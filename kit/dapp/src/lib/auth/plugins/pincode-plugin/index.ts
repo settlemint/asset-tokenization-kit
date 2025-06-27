@@ -1,17 +1,17 @@
-import {
-  removePincode,
-  setPincode,
-  updatePincode,
-} from "@/lib/auth/plugins/pincode-plugin/queries";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import type { BetterAuthPlugin } from "better-auth";
+import type { BetterAuthPlugin } from 'better-auth';
 import {
   APIError,
   createAuthEndpoint,
   sessionMiddleware,
-} from "better-auth/api";
-import { z } from "zod";
-import { revokeSession, validatePassword } from "../utils";
+} from 'better-auth/api';
+import { z } from 'zod';
+import {
+  removePincode,
+  setPincode,
+  updatePincode,
+} from '@/lib/auth/plugins/pincode-plugin/queries';
+import type { EthereumAddress } from '@/lib/zod/validators/ethereum-address';
+import { revokeSession, validatePassword } from '../utils';
 
 export interface UserWithPincodeContext {
   id: string;
@@ -23,38 +23,38 @@ export interface UserWithPincodeContext {
 
 export const pincode = () => {
   return {
-    id: "pincode",
+    id: 'pincode',
     endpoints: {
       enablePincode: createAuthEndpoint(
-        "/pincode/enable",
+        '/pincode/enable',
         {
-          method: "POST",
+          method: 'POST',
           body: z.object({
-            pincode: z.string().describe("The pincode for wallet verification"),
+            pincode: z.string().describe('The pincode for wallet verification'),
             password: z
               .string()
               .describe(
-                "User password (only required if the user has done the initial onboarding)"
+                'User password (only required if the user has done the initial onboarding)'
               )
               .optional(),
           }),
           use: [sessionMiddleware],
           metadata: {
             openapi: {
-              summary: "Enable pincode",
+              summary: 'Enable pincode',
               description:
                 "Use this endpoint to enable pincode. This will set the pincode for the user's account.",
               responses: {
                 200: {
-                  description: "Successful response",
+                  description: 'Successful response',
                   content: {
-                    "application/json": {
+                    'application/json': {
                       schema: {
-                        type: "object",
+                        type: 'object',
                         properties: {
                           success: {
-                            type: "boolean",
-                            description: "Success status",
+                            type: 'boolean',
+                            description: 'Success status',
                           },
                         },
                       },
@@ -67,16 +67,16 @@ export const pincode = () => {
         },
         async (ctx) => {
           const user = ctx.context.session.user as UserWithPincodeContext;
-          const { password, pincode } = ctx.body;
+          const { password, pincode: userPincode } = ctx.body;
           if (user.pincodeEnabled && user.pincodeVerificationId) {
-            throw new APIError("BAD_REQUEST", {
-              message: "Pincode already set",
+            throw new APIError('BAD_REQUEST', {
+              message: 'Pincode already set',
             });
           }
           if (user.initialOnboardingFinished) {
             if (!password) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Password is required",
+              throw new APIError('BAD_REQUEST', {
+                message: 'Password is required',
               });
             }
             const isPasswordValid = await validatePassword(ctx, {
@@ -84,12 +84,12 @@ export const pincode = () => {
               userId: user.id,
             });
             if (!isPasswordValid) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Invalid password",
+              throw new APIError('BAD_REQUEST', {
+                message: 'Invalid password',
               });
             }
           }
-          const pincodeVerificationId = await setPincode(user, pincode);
+          const pincodeVerificationId = await setPincode(user, userPincode);
           await revokeSession(ctx, {
             initialOnboardingFinished: true,
             pincodeEnabled: true,
@@ -99,31 +99,31 @@ export const pincode = () => {
         }
       ),
       disablePincode: createAuthEndpoint(
-        "/pincode/disable",
+        '/pincode/disable',
         {
-          method: "POST",
+          method: 'POST',
           body: z.object({
             password: z.string({
-              message: "User password",
+              message: 'User password',
             }),
           }),
           use: [sessionMiddleware],
           metadata: {
             openapi: {
-              summary: "Disable pincode",
+              summary: 'Disable pincode',
               description:
                 "Use this endpoint to disable pincode. This will remove the pincode from the user's account.",
               responses: {
                 200: {
-                  description: "Successful response",
+                  description: 'Successful response',
                   content: {
-                    "application/json": {
+                    'application/json': {
                       schema: {
-                        type: "object",
+                        type: 'object',
                         properties: {
                           success: {
-                            type: "boolean",
-                            description: "Success status",
+                            type: 'boolean',
+                            description: 'Success status',
                           },
                         },
                       },
@@ -137,9 +137,9 @@ export const pincode = () => {
         async (ctx) => {
           const user = ctx.context.session.user as UserWithPincodeContext;
           const { pincodeEnabled, pincodeVerificationId } = user;
-          if (!pincodeEnabled || !pincodeVerificationId) {
-            throw new APIError("BAD_REQUEST", {
-              message: "Pincode already removed",
+          if (!(pincodeEnabled && pincodeVerificationId)) {
+            throw new APIError('BAD_REQUEST', {
+              message: 'Pincode already removed',
             });
           }
           const { password } = ctx.body;
@@ -148,8 +148,8 @@ export const pincode = () => {
             userId: user.id,
           });
           if (!isPasswordValid) {
-            throw new APIError("BAD_REQUEST", {
-              message: "Invalid password",
+            throw new APIError('BAD_REQUEST', {
+              message: 'Invalid password',
             });
           }
           const success = await removePincode(user, pincodeVerificationId);
@@ -162,34 +162,34 @@ export const pincode = () => {
         }
       ),
       updatePincode: createAuthEndpoint(
-        "/pincode/update",
+        '/pincode/update',
         {
-          method: "POST",
+          method: 'POST',
           body: z.object({
             password: z.string({
-              message: "User password",
+              message: 'User password',
             }),
             newPincode: z.string({
-              message: "New pincode",
+              message: 'New pincode',
             }),
           }),
           use: [sessionMiddleware],
           metadata: {
             openapi: {
-              summary: "Update pincode",
+              summary: 'Update pincode',
               description:
                 "Use this endpoint to update pincode. This will update the pincode for the user's account.",
               responses: {
                 200: {
-                  description: "Successful response",
+                  description: 'Successful response',
                   content: {
-                    "application/json": {
+                    'application/json': {
                       schema: {
-                        type: "object",
+                        type: 'object',
                         properties: {
                           success: {
-                            type: "boolean",
-                            description: "Success status",
+                            type: 'boolean',
+                            description: 'Success status',
                           },
                         },
                       },
@@ -208,8 +208,8 @@ export const pincode = () => {
             userId: user.id,
           });
           if (!isPasswordValid) {
-            throw new APIError("BAD_REQUEST", {
-              message: "Invalid password",
+            throw new APIError('BAD_REQUEST', {
+              message: 'Invalid password',
             });
           }
           const pincodeVerificationId = await updatePincode(user, newPincode);
@@ -223,7 +223,7 @@ export const pincode = () => {
     rateLimit: [
       {
         pathMatcher(path) {
-          return path.startsWith("/pincode/");
+          return path.startsWith('/pincode/');
         },
         window: 10,
         max: 3,

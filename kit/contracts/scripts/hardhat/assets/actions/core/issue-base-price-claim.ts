@@ -1,23 +1,23 @@
 import {
   ATK_BASE_CURRENCY_CODE,
   ATK_BASE_CURRENCY_DECIMALS,
-} from "../../../constants/base-currency";
-import { ATKContracts } from "../../../constants/contracts";
-import { ATKTopic } from "../../../constants/topics";
-import { claimIssuer } from "../../../entities/actors/claim-issuer";
-import { owner } from "../../../entities/actors/owner";
-import type { Asset } from "../../../entities/asset";
-import { encodeClaimData } from "../../../utils/claim-scheme-utils";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatBaseUnits } from "../../../utils/format-base-units";
-import { toBaseUnits } from "../../../utils/to-base-units";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+} from '../../../constants/base-currency';
+import { ATKContracts } from '../../../constants/contracts';
+import { ATKTopic } from '../../../constants/topics';
+import { claimIssuer } from '../../../entities/actors/claim-issuer';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { encodeClaimData } from '../../../utils/claim-scheme-utils';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { formatBaseUnits } from '../../../utils/format-base-units';
+import { toBaseUnits } from '../../../utils/to-base-units';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 export const issueBasePriceClaim = async (
   asset: Asset<any>,
   amount: number | bigint
 ) => {
-  console.log(`[Base price claim] → Starting claim issuance...`);
+  console.log('[Base price claim] → Starting claim issuance...');
 
   const amountBigInt = toBaseUnits(amount, ATK_BASE_CURRENCY_DECIMALS);
 
@@ -51,7 +51,7 @@ export const issueBasePriceClaim = async (
       claimIssuerIdentity,
       basePriceClaimSignature,
       basePriceClaimData,
-      "",
+      '',
     ])
   );
 

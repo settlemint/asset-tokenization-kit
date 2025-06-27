@@ -1,26 +1,26 @@
-import { type BrowserContext, test } from "@playwright/test";
-import { Pages } from "../pages/pages";
+import { type BrowserContext, test } from '@playwright/test';
+import { Pages } from '../pages/pages';
 import {
   cryptocurrencyBurnData,
   cryptocurrencyData,
   cryptocurrencyDataAmountAfterMint,
   cryptocurrencyMintData,
   cryptocurrencyTransferData,
-} from "../test-data/asset-data";
-import { successMessageData } from "../test-data/message-data";
-import { adminUser, signUpTransferUserData } from "../test-data/user-data";
-import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
+} from '../test-data/asset-data';
+import { successMessageData } from '../test-data/message-data';
+import { adminUser, signUpTransferUserData } from '../test-data/user-data';
+import { ensureUserIsAdmin, fetchWalletAddressFromDB } from '../utils/db-utils';
 
 const testData = {
-  transferUserEmail: "",
-  transferUserWalletAddress: "",
-  transferUserName: "",
-  cryptocurrencyName: "",
+  transferUserEmail: '',
+  transferUserWalletAddress: '',
+  transferUserName: '',
+  cryptocurrencyName: '',
   currentTotalSupply: 0,
 };
 
-test.describe("Create, mint, burn and transfer cryptocurrency", () => {
-  test.describe.configure({ mode: "serial" });
+test.describe('Create, mint, burn and transfer cryptocurrency', () => {
+  test.describe.configure({ mode: 'serial' });
   let transferUserContext: BrowserContext | undefined;
   let adminContext: BrowserContext | undefined;
   let transferUserPages: ReturnType<typeof Pages>;
@@ -31,7 +31,7 @@ test.describe("Create, mint, burn and transfer cryptocurrency", () => {
       transferUserContext = await browser.newContext();
       const transferUserPage = await transferUserContext.newPage();
       transferUserPages = Pages(transferUserPage);
-      await transferUserPage.goto("/");
+      await transferUserPage.goto('/');
       await transferUserPages.signUpPage.signUp(signUpTransferUserData);
       testData.transferUserEmail = signUpTransferUserData.email;
       testData.transferUserName = signUpTransferUserData.name;
@@ -44,7 +44,7 @@ test.describe("Create, mint, burn and transfer cryptocurrency", () => {
       adminContext = await browser.newContext();
       const adminPage = await adminContext.newPage();
       adminPages = Pages(adminPage);
-      await adminPage.goto("/");
+      await adminPage.goto('/');
       await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
     } catch (error) {
@@ -66,7 +66,7 @@ test.describe("Create, mint, burn and transfer cryptocurrency", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates, mints and burns cryptocurrency", async ({
+  test('Admin user creates, mints and burns cryptocurrency', async ({
     browser,
   }) => {
     await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
@@ -101,7 +101,7 @@ test.describe("Create, mint, burn and transfer cryptocurrency", () => {
     testData.currentTotalSupply = newTotal;
     await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
   });
-  test("Admin user transfers cryptocurrency to regular transfer user", async () => {
+  test('Admin user transfers cryptocurrency to regular transfer user', async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.cryptocurrencyName,
       walletAddress: testData.transferUserWalletAddress,
@@ -119,8 +119,8 @@ test.describe("Create, mint, burn and transfer cryptocurrency", () => {
       testData.currentTotalSupply - transferAmount
     ).toString();
     await adminPages.adminPage.chooseSidebarMenuOption({
-      sidebarOption: "My assets",
-      expectedUrlPattern: "**/portfolio/my-assets",
+      sidebarOption: 'My assets',
+      expectedUrlPattern: '**/portfolio/my-assets',
       expectedLocatorsToWaitFor: [
         adminPages.adminPage.getTableBodyLocator(),
         adminPages.adminPage.getFilterButtonLocator(),
@@ -133,7 +133,7 @@ test.describe("Create, mint, burn and transfer cryptocurrency", () => {
     });
   });
 
-  test("Verify regular transfer user received cryptocurrency", async () => {
+  test('Verify regular transfer user received cryptocurrency', async () => {
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.portfolioPage.verifyPortfolioAssetAmount({
       expectedAmount: cryptocurrencyTransferData.transferAmount,

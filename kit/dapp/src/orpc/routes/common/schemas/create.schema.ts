@@ -27,9 +27,9 @@
  * @see {@link @/lib/zod/validators/verification-type} - Verification type options
  */
 
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+import { ethereumAddress } from '@/lib/zod/validators/ethereum-address';
+import { UserVerificationSchema } from '@/orpc/routes/common/schemas/user-verification.schema';
 
 export const CreateSchema = z.object({
   /**
@@ -43,7 +43,7 @@ export const CreateSchema = z.object({
    */
   contract: ethereumAddress
     .optional()
-    .describe("The address of the contract to call this function on"),
+    .describe('The address of the contract to call this function on'),
 
   /**
    * Multi-factor authentication credentials for transaction signing.

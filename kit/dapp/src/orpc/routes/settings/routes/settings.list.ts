@@ -1,7 +1,7 @@
-import { settings } from "@/lib/db/schema";
-import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
-import { asc, desc } from "drizzle-orm";
+import { asc, desc } from 'drizzle-orm';
+import { settings } from '@/lib/db/schemas/settings';
+import { databaseMiddleware } from '@/orpc/middlewares/services/db.middleware';
+import { authRouter } from '@/orpc/procedures/auth.router';
 
 /**
  * Settings listing route handler.
@@ -39,16 +39,16 @@ export const list = authRouter.settings.list
     const {
       offset = 0,
       limit = 100,
-      orderDirection = "asc",
-      orderBy = "key",
+      orderDirection = 'asc',
+      orderBy = 'key',
     } = input ?? {};
 
     // Determine sort order
-    const order = orderDirection === "desc" ? desc : asc;
+    const order = orderDirection === 'desc' ? desc : asc;
 
     // Map orderBy field to the correct column
     const orderColumn =
-      orderBy === "lastUpdated" ? settings.lastUpdated : settings.key;
+      orderBy === 'lastUpdated' ? settings.lastUpdated : settings.key;
 
     // Query settings with pagination and sorting
     const result = await context.db

@@ -1,6 +1,6 @@
-import { create } from "./routes/system.create";
-import { list } from "./routes/system.list";
-import { read } from "./routes/system.read";
+import { create } from './routes/system.create';
+import { list } from './routes/system.list';
+import { read } from './routes/system.read';
 
 /**
  * System router module.

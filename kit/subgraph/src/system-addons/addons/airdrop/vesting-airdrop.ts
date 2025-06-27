@@ -1,18 +1,18 @@
-import {
+import type {
   BatchVestingInitialized,
   VestingInitialized,
   VestingStrategyUpdated,
-} from "../../../../generated/templates/VestingAirdrop/VestingAirdrop";
-import { fetchEvent } from "../../../event/fetch/event";
-import { fetchAirdropAllocation } from "./fetch/airdrop-allocation";
-import { fetchAirdropRecipient } from "./fetch/airdrop-recipient";
-import { fetchVestingAirdrop } from "./fetch/vesting-airdrop";
-import { updateVestingAirdropStrategy } from "./utils/vesting-airdrop-utils";
+} from '../../../../generated/templates/VestingAirdrop/VestingAirdrop';
+import { fetchEvent } from '../../../event/fetch/event';
+import { fetchAirdropAllocation } from './fetch/airdrop-allocation';
+import { fetchAirdropRecipient } from './fetch/airdrop-recipient';
+import { fetchVestingAirdrop } from './fetch/vesting-airdrop';
+import { updateVestingAirdropStrategy } from './utils/vesting-airdrop-utils';
 
 export function handleVestingStrategyUpdated(
   event: VestingStrategyUpdated
 ): void {
-  fetchEvent(event, "VestingStrategyUpdated");
+  fetchEvent(event, 'VestingStrategyUpdated');
 
   const vestingAirdrop = fetchVestingAirdrop(event.address);
   updateVestingAirdropStrategy(vestingAirdrop);
@@ -21,7 +21,7 @@ export function handleVestingStrategyUpdated(
 }
 
 export function handleVestingInitialized(event: VestingInitialized): void {
-  fetchEvent(event, "VestingInitialized");
+  fetchEvent(event, 'VestingInitialized');
   const airdropRecipient = fetchAirdropRecipient(
     event.address,
     event.params.account
@@ -37,7 +37,7 @@ export function handleVestingInitialized(event: VestingInitialized): void {
 export function handleBatchVestingInitialized(
   event: BatchVestingInitialized
 ): void {
-  fetchEvent(event, "BatchVestingInitialized");
+  fetchEvent(event, 'BatchVestingInitialized');
   const airdropRecipient = fetchAirdropRecipient(
     event.address,
     event.params.account

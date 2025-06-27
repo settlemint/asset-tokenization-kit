@@ -1,19 +1,19 @@
-import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
-import { Asset } from "../../../entities/asset";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatBaseUnits } from "../../../utils/format-base-units";
-import { toBaseUnits } from "../../../utils/to-base-units";
-import { waitForEvent } from "../../../utils/wait-for-event";
-import { approve } from "../core/approve";
-import { mint } from "../core/mint";
+import { ATKContracts } from '../../../constants/contracts';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { formatBaseUnits } from '../../../utils/format-base-units';
+import { toBaseUnits } from '../../../utils/to-base-units';
+import { waitForEvent } from '../../../utils/wait-for-event';
+import { approve } from '../core/approve';
+import { mint } from '../core/mint';
 
 export const topupUnderlyingAsset = async (
   asset: Asset<any>,
   underlyingAsset: Asset<any>,
   amount: bigint
 ) => {
-  console.log(`[Topup underlying asset] → Starting underlying asset topup...`);
+  console.log('[Topup underlying asset] → Starting underlying asset topup...');
 
   const tokenContract = owner.getContractInstance({
     address: asset.address,
@@ -37,7 +37,7 @@ export const topupUnderlyingAsset = async (
   await waitForEvent({
     transactionHash: topUpTransactionHash,
     contract: scheduleContract,
-    eventName: "UnderlyingAssetTopUp",
+    eventName: 'UnderlyingAssetTopUp',
   });
 
   console.log(

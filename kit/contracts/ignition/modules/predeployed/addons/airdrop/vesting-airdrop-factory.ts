@@ -1,13 +1,13 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "../../forwarder";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from '../../forwarder';
 
 const VestingAirdropFactoryModule = buildModule(
-  "VestingAirdropFactoryModule",
+  'VestingAirdropFactoryModule',
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
     const vestingAirdropFactoryImplementation = m.contract(
-      "ATKVestingAirdropFactoryImplementation",
+      'ATKVestingAirdropFactoryImplementation',
       [forwarder]
     );
 

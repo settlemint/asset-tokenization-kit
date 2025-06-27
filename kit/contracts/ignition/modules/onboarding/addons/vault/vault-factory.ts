@@ -1,9 +1,9 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ATKModule from "../../../main";
-import ATKOnboardingSystemModule from "../../system";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ATKModule from '../../../main';
+import ATKOnboardingSystemModule from '../../system';
 
 const ATKOnboardingVaultFactoryModule = buildModule(
-  "ATKOnboardingVaultFactoryModule",
+  'ATKOnboardingVaultFactoryModule',
   (m) => {
     const { system, systemAddonRegistry } = m.useModule(
       ATKOnboardingSystemModule
@@ -14,26 +14,26 @@ const ATKOnboardingVaultFactoryModule = buildModule(
 
     const encodedInitializationData = m.encodeFunctionCall(
       vaultFactoryImplementation,
-      "initialize",
+      'initialize',
       [system.address, platformAdmin]
     );
 
     const createVaultFactoryAddon = m.call(
       systemAddonRegistry,
-      "registerSystemAddon",
-      ["vault-factory", vaultFactoryImplementation, encodedInitializationData]
+      'registerSystemAddon',
+      ['vault-factory', vaultFactoryImplementation, encodedInitializationData]
     );
     const vaultFactoryAddress = m.readEventArgument(
       createVaultFactoryAddon,
-      "SystemAddonRegistered",
-      "proxyAddress",
-      { id: "vaultFactoryAddress" }
+      'SystemAddonRegistered',
+      'proxyAddress',
+      { id: 'vaultFactoryAddress' }
     );
     const vaultFactoryProxy = m.contractAt(
-      "IATKVaultFactory",
+      'IATKVaultFactory',
       vaultFactoryAddress,
       {
-        id: "vaultFactory",
+        id: 'vaultFactory',
       }
     );
 

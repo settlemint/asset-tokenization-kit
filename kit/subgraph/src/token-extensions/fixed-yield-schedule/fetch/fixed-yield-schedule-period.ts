@@ -1,7 +1,7 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { TokenFixedYieldSchedulePeriod } from "../../../../generated/schema";
-import { DEFAULT_TOKEN_DECIMALS } from "../../../config/token";
-import { setBigNumber } from "../../../utils/bignumber";
+import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { TokenFixedYieldSchedulePeriod } from '../../../../generated/schema';
+import { DEFAULT_TOKEN_DECIMALS } from '../../../config/token';
+import { setBigNumber } from '../../../utils/bignumber';
 
 export function fetchFixedYieldSchedulePeriod(
   periodId: Bytes
@@ -15,19 +15,19 @@ export function fetchFixedYieldSchedulePeriod(
     fixedYieldSchedulePeriod.endDate = BigInt.zero();
     setBigNumber(
       fixedYieldSchedulePeriod,
-      "totalClaimed",
+      'totalClaimed',
       BigInt.zero(),
       DEFAULT_TOKEN_DECIMALS
     );
     setBigNumber(
       fixedYieldSchedulePeriod,
-      "totalYield",
+      'totalYield',
       BigInt.zero(),
       DEFAULT_TOKEN_DECIMALS
     );
     setBigNumber(
       fixedYieldSchedulePeriod,
-      "totalUnclaimedYield",
+      'totalUnclaimedYield',
       BigInt.zero(),
       DEFAULT_TOKEN_DECIMALS
     );

@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt, Entity } from "@graphprotocol/graph-ts";
+import { type BigDecimal, BigInt, type Entity } from '@graphprotocol/graph-ts';
 
 function toDecimals(value: BigInt, decimals: number): BigDecimal {
   const precision = BigInt.fromI32(10)
@@ -13,6 +13,6 @@ export function setBigNumber(
   value: BigInt,
   decimals: number
 ): void {
-  entity.setBigInt(fieldName.concat("Exact"), value);
+  entity.setBigInt(fieldName.concat('Exact'), value);
   entity.setBigDecimal(fieldName, toDecimals(value, decimals));
 }

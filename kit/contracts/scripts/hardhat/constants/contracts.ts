@@ -41,7 +41,7 @@ import {
   trustedIssuersRegistryAbi,
   vestingAirdropFactoryAbi,
   xvpSettlementFactoryAbi,
-} from "../abi";
+} from '../abi';
 
 export const ATKContracts = {
   // onboarding

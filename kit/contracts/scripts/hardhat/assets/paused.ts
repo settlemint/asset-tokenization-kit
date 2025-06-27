@@ -1,25 +1,24 @@
-import { atkDeployer } from "../services/deployer";
-
-import { ATKRoles } from "../constants/roles";
-import { ATKTopic } from "../constants/topics";
-import { owner } from "../entities/actors/owner";
-import { Asset } from "../entities/asset";
-import { topicManager } from "../services/topic-manager";
-import { grantRoles } from "./actions/core/grant-roles";
-import { issueBasePriceClaim } from "./actions/core/issue-base-price-claim";
-import { pauseAsset } from "./actions/pausable/pause-asset";
-import { unpauseAsset } from "./actions/pausable/unpause-asset";
+import { ATKRoles } from '../constants/roles';
+import { ATKTopic } from '../constants/topics';
+import { owner } from '../entities/actors/owner';
+import { Asset } from '../entities/asset';
+import { atkDeployer } from '../services/deployer';
+import { topicManager } from '../services/topic-manager';
+import { grantRoles } from './actions/core/grant-roles';
+import { issueBasePriceClaim } from './actions/core/issue-base-price-claim';
+import { pauseAsset } from './actions/pausable/pause-asset';
+import { unpauseAsset } from './actions/pausable/unpause-asset';
 
 export const createPausedAsset = async () => {
-  console.log("\n=== Creating paused stablecoin... ===\n");
+  console.log('\n=== Creating paused stablecoin... ===\n');
 
   const stablecoinFactory = atkDeployer.getStablecoinFactoryContract();
 
-  const pausedStableCoin = new Asset<"stablecoinFactory">(
-    "Paused Stablecoin",
-    "PSD",
+  const pausedStableCoin = new Asset<'stablecoinFactory'>(
+    'Paused Stablecoin',
+    'PSD',
     6,
-    "JP3902900005",
+    'JP3902900005',
     stablecoinFactory
   );
 

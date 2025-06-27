@@ -20,7 +20,7 @@
  * @see {@link ./auth.router} - Authenticated router that this extends
  * @see {@link ../middlewares/auth/wallet.middleware} - Wallet verification middleware
  */
-import { walletMiddleware } from "../middlewares/auth/wallet.middleware";
-import { authRouter } from "./auth.router";
+import { walletMiddleware } from '../middlewares/auth/wallet.middleware';
+import { authRouter } from './auth.router';
 
 export const onboardedRouter = authRouter.use(walletMiddleware);

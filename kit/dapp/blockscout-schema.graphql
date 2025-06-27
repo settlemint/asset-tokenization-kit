@@ -3,7 +3,9 @@ schema {
   subscription: RootSubscriptionType
 }
 
-"""A stored representation of a Web3 address."""
+"""
+A stored representation of a Web3 address.
+"""
 type Address {
   contractCode: Data
   fetchedCoinBalance: Wei
@@ -12,9 +14,22 @@ type Address {
   hash: AddressHash
   nonce: Int
   smartContract: SmartContract
-  tokenTransfers(after: String, before: String, count: Int, first: Int, last: Int): TokenTransferConnection
+  tokenTransfers(
+    after: String
+    before: String
+    count: Int
+    first: Int
+    last: Int
+  ): TokenTransferConnection
   tokenTransfersCount: Int
-  transactions(after: String, before: String, count: Int, first: Int, last: Int, order: SortOrder = DESC): TransactionConnection
+  transactions(
+    after: String
+    before: String
+    count: Int
+    first: Int
+    last: Int
+    order: SortOrder = DESC
+  ): TransactionConnection
   transactionsCount: Int
 }
 
@@ -55,7 +70,9 @@ enum CallType {
   STATICCALL
 }
 
-"""Represents a CELO or usd token transfer between addresses."""
+"""
+Represents a CELO or usd token transfer between addresses.
+"""
 type CeloTransfer implements Node {
   blockNumber: Int
   comment: String
@@ -64,7 +81,9 @@ type CeloTransfer implements Node {
   gasPrice: Wei
   gasUsed: Decimal
 
-  """The ID of an object"""
+  """
+  The ID of an object
+  """
   id: ID!
   input: String
   logIndex: Int
@@ -111,10 +130,14 @@ response as a string to preserve precision.
 """
 scalar Decimal
 
-"""A 32-byte [KECCAK-256](https://en.wikipedia.org/wiki/SHA-3) hash."""
+"""
+A 32-byte [KECCAK-256](https://en.wikipedia.org/wiki/SHA-3) hash.
+"""
 scalar FullHash
 
-"""Models internal transactions."""
+"""
+Models internal transactions.
+"""
 type InternalTransaction implements Node {
   blockHash: FullHash
   blockIndex: Int
@@ -127,7 +150,9 @@ type InternalTransaction implements Node {
   gas: Decimal
   gasUsed: Decimal
 
-  """The ID of an object"""
+  """
+  The ID of an object
+  """
   id: ID!
   index: Int
   init: Data
@@ -165,7 +190,9 @@ enum Language {
 }
 
 interface Node {
-  """The ID of the object."""
+  """
+  The ID of the object.
+  """
   id: ID!
 }
 
@@ -175,38 +202,72 @@ The nonce (16 (hex) characters / 128 bits / 8 bytes) is derived from the Proof-o
 scalar NonceHash
 
 type PageInfo {
-  """When paginating forwards, the cursor to continue."""
+  """
+  When paginating forwards, the cursor to continue.
+  """
   endCursor: String
 
-  """When paginating forwards, are there more items?"""
+  """
+  When paginating forwards, are there more items?
+  """
   hasNextPage: Boolean!
 
-  """When paginating backwards, are there more items?"""
+  """
+  When paginating backwards, are there more items?
+  """
   hasPreviousPage: Boolean!
 
-  """When paginating backwards, the cursor to continue."""
+  """
+  When paginating backwards, the cursor to continue.
+  """
   startCursor: String
 }
 
 type RootQueryType {
-  """Gets an address by hash."""
+  """
+  Gets an address by hash.
+  """
   address(hash: AddressHash!): Address
 
-  """Gets addresses by address hash."""
+  """
+  Gets addresses by address hash.
+  """
   addresses(hashes: [AddressHash!]!): [Address]
 
-  """Gets a block by number."""
+  """
+  Gets a block by number.
+  """
   block(number: Int!): Block
   node(
-    """The ID of an object."""
+    """
+    The ID of an object.
+    """
     id: ID!
   ): Node
-  tokenTransferTxs(addressHash: AddressHash, after: String, before: String, count: Int, first: Int, last: Int): TransferTransactionConnection
+  tokenTransferTxs(
+    addressHash: AddressHash
+    after: String
+    before: String
+    count: Int
+    first: Int
+    last: Int
+  ): TransferTransactionConnection
 
-  """Gets token transfers by token contract address hash."""
-  tokenTransfers(after: String, before: String, count: Int, first: Int, last: Int, tokenContractAddressHash: AddressHash!): TokenTransferConnection
+  """
+  Gets token transfers by token contract address hash.
+  """
+  tokenTransfers(
+    after: String
+    before: String
+    count: Int
+    first: Int
+    last: Int
+    tokenContractAddressHash: AddressHash!
+  ): TokenTransferConnection
 
-  """Gets a transaction by hash."""
+  """
+  Gets a transaction by hash.
+  """
   transaction(hash: FullHash!): Transaction
 }
 
@@ -252,7 +313,9 @@ type RootSubscriptionType {
   tokenTransfers(tokenContractAddressHash: AddressHash!): [TokenTransfer]
 }
 
-"""Represents a token."""
+"""
+Represents a token.
+"""
 type Token {
   circulatingMarketCap: Decimal
   contractAddressHash: AddressHash
@@ -266,14 +329,18 @@ type Token {
   volume24h: Decimal
 }
 
-"""Represents a token transfer between addresses."""
+"""
+Represents a token transfer between addresses.
+"""
 type TokenTransfer implements Node {
   amount: Decimal
   amounts: [Decimal]
   blockNumber: Int
   fromAddressHash: AddressHash
 
-  """The ID of an object"""
+  """
+  The ID of an object
+  """
   id: ID!
   logIndex: Int
   toAddressHash: AddressHash
@@ -294,7 +361,9 @@ type TokenTransferEdge {
   node: TokenTransfer
 }
 
-"""Models a Web3 transaction."""
+"""
+Models a Web3 transaction.
+"""
 type Transaction implements Node {
   block: Block
   blockHash: FullHash
@@ -310,11 +379,19 @@ type Transaction implements Node {
   hasErrorInInternalTransactions: Boolean
   hash: FullHash
 
-  """The ID of an object"""
+  """
+  The ID of an object
+  """
   id: ID!
   index: Int
   input: String
-  internalTransactions(after: String, before: String, count: Int, first: Int, last: Int): InternalTransactionConnection
+  internalTransactions(
+    after: String
+    before: String
+    count: Int
+    first: Int
+    last: Int
+  ): InternalTransactionConnection
   maxFeePerGas: Wei
   maxPriorityFeePerGas: Wei
   nonce: NonceHash
@@ -338,7 +415,9 @@ type TransactionEdge {
   node: Transaction
 }
 
-"""Represents a CELO token transfer between addresses."""
+"""
+Represents a CELO token transfer between addresses.
+"""
 type TransferTransaction implements Node {
   addressHash: AddressHash
   blockNumber: Int
@@ -349,11 +428,19 @@ type TransferTransaction implements Node {
   gatewayFee: AddressHash
   gatewayFeeRecipient: AddressHash
 
-  """The ID of an object"""
+  """
+  The ID of an object
+  """
   id: ID!
   input: String
   timestamp: DateTime
-  tokenTransfer(after: String, before: String, count: Int, first: Int, last: Int): CeloTransferConnection
+  tokenTransfer(
+    after: String
+    before: String
+    count: Int
+    first: Int
+    last: Int
+  ): CeloTransferConnection
   transactionHash: FullHash
 }
 

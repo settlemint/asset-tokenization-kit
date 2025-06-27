@@ -1,15 +1,15 @@
-import type { router } from "@/orpc/routes/router";
-import { createORPCClient } from "@orpc/client";
-import { RPCLink } from "@orpc/client/fetch";
-import type { RouterClient } from "@orpc/server";
+import { createORPCClient } from '@orpc/client';
+import { RPCLink } from '@orpc/client/fetch';
+import type { RouterClient } from '@orpc/server';
+import type { router } from '@/orpc/routes/router';
 
 export type OrpcClient = RouterClient<typeof router>;
 
 export const getOrpcClient = (headers: Headers) => {
   const link = new RPCLink({
-    url: "http://localhost:3000/api/rpc",
+    url: 'http://localhost:3000/api/rpc',
     headers: () => ({
-      cookie: headers.get("Cookie") as string,
+      cookie: headers.get('Cookie') as string,
     }),
     // fetch: <-- provide fetch polyfill fetch if needed
   });

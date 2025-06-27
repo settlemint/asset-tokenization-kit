@@ -7,7 +7,7 @@
  *
  * @module TimeUnitValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Available time measurement units from seconds to years.
@@ -23,13 +23,13 @@ import { z } from "zod/v4";
  * - `years`: Annual periods, long-term vesting
  */
 export const timeUnits = [
-  "seconds",
-  "minutes",
-  "hours",
-  "days",
-  "weeks",
-  "months",
-  "years",
+  'seconds',
+  'minutes',
+  'hours',
+  'days',
+  'weeks',
+  'months',
+  'years',
 ] as const;
 
 /**
@@ -52,7 +52,7 @@ export const timeUnits = [
  * ```
  */
 export const timeUnit = () =>
-  z.enum(timeUnits).describe("Unit of time measurement");
+  z.enum(timeUnits).describe('Unit of time measurement');
 
 /**
  * Type representing a validated time measurement unit.

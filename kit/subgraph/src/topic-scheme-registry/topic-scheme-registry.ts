@@ -1,17 +1,17 @@
-import { Bytes } from "@graphprotocol/graph-ts";
-import {
+import { Bytes } from '@graphprotocol/graph-ts';
+import type {
   TopicSchemeRegistered,
   TopicSchemeRemoved,
-  TopicSchemeUpdated,
   TopicSchemesBatchRegistered,
-} from "../../generated/templates/TopicSchemeRegistry/TopicSchemeRegistry";
-import { fetchEvent } from "../event/fetch/event";
-import { fetchTopicScheme } from "./fetch/topic-scheme";
+  TopicSchemeUpdated,
+} from '../../generated/templates/TopicSchemeRegistry/TopicSchemeRegistry';
+import { fetchEvent } from '../event/fetch/event';
+import { fetchTopicScheme } from './fetch/topic-scheme';
 
 export function handleTopicSchemeRegistered(
   event: TopicSchemeRegistered
 ): void {
-  fetchEvent(event, "TopicSchemeRegistered");
+  fetchEvent(event, 'TopicSchemeRegistered');
   const topicScheme = fetchTopicScheme(event.params.topicId);
   if (topicScheme.deployedInTransaction.equals(Bytes.empty())) {
     topicScheme.deployedInTransaction = event.transaction.hash;
@@ -23,14 +23,14 @@ export function handleTopicSchemeRegistered(
 }
 
 export function handleTopicSchemeRemoved(event: TopicSchemeRemoved): void {
-  fetchEvent(event, "TopicSchemeRemoved");
+  fetchEvent(event, 'TopicSchemeRemoved');
   const topicScheme = fetchTopicScheme(event.params.topicId);
   topicScheme.enabled = false;
   topicScheme.save();
 }
 
 export function handleTopicSchemeUpdated(event: TopicSchemeUpdated): void {
-  fetchEvent(event, "TopicSchemeUpdated");
+  fetchEvent(event, 'TopicSchemeUpdated');
   const topicScheme = fetchTopicScheme(event.params.topicId);
   topicScheme.name = event.params.name;
   topicScheme.topicId = event.params.topicId;
@@ -41,7 +41,7 @@ export function handleTopicSchemeUpdated(event: TopicSchemeUpdated): void {
 export function handleTopicSchemesBatchRegistered(
   event: TopicSchemesBatchRegistered
 ): void {
-  fetchEvent(event, "TopicSchemesBatchRegistered");
+  fetchEvent(event, 'TopicSchemesBatchRegistered');
 
   const topicIds = event.params.topicIds;
   const names = event.params.names;

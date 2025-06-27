@@ -1,16 +1,16 @@
-import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
-import type { Asset } from "../../../entities/asset";
-import { increaseAnvilTime } from "../../../utils/anvil";
-import { formatBaseUnits } from "../../../utils/format-base-units";
-import { waitForEvent } from "../../../utils/wait-for-event";
+import { ATKContracts } from '../../../constants/contracts';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { increaseAnvilTime } from '../../../utils/anvil';
+import { formatBaseUnits } from '../../../utils/format-base-units';
+import { waitForEvent } from '../../../utils/wait-for-event';
 
 export const collectManagementFee = async (
-  asset: Asset<"fundFactory">,
+  asset: Asset<'fundFactory'>,
   waitTimeInDays: number
 ) => {
   console.log(
-    `[Fund management fee collected] → Starting management fee collection...`
+    '[Fund management fee collected] → Starting management fee collection...'
   );
 
   const fundContract = owner.getContractInstance({
@@ -25,7 +25,7 @@ export const collectManagementFee = async (
   const { amount } = (await waitForEvent({
     transactionHash,
     contract: fundContract,
-    eventName: "ManagementFeeCollected",
+    eventName: 'ManagementFeeCollected',
   })) as { amount: bigint };
 
   console.log(

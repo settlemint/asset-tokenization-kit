@@ -7,14 +7,14 @@
  * @module ISOCountryCodeValidation
  */
 
-import * as countries from "i18n-iso-countries";
-import { z } from "zod/v4";
-
+// biome-ignore lint/performance/noNamespaceImport: required to use i18n-iso-countries
+import * as countries from 'i18n-iso-countries';
 // Preload supported locales
-import localeAr from "i18n-iso-countries/langs/ar.json";
-import localeDe from "i18n-iso-countries/langs/de.json";
-import localeEn from "i18n-iso-countries/langs/en.json";
-import localeJa from "i18n-iso-countries/langs/ja.json";
+import localeAr from 'i18n-iso-countries/langs/ar.json' with { type: 'json' };
+import localeDe from 'i18n-iso-countries/langs/de.json' with { type: 'json' };
+import localeEn from 'i18n-iso-countries/langs/en.json' with { type: 'json' };
+import localeJa from 'i18n-iso-countries/langs/ja.json' with { type: 'json' };
+import { z } from 'zod/v4';
 
 // Register all supported locales at module initialization
 countries.registerLocale(localeEn);
@@ -25,16 +25,16 @@ countries.registerLocale(localeJa);
 /**
  * Supported locale codes for country name translations.
  */
-export type SupportedLocale = "en" | "ar" | "de" | "ja";
+export type SupportedLocale = 'en' | 'ar' | 'de' | 'ja';
 
 /**
  * Array of supported locale codes.
  */
 export const SUPPORTED_LOCALES: readonly SupportedLocale[] = [
-  "en",
-  "ar",
-  "de",
-  "ja",
+  'en',
+  'ar',
+  'de',
+  'ja',
 ] as const;
 
 /**
@@ -67,7 +67,7 @@ const validCountryCodes = Object.keys(countries.getAlpha2Codes()) as [
  */
 export const isoCountryCode = z
   .enum(validCountryCodes)
-  .describe("ISO 3166-1 alpha-2 country code");
+  .describe('ISO 3166-1 alpha-2 country code');
 
 /**
  * Type representing a valid ISO 3166-1 alpha-2 country code.
@@ -92,7 +92,7 @@ export type ISOCountryCode = z.infer<typeof isoCountryCode>;
  */
 export function getCountryName(
   code: string,
-  locale: SupportedLocale = "en"
+  locale: SupportedLocale = 'en'
 ): string | undefined {
   // All supported locales are pre-registered at module initialization
   return countries.getName(code, locale);

@@ -1,6 +1,6 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { TokenPausable } from "../../../../generated/schema";
-import { Pausable as PausableTemplate } from "../../../../generated/templates";
+import type { Address } from '@graphprotocol/graph-ts';
+import { TokenPausable } from '../../../../generated/schema';
+import { Pausable as PausableTemplate } from '../../../../generated/templates';
 
 export function fetchPausable(address: Address): TokenPausable {
   let pausable = TokenPausable.load(address);

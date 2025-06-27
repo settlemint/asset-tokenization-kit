@@ -1,9 +1,9 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { Token } from "../../../generated/schema";
-import { Token as TokenTemplate } from "../../../generated/templates";
-import { Token as TokenContract } from "../../../generated/templates/Token/Token";
-import { fetchAccount } from "../../account/fetch/account";
-import { setBigNumber } from "../../utils/bignumber";
+import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { Token } from '../../../generated/schema';
+import { Token as TokenTemplate } from '../../../generated/templates';
+import { Token as TokenContract } from '../../../generated/templates/Token/Token';
+import { fetchAccount } from '../../account/fetch/account';
+import { setBigNumber } from '../../utils/bignumber';
 
 export function fetchToken(address: Address): Token {
   let token = Token.load(address);
@@ -11,7 +11,7 @@ export function fetchToken(address: Address): Token {
   if (!token) {
     token = new Token(address);
     token.account = fetchAccount(address).id;
-    token.type = "unknown";
+    token.type = 'unknown';
 
     const tokenContract = TokenContract.bind(address);
     token.name = tokenContract.name();
@@ -21,7 +21,7 @@ export function fetchToken(address: Address): Token {
     token.createdBy = Address.zero();
     setBigNumber(
       token,
-      "totalSupply",
+      'totalSupply',
       tokenContract.totalSupply(),
       token.decimals
     );

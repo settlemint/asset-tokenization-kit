@@ -42,13 +42,14 @@
     "ci:gha": "turbo run ci:gha",
     "ci:gha:main": "turbo run ci:gha:main",
     "ci": "turbo run ci",
+    "typecheck": "turbo run typecheck",
     "ci:publish": "turbo run ci:publish",
     "version": "bun run tools/version.ts",
     "clean": "git clean -fdX -e '.env' -e '.env.*' -e '!.env' -e '!.env.*' && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' -o -name 'bun.lock' \\) -exec rm -f {} + && bun install",
     "predev": "bunx settlemint connect --instance local",
     "dev": "turbo dev watch db:studio",
-    "lint": "turbo lint",
-    "format": "turbo format",
+    "lint": "bunx ultracite lint",
+    "format": "bunx ultracite format",
     "test": "turbo test",
     "test:integration": "turbo test:integration",
     "publish": "turbo publish",
@@ -65,15 +66,16 @@
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
-  "dependencies": {
-    "js-yaml": "4.1.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@biomejs/biome": "2.0.5",
     "@prettier/plugin-oxc": "0.0.4",
     "@settlemint/sdk-cli": "2.4.0",
     "prettier": "3.6.1",
     "turbo": "2.5.4",
-    "typescript": "5.8.3"
+    "lefthook": "1.11.14",
+    "typescript": "5.8.3",
+    "ultracite": "5.0.25"
   },
   "trustedDependencies": [
     "@sentry/cli",

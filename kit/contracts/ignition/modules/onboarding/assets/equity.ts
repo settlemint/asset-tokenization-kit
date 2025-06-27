@@ -1,9 +1,9 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ATKModule from "../../main";
-import ATKOnboardingSystemModule from "../system";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ATKModule from '../../main';
+import ATKOnboardingSystemModule from '../system';
 
 const ATKOnboardingEquityModule = buildModule(
-  "ATKOnboardingEquityModule",
+  'ATKOnboardingEquityModule',
   (m) => {
     const { tokenFactoryRegistry } = m.useModule(ATKOnboardingSystemModule);
     const { equityFactoryImplementation, equityImplementation } =
@@ -11,20 +11,20 @@ const ATKOnboardingEquityModule = buildModule(
 
     const createEquityFactory = m.call(
       tokenFactoryRegistry,
-      "registerTokenFactory",
-      ["equity", equityFactoryImplementation, equityImplementation]
+      'registerTokenFactory',
+      ['equity', equityFactoryImplementation, equityImplementation]
     );
     const equityFactoryAddress = m.readEventArgument(
       createEquityFactory,
-      "TokenFactoryRegistered",
-      "proxyAddress",
-      { id: "equityFactoryAddress" }
+      'TokenFactoryRegistered',
+      'proxyAddress',
+      { id: 'equityFactoryAddress' }
     );
     const equityFactoryProxy = m.contractAt(
-      "ATKEquityFactoryImplementation",
+      'ATKEquityFactoryImplementation',
       equityFactoryAddress,
       {
-        id: "equityFactory",
+        id: 'equityFactory',
       }
     );
 

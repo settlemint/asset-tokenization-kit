@@ -1,5 +1,5 @@
-import { verificationType } from "@/lib/zod/validators/verification-type";
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+import { verificationType } from '@/lib/zod/validators/verification-type';
 
 /**
  * User verification schema
@@ -14,5 +14,5 @@ export const UserVerificationSchema = z.object({
   /**
    * The verification type
    */
-  verificationType: verificationType.default("pincode"),
+  verificationType: verificationType.default('pincode'),
 });

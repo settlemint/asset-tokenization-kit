@@ -8,7 +8,7 @@
  * @throws Error if the decimal string has more precision than allowed.
  */
 export function parseDecimalString(amount: string, decimals: number): bigint {
-  const [whole, fraction = ""] = amount.split(".");
+  const [whole, fraction = ''] = amount.split('.');
 
   if (fraction.length > decimals) {
     throw new Error(
@@ -17,7 +17,7 @@ export function parseDecimalString(amount: string, decimals: number): bigint {
   }
 
   // Pad fraction with zeros if needed
-  const paddedFraction = fraction.padEnd(decimals, "0");
+  const paddedFraction = fraction.padEnd(decimals, '0');
   const combinedString = whole + paddedFraction;
 
   return BigInt(combinedString);
@@ -35,16 +35,16 @@ export function toBaseUnits(
   amount: string | number | bigint,
   decimals: number
 ): bigint {
-  if (typeof amount === "bigint") {
+  if (typeof amount === 'bigint') {
     return amount * 10n ** BigInt(decimals);
   }
 
-  if (typeof amount === "string") {
+  if (typeof amount === 'string') {
     // Use the dedicated string parsing function
     return parseDecimalString(amount, decimals);
   }
 
-  if (typeof amount === "number") {
+  if (typeof amount === 'number') {
     // Convert number to string first to handle decimals properly
     // Note: This may have precision issues for very large or very precise numbers
     return parseDecimalString(amount.toString(), decimals);

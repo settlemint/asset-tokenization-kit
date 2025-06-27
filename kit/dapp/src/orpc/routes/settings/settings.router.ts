@@ -1,7 +1,7 @@
-import { del } from "./routes/settings.delete";
-import { list } from "./routes/settings.list";
-import { read } from "./routes/settings.read";
-import { upsert } from "./routes/settings.upsert";
+import { del } from './routes/settings.delete';
+import { list } from './routes/settings.list';
+import { read } from './routes/settings.read';
+import { upsert } from './routes/settings.upsert';
 
 /**
  * Settings router module.

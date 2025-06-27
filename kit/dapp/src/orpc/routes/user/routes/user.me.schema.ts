@@ -6,9 +6,9 @@
  * data throughout the application.
  */
 
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { userRoles } from "@/lib/zod/validators/user-roles";
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+import { ethereumAddress } from '@/lib/zod/validators/ethereum-address';
+import { userRoles } from '@/lib/zod/validators/user-roles';
 
 /**
  * Schema for authenticated user information.
@@ -57,7 +57,7 @@ export const UserMeSchema = z.object({
    * - issuer: Can issue assets
    * - user: Standard user (investors)
    */
-  role: userRoles().default("investor"),
+  role: userRoles().default('investor'),
 
   /**
    * User's Ethereum wallet address.

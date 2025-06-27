@@ -2,13 +2,16 @@ import { expect, test } from '@playwright/test';
 import { Pages } from '../pages/pages';
 import { signUpData } from '../test-data/user-data';
 import { getUserRole, updateUserRole } from '../utils/db-utils';
+
 test.describe('Issuer Portal Sign Up', () => {
   test.beforeEach(async ({ page }) => {
     const pages = Pages(page);
     await pages.signUpPage.goto();
   });
 
-  test('should complete the signup flow and update to admin', async ({ page }) => {
+  test('should complete the signup flow and update to admin', async ({
+    page,
+  }) => {
     const pages = Pages(page);
     await pages.signUpPage.signUp(signUpData);
 

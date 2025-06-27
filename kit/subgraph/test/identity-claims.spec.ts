@@ -1,8 +1,8 @@
-import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "./utils/thegraph-client";
+import { describe, expect, it } from 'bun:test';
+import { theGraphClient, theGraphGraphql } from './utils/thegraph-client';
 
-describe("Identity claims", () => {
-  it("claims should be issued by an account which is not a contract", async () => {
+describe('Identity claims', () => {
+  it('claims should be issued by an account which is not a contract', async () => {
     const query = theGraphGraphql(
       `query {
         identityClaims {

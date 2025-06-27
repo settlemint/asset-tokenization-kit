@@ -1,5 +1,5 @@
-import { settingKeySchema } from "@/lib/zod/validators/settings-key";
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+import { settingKeySchema } from '@/lib/zod/validators/settings-key';
 
 /**
  * Schema for reading a single setting by key.

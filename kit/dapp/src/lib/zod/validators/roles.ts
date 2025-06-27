@@ -7,7 +7,7 @@
  *
  * @module RoleValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Available system roles with different permission levels.
@@ -22,12 +22,12 @@ import { z } from "zod/v4";
  * - `investor`: Standard user role for token holders
  */
 export const roleNames = [
-  "admin",
-  "issuer",
-  "manager",
-  "compliance",
-  "auditor",
-  "investor",
+  'admin',
+  'issuer',
+  'manager',
+  'compliance',
+  'auditor',
+  'investor',
 ] as const;
 
 /**
@@ -49,7 +49,7 @@ export const roleNames = [
  * schema.parse("superuser"); // Throws ZodError
  * ```
  */
-export const roles = () => z.enum(roleNames).describe("System role");
+export const roles = () => z.enum(roleNames).describe('System role');
 
 /**
  * Creates a Zod schema for validating role mappings.
@@ -75,7 +75,7 @@ export const roles = () => z.enum(roleNames).describe("System role");
  * ```
  */
 export const roleMap = () =>
-  z.record(z.string(), roles()).describe("Mapping of addresses to roles");
+  z.record(z.string(), roles()).describe('Mapping of addresses to roles');
 
 /**
  * Type representing a validated system role.

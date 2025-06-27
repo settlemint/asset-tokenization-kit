@@ -11,7 +11,7 @@
  */
 export function formatBaseUnits(amount: bigint, decimals: number): string {
   if (decimals < 0) {
-    throw new Error("Decimals cannot be negative");
+    throw new Error('Decimals cannot be negative');
   }
 
   if (decimals === 0) {
@@ -27,10 +27,10 @@ export function formatBaseUnits(amount: bigint, decimals: number): string {
   }
 
   // Pad remainder with leading zeros if necessary
-  const remainderStr = remainder.toString().padStart(decimals, "0");
+  const remainderStr = remainder.toString().padStart(decimals, '0');
 
   // Remove trailing zeros from decimal part
-  const trimmedRemainder = remainderStr.replace(/0+$/, "");
+  const trimmedRemainder = remainderStr.replace(/0+$/, '');
 
   return `${quotient}.${trimmedRemainder}`;
 }

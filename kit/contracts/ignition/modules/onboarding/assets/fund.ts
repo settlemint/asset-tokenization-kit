@@ -1,28 +1,28 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ATKModule from "../../main";
-import ATKOnboardingSystemModule from "../system";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ATKModule from '../../main';
+import ATKOnboardingSystemModule from '../system';
 
-const ATKOnboardingFundModule = buildModule("ATKOnboardingFundModule", (m) => {
+const ATKOnboardingFundModule = buildModule('ATKOnboardingFundModule', (m) => {
   const { tokenFactoryRegistry } = m.useModule(ATKOnboardingSystemModule);
   const { fundFactoryImplementation, fundImplementation } =
     m.useModule(ATKModule);
 
   const createFundFactory = m.call(
     tokenFactoryRegistry,
-    "registerTokenFactory",
-    ["fund", fundFactoryImplementation, fundImplementation]
+    'registerTokenFactory',
+    ['fund', fundFactoryImplementation, fundImplementation]
   );
   const fundFactoryAddress = m.readEventArgument(
     createFundFactory,
-    "TokenFactoryRegistered",
-    "proxyAddress",
-    { id: "fundFactoryAddress" }
+    'TokenFactoryRegistered',
+    'proxyAddress',
+    { id: 'fundFactoryAddress' }
   );
   const fundFactoryProxy = m.contractAt(
-    "ATKFundFactoryImplementation",
+    'ATKFundFactoryImplementation',
     fundFactoryAddress,
     {
-      id: "fundFactory",
+      id: 'fundFactory',
     }
   );
 

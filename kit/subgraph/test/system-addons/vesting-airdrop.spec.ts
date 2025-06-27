@@ -1,8 +1,8 @@
-import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { describe, expect, it } from 'bun:test';
+import { theGraphClient, theGraphGraphql } from '../utils/thegraph-client';
 
-describe("Vesting Airdrops", () => {
-  it("should fetch a list of all vesting airdrops", async () => {
+describe('Vesting Airdrops', () => {
+  it('should fetch a list of all vesting airdrops', async () => {
     const query = theGraphGraphql(
       `query($where: Airdrop_filter) {
         airdrops(where: $where, orderBy: name) {
@@ -29,7 +29,7 @@ describe("Vesting Airdrops", () => {
     expect(response.airdrops.length).toBe(1);
     expect(response.airdrops).toEqual([
       {
-        name: "Test Vesting Airdrop",
+        name: 'Test Vesting Airdrop',
         token: {
           name: expect.any(String),
         },
@@ -42,7 +42,7 @@ describe("Vesting Airdrops", () => {
     ]);
   });
 
-  it("should fetch vesting airdrop with linear vesting strategy", async () => {
+  it('should fetch vesting airdrop with linear vesting strategy', async () => {
     const query = theGraphGraphql(
       `query($where: Airdrop_filter) {
         airdrops(where: $where, orderBy: name) {
@@ -67,7 +67,7 @@ describe("Vesting Airdrops", () => {
     expect(response.airdrops.length).toBe(1);
     expect(response.airdrops).toEqual([
       {
-        name: "Test Vesting Airdrop",
+        name: 'Test Vesting Airdrop',
         vestingAirdrop: {
           linearVestingStrategy: {
             vestingDuration: expect.any(String),

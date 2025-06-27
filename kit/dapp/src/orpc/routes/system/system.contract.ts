@@ -1,16 +1,16 @@
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { eventIterator } from '@orpc/server';
+import { z } from 'zod/v4';
+import { ListSchema } from '@/orpc/routes/common/schemas/list.schema';
 import {
   SystemCreateOutputSchema,
   SystemCreateSchema,
-} from "@/orpc/routes/system/routes/system.create.schema";
+} from '@/orpc/routes/system/routes/system.create.schema';
 import {
   SystemReadOutputSchema,
   SystemReadSchema,
-} from "@/orpc/routes/system/routes/system.read.schema";
-import { eventIterator } from "@orpc/server";
-import { z } from "zod/v4";
-import { baseContract } from "../../procedures/base.contract";
-import { SystemSchema } from "./routes/system.list.schema";
+} from '@/orpc/routes/system/routes/system.read.schema';
+import { baseContract } from '../../procedures/base.contract';
+import { SystemSchema } from './routes/system.list.schema';
 
 /**
  * Contract definition for the system list endpoint.
@@ -26,11 +26,11 @@ import { SystemSchema } from "./routes/system.list.schema";
  */
 const list = baseContract
   .route({
-    method: "GET",
-    path: "/systems",
-    description: "List the SMART systems",
-    successDescription: "List of SMART systems",
-    tags: ["system"],
+    method: 'GET',
+    path: '/systems',
+    description: 'List the SMART systems',
+    successDescription: 'List of SMART systems',
+    tags: ['system'],
   })
   .input(ListSchema) // Standard list query parameters (pagination, filters, etc.)
   .output(z.array(SystemSchema)); // Return array of system objects
@@ -49,11 +49,11 @@ const list = baseContract
  */
 const create = baseContract
   .route({
-    method: "POST",
-    path: "/systems",
-    description: "Create a new SMART system",
-    successDescription: "New SMART system created",
-    tags: ["system"],
+    method: 'POST',
+    path: '/systems',
+    description: 'Create a new SMART system',
+    successDescription: 'New SMART system created',
+    tags: ['system'],
   })
   .input(SystemCreateSchema)
   .output(eventIterator(SystemCreateOutputSchema));
@@ -69,11 +69,11 @@ const create = baseContract
  */
 const read = baseContract
   .route({
-    method: "GET",
-    path: "/systems/:id",
-    description: "Get details of a specific SMART system",
-    successDescription: "SMART system details with token factories",
-    tags: ["system"],
+    method: 'GET',
+    path: '/systems/:id',
+    description: 'Get details of a specific SMART system',
+    successDescription: 'SMART system details with token factories',
+    tags: ['system'],
   })
   .input(SystemReadSchema)
   .output(SystemReadOutputSchema);

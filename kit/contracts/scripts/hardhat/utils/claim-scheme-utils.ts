@@ -1,11 +1,11 @@
 import {
-  type Hex,
   decodeAbiParameters,
   encodeAbiParameters,
+  type Hex,
   parseAbiParameters,
-} from "viem";
-import type { ATKTopic } from "../constants/topics";
-import { topicManager } from "../services/topic-manager";
+} from 'viem';
+import type { ATKTopic } from '../constants/topics';
+import { topicManager } from '../services/topic-manager';
 
 /**
  * Decodes claim data based on the claim topic's scheme
@@ -20,7 +20,7 @@ export function decodeClaimData(
   // Ensure topic manager is initialized
   if (!topicManager.isInitialized()) {
     throw new Error(
-      "TopicManager is not initialized. Call topicManager.initialize() first."
+      'TopicManager is not initialized. Call topicManager.initialize() first.'
     );
   }
 
@@ -45,13 +45,13 @@ export function encodeClaimData(
 ): Hex {
   let topicId: bigint;
 
-  if (typeof claimTopic === "bigint") {
+  if (typeof claimTopic === 'bigint') {
     topicId = claimTopic;
   } else {
     // Ensure topic manager is initialized
     if (!topicManager.isInitialized()) {
       throw new Error(
-        "TopicManager is not initialized. Call topicManager.initialize() first."
+        'TopicManager is not initialized. Call topicManager.initialize() first.'
       );
     }
     topicId = topicManager.getTopicId(claimTopic);
@@ -60,7 +60,7 @@ export function encodeClaimData(
   // Ensure topic manager is initialized
   if (!topicManager.isInitialized()) {
     throw new Error(
-      "TopicManager is not initialized. Call topicManager.initialize() first."
+      'TopicManager is not initialized. Call topicManager.initialize() first.'
     );
   }
 

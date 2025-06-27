@@ -1,29 +1,29 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import PushAirdropFactoryModule from "./predeployed/addons/airdrop/push-airdrop-factory";
-import TimeboundAirdropFactoryModule from "./predeployed/addons/airdrop/time-bound-airdrop.factory";
-import VestingAirdropFactoryModule from "./predeployed/addons/airdrop/vesting-airdrop-factory";
-import FixedYieldScheduleFactoryModule from "./predeployed/addons/fixed-yield-schedule-factory";
-import VaultModule from "./predeployed/addons/vault/vault";
-import VaultFactoryModule from "./predeployed/addons/vault/vault-factory";
-import XvPSettlementFactoryModule from "./predeployed/addons/xvp-settlement-factory";
-import BondModule from "./predeployed/assets/bond";
-import DepositModule from "./predeployed/assets/deposit";
-import EquityModule from "./predeployed/assets/equity";
-import FundModule from "./predeployed/assets/fund";
-import StableCoinModule from "./predeployed/assets/stablecoin";
-import AddressBlockListModule from "./predeployed/modules/address-block-list-module";
-import CountryAllowListModule from "./predeployed/modules/country-allow-list-module";
-import CountryBlockListModule from "./predeployed/modules/country-block-list-module";
-import IdentityAllowListModule from "./predeployed/modules/identity-allow-list-module";
-import IdentityBlockListModule from "./predeployed/modules/identity-block-list-module";
-import SystemFactoryModule from "./predeployed/system-factory";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import PushAirdropFactoryModule from './predeployed/addons/airdrop/push-airdrop-factory';
+import TimeboundAirdropFactoryModule from './predeployed/addons/airdrop/time-bound-airdrop.factory';
+import VestingAirdropFactoryModule from './predeployed/addons/airdrop/vesting-airdrop-factory';
+import FixedYieldScheduleFactoryModule from './predeployed/addons/fixed-yield-schedule-factory';
+import VaultModule from './predeployed/addons/vault/vault';
+import VaultFactoryModule from './predeployed/addons/vault/vault-factory';
+import XvPSettlementFactoryModule from './predeployed/addons/xvp-settlement-factory';
+import BondModule from './predeployed/assets/bond';
+import DepositModule from './predeployed/assets/deposit';
+import EquityModule from './predeployed/assets/equity';
+import FundModule from './predeployed/assets/fund';
+import StableCoinModule from './predeployed/assets/stablecoin';
+import AddressBlockListModule from './predeployed/modules/address-block-list-module';
+import CountryAllowListModule from './predeployed/modules/country-allow-list-module';
+import CountryBlockListModule from './predeployed/modules/country-block-list-module';
+import IdentityAllowListModule from './predeployed/modules/identity-allow-list-module';
+import IdentityBlockListModule from './predeployed/modules/identity-block-list-module';
+import SystemFactoryModule from './predeployed/system-factory';
 
 /**
  * This module is used to deploy the ATK contracts, this should be used to
  * bootstrap a public network. For SettleMint consortium networks this is handled
  * by predeploying in the genesis file.
  */
-const ATKModule = buildModule("ATKModule", (m) => {
+const ATKModule = buildModule('ATKModule', (m) => {
   const { systemFactory } = m.useModule(SystemFactoryModule);
   const { bondImplementation, bondFactoryImplementation } =
     m.useModule(BondModule);

@@ -1,5 +1,5 @@
-import hre from "hardhat";
-import * as viemChains from "viem/chains";
+import hre from 'hardhat';
+import * as viemChains from 'viem/chains';
 
 let viemChainInstance: viemChains.Chain | null = null;
 

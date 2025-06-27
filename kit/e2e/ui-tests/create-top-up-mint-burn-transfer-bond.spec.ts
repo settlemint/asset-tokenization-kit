@@ -1,6 +1,7 @@
-import { type BrowserContext, test } from "@playwright/test";
-import { Pages } from "../pages/pages";
+import { type BrowserContext, test } from '@playwright/test';
+import { Pages } from '../pages/pages';
 import {
+  bondBurnData,
   bondData,
   bondMintData,
   bondTransferData,
@@ -8,23 +9,22 @@ import {
   stableCoinUpdateCollateralData,
   stablecoinData,
   topUpData,
-  bondBurnData,
-} from "../test-data/asset-data";
-import { successMessageData } from "../test-data/message-data";
-import { adminUser, signUpTransferUserData } from "../test-data/user-data";
-import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
+} from '../test-data/asset-data';
+import { successMessageData } from '../test-data/message-data';
+import { adminUser, signUpTransferUserData } from '../test-data/user-data';
+import { ensureUserIsAdmin, fetchWalletAddressFromDB } from '../utils/db-utils';
 
 const testData = {
-  transferUserEmail: "",
-  transferUserWalletAddress: "",
-  transferUserName: "",
-  stablecoinName: "",
-  bondName: "",
+  transferUserEmail: '',
+  transferUserWalletAddress: '',
+  transferUserName: '',
+  stablecoinName: '',
+  bondName: '',
   currentTotalSupply: 0,
 };
 
-test.describe("Create, top up, mint and transfer bonds", () => {
-  test.describe.configure({ mode: "serial" });
+test.describe('Create, top up, mint and transfer bonds', () => {
+  test.describe.configure({ mode: 'serial' });
   let transferUserContext: BrowserContext | undefined;
   let adminContext: BrowserContext | undefined;
   let transferUserPages: ReturnType<typeof Pages>;
@@ -35,7 +35,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       transferUserContext = await browser.newContext();
       const transferUserPage = await transferUserContext.newPage();
       transferUserPages = Pages(transferUserPage);
-      await transferUserPage.goto("/");
+      await transferUserPage.goto('/');
       await transferUserPages.signUpPage.signUp(signUpTransferUserData);
       testData.transferUserEmail = signUpTransferUserData.email;
       testData.transferUserName = signUpTransferUserData.name;
@@ -48,7 +48,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       adminContext = await browser.newContext();
       const adminPage = await adminContext.newPage();
       adminPages = Pages(adminPage);
-      await adminPage.goto("/");
+      await adminPage.goto('/');
       await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
     } catch (error) {
@@ -71,7 +71,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     }
   });
 
-  test("Admin user creates stablecoin", async () => {
+  test('Admin user creates stablecoin', async () => {
     await adminPages.adminPage.createStablecoin(stablecoinData);
     testData.stablecoinName = stablecoinData.name;
     await adminPages.adminPage.verifySuccessMessage(
@@ -84,7 +84,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     });
   });
 
-  test("Admin user creates bond", async () => {
+  test('Admin user creates bond', async () => {
     const bondDataWithStablecoin = {
       ...bondData,
       underlyingAsset: testData.stablecoinName,
@@ -102,7 +102,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     });
   });
 
-  test("Admin user updates collateral and mints stablecoin", async () => {
+  test('Admin user updates collateral and mints stablecoin', async () => {
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: stablecoinData.sidebarAssetTypes,
       name: testData.stablecoinName,
@@ -129,7 +129,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     await adminPages.adminPage.verifyTotalSupply(stableCoinMintData.amount);
   });
 
-  test("Admin user top up, mints and burns bond", async () => {
+  test('Admin user top up, mints and burns bond', async () => {
     await adminPages.adminPage.checkIfAssetExists({
       sidebarAssetTypes: bondData.sidebarAssetTypes,
       name: testData.bondName,
@@ -163,7 +163,7 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
   });
 
-  test("Admin user transfers bonds to regular transfer user", async () => {
+  test('Admin user transfers bonds to regular transfer user', async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.bondName,
       walletAddress: testData.transferUserWalletAddress,
@@ -179,8 +179,8 @@ test.describe("Create, top up, mint and transfer bonds", () => {
       testData.currentTotalSupply - transferAmount
     ).toString();
     await adminPages.adminPage.chooseSidebarMenuOption({
-      sidebarOption: "My assets",
-      expectedUrlPattern: "**/portfolio/my-assets",
+      sidebarOption: 'My assets',
+      expectedUrlPattern: '**/portfolio/my-assets',
       expectedLocatorsToWaitFor: [
         adminPages.adminPage.getTableBodyLocator(),
         adminPages.adminPage.getFilterButtonLocator(),
@@ -192,11 +192,11 @@ test.describe("Create, top up, mint and transfer bonds", () => {
     });
   });
 
-  test("Verify regular transfer user received bonds", async () => {
+  test('Verify regular transfer user received bonds', async () => {
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.adminPage.chooseSidebarMenuOption({
-      sidebarOption: "My assets",
-      expectedUrlPattern: "**/portfolio/my-assets",
+      sidebarOption: 'My assets',
+      expectedUrlPattern: '**/portfolio/my-assets',
       expectedLocatorsToWaitFor: [
         transferUserPages.adminPage.getTableBodyLocator(),
         transferUserPages.adminPage.getFilterButtonLocator(),

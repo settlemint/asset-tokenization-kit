@@ -1,12 +1,12 @@
-import { Address } from "viem";
-import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
-import { Asset } from "../../../entities/asset";
-import { atkDeployer } from "../../../services/deployer";
-import { increaseAnvilTime } from "../../../utils/anvil";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { waitForEvent } from "../../../utils/wait-for-event";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import type { Address } from 'viem';
+import { ATKContracts } from '../../../constants/contracts';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { atkDeployer } from '../../../services/deployer';
+import { increaseAnvilTime } from '../../../utils/anvil';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { waitForEvent } from '../../../utils/wait-for-event';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 export const setYieldSchedule = async (
   asset: Asset<any>,
@@ -17,7 +17,7 @@ export const setYieldSchedule = async (
   /** The interval between yield distributions in seconds (e.g., 86400 for daily). Must be greater than 0. */
   interval: number
 ) => {
-  console.log(`[Set yield schedule] → Starting yield schedule setup...`);
+  console.log('[Set yield schedule] → Starting yield schedule setup...');
 
   const tokenContract = owner.getContractInstance({
     address: asset.address,
@@ -25,7 +25,7 @@ export const setYieldSchedule = async (
   });
 
   const factoryAddress = atkDeployer.getContractAddress(
-    "fixedYieldScheduleFactory"
+    'fixedYieldScheduleFactory'
   );
   const factoryContract = owner.getContractInstance({
     address: factoryAddress,
@@ -44,7 +44,7 @@ export const setYieldSchedule = async (
   const { schedule } = (await waitForEvent({
     transactionHash: createYieldScheduleTransactionHash,
     contract: factoryContract,
-    eventName: "ATKFixedYieldScheduleCreated",
+    eventName: 'ATKFixedYieldScheduleCreated',
   })) as { schedule: Address };
 
   const setYieldScheduleTransactionHash =
@@ -82,7 +82,7 @@ export const setYieldSchedule = async (
 
       await increaseAnvilTime(owner, Number(timeUntilNextPeriod));
 
-      if (currentPeriod.toString() === "0") {
+      if (currentPeriod.toString() === '0') {
         const timeToFirstPeriodCompleted =
           await scheduleContract.read.timeUntilNextPeriod();
         await increaseAnvilTime(owner, Number(timeToFirstPeriodCompleted));

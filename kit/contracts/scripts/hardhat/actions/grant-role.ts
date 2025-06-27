@@ -1,8 +1,8 @@
-import type { Address, Hex } from "viem";
-import { ATKContracts } from "../constants/contracts";
-import type { AbstractActor } from "../entities/actors/abstract-actor";
-import { withDecodedRevertReason } from "../utils/decode-revert-reason";
-import { waitForSuccess } from "../utils/wait-for-success";
+import type { Address, Hex } from 'viem';
+import { ATKContracts } from '../constants/contracts';
+import type { AbstractActor } from '../entities/actors/abstract-actor';
+import { withDecodedRevertReason } from '../utils/decode-revert-reason';
+import { waitForSuccess } from '../utils/wait-for-success';
 
 export const grantRole = async (
   contractAddress: Address,
@@ -10,7 +10,7 @@ export const grantRole = async (
   role: Hex,
   address: Address
 ) => {
-  console.log(`[Role] → Starting role grant operation...`);
+  console.log('[Role] → Starting role grant operation...');
 
   const contract = admin.getContractInstance({
     address: contractAddress,

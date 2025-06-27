@@ -1,22 +1,22 @@
-import { Button } from "@/components/ui/button";
+import { Check, Languages } from 'lucide-react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { supportedLanguages } from "@/lib/i18n";
-import { useMounted } from "@/lib/utils/use-mounted";
-import { Check, Languages } from "lucide-react";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
+} from '@/components/ui/dropdown-menu';
+import { supportedLanguages } from '@/lib/i18n';
+import { useMounted } from '@/lib/utils/use-mounted';
 
 // Language display names mapping
 const LANGUAGE_NAMES: Record<string, string> = {
-  en: "English",
-  de: "Deutsch",
-  ar: "العربية",
-  ja: "日本語",
+  en: 'English',
+  de: 'Deutsch',
+  ar: 'العربية',
+  ja: '日本語',
 };
 
 /**
@@ -24,9 +24,9 @@ const LANGUAGE_NAMES: Record<string, string> = {
  */
 interface LanguageSwitcherProps {
   /** The variant of the button. */
-  variant?: Parameters<typeof Button>[0]["variant"];
+  variant?: Parameters<typeof Button>[0]['variant'];
   /** The size of the button. */
-  size?: Parameters<typeof Button>[0]["size"];
+  size?: Parameters<typeof Button>[0]['size'];
   /** Additional CSS classes to apply to the button. */
   className?: string;
 }
@@ -37,12 +37,12 @@ interface LanguageSwitcherProps {
  * @returns A dropdown menu for language selection.
  */
 export function LanguageSwitcher({
-  variant = "outline",
-  size = "icon",
+  variant = 'outline',
+  size = 'icon',
   className,
 }: LanguageSwitcherProps = {}) {
   const mounted = useMounted();
-  const { i18n, t } = useTranslation("language");
+  const { i18n, t } = useTranslation('language');
   const [isPending, setIsPending] = useState(false);
 
   // Show skeleton during SSR to prevent hydration mismatch
@@ -54,17 +54,17 @@ export function LanguageSwitcher({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant={variant}
-          size={size}
+          aria-label={t('switch')}
           className={className}
-          aria-label={t("switch")}
           disabled={isPending}
+          size={size}
+          variant={variant}
         >
           <Languages className="h-[1.2rem] w-[1.2rem]" />
-          {size !== "icon" && (
+          {size !== 'icon' && (
             <span className="ml-2">
               {isPending
-                ? t("changing")
+                ? t('changing')
                 : (LANGUAGE_NAMES[i18n.language] ?? i18n.language)}
             </span>
           )}
@@ -73,16 +73,18 @@ export function LanguageSwitcher({
       <DropdownMenuContent align="end">
         {supportedLanguages.map((locale) => (
           <DropdownMenuItem
+            className="flex items-center justify-between"
+            disabled={isPending || locale === i18n.language}
             key={locale}
             onClick={() => {
-              if (locale === i18n.language) return;
+              if (locale === i18n.language) {
+                return;
+              }
               setIsPending(true);
-              void i18n.changeLanguage(locale).then(() => {
+              i18n.changeLanguage(locale).then(() => {
                 setIsPending(false);
               });
             }}
-            className="flex items-center justify-between"
-            disabled={isPending || locale === i18n.language}
           >
             {LANGUAGE_NAMES[locale] ?? locale}
             {locale === i18n.language && <Check className="ml-2 size-4" />}

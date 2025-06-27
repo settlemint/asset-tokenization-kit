@@ -1,5 +1,5 @@
-import { authMiddleware } from "../middlewares/auth/auth.middleware";
-import { publicRouter } from "./public.router";
+import { authMiddleware } from '../middlewares/auth/auth.middleware';
+import { publicRouter } from './public.router';
 
 /**
  * Authenticated ORPC router for protected procedures.

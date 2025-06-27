@@ -1,14 +1,14 @@
-import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from '@graphprotocol/graph-ts';
 import {
-  Token,
-  TokenFixedYieldSchedule,
+  type Token,
+  type TokenFixedYieldSchedule,
   TokenFixedYieldSchedulePeriod,
-} from "../../../../generated/schema";
-import { FixedYieldSchedule as FixedYieldScheduleContract } from "../../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
-import { setBigNumber } from "../../../utils/bignumber";
-import { fetchYield } from "../../yield/fetch/yield";
-import { fetchFixedYieldSchedule } from "../fetch/fixed-yield-schedule";
-import { fetchFixedYieldSchedulePeriod } from "../fetch/fixed-yield-schedule-period";
+} from '../../../../generated/schema';
+import { FixedYieldSchedule as FixedYieldScheduleContract } from '../../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule';
+import { setBigNumber } from '../../../utils/bignumber';
+import { fetchYield } from '../../yield/fetch/yield';
+import { fetchFixedYieldSchedule } from '../fetch/fixed-yield-schedule';
+import { fetchFixedYieldSchedulePeriod } from '../fetch/fixed-yield-schedule-period';
 
 export function getPeriodId(address: Address, periodNumber: i32): Bytes {
   return address.concat(Bytes.fromUTF8(`-period-${periodNumber.toString()}`));
@@ -34,7 +34,7 @@ export function updateYield(token: Token): void {
 
   const currentPeriod = fixedYieldScheduleContract.try_currentPeriod();
   if (currentPeriod.reverted) {
-    log.error("FixedYieldSchedule: currentPeriod reverted", []);
+    log.error('FixedYieldSchedule: currentPeriod reverted', []);
     return;
   }
 
@@ -69,7 +69,7 @@ export function updateYield(token: Token): void {
   const nextPeriodYield =
     fixedYieldScheduleContract.try_totalYieldForNextPeriod();
   if (nextPeriodYield.reverted) {
-    log.error("FixedYieldSchedule: totalYieldForNextPeriod reverted", []);
+    log.error('FixedYieldSchedule: totalYieldForNextPeriod reverted', []);
     return;
   }
 
@@ -82,7 +82,7 @@ export function updateYield(token: Token): void {
 
   setBigNumber(
     fixedYieldNextPeriod,
-    "totalYield",
+    'totalYield',
     nextPeriodYield.value,
     token.decimals
   );
@@ -91,19 +91,19 @@ export function updateYield(token: Token): void {
 
   const unclaimedYield = fixedYieldScheduleContract.try_totalUnclaimedYield();
   if (unclaimedYield.reverted) {
-    log.error("FixedYieldSchedule: totalUnclaimedYield reverted", []);
+    log.error('FixedYieldSchedule: totalUnclaimedYield reverted', []);
     return;
   }
 
   setBigNumber(
     fixedYieldSchedule,
-    "totalUnclaimedYield",
+    'totalUnclaimedYield',
     unclaimedYield.value,
     token.decimals
   );
   setBigNumber(
     fixedYieldSchedule,
-    "totalYield",
+    'totalYield',
     fixedYieldSchedule.totalYieldExact.plus(nextPeriodYield.value),
     token.decimals
   );

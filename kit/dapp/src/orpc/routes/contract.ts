@@ -1,8 +1,8 @@
-import { accountContract } from "@/orpc/routes/account/account.contract";
-import { settingsContract } from "@/orpc/routes/settings/settings.contract";
-import { systemContract } from "@/orpc/routes/system/system.contract";
-import { tokenContract } from "@/orpc/routes/token/token.contract";
-import { userContract } from "@/orpc/routes/user/user.contract";
+import { accountContract } from '@/orpc/routes/account/account.contract';
+import { settingsContract } from '@/orpc/routes/settings/settings.contract';
+import { systemContract } from '@/orpc/routes/system/system.contract';
+import { tokenContract } from '@/orpc/routes/token/token.contract';
+import { userContract } from '@/orpc/routes/user/user.contract';
 
 /**
  * Main ORPC contract definition.

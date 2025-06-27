@@ -7,7 +7,7 @@
  *
  * @module PriceValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Creates a Zod schema that validates price values.
@@ -46,14 +46,14 @@ import { z } from "zod/v4";
 export const price = () =>
   z
     .number()
-    .positive("Price must be greater than zero")
+    .positive('Price must be greater than zero')
     .refine((value) => {
       // Check decimal places by converting to string
       // This handles both integer and decimal prices correctly
-      const decimalPlaces = (value.toString().split(".")[1] ?? "").length;
+      const decimalPlaces = (value.toString().split('.')[1] ?? '').length;
       return decimalPlaces <= 4;
-    }, "Price cannot have more than 4 decimal places")
-    .describe("Asset price");
+    }, 'Price cannot have more than 4 decimal places')
+    .describe('Asset price');
 
 /**
  * Type representing a validated price value.

@@ -7,7 +7,7 @@
  *
  * @module UserRoleValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Available user roles with different permission levels.
@@ -21,7 +21,7 @@ import { z } from "zod/v4";
  * Note: This is separate from system roles (roles.ts) which handle
  * blockchain/smart contract permissions.
  */
-export const userRoleNames = ["admin", "investor", "issuer"] as const;
+export const userRoleNames = ['admin', 'investor', 'issuer'] as const;
 
 /**
  * Creates a Zod schema that validates user roles.
@@ -42,7 +42,7 @@ export const userRoleNames = ["admin", "investor", "issuer"] as const;
  * ```
  */
 export const userRoles = () =>
-  z.enum(userRoleNames).describe("User role in the system").default("investor");
+  z.enum(userRoleNames).describe('User role in the system').default('investor');
 
 /**
  * Type representing a validated user role.

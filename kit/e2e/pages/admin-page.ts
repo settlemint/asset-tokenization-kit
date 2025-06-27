@@ -1,14 +1,14 @@
-import type { Locator } from "@playwright/test";
-import { expect } from "@playwright/test";
-import { formatAmount, searchAndSelectFromDialog } from "../utils/page-utils";
-import { BasePage } from "./base-page";
+import type { Locator } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { formatAmount, searchAndSelectFromDialog } from '../utils/page-utils';
+import { BasePage } from './base-page';
 
 export class AdminPage extends BasePage {
   private static readonly CURRENCY_CODE_REGEX = /[A-Z]+$/;
   private static readonly COMMA_REGEX = /,/g;
 
   async goto() {
-    await this.page.goto("/assets");
+    await this.page.goto('/assets');
   }
 
   private async startAssetCreation(
@@ -29,16 +29,16 @@ export class AdminPage extends BasePage {
         `[data-slot="card"] [data-slot="card-title"]:has-text("${assetType}")`
       )
       .click();
-    await this.page.getByLabel("Name").fill(name);
-    await this.page.getByLabel("Symbol").fill(symbol);
-    await this.page.getByLabel("ISIN").fill(isin);
-    await this.page.getByLabel("Internal ID").fill(internalId);
+    await this.page.getByLabel('Name').fill(name);
+    await this.page.getByLabel('Symbol').fill(symbol);
+    await this.page.getByLabel('ISIN').fill(isin);
+    await this.page.getByLabel('Internal ID').fill(internalId);
   }
 
   public async completeAssetCreation(buttonName: string, pincode: string) {
-    const button = this.page.getByRole("button", { name: buttonName });
+    const button = this.page.getByRole('button', { name: buttonName });
 
-    await button.waitFor({ state: "attached" });
+    await button.waitFor({ state: 'attached' });
     await button.focus();
     await button.scrollIntoViewIfNeeded();
     await button.click();
@@ -65,32 +65,32 @@ export class AdminPage extends BasePage {
       options.isin,
       options.internalId
     );
-    const nextButton = this.page.getByRole("button", {
-      name: "Next",
+    const nextButton = this.page.getByRole('button', {
+      name: 'Next',
       exact: true,
     });
     await nextButton.focus();
     await nextButton.click();
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    await this.page.getByLabel("Maximum supply").fill(options.maximumSupply);
-    await this.page.getByLabel("Face value").fill(options.faceValue);
+    await this.page.getByLabel('Decimals').fill(options.decimals);
+    await this.page.getByLabel('Maximum supply').fill(options.maximumSupply);
+    await this.page.getByLabel('Face value').fill(options.faceValue);
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
     const formattedDateTime = tomorrow.toISOString().slice(0, 16);
-    await this.page.getByLabel("Maturity date").fill(formattedDateTime);
+    await this.page.getByLabel('Maturity date').fill(formattedDateTime);
     await this.page
       .locator('[id="underlyingAsset"]')
-      .waitFor({ state: "visible" });
+      .waitFor({ state: 'visible' });
     await this.page
       .locator('button[id="underlyingAsset"][data-slot="popover-trigger"]')
       .click();
-    await this.page.getByPlaceholder("Search for an asset...").click();
+    await this.page.getByPlaceholder('Search for an asset...').click();
     await this.page
-      .getByPlaceholder("Search for an asset...")
+      .getByPlaceholder('Search for an asset...')
       .fill(options.underlyingAsset);
     await this.page
-      .getByRole("option", { name: `Avatar ${options.underlyingAsset}` })
+      .getByRole('option', { name: `Avatar ${options.underlyingAsset}` })
       .click();
     await nextButton.click();
     await nextButton.click();
@@ -121,11 +121,11 @@ export class AdminPage extends BasePage {
     );
     await nextButton.focus();
     await nextButton.click();
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    await this.page.getByLabel("Initial supply").fill(options.initialSupply);
-    await this.page.getByLabel("Price").fill(options.price);
-    await this.page.locator("#price\\.currency").click();
-    await this.page.getByRole("option", { name: "EUR" }).click();
+    await this.page.getByLabel('Decimals').fill(options.decimals);
+    await this.page.getByLabel('Initial supply').fill(options.initialSupply);
+    await this.page.getByLabel('Price').fill(options.price);
+    await this.page.locator('#price\\.currency').click();
+    await this.page.getByRole('option', { name: 'EUR' }).click();
     await nextButton.click();
     await nextButton.click();
     const buttonName = `Issue ${options.assetType.toLowerCase()}`;
@@ -156,21 +156,21 @@ export class AdminPage extends BasePage {
     );
     await nextButton.focus();
     await nextButton.click();
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    await this.page.getByLabel("Price").fill(options.price);
-    await this.page.locator("#price\\.currency").click();
-    await this.page.getByRole("option", { name: "EUR" }).click();
-    await this.page.getByRole("combobox", { name: "Equity class" }).click();
+    await this.page.getByLabel('Decimals').fill(options.decimals);
+    await this.page.getByLabel('Price').fill(options.price);
+    await this.page.locator('#price\\.currency').click();
+    await this.page.getByRole('option', { name: 'EUR' }).click();
+    await this.page.getByRole('combobox', { name: 'Equity class' }).click();
     await this.page
-      .getByRole("option", { name: options.equityClass })
-      .waitFor({ state: "visible" });
-    await this.page.getByRole("option", { name: options.equityClass }).click();
-    await this.page.getByRole("combobox", { name: "Equity category" }).click();
+      .getByRole('option', { name: options.equityClass })
+      .waitFor({ state: 'visible' });
+    await this.page.getByRole('option', { name: options.equityClass }).click();
+    await this.page.getByRole('combobox', { name: 'Equity category' }).click();
     await this.page
-      .getByRole("option", { name: options.equityCategory })
-      .waitFor({ state: "visible" });
+      .getByRole('option', { name: options.equityCategory })
+      .waitFor({ state: 'visible' });
     await this.page
-      .getByRole("option", { name: options.equityCategory })
+      .getByRole('option', { name: options.equityCategory })
       .click();
     await nextButton.click();
     await nextButton.click();
@@ -203,21 +203,21 @@ export class AdminPage extends BasePage {
     );
     await nextButton.focus();
     await nextButton.click();
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    await this.page.getByLabel("Price").fill(options.price);
-    await this.page.locator("#price\\.currency").click();
-    await this.page.getByRole("option", { name: "EUR" }).click();
-    await this.page.getByLabel("Management fee").fill(options.managementFee);
-    await this.page.getByRole("combobox", { name: "Fund category" }).click();
+    await this.page.getByLabel('Decimals').fill(options.decimals);
+    await this.page.getByLabel('Price').fill(options.price);
+    await this.page.locator('#price\\.currency').click();
+    await this.page.getByRole('option', { name: 'EUR' }).click();
+    await this.page.getByLabel('Management fee').fill(options.managementFee);
+    await this.page.getByRole('combobox', { name: 'Fund category' }).click();
     await this.page
-      .getByRole("option", { name: options.fundCategory })
-      .waitFor({ state: "visible" });
-    await this.page.getByRole("option", { name: options.fundCategory }).click();
-    await this.page.getByRole("combobox", { name: "Fund class" }).click();
+      .getByRole('option', { name: options.fundCategory })
+      .waitFor({ state: 'visible' });
+    await this.page.getByRole('option', { name: options.fundCategory }).click();
+    await this.page.getByRole('combobox', { name: 'Fund class' }).click();
     await this.page
-      .getByRole("option", { name: options.fundClass })
-      .waitFor({ state: "visible" });
-    await this.page.getByRole("option", { name: options.fundClass }).click();
+      .getByRole('option', { name: options.fundClass })
+      .waitFor({ state: 'visible' });
+    await this.page.getByRole('option', { name: options.fundClass }).click();
     await nextButton.click();
     await nextButton.click();
     const buttonName = `Issue ${options.assetType.toLowerCase()}`;
@@ -247,12 +247,12 @@ export class AdminPage extends BasePage {
     );
     await nextButton.focus();
     await nextButton.click();
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    await this.page.getByLabel("Price").fill(options.price);
-    await this.page.locator("#price\\.currency").click();
-    await this.page.getByRole("option", { name: "EUR" }).click();
+    await this.page.getByLabel('Decimals').fill(options.decimals);
+    await this.page.getByLabel('Price').fill(options.price);
+    await this.page.locator('#price\\.currency').click();
+    await this.page.getByRole('option', { name: 'EUR' }).click();
     await this.page
-      .getByLabel("Collateral Proof Validity")
+      .getByLabel('Collateral Proof Validity')
       .fill(options.validityPeriod);
     await nextButton.click();
     await nextButton.click();
@@ -283,12 +283,12 @@ export class AdminPage extends BasePage {
     );
     await nextButton.focus();
     await nextButton.click();
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    await this.page.getByLabel("Price").fill(options.price);
-    await this.page.locator("#price\\.currency").click();
-    await this.page.getByRole("option", { name: "EUR" }).click();
+    await this.page.getByLabel('Decimals').fill(options.decimals);
+    await this.page.getByLabel('Price').fill(options.price);
+    await this.page.locator('#price\\.currency').click();
+    await this.page.getByRole('option', { name: 'EUR' }).click();
     await this.page
-      .getByLabel("Collateral Proof Validity")
+      .getByLabel('Collateral Proof Validity')
       .fill(options.validityPeriod);
     await nextButton.click();
     await nextButton.click();
@@ -297,16 +297,16 @@ export class AdminPage extends BasePage {
   }
 
   private async getColumnIndices() {
-    const nameColumn = this.page.locator("th", { hasText: "Name" });
+    const nameColumn = this.page.locator('th', { hasText: 'Name' });
 
-    let supplyColumn = this.page.locator("th", { hasText: "Total Supply" });
+    let supplyColumn = this.page.locator('th', { hasText: 'Total Supply' });
 
     if ((await supplyColumn.count()) === 0) {
-      supplyColumn = this.page.locator("th", { hasText: "Balance" });
+      supplyColumn = this.page.locator('th', { hasText: 'Balance' });
     }
 
-    await nameColumn.waitFor({ state: "visible", timeout: 40000 });
-    await supplyColumn.waitFor({ state: "visible", timeout: 40000 });
+    await nameColumn.waitFor({ state: 'visible', timeout: 40_000 });
+    await supplyColumn.waitFor({ state: 'visible', timeout: 40_000 });
 
     return {
       nameColumnIndex: await nameColumn.evaluate((el: HTMLElement) => {
@@ -327,11 +327,10 @@ export class AdminPage extends BasePage {
       await searchInput.clear();
       await this.page.waitForTimeout(300);
       await searchInput.fill(assetName);
-      await searchInput.press("Enter");
+      await searchInput.press('Enter');
       await this.page.waitForTimeout(500);
       return true;
-    } catch (error) {
-      console.log(`Error during search: ${error}`);
+    } catch (_error) {
       return false;
     }
   }
@@ -350,9 +349,9 @@ export class AdminPage extends BasePage {
       const nameCell = row.locator(
         `td:nth-child(${columnIndices.nameColumnIndex})`
       );
-      await nameCell.waitFor({ state: "visible", timeout: 10000 });
+      await nameCell.waitFor({ state: 'visible', timeout: 10_000 });
 
-      const nameFlex = nameCell.locator(".flex");
+      const nameFlex = nameCell.locator('.flex');
       const isFlexVisible = await nameFlex.isVisible();
 
       const textToCheck = isFlexVisible
@@ -364,9 +363,9 @@ export class AdminPage extends BasePage {
           const supplyCell = row.locator(
             `td:nth-child(${columnIndices.supplyColumnIndex})`
           );
-          const supplyText = (await supplyCell.textContent()) || "";
+          const supplyText = (await supplyCell.textContent()) || '';
 
-          if (supplyText.includes("NaN") || supplyText.trim() === "NaN") {
+          if (supplyText.includes('NaN') || supplyText.trim() === 'NaN') {
             throw new Error(
               `VALIDATION_ERROR: Found asset ${assetName} but total supply is NaN in the table`
             );
@@ -380,8 +379,8 @@ export class AdminPage extends BasePage {
           const formattedSupply = this.formatAmount(supplyText);
           const formattedExpected = this.formatAmount(expectedTotalSupply);
           if (
-            formattedSupply === "NaN" ||
-            formattedSupply === "undefined" ||
+            formattedSupply === 'NaN' ||
+            formattedSupply === 'undefined' ||
             !formattedSupply.match(/^[\d.]+$/)
           ) {
             throw new Error(
@@ -409,10 +408,9 @@ export class AdminPage extends BasePage {
     } catch (error) {
       if (
         error instanceof Error &&
-        (error.message.includes("VALIDATION_ERROR") ||
-          error.message.includes("but total supply"))
+        (error.message.includes('VALIDATION_ERROR') ||
+          error.message.includes('but total supply'))
       ) {
-        console.error(error.message);
         throw error;
       }
       return { found: false, matchedSupply: false };
@@ -442,10 +440,10 @@ export class AdminPage extends BasePage {
     sidebarAssetTypes?: string;
     totalSupply?: string;
   }) {
-    await this.page.getByRole("button", { name: "Filter" }).click();
-    await this.page.getByRole("option", { name: "Name" }).click();
-    await this.page.getByRole("button", { name: "Contains" }).click();
-    const searchInput = this.page.getByPlaceholder("Search...");
+    await this.page.getByRole('button', { name: 'Filter' }).click();
+    await this.page.getByRole('option', { name: 'Name' }).click();
+    await this.page.getByRole('button', { name: 'Contains' }).click();
+    const searchInput = this.page.getByPlaceholder('Search...');
     let currentSearchAttempts = 0;
     const maxSearchAttempts = 3;
     let currentRefreshCount = 0;
@@ -465,14 +463,10 @@ export class AdminPage extends BasePage {
               return false;
             }
 
-            const rows = this.page.locator("tbody tr");
+            const rows = this.page.locator('tbody tr');
             const count = await rows.count();
 
             if (count === 0) {
-              console.log(
-                "No rows found in table, checking if we need to refresh"
-              );
-
               const result = await this.handleNoRows(
                 currentSearchAttempts,
                 maxSearchAttempts,
@@ -501,8 +495,6 @@ export class AdminPage extends BasePage {
               }
             }
 
-            console.log(`Asset ${options.name} not found in ${count} rows`);
-
             const result = await this.handleAssetNotFound(
               currentSearchAttempts,
               maxSearchAttempts,
@@ -518,19 +510,17 @@ export class AdminPage extends BasePage {
           } catch (error) {
             if (
               error instanceof Error &&
-              (error.message.includes("VALIDATION_ERROR") ||
-                error.message.includes("but total supply"))
+              (error.message.includes('VALIDATION_ERROR') ||
+                error.message.includes('but total supply'))
             ) {
               throw error;
             }
-
-            console.log(`Error during search: ${error}`);
             return false;
           }
         },
         {
-          message: `Waiting for asset ${options.name} to appear in the table with${options.totalSupply ? ` total supply ${options.totalSupply}` : ""}`,
-          timeout: 180000,
+          message: `Waiting for asset ${options.name} to appear in the table with${options.totalSupply ? ` total supply ${options.totalSupply}` : ''}`,
+          timeout: 180_000,
           intervals: [3000],
         }
       )
@@ -560,7 +550,7 @@ export class AdminPage extends BasePage {
     }
 
     await this.page
-      .locator("body")
+      .locator('body')
       .click({ position: { x: 1, y: 1 }, force: true });
 
     let updatedRefreshCount = refreshCount;
@@ -596,9 +586,6 @@ export class AdminPage extends BasePage {
     const updatedSearchAttempts = searchAttempts + 1;
 
     if (updatedSearchAttempts < maxSearchAttempts) {
-      console.error(
-        `Asset not found, search attempt ${updatedSearchAttempts}/${maxSearchAttempts}...`
-      );
       await this.page.waitForTimeout(1000);
       return {
         continueSearch: false,
@@ -628,15 +615,15 @@ export class AdminPage extends BasePage {
 
   async updateCollateral(options: { amount: string; pincode: string }) {
     await this.page
-      .getByRole("button", { name: "Manage", exact: true })
+      .getByRole('button', { name: 'Manage', exact: true })
       .click();
-    const updateCollateralOption = this.page.getByRole("menuitem", {
-      name: "Update Collateral",
+    const updateCollateralOption = this.page.getByRole('menuitem', {
+      name: 'Update Collateral',
     });
 
-    await updateCollateralOption.waitFor({ state: "visible" });
+    await updateCollateralOption.waitFor({ state: 'visible' });
     await updateCollateralOption.click();
-    await this.page.locator("#amount").fill(options.amount);
+    await this.page.locator('#amount').fill(options.amount);
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
     );
@@ -645,13 +632,13 @@ export class AdminPage extends BasePage {
     const updateButton = this.page.locator(
       'button[data-slot="button"][aria-label="Update collateral"]'
     );
-    await updateButton.waitFor({ state: "attached" });
+    await updateButton.waitFor({ state: 'attached' });
     await updateButton.scrollIntoViewIfNeeded();
     await updateButton.click();
 
-    await this.page.getByRole("dialog").waitFor({ state: "visible" });
+    await this.page.getByRole('dialog').waitFor({ state: 'visible' });
     await this.page.locator('[data-input-otp="true"]').fill(options.pincode);
-    await this.page.getByRole("button", { name: "Yes, confirm" }).click();
+    await this.page.getByRole('button', { name: 'Yes, confirm' }).click();
   }
 
   private formatAmount(amount: string): string {
@@ -665,39 +652,39 @@ export class AdminPage extends BasePage {
   async verifyCollateral(expectedAmount: string) {
     await this.page.reload();
     const collateralElement = this.page
-      .locator("div.space-y-1")
+      .locator('div.space-y-1')
       .filter({
         has: this.page.locator(
-          "span.font-medium.text-muted-foreground.text-sm",
+          'span.font-medium.text-muted-foreground.text-sm',
           {
-            hasText: "Proven collateral",
+            hasText: 'Proven collateral',
           }
         ),
       })
-      .locator("div.text-md");
+      .locator('div.text-md');
 
     await expect(collateralElement).toBeVisible();
     await this.page
-      .locator("body")
+      .locator('body')
       .click({ position: { x: 1, y: 1 }, force: true });
     await expect
       .poll(
         async () => {
           const text = await collateralElement.textContent();
-          return text ? this.formatAmount(text) : "0";
+          return text ? this.formatAmount(text) : '0';
         },
         {
-          message: "Waiting for proven collateral to be updated from 0",
-          timeout: 120000,
+          message: 'Waiting for proven collateral to be updated from 0',
+          timeout: 120_000,
           intervals: [1000],
         }
       )
-      .not.toBe("0");
+      .not.toBe('0');
 
     const actualAmount = await collateralElement.textContent();
 
     if (!actualAmount) {
-      throw new Error("Could not find proven collateral amount");
+      throw new Error('Could not find proven collateral amount');
     }
 
     const formattedActual = this.formatAmount(actualAmount);
@@ -709,27 +696,27 @@ export class AdminPage extends BasePage {
   async mintAsset(options: { user: string; amount: string; pincode: string }) {
     await this.page.reload();
     await this.page
-      .getByRole("button", { name: "Manage", exact: true })
+      .getByRole('button', { name: 'Manage', exact: true })
       .click();
-    const mintTokensOption = this.page.getByRole("menuitem", {
-      name: "Mint",
+    const mintTokensOption = this.page.getByRole('menuitem', {
+      name: 'Mint',
     });
-    await mintTokensOption.waitFor({ state: "visible" });
+    await mintTokensOption.waitFor({ state: 'visible' });
     await mintTokensOption.click();
-    await this.page.locator("#amount").fill(options.amount);
+    await this.page.locator('#amount').fill(options.amount);
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
     );
     await nextButton.focus();
     await nextButton.click();
     await this.page
-      .getByRole("button", { name: "Enter an address, name or email" })
+      .getByRole('button', { name: 'Enter an address, name or email' })
       .click();
     await this.page.waitForSelector('[role="dialog"][data-state="open"]');
     const searchInput = this.page.locator(
       '[role="dialog"][data-state="open"] input'
     );
-    await searchInput.waitFor({ state: "visible" });
+    await searchInput.waitFor({ state: 'visible' });
     await searchInput.fill(options.user);
     await this.page
       .locator(`[role="option"]`)
@@ -737,7 +724,7 @@ export class AdminPage extends BasePage {
       .first()
       .click();
     await nextButton.click();
-    await this.completeAssetCreation("Mint", options.pincode);
+    await this.completeAssetCreation('Mint', options.pincode);
   }
 
   async topUpAsset(options: {
@@ -748,52 +735,52 @@ export class AdminPage extends BasePage {
   }) {
     await this.page.reload();
     await this.page
-      .getByRole("button", { name: "Manage", exact: true })
+      .getByRole('button', { name: 'Manage', exact: true })
       .click();
-    const mintTokensOption = this.page.getByRole("menuitem", {
-      name: "Top up",
+    const mintTokensOption = this.page.getByRole('menuitem', {
+      name: 'Top up',
     });
-    await mintTokensOption.waitFor({ state: "visible" });
+    await mintTokensOption.waitFor({ state: 'visible' });
     await mintTokensOption.click();
-    await this.page.locator("#amount").fill(options.amount);
+    await this.page.locator('#amount').fill(options.amount);
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
     );
     await nextButton.focus();
     await nextButton.click();
-    await this.completeAssetCreation("Top up", options.pincode);
+    await this.completeAssetCreation('Top up', options.pincode);
   }
 
   async redeemBurnAsset(options: { amount: string; pincode: string }) {
     await this.page
       .locator('button[data-slot="sheet-trigger"]')
-      .filter({ hasText: "Burn" })
+      .filter({ hasText: 'Burn' })
       .click();
-    await this.page.locator("#amount").fill(options.amount);
+    await this.page.locator('#amount').fill(options.amount);
     const nextButton = this.page.locator(
       'button[data-slot="button"]:has-text("Next")'
     );
     await nextButton.focus();
     await nextButton.click();
-    await this.completeAssetCreation("Burn", options.pincode);
+    await this.completeAssetCreation('Burn', options.pincode);
   }
 
   async verifyTotalSupply(expectedAmount: string) {
     const totalSupplyElement = this.page
-      .locator("div.space-y-1")
+      .locator('div.space-y-1')
       .filter({
         has: this.page.locator(
-          "span.font-medium.text-muted-foreground.text-sm",
+          'span.font-medium.text-muted-foreground.text-sm',
           {
-            hasText: "Total supply",
+            hasText: 'Total supply',
           }
         ),
       })
-      .locator("div.text-md");
+      .locator('div.text-md');
 
     await expect(totalSupplyElement).toBeVisible();
     await this.page
-      .locator("body")
+      .locator('body')
       .click({ position: { x: 1, y: 1 }, force: true });
 
     const formattedExpected = this.formatAmount(expectedAmount);
@@ -803,10 +790,10 @@ export class AdminPage extends BasePage {
       .poll(
         async () => {
           const text = await totalSupplyElement.textContent();
-          const currentValue = text ? this.formatAmount(text) : "";
+          const currentValue = text ? this.formatAmount(text) : '';
           if (!initialValue) {
             initialValue = currentValue;
-            return currentValue !== "" && currentValue === formattedExpected;
+            return currentValue !== '' && currentValue === formattedExpected;
           }
           return (
             currentValue !== initialValue && currentValue === formattedExpected
@@ -814,7 +801,7 @@ export class AdminPage extends BasePage {
         },
         {
           message: `Waiting for total supply to update from initial value to ${formattedExpected}`,
-          timeout: 120000,
+          timeout: 120_000,
           intervals: [1000],
         }
       )
@@ -823,7 +810,7 @@ export class AdminPage extends BasePage {
     const actualAmount = await totalSupplyElement.textContent();
 
     if (!actualAmount) {
-      throw new Error("Could not find total supply amount");
+      throw new Error('Could not find total supply amount');
     }
 
     const formattedActual = this.formatAmount(actualAmount);
@@ -837,13 +824,13 @@ export class AdminPage extends BasePage {
   }): Promise<void> {
     await this.page.reload();
     await this.page
-      .getByRole("button", { name: "Manage", exact: true })
+      .getByRole('button', { name: 'Manage', exact: true })
       .click();
-    const allowUserOption = this.page.getByRole("menuitem", {
-      name: "Allow user",
+    const allowUserOption = this.page.getByRole('menuitem', {
+      name: 'Allow user',
       exact: true,
     });
-    await allowUserOption.waitFor({ state: "visible" });
+    await allowUserOption.waitFor({ state: 'visible' });
     await allowUserOption.click();
 
     await searchAndSelectFromDialog(
@@ -856,13 +843,13 @@ export class AdminPage extends BasePage {
     );
     await nextButton.focus();
     await nextButton.click();
-    await this.completeAssetCreation("Allow", options.pincode);
+    await this.completeAssetCreation('Allow', options.pincode);
   }
 
   async verifySuccessMessage(partialMessage: string) {
     const toastSelector =
       '[data-sonner-toast][data-type="success"][data-mounted="true"][data-visible="true"]';
-    const titleSelector = `${toastSelector} [data-title]`;
+    const _titleSelector = `${toastSelector} [data-title]`;
 
     await expect
       .poll(
@@ -873,7 +860,7 @@ export class AdminPage extends BasePage {
           }
 
           for (const toast of toasts) {
-            const title = await toast.locator("[data-title]").textContent();
+            const title = await toast.locator('[data-title]').textContent();
             if (title?.toLowerCase().includes(partialMessage.toLowerCase())) {
               return true;
             }
@@ -882,7 +869,7 @@ export class AdminPage extends BasePage {
         },
         {
           message: `Waiting for success toast containing "${partialMessage}"`,
-          timeout: 180000,
+          timeout: 180_000,
           intervals: [1000, 2000, 3000],
         }
       )
@@ -891,12 +878,12 @@ export class AdminPage extends BasePage {
 
   private getSingularForm(type: string): string {
     const pluralToSingular: Record<string, string> = {
-      Cryptocurrencies: "cryptocurrency",
-      Stablecoins: "stablecoin",
-      Bonds: "bond",
-      Equities: "equity",
-      Funds: "fund",
-      Deposits: "deposit",
+      Cryptocurrencies: 'cryptocurrency',
+      Stablecoins: 'stablecoin',
+      Bonds: 'bond',
+      Equities: 'equity',
+      Funds: 'fund',
+      Deposits: 'deposit',
     };
     return pluralToSingular[type] || type.toLowerCase();
   }
@@ -912,10 +899,10 @@ export class AdminPage extends BasePage {
     }
 
     const isExpanded =
-      (await menuButton.getAttribute("aria-expanded")) === "true";
-    const state = await menuButton.getAttribute("data-state");
+      (await menuButton.getAttribute('aria-expanded')) === 'true';
+    const state = await menuButton.getAttribute('data-state');
 
-    return isExpanded && state === "open";
+    return isExpanded && state === 'open';
   }
 
   async chooseAssetTypeFromSidebar(options: { sidebarAssetTypes: string }) {
@@ -923,7 +910,7 @@ export class AdminPage extends BasePage {
       options.sidebarAssetTypes
     );
 
-    const assetTypeButton = this.page.getByRole("button", {
+    const assetTypeButton = this.page.getByRole('button', {
       name: options.sidebarAssetTypes,
     });
 
@@ -937,20 +924,20 @@ export class AdminPage extends BasePage {
       .locator(
         `a[data-sidebar="menu-sub-button"][href*="/assets/${singularForm}"]`
       )
-      .filter({ hasText: "View all" });
+      .filter({ hasText: 'View all' });
 
-    await viewAllLink.waitFor({ state: "visible", timeout: 15000 });
+    await viewAllLink.waitFor({ state: 'visible', timeout: 15_000 });
 
     await viewAllLink.evaluate((element: HTMLElement) => {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return new Promise((resolve) => setTimeout(resolve, 100));
     });
 
     await viewAllLink.click();
     await this.page.waitForURL(`**/${singularForm}`);
     await Promise.all([
-      this.page.waitForSelector("table tbody"),
-      this.page.getByRole("button", { name: "Filter" }),
+      this.page.waitForSelector('table tbody'),
+      this.page.getByRole('button', { name: 'Filter' }),
     ]);
   }
 
@@ -961,20 +948,20 @@ export class AdminPage extends BasePage {
     await menuTrigger.click();
     await this.page
       .locator('[role="menu"][data-state="open"]')
-      .waitFor({ state: "visible" });
+      .waitFor({ state: 'visible' });
     const menu = this.page.locator('[role="menu"][data-state="open"]');
-    await menu.waitFor({ state: "visible" });
+    await menu.waitFor({ state: 'visible' });
 
     const option = this.page
       .locator('div[role="menuitemradio"]')
       .filter({ hasText: optionText });
-    await option.waitFor({ state: "visible" });
+    await option.waitFor({ state: 'visible' });
 
-    const isSelected = (await option.getAttribute("aria-checked")) === "true";
+    const isSelected = (await option.getAttribute('aria-checked')) === 'true';
     if (!isSelected) {
       await option.click();
 
-      await option.waitFor({ state: "visible" });
+      await option.waitFor({ state: 'visible' });
       await expect(option).toContainText(optionText);
     }
   }
@@ -984,29 +971,29 @@ export class AdminPage extends BasePage {
     sidebarAssetTypes: string;
   }) {
     const detailsLink = this.page
-      .locator("tr")
+      .locator('tr')
       .filter({ has: this.page.getByText(options.name, { exact: true }) })
-      .getByRole("link", { name: "Details" });
+      .getByRole('link', { name: 'Details' });
 
     await detailsLink.click();
     const singularForm = this.getSingularForm(options.sidebarAssetTypes);
     await this.page.waitForURL(
-      new RegExp(`.*\/assets\/${singularForm}\/0x[a-fA-F0-9]{40}`)
+      new RegExp(`.*/assets/${singularForm}/0x[a-fA-F0-9]{40}`)
     );
   }
 
   async clickAssetDetails(assetName: string): Promise<void> {
-    const rows = this.page.locator("tbody tr");
+    const rows = this.page.locator('tbody tr');
     const rowCount = await rows.count();
 
     let assetFound = false;
     for (let i = 0; i < rowCount; i++) {
       const row = rows.nth(i);
-      const nameCell = row.locator("td").nth(1);
+      const nameCell = row.locator('td').nth(1);
       const nameText = await nameCell.textContent();
 
       if (nameText?.trim() === assetName) {
-        const detailsLink = row.getByRole("link", { name: "Details" });
+        const detailsLink = row.getByRole('link', { name: 'Details' });
         await detailsLink.click();
         assetFound = true;
         break;
@@ -1023,11 +1010,11 @@ export class AdminPage extends BasePage {
   }
 
   public getTableBodyLocator(): Locator {
-    return this.page.locator("table tbody");
+    return this.page.locator('table tbody');
   }
 
   public getFilterButtonLocator(): Locator {
-    return this.page.getByRole("button", { name: "Filter" });
+    return this.page.getByRole('button', { name: 'Filter' });
   }
 
   async chooseSidebarMenuOption(options: {
@@ -1050,7 +1037,7 @@ export class AdminPage extends BasePage {
     }
     if (options.expectedLocatorsToWaitFor) {
       for (const locator of options.expectedLocatorsToWaitFor) {
-        await locator.waitFor({ state: "visible" });
+        await locator.waitFor({ state: 'visible' });
       }
     }
   }

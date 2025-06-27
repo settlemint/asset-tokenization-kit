@@ -1,6 +1,6 @@
-import hre from "hardhat";
-import { type PublicClient, createPublicClient, custom } from "viem";
-import { getViemChain } from "./viem-chain";
+import hre from 'hardhat';
+import { createPublicClient, custom, type PublicClient } from 'viem';
+import { getViemChain } from './viem-chain';
 
 let publicClientInstance: PublicClient | null = null;
 

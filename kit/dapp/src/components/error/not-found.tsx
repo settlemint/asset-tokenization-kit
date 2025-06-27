@@ -11,8 +11,8 @@
  * @see {@link https://tanstack.com/router/latest/docs/guide/not-found-errors} - TanStack Router not found handling
  */
 
-import { ErrorDisplay, ErrorCodeDisplay } from "@/components/ui/error-display";
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
+import { ErrorCodeDisplay, ErrorDisplay } from '@/components/ui/error-display';
 
 /**
  * Not Found component for displaying 404 error pages.
@@ -49,26 +49,26 @@ export function NotFound({ children }: { children?: ReactNode }) {
   // If children is provided as a string, use it as the description
   // If children is a ReactNode (JSX), render it directly in the ErrorDisplay
   // If no children, use the default message
-  const defaultDescription = "The page you are looking for does not exist.";
+  const defaultDescription = 'The page you are looking for does not exist.';
   const description =
-    typeof children === "string"
+    typeof children === 'string'
       ? children
       : children
         ? undefined
         : defaultDescription;
 
   return (
-    <div className="relative flex flex-col w-full justify-center min-h-[50vh] p-6 md:p-10">
-      <div className="relative max-w-5xl mx-auto w-full">
+    <div className="relative flex min-h-[50vh] w-full flex-col justify-center p-6 md:p-10">
+      <div className="relative mx-auto w-full max-w-5xl">
         <ErrorCodeDisplay errorCode="404" />
         <ErrorDisplay
-          title="Page not found"
           description={description ?? defaultDescription}
           errorCode="404"
           showRetry={false}
+          title="Page not found"
         />
         {/* Render non-string children as custom content below the error display */}
-        {children && typeof children !== "string" && (
+        {children && typeof children !== 'string' && (
           <div className="mt-6 text-center">{children}</div>
         )}
       </div>

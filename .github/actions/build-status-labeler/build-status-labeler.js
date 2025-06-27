@@ -1,6 +1,6 @@
 /**
  * Build Status Labeler Script
- * 
+ *
  * Manages QA status labels on pull requests with efficient delta-based updates.
  * Only changes what's necessary to minimize GitHub UI noise.
  */
@@ -9,32 +9,47 @@
  * Label definitions for QA statuses
  */
 const QA_LABELS = [
-  { name: 'qa:pending', color: 'CEE0F5', description: 'QA workflow needs to run' },  // Light purple
-  { name: 'qa:running', color: 'FFA500', description: 'QA workflow is currently running' },  // Orange
-  { name: 'qa:success', color: '22863A', description: 'QA workflow passed successfully' },  // Forest green
-  { name: 'qa:failed', color: 'CB2431', description: 'QA workflow failed' }  // Red
+  {
+    name: 'qa:pending',
+    color: 'CEE0F5',
+    description: 'QA workflow needs to run',
+  }, // Light purple
+  {
+    name: 'qa:running',
+    color: 'FFA500',
+    description: 'QA workflow is currently running',
+  }, // Orange
+  {
+    name: 'qa:success',
+    color: '22863A',
+    description: 'QA workflow passed successfully',
+  }, // Forest green
+  { name: 'qa:failed', color: 'CB2431', description: 'QA workflow failed' }, // Red
 ];
 
-const QA_LABEL_NAMES = QA_LABELS.map(l => l.name);
+const QA_LABEL_NAMES = QA_LABELS.map((l) => l.name);
 
 /**
  * Create or update QA labels in the repository
  */
 async function ensureLabelsExist({ github, context }) {
   console.log('Ensuring QA labels exist in repository...');
-  
+
   // Get all existing labels
-  const existingLabels = await github.paginate(github.rest.issues.listLabelsForRepo, {
-    owner: context.repo.owner,
-    repo: context.repo.repo
-  });
-  
-  const existingLabelNames = new Set(existingLabels.map(l => l.name));
-  
+  const existingLabels = await github.paginate(
+    github.rest.issues.listLabelsForRepo,
+    {
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+    }
+  );
+
+  const existingLabelNames = new Set(existingLabels.map((l) => l.name));
+
   // Create or update labels
   for (const label of QA_LABELS) {
-    const existingLabel = existingLabels.find(l => l.name === label.name);
-    
+    const existingLabel = existingLabels.find((l) => l.name === label.name);
+
     if (!existingLabel) {
       // Create new label
       try {
@@ -43,13 +58,16 @@ async function ensureLabelsExist({ github, context }) {
           repo: context.repo.repo,
           name: label.name,
           color: label.color,
-          description: label.description
+          description: label.description,
         });
         console.log(`Created label: ${label.name}`);
       } catch (error) {
         console.log(`Failed to create label ${label.name}: ${error.message}`);
       }
-    } else if (existingLabel.color !== label.color || existingLabel.description !== label.description) {
+    } else if (
+      existingLabel.color !== label.color ||
+      existingLabel.description !== label.description
+    ) {
       // Update existing label if color or description changed
       try {
         await github.rest.issues.updateLabel({
@@ -57,9 +75,11 @@ async function ensureLabelsExist({ github, context }) {
           repo: context.repo.repo,
           name: label.name,
           color: label.color,
-          description: label.description
+          description: label.description,
         });
-        console.log(`Updated label: ${label.name} (color: ${existingLabel.color} -> ${label.color}, desc: "${existingLabel.description}" -> "${label.description}")`);
+        console.log(
+          `Updated label: ${label.name} (color: ${existingLabel.color} -> ${label.color}, desc: "${existingLabel.description}" -> "${label.description}")`
+        );
       } catch (error) {
         console.log(`Failed to update label ${label.name}: ${error.message}`);
       }
@@ -70,10 +90,15 @@ async function ensureLabelsExist({ github, context }) {
 /**
  * Update build status label efficiently (only changes what's necessary)
  */
-async function updateBuildStatusLabel({ github, context, prNumber, workflowStatus }) {
+async function updateBuildStatusLabel({
+  github,
+  context,
+  prNumber,
+  workflowStatus,
+}) {
   // Determine the desired label based on status
   let desiredLabel = '';
-  switch(workflowStatus) {
+  switch (workflowStatus) {
     case 'pending':
       desiredLabel = 'qa:pending';
       break;
@@ -94,20 +119,24 @@ async function updateBuildStatusLabel({ github, context, prNumber, workflowStatu
     return;
   }
 
-  console.log(`Updating PR #${prNumber} with status: ${workflowStatus} -> label: ${desiredLabel}`);
+  console.log(
+    `Updating PR #${prNumber} with status: ${workflowStatus} -> label: ${desiredLabel}`
+  );
 
   // Get current labels on the PR
   const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
     owner: context.repo.owner,
     repo: context.repo.repo,
-    issue_number: prNumber
+    issue_number: prNumber,
   });
 
-  const currentLabelNames = currentLabels.map(l => l.name);
+  const currentLabelNames = currentLabels.map((l) => l.name);
   console.log('Current PR labels:', currentLabelNames);
 
   // Find which QA labels are currently on the PR
-  const currentQaLabels = currentLabelNames.filter(l => QA_LABEL_NAMES.includes(l));
+  const currentQaLabels = currentLabelNames.filter((l) =>
+    QA_LABEL_NAMES.includes(l)
+  );
   console.log('Current QA labels:', currentQaLabels);
   console.log('Desired QA label:', desiredLabel);
 
@@ -118,7 +147,7 @@ async function updateBuildStatusLabel({ github, context, prNumber, workflowStatu
   }
 
   // Calculate what needs to change
-  const labelsToRemove = currentQaLabels.filter(l => l !== desiredLabel);
+  const labelsToRemove = currentQaLabels.filter((l) => l !== desiredLabel);
   const needsToAdd = !currentQaLabels.includes(desiredLabel);
 
   console.log('Labels to remove:', labelsToRemove);
@@ -132,7 +161,7 @@ async function updateBuildStatusLabel({ github, context, prNumber, workflowStatu
         owner: context.repo.owner,
         repo: context.repo.repo,
         issue_number: prNumber,
-        name: label
+        name: label,
       });
     } catch (error) {
       console.log(`Failed to remove label ${label}: ${error.message}`);
@@ -147,7 +176,7 @@ async function updateBuildStatusLabel({ github, context, prNumber, workflowStatu
         owner: context.repo.owner,
         repo: context.repo.repo,
         issue_number: prNumber,
-        labels: [desiredLabel]
+        labels: [desiredLabel],
       });
     } catch (error) {
       console.log(`Failed to add label ${desiredLabel}: ${error.message}`);
@@ -159,5 +188,5 @@ async function updateBuildStatusLabel({ github, context, prNumber, workflowStatu
 
 module.exports = {
   ensureLabelsExist,
-  updateBuildStatusLabel
+  updateBuildStatusLabel,
 };

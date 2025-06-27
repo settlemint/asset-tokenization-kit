@@ -1,7 +1,7 @@
-import { queryClient } from "@/lib/query.client";
-import type { SettingKey } from "@/lib/zod/validators/settings-key";
-import { orpc } from "@/orpc";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { queryClient } from '@/lib/query.client';
+import type { SettingKey } from '@/lib/zod/validators/settings-key';
+import { orpc } from '@/orpc';
 
 /**
  * Custom hook for managing application settings.
@@ -38,11 +38,11 @@ export function useSettings(
     orpc.settings.upsert.mutationOptions({
       onSuccess: () => {
         // Invalidate the specific setting query
-        void queryClient.invalidateQueries({
+        queryClient.invalidateQueries({
           queryKey: orpc.settings.read.key({
             input: { key },
           }),
-          refetchType: "all",
+          refetchType: 'all',
         });
       },
     })
@@ -54,7 +54,7 @@ export function useSettings(
   };
 
   const invalidateSetting = () => {
-    void queryClient.invalidateQueries({
+    queryClient.invalidateQueries({
       queryKey: orpc.settings.read.key({ input: { key } }),
     });
   };

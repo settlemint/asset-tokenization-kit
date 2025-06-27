@@ -1,8 +1,8 @@
-import type { Address } from "viem";
-import { ATKTopic } from "../constants/topics";
-import { atkDeployer } from "../services/deployer";
-import { topicManager } from "../services/topic-manager";
-import { waitForSuccess } from "../utils/wait-for-success";
+import type { Address } from 'viem';
+import { ATKTopic } from '../constants/topics';
+import { atkDeployer } from '../services/deployer';
+import { topicManager } from '../services/topic-manager';
+import { waitForSuccess } from '../utils/wait-for-success';
 export const addTrustedIssuer = async (
   trustedIssuerIdentity: Address,
   claimTopics: bigint[] = [
@@ -11,7 +11,7 @@ export const addTrustedIssuer = async (
     topicManager.getTopicId(ATKTopic.collateral),
   ]
 ) => {
-  console.log(`[Add trusted issuer] → Starting trusted issuer setup...`);
+  console.log('[Add trusted issuer] → Starting trusted issuer setup...');
 
   // Set up the claim issuer as a trusted issuer
   const trustedIssuersRegistry =

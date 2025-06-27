@@ -1,8 +1,8 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
-import { IdentityFactory } from "../../../generated/schema";
-import { IdentityFactory as IdentityFactoryTemplate } from "../../../generated/templates";
-import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
-import { fetchAccount } from "../../account/fetch/account";
+import { type Address, Bytes } from '@graphprotocol/graph-ts';
+import { IdentityFactory } from '../../../generated/schema';
+import { IdentityFactory as IdentityFactoryTemplate } from '../../../generated/templates';
+import { fetchAccessControl } from '../../access-control/fetch/accesscontrol';
+import { fetchAccount } from '../../account/fetch/account';
 
 export function fetchIdentityFactory(address: Address): IdentityFactory {
   let identityFactory = IdentityFactory.load(address);

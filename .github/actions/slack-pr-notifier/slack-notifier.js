@@ -33,11 +33,11 @@ module.exports = async ({ github, context, core }) => {
     PR_AUTHOR_TYPE,
     PR_AUTHOR_AVATAR,
     IS_ABANDONED,
-    WAIT_TIME = "10000", // Default to 10 seconds for label propagation
+    WAIT_TIME = '10000', // Default to 10 seconds for label propagation
   } = process.env;
 
-  console.log("Starting Slack PR notifier for PR #" + PR_NUMBER);
-  console.log("Environment:", {
+  console.log('Starting Slack PR notifier for PR #' + PR_NUMBER);
+  console.log('Environment:', {
     PR_NUMBER,
     PR_TITLE,
     PR_URL,
@@ -45,12 +45,12 @@ module.exports = async ({ github, context, core }) => {
     PR_AUTHOR_TYPE,
     IS_ABANDONED,
     WAIT_TIME,
-    SLACK_CHANNEL_ID: SLACK_CHANNEL_ID ? "Set" : "Not set",
-    SLACK_BOT_TOKEN: SLACK_BOT_TOKEN ? "Set" : "Not set",
+    SLACK_CHANNEL_ID: SLACK_CHANNEL_ID ? 'Set' : 'Not set',
+    SLACK_BOT_TOKEN: SLACK_BOT_TOKEN ? 'Set' : 'Not set',
   });
 
   // Wait for label propagation if specified
-  const waitTime = parseInt(WAIT_TIME, 10);
+  const waitTime = Number.parseInt(WAIT_TIME, 10);
   if (waitTime > 0) {
     console.log(`Waiting ${waitTime}ms for label propagation...`);
     await new Promise((resolve) => setTimeout(resolve, waitTime));
@@ -66,7 +66,7 @@ module.exports = async ({ github, context, core }) => {
       repo: context.repo.repo,
     });
     const isPrivateRepo = repo.private;
-    console.log(`Repository is ${isPrivateRepo ? "private" : "public"}`);
+    console.log(`Repository is ${isPrivateRepo ? 'private' : 'public'}`);
     // Get PR labels
     let { data: labels } = await github.rest.issues.listLabelsOnIssue({
       owner: context.repo.owner,
@@ -76,7 +76,7 @@ module.exports = async ({ github, context, core }) => {
 
     // Ensure labels is always an array
     if (!Array.isArray(labels)) {
-      console.error("WARNING: Labels response is not an array:", labels);
+      console.error('WARNING: Labels response is not an array:', labels);
       labels = [];
     }
 
@@ -96,10 +96,10 @@ module.exports = async ({ github, context, core }) => {
       });
       isPRMerged = pr.merged === true;
       if (isPRMerged) {
-        console.log("PR is merged according to GitHub API");
+        console.log('PR is merged according to GitHub API');
       }
     } catch (error) {
-      console.error("Failed to check PR merged status:", error.message);
+      console.error('Failed to check PR merged status:', error.message);
     }
 
     // Get PR comments to find existing Slack timestamp
@@ -111,20 +111,20 @@ module.exports = async ({ github, context, core }) => {
 
     // Look for existing Slack timestamp in comments
     const slackComment = comments.find(
-      (c) => c.body && c.body.includes("<!-- slack-ts:")
+      (c) => c.body && c.body.includes('<!-- slack-ts:')
     );
     if (slackComment) {
       const match = slackComment.body.match(/<!-- slack-ts:([0-9.]+) -->/);
       if (match) {
         slackTs = match[1];
-        console.log("Found existing Slack timestamp:", slackTs);
+        console.log('Found existing Slack timestamp:', slackTs);
       }
     } else {
-      console.log("No existing Slack timestamp found");
+      console.log('No existing Slack timestamp found');
     }
 
     // Check if PR is from a bot - SKIP ALL BOT PRS
-    if (PR_AUTHOR_TYPE === "Bot") {
+    if (PR_AUTHOR_TYPE === 'Bot') {
       console.log(`Skipping notification for bot PR from ${PR_AUTHOR}`);
       return;
     }
@@ -132,9 +132,9 @@ module.exports = async ({ github, context, core }) => {
     // Check if PR is draft
     const isDraft =
       Array.isArray(labels) &&
-      labels.some((label) => label.name === "status:draft");
+      labels.some((label) => label.name === 'status:draft');
     if (isDraft) {
-      console.log("Skipping notification for draft PR");
+      console.log('Skipping notification for draft PR');
       return;
     }
 
@@ -142,51 +142,51 @@ module.exports = async ({ github, context, core }) => {
     // But allow abandoned PRs to create messages for visibility
     if (
       !slackTs &&
-      (labels.some((l) => l.name === "status:merged") || isPRMerged)
+      (labels.some((l) => l.name === 'status:merged') || isPRMerged)
     ) {
       console.log(
-        "Skipping notification for merged PR without existing message"
+        'Skipping notification for merged PR without existing message'
       );
       return;
     }
 
     // Define label mappings
     const statusLabels = [
-      { label: "status:draft", text: ":pencil2: Draft" },
-      { label: "status:ready-for-review", text: ":mag: Ready for Review" },
-      { label: "status:in-review", text: ":eyes: In Review" },
-      { label: "qa:running", text: ":hourglass_flowing_sand: QA Running" },
-      { label: "qa:failed", text: ":x: QA Failed" },
-      { label: "qa:success", text: ":white_check_mark: QA Passed" },
+      { label: 'status:draft', text: ':pencil2: Draft' },
+      { label: 'status:ready-for-review', text: ':mag: Ready for Review' },
+      { label: 'status:in-review', text: ':eyes: In Review' },
+      { label: 'qa:running', text: ':hourglass_flowing_sand: QA Running' },
+      { label: 'qa:failed', text: ':x: QA Failed' },
+      { label: 'qa:success', text: ':white_check_mark: QA Passed' },
       {
-        label: "status:changes-requested",
-        text: ":warning: Changes Requested",
+        label: 'status:changes-requested',
+        text: ':warning: Changes Requested',
       },
-      { label: "status:approved", text: ":white_check_mark: Approved" },
-      { label: "status:on-hold", text: ":pause_button: On Hold" },
-      { label: "status:blocked", text: ":octagonal_sign: Blocked" },
-      { label: "status:ready-to-merge", text: ":rocket: Ready to Merge" },
-      { label: "status:merged", text: ":tada: Merged" },
+      { label: 'status:approved', text: ':white_check_mark: Approved' },
+      { label: 'status:on-hold', text: ':pause_button: On Hold' },
+      { label: 'status:blocked', text: ':octagonal_sign: Blocked' },
+      { label: 'status:ready-to-merge', text: ':rocket: Ready to Merge' },
+      { label: 'status:merged', text: ':tada: Merged' },
     ];
 
     const priorityLabels = [
-      { label: "priority:critical", text: ":rotating_light:" },
-      { label: "priority:high", text: ":arrow_up:" },
-      { label: "priority:medium", text: ":arrow_right:" },
-      { label: "priority:low", text: ":arrow_down:" },
+      { label: 'priority:critical', text: ':rotating_light:' },
+      { label: 'priority:high', text: ':arrow_up:' },
+      { label: 'priority:medium', text: ':arrow_right:' },
+      { label: 'priority:low', text: ':arrow_down:' },
     ];
 
     const categoryLabels = [
-      { label: "type:bug", text: ":bug:" },
-      { label: "type:feature", text: ":sparkles:" },
-      { label: "type:refactor", text: ":recycle:" },
-      { label: "type:test", text: ":test_tube:" },
-      { label: "type:docs", text: ":books:" },
-      { label: "type:chore", text: ":wrench:" },
-      { label: "type:style", text: ":art:" },
-      { label: "type:perf", text: ":zap:" },
-      { label: "type:security", text: ":shield:" },
-      { label: "type:breaking", text: ":boom:" },
+      { label: 'type:bug', text: ':bug:' },
+      { label: 'type:feature', text: ':sparkles:' },
+      { label: 'type:refactor', text: ':recycle:' },
+      { label: 'type:test', text: ':test_tube:' },
+      { label: 'type:docs', text: ':books:' },
+      { label: 'type:chore', text: ':wrench:' },
+      { label: 'type:style', text: ':art:' },
+      { label: 'type:perf', text: ':zap:' },
+      { label: 'type:security', text: ':shield:' },
+      { label: 'type:breaking', text: ':boom:' },
     ];
 
     // Build status text from labels
@@ -207,7 +207,7 @@ module.exports = async ({ github, context, core }) => {
     statusTexts.push(...activeCategories.map((c) => c.text));
 
     const statusString =
-      statusTexts.length > 0 ? statusTexts.join(" ") + " " : "";
+      statusTexts.length > 0 ? statusTexts.join(' ') + ' ' : '';
 
     // Slack API helper with enhanced debugging and exponential backoff
     async function slackApi(method, params, maxRetries = 3) {
@@ -217,7 +217,7 @@ module.exports = async ({ github, context, core }) => {
         const startTime = Date.now();
 
         if (attempt > 0) {
-          const backoffTime = Math.min(1000 * Math.pow(2, attempt - 1), 10000); // Max 10 seconds
+          const backoffTime = Math.min(1000 * 2 ** (attempt - 1), 10_000); // Max 10 seconds
           console.log(
             `Retry attempt ${attempt}/${maxRetries} after ${backoffTime}ms backoff`
           );
@@ -227,14 +227,14 @@ module.exports = async ({ github, context, core }) => {
         console.log(
           `[${new Date().toISOString()}] Calling Slack API: ${method} (attempt ${attempt + 1})`
         );
-        console.log("Request params:", JSON.stringify(params, null, 2));
+        console.log('Request params:', JSON.stringify(params, null, 2));
 
         try {
           const response = await fetch(`https://slack.com/api/${method}`, {
-            method: "POST",
+            method: 'POST',
             headers: {
               Authorization: `Bearer ${SLACK_BOT_TOKEN}`,
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify(params),
           });
@@ -245,52 +245,49 @@ module.exports = async ({ github, context, core }) => {
           if (data.ok) {
             console.log(`✓ Slack API ${method} succeeded in ${duration}ms`);
             // Log specific useful response data
-            if (method === "conversations.history" && data.messages) {
+            if (method === 'conversations.history' && data.messages) {
               console.log(`  Found ${data.messages.length} messages`);
             }
-            if (method === "chat.postMessage" && data.ts) {
+            if (method === 'chat.postMessage' && data.ts) {
               console.log(`  Message posted with timestamp: ${data.ts}`);
             }
             return data;
-          } else {
+          }
+          console.error(
+            `✗ Slack API ${method} failed in ${duration}ms:`,
+            data.error
+          );
+
+          // Handle specific errors
+          if (data.error === 'missing_scope') {
             console.error(
-              `✗ Slack API ${method} failed in ${duration}ms:`,
-              data.error
+              `  Required scope for ${method}: Check Slack app permissions`
             );
-
-            // Handle specific errors
-            if (data.error === "missing_scope") {
-              console.error(
-                `  Required scope for ${method}: Check Slack app permissions`
+            throw new Error(`Slack API error: ${data.error}`); // Don't retry permission errors
+          }
+          if (data.error === 'not_in_channel') {
+            console.error(`  Bot is not in channel ${SLACK_CHANNEL_ID}`);
+            throw new Error(`Slack API error: ${data.error}`); // Don't retry channel errors
+          }
+          if (data.error === 'channel_not_found') {
+            console.error(`  Channel ${SLACK_CHANNEL_ID} not found`);
+            throw new Error(`Slack API error: ${data.error}`); // Don't retry missing channel
+          }
+          if (data.error === 'rate_limited') {
+            const retryAfter = data.retry_after || 60;
+            console.error(`  Rate limited. Retry after: ${retryAfter} seconds`);
+            if (attempt < maxRetries) {
+              await new Promise((resolve) =>
+                setTimeout(resolve, retryAfter * 1000)
               );
-              throw new Error(`Slack API error: ${data.error}`); // Don't retry permission errors
+              continue; // Retry after rate limit wait
             }
-            if (data.error === "not_in_channel") {
-              console.error(`  Bot is not in channel ${SLACK_CHANNEL_ID}`);
-              throw new Error(`Slack API error: ${data.error}`); // Don't retry channel errors
-            }
-            if (data.error === "channel_not_found") {
-              console.error(`  Channel ${SLACK_CHANNEL_ID} not found`);
-              throw new Error(`Slack API error: ${data.error}`); // Don't retry missing channel
-            }
-            if (data.error === "rate_limited") {
-              const retryAfter = data.retry_after || 60;
-              console.error(
-                `  Rate limited. Retry after: ${retryAfter} seconds`
-              );
-              if (attempt < maxRetries) {
-                await new Promise((resolve) =>
-                  setTimeout(resolve, retryAfter * 1000)
-                );
-                continue; // Retry after rate limit wait
-              }
-            }
+          }
 
-            // For other errors, store and maybe retry
-            lastError = new Error(`Slack API error: ${data.error}`);
-            if (attempt === maxRetries) {
-              throw lastError;
-            }
+          // For other errors, store and maybe retry
+          lastError = new Error(`Slack API error: ${data.error}`);
+          if (attempt === maxRetries) {
+            throw lastError;
           }
         } catch (error) {
           const duration = Date.now() - startTime;
@@ -301,8 +298,8 @@ module.exports = async ({ github, context, core }) => {
 
           // Network errors are retryable
           if (
-            error.message.includes("fetch failed") ||
-            error.message.includes("ECONNRESET")
+            error.message.includes('fetch failed') ||
+            error.message.includes('ECONNRESET')
           ) {
             lastError = error;
             if (attempt === maxRetries) {
@@ -322,14 +319,14 @@ module.exports = async ({ github, context, core }) => {
     // Escape text for Slack
     function escapeText(text) {
       return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
     }
 
     const isMerged =
-      labels.some((l) => l.name === "status:merged") || isPRMerged;
-    const isAbandoned = IS_ABANDONED === "true";
+      labels.some((l) => l.name === 'status:merged') || isPRMerged;
+    const isAbandoned = IS_ABANDONED === 'true';
     const escapedTitle = escapeText(PR_TITLE);
 
     // Build message blocks
@@ -337,36 +334,36 @@ module.exports = async ({ github, context, core }) => {
     if (isMerged) {
       messageBlocks = [
         {
-          type: "section",
+          type: 'section',
           text: {
-            type: "mrkdwn",
+            type: 'mrkdwn',
             text: `:tada: ${escapedTitle}`,
           },
           accessory: {
-            type: "button",
+            type: 'button',
             text: {
-              type: "plain_text",
-              text: "View PR",
+              type: 'plain_text',
+              text: 'View PR',
               emoji: false,
             },
             url: PR_URL,
-            style: "primary",
+            style: 'primary',
           },
         },
       ];
     } else if (isAbandoned) {
       messageBlocks = [
         {
-          type: "section",
+          type: 'section',
           text: {
-            type: "mrkdwn",
+            type: 'mrkdwn',
             text: `:file_folder: ${escapedTitle}`,
           },
           accessory: {
-            type: "button",
+            type: 'button',
             text: {
-              type: "plain_text",
-              text: "View PR",
+              type: 'plain_text',
+              text: 'View PR',
               emoji: false,
             },
             url: PR_URL,
@@ -378,22 +375,22 @@ module.exports = async ({ github, context, core }) => {
       if (isPrivateRepo) {
         messageBlocks = [
           {
-            type: "header",
+            type: 'header',
             text: {
-              type: "plain_text",
+              type: 'plain_text',
               text: `#${PR_NUMBER} ${escapedTitle}`,
               emoji: false,
             },
           },
           {
-            type: "section",
+            type: 'section',
             fields: [
               {
-                type: "mrkdwn",
+                type: 'mrkdwn',
                 text: `*Repository:*\n${context.repo.owner}/${context.repo.repo}`,
               },
               {
-                type: "mrkdwn",
+                type: 'mrkdwn',
                 text: `*Author:*\n${PR_AUTHOR}`,
               },
             ],
@@ -403,10 +400,10 @@ module.exports = async ({ github, context, core }) => {
         // Add status context if available
         if (statusString.trim()) {
           messageBlocks.push({
-            type: "context",
+            type: 'context',
             elements: [
               {
-                type: "mrkdwn",
+                type: 'mrkdwn',
                 text: statusString.trim(),
               },
             ],
@@ -415,32 +412,32 @@ module.exports = async ({ github, context, core }) => {
 
         // Add action buttons
         messageBlocks.push({
-          type: "actions",
+          type: 'actions',
           elements: [
             {
-              type: "button",
+              type: 'button',
               text: {
-                type: "plain_text",
-                text: "View PR",
+                type: 'plain_text',
+                text: 'View PR',
                 emoji: false,
               },
               url: PR_URL,
-              style: "primary",
+              style: 'primary',
             },
             {
-              type: "button",
+              type: 'button',
               text: {
-                type: "plain_text",
-                text: "Files",
+                type: 'plain_text',
+                text: 'Files',
                 emoji: false,
               },
               url: `${PR_URL}/files`,
             },
             {
-              type: "button",
+              type: 'button',
               text: {
-                type: "plain_text",
-                text: "Checks",
+                type: 'plain_text',
+                text: 'Checks',
                 emoji: false,
               },
               url: `${PR_URL}/checks`,
@@ -450,49 +447,49 @@ module.exports = async ({ github, context, core }) => {
       } else {
         // Public repository - use OpenGraph image
         let ogImageUrl;
-        if (!slackTs) {
-          // New message - use timestamp-based cache busting for QA running
-          const qaRunning = labels.some((l) => l.name === "qa:running");
-          const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
-          ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${PR_NUMBER}`;
-        } else {
+        if (slackTs) {
           // Update - use stable URL
           ogImageUrl = `https://opengraph.githubassets.com/1/${context.repo.owner}/${context.repo.repo}/pull/${PR_NUMBER}`;
+        } else {
+          // New message - use timestamp-based cache busting for QA running
+          const qaRunning = labels.some((l) => l.name === 'qa:running');
+          const cacheKey = qaRunning ? `qa-${Date.now()}` : Date.now();
+          ogImageUrl = `https://opengraph.githubassets.com/${cacheKey}/${context.repo.owner}/${context.repo.repo}/pull/${PR_NUMBER}`;
         }
 
         messageBlocks = [
           {
-            type: "image",
+            type: 'image',
             image_url: ogImageUrl,
             alt_text: `PR #${PR_NUMBER}: ${escapedTitle}`,
           },
           {
-            type: "actions",
+            type: 'actions',
             elements: [
               {
-                type: "button",
+                type: 'button',
                 text: {
-                  type: "plain_text",
-                  text: "View PR",
+                  type: 'plain_text',
+                  text: 'View PR',
                   emoji: false,
                 },
                 url: PR_URL,
-                style: "primary",
+                style: 'primary',
               },
               {
-                type: "button",
+                type: 'button',
                 text: {
-                  type: "plain_text",
-                  text: "Files",
+                  type: 'plain_text',
+                  text: 'Files',
                   emoji: false,
                 },
                 url: `${PR_URL}/files`,
               },
               {
-                type: "button",
+                type: 'button',
                 text: {
-                  type: "plain_text",
-                  text: "Checks",
+                  type: 'plain_text',
+                  text: 'Checks',
                   emoji: false,
                 },
                 url: `${PR_URL}/checks`,
@@ -512,13 +509,13 @@ module.exports = async ({ github, context, core }) => {
       while (retryCount <= maxRetries) {
         try {
           if (isNew) {
-            result = await slackApi("chat.postMessage", {
+            result = await slackApi('chat.postMessage', {
               channel: SLACK_CHANNEL_ID,
               text: `#${PR_NUMBER}: ${escapedTitle}`,
               blocks: messageBlocks,
             });
           } else {
-            await slackApi("chat.update", {
+            await slackApi('chat.update', {
               channel: SLACK_CHANNEL_ID,
               ts: slackTs,
               text: `#${PR_NUMBER}: ${escapedTitle}`,
@@ -528,14 +525,14 @@ module.exports = async ({ github, context, core }) => {
           break;
         } catch (error) {
           if (
-            error.message.includes("invalid_blocks") &&
+            error.message.includes('invalid_blocks') &&
             retryCount < maxRetries
           ) {
             retryCount++;
             await new Promise((resolve) =>
               setTimeout(resolve, 1000 * retryCount)
             );
-          } else if (error.message.includes("invalid_blocks")) {
+          } else if (error.message.includes('invalid_blocks')) {
             // Fallback to simpler text-only blocks
             let fallbackBlocks;
 
@@ -546,24 +543,24 @@ module.exports = async ({ github, context, core }) => {
               // For active PRs, create a simplified block structure
               fallbackBlocks = [
                 {
-                  type: "section",
+                  type: 'section',
                   text: {
-                    type: "mrkdwn",
+                    type: 'mrkdwn',
                     text: `*<${PR_URL}|#${PR_NUMBER} ${escapedTitle}>*\n_Author: ${PR_AUTHOR} • Repo: ${context.repo.owner}/${context.repo.repo}_`,
                   },
                 },
                 {
-                  type: "actions",
+                  type: 'actions',
                   elements: [
                     {
-                      type: "button",
+                      type: 'button',
                       text: {
-                        type: "plain_text",
-                        text: "View PR",
+                        type: 'plain_text',
+                        text: 'View PR',
                         emoji: false,
                       },
                       url: PR_URL,
-                      style: "primary",
+                      style: 'primary',
                     },
                   ],
                 },
@@ -571,13 +568,13 @@ module.exports = async ({ github, context, core }) => {
             }
 
             if (isNew) {
-              result = await slackApi("chat.postMessage", {
+              result = await slackApi('chat.postMessage', {
                 channel: SLACK_CHANNEL_ID,
                 text: `#${PR_NUMBER}: ${escapedTitle}`,
                 blocks: fallbackBlocks,
               });
             } else {
-              await slackApi("chat.update", {
+              await slackApi('chat.update', {
                 channel: SLACK_CHANNEL_ID,
                 ts: slackTs,
                 text: `#${PR_NUMBER}: ${escapedTitle}`,
@@ -594,18 +591,21 @@ module.exports = async ({ github, context, core }) => {
     }
 
     // Handle new message creation
-    if (!slackTs) {
-      console.log("Creating new Slack message...");
+    if (slackTs) {
+      // Update existing message
+      await sendMessage(false);
+    } else {
+      console.log('Creating new Slack message...');
 
       // Create a lock comment to prevent race conditions
       const lockComment = await github.rest.issues.createComment({
         owner: context.repo.owner,
         repo: context.repo.repo,
         issue_number: PR_NUMBER,
-        body: "<!-- slack-creating-lock -->",
+        body: '<!-- slack-creating-lock -->',
       });
 
-      console.log("Created lock comment with ID:", lockComment.data.id);
+      console.log('Created lock comment with ID:', lockComment.data.id);
 
       // Check again for existing Slack comments (race condition check)
       const { data: currentComments } = await github.rest.issues.listComments({
@@ -617,7 +617,7 @@ module.exports = async ({ github, context, core }) => {
       const existingComment = currentComments.find(
         (c) =>
           c.body &&
-          c.body.includes("<!-- slack-ts:") &&
+          c.body.includes('<!-- slack-ts:') &&
           c.id !== lockComment.data.id
       );
 
@@ -642,7 +642,7 @@ module.exports = async ({ github, context, core }) => {
           const commentBody = [
             `<!-- slack-ts:${result.ts} -->`,
             `To view in Slack, search for: ${result.ts}`,
-          ].join("\n");
+          ].join('\n');
 
           await github.rest.issues.updateComment({
             owner: context.repo.owner,
@@ -665,9 +665,6 @@ module.exports = async ({ github, context, core }) => {
           }
         }
       }
-    } else {
-      // Update existing message
-      await sendMessage(false);
     }
 
     // EFFICIENT REACTION MANAGEMENT
@@ -681,22 +678,22 @@ module.exports = async ({ github, context, core }) => {
       );
     }
   } catch (error) {
-    console.error("❌ CRITICAL ERROR in Slack notifier:", error.message);
-    console.error("Stack trace:", error.stack);
-    console.error("\n=== EXECUTION CONTEXT ===");
-    console.error("PR Number:", PR_NUMBER);
-    console.error("PR Title:", PR_TITLE);
-    console.error("PR Author:", PR_AUTHOR);
-    console.error("Author Type:", PR_AUTHOR_TYPE);
-    console.error("Channel ID:", SLACK_CHANNEL_ID ? "Set" : "Not set");
-    console.error("Bot Token:", SLACK_BOT_TOKEN ? "Set" : "Not set");
-    console.error("Slack Timestamp:", slackTs || "Not set");
+    console.error('❌ CRITICAL ERROR in Slack notifier:', error.message);
+    console.error('Stack trace:', error.stack);
+    console.error('\n=== EXECUTION CONTEXT ===');
+    console.error('PR Number:', PR_NUMBER);
+    console.error('PR Title:', PR_TITLE);
+    console.error('PR Author:', PR_AUTHOR);
+    console.error('Author Type:', PR_AUTHOR_TYPE);
+    console.error('Channel ID:', SLACK_CHANNEL_ID ? 'Set' : 'Not set');
+    console.error('Bot Token:', SLACK_BOT_TOKEN ? 'Set' : 'Not set');
+    console.error('Slack Timestamp:', slackTs || 'Not set');
     throw error;
   }
 
-  console.log("\n=== SLACK NOTIFIER COMPLETED SUCCESSFULLY ===");
+  console.log('\n=== SLACK NOTIFIER COMPLETED SUCCESSFULLY ===');
   console.log(`PR #${PR_NUMBER} processed`);
-  console.log(`Slack timestamp: ${slackTs || "New message created"}`);
+  console.log(`Slack timestamp: ${slackTs || 'New message created'}`);
 };
 
 /**
@@ -714,20 +711,20 @@ async function manageReactionsEfficiently(
 
   // Define reaction mappings from the ORIGINAL working version
   const statusReactions = {
-    "qa:pending": "hourglass_flowing_sand",
-    "qa:running": "runner",
-    "qa:success": "white_check_mark",
-    "qa:failed": "x",
-    "status:ready-for-review": "eyes",
-    "status:approved": "thumbsup",
-    "status:mergeable": "rocket",
+    'qa:pending': 'hourglass_flowing_sand',
+    'qa:running': 'runner',
+    'qa:success': 'white_check_mark',
+    'qa:failed': 'x',
+    'status:ready-for-review': 'eyes',
+    'status:approved': 'thumbsup',
+    'status:mergeable': 'rocket',
     // Note: status:merged is intentionally not mapped - merged PRs should have no reactions
   };
 
   // Define mutually exclusive groups (only one can be active at a time)
   const exclusiveGroups = {
-    qa: ["hourglass_flowing_sand", "runner", "white_check_mark", "x"],
-    status: ["eyes", "thumbsup", "rocket"],
+    qa: ['hourglass_flowing_sand', 'runner', 'white_check_mark', 'x'],
+    status: ['eyes', 'thumbsup', 'rocket'],
   };
 
   // All possible status reactions we manage
@@ -735,7 +732,7 @@ async function manageReactionsEfficiently(
 
   try {
     // Get message to ensure it exists
-    const messages = await slackApi("conversations.history", {
+    const messages = await slackApi('conversations.history', {
       channel: SLACK_CHANNEL_ID,
       latest: slackTs,
       limit: 1,
@@ -743,19 +740,19 @@ async function manageReactionsEfficiently(
     });
 
     if (!messages.messages || messages.messages.length === 0) {
-      console.warn("⚠️ No message found in Slack for timestamp:", slackTs);
+      console.warn('⚠️ No message found in Slack for timestamp:', slackTs);
       return;
     }
 
     const message = messages.messages[0];
-    console.log("Message found for reaction management");
+    console.log('Message found for reaction management');
 
     // Get current reactions
     const currentReactions = (message.reactions || [])
       .filter((r) => r.users && r.users.length > 0)
       .map((r) => r.name);
 
-    console.log(`Current reactions: [${currentReactions.join(", ")}]`);
+    console.log(`Current reactions: [${currentReactions.join(', ')}]`);
 
     // Calculate desired reactions based on labels
     const desiredReactions = calculateDesiredReactions(
@@ -765,7 +762,7 @@ async function manageReactionsEfficiently(
       exclusiveGroups
     );
 
-    console.log(`Desired reactions: [${desiredReactions.join(", ")}]`);
+    console.log(`Desired reactions: [${desiredReactions.join(', ')}]`);
 
     // Calculate delta (what to add/remove) - only for reactions we manage
     const currentManagedReactions = currentReactions.filter((r) =>
@@ -773,9 +770,9 @@ async function manageReactionsEfficiently(
     );
     const delta = calculateDelta(currentManagedReactions, desiredReactions);
 
-    console.log("\n=== EFFICIENT REACTION UPDATE PLAN ===");
-    console.log(`Reactions to add: [${delta.add.join(", ")}]`);
-    console.log(`Reactions to remove: [${delta.remove.join(", ")}]`);
+    console.log('\n=== EFFICIENT REACTION UPDATE PLAN ===');
+    console.log(`Reactions to add: [${delta.add.join(', ')}]`);
+    console.log(`Reactions to remove: [${delta.remove.join(', ')}]`);
 
     // Apply changes
     let changesMade = 0;
@@ -785,7 +782,7 @@ async function manageReactionsEfficiently(
     for (const reaction of delta.remove) {
       try {
         console.log(`Removing reaction: ${reaction}`);
-        await slackApi("reactions.remove", {
+        await slackApi('reactions.remove', {
           channel: SLACK_CHANNEL_ID,
           timestamp: slackTs,
           name: reaction,
@@ -793,7 +790,7 @@ async function manageReactionsEfficiently(
         changesMade++;
         await new Promise((resolve) => setTimeout(resolve, 100)); // Small delay between operations
       } catch (error) {
-        if (error.message.includes("no_reaction")) {
+        if (error.message.includes('no_reaction')) {
           console.log(
             `Reaction ${reaction} was already removed (race condition)`
           );
@@ -811,7 +808,7 @@ async function manageReactionsEfficiently(
     for (const reaction of delta.add) {
       try {
         console.log(`Adding reaction: ${reaction}`);
-        await slackApi("reactions.add", {
+        await slackApi('reactions.add', {
           channel: SLACK_CHANNEL_ID,
           timestamp: slackTs,
           name: reaction,
@@ -819,7 +816,7 @@ async function manageReactionsEfficiently(
         changesMade++;
         await new Promise((resolve) => setTimeout(resolve, 100)); // Small delay between operations
       } catch (error) {
-        if (error.message.includes("already_reacted")) {
+        if (error.message.includes('already_reacted')) {
           console.log(`Reaction ${reaction} already exists (race condition)`);
         } else {
           errors.push(`Failed to add ${reaction}: ${error.message}`);
@@ -841,8 +838,8 @@ async function manageReactionsEfficiently(
       );
     }
   } catch (error) {
-    console.error("Failed to manage reactions:", error.message);
-    console.error("Stack trace:", error.stack);
+    console.error('Failed to manage reactions:', error.message);
+    console.error('Stack trace:', error.stack);
   }
 }
 
@@ -855,13 +852,13 @@ function calculateDesiredReactions(
   statusReactions,
   exclusiveGroups
 ) {
-  console.log("\n=== CALCULATING DESIRED REACTIONS ===");
+  console.log('\n=== CALCULATING DESIRED REACTIONS ===');
 
   // Check if PR is merged - if so, we want NO reactions
   // Check both the label AND the actual PR merge state for reliability
-  const isMerged = labels.some((l) => l.name === "status:merged") || isPRMerged;
+  const isMerged = labels.some((l) => l.name === 'status:merged') || isPRMerged;
   if (isMerged) {
-    console.log("PR is merged - no reactions should be displayed");
+    console.log('PR is merged - no reactions should be displayed');
     return [];
   }
 
@@ -879,12 +876,12 @@ function calculateDesiredReactions(
   // Apply exclusive group rules
   const finalReactions = [];
   const groupPriority = {
-    qa: ["qa:failed", "qa:success", "qa:running", "qa:pending"],
+    qa: ['qa:failed', 'qa:success', 'qa:running', 'qa:pending'],
     status: [
-      "status:merged",
-      "status:mergeable",
-      "status:approved",
-      "status:ready-for-review",
+      'status:merged',
+      'status:mergeable',
+      'status:approved',
+      'status:ready-for-review',
     ],
   };
 
@@ -914,10 +911,10 @@ function calculateDesiredReactions(
 
   // If QA is running or pending, only show QA reactions
   const hasQaInProgress = labels.some(
-    (l) => l.name === "qa:running" || l.name === "qa:pending"
+    (l) => l.name === 'qa:running' || l.name === 'qa:pending'
   );
   if (hasQaInProgress) {
-    console.log("QA in progress - filtering to only QA reactions");
+    console.log('QA in progress - filtering to only QA reactions');
     return finalReactions.filter((r) => exclusiveGroups.qa.includes(r));
   }
 
@@ -934,14 +931,14 @@ async function verifySanity(
   slackApi,
   SLACK_CHANNEL_ID
 ) {
-  console.log("\n=== SANITY CHECK ===");
+  console.log('\n=== SANITY CHECK ===');
 
   // Wait a bit for Slack to process our changes
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   try {
     // Re-fetch the message
-    const messages = await slackApi("conversations.history", {
+    const messages = await slackApi('conversations.history', {
       channel: SLACK_CHANNEL_ID,
       latest: slackTs,
       limit: 1,
@@ -949,7 +946,7 @@ async function verifySanity(
     });
 
     if (!messages.messages || messages.messages.length === 0) {
-      console.error("❌ SANITY CHECK FAILED: Message disappeared!");
+      console.error('❌ SANITY CHECK FAILED: Message disappeared!');
       return;
     }
 
@@ -967,32 +964,32 @@ async function verifySanity(
     const desiredArray = desiredReactions.sort();
     const actualArray = actualManagedReactions.sort();
 
-    console.log(`Expected reactions: [${desiredArray.join(", ")}]`);
-    console.log(`Actual reactions:   [${actualArray.join(", ")}]`);
+    console.log(`Expected reactions: [${desiredArray.join(', ')}]`);
+    console.log(`Actual reactions:   [${actualArray.join(', ')}]`);
 
     if (JSON.stringify(desiredArray) === JSON.stringify(actualArray)) {
-      console.log("✅ SANITY CHECK PASSED: Reactions are correct");
+      console.log('✅ SANITY CHECK PASSED: Reactions are correct');
     } else {
-      console.error("❌ SANITY CHECK FAILED: Reactions mismatch!");
+      console.error('❌ SANITY CHECK FAILED: Reactions mismatch!');
 
       // Calculate what's wrong
       const missing = desiredArray.filter((r) => !actualArray.includes(r));
       const extra = actualArray.filter((r) => !desiredArray.includes(r));
 
       if (missing.length > 0) {
-        console.error(`Missing reactions: [${missing.join(", ")}]`);
+        console.error(`Missing reactions: [${missing.join(', ')}]`);
       }
       if (extra.length > 0) {
-        console.error(`Extra reactions: [${extra.join(", ")}]`);
+        console.error(`Extra reactions: [${extra.join(', ')}]`);
       }
 
       // Attempt recovery
-      console.log("\n🔧 ATTEMPTING FULL RESET...");
+      console.log('\n🔧 ATTEMPTING FULL RESET...');
 
       // Remove all managed reactions
       for (const reaction of actualManagedReactions) {
         try {
-          await slackApi("reactions.remove", {
+          await slackApi('reactions.remove', {
             channel: SLACK_CHANNEL_ID,
             timestamp: slackTs,
             name: reaction,
@@ -1009,7 +1006,7 @@ async function verifySanity(
       // Add all desired reactions
       for (const reaction of desiredReactions) {
         try {
-          await slackApi("reactions.add", {
+          await slackApi('reactions.add', {
             channel: SLACK_CHANNEL_ID,
             timestamp: slackTs,
             name: reaction,
@@ -1020,9 +1017,9 @@ async function verifySanity(
         }
       }
 
-      console.log("Full reset completed");
+      console.log('Full reset completed');
     }
   } catch (error) {
-    console.error("Failed to perform sanity check:", error.message);
+    console.error('Failed to perform sanity check:', error.message);
   }
 }

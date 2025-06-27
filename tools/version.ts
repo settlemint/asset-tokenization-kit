@@ -1,17 +1,20 @@
 #!/usr/bin/env bun
 
-import { Glob } from "bun";
-import { relative } from "path";
-import { parse, stringify } from "yaml";
-import { findTurboRoot } from "./root";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import { Glob } from 'bun';
+import { relative } from 'path';
+import { parse, stringify } from 'yaml';
+import { findTurboRoot } from './root';
 
 const logger = createLogger({
-  level: (process.env.LOG_LEVEL as LogLevel) || (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info",
+  level:
+    (process.env.LOG_LEVEL as LogLevel) ||
+    (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
+    'info',
 });
 
 interface VersionInfo {
-  tag: "latest" | "main" | "pr";
+  tag: 'latest' | 'main' | 'pr';
   version: string;
 }
 
@@ -55,7 +58,7 @@ async function readRootPackageJson(startPath?: string): Promise<PackageJson> {
   const packageJson = (await packageJsonFile.json()) as PackageJson;
 
   if (!packageJson.version) {
-    throw new Error("No version found in package.json");
+    throw new Error('No version found in package.json');
   }
 
   return packageJson;
@@ -80,25 +83,25 @@ function generateVersionInfo(
 
   if (versionPattern.test(refSlug)) {
     // Remove 'v' prefix if present
-    const version = refSlug.replace(/^v/, "");
+    const version = refSlug.replace(/^v/, '');
     return {
-      tag: "latest",
+      tag: 'latest',
       version,
     };
   }
 
-  if (refName === "main") {
-    const version = `${baseVersion}-main${shaShort.replace(/^v/, "")}`;
+  if (refName === 'main') {
+    const version = `${baseVersion}-main${shaShort.replace(/^v/, '')}`;
     return {
-      tag: "main",
+      tag: 'main',
       version,
     };
   }
 
   // Default case (PR or other branches)
-  const version = `${baseVersion}-pr${shaShort.replace(/^v/, "")}`;
+  const version = `${baseVersion}-pr${shaShort.replace(/^v/, '')}`;
   return {
-    tag: "pr",
+    tag: 'pr',
     version,
   };
 }
@@ -112,9 +115,9 @@ export async function getVersionInfo(
   params: VersionParams = {}
 ): Promise<VersionInfo> {
   const {
-    refSlug = process.env.GITHUB_REF_SLUG || "",
-    refName = process.env.GITHUB_REF_NAME || "",
-    shaShort = process.env.GITHUB_SHA_SHORT || "",
+    refSlug = process.env.GITHUB_REF_SLUG || '',
+    refName = process.env.GITHUB_REF_NAME || '',
+    shaShort = process.env.GITHUB_SHA_SHORT || '',
     startPath,
   } = params;
 
@@ -155,7 +158,7 @@ function updateWorkspaceDependencies(
 
   let workspaceCount = 0;
   for (const [depName, depVersion] of Object.entries(deps)) {
-    if (depVersion === "workspace:*") {
+    if (depVersion === 'workspace:*') {
       deps[depName] = newVersion;
       workspaceCount++;
     }
@@ -186,7 +189,7 @@ function updateChartDependencies(
 
   let dependencyCount = 0;
   for (const dep of dependencies) {
-    if (dep.version === "*") {
+    if (dep.version === '*') {
       dep.version = newVersion;
       dependencyCount++;
     }
@@ -208,7 +211,7 @@ function updateChartDependencies(
  * @returns Promise that resolves when all updates are complete
  */
 export async function updatePackageVersion(startPath?: string): Promise<void> {
-  const { Glob } = await import("bun");
+  const { Glob } = await import('bun');
 
   try {
     // Get the current version info
@@ -218,14 +221,14 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
     logger.info(`Updating all package.json files to version: ${newVersion}`);
 
     // Find all package.json files in the workspace, excluding node_modules
-    const glob = new Glob("**/package.json");
+    const glob = new Glob('**/package.json');
     const packageFiles: string[] = [];
 
-    for await (const file of glob.scan(startPath || ".")) {
+    for await (const file of glob.scan(startPath || '.')) {
       // Skip files in node_modules and kit/contracts/dependencies directories
       if (
-        file.includes("node_modules/") ||
-        file.includes("kit/contracts/dependencies/")
+        file.includes('node_modules/') ||
+        file.includes('kit/contracts/dependencies/')
       ) {
         continue;
       }
@@ -233,7 +236,7 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
     }
 
     if (packageFiles.length === 0) {
-      logger.warn("No package.json files found");
+      logger.warn('No package.json files found');
       return;
     }
 
@@ -248,14 +251,14 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
         // Read the current package.json file
         const packageJsonFile = Bun.file(packagePath);
         if (!(await packageJsonFile.exists())) {
-          logger.warn(`    Skipping: File does not exist`);
+          logger.warn('    Skipping: File does not exist');
           continue;
         }
 
         const packageJson = (await packageJsonFile.json()) as PackageJson;
 
         if (!packageJson.version) {
-          logger.warn(`    Skipping: No version field found`);
+          logger.warn('    Skipping: No version field found');
           continue;
         }
 
@@ -270,22 +273,22 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
         const workspaceUpdates = [
           updateWorkspaceDependencies(
             packageJson.dependencies as Record<string, string>,
-            "dependencies",
+            'dependencies',
             newVersion
           ),
           updateWorkspaceDependencies(
             packageJson.devDependencies as Record<string, string>,
-            "devDependencies",
+            'devDependencies',
             newVersion
           ),
           updateWorkspaceDependencies(
             packageJson.peerDependencies as Record<string, string>,
-            "peerDependencies",
+            'peerDependencies',
             newVersion
           ),
           updateWorkspaceDependencies(
             packageJson.optionalDependencies as Record<string, string>,
-            "optionalDependencies",
+            'optionalDependencies',
             newVersion
           ),
         ];
@@ -299,7 +302,7 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
           // Write the updated package.json back to disk
           await Bun.write(
             packagePath,
-            JSON.stringify(packageJson, null, 2) + "\n"
+            JSON.stringify(packageJson, null, 2) + '\n'
           );
 
           logger.info(`    Updated version: ${oldVersion} -> ${newVersion}`);
@@ -310,7 +313,7 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
           }
           updatedCount++;
         } else {
-          logger.info(`    No changes needed`);
+          logger.info('    No changes needed');
         }
       } catch (err) {
         logger.error(`    Error processing ${packagePath}:`, err);
@@ -319,7 +322,7 @@ export async function updatePackageVersion(startPath?: string): Promise<void> {
 
     logger.info(`\nSuccessfully updated ${updatedCount} package.json files`);
   } catch (err) {
-    logger.error("Failed to update package versions:", err);
+    logger.error('Failed to update package versions:', err);
     process.exit(1);
   }
 }
@@ -336,15 +339,15 @@ async function updateChartVersions(): Promise<void> {
     logger.info(`Updating charts to version: ${newVersion}`);
 
     // Find all Chart.yaml files in the ATK directory
-    const glob = new Glob("kit/charts/**/Chart.yaml");
+    const glob = new Glob('kit/charts/**/Chart.yaml');
     const chartFiles: string[] = [];
 
-    for await (const file of glob.scan(".")) {
+    for await (const file of glob.scan('.')) {
       chartFiles.push(file);
     }
 
     if (chartFiles.length === 0) {
-      logger.warn("No Chart.yaml files found in kit/charts/");
+      logger.warn('No Chart.yaml files found in kit/charts/');
       return;
     }
 
@@ -360,7 +363,7 @@ async function updateChartVersions(): Promise<void> {
         // Read the current Chart.yaml file
         const file = Bun.file(chartPath);
         if (!(await file.exists())) {
-          logger.warn(`    Skipping: File does not exist`);
+          logger.warn('    Skipping: File does not exist');
           continue;
         }
 
@@ -368,8 +371,8 @@ async function updateChartVersions(): Promise<void> {
         const chart = parse(content) as ChartYaml;
 
         // Check if version fields exist
-        if (!chart.version && !chart.appVersion) {
-          logger.warn(`    Skipping: No version or appVersion fields found`);
+        if (!(chart.version || chart.appVersion)) {
+          logger.warn('    Skipping: No version or appVersion fields found');
           continue;
         }
 
@@ -410,7 +413,7 @@ async function updateChartVersions(): Promise<void> {
           }
           updatedCount++;
         } else {
-          logger.info(`    No changes needed`);
+          logger.info('    No changes needed');
         }
       } catch (err) {
         logger.error(`    Error processing ${chartPath}:`, err);
@@ -419,7 +422,7 @@ async function updateChartVersions(): Promise<void> {
 
     logger.info(`\nSuccessfully updated ${updatedCount} Chart.yaml files`);
   } catch (err) {
-    logger.error("Failed to update chart versions:", err);
+    logger.error('Failed to update chart versions:', err);
     process.exit(1);
   }
 }
@@ -428,7 +431,7 @@ async function updateChartVersions(): Promise<void> {
 if (import.meta.main) {
   // Check if running in CI environment
   if (!process.env.CI) {
-    logger.info("Set the CI environment variable to run this script.");
+    logger.info('Set the CI environment variable to run this script.');
     process.exit(0);
   }
 

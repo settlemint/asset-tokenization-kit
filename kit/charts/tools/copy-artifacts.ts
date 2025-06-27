@@ -7,11 +7,11 @@
  * It handles both ABI files and genesis output files.
  */
 
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { $, Glob } from "bun";
-import { existsSync } from "node:fs";
-import { join } from "node:path";
-import { getKitProjectPath } from "../../../tools/root";
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import { $, Glob } from 'bun';
+import { getKitProjectPath } from '../../../tools/root';
 
 // =============================================================================
 // CONFIGURATION
@@ -30,24 +30,24 @@ const defaultConfig: Config = {
 };
 
 const logger = createLogger({
-  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || 'info',
 });
 
 // File paths
-const CONTRACTS_ROOT = await getKitProjectPath("contracts");
-const CHARTS_ROOT = await getKitProjectPath("charts");
+const CONTRACTS_ROOT = await getKitProjectPath('contracts');
+const CHARTS_ROOT = await getKitProjectPath('charts');
 
 // Source paths
-const PORTAL_DIR = join(CONTRACTS_ROOT, ".generated/portal");
-const GENESIS_OUTPUT_FILE = join(CONTRACTS_ROOT, ".generated/genesis.json");
+const PORTAL_DIR = join(CONTRACTS_ROOT, '.generated/portal');
+const GENESIS_OUTPUT_FILE = join(CONTRACTS_ROOT, '.generated/genesis.json');
 
 // Destination paths
-const CHARTS_PORTAL_DIR = join(CHARTS_ROOT, "atk/charts/portal/abis");
+const CHARTS_PORTAL_DIR = join(CHARTS_ROOT, 'atk/charts/portal/abis');
 const CHARTS_GENESIS_DIR = join(
   CHARTS_ROOT,
-  "atk/charts/besu-network/charts/besu-genesis/files"
+  'atk/charts/besu-network/charts/besu-genesis/files'
 );
-const CHARTS_GENESIS_FILE = join(CHARTS_GENESIS_DIR, "genesis-output.json");
+const CHARTS_GENESIS_FILE = join(CHARTS_GENESIS_DIR, 'genesis-output.json');
 
 // =============================================================================
 // UTILITY FUNCTIONS
@@ -79,40 +79,46 @@ class ArtifactsCopier {
   }
 
   async initializeDirectories(): Promise<void> {
-    logger.info("Initializing destination directories...");
+    logger.info('Initializing destination directories...');
 
     if (this.config.copyAbis) {
       if (!(await directoryExists(CHARTS_PORTAL_DIR))) {
         await createDirectory(CHARTS_PORTAL_DIR);
       }
-      logger.debug(`Ensured charts portal directory exists: ${CHARTS_PORTAL_DIR}`);
+      logger.debug(
+        `Ensured charts portal directory exists: ${CHARTS_PORTAL_DIR}`
+      );
     }
 
     if (this.config.copyGenesis) {
       if (!(await directoryExists(CHARTS_GENESIS_DIR))) {
         await createDirectory(CHARTS_GENESIS_DIR);
       }
-      logger.debug(`Ensured charts genesis directory exists: ${CHARTS_GENESIS_DIR}`);
+      logger.debug(
+        `Ensured charts genesis directory exists: ${CHARTS_GENESIS_DIR}`
+      );
     }
 
-    logger.info("Destination directories initialized");
+    logger.info('Destination directories initialized');
   }
 
   async copyAbiFiles(): Promise<void> {
     if (!this.config.copyAbis) {
-      logger.debug("Skipping ABI files copy (disabled)");
+      logger.debug('Skipping ABI files copy (disabled)');
       return;
     }
 
-    logger.info("Copying ABI files to charts portal directory...");
+    logger.info('Copying ABI files to charts portal directory...');
 
     if (!(await directoryExists(PORTAL_DIR))) {
       logger.warn(`Portal directory not found: ${PORTAL_DIR}`);
-      logger.warn("Run 'bun run abi-output' in the contracts workspace first to generate ABI files");
+      logger.warn(
+        "Run 'bun run abi-output' in the contracts workspace first to generate ABI files"
+      );
       return;
     }
 
-    const glob = new Glob("*.json");
+    const glob = new Glob('*.json');
     const abiFiles: string[] = [];
 
     for await (const file of glob.scan({ cwd: PORTAL_DIR })) {
@@ -120,7 +126,7 @@ class ArtifactsCopier {
     }
 
     if (abiFiles.length === 0) {
-      logger.warn("No ABI files found in portal directory to copy");
+      logger.warn('No ABI files found in portal directory to copy');
       return;
     }
 
@@ -140,24 +146,24 @@ class ArtifactsCopier {
       }
     }
 
-    logger.info(
-      `Copied ${copiedCount} ABI files to charts portal directory`
-    );
+    logger.info(`Copied ${copiedCount} ABI files to charts portal directory`);
     logger.info(`Charts portal directory: ${CHARTS_PORTAL_DIR}`);
   }
 
   async copyGenesisOutput(): Promise<void> {
     if (!this.config.copyGenesis) {
-      logger.debug("Skipping genesis output copy (disabled)");
+      logger.debug('Skipping genesis output copy (disabled)');
       return;
     }
 
-    logger.info("Copying genesis output to charts directory...");
+    logger.info('Copying genesis output to charts directory...');
 
     const genesisFile = Bun.file(GENESIS_OUTPUT_FILE);
     if (!(await genesisFile.exists())) {
       logger.warn(`Genesis output file not found: ${GENESIS_OUTPUT_FILE}`);
-      logger.warn("Run 'bun run genesis' in the contracts workspace first to generate genesis output");
+      logger.warn(
+        "Run 'bun run genesis' in the contracts workspace first to generate genesis output"
+      );
       return;
     }
 
@@ -165,9 +171,7 @@ class ArtifactsCopier {
       const sourceContent = await Bun.file(GENESIS_OUTPUT_FILE).text();
       await Bun.write(CHARTS_GENESIS_FILE, sourceContent);
 
-      logger.info(
-        `Copied genesis output to charts genesis directory`
-      );
+      logger.info('Copied genesis output to charts genesis directory');
       logger.info(`Charts genesis file: ${CHARTS_GENESIS_FILE}`);
     } catch (error) {
       logger.error(`Failed to copy genesis output: ${error}`);
@@ -179,17 +183,15 @@ class ArtifactsCopier {
       return;
     }
 
-    logger.info("Verifying ABI files copy...");
+    logger.info('Verifying ABI files copy...');
 
     // Check if portal directory exists
     if (!(await directoryExists(CHARTS_PORTAL_DIR))) {
-      throw new Error(
-        `Portal directory not created: ${CHARTS_PORTAL_DIR}`
-      );
+      throw new Error(`Portal directory not created: ${CHARTS_PORTAL_DIR}`);
     }
 
     // Verify files were copied
-    const glob = new Glob("*.json");
+    const glob = new Glob('*.json');
     const copiedFiles: string[] = [];
 
     for await (const file of glob.scan({ cwd: CHARTS_PORTAL_DIR })) {
@@ -198,7 +200,7 @@ class ArtifactsCopier {
 
     if (copiedFiles.length === 0) {
       throw new Error(
-        "No ABI files found in charts portal directory after copy"
+        'No ABI files found in charts portal directory after copy'
       );
     }
 
@@ -208,7 +210,7 @@ class ArtifactsCopier {
         const filePath = join(CHARTS_PORTAL_DIR, file);
         const content = await Bun.file(filePath).text();
         const parsed = JSON.parse(content);
-        if (!parsed.abi || !Array.isArray(parsed.abi)) {
+        if (!(parsed.abi && Array.isArray(parsed.abi))) {
           throw new Error(`Invalid ABI structure in ${file}`);
         }
       } catch (error) {
@@ -226,7 +228,7 @@ class ArtifactsCopier {
       return;
     }
 
-    logger.info("Verifying genesis file copy...");
+    logger.info('Verifying genesis file copy...');
 
     const genesisFile = Bun.file(CHARTS_GENESIS_FILE);
     if (!(await genesisFile.exists())) {
@@ -238,38 +240,44 @@ class ArtifactsCopier {
     try {
       const content = await Bun.file(CHARTS_GENESIS_FILE).text();
       const parsed = JSON.parse(content);
-      
+
       // Check if it's a full genesis file format
-      if (parsed.alloc && typeof parsed.alloc === "object") {
+      if (parsed.alloc && typeof parsed.alloc === 'object') {
         // Full genesis format with config, alloc, etc.
         const allocKeys = Object.keys(parsed.alloc);
         if (allocKeys.length === 0) {
-          throw new Error("Genesis alloc section is empty");
+          throw new Error('Genesis alloc section is empty');
         }
         // Verify at least one address in alloc looks valid
         const firstAllocKey = allocKeys[0];
-        if (!firstAllocKey?.startsWith("0x") || firstAllocKey.length !== 42) {
-          throw new Error("Invalid genesis alloc structure - expected addresses as keys");
+        if (!firstAllocKey?.startsWith('0x') || firstAllocKey.length !== 42) {
+          throw new Error(
+            'Invalid genesis alloc structure - expected addresses as keys'
+          );
         }
-      } else if (typeof parsed === "object" && parsed !== null) {
+      } else if (typeof parsed === 'object' && parsed !== null) {
         // Legacy format: flat object with addresses as keys
         const keys = Object.keys(parsed);
         if (keys.length === 0) {
-          throw new Error("Genesis output is empty");
+          throw new Error('Genesis output is empty');
         }
         // Verify at least one address looks valid
         const firstKey = keys[0];
-        if (!firstKey?.startsWith("0x") || firstKey.length !== 42) {
-          throw new Error("Invalid genesis output structure - expected addresses as keys");
+        if (!firstKey?.startsWith('0x') || firstKey.length !== 42) {
+          throw new Error(
+            'Invalid genesis output structure - expected addresses as keys'
+          );
         }
       } else {
-        throw new Error("Invalid genesis output structure - expected an object");
+        throw new Error(
+          'Invalid genesis output structure - expected an object'
+        );
       }
     } catch (error) {
       throw new Error(`Failed to verify genesis output: ${error}`);
     }
 
-    logger.info("Successfully verified genesis file in charts directory");
+    logger.info('Successfully verified genesis file in charts directory');
   }
 
   async showOutput(): Promise<void> {
@@ -278,17 +286,15 @@ class ArtifactsCopier {
     }
 
     if (this.config.copyAbis) {
-      logger.info("Charts portal directory contents:");
-      const glob = new Glob("*.json");
+      logger.info('Charts portal directory contents:');
+      const glob = new Glob('*.json');
       for await (const file of glob.scan({ cwd: CHARTS_PORTAL_DIR })) {
         try {
           const filePath = join(CHARTS_PORTAL_DIR, file);
           const contentPreview = await Bun.file(filePath).text();
           const parsed = JSON.parse(contentPreview);
           const numMethods = parsed.abi?.length || 0;
-          logger.info(
-            `  - ${file} (${numMethods} ABI entries)`
-          );
+          logger.info(`  - ${file} (${numMethods} ABI entries)`);
         } catch (error) {
           logger.warn(`  - ${file} (failed to parse)`);
         }
@@ -296,25 +302,23 @@ class ArtifactsCopier {
     }
 
     if (this.config.copyGenesis) {
-      logger.info("Charts genesis file:");
+      logger.info('Charts genesis file:');
       try {
         const content = await Bun.file(CHARTS_GENESIS_FILE).text();
         const parsed = JSON.parse(content);
-        
+
         let numAllocations = 0;
-        if (parsed.alloc && typeof parsed.alloc === "object") {
+        if (parsed.alloc && typeof parsed.alloc === 'object') {
           // Full genesis format
           numAllocations = Object.keys(parsed.alloc).length;
-        } else if (typeof parsed === "object") {
+        } else if (typeof parsed === 'object') {
           // Legacy format
           numAllocations = Object.keys(parsed).length;
         }
-        
-        logger.info(
-          `  - genesis-output.json (${numAllocations} allocations)`
-        );
+
+        logger.info(`  - genesis-output.json (${numAllocations} allocations)`);
       } catch (error) {
-        logger.warn(`  - genesis-output.json (failed to parse)`);
+        logger.warn('  - genesis-output.json (failed to parse)');
       }
     }
   }
@@ -328,7 +332,7 @@ class ArtifactsCopier {
       await this.verifyGenesisOutput();
       await this.showOutput();
 
-      logger.info("All artifacts copied successfully!");
+      logger.info('All artifacts copied successfully!');
     } catch (error) {
       logger.error(`Failed to copy artifacts: ${error}`);
       process.exit(1);
@@ -347,8 +351,8 @@ function parseArguments(args: string[]): Config {
     const arg = args[i];
 
     switch (arg) {
-      case "--help":
-      case "-h":
+      case '--help':
+      case '-h':
         logger.info(`
 Usage: bun run copy-artifacts.ts [OPTIONS]
 
@@ -372,17 +376,17 @@ Examples:
         `);
         process.exit(0);
 
-      case "--abi-only":
+      case '--abi-only':
         config.copyAbis = true;
         config.copyGenesis = false;
         break;
 
-      case "--genesis-only":
+      case '--genesis-only':
         config.copyAbis = false;
         config.copyGenesis = true;
         break;
 
-      case "--show-output":
+      case '--show-output':
         config.showOutput = true;
         break;
 

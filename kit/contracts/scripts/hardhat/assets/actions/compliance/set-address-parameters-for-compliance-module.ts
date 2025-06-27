@@ -1,14 +1,14 @@
-import { encodeAbiParameters, parseAbiParameters, type Address } from "viem";
-import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
-import type { Asset } from "../../../entities/asset";
-import { atkDeployer } from "../../../services/deployer";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
+import { ATKContracts } from '../../../constants/contracts';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { atkDeployer } from '../../../services/deployer';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 export const setAddressParametersForComplianceModule = async (
   asset: Asset<any>,
-  module: "identityAllowListModule" | "identityBlockListModule",
+  module: 'identityAllowListModule' | 'identityBlockListModule',
   addresses: Address[]
 ) => {
   console.log(
@@ -21,7 +21,7 @@ export const setAddressParametersForComplianceModule = async (
   });
 
   const encodedAddresses = encodeAbiParameters(
-    parseAbiParameters("address[]"),
+    parseAbiParameters('address[]'),
     [addresses]
   );
 
@@ -35,6 +35,6 @@ export const setAddressParametersForComplianceModule = async (
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Set parameters for ${module} compliance module] ✓ ${addresses.join(", ")} set for ${asset.name} (${asset.address})`
+    `[Set parameters for ${module} compliance module] ✓ ${addresses.join(', ')} set for ${asset.name} (${asset.address})`
   );
 };

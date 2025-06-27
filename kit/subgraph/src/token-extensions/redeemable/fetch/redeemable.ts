@@ -1,8 +1,8 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { TokenRedeemable } from "../../../../generated/schema";
-import { Redeemable as RedeemableTemplate } from "../../../../generated/templates";
-import { fetchToken } from "../../../token/fetch/token";
-import { setBigNumber } from "../../../utils/bignumber";
+import { type Address, BigInt } from '@graphprotocol/graph-ts';
+import { TokenRedeemable } from '../../../../generated/schema';
+import { Redeemable as RedeemableTemplate } from '../../../../generated/templates';
+import { fetchToken } from '../../../token/fetch/token';
+import { setBigNumber } from '../../../utils/bignumber';
 
 export function fetchRedeemable(address: Address): TokenRedeemable {
   let redeemable = TokenRedeemable.load(address);
@@ -10,7 +10,7 @@ export function fetchRedeemable(address: Address): TokenRedeemable {
   if (!redeemable) {
     redeemable = new TokenRedeemable(address);
     const token = fetchToken(address);
-    setBigNumber(redeemable, "redeemedAmount", BigInt.zero(), token.decimals);
+    setBigNumber(redeemable, 'redeemedAmount', BigInt.zero(), token.decimals);
     redeemable.save();
     RedeemableTemplate.create(address);
   }

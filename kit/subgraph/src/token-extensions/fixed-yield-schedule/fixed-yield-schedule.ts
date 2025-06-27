@@ -1,25 +1,25 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { TokenFixedYieldSchedulePeriod } from "../../../generated/schema";
-import {
+import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { TokenFixedYieldSchedulePeriod } from '../../../generated/schema';
+import type {
   FixedYieldScheduleSet,
   UnderlyingAssetTopUp,
   UnderlyingAssetWithdrawn,
   YieldClaimed,
-} from "../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule";
-import { fetchEvent } from "../../event/fetch/event";
-import { setBigNumber } from "../../utils/bignumber";
-import { getTokenDecimals } from "../../utils/token-decimals";
-import { fetchFixedYieldSchedule } from "./fetch/fixed-yield-schedule";
-import { fetchFixedYieldSchedulePeriod } from "./fetch/fixed-yield-schedule-period";
+} from '../../../generated/templates/FixedYieldSchedule/FixedYieldSchedule';
+import { fetchEvent } from '../../event/fetch/event';
+import { setBigNumber } from '../../utils/bignumber';
+import { getTokenDecimals } from '../../utils/token-decimals';
+import { fetchFixedYieldSchedule } from './fetch/fixed-yield-schedule';
+import { fetchFixedYieldSchedulePeriod } from './fetch/fixed-yield-schedule-period';
 import {
   calculateTotalYield,
   getPeriodId,
-} from "./utils/fixed-yield-schedule-utils";
+} from './utils/fixed-yield-schedule-utils';
 
 export function handleFixedYieldScheduleSet(
   event: FixedYieldScheduleSet
 ): void {
-  fetchEvent(event, "FixedYieldScheduleSet");
+  fetchEvent(event, 'FixedYieldScheduleSet');
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
   if (fixedYieldSchedule.deployedInTransaction.equals(Bytes.empty())) {
     fixedYieldSchedule.deployedInTransaction = event.transaction.hash;
@@ -32,19 +32,19 @@ export function handleFixedYieldScheduleSet(
   fixedYieldSchedule.interval = event.params.interval;
   setBigNumber(
     fixedYieldSchedule,
-    "totalClaimed",
+    'totalClaimed',
     BigInt.zero(),
     tokenDecimals
   );
   setBigNumber(
     fixedYieldSchedule,
-    "totalUnclaimedYield",
+    'totalUnclaimedYield',
     BigInt.zero(),
     tokenDecimals
   );
   setBigNumber(
     fixedYieldSchedule,
-    "totalYield",
+    'totalYield',
     event.params.yieldForNextPeriod,
     tokenDecimals
   );
@@ -72,14 +72,14 @@ export function handleFixedYieldScheduleSet(
       ? event.params.startDate
       : event.params.periodEndTimestamps[i - 1];
     period.endDate = event.params.periodEndTimestamps[i - 1];
-    setBigNumber(period, "totalClaimed", BigInt.zero(), tokenDecimals);
+    setBigNumber(period, 'totalClaimed', BigInt.zero(), tokenDecimals);
     setBigNumber(
       period,
-      "totalYield",
+      'totalYield',
       isFirstPeriod ? event.params.yieldForNextPeriod : BigInt.zero(),
       tokenDecimals
     );
-    setBigNumber(period, "totalUnclaimedYield", BigInt.zero(), tokenDecimals);
+    setBigNumber(period, 'totalUnclaimedYield', BigInt.zero(), tokenDecimals);
     period.save();
     if (isFirstPeriod) {
       fixedYieldSchedule.nextPeriod = period.id;
@@ -89,7 +89,7 @@ export function handleFixedYieldScheduleSet(
 }
 
 export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
-  fetchEvent(event, "UnderlyingAssetTopUp");
+  fetchEvent(event, 'UnderlyingAssetTopUp');
   /* TODO: implement stats
   const underlyingAsset = fetchToken(
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
@@ -113,7 +113,7 @@ export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
 export function handleUnderlyingAssetWithdrawn(
   event: UnderlyingAssetWithdrawn
 ): void {
-  fetchEvent(event, "UnderlyingAssetWithdrawn");
+  fetchEvent(event, 'UnderlyingAssetWithdrawn');
   /* TODO: implement stats
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
   const underlyingAsset = fetchToken(
@@ -134,7 +134,7 @@ export function handleUnderlyingAssetWithdrawn(
 }
 
 export function handleYieldClaimed(event: YieldClaimed): void {
-  fetchEvent(event, "YieldClaimed");
+  fetchEvent(event, 'YieldClaimed');
   const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
   const tokenAddress = Address.fromBytes(fixedYieldSchedule.token);
   const tokenDecimals = getTokenDecimals(tokenAddress);
@@ -153,11 +153,11 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     const totalUnclaimedYieldForPeriod = totalYieldForPeriod.minus(
       totalClaimedForPeriod
     );
-    setBigNumber(period, "totalClaimed", totalClaimedForPeriod, tokenDecimals);
-    setBigNumber(period, "totalYield", totalYieldForPeriod, tokenDecimals);
+    setBigNumber(period, 'totalClaimed', totalClaimedForPeriod, tokenDecimals);
+    setBigNumber(period, 'totalYield', totalYieldForPeriod, tokenDecimals);
     setBigNumber(
       period,
-      "totalUnclaimedYield",
+      'totalUnclaimedYield',
       totalUnclaimedYieldForPeriod,
       tokenDecimals
     );
@@ -177,7 +177,7 @@ export function handleYieldClaimed(event: YieldClaimed): void {
   if (nextPeriod) {
     setBigNumber(
       nextPeriod,
-      "totalYield",
+      'totalYield',
       event.params.yieldForNextPeriod,
       tokenDecimals
     );
@@ -193,13 +193,13 @@ export function handleYieldClaimed(event: YieldClaimed): void {
     event.params.claimedAmount
   );
   const totalYield = calculateTotalYield(fixedYieldSchedule);
-  setBigNumber(fixedYieldSchedule, "totalClaimed", totalClaimed, tokenDecimals);
+  setBigNumber(fixedYieldSchedule, 'totalClaimed', totalClaimed, tokenDecimals);
   setBigNumber(
     fixedYieldSchedule,
-    "totalUnclaimedYield",
+    'totalUnclaimedYield',
     event.params.totalUnclaimedYield,
     tokenDecimals
   );
-  setBigNumber(fixedYieldSchedule, "totalYield", totalYield, tokenDecimals);
+  setBigNumber(fixedYieldSchedule, 'totalYield', totalYield, tokenDecimals);
   fixedYieldSchedule.save();
 }

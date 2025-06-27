@@ -1,14 +1,14 @@
-import { validatePassword } from "@/lib/auth/plugins/utils";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import type { BetterAuthPlugin } from "better-auth";
+import type { BetterAuthPlugin } from 'better-auth';
 import {
   APIError,
   createAuthEndpoint,
   sessionMiddleware,
-} from "better-auth/api";
-import { z } from "zod/v4";
-import { revokeSession } from "../utils";
+} from 'better-auth/api';
+import { z } from 'zod/v4';
+import { validatePassword } from '@/lib/auth/plugins/utils';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import type { EthereumAddress } from '@/lib/zod/validators/ethereum-address';
+import { revokeSession } from '../utils';
 
 const GENERATE_SECRET_CODES_MUTATION = portalGraphql(`
   mutation GenerateSecretCodes($address: String!) {
@@ -44,35 +44,35 @@ export interface UserWithSecretCodesContext {
 
 export const secretCodes = () => {
   return {
-    id: "secret-codes",
+    id: 'secret-codes',
     endpoints: {
       generateSecretCodes: createAuthEndpoint(
-        "/secret-codes/generate",
+        '/secret-codes/generate',
         {
-          method: "POST",
+          method: 'POST',
           body: z.object({
-            password: z.string().describe("User password").optional(),
+            password: z.string().describe('User password').optional(),
           }),
           use: [sessionMiddleware],
           metadata: {
             openapi: {
-              summary: "Generate secret codes",
+              summary: 'Generate secret codes',
               description:
                 "Use this endpoint to generate secret codes. This will set the secret codes for the user's account.",
               responses: {
                 200: {
-                  description: "Successful response",
+                  description: 'Successful response',
                   content: {
-                    "application/json": {
+                    'application/json': {
                       schema: {
-                        type: "object",
+                        type: 'object',
                         properties: {
                           secretCodes: {
-                            type: "array",
+                            type: 'array',
                             items: {
-                              type: "string",
+                              type: 'string',
                             },
-                            description: "Secret codes",
+                            description: 'Secret codes',
                           },
                         },
                       },
@@ -87,14 +87,14 @@ export const secretCodes = () => {
           const user = ctx.context.session.user as UserWithSecretCodesContext;
           const { password } = ctx.body;
           if (!user.wallet) {
-            throw new APIError("BAD_REQUEST", {
-              message: "User wallet not found",
+            throw new APIError('BAD_REQUEST', {
+              message: 'User wallet not found',
             });
           }
           if (user.initialOnboardingFinished) {
             if (!password) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Password is required",
+              throw new APIError('BAD_REQUEST', {
+                message: 'Password is required',
               });
             }
             const isPasswordValid = await validatePassword(ctx, {
@@ -102,8 +102,8 @@ export const secretCodes = () => {
               userId: user.id,
             });
             if (!isPasswordValid) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Invalid password",
+              throw new APIError('BAD_REQUEST', {
+                message: 'Invalid password',
               });
             }
           }
@@ -120,8 +120,8 @@ export const secretCodes = () => {
             }
           );
           if (!result.createWalletVerification?.id) {
-            throw new APIError("INTERNAL_SERVER_ERROR", {
-              message: "Failed to create wallet verification",
+            throw new APIError('INTERNAL_SERVER_ERROR', {
+              message: 'Failed to create wallet verification',
             });
           }
 
@@ -132,7 +132,7 @@ export const secretCodes = () => {
             secretCodes?: string;
           };
           return ctx.json({
-            secretCodes: parameters.secretCodes?.split(",") ?? [],
+            secretCodes: parameters.secretCodes?.split(',') ?? [],
           });
         }
       ),
@@ -140,7 +140,7 @@ export const secretCodes = () => {
     rateLimit: [
       {
         pathMatcher(path) {
-          return path.startsWith("/secret-codes/");
+          return path.startsWith('/secret-codes/');
         },
         window: 10,
         max: 3,

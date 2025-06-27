@@ -1,4 +1,4 @@
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { theGraphGraphql } from '@/lib/settlemint/the-graph';
 
 /**
  * GraphQL fragment for access control data from The Graph

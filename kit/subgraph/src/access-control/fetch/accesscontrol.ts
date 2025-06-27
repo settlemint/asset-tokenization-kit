@@ -1,7 +1,7 @@
-import { Address, Value } from "@graphprotocol/graph-ts";
-import { AccessControl } from "../../../generated/schema";
-import { AccessControl as AccessControlTemplate } from "../../../generated/templates";
-import { Roles } from "../utils/role";
+import { type Address, Value } from '@graphprotocol/graph-ts';
+import { AccessControl } from '../../../generated/schema';
+import { AccessControl as AccessControlTemplate } from '../../../generated/templates';
+import { Roles } from '../utils/role';
 
 export function fetchAccessControl(address: Address): AccessControl {
   let accessControlEntity = AccessControl.load(address);

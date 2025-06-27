@@ -18,11 +18,11 @@
  * @see {@link https://better-auth.com/docs/ui/auth-card} - AuthCard documentation
  */
 
-import { AuthCard } from "@daveyplate/better-auth-ui";
-import { createFileRoute } from "@tanstack/react-router";
-import { Suspense } from "react";
+import { AuthCard } from '@daveyplate/better-auth-ui';
+import { createFileRoute } from '@tanstack/react-router';
+import { Suspense } from 'react';
 
-export const Route = createFileRoute("/auth/$pathname")({
+export const Route = createFileRoute('/auth/$pathname')({
   component: RouteComponent,
 });
 
@@ -41,9 +41,9 @@ function RouteComponent() {
   const { pathname } = Route.useParams();
 
   return (
-    <main className="my-auto flex flex-col items-center w-full max-w-md px-4">
+    <main className="my-auto flex w-full max-w-md flex-col items-center px-4">
       <Suspense>
-        <AuthCard pathname={pathname} className="w-full" />
+        <AuthCard className="w-full" pathname={pathname} />
       </Suspense>
     </main>
   );

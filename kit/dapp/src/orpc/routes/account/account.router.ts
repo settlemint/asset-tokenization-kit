@@ -1,5 +1,5 @@
-import { me } from "@/orpc/routes/account/routes/account.me";
-import { read } from "./routes/account.read";
+import { me } from '@/orpc/routes/account/routes/account.me';
+import { read } from './routes/account.read';
 
 /**
  * Account router module.

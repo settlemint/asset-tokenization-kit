@@ -1,10 +1,10 @@
-import { ATKContracts } from "../../../constants/contracts";
-import { ATKRoles } from "../../../constants/roles";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
-import { owner } from "../../../entities/actors/owner";
-import type { Asset } from "../../../entities/asset";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import { ATKContracts } from '../../../constants/contracts';
+import { ATKRoles } from '../../../constants/roles';
+import type { AbstractActor } from '../../../entities/actors/abstract-actor';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 // The issuer doesn't need to have a claim manager role, it can be anyone that adds the claim.
 // The issuer will create the claim and the claim manager will add it to the token identity.
@@ -13,7 +13,7 @@ export const grantRoles = async (
   targetActor: AbstractActor,
   roles: (typeof ATKRoles)[keyof typeof ATKRoles][]
 ) => {
-  console.log(`[Role] → Starting role grant operation...`);
+  console.log('[Role] → Starting role grant operation...');
 
   const accessManagerContract = owner.getContractInstance({
     address: asset.accessManager,
@@ -34,6 +34,6 @@ export const grantRoles = async (
   );
 
   console.log(
-    `[Role] ✓ ${roleNames.join(", ")} granted to ${targetActor.name} (${targetActor.address}) on ${asset.name} (${asset.address}) by ${asset.accessManager}`
+    `[Role] ✓ ${roleNames.join(', ')} granted to ${targetActor.name} (${targetActor.address}) on ${asset.name} (${asset.address}) by ${asset.accessManager}`
   );
 };

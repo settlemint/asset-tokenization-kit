@@ -1,29 +1,36 @@
-import { Address, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
+import { Address, Bytes, ethereum, log } from '@graphprotocol/graph-ts';
 import {
-  Account,
+  type Account,
   Event,
   EventValue,
   Identity,
-} from "../../../generated/schema";
-import { fetchAccount } from "../../account/fetch/account";
-import { trackEventStats } from "../../stats/event-stats";
+} from '../../../generated/schema';
+import { fetchAccount } from '../../account/fetch/account';
+import { trackEventStats } from '../../stats/event-stats';
 
 export function convertEthereumValue(value: ethereum.Value): string {
   if (value.kind == ethereum.ValueKind.ADDRESS) {
     return value.toAddress().toHexString();
-  } else if (value.kind == ethereum.ValueKind.BOOL) {
+  }
+  if (value.kind == ethereum.ValueKind.BOOL) {
     return value.toBoolean().toString();
-  } else if (value.kind == ethereum.ValueKind.BYTES) {
+  }
+  if (value.kind == ethereum.ValueKind.BYTES) {
     return value.toBytes().toString();
-  } else if (value.kind == ethereum.ValueKind.FIXED_BYTES) {
+  }
+  if (value.kind == ethereum.ValueKind.FIXED_BYTES) {
     return value.toBytes().toHexString();
-  } else if (value.kind == ethereum.ValueKind.INT) {
+  }
+  if (value.kind == ethereum.ValueKind.INT) {
     return value.toBigInt().toString();
-  } else if (value.kind == ethereum.ValueKind.UINT) {
+  }
+  if (value.kind == ethereum.ValueKind.UINT) {
     return value.toBigInt().toString();
-  } else if (value.kind == ethereum.ValueKind.STRING) {
+  }
+  if (value.kind == ethereum.ValueKind.STRING) {
     return value.toString();
-  } else if (
+  }
+  if (
     value.kind == ethereum.ValueKind.ARRAY ||
     value.kind == ethereum.ValueKind.FIXED_ARRAY
   ) {
@@ -32,17 +39,16 @@ export function convertEthereumValue(value: ethereum.Value): string {
     for (let j = 0; j < arrayValue.length; j++) {
       stringValues.push(convertEthereumValue(arrayValue[j]));
     }
-    return "[" + stringValues.join(", ") + "]";
-  } else {
-    return value.toString();
+    return '[' + stringValues.join(', ') + ']';
   }
+  return value.toString();
 }
 
 export function fetchEvent(event: ethereum.Event, eventType: string): Event {
   const id = event.transaction.hash
     .concatI32(event.logIndex.toI32())
     .concat(Bytes.fromUTF8(eventType));
-  let eventEntity = Event.load(id);
+  const eventEntity = Event.load(id);
 
   log.info("Handling event '{}' with id '{}'", [eventType, id.toHexString()]);
 
@@ -68,7 +74,7 @@ export function fetchEvent(event: ethereum.Event, eventType: string): Event {
     const param = event.parameters[i];
     if (param.value.kind == ethereum.ValueKind.ADDRESS) {
       const address = getAccount(param.value.toAddress());
-      if (param.name == "sender") {
+      if (param.name == 'sender') {
         entry.sender = address.id;
       }
 

@@ -1,8 +1,8 @@
-import { ATKContracts } from "../../../constants/contracts";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
-import { Asset } from "../../../entities/asset";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import { ATKContracts } from '../../../constants/contracts';
+import type { AbstractActor } from '../../../entities/actors/abstract-actor';
+import type { Asset } from '../../../entities/asset';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 export const setAddressFrozen = async (
   asset: Asset<any>,
@@ -11,7 +11,7 @@ export const setAddressFrozen = async (
   frozen: boolean
 ) => {
   console.log(
-    `[Set address frozen] → Starting address freeze status update...`
+    '[Set address frozen] → Starting address freeze status update...'
   );
 
   const tokenContract = custodian.getContractInstance({

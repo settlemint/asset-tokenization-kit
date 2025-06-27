@@ -1,19 +1,19 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { Bytes } from '@graphprotocol/graph-ts';
 import {
   AbstractAddressListComplianceModule as AddressListComplianceModuleTemplate,
   AbstractCountryComplianceModule as CountryListComplianceModuleTemplate,
-} from "../../generated/templates";
-import { ComplianceModuleRegistered as ComplianceModuleRegisteredEvent } from "../../generated/templates/ComplianceModuleRegistry/ComplianceModuleRegistry";
-import { fetchEvent } from "../event/fetch/event";
-import { fetchComplianceModule } from "./fetch/compliance-module";
-import { fetchComplianceModuleRegistry } from "./fetch/compliance-module-registry";
-import { isAddressListComplianceModule } from "./modules/address-list-compliance-module";
-import { isCountryListComplianceModule } from "./modules/country-list-compliance-module";
+} from '../../generated/templates';
+import type { ComplianceModuleRegistered as ComplianceModuleRegisteredEvent } from '../../generated/templates/ComplianceModuleRegistry/ComplianceModuleRegistry';
+import { fetchEvent } from '../event/fetch/event';
+import { fetchComplianceModule } from './fetch/compliance-module';
+import { fetchComplianceModuleRegistry } from './fetch/compliance-module-registry';
+import { isAddressListComplianceModule } from './modules/address-list-compliance-module';
+import { isCountryListComplianceModule } from './modules/country-list-compliance-module';
 
 export function handleComplianceModuleRegistered(
   event: ComplianceModuleRegisteredEvent
 ): void {
-  fetchEvent(event, "ComplianceModuleRegistered");
+  fetchEvent(event, 'ComplianceModuleRegistered');
 
   const complianceModule = fetchComplianceModule(event.params.moduleAddress);
   if (complianceModule.deployedInTransaction.equals(Bytes.empty())) {

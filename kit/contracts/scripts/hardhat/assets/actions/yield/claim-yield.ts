@@ -1,16 +1,16 @@
-import { ATKContracts } from "../../../constants/contracts";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
-import { Asset } from "../../../entities/asset";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatBaseUnits } from "../../../utils/format-base-units";
-import { waitForEvent } from "../../../utils/wait-for-event";
+import { ATKContracts } from '../../../constants/contracts';
+import type { AbstractActor } from '../../../entities/actors/abstract-actor';
+import type { Asset } from '../../../entities/asset';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { formatBaseUnits } from '../../../utils/format-base-units';
+import { waitForEvent } from '../../../utils/wait-for-event';
 
 export const claimYield = async (
   asset: Asset<any>,
   underlyingAsset: Asset<any>,
   actor: AbstractActor
 ) => {
-  console.log(`[Claim yield] → Starting yield claim...`);
+  console.log('[Claim yield] → Starting yield claim...');
 
   const tokenContract = actor.getContractInstance({
     address: asset.address,
@@ -29,7 +29,7 @@ export const claimYield = async (
   const eventArgs = await waitForEvent({
     transactionHash,
     contract: scheduleContract,
-    eventName: "YieldClaimed",
+    eventName: 'YieldClaimed',
   });
 
   const { claimedAmount, fromPeriod, toPeriod, periodAmounts, periodYields } =

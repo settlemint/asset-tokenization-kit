@@ -1,13 +1,13 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "./forwarder";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from './forwarder';
 
 const TokenAccessManagerModule = buildModule(
-  "TokenAccessManagerModule",
+  'TokenAccessManagerModule',
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
     const tokenAccessManager = m.contract(
-      "ATKTokenAccessManagerImplementation",
+      'ATKTokenAccessManagerImplementation',
       [forwarder]
     );
 

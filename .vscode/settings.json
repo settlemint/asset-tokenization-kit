@@ -1,30 +1,6 @@
 {
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[mdx]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[solidity]": {
-    "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[yaml]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
   "aderyn.config.autoCheckHealth": false,
-  "biome.enabled": false,
+  "biome.enabled": true,
   "biome.requireConfiguration": true,
   "coderabbit.autoReviewMode": "disabled",
   "cursor.composer.cmdPFilePicker2": true,
@@ -37,10 +13,8 @@
   "cursor.terminal.usePreviewBox": true,
   "dotenv.enableAutocloaking": false,
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.fixAll": "explicit",
-    "source.organizeImports": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.organizeImports.biome": "explicit",
+    "source.fixAll.biome": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.fontLigatures": true,
@@ -50,15 +24,7 @@
   "editor.tabSize": 2,
   "emmet.showExpandedAbbreviation": "never",
   "errorLens.fontStyleItalic": true,
-  "eslint.codeActionsOnSave.mode": "all",
-  "eslint.enable": true,
-  "eslint.lintTask.enable": true,
-  "eslint.run": "onType",
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ],
+  "eslint.enable": false,
   "explorer.confirmPasteNative": false,
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
@@ -151,5 +117,9 @@
   "workbench.editor.revealIfOpen": true,
   "workbench.fontAliasing": "auto",
   "workbench.tips.enabled": false,
-  "workbench.tree.enableStickyScroll": true
+  "workbench.tree.enableStickyScroll": true,
+  "[javascript][typescript][javascriptreact][typescriptreact][json][jsonc][css][graphql]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "editor.formatOnPaste": true
 }

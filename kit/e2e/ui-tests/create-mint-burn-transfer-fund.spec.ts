@@ -1,25 +1,25 @@
-import { type BrowserContext, test } from "@playwright/test";
-import { Pages } from "../pages/pages";
+import { type BrowserContext, test } from '@playwright/test';
+import { Pages } from '../pages/pages';
 import {
   fundBurnData,
   fundData,
   fundMintData,
   fundTransferData,
-} from "../test-data/asset-data";
-import { successMessageData } from "../test-data/message-data";
-import { adminUser, signUpTransferUserData } from "../test-data/user-data";
-import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
+} from '../test-data/asset-data';
+import { successMessageData } from '../test-data/message-data';
+import { adminUser, signUpTransferUserData } from '../test-data/user-data';
+import { ensureUserIsAdmin, fetchWalletAddressFromDB } from '../utils/db-utils';
 
 const testData = {
-  transferUserEmail: "",
-  transferUserWalletAddress: "",
-  transferUserName: "",
-  fundName: "",
+  transferUserEmail: '',
+  transferUserWalletAddress: '',
+  transferUserName: '',
+  fundName: '',
   currentTotalSupply: 0,
 };
 
-test.describe("Create, mint, burn and transfer fund", () => {
-  test.describe.configure({ mode: "serial" });
+test.describe('Create, mint, burn and transfer fund', () => {
+  test.describe.configure({ mode: 'serial' });
   let transferUserContext: BrowserContext | undefined;
   let adminContext: BrowserContext | undefined;
   let transferUserPages: ReturnType<typeof Pages>;
@@ -30,7 +30,7 @@ test.describe("Create, mint, burn and transfer fund", () => {
       transferUserContext = await browser.newContext();
       const transferUserPage = await transferUserContext.newPage();
       transferUserPages = Pages(transferUserPage);
-      await transferUserPage.goto("/");
+      await transferUserPage.goto('/');
       await transferUserPages.signUpPage.signUp(signUpTransferUserData);
       testData.transferUserEmail = signUpTransferUserData.email;
       testData.transferUserName = signUpTransferUserData.name;
@@ -43,7 +43,7 @@ test.describe("Create, mint, burn and transfer fund", () => {
       adminContext = await browser.newContext();
       const adminPage = await adminContext.newPage();
       adminPages = Pages(adminPage);
-      await adminPage.goto("/");
+      await adminPage.goto('/');
       await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
     } catch (error) {
@@ -65,7 +65,7 @@ test.describe("Create, mint, burn and transfer fund", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates, mints and burns fund", async () => {
+  test('Admin user creates, mints and burns fund', async () => {
     await adminPages.adminPage.createFund(fundData);
     testData.fundName = fundData.name;
     await adminPages.adminPage.verifySuccessMessage(
@@ -94,7 +94,7 @@ test.describe("Create, mint, burn and transfer fund", () => {
     testData.currentTotalSupply = newTotal;
     await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
   });
-  test("Admin user transfers fund to regular transfer user", async () => {
+  test('Admin user transfers fund to regular transfer user', async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.fundName,
       walletAddress: testData.transferUserWalletAddress,
@@ -110,8 +110,8 @@ test.describe("Create, mint, burn and transfer fund", () => {
       testData.currentTotalSupply - transferAmount
     ).toString();
     await adminPages.adminPage.chooseSidebarMenuOption({
-      sidebarOption: "My assets",
-      expectedUrlPattern: "**/portfolio/my-assets",
+      sidebarOption: 'My assets',
+      expectedUrlPattern: '**/portfolio/my-assets',
       expectedLocatorsToWaitFor: [
         adminPages.adminPage.getTableBodyLocator(),
         adminPages.adminPage.getFilterButtonLocator(),
@@ -124,7 +124,7 @@ test.describe("Create, mint, burn and transfer fund", () => {
     });
   });
 
-  test("Verify regular transfer user received fund", async () => {
+  test('Verify regular transfer user received fund', async () => {
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.portfolioPage.verifyPortfolioAssetAmount({
       expectedAmount: fundTransferData.transferAmount,

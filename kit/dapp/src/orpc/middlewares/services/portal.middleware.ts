@@ -1,14 +1,13 @@
-import { portalClient } from "@/lib/settlemint/portal";
-import { portalGraphql } from "@/lib/settlemint/portal";
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
-import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { withEventMeta } from "@orpc/server";
-import type { TadaDocumentNode } from "gql.tada";
-import type { Variables } from "graphql-request";
-import { z } from "zod/v4";
-import { baseRouter } from "../../procedures/base.router";
+import { withEventMeta } from '@orpc/server';
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import type { TadaDocumentNode } from 'gql.tada';
+import type { Variables } from 'graphql-request';
+import { z } from 'zod/v4';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import { theGraphGraphql } from '@/lib/settlemint/the-graph';
+import { ethereumHash } from '@/lib/zod/validators/ethereum-hash';
+import type { ValidatedTheGraphClient } from '@/orpc/middlewares/services/the-graph.middleware';
+import { baseRouter } from '../../procedures/base.router';
 
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
@@ -26,7 +25,7 @@ const logger = createLogger({
  * @property {string} transactionHash - The Ethereum transaction hash (0x-prefixed)
  */
 interface TransactionEvent {
-  status: "pending" | "confirmed" | "failed";
+  status: 'pending' | 'confirmed' | 'failed';
   message: string;
   transactionHash: string;
 }
@@ -62,7 +61,7 @@ interface TransactionEvent {
  * ```
  */
 function createValidatedPortalClient(
-  errors: Parameters<Parameters<typeof baseRouter.middleware>[0]>[0]["errors"],
+  errors: Parameters<Parameters<typeof baseRouter.middleware>[0]>[0]['errors'],
   theGraphClient?: ValidatedTheGraphClient
 ) {
   const client = {
@@ -152,7 +151,7 @@ function createValidatedPortalClient(
           document as TadaDocumentNode<TResult, TVariables> & {
             __meta?: { operationName?: string };
           }
-        ).__meta?.operationName ?? "GraphQL Mutation";
+        ).__meta?.operationName ?? 'GraphQL Mutation';
 
       let result: TResult;
       try {
@@ -176,8 +175,8 @@ function createValidatedPortalClient(
 
         // Use specialized errors when possible
         if (
-          errorMessage.includes("Portal") ||
-          errorMessage.includes("portal")
+          errorMessage.includes('Portal') ||
+          errorMessage.includes('portal')
         ) {
           throw errors.PORTAL_ERROR({
             message: userMessage,
@@ -212,7 +211,7 @@ function createValidatedPortalClient(
       try {
         transactionHash = ethereumHash.parse(found.value);
       } catch (zodError) {
-        logger.error(`Invalid transaction hash format`, {
+        logger.error('Invalid transaction hash format', {
           operation,
           value: found.value,
           path: found.path,
@@ -229,8 +228,8 @@ function createValidatedPortalClient(
       if (!theGraphClient) {
         yield withEventMeta(
           {
-            status: "pending",
-            message: "Transaction submitted",
+            status: 'pending',
+            message: 'Transaction submitted',
             transactionHash,
           },
           { id: transactionHash, retry: 1000 }
@@ -272,25 +271,25 @@ function createValidatedPortalClient(
       const messages = {
         streamTimeout:
           trackingMessages?.streamTimeout ??
-          "Transaction tracking timed out. Please check the status later.",
+          'Transaction tracking timed out. Please check the status later.',
         waitingForMining:
           trackingMessages?.waitingForMining ??
-          "Waiting for transaction to be mined...",
+          'Waiting for transaction to be mined...',
         transactionFailed:
           trackingMessages?.transactionFailed ??
-          "Transaction failed. Please try again.",
+          'Transaction failed. Please try again.',
         transactionDropped:
           trackingMessages?.transactionDropped ??
-          "Transaction was dropped from the network. Please try again.",
+          'Transaction was dropped from the network. Please try again.',
         waitingForIndexing:
           trackingMessages?.waitingForIndexing ??
-          "Transaction confirmed. Waiting for indexing...",
+          'Transaction confirmed. Waiting for indexing...',
         transactionIndexed:
           trackingMessages?.transactionIndexed ??
-          "Transaction successfully indexed.",
+          'Transaction successfully indexed.',
         indexingTimeout:
           trackingMessages?.indexingTimeout ??
-          "Indexing is taking longer than expected. Data will be available soon.",
+          'Indexing is taking longer than expected. Data will be available soon.',
       };
 
       const streamStartTime = Date.now();
@@ -303,7 +302,7 @@ function createValidatedPortalClient(
       // - Dropped from the mempool (no receipt after timeout)
       let receipt:
         | {
-            status: "Success" | "Reverted";
+            status: 'Success' | 'Reverted';
             blockNumber: string;
             revertReasonDecoded: string | null;
             revertReason: string | null;
@@ -314,7 +313,7 @@ function createValidatedPortalClient(
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
           yield withEventMeta(
             {
-              status: "failed" as const,
+              status: 'failed' as const,
               message: messages.streamTimeout,
               transactionHash,
             },
@@ -326,7 +325,7 @@ function createValidatedPortalClient(
           });
         }
 
-        const result = await client.query(
+        const txResult = await client.query(
           GET_TRANSACTION_QUERY,
           { transactionHash },
           z.object({
@@ -334,7 +333,7 @@ function createValidatedPortalClient(
               .object({
                 receipt: z
                   .object({
-                    status: z.enum(["Success", "Reverted"]),
+                    status: z.enum(['Success', 'Reverted']),
                     revertReasonDecoded: z.string().nullable(),
                     revertReason: z.string().nullable(),
                     blockNumber: z.string(),
@@ -346,12 +345,12 @@ function createValidatedPortalClient(
           messages.waitingForMining
         );
 
-        receipt = result.getTransaction?.receipt ?? undefined;
+        receipt = txResult.getTransaction?.receipt ?? undefined;
 
         if (!receipt) {
           yield withEventMeta(
             {
-              status: "pending",
+              status: 'pending',
               message: messages.waitingForMining,
               transactionHash,
             },
@@ -361,10 +360,10 @@ function createValidatedPortalClient(
           continue;
         }
 
-        if (receipt.status !== "Success") {
+        if (receipt.status !== 'Success') {
           yield withEventMeta(
             {
-              status: "failed",
+              status: 'failed',
               message: messages.transactionFailed,
               transactionHash,
             },
@@ -382,7 +381,7 @@ function createValidatedPortalClient(
       if (!receipt) {
         yield withEventMeta(
           {
-            status: "failed",
+            status: 'failed',
             message: messages.transactionDropped,
             transactionHash,
           },
@@ -401,7 +400,7 @@ function createValidatedPortalClient(
       // the dApp can display updated data.
       yield withEventMeta(
         {
-          status: "pending",
+          status: 'pending',
           message: messages.waitingForIndexing,
           transactionHash,
         },
@@ -418,7 +417,7 @@ function createValidatedPortalClient(
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
           yield withEventMeta(
             {
-              status: "failed",
+              status: 'failed',
               message: messages.streamTimeout,
               transactionHash,
             },
@@ -430,7 +429,7 @@ function createValidatedPortalClient(
           });
         }
 
-        const result = await theGraphClient.query(
+        const indexingResult = await theGraphClient.query(
           GET_INDEXING_STATUS_QUERY,
           {},
           z.object({
@@ -445,13 +444,13 @@ function createValidatedPortalClient(
           messages.waitingForIndexing
         );
 
-        const indexedBlock = result._meta?.block.number ?? 0;
+        const indexedBlock = indexingResult._meta?.block.number ?? 0;
 
         if (indexedBlock >= targetBlockNumber) {
           // Always yield the final confirmed event
           yield withEventMeta(
             {
-              status: "confirmed",
+              status: 'confirmed',
               message: messages.transactionIndexed,
               transactionHash,
             },
@@ -468,7 +467,7 @@ function createValidatedPortalClient(
       // Indexing timeout
       yield withEventMeta(
         {
-          status: "confirmed",
+          status: 'confirmed',
           message: messages.indexingTimeout,
           transactionHash,
         },
@@ -554,7 +553,7 @@ function createValidatedPortalClient(
           document as TadaDocumentNode<TResult, TVariables> & {
             __meta?: { operationName?: string };
           }
-        ).__meta?.operationName ?? "GraphQL Query";
+        ).__meta?.operationName ?? 'GraphQL Query';
 
       let result: TResult;
       try {
@@ -575,8 +574,8 @@ function createValidatedPortalClient(
           error instanceof Error ? error.message : String(error);
 
         if (
-          errorMessage.includes("Portal") ||
-          errorMessage.includes("portal")
+          errorMessage.includes('Portal') ||
+          errorMessage.includes('portal')
         ) {
           throw errors.PORTAL_ERROR({
             message: userMessage,
@@ -585,8 +584,8 @@ function createValidatedPortalClient(
         }
 
         if (
-          errorMessage.includes("not found") ||
-          errorMessage.includes("404")
+          errorMessage.includes('not found') ||
+          errorMessage.includes('404')
         ) {
           throw errors.NOT_FOUND({
             message: userMessage,
@@ -613,7 +612,7 @@ function createValidatedPortalClient(
         if (result === null || result === undefined) {
           throw errors.NOT_FOUND({
             message: userMessage,
-            data: { operation, details: "Query returned no data" },
+            data: { operation, details: 'Query returned no data' },
           });
         }
 
@@ -681,21 +680,21 @@ function createValidatedPortalClient(
  */
 function findTransactionHash(
   obj: unknown,
-  path = ""
+  path = ''
 ): { value: unknown; path: string } | null {
-  if (!obj || typeof obj !== "object") {
+  if (!obj || typeof obj !== 'object') {
     return null;
   }
 
-  if ("transactionHash" in obj && obj.transactionHash !== undefined) {
+  if ('transactionHash' in obj && obj.transactionHash !== undefined) {
     return {
       value: obj.transactionHash,
-      path: path ? `${path}.transactionHash` : "transactionHash",
+      path: path ? `${path}.transactionHash` : 'transactionHash',
     };
   }
 
   for (const [key, value] of Object.entries(obj)) {
-    if (value && typeof value === "object") {
+    if (value && typeof value === 'object') {
       const newPath = path ? `${path}.${key}` : key;
       const found = findTransactionHash(value, newPath);
       if (found) {
@@ -744,7 +743,7 @@ export const portalMiddleware = baseRouter.middleware((options) => {
   const { context, next, errors } = options;
 
   // If already has our methods, use existing client
-  if (context.portalClient && "mutate" in context.portalClient) {
+  if (context.portalClient && 'mutate' in context.portalClient) {
     return next({
       context: {
         portalClient: context.portalClient,
@@ -753,7 +752,7 @@ export const portalMiddleware = baseRouter.middleware((options) => {
   }
 
   // Create validated client with theGraphClient if available
-  const portalClient = createValidatedPortalClient(
+  const validatedPortalClient = createValidatedPortalClient(
     errors,
     context.theGraphClient
   );
@@ -761,7 +760,7 @@ export const portalMiddleware = baseRouter.middleware((options) => {
   // Return with guaranteed portalClient
   return next({
     context: {
-      portalClient,
+      portalClient: validatedPortalClient,
     },
   });
 });

@@ -1,13 +1,13 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "../forwarder";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from '../forwarder';
 
 const FixedYieldScheduleFactoryModule = buildModule(
-  "FixedYieldScheduleFactoryModule",
+  'FixedYieldScheduleFactoryModule',
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
     const fixedYieldScheduleFactoryImplementation = m.contract(
-      "ATKFixedYieldScheduleFactoryImplementation",
+      'ATKFixedYieldScheduleFactoryImplementation',
       [forwarder]
     );
 

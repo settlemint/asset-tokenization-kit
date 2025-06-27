@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Common list schema for paginated entity retrieval.
@@ -77,7 +77,7 @@ export const ListSchema = z
      *
      * Optional field that defaults to natural ordering if not specified.
      */
-    orderDirection: z.enum(["asc", "desc"]).optional(),
+    orderDirection: z.enum(['asc', 'desc']).optional(),
 
     /**
      * Field name to sort the results by.

@@ -6,8 +6,15 @@
  *
  * @module BigIntValidation
  */
-import { abs, floor, from, multiply, toString, type Numberish } from "dnum";
-import { z } from "zod/v4";
+import {
+  abs,
+  toString as dnumToString,
+  floor,
+  from,
+  multiply,
+  type Numberish,
+} from 'dnum';
+import { z } from 'zod/v4';
 
 /**
  * Flexible BigInt validator that accepts strings, numbers, or bigints.
@@ -27,31 +34,32 @@ import { z } from "zod/v4";
  */
 export const apiBigInt = z.preprocess((value, ctx) => {
   // If already a bigint, return as is
-  if (typeof value === "bigint") {
+  if (typeof value === 'bigint') {
     return value;
   }
 
   // Handle string preprocessing
-  if (typeof value === "string") {
-    // Reject multiple decimal points
-    if (value.includes(".") && value.split(".").length > 2) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Invalid BigInt format: multiple decimal points",
-      });
-      return z.NEVER;
-    }
+  if (
+    typeof value === 'string' &&
+    value.includes('.') &&
+    value.split('.').length > 2
+  ) {
+    ctx.addIssue({
+      code: 'custom',
+      message: 'Invalid BigInt format: multiple decimal points',
+    });
+    return z.NEVER;
   }
 
   // dnum accepts string, number, bigint, or [bigint, number] (Dnum type)
   // Check if the value is one of these types
   if (
-    typeof value === "string" ||
-    typeof value === "number" ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
     (Array.isArray(value) &&
       value.length === 2 &&
-      typeof value[0] === "bigint" &&
-      typeof value[1] === "number")
+      typeof value[0] === 'bigint' &&
+      typeof value[1] === 'number')
   ) {
     try {
       // Convert to dnum (handles strings, numbers, scientific notation)
@@ -62,22 +70,19 @@ export const apiBigInt = z.preprocess((value, ctx) => {
       // For positive numbers, floor works fine
       // For negative numbers, we need to use ceiling (which is -floor(abs))
       const isNegative = dnum[0] < 0n;
-      let truncated;
-
-      if (isNegative) {
-        // For negative numbers, we want to truncate towards zero
-        // So we take the absolute value, floor it, then negate
-        const absValue = abs(dnum);
-        const floored = floor(absValue);
-        // Negate by multiplying by -1
-        truncated = multiply(floored, from(-1));
-      } else {
-        // For positive numbers, floor is what we want
-        truncated = floor(dnum);
-      }
+      const truncated = isNegative
+        ? (() => {
+            // For negative numbers, we want to truncate towards zero
+            // So we take the absolute value, floor it, then negate
+            const absValue = abs(dnum);
+            const floored = floor(absValue);
+            // Negate by multiplying by -1
+            return multiply(floored, from(-1));
+          })()
+        : floor(dnum); // For positive numbers, floor is what we want
 
       // Convert to string without decimals
-      const integerString = toString(truncated, 0);
+      const integerString = dnumToString(truncated, 0);
 
       // Return the integer string for z.coerce.bigint() to process
       return integerString;

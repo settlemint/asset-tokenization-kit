@@ -1,26 +1,26 @@
-import * as React from "react";
+import { useEffect, useState } from 'react';
 
 const MOBILE_BREAKPOINT = 768;
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean>(() => {
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
     // Set initial state based on window width if available (client-side)
     // Default to false for SSR
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       return window.innerWidth < MOBILE_BREAKPOINT;
     }
     return false;
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
     const onChange = () => {
       setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
-    mql.addEventListener("change", onChange);
+    mql.addEventListener('change', onChange);
     // No need to set initial state here since we do it in useState
     return () => {
-      mql.removeEventListener("change", onChange);
+      mql.removeEventListener('change', onChange);
     };
   }, []);
 

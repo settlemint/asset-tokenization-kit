@@ -7,7 +7,7 @@
  *
  * @module FundCategoryValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Available investment fund categories.
@@ -19,7 +19,7 @@ import { z } from "zod/v4";
  * - `etf`: Exchange-Traded Funds - traded on exchanges like stocks
  * - `index`: Index funds - passive funds tracking market indices
  */
-export const fundCategories = ["mutual", "hedge", "etf", "index"] as const;
+export const fundCategories = ['mutual', 'hedge', 'etf', 'index'] as const;
 
 /**
  * Creates a Zod schema that validates fund categories.
@@ -41,7 +41,7 @@ export const fundCategories = ["mutual", "hedge", "etf", "index"] as const;
  * ```
  */
 export const fundCategory = () =>
-  z.enum(fundCategories).describe("Category of investment fund");
+  z.enum(fundCategories).describe('Category of investment fund');
 
 /**
  * Type representing a validated fund category.

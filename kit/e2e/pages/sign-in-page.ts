@@ -1,11 +1,11 @@
-import { expect } from "@playwright/test";
-import type { UserRole } from "../test-data/user-data";
-import { getUserRole, updateUserRole } from "../utils/db-utils";
-import { BasePage } from "./base-page";
-import { Pages } from "./pages";
+import { expect } from '@playwright/test';
+import type { UserRole } from '../test-data/user-data';
+import { getUserRole, updateUserRole } from '../utils/db-utils';
+import { BasePage } from './base-page';
+import { Pages } from './pages';
 export class SignInPage extends BasePage {
   async goto() {
-    await this.page.goto("/auth/signin");
+    await this.page.goto('/auth/signin');
   }
 
   async signIn(options: {
@@ -31,7 +31,7 @@ export class SignInPage extends BasePage {
     while (retries < maxRetries) {
       await emailInput.click({ force: true });
       await emailInput.focus();
-      await emailInput.fill("");
+      await emailInput.fill('');
       await emailInput.fill(options.email);
 
       const value = await emailInput.inputValue();
@@ -43,8 +43,8 @@ export class SignInPage extends BasePage {
       if (retries === maxRetries) {
         await emailInput.evaluate((el, email) => {
           (el as HTMLInputElement).value = email;
-          el.dispatchEvent(new Event("input", { bubbles: true }));
-          el.dispatchEvent(new Event("change", { bubbles: true }));
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('change', { bubbles: true }));
         }, options.email);
       }
     }
@@ -52,52 +52,49 @@ export class SignInPage extends BasePage {
     await expect(async () => {
       const inputValue = await emailInput.inputValue();
       expect(inputValue).toBe(options.email);
-    }).toPass({ timeout: 20000 });
+    }).toPass({ timeout: 20_000 });
 
     await passwordInput.click({ force: true });
     await passwordInput.focus();
-    await passwordInput.fill("");
+    await passwordInput.fill('');
     await passwordInput.fill(options.password);
 
     await expect(async () => {
       const inputValue = await passwordInput.inputValue();
       expect(inputValue.length).toBeGreaterThan(0);
-    }).toPass({ timeout: 20000 });
+    }).toPass({ timeout: 20_000 });
 
     if (options.rememberMe) {
       const rememberMeCheckbox = this.page.locator('button[role="checkbox"]');
       await rememberMeCheckbox.click();
 
-      await expect(rememberMeCheckbox).toHaveAttribute("data-state", "checked");
+      await expect(rememberMeCheckbox).toHaveAttribute('data-state', 'checked');
     }
 
     const loginButton = this.page
       .locator('button[type="submit"]')
-      .filter({ hasText: "Login" });
-    await loginButton.waitFor({ state: "visible" });
+      .filter({ hasText: 'Login' });
+    await loginButton.waitFor({ state: 'visible' });
     await loginButton.click();
 
     try {
       await this.page.waitForURL(
         (url) =>
-          url.pathname.includes("/portfolio") ||
-          url.pathname.includes("/assets"),
-        { timeout: 15000 }
+          url.pathname.includes('/portfolio') ||
+          url.pathname.includes('/assets'),
+        { timeout: 15_000 }
       );
-    } catch (error) {
-      console.log("Navigation failed:", error);
-
+    } catch (_error) {
       const errorMessages = await this.page
-        .locator(".text-destructive")
+        .locator('.text-destructive')
         .allTextContents();
       if (errorMessages.length > 0) {
-        console.log("Validation errors found:", errorMessages);
       }
     }
 
     await pages.signUpPage.secureWallet({ pincode: options.pincode });
     await expect(
-      this.page.locator("div.grid span.truncate.font-semibold", {
+      this.page.locator('div.grid span.truncate.font-semibold', {
         hasText: options.name,
       })
     ).toBeVisible();
@@ -119,8 +116,8 @@ export class SignInPage extends BasePage {
       await pages.signUpPage.goto();
       const signUpOptions = {
         ...options,
-        pincodeName: options.pincodeName ?? "Test Pincode",
-        pincode: options.pincode ?? "123456",
+        pincodeName: options.pincodeName ?? 'Test Pincode',
+        pincode: options.pincode ?? '123456',
       };
       await pages.signUpPage.signUp(signUpOptions);
       if (options.role) {
@@ -131,7 +128,7 @@ export class SignInPage extends BasePage {
     await this.goto();
     await this.signIn({
       ...options,
-      pincode: options.pincode ?? "123456",
+      pincode: options.pincode ?? '123456',
       rememberMe: options.rememberMe,
     });
   }
@@ -144,7 +141,7 @@ export class SignInPage extends BasePage {
     pincode?: string;
     rememberMe?: boolean;
   }) {
-    await this.signInWithRole({ ...options, role: "admin" });
+    await this.signInWithRole({ ...options, role: 'admin' });
   }
 
   async signInAsUser(options: {

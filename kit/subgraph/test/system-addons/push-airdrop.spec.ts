@@ -1,8 +1,8 @@
-import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { describe, expect, it } from 'bun:test';
+import { theGraphClient, theGraphGraphql } from '../utils/thegraph-client';
 
-describe("Push Airdrops", () => {
-  it("should fetch a list of all push airdrops", async () => {
+describe('Push Airdrops', () => {
+  it('should fetch a list of all push airdrops', async () => {
     const query = theGraphGraphql(
       `query($where: Airdrop_filter) {
         airdrops(where: $where, orderBy: name) {
@@ -26,7 +26,7 @@ describe("Push Airdrops", () => {
     expect(response.airdrops.length).toBe(1);
     expect(response.airdrops).toEqual([
       {
-        name: "Test Push Airdrop",
+        name: 'Test Push Airdrop',
         token: {
           name: expect.any(String),
         },
@@ -38,7 +38,7 @@ describe("Push Airdrops", () => {
     ]);
   });
 
-  it("should fetch push airdrop with distribution cap details", async () => {
+  it('should fetch push airdrop with distribution cap details', async () => {
     const query = theGraphGraphql(
       `query($where: Airdrop_filter) {
         airdrops(where: $where, orderBy: name) {
@@ -60,7 +60,7 @@ describe("Push Airdrops", () => {
     expect(response.airdrops.length).toBe(1);
     expect(response.airdrops).toEqual([
       {
-        name: "Test Push Airdrop",
+        name: 'Test Push Airdrop',
         amountTransferred: expect.any(String),
         amountTransferredExact: expect.any(String),
         pushAirdrop: {

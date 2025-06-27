@@ -1,13 +1,13 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
-import { IdentityClaim, Token } from "../../../generated/schema";
-import { fetchIdentity } from "../../identity/fetch/identity";
-import { setBigNumber } from "../../utils/bignumber";
-import { fetchToken } from "../fetch/token";
+import { Address, type BigInt, log } from '@graphprotocol/graph-ts';
+import type { IdentityClaim, Token } from '../../../generated/schema';
+import { fetchIdentity } from '../../identity/fetch/identity';
+import { setBigNumber } from '../../utils/bignumber';
+import { fetchToken } from '../fetch/token';
 
 export function increaseTokenSupply(token: Token, amount: BigInt): void {
   setBigNumber(
     token,
-    "totalSupply",
+    'totalSupply',
     token.totalSupplyExact.plus(amount),
     token.decimals
   );
@@ -18,7 +18,7 @@ export function increaseTokenSupply(token: Token, amount: BigInt): void {
 export function decreaseTokenSupply(token: Token, amount: BigInt): void {
   setBigNumber(
     token,
-    "totalSupply",
+    'totalSupply',
     token.totalSupplyExact.minus(amount),
     token.decimals
   );
@@ -31,7 +31,7 @@ export function updateBasePrice(basePriceClaim: IdentityClaim): void {
 
   const identity = fetchIdentity(identityAddress);
   if (!identity.token) {
-    log.warning(`No token found for identity {}`, [
+    log.warning('No token found for identity {}', [
       identityAddress.toHexString(),
     ]);
     return;

@@ -1,153 +1,153 @@
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react";
-import * as React from "react";
+  AudioWaveformIcon,
+  BookOpenIcon,
+  BotIcon,
+  CommandIcon,
+  FrameIcon,
+  GalleryVerticalEndIcon,
+  MapIcon,
+  PieChartIcon,
+  Settings2Icon,
+  SquareTerminalIcon,
+} from 'lucide-react';
+import type * as React from 'react';
 
-import { NavMain } from "@/components/sidebar/nav-main";
-import { NavProjects } from "@/components/sidebar/nav-projects";
-import { SidebarLogo } from "@/components/sidebar/sidebar-logo.tsx";
+import { NavMain } from '@/components/sidebar/nav-main';
+import { NavProjects } from '@/components/sidebar/nav-projects';
+import { SidebarLogo } from '@/components/sidebar/sidebar-logo.tsx';
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: 'shadcn',
+    email: 'm@example.com',
+    avatar: '/avatars/shadcn.jpg',
   },
   teams: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      name: 'Acme Inc',
+      logo: GalleryVerticalEndIcon,
+      plan: 'Enterprise',
     },
     {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
+      name: 'Acme Corp.',
+      logo: AudioWaveformIcon,
+      plan: 'Startup',
     },
     {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      name: 'Evil Corp.',
+      logo: CommandIcon,
+      plan: 'Free',
     },
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
+      title: 'Playground',
+      url: '#',
+      icon: SquareTerminalIcon,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: 'History',
+          url: '#',
         },
         {
-          title: "Starred",
-          url: "#",
+          title: 'Starred',
+          url: '#',
         },
         {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
+          title: 'Settings',
+          url: '#',
         },
       ],
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
+      title: 'Models',
+      url: '#',
+      icon: BotIcon,
       items: [
         {
-          title: "Introduction",
-          url: "#",
+          title: 'Genesis',
+          url: '#',
         },
         {
-          title: "Get Started",
-          url: "#",
+          title: 'Explorer',
+          url: '#',
         },
         {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
+          title: 'Quantum',
+          url: '#',
         },
       ],
     },
     {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
+      title: 'Documentation',
+      url: '#',
+      icon: BookOpenIcon,
       items: [
         {
-          title: "General",
-          url: "#",
+          title: 'Introduction',
+          url: '#',
         },
         {
-          title: "Team",
-          url: "#",
+          title: 'Get Started',
+          url: '#',
         },
         {
-          title: "Billing",
-          url: "#",
+          title: 'Tutorials',
+          url: '#',
         },
         {
-          title: "Limits",
-          url: "#",
+          title: 'Changelog',
+          url: '#',
+        },
+      ],
+    },
+    {
+      title: 'Settings',
+      url: '#',
+      icon: Settings2Icon,
+      items: [
+        {
+          title: 'General',
+          url: '#',
+        },
+        {
+          title: 'Team',
+          url: '#',
+        },
+        {
+          title: 'Billing',
+          url: '#',
+        },
+        {
+          title: 'Limits',
+          url: '#',
         },
       ],
     },
   ],
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      name: 'Design Engineering',
+      url: '#',
+      icon: FrameIcon,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      name: 'Sales & Marketing',
+      url: '#',
+      icon: PieChartIcon,
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: 'Travel',
+      url: '#',
+      icon: MapIcon,
     },
   ],
 };

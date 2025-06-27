@@ -12,16 +12,16 @@
  * @see {@link ./routes/router} - Main router with all endpoints
  */
 
-import type { contract } from "@/orpc/routes/contract";
-import { createORPCClient } from "@orpc/client";
-import { RPCLink } from "@orpc/client/fetch";
-import type { ContractRouterClient } from "@orpc/contract";
-import type { RouterClient } from "@orpc/server";
-import { createRouterClient } from "@orpc/server";
-import { createTanstackQueryUtils } from "@orpc/tanstack-query";
-import { createIsomorphicFn } from "@tanstack/react-start";
-import { getHeaders } from "@tanstack/react-start/server";
-import { router } from "./routes/router";
+import { createORPCClient } from '@orpc/client';
+import { RPCLink } from '@orpc/client/fetch';
+import type { ContractRouterClient } from '@orpc/contract';
+import type { RouterClient } from '@orpc/server';
+import { createRouterClient } from '@orpc/server';
+import { createTanstackQueryUtils } from '@orpc/tanstack-query';
+import { createIsomorphicFn } from '@tanstack/react-start';
+import { getHeaders } from '@tanstack/react-start/server';
+import type { contract } from '@/orpc/routes/contract';
+import { router } from './routes/router';
 
 /**
  * Creates an isomorphic ORPC client that adapts based on the runtime environment.
@@ -51,7 +51,7 @@ const getORPCClient = createIsomorphicFn()
         return globalThis.fetch(url, {
           ...options,
           // Include cookies in all requests for authentication
-          credentials: "include",
+          credentials: 'include',
         });
       },
     });

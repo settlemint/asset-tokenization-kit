@@ -1,6 +1,6 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { TokenYield } from "../../../../generated/schema";
-import { Yield as YieldTemplate } from "../../../../generated/templates";
+import { Address } from '@graphprotocol/graph-ts';
+import { TokenYield } from '../../../../generated/schema';
+import { Yield as YieldTemplate } from '../../../../generated/templates';
 
 export function fetchYield(address: Address): TokenYield {
   let tokenYield = TokenYield.load(address);

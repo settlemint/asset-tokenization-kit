@@ -1,5 +1,5 @@
-import type { AssetType } from "@/lib/zod/validators/asset-types";
-import { baseRouter } from "@/orpc/procedures/base.router";
+import type { AssetType } from '@/lib/zod/validators/asset-types';
+import { baseRouter } from '@/orpc/procedures/base.router';
 
 /**
  * Middleware to inject the token factory into the context.
@@ -7,18 +7,18 @@ import { baseRouter } from "@/orpc/procedures/base.router";
  * @returns The middleware function.
  */
 export const tokenFactoryMiddleware = (type: AssetType) =>
-  baseRouter.middleware(async ({ context, next, errors }) => {
+  baseRouter.middleware(({ context, next, errors }) => {
     const { system } = context;
     if (!system) {
       throw errors.SYSTEM_NOT_CREATED();
     }
 
     const tokenFactory = system.tokenFactories.find(
-      (tokenFactory) => tokenFactory.type === type
+      (factory) => factory.type === type
     );
     if (!tokenFactory) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: "Token factory context not set",
+        message: 'Token factory context not set',
       });
     }
 

@@ -5,14 +5,19 @@
  * responses. Preserves full type inference from ORPC.
  */
 
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
 import type {
   UseMutationOptions,
   UseMutationResult,
-} from "@tanstack/react-query";
-import { useMutation } from "@tanstack/react-query";
-import { useCallback, useRef, useState } from "react";
-import { toast } from "sonner";
-import { formatValidationError } from "@/lib/utils/format-validation-error";
+} from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
+import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { formatValidationError } from '@/lib/utils/format-validation-error';
+
+const logger = createLogger({
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || 'info',
+});
 
 /**
  * Extract the result type from an async iterator of events
@@ -23,14 +28,13 @@ import { formatValidationError } from "@/lib/utils/format-validation-error";
  * - Uses conditional types with infer to extract nested result types
  * - Provides type safety for streaming mutation results
  */
-type ExtractResultType<T> =
-  T extends AsyncIteratorObject<{ result?: infer R }>
+type ExtractResultType<T> = T extends AsyncIteratorObject<{ result?: infer R }>
+  ? R
+  : T extends AsyncGenerator<{ result?: infer R }, unknown>
     ? R
-    : T extends AsyncGenerator<{ result?: infer R }, unknown>
+    : T extends AsyncIterable<{ result?: infer R }>
       ? R
-      : T extends AsyncIterable<{ result?: infer R }>
-        ? R
-        : never;
+      : never;
 
 /**
  * Streaming mutation options that transform callbacks to work with extracted result
@@ -111,52 +115,55 @@ export function useStreamingMutation<
 
           // Access metadata if available using ORPC's symbol-based metadata
           // This provides type-safe access to retry counts and other event metadata
-          const meta = Reflect.get(event, Symbol.for("orpc.event.meta")) as
+          const meta = Reflect.get(event, Symbol.for('orpc.event.meta')) as
             | { retry?: number }
             | undefined;
 
           switch (event.status) {
-            case "pending":
-              if (!toastIdRef.current) {
-                toastIdRef.current = toast.loading(message || "Loading...");
-              } else {
+            case 'pending':
+              if (toastIdRef.current) {
                 toast.loading(message, { id: toastIdRef.current });
+              } else {
+                toastIdRef.current = toast.loading(message || 'Loading...');
               }
               break;
 
-            case "confirmed":
+            case 'confirmed':
               if (event.result !== undefined) {
                 finalResult = event.result;
               }
-              toast.success(message || "Success", {
+              toast.success(message || 'Success', {
                 id: toastIdRef.current,
                 duration: meta?.retry ?? 5000,
               });
               break;
 
-            case "completed":
+            case 'completed':
               // Handle batch completion status
               if (event.result !== undefined) {
                 finalResult = event.result;
               }
-              toast.success(message || "Completed", {
+              toast.success(message || 'Completed', {
                 id: toastIdRef.current,
                 duration: meta?.retry ?? 5000,
               });
               break;
 
-            case "failed":
-              toast.error(message || "Failed", {
+            case 'failed':
+              toast.error(message || 'Failed', {
                 id: toastIdRef.current,
-                duration: 10000, // Longer duration for failed operations
-                description: "Check browser console for error details",
+                duration: 10_000, // Longer duration for failed operations
+                description: 'Check browser console for error details',
               });
-              throw new Error(message || "Operation failed");
+              throw new Error(message || 'Operation failed');
+
+            default:
+              break;
           }
         }
 
         if (finalResult === undefined) {
-          const errorMessage = "No result received";
+          const errorMessage = 'No result received';
           toast.error(errorMessage, { id: toastIdRef.current });
           throw new Error(errorMessage);
         }
@@ -168,7 +175,7 @@ export function useStreamingMutation<
         // Extract detailed error information from ORPC errors
         if (
           error instanceof Error &&
-          "cause" in error &&
+          'cause' in error &&
           error.cause instanceof Error
         ) {
           errorMessage = `${errorMessage}\n\nDetails: ${error.cause.message}`;
@@ -177,12 +184,12 @@ export function useStreamingMutation<
         // Show error with longer duration for debugging
         toast.error(errorMessage, {
           id: toastIdRef.current,
-          duration: 10000, // 10 seconds to allow time to read detailed errors
-          description: "Check browser console for full error details",
+          duration: 10_000, // 10 seconds to allow time to read detailed errors
+          description: 'Check browser console for full error details',
         });
 
         // Log full error details to console for debugging
-        console.error("Streaming mutation error:", {
+        logger.error('Streaming mutation error:', {
           message: errorMessage,
           error,
           cause: error instanceof Error ? error.cause : undefined,
@@ -212,7 +219,7 @@ export function useStreamingMutation<
     mutationFn: async (variables: TVariables) => {
       const originalMutationFn = options.mutationOptions.mutationFn;
       if (!originalMutationFn) {
-        throw new Error("Mutation function not found");
+        throw new Error('Mutation function not found');
       }
 
       // Execute the original mutation to get the iterator
@@ -225,9 +232,7 @@ export function useStreamingMutation<
     onMutate: options.mutationOptions.onMutate,
     onError: options.mutationOptions.onError,
     onSuccess: options.onSuccess,
-    // Type assertion needed due to variance in callback parameter types
-    // The extracted result type differs from the original TData type
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint/suspicious/noExplicitAny: Type assertion needed due to variance in callback parameter types. The extracted result type differs from the original TData type
     onSettled: options.mutationOptions.onSettled as any,
     retry: options.mutationOptions.retry,
     retryDelay: options.mutationOptions.retryDelay,

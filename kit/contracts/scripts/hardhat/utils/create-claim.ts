@@ -1,5 +1,5 @@
-import { encodeAbiParameters, keccak256, parseAbiParameters } from "viem";
-import type { Address, LocalAccount } from "viem";
+import type { Address, LocalAccount } from 'viem';
+import { encodeAbiParameters, keccak256, parseAbiParameters } from 'viem';
 
 export async function createClaim(
   signer: LocalAccount,
@@ -14,7 +14,7 @@ export async function createClaim(
   // Encode data to match Solidity's abi.encode(address, uint256, bytes)
   const dataToSign = encodeAbiParameters(
     parseAbiParameters(
-      "address subject, uint256 topicValue, bytes memory dataBytes"
+      'address subject, uint256 topicValue, bytes memory dataBytes'
     ),
     [subjectIdentityAddress, claimTopic, claimData]
   );

@@ -1,9 +1,9 @@
-import { Address, type Hex } from "viem";
-import {
+import type { Address, Hex } from 'viem';
+import type {
   ATKOnboardingContracts,
-  type PredeployedContractName,
-} from "../services/deployer";
-import { waitForEvent } from "../utils/wait-for-event";
+  PredeployedContractName,
+} from '../services/deployer';
+import { waitForEvent } from '../utils/wait-for-event';
 
 export class Asset<T extends PredeployedContractName> {
   public address!: Address;
@@ -22,7 +22,7 @@ export class Asset<T extends PredeployedContractName> {
     const eventArgs = await waitForEvent({
       transactionHash,
       contract: this.contract as any,
-      eventName: "TokenAssetCreated",
+      eventName: 'TokenAssetCreated',
     });
 
     const { tokenAddress, tokenIdentity, accessManager } = eventArgs as {

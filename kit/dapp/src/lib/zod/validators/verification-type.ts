@@ -7,7 +7,7 @@
  *
  * @module VerificationTypeValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Available verification method types.
@@ -19,9 +19,9 @@ import { z } from "zod/v4";
  * - `identity`: Identity document verification (passport, ID card, etc.)
  */
 export const verificationTypes = [
-  "two-factor",
-  "pincode",
-  "secret-code",
+  'two-factor',
+  'pincode',
+  'secret-code',
 ] as const;
 
 /**
@@ -44,7 +44,7 @@ export const verificationTypes = [
  */
 export const verificationType = z
   .enum(verificationTypes)
-  .describe("Type of verification");
+  .describe('Type of verification');
 
 /**
  * Type representing a validated verification method type.

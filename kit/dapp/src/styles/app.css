@@ -308,7 +308,7 @@
   }
 
   input[data-slot="form-control"] {
-    background-color: transparent !important;
+    background-color: transparent;
   }
 
   [data-slot="sidebar-wrapper"]

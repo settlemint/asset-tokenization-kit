@@ -1,31 +1,35 @@
-import { LanguageSwitcher } from "@/components/language/language-switcher";
-import { Logo } from "@/components/logo/logo";
-import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
-import { AssetSelectionStep } from "@/components/onboarding/steps/asset-selection-step";
-import { SystemStep } from "@/components/onboarding/steps/system-step";
-import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
-import { WalletStep } from "@/components/onboarding/steps/wallet-step";
-import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { useSettings } from "@/hooks/use-settings";
-import { authClient } from "@/lib/auth/auth.client";
-import { orpc } from "@/orpc";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/components/language/language-switcher';
+import { Logo } from '@/components/logo/logo';
+import { OnboardingGuard } from '@/components/onboarding/onboarding-guard';
+import { AssetSelectionStep } from '@/components/onboarding/steps/asset-selection-step';
+import { SystemStep } from '@/components/onboarding/steps/system-step';
+import { WalletSecurityStep } from '@/components/onboarding/steps/wallet-security-step';
+import { WalletStep } from '@/components/onboarding/steps/wallet-step';
+import { type Step, StepWizard } from '@/components/step-wizard/step-wizard';
+import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { useSettings } from '@/hooks/use-settings';
+import { authClient } from '@/lib/auth/auth.client';
+import { orpc } from '@/orpc';
 
-export const Route = createFileRoute("/_private/onboarding/platform")({
+export const Route = createFileRoute('/_private/onboarding/platform')({
   loader: async ({ context }) => {
     // Load user and system address in parallel
     const [user, systemAddress] = await Promise.all([
       context.queryClient.ensureQueryData(orpc.user.me.queryOptions()),
       context.queryClient.ensureQueryData(
-        orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
+        orpc.settings.read.queryOptions({ input: { key: 'SYSTEM_ADDRESS' } })
       ),
     ]);
 
     // If we have a system address, ensure system details are loaded
-    let systemDetails = null;
+    let systemDetails: {
+      id: string;
+      tokenFactoryRegistry: string;
+      tokenFactories: { id: string; name: string; typeId: string }[];
+    } | null = null;
     if (systemAddress) {
       systemDetails = await context.queryClient.ensureQueryData(
         orpc.system.read.queryOptions({
@@ -40,7 +44,7 @@ export const Route = createFileRoute("/_private/onboarding/platform")({
 });
 
 function PlatformOnboarding() {
-  const { t } = useTranslation(["general", "onboarding"]);
+  const { t } = useTranslation(['general', 'onboarding']);
   const navigate = useNavigate();
   const { data: session } = authClient.useSession();
 
@@ -52,23 +56,36 @@ function PlatformOnboarding() {
   } = Route.useLoaderData();
 
   // Get real-time system address from settings hook
-  const [liveSystemAddress] = useSettings("SYSTEM_ADDRESS");
+  const [liveSystemAddress] = useSettings('SYSTEM_ADDRESS');
 
   // Use live system address if available, otherwise fall back to loader data
   const systemAddress = liveSystemAddress ?? loaderSystemAddress;
 
   // Start with first step, will update when data loads
-  const [currentStepId, setCurrentStepId] = useState("wallet");
+  const [currentStepId, setCurrentStepId] = useState('wallet');
   const [hasInitialized, setHasInitialized] = useState(false);
 
   // Determine initial step based on what's completed
-  const getInitialStep = () => {
-    if (!user?.wallet) return "wallet";
-    if (!session?.user?.pincodeEnabled) return "security";
-    if (!systemAddress) return "system";
-    if ((systemDetails?.tokenFactories?.length ?? 0) === 0) return "assets";
-    return "assets"; // Default to last step if all complete
-  };
+  const getInitialStep = useCallback(() => {
+    if (!user?.wallet) {
+      return 'wallet';
+    }
+    if (!session?.user?.pincodeEnabled) {
+      return 'security';
+    }
+    if (!systemAddress) {
+      return 'system';
+    }
+    if ((systemDetails?.tokenFactories?.length ?? 0) === 0) {
+      return 'assets';
+    }
+    return 'assets'; // Default to last step if all complete
+  }, [
+    user?.wallet,
+    session?.user?.pincodeEnabled,
+    systemAddress,
+    systemDetails?.tokenFactories?.length,
+  ]);
 
   // Set initial step once when data is loaded
   useEffect(() => {
@@ -78,52 +95,52 @@ function PlatformOnboarding() {
       setCurrentStepId(initialStep);
       setHasInitialized(true);
     }
-  }, [user, systemAddress, systemDetails, hasInitialized, session?.user]);
+  }, [user, hasInitialized, session?.user, getInitialStep]);
 
   // Note: Auto-navigation after system deployment is now handled in the SystemStep's onSuccess callback
 
   // Define steps with dynamic statuses
   const steps: Step[] = [
     {
-      id: "wallet",
-      title: "Generate Wallet",
-      description: "Create your secure blockchain wallet",
+      id: 'wallet',
+      title: 'Generate Wallet',
+      description: 'Create your secure blockchain wallet',
       status: user?.initialOnboardingFinished
-        ? "completed"
-        : currentStepId === "wallet"
-          ? "active"
-          : "pending",
+        ? 'completed'
+        : currentStepId === 'wallet'
+          ? 'active'
+          : 'pending',
     },
     {
-      id: "security",
-      title: "Secure Your Wallet",
-      description: "Set up PIN code protection",
+      id: 'security',
+      title: 'Secure Your Wallet',
+      description: 'Set up PIN code protection',
       status: session?.user?.pincodeEnabled
-        ? "completed"
-        : currentStepId === "security"
-          ? "active"
-          : "pending",
+        ? 'completed'
+        : currentStepId === 'security'
+          ? 'active'
+          : 'pending',
     },
     {
-      id: "system",
-      title: "Deploy System",
-      description: "Deploy your SMART tokenization system",
+      id: 'system',
+      title: 'Deploy System',
+      description: 'Deploy your SMART tokenization system',
       status: systemAddress
-        ? "completed"
-        : currentStepId === "system"
-          ? "active"
-          : "pending",
+        ? 'completed'
+        : currentStepId === 'system'
+          ? 'active'
+          : 'pending',
     },
     {
-      id: "assets",
-      title: t("onboarding:steps.assets.title"),
-      description: t("onboarding:steps.assets.description"),
+      id: 'assets',
+      title: t('onboarding:steps.assets.title'),
+      description: t('onboarding:steps.assets.description'),
       status:
         (systemDetails?.tokenFactories.length ?? 0) > 0
-          ? "completed"
-          : currentStepId === "assets"
-            ? "active"
-            : "pending",
+          ? 'completed'
+          : currentStepId === 'assets'
+            ? 'active'
+            : 'pending',
     },
   ];
 
@@ -133,17 +150,17 @@ function PlatformOnboarding() {
 
   const handleWalletSuccess = () => {
     // Auto-advance to security step after wallet generation
-    setCurrentStepId("security");
+    setCurrentStepId('security');
   };
 
   const handleSecuritySuccess = () => {
     // Auto-advance to system step after PIN setup
-    setCurrentStepId("system");
+    setCurrentStepId('system');
   };
 
   const handleSystemSuccess = () => {
     // Auto-advance to next step after successful system deployment
-    setCurrentStepId("assets");
+    setCurrentStepId('assets');
   };
 
   const handleAssetsSuccess = () => {
@@ -163,7 +180,7 @@ function PlatformOnboarding() {
   const handleNext = () => {
     // Check if current step needs special action
     if (
-      currentStepId === "wallet" &&
+      currentStepId === 'wallet' &&
       !user?.initialOnboardingFinished &&
       walletActionRef.current
     ) {
@@ -172,7 +189,7 @@ function PlatformOnboarding() {
     }
 
     // If we're on wallet step and wallet already exists, move to next step
-    if (currentStepId === "wallet" && user.wallet) {
+    if (currentStepId === 'wallet' && user.wallet) {
       const nextStep = steps[currentStepIndex + 1];
       if (nextStep) {
         setCurrentStepId(nextStep.id);
@@ -181,7 +198,7 @@ function PlatformOnboarding() {
     }
 
     if (
-      currentStepId === "security" &&
+      currentStepId === 'security' &&
       !session?.user?.pincodeEnabled &&
       securityActionRef.current
     ) {
@@ -190,7 +207,7 @@ function PlatformOnboarding() {
     }
 
     // If we're on security step and pincode already exists, move to next step
-    if (currentStepId === "security" && session?.user?.pincodeEnabled) {
+    if (currentStepId === 'security' && session?.user?.pincodeEnabled) {
       const nextStep = steps[currentStepIndex + 1];
       if (nextStep) {
         setCurrentStepId(nextStep.id);
@@ -199,7 +216,7 @@ function PlatformOnboarding() {
     }
 
     if (
-      currentStepId === "system" &&
+      currentStepId === 'system' &&
       !systemAddress &&
       systemActionRef.current
     ) {
@@ -208,7 +225,7 @@ function PlatformOnboarding() {
     }
 
     // If we're on system step and system already exists, move to next step
-    if (currentStepId === "system" && systemAddress) {
+    if (currentStepId === 'system' && systemAddress) {
       const nextStep = steps[currentStepIndex + 1];
       if (nextStep) {
         setCurrentStepId(nextStep.id);
@@ -217,7 +234,7 @@ function PlatformOnboarding() {
     }
 
     if (
-      currentStepId === "assets" &&
+      currentStepId === 'assets' &&
       (systemDetails?.tokenFactories.length ?? 0) === 0 &&
       assetsActionRef.current
     ) {
@@ -231,12 +248,13 @@ function PlatformOnboarding() {
       if (nextStep) {
         setCurrentStepId(nextStep.id);
       }
-    } else if (currentStepIndex === steps.length - 1) {
+    } else if (
+      currentStepIndex === steps.length - 1 &&
+      (systemDetails?.tokenFactories.length ?? 0) > 0
+    ) {
       // Last step - complete onboarding
-      if ((systemDetails?.tokenFactories.length ?? 0) > 0) {
-        // All done - navigate to dashboard
-        void navigate({ to: "/" });
-      }
+      // All done - navigate to dashboard
+      navigate({ to: '/' });
     }
   };
 
@@ -252,79 +270,79 @@ function PlatformOnboarding() {
   // Determine if next button should be disabled
   const isNextDisabled = () => {
     // For wallet step, enable button if no wallet (for generation) or if wallet exists (for navigation)
-    if (currentStepId === "wallet") {
+    if (currentStepId === 'wallet') {
       return false; // Always enable button on wallet step
     }
 
     // For security step, enable button if no pincode (for setup) or if pincode exists (for navigation)
-    if (currentStepId === "security") {
+    if (currentStepId === 'security') {
       return false; // Always enable button on security step
     }
 
     // For system step, enable button if no system (for deployment) or if system exists (for navigation)
-    if (currentStepId === "system") {
+    if (currentStepId === 'system') {
       return false; // Always enable button on system step
     }
 
     // For assets step, enable button if no assets deployed
     if (
-      currentStepId === "assets" &&
+      currentStepId === 'assets' &&
       (systemDetails?.tokenFactories.length ?? 0) === 0
     ) {
       return false; // Enable the "Deploy Asset Factories" button
     }
 
     const currentStep = steps[currentStepIndex];
-    return currentStep?.status !== "completed";
+    return currentStep?.status !== 'completed';
   };
 
   // Determine button labels
   const getNextLabel = () => {
-    if (currentStepId === "wallet" && !user?.initialOnboardingFinished) {
-      return "Generate Wallet";
+    if (currentStepId === 'wallet' && !user?.initialOnboardingFinished) {
+      return 'Generate Wallet';
     }
-    if (currentStepId === "wallet" && user.wallet) {
-      return t("onboarding:next", "Next");
+    if (currentStepId === 'wallet' && user.wallet) {
+      return t('onboarding:next', 'Next');
     }
-    if (currentStepId === "security" && !session?.user?.pincodeEnabled) {
-      return "Set PIN Code";
+    if (currentStepId === 'security' && !session?.user?.pincodeEnabled) {
+      return 'Set PIN Code';
     }
-    if (currentStepId === "security" && session?.user?.pincodeEnabled) {
-      return t("onboarding:next", "Next");
+    if (currentStepId === 'security' && session?.user?.pincodeEnabled) {
+      return t('onboarding:next', 'Next');
     }
-    if (currentStepId === "system" && !systemAddress) {
-      return "Deploy System";
+    if (currentStepId === 'system' && !systemAddress) {
+      return 'Deploy System';
     }
-    if (currentStepId === "system" && systemAddress) {
-      return t("onboarding:next", "Next");
+    if (currentStepId === 'system' && systemAddress) {
+      return t('onboarding:next', 'Next');
     }
     if (
-      currentStepId === "assets" &&
+      currentStepId === 'assets' &&
       (systemDetails?.tokenFactories.length ?? 0) === 0
     ) {
-      return "Deploy Asset Factories";
+      return 'Deploy Asset Factories';
     }
     if (currentStepIndex === steps.length - 1) {
-      return t("onboarding:complete", "Complete");
+      return t('onboarding:complete', 'Complete');
     }
-    return t("onboarding:next", "Next");
+    return t('onboarding:next', 'Next');
   };
 
   return (
-    <OnboardingGuard require="not-onboarded" allowedTypes={["platform"]}>
-      <div className="min-h-screen w-full bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
+    <OnboardingGuard allowedTypes={['platform']} require="not-onboarded">
+      <div className="min-h-screen w-full bg-[url('/backgrounds/background-lm.svg')] bg-center bg-cover dark:bg-[url('/backgrounds/background-dm.svg')]">
         {/* Logo positioned in top-left - matching auth pages */}
         <div className="absolute top-8 left-8 flex flex-col items-end gap-0">
           <div className="flex w-full items-center gap-3">
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
-              <Logo variant="icon" forcedColorMode="dark" />
+              <Logo forcedColorMode="dark" variant="icon" />
             </div>
             <div className="flex flex-col text-foreground leading-none">
               <span className="font-bold text-lg text-primary-foreground">
                 SettleMint
               </span>
-              <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-sm leading-snug text-primary-foreground dark:text-foreground">
-                {t("general:appDescription")}
+              <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-primary-foreground text-sm leading-snug dark:text-foreground">
+                {t('general:appDescription')}
               </span>
             </div>
           </div>
@@ -338,62 +356,64 @@ function PlatformOnboarding() {
         <div className="flex min-h-screen items-center justify-center">
           <div className="w-full max-w-6xl px-4">
             <StepWizard
-              steps={steps}
+              backLabel={t('onboarding:back', 'Back')}
               currentStepId={currentStepId}
-              title="Let's get you set up!"
               description="You will need a wallet, security, and an identity on the blockchain to use this platform."
-              onStepChange={handleStepChange}
-              showBackButton={currentStepIndex > 0}
-              showNextButton={true}
-              onBack={handleBack}
-              onNext={handleNext}
               isBackDisabled={false}
               isNextDisabled={isNextDisabled()}
               nextLabel={getNextLabel()}
-              backLabel={t("onboarding:back", "Back")}
+              onBack={handleBack}
+              onNext={handleNext}
+              onStepChange={handleStepChange}
+              showBackButton={currentStepIndex > 0}
+              showNextButton={true}
+              steps={steps}
+              title="Let's get you set up!"
             >
               {(() => {
-                if (currentStepId === "wallet") {
+                if (currentStepId === 'wallet') {
                   return (
                     <WalletStep
-                      onSuccess={handleWalletSuccess}
                       onRegisterAction={(action) => {
                         walletActionRef.current = action;
                       }}
+                      onSuccess={handleWalletSuccess}
                     />
                   );
-                } else if (currentStepId === "security") {
+                }
+                if (currentStepId === 'security') {
                   return (
                     <WalletSecurityStep
-                      onSuccess={handleSecuritySuccess}
                       onRegisterAction={(action) => {
                         securityActionRef.current = action;
                       }}
+                      onSuccess={handleSecuritySuccess}
                     />
                   );
-                } else if (currentStepId === "system") {
+                }
+                if (currentStepId === 'system') {
                   return (
                     <SystemStep
-                      systemAddress={systemAddress}
                       isSystemDeployed={!!systemAddress}
-                      onSuccess={handleSystemSuccess}
                       onRegisterAction={(action) => {
                         systemActionRef.current = action;
                       }}
+                      onSuccess={handleSystemSuccess}
+                      systemAddress={systemAddress}
                     />
                   );
-                } else if (currentStepId === "assets") {
+                }
+                if (currentStepId === 'assets') {
                   return (
                     <AssetSelectionStep
-                      onSuccess={handleAssetsSuccess}
                       onRegisterAction={(action) => {
                         assetsActionRef.current = action;
                       }}
+                      onSuccess={handleAssetsSuccess}
                     />
                   );
-                } else {
-                  return null;
                 }
+                return null;
               })()}
             </StepWizard>
           </div>

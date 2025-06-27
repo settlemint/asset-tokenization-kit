@@ -1,12 +1,12 @@
-import { AbstractActor } from "../entities/actors/abstract-actor";
-import { atkDeployer } from "../services/deployer";
-import { waitForSuccess } from "../utils/wait-for-success";
+import type { AbstractActor } from '../entities/actors/abstract-actor';
+import { atkDeployer } from '../services/deployer';
+import { waitForSuccess } from '../utils/wait-for-success';
 
 export const recoverIdentity = async (
   lostActor: AbstractActor,
   newActor: AbstractActor
 ) => {
-  console.log(`[Recover identity] → Starting identity recovery...`);
+  console.log('[Recover identity] → Starting identity recovery...');
 
   const newIdentity = await newActor.getIdentity();
 

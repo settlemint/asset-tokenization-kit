@@ -1,20 +1,20 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "../forwarder";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from '../forwarder';
 
 const XvPSettlementFactoryModule = buildModule(
-  "XvPSettlementFactoryModule",
+  'XvPSettlementFactoryModule',
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
     // Deploy the XvPSettlement implementation (the logic contract)
     const xvpSettlementImplementation = m.contract(
-      "ATKXvPSettlementImplementation",
+      'ATKXvPSettlementImplementation',
       [forwarder]
     );
 
     // Deploy the XvPSettlementFactory implementation
     const xvpSettlementFactoryImplementation = m.contract(
-      "ATKXvPSettlementFactoryImplementation",
+      'ATKXvPSettlementFactoryImplementation',
       [forwarder]
     );
 

@@ -16,10 +16,10 @@
  * @see {@link https://tanstack.com/router/latest/docs/guide/route-trees#pathless-routes} - TanStack Router pathless routes
  */
 
-import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { RedirectToSignIn, SignedIn } from '@daveyplate/better-auth-ui';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 
-export const Route = createFileRoute("/_private")({
+export const Route = createFileRoute('/_private')({
   beforeLoad: async ({ context: { queryClient, orpc } }) => {
     // Try to get user data, but don't throw if unauthenticated
     try {
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_private")({
         queryClient.ensureQueryData(orpc.user.me.queryOptions()),
         queryClient.ensureQueryData(
           orpc.settings.read.queryOptions({
-            input: { key: "SYSTEM_ADDRESS" },
+            input: { key: 'SYSTEM_ADDRESS' },
           })
         ),
       ]);

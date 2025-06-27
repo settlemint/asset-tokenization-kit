@@ -1,25 +1,25 @@
-import { Address } from "@graphprotocol/graph-ts";
-import {
+import { Address } from '@graphprotocol/graph-ts';
+import type {
   AirdropBatchTokensTransferred,
   AirdropTokensTransferred,
-} from "../../../../generated/templates/PushAirdrop/PushAirdrop";
-import { fetchEvent } from "../../../event/fetch/event";
-import { setBigNumber } from "../../../utils/bignumber";
-import { getTokenDecimals } from "../../../utils/token-decimals";
-import { fetchAirdrop } from "./fetch/airdrop";
-import { fetchAirdropAllocation } from "./fetch/airdrop-allocation";
-import { fetchAirdropRecipient } from "./fetch/airdrop-recipient";
+} from '../../../../generated/templates/PushAirdrop/PushAirdrop';
+import { fetchEvent } from '../../../event/fetch/event';
+import { setBigNumber } from '../../../utils/bignumber';
+import { getTokenDecimals } from '../../../utils/token-decimals';
+import { fetchAirdrop } from './fetch/airdrop';
+import { fetchAirdropAllocation } from './fetch/airdrop-allocation';
+import { fetchAirdropRecipient } from './fetch/airdrop-recipient';
 
 export function handleAirdropTokensTransferred(
   event: AirdropTokensTransferred
 ): void {
-  fetchEvent(event, "AirdropTokensTransferred");
+  fetchEvent(event, 'AirdropTokensTransferred');
   const airdrop = fetchAirdrop(event.address);
   const tokenAddress = Address.fromBytes(airdrop.token);
   const tokenDecimals = getTokenDecimals(tokenAddress);
   setBigNumber(
     airdrop,
-    "amountTransferred",
+    'amountTransferred',
     event.params.amount.plus(airdrop.amountTransferredExact),
     tokenDecimals
   );
@@ -31,7 +31,7 @@ export function handleAirdropTokensTransferred(
   );
   setBigNumber(
     airdropRecipient,
-    "amountTransferred",
+    'amountTransferred',
     event.params.amount.plus(airdropRecipient.amountTransferredExact),
     tokenDecimals
   );
@@ -44,7 +44,7 @@ export function handleAirdropTokensTransferred(
   );
   setBigNumber(
     airdropAllocation,
-    "amountTransferred",
+    'amountTransferred',
     event.params.amount.plus(airdropAllocation.amountTransferredExact),
     tokenDecimals
   );
@@ -54,7 +54,7 @@ export function handleAirdropTokensTransferred(
 export function handleAirdropBatchTokensTransferred(
   event: AirdropBatchTokensTransferred
 ): void {
-  fetchEvent(event, "AirdropBatchTokensTransferred");
+  fetchEvent(event, 'AirdropBatchTokensTransferred');
   const airdrop = fetchAirdrop(event.address);
   const tokenAddress = Address.fromBytes(airdrop.token);
   const tokenDecimals = getTokenDecimals(tokenAddress);
@@ -67,7 +67,7 @@ export function handleAirdropBatchTokensTransferred(
     const airdropRecipient = fetchAirdropRecipient(airdrop.id, recipient);
     setBigNumber(
       airdropRecipient,
-      "amountTransferred",
+      'amountTransferred',
       amount.plus(airdropRecipient.amountTransferredExact),
       tokenDecimals
     );
@@ -80,7 +80,7 @@ export function handleAirdropBatchTokensTransferred(
     );
     setBigNumber(
       airdropAllocation,
-      "amountTransferred",
+      'amountTransferred',
       amount.plus(airdropAllocation.amountTransferredExact),
       tokenDecimals
     );

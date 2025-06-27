@@ -1,6 +1,6 @@
-import { settings } from "@/lib/db/schema";
-import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { settings } from '@/lib/db/schemas/settings';
+import { databaseMiddleware } from '@/orpc/middlewares/services/db.middleware';
+import { authRouter } from '@/orpc/procedures/auth.router';
 
 /**
  * Setting update/create route handler.

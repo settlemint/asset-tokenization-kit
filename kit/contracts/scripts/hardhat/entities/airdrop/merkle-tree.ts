@@ -1,11 +1,11 @@
-import { MerkleTree } from "merkletreejs";
+import { MerkleTree } from 'merkletreejs';
 import {
   type Address,
   encodeAbiParameters,
   type Hex,
   keccak256,
   parseAbiParameters,
-} from "viem";
+} from 'viem';
 
 /**
  * Represents a single airdrop distribution entry
@@ -48,7 +48,7 @@ export class AirdropMerkleTree {
   ): Hex {
     // First hash: keccak256(abi.encode(index, account, amount))
     const firstHash = keccak256(
-      encodeAbiParameters(parseAbiParameters("uint256, address, uint256"), [
+      encodeAbiParameters(parseAbiParameters('uint256, address, uint256'), [
         index,
         account,
         amount,
@@ -57,7 +57,7 @@ export class AirdropMerkleTree {
 
     // Second hash: keccak256(abi.encode(firstHash))
     const node = keccak256(
-      encodeAbiParameters(parseAbiParameters("bytes32"), [firstHash])
+      encodeAbiParameters(parseAbiParameters('bytes32'), [firstHash])
     );
 
     return node;

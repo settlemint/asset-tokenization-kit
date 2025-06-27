@@ -13,12 +13,12 @@
  * @see {@link ./system.read.schema} - Input/output validation schemas
  */
 
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { z } from "zod/v4";
-import type { SystemReadOutput } from "./system.read.schema";
+import { z } from 'zod/v4';
+import { theGraphGraphql } from '@/lib/settlemint/the-graph';
+import type { EthereumAddress } from '@/lib/zod/validators/ethereum-address';
+import { theGraphMiddleware } from '@/orpc/middlewares/services/the-graph.middleware';
+import { onboardedRouter } from '@/orpc/procedures/onboarded.router';
+import type { SystemReadOutput } from './system.read.schema';
 
 /**
  * GraphQL query to fetch system details with token factories.

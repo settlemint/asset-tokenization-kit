@@ -1,35 +1,34 @@
-import { atkDeployer } from "../services/deployer";
+import { ATKTopic } from '../constants/topics';
 
 import {
   frozenInvestor,
   investorA,
   investorB,
-} from "../entities/actors/investors";
-
-import { ATKTopic } from "../constants/topics";
-import { owner } from "../entities/actors/owner";
-import { Asset } from "../entities/asset";
-import { topicManager } from "../services/topic-manager";
-import { burn } from "./actions/burnable/burn";
-import { mint } from "./actions/core/mint";
-import { transfer } from "./actions/core/transfer";
-import { forcedTransfer } from "./actions/custodian/forced-transfer";
-import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
-import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
-import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
-import { setupAsset } from "./actions/setup-asset";
-import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
+} from '../entities/actors/investors';
+import { owner } from '../entities/actors/owner';
+import { Asset } from '../entities/asset';
+import { atkDeployer } from '../services/deployer';
+import { topicManager } from '../services/topic-manager';
+import { burn } from './actions/burnable/burn';
+import { mint } from './actions/core/mint';
+import { transfer } from './actions/core/transfer';
+import { forcedTransfer } from './actions/custodian/forced-transfer';
+import { freezePartialTokens } from './actions/custodian/freeze-partial-tokens';
+import { setAddressFrozen } from './actions/custodian/set-address-frozen';
+import { unfreezePartialTokens } from './actions/custodian/unfreeze-partial-tokens';
+import { setupAsset } from './actions/setup-asset';
+import { getDefaultComplianceModules } from './utils/default-compliance-modules';
 
 export const createStableCoin = async () => {
-  console.log("\n=== Creating stablecoin... ===\n");
+  console.log('\n=== Creating stablecoin... ===\n');
 
   const stablecoinFactory = atkDeployer.getStablecoinFactoryContract();
 
-  const stableCoin = new Asset<"stablecoinFactory">(
-    "Tether",
-    "USDT",
+  const stableCoin = new Asset<'stablecoinFactory'>(
+    'Tether',
+    'USDT',
     6,
-    "JP3902900004",
+    'JP3902900004',
     stablecoinFactory
   );
 

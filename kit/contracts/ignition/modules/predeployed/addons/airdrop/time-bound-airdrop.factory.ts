@@ -1,13 +1,13 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "../../forwarder";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from '../../forwarder';
 
 const TimeBoundAirdropFactoryModule = buildModule(
-  "TimeBoundAirdropFactoryModule",
+  'TimeBoundAirdropFactoryModule',
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
     const timeBoundAirdropFactoryImplementation = m.contract(
-      "ATKTimeBoundAirdropFactoryImplementation",
+      'ATKTimeBoundAirdropFactoryImplementation',
       [forwarder]
     );
 

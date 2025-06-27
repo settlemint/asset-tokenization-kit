@@ -1,5 +1,5 @@
-import { expect } from "@playwright/test";
-import { BasePage } from "./base-page";
+import { expect } from '@playwright/test';
+import { BasePage } from './base-page';
 
 export class CreateAssetForm extends BasePage {
   async clickOnNextButton() {
@@ -16,14 +16,14 @@ export class CreateAssetForm extends BasePage {
     isin?: string;
     internalId?: string;
   }) {
-    await this.page.getByLabel("Name").fill(options.name);
+    await this.page.getByLabel('Name').fill(options.name);
 
-    await this.page.getByLabel("Symbol").fill(options.symbol);
+    await this.page.getByLabel('Symbol').fill(options.symbol);
     if (options.isin !== undefined) {
-      await this.page.getByLabel("ISIN").fill(options.isin);
+      await this.page.getByLabel('ISIN').fill(options.isin);
     }
     if (options.internalId !== undefined) {
-      await this.page.getByLabel("Internal ID").fill(options.internalId);
+      await this.page.getByLabel('Internal ID').fill(options.internalId);
     }
   }
 
@@ -34,17 +34,17 @@ export class CreateAssetForm extends BasePage {
     maturityDate: string;
     underlyingAsset?: string;
   }) {
-    await this.page.getByLabel("Decimals").fill(options.decimals);
-    await this.page.getByLabel("Maximum supply").fill(options.maximumSupply);
-    await this.page.getByLabel("Face value").fill(options.faceValue);
-    await this.page.getByLabel("Maturity date").fill(options.maturityDate);
+    await this.page.getByLabel('Decimals').fill(options.decimals);
+    await this.page.getByLabel('Maximum supply').fill(options.maximumSupply);
+    await this.page.getByLabel('Face value').fill(options.faceValue);
+    await this.page.getByLabel('Maturity date').fill(options.maturityDate);
     if (options.underlyingAsset !== undefined) {
-      await this.page.getByLabel("Underlying asset").click();
+      await this.page.getByLabel('Underlying asset').click();
       await this.page
-        .getByPlaceholder("Search for an asset...")
+        .getByPlaceholder('Search for an asset...')
         .fill(options.underlyingAsset);
       await this.page
-        .getByRole("option", { name: options.underlyingAsset })
+        .getByRole('option', { name: options.underlyingAsset })
         .click();
     }
   }
@@ -102,13 +102,13 @@ export class CreateAssetForm extends BasePage {
     price?: string;
   }) {
     if (options.decimals !== undefined) {
-      await this.page.getByLabel("Decimals").fill(options.decimals);
+      await this.page.getByLabel('Decimals').fill(options.decimals);
     }
     if (options.initialSupply !== undefined) {
-      await this.page.getByLabel("Initial supply").fill(options.initialSupply);
+      await this.page.getByLabel('Initial supply').fill(options.initialSupply);
     }
     if (options.price !== undefined) {
-      await this.page.getByLabel("Price").fill(options.price);
+      await this.page.getByLabel('Price').fill(options.price);
     }
   }
 
@@ -119,23 +119,23 @@ export class CreateAssetForm extends BasePage {
     equityCategory?: string;
   }) {
     if (options.decimals !== undefined) {
-      await this.page.getByLabel("Decimals").fill(options.decimals);
+      await this.page.getByLabel('Decimals').fill(options.decimals);
     }
     if (options.price !== undefined) {
-      await this.page.getByLabel("Price").fill(options.price);
+      await this.page.getByLabel('Price').fill(options.price);
     }
     if (options.equityClass !== undefined) {
-      await this.page.getByRole("combobox", { name: "Equity class" }).click();
+      await this.page.getByRole('combobox', { name: 'Equity class' }).click();
       await this.page
-        .getByRole("option", { name: options.equityClass })
+        .getByRole('option', { name: options.equityClass })
         .click();
     }
     if (options.equityCategory !== undefined) {
       await this.page
-        .getByRole("combobox", { name: "Equity category" })
+        .getByRole('combobox', { name: 'Equity category' })
         .click();
       await this.page
-        .getByRole("option", { name: options.equityCategory })
+        .getByRole('option', { name: options.equityCategory })
         .click();
     }
   }
@@ -157,23 +157,23 @@ export class CreateAssetForm extends BasePage {
   ) {
     const actions: Record<string, (value: string) => Promise<void>> = {
       decimals: async (value) => {
-        await this.page.getByLabel("Decimals", { exact: false }).fill(value);
+        await this.page.getByLabel('Decimals', { exact: false }).fill(value);
       },
       price: async (value) => {
-        await this.page.getByLabel("Price", { exact: false }).fill(value);
+        await this.page.getByLabel('Price', { exact: false }).fill(value);
       },
       managementFeeBps: async (value) => {
         await this.page
-          .getByLabel("Management fee", { exact: false })
+          .getByLabel('Management fee', { exact: false })
           .fill(value);
       },
       fundCategory: async (value) => {
-        await this.page.getByLabel("Fund category", { exact: false }).click();
-        await this.page.getByRole("option", { name: value }).click();
+        await this.page.getByLabel('Fund category', { exact: false }).click();
+        await this.page.getByRole('option', { name: value }).click();
       },
       fundClass: async (value) => {
-        await this.page.getByLabel("Fund class", { exact: false }).click();
-        await this.page.getByRole("option", { name: value }).click();
+        await this.page.getByLabel('Fund class', { exact: false }).click();
+        await this.page.getByRole('option', { name: value }).click();
       },
     };
     for (const key in options) {
@@ -195,23 +195,23 @@ export class CreateAssetForm extends BasePage {
   ) {
     const actions: Record<string, (value: string) => Promise<void>> = {
       decimals: async (value) => {
-        await this.page.getByLabel("Decimals", { exact: false }).fill(value);
+        await this.page.getByLabel('Decimals', { exact: false }).fill(value);
       },
       price: async (value) => {
-        await this.page.getByLabel("Price", { exact: false }).fill(value);
+        await this.page.getByLabel('Price', { exact: false }).fill(value);
       },
       priceCurrency: async (value) => {
-        await this.page.locator("#price\\.currency").click();
-        await this.page.getByRole("option", { name: value }).click();
+        await this.page.locator('#price\\.currency').click();
+        await this.page.getByRole('option', { name: value }).click();
       },
       collateralProofValidity: async (value) => {
         await this.page
-          .getByLabel("Collateral proof validity", { exact: false })
+          .getByLabel('Collateral proof validity', { exact: false })
           .fill(value);
       },
       collateralProofValidityTimeUnit: async (value) => {
-        await this.page.locator("#collateralLivenessTimeUnit").click();
-        await this.page.getByRole("option", { name: value }).click();
+        await this.page.locator('#collateralLivenessTimeUnit').click();
+        await this.page.getByRole('option', { name: value }).click();
       },
     };
 
@@ -224,7 +224,7 @@ export class CreateAssetForm extends BasePage {
   }
 
   async clearField(label: string) {
-    await this.page.getByLabel(label, { exact: false }).fill("");
+    await this.page.getByLabel(label, { exact: false }).fill('');
   }
 
   async setInvalidValueInNumberInput(selector: string, invalidValue: string) {
@@ -233,8 +233,8 @@ export class CreateAssetForm extends BasePage {
         const input = document.querySelector(selector) as HTMLInputElement;
         if (input) {
           input.value = value;
-          input.dispatchEvent(new Event("input", { bubbles: true }));
-          input.dispatchEvent(new Event("change", { bubbles: true }));
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.dispatchEvent(new Event('change', { bubbles: true }));
         }
       },
       { selector, value: invalidValue }

@@ -24,44 +24,44 @@ export const metadata = {
    * Default page title.
    * Used as the base title for all pages and appended to page-specific titles.
    */
-  title: `Asset Tokenization Kit | SettleMint`,
+  title: 'Asset Tokenization Kit | SettleMint',
 
   /**
    * Default meta description.
    * Brief description of the application for search engine results.
    */
-  description: "SettleMint",
+  description: 'SettleMint',
 
   /**
    * Twitter handle for the application.
    * Used in Twitter Card meta tags for attribution.
    */
-  twitter: "@settlemintcom",
+  twitter: '@settlemintcom',
 
   /**
    * Default keywords for SEO.
    * Array of relevant terms that describe the application's purpose and features.
    */
   keywords: [
-    "Asset Tokenization",
-    "SettleMint",
-    "Tokenization",
-    "Asset Tokenization Kit",
-    "Digital Assets",
-    "SMART protocol",
-    "ERC-3643",
-    "Bonds",
-    "Stablecoins",
-    "Funds",
-    "Deposits",
-    "Equity",
+    'Asset Tokenization',
+    'SettleMint',
+    'Tokenization',
+    'Asset Tokenization Kit',
+    'Digital Assets',
+    'SMART protocol',
+    'ERC-3643',
+    'Bonds',
+    'Stablecoins',
+    'Funds',
+    'Deposits',
+    'Equity',
   ],
 
   /**
    * Default Open Graph image path.
    * Relative path to the image used when sharing links on social media.
    */
-  og: "/og.png",
+  og: '/og.png',
 };
 
 /**
@@ -122,33 +122,33 @@ export const seo = ({
   const resolvedDescription = description ?? metadata.description;
   const resolvedImage = image ?? metadata.og;
   const resolvedKeywords = [...metadata.keywords, ...(keywords ?? [])].join(
-    ", "
+    ', '
   );
 
   // Build comprehensive meta tag array
   const tags = [
     // Standard HTML meta tags
     { title: resolvedTitle },
-    { name: "description", content: resolvedDescription },
-    { name: "keywords", content: resolvedKeywords },
+    { name: 'description', content: resolvedDescription },
+    { name: 'keywords', content: resolvedKeywords },
 
     // Twitter Card meta tags
-    { name: "twitter:title", content: resolvedTitle },
-    { name: "twitter:description", content: resolvedDescription },
-    { name: "twitter:creator", content: metadata.twitter },
-    { name: "twitter:site", content: metadata.twitter },
+    { name: 'twitter:title', content: resolvedTitle },
+    { name: 'twitter:description', content: resolvedDescription },
+    { name: 'twitter:creator', content: metadata.twitter },
+    { name: 'twitter:site', content: metadata.twitter },
 
     // Open Graph meta tags
-    { name: "og:type", content: "website" },
-    { name: "og:title", content: resolvedTitle },
-    { name: "og:description", content: resolvedDescription },
+    { name: 'og:type', content: 'website' },
+    { name: 'og:title', content: resolvedTitle },
+    { name: 'og:description', content: resolvedDescription },
 
     // Conditionally include image-related tags
     ...(image
       ? [
-          { name: "twitter:image", content: resolvedImage },
-          { name: "twitter:card", content: "summary_large_image" },
-          { name: "og:image", content: resolvedImage },
+          { name: 'twitter:image', content: resolvedImage },
+          { name: 'twitter:card', content: 'summary_large_image' },
+          { name: 'og:image', content: resolvedImage },
         ]
       : []),
   ];

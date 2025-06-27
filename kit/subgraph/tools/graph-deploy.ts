@@ -25,18 +25,18 @@
  *   bun run graph-deploy.ts --help     # Show help
  */
 
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { join, relative } from "path";
-import { parseArgs } from "util";
-import { parse, stringify } from "yaml";
-import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import { join, relative } from 'path';
+import { parseArgs } from 'util';
+import { parse, stringify } from 'yaml';
+import { findTurboRoot, getKitProjectPath } from '../../../tools/root';
 
 // ============================================================================
 // TYPES AND INTERFACES
 // ============================================================================
 
 interface DeploymentConfig {
-  environment: "local" | "remote";
+  environment: 'local' | 'remote';
   deploymentPort: string;
   queryPort: string;
   verbose: boolean;
@@ -81,15 +81,15 @@ const EXIT_CODES = {
 
 type ExitCode = (typeof EXIT_CODES)[keyof typeof EXIT_CODES];
 
-const LOCAL_DEPLOYMENT_SUBGRAPH_NAME = "kit-integration-tests";
-const GRAPH_VERSION_PREFIX = "v1.0.0";
+const LOCAL_DEPLOYMENT_SUBGRAPH_NAME = 'kit-integration-tests';
+const GRAPH_VERSION_PREFIX = 'v1.0.0';
 
 // Create logger instance
 const logger = createLogger({
   level:
     (process.env.LOG_LEVEL as LogLevel) ||
     (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
-    "info",
+    'info',
 });
 
 // ============================================================================
@@ -107,25 +107,25 @@ async function cleanup(): Promise<void> {
   // Restore subgraph.json
   if (originalAddresses && graphPaths?.subgraphConfig) {
     try {
-      logger.info("Restoring original subgraph configuration...");
+      logger.info('Restoring original subgraph configuration...');
       await Bun.write(
         graphPaths.subgraphConfig,
         JSON.stringify(originalAddresses, null, 2)
       );
-      logger.info("Original configuration restored");
+      logger.info('Original configuration restored');
     } catch (error) {
-      logger.error("Failed to restore original configuration:", error);
+      logger.error('Failed to restore original configuration:', error);
     }
   }
 
   // Restore subgraph.yaml
   if (originalSubgraphYaml && graphPaths?.subgraphYaml) {
     try {
-      logger.info("Restoring original subgraph.yaml...");
+      logger.info('Restoring original subgraph.yaml...');
       await Bun.write(graphPaths.subgraphYaml, originalSubgraphYaml);
-      logger.info("Original subgraph.yaml restored");
+      logger.info('Original subgraph.yaml restored');
     } catch (error) {
-      logger.error("Failed to restore original subgraph.yaml:", error);
+      logger.error('Failed to restore original subgraph.yaml:', error);
     }
   }
 }
@@ -135,7 +135,7 @@ async function cleanup(): Promise<void> {
  */
 function setupCleanup(): void {
   // Handle various exit signals
-  const signals = ["SIGINT", "SIGTERM", "SIGQUIT"];
+  const signals = ['SIGINT', 'SIGTERM', 'SIGQUIT'];
 
   for (const signal of signals) {
     process.on(signal, async () => {
@@ -146,21 +146,21 @@ function setupCleanup(): void {
   }
 
   // Handle uncaught exceptions
-  process.on("uncaughtException", async (error) => {
-    logger.error("Uncaught exception:", error);
+  process.on('uncaughtException', async (error) => {
+    logger.error('Uncaught exception:', error);
     await cleanup();
     process.exit(EXIT_CODES.ERROR);
   });
 
   // Handle unhandled promise rejections
-  process.on("unhandledRejection", async (reason) => {
-    logger.error("Unhandled promise rejection:", reason);
+  process.on('unhandledRejection', async (reason) => {
+    logger.error('Unhandled promise rejection:', reason);
     await cleanup();
     process.exit(EXIT_CODES.ERROR);
   });
 
   // Handle normal exit
-  process.on("beforeExit", cleanup);
+  process.on('beforeExit', cleanup);
 }
 
 // ============================================================================
@@ -213,16 +213,16 @@ function parseArguments(): DeploymentConfig {
     const { values } = parseArgs({
       args: Bun.argv.slice(2),
       options: {
-        local: { type: "boolean" },
-        remote: { type: "boolean" },
-        help: { type: "boolean", short: "h" },
-        verbose: { type: "boolean", short: "v" },
-        quiet: { type: "boolean", short: "q" },
-        debug: { type: "boolean", short: "d" },
+        local: { type: 'boolean' },
+        remote: { type: 'boolean' },
+        help: { type: 'boolean', short: 'h' },
+        verbose: { type: 'boolean', short: 'v' },
+        quiet: { type: 'boolean', short: 'q' },
+        debug: { type: 'boolean', short: 'd' },
         port: {
-          type: "string",
-          short: "p",
-          default: "8020:8000",
+          type: 'string',
+          short: 'p',
+          default: '8020:8000',
         },
       },
       allowPositionals: false,
@@ -236,14 +236,14 @@ function parseArguments(): DeploymentConfig {
 
     // Validate deployment environment
     if (values.local && values.remote) {
-      logger.error("Cannot specify both --local and --remote");
+      logger.error('Cannot specify both --local and --remote');
       showUsage();
       process.exit(EXIT_CODES.INVALID_ARGS);
     }
 
-    if (!values.local && !values.remote) {
-      logger.error("Deployment environment not specified");
-      logger.error("Please use either --local or --remote");
+    if (!(values.local || values.remote)) {
+      logger.error('Deployment environment not specified');
+      logger.error('Please use either --local or --remote');
       showUsage();
       process.exit(EXIT_CODES.INVALID_ARGS);
     }
@@ -253,16 +253,16 @@ function parseArguments(): DeploymentConfig {
     // Use LOG_LEVEL or SETTLEMINT_LOG_LEVEL env vars to control logging level
     if (values.debug || values.verbose || values.quiet) {
       const levelHint = values.debug
-        ? "debug"
+        ? 'debug'
         : values.verbose
-          ? "info"
-          : "error";
+          ? 'info'
+          : 'error';
       logger.debug(`Log level hint: ${levelHint} (set via env vars)`);
     }
 
     // Parse port configuration
     // Requires format: "deploymentPort:queryPort"
-    if (!values.port.includes(":")) {
+    if (!values.port.includes(':')) {
       logger.error(
         "Port must be specified in format 'deployment:query' (e.g., '8020:8000')"
       );
@@ -270,9 +270,9 @@ function parseArguments(): DeploymentConfig {
       process.exit(EXIT_CODES.INVALID_ARGS);
     }
 
-    const [deploymentPort, queryPort] = values.port.split(":");
+    const [deploymentPort, queryPort] = values.port.split(':');
 
-    if (!deploymentPort || !queryPort) {
+    if (!(deploymentPort && queryPort)) {
       logger.error(
         "Both deployment and query ports must be specified (e.g., '8020:8000')"
       );
@@ -281,7 +281,7 @@ function parseArguments(): DeploymentConfig {
     }
 
     return {
-      environment: values.local ? "local" : "remote",
+      environment: values.local ? 'local' : 'remote',
       deploymentPort,
       queryPort,
       verbose: Boolean(values.verbose || values.debug),
@@ -289,7 +289,7 @@ function parseArguments(): DeploymentConfig {
       debug: Boolean(values.debug),
     };
   } catch (error) {
-    logger.error("Failed to parse arguments:", error);
+    logger.error('Failed to parse arguments:', error);
     showUsage();
     process.exit(EXIT_CODES.INVALID_ARGS);
   }
@@ -301,8 +301,8 @@ function parseArguments(): DeploymentConfig {
 async function initGraphPaths(): Promise<GraphPaths> {
   try {
     const { monorepoRoot, kitRoot } = await findTurboRoot();
-    const subgraphRoot = await getKitProjectPath("subgraph");
-    const contractsRoot = await getKitProjectPath("contracts");
+    const subgraphRoot = await getKitProjectPath('subgraph');
+    const contractsRoot = await getKitProjectPath('contracts');
 
     const paths: GraphPaths = {
       projectRoot: monorepoRoot,
@@ -311,20 +311,20 @@ async function initGraphPaths(): Promise<GraphPaths> {
       contractsRoot,
       deployedAddressesFile: join(
         contractsRoot,
-        "ignition",
-        "deployments",
-        "atk-local",
-        "deployed_addresses.json"
+        'ignition',
+        'deployments',
+        'atk-local',
+        'deployed_addresses.json'
       ),
-      subgraphConfig: join(subgraphRoot, "subgraph.json"),
-      schemaFile: join(subgraphRoot, "schema.graphql"),
-      subgraphYaml: join(subgraphRoot, "subgraph.yaml"),
+      subgraphConfig: join(subgraphRoot, 'subgraph.json'),
+      schemaFile: join(subgraphRoot, 'schema.graphql'),
+      subgraphYaml: join(subgraphRoot, 'subgraph.yaml'),
     };
 
-    logger.debug("Initialized graph paths:", paths);
+    logger.debug('Initialized graph paths:', paths);
     return paths;
   } catch (error) {
-    logger.error("Failed to initialize graph paths:", error);
+    logger.error('Failed to initialize graph paths:', error);
     throw error;
   }
 }
@@ -333,7 +333,7 @@ async function initGraphPaths(): Promise<GraphPaths> {
  * Validate environment and dependencies
  */
 async function validateEnvironment(config: DeploymentConfig): Promise<void> {
-  logger.info("Validating environment...");
+  logger.info('Validating environment...');
 
   // Check if deployed addresses file exists
   const addressesFile = Bun.file(graphPaths!.deployedAddressesFile);
@@ -341,38 +341,38 @@ async function validateEnvironment(config: DeploymentConfig): Promise<void> {
     logger.error(
       `Deployed addresses file not found: ${graphPaths!.deployedAddressesFile}`
     );
-    logger.error("Please deploy contracts first using Hardhat Ignition");
-    throw new Error("Missing deployed addresses");
+    logger.error('Please deploy contracts first using Hardhat Ignition');
+    throw new Error('Missing deployed addresses');
   }
 
   // Check if subgraph schema exists
   const schemaFile = Bun.file(graphPaths!.schemaFile);
   if (!(await schemaFile.exists())) {
     logger.error(`Schema file not found: ${graphPaths!.schemaFile}`);
-    throw new Error("Missing subgraph schema");
+    throw new Error('Missing subgraph schema');
   }
 
   // Validate deployment-specific requirements
-  if (config.environment === "local") {
+  if (config.environment === 'local') {
     await validateLocalEnvironment(`http://localhost:${config.deploymentPort}`);
   } else {
     await validateRemoteEnvironment();
   }
 
-  logger.info("Environment validation completed");
+  logger.info('Environment validation completed');
 }
 
 /**
  * Validate local deployment environment
  */
 async function validateLocalEnvironment(node: string): Promise<void> {
-  logger.info("Checking local Graph node...");
+  logger.info('Checking local Graph node...');
 
   try {
     const response = await fetch(`${node}/graphql`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: "{ __schema { types { name } } }" }),
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: '{ __schema { types { name } } }' }),
     });
 
     if (!response.ok) {
@@ -381,7 +381,7 @@ async function validateLocalEnvironment(node: string): Promise<void> {
 
     logger.info(`Local Graph node (${node}) is accessible`);
   } catch (error) {
-    logger.error("Failed to connect to local Graph node:", error);
+    logger.error('Failed to connect to local Graph node:', error);
     logger.error(`Make sure Graph node is running at ${node}`);
     throw error;
   }
@@ -391,14 +391,14 @@ async function validateLocalEnvironment(node: string): Promise<void> {
  * Validate remote deployment environment
  */
 async function validateRemoteEnvironment(): Promise<void> {
-  logger.info("Checking SettleMint CLI...");
+  logger.info('Checking SettleMint CLI...');
 
   try {
     await Bun.$`settlemint --version`.quiet();
-    logger.info("SettleMint CLI is available");
+    logger.info('SettleMint CLI is available');
   } catch (error) {
-    logger.error("SettleMint CLI validation failed:", error);
-    logger.error("Please install and authenticate SettleMint CLI");
+    logger.error('SettleMint CLI validation failed:', error);
+    logger.error('Please install and authenticate SettleMint CLI');
     throw error;
   }
 }
@@ -408,17 +408,17 @@ async function validateRemoteEnvironment(): Promise<void> {
  */
 async function readDeployedAddresses(): Promise<DeployedAddresses> {
   try {
-    logger.info("Reading deployed contract addresses...");
+    logger.info('Reading deployed contract addresses...');
 
     const addressesFile = Bun.file(graphPaths!.deployedAddressesFile);
     const addresses = (await addressesFile.json()) as DeployedAddresses;
 
-    logger.debug("Deployed addresses:", addresses);
+    logger.debug('Deployed addresses:', addresses);
     logger.info(`Found ${Object.keys(addresses).length} deployed contracts`);
 
     return addresses;
   } catch (error) {
-    logger.error("Failed to read deployed addresses:", error);
+    logger.error('Failed to read deployed addresses:', error);
     throw error;
   }
 }
@@ -430,14 +430,14 @@ async function updateSubgraphConfig(
   addresses: DeployedAddresses
 ): Promise<void> {
   try {
-    logger.info("Updating subgraph configuration...");
+    logger.info('Updating subgraph configuration...');
 
     const configFile = Bun.file(graphPaths!.subgraphConfig);
 
     // Backup original configuration if it exists
     if (await configFile.exists()) {
       originalAddresses = (await configFile.json()) as DeployedAddresses;
-      logger.debug("Backed up original configuration");
+      logger.debug('Backed up original configuration');
     }
 
     // Write new configuration
@@ -446,9 +446,9 @@ async function updateSubgraphConfig(
       JSON.stringify(addresses, null, 2)
     );
 
-    logger.info("Subgraph configuration updated");
+    logger.info('Subgraph configuration updated');
   } catch (error) {
-    logger.error("Failed to update subgraph configuration:", error);
+    logger.error('Failed to update subgraph configuration:', error);
     throw error;
   }
 }
@@ -458,20 +458,20 @@ async function updateSubgraphConfig(
  */
 async function updateSubgraphYaml(addresses: DeployedAddresses): Promise<void> {
   try {
-    logger.info("Updating subgraph yaml...");
+    logger.info('Updating subgraph yaml...');
 
     const subgraphYaml = Bun.file(graphPaths!.subgraphYaml);
 
     if (!(await subgraphYaml.exists())) {
-      logger.error("Subgraph yaml not found");
-      throw new Error("Missing subgraph yaml");
+      logger.error('Subgraph yaml not found');
+      throw new Error('Missing subgraph yaml');
     }
 
     // Backup original subgraph.yaml content if not already backed up
     const yamlContent = await subgraphYaml.text();
     if (!originalSubgraphYaml) {
       originalSubgraphYaml = yamlContent;
-      logger.debug("Backed up original subgraph.yaml");
+      logger.debug('Backed up original subgraph.yaml');
     }
 
     const subgraphYamlConfig = (await parse(yamlContent)) as SubgraphYamlConfig;
@@ -507,9 +507,9 @@ async function updateSubgraphYaml(addresses: DeployedAddresses): Promise<void> {
       stringify(updatedSubgraphYamlConfig)
     );
 
-    logger.info("Subgraph yaml updated");
+    logger.info('Subgraph yaml updated');
   } catch (error) {
-    logger.error("Failed to update subgraph yaml:", error);
+    logger.error('Failed to update subgraph yaml:', error);
     throw error;
   }
 }
@@ -519,13 +519,13 @@ async function updateSubgraphYaml(addresses: DeployedAddresses): Promise<void> {
  */
 async function generateCode(): Promise<void> {
   try {
-    logger.info("Generating TypeScript code from GraphQL schema...");
+    logger.info('Generating TypeScript code from GraphQL schema...');
 
     await Bun.$`bun run codegen`.cwd(graphPaths!.subgraphRoot);
 
-    logger.info("TypeScript code generation completed");
+    logger.info('TypeScript code generation completed');
   } catch (error) {
-    logger.error("Failed to generate TypeScript code:", error);
+    logger.error('Failed to generate TypeScript code:', error);
     throw error;
   }
 }
@@ -585,12 +585,12 @@ async function deployLocal(config: DeploymentConfig): Promise<void> {
     const deploymentNode = `http://localhost:${config.deploymentPort}`;
     const queryNode = `http://localhost:${config.queryPort}`;
 
-    logger.info("Deploying subgraph locally...");
+    logger.info('Deploying subgraph locally...');
     logger.info(`  Name: ${graphName}`);
     logger.info(`  Version: ${versionLabel}`);
     logger.info(`  Deployment Node: ${deploymentNode}`);
     logger.info(`  Query Node: ${queryNode}`);
-    logger.info(`  IPFS: https://ipfs.console.settlemint.com`);
+    logger.info('  IPFS: https://ipfs.console.settlemint.com');
 
     // Remove existing subgraph first
     await removeLocalSubgraph(deploymentNode, graphName);
@@ -603,12 +603,12 @@ async function deployLocal(config: DeploymentConfig): Promise<void> {
       graphPaths!.subgraphRoot
     );
 
-    logger.info("Subgraph deployed successfully!");
+    logger.info('Subgraph deployed successfully!');
     logger.info(`  Deployment endpoint: ${deploymentNode}`);
     logger.info(`  Query endpoint: ${queryNode}/subgraphs/name/${graphName}`);
-    logger.info(`  Note: Use POST requests to query the GraphQL endpoint`);
+    logger.info('  Note: Use POST requests to query the GraphQL endpoint');
   } catch (error) {
-    logger.error("Local deployment failed:", error);
+    logger.error('Local deployment failed:', error);
     throw error;
   }
 }
@@ -618,16 +618,16 @@ async function deployLocal(config: DeploymentConfig): Promise<void> {
  */
 async function deployRemote(): Promise<void> {
   try {
-    logger.info("Deploying to SettleMint...");
+    logger.info('Deploying to SettleMint...');
 
     // Change to project root for SettleMint deployment
     await Bun.$`bunx settlemint scs subgraph deploy`.cwd(
       graphPaths!.projectRoot
     );
 
-    logger.info("Subgraph deployed to SettleMint successfully!");
+    logger.info('Subgraph deployed to SettleMint successfully!');
   } catch (error) {
-    logger.error("SettleMint deployment failed:", error);
+    logger.error('SettleMint deployment failed:', error);
     throw error;
   }
 }
@@ -643,7 +643,7 @@ async function executeLocalWorkflow(config: DeploymentConfig): Promise<void> {
     await generateCode();
     await deployLocal(config);
   } catch (error) {
-    logger.error("Local deployment workflow failed:", error);
+    logger.error('Local deployment workflow failed:', error);
     throw error;
   }
 }
@@ -658,7 +658,7 @@ async function executeRemoteWorkflow(): Promise<void> {
     await generateCode();
     await deployRemote();
   } catch (error) {
-    logger.error("Remote deployment workflow failed:", error);
+    logger.error('Remote deployment workflow failed:', error);
     throw error;
   }
 }
@@ -667,9 +667,9 @@ async function executeRemoteWorkflow(): Promise<void> {
  * Print deployment header
  */
 function printHeader(config: DeploymentConfig): void {
-  logger.info("=".repeat(60));
-  logger.info("SMART Protocol Subgraph Deployment");
-  logger.info("=".repeat(60));
+  logger.info('='.repeat(60));
+  logger.info('SMART Protocol Subgraph Deployment');
+  logger.info('='.repeat(60));
   logger.info(`Deployment target: ${config.environment}`);
   logger.info(
     `Project root: ${relative(process.cwd(), graphPaths!.projectRoot)}`
@@ -677,7 +677,7 @@ function printHeader(config: DeploymentConfig): void {
   logger.info(
     `Subgraph root: ${relative(process.cwd(), graphPaths!.subgraphRoot)}`
   );
-  logger.info("=".repeat(60));
+  logger.info('='.repeat(60));
 }
 
 // ============================================================================
@@ -707,15 +707,15 @@ async function main(): Promise<void> {
     await validateEnvironment(config);
 
     // Execute deployment workflow
-    if (config.environment === "local") {
+    if (config.environment === 'local') {
       await executeLocalWorkflow(config);
     } else {
       await executeRemoteWorkflow();
     }
 
-    logger.info("Deployment completed successfully!");
+    logger.info('Deployment completed successfully!');
   } catch (error) {
-    logger.error("Deployment failed:", error);
+    logger.error('Deployment failed:', error);
     exitCode = EXIT_CODES.ERROR;
   } finally {
     // Cleanup will be called by the beforeExit handler

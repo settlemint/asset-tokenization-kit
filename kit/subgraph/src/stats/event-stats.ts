@@ -1,5 +1,5 @@
-import { Bytes } from "@graphprotocol/graph-ts";
-import { EventStatsData } from "../../generated/schema";
+import type { Bytes } from '@graphprotocol/graph-ts';
+import { EventStatsData } from '../../generated/schema';
 
 /**
  * Track event statistics for system activity monitoring

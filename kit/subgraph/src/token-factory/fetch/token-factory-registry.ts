@@ -1,8 +1,8 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
-import { TokenFactoryRegistry } from "../../../generated/schema";
-import { TokenFactoryRegistry as TokenFactoryRegistryTemplate } from "../../../generated/templates";
-import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
-import { fetchAccount } from "../../account/fetch/account";
+import { type Address, Bytes } from '@graphprotocol/graph-ts';
+import { TokenFactoryRegistry } from '../../../generated/schema';
+import { TokenFactoryRegistry as TokenFactoryRegistryTemplate } from '../../../generated/templates';
+import { fetchAccessControl } from '../../access-control/fetch/accesscontrol';
+import { fetchAccount } from '../../account/fetch/account';
 
 export function fetchTokenFactoryRegistry(
   address: Address

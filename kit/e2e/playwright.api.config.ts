@@ -1,11 +1,11 @@
-import type { PlaywrightTestConfig } from "@playwright/test";
-import baseConfig from "./playwright.base.config";
+import type { PlaywrightTestConfig } from '@playwright/test';
+import baseConfig from './playwright.base.config';
 
 const apiConfig: PlaywrightTestConfig = {
   ...baseConfig,
-  testDir: "./api-tests",
-  globalSetup: "./api-global-setup.ts",
-  globalTeardown: "./api-global-teardown.ts",
+  testDir: './api-tests',
+  globalSetup: './api-global-setup.ts',
+  globalTeardown: './api-global-teardown.ts',
 
   use: {
     ...baseConfig.use,
@@ -13,7 +13,7 @@ const apiConfig: PlaywrightTestConfig = {
 
   projects: [
     {
-      name: "api-tests",
+      name: 'api-tests',
     },
   ],
 };

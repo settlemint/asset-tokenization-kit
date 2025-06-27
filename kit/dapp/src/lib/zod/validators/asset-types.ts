@@ -7,7 +7,7 @@
  *
  * @module AssetTypeValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Tuple of valid asset types for type-safe iteration.
@@ -21,11 +21,11 @@ import { z } from "zod/v4";
  * - `deposit`: Bank deposit certificates or similar instruments
  */
 export const assetTypes = [
-  "bond",
-  "equity",
-  "fund",
-  "stablecoin",
-  "deposit",
+  'bond',
+  'equity',
+  'fund',
+  'stablecoin',
+  'deposit',
 ] as const;
 
 /**
@@ -51,11 +51,11 @@ export const assetTypes = [
  * ```
  */
 export const AssetTypeEnum = {
-  bond: "bond",
-  equity: "equity",
-  fund: "fund",
-  stablecoin: "stablecoin",
-  deposit: "deposit",
+  bond: 'bond',
+  equity: 'equity',
+  fund: 'fund',
+  stablecoin: 'stablecoin',
+  deposit: 'deposit',
 } as const;
 
 /**
@@ -84,7 +84,7 @@ export const AssetTypeEnum = {
  * ```
  */
 export const assetType = () =>
-  z.enum(assetTypes).describe("Type of financial asset");
+  z.enum(assetTypes).describe('Type of financial asset');
 
 /**
  * Creates an array validator for multiple asset types.
@@ -103,8 +103,8 @@ export const assetType = () =>
 export const assetTypeArray = () =>
   z
     .array(assetType())
-    .min(1, "At least one asset type must be selected")
-    .describe("List of asset types");
+    .min(1, 'At least one asset type must be selected')
+    .describe('List of asset types');
 
 /**
  * Creates a set validator for unique asset types.
@@ -123,8 +123,8 @@ export const assetTypeArray = () =>
 export const assetTypeSet = () =>
   z
     .set(assetType())
-    .min(1, "At least one asset type must be selected")
-    .describe("Set of unique asset types");
+    .min(1, 'At least one asset type must be selected')
+    .describe('Set of unique asset types');
 
 /**
  * Creates an asset type validator with an optional default value.
@@ -141,7 +141,7 @@ export const assetTypeSet = () =>
  * ```
  */
 export const assetTypeWithDefault = (
-  defaultValue: AssetType = assetType().parse("bond")
+  defaultValue: AssetType = assetType().parse('bond')
 ) => assetType().default(defaultValue);
 
 /**
@@ -179,7 +179,7 @@ export const assetTypeRecord = <T extends z.ZodType>(valueSchema: T) =>
       deposit: valueSchema.optional(),
     })
     .strict() // Prevent unknown keys
-    .describe("Mapping of asset types to values");
+    .describe('Mapping of asset types to values');
 
 // Export types
 /**

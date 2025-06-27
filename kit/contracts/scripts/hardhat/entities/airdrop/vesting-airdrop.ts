@@ -1,9 +1,12 @@
-import hre from "hardhat";
-import { Address, type Hex } from "viem";
-import ATKLinearVestingStrategy from "../../../../ignition/modules/atk/addons/airdrop/linear-vesting-strategy";
-import { atkDeployer, ATKOnboardingContracts } from "../../services/deployer";
-import { waitForEvent } from "../../utils/wait-for-event";
-import { Asset } from "../asset";
+import hre from 'hardhat';
+import type { Address, Hex } from 'viem';
+import ATKLinearVestingStrategy from '../../../../ignition/modules/atk/addons/airdrop/linear-vesting-strategy';
+import {
+  type ATKOnboardingContracts,
+  atkDeployer,
+} from '../../services/deployer';
+import { waitForEvent } from '../../utils/wait-for-event';
+import type { Asset } from '../asset';
 
 export class VestingAirdrop {
   public address!: Address;
@@ -15,14 +18,14 @@ export class VestingAirdrop {
     public readonly owner: Address,
     public readonly vestingStrategy: Address,
     public readonly initializationDeadline: bigint,
-    public readonly contract: ATKOnboardingContracts["vestingAirdropFactory"]
+    public readonly contract: ATKOnboardingContracts['vestingAirdropFactory']
   ) {}
 
   public async waitUntilDeployed(transactionHash: Hex) {
     const eventArgs = await waitForEvent({
       transactionHash,
       contract: this.contract,
-      eventName: "ATKVestingAirdropCreated",
+      eventName: 'ATKVestingAirdropCreated',
     });
 
     const {

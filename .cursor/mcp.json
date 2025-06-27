@@ -11,10 +11,6 @@
     },
     "Sentry": {
       "url": "https://mcp.sentry.dev/sse"
-    },
-    "shadcn-ui": {
-      "command": "bunx",
-      "args": ["-y", "shadcn-ui-mcp-server"]
     }
   }
 }

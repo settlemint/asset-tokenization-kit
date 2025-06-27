@@ -14,11 +14,13 @@
  * @see {@link ./schema} - Database schema definitions
  * @see {@link ../settlemint/postgres} - PostgreSQL connection pool configuration
  */
+/** biome-ignore-all lint/performance/noNamespaceImport: schema imports need namespaces */
 
-import { postgresPool } from "@/lib/settlemint/postgres";
-import { serverOnly } from "@tanstack/react-start";
-import { drizzle } from "drizzle-orm/node-postgres";
-import * as schemas from "./schema";
+import { serverOnly } from '@tanstack/react-start';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { postgresPool } from '@/lib/settlemint/postgres';
+import * as authSchemas from './schemas/auth';
+import * as settingsSchemas from './schemas/settings';
 
 /**
  * Creates the Drizzle ORM database instance.
@@ -39,14 +41,17 @@ const getDb = serverOnly(() =>
      * When enabled in development, logs all SQL queries to the console
      * for debugging and performance analysis.
      */
-    logger: process.env.NODE_ENV === "development",
+    logger: process.env.NODE_ENV === 'development',
 
     /**
      * Schema definitions for type-safe queries.
      * Includes all table schemas from the schema module,
      * providing full TypeScript support for database operations.
      */
-    schema: schemas,
+    schema: {
+      ...authSchemas,
+      ...settingsSchemas,
+    },
   })
 );
 

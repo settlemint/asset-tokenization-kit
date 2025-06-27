@@ -1,35 +1,34 @@
+import { ATKTopic } from '../constants/topics';
 import {
   frozenInvestor,
   investorA,
   investorB,
-} from "../entities/actors/investors";
-
-import { ATKTopic } from "../constants/topics";
-import { owner } from "../entities/actors/owner";
-import { Asset } from "../entities/asset";
-import { atkDeployer } from "../services/deployer";
-import { topicManager } from "../services/topic-manager";
-import { burn } from "./actions/burnable/burn";
-import { mint } from "./actions/core/mint";
-import { transfer } from "./actions/core/transfer";
-import { forcedTransfer } from "./actions/custodian/forced-transfer";
-import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
-import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
-import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
-import { setupAsset } from "./actions/setup-asset";
-import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
-import { encodeAddressParams } from "./utils/encode-address-params";
+} from '../entities/actors/investors';
+import { owner } from '../entities/actors/owner';
+import { Asset } from '../entities/asset';
+import { atkDeployer } from '../services/deployer';
+import { topicManager } from '../services/topic-manager';
+import { burn } from './actions/burnable/burn';
+import { mint } from './actions/core/mint';
+import { transfer } from './actions/core/transfer';
+import { forcedTransfer } from './actions/custodian/forced-transfer';
+import { freezePartialTokens } from './actions/custodian/freeze-partial-tokens';
+import { setAddressFrozen } from './actions/custodian/set-address-frozen';
+import { unfreezePartialTokens } from './actions/custodian/unfreeze-partial-tokens';
+import { setupAsset } from './actions/setup-asset';
+import { getDefaultComplianceModules } from './utils/default-compliance-modules';
+import { encodeAddressParams } from './utils/encode-address-params';
 
 export const createDeposit = async () => {
-  console.log("\n=== Creating deposit... ===\n");
+  console.log('\n=== Creating deposit... ===\n');
 
   const depositFactory = atkDeployer.getDepositFactoryContract();
 
-  const deposit = new Asset<"depositFactory">(
-    "Euro Deposits",
-    "EURD",
+  const deposit = new Asset<'depositFactory'>(
+    'Euro Deposits',
+    'EURD',
     6,
-    "US1234567890",
+    'US1234567890',
     depositFactory
   );
 
@@ -46,7 +45,7 @@ export const createDeposit = async () => {
     [
       ...getDefaultComplianceModules(),
       {
-        module: atkDeployer.getContractAddress("identityAllowListModule"),
+        module: atkDeployer.getContractAddress('identityAllowListModule'),
         params: encodeAddressParams(allowedIdentities),
       },
     ],

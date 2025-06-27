@@ -1,8 +1,8 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { VestingAirdrop } from "../../../../../generated/schema";
-import { VestingAirdrop as VestingAirdropTemplate } from "../../../../../generated/templates";
-import { VestingAirdrop as VestingAirdropContract } from "../../../../../generated/templates/VestingAirdrop/VestingAirdrop";
-import { updateVestingAirdropStrategy } from "../utils/vesting-airdrop-utils";
+import { type Address, BigInt } from '@graphprotocol/graph-ts';
+import { VestingAirdrop } from '../../../../../generated/schema';
+import { VestingAirdrop as VestingAirdropTemplate } from '../../../../../generated/templates';
+import { VestingAirdrop as VestingAirdropContract } from '../../../../../generated/templates/VestingAirdrop/VestingAirdrop';
+import { updateVestingAirdropStrategy } from '../utils/vesting-airdrop-utils';
 
 export function fetchVestingAirdrop(id: Address): VestingAirdrop {
   let entity = VestingAirdrop.load(id);

@@ -1,12 +1,12 @@
-import { baseContract } from "@/orpc/procedures/base.contract";
-import { z } from "zod/v4";
-import { SettingsDeleteSchema } from "./routes/settings.delete.schema";
+import { z } from 'zod/v4';
+import { baseContract } from '@/orpc/procedures/base.contract';
+import { SettingsDeleteSchema } from './routes/settings.delete.schema';
 import {
   SettingsListOutputSchema,
   SettingsListSchema,
-} from "./routes/settings.list.schema";
-import { SettingsReadSchema } from "./routes/settings.read.schema";
-import { SettingsUpsertSchema } from "./routes/settings.upsert.schema";
+} from './routes/settings.list.schema';
+import { SettingsReadSchema } from './routes/settings.read.schema';
+import { SettingsUpsertSchema } from './routes/settings.upsert.schema';
 
 /**
  * Contract definition for the settings read endpoint.
@@ -15,11 +15,11 @@ import { SettingsUpsertSchema } from "./routes/settings.upsert.schema";
  */
 const read = baseContract
   .route({
-    method: "GET",
-    path: "/settings/:key",
-    description: "Read a single setting by key",
-    successDescription: "Setting retrieved successfully",
-    tags: ["settings"],
+    method: 'GET',
+    path: '/settings/:key',
+    description: 'Read a single setting by key',
+    successDescription: 'Setting retrieved successfully',
+    tags: ['settings'],
   })
   .input(SettingsReadSchema)
   .output(z.string().nullable());
@@ -31,11 +31,11 @@ const read = baseContract
  */
 const list = baseContract
   .route({
-    method: "GET",
-    path: "/settings",
-    description: "List all settings with pagination",
-    successDescription: "Settings list retrieved successfully",
-    tags: ["settings"],
+    method: 'GET',
+    path: '/settings',
+    description: 'List all settings with pagination',
+    successDescription: 'Settings list retrieved successfully',
+    tags: ['settings'],
   })
   .input(SettingsListSchema)
   .output(SettingsListOutputSchema);
@@ -47,11 +47,11 @@ const list = baseContract
  */
 const upsert = baseContract
   .route({
-    method: "POST",
-    path: "/settings",
-    description: "Upsert a setting",
-    successDescription: "Setting upserted successfully",
-    tags: ["settings"],
+    method: 'POST',
+    path: '/settings',
+    description: 'Upsert a setting',
+    successDescription: 'Setting upserted successfully',
+    tags: ['settings'],
   })
   .input(SettingsUpsertSchema)
   .output(z.string());
@@ -63,11 +63,11 @@ const upsert = baseContract
  */
 const del = baseContract
   .route({
-    method: "DELETE",
-    path: "/settings/:key",
-    description: "Delete a setting",
-    successDescription: "Setting deleted successfully",
-    tags: ["settings"],
+    method: 'DELETE',
+    path: '/settings/:key',
+    description: 'Delete a setting',
+    successDescription: 'Setting deleted successfully',
+    tags: ['settings'],
   })
   .input(SettingsDeleteSchema)
   .output(z.object({ success: z.boolean() }));

@@ -7,7 +7,7 @@
  *
  * @module SecretCodeValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Creates a Zod schema that validates secret authentication codes.
@@ -45,9 +45,9 @@ import { z } from "zod/v4";
 export const secretCode = () =>
   z
     .string()
-    .min(8, "Secret code must be at least 8 characters long")
-    .max(64, "Secret code must not exceed 64 characters")
-    .describe("Secret authentication code");
+    .min(8, 'Secret code must be at least 8 characters long')
+    .max(64, 'Secret code must not exceed 64 characters')
+    .describe('Secret authentication code');
 
 /**
  * Type representing a validated secret authentication code.

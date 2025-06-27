@@ -7,7 +7,7 @@
  *
  * @module EquityCategoryValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Available equity categories in corporate share structures.
@@ -17,7 +17,7 @@ import { z } from "zod/v4";
  * - `preferred`: Shares with priority in dividends and liquidation
  * - `restricted`: Shares with transfer limitations or vesting schedules
  */
-export const equityCategories = ["common", "preferred", "restricted"] as const;
+export const equityCategories = ['common', 'preferred', 'restricted'] as const;
 
 /**
  * Creates a Zod schema that validates equity categories.
@@ -38,7 +38,7 @@ export const equityCategories = ["common", "preferred", "restricted"] as const;
  * ```
  */
 export const equityCategory = () =>
-  z.enum(equityCategories).describe("Category of equity");
+  z.enum(equityCategories).describe('Category of equity');
 
 /**
  * Type representing a validated equity category.

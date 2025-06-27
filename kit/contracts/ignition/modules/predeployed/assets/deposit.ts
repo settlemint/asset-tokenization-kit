@@ -1,14 +1,14 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "../forwarder";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from '../forwarder';
 
-const DepositModule = buildModule("DepositModule", (m) => {
+const DepositModule = buildModule('DepositModule', (m) => {
   const { forwarder } = m.useModule(ForwarderModule);
 
   const depositFactoryImplementation = m.contract(
-    "ATKDepositFactoryImplementation",
+    'ATKDepositFactoryImplementation',
     [forwarder]
   );
-  const depositImplementation = m.contract("ATKDepositImplementation", [
+  const depositImplementation = m.contract('ATKDepositImplementation', [
     forwarder,
   ]);
 

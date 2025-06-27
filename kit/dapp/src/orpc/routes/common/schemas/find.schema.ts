@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Common find schema for ID-based entity lookups.

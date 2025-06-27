@@ -1,7 +1,7 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
-import { IdentityRegistryStorage } from "../../../generated/schema";
-import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
-import { fetchAccount } from "../../account/fetch/account";
+import { type Address, Bytes } from '@graphprotocol/graph-ts';
+import { IdentityRegistryStorage } from '../../../generated/schema';
+import { fetchAccessControl } from '../../access-control/fetch/accesscontrol';
+import { fetchAccount } from '../../account/fetch/account';
 
 export function fetchIdentityRegistryStorage(
   address: Address

@@ -1,10 +1,10 @@
-import { Address } from "viem";
-import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
-import { Asset } from "../../../entities/asset";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { toBaseUnits } from "../../../utils/to-base-units";
-import { waitForEvent } from "../../../utils/wait-for-event";
+import type { Address } from 'viem';
+import { ATKContracts } from '../../../constants/contracts';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { toBaseUnits } from '../../../utils/to-base-units';
+import { waitForEvent } from '../../../utils/wait-for-event';
 
 export const withdrawnUnderlyingAsset = async (
   asset: Asset<any>,
@@ -13,7 +13,7 @@ export const withdrawnUnderlyingAsset = async (
   amount: bigint
 ) => {
   console.log(
-    `[Withdrawn underlying asset] → Starting underlying asset withdrawal...`
+    '[Withdrawn underlying asset] → Starting underlying asset withdrawal...'
   );
 
   const tokenContract = owner.getContractInstance({
@@ -34,7 +34,7 @@ export const withdrawnUnderlyingAsset = async (
   await waitForEvent({
     transactionHash,
     contract: scheduleContract,
-    eventName: "UnderlyingAssetWithdrawn",
+    eventName: 'UnderlyingAssetWithdrawn',
   });
 
   console.log(

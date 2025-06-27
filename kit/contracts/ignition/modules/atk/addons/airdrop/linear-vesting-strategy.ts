@@ -1,4 +1,4 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
 
 /**
  * Ignition module for deploying ATKLinearVestingStrategy contract
@@ -10,7 +10,7 @@ import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
  * @param cliffDuration - Cliff duration in seconds (default: 3 months)
  */
 const ATKLinearVestingStrategyModule = buildModule(
-  "ATKLinearVestingStrategy",
+  'ATKLinearVestingStrategy',
   (m) => {
     // Default vesting parameters
     const DEFAULT_VESTING_DURATION = 365 * 24 * 60 * 60; // 1 year in seconds
@@ -18,16 +18,16 @@ const ATKLinearVestingStrategyModule = buildModule(
 
     // Module parameters with defaults
     const vestingDuration = m.getParameter(
-      "vestingDuration",
+      'vestingDuration',
       DEFAULT_VESTING_DURATION
     );
     const cliffDuration = m.getParameter(
-      "cliffDuration",
+      'cliffDuration',
       DEFAULT_CLIFF_DURATION
     );
 
     // Deploy the ATKLinearVestingStrategy contract
-    const atkLinearVestingStrategy = m.contract("ATKLinearVestingStrategy", [
+    const atkLinearVestingStrategy = m.contract('ATKLinearVestingStrategy', [
       vestingDuration,
       cliffDuration,
     ]);

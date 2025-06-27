@@ -15,9 +15,9 @@
 import {
   UserListOutputSchema,
   UserListSchema,
-} from "@/orpc/routes/user/routes/user.list.schema";
-import { UserMeSchema } from "@/orpc/routes/user/routes/user.me.schema";
-import { baseContract } from "../../procedures/base.contract";
+} from '@/orpc/routes/user/routes/user.list.schema';
+import { UserMeSchema } from '@/orpc/routes/user/routes/user.me.schema';
+import { baseContract } from '../../procedures/base.contract';
 
 /**
  * Get current authenticated user information.
@@ -34,21 +34,21 @@ import { baseContract } from "../../procedures/base.contract";
  */
 const me = baseContract
   .route({
-    method: "GET",
-    path: "/user/me",
-    description: "Get the current user",
-    successDescription: "Current user",
-    tags: ["user"],
+    method: 'GET',
+    path: '/user/me',
+    description: 'Get the current user',
+    successDescription: 'Current user',
+    tags: ['user'],
   })
   .output(UserMeSchema);
 
 const list = baseContract
   .route({
-    method: "GET",
-    path: "/user/list",
-    description: "Get the list of users",
-    successDescription: "List of users",
-    tags: ["user"],
+    method: 'GET',
+    path: '/user/list',
+    description: 'Get the list of users',
+    successDescription: 'List of users',
+    tags: ['user'],
   })
   .input(UserListSchema)
   .output(UserListOutputSchema);

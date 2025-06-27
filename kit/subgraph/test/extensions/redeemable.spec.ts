@@ -1,8 +1,8 @@
-import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { describe, expect, it } from 'bun:test';
+import { theGraphClient, theGraphGraphql } from '../utils/thegraph-client';
 
-describe("Token redeemable extension", () => {
-  it("tokens can be redeemable", async () => {
+describe('Token redeemable extension', () => {
+  it('tokens can be redeemable', async () => {
     const query = theGraphGraphql(
       `query($where: Token_filter) {
         tokens(where: $where, orderBy: name) {
@@ -24,11 +24,11 @@ describe("Token redeemable extension", () => {
     expect(response.tokens.length).toBe(1);
     expect(response.tokens).toEqual([
       {
-        name: "Euro Bonds",
-        type: "bond",
+        name: 'Euro Bonds',
+        type: 'bond',
         redeemable: {
-          redeemedAmount: "11",
-          redeemedAmountExact: "11000000",
+          redeemedAmount: '11',
+          redeemedAmountExact: '11000000',
         },
       },
     ]);

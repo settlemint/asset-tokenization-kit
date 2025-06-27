@@ -10,9 +10,10 @@
  *
  * @see {@link https://github.com/pacocoursey/next-themes} - Next Themes for theme detection
  */
-import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
-import type { PropsWithChildren } from "react";
+
+import { useTheme } from 'next-themes';
+import type { PropsWithChildren } from 'react';
+import { cn } from '@/lib/utils';
 
 /**
  * Props for the Logo component.
@@ -30,7 +31,7 @@ interface LogoProps {
    * - "vertical": Stacked logo with text below the icon
    * - "icon": Icon-only logo without text
    */
-  variant?: "horizontal" | "vertical" | "icon";
+  variant?: 'horizontal' | 'vertical' | 'icon';
 
   /**
    * Force a specific color mode regardless of the current theme.
@@ -39,7 +40,7 @@ interface LogoProps {
    * - "dark": Use dark mode logo
    * - undefined: Auto-detect based on theme (default)
    */
-  forcedColorMode?: "light" | "dark";
+  forcedColorMode?: 'light' | 'dark';
 }
 
 /**
@@ -78,8 +79,8 @@ interface LogoProps {
  * ```
  */
 export function Logo({
-  className = "",
-  variant = "horizontal",
+  className = '',
+  variant = 'horizontal',
   forcedColorMode,
 }: PropsWithChildren<LogoProps>) {
   const { resolvedTheme } = useTheme();
@@ -90,31 +91,31 @@ export function Logo({
    */
   const getLogoSrc = () => {
     // Check if dark mode should be used (either from theme or forced)
-    const isDark = resolvedTheme === "dark";
+    const isDark = resolvedTheme === 'dark';
 
     // Select logo file based on variant and color mode
     switch (variant) {
-      case "horizontal":
-        return isDark || forcedColorMode === "dark"
-          ? "/logos/settlemint-logo-h-dm.svg"
-          : "/logos/settlemint-logo-h-lm.svg";
-      case "vertical":
-        return isDark || forcedColorMode === "dark"
-          ? "/logos/settlemint-logo-v-dm.svg"
-          : "/logos/settlemint-logo-v-lm.svg";
-      case "icon":
-        return isDark || forcedColorMode === "dark"
-          ? "/logos/settlemint-logo-i-dm.svg"
-          : "/logos/settlemint-logo-i-lm.svg";
+      case 'horizontal':
+        return isDark || forcedColorMode === 'dark'
+          ? '/logos/settlemint-logo-h-dm.svg'
+          : '/logos/settlemint-logo-h-lm.svg';
+      case 'vertical':
+        return isDark || forcedColorMode === 'dark'
+          ? '/logos/settlemint-logo-v-dm.svg'
+          : '/logos/settlemint-logo-v-lm.svg';
+      case 'icon':
+        return isDark || forcedColorMode === 'dark'
+          ? '/logos/settlemint-logo-i-dm.svg'
+          : '/logos/settlemint-logo-i-lm.svg';
       default:
         // Fallback to horizontal light mode logo
-        return "/logos/settlemint-logo-h-lm.svg";
+        return '/logos/settlemint-logo-h-lm.svg';
     }
   };
 
   return (
-    <div className={cn("relative", className)}>
-      <img src={getLogoSrc()} alt="SettleMint" className="h-full w-full" />
+    <div className={cn('relative', className)}>
+      <img alt="SettleMint" className="h-full w-full" src={getLogoSrc()} />
     </div>
   );
 }

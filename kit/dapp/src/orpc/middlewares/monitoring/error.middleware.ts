@@ -1,9 +1,9 @@
-import type { ORPCErrorCode } from "@orpc/client";
-import { ORPCError, ValidationError } from "@orpc/server";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { APIError } from "better-auth/api";
-import { z } from "zod/v4";
-import { baseRouter } from "../../procedures/base.router";
+import type { ORPCErrorCode } from '@orpc/client';
+import { ORPCError, ValidationError } from '@orpc/server';
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import { APIError } from 'better-auth/api';
+import { z } from 'zod/v4';
+import { baseRouter } from '../../procedures/base.router';
 
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
@@ -39,11 +39,11 @@ interface ORPCValidationIssue {
  */
 function formatZodError(zodError: z.ZodError): FormattedValidationError {
   const formattedErrors = zodError.issues.map((err) => ({
-    path: err.path.join("."),
+    path: err.path.join('.'),
     message: err.message,
     code: err.code,
-    expected: "expected" in err ? err.expected : undefined,
-    received: "received" in err ? err.received : undefined,
+    expected: 'expected' in err ? err.expected : undefined,
+    received: 'received' in err ? err.received : undefined,
   }));
 
   return {
@@ -60,14 +60,14 @@ function formatORPCValidationIssues(
   issues: ORPCValidationIssue[]
 ): FormattedValidationError {
   const formattedErrors = issues.map((issue) => ({
-    path: issue.path ?? "unknown",
-    message: issue.message ?? "Validation failed",
+    path: issue.path ?? 'unknown',
+    message: issue.message ?? 'Validation failed',
     expected: issue.expected,
     received: issue.received,
   }));
 
   return {
-    message: `Output validation failed:\n${formattedErrors.map((i) => `- ${i.path}: ${i.message}`).join("\n")}`,
+    message: `Output validation failed:\n${formattedErrors.map((i) => `- ${i.path}: ${i.message}`).join('\n')}`,
     errors: formattedErrors,
     errorCount: formattedErrors.length,
   };
@@ -133,7 +133,7 @@ function logValidationError(
 ) {
   const logData: Record<string, unknown> = {
     message:
-      typeof formattedData === "object" ? formattedData.message : formattedData,
+      typeof formattedData === 'object' ? formattedData.message : formattedData,
     details: formattedData,
   };
 
@@ -171,7 +171,7 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
   } catch (error) {
     // Handle Better Auth API errors
     if (error instanceof APIError) {
-      logger.error("Better Auth API error", {
+      logger.error('Better Auth API error', {
         statusCode: error.statusCode,
         message: error.message,
         error: error.name,
@@ -184,23 +184,23 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
       const validationError = error.cause;
 
       // Authorization validation errors (403)
-      if (error.code === "FORBIDDEN") {
-        throw new ORPCError("FORBIDDEN", {
+      if (error.code === 'FORBIDDEN') {
+        throw new ORPCError('FORBIDDEN', {
           status: 403,
           cause: validationError,
         });
       }
 
       // Input validation errors (422)
-      if (error.code === "BAD_REQUEST") {
+      if (error.code === 'BAD_REQUEST') {
         const formattedData = getFormattedValidationData(validationError);
         logValidationError(
-          "Input validation failed",
+          'Input validation failed',
           formattedData,
           validationError
         );
 
-        throw new ORPCError("INPUT_VALIDATION_FAILED", {
+        throw new ORPCError('INPUT_VALIDATION_FAILED', {
           status: 422,
           data: formattedData,
           cause: validationError,
@@ -208,15 +208,15 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
       }
 
       // Output validation errors (522)
-      if (error.code === "INTERNAL_SERVER_ERROR") {
+      if (error.code === 'INTERNAL_SERVER_ERROR') {
         const formattedData = getFormattedValidationData(validationError);
         logValidationError(
-          "Output validation failed",
+          'Output validation failed',
           formattedData,
           validationError
         );
 
-        throw new ORPCError("OUTPUT_VALIDATION_FAILED", {
+        throw new ORPCError('OUTPUT_VALIDATION_FAILED', {
           status: 522,
           data: formattedData,
           cause: validationError,
@@ -227,7 +227,7 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
     // Handle other ORPC errors
     if (error instanceof ORPCError) {
       // Log the error for debugging with full context
-      logger.error("ORPC error", {
+      logger.error('ORPC error', {
         code: error.code,
         status: error.status,
         message: error.message || `Request failed with status ${error.code}`,
@@ -237,7 +237,7 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
       });
 
       // Ensure the error has a meaningful message
-      if (!error.message || error.message.trim() === "") {
+      if (!error.message || error.message.trim() === '') {
         throw new ORPCError(error.code, {
           status: error.status,
           message: `Request failed with status ${error.code}`,
@@ -250,16 +250,16 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
     }
 
     // Wrap all other errors in INTERNAL_SERVER_ERROR
-    logger.error("Unexpected error in ORPC middleware", {
+    logger.error('Unexpected error in ORPC middleware', {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
       cause: error instanceof Error ? error.cause : undefined,
     });
 
-    throw new ORPCError("INTERNAL_SERVER_ERROR", {
+    throw new ORPCError('INTERNAL_SERVER_ERROR', {
       status: 500,
       message:
-        error instanceof Error ? error.message : "An unexpected error occurred",
+        error instanceof Error ? error.message : 'An unexpected error occurred',
       cause: error,
     });
   }

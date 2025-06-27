@@ -1,14 +1,14 @@
-import { ATKContracts } from "../../../constants/contracts";
-import { ATKTopic } from "../../../constants/topics";
-import { claimIssuer } from "../../../entities/actors/claim-issuer";
-import { owner } from "../../../entities/actors/owner";
-import type { Asset } from "../../../entities/asset";
-import { encodeClaimData } from "../../../utils/claim-scheme-utils";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import { ATKContracts } from '../../../constants/contracts';
+import { ATKTopic } from '../../../constants/topics';
+import { claimIssuer } from '../../../entities/actors/claim-issuer';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { encodeClaimData } from '../../../utils/claim-scheme-utils';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 export const issueIsinClaim = async (asset: Asset<any>, isin: string) => {
-  console.log(`[ISIN claim] → Starting claim issuance...`);
+  console.log('[ISIN claim] → Starting claim issuance...');
 
   const encodedIsinData = encodeClaimData(ATKTopic.isin, [isin]);
 
@@ -36,7 +36,7 @@ export const issueIsinClaim = async (asset: Asset<any>, isin: string) => {
       claimIssuerIdentity,
       isinClaimSignature,
       isinClaimData,
-      "",
+      '',
     ])
   );
 

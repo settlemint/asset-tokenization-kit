@@ -7,8 +7,8 @@
  *
  * @module EthereumHashValidation
  */
-import { isHash, type Hex } from "viem";
-import { z } from "zod/v4";
+import { type Hex, isHash } from 'viem';
+import { z } from 'zod/v4';
 
 /**
  * Zod schema for validating and normalizing Ethereum hashes (32 bytes)
@@ -45,15 +45,15 @@ import { z } from "zod/v4";
  */
 export const ethereumHash = z
   .string()
-  .describe("A valid Ethereum hash (66 characters, starting with 0x)")
-  .min(66, "Ethereum hash must be exactly 66 characters long")
-  .max(66, "Ethereum hash must be exactly 66 characters long")
+  .describe('A valid Ethereum hash (66 characters, starting with 0x)')
+  .min(66, 'Ethereum hash must be exactly 66 characters long')
+  .max(66, 'Ethereum hash must be exactly 66 characters long')
   .regex(
     /^0x[a-fA-F0-9]{64}$/,
     "Ethereum hash must start with '0x' followed by 64 hexadecimal characters"
   )
   .refine(isHash, {
-    message: "Invalid Ethereum hash format",
+    message: 'Invalid Ethereum hash format',
   });
 
 /**

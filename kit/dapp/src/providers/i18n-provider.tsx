@@ -20,15 +20,15 @@
  * @see {@link https://react.i18next.com} - React i18next documentation
  */
 
-import { default as i18n } from "@/lib/i18n/index";
-import { useLanguageDetection } from "@/lib/i18n/use-language-detection";
-import { useEffect } from "react";
-import { I18nextProvider } from "react-i18next";
+import { useEffect } from 'react';
+import { I18nextProvider } from 'react-i18next';
+import { default as i18n } from '@/lib/i18n/index';
+import { useLanguageDetection } from '@/lib/i18n/use-language-detection';
 
 /**
  * RTL languages that require right-to-left text direction
  */
-const RTL_LANGUAGES = ["ar", "he", "fa", "ur"];
+const RTL_LANGUAGES = ['ar', 'he', 'fa', 'ur'];
 
 /**
  * Props for the I18nProvider component.
@@ -73,7 +73,7 @@ function I18nProviderContent({ children }: { children: React.ReactNode }) {
 
       // Update HTML dir attribute for RTL languages
       const isRTL = RTL_LANGUAGES.includes(currentLanguage);
-      document.documentElement.dir = isRTL ? "rtl" : "ltr";
+      document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
     }
   }, [currentLanguage]);
 
@@ -128,7 +128,7 @@ export function I18nProvider({ children, initialLanguage }: I18nProviderProps) {
    */
   useEffect(() => {
     if (initialLanguage && initialLanguage !== i18n.language) {
-      void i18n.changeLanguage(initialLanguage);
+      i18n.changeLanguage(initialLanguage);
     }
   }, [initialLanguage]);
 

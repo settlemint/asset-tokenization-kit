@@ -12,8 +12,8 @@
  * @see {@link ./account.router} - Implementation router
  */
 
-import { baseContract } from "../../procedures/base.contract";
-import { AccountReadSchema, AccountSchema } from "./routes/account.read.schema";
+import { baseContract } from '../../procedures/base.contract';
+import { AccountReadSchema, AccountSchema } from './routes/account.read.schema';
 
 /**
  * Read account information including identity claims.
@@ -54,22 +54,22 @@ import { AccountReadSchema, AccountSchema } from "./routes/account.read.schema";
  */
 const read = baseContract
   .route({
-    method: "GET",
-    path: "/account/read",
-    description: "Read account information including identity claims",
-    successDescription: "Account information retrieved successfully",
-    tags: ["account"],
+    method: 'GET',
+    path: '/account/read',
+    description: 'Read account information including identity claims',
+    successDescription: 'Account information retrieved successfully',
+    tags: ['account'],
   })
   .input(AccountReadSchema)
   .output(AccountSchema);
 
 const me = baseContract
   .route({
-    method: "GET",
-    path: "/account/me",
-    description: "Read account information for the authenticated user",
-    successDescription: "Account information retrieved successfully",
-    tags: ["account"],
+    method: 'GET',
+    path: '/account/me',
+    description: 'Read account information for the authenticated user',
+    successDescription: 'Account information retrieved successfully',
+    tags: ['account'],
   })
   .output(AccountSchema.nullable());
 

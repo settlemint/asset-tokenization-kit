@@ -8,7 +8,9 @@
  *
  * @module TimestampValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+
+const NUMERIC_STRING_REGEX = /^\d+$/;
 
 /**
  * Creates a Zod schema that validates and normalizes timestamps in various formats.
@@ -64,55 +66,67 @@ export const timestamp = () =>
       }
 
       // Handle numeric strings that represent timestamps
-      if (typeof value === "string" && /^\d+$/.test(value)) {
+      if (typeof value === 'string' && NUMERIC_STRING_REGEX.test(value)) {
         const num = Number(value);
         // No need to check isNaN - a string of only digits always parses to a valid number
         // Detect timestamp precision based on length
         const len = value.length;
-        if (len === 10) return new Date(num * 1000); // Unix seconds to milliseconds
-        if (len === 13) return new Date(num); // Already milliseconds
-        if (len === 16) return new Date(num / 1000); // Microseconds to milliseconds
-        if (len === 19) return new Date(num / 1000000); // Nanoseconds to milliseconds
+        if (len === 10) {
+          return new Date(num * 1000); // Unix seconds to milliseconds
+        }
+        if (len === 13) {
+          return new Date(num); // Already milliseconds
+        }
+        if (len === 16) {
+          return new Date(num / 1000); // Microseconds to milliseconds
+        }
+        if (len === 19) {
+          return new Date(num / 1_000_000); // Nanoseconds to milliseconds
+        }
         // For other lengths, use heuristic
-        return new Date(num < 10000000000 ? num * 1000 : num);
+        return new Date(num < 10_000_000_000 ? num * 1000 : num);
       }
 
       // Handle any other string (ISO dates, etc)
-      if (typeof value === "string") {
+      if (typeof value === 'string') {
         const date = new Date(value);
-        if (isNaN(date.getTime())) {
-          throw new Error(`Invalid date string format`);
+        if (Number.isNaN(date.getTime())) {
+          throw new Error('Invalid date string format');
         }
         return date;
       }
 
       // Handle number timestamps
-      if (typeof value === "number") {
+      if (typeof value === 'number') {
         // Check for negative
         if (value < 0) {
-          throw new Error("Timestamp cannot be negative");
+          throw new Error('Timestamp cannot be negative');
         }
         // Convert seconds to milliseconds if needed
-        if (value < 10000000000) return new Date(value * 1000);
-        if (value >= 10000000000000) return new Date(value / 1000); // Microseconds
+        if (value < 10_000_000_000) {
+          return new Date(value * 1000);
+        }
+        if (value >= 10_000_000_000_000) {
+          return new Date(value / 1000); // Microseconds
+        }
         return new Date(value); // Already milliseconds
       }
 
       // For any other type, let z.date() handle the error
       return value;
     }, z.date())
-    .describe("A timestamp in various formats")
+    .describe('A timestamp in various formats')
     .refine(
       (date) => {
         const time = date.getTime();
         // Check for valid date range
         // Min: January 1, 1970 (Unix epoch)
         // Max: December 31, 9999 (far future, but still representable)
-        return time >= 0 && time <= 253402300799999;
+        return time >= 0 && time <= 253_402_300_799_999;
       },
       {
         message:
-          "Timestamp is out of valid range (must be between 1970 and 9999)",
+          'Timestamp is out of valid range (must be between 1970 and 9999)',
       }
     );
 

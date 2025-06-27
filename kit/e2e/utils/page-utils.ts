@@ -1,13 +1,13 @@
-import type { Page } from "@playwright/test";
+import type { Page } from '@playwright/test';
 
 export async function searchAndSelectFromDialog(
   page: Page,
   walletAddress: string,
   displayName: string,
-  optionSelector: string = '[role="option"]'
+  optionSelector = '[role="option"]'
 ): Promise<void> {
   await page.waitForSelector('[role="dialog"][data-state="open"]', {
-    timeout: 30000,
+    timeout: 30_000,
   });
 
   const triggerButton = page.locator(
@@ -19,8 +19,8 @@ export async function searchAndSelectFromDialog(
     await page.waitForSelector(
       '[role="dialog"][data-state="open"] input:visible, [data-slot="command-input"]:visible',
       {
-        timeout: 15000,
-        state: "visible",
+        timeout: 15_000,
+        state: 'visible',
       }
     );
   }
@@ -28,14 +28,14 @@ export async function searchAndSelectFromDialog(
   const searchInput = page.locator(
     '[role="dialog"][data-state="open"] input, [data-slot="command-input"]'
   );
-  await searchInput.waitFor({ state: "visible", timeout: 20000 });
+  await searchInput.waitFor({ state: 'visible', timeout: 20_000 });
   await searchInput.click();
   await searchInput.fill(walletAddress);
   await page.waitForSelector(
     `${optionSelector}, [data-slot="command-item"], [role="option"]`,
     {
-      timeout: 20000,
-      state: "visible",
+      timeout: 20_000,
+      state: 'visible',
     }
   );
 
@@ -45,21 +45,21 @@ export async function searchAndSelectFromDialog(
       .filter({ hasText: displayName })
       .first();
 
-    await option.waitFor({ state: "visible", timeout: 10000 });
+    await option.waitFor({ state: 'visible', timeout: 10_000 });
     await option.click();
-  } catch (error) {
+  } catch (_error) {
     try {
       const commandOption = page
         .locator('[data-slot="command-item"]')
         .filter({ hasText: displayName })
         .first();
       await commandOption.click();
-    } catch (e) {
+    } catch (_e) {
       const fallbackOption = page
         .locator('[role="option"]')
         .filter({ hasText: displayName })
         .first();
-      await fallbackOption.waitFor({ state: "visible", timeout: 10000 });
+      await fallbackOption.waitFor({ state: 'visible', timeout: 10_000 });
       await fallbackOption.click();
     }
   }
@@ -69,12 +69,12 @@ export async function selectRecipientFromDialog(
   page: Page,
   walletAddress: string,
   user: string,
-  optionSelector: string = '[role="option"]'
+  optionSelector = '[role="option"]'
 ) {
   await page.waitForSelector('[role="dialog"][data-state="open"]');
 
   const searchInput = page.locator('[role="dialog"][data-state="open"] input');
-  await searchInput.waitFor({ state: "visible" });
+  await searchInput.waitFor({ state: 'visible' });
   await searchInput.fill(walletAddress);
 
   await page.locator(optionSelector).filter({ hasText: user }).first().click();
@@ -86,33 +86,33 @@ export function formatAmount(
   commaRegex: RegExp = /,/g
 ): string {
   return amount
-    .replace(currencyRegex, "")
-    .replace(commaRegex, "")
+    .replace(currencyRegex, '')
+    .replace(commaRegex, '')
     .trim()
-    .split(".")[0]
-    .replace(/(\d+).*/s, "$1")
+    .split('.')[0]
+    .replace(/(\d+).*/s, '$1')
     .trim();
 }
 
 export function parseAmountString(text: string): number {
   if (!text) {
-    throw new Error("Cannot parse empty amount string");
+    throw new Error('Cannot parse empty amount string');
   }
 
   let numericValue: number | null = null;
 
   const matchInParens = text.match(/\(([^)]+)\)/);
-  if (matchInParens && matchInParens[1]) {
-    const valueInParens = matchInParens[1].replace(/[€$£,]/g, "").trim();
+  if (matchInParens?.[1]) {
+    const valueInParens = matchInParens[1].replace(/[€$£,]/g, '').trim();
     numericValue = Number.parseFloat(valueInParens);
   } else {
-    let cleanedAmount = text.replace(/[€$£,]/g, "").trim();
+    let cleanedAmount = text.replace(/[€$£,]/g, '').trim();
 
     const kiloMatch = cleanedAmount.match(/^([\d.]+)\s*K$/i);
-    if (kiloMatch && kiloMatch[1]) {
+    if (kiloMatch?.[1]) {
       numericValue = Number.parseFloat(kiloMatch[1]) * 1000;
     } else {
-      cleanedAmount = cleanedAmount.replace(/[^\d.]/g, "");
+      cleanedAmount = cleanedAmount.replace(/[^\d.]/g, '');
       numericValue = Number.parseFloat(cleanedAmount);
     }
   }
@@ -132,39 +132,39 @@ export async function clickAssetDetailTab(
     .locator('nav[data-slot="navigation-menu"] a')
     .filter({ hasText: tabName });
 
-  await tabSelector.waitFor({ state: "visible", timeout: 10000 });
+  await tabSelector.waitFor({ state: 'visible', timeout: 10_000 });
   await tabSelector.scrollIntoViewIfNeeded();
   await tabSelector.click();
 
-  if (tabName === "Details") {
+  if (tabName === 'Details') {
     await page.waitForURL(
       (url) => {
         const urlStr = url.toString();
         return (
-          urlStr.includes("/assets/") &&
-          !urlStr.includes("/holders") &&
-          !urlStr.includes("/events") &&
-          !urlStr.includes("/permissions") &&
-          !urlStr.includes("/allowlist")
+          urlStr.includes('/assets/') &&
+          !urlStr.includes('/holders') &&
+          !urlStr.includes('/events') &&
+          !urlStr.includes('/permissions') &&
+          !urlStr.includes('/allowlist')
         );
       },
-      { timeout: 10000 }
+      { timeout: 10_000 }
     );
   } else {
     const tabPath = getTabPathSegment(tabName);
     if (tabPath) {
-      await page.waitForURL(new RegExp(`.*/${tabPath}.*`), { timeout: 10000 });
+      await page.waitForURL(new RegExp(`.*/${tabPath}.*`), { timeout: 10_000 });
     }
   }
 }
 
 function getTabPathSegment(tabName: string): string | undefined {
   const tabMap: Record<string, string> = {
-    Details: "",
-    Holders: "holders",
-    Events: "events",
-    Permissions: "permissions",
-    "Allow list": "allowlist",
+    Details: '',
+    Holders: 'holders',
+    Events: 'events',
+    Permissions: 'permissions',
+    'Allow list': 'allowlist',
   };
 
   return tabMap[tabName];

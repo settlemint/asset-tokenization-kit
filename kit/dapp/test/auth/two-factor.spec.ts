@@ -1,20 +1,22 @@
-import { beforeAll, describe, expect, it } from "bun:test";
-import { randomUUID } from "node:crypto";
-import { authClient } from "../utils/auth-client";
-import { setupUser, signInWithUser } from "../utils/user";
+import { beforeAll, describe, expect, it } from 'bun:test';
+import { randomUUID } from 'node:crypto';
+import { authClient } from '../utils/auth-client';
+import { setupUser, signInWithUser } from '../utils/user';
 
-describe("Two factor verification", () => {
+const OTPAUTH_TOTP_REGEX = /^otpauth:\/\/totp/;
+
+describe('Two factor verification', () => {
   const TEST_USER = {
     email: `${randomUUID()}@test.com`,
-    name: "test",
-    password: "settlemint",
+    name: 'test',
+    password: 'settlemint',
   };
 
   beforeAll(async () => {
     await setupUser(TEST_USER);
   });
 
-  it("can enable two factor verification", async () => {
+  it('can enable two factor verification', async () => {
     const headers = await signInWithUser(TEST_USER);
     const { data, error } = await authClient.twoFactor.enable(
       {
@@ -26,10 +28,10 @@ describe("Two factor verification", () => {
     );
     expect(error).toBeNull();
     expect(data?.totpURI).toBeDefined();
-    expect(data?.totpURI).toMatch(/^otpauth:\/\/totp/);
+    expect(data?.totpURI).toMatch(OTPAUTH_TOTP_REGEX);
   });
 
-  it("can disable two factor verification", async () => {
+  it('can disable two factor verification', async () => {
     const headers = await signInWithUser(TEST_USER);
     const { data, error } = await authClient.twoFactor.disable(
       {

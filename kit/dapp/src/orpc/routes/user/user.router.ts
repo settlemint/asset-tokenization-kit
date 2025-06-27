@@ -1,5 +1,5 @@
-import { list } from "@/orpc/routes/user/routes/user.list";
-import { me } from "@/orpc/routes/user/routes/user.me";
+import { list } from '@/orpc/routes/user/routes/user.list';
+import { me } from '@/orpc/routes/user/routes/user.me';
 
 /**
  * User router module.

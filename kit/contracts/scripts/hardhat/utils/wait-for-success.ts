@@ -1,6 +1,6 @@
-import type { Hex, TransactionReceipt } from "viem";
-import { parseRevertReason } from "./decode-revert-reason";
-import { getPublicClient } from "./public-client";
+import type { Hex, TransactionReceipt } from 'viem';
+import { parseRevertReason } from './decode-revert-reason';
+import { getPublicClient } from './public-client';
 
 export async function waitForSuccess(transactionHash: Hex) {
   const publicClient = getPublicClient();
@@ -10,18 +10,18 @@ export async function waitForSuccess(transactionHash: Hex) {
       pollingInterval: 50,
     });
 
-  if (receipt.status === "success") {
+  if (receipt.status === 'success') {
     return receipt;
   }
 
-  if (receipt.status === "reverted") {
-    console.log(`\n=== TRANSACTION REVERT ANALYSIS ===`);
+  if (receipt.status === 'reverted') {
+    console.log('\n=== TRANSACTION REVERT ANALYSIS ===');
     console.log(`Transaction Hash: ${transactionHash}`);
     console.log(`Block Number: ${receipt.blockNumber}`);
     console.log(`Transaction Index: ${receipt.transactionIndex}`);
     console.log(`Gas Used: ${receipt.gasUsed.toString()}`);
     console.log(
-      `Effective Gas Price: ${receipt.effectiveGasPrice?.toString() || "N/A"}`
+      `Effective Gas Price: ${receipt.effectiveGasPrice?.toString() || 'N/A'}`
     );
 
     try {
@@ -30,12 +30,12 @@ export async function waitForSuccess(transactionHash: Hex) {
         hash: transactionHash,
       });
 
-      console.log(`\n--- ORIGINAL TRANSACTION DETAILS ---`);
+      console.log('\n--- ORIGINAL TRANSACTION DETAILS ---');
       console.log(`From: ${transaction.from}`);
       console.log(`To: ${transaction.to}`);
-      console.log(`Value: ${transaction.value?.toString() || "0"} wei`);
-      console.log(`Gas Limit: ${transaction.gas?.toString() || "N/A"}`);
-      console.log(`Gas Price: ${transaction.gasPrice?.toString() || "N/A"}`);
+      console.log(`Value: ${transaction.value?.toString() || '0'} wei`);
+      console.log(`Gas Limit: ${transaction.gas?.toString() || 'N/A'}`);
+      console.log(`Gas Price: ${transaction.gasPrice?.toString() || 'N/A'}`);
       console.log(`Nonce: ${transaction.nonce}`);
       console.log(`Input Data: ${transaction.input}`);
       console.log(`Input Data Length: ${transaction.input.length} characters`);
@@ -46,7 +46,7 @@ export async function waitForSuccess(transactionHash: Hex) {
         console.log(`Function Selector: ${selector}`);
       }
 
-      console.log(`\n--- TRANSACTION RECEIPT DETAILS ---`);
+      console.log('\n--- TRANSACTION RECEIPT DETAILS ---');
       console.log(`Status: ${receipt.status}`);
       console.log(
         `Cumulative Gas Used: ${receipt.cumulativeGasUsed.toString()}`
@@ -56,21 +56,21 @@ export async function waitForSuccess(transactionHash: Hex) {
 
       // Log any events that were emitted (even on revert, some events might be there)
       if (receipt.logs.length > 0) {
-        console.log(`\n--- EMITTED LOGS ---`);
+        console.log('\n--- EMITTED LOGS ---');
         receipt.logs.forEach((log, index) => {
           console.log(`Log ${index}:`);
           console.log(`  Address: ${log.address}`);
-          console.log(`  Topics: ${log.topics.join(", ")}`);
+          console.log(`  Topics: ${log.topics.join(', ')}`);
           console.log(`  Data: ${log.data}`);
         });
       }
 
-      console.log(`\n--- ATTEMPTING TRANSACTION SIMULATION ---`);
+      console.log('\n--- ATTEMPTING TRANSACTION SIMULATION ---');
 
       // Try multiple simulation approaches with more detailed logging
       const simulationMethods = [
         {
-          name: "Previous Block",
+          name: 'Previous Block',
           method: () =>
             publicClient.call({
               to: transaction.to,
@@ -80,7 +80,7 @@ export async function waitForSuccess(transactionHash: Hex) {
             }),
         },
         {
-          name: "Same Block",
+          name: 'Same Block',
           method: () =>
             publicClient.call({
               to: transaction.to,
@@ -90,7 +90,7 @@ export async function waitForSuccess(transactionHash: Hex) {
             }),
         },
         {
-          name: "Latest State",
+          name: 'Latest State',
           method: () =>
             publicClient.call({
               to: transaction.to,
@@ -99,7 +99,7 @@ export async function waitForSuccess(transactionHash: Hex) {
             }),
         },
         {
-          name: "With Original Gas",
+          name: 'With Original Gas',
           method: () =>
             publicClient.call({
               to: transaction.to,
@@ -123,13 +123,13 @@ export async function waitForSuccess(transactionHash: Hex) {
           );
 
           // Extract and log detailed error information
-          console.log(`  Error details:`);
-          console.log(`    Name: ${simulationError?.name || "Unknown"}`);
+          console.log('  Error details:');
+          console.log(`    Name: ${simulationError?.name || 'Unknown'}`);
           console.log(
-            `    Message: ${simulationError?.message || "No message"}`
+            `    Message: ${simulationError?.message || 'No message'}`
           );
-          console.log(`    Code: ${simulationError?.code || "No code"}`);
-          console.log(`    Cause: ${simulationError?.cause || "No cause"}`);
+          console.log(`    Code: ${simulationError?.code || 'No code'}`);
+          console.log(`    Cause: ${simulationError?.cause || 'No cause'}`);
 
           // Try to decode the revert reason from different possible locations
           const possibleRevertData = [
@@ -144,8 +144,8 @@ export async function waitForSuccess(transactionHash: Hex) {
           for (const [dataIndex, revertData] of possibleRevertData.entries()) {
             if (
               revertData &&
-              typeof revertData === "string" &&
-              revertData.startsWith("0x") &&
+              typeof revertData === 'string' &&
+              revertData.startsWith('0x') &&
               revertData.length > 2
             ) {
               console.log(
@@ -167,12 +167,12 @@ export async function waitForSuccess(transactionHash: Hex) {
 
           // Log the full error object structure for debugging
           console.log(
-            `  Full error object keys: ${Object.keys(simulationError || {}).join(", ")}`
+            `  Full error object keys: ${Object.keys(simulationError || {}).join(', ')}`
           );
         }
       }
 
-      console.log(`\n--- CHECKING BLOCK STATE ---`);
+      console.log('\n--- CHECKING BLOCK STATE ---');
       try {
         const block = await publicClient.getBlock({
           blockNumber: receipt.blockNumber,
@@ -186,7 +186,7 @@ export async function waitForSuccess(transactionHash: Hex) {
       }
     } catch (error: any) {
       // If we got here from a decoded error, re-throw it
-      if (error.message?.includes("The contract reverted with reason:")) {
+      if (error.message?.includes('The contract reverted with reason:')) {
         throw error;
       }
       console.log(

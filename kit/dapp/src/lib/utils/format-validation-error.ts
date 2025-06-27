@@ -2,7 +2,7 @@
  * Formats validation errors for display in the UI
  */
 
-import type { ORPCError } from "@orpc/server";
+import type { ORPCError } from '@orpc/server';
 
 interface FormattedValidationError {
   path: string;
@@ -19,7 +19,7 @@ interface ValidationErrorData {
 }
 
 type ValidationError = ORPCError<
-  "INPUT_VALIDATION_FAILED" | "OUTPUT_VALIDATION_FAILED",
+  'INPUT_VALIDATION_FAILED' | 'OUTPUT_VALIDATION_FAILED',
   ValidationErrorData
 >;
 
@@ -27,18 +27,20 @@ type ValidationError = ORPCError<
  * Checks if an error is a validation error with structured data
  */
 export function isValidationError(error: unknown): error is ValidationError {
-  if (!(error instanceof Error)) return false;
+  if (!(error instanceof Error)) {
+    return false;
+  }
 
   const orpcError = error as ORPCError<string, unknown>;
 
   return (
-    "code" in orpcError &&
-    (orpcError.code === "INPUT_VALIDATION_FAILED" ||
-      orpcError.code === "OUTPUT_VALIDATION_FAILED") &&
-    "data" in orpcError &&
-    typeof orpcError.data === "object" &&
+    'code' in orpcError &&
+    (orpcError.code === 'INPUT_VALIDATION_FAILED' ||
+      orpcError.code === 'OUTPUT_VALIDATION_FAILED') &&
+    'data' in orpcError &&
+    typeof orpcError.data === 'object' &&
     orpcError.data !== null &&
-    "errors" in orpcError.data &&
+    'errors' in orpcError.data &&
     Array.isArray((orpcError.data as { errors?: unknown[] }).errors)
   );
 }
@@ -54,14 +56,14 @@ export function formatValidationError(error: unknown): string {
     if (error instanceof Error) {
       return error.message;
     }
-    return "An unknown error occurred";
+    return 'An unknown error occurred';
   }
 
   // If we have a pretty-printed message from Zod, use it directly
   if (
-    typeof error.data === "object" &&
-    "message" in error.data &&
-    typeof error.data.message === "string"
+    typeof error.data === 'object' &&
+    'message' in error.data &&
+    typeof error.data.message === 'string'
   ) {
     return error.data.message;
   }
@@ -84,7 +86,7 @@ export function formatValidationError(error: unknown): string {
     err.path ? `• ${err.path}: ${err.message}` : `• ${err.message}`
   );
 
-  return `Validation failed with ${errorCount} errors:\n${errorMessages.join("\n")}`;
+  return `Validation failed with ${errorCount} errors:\n${errorMessages.join('\n')}`;
 }
 
 /**

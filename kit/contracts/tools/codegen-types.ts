@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+
 /**
  * codegen-types.ts - Generate TypeScript typings from Hardhat contract ABIs
  *
@@ -11,11 +12,11 @@
  *   bun run codegen-types.ts bond equity  # Generate specific ABIs
  */
 
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { $ } from "bun";
-import { existsSync } from "node:fs";
-import { join } from "node:path";
-import { getKitProjectPath } from "../../../tools/root";
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import { $ } from 'bun';
+import { getKitProjectPath } from '../../../tools/root';
 
 // =============================================================================
 // TYPES AND INTERFACES
@@ -23,7 +24,7 @@ import { getKitProjectPath } from "../../../tools/root";
 
 interface ScriptOptions {
   skipBuild: boolean;
-  operationMode: "generate-all" | "generate-specific" | "list";
+  operationMode: 'generate-all' | 'generate-specific' | 'list';
   specificAbis: string[];
 }
 
@@ -42,11 +43,11 @@ const logger = createLogger({
   level:
     (process.env.LOG_LEVEL as LogLevel) ||
     (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
-    "info",
+    'info',
 });
-const CONTRACTS_ROOT = await getKitProjectPath("contracts");
-const ARTIFACTS_DIR = join(CONTRACTS_ROOT, ".generated", "artifacts");
-const OUTPUT_DIR = join(CONTRACTS_ROOT, "scripts/hardhat/abi");
+const CONTRACTS_ROOT = await getKitProjectPath('contracts');
+const ARTIFACTS_DIR = join(CONTRACTS_ROOT, '.generated', 'artifacts');
+const OUTPUT_DIR = join(CONTRACTS_ROOT, 'scripts/hardhat/abi');
 
 const ABI_PATHS = {
   // onboarding
@@ -104,49 +105,49 @@ const ABI_PATHS = {
 
 const AVAILABLE_ABIS = {
   onboarding: [
-    "system",
-    "compliance",
-    "identityRegistry",
-    "identityRegistryStorage",
-    "trustedIssuersRegistry",
-    "topicSchemeRegistry",
-    "identityFactory",
-    "bondFactory",
-    "depositFactory",
-    "equityFactory",
-    "fundFactory",
-    "stablecoinFactory",
-    "tokenFactoryRegistry",
-    "complianceModuleRegistry",
-    "systemAddonRegistry",
+    'system',
+    'compliance',
+    'identityRegistry',
+    'identityRegistryStorage',
+    'trustedIssuersRegistry',
+    'topicSchemeRegistry',
+    'identityFactory',
+    'bondFactory',
+    'depositFactory',
+    'equityFactory',
+    'fundFactory',
+    'stablecoinFactory',
+    'tokenFactoryRegistry',
+    'complianceModuleRegistry',
+    'systemAddonRegistry',
   ],
-  tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
-  assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
-  openZeppelin: ["accessControl"],
+  tokenInfrastructure: ['accessManager', 'identity', 'tokenIdentity'],
+  assetTokens: ['deposit', 'equity', 'fund', 'stablecoin', 'bond'],
+  openZeppelin: ['accessControl'],
   coreSmart: [
-    "ismart",
-    "ismartBurnable",
-    "ismartCustodian",
-    "ismartPausable",
-    "ismartYield",
-    "ismartFixedYieldSchedule",
-    "ismartCapped",
-    "ismartRedeemable",
+    'ismart',
+    'ismartBurnable',
+    'ismartCustodian',
+    'ismartPausable',
+    'ismartYield',
+    'ismartFixedYieldSchedule',
+    'ismartCapped',
+    'ismartRedeemable',
   ],
   complianceModules: [
-    "identityVerification",
-    "countryAllowList",
-    "countryBlockList",
-    "addressBlockList",
-    "identityBlockList",
-    "identityAllowList",
+    'identityVerification',
+    'countryAllowList',
+    'countryBlockList',
+    'addressBlockList',
+    'identityBlockList',
+    'identityAllowList',
   ],
   addons: [
-    "fixedYieldScheduleFactory",
-    "vestingAirdropFactory",
-    "pushAirdropFactory",
-    "timeBoundAirdropFactory",
-    "xvpSettlementFactory",
+    'fixedYieldScheduleFactory',
+    'vestingAirdropFactory',
+    'pushAirdropFactory',
+    'timeBoundAirdropFactory',
+    'xvpSettlementFactory',
   ],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 
@@ -164,9 +165,9 @@ const ALL_ABIS = [
 // SCRIPT STATE
 // =============================================================================
 
-let options: ScriptOptions = {
+const options: ScriptOptions = {
   skipBuild: false,
-  operationMode: "generate-all",
+  operationMode: 'generate-all',
   specificAbis: [],
 };
 
@@ -216,25 +217,25 @@ OUTPUT:
 
 AVAILABLE ABI NAMES:
     Onboarding:
-      ${AVAILABLE_ABIS.onboarding.join(", ")}
+      ${AVAILABLE_ABIS.onboarding.join(', ')}
 
     Token Infrastructure:
-      ${AVAILABLE_ABIS.tokenInfrastructure.join(", ")}
+      ${AVAILABLE_ABIS.tokenInfrastructure.join(', ')}
 
     Asset Tokens:
-      ${AVAILABLE_ABIS.assetTokens.join(", ")}
+      ${AVAILABLE_ABIS.assetTokens.join(', ')}
 
     Core ATK:
-      ${AVAILABLE_ABIS.coreSmart.join(", ")}
+      ${AVAILABLE_ABIS.coreSmart.join(', ')}
 
     Open Zeppelin:
-      ${AVAILABLE_ABIS.openZeppelin.join(", ")}
+      ${AVAILABLE_ABIS.openZeppelin.join(', ')}
 
     Compliance Modules:
-      ${AVAILABLE_ABIS.complianceModules.join(", ")}
+      ${AVAILABLE_ABIS.complianceModules.join(', ')}
 
     Addons:
-      ${AVAILABLE_ABIS.addons.join(", ")}
+      ${AVAILABLE_ABIS.addons.join(', ')}
 `);
 }
 
@@ -243,36 +244,36 @@ function parseArguments(args: string[]): void {
     const arg = args[i];
 
     switch (arg) {
-      case "-h":
-      case "--help":
+      case '-h':
+      case '--help':
         showUsage();
         process.exit(0);
-      case "-v":
-      case "--verbose":
+      case '-v':
+      case '--verbose':
         // Note: SettleMint SDK logger level is set at creation time
-        logger.info("Verbose mode requested (set LOG_LEVEL=debug in env)");
+        logger.info('Verbose mode requested (set LOG_LEVEL=debug in env)');
         break;
-      case "-q":
-      case "--quiet":
+      case '-q':
+      case '--quiet':
         // Note: SettleMint SDK logger level is set at creation time
         // Quiet mode can be achieved by setting LOG_LEVEL=error in env
         break;
-      case "-l":
-      case "--list":
-        options.operationMode = "list";
+      case '-l':
+      case '--list':
+        options.operationMode = 'list';
         break;
-      case "--skip-build":
+      case '--skip-build':
         options.skipBuild = true;
-        logger.info("Skip build mode enabled");
+        logger.info('Skip build mode enabled');
         break;
       default:
-        if (arg?.startsWith("-")) {
+        if (arg?.startsWith('-')) {
           logger.error(`Unknown option: ${arg}`);
           showUsage();
           process.exit(1);
         } else {
           // Treat as ABI name
-          options.operationMode = "generate-specific";
+          options.operationMode = 'generate-specific';
           if (arg) {
             options.specificAbis.push(arg);
           }
@@ -284,11 +285,11 @@ function parseArguments(args: string[]): void {
 
 async function compileContracts(): Promise<boolean> {
   if (options.skipBuild) {
-    logger.info("Skipping contract compilation");
+    logger.info('Skipping contract compilation');
     return true;
   }
 
-  logger.info("Compiling contracts with Hardhat...");
+  logger.info('Compiling contracts with Hardhat...');
 
   try {
     // Set working directory for shell commands);
@@ -297,50 +298,49 @@ async function compileContracts(): Promise<boolean> {
     const result = await $`settlemint scs hardhat build`.quiet();
 
     if (result.exitCode === 0) {
-      logger.info("Contracts compiled successfully");
+      logger.info('Contracts compiled successfully');
       return true;
-    } else {
-      logger.error("Failed to compile contracts");
-      if (result.stderr) {
-        logger.error(result.stderr.toString());
-      }
-      return false;
     }
+    logger.error('Failed to compile contracts');
+    if (result.stderr) {
+      logger.error(result.stderr.toString());
+    }
+    return false;
   } catch (err) {
     const shellError = err as $.ShellError;
     logger.info(shellError.stdout.toString());
     logger.error(shellError.stderr.toString());
-    logger.error(`Failed to execute compilation`);
+    logger.error('Failed to execute compilation');
     return false;
   }
 }
 
 function listAbiNames(): void {
-  logger.info("Available ABI names:");
+  logger.info('Available ABI names:');
 
-  logger.info("\nOnboarding:");
+  logger.info('\nOnboarding:');
   AVAILABLE_ABIS.onboarding.forEach((name) => logger.info(`  • ${name}`));
 
-  logger.info("\nToken Infrastructure:");
+  logger.info('\nToken Infrastructure:');
   AVAILABLE_ABIS.tokenInfrastructure.forEach((name) =>
     logger.info(`  • ${name}`)
   );
 
-  logger.info("\nAsset Tokens:");
+  logger.info('\nAsset Tokens:');
   AVAILABLE_ABIS.assetTokens.forEach((name) => logger.info(`  • ${name}`));
 
-  logger.info("\nCore ATK:");
+  logger.info('\nCore ATK:');
   AVAILABLE_ABIS.coreSmart.forEach((name) => logger.info(`  • ${name}`));
 
-  logger.info("\nOpen Zeppelin:");
+  logger.info('\nOpen Zeppelin:');
   AVAILABLE_ABIS.openZeppelin.forEach((name) => logger.info(`  • ${name}`));
 
-  logger.info("\nCompliance Modules:");
+  logger.info('\nCompliance Modules:');
   AVAILABLE_ABIS.complianceModules.forEach((name) =>
     logger.info(`  • ${name}`)
   );
 
-  logger.info("\nAddons:");
+  logger.info('\nAddons:');
   AVAILABLE_ABIS.addons.forEach((name) => logger.info(`  • ${name}`));
 }
 
@@ -422,8 +422,8 @@ async function generateSpecificAbiTypings(
     (name) => !validAbiNames.has(name as any)
   );
   if (invalidAbis.length > 0) {
-    logger.error(`Invalid ABI names: ${invalidAbis.join(", ")}`);
-    logger.info("Use --list to see available ABI names");
+    logger.error(`Invalid ABI names: ${invalidAbis.join(', ')}`);
+    logger.info('Use --list to see available ABI names');
     return false;
   }
 
@@ -461,12 +461,12 @@ async function generateIndexFile(): Promise<void> {
   const indexContent = `// Generated automatically by codegen-types.ts
 // Do not edit this file manually
 
-${exports.join("\n")}
+${exports.join('\n')}
 `;
 
-  const indexPath = join(OUTPUT_DIR, "index.ts");
+  const indexPath = join(OUTPUT_DIR, 'index.ts');
   await Bun.write(indexPath, indexContent);
-  logger.info("Generated index.ts file");
+  logger.info('Generated index.ts file');
 }
 
 // =============================================================================
@@ -474,7 +474,7 @@ ${exports.join("\n")}
 // =============================================================================
 
 async function main(): Promise<void> {
-  logger.info("Starting ABI typings generation...");
+  logger.info('Starting ABI typings generation...');
   logger.debug(`Contracts root: ${CONTRACTS_ROOT}`);
 
   // Parse command line arguments
@@ -484,11 +484,11 @@ async function main(): Promise<void> {
 
   try {
     switch (options.operationMode) {
-      case "list":
+      case 'list':
         listAbiNames();
         break;
 
-      case "generate-all":
+      case 'generate-all':
         // Compile contracts first
         if (!(await compileContracts())) {
           exitCode = 1;
@@ -502,10 +502,10 @@ async function main(): Promise<void> {
         }
 
         await generateIndexFile();
-        logger.info("All ABI typings generated successfully");
+        logger.info('All ABI typings generated successfully');
         break;
 
-      case "generate-specific":
+      case 'generate-specific':
         // Compile contracts first
         if (!(await compileContracts())) {
           exitCode = 1;
@@ -519,7 +519,7 @@ async function main(): Promise<void> {
         }
 
         await generateIndexFile();
-        logger.info("Specific ABI typings generated successfully");
+        logger.info('Specific ABI typings generated successfully');
         break;
 
       default:

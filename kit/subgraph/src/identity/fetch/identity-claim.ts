@@ -1,5 +1,5 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
-import { Identity, IdentityClaim } from "../../../generated/schema";
+import { Address, Bytes } from '@graphprotocol/graph-ts';
+import { type Identity, IdentityClaim } from '../../../generated/schema';
 
 export function fetchIdentityClaim(
   identity: Identity,
@@ -12,7 +12,7 @@ export function fetchIdentityClaim(
     identityClaim = new IdentityClaim(id);
     identityClaim.issuer = Address.zero();
     identityClaim.identity = identity.id;
-    identityClaim.name = "";
+    identityClaim.name = '';
     identityClaim.revoked = false;
     identityClaim.deployedInTransaction = Bytes.empty();
     identityClaim.save();

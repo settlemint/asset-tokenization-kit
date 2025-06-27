@@ -1,31 +1,32 @@
-import { type BrowserContext, test } from "@playwright/test";
-import { Pages } from "../pages/pages";
+import { type BrowserContext, test } from '@playwright/test';
+import { Pages } from '../pages/pages';
 import {
   cryptocurrencyData,
-  cryptocurrencyMintData,
   cryptocurrencyDataAmountAfterMint,
+  cryptocurrencyMintData,
   equityData,
   equityMintData,
-} from "../test-data/asset-data";
-import { successMessageData } from "../test-data/message-data";
+  xvpSettlementData,
+} from '../test-data/asset-data';
+import { successMessageData } from '../test-data/message-data';
 import {
-  adminUser,
   adminRecipient,
+  adminUser,
   userRecipient,
-} from "../test-data/user-data";
-import { ensureUserIsAdmin } from "../utils/db-utils";
-import { xvpSettlementData } from "../test-data/asset-data";
+} from '../test-data/user-data';
+import { ensureUserIsAdmin } from '../utils/db-utils';
+
 const testData = {
-  xvpUserEmail: "",
-  xvpUserWalletAddress: "",
-  xvpUserName: "",
-  cryptocurrencyName: "",
+  xvpUserEmail: '',
+  xvpUserWalletAddress: '',
+  xvpUserName: '',
+  cryptocurrencyName: '',
   currentTotalSupply: 0,
-  equityName: "",
+  equityName: '',
 };
 
-test.describe("Create and approve XvP settlement", () => {
-  test.describe.configure({ mode: "serial" });
+test.describe('Create and approve XvP settlement', () => {
+  test.describe.configure({ mode: 'serial' });
   let adminContext: BrowserContext | undefined;
   let adminRecipientContext: BrowserContext | undefined;
   let userRecipientContext: BrowserContext | undefined;
@@ -39,21 +40,21 @@ test.describe("Create and approve XvP settlement", () => {
       adminContext = await browser.newContext();
       const adminPage = await adminContext.newPage();
       adminPages = Pages(adminPage);
-      await adminPage.goto("/");
+      await adminPage.goto('/');
       await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
 
       adminRecipientContext = await browser.newContext();
       const adminRecipientPage = await adminRecipientContext.newPage();
       adminRecipientPages = Pages(adminRecipientPage);
-      await adminRecipientPage.goto("/");
+      await adminRecipientPage.goto('/');
       await adminRecipientPages.signUpPage.signUp(adminRecipient);
       await ensureUserIsAdmin(adminRecipient.email);
 
       userRecipientContext = await browser.newContext();
       const userRecipientPage = await userRecipientContext.newPage();
       userRecipientPages = Pages(userRecipientPage);
-      await userRecipientPage.goto("/");
+      await userRecipientPage.goto('/');
       await userRecipientPages.signUpPage.signUp(userRecipient);
     } catch (error) {
       if (adminContext) {
@@ -80,7 +81,7 @@ test.describe("Create and approve XvP settlement", () => {
       await userRecipientContext.close();
     }
   });
-  test("Admin user creates and mints cryptocurrency", async () => {
+  test('Admin user creates and mints cryptocurrency', async () => {
     await adminPages.adminPage.createCryptocurrency(cryptocurrencyData);
     testData.cryptocurrencyName = cryptocurrencyData.name;
     await adminPages.adminPage.verifySuccessMessage(
@@ -103,7 +104,7 @@ test.describe("Create and approve XvP settlement", () => {
       cryptocurrencyDataAmountAfterMint.amount
     );
   });
-  test("Admin user creates and mints equity", async () => {
+  test('Admin user creates and mints equity', async () => {
     await adminPages.adminPage.createEquity(equityData);
     testData.equityName = equityData.name;
     await adminPages.adminPage.verifySuccessMessage(
@@ -124,11 +125,11 @@ test.describe("Create and approve XvP settlement", () => {
     );
     await adminPages.adminPage.verifyTotalSupply(equityMintData.amount);
   });
-  test("Admin user creates XvP settlement with auto execute", async () => {
-    await adminPages.adminPage.selectFooterDropdownOption("My portfolio");
+  test('Admin user creates XvP settlement with auto execute', async () => {
+    await adminPages.adminPage.selectFooterDropdownOption('My portfolio');
     await adminPages.adminPage.chooseSidebarMenuOption({
-      sidebarOption: "XvP",
-      expectedUrlPattern: "**/trades/xvp",
+      sidebarOption: 'XvP',
+      expectedUrlPattern: '**/trades/xvp',
       expectedLocatorsToWaitFor: [
         adminPages.adminPage.getTableBodyLocator(),
         adminPages.adminPage.getFilterButtonLocator(),
@@ -162,8 +163,8 @@ test.describe("Create and approve XvP settlement", () => {
       successMessageData.successMessage
     );
     await adminPages.xvpSettlementPage.chooseCreatedXvpSettlement({
-      settlementStatus: "Pending",
-      settlementExpiry: "tomorrow",
+      settlementStatus: 'Pending',
+      settlementExpiry: 'tomorrow',
     });
     await adminPages.xvpSettlementPage.approveXvpSettlement({
       pincode: adminRecipient.pincode,
@@ -172,17 +173,17 @@ test.describe("Create and approve XvP settlement", () => {
       successMessageData.successMessage
     );
     await adminPages.xvpSettlementPage.verifySettlementStatus({
-      status: "Executed",
+      status: 'Executed',
     });
   });
-  test("Verify Admin recipient receives cryptocurrency", async () => {
+  test('Verify Admin recipient receives cryptocurrency', async () => {
     await adminRecipientPages.portfolioPage.goto();
     await adminRecipientPages.portfolioPage.verifyPortfolioAssetAmount({
       expectedAmount: xvpSettlementData.cryptocurrencyAmount,
       price: cryptocurrencyData.price,
     });
   });
-  test("Verify User recipient receives equity", async () => {
+  test('Verify User recipient receives equity', async () => {
     await userRecipientPages.portfolioPage.goto();
     await userRecipientPages.portfolioPage.verifyPortfolioAssetAmount({
       expectedAmount: xvpSettlementData.equityAmount,

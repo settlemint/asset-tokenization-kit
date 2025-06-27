@@ -1,4 +1,4 @@
-import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
+import { ByteArray, Bytes, crypto } from '@graphprotocol/graph-ts';
 
 class RoleConfig {
   _name: string;
@@ -8,9 +8,9 @@ class RoleConfig {
 
   constructor(name: string, fieldName: string) {
     this._name = name;
-    if (name == "DEFAULT_ADMIN_ROLE") {
+    if (name == 'DEFAULT_ADMIN_ROLE') {
       this._hexString =
-        "0x0000000000000000000000000000000000000000000000000000000000000000";
+        '0x0000000000000000000000000000000000000000000000000000000000000000';
     } else {
       this._hexString = crypto
         .keccak256(ByteArray.fromUTF8(name))
@@ -38,19 +38,19 @@ class RoleConfig {
 }
 
 export const Roles = [
-  new RoleConfig("DEFAULT_ADMIN_ROLE", "admin"),
-  new RoleConfig("REGISTRAR_ROLE", "registrar"),
-  new RoleConfig("CLAIM_MANAGER_ROLE", "claimManager"),
-  new RoleConfig("DEPLOYER_ROLE", "deployer"),
-  new RoleConfig("STORAGE_MODIFIER_ROLE", "storageModifier"),
-  new RoleConfig("REGISTRY_MANAGER_ROLE", "registryManager"),
-  new RoleConfig("GOVERNANCE_ROLE", "governance"),
-  new RoleConfig("SUPPLY_MANAGEMENT_ROLE", "supplyManagement"),
-  new RoleConfig("CUSTODIAN_ROLE", "custodian"),
-  new RoleConfig("EMERGENCY_ROLE", "emergency"),
-  new RoleConfig("IMPLEMENTATION_MANAGER_ROLE", "implementationManager"),
-  new RoleConfig("BYPASS_LIST_MANAGER_ROLE", "bypassListManager"),
-  new RoleConfig("BYPASS_LIST_MANAGER_ADMIN_ROLE", "bypassListManagerAdmin"),
+  new RoleConfig('DEFAULT_ADMIN_ROLE', 'admin'),
+  new RoleConfig('REGISTRAR_ROLE', 'registrar'),
+  new RoleConfig('CLAIM_MANAGER_ROLE', 'claimManager'),
+  new RoleConfig('DEPLOYER_ROLE', 'deployer'),
+  new RoleConfig('STORAGE_MODIFIER_ROLE', 'storageModifier'),
+  new RoleConfig('REGISTRY_MANAGER_ROLE', 'registryManager'),
+  new RoleConfig('GOVERNANCE_ROLE', 'governance'),
+  new RoleConfig('SUPPLY_MANAGEMENT_ROLE', 'supplyManagement'),
+  new RoleConfig('CUSTODIAN_ROLE', 'custodian'),
+  new RoleConfig('EMERGENCY_ROLE', 'emergency'),
+  new RoleConfig('IMPLEMENTATION_MANAGER_ROLE', 'implementationManager'),
+  new RoleConfig('BYPASS_LIST_MANAGER_ROLE', 'bypassListManager'),
+  new RoleConfig('BYPASS_LIST_MANAGER_ADMIN_ROLE', 'bypassListManagerAdmin'),
 ];
 
 export function getRoleConfigFromBytes(bytes: Bytes): RoleConfig {

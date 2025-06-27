@@ -18,8 +18,8 @@
  * ```
  */
 
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+import { ethereumAddress } from '@/lib/zod/validators/ethereum-address';
 
 /**
  * Input schema for system read operations
@@ -28,7 +28,7 @@ export const SystemReadSchema = z.object({
   /**
    * The system contract address to query
    */
-  id: ethereumAddress.describe("The system contract address"),
+  id: ethereumAddress.describe('The system contract address'),
 });
 
 /**

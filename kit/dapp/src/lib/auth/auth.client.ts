@@ -15,24 +15,24 @@
  * @see https://better-auth.com - Better Auth documentation
  */
 
-import { pincodeClient } from "@/lib/auth/plugins/pincode-plugin/client";
-import { secretCodesClient } from "@/lib/auth/plugins/secret-codes-plugin/client";
-import { twoFactorClient } from "@/lib/auth/plugins/two-factor/client";
-import { walletClient } from "@/lib/auth/plugins/wallet-plugin/client";
 import {
   adminClient,
   apiKeyClient,
   inferAdditionalFields,
   passkeyClient,
-} from "better-auth/client/plugins";
-import { createAuthClient } from "better-auth/react";
-import type { auth } from ".";
+} from 'better-auth/client/plugins';
+import { createAuthClient } from 'better-auth/react';
+import { pincodeClient } from '@/lib/auth/plugins/pincode-plugin/client';
+import { secretCodesClient } from '@/lib/auth/plugins/secret-codes-plugin/client';
+import { twoFactorClient } from '@/lib/auth/plugins/two-factor/client';
+import { walletClient } from '@/lib/auth/plugins/wallet-plugin/client';
+import type { auth } from '.';
 import {
   accessControl,
   adminRole,
   investorRole,
   issuerRole,
-} from "./permissions";
+} from './permissions';
 
 /**
  * The main authentication client instance for the application.

@@ -1,36 +1,35 @@
-import { atkDeployer } from "../services/deployer";
+import { ATKTopic } from '../constants/topics';
 
 import {
   frozenInvestor,
   investorA,
   investorB,
-} from "../entities/actors/investors";
-
-import { ATKTopic } from "../constants/topics";
-import { owner } from "../entities/actors/owner";
-import { Asset } from "../entities/asset";
-import { topicManager } from "../services/topic-manager";
-import { burn } from "./actions/burnable/burn";
-import { mint } from "./actions/core/mint";
-import { transfer } from "./actions/core/transfer";
-import { forcedTransfer } from "./actions/custodian/forced-transfer";
-import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
-import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
-import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
-import { collectManagementFee } from "./actions/fund/collect-management-fee";
-import { setupAsset } from "./actions/setup-asset";
-import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
+} from '../entities/actors/investors';
+import { owner } from '../entities/actors/owner';
+import { Asset } from '../entities/asset';
+import { atkDeployer } from '../services/deployer';
+import { topicManager } from '../services/topic-manager';
+import { burn } from './actions/burnable/burn';
+import { mint } from './actions/core/mint';
+import { transfer } from './actions/core/transfer';
+import { forcedTransfer } from './actions/custodian/forced-transfer';
+import { freezePartialTokens } from './actions/custodian/freeze-partial-tokens';
+import { setAddressFrozen } from './actions/custodian/set-address-frozen';
+import { unfreezePartialTokens } from './actions/custodian/unfreeze-partial-tokens';
+import { collectManagementFee } from './actions/fund/collect-management-fee';
+import { setupAsset } from './actions/setup-asset';
+import { getDefaultComplianceModules } from './utils/default-compliance-modules';
 
 export const createFund = async () => {
-  console.log("\n=== Creating fund... ===\n");
+  console.log('\n=== Creating fund... ===\n');
 
   const fundFactory = atkDeployer.getFundFactoryContract();
 
-  const fund = new Asset<"fundFactory">(
-    "Bens Bugs",
-    "BB",
+  const fund = new Asset<'fundFactory'>(
+    'Bens Bugs',
+    'BB',
     8,
-    "FR0000120271",
+    'FR0000120271',
     fundFactory
   );
 
@@ -46,8 +45,8 @@ export const createFund = async () => {
   await fund.waitUntilDeployed(transactionHash);
 
   await setupAsset(fund, {
-    assetClass: "Class A",
-    assetCategory: "Category A",
+    assetClass: 'Class A',
+    assetCategory: 'Category A',
     basePrice: 20.0,
   });
 

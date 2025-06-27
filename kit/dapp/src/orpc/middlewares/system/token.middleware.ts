@@ -1,7 +1,7 @@
-import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { baseRouter } from "@/orpc/procedures/base.router";
-import type { ResultOf } from "@settlemint/sdk-thegraph";
+import type { ResultOf } from '@settlemint/sdk-thegraph';
+import { AccessControlFragment } from '@/lib/fragments/the-graph/access-control-fragment';
+import { theGraphClient, theGraphGraphql } from '@/lib/settlemint/the-graph';
+import { baseRouter } from '@/orpc/procedures/base.router';
 
 const READ_TOKEN_QUERY = theGraphGraphql(
   `
@@ -24,12 +24,12 @@ const READ_TOKEN_QUERY = theGraphGraphql(
 );
 
 export type TokenRoles = keyof NonNullable<
-  NonNullable<ResultOf<typeof READ_TOKEN_QUERY>["token"]>["accessControl"]
+  NonNullable<ResultOf<typeof READ_TOKEN_QUERY>['token']>['accessControl']
 >;
 
 export type Token = Omit<
-  ResultOf<typeof READ_TOKEN_QUERY>["token"],
-  "accessControl"
+  ResultOf<typeof READ_TOKEN_QUERY>['token'],
+  'accessControl'
 > & {
   userPermissions: {
     // List of roles, when true the user has the role
@@ -48,22 +48,22 @@ export type Token = Omit<
 export const tokenMiddleware = baseRouter.middleware(
   async ({ next, context, errors }, input) => {
     const id =
-      typeof input === "object" && input !== null && "id" in input
+      typeof input === 'object' && input !== null && 'id' in input
         ? input.id
         : null;
-    if (typeof id !== "string") {
+    if (typeof id !== 'string') {
       return next();
     }
 
     const { auth, userClaimTopics } = context;
     if (!userClaimTopics) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: "User claim topics context not set",
+        message: 'User claim topics context not set',
       });
     }
 
     const { token } = await theGraphClient.request(READ_TOKEN_QUERY, {
-      id: id,
+      id,
     });
     const userRoles = Object.entries(token?.accessControl ?? {}).reduce<
       Record<TokenRoles, boolean>

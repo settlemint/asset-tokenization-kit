@@ -1,45 +1,44 @@
-import { atkDeployer } from "../services/deployer";
-
-import { ATKTopic } from "../constants/topics";
+import { ATKTopic } from '../constants/topics';
 import {
   frozenInvestor,
   investorA,
   investorB,
-} from "../entities/actors/investors";
-import { owner } from "../entities/actors/owner";
-import { Asset } from "../entities/asset";
-import { topicManager } from "../services/topic-manager";
-import { getAnvilTimeMilliseconds, getAnvilTimeSeconds } from "../utils/anvil";
-import { toBaseUnits } from "../utils/to-base-units";
-import { mature } from "./actions/bond/mature";
-import { burn } from "./actions/burnable/burn";
-import { setCap } from "./actions/capped/set-cap";
-import { setAddressParametersForComplianceModule } from "./actions/compliance/set-address-parameters-for-compliance-module";
-import { mint } from "./actions/core/mint";
-import { transfer } from "./actions/core/transfer";
-import { forcedTransfer } from "./actions/custodian/forced-transfer";
-import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
-import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
-import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
-import { redeem } from "./actions/redeemable/redeem";
-import { setupAsset } from "./actions/setup-asset";
-import { claimYield } from "./actions/yield/claim-yield";
-import { setYieldSchedule } from "./actions/yield/set-yield-schedule";
-import { topupUnderlyingAsset } from "./actions/yield/topup-underlying-asset";
-import { withdrawnUnderlyingAsset } from "./actions/yield/withdrawn-underlying-asset";
-import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
-import { encodeAddressParams } from "./utils/encode-address-params";
+} from '../entities/actors/investors';
+import { owner } from '../entities/actors/owner';
+import { Asset } from '../entities/asset';
+import { atkDeployer } from '../services/deployer';
+import { topicManager } from '../services/topic-manager';
+import { getAnvilTimeMilliseconds, getAnvilTimeSeconds } from '../utils/anvil';
+import { toBaseUnits } from '../utils/to-base-units';
+import { mature } from './actions/bond/mature';
+import { burn } from './actions/burnable/burn';
+import { setCap } from './actions/capped/set-cap';
+import { setAddressParametersForComplianceModule } from './actions/compliance/set-address-parameters-for-compliance-module';
+import { mint } from './actions/core/mint';
+import { transfer } from './actions/core/transfer';
+import { forcedTransfer } from './actions/custodian/forced-transfer';
+import { freezePartialTokens } from './actions/custodian/freeze-partial-tokens';
+import { setAddressFrozen } from './actions/custodian/set-address-frozen';
+import { unfreezePartialTokens } from './actions/custodian/unfreeze-partial-tokens';
+import { redeem } from './actions/redeemable/redeem';
+import { setupAsset } from './actions/setup-asset';
+import { claimYield } from './actions/yield/claim-yield';
+import { setYieldSchedule } from './actions/yield/set-yield-schedule';
+import { topupUnderlyingAsset } from './actions/yield/topup-underlying-asset';
+import { withdrawnUnderlyingAsset } from './actions/yield/withdrawn-underlying-asset';
+import { getDefaultComplianceModules } from './utils/default-compliance-modules';
+import { encodeAddressParams } from './utils/encode-address-params';
 
 export const createBond = async (depositToken: Asset<any>) => {
-  console.log("\n=== Creating bond... ===\n");
+  console.log('\n=== Creating bond... ===\n');
 
   const bondFactory = atkDeployer.getBondFactoryContract();
 
-  const bond = new Asset<"bondFactory">(
-    "Euro Bonds",
-    "EURB",
+  const bond = new Asset<'bondFactory'>(
+    'Euro Bonds',
+    'EURB',
     6,
-    "DE000BAY0017",
+    'DE000BAY0017',
     bondFactory
   );
 
@@ -52,7 +51,7 @@ export const createBond = async (depositToken: Asset<any>) => {
   ]);
 
   const anvilTimeSeconds = await getAnvilTimeSeconds(owner);
-  const faceValue = toBaseUnits(0.000123, depositToken.decimals);
+  const faceValue = toBaseUnits(0.000_123, depositToken.decimals);
   const cap = toBaseUnits(1_000_000, bond.decimals);
   const transactionHash = await bondFactory.write.createBond([
     bond.name,
@@ -66,7 +65,7 @@ export const createBond = async (depositToken: Asset<any>) => {
     [
       ...getDefaultComplianceModules(),
       {
-        module: atkDeployer.getContractAddress("identityAllowListModule"),
+        module: atkDeployer.getContractAddress('identityAllowListModule'),
         params: encodeAddressParams(bondAllowedIdentities),
       },
     ],
@@ -117,7 +116,7 @@ export const createBond = async (depositToken: Asset<any>) => {
 
   await setAddressParametersForComplianceModule(
     depositToken,
-    "identityAllowListModule",
+    'identityAllowListModule',
     allowedIdentities
   );
 

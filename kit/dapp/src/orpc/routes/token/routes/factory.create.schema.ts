@@ -28,20 +28,20 @@
  * ```
  */
 
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { z } from "zod/v4";
-import { CreateSchema } from "../../common/schemas/create.schema";
-import { TransactionTrackingMessagesSchema } from "../../common/schemas/transaction-messages.schema";
+import { z } from 'zod/v4';
+import { ethereumAddress } from '@/lib/zod/validators/ethereum-address';
+import { CreateSchema } from '../../common/schemas/create.schema';
+import { TransactionTrackingMessagesSchema } from '../../common/schemas/transaction-messages.schema';
 
 /**
  * Token types supported for factory creation
  */
 export const TokenTypeEnum = z.enum([
-  "bond",
-  "equity",
-  "fund",
-  "stablecoin",
-  "deposit",
+  'bond',
+  'equity',
+  'fund',
+  'stablecoin',
+  'deposit',
 ]);
 
 export type TokenType = z.infer<typeof TokenTypeEnum>;
@@ -52,24 +52,24 @@ export type TokenType = z.infer<typeof TokenTypeEnum>;
  */
 const DEFAULT_IMPLEMENTATIONS = {
   bond: {
-    factoryImplementation: "0x5e771e1417100000000000000000000000020021",
-    tokenImplementation: "0x5e771e1417100000000000000000000000020020",
+    factoryImplementation: '0x5e771e1417100000000000000000000000020021',
+    tokenImplementation: '0x5e771e1417100000000000000000000000020020',
   },
   equity: {
-    factoryImplementation: "0x5e771e1417100000000000000000000000020025",
-    tokenImplementation: "0x5e771e1417100000000000000000000000020024",
+    factoryImplementation: '0x5e771e1417100000000000000000000000020025',
+    tokenImplementation: '0x5e771e1417100000000000000000000000020024',
   },
   fund: {
-    factoryImplementation: "0x5e771e1417100000000000000000000000020027",
-    tokenImplementation: "0x5e771e1417100000000000000000000000020026",
+    factoryImplementation: '0x5e771e1417100000000000000000000000020027',
+    tokenImplementation: '0x5e771e1417100000000000000000000000020026',
   },
   stablecoin: {
-    factoryImplementation: "0x5e771e1417100000000000000000000000020029",
-    tokenImplementation: "0x5e771e1417100000000000000000000000020028",
+    factoryImplementation: '0x5e771e1417100000000000000000000000020029',
+    tokenImplementation: '0x5e771e1417100000000000000000000000020028',
   },
   deposit: {
-    factoryImplementation: "0x5e771e1417100000000000000000000000020023",
-    tokenImplementation: "0x5e771e1417100000000000000000000000020022",
+    factoryImplementation: '0x5e771e1417100000000000000000000000020023',
+    tokenImplementation: '0x5e771e1417100000000000000000000000020022',
   },
 } as const;
 
@@ -80,12 +80,12 @@ const SingleFactorySchema = z.object({
   /**
    * The type of token factory to create
    */
-  type: TokenTypeEnum.describe("The type of token factory to create"),
+  type: TokenTypeEnum.describe('The type of token factory to create'),
 
   /**
    * The name for the token factory
    */
-  name: z.string().min(1).max(100).describe("The name for the token factory"),
+  name: z.string().min(1).max(100).describe('The name for the token factory'),
 
   /**
    * Optional custom factory implementation address
@@ -93,7 +93,7 @@ const SingleFactorySchema = z.object({
    */
   factoryImplementation: ethereumAddress
     .optional()
-    .describe("Custom factory implementation address"),
+    .describe('Custom factory implementation address'),
 
   /**
    * Optional custom token implementation address
@@ -101,7 +101,7 @@ const SingleFactorySchema = z.object({
    */
   tokenImplementation: ethereumAddress
     .optional()
-    .describe("Custom token implementation address"),
+    .describe('Custom token implementation address'),
 });
 
 /**
@@ -118,73 +118,73 @@ export const FactoryCreateMessagesSchema =
     factoryCreated: z
       .string()
       .optional()
-      .default("Token factory successfully created."),
-    creatingFactory: z.string().optional().default("Creating token factory..."),
+      .default('Token factory successfully created.'),
+    creatingFactory: z.string().optional().default('Creating token factory...'),
     factoryCreationFailed: z
       .string()
       .optional()
-      .default("Failed to create token factory. Please try again."),
+      .default('Failed to create token factory. Please try again.'),
     batchProgress: z
       .string()
       .optional()
-      .default("Creating factory {{current}} of {{total}}..."),
+      .default('Creating factory {{current}} of {{total}}...'),
     batchCompleted: z
       .string()
       .optional()
-      .default("Successfully created {{count}} token factories."),
+      .default('Successfully created {{count}} token factories.'),
     // Messages used by useStreamingMutation hook for proper event handling
     // These messages align with the streaming mutation's event status types
     initialLoading: z
       .string()
       .optional()
-      .default("Preparing to create token factories..."),
+      .default('Preparing to create token factories...'),
     noResultError: z
       .string()
       .optional()
-      .default("No factory address received from transaction."),
+      .default('No factory address received from transaction.'),
     defaultError: z
       .string()
       .optional()
-      .default("Failed to create token factory."),
+      .default('Failed to create token factory.'),
     systemNotBootstrapped: z
       .string()
       .optional()
       .default(
-        "System needs to be bootstrapped first. Please wait for system initialization to complete."
+        'System needs to be bootstrapped first. Please wait for system initialization to complete.'
       ),
     transactionSubmitted: z
       .string()
       .optional()
-      .default("Transaction submitted. Waiting for confirmation..."),
+      .default('Transaction submitted. Waiting for confirmation...'),
     factoryCreationCompleted: z
       .string()
       .optional()
-      .default("Factory creation completed."),
+      .default('Factory creation completed.'),
     allFactoriesSucceeded: z
       .string()
       .optional()
-      .default("All {{count}} factories created successfully."),
+      .default('All {{count}} factories created successfully.'),
     someFactoriesFailed: z
       .string()
       .optional()
-      .default("{{success}} factories created, {{failed}} failed."),
+      .default('{{success}} factories created, {{failed}} failed.'),
     allFactoriesFailed: z
       .string()
       .optional()
-      .default("All {{count}} factories failed to create."),
+      .default('All {{count}} factories failed to create.'),
     factoryAlreadyExists: z
       .string()
       .optional()
-      .default("{{name}} factory already exists, skipping..."),
+      .default('{{name}} factory already exists, skipping...'),
     allFactoriesSkipped: z
       .string()
       .optional()
-      .default("All {{count}} factories already exist."),
+      .default('All {{count}} factories already exist.'),
     someFactoriesSkipped: z
       .string()
       .optional()
       .default(
-        "{{success}} factories created, {{skipped}} skipped, {{failed}} failed."
+        '{{success}} factories created, {{skipped}} skipped, {{failed}} failed.'
       ),
   });
 
@@ -198,8 +198,8 @@ export const FactoryCreateSchema = CreateSchema.extend({
    * Defaults to the standard SettleMint system contract
    */
   contract: ethereumAddress
-    .describe("The system contract address")
-    .default("0x5e771e1417100000000000000000000000020088"),
+    .describe('The system contract address')
+    .default('0x5e771e1417100000000000000000000000020088'),
 
   /**
    * Factory or factories to create
@@ -207,7 +207,7 @@ export const FactoryCreateSchema = CreateSchema.extend({
    */
   factories: z
     .union([SingleFactorySchema, z.array(SingleFactorySchema).min(1).max(10)])
-    .describe("Factory or factories to create"),
+    .describe('Factory or factories to create'),
 
   /**
    * Optional custom messages for the operation
@@ -235,7 +235,7 @@ const FactoryResultSchema = z.object({
  * - The 'result' field provides compatibility with useStreamingMutation hook's ExtractResultType
  */
 export const FactoryCreateOutputSchema = z.object({
-  status: z.enum(["pending", "confirmed", "failed", "completed"]),
+  status: z.enum(['pending', 'confirmed', 'failed', 'completed']),
   message: z.string(),
   currentFactory: FactoryResultSchema.optional(),
   results: z.array(FactoryResultSchema).optional(),

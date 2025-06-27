@@ -7,7 +7,7 @@
  *
  * @module DecimalsValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Creates a Zod schema that validates decimal precision values.
@@ -40,10 +40,10 @@ import { z } from "zod/v4";
 export const decimals = () =>
   z
     .number()
-    .int("Decimals must be a whole number (integer)")
-    .min(0, "Decimals cannot be negative")
-    .max(18, "Decimals cannot exceed 18 (ERC20 standard maximum)") // Standard ERC20 maximum
-    .describe("Number of decimal places for the asset");
+    .int('Decimals must be a whole number (integer)')
+    .min(0, 'Decimals cannot be negative')
+    .max(18, 'Decimals cannot exceed 18 (ERC20 standard maximum)') // Standard ERC20 maximum
+    .describe('Number of decimal places for the asset');
 
 /**
  * Type representing validated decimal precision.

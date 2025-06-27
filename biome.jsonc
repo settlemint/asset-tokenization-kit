@@ -1,0 +1,56 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.0.5/schema.json",
+  "extends": ["ultracite"],
+  "files": {
+    "maxSize": 10485760
+  },
+  "linter": {
+    "rules": {
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off"
+      },
+      "performance": {
+        "noImgElement": "off"
+      },
+      "nursery": {
+        "noAwaitInLoop": "off",
+        "useJsonImportAttribute": "off",
+        "noUnknownAtRule": "off"
+      },
+      "style": {
+        "noNestedTernary": "off",
+        "noHeadElement": "off",
+        "useFilenamingConvention": "off"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      }
+    }
+  },
+  "javascript": {
+    "globals": ["Bun"]
+  },
+  "overrides": [
+    {
+      "includes": [
+        ".github/actions/**",
+        "**/tools/*.ts",
+        "kit/contracts/scripts/hardhat/**",
+        "kit/subgraph/**",
+        "kit/dapp/src/components/ui/**",
+        "kit/dapp/*.d.ts",
+        "kit/dapp/src/routeTree.gen.ts",
+        "kit/e2e/**",
+        "kit/dapp/src/styles/app.css",
+        "kit/dapp/portal-env.d.ts",
+        "kit/dapp/portal-schema.graphql"
+      ],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
+      }
+    }
+  ]
+}

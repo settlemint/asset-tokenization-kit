@@ -1,5 +1,5 @@
-import type { AbstractActor } from "../entities/actors/abstract-actor";
-import { getPublicClient } from "./public-client";
+import type { AbstractActor } from '../entities/actors/abstract-actor';
+import { getPublicClient } from './public-client';
 
 /**
  * Forces Anvil to mine new blocks with verification
@@ -28,7 +28,7 @@ export async function mineAnvilBlock(
 
   // Call the anvil_mine RPC method to mine specified number of blocks
   await actor.getWalletClient().request({
-    method: "anvil_mine",
+    method: 'anvil_mine',
     params: [blocks],
   } as any);
 
@@ -97,7 +97,7 @@ export const increaseAnvilTime = async (
 
   // Call the evm_increaseTime RPC method
   await actor.getWalletClient().request({
-    method: "evm_increaseTime",
+    method: 'evm_increaseTime',
     params: [seconds],
   } as any);
 
@@ -150,12 +150,12 @@ export const getAnvilTimeSeconds = async (
   actor: AbstractActor
 ): Promise<number> => {
   const block = (await actor.getWalletClient().request({
-    method: "eth_getBlockByNumber",
-    params: ["latest", false],
+    method: 'eth_getBlockByNumber',
+    params: ['latest', false],
   } as any)) as { timestamp: string } | null;
 
-  if (!block || !block.timestamp) {
-    throw new Error("[Anvil] Failed to get current block or timestamp");
+  if (!(block && block.timestamp)) {
+    throw new Error('[Anvil] Failed to get current block or timestamp');
   }
 
   const timestamp = Number(block.timestamp);
@@ -195,7 +195,7 @@ export const isAnvilNode = async (actor: AbstractActor): Promise<boolean> => {
   try {
     // Try to call an Anvil-specific method
     await actor.getWalletClient().request({
-      method: "anvil_version",
+      method: 'anvil_version',
       params: [],
     } as any);
     return true;

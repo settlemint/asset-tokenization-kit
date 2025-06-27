@@ -1,27 +1,28 @@
-import { config as dotenvConfig } from "dotenv";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import type { ClientConfig } from "pg";
-import postgres from "pg";
-import { adminUser } from "../test-data/user-data";
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { config as dotenvConfig } from 'dotenv';
+import type { ClientConfig } from 'pg';
+import postgres from 'pg';
+import { adminUser } from '../test-data/user-data';
+
 const { Client } = postgres;
 
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../../../"
+  '../../../'
 );
 
-dotenvConfig({ path: path.join(projectRoot, ".env") });
-dotenvConfig({ path: path.join(projectRoot, ".env.local"), override: true });
+dotenvConfig({ path: path.join(projectRoot, '.env') });
+dotenvConfig({ path: path.join(projectRoot, '.env.local'), override: true });
 
 const databaseUrl = process.env.SETTLEMINT_HASURA_DATABASE_URL;
 if (!databaseUrl) {
   throw new Error(
-    "SETTLEMINT_HASURA_DATABASE_URL not found in environment variables"
+    'SETTLEMINT_HASURA_DATABASE_URL not found in environment variables'
   );
 }
 
-export type UserRole = "admin" | "user";
+export type UserRole = 'admin' | 'user';
 
 interface DatabaseConfig extends ClientConfig {
   connectionString: string;
@@ -32,7 +33,7 @@ function getDatabaseConfig(): DatabaseConfig {
 
   if (!connectionString) {
     throw new Error(
-      "Database connection string not found in environment variables"
+      'Database connection string not found in environment variables'
     );
   }
 
@@ -45,12 +46,12 @@ export async function createDbClient(): Promise<InstanceType<typeof Client>> {
 
   try {
     await client.connect();
-    await client.query("SELECT 1");
+    await client.query('SELECT 1');
     return client;
   } catch (error) {
     await client.end().catch(() => false);
     throw new Error(
-      `Failed to connect to database: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to connect to database: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -67,7 +68,7 @@ export async function updateUserRole(
     ]);
   } catch (error) {
     throw new Error(
-      `Failed to update user role: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to update user role: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   } finally {
     await client.end();
@@ -95,7 +96,7 @@ export async function fetchWalletAddressFromDB(email: string): Promise<string> {
       [email]
     );
 
-    if (!result.rows.length || !result.rows[0].wallet) {
+    if (!(result.rows.length && result.rows[0].wallet)) {
       throw new Error(`No wallet address found for user with email: ${email}`);
     }
 
@@ -110,10 +111,10 @@ export async function isUserAdmin(
 ): Promise<boolean> {
   try {
     const role = await getUserRole(email);
-    return role === "admin";
+    return role === 'admin';
   } catch (error) {
     throw new Error(
-      `Failed to check admin role: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to check admin role: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -125,21 +126,19 @@ export async function ensureUserIsAdmin(
     const hasAdminRole = await isUserAdmin(email);
 
     if (!hasAdminRole) {
-      await updateUserRole(email, "admin");
+      await updateUserRole(email, 'admin');
       return true;
     }
 
     return false;
   } catch (error) {
     throw new Error(
-      `Failed to ensure admin role: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to ensure admin role: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
 
-export async function getUserPincodeStatusFromDB(
-  email: string
-): Promise<{
+export async function getUserPincodeStatusFromDB(email: string): Promise<{
   pincodeEnabled: boolean;
   pincodeVerificationId: string | null;
 } | null> {
@@ -158,12 +157,8 @@ export async function getUserPincodeStatusFromDB(
       pincodeVerificationId: userData.pincode_verification_id ?? null,
     };
   } catch (error) {
-    console.error(
-      `[DB UTILS] Error fetching pincode status for ${email}:`,
-      error instanceof Error ? error.message : String(error)
-    );
     throw new Error(
-      `Failed to get user pincode status: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to get user pincode status: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   } finally {
     await client.end();
@@ -179,14 +174,10 @@ export async function isPincodeEnabledInDB(email: string): Promise<boolean> {
     const isEnabled = !!(
       status.pincodeEnabled &&
       status.pincodeVerificationId &&
-      status.pincodeVerificationId.trim() !== ""
+      status.pincodeVerificationId.trim() !== ''
     );
     return isEnabled;
-  } catch (error) {
-    console.error(
-      `[DB UTILS] Error in isPincodeEnabledInDB for ${email}:`,
-      error instanceof Error ? error.message : String(error)
-    );
+  } catch (_error) {
     return false;
   }
 }

@@ -1,6 +1,6 @@
-import { sessionMiddleware } from "../middlewares/auth/session.middleware";
-import { errorMiddleware } from "../middlewares/monitoring/error.middleware";
-import { baseRouter } from "./base.router";
+import { sessionMiddleware } from '../middlewares/auth/session.middleware';
+import { errorMiddleware } from '../middlewares/monitoring/error.middleware';
+import { baseRouter } from './base.router';
 
 /**
  * Public ORPC router for unauthenticated procedures.

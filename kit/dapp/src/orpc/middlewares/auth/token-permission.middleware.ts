@@ -1,5 +1,5 @@
-import { type TokenRoles } from "@/orpc/middlewares/system/token.middleware";
-import { baseRouter } from "@/orpc/procedures/base.router";
+import type { TokenRoles } from '@/orpc/middlewares/system/token.middleware';
+import { baseRouter } from '@/orpc/procedures/base.router';
 
 /**
  * Middleware to check if
@@ -15,12 +15,12 @@ export function tokenPermissionMiddleware({
 }: {
   requiredRoles?: TokenRoles[];
 }) {
-  return baseRouter.middleware(async ({ context, next, errors }) => {
+  return baseRouter.middleware(({ context, next, errors }) => {
     const { token } = context;
 
     if (!token) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: "Token context not set",
+        message: 'Token context not set',
       });
     }
 

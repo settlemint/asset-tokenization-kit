@@ -17,30 +17,31 @@
  * @see {@link ../db/schemas/auth} - Database schema for authentication
  */
 
-import { metadata } from "@/config/metadata";
+import { serverOnly } from '@tanstack/react-start';
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { APIError } from 'better-auth/api';
+import { admin, apiKey, openAPI } from 'better-auth/plugins';
+import { passkey } from 'better-auth/plugins/passkey';
+import { reactStartCookies } from 'better-auth/react-start';
+import { eq } from 'drizzle-orm/sql';
+import { metadata } from '@/config/metadata';
 import {
   accessControl,
   adminRole,
   investorRole,
   issuerRole,
-} from "@/lib/auth/permissions";
-import { pincode } from "@/lib/auth/plugins/pincode-plugin";
-import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
-import { twoFactor } from "@/lib/auth/plugins/two-factor";
-import { wallet } from "@/lib/auth/plugins/wallet-plugin";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import type { UserRole } from "@/lib/zod/validators/user-roles";
-import { serverOnly } from "@tanstack/react-start";
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { APIError } from "better-auth/api";
-import { admin, apiKey, openAPI } from "better-auth/plugins";
-import { passkey } from "better-auth/plugins/passkey";
-import { reactStartCookies } from "better-auth/react-start";
-import { eq } from "drizzle-orm/sql";
-import { db } from "../db";
-import * as authSchema from "../db/schemas/auth";
-import { env } from "../env";
+} from '@/lib/auth/permissions';
+import { pincode } from '@/lib/auth/plugins/pincode-plugin';
+import { secretCodes } from '@/lib/auth/plugins/secret-codes-plugin';
+import { twoFactor } from '@/lib/auth/plugins/two-factor';
+import { wallet } from '@/lib/auth/plugins/wallet-plugin';
+import type { EthereumAddress } from '@/lib/zod/validators/ethereum-address';
+import type { UserRole } from '@/lib/zod/validators/user-roles';
+import { db } from '../db';
+// biome-ignore lint/performance/noNamespaceImport: drizzle schema imports need this
+import * as authSchema from '../db/schemas/auth';
+import { env } from '../env';
 
 /**
  * Creates the authentication configuration.
@@ -78,7 +79,7 @@ const getAuthConfig = serverOnly(() =>
      * Connects authentication to the PostgreSQL database.
      */
     database: drizzleAdapter(db, {
-      provider: "pg",
+      provider: 'pg',
       schema: authSchema,
     }),
     /**
@@ -118,7 +119,7 @@ const getAuthConfig = serverOnly(() =>
          * Unique to ensure one wallet per user account.
          */
         wallet: {
-          type: "string",
+          type: 'string',
           required: false,
           unique: true,
           input: false,
@@ -127,7 +128,7 @@ const getAuthConfig = serverOnly(() =>
          * The last time the user logged in.
          */
         lastLoginAt: {
-          type: "date",
+          type: 'date',
           required: false,
           input: false,
         },
@@ -135,16 +136,16 @@ const getAuthConfig = serverOnly(() =>
          * The role of the user.
          */
         role: {
-          type: "string",
+          type: 'string',
           required: true,
-          defaultValue: "investor",
+          defaultValue: 'investor',
           input: false,
         },
         /**
          * Whether the user has enabled pincode.
          */
         pincodeEnabled: {
-          type: "boolean",
+          type: 'boolean',
           required: false,
           defaultValue: false,
           input: false,
@@ -153,7 +154,7 @@ const getAuthConfig = serverOnly(() =>
          * The verification id for the pincode.
          */
         pincodeVerificationId: {
-          type: "string",
+          type: 'string',
           required: false,
           unique: true,
           input: false,
@@ -163,7 +164,7 @@ const getAuthConfig = serverOnly(() =>
          * Only set after the first otp code is verified.
          */
         twoFactorEnabled: {
-          type: "boolean",
+          type: 'boolean',
           required: false,
           defaultValue: false,
           input: false,
@@ -172,7 +173,7 @@ const getAuthConfig = serverOnly(() =>
          * The verification id for the two-factor authentication.
          */
         twoFactorVerificationId: {
-          type: "string",
+          type: 'string',
           required: false,
           unique: true,
           input: false,
@@ -181,7 +182,7 @@ const getAuthConfig = serverOnly(() =>
          * The verification id for the secret code.
          */
         secretCodeVerificationId: {
-          type: "string",
+          type: 'string',
           required: false,
           unique: true,
           input: false,
@@ -190,7 +191,7 @@ const getAuthConfig = serverOnly(() =>
          * Whether the user has finished the initial onboarding.
          */
         initialOnboardingFinished: {
-          type: "boolean",
+          type: 'boolean',
           required: false,
           defaultValue: false,
           input: false,
@@ -233,12 +234,12 @@ const getAuthConfig = serverOnly(() =>
               return {
                 data: {
                   ...user,
-                  role: firstUser ? "investor" : "admin",
+                  role: firstUser ? 'investor' : 'admin',
                 },
               };
             } catch (error) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Failed to set the user role",
+              throw new APIError('BAD_REQUEST', {
+                message: 'Failed to set the user role',
                 cause: error instanceof Error ? error : undefined,
               });
             }
@@ -284,7 +285,7 @@ const getAuthConfig = serverOnly(() =>
        */
       apiKey({
         defaultKeyLength: 16,
-        defaultPrefix: "sm_atk_", // SettleMint Asset Tokenization Kit prefix
+        defaultPrefix: 'sm_atk_', // SettleMint Asset Tokenization Kit prefix
         enableMetadata: true,
         rateLimit: {
           enabled: true,
@@ -294,7 +295,7 @@ const getAuthConfig = serverOnly(() =>
         permissions: {
           // TODO: assing a role to the api key when created
           defaultPermissions: {
-            planets: ["read"], // Default read-only permissions
+            planets: ['read'], // Default read-only permissions
           },
         },
       }),
@@ -360,7 +361,7 @@ export type Session = typeof auth.$Infer.Session;
 /**
  * Enhanced type for session users with proper typing.
  */
-export type SessionUser = Omit<Session["user"], "wallet" | "role"> & {
+export type SessionUser = Omit<Session['user'], 'wallet' | 'role'> & {
   wallet?: EthereumAddress | null;
   role: UserRole;
 };

@@ -1,8 +1,8 @@
-import { metadata } from "@/config/metadata";
-import type { UserWithTwoFactorContext } from "@/lib/auth/plugins/two-factor/index";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import type { VariablesOf } from "@settlemint/sdk-portal";
-import { APIError } from "better-auth/api";
+import type { VariablesOf } from '@settlemint/sdk-portal';
+import { APIError } from 'better-auth/api';
+import { metadata } from '@/config/metadata';
+import type { UserWithTwoFactorContext } from '@/lib/auth/plugins/two-factor/index';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 
 const DELETE_WALLET_VERIFICATION_MUTATION = portalGraphql(`
   mutation DisableTwoFactor($address: String!, $verificationId: String!) {
@@ -58,13 +58,13 @@ const CREATE_WALLET_VERIFICATION_MUTATION = portalGraphql(`
 
 export async function disableTwoFactor(user: UserWithTwoFactorContext) {
   if (!user.wallet) {
-    throw new APIError("BAD_REQUEST", {
-      message: "Wallet address is not set",
+    throw new APIError('BAD_REQUEST', {
+      message: 'Wallet address is not set',
     });
   }
   if (!user.twoFactorVerificationId) {
-    throw new APIError("BAD_REQUEST", {
-      message: "Two-factor verification ID is not set",
+    throw new APIError('BAD_REQUEST', {
+      message: 'Two-factor verification ID is not set',
     });
   }
   const result = await portalClient.request(
@@ -82,13 +82,13 @@ export async function verifyTwoFactorOTP(
   code: string
 ) {
   if (!user.wallet) {
-    throw new APIError("BAD_REQUEST", {
-      message: "Wallet address is not set",
+    throw new APIError('BAD_REQUEST', {
+      message: 'Wallet address is not set',
     });
   }
   if (!user.twoFactorVerificationId) {
-    throw new APIError("BAD_REQUEST", {
-      message: "Two-factor verification ID is not set",
+    throw new APIError('BAD_REQUEST', {
+      message: 'Two-factor verification ID is not set',
     });
   }
   const result = await portalClient.request(
@@ -106,7 +106,7 @@ export async function verifyTwoFactorOTP(
 
 type OTPAlgorithm = VariablesOf<
   typeof CREATE_WALLET_VERIFICATION_MUTATION
->["algorithm"];
+>['algorithm'];
 
 export async function enableTwoFactor(
   {
@@ -117,13 +117,13 @@ export async function enableTwoFactor(
   user: UserWithTwoFactorContext
 ) {
   if (!user.wallet) {
-    throw new APIError("BAD_REQUEST", {
-      message: "Wallet address is not set",
+    throw new APIError('BAD_REQUEST', {
+      message: 'Wallet address is not set',
     });
   }
   if (user.twoFactorEnabled && user.twoFactorVerificationId) {
-    throw new APIError("BAD_REQUEST", {
-      message: "Two-factor verification already enabled",
+    throw new APIError('BAD_REQUEST', {
+      message: 'Two-factor verification already enabled',
     });
   }
   const result = await portalClient.request(
@@ -141,14 +141,14 @@ export async function enableTwoFactor(
     uri?: string;
   };
   if (!result.createWalletVerification?.id) {
-    throw new APIError("INTERNAL_SERVER_ERROR", {
+    throw new APIError('INTERNAL_SERVER_ERROR', {
       message:
-        "Failed to create wallet verification, no verification ID returned",
+        'Failed to create wallet verification, no verification ID returned',
     });
   }
 
   return {
-    totpURI: parameters.uri ?? "",
+    totpURI: parameters.uri ?? '',
     verificationId: result.createWalletVerification.id,
   };
 }

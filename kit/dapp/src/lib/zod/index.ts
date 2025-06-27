@@ -7,8 +7,8 @@
  *
  * @module ZodUtilities
  */
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { z } from "zod/v4";
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import { z } from 'zod/v4';
 
 // Create logger instance with configurable log level
 const logger = createLogger({
@@ -72,7 +72,7 @@ export function safeParse<T extends z.ZodType>(
   if (!result.success) {
     logger.error(z.prettifyError(result.error));
     // Throw a generic error to avoid exposing sensitive validation details
-    throw new Error(`Validation failed with error(s). Check logs for details.`);
+    throw new Error('Validation failed with error(s). Check logs for details.');
   }
 
   return result.data;

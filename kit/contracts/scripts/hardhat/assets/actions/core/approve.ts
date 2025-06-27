@@ -1,18 +1,18 @@
-import { Address } from "viem";
-import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
-import { Asset } from "../../../entities/asset";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatBaseUnits } from "../../../utils/format-base-units";
-import { toBaseUnits } from "../../../utils/to-base-units";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import type { Address } from 'viem';
+import { ATKContracts } from '../../../constants/contracts';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { formatBaseUnits } from '../../../utils/format-base-units';
+import { toBaseUnits } from '../../../utils/to-base-units';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 export const approve = async (
   asset: Asset<any>,
   to: Address,
   amount: bigint
 ) => {
-  console.log(`[Approve] → Starting approval operation...`);
+  console.log('[Approve] → Starting approval operation...');
 
   const tokenContract = owner.getContractInstance({
     address: asset.address,

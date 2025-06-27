@@ -1,6 +1,6 @@
-import type { UserWithPincodeContext } from "@/lib/auth/plugins/pincode-plugin";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import { APIError } from "better-auth/api";
+import { APIError } from 'better-auth/api';
+import type { UserWithPincodeContext } from '@/lib/auth/plugins/pincode-plugin';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
 
 const SET_PINCODE_MUTATION = portalGraphql(`
   mutation SetPinCode($address: String!, $pincode: String!) {
@@ -32,8 +32,8 @@ export async function setPincode(
   pincode: string
 ) {
   if (!user.wallet) {
-    throw new APIError("BAD_REQUEST", {
-      message: "User wallet not found",
+    throw new APIError('BAD_REQUEST', {
+      message: 'User wallet not found',
     });
   }
   const result = await portalClient.request(SET_PINCODE_MUTATION, {
@@ -41,8 +41,8 @@ export async function setPincode(
     pincode,
   });
   if (!result.createWalletVerification?.id) {
-    throw new APIError("INTERNAL_SERVER_ERROR", {
-      message: "Failed to create wallet verification",
+    throw new APIError('INTERNAL_SERVER_ERROR', {
+      message: 'Failed to create wallet verification',
     });
   }
   return result.createWalletVerification.id;
@@ -53,8 +53,8 @@ export async function removePincode(
   verificationId: string
 ) {
   if (!user.wallet) {
-    throw new APIError("BAD_REQUEST", {
-      message: "User wallet not found",
+    throw new APIError('BAD_REQUEST', {
+      message: 'User wallet not found',
     });
   }
   const result = await portalClient.request(REMOVE_PINCODE_MUTATION, {

@@ -1,4 +1,4 @@
-import { baseRouter } from "../procedures/base.router";
+import { baseRouter } from '../procedures/base.router';
 
 /**
  * Main ORPC router configuration.
@@ -24,7 +24,7 @@ export const router = baseRouter.router({
    *
    * @see {@link ./account/account.router} - Account router implementation
    */
-  account: baseRouter.account.lazy(() => import("./account/account.router")),
+  account: baseRouter.account.lazy(() => import('./account/account.router')),
 
   /**
    * Settings-related API procedures.
@@ -34,7 +34,7 @@ export const router = baseRouter.router({
    * @see {@link ./settings/settings.router} - Settings router implementation
    */
   settings: baseRouter.settings.lazy(
-    () => import("./settings/settings.router")
+    () => import('./settings/settings.router')
   ),
 
   /**
@@ -44,7 +44,7 @@ export const router = baseRouter.router({
    *
    * @see {@link ./token/token.router} - Token router implementation
    */
-  token: baseRouter.token.lazy(() => import("./token/token.router")),
+  token: baseRouter.token.lazy(() => import('./token/token.router')),
 
   /**
    * System-related API procedures.
@@ -57,7 +57,7 @@ export const router = baseRouter.router({
    *
    * @see {@link ./system/system.router} - System router implementation
    */
-  system: baseRouter.system.lazy(() => import("./system/system.router")),
+  system: baseRouter.system.lazy(() => import('./system/system.router')),
 
   /**
    * User-related API procedures.
@@ -65,5 +65,5 @@ export const router = baseRouter.router({
    * Lazy-loaded module containing user-related operations such as
    * querying and managing user-related resources.
    */
-  user: baseRouter.user.lazy(() => import("./user/user.router")),
+  user: baseRouter.user.lazy(() => import('./user/user.router')),
 });

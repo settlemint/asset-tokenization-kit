@@ -1,5 +1,5 @@
-import { parseEther, type Address } from "viem";
-import { AirdropDistributionList } from "../../entities/airdrop/merkle-tree";
+import { type Address, parseEther } from 'viem';
+import type { AirdropDistributionList } from '../../entities/airdrop/merkle-tree';
 
 // Create airdrop distribution
 export const createDistribution = ({
@@ -18,26 +18,26 @@ export const createDistribution = ({
   {
     index: 5,
     recipient: ownerAddress, // Include the owner in the distribution
-    amount: parseEther("1000"), // 1000 tokens for Owner
+    amount: parseEther('1000'), // 1000 tokens for Owner
   },
   {
     index: 0,
     recipient: investorAAddress,
-    amount: parseEther("100"), // 100 tokens for Investor A
+    amount: parseEther('100'), // 100 tokens for Investor A
   },
   {
     index: 2,
     recipient: investorBAddress,
-    amount: parseEther("500"), // 500 tokens for Investor B
+    amount: parseEther('500'), // 500 tokens for Investor B
   },
   {
     index: 3,
     recipient: frozenInvestorAddress,
-    amount: parseEther("75"), // 75 tokens for Frozen Investor
+    amount: parseEther('75'), // 75 tokens for Frozen Investor
   },
   {
     index: 4,
     recipient: claimIssuerAddress,
-    amount: parseEther("300"), // 300 tokens for Claim Issuer
+    amount: parseEther('300'), // 300 tokens for Claim Issuer
   },
 ];

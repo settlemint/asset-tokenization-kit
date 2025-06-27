@@ -1,6 +1,10 @@
-import { BigInt } from "@graphprotocol/graph-ts";
-import { Account, Token, TokenBalance } from "../../../generated/schema";
-import { setBigNumber } from "../../utils/bignumber";
+import { BigInt } from '@graphprotocol/graph-ts';
+import {
+  type Account,
+  type Token,
+  TokenBalance,
+} from '../../../generated/schema';
+import { setBigNumber } from '../../utils/bignumber';
 
 export function fetchTokenBalance(
   token: Token,
@@ -16,9 +20,9 @@ export function fetchTokenBalance(
     tokenBalance.account = account.id;
     tokenBalance.lastUpdatedAt = BigInt.zero();
     tokenBalance.isFrozen = false;
-    setBigNumber(tokenBalance, "value", BigInt.zero(), token.decimals);
-    setBigNumber(tokenBalance, "frozen", BigInt.zero(), token.decimals);
-    setBigNumber(tokenBalance, "available", BigInt.zero(), token.decimals);
+    setBigNumber(tokenBalance, 'value', BigInt.zero(), token.decimals);
+    setBigNumber(tokenBalance, 'frozen', BigInt.zero(), token.decimals);
+    setBigNumber(tokenBalance, 'available', BigInt.zero(), token.decimals);
     tokenBalance.save();
   }
 

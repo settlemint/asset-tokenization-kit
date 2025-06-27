@@ -18,23 +18,23 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
-import { metadata } from "@/config/metadata";
-import { env } from "@/lib/env";
-import { router } from "@/orpc/routes/router";
-import { onError } from "@orpc/client";
-import { OpenAPIHandler } from "@orpc/openapi/fetch";
-import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
-import { CORSPlugin } from "@orpc/server/plugins";
+import { onError } from '@orpc/client';
+import { OpenAPIHandler } from '@orpc/openapi/fetch';
+import { OpenAPIReferencePlugin } from '@orpc/openapi/plugins';
+import { CORSPlugin } from '@orpc/server/plugins';
 import {
   experimental_ZodSmartCoercionPlugin as ZodSmartCoercionPlugin,
   experimental_ZodToJsonSchemaConverter as ZodToJsonSchemaConverter,
-} from "@orpc/zod/zod4";
-import { createLogger } from "@settlemint/sdk-utils/logging";
+} from '@orpc/zod/zod4';
+import { createLogger } from '@settlemint/sdk-utils/logging';
 import {
   createServerFileRoute,
   getHeaders,
-} from "@tanstack/react-start/server";
-import pkgjson from "../../../package.json";
+} from '@tanstack/react-start/server';
+import { metadata } from '@/config/metadata';
+import { env } from '@/lib/env';
+import { router } from '@/orpc/routes/router';
+import pkgjson from '../../../package.json' with { type: 'json' };
 
 // Uncomment for debugging API errors
 const logger = createLogger({
@@ -63,11 +63,11 @@ const handler = new OpenAPIHandler(router, {
      * Enables cross-origin requests with credentials support.
      */
     new CORSPlugin({
-      allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH"],
-      allowHeaders: ["Content-Type", "X-Api-Key"],
-      exposeHeaders: ["Content-Disposition", "X-Retry-After"],
+      allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH'],
+      allowHeaders: ['Content-Type', 'X-Api-Key'],
+      exposeHeaders: ['Content-Disposition', 'X-Retry-After'],
       credentials: true,
-      origin: (origin) => origin || "http://localhost:3000",
+      origin: (origin) => origin || 'http://localhost:3000',
     }),
 
     /**
@@ -82,13 +82,13 @@ const handler = new OpenAPIHandler(router, {
           version: pkgjson.version,
           description: metadata.description,
           license: {
-            name: "FSL-1.1-MIT",
-            url: "https://github.com/settlemint/asset-tokenization-kit/blob/main/LICENSE",
+            name: 'FSL-1.1-MIT',
+            url: 'https://github.com/settlemint/asset-tokenization-kit/blob/main/LICENSE',
           },
         },
         externalDocs: {
-          description: "SettleMint Asset Tokenization Kit",
-          url: "https://console.settlemint.com/documentation/application-kits/asset-tokenization/introduction",
+          description: 'SettleMint Asset Tokenization Kit',
+          url: 'https://console.settlemint.com/documentation/application-kits/asset-tokenization/introduction',
         },
         security: [
           {
@@ -98,10 +98,10 @@ const handler = new OpenAPIHandler(router, {
         components: {
           securitySchemes: {
             apiKey: {
-              type: "apiKey",
-              in: "header",
-              name: "X-Api-Key",
-              description: "API key",
+              type: 'apiKey',
+              in: 'header',
+              name: 'X-Api-Key',
+              description: 'API key',
             },
           },
         },
@@ -129,16 +129,16 @@ const handler = new OpenAPIHandler(router, {
  */
 export async function handle({ request }: { request: Request }) {
   const { response } = await handler.handle(request, {
-    prefix: "/api",
+    prefix: '/api',
     context: {
       headers: getHeaders(),
     },
   });
 
-  return response ?? new Response("Not Found", { status: 404 });
+  return response ?? new Response('Not Found', { status: 404 });
 }
 
-export const ServerRoute = createServerFileRoute("/api/$").methods({
+export const ServerRoute = createServerFileRoute('/api/$').methods({
   HEAD: handle,
   GET: handle,
   POST: handle,

@@ -1,9 +1,9 @@
-import { theGraphClient } from "@/lib/settlemint/the-graph";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import type { TadaDocumentNode } from "gql.tada";
-import type { Variables } from "graphql-request";
-import type { z } from "zod/v4";
-import { baseRouter } from "../../procedures/base.router";
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import type { TadaDocumentNode } from 'gql.tada';
+import type { Variables } from 'graphql-request';
+import type { z } from 'zod/v4';
+import { theGraphClient } from '@/lib/settlemint/the-graph';
+import { baseRouter } from '../../procedures/base.router';
 
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
@@ -36,7 +36,7 @@ const logger = createLogger({
  * ```
  */
 function createValidatedTheGraphClient(
-  errors: Parameters<Parameters<typeof baseRouter.middleware>[0]>[0]["errors"]
+  errors: Parameters<Parameters<typeof baseRouter.middleware>[0]>[0]['errors']
 ) {
   return {
     /**
@@ -131,7 +131,7 @@ function createValidatedTheGraphClient(
           document as TadaDocumentNode<TResult, TVariables> & {
             __meta?: { operationName?: string };
           }
-        ).__meta?.operationName ?? "GraphQL Query";
+        ).__meta?.operationName ?? 'GraphQL Query';
 
       let result: TResult;
       try {
@@ -157,9 +157,9 @@ function createValidatedTheGraphClient(
         // Check for specific error patterns to provide appropriate error types
         // TheGraph returns 404 when a subgraph doesn't exist or hasn't been deployed
         if (
-          errorMessage.includes("not found") ||
-          errorMessage.includes("404") ||
-          errorMessage.includes("No ")
+          errorMessage.includes('not found') ||
+          errorMessage.includes('404') ||
+          errorMessage.includes('No ')
         ) {
           throw errors.NOT_FOUND({
             message: userMessage,
@@ -236,7 +236,7 @@ export const theGraphMiddleware = baseRouter.middleware((options) => {
 
   // Check if the context already has a validated TheGraph client
   // This prevents creating duplicate clients when middlewares are chained
-  if (context.theGraphClient && "query" in context.theGraphClient) {
+  if (context.theGraphClient && 'query' in context.theGraphClient) {
     return next({
       context: {
         theGraphClient: context.theGraphClient,
@@ -245,12 +245,12 @@ export const theGraphMiddleware = baseRouter.middleware((options) => {
   }
 
   // Create a new validated client with error handling capabilities
-  const theGraphClient = createValidatedTheGraphClient(errors);
+  const validatedTheGraphClient = createValidatedTheGraphClient(errors);
 
   // Pass the client to the next middleware/procedure in the chain
   return next({
     context: {
-      theGraphClient,
+      theGraphClient: validatedTheGraphClient,
     },
   });
 });

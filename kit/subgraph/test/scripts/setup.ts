@@ -1,16 +1,16 @@
-import { beforeAll } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { beforeAll } from 'bun:test';
+import { theGraphClient, theGraphGraphql } from '../utils/thegraph-client';
 
 async function getLatestBlockNumber() {
-  const response = await fetch("http://localhost:8545", {
-    method: "POST",
+  const response = await fetch('http://localhost:8545', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      jsonrpc: "2.0",
-      method: "eth_getBlockByNumber",
-      params: ["latest", false],
+      jsonrpc: '2.0',
+      method: 'eth_getBlockByNumber',
+      params: ['latest', false],
       id: 1,
     }),
   });
@@ -19,10 +19,10 @@ async function getLatestBlockNumber() {
       result: { number: `0x${string}` };
     };
     const latestBlockNumber = Number(data.result.number);
-    console.log("Latest block number:", latestBlockNumber);
+    console.log('Latest block number:', latestBlockNumber);
     return latestBlockNumber;
   }
-  console.error("Failed to get latest block number");
+  console.error('Failed to get latest block number');
   process.exit(1);
 }
 
@@ -47,13 +47,13 @@ beforeAll(async () => {
       `);
       const statusResponse = await theGraphClient.request(statusQuery);
       if (statusResponse._meta?.hasIndexingErrors) {
-        throw new Error("Subgraph has indexing errors");
+        throw new Error('Subgraph has indexing errors');
       }
       if (
-        typeof statusResponse._meta?.block.number === "number" &&
+        typeof statusResponse._meta?.block.number === 'number' &&
         statusResponse._meta.block.number >= latestBlockNumber
       ) {
-        console.log("Subgraph has indexed all blocks");
+        console.log('Subgraph has indexed all blocks');
         isReady = true;
         break;
       }
@@ -61,15 +61,15 @@ beforeAll(async () => {
         `Subgraph is not ready yet (blocks indexed: ${statusResponse._meta?.block.number}, latest block: ${latestBlockNumber}), waiting...`
       );
     } catch (error) {
-      console.log("Subgraph is not ready yet, retrying...", error);
+      console.log('Subgraph is not ready yet, retrying...', error);
       // Ignore errors during polling
     }
 
     attempts++;
-    await new Promise((resolve) => setTimeout(resolve, 3_000)); // Wait 3 seconds between attempts
+    await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait 3 seconds between attempts
   }
 
   if (!isReady) {
-    throw new Error("Subgraph failed to start within timeout period");
+    throw new Error('Subgraph failed to start within timeout period');
   }
 });

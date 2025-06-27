@@ -1,6 +1,6 @@
-import { orpc } from "@/orpc";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { orpc } from '@/orpc';
+import { theGraphMiddleware } from '@/orpc/middlewares/services/the-graph.middleware';
+import { onboardedRouter } from '@/orpc/procedures/onboarded.router';
 
 /**
  * System listing route handler.
@@ -37,7 +37,7 @@ export const me = onboardedRouter.account.me
   .handler(async ({ context }) => {
     try {
       return await orpc.account.read.call({
-        wallet: context.auth.user.wallet ?? "",
+        wallet: context.auth.user.wallet ?? '',
       });
     } catch {
       return null;

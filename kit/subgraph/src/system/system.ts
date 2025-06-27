@@ -1,6 +1,6 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { Bytes } from '@graphprotocol/graph-ts';
 
-import {
+import type {
   Bootstrapped,
   ComplianceImplementationUpdated,
   ComplianceModuleRegistryImplementationUpdated,
@@ -14,21 +14,21 @@ import {
   TokenIdentityImplementationUpdated,
   TopicSchemeRegistryImplementationUpdated,
   TrustedIssuersRegistryImplementationUpdated,
-} from "../../generated/templates/System/System";
-import { fetchComplianceModuleRegistry } from "../compliance/fetch/compliance-module-registry";
-import { fetchEvent } from "../event/fetch/event";
-import { fetchIdentityFactory } from "../identity-factory/fetch/identity-factory";
-import { fetchIdentityRegistry } from "../identity-registry/fetch/identity-registry";
-import { fetchIdentityRegistryStorage } from "../identity-registry/fetch/identity-registry-storage";
-import { fetchSystemAddonRegistry } from "../system-addons/fetch/system-addon-registry";
-import { fetchTokenFactoryRegistry } from "../token-factory/fetch/token-factory-registry";
-import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
-import { fetchCompliance } from "./fetch/compliance";
-import { fetchSystem } from "./fetch/system";
-import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
+} from '../../generated/templates/System/System';
+import { fetchComplianceModuleRegistry } from '../compliance/fetch/compliance-module-registry';
+import { fetchEvent } from '../event/fetch/event';
+import { fetchIdentityFactory } from '../identity-factory/fetch/identity-factory';
+import { fetchIdentityRegistry } from '../identity-registry/fetch/identity-registry';
+import { fetchIdentityRegistryStorage } from '../identity-registry/fetch/identity-registry-storage';
+import { fetchSystemAddonRegistry } from '../system-addons/fetch/system-addon-registry';
+import { fetchTokenFactoryRegistry } from '../token-factory/fetch/token-factory-registry';
+import { fetchTopicSchemeRegistry } from '../topic-scheme-registry/fetch/topic-scheme-registry';
+import { fetchCompliance } from './fetch/compliance';
+import { fetchSystem } from './fetch/system';
+import { fetchTrustedIssuersRegistry } from './fetch/trusted-issuers-registry';
 
 export function handleBootstrapped(event: Bootstrapped): void {
-  fetchEvent(event, "Bootstrapped");
+  fetchEvent(event, 'Bootstrapped');
   const system = fetchSystem(event.address);
 
   // Set deployedInTransaction for all entities created during bootstrap
@@ -111,71 +111,71 @@ export function handleBootstrapped(event: Bootstrapped): void {
 export function handleComplianceImplementationUpdated(
   event: ComplianceImplementationUpdated
 ): void {
-  fetchEvent(event, "ComplianceImplementationUpdated");
+  fetchEvent(event, 'ComplianceImplementationUpdated');
 }
 
 export function handleIdentityFactoryImplementationUpdated(
   event: IdentityFactoryImplementationUpdated
 ): void {
-  fetchEvent(event, "IdentityFactoryImplementationUpdated");
+  fetchEvent(event, 'IdentityFactoryImplementationUpdated');
 }
 
 export function handleIdentityImplementationUpdated(
   event: IdentityImplementationUpdated
 ): void {
-  fetchEvent(event, "IdentityImplementationUpdated");
+  fetchEvent(event, 'IdentityImplementationUpdated');
 }
 
 export function handleIdentityRegistryImplementationUpdated(
   event: IdentityRegistryImplementationUpdated
 ): void {
-  fetchEvent(event, "IdentityRegistryImplementationUpdated");
+  fetchEvent(event, 'IdentityRegistryImplementationUpdated');
 }
 
 export function handleIdentityRegistryStorageImplementationUpdated(
   event: IdentityRegistryStorageImplementationUpdated
 ): void {
-  fetchEvent(event, "IdentityRegistryStorageImplementationUpdated");
+  fetchEvent(event, 'IdentityRegistryStorageImplementationUpdated');
 }
 
 export function handleTokenAccessManagerImplementationUpdated(
   event: TokenAccessManagerImplementationUpdated
 ): void {
-  fetchEvent(event, "TokenAccessManagerImplementationUpdated");
+  fetchEvent(event, 'TokenAccessManagerImplementationUpdated');
 }
 
 export function handleTokenIdentityImplementationUpdated(
   event: TokenIdentityImplementationUpdated
 ): void {
-  fetchEvent(event, "TokenIdentityImplementationUpdated");
+  fetchEvent(event, 'TokenIdentityImplementationUpdated');
 }
 
 export function handleTrustedIssuersRegistryImplementationUpdated(
   event: TrustedIssuersRegistryImplementationUpdated
 ): void {
-  fetchEvent(event, "TrustedIssuersRegistryImplementationUpdated");
+  fetchEvent(event, 'TrustedIssuersRegistryImplementationUpdated');
 }
 
 export function handleTopicSchemeRegistryImplementationUpdated(
   event: TopicSchemeRegistryImplementationUpdated
 ): void {
-  fetchEvent(event, "TopicSchemeRegistryImplementationUpdated");
+  fetchEvent(event, 'TopicSchemeRegistryImplementationUpdated');
 }
 
 export function handleTokenFactoryRegistryImplementationUpdated(
   event: TokenFactoryRegistryImplementationUpdated
 ): void {
-  fetchEvent(event, "TokenFactoryRegistryImplementationUpdated");
+  fetchEvent(event, 'TokenFactoryRegistryImplementationUpdated');
 }
 
 export function handleComplianceModuleRegistryImplementationUpdated(
   event: ComplianceModuleRegistryImplementationUpdated
 ): void {
-  fetchEvent(event, "ComplianceModuleRegistryImplementationUpdated");
+  fetchEvent(event, 'ComplianceModuleRegistryImplementationUpdated');
 }
 
 export function handleSystemAddonRegistryImplementationUpdated(
   event: SystemAddonRegistryImplementationUpdated
 ): void {
-  fetchEvent(event, "SystemAddonRegistryImplementationUpdated");
+  fetchEvent(event, 'SystemAddonRegistryImplementationUpdated');
 }

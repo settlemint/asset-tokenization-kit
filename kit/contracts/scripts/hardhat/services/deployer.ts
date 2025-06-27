@@ -1,6 +1,6 @@
-import hre from "hardhat";
-import { existsSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+import hre from 'hardhat';
 import type {
   Abi,
   Account,
@@ -10,38 +10,38 @@ import type {
   PublicClient,
   Transport,
   WalletClient,
-} from "viem";
+} from 'viem';
 
-import ATKOnboardingModule from "../../../ignition/modules/onboarding";
-import { ATKContracts } from "../constants/contracts";
-import { owner } from "../entities/actors/owner";
+import ATKOnboardingModule from '../../../ignition/modules/onboarding';
+import { ATKContracts } from '../constants/contracts';
+import { owner } from '../entities/actors/owner';
 // --- Utility Imports ---
 
 // Type for the keys of CONTRACT_METADATA, e.g., "system" | "compliance" | ...
 export type PredeployedContractName = keyof Pick<
   typeof ATKContracts,
-  | "system"
-  | "compliance"
-  | "identityRegistry"
-  | "identityRegistryStorage"
-  | "trustedIssuersRegistry"
-  | "topicSchemeRegistry"
-  | "identityFactory"
-  | "bondFactory"
-  | "depositFactory"
-  | "equityFactory"
-  | "fundFactory"
-  | "stablecoinFactory"
-  | "countryAllowListModule"
-  | "countryBlockListModule"
-  | "addressBlockListModule"
-  | "identityBlockListModule"
-  | "identityAllowListModule"
-  | "fixedYieldScheduleFactory"
-  | "vestingAirdropFactory"
-  | "pushAirdropFactory"
-  | "timeBoundAirdropFactory"
-  | "xvpSettlementFactory"
+  | 'system'
+  | 'compliance'
+  | 'identityRegistry'
+  | 'identityRegistryStorage'
+  | 'trustedIssuersRegistry'
+  | 'topicSchemeRegistry'
+  | 'identityFactory'
+  | 'bondFactory'
+  | 'depositFactory'
+  | 'equityFactory'
+  | 'fundFactory'
+  | 'stablecoinFactory'
+  | 'countryAllowListModule'
+  | 'countryBlockListModule'
+  | 'addressBlockListModule'
+  | 'identityBlockListModule'
+  | 'identityAllowListModule'
+  | 'fixedYieldScheduleFactory'
+  | 'vestingAirdropFactory'
+  | 'pushAirdropFactory'
+  | 'timeBoundAirdropFactory'
+  | 'xvpSettlementFactory'
 >;
 
 // Helper type for Viem contract instances
@@ -90,7 +90,7 @@ export class ATKDeployer {
 
   public constructor() {
     this._deployedContractAddresses = undefined;
-    this._deploymentId = "atk-local"; // Default deployment ID
+    this._deploymentId = 'atk-local'; // Default deployment ID
   }
 
   /**
@@ -99,15 +99,15 @@ export class ATKDeployer {
    */
   private clearDeployment(deploymentId: string): void {
     const deploymentPath = join(
-      hre.config.paths?.ignition || "ignition",
-      "deployments",
+      hre.config.paths?.ignition || 'ignition',
+      'deployments',
       deploymentId
     );
 
     if (existsSync(deploymentPath)) {
       console.log(`🧹 Clearing existing deployment: ${deploymentPath}`);
       rmSync(deploymentPath, { recursive: true, force: true });
-      console.log("✅ Deployment cleared successfully");
+      console.log('✅ Deployment cleared successfully');
     } else {
       console.log(`ℹ️ No existing deployment found at: ${deploymentPath}`);
     }
@@ -128,7 +128,7 @@ export class ATKDeployer {
 
     // Handle reset functionality
     if (reset) {
-      console.log("🔄 Reset flag enabled - clearing existing deployment...");
+      console.log('🔄 Reset flag enabled - clearing existing deployment...');
       this.clearDeployment(this._deploymentId);
       // Also clear internal state
       this._deployedContractAddresses = undefined;
@@ -136,12 +136,12 @@ export class ATKDeployer {
 
     if (this._deployedContractAddresses && !reset) {
       console.warn(
-        "ATKOnboardingModule has already been deployed. Skipping setup. Use reset option to redeploy."
+        'ATKOnboardingModule has already been deployed. Skipping setup. Use reset option to redeploy.'
       );
       return;
     }
 
-    console.log("🚀 Starting deployment of ATKOnboardingModule...");
+    console.log('🚀 Starting deployment of ATKOnboardingModule...');
     console.log(`📁 Using deployment ID: ${this._deploymentId}`);
 
     try {
@@ -158,24 +158,24 @@ export class ATKDeployer {
       this._deployedContractAddresses = deploymentAddresses;
 
       console.log(
-        "✅ ATKOnboardingModule deployed successfully! Contract addresses and default signer initialized."
+        '✅ ATKOnboardingModule deployed successfully! Contract addresses and default signer initialized.'
       );
       console.log(
         `📂 Deployment artifacts stored in: ignition/deployments/${this._deploymentId}`
       );
 
       if (this._deployedContractAddresses) {
-        console.log("📋 Deployed Contract Addresses:");
+        console.log('📋 Deployed Contract Addresses:');
         for (const [name, contractInfo] of Object.entries(
           this._deployedContractAddresses
         )) {
-          if (contractInfo && typeof contractInfo.address === "string") {
+          if (contractInfo && typeof contractInfo.address === 'string') {
             console.log(`  ${name}: ${contractInfo.address}`);
           }
         }
       }
     } catch (error) {
-      console.error("❌ Failed to deploy ATKOnboardingModule:", error);
+      console.error('❌ Failed to deploy ATKOnboardingModule:', error);
       throw error; // Re-throw the error to indicate failure
     }
   }
@@ -211,7 +211,7 @@ export class ATKDeployer {
   > {
     if (!this._deployedContractAddresses) {
       throw new Error(
-        "Contracts not deployed. Call setUp() before accessing contracts."
+        'Contracts not deployed. Call setUp() before accessing contracts.'
       );
     }
 
@@ -233,7 +233,7 @@ export class ATKDeployer {
   public getContractAddress(contractName: PredeployedContractName): Address {
     if (!this._deployedContractAddresses) {
       throw new Error(
-        "Contracts not deployed. Call setUp() before accessing contracts."
+        'Contracts not deployed. Call setUp() before accessing contracts.'
       );
     }
 
@@ -244,128 +244,128 @@ export class ATKDeployer {
 
   public getSystemContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["system"] {
-    return this.getContract("system", walletClient);
+  ): ATKOnboardingContracts['system'] {
+    return this.getContract('system', walletClient);
   }
 
   public getComplianceContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["compliance"] {
-    return this.getContract("compliance", walletClient);
+  ): ATKOnboardingContracts['compliance'] {
+    return this.getContract('compliance', walletClient);
   }
 
   public getIdentityRegistryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["identityRegistry"] {
-    return this.getContract("identityRegistry", walletClient);
+  ): ATKOnboardingContracts['identityRegistry'] {
+    return this.getContract('identityRegistry', walletClient);
   }
 
   public getIdentityRegistryStorageContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["identityRegistryStorage"] {
-    return this.getContract("identityRegistryStorage", walletClient);
+  ): ATKOnboardingContracts['identityRegistryStorage'] {
+    return this.getContract('identityRegistryStorage', walletClient);
   }
 
   public getTrustedIssuersRegistryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["trustedIssuersRegistry"] {
-    return this.getContract("trustedIssuersRegistry", walletClient);
+  ): ATKOnboardingContracts['trustedIssuersRegistry'] {
+    return this.getContract('trustedIssuersRegistry', walletClient);
   }
 
   public getTopicSchemeRegistryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["topicSchemeRegistry"] {
-    return this.getContract("topicSchemeRegistry", walletClient);
+  ): ATKOnboardingContracts['topicSchemeRegistry'] {
+    return this.getContract('topicSchemeRegistry', walletClient);
   }
 
   public getIdentityFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["identityFactory"] {
-    return this.getContract("identityFactory", walletClient);
+  ): ATKOnboardingContracts['identityFactory'] {
+    return this.getContract('identityFactory', walletClient);
   }
 
   public getBondFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["bondFactory"] {
-    return this.getContract("bondFactory", walletClient);
+  ): ATKOnboardingContracts['bondFactory'] {
+    return this.getContract('bondFactory', walletClient);
   }
 
   public getDepositFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["depositFactory"] {
-    return this.getContract("depositFactory", walletClient);
+  ): ATKOnboardingContracts['depositFactory'] {
+    return this.getContract('depositFactory', walletClient);
   }
 
   public getEquityFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["equityFactory"] {
-    return this.getContract("equityFactory", walletClient);
+  ): ATKOnboardingContracts['equityFactory'] {
+    return this.getContract('equityFactory', walletClient);
   }
 
   public getFundFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["fundFactory"] {
-    return this.getContract("fundFactory", walletClient);
+  ): ATKOnboardingContracts['fundFactory'] {
+    return this.getContract('fundFactory', walletClient);
   }
 
   public getStablecoinFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["stablecoinFactory"] {
-    return this.getContract("stablecoinFactory", walletClient);
+  ): ATKOnboardingContracts['stablecoinFactory'] {
+    return this.getContract('stablecoinFactory', walletClient);
   }
 
   public getCountryAllowListModuleContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["countryAllowListModule"] {
-    return this.getContract("countryAllowListModule", walletClient);
+  ): ATKOnboardingContracts['countryAllowListModule'] {
+    return this.getContract('countryAllowListModule', walletClient);
   }
 
   public getCountryBlockListModuleContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["countryBlockListModule"] {
-    return this.getContract("countryBlockListModule", walletClient);
+  ): ATKOnboardingContracts['countryBlockListModule'] {
+    return this.getContract('countryBlockListModule', walletClient);
   }
 
   public getFixedYieldScheduleFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["fixedYieldScheduleFactory"] {
-    return this.getContract("fixedYieldScheduleFactory", walletClient);
+  ): ATKOnboardingContracts['fixedYieldScheduleFactory'] {
+    return this.getContract('fixedYieldScheduleFactory', walletClient);
   }
 
   public getVestingAirdropFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["vestingAirdropFactory"] {
-    return this.getContract("vestingAirdropFactory", walletClient);
+  ): ATKOnboardingContracts['vestingAirdropFactory'] {
+    return this.getContract('vestingAirdropFactory', walletClient);
   }
 
   public getPushAirdropFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["pushAirdropFactory"] {
-    return this.getContract("pushAirdropFactory", walletClient);
+  ): ATKOnboardingContracts['pushAirdropFactory'] {
+    return this.getContract('pushAirdropFactory', walletClient);
   }
 
   public getTimeBoundAirdropFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["timeBoundAirdropFactory"] {
-    return this.getContract("timeBoundAirdropFactory", walletClient);
+  ): ATKOnboardingContracts['timeBoundAirdropFactory'] {
+    return this.getContract('timeBoundAirdropFactory', walletClient);
   }
 
   public getXvpSettlementFactoryContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["xvpSettlementFactory"] {
-    return this.getContract("xvpSettlementFactory", walletClient);
+  ): ATKOnboardingContracts['xvpSettlementFactory'] {
+    return this.getContract('xvpSettlementFactory', walletClient);
   }
 
   public getAddressBlockListModuleContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["addressBlockListModule"] {
-    return this.getContract("addressBlockListModule", walletClient);
+  ): ATKOnboardingContracts['addressBlockListModule'] {
+    return this.getContract('addressBlockListModule', walletClient);
   }
 
   public getIdentityBlockListModuleContract(
     walletClient?: WalletClient<Transport, Chain, Account>
-  ): ATKOnboardingContracts["identityBlockListModule"] {
-    return this.getContract("identityBlockListModule", walletClient);
+  ): ATKOnboardingContracts['identityBlockListModule'] {
+    return this.getContract('identityBlockListModule', walletClient);
   }
 }
 

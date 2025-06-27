@@ -1,5 +1,5 @@
-import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "./utils/thegraph-client";
+import { describe, expect, it } from 'bun:test';
+import { theGraphClient, theGraphGraphql } from './utils/thegraph-client';
 
 // TypeScript interfaces for EventStats data structures
 interface Account {
@@ -17,8 +17,8 @@ interface EventStatsResponse {
   eventStats_collection: EventStat[];
 }
 
-describe("EventStats", () => {
-  it("should fetch event stats aggregated by hour", async () => {
+describe('EventStats', () => {
+  it('should fetch event stats aggregated by hour', async () => {
     const query = theGraphGraphql(
       `query {
         eventStats_collection(
@@ -50,7 +50,7 @@ describe("EventStats", () => {
     }
   });
 
-  it("should fetch event stats aggregated by day", async () => {
+  it('should fetch event stats aggregated by day', async () => {
     const query = theGraphGraphql(
       `query {
         eventStats_collection(
@@ -73,7 +73,7 @@ describe("EventStats", () => {
     expect(Array.isArray(response.eventStats_collection)).toBe(true);
   });
 
-  it("should filter event stats by event name", async () => {
+  it('should filter event stats by event name', async () => {
     const query = theGraphGraphql(
       `query($where: EventStats_filter) {
         eventStats_collection(
@@ -93,19 +93,19 @@ describe("EventStats", () => {
     );
     const response = await theGraphClient.request(query, {
       where: {
-        eventName: "Transfer",
+        eventName: 'Transfer',
       },
     });
 
     expect(response.eventStats_collection).toBeDefined();
     if (response.eventStats_collection.length > 0) {
       response.eventStats_collection.forEach((stat: EventStat) => {
-        expect(stat.eventName).toBe("Transfer");
+        expect(stat.eventName).toBe('Transfer');
       });
     }
   });
 
-  it("should filter event stats by account", async () => {
+  it('should filter event stats by account', async () => {
     const query = theGraphGraphql(
       `query($accountId: Bytes!) {
         eventStats_collection(
@@ -140,7 +140,7 @@ describe("EventStats", () => {
     if (accountResponse.events.length > 0) {
       const accountId = accountResponse.events[0].emitter.id;
       const response = await theGraphClient.request(query, {
-        accountId: accountId,
+        accountId,
       });
 
       expect(response.eventStats_collection).toBeDefined();
@@ -152,7 +152,7 @@ describe("EventStats", () => {
     }
   });
 
-  it("should show cumulative event counts", async () => {
+  it('should show cumulative event counts', async () => {
     const query = theGraphGraphql(
       `query {
         eventStats_collection(
@@ -186,7 +186,9 @@ describe("EventStats", () => {
     Object.values(groupedStats).forEach((stats) => {
       if (stats.length > 1) {
         // Sort by timestamp (parse strings to numbers for proper sorting)
-        stats.sort((a, b) => parseInt(a.timestamp) - parseInt(b.timestamp));
+        stats.sort(
+          (a, b) => Number.parseInt(a.timestamp) - Number.parseInt(b.timestamp)
+        );
 
         for (let i = 1; i < stats.length; i++) {
           expect(stats[i].eventsCount).toBeGreaterThanOrEqual(
@@ -197,7 +199,7 @@ describe("EventStats", () => {
     });
   });
 
-  it("should track different event types separately", async () => {
+  it('should track different event types separately', async () => {
     const query = theGraphGraphql(
       `query {
         eventStats_collection(

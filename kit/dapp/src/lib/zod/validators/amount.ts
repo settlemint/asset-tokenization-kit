@@ -8,7 +8,7 @@
  *
  * @module AmountValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Configuration options for amount validation.
@@ -59,9 +59,9 @@ export const amount = ({
   // Calculate the minimum value based on provided options
   // Priority: explicit min > decimals-based min > 0
   const minimum =
-    typeof min === "number"
+    typeof min === 'number'
       ? min
-      : typeof decimals === "number"
+      : typeof decimals === 'number'
         ? 10 ** -decimals // e.g., 0.01 for 2 decimals
         : 0;
 

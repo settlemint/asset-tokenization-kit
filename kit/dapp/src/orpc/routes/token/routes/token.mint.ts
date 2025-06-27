@@ -1,13 +1,13 @@
-import { portalGraphql } from "@/lib/settlemint/portal";
+import z from 'zod/v4';
+import { portalGraphql } from '@/lib/settlemint/portal';
 import {
   ethereumHash,
   getEthereumHash,
-} from "@/lib/zod/validators/ethereum-hash";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { tokenRouter } from "@/orpc/procedures/token.router";
-import z from "zod/v4";
+} from '@/lib/zod/validators/ethereum-hash';
+import { handleChallenge } from '@/orpc/helpers/challenge-response';
+import { tokenPermissionMiddleware } from '@/orpc/middlewares/auth/token-permission.middleware';
+import { portalMiddleware } from '@/orpc/middlewares/services/portal.middleware';
+import { tokenRouter } from '@/orpc/procedures/token.router';
 
 const MINT_BOND_MUTATION = portalGraphql(`
   mutation MintToken(
@@ -31,7 +31,7 @@ const MINT_BOND_MUTATION = portalGraphql(`
 `);
 
 export const mint = tokenRouter.token.mint
-  .use(tokenPermissionMiddleware({ requiredRoles: ["supplyManagement"] }))
+  .use(tokenPermissionMiddleware({ requiredRoles: ['supplyManagement'] }))
   .use(portalMiddleware)
   .handler(async ({ input, context }) => {
     const { contract, to, amount, verification } = input;
@@ -42,7 +42,7 @@ export const mint = tokenRouter.token.mint
       MINT_BOND_MUTATION,
       {
         address: contract,
-        from: sender.wallet ?? "",
+        from: sender.wallet ?? '',
         to,
         amount: amount.toString(),
         ...(await handleChallenge(sender, {
@@ -55,7 +55,7 @@ export const mint = tokenRouter.token.mint
           transactionHash: ethereumHash,
         }),
       }),
-      "Failed to mint token"
+      'Failed to mint token'
     );
 
     return getEthereumHash(result.mint.transactionHash);

@@ -1,5 +1,8 @@
-import { Bytes } from "@graphprotocol/graph-ts";
-import { IdentityClaim, IdentityClaimValue } from "../../../generated/schema";
+import { Bytes } from '@graphprotocol/graph-ts';
+import {
+  type IdentityClaim,
+  IdentityClaimValue,
+} from '../../../generated/schema';
 
 export function fetchIdentityClaimValue(
   claim: IdentityClaim,
@@ -12,7 +15,7 @@ export function fetchIdentityClaimValue(
     identityClaimValue = new IdentityClaimValue(id);
     identityClaimValue.claim = claim.id;
     identityClaimValue.key = key;
-    identityClaimValue.value = "";
+    identityClaimValue.value = '';
   }
 
   return identityClaimValue;

@@ -10,9 +10,9 @@
  * Optimized for Bun runtime with native file operations and efficient JSON handling.
  */
 
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { $ } from "bun";
-import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import { $ } from 'bun';
+import { findTurboRoot, getKitProjectPath } from '../../../tools/root';
 
 // =============================================================================
 // CONFIGURATION
@@ -36,11 +36,11 @@ const logger = createLogger({
   level:
     (process.env.LOG_LEVEL as LogLevel) ||
     (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
-    "info",
+    'info',
 });
 
 // File paths
-const CONTRACTS_ROOT = await getKitProjectPath("contracts");
+const CONTRACTS_ROOT = await getKitProjectPath('contracts');
 const FORGE_OUT_DIR = `${CONTRACTS_ROOT}/.generated/out-genesis`;
 const FORGE_CACHE_DIR = `${CONTRACTS_ROOT}/.generated/cache-genesis`;
 const OUTPUT_DIR = `${CONTRACTS_ROOT}/.generated`;
@@ -52,157 +52,157 @@ const CONTRACTS_GENESIS_FILE = `${OUTPUT_DIR}/genesis.json`;
 // Contract configuration
 const CONTRACT_ADDRESSES = {
   // Core infrastructure
-  ATKForwarder: "0x5e771e1417100000000000000000000000020099",
+  ATKForwarder: '0x5e771e1417100000000000000000000000020099',
 
   // System implementations
-  ATKComplianceImplementation: "0x5e771e1417100000000000000000000000020001",
+  ATKComplianceImplementation: '0x5e771e1417100000000000000000000000020001',
   ATKIdentityRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020002",
+    '0x5e771e1417100000000000000000000000020002',
   ATKIdentityRegistryStorageImplementation:
-    "0x5e771e1417100000000000000000000000020003",
+    '0x5e771e1417100000000000000000000000020003',
   ATKTrustedIssuersRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020004",
+    '0x5e771e1417100000000000000000000000020004',
   ATKIdentityFactoryImplementation:
-    "0x5e771e1417100000000000000000000000020005",
-  ATKIdentityImplementation: "0x5e771e1417100000000000000000000000020006",
-  ATKTokenIdentityImplementation: "0x5e771e1417100000000000000000000000020007",
+    '0x5e771e1417100000000000000000000000020005',
+  ATKIdentityImplementation: '0x5e771e1417100000000000000000000000020006',
+  ATKTokenIdentityImplementation: '0x5e771e1417100000000000000000000000020007',
   ATKTopicSchemeRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020008",
+    '0x5e771e1417100000000000000000000000020008',
   ATKTokenAccessManagerImplementation:
-    "0x5e771e1417100000000000000000000000020009",
+    '0x5e771e1417100000000000000000000000020009',
 
   // Registry implementations
   ATKTokenFactoryRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020010",
+    '0x5e771e1417100000000000000000000000020010',
   ATKComplianceModuleRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020011",
+    '0x5e771e1417100000000000000000000000020011',
   ATKSystemAddonRegistryImplementation:
-    "0x5e771e1417100000000000000000000000020012",
+    '0x5e771e1417100000000000000000000000020012',
 
   // System
-  ATKSystemImplementation: "0x5e771e1417100000000000000000000000020087",
-  ATKSystemFactory: "0x5e771e1417100000000000000000000000020088",
+  ATKSystemImplementation: '0x5e771e1417100000000000000000000000020087',
+  ATKSystemFactory: '0x5e771e1417100000000000000000000000020088',
 
   // Asset implementations
-  ATKBondImplementation: "0x5e771e1417100000000000000000000000020020",
-  ATKBondFactoryImplementation: "0x5e771e1417100000000000000000000000020021",
-  ATKDepositImplementation: "0x5e771e1417100000000000000000000000020022",
-  ATKDepositFactoryImplementation: "0x5e771e1417100000000000000000000000020023",
-  ATKEquityImplementation: "0x5e771e1417100000000000000000000000020024",
-  ATKEquityFactoryImplementation: "0x5e771e1417100000000000000000000000020025",
-  ATKFundImplementation: "0x5e771e1417100000000000000000000000020026",
-  ATKFundFactoryImplementation: "0x5e771e1417100000000000000000000000020027",
-  ATKStableCoinImplementation: "0x5e771e1417100000000000000000000000020028",
+  ATKBondImplementation: '0x5e771e1417100000000000000000000000020020',
+  ATKBondFactoryImplementation: '0x5e771e1417100000000000000000000000020021',
+  ATKDepositImplementation: '0x5e771e1417100000000000000000000000020022',
+  ATKDepositFactoryImplementation: '0x5e771e1417100000000000000000000000020023',
+  ATKEquityImplementation: '0x5e771e1417100000000000000000000000020024',
+  ATKEquityFactoryImplementation: '0x5e771e1417100000000000000000000000020025',
+  ATKFundImplementation: '0x5e771e1417100000000000000000000000020026',
+  ATKFundFactoryImplementation: '0x5e771e1417100000000000000000000000020027',
+  ATKStableCoinImplementation: '0x5e771e1417100000000000000000000000020028',
   ATKStableCoinFactoryImplementation:
-    "0x5e771e1417100000000000000000000000020029",
+    '0x5e771e1417100000000000000000000000020029',
 
   // Compliance modules
   SMARTIdentityVerificationComplianceModule:
-    "0x5e771e1417100000000000000000000000020100",
+    '0x5e771e1417100000000000000000000000020100',
   CountryAllowListComplianceModule:
-    "0x5e771e1417100000000000000000000000020101",
+    '0x5e771e1417100000000000000000000000020101',
   CountryBlockListComplianceModule:
-    "0x5e771e1417100000000000000000000000020102",
+    '0x5e771e1417100000000000000000000000020102',
   AddressBlockListComplianceModule:
-    "0x5e771e1417100000000000000000000000020103",
+    '0x5e771e1417100000000000000000000000020103',
   IdentityBlockListComplianceModule:
-    "0x5e771e1417100000000000000000000000020104",
+    '0x5e771e1417100000000000000000000000020104',
   IdentityAllowListComplianceModule:
-    "0x5e771e1417100000000000000000000000020105",
+    '0x5e771e1417100000000000000000000000020105',
 
   // Addon factory implementations
   ATKFixedYieldScheduleFactoryImplementation:
-    "0x5e771e1417100000000000000000000000020030",
-  ATKXvPSettlementImplementation: "0x5e771e1417100000000000000000000000020031",
+    '0x5e771e1417100000000000000000000000020030',
+  ATKXvPSettlementImplementation: '0x5e771e1417100000000000000000000000020031',
   ATKXvPSettlementFactoryImplementation:
-    "0x5e771e1417100000000000000000000000020032",
+    '0x5e771e1417100000000000000000000000020032',
   ATKVestingAirdropFactoryImplementation:
-    "0x5e771e1417100000000000000000000000020033",
+    '0x5e771e1417100000000000000000000000020033',
   ATKPushAirdropFactoryImplementation:
-    "0x5e771e1417100000000000000000000000020034",
+    '0x5e771e1417100000000000000000000000020034',
   // Note: ATKVault and ATKVaultFactoryImplementation removed per https://linear.app/settlemint/issue/SRT-697/implementation-vs-configured-instance
   // These contracts should not be predeployed as implementations need proper configuration
 } as const;
 
 const CONTRACT_FILES = {
   // Core infrastructure
-  ATKForwarder: "contracts/vendor/ATKForwarder.sol",
+  ATKForwarder: 'contracts/vendor/ATKForwarder.sol',
 
   // System implementations
   ATKComplianceImplementation:
-    "contracts/system/compliance/ATKComplianceImplementation.sol",
+    'contracts/system/compliance/ATKComplianceImplementation.sol',
   ATKIdentityRegistryImplementation:
-    "contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol",
+    'contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol',
   ATKIdentityRegistryStorageImplementation:
-    "contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol",
+    'contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol',
   ATKTrustedIssuersRegistryImplementation:
-    "contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol",
+    'contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol',
   ATKIdentityFactoryImplementation:
-    "contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol",
+    'contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol',
   ATKIdentityImplementation:
-    "contracts/system/identity-factory/identities/ATKIdentityImplementation.sol",
+    'contracts/system/identity-factory/identities/ATKIdentityImplementation.sol',
   ATKTokenIdentityImplementation:
-    "contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol",
+    'contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol',
   ATKTopicSchemeRegistryImplementation:
-    "contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol",
+    'contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol',
   ATKTokenAccessManagerImplementation:
-    "contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol",
+    'contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol',
   ATKTokenFactoryRegistryImplementation:
-    "contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol",
+    'contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol',
   ATKComplianceModuleRegistryImplementation:
-    "contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol",
+    'contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol',
   ATKSystemAddonRegistryImplementation:
-    "contracts/system/addons/ATKSystemAddonRegistryImplementation.sol",
+    'contracts/system/addons/ATKSystemAddonRegistryImplementation.sol',
 
   // System
-  ATKSystemImplementation: "contracts/system/ATKSystemImplementation.sol",
-  ATKSystemFactory: "contracts/system/ATKSystemFactory.sol",
+  ATKSystemImplementation: 'contracts/system/ATKSystemImplementation.sol',
+  ATKSystemFactory: 'contracts/system/ATKSystemFactory.sol',
 
   // Asset implementations
-  ATKBondImplementation: "contracts/assets/bond/ATKBondImplementation.sol",
+  ATKBondImplementation: 'contracts/assets/bond/ATKBondImplementation.sol',
   ATKBondFactoryImplementation:
-    "contracts/assets/bond/ATKBondFactoryImplementation.sol",
+    'contracts/assets/bond/ATKBondFactoryImplementation.sol',
   ATKDepositImplementation:
-    "contracts/assets/deposit/ATKDepositImplementation.sol",
+    'contracts/assets/deposit/ATKDepositImplementation.sol',
   ATKDepositFactoryImplementation:
-    "contracts/assets/deposit/ATKDepositFactoryImplementation.sol",
+    'contracts/assets/deposit/ATKDepositFactoryImplementation.sol',
   ATKEquityImplementation:
-    "contracts/assets/equity/ATKEquityImplementation.sol",
+    'contracts/assets/equity/ATKEquityImplementation.sol',
   ATKEquityFactoryImplementation:
-    "contracts/assets/equity/ATKEquityFactoryImplementation.sol",
-  ATKFundImplementation: "contracts/assets/fund/ATKFundImplementation.sol",
+    'contracts/assets/equity/ATKEquityFactoryImplementation.sol',
+  ATKFundImplementation: 'contracts/assets/fund/ATKFundImplementation.sol',
   ATKFundFactoryImplementation:
-    "contracts/assets/fund/ATKFundFactoryImplementation.sol",
+    'contracts/assets/fund/ATKFundFactoryImplementation.sol',
   ATKStableCoinImplementation:
-    "contracts/assets/stable-coin/ATKStableCoinImplementation.sol",
+    'contracts/assets/stable-coin/ATKStableCoinImplementation.sol',
   ATKStableCoinFactoryImplementation:
-    "contracts/assets/stable-coin/ATKStableCoinFactoryImplementation.sol",
+    'contracts/assets/stable-coin/ATKStableCoinFactoryImplementation.sol',
 
   // Compliance modules
   SMARTIdentityVerificationComplianceModule:
-    "contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol",
+    'contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol',
   CountryAllowListComplianceModule:
-    "contracts/smart/modules/CountryAllowListComplianceModule.sol",
+    'contracts/smart/modules/CountryAllowListComplianceModule.sol',
   CountryBlockListComplianceModule:
-    "contracts/smart/modules/CountryBlockListComplianceModule.sol",
+    'contracts/smart/modules/CountryBlockListComplianceModule.sol',
   AddressBlockListComplianceModule:
-    "contracts/smart/modules/AddressBlockListComplianceModule.sol",
+    'contracts/smart/modules/AddressBlockListComplianceModule.sol',
   IdentityBlockListComplianceModule:
-    "contracts/smart/modules/IdentityBlockListComplianceModule.sol",
+    'contracts/smart/modules/IdentityBlockListComplianceModule.sol',
   IdentityAllowListComplianceModule:
-    "contracts/smart/modules/IdentityAllowListComplianceModule.sol",
+    'contracts/smart/modules/IdentityAllowListComplianceModule.sol',
 
   // Addon factory implementations
   ATKFixedYieldScheduleFactoryImplementation:
-    "contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol",
+    'contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol',
   ATKXvPSettlementImplementation:
-    "contracts/addons/xvp/ATKXvPSettlementImplementation.sol",
+    'contracts/addons/xvp/ATKXvPSettlementImplementation.sol',
   ATKXvPSettlementFactoryImplementation:
-    "contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol",
+    'contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol',
   ATKVestingAirdropFactoryImplementation:
-    "contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropFactoryImplementation.sol",
+    'contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropFactoryImplementation.sol',
   ATKPushAirdropFactoryImplementation:
-    "contracts/addons/airdrop/push-airdrop/ATKPushAirdropFactoryImplementation.sol",
+    'contracts/addons/airdrop/push-airdrop/ATKPushAirdropFactoryImplementation.sol',
   // Note: ATKVault and ATKVaultFactoryImplementation removed per https://linear.app/settlemint/issue/SRT-697/implementation-vs-configured-instance
 } as const;
 
@@ -215,8 +215,8 @@ const CONTRACT_FILES = {
  */
 function isDebugEnabled(): boolean {
   return (
-    process.env.LOG_LEVEL === "debug" ||
-    process.env.SETTLEMINT_LOG_LEVEL === "debug"
+    process.env.LOG_LEVEL === 'debug' ||
+    process.env.SETTLEMINT_LOG_LEVEL === 'debug'
   );
 }
 
@@ -237,11 +237,11 @@ class AnvilManager {
       const response = await fetch(
         `http://localhost:${this.config.anvilPort}`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            jsonrpc: "2.0",
-            method: "eth_chainId",
+            jsonrpc: '2.0',
+            method: 'eth_chainId',
             params: [],
             id: 1,
           }),
@@ -266,7 +266,7 @@ class AnvilManager {
   }
 
   async stopExistingAnvil(): Promise<void> {
-    logger.info("Stopping existing Anvil instances...");
+    logger.info('Stopping existing Anvil instances...');
 
     try {
       // Kill any existing anvil processes
@@ -284,7 +284,7 @@ class AnvilManager {
       );
     }
 
-    logger.debug("Existing Anvil instances stopped");
+    logger.debug('Existing Anvil instances stopped');
   }
 
   async startAnvil(): Promise<void> {
@@ -294,21 +294,21 @@ class AnvilManager {
     try {
       const anvilCheck = await $`which anvil`.quiet();
       if (anvilCheck.exitCode !== 0) {
-        throw new Error("Anvil not found in PATH. Please install Foundry.");
+        throw new Error('Anvil not found in PATH. Please install Foundry.');
       }
       logger.debug(`Anvil found at: ${anvilCheck.stdout.toString().trim()}`);
     } catch (error) {
-      throw new Error("Anvil not found in PATH. Please install Foundry.");
+      throw new Error('Anvil not found in PATH. Please install Foundry.');
     }
 
-    const anvilArgs = ["anvil", "--port", this.config.anvilPort.toString()];
+    const anvilArgs = ['anvil', '--port', this.config.anvilPort.toString()];
 
-    logger.debug(`Starting Anvil with args: ${anvilArgs.join(" ")}`);
+    logger.debug(`Starting Anvil with args: ${anvilArgs.join(' ')}`);
 
     // Capture stdout and stderr for debugging
     // Note: SettleMint SDK logger doesn't have isLevelEnabled
-    const stdout = isDebugEnabled() ? "inherit" : "pipe";
-    const stderr = isDebugEnabled() ? "inherit" : "pipe";
+    const stdout = isDebugEnabled() ? 'inherit' : 'pipe';
+    const stderr = isDebugEnabled() ? 'inherit' : 'pipe';
 
     // Start anvil in background
     this.anvilProcess = Bun.spawn(anvilArgs, {
@@ -318,7 +318,7 @@ class AnvilManager {
 
     // Check if process started successfully
     if (!this.anvilProcess) {
-      throw new Error("Failed to spawn Anvil process");
+      throw new Error('Failed to spawn Anvil process');
     }
 
     // Wait for Anvil to be ready
@@ -329,7 +329,7 @@ class AnvilManager {
       // Check if process is still alive
       if (this.anvilProcess.exitCode !== null) {
         const exitCode = this.anvilProcess.exitCode;
-        let errorOutput = "";
+        let errorOutput = '';
 
         if (!isDebugEnabled() && this.anvilProcess.stderr) {
           try {
@@ -341,7 +341,7 @@ class AnvilManager {
         }
 
         throw new Error(
-          `Anvil process exited with code ${exitCode}. ${errorOutput ? `Error: ${errorOutput}` : ""}`
+          `Anvil process exited with code ${exitCode}. ${errorOutput ? `Error: ${errorOutput}` : ''}`
         );
       }
 
@@ -361,7 +361,7 @@ class AnvilManager {
     }
 
     // If we get here, Anvil failed to start
-    let errorOutput = "";
+    let errorOutput = '';
     if (!isDebugEnabled() && this.anvilProcess.stderr) {
       try {
         const stderr = await new Response(this.anvilProcess.stderr).text();
@@ -372,24 +372,24 @@ class AnvilManager {
     }
 
     throw new Error(
-      `Anvil failed to start after ${maxAttempts} attempts. ${errorOutput ? `Error: ${errorOutput}` : "Check if port ${this.config.anvilPort} is available."}`
+      `Anvil failed to start after ${maxAttempts} attempts. ${errorOutput ? `Error: ${errorOutput}` : 'Check if port ${this.config.anvilPort} is available.'}`
     );
   }
 
   async stopAnvil(): Promise<void> {
     if (this.anvilProcess) {
-      logger.info("Stopping Anvil...");
+      logger.info('Stopping Anvil...');
       this.anvilProcess.kill();
       this.anvilProcess = null;
 
       // Wait a bit for graceful shutdown
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      logger.debug("Anvil stopped");
+      logger.debug('Anvil stopped');
     }
   }
 
   async testAnvilCommand(): Promise<void> {
-    logger.debug("Testing Anvil command...");
+    logger.debug('Testing Anvil command...');
     try {
       const testResult = await $`anvil --version`.quiet();
       if (testResult.exitCode === 0) {
@@ -445,12 +445,12 @@ class AnvilManager {
   }
 
   async cleanup(): Promise<void> {
-    if (!this.config.keepAnvilRunning) {
-      await this.stopAnvil();
-    } else {
+    if (this.config.keepAnvilRunning) {
       logger.info(
         `Keeping Anvil running on port ${this.config.anvilPort} as requested`
       );
+    } else {
+      await this.stopAnvil();
     }
   }
 }
@@ -476,10 +476,10 @@ class ContractDeployer {
     const forwarderAddress = CONTRACT_ADDRESSES.ATKForwarder;
 
     switch (contractName) {
-      case "ATKForwarder":
+      case 'ATKForwarder':
         return [];
 
-      case "ATKSystemFactory":
+      case 'ATKSystemFactory':
         return [
           CONTRACT_ADDRESSES.ATKSystemImplementation,
           CONTRACT_ADDRESSES.ATKComplianceImplementation,
@@ -528,12 +528,12 @@ class ContractDeployer {
       `Raw bytecode for ${contractName}: ${bytecode.slice(0, 100)}...`
     );
 
-    if (!bytecode || bytecode === "0x") {
+    if (!bytecode || bytecode === '0x') {
       throw new Error(`Empty bytecode for ${contractName}`);
     }
 
     const bytecodeSize = (bytecode.length - 2) / 2; // Remove 0x and divide by 2
-    const maxSize = 24576; // 24KB EIP-170 limit
+    const maxSize = 24_576; // 24KB EIP-170 limit
 
     logger.debug(
       `Contract ${contractName} bytecode size: ${bytecodeSize} bytes`
@@ -551,27 +551,27 @@ class ContractDeployer {
 
     const args = this.getConstructorArgs(contractName);
     const forgeArgs = [
-      "forge",
-      "create",
+      'forge',
+      'create',
       `${solFile}:${contractName}`,
-      "--broadcast",
-      "--unlocked",
-      "--from",
-      "0x976EA74026E726554dB657fA54763abd0C3a0aa9",
-      "--json",
-      "--rpc-url",
+      '--broadcast',
+      '--unlocked',
+      '--from',
+      '0x976EA74026E726554dB657fA54763abd0C3a0aa9',
+      '--json',
+      '--rpc-url',
       `http://localhost:${this.config.anvilPort}`,
-      "--optimize",
-      "--optimizer-runs",
-      "200",
+      '--optimize',
+      '--optimizer-runs',
+      '200',
     ];
 
     if (args.length > 0) {
-      forgeArgs.push("--constructor-args", ...args);
-      logger.debug(`Using constructor args: ${args.join(" ")}`);
+      forgeArgs.push('--constructor-args', ...args);
+      logger.debug(`Using constructor args: ${args.join(' ')}`);
     }
 
-    logger.debug(`Forge command: ${forgeArgs.join(" ")}`);
+    logger.debug(`Forge command: ${forgeArgs.join(' ')}`);
     logger.debug(`Working directory: ${CONTRACTS_ROOT}`);
 
     let result;
@@ -602,12 +602,12 @@ class ContractDeployer {
 
     if (result.exitCode !== 0) {
       throw new Error(
-        `Failed to deploy ${contractName}: ${errorOutput || output || "Unknown error"}`
+        `Failed to deploy ${contractName}: ${errorOutput || output || 'Unknown error'}`
       );
     }
 
     // Check if output looks like bytecode instead of JSON
-    if (output.startsWith("0x") && !output.includes("{")) {
+    if (output.startsWith('0x') && !output.includes('{')) {
       logger.warn(
         `Received bytecode instead of JSON for ${contractName}. This might indicate a compilation issue.`
       );
@@ -681,13 +681,13 @@ class ContractDeployer {
           let slotValue = slotResult.stdout.toString().trim();
 
           // Validate and pad if needed
-          if (slotValue.startsWith("0x")) {
+          if (slotValue.startsWith('0x')) {
             slotValue = slotValue.slice(2); // Remove 0x prefix
-            slotValue = slotValue.padStart(64, "0"); // Pad to 32 bytes
+            slotValue = slotValue.padStart(64, '0'); // Pad to 32 bytes
             slotValue = `0x${slotValue}`;
           }
 
-          const paddedSlot = `0x${slot.slot.toString().padStart(64, "0")}`;
+          const paddedSlot = `0x${slot.slot.toString().padStart(64, '0')}`;
           storage[paddedSlot] = slotValue;
         } else {
           logger.warn(
@@ -722,12 +722,12 @@ class ContractDeployer {
 
     const bytecode = result.stdout.toString().trim();
 
-    if (!bytecode || bytecode === "0x") {
+    if (!bytecode || bytecode === '0x') {
       throw new Error(`Empty bytecode for deployed ${contractName}`);
     }
 
     // Remove 0x prefix for consistency
-    return bytecode.startsWith("0x") ? bytecode.slice(2) : bytecode;
+    return bytecode.startsWith('0x') ? bytecode.slice(2) : bytecode;
   }
 
   async deployAndProcess(
@@ -788,7 +788,7 @@ class GenesisGenerator {
   }
 
   async initializeGenesisFile(): Promise<void> {
-    logger.info("Initializing genesis allocation file...");
+    logger.info('Initializing genesis allocation file...');
 
     // Create output directories
     await $`mkdir -p ${FORGE_OUT_DIR}`.quiet();
@@ -800,12 +800,12 @@ class GenesisGenerator {
     const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
     if (await allocFile.exists()) {
       await $`rm -f ${ALL_ALLOCATIONS_FILE}`.quiet();
-      logger.debug("Removed existing genesis file");
+      logger.debug('Removed existing genesis file');
     }
 
     // Initialize empty JSON object
-    await Bun.write(ALL_ALLOCATIONS_FILE, "{}");
-    logger.info("Genesis allocation file initialized");
+    await Bun.write(ALL_ALLOCATIONS_FILE, '{}');
+    logger.info('Genesis allocation file initialized');
   }
 
   async addToGenesis(
@@ -822,7 +822,7 @@ class GenesisGenerator {
 
     // Add contract allocation
     currentGenesis[targetAddress] = {
-      balance: "0x0",
+      balance: '0x0',
       code: `0x${bytecode}`,
       storage,
     };
@@ -889,7 +889,7 @@ class GenesisGenerator {
   }
 
   async processAllContracts(): Promise<void> {
-    logger.info("Processing all contracts...");
+    logger.info('Processing all contracts...');
 
     const contractNames = Object.keys(CONTRACT_ADDRESSES);
     const totalContracts = contractNames.length;
@@ -897,12 +897,12 @@ class GenesisGenerator {
 
     // Process ATKForwarder first (no dependencies)
     if (CONTRACT_ADDRESSES.ATKForwarder) {
-      await this.processContract("ATKForwarder", totalContracts);
+      await this.processContract('ATKForwarder', totalContracts);
     }
 
     // Process all other contracts
     for (const contractName of contractNames) {
-      if (contractName === "ATKForwarder") {
+      if (contractName === 'ATKForwarder') {
         continue; // Already processed
       }
 
@@ -917,12 +917,12 @@ class GenesisGenerator {
     }
 
     if (this.processedCount === 0) {
-      throw new Error("No contracts were processed successfully");
+      throw new Error('No contracts were processed successfully');
     }
   }
 
   async verifyAllContractsProcessed(): Promise<void> {
-    logger.info("Verifying all contracts were processed...");
+    logger.info('Verifying all contracts were processed...');
 
     const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
     if (!(await allocFile.exists())) {
@@ -952,13 +952,13 @@ class GenesisGenerator {
 
     if (missingContracts.length > 0) {
       logger.error(
-        "The following contracts are missing from the genesis file:"
+        'The following contracts are missing from the genesis file:'
       );
       for (const contract of missingContracts) {
         logger.error(`  - ${contract}`);
       }
       throw new Error(
-        "Genesis generation incomplete - not all contracts were processed"
+        'Genesis generation incomplete - not all contracts were processed'
       );
     }
 
@@ -966,7 +966,7 @@ class GenesisGenerator {
   }
 
   async generateFinalGenesis(): Promise<void> {
-    logger.info("Generating final genesis.json file...");
+    logger.info('Generating final genesis.json file...');
 
     // Check if allocations exist
     const allocFile = Bun.file(ALL_ALLOCATIONS_FILE);
@@ -1017,17 +1017,17 @@ class GenesisGenerator {
       // Verify the written file can be read back
       const verificationFile = Bun.file(CONTRACTS_GENESIS_FILE);
       const verification = await verificationFile.json();
-      if (!verification || !verification.config || !verification.alloc) {
-        throw new Error("Written genesis file is invalid");
+      if (!(verification && verification.config && verification.alloc)) {
+        throw new Error('Written genesis file is invalid');
       }
-      logger.debug("Genesis file verification passed");
+      logger.debug('Genesis file verification passed');
     } catch (error) {
       throw new Error(`Failed to generate final genesis file: ${error}`);
     }
   }
 
   async cleanupForgeOutput(): Promise<void> {
-    logger.info("Cleaning up forge output directory...");
+    logger.info('Cleaning up forge output directory...');
 
     try {
       const forgeDir = Bun.file(FORGE_OUT_DIR);
@@ -1101,18 +1101,18 @@ function parseCliArgs(): Config {
   // Parse environment variables
   if (process.env.LOG_LEVEL) {
     const level = process.env.LOG_LEVEL.toUpperCase();
-    if (["DEBUG", "INFO", "WARN", "ERROR"].includes(level)) {
+    if (['DEBUG', 'INFO', 'WARN', 'ERROR'].includes(level)) {
       // Note: SettleMint SDK logger level is set at creation time
       // Use LOG_LEVEL or SETTLEMINT_LOG_LEVEL env var instead
     }
   }
   if (process.env.ANVIL_PORT) {
-    config.anvilPort = parseInt(process.env.ANVIL_PORT, 10);
+    config.anvilPort = Number.parseInt(process.env.ANVIL_PORT, 10);
   }
-  if (process.env.FORCE_RESTART_ANVIL === "true") {
+  if (process.env.FORCE_RESTART_ANVIL === 'true') {
     config.forceRestartAnvil = true;
   }
-  if (process.env.KEEP_ANVIL_RUNNING === "true") {
+  if (process.env.KEEP_ANVIL_RUNNING === 'true') {
     config.keepAnvilRunning = true;
   }
 
@@ -1123,44 +1123,45 @@ function parseCliArgs(): Config {
     const arg = args[i];
 
     switch (arg) {
-      case "-h":
-      case "--help":
+      case '-h':
+      case '--help':
         showUsage();
         process.exit(0);
 
-      case "-v":
-      case "--verbose":
+      case '-v':
+      case '--verbose':
         // Note: SettleMint SDK logger level is set at creation time
         // Use LOG_LEVEL=debug env var instead
         break;
 
-      case "-q":
-      case "--quiet":
+      case '-q':
+      case '--quiet':
         // Note: SettleMint SDK logger level is set at creation time
         // Use LOG_LEVEL=error env var instead
         break;
 
-      case "-p":
-      case "--port":
-        const port = parseInt(args[++i] ?? "", 10);
+      case '-p':
+      case '--port': {
+        const port = Number.parseInt(args[++i] ?? '', 10);
         if (isNaN(port)) {
-          logger.error("Option --port requires a valid port number");
+          logger.error('Option --port requires a valid port number');
           process.exit(1);
         }
         config.anvilPort = port;
         break;
+      }
 
-      case "-r":
-      case "--restart-anvil":
+      case '-r':
+      case '--restart-anvil':
         config.forceRestartAnvil = true;
         break;
 
-      case "-k":
-      case "--keep-anvil":
+      case '-k':
+      case '--keep-anvil':
         config.keepAnvilRunning = true;
         break;
 
-      case "--show-output":
+      case '--show-output':
         config.showOutput = true;
         break;
 
@@ -1180,12 +1181,12 @@ function parseCliArgs(): Config {
 async function main(): Promise<void> {
   const config = parseCliArgs();
 
-  logger.info("Starting Genesis Output Generator...");
+  logger.info('Starting Genesis Output Generator...');
   logger.info(`Contracts root: ${CONTRACTS_ROOT}`);
   logger.info(`Anvil port: ${config.anvilPort}`);
 
   // Check prerequisites
-  logger.info("Checking prerequisites...");
+  logger.info('Checking prerequisites...');
 
   // Check if forge is available
   try {
@@ -1194,7 +1195,7 @@ async function main(): Promise<void> {
       : await $`forge --version`.cwd(CONTRACTS_ROOT).quiet();
     logger.debug(`Forge version: ${forgeResult.stdout}`);
   } catch (error) {
-    throw new Error("Forge not found. Please install Foundry.");
+    throw new Error('Forge not found. Please install Foundry.');
   }
 
   // Check if anvil is available
@@ -1204,7 +1205,7 @@ async function main(): Promise<void> {
       : await $`anvil --version`.quiet();
     logger.debug(`Anvil version: ${anvilResult.stdout}`);
   } catch (error) {
-    throw new Error("Anvil not found. Please install Foundry.");
+    throw new Error('Anvil not found. Please install Foundry.');
   }
 
   const generator = new GenesisGenerator(config);
@@ -1233,7 +1234,7 @@ async function main(): Promise<void> {
     await generator.stopAnvil();
 
     const stats = generator.getStats();
-    logger.info("Genesis generation completed successfully!");
+    logger.info('Genesis generation completed successfully!');
     logger.info(
       `Processing summary: ${stats.processed} processed, ${stats.skipped} skipped, ${stats.failed} failed`
     );
@@ -1242,7 +1243,7 @@ async function main(): Promise<void> {
 
     // Show output if requested
     if (config.showOutput) {
-      logger.info("=== FINAL GENESIS OUTPUT ===");
+      logger.info('=== FINAL GENESIS OUTPUT ===');
       const genesisFile = Bun.file(CONTRACTS_GENESIS_FILE);
       const genesisContent = await genesisFile.text();
       logger.info(genesisContent);
@@ -1265,8 +1266,8 @@ async function main(): Promise<void> {
 let globalGenerator: GenesisGenerator | null = null;
 
 // Handle process interruption
-process.on("SIGINT", async () => {
-  logger.info("Received SIGINT, cleaning up...");
+process.on('SIGINT', async () => {
+  logger.info('Received SIGINT, cleaning up...');
   if (globalGenerator) {
     try {
       await globalGenerator.stopAnvil();
@@ -1277,8 +1278,8 @@ process.on("SIGINT", async () => {
   process.exit(0);
 });
 
-process.on("SIGTERM", async () => {
-  logger.info("Received SIGTERM, cleaning up...");
+process.on('SIGTERM', async () => {
+  logger.info('Received SIGTERM, cleaning up...');
   if (globalGenerator) {
     try {
       await globalGenerator.stopAnvil();
@@ -1292,7 +1293,7 @@ process.on("SIGTERM", async () => {
 // Run the script
 if (import.meta.main) {
   main().catch((error) => {
-    logger.error("Unhandled error:", error);
+    logger.error('Unhandled error:', error);
     process.exit(1);
   });
 }

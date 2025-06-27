@@ -7,7 +7,7 @@
  *
  * @module VerificationCodeValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Creates a Zod schema that validates 8-character alphanumeric verification codes.
@@ -46,12 +46,12 @@ import { z } from "zod/v4";
  */
 export const verificationCode = z
   .string()
-  .length(8, "Verification code must be exactly 8 characters")
+  .length(8, 'Verification code must be exactly 8 characters')
   .regex(
     /^[A-Z0-9]{8}$/,
-    "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
+    'Verification code must contain only uppercase letters (A-Z) and numbers (0-9)'
   )
-  .describe("Verification code");
+  .describe('Verification code');
 
 /**
  * Type representing a validated 8-character verification code.

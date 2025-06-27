@@ -9,7 +9,7 @@
  * @see {@link @/orpc/procedures/auth.router} - Authentication requirements
  */
 
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { authRouter } from '@/orpc/procedures/auth.router';
 
 /**
  * Get current authenticated user information.

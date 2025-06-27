@@ -1,6 +1,6 @@
-import { encodePacked, keccak256 } from "viem";
-import { ATKTopic } from "../constants/topics";
-import { atkDeployer } from "./deployer";
+import { encodePacked, keccak256 } from 'viem';
+import { ATKTopic } from '../constants/topics';
+import { atkDeployer } from './deployer';
 
 /**
  * Cached topic information
@@ -48,7 +48,7 @@ export class TopicManager {
     }
 
     // Calculate ID from name (same as Solidity: uint256(keccak256(abi.encodePacked(name))))
-    const hash = keccak256(encodePacked(["string"], [name]));
+    const hash = keccak256(encodePacked(['string'], [name]));
     return BigInt(hash);
   }
 
@@ -171,7 +171,7 @@ export class TopicManager {
       console.log(
         `[TopicManager] Loaded ${this._topicCache.size} topics into cache`
       );
-      console.log("[TopicManager] Default Topic IDs:", {
+      console.log('[TopicManager] Default Topic IDs:', {
         kyc: this.getTopicId(ATKTopic.kyc).toString(),
         aml: this.getTopicId(ATKTopic.aml).toString(),
         collateral: this.getTopicId(ATKTopic.collateral).toString(),
@@ -181,7 +181,7 @@ export class TopicManager {
         ).toString(),
       });
     } catch (error) {
-      console.error("Failed to load topics from registry:", error);
+      console.error('Failed to load topics from registry:', error);
       throw error;
     }
   }

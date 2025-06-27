@@ -12,10 +12,10 @@
   ],
   "tasks": {
     "ci": {
-      "dependsOn": ["ci:base", "format"]
+      "dependsOn": ["ci:base", "//#format"]
     },
     "ci:base": {
-      "dependsOn": ["compile", "codegen", "lint", "test"]
+      "dependsOn": ["compile", "codegen", "//#lint", "test"]
     },
     "ci:gha": {
       "dependsOn": ["ci:base", "test:integration", "build"]
@@ -49,8 +49,8 @@
       "dependsOn": ["package"]
     },
     "dependencies": {},
-    "format": {},
-    "lint": {},
+    "//#format": {},
+    "//#lint": {},
     "dev": {
       "cache": false,
       "persistent": true,
@@ -65,6 +65,7 @@
     },
     "docs": {},
     "test": {},
+    "typecheck": {},
     "artifacts": {},
     "test:integration": {},
     "db:studio": {

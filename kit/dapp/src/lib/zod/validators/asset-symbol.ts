@@ -7,7 +7,13 @@
  *
  * @module AssetSymbolValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+
+/**
+ * Regular expression for validating asset symbol format
+ * Matches strings containing only uppercase letters (A-Z) and numbers (0-9)
+ */
+const ASSET_SYMBOL_REGEX = /^[A-Z0-9]+$/;
 
 /**
  * Zod schema for validating trading symbols for financial assets
@@ -69,13 +75,13 @@ import { z } from "zod/v4";
 export const assetSymbol = () =>
   z
     .string()
-    .min(1, "Asset symbol is required")
-    .max(12, "Asset symbol must not exceed 12 characters")
+    .min(1, 'Asset symbol is required')
+    .max(12, 'Asset symbol must not exceed 12 characters')
     .regex(
-      /^[A-Z0-9]+$/,
-      "Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)"
+      ASSET_SYMBOL_REGEX,
+      'Asset symbol must contain only uppercase letters (A-Z) and numbers (0-9)'
     )
-    .describe("Trading symbol for the asset");
+    .describe('Trading symbol for the asset');
 
 // Note: Global registry functionality removed as it's not available in Zod v4
 

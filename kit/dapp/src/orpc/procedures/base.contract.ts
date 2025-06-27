@@ -1,6 +1,6 @@
-import { oc } from "@orpc/contract";
-import { oo } from "@orpc/openapi";
-import { z } from "zod/v4";
+import { oc } from '@orpc/contract';
+import { oo } from '@orpc/openapi';
+import { z } from 'zod/v4';
 
 /**
  * Base ORPC contract with common error definitions.
@@ -27,7 +27,7 @@ export const baseContract = oc.errors({
    */
   INPUT_VALIDATION_FAILED: {
     status: 422,
-    message: "Input validation failed",
+    message: 'Input validation failed',
     data: z.object({
       errors: z.array(z.string()),
     }),
@@ -45,7 +45,7 @@ export const baseContract = oc.errors({
    */
   OUTPUT_VALIDATION_FAILED: {
     status: 522,
-    message: "Output validation failed",
+    message: 'Output validation failed',
     data: z.object({
       errors: z.array(z.string()),
     }),
@@ -64,7 +64,7 @@ export const baseContract = oc.errors({
    */
   INTERNAL_SERVER_ERROR: {
     status: 500,
-    message: "Internal server error",
+    message: 'Internal server error',
   },
 
   /**
@@ -79,7 +79,7 @@ export const baseContract = oc.errors({
    */
   RATE_LIMIT_EXCEEDED: {
     status: 429,
-    message: "Too many requests. Please try again later.",
+    message: 'Too many requests. Please try again later.',
     data: z.object({
       retryAfter: z.string(),
     }),
@@ -97,7 +97,7 @@ export const baseContract = oc.errors({
    */
   FORBIDDEN: {
     status: 403,
-    message: "Forbidden",
+    message: 'Forbidden',
   },
 
   /**
@@ -110,7 +110,7 @@ export const baseContract = oc.errors({
    */
   VERIFICATION_ID_NOT_FOUND: {
     status: 404,
-    message: "Verification ID not found",
+    message: 'Verification ID not found',
     data: z.object({
       verificationType: z.string().optional(),
     }),
@@ -127,7 +127,7 @@ export const baseContract = oc.errors({
    */
   CHALLENGE_FAILED: {
     status: 401,
-    message: "Challenge verification failed",
+    message: 'Challenge verification failed',
     data: z.object({
       verificationType: z.string().optional(),
     }),
@@ -143,7 +143,7 @@ export const baseContract = oc.errors({
    */
   TIMEOUT: {
     status: 504,
-    message: "Operation timeout",
+    message: 'Operation timeout',
     data: z.object({
       details: z.unknown().optional(),
     }),
@@ -160,7 +160,7 @@ export const baseContract = oc.errors({
    */
   TRANSACTION_FAILED: {
     status: 400,
-    message: "Transaction failed",
+    message: 'Transaction failed',
     data: z.object({
       details: z.unknown().optional(),
     }),
@@ -176,7 +176,7 @@ export const baseContract = oc.errors({
    */
   CONFIRMATION_TIMEOUT: {
     status: 504,
-    message: "Transaction confirmation timeout",
+    message: 'Transaction confirmation timeout',
     data: z.object({
       details: z.unknown().optional(),
     }),
@@ -197,7 +197,7 @@ export const baseContract = oc.errors({
    */
   UNAUTHORIZED: oo.spec(
     {
-      message: "Authentication missing or failed",
+      message: 'Authentication missing or failed',
       status: 401,
     },
     {
@@ -221,7 +221,7 @@ export const baseContract = oc.errors({
    */
   NOT_ONBOARDED: oo.spec(
     {
-      message: "User not onboarded",
+      message: 'User not onboarded',
       status: 403,
     },
     {
@@ -237,7 +237,7 @@ export const baseContract = oc.errors({
    */
   SYSTEM_NOT_CREATED: oo.spec(
     {
-      message: "System not created",
+      message: 'System not created',
       status: 403,
     },
     {
@@ -255,7 +255,7 @@ export const baseContract = oc.errors({
    * - Resource not found in database
    */
   NOT_FOUND: {
-    message: "Resource not found",
+    message: 'Resource not found',
     status: 404,
   },
 
@@ -267,7 +267,7 @@ export const baseContract = oc.errors({
    * - Resource already exists in database
    */
   RESOURCE_ALREADY_EXISTS: {
-    message: "Resource already exists",
+    message: 'Resource already exists',
     status: 409,
   },
 
@@ -280,7 +280,7 @@ export const baseContract = oc.errors({
    * - Portal service error
    */
   PORTAL_ERROR: {
-    message: "Portal error",
+    message: 'Portal error',
     status: 500,
     data: z.object({
       operation: z.string(),

@@ -1,5 +1,5 @@
-import { settingKeySchema } from "@/lib/zod/validators/settings-key";
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+import { settingKeySchema } from '@/lib/zod/validators/settings-key';
 
 /**
  * Schema for updating an existing setting.
@@ -16,5 +16,5 @@ export const SettingsUpsertSchema = z.object({
    * The new value for the setting.
    * Must be a non-empty string.
    */
-  value: z.string().min(1, "Value cannot be empty"),
+  value: z.string().min(1, 'Value cannot be empty'),
 });

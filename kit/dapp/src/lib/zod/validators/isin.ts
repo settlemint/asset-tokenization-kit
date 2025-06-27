@@ -7,29 +7,33 @@
  *
  * @module ISINValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+
+const ISIN_FORMAT_REGEX = /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/;
 
 /**
  * Validates an ISIN using the Luhn algorithm checksum.
  * @param isin - The ISIN string to validate
  * @returns `true` if the checksum is valid, `false` otherwise
  */
-function validateIsinChecksum(isin: string): boolean {
+function validateIsinChecksum(isinCode: string): boolean {
   // First, expand alphanumeric characters to their numeric values
-  let expandedString = "";
+  let expandedString = '';
 
   // Process all 12 characters
   for (let i = 0; i < 12; i++) {
-    const char = isin[i];
-    if (!char) return false;
+    const char = isinCode[i];
+    if (!char) {
+      return false;
+    }
 
-    if (char >= "0" && char <= "9") {
+    if (char >= '0' && char <= '9') {
       expandedString += char;
-    } else if (char >= "A" && char <= "Z") {
+    } else if (char >= 'A' && char <= 'Z') {
       // A=10, B=11, ..., Z=35
       expandedString += (
         char.charCodeAt(0) -
-        "A".charCodeAt(0) +
+        'A'.charCodeAt(0) +
         10
       ).toString();
     } else {
@@ -44,7 +48,9 @@ function validateIsinChecksum(isin: string): boolean {
   // Process from right to left
   for (let i = expandedString.length - 1; i >= 0; i--) {
     const char = expandedString[i];
-    if (!char) continue;
+    if (!char) {
+      continue;
+    }
     let digit = Number.parseInt(char, 10);
 
     if (alternate) {
@@ -122,15 +128,15 @@ export const isin = () =>
     .pipe(
       z
         .string()
-        .min(12, "ISIN must be exactly 12 characters long")
-        .max(12, "ISIN must be exactly 12 characters long")
+        .min(12, 'ISIN must be exactly 12 characters long')
+        .max(12, 'ISIN must be exactly 12 characters long')
         .regex(
-          /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/,
-          "ISIN must follow the format: 2 letter country code + 9 alphanumeric characters + 1 check digit"
+          ISIN_FORMAT_REGEX,
+          'ISIN must follow the format: 2 letter country code + 9 alphanumeric characters + 1 check digit'
         )
-        .refine(validateIsinChecksum, "Invalid ISIN checksum")
+        .refine(validateIsinChecksum, 'Invalid ISIN checksum')
     )
-    .describe("International Securities Identification Number");
+    .describe('International Securities Identification Number');
 
 // Note: Global registry functionality removed as it's not available in Zod v4
 

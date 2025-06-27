@@ -27,10 +27,10 @@
  * @see {@link ../../common/schemas/create.schema} - Base create schema
  */
 
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { z } from "zod/v4";
-import { CreateSchema } from "../../common/schemas/create.schema";
-import { TransactionTrackingMessagesSchema } from "../../common/schemas/transaction-messages.schema";
+import { z } from 'zod/v4';
+import { ethereumAddress } from '@/lib/zod/validators/ethereum-address';
+import { CreateSchema } from '../../common/schemas/create.schema';
+import { TransactionTrackingMessagesSchema } from '../../common/schemas/transaction-messages.schema';
 
 /**
  * Combined messages schema for system creation
@@ -41,33 +41,33 @@ export const SystemCreateMessagesSchema =
     systemCreated: z
       .string()
       .optional()
-      .default("System successfully created and bootstrapped."),
-    creatingSystem: z.string().optional().default("Creating new system..."),
+      .default('System successfully created and bootstrapped.'),
+    creatingSystem: z.string().optional().default('Creating new system...'),
     systemCreationFailed: z
       .string()
       .optional()
-      .default("Failed to create system. Please try again."),
+      .default('Failed to create system. Please try again.'),
     bootstrappingSystem: z
       .string()
       .optional()
-      .default("Bootstrapping system..."),
+      .default('Bootstrapping system...'),
     bootstrapFailed: z
       .string()
       .optional()
-      .default("Failed to bootstrap system. Please try again."),
+      .default('Failed to bootstrap system. Please try again.'),
     systemCreatedBootstrapFailed: z
       .string()
       .optional()
       .default(
-        "System created but bootstrap failed. You may need to manually bootstrap the system."
+        'System created but bootstrap failed. You may need to manually bootstrap the system.'
       ),
     // Messages used by useStreamingMutation hook
-    initialLoading: z.string().optional().default("Creating new system..."),
+    initialLoading: z.string().optional().default('Creating new system...'),
     noResultError: z
       .string()
       .optional()
-      .default("No system address received from transaction."),
-    defaultError: z.string().optional().default("Failed to create system."),
+      .default('No system address received from transaction.'),
+    defaultError: z.string().optional().default('Failed to create system.'),
   });
 
 export const SystemCreateSchema = CreateSchema.extend({
@@ -79,8 +79,8 @@ export const SystemCreateSchema = CreateSchema.extend({
    * deployments within the SettleMint platform.
    */
   contract: ethereumAddress
-    .describe("The address of the contract to call this function on")
-    .default("0x5e771e1417100000000000000000000000020088"),
+    .describe('The address of the contract to call this function on')
+    .default('0x5e771e1417100000000000000000000000020088'),
 
   /**
    * Optional custom messages for the operation.
@@ -94,7 +94,7 @@ export const SystemCreateSchema = CreateSchema.extend({
  * Output schema for streaming events
  */
 export const SystemCreateOutputSchema = z.object({
-  status: z.enum(["pending", "confirmed", "failed"]),
+  status: z.enum(['pending', 'confirmed', 'failed']),
   message: z.string(),
   result: ethereumAddress.optional(),
 });

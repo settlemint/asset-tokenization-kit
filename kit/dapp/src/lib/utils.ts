@@ -6,8 +6,8 @@
  * extended with other general-purpose utilities as needed.
  */
 
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 /**
  * Combines and merges CSS class names with proper Tailwind CSS precedence.

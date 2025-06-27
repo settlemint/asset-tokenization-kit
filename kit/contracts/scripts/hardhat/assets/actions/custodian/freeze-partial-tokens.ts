@@ -1,10 +1,10 @@
-import { ATKContracts } from "../../../constants/contracts";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
-import { Asset } from "../../../entities/asset";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatBaseUnits } from "../../../utils/format-base-units";
-import { toBaseUnits } from "../../../utils/to-base-units";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import { ATKContracts } from '../../../constants/contracts';
+import type { AbstractActor } from '../../../entities/actors/abstract-actor';
+import type { Asset } from '../../../entities/asset';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { formatBaseUnits } from '../../../utils/format-base-units';
+import { toBaseUnits } from '../../../utils/to-base-units';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 export const freezePartialTokens = async (
   asset: Asset<any>,
@@ -12,7 +12,7 @@ export const freezePartialTokens = async (
   address: AbstractActor,
   amount: bigint
 ) => {
-  console.log(`[Freeze partial tokens] → Starting partial token freezing...`);
+  console.log('[Freeze partial tokens] → Starting partial token freezing...');
 
   const tokenContract = custodian.getContractInstance({
     address: asset.address,

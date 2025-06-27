@@ -7,8 +7,8 @@
  *
  * @module BigDecimalValidation
  */
-import { from } from "dnum";
-import { z } from "zod/v4";
+import { from } from 'dnum';
+import { z } from 'zod/v4';
 
 /**
  * Zod schema for validating and transforming arbitrary precision decimal numbers
@@ -67,15 +67,15 @@ import { z } from "zod/v4";
 export const bigDecimal = () =>
   z
     .string()
-    .describe("A decimal number with arbitrary precision")
+    .describe('A decimal number with arbitrary precision')
     .transform((value, ctx) => {
       // Reject special values
       const upper = value.toUpperCase();
-      if (upper === "NAN" || upper === "INFINITY" || upper === "-INFINITY") {
+      if (upper === 'NAN' || upper === 'INFINITY' || upper === '-INFINITY') {
         ctx.addIssue({
-          code: "custom",
+          code: 'custom',
           message:
-            "Invalid value. NaN, Infinity, and -Infinity are not allowed",
+            'Invalid value. NaN, Infinity, and -Infinity are not allowed',
         });
         return z.NEVER;
       }
@@ -84,9 +84,9 @@ export const bigDecimal = () =>
         return from(value);
       } catch {
         ctx.addIssue({
-          code: "custom",
+          code: 'custom',
           message:
-            "Invalid decimal format. Please provide a valid numeric string",
+            'Invalid decimal format. Please provide a valid numeric string',
         });
         return z.NEVER;
       }

@@ -1,9 +1,9 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ATKModule from "../../../main";
-import ATKOnboardingSystemModule from "../../system";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ATKModule from '../../../main';
+import ATKOnboardingSystemModule from '../../system';
 
 const ATKOnboardingPushAirdropFactoryModule = buildModule(
-  "ATKOnboardingPushAirdropFactoryModule",
+  'ATKOnboardingPushAirdropFactoryModule',
   (m) => {
     const { system, systemAddonRegistry } = m.useModule(
       ATKOnboardingSystemModule
@@ -14,30 +14,30 @@ const ATKOnboardingPushAirdropFactoryModule = buildModule(
 
     const encodedInitializationData = m.encodeFunctionCall(
       pushAirdropFactoryImplementation,
-      "initialize",
+      'initialize',
       [system.address, platformAdmin]
     );
 
     const createPushAirdropFactoryAddon = m.call(
       systemAddonRegistry,
-      "registerSystemAddon",
+      'registerSystemAddon',
       [
-        "push-airdrop-factory",
+        'push-airdrop-factory',
         pushAirdropFactoryImplementation,
         encodedInitializationData,
       ]
     );
     const pushAirdropFactoryAddress = m.readEventArgument(
       createPushAirdropFactoryAddon,
-      "SystemAddonRegistered",
-      "proxyAddress",
-      { id: "pushAirdropFactoryAddress" }
+      'SystemAddonRegistered',
+      'proxyAddress',
+      { id: 'pushAirdropFactoryAddress' }
     );
     const pushAirdropFactoryProxy = m.contractAt(
-      "IATKPushAirdropFactory",
+      'IATKPushAirdropFactory',
       pushAirdropFactoryAddress,
       {
-        id: "pushAirdropFactory",
+        id: 'pushAirdropFactory',
       }
     );
 

@@ -1,26 +1,26 @@
-import { type BrowserContext, test } from "@playwright/test";
-import { Pages } from "../pages/pages";
+import { type BrowserContext, test } from '@playwright/test';
+import { Pages } from '../pages/pages';
 import {
   stableCoinBurnData,
   stableCoinMintData,
   stableCoinTransferData,
   stableCoinUpdateCollateralData,
   stablecoinData,
-} from "../test-data/asset-data";
-import { successMessageData } from "../test-data/message-data";
-import { adminUser, signUpTransferUserData } from "../test-data/user-data";
-import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
+} from '../test-data/asset-data';
+import { successMessageData } from '../test-data/message-data';
+import { adminUser, signUpTransferUserData } from '../test-data/user-data';
+import { ensureUserIsAdmin, fetchWalletAddressFromDB } from '../utils/db-utils';
 
 const testData = {
-  transferUserEmail: "",
-  transferUserWalletAddress: "",
-  transferUserName: "",
-  stablecoinName: "",
+  transferUserEmail: '',
+  transferUserWalletAddress: '',
+  transferUserName: '',
+  stablecoinName: '',
   currentTotalSupply: 0,
 };
 
-test.describe("Create, update collateral, mint, burn and transfer stablecoin", () => {
-  test.describe.configure({ mode: "serial" });
+test.describe('Create, update collateral, mint, burn and transfer stablecoin', () => {
+  test.describe.configure({ mode: 'serial' });
   let transferUserContext: BrowserContext | undefined;
   let transferUserPages: ReturnType<typeof Pages>;
   let adminContext: BrowserContext | undefined;
@@ -30,7 +30,7 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
       transferUserContext = await browser.newContext();
       const transferUserPage = await transferUserContext.newPage();
       transferUserPages = Pages(transferUserPage);
-      await transferUserPage.goto("/");
+      await transferUserPage.goto('/');
       await transferUserPages.signUpPage.signUp(signUpTransferUserData);
       testData.transferUserEmail = signUpTransferUserData.email;
       testData.transferUserName = signUpTransferUserData.name;
@@ -42,7 +42,7 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
       adminContext = await browser.newContext();
       const adminPage = await adminContext.newPage();
       adminPages = Pages(adminPage);
-      await adminPage.goto("/");
+      await adminPage.goto('/');
       await adminPages.signInPage.signInAsAdmin(adminUser);
       await adminPages.adminPage.goto();
     } catch (error) {
@@ -63,7 +63,7 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
       await adminContext.close();
     }
   });
-  test("Admin user creates stablecoin, updates proven collateral, mints and burns stablecoins", async ({
+  test('Admin user creates stablecoin, updates proven collateral, mints and burns stablecoins', async ({
     browser,
   }) => {
     await adminPages.adminPage.createStablecoin(stablecoinData);
@@ -103,7 +103,7 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
     testData.currentTotalSupply = newTotal;
     await adminPages.adminPage.verifyTotalSupply(newTotal.toString());
   });
-  test("Admin user transfers stablecoin to regular transfer user", async () => {
+  test('Admin user transfers stablecoin to regular transfer user', async () => {
     await adminPages.portfolioPage.transferAsset({
       asset: testData.stablecoinName,
       walletAddress: testData.transferUserWalletAddress,
@@ -121,8 +121,8 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
       testData.currentTotalSupply - transferAmount
     ).toString();
     await adminPages.adminPage.chooseSidebarMenuOption({
-      sidebarOption: "My assets",
-      expectedUrlPattern: "**/portfolio/my-assets",
+      sidebarOption: 'My assets',
+      expectedUrlPattern: '**/portfolio/my-assets',
       expectedLocatorsToWaitFor: [
         adminPages.adminPage.getTableBodyLocator(),
         adminPages.adminPage.getFilterButtonLocator(),
@@ -133,7 +133,7 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
       totalSupply: expectedBalance,
     });
   });
-  test("Verify regular transfer user received stablecoins", async () => {
+  test('Verify regular transfer user received stablecoins', async () => {
     await transferUserPages.portfolioPage.goto();
     await transferUserPages.portfolioPage.verifyPortfolioAssetAmount({
       expectedAmount: stableCoinTransferData.transferAmount,

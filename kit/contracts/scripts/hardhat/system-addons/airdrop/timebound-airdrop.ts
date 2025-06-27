@@ -1,15 +1,15 @@
-import { owner } from "../../entities/actors/owner";
-import { AirdropMerkleTree } from "../../entities/airdrop/merkle-tree";
-import { TimeBoundAirdrop } from "../../entities/airdrop/timebound-airdrop";
-import { Asset } from "../../entities/asset";
-import { atkDeployer } from "../../services/deployer";
-import { getAnvilTimeSeconds } from "../../utils/anvil";
+import { owner } from '../../entities/actors/owner';
+import type { AirdropMerkleTree } from '../../entities/airdrop/merkle-tree';
+import { TimeBoundAirdrop } from '../../entities/airdrop/timebound-airdrop';
+import type { Asset } from '../../entities/asset';
+import { atkDeployer } from '../../services/deployer';
+import { getAnvilTimeSeconds } from '../../utils/anvil';
 
 export const createTimeBoundAirdrop = async (
   asset: Asset<any>,
   merkleTree: AirdropMerkleTree
 ) => {
-  console.log("\n=== Creating timebound airdrop... ===\n");
+  console.log('\n=== Creating timebound airdrop... ===\n');
 
   const timeBoundAirdropFactory =
     atkDeployer.getTimeBoundAirdropFactoryContract();
@@ -20,7 +20,7 @@ export const createTimeBoundAirdrop = async (
   const endTime = BigInt(anvilTimeSeconds + 30 * 24 * 60 * 60 + 60 * 60); // 30 days + 1 hour from now
 
   const timeBoundAirdrop = new TimeBoundAirdrop(
-    "Test TimeBound Airdrop",
+    'Test TimeBound Airdrop',
     asset,
     merkleTree.getRoot(),
     owner.address,

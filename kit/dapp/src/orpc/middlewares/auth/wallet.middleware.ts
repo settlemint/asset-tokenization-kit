@@ -1,7 +1,7 @@
-import { baseRouter } from "@/orpc/procedures/base.router";
+import { baseRouter } from '@/orpc/procedures/base.router';
 
 export const walletMiddleware = baseRouter.middleware(
-  async ({ context, next, errors }) => {
+  ({ context, next, errors }) => {
     // Check if valid authentication context exists
     if (
       context.auth?.user.wallet &&

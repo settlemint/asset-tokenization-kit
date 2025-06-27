@@ -1,4 +1,4 @@
-import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
+import { ByteArray, Bytes, crypto } from '@graphprotocol/graph-ts';
 import {
   FixedYieldScheduleFactory as FixedYieldScheduleFactoryTemplate,
   PushAirdropFactory as PushAirdropFactoryTemplate,
@@ -6,25 +6,25 @@ import {
   VaultFactory as VaultFactoryTemplate,
   VestingAirdropFactory as VestingAirdropFactoryTemplate,
   XvPSettlementFactory as XvPSettlementFactoryTemplate,
-} from "../../generated/templates";
-import {
+} from '../../generated/templates';
+import type {
   AddonImplementationUpdated as AddonImplementationUpdatedEvent,
   SystemAddonRegistered as SystemAddonRegisteredEvent,
-} from "../../generated/templates/SystemAddonRegistry/SystemAddonRegistry";
-import { fetchEvent } from "../event/fetch/event";
-import { fetchSystem } from "../system/fetch/system";
-import { fetchSystemAddon } from "./fetch/system-addon";
+} from '../../generated/templates/SystemAddonRegistry/SystemAddonRegistry';
+import { fetchEvent } from '../event/fetch/event';
+import { fetchSystem } from '../system/fetch/system';
+import { fetchSystemAddon } from './fetch/system-addon';
 
 export function handleAddonImplementationUpdated(
   event: AddonImplementationUpdatedEvent
 ): void {
-  fetchEvent(event, "AddonImplementationUpdated");
+  fetchEvent(event, 'AddonImplementationUpdated');
 }
 
 export function handleSystemAddonRegistered(
   event: SystemAddonRegisteredEvent
 ): void {
-  fetchEvent(event, "SystemAddonRegistered");
+  fetchEvent(event, 'SystemAddonRegistered');
   const systemAddon = fetchSystemAddon(event.params.proxyAddress);
   if (systemAddon.deployedInTransaction.equals(Bytes.empty())) {
     systemAddon.deployedInTransaction = event.transaction.hash;
@@ -33,42 +33,42 @@ export function handleSystemAddonRegistered(
   systemAddon.typeId = event.params.typeId;
   if (
     event.params.typeId.equals(
-      crypto.keccak256(ByteArray.fromUTF8("ATKFixedYieldScheduleFactory"))
+      crypto.keccak256(ByteArray.fromUTF8('ATKFixedYieldScheduleFactory'))
     )
   ) {
     FixedYieldScheduleFactoryTemplate.create(event.params.proxyAddress);
   }
   if (
     event.params.typeId.equals(
-      crypto.keccak256(ByteArray.fromUTF8("ATKXvPSettlementFactory"))
+      crypto.keccak256(ByteArray.fromUTF8('ATKXvPSettlementFactory'))
     )
   ) {
     XvPSettlementFactoryTemplate.create(event.params.proxyAddress);
   }
   if (
     event.params.typeId.equals(
-      crypto.keccak256(ByteArray.fromUTF8("ATKVaultFactory"))
+      crypto.keccak256(ByteArray.fromUTF8('ATKVaultFactory'))
     )
   ) {
     VaultFactoryTemplate.create(event.params.proxyAddress);
   }
   if (
     event.params.typeId.equals(
-      crypto.keccak256(ByteArray.fromUTF8("ATKPushAirdropFactory"))
+      crypto.keccak256(ByteArray.fromUTF8('ATKPushAirdropFactory'))
     )
   ) {
     PushAirdropFactoryTemplate.create(event.params.proxyAddress);
   }
   if (
     event.params.typeId.equals(
-      crypto.keccak256(ByteArray.fromUTF8("ATKVestingAirdropFactory"))
+      crypto.keccak256(ByteArray.fromUTF8('ATKVestingAirdropFactory'))
     )
   ) {
     VestingAirdropFactoryTemplate.create(event.params.proxyAddress);
   }
   if (
     event.params.typeId.equals(
-      crypto.keccak256(ByteArray.fromUTF8("ATKTimeBoundAirdropFactory"))
+      crypto.keccak256(ByteArray.fromUTF8('ATKTimeBoundAirdropFactory'))
     )
   ) {
     TimeBoundAirdropFactoryTemplate.create(event.params.proxyAddress);

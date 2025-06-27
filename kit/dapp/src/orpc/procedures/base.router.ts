@@ -1,6 +1,6 @@
-import { implement } from "@orpc/server";
-import type { Context } from "../context/context";
-import { contract } from "../routes/contract";
+import { implement } from '@orpc/server';
+import type { Context } from '../context/context';
+import { contract } from '../routes/contract';
 
 /**
  * Base ORPC router implementation.

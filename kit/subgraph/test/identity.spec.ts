@@ -1,8 +1,8 @@
-import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "./utils/thegraph-client";
+import { describe, expect, it } from 'bun:test';
+import { theGraphClient, theGraphGraphql } from './utils/thegraph-client';
 
-describe("Identity", () => {
-  it("tokens should have an identity", async () => {
+describe('Identity', () => {
+  it('tokens should have an identity', async () => {
     const query = theGraphGraphql(
       `query {
         tokens {
@@ -20,7 +20,7 @@ describe("Identity", () => {
     );
   });
 
-  it("there should be no identities and accounts with the same address", async () => {
+  it('there should be no identities and accounts with the same address', async () => {
     const query = theGraphGraphql(
       `query {
         identities {

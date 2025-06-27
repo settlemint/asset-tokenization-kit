@@ -1,6 +1,6 @@
 /**
  * Auto-Merge Manager Script
- * 
+ *
  * Manages auto-merge functionality for pull requests based on approval status,
  * QA status, and draft state. Automatically enables or disables auto-merge
  * to streamline the PR merge process.
@@ -8,7 +8,7 @@
 
 /**
  * Manage auto-merge for a pull request
- * 
+ *
  * @param {Object} params - Parameters for managing auto-merge
  * @param {Object} params.github - GitHub API client
  * @param {Object} params.context - GitHub Actions context
@@ -29,7 +29,7 @@ async function manageAutoMerge({
   hasApproval,
   qaStatus,
   isDraft,
-  mergeMethod = 'squash'
+  mergeMethod = 'squash',
 }) {
   console.log(`Managing auto-merge for PR #${prNumber}`);
   console.log('Current state:', {
@@ -38,7 +38,7 @@ async function manageAutoMerge({
     hasApproval,
     qaStatus,
     isDraft,
-    mergeMethod
+    mergeMethod,
   });
 
   // Skip auto-merge for bot PRs
@@ -49,20 +49,24 @@ async function manageAutoMerge({
 
   // Determine if PR is mergeable
   const isMergeable = hasApproval && qaStatus === 'success' && !isDraft;
-  console.log(`PR #${prNumber} is ${isMergeable ? 'mergeable' : 'not mergeable'}`);
+  console.log(
+    `PR #${prNumber} is ${isMergeable ? 'mergeable' : 'not mergeable'}`
+  );
 
   try {
     if (isMergeable) {
       // Enable auto-merge
-      console.log(`Enabling auto-merge for PR #${prNumber} with method: ${mergeMethod}`);
-      
+      console.log(
+        `Enabling auto-merge for PR #${prNumber} with method: ${mergeMethod}`
+      );
+
       // First, get the PR node ID required for GraphQL
       const { data: pr } = await github.rest.pulls.get({
         owner: context.repo.owner,
         repo: context.repo.repo,
-        pull_number: prNumber
+        pull_number: prNumber,
       });
-      
+
       // Use GraphQL to enable auto-merge
       const mutation = `
         mutation($pullRequestId: ID!, $mergeMethod: PullRequestMergeMethod!) {
@@ -79,23 +83,23 @@ async function manageAutoMerge({
           }
         }
       `;
-      
+
       const mergeMethodMap = {
         merge: 'MERGE',
         squash: 'SQUASH',
-        rebase: 'REBASE'
+        rebase: 'REBASE',
       };
-      
+
       await github.graphql(mutation, {
         pullRequestId: pr.node_id,
-        mergeMethod: mergeMethodMap[mergeMethod] || 'SQUASH'
+        mergeMethod: mergeMethodMap[mergeMethod] || 'SQUASH',
       });
-      
+
       console.log(`✅ Auto-merge enabled for PR #${prNumber}`);
     } else {
       // Just log why it's not mergeable, don't disable auto-merge
       console.log(`PR #${prNumber} is not ready for auto-merge`);
-      
+
       const reasons = [];
       if (!hasApproval) reasons.push('no approval');
       if (qaStatus !== 'success') reasons.push(`QA status is ${qaStatus}`);
@@ -109,7 +113,9 @@ async function manageAutoMerge({
     } else if (error.message.includes('already enabled')) {
       console.log('ℹ️ Auto-merge is already enabled');
     } else if (error.message.includes('Auto-merge is not allowed')) {
-      console.log('⚠️ Auto-merge is not allowed for this repository. Please enable it in repository settings.');
+      console.log(
+        '⚠️ Auto-merge is not allowed for this repository. Please enable it in repository settings.'
+      );
     } else if (error.message.includes('Pull request is in clean status')) {
       console.log('ℹ️ PR is already up to date with base branch');
     } else if (error.message.includes('Pull request is in dirty status')) {
@@ -122,5 +128,5 @@ async function manageAutoMerge({
 }
 
 module.exports = {
-  manageAutoMerge
+  manageAutoMerge,
 };

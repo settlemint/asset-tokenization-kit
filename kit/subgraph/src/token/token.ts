@@ -1,5 +1,5 @@
-import { store } from "@graphprotocol/graph-ts";
-import {
+import { store } from '@graphprotocol/graph-ts';
+import type {
   Approval,
   ComplianceAdded,
   ComplianceModuleAdded,
@@ -9,38 +9,38 @@ import {
   ModuleParametersUpdated,
   TransferCompleted,
   UpdatedTokenInformation,
-} from "../../generated/templates/Token/Token";
-import { fetchComplianceModule } from "../compliance/fetch/compliance-module";
+} from '../../generated/templates/Token/Token';
+import { fetchComplianceModule } from '../compliance/fetch/compliance-module';
 import {
   decodeAddressListParams,
   isAddressListComplianceModule,
-} from "../compliance/modules/address-list-compliance-module";
+} from '../compliance/modules/address-list-compliance-module';
 import {
   decodeCountryListParams,
   isCountryListComplianceModule,
-} from "../compliance/modules/country-list-compliance-module";
-import { fetchEvent } from "../event/fetch/event";
+} from '../compliance/modules/country-list-compliance-module';
+import { fetchEvent } from '../event/fetch/event';
 import {
   decreaseTokenBalanceValue,
   increaseTokenBalanceValue,
-} from "../token-balance/utils/token-balance-utils";
-import { updateYield } from "../token-extensions/fixed-yield-schedule/utils/fixed-yield-schedule-utils";
-import { fetchToken } from "./fetch/token";
-import { fetchTokenComplianceModule } from "./fetch/token-compliance-module";
-import { increaseTokenSupply } from "./utils/token-utils";
+} from '../token-balance/utils/token-balance-utils';
+import { updateYield } from '../token-extensions/fixed-yield-schedule/utils/fixed-yield-schedule-utils';
+import { fetchToken } from './fetch/token';
+import { fetchTokenComplianceModule } from './fetch/token-compliance-module';
+import { increaseTokenSupply } from './utils/token-utils';
 
 export function handleApproval(event: Approval): void {
-  fetchEvent(event, "Approval");
+  fetchEvent(event, 'Approval');
 }
 
 export function handleComplianceAdded(event: ComplianceAdded): void {
-  fetchEvent(event, "ComplianceAdded");
+  fetchEvent(event, 'ComplianceAdded');
 }
 
 export function handleComplianceModuleAdded(
   event: ComplianceModuleAdded
 ): void {
-  fetchEvent(event, "ComplianceModuleAdded");
+  fetchEvent(event, 'ComplianceModuleAdded');
 
   const tokenComplianceModule = fetchTokenComplianceModule(
     event.address,
@@ -67,24 +67,24 @@ export function handleComplianceModuleAdded(
 export function handleComplianceModuleRemoved(
   event: ComplianceModuleRemoved
 ): void {
-  fetchEvent(event, "ComplianceModuleRemoved");
+  fetchEvent(event, 'ComplianceModuleRemoved');
 
   const tokenComplianceModule = fetchTokenComplianceModule(
     event.address,
     event.params._module
   );
 
-  store.remove("TokenComplianceModule", tokenComplianceModule.id.toHexString());
+  store.remove('TokenComplianceModule', tokenComplianceModule.id.toHexString());
 }
 
 export function handleIdentityRegistryAdded(
   event: IdentityRegistryAdded
 ): void {
-  fetchEvent(event, "IdentityRegistryAdded");
+  fetchEvent(event, 'IdentityRegistryAdded');
 }
 
 export function handleMintCompleted(event: MintCompleted): void {
-  fetchEvent(event, "Mint");
+  fetchEvent(event, 'Mint');
   const token = fetchToken(event.address);
   increaseTokenSupply(token, event.params.amount);
   increaseTokenBalanceValue(
@@ -98,7 +98,7 @@ export function handleMintCompleted(event: MintCompleted): void {
 export function handleModuleParametersUpdated(
   event: ModuleParametersUpdated
 ): void {
-  fetchEvent(event, "ModuleParametersUpdated");
+  fetchEvent(event, 'ModuleParametersUpdated');
 
   const tokenComplianceModule = fetchTokenComplianceModule(
     event.address,
@@ -123,7 +123,7 @@ export function handleModuleParametersUpdated(
 }
 
 export function handleTransferCompleted(event: TransferCompleted): void {
-  fetchEvent(event, "Transfer");
+  fetchEvent(event, 'Transfer');
   const token = fetchToken(event.address);
   decreaseTokenBalanceValue(
     token,
@@ -145,7 +145,7 @@ export function handleTransferCompleted(event: TransferCompleted): void {
 export function handleUpdatedTokenInformation(
   event: UpdatedTokenInformation
 ): void {
-  fetchEvent(event, "UpdatedTokenInformation");
+  fetchEvent(event, 'UpdatedTokenInformation');
   const token = fetchToken(event.address);
   token.decimals = event.params._newDecimals;
   token.save();

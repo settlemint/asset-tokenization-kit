@@ -1,9 +1,9 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ATKModule from "../../main";
-import ATKOnboardingSystemModule from "../system";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ATKModule from '../../main';
+import ATKOnboardingSystemModule from '../system';
 
 const ATKOnboardingFixedYieldScheduleFactoryModule = buildModule(
-  "ATKOnboardingFixedYieldScheduleFactoryModule",
+  'ATKOnboardingFixedYieldScheduleFactoryModule',
   (m) => {
     const { system, systemAddonRegistry } = m.useModule(
       ATKOnboardingSystemModule
@@ -14,30 +14,30 @@ const ATKOnboardingFixedYieldScheduleFactoryModule = buildModule(
 
     const encodedInitializationData = m.encodeFunctionCall(
       fixedYieldScheduleFactoryImplementation,
-      "initialize",
+      'initialize',
       [system.address, platformAdmin]
     );
 
     const createFixedYieldScheduleFactoryAddon = m.call(
       systemAddonRegistry,
-      "registerSystemAddon",
+      'registerSystemAddon',
       [
-        "fixed-yield-schedule-factory",
+        'fixed-yield-schedule-factory',
         fixedYieldScheduleFactoryImplementation,
         encodedInitializationData,
       ]
     );
     const fixedYieldScheduleFactoryAddress = m.readEventArgument(
       createFixedYieldScheduleFactoryAddon,
-      "SystemAddonRegistered",
-      "proxyAddress",
-      { id: "fixedYieldScheduleFactoryAddress" }
+      'SystemAddonRegistered',
+      'proxyAddress',
+      { id: 'fixedYieldScheduleFactoryAddress' }
     );
     const fixedYieldScheduleFactoryProxy = m.contractAt(
-      "IATKFixedYieldScheduleFactory",
+      'IATKFixedYieldScheduleFactory',
       fixedYieldScheduleFactoryAddress,
       {
-        id: "fixedYieldScheduleFactory",
+        id: 'fixedYieldScheduleFactory',
       }
     );
 

@@ -1,8 +1,8 @@
-import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { describe, expect, it } from 'bun:test';
+import { theGraphClient, theGraphGraphql } from '../utils/thegraph-client';
 
-describe("Token capped extension", () => {
-  it("tokens can be capped", async () => {
+describe('Token capped extension', () => {
+  it('tokens can be capped', async () => {
     const query = theGraphGraphql(
       `query($where: Token_filter) {
         tokens(where: $where, orderBy: name) {
@@ -24,9 +24,9 @@ describe("Token capped extension", () => {
     expect(response.tokens.length).toBe(1);
     expect(response.tokens).toEqual([
       {
-        name: "Euro Bonds",
-        type: "bond",
-        capped: { capExact: "1500000000000", cap: "1500000" },
+        name: 'Euro Bonds',
+        type: 'bond',
+        capped: { capExact: '1500000000000', cap: '1500000' },
       },
     ]);
   });

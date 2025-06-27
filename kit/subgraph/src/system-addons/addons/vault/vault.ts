@@ -1,5 +1,5 @@
-import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
-import {
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import type {
   ConfirmTransaction,
   Deposit,
   ExecuteTransaction,
@@ -9,24 +9,24 @@ import {
   SubmitERC20TransferTransaction,
   SubmitTransaction,
   TransactionExecutionFailed,
-} from "../../../../generated/templates/Vault/Vault";
-import { fetchEvent } from "../../../event/fetch/event";
-import { fetchVault } from "./fetch/vault";
-import { fetchVaultTransaction } from "./fetch/vault-transaction";
+} from '../../../../generated/templates/Vault/Vault';
+import { fetchEvent } from '../../../event/fetch/event';
+import { fetchVault } from './fetch/vault';
+import { fetchVaultTransaction } from './fetch/vault-transaction';
 
 export function handleDeposit(event: Deposit): void {
-  fetchEvent(event, "Deposit");
+  fetchEvent(event, 'Deposit');
 
   const vault = fetchVault(event.address);
   vault.balance = BigDecimal.fromString(event.params.balance.toString()).div(
-    BigDecimal.fromString("1000000000000000000")
+    BigDecimal.fromString('1000000000000000000')
   );
   vault.balanceExact = event.params.balance;
   vault.save();
 }
 
 export function handleSubmitTransaction(event: SubmitTransaction): void {
-  fetchEvent(event, "SubmitTransaction");
+  fetchEvent(event, 'SubmitTransaction');
 
   const transaction = fetchVaultTransaction(
     event.address,
@@ -34,7 +34,7 @@ export function handleSubmitTransaction(event: SubmitTransaction): void {
   );
   transaction.to = event.params.to;
   transaction.value = BigDecimal.fromString(event.params.value.toString()).div(
-    BigDecimal.fromString("1000000000000000000")
+    BigDecimal.fromString('1000000000000000000')
   );
   transaction.valueExact = event.params.value;
   transaction.data = event.params.data;
@@ -48,7 +48,7 @@ export function handleSubmitTransaction(event: SubmitTransaction): void {
 export function handleSubmitERC20TransferTransaction(
   event: SubmitERC20TransferTransaction
 ): void {
-  fetchEvent(event, "SubmitERC20TransferTransaction");
+  fetchEvent(event, 'SubmitERC20TransferTransaction');
 
   const transaction = fetchVaultTransaction(
     event.address,
@@ -69,7 +69,7 @@ export function handleSubmitERC20TransferTransaction(
 export function handleSubmitContractCallTransaction(
   event: SubmitContractCallTransaction
 ): void {
-  fetchEvent(event, "SubmitContractCallTransaction");
+  fetchEvent(event, 'SubmitContractCallTransaction');
 
   const transaction = fetchVaultTransaction(
     event.address,
@@ -77,7 +77,7 @@ export function handleSubmitContractCallTransaction(
   );
   transaction.to = event.params.target;
   transaction.value = BigDecimal.fromString(event.params.value.toString()).div(
-    BigDecimal.fromString("1000000000000000000")
+    BigDecimal.fromString('1000000000000000000')
   );
   transaction.valueExact = event.params.value;
   // Combine selector and abiEncodedArguments for the data field
@@ -96,7 +96,7 @@ export function handleSubmitContractCallTransaction(
 }
 
 export function handleConfirmTransaction(event: ConfirmTransaction): void {
-  fetchEvent(event, "ConfirmTransaction");
+  fetchEvent(event, 'ConfirmTransaction');
 
   const transaction = fetchVaultTransaction(
     event.address,
@@ -111,7 +111,7 @@ export function handleConfirmTransaction(event: ConfirmTransaction): void {
 }
 
 export function handleRevokeConfirmation(event: RevokeConfirmation): void {
-  fetchEvent(event, "RevokeConfirmation");
+  fetchEvent(event, 'RevokeConfirmation');
 
   const transaction = fetchVaultTransaction(
     event.address,
@@ -126,7 +126,7 @@ export function handleRevokeConfirmation(event: RevokeConfirmation): void {
 }
 
 export function handleExecuteTransaction(event: ExecuteTransaction): void {
-  fetchEvent(event, "ExecuteTransaction");
+  fetchEvent(event, 'ExecuteTransaction');
 
   const transaction = fetchVaultTransaction(
     event.address,
@@ -139,7 +139,7 @@ export function handleExecuteTransaction(event: ExecuteTransaction): void {
 }
 
 export function handleRequirementChanged(event: RequirementChanged): void {
-  fetchEvent(event, "RequirementChanged");
+  fetchEvent(event, 'RequirementChanged');
 
   const vault = fetchVault(event.address);
   vault.required = event.params.required;
@@ -149,7 +149,7 @@ export function handleRequirementChanged(event: RequirementChanged): void {
 export function handleTransactionExecutionFailed(
   event: TransactionExecutionFailed
 ): void {
-  fetchEvent(event, "TransactionExecutionFailed");
+  fetchEvent(event, 'TransactionExecutionFailed');
 
   // Log the failed execution - transaction entity already exists
   const transaction = fetchVaultTransaction(

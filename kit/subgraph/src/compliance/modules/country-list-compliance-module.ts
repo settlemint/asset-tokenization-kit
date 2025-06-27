@@ -4,30 +4,30 @@ import {
   Bytes,
   crypto,
   ethereum,
-} from "@graphprotocol/graph-ts";
-import { GlobalCountryListChange as GlobalCountryListChangeEvent } from "../../../generated/templates/AbstractCountryComplianceModule/AbstractCountryComplianceModule";
-import { fetchEvent } from "../../event/fetch/event";
-import { fetchComplianceModule } from "../fetch/compliance-module";
+} from '@graphprotocol/graph-ts';
+import type { GlobalCountryListChange as GlobalCountryListChangeEvent } from '../../../generated/templates/AbstractCountryComplianceModule/AbstractCountryComplianceModule';
+import { fetchEvent } from '../../event/fetch/event';
+import { fetchComplianceModule } from '../fetch/compliance-module';
 
 export function isCountryListComplianceModule(typeId: Bytes): boolean {
   return (
     typeId ==
       crypto.keccak256(
-        ByteArray.fromUTF8("CountryAllowListComplianceModule")
+        ByteArray.fromUTF8('CountryAllowListComplianceModule')
       ) ||
     typeId ==
-      crypto.keccak256(ByteArray.fromUTF8("CountryBlockListComplianceModule"))
+      crypto.keccak256(ByteArray.fromUTF8('CountryBlockListComplianceModule'))
   );
 }
 
 export function decodeCountryListParams(data: Bytes): Array<i32> {
-  const result = new Array<i32>();
+  const result: i32[] = [];
 
   // Assumes wrapped in a tuple, so skip offset
   let offset = 32;
 
   const lenBytes = Bytes.fromUint8Array(data.subarray(offset, offset + 32));
-  const lenVal = ethereum.decode("uint256", lenBytes);
+  const lenVal = ethereum.decode('uint256', lenBytes);
 
   if (lenVal === null) return result;
 
@@ -39,12 +39,12 @@ export function decodeCountryListParams(data: Bytes): Array<i32> {
     const bytes32 = Bytes.fromUint8Array(chunk);
 
     // Decode as uint256, then mask to 16 bits
-    const val = ethereum.decode("uint256", bytes32);
+    const val = ethereum.decode('uint256', bytes32);
 
     if (val !== null) {
       const big = val.toBigInt();
       // Mask to 16 bits (optional if you trust contract, but safer)
-      const masked = big.bitAnd(BigInt.fromI32(0xffff));
+      const masked = big.bitAnd(BigInt.fromI32(0xff_ff));
       result.push(masked.toI32());
     }
 
@@ -57,7 +57,7 @@ export function decodeCountryListParams(data: Bytes): Array<i32> {
 export function handleGlobalCountryListChange(
   event: GlobalCountryListChangeEvent
 ): void {
-  fetchEvent(event, "GlobalCountryListChange");
+  fetchEvent(event, 'GlobalCountryListChange');
 
   const complianceModule = fetchComplianceModule(event.address);
   let countries = complianceModule.countries;

@@ -7,7 +7,7 @@
  *
  * @module EquityClassValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Available equity share classes.
@@ -20,7 +20,7 @@ import { z } from "zod/v4";
  *
  * Note: Actual rights vary by company charter and jurisdiction
  */
-export const equityClasses = ["A", "B", "C"] as const;
+export const equityClasses = ['A', 'B', 'C'] as const;
 
 /**
  * Creates a Zod schema that validates equity share classes.
@@ -42,7 +42,7 @@ export const equityClasses = ["A", "B", "C"] as const;
  * ```
  */
 export const equityClass = () =>
-  z.enum(equityClasses).describe("Class of equity shares");
+  z.enum(equityClasses).describe('Class of equity shares');
 
 /**
  * Type representing a validated equity share class.

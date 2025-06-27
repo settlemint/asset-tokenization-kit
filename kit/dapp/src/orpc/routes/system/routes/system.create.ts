@@ -18,18 +18,18 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
 
-import { portalGraphql } from "@/lib/settlemint/portal";
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { orpc } from "@/orpc";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { withEventMeta } from "@orpc/server";
-import type { VariablesOf } from "@settlemint/sdk-portal";
-import { z } from "zod/v4";
-import { SystemCreateMessagesSchema } from "./system.create.schema";
+import { withEventMeta } from '@orpc/server';
+import type { VariablesOf } from '@settlemint/sdk-portal';
+import { z } from 'zod/v4';
+import { portalGraphql } from '@/lib/settlemint/portal';
+import { theGraphGraphql } from '@/lib/settlemint/the-graph';
+import { orpc } from '@/orpc';
+import { handleChallenge } from '@/orpc/helpers/challenge-response';
+import { permissionsMiddleware } from '@/orpc/middlewares/auth/permissions.middleware';
+import { portalMiddleware } from '@/orpc/middlewares/services/portal.middleware';
+import { theGraphMiddleware } from '@/orpc/middlewares/services/the-graph.middleware';
+import { onboardedRouter } from '@/orpc/procedures/onboarded.router';
+import { SystemCreateMessagesSchema } from './system.create.schema';
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -145,7 +145,7 @@ const FIND_SYSTEM_FOR_TRANSACTION_QUERY = theGraphGraphql(`
  * ```
  */
 export const create = onboardedRouter.system.create
-  .use(permissionsMiddleware({ system: ["create"] }))
+  .use(permissionsMiddleware({ system: ['create'] }))
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
@@ -157,13 +157,13 @@ export const create = onboardedRouter.system.create
 
     // Check if system already exists using orpc
     const existingSystem = await orpc.settings.read.call({
-      key: "SYSTEM_ADDRESS",
+      key: 'SYSTEM_ADDRESS',
     });
 
     if (existingSystem) {
       throw errors.RESOURCE_ALREADY_EXISTS({
         message:
-          "System already exists. Only one system is allowed per platform.",
+          'System already exists. Only one system is allowed per platform.',
         cause: new Error(
           `System already deployed at address: ${existingSystem}`
         ),
@@ -173,7 +173,7 @@ export const create = onboardedRouter.system.create
     // Execute the system creation transaction
     const createSystemVariables: VariablesOf<typeof CREATE_SYSTEM_MUTATION> = {
       address: contract,
-      from: sender.wallet ?? "",
+      from: sender.wallet ?? '',
       ...(await handleChallenge(sender, {
         code: verification.verificationCode,
         type: verification.verificationType,
@@ -182,7 +182,7 @@ export const create = onboardedRouter.system.create
 
     // Use the Portal client's mutate method that returns an async generator
     // This enables real-time transaction tracking with automatic status updates
-    let transactionHash = "";
+    let transactionHash = '';
 
     // Iterate through transaction events as they occur
     for await (const event of context.portalClient.mutate(
@@ -196,7 +196,7 @@ export const create = onboardedRouter.system.create
 
       // Only yield pending and failed events during creation phase
       // Confirmed events are handled after we query for the system address
-      if (event.status === "pending" || event.status === "failed") {
+      if (event.status === 'pending' || event.status === 'failed') {
         // Transform Portal event to ORPC event format with metadata
         yield withEventMeta(
           {
@@ -208,7 +208,7 @@ export const create = onboardedRouter.system.create
         );
 
         // If transaction failed, stop the entire process
-        if (event.status === "failed") {
+        if (event.status === 'failed') {
           return;
         }
       }
@@ -255,7 +255,7 @@ export const create = onboardedRouter.system.create
     // Now bootstrap the system
     yield withEventMeta(
       {
-        status: "pending",
+        status: 'pending',
         message: messages.bootstrappingSystem,
         result: undefined,
       },
@@ -265,7 +265,7 @@ export const create = onboardedRouter.system.create
     // Execute the bootstrap transaction
     const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> = {
       address: system.id,
-      from: sender.wallet ?? "",
+      from: sender.wallet ?? '',
       ...(await handleChallenge(sender, {
         code: verification.verificationCode,
         type: verification.verificationType,
@@ -274,7 +274,7 @@ export const create = onboardedRouter.system.create
 
     // Track bootstrap transaction using the same async generator pattern
     let bootstrapSucceeded = false;
-    let bootstrapTransactionHash = "";
+    let bootstrapTransactionHash = '';
 
     // Iterate through bootstrap transaction events
     for await (const event of context.portalClient.mutate(
@@ -300,9 +300,9 @@ export const create = onboardedRouter.system.create
       );
 
       // Track final bootstrap status for the completion event
-      if (event.status === "confirmed") {
+      if (event.status === 'confirmed') {
         bootstrapSucceeded = true;
-      } else if (event.status === "failed") {
+      } else if (event.status === 'failed') {
         bootstrapSucceeded = false;
         // Don't return early - we still need to report the system ID
         // even if bootstrap failed, as the system was created successfully
@@ -312,17 +312,17 @@ export const create = onboardedRouter.system.create
 
     // Save the system address to settings using orpc BEFORE yielding final events
     await orpc.settings.upsert.call({
-      key: "SYSTEM_ADDRESS",
+      key: 'SYSTEM_ADDRESS',
       value: system.id,
     });
 
     // Always yield the final event with the system ID
     // If bootstrap failed, we still return the system ID but with failed status
-    if (!bootstrapSucceeded) {
+    if (bootstrapSucceeded) {
       yield withEventMeta(
         {
-          status: "failed",
-          message: `${messages.systemCreatedBootstrapFailed} System address: ${system.id}`,
+          status: 'confirmed',
+          message: messages.systemCreated,
           result: system.id,
         },
         { id: transactionHash, retry: 1000 }
@@ -330,8 +330,8 @@ export const create = onboardedRouter.system.create
     } else {
       yield withEventMeta(
         {
-          status: "confirmed",
-          message: messages.systemCreated,
+          status: 'failed',
+          message: `${messages.systemCreatedBootstrapFailed} System address: ${system.id}`,
           result: system.id,
         },
         { id: transactionHash, retry: 1000 }

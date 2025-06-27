@@ -1,13 +1,13 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "../forwarder";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from '../forwarder';
 
 const IdentityVerificationModule = buildModule(
-  "IdentityVerificationModule",
+  'IdentityVerificationModule',
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
     const identityVerificationModule = m.contract(
-      "SMARTIdentityVerificationComplianceModule",
+      'SMARTIdentityVerificationComplianceModule',
       [forwarder]
     );
 

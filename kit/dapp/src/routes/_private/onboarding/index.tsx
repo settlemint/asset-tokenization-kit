@@ -1,11 +1,11 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { orpc } from "@/orpc";
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import {
   determineOnboardingType,
   type PlatformOnboardingRequirements,
-} from "@/lib/types/onboarding";
+} from '@/lib/types/onboarding';
+import { orpc } from '@/orpc';
 
-export const Route = createFileRoute("/_private/onboarding/")({
+export const Route = createFileRoute('/_private/onboarding/')({
   beforeLoad: async ({ context }) => {
     const queryClient = context.queryClient;
 
@@ -13,20 +13,19 @@ export const Route = createFileRoute("/_private/onboarding/")({
     const [user, systemAddress] = await Promise.all([
       queryClient.ensureQueryData(orpc.user.me.queryOptions()),
       queryClient.ensureQueryData(
-        orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
+        orpc.settings.read.queryOptions({ input: { key: 'SYSTEM_ADDRESS' } })
       ),
     ]);
 
     // User is guaranteed to exist in _private routes due to auth middleware
 
-    let systemDetails = null;
-    if (systemAddress) {
-      systemDetails = await queryClient.ensureQueryData(
-        orpc.system.read.queryOptions({
-          input: { id: systemAddress },
-        })
-      );
-    }
+    const systemDetails = systemAddress
+      ? await queryClient.ensureQueryData(
+          orpc.system.read.queryOptions({
+            input: { id: systemAddress },
+          })
+        )
+      : null;
 
     // Determine platform onboarding requirements
     const platformRequirements: PlatformOnboardingRequirements = {

@@ -1,20 +1,20 @@
-import { Countries } from "../../constants/countries";
-import { ATKRoles } from "../../constants/roles";
-import { ATKTopic } from "../../constants/topics";
-import { owner } from "../../entities/actors/owner";
-import type { Asset } from "../../entities/asset";
-import { atkDeployer } from "../../services/deployer";
-import { getAnvilTimeMilliseconds } from "../../utils/anvil";
-import { addCountryComplianceModule } from "./compliance/add-country-allow-list-compliance-module";
-import { removeComplianceModule } from "./compliance/remove-compliance-module";
-import { setCountryParametersForComplianceModule } from "./compliance/set-country-parameters-for-compliance-module";
-import { grantRoles } from "./core/grant-roles";
-import { issueAssetClassificationClaim } from "./core/issue-asset-classification-claim";
-import { issueBasePriceClaim } from "./core/issue-base-price-claim";
-import { issueCollateralClaim } from "./core/issue-collateral-claim";
-import { issueIsinClaim } from "./core/issue-isin-claim";
-import { updateRequiredTopics } from "./core/update-required-topic";
-import { unpauseAsset } from "./pausable/unpause-asset";
+import { Countries } from '../../constants/countries';
+import { ATKRoles } from '../../constants/roles';
+import { ATKTopic } from '../../constants/topics';
+import { owner } from '../../entities/actors/owner';
+import type { Asset } from '../../entities/asset';
+import { atkDeployer } from '../../services/deployer';
+import { getAnvilTimeMilliseconds } from '../../utils/anvil';
+import { addCountryComplianceModule } from './compliance/add-country-allow-list-compliance-module';
+import { removeComplianceModule } from './compliance/remove-compliance-module';
+import { setCountryParametersForComplianceModule } from './compliance/set-country-parameters-for-compliance-module';
+import { grantRoles } from './core/grant-roles';
+import { issueAssetClassificationClaim } from './core/issue-asset-classification-claim';
+import { issueBasePriceClaim } from './core/issue-base-price-claim';
+import { issueCollateralClaim } from './core/issue-collateral-claim';
+import { issueIsinClaim } from './core/issue-isin-claim';
+import { updateRequiredTopics } from './core/update-required-topic';
+import { unpauseAsset } from './pausable/unpause-asset';
 
 export const setupAsset = async (
   asset: Asset<any>,
@@ -39,14 +39,14 @@ export const setupAsset = async (
   await updateRequiredTopics(asset, [ATKTopic.kyc, ATKTopic.aml]);
 
   // add country allow list compliance module
-  await addCountryComplianceModule(asset, "countryAllowListModule", [
+  await addCountryComplianceModule(asset, 'countryAllowListModule', [
     Countries.BE,
     Countries.NL,
   ]);
 
   await setCountryParametersForComplianceModule(
     asset,
-    "countryAllowListModule",
+    'countryAllowListModule',
     [Countries.BE, Countries.NL, Countries.FR, Countries.DE]
   );
 
@@ -54,7 +54,7 @@ export const setupAsset = async (
     // remove country block list compliance module
     await removeComplianceModule(
       asset,
-      atkDeployer.getContractAddress("countryBlockListModule")
+      atkDeployer.getContractAddress('countryBlockListModule')
     );
   }
 

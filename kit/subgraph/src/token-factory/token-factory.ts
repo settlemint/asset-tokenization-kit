@@ -1,27 +1,27 @@
-import { Bytes } from "@graphprotocol/graph-ts";
-import { Burnable as BurnableTemplate } from "../../generated/templates";
-import {
+import { Bytes } from '@graphprotocol/graph-ts';
+import { Burnable as BurnableTemplate } from '../../generated/templates';
+import type {
   TokenAssetCreated,
   TokenImplementationUpdated,
-} from "../../generated/templates/TokenFactory/TokenFactory";
-import { fetchAccessControl } from "../access-control/fetch/accesscontrol";
-import { fetchAccount } from "../account/fetch/account";
-import { InterfaceIds } from "../erc165/utils/interfaceids";
-import { fetchEvent } from "../event/fetch/event";
-import { fetchIdentity } from "../identity/fetch/identity";
-import { fetchBond } from "../token-assets/bond/fetch/bond";
-import { fetchFund } from "../token-assets/fund/fetch/fund";
-import { fetchCapped } from "../token-extensions/capped/fetch/capped";
-import { fetchCollateral } from "../token-extensions/collateral/fetch/collateral";
-import { fetchCustodian } from "../token-extensions/custodian/fetch/custodian";
-import { fetchPausable } from "../token-extensions/pausable/fetch/pausable";
-import { fetchRedeemable } from "../token-extensions/redeemable/fetch/redeemable";
-import { fetchYield } from "../token-extensions/yield/fetch/yield";
-import { fetchToken } from "../token/fetch/token";
-import { fetchTokenFactory } from "./fetch/token-factory";
+} from '../../generated/templates/TokenFactory/TokenFactory';
+import { fetchAccessControl } from '../access-control/fetch/accesscontrol';
+import { fetchAccount } from '../account/fetch/account';
+import { InterfaceIds } from '../erc165/utils/interfaceids';
+import { fetchEvent } from '../event/fetch/event';
+import { fetchIdentity } from '../identity/fetch/identity';
+import { fetchToken } from '../token/fetch/token';
+import { fetchBond } from '../token-assets/bond/fetch/bond';
+import { fetchFund } from '../token-assets/fund/fetch/fund';
+import { fetchCapped } from '../token-extensions/capped/fetch/capped';
+import { fetchCollateral } from '../token-extensions/collateral/fetch/collateral';
+import { fetchCustodian } from '../token-extensions/custodian/fetch/custodian';
+import { fetchPausable } from '../token-extensions/pausable/fetch/pausable';
+import { fetchRedeemable } from '../token-extensions/redeemable/fetch/redeemable';
+import { fetchYield } from '../token-extensions/yield/fetch/yield';
+import { fetchTokenFactory } from './fetch/token-factory';
 
 export function handleTokenAssetCreated(event: TokenAssetCreated): void {
-  fetchEvent(event, "TokenAssetCreated");
+  fetchEvent(event, 'TokenAssetCreated');
   const tokenFactory = fetchTokenFactory(event.address);
   const token = fetchToken(event.params.tokenAddress);
   if (token.deployedInTransaction.equals(Bytes.empty())) {
@@ -75,5 +75,5 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
 export function handleTokenImplementationUpdated(
   event: TokenImplementationUpdated
 ): void {
-  fetchEvent(event, "TokenImplementationUpdated");
+  fetchEvent(event, 'TokenImplementationUpdated');
 }

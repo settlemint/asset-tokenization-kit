@@ -1,7 +1,12 @@
-import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { Vault } from "../../../../../generated/schema";
-import { fetchAccessControl } from "../../../../access-control/fetch/accesscontrol";
-import { fetchAccount } from "../../../../account/fetch/account";
+import {
+  type Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+} from '@graphprotocol/graph-ts';
+import { Vault } from '../../../../../generated/schema';
+import { fetchAccessControl } from '../../../../access-control/fetch/accesscontrol';
+import { fetchAccount } from '../../../../account/fetch/account';
 
 export function fetchVault(address: Address): Vault {
   let vault = Vault.load(address);
@@ -13,7 +18,7 @@ export function fetchVault(address: Address): Vault {
     vault.createdAt = BigInt.fromI32(0);
     vault.required = BigInt.fromI32(0);
     vault.signers = [];
-    vault.balance = BigDecimal.fromString("0");
+    vault.balance = BigDecimal.fromString('0');
     vault.balanceExact = BigInt.fromI32(0);
     vault.deployedInTransaction = Bytes.empty();
     vault.save();

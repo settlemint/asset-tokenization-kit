@@ -1,12 +1,11 @@
-import { ATKContracts } from "../../../constants/contracts";
-import { claimIssuer } from "../../../entities/actors/claim-issuer";
-import { owner } from "../../../entities/actors/owner";
-
-import { ATKTopic } from "../../../constants/topics";
-import { Asset } from "../../../entities/asset";
-import { encodeClaimData } from "../../../utils/claim-scheme-utils";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import { ATKContracts } from '../../../constants/contracts';
+import { ATKTopic } from '../../../constants/topics';
+import { claimIssuer } from '../../../entities/actors/claim-issuer';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { encodeClaimData } from '../../../utils/claim-scheme-utils';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 /**
  * Issues a collateral claim to a token's identity contract.
@@ -21,7 +20,7 @@ export const issueAssetClassificationClaim = async (
   assetClass: string,
   assetCategory: string
 ) => {
-  console.log(`[Asset classification claim] → Starting claim issuance...`);
+  console.log('[Asset classification claim] → Starting claim issuance...');
 
   const encodedAssetClassificationData = encodeClaimData(
     ATKTopic.assetClassification,
@@ -52,7 +51,7 @@ export const issueAssetClassificationClaim = async (
       claimIssuerIdentityAddress,
       assetClassificationClaimSignature,
       assetClassificationClaimData,
-      "",
+      '',
     ])
   );
 

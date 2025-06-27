@@ -1,5 +1,5 @@
-import type { SystemAccessControl } from "@/orpc/middlewares/system/system.middleware";
-import { baseRouter } from "@/orpc/procedures/base.router";
+import type { SystemAccessControl } from '@/orpc/middlewares/system/system.middleware';
+import { baseRouter } from '@/orpc/procedures/base.router';
 
 /**
  * Middleware to check if the user has the required permission to interact with the token factory.
@@ -10,7 +10,7 @@ import { baseRouter } from "@/orpc/procedures/base.router";
 export const tokenFactoryPermissionMiddleware = (
   requiredRoles: (keyof SystemAccessControl)[]
 ) =>
-  baseRouter.middleware(async ({ context, next, errors }) => {
+  baseRouter.middleware(({ context, next, errors }) => {
     const { auth, tokenFactory } = context;
 
     if (!tokenFactory) {

@@ -1,6 +1,6 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { Compliance } from "../../../generated/schema";
-import { fetchAccount } from "../../account/fetch/account";
+import type { Address } from '@graphprotocol/graph-ts';
+import { Compliance } from '../../../generated/schema';
+import { fetchAccount } from '../../account/fetch/account';
 
 export function fetchCompliance(address: Address): Compliance {
   let compliance = Compliance.load(address);

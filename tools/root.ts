@@ -1,8 +1,8 @@
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, resolve } from 'node:path';
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
 
 const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info",
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || 'info',
 });
 
 /**
@@ -21,9 +21,9 @@ export async function findTurboRoot(startPath?: string) {
 
   // Walk up the directory tree looking for the monorepo root
   while (currentDir !== dirname(currentDir)) {
-    const turboConfigPath = join(currentDir, "turbo.json");
-    const packageJsonPath = join(currentDir, "package.json");
-    const currentKitPath = join(currentDir, "kit");
+    const turboConfigPath = join(currentDir, 'turbo.json');
+    const packageJsonPath = join(currentDir, 'package.json');
+    const currentKitPath = join(currentDir, 'kit');
 
     // Check if this directory has turbo.json and kit directory
     const turboFile = Bun.file(turboConfigPath);
@@ -33,7 +33,7 @@ export async function findTurboRoot(startPath?: string) {
       // Check if kit directory exists by trying to glob it
       let kitExists = false;
       try {
-        const glob = new Bun.Glob("*");
+        const glob = new Bun.Glob('*');
         const scanner = glob.scan({ cwd: currentKitPath, onlyFiles: false });
         await scanner.next();
         kitExists = true;
@@ -50,7 +50,7 @@ export async function findTurboRoot(startPath?: string) {
             packageJson.devDependencies?.turbo ||
             packageJson.dependencies?.turbo ||
             Object.keys(packageJson.scripts || {}).some((script) =>
-              packageJson.scripts[script].includes("turbo")
+              packageJson.scripts[script].includes('turbo')
             );
 
           if (hasTurboDep) {
@@ -77,8 +77,8 @@ export async function findTurboRoot(startPath?: string) {
     currentDir = resolve(cwd);
 
     while (currentDir !== dirname(currentDir)) {
-      const turboConfigPath = join(currentDir, "turbo.json");
-      const packageJsonPath = join(currentDir, "package.json");
+      const turboConfigPath = join(currentDir, 'turbo.json');
+      const packageJsonPath = join(currentDir, 'package.json');
 
       const turboFile = Bun.file(turboConfigPath);
       const packageFile = Bun.file(packageJsonPath);
@@ -91,7 +91,7 @@ export async function findTurboRoot(startPath?: string) {
             packageJson.devDependencies?.turbo ||
             packageJson.dependencies?.turbo ||
             Object.keys(packageJson.scripts || {}).some((script) =>
-              packageJson.scripts[script].includes("turbo")
+              packageJson.scripts[script].includes('turbo')
             );
 
           if (hasTurboDep) {
@@ -115,12 +115,12 @@ export async function findTurboRoot(startPath?: string) {
     );
   }
 
-  const kitRootPath = join(foundMonorepoRoot, "kit");
+  const kitRootPath = join(foundMonorepoRoot, 'kit');
 
   // Verify kit directory exists, if not warn but continue
   let kitExists = false;
   try {
-    const glob = new Bun.Glob("*");
+    const glob = new Bun.Glob('*');
     const scanner = glob.scan({ cwd: kitRootPath, onlyFiles: false });
     await scanner.next();
     kitExists = true;
@@ -138,7 +138,7 @@ export async function findTurboRoot(startPath?: string) {
     monorepoRoot: foundMonorepoRoot,
     kitRoot: kitRootPath,
     isInKit: kitExists && cwd.includes(kitRootPath),
-    relativePath: cwd.replace(foundMonorepoRoot, "").replace(/^[/\\]/, ""),
+    relativePath: cwd.replace(foundMonorepoRoot, '').replace(/^[/\\]/, ''),
   };
 }
 
@@ -160,7 +160,7 @@ export async function getKitProjectPath(
   // Check if directory exists
   let exists = false;
   try {
-    const glob = new Bun.Glob("*");
+    const glob = new Bun.Glob('*');
     const scanner = glob.scan({ cwd: projectPath, onlyFiles: false });
     await scanner.next();
     exists = true;
@@ -186,12 +186,12 @@ export async function getKitProjects(startPath?: string) {
 
   try {
     // Use glob to find all directories with package.json
-    const glob = new Bun.Glob("*/package.json");
+    const glob = new Bun.Glob('*/package.json');
     const projects: string[] = [];
 
     for await (const file of glob.scan({ cwd: kitRoot })) {
       // Extract directory name from path (remove /package.json)
-      const projectName = file.replace(/\/package\.json$/, "");
+      const projectName = file.replace(/\/package\.json$/, '');
       projects.push(projectName);
     }
 
@@ -220,7 +220,7 @@ export async function getCurrentKitContext(startPath?: string) {
   }
 
   // Determine which kit project we're in
-  const relativePath = cwd.replace(rootInfo.kitRoot, "").replace(/^[/\\]/, "");
+  const relativePath = cwd.replace(rootInfo.kitRoot, '').replace(/^[/\\]/, '');
   const projectName = relativePath.split(/[/\\]/)[0];
 
   if (!projectName) {

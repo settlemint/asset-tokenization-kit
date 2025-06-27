@@ -76,7 +76,7 @@ This command (`bun run ci`) executes the following tasks in order:
    - Updates SDK types for Portal, TheGraph, and Hasura
 
 4. **Linting** (`bun run lint`)
-   - Runs ESLint on TypeScript/JavaScript code
+   - Runs Biome on TypeScript/JavaScript code
    - Checks for code quality issues and potential bugs
    - Enforces coding standards and best practices
 

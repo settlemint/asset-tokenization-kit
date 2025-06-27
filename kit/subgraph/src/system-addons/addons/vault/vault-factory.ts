@@ -1,12 +1,12 @@
-import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
-import { Vault as VaultTemplate } from "../../../../generated/templates";
-import { ATKVaultCreated } from "../../../../generated/templates/VaultFactory/VaultFactory";
-import { fetchEvent } from "../../../event/fetch/event";
-import { fetchVault } from "./fetch/vault";
-import { fetchVaultFactory } from "./fetch/vault-factory";
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import { Vault as VaultTemplate } from '../../../../generated/templates';
+import type { ATKVaultCreated } from '../../../../generated/templates/VaultFactory/VaultFactory';
+import { fetchEvent } from '../../../event/fetch/event';
+import { fetchVault } from './fetch/vault';
+import { fetchVaultFactory } from './fetch/vault-factory';
 
 export function handleATKVaultCreated(event: ATKVaultCreated): void {
-  fetchEvent(event, "ATKVaultCreated");
+  fetchEvent(event, 'ATKVaultCreated');
 
   const vaultFactory = fetchVaultFactory(event.address);
   const vault = fetchVault(event.params.vault);
@@ -18,7 +18,7 @@ export function handleATKVaultCreated(event: ATKVaultCreated): void {
   vault.deployedInTransaction = event.transaction.hash;
 
   // Initialize balance tracking
-  vault.balance = BigDecimal.fromString("0");
+  vault.balance = BigDecimal.fromString('0');
   vault.balanceExact = BigInt.fromI32(0);
 
   vault.save();

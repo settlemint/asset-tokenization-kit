@@ -1,12 +1,12 @@
-import { Bytes } from "@graphprotocol/graph-ts";
-import {
+import { Bytes } from '@graphprotocol/graph-ts';
+import type {
   IdentityCreated,
   TokenIdentityCreated,
-} from "../../generated/templates/IdentityFactory/IdentityFactory";
-import { fetchAccount } from "../account/fetch/account";
-import { fetchEvent } from "../event/fetch/event";
-import { fetchIdentity } from "../identity/fetch/identity";
-import { fetchToken } from "../token/fetch/token";
+} from '../../generated/templates/IdentityFactory/IdentityFactory';
+import { fetchAccount } from '../account/fetch/account';
+import { fetchEvent } from '../event/fetch/event';
+import { fetchIdentity } from '../identity/fetch/identity';
+import { fetchToken } from '../token/fetch/token';
 
 export function handleIdentityCreated(event: IdentityCreated): void {
   const identity = fetchIdentity(event.params.identity);
@@ -20,7 +20,7 @@ export function handleIdentityCreated(event: IdentityCreated): void {
   identity.save();
   // Record the event that created the identity for the account
   // needs to be after creating the account as we map the involved accounts in the event
-  fetchEvent(event, "IdentityCreated");
+  fetchEvent(event, 'IdentityCreated');
 }
 
 export function handleTokenIdentityCreated(event: TokenIdentityCreated): void {
@@ -35,5 +35,5 @@ export function handleTokenIdentityCreated(event: TokenIdentityCreated): void {
   identity.save();
   // Record the event that created the identity for the account
   // needs to be after creating the account as we map the involved accounts in the event
-  fetchEvent(event, "TokenIdentityCreated");
+  fetchEvent(event, 'TokenIdentityCreated');
 }

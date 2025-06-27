@@ -1,13 +1,13 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "./forwarder";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from './forwarder';
 
 const TokenFactoryRegistryModule = buildModule(
-  "TokenFactoryRegistryModule",
+  'TokenFactoryRegistryModule',
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
     const tokenFactoryRegistry = m.contract(
-      "ATKTokenFactoryRegistryImplementation",
+      'ATKTokenFactoryRegistryImplementation',
       [forwarder]
     );
     return { tokenFactoryRegistry };

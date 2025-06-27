@@ -2,18 +2,18 @@ import {
   type Abi,
   type Address,
   type Chain,
+  formatEther,
   type GetContractReturnType,
+  getContract as getViemContract,
   type PublicClient,
   type Transport,
   type WalletClient,
-  formatEther,
-  getContract as getViemContract,
-} from "viem";
-import type { Account } from "viem/accounts";
-import { atkDeployer } from "../../services/deployer";
-import { withDecodedRevertReason } from "../../utils/decode-revert-reason";
-import { getPublicClient } from "../../utils/public-client";
-import { waitForEvent } from "../../utils/wait-for-event";
+} from 'viem';
+import type { Account } from 'viem/accounts';
+import { atkDeployer } from '../../services/deployer';
+import { withDecodedRevertReason } from '../../utils/decode-revert-reason';
+import { getPublicClient } from '../../utils/public-client';
+import { waitForEvent } from '../../utils/wait-for-event';
 
 // Chain to ensure identity creation operations are serialized across all actors
 // To avoid replacement transactions when in sync
@@ -62,7 +62,7 @@ export abstract class AbstractActor {
    */
   get address(): Address {
     if (!this._address) {
-      throw new Error("Address not initialized");
+      throw new Error('Address not initialized');
     }
     return this._address;
   }
@@ -93,7 +93,7 @@ export abstract class AbstractActor {
         const { identity } = (await waitForEvent({
           transactionHash,
           contract: identityFactory,
-          eventName: "IdentityCreated",
+          eventName: 'IdentityCreated',
         })) as { identity: `0x${string}` };
 
         this._identity = identity;

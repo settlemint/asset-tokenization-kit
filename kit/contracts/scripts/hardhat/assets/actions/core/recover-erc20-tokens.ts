@@ -1,10 +1,10 @@
-import { ATKContracts } from "../../../constants/contracts";
-import { AbstractActor } from "../../../entities/actors/abstract-actor";
-import { Asset } from "../../../entities/asset";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatBaseUnits } from "../../../utils/format-base-units";
-import { toBaseUnits } from "../../../utils/to-base-units";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import { ATKContracts } from '../../../constants/contracts';
+import type { AbstractActor } from '../../../entities/actors/abstract-actor';
+import type { Asset } from '../../../entities/asset';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { formatBaseUnits } from '../../../utils/format-base-units';
+import { toBaseUnits } from '../../../utils/to-base-units';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 export const recoverErc20Tokens = async (
   asset: Asset<any>,
@@ -13,7 +13,7 @@ export const recoverErc20Tokens = async (
   to: AbstractActor,
   amount: bigint
 ) => {
-  console.log(`[Recover ERC20 tokens] → Starting token recovery...`);
+  console.log('[Recover ERC20 tokens] → Starting token recovery...');
 
   const tokenContract = actor.getContractInstance({
     address: asset.address,

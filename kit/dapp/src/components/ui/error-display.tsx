@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, Home, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 
 interface ErrorDisplayProps {
   title?: string;
@@ -49,41 +49,41 @@ export function ErrorDisplay({
       </p>
       <div className="mt-10 flex flex-col sm:flex-row sm:items-center sm:justify-center gap-y-3 gap-x-4">
         {showRetry && onRetry && (
-          <Button onClick={onRetry} className="group">
+          <Button className="group" onClick={onRetry}>
             <RefreshCw
+              aria-hidden="true"
               className="me-2 transition-transform group-hover:rotate-180"
               size={16}
               strokeWidth={2}
-              aria-hidden="true"
             />
             {t("errors.buttons.tryAgain")}
           </Button>
         )}
         {showGoBack && (
           <Button
-            variant="secondary"
             className="group"
             onClick={() => {
               window.history.back();
             }}
+            variant="secondary"
           >
             <ArrowLeft
+              aria-hidden="true"
               className="me-2 ms-0 opacity-60 transition-transform group-hover:-translate-x-0.5"
               size={16}
               strokeWidth={2}
-              aria-hidden="true"
             />
             {t("errors.buttons.goBack")}
           </Button>
         )}
         {showHome && (
-          <Button variant="outline" asChild>
+          <Button asChild variant="outline">
             <Link to="/">
               <Home
+                aria-hidden="true"
                 className="me-2"
                 size={16}
                 strokeWidth={2}
-                aria-hidden="true"
               />
               {t("errors.buttons.goHome")}
             </Link>

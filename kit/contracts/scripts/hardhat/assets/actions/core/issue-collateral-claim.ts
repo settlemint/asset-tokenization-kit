@@ -1,14 +1,13 @@
-import { ATKContracts } from "../../../constants/contracts";
-import { claimIssuer } from "../../../entities/actors/claim-issuer";
-import { owner } from "../../../entities/actors/owner";
-
-import { ATKTopic } from "../../../constants/topics";
-import type { Asset } from "../../../entities/asset";
-import { encodeClaimData } from "../../../utils/claim-scheme-utils";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatBaseUnits } from "../../../utils/format-base-units";
-import { toBaseUnits } from "../../../utils/to-base-units";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import { ATKContracts } from '../../../constants/contracts';
+import { ATKTopic } from '../../../constants/topics';
+import { claimIssuer } from '../../../entities/actors/claim-issuer';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { encodeClaimData } from '../../../utils/claim-scheme-utils';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { formatBaseUnits } from '../../../utils/format-base-units';
+import { toBaseUnits } from '../../../utils/to-base-units';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 /**
  * Issues a collateral claim to a token's identity contract.
@@ -23,7 +22,7 @@ export const issueCollateralClaim = async (
   amount: number | bigint,
   expiryTimestamp: Date
 ) => {
-  console.log(`[Collateral claim] → Starting claim issuance...`);
+  console.log('[Collateral claim] → Starting claim issuance...');
 
   // Convert Date object to Unix timestamp (seconds) and then to bigint
   const expiryTimestampBigInt = BigInt(
@@ -69,7 +68,7 @@ export const issueCollateralClaim = async (
       claimIssuerIdentityAddress,
       collateralClaimSignature,
       collateralClaimData,
-      "",
+      '',
     ])
   );
 

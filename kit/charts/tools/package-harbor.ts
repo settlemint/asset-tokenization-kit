@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { join } from "node:path";
-import { getKitProjectPath } from "../../../tools/root";
+import { join } from 'node:path';
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import { getKitProjectPath } from '../../../tools/root';
 
 /**
  * Script to update registry values in Helm chart files to use Harbor proxy
@@ -11,9 +11,9 @@ import { getKitProjectPath } from "../../../tools/root";
  *   - From root: turbo run harbor --filter=charts
  */
 
-const HARBOR_PROXY = "harbor.settlemint.com";
+const HARBOR_PROXY = 'harbor.settlemint.com';
 const logger = createLogger({
-  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel || "info",
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || 'info',
 });
 
 /**
@@ -60,15 +60,15 @@ function isImplicitDockerHubImage(value: string): boolean {
  * Find the charts directory using intelligent root detection
  */
 async function findChartsDirectory(): Promise<string> {
-  logger.debug("Finding charts directory...");
+  logger.debug('Finding charts directory...');
 
   // If we're already in kit/charts, use current directory
-  const packageJsonFile = Bun.file(join(process.cwd(), "package.json"));
+  const packageJsonFile = Bun.file(join(process.cwd(), 'package.json'));
   if (await packageJsonFile.exists()) {
     try {
       const content = JSON.parse(await packageJsonFile.text());
-      if (content.name === "charts") {
-        logger.debug("Already in charts directory");
+      if (content.name === 'charts') {
+        logger.debug('Already in charts directory');
         return process.cwd();
       }
     } catch {
@@ -78,13 +78,13 @@ async function findChartsDirectory(): Promise<string> {
 
   // Use root detection to find charts
   try {
-    const chartsPath = getKitProjectPath("charts");
+    const chartsPath = getKitProjectPath('charts');
     logger.debug(`Found charts directory: ${chartsPath}`);
     return chartsPath;
   } catch (error) {
     logger.error(`Could not find charts directory: ${error}`);
     throw new Error(
-      "Could not find charts package.json file. Run this script from kit/charts or project root."
+      'Could not find charts package.json file. Run this script from kit/charts or project root.'
     );
   }
 }
@@ -97,12 +97,15 @@ async function findValuesFiles(dir: string): Promise<string[]> {
 
   try {
     // Use Bun.glob to find all values.yaml and values-*.yaml files
-    const valuesGlob = new Bun.Glob("**/values*.yaml");
+    const valuesGlob = new Bun.Glob('**/values*.yaml');
 
     for await (const file of valuesGlob.scan({ cwd: dir, dot: false })) {
       // Only include files that match our exact pattern
-      const basename = file.split("/").pop() || "";
-      if (basename === "values.yaml" || (basename.startsWith("values-") && basename.endsWith(".yaml"))) {
+      const basename = file.split('/').pop() || '';
+      if (
+        basename === 'values.yaml' ||
+        (basename.startsWith('values-') && basename.endsWith('.yaml'))
+      ) {
         files.push(file);
       }
     }
@@ -117,11 +120,11 @@ async function findValuesFiles(dir: string): Promise<string[]> {
  * Get all chart files that need to be processed
  */
 async function getChartFiles(projectDir: string): Promise<string[]> {
-  const atkDir = join(projectDir, "atk");
+  const atkDir = join(projectDir, 'atk');
 
   // Check if directory exists by trying to scan it
   try {
-    const testGlob = new Bun.Glob("*");
+    const testGlob = new Bun.Glob('*');
     const scanner = testGlob.scan({ cwd: atkDir, onlyFiles: false });
     // Try to get first item to verify directory exists
     await scanner.next();
@@ -134,7 +137,7 @@ async function getChartFiles(projectDir: string): Promise<string[]> {
   const relativeFiles = await findValuesFiles(atkDir);
 
   // Convert to absolute paths and add the atk prefix
-  const files = relativeFiles.map(file => join(atkDir, file));
+  const files = relativeFiles.map((file) => join(atkDir, file));
 
   // Filter out files that don't exist (shouldn't happen, but defensive programming)
   const existingFiles: string[] = [];
@@ -153,10 +156,12 @@ async function getChartFiles(projectDir: string): Promise<string[]> {
 /**
  * Process a single file to update registry values
  */
-async function processFile(filePath: string): Promise<{ modified: boolean; changes: number }> {
+async function processFile(
+  filePath: string
+): Promise<{ modified: boolean; changes: number }> {
   try {
     const content = await Bun.file(filePath).text();
-    const lines = content.split("\n");
+    const lines = content.split('\n');
     let changeCount = 0;
 
     // Check if there's a features.kits section
@@ -164,23 +169,23 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
     let inKitsSection = false;
     let inCustomDeployment = false;
     let inCodeStudio = false;
-    let featuresSectionIndent = "";
+    let featuresSectionIndent = '';
 
     const modifiedLines = lines.map((line, index) => {
       // Track if we're entering or leaving the features section
-      if (line.trim() === "features:") {
+      if (line.trim() === 'features:') {
         inFeaturesSection = true;
-        featuresSectionIndent = line.match(/^\s*/)?.[0] || "";
+        featuresSectionIndent = line.match(/^\s*/)?.[0] || '';
       }
       // If we're in features section and find a kits: entry
-      else if (inFeaturesSection && line.trim() === "kits:") {
+      else if (inFeaturesSection && line.trim() === 'kits:') {
         inKitsSection = true;
       }
       // Track customDeployment and codeStudio sections within kits
-      else if (inKitsSection && line.trim() === "customDeployment:") {
+      else if (inKitsSection && line.trim() === 'customDeployment:') {
         inCustomDeployment = true;
         inCodeStudio = false;
-      } else if (inKitsSection && line.trim() === "codeStudio:") {
+      } else if (inKitsSection && line.trim() === 'codeStudio:') {
         inCodeStudio = true;
         inCustomDeployment = false;
       }
@@ -188,7 +193,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
       else if (
         inFeaturesSection &&
         !line.startsWith(`${featuresSectionIndent} `) &&
-        line.trim() !== ""
+        line.trim() !== ''
       ) {
         inFeaturesSection = false;
         inKitsSection = false;
@@ -204,7 +209,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
       const originalLine = line;
 
       // Process registry: values
-      if (line.includes("registry:")) {
+      if (line.includes('registry:')) {
         // Clean up corrupted values like harbor.settlemint.com/""
         if (line.includes(`${HARBOR_PROXY}/""`)) {
           line = line.replace(`${HARBOR_PROXY}/""`, '""');
@@ -219,9 +224,9 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             registryMatch[2] &&
             registryMatch[2] !== HARBOR_PROXY &&
             !registryMatch[2].startsWith(`${HARBOR_PROXY}/`) &&
-            registryMatch[2] !== '""' &&  // Skip empty string values
-            registryMatch[2] !== "''" &&  // Skip empty string values with single quotes
-            registryMatch[2].trim() !== ""  // Skip actual empty values
+            registryMatch[2] !== '""' && // Skip empty string values
+            registryMatch[2] !== "''" && // Skip empty string values with single quotes
+            registryMatch[2].trim() !== '' // Skip actual empty values
           ) {
             line = line.replace(
               /(\s+registry:\s+)([^\s\n]+)/,
@@ -232,7 +237,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
       }
 
       // Process imageRegistry: values
-      if (line.includes("imageRegistry:")) {
+      if (line.includes('imageRegistry:')) {
         // Clean up corrupted values like harbor.settlemint.com/""
         if (line.includes(`${HARBOR_PROXY}/""`)) {
           line = line.replace(`${HARBOR_PROXY}/""`, '""');
@@ -249,9 +254,9 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             registryMatch[2] &&
             registryMatch[2] !== HARBOR_PROXY &&
             !registryMatch[2].startsWith(`${HARBOR_PROXY}/`) &&
-            registryMatch[2] !== '""' &&  // Skip empty string values
-            registryMatch[2] !== "''" &&  // Skip empty string values with single quotes
-            registryMatch[2].trim() !== ""  // Skip actual empty values
+            registryMatch[2] !== '""' && // Skip empty string values
+            registryMatch[2] !== "''" && // Skip empty string values with single quotes
+            registryMatch[2].trim() !== '' // Skip actual empty values
           ) {
             line = line.replace(
               /(\s+imageRegistry:\s+)([^\s\n]+)/,
@@ -262,12 +267,12 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
       }
 
       // Replace name: ghcr.io with name: harbor.settlemint.com
-      if (line.includes("name:") && line.includes("ghcr.io")) {
+      if (line.includes('name:') && line.includes('ghcr.io')) {
         line = line.replace(/(\s+name:\s+)ghcr\.io/, `$1${HARBOR_PROXY}`);
       }
 
       // Process repository: values
-      if (line.includes("repository:")) {
+      if (line.includes('repository:')) {
         const repoMatch = line.match(/(\s+repository:\s+)([^\s\n]+)/);
         if (repoMatch && repoMatch[2]) {
           const repoValue = repoMatch[2];
@@ -278,11 +283,20 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
             const currentLineIndex = index;
             let hasNearbyRegistry = false;
 
-            for (let i = Math.max(0, currentLineIndex - 5); i < currentLineIndex; i++) {
-              if (lines[i]?.includes('registry:') && lines[i]?.includes(HARBOR_PROXY) && !lines[i]?.trim().startsWith('#')) {
+            for (
+              let i = Math.max(0, currentLineIndex - 5);
+              i < currentLineIndex;
+              i++
+            ) {
+              if (
+                lines[i]?.includes('registry:') &&
+                lines[i]?.includes(HARBOR_PROXY) &&
+                !lines[i]?.trim().startsWith('#')
+              ) {
                 // Check if it's at similar indentation (same image block)
                 const currentIndent = line.match(/^\s*/)?.[0]?.length ?? 0;
-                const registryIndent = lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
+                const registryIndent =
+                  lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
                 if (Math.abs(currentIndent - registryIndent) <= 2) {
                   hasNearbyRegistry = true;
                   break;
@@ -292,7 +306,12 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
 
             // If there's a nearby registry field, remove harbor prefix from repository
             if (hasNearbyRegistry) {
-              const registries = ["registry.k8s.io", "quay.io", "ghcr.io", "docker.io"];
+              const registries = [
+                'registry.k8s.io',
+                'quay.io',
+                'ghcr.io',
+                'docker.io',
+              ];
               for (const registry of registries) {
                 const pattern = `${HARBOR_PROXY}/${registry}/`;
                 if (repoValue.startsWith(pattern)) {
@@ -305,10 +324,10 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
           }
 
           const registries = [
-            "registry.k8s.io",
-            "quay.io",
-            "ghcr.io",
-            "docker.io"
+            'registry.k8s.io',
+            'quay.io',
+            'ghcr.io',
+            'docker.io',
           ];
 
           let processed = false;
@@ -331,16 +350,24 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
 
           // If not processed and not already harbored, handle implicit Docker Hub images
           // BUT ONLY if there's no nearby registry field
-          if (!processed && !repoValue.includes(HARBOR_PROXY)) {
+          if (!(processed || repoValue.includes(HARBOR_PROXY))) {
             // Check if there's a registry field nearby (within 5 lines before this one)
             const currentLineIndex = index;
             let hasNearbyRegistry = false;
 
-            for (let i = Math.max(0, currentLineIndex - 5); i < currentLineIndex; i++) {
-              if (lines[i]?.includes('registry:') && !lines[i]?.trim().startsWith('#')) {
+            for (
+              let i = Math.max(0, currentLineIndex - 5);
+              i < currentLineIndex;
+              i++
+            ) {
+              if (
+                lines[i]?.includes('registry:') &&
+                !lines[i]?.trim().startsWith('#')
+              ) {
                 // Check if it's at similar indentation (same image block)
                 const currentIndent = line.match(/^\s*/)?.[0]?.length ?? 0;
-                const registryIndent = lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
+                const registryIndent =
+                  lines[i]?.match(/^\s*/)?.[0]?.length ?? 0;
                 if (Math.abs(currentIndent - registryIndent) <= 2) {
                   hasNearbyRegistry = true;
                   break;
@@ -361,16 +388,16 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
       }
 
       // Process image: values
-      if (line.includes("image:") && !line.includes("imageRegistry")) {
+      if (line.includes('image:') && !line.includes('imageRegistry')) {
         const imageMatch = line.match(/(\s+image:\s+)([^\s\n]+)/);
         if (imageMatch && imageMatch[2]) {
           const imageValue = imageMatch[2];
 
           const registries = [
-            "registry.k8s.io",
-            "quay.io",
-            "ghcr.io",
-            "docker.io"
+            'registry.k8s.io',
+            'quay.io',
+            'ghcr.io',
+            'docker.io',
           ];
 
           let processed = false;
@@ -392,7 +419,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
           }
 
           // If not processed and not already harbored, handle implicit Docker Hub images
-          if (!processed && !imageValue.includes(HARBOR_PROXY)) {
+          if (!(processed || imageValue.includes(HARBOR_PROXY))) {
             // Check if it's an implicit Docker Hub image
             if (isImplicitDockerHubImage(imageValue)) {
               const newValue = `${HARBOR_PROXY}/docker.io/${imageValue}`;
@@ -410,7 +437,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
       return line;
     });
 
-    const modifiedContent = modifiedLines.join("\n");
+    const modifiedContent = modifiedLines.join('\n');
     const wasModified = modifiedContent !== content;
 
     // Write changes if any were made
@@ -429,7 +456,7 @@ async function processFile(filePath: string): Promise<{ modified: boolean; chang
  * Main execution function
  */
 async function main(): Promise<void> {
-  logger.info("Starting Harbor registry updates...");
+  logger.info('Starting Harbor registry updates...');
 
   let totalModified = 0;
   let totalChanges = 0;
@@ -443,7 +470,7 @@ async function main(): Promise<void> {
     const chartFiles = await getChartFiles(projectDir);
 
     if (chartFiles.length === 0) {
-      logger.info("No chart files found to process");
+      logger.info('No chart files found to process');
       return;
     }
 
@@ -453,7 +480,7 @@ async function main(): Promise<void> {
     const results = await Promise.allSettled(
       chartFiles.map(async (filePath) => {
         const result = await processFile(filePath);
-        const fileName = filePath.split("/").slice(-2).join("/");
+        const fileName = filePath.split('/').slice(-2).join('/');
 
         if (result.modified) {
           logger.info(`Updated ${fileName} (${result.changes} changes)`);
@@ -468,7 +495,7 @@ async function main(): Promise<void> {
     // Count results and errors
     let errorCount = 0;
     for (const result of results) {
-      if (result.status === "fulfilled") {
+      if (result.status === 'fulfilled') {
         if (result.value.modified) {
           totalModified++;
           totalChanges += result.value.changes;
@@ -484,13 +511,16 @@ async function main(): Promise<void> {
     }
 
     if (totalModified > 0) {
-      logger.info(`Successfully updated ${totalModified} files with ${totalChanges} total changes!`);
+      logger.info(
+        `Successfully updated ${totalModified} files with ${totalChanges} total changes!`
+      );
     } else {
-      logger.info("All files are already up to date!");
+      logger.info('All files are already up to date!');
     }
-
   } catch (error) {
-    logger.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    logger.error(
+      `Error: ${error instanceof Error ? error.message : String(error)}`
+    );
     process.exit(1);
   }
 }

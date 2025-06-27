@@ -1,14 +1,14 @@
-import { db } from "@/lib/db";
-import { settings } from "@/lib/db/schema";
-import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
-import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import type { assetTypes } from "@/lib/zod/validators/asset-types";
-import { baseRouter } from "@/orpc/procedures/base.router";
-import type { ResultOf } from "@settlemint/sdk-thegraph";
-import { eq } from "drizzle-orm";
-import { getAddress, type Address } from "viem";
+import type { ResultOf } from '@settlemint/sdk-thegraph';
+import { eq } from 'drizzle-orm';
+import { type Address, getAddress } from 'viem';
+import { db } from '@/lib/db';
+import { settings } from '@/lib/db/schemas/settings';
+import { AccessControlFragment } from '@/lib/fragments/the-graph/access-control-fragment';
+import { theGraphClient, theGraphGraphql } from '@/lib/settlemint/the-graph';
+import type { assetTypes } from '@/lib/zod/validators/asset-types';
+import { baseRouter } from '@/orpc/procedures/base.router';
 
-const SYSTEM_ADDRESS_KEY = "SYSTEM_ADDRESS";
+const SYSTEM_ADDRESS_KEY = 'SYSTEM_ADDRESS';
 
 const TOKEN_FACTORIES_QUERY = theGraphGraphql(
   `
@@ -34,9 +34,9 @@ const TOKEN_FACTORIES_QUERY = theGraphGraphql(
  */
 export type SystemAccessControl = NonNullable<
   NonNullable<
-    ResultOf<typeof TOKEN_FACTORIES_QUERY>["system"]
-  >["tokenFactoryRegistry"]
->["tokenFactories"][number]["accessControl"];
+    ResultOf<typeof TOKEN_FACTORIES_QUERY>['system']
+  >['tokenFactoryRegistry']
+>['tokenFactories'][number]['accessControl'];
 
 /**
  * Interface for a token factory.

@@ -1,20 +1,20 @@
-import {
+import type {
   AddressFrozen,
   RecoverySuccess,
   TokensFrozen,
   TokensUnfrozen,
-} from "../../../generated/templates/Custodian/Custodian";
-import { fetchEvent } from "../../event/fetch/event";
+} from '../../../generated/templates/Custodian/Custodian';
+import { fetchEvent } from '../../event/fetch/event';
+import { fetchToken } from '../../token/fetch/token';
 import {
   decreaseTokenBalanceFrozen,
   freezeOrUnfreezeTokenBalance,
   increaseTokenBalanceFrozen,
   moveTokenBalanceToNewAccount,
-} from "../../token-balance/utils/token-balance-utils";
-import { fetchToken } from "../../token/fetch/token";
+} from '../../token-balance/utils/token-balance-utils';
 
 export function handleAddressFrozen(event: AddressFrozen): void {
-  fetchEvent(event, "AddressFrozen");
+  fetchEvent(event, 'AddressFrozen');
   const token = fetchToken(event.address);
   freezeOrUnfreezeTokenBalance(
     token,
@@ -25,7 +25,7 @@ export function handleAddressFrozen(event: AddressFrozen): void {
 }
 
 export function handleRecoverySuccess(event: RecoverySuccess): void {
-  fetchEvent(event, "RecoverySuccess");
+  fetchEvent(event, 'RecoverySuccess');
   const token = fetchToken(event.address);
   moveTokenBalanceToNewAccount(
     token,
@@ -36,7 +36,7 @@ export function handleRecoverySuccess(event: RecoverySuccess): void {
 }
 
 export function handleTokensFrozen(event: TokensFrozen): void {
-  fetchEvent(event, "TokensFrozen");
+  fetchEvent(event, 'TokensFrozen');
   const token = fetchToken(event.address);
   increaseTokenBalanceFrozen(
     token,
@@ -47,7 +47,7 @@ export function handleTokensFrozen(event: TokensFrozen): void {
 }
 
 export function handleTokensUnfrozen(event: TokensUnfrozen): void {
-  fetchEvent(event, "TokensUnfrozen");
+  fetchEvent(event, 'TokensUnfrozen');
   const token = fetchToken(event.address);
   decreaseTokenBalanceFrozen(
     token,

@@ -1,137 +1,137 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ATKModule from "../main";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ATKModule from '../main';
 
 const ATKOnboardingSystemModule = buildModule(
-  "ATKOnboardingSystemModule",
+  'ATKOnboardingSystemModule',
   (m) => {
     const { systemFactory } = m.useModule(ATKModule);
 
-    const createSystem = m.call(systemFactory, "createSystem");
+    const createSystem = m.call(systemFactory, 'createSystem');
     const systemAddress = m.readEventArgument(
       createSystem,
-      "ATKSystemCreated",
-      "systemAddress",
-      { id: "systemAddress" }
+      'ATKSystemCreated',
+      'systemAddress',
+      { id: 'systemAddress' }
     );
-    const system = m.contractAt("IATKSystem", systemAddress, {
-      id: "system",
+    const system = m.contractAt('IATKSystem', systemAddress, {
+      id: 'system',
     });
 
-    const bootstrap = m.call(system, "bootstrap");
+    const bootstrap = m.call(system, 'bootstrap');
 
     const complianceAddress = m.readEventArgument(
       bootstrap,
-      "Bootstrapped",
-      "complianceProxy",
-      { id: "complianceAddress" }
+      'Bootstrapped',
+      'complianceProxy',
+      { id: 'complianceAddress' }
     );
 
-    const compliance = m.contractAt("ISMARTCompliance", complianceAddress, {
-      id: "compliance",
+    const compliance = m.contractAt('ISMARTCompliance', complianceAddress, {
+      id: 'compliance',
     });
 
     const identityRegistryAddress = m.readEventArgument(
       bootstrap,
-      "Bootstrapped",
-      "identityRegistryProxy",
-      { id: "identityRegistryAddress" }
+      'Bootstrapped',
+      'identityRegistryProxy',
+      { id: 'identityRegistryAddress' }
     );
 
     const identityRegistry = m.contractAt(
-      "ISMARTIdentityRegistry",
+      'ISMARTIdentityRegistry',
       identityRegistryAddress,
-      { id: "identityRegistry" }
+      { id: 'identityRegistry' }
     );
 
     const identityRegistryStorageAddress = m.readEventArgument(
       bootstrap,
-      "Bootstrapped",
-      "identityRegistryStorageProxy",
-      { id: "identityRegistryStorageAddress" }
+      'Bootstrapped',
+      'identityRegistryStorageProxy',
+      { id: 'identityRegistryStorageAddress' }
     );
 
     const identityRegistryStorage = m.contractAt(
-      "IERC3643IdentityRegistryStorage", // TODO this will change with next PR
+      'IERC3643IdentityRegistryStorage', // TODO this will change with next PR
       identityRegistryStorageAddress,
-      { id: "identityRegistryStorage" }
+      { id: 'identityRegistryStorage' }
     );
 
     const trustedIssuersRegistryAddress = m.readEventArgument(
       bootstrap,
-      "Bootstrapped",
-      "trustedIssuersRegistryProxy",
-      { id: "trustedIssuersRegistryAddress" }
+      'Bootstrapped',
+      'trustedIssuersRegistryProxy',
+      { id: 'trustedIssuersRegistryAddress' }
     );
 
     const trustedIssuersRegistry = m.contractAt(
-      "IERC3643TrustedIssuersRegistry",
+      'IERC3643TrustedIssuersRegistry',
       trustedIssuersRegistryAddress,
-      { id: "trustedIssuersRegistry" }
+      { id: 'trustedIssuersRegistry' }
     );
 
     const topicSchemeRegistryAddress = m.readEventArgument(
       bootstrap,
-      "Bootstrapped",
-      "topicSchemeRegistryProxy",
-      { id: "topicSchemeRegistryAddress" }
+      'Bootstrapped',
+      'topicSchemeRegistryProxy',
+      { id: 'topicSchemeRegistryAddress' }
     );
 
     const topicSchemeRegistry = m.contractAt(
-      "ISMARTTopicSchemeRegistry",
+      'ISMARTTopicSchemeRegistry',
       topicSchemeRegistryAddress,
-      { id: "topicSchemeRegistry" }
+      { id: 'topicSchemeRegistry' }
     );
 
     const identityFactoryAddress = m.readEventArgument(
       bootstrap,
-      "Bootstrapped",
-      "identityFactoryProxy",
-      { id: "identityFactoryAddress" }
+      'Bootstrapped',
+      'identityFactoryProxy',
+      { id: 'identityFactoryAddress' }
     );
 
     const identityFactory = m.contractAt(
-      "IATKIdentityFactory",
+      'IATKIdentityFactory',
       identityFactoryAddress,
-      { id: "identityFactory" }
+      { id: 'identityFactory' }
     );
 
     const tokenFactoryRegistryAddress = m.readEventArgument(
       bootstrap,
-      "Bootstrapped",
-      "tokenFactoryRegistryProxy",
-      { id: "tokenFactoryRegistryAddress" }
+      'Bootstrapped',
+      'tokenFactoryRegistryProxy',
+      { id: 'tokenFactoryRegistryAddress' }
     );
 
     const tokenFactoryRegistry = m.contractAt(
-      "IATKTokenFactoryRegistry",
+      'IATKTokenFactoryRegistry',
       tokenFactoryRegistryAddress,
-      { id: "tokenFactoryRegistry" }
+      { id: 'tokenFactoryRegistry' }
     );
 
     const complianceModuleRegistryAddress = m.readEventArgument(
       bootstrap,
-      "Bootstrapped",
-      "complianceModuleRegistryProxy",
-      { id: "complianceModuleRegistryAddress" }
+      'Bootstrapped',
+      'complianceModuleRegistryProxy',
+      { id: 'complianceModuleRegistryAddress' }
     );
 
     const complianceModuleRegistry = m.contractAt(
-      "IATKComplianceModuleRegistry",
+      'IATKComplianceModuleRegistry',
       complianceModuleRegistryAddress,
-      { id: "complianceModuleRegistry" }
+      { id: 'complianceModuleRegistry' }
     );
 
     const systemAddonRegistryAddress = m.readEventArgument(
       bootstrap,
-      "Bootstrapped",
-      "systemAddonRegistryProxy",
-      { id: "systemAddonRegistryAddress" }
+      'Bootstrapped',
+      'systemAddonRegistryProxy',
+      { id: 'systemAddonRegistryAddress' }
     );
 
     const systemAddonRegistry = m.contractAt(
-      "IATKSystemAddonRegistry",
+      'IATKSystemAddonRegistry',
       systemAddonRegistryAddress,
-      { id: "systemAddonRegistry" }
+      { id: 'systemAddonRegistry' }
     );
 
     return {

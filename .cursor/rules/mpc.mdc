@@ -1,0 +1,28 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# MCP Server Usage
+
+## Linear (Project Management)
+- **Search/Get:** `mcp_linear_list_issues(query="ENG-3236")`, `mcp_linear_get_issue(id="ENG-3236")`
+- **Update:** `mcp_linear_update_issue(id, stateId?, description?)`
+- **Comment:** `mcp_linear_create_comment(issueId, body="PR: https://...")`
+
+## Sentry (Error Tracking)
+- **Find:** `mcp_sentry_find_organizations()`, `mcp_sentry_find_issues(organizationSlug, query="is:unresolved")`
+- **Details:** `mcp_sentry_get_issue_details(organizationSlug, issueId)`
+- **Update:** `mcp_sentry_update_issue(organizationSlug, issueId, status)`
+
+## Context7 & DeepWiki (Documentation)
+- **Context7:** `resolve-library-id(libraryName)` → `get-library-docs(libraryID, topic?)`
+- **DeepWiki:** `read_wiki_structure(repoName)`, `read_wiki_contents(repoName)`, `ask_question(repoName, question)`
+
+**Note:** Always link PRs in Linear comments and include Linear IDs in PR descriptions.
+
+## Ticket Management
+
+- Use Linear to manage the metadata of a Linear ticket that you are asked to
+  manage. Do this when you start and during the lifecycle of your work/pr so we
+  can keep track of progress.

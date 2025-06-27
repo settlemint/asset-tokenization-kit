@@ -1,13 +1,13 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "./forwarder";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from './forwarder';
 
 const SystemAddonRegistryModule = buildModule(
-  "SystemAddonRegistryModule",
+  'SystemAddonRegistryModule',
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
     const systemAddonRegistry = m.contract(
-      "ATKSystemAddonRegistryImplementation",
+      'ATKSystemAddonRegistryImplementation',
       [forwarder]
     );
     return { systemAddonRegistry };

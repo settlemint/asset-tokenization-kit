@@ -1,9 +1,9 @@
-import { Address } from "viem";
-import { ATKContracts } from "../../../constants/contracts";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
-import { Asset } from "../../../entities/asset";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import type { Address } from 'viem';
+import { ATKContracts } from '../../../constants/contracts';
+import type { AbstractActor } from '../../../entities/actors/abstract-actor';
+import type { Asset } from '../../../entities/asset';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 export const forcedRecoverTokens = async (
   asset: Asset<any>,
@@ -11,7 +11,7 @@ export const forcedRecoverTokens = async (
   newWallet: AbstractActor,
   lostWallet: Address
 ) => {
-  console.log(`[Forced recover tokens] → Starting forced token recovery...`);
+  console.log('[Forced recover tokens] → Starting forced token recovery...');
 
   const custodianContract = custodian.getContractInstance({
     address: asset.address,

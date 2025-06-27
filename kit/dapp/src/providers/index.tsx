@@ -20,9 +20,9 @@
  * @see {@link https://github.com/pacocoursey/next-themes} - Next Themes documentation
  */
 
-import { AuthProvider } from "@/providers/auth";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { I18nProvider } from "./i18n-provider";
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { AuthProvider } from '@/providers/auth';
+import { I18nProvider } from './i18n-provider';
 
 /**
  * Root provider component that wraps the application with essential contexts.

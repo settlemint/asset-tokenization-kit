@@ -16,32 +16,32 @@
  * @see {@link https://tanstack.com/router/latest/docs/guide/route-trees#the-root-route} - TanStack Router root routes
  */
 
-/// <reference types="vite/client" />
-import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { NotFound } from "@/components/error/not-found";
-import { seo } from "@/config/metadata";
-import type { orpc } from "@/orpc";
-import { Providers } from "@/providers";
-import appCss from "@/styles/app.css?url";
-import { type QueryClient } from "@tanstack/react-query";
+import type { QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
   Scripts,
-} from "@tanstack/react-router";
-import { lazy, Suspense, type ReactNode } from "react";
-import { Toaster } from "sonner";
+} from '@tanstack/react-router';
+import { lazy, type ReactNode, Suspense } from 'react';
+import { Toaster } from 'sonner';
+/// <reference types="vite/client" />
+import { DefaultCatchBoundary } from '@/components/error/default-catch-boundary';
+import { NotFound } from '@/components/error/not-found';
+import { seo } from '@/config/metadata';
+import type { orpc } from '@/orpc';
+import { Providers } from '@/providers';
+import appCss from '@/styles/app.css?url';
 
 // Lazy load dev tools to reduce bundle size in production
 const ReactQueryDevtools = lazy(() =>
-  import("@tanstack/react-query-devtools").then((m) => ({
+  import('@tanstack/react-query-devtools').then((m) => ({
     default: m.ReactQueryDevtools,
   }))
 );
 
 const TanStackRouterDevtools = lazy(() =>
-  import("@tanstack/react-router-devtools").then((m) => ({
+  import('@tanstack/react-router-devtools').then((m) => ({
     default: m.TanStackRouterDevtools,
   }))
 );
@@ -53,41 +53,41 @@ export const Route = createRootRouteWithContext<{
   head: () => ({
     meta: [
       {
-        charSet: "utf-8",
+        charSet: 'utf-8',
       },
       {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1',
       },
       {
-        name: "color-scheme",
-        content: "light dark",
+        name: 'color-scheme',
+        content: 'light dark',
       },
       ...seo({}),
     ],
     links: [
       {
-        rel: "stylesheet",
+        rel: 'stylesheet',
         href: appCss,
       },
       {
-        rel: "apple-touch-icon",
-        sizes: "180x180",
-        href: "/apple-touch-icon.png",
+        rel: 'apple-touch-icon',
+        sizes: '180x180',
+        href: '/apple-touch-icon.png',
       },
       {
-        rel: "icon",
-        type: "image/png",
-        sizes: "96x96",
-        href: "/favicon-96x96.png",
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '96x96',
+        href: '/favicon-96x96.png',
       },
       {
-        rel: "icon",
-        type: "image/svg+xml",
-        href: "/favicon.svg",
+        rel: 'icon',
+        type: 'image/svg+xml',
+        href: '/favicon.svg',
       },
-      { rel: "shortcut icon", href: "/favicon.ico" },
-      { rel: "manifest", href: "/site.webmanifest", color: "#ffffff" },
+      { rel: 'shortcut icon', href: '/favicon.ico' },
+      { rel: 'manifest', href: '/site.webmanifest', color: '#ffffff' },
     ],
   }),
   errorComponent: (props) => {
@@ -132,6 +132,7 @@ function RootComponent() {
  */
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
+    // biome-ignore lint/a11y/useHtmlLang: required to set theme
     <html suppressHydrationWarning>
       <head>
         <HeadContent />
@@ -141,6 +142,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
          * the user's theme preference from localStorage or system settings.
          */}
         <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: required to set theme
           dangerouslySetInnerHTML={{
             __html: `
               (function() {

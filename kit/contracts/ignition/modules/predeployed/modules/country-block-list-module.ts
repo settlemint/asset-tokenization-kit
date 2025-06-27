@@ -1,11 +1,11 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "../forwarder";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from '../forwarder';
 
-const CountryBlockListModule = buildModule("CountryBlockListModule", (m) => {
+const CountryBlockListModule = buildModule('CountryBlockListModule', (m) => {
   const { forwarder } = m.useModule(ForwarderModule);
 
   const countryBlockListModule = m.contract(
-    "CountryBlockListComplianceModule",
+    'CountryBlockListComplianceModule',
     [forwarder]
   );
 

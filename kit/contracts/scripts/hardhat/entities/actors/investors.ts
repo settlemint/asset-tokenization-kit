@@ -1,8 +1,8 @@
-import hre from "hardhat";
-import type { Chain, Transport, WalletClient } from "viem";
-import type { Account } from "viem/accounts";
-import { Countries } from "../../constants/countries";
-import { AbstractActor } from "./abstract-actor";
+import hre from 'hardhat';
+import type { Chain, Transport, WalletClient } from 'viem';
+import type { Account } from 'viem/accounts';
+import { Countries } from '../../constants/countries';
+import { AbstractActor } from './abstract-actor';
 
 /**
  * Class representing an investor that can generate and sign claims
@@ -25,7 +25,7 @@ class Investor extends AbstractActor {
     const wallets = await hre.viem.getWalletClients();
 
     if (!wallets[this.accountIndex]) {
-      throw new Error("Could not get a default wallet client from Hardhat.");
+      throw new Error('Could not get a default wallet client from Hardhat.');
     }
     this.walletClient = wallets[this.accountIndex];
     this._address = wallets[this.accountIndex].account.address;
@@ -42,19 +42,19 @@ class Investor extends AbstractActor {
    */
   public getWalletClient(): WalletClient<Transport, Chain, Account> {
     if (!this.walletClient) {
-      throw new Error("Wallet client not initialized");
+      throw new Error('Wallet client not initialized');
     }
 
     return this.walletClient;
   }
 }
 
-export const investorA = new Investor("Investor A", Countries.BE, 1);
-export const investorANew = new Investor("Investor A New", Countries.BE, 2);
-export const investorB = new Investor("Investor B", Countries.NL, 3);
-export const frozenInvestor = new Investor("Frozen Investor", Countries.NL, 4);
+export const investorA = new Investor('Investor A', Countries.BE, 1);
+export const investorANew = new Investor('Investor A New', Countries.BE, 2);
+export const investorB = new Investor('Investor B', Countries.NL, 3);
+export const frozenInvestor = new Investor('Frozen Investor', Countries.NL, 4);
 export const maliciousInvestor = new Investor(
-  "Malicious Investor",
+  'Malicious Investor',
   Countries.ES,
   5
 );

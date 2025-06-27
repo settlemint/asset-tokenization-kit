@@ -7,7 +7,9 @@
  *
  * @module PincodeValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+
+const PINCODE_REGEX = /^\d{6}$/;
 
 /**
  * Zod schema for validating 6-digit PIN codes
@@ -69,9 +71,9 @@ import { z } from "zod/v4";
 export const pincode = () =>
   z
     .string()
-    .length(6, "PIN code must be exactly 6 digits")
-    .regex(/^\d{6}$/, "PIN code must contain only numeric digits (0-9)")
-    .describe("6-digit PIN code");
+    .length(6, 'PIN code must be exactly 6 digits')
+    .regex(PINCODE_REGEX, 'PIN code must contain only numeric digits (0-9)')
+    .describe('6-digit PIN code');
 
 // Note: Global registry functionality removed as it's not available in Zod v4
 

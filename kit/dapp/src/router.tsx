@@ -16,13 +16,13 @@
  * @see {@link https://tanstack.com/router/latest/docs/framework/react/guide/data-loading} - Router with Query integration
  */
 
-import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { NotFound } from "@/components/error/not-found";
-import { queryClient } from "@/lib/query.client";
-import { orpc } from "@/orpc";
-import { createRouter as createTanStackRouter } from "@tanstack/react-router";
-import { routerWithQueryClient } from "@tanstack/react-router-with-query";
-import { routeTree } from "./routeTree.gen";
+import { createRouter as createTanStackRouter } from '@tanstack/react-router';
+import { routerWithQueryClient } from '@tanstack/react-router-with-query';
+import { DefaultCatchBoundary } from '@/components/error/default-catch-boundary';
+import { NotFound } from '@/components/error/not-found';
+import { queryClient } from '@/lib/query.client';
+import { orpc } from '@/orpc';
+import { routeTree } from './routeTree.gen';
 
 /**
  * Creates and configures the application router.
@@ -72,7 +72,7 @@ export function createRouter() {
        * "intent" preloads routes when users hover or focus on links,
        * improving perceived performance.
        */
-      defaultPreload: "intent",
+      defaultPreload: 'intent',
       defaultPreloadStaleTime: 0,
 
       /**
@@ -103,7 +103,7 @@ export function createRouter() {
  * The router type is automatically inferred from the createRouter
  * function, ensuring type safety throughout the application.
  */
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface Register {
     router: ReturnType<typeof createRouter>;
   }

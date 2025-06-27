@@ -1,7 +1,7 @@
-import { settings } from "@/lib/db/schema";
-import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
-import { eq } from "drizzle-orm";
+import { eq } from 'drizzle-orm';
+import { settings } from '@/lib/db/schemas/settings';
+import { databaseMiddleware } from '@/orpc/middlewares/services/db.middleware';
+import { authRouter } from '@/orpc/procedures/auth.router';
 
 /**
  * Setting read route handler.

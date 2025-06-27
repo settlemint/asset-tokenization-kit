@@ -1,20 +1,20 @@
-import { authClient } from "@/lib/auth/auth.client";
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
+import { type PropsWithChildren, useEffect } from 'react';
+import { authClient } from '@/lib/auth/auth.client';
 import {
-  type OnboardingType,
-  type PlatformOnboardingRequirements,
   determineOnboardingType,
   isInvestorOnboardingComplete,
   isIssuerOnboardingComplete,
   isPlatformOnboardingComplete,
-} from "@/lib/types/onboarding";
-import { useMounted } from "@/lib/utils/use-mounted";
-import { orpc } from "@/orpc";
-import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
-import { type PropsWithChildren, useEffect } from "react";
+  type OnboardingType,
+  type PlatformOnboardingRequirements,
+} from '@/lib/types/onboarding';
+import { useMounted } from '@/lib/utils/use-mounted';
+import { orpc } from '@/orpc';
 
 type OnboardingGuardProps = PropsWithChildren<{
-  require: "onboarded" | "not-onboarded" | "platform-onboarded";
+  require: 'onboarded' | 'not-onboarded' | 'platform-onboarded';
   allowedTypes?: OnboardingType[];
 }>;
 
@@ -35,14 +35,14 @@ export function OnboardingGuard({
 
   // Fetch system address from settings
   const { data: systemAddress } = useQuery({
-    ...orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } }),
+    ...orpc.settings.read.queryOptions({ input: { key: 'SYSTEM_ADDRESS' } }),
     enabled: !!user,
   });
 
   // Fetch system details including token factories
   const { data: systemDetails } = useQuery({
     ...orpc.system.read.queryOptions({
-      input: { id: systemAddress ?? "" },
+      input: { id: systemAddress ?? '' },
     }),
     enabled: !!systemAddress,
   });
@@ -58,7 +58,7 @@ export function OnboardingGuard({
   const userHasWallet = !!user?.initialOnboardingFinished;
   const userHasIdentity = false; // TODO: Implement identity check
   const userRole =
-    (user?.role as undefined | "issuer" | "investor" | "admin") ?? "investor";
+    (user?.role as undefined | 'issuer' | 'investor' | 'admin') ?? 'investor';
 
   const onboardingType = user
     ? determineOnboardingType(userRole, platformRequirements)
@@ -66,24 +66,28 @@ export function OnboardingGuard({
 
   // Check if onboarding is complete based on type
   const isOnboardingComplete = (() => {
-    if (!onboardingType || !user) return false;
+    if (!(onboardingType && user)) {
+      return false;
+    }
 
     switch (onboardingType) {
-      case "platform":
+      case 'platform':
         return isPlatformOnboardingComplete(platformRequirements);
-      case "issuer":
+      case 'issuer':
         return isIssuerOnboardingComplete({
           hasWallet: userHasWallet,
           platformOnboardingComplete:
             isPlatformOnboardingComplete(platformRequirements),
         });
-      case "investor":
+      case 'investor':
         return isInvestorOnboardingComplete({
           hasWallet: userHasWallet,
           hasIdentity: userHasIdentity,
           platformOnboardingComplete:
             isPlatformOnboardingComplete(platformRequirements),
         });
+      default:
+        return false;
     }
   })();
 
@@ -97,63 +101,63 @@ export function OnboardingGuard({
     }
 
     // Handle platform-onboarded requirement
-    if (require === "platform-onboarded" && !isPlatformOnboarded) {
+    if (require === 'platform-onboarded' && !isPlatformOnboarded) {
       // Only admin users can do platform onboarding
-      if (userRole === "admin") {
-        void navigate({ to: "/onboarding/platform" });
+      if (userRole === 'admin') {
+        navigate({ to: '/onboarding/platform' });
       } else {
-        void navigate({ to: "/" });
+        navigate({ to: '/' });
       }
       return;
     }
 
     // Handle onboarded requirement
-    if (require === "onboarded" && !isOnboardingComplete) {
+    if (require === 'onboarded' && !isOnboardingComplete) {
       // Navigate to specific onboarding route based on type
       switch (onboardingType) {
-        case "platform":
-          void navigate({ to: "/onboarding/platform" });
+        case 'platform':
+          navigate({ to: '/onboarding/platform' });
           break;
-        case "issuer":
-          void navigate({ to: "/onboarding/issuer" });
+        case 'issuer':
+          navigate({ to: '/onboarding/issuer' });
           break;
-        case "investor":
-          void navigate({ to: "/onboarding/investor" });
+        case 'investor':
+          navigate({ to: '/onboarding/investor' });
           break;
         default:
           // Fallback to generic onboarding route if type is unknown
-          void navigate({ to: "/onboarding" });
+          navigate({ to: '/onboarding' });
       }
       return;
     }
 
     // Handle not-onboarded requirement
-    if (require === "not-onboarded" && isOnboardingComplete) {
-      void navigate({ to: "/" });
+    if (require === 'not-onboarded' && isOnboardingComplete) {
+      navigate({ to: '/' });
       return;
     }
 
     // Check if user is on the correct onboarding type
     if (
-      require === "not-onboarded" &&
+      require === 'not-onboarded' &&
       allowedTypes &&
       onboardingType &&
       !allowedTypes.includes(onboardingType)
     ) {
       // Navigate to specific onboarding route based on type
       switch (onboardingType) {
-        case "platform":
-          void navigate({ to: "/onboarding/platform" });
+        case 'platform':
+          navigate({ to: '/onboarding/platform' });
           break;
-        case "issuer":
-          void navigate({ to: "/onboarding/issuer" });
+        case 'issuer':
+          navigate({ to: '/onboarding/issuer' });
           break;
-        case "investor":
-          void navigate({ to: "/onboarding/investor" });
+        case 'investor':
+          navigate({ to: '/onboarding/investor' });
           break;
         default:
           // Fallback to generic onboarding route if type is unknown
-          void navigate({ to: "/onboarding" });
+          navigate({ to: '/onboarding' });
       }
     }
   }, [
@@ -162,34 +166,30 @@ export function OnboardingGuard({
     isPlatformOnboarded,
     require,
     navigate,
-    user,
     onboardingType,
     allowedTypes,
     userRole,
   ]);
 
-  if (!isMounted || !isCheckComplete) {
+  if (!(isMounted && isCheckComplete)) {
     return null;
   }
 
   // Render children if all checks pass
-  if (require === "platform-onboarded" && isPlatformOnboarded) {
+  if (require === 'platform-onboarded' && isPlatformOnboarded) {
     return <>{children}</>;
   }
 
-  if (require === "onboarded" && isOnboardingComplete) {
+  if (require === 'onboarded' && isOnboardingComplete) {
     return <>{children}</>;
   }
 
-  if (require === "not-onboarded" && !isOnboardingComplete) {
-    // Additional check for allowed types
-    if (
-      !allowedTypes ||
-      !onboardingType ||
-      allowedTypes.includes(onboardingType)
-    ) {
-      return <>{children}</>;
-    }
+  if (
+    require === 'not-onboarded' &&
+    !isOnboardingComplete &&
+    (!(allowedTypes && onboardingType) || allowedTypes.includes(onboardingType))
+  ) {
+    return <>{children}</>;
   }
 
   return null;

@@ -1,8 +1,8 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
-import { IdentityRegistry } from "../../../generated/schema";
-import { IdentityRegistry as IdentityRegistryTemplate } from "../../../generated/templates";
-import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
-import { fetchAccount } from "../../account/fetch/account";
+import { type Address, Bytes } from '@graphprotocol/graph-ts';
+import { IdentityRegistry } from '../../../generated/schema';
+import { IdentityRegistry as IdentityRegistryTemplate } from '../../../generated/templates';
+import { fetchAccessControl } from '../../access-control/fetch/accesscontrol';
+import { fetchAccount } from '../../account/fetch/account';
 
 export function fetchIdentityRegistry(address: Address): IdentityRegistry {
   let identityRegistry = IdentityRegistry.load(address);

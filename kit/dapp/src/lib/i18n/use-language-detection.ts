@@ -8,9 +8,9 @@
  * @see {@link ./index} - Main i18n configuration with supported languages
  */
 
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { fallbackLng, supportedLanguages } from "./index";
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { fallbackLng, supportedLanguages } from './index';
 
 /**
  * Custom hook for automatic language detection and management.
@@ -55,22 +55,22 @@ export function useLanguageDetection() {
    */
   useEffect(() => {
     // Check if language is already set (e.g., from localStorage)
-    const storedLang = localStorage.getItem("i18nextLng");
+    const storedLang = localStorage.getItem('i18nextLng');
     if (storedLang && supportedLanguages.includes(storedLang)) {
-      void i18n.changeLanguage(storedLang);
+      i18n.changeLanguage(storedLang);
       return;
     }
 
     // Detect browser language
     // Split to get base language code (e.g., 'en' from 'en-US')
-    const browserLang = navigator.language.split("-")[0];
+    const browserLang = navigator.language.split('-')[0];
     const detectedLang =
       browserLang && supportedLanguages.includes(browserLang)
         ? browserLang
         : fallbackLng;
 
     // Set detected language
-    void i18n.changeLanguage(detectedLang);
+    i18n.changeLanguage(detectedLang);
   }, [i18n]);
 
   /**
@@ -81,7 +81,7 @@ export function useLanguageDetection() {
    */
   useEffect(() => {
     if (i18n.language) {
-      localStorage.setItem("i18nextLng", i18n.language);
+      localStorage.setItem('i18nextLng', i18n.language);
     }
   }, [i18n.language]);
 

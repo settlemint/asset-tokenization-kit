@@ -1,4 +1,4 @@
-# Setup MCP Servers
+# Setup
 
 This command configures all recommended MCP servers for the project.
 

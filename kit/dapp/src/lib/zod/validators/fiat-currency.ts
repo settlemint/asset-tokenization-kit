@@ -7,7 +7,7 @@
  *
  * @module FiatCurrencyValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Supported fiat currency codes (ISO 4217).
@@ -23,13 +23,13 @@ import { z } from "zod/v4";
  * - `AUD`: Australian Dollar
  */
 export const fiatCurrencies = [
-  "USD",
-  "EUR",
-  "GBP",
-  "JPY",
-  "CHF",
-  "CAD",
-  "AUD",
+  'USD',
+  'EUR',
+  'GBP',
+  'JPY',
+  'CHF',
+  'CAD',
+  'AUD',
 ] as const;
 
 /**
@@ -58,7 +58,7 @@ export const fiatCurrency = () =>
     .string()
     .transform((val) => val.toUpperCase()) // Normalize to uppercase
     .pipe(z.enum(fiatCurrencies)) // Validate against allowed currencies
-    .describe("Fiat currency code");
+    .describe('Fiat currency code');
 
 /**
  * Type representing a validated fiat currency code.

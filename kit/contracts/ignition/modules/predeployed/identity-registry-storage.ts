@@ -1,13 +1,13 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ForwarderModule from "./forwarder";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ForwarderModule from './forwarder';
 
 const IdentityRegistryStorageModule = buildModule(
-  "IdentityRegistryStorageModule",
+  'IdentityRegistryStorageModule',
   (m) => {
     const { forwarder } = m.useModule(ForwarderModule);
 
     const identityRegistryStorage = m.contract(
-      "ATKIdentityRegistryStorageImplementation",
+      'ATKIdentityRegistryStorageImplementation',
       [forwarder]
     );
 

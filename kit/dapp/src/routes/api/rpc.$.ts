@@ -18,16 +18,16 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
-import { env } from "@/lib/env";
-import { router } from "@/orpc/routes/router";
-import { onError } from "@orpc/client";
-import { RPCHandler } from "@orpc/server/fetch";
-import { BatchHandlerPlugin } from "@orpc/server/plugins";
-import { createLogger } from "@settlemint/sdk-utils/logging";
+import { onError } from '@orpc/client';
+import { RPCHandler } from '@orpc/server/fetch';
+import { BatchHandlerPlugin } from '@orpc/server/plugins';
+import { createLogger } from '@settlemint/sdk-utils/logging';
 import {
   createServerFileRoute,
   getHeaders,
-} from "@tanstack/react-start/server";
+} from '@tanstack/react-start/server';
+import { env } from '@/lib/env';
+import { router } from '@/orpc/routes/router';
 
 // Uncomment for debugging API errors
 const logger = createLogger({
@@ -66,16 +66,16 @@ const handler = new RPCHandler(router, {
  */
 export async function handle({ request }: { request: Request }) {
   const { response } = await handler.handle(request, {
-    prefix: "/api/rpc",
+    prefix: '/api/rpc',
     context: {
       headers: getHeaders(),
     },
   });
 
-  return response ?? new Response("Not Found", { status: 404 });
+  return response ?? new Response('Not Found', { status: 404 });
 }
 
-export const ServerRoute = createServerFileRoute("/api/rpc/$").methods({
+export const ServerRoute = createServerFileRoute('/api/rpc/$').methods({
   HEAD: handle,
   GET: handle,
   POST: handle,

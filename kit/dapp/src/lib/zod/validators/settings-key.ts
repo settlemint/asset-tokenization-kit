@@ -1,6 +1,6 @@
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
-export const SETTING_KEYS = ["BASE_CURRENCY", "SYSTEM_ADDRESS"] as const;
+export const SETTING_KEYS = ['BASE_CURRENCY', 'SYSTEM_ADDRESS'] as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[number];
 

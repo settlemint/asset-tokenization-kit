@@ -1,21 +1,21 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { orpc } from "@/orpc";
-import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
-import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
-import { WalletStep } from "@/components/onboarding/steps/wallet-step";
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { AlertCircle, UserCheck } from 'lucide-react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { OnboardingGuard } from '@/components/onboarding/onboarding-guard';
+import { WalletStep } from '@/components/onboarding/steps/wallet-step';
+import { type Step, StepWizard } from '@/components/step-wizard/step-wizard';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { AlertCircle, UserCheck } from "lucide-react";
+} from '@/components/ui/card';
+import { orpc } from '@/orpc';
 
-export const Route = createFileRoute("/_private/onboarding/investor")({
+export const Route = createFileRoute('/_private/onboarding/investor')({
   loader: async ({ context }) => {
     // User data is critical for determining step status
     const user = await context.queryClient.ensureQueryData(
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/_private/onboarding/investor")({
 
 // Placeholder component for identity verification
 function IdentityStep({ onSuccess }: { onSuccess: () => void }) {
-  const { t } = useTranslation(["onboarding", "general"]);
+  const { t } = useTranslation(['onboarding', 'general']);
 
   return (
     <Card>
@@ -36,13 +36,13 @@ function IdentityStep({ onSuccess }: { onSuccess: () => void }) {
         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-sm-state-warning-background/20">
           <UserCheck className="h-6 w-6 text-sm-state-warning-background" />
         </div>
-        <CardTitle>{t("steps.identity.title")}</CardTitle>
-        <CardDescription>{t("steps.identity.description")}</CardDescription>
+        <CardTitle>{t('steps.identity.title')}</CardTitle>
+        <CardDescription>{t('steps.identity.description')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="rounded-lg bg-muted p-4">
-          <p className="text-sm text-muted-foreground">
-            {t("steps.identity.info")}
+          <p className="text-muted-foreground text-sm">
+            {t('steps.identity.info')}
           </p>
         </div>
 
@@ -50,18 +50,18 @@ function IdentityStep({ onSuccess }: { onSuccess: () => void }) {
           <div className="flex">
             <AlertCircle className="h-5 w-5 text-sm-state-warning-background" />
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-sm-text">
-                {t("steps.identity.coming-soon")}
+              <h3 className="font-medium text-sm text-sm-text">
+                {t('steps.identity.coming-soon')}
               </h3>
-              <div className="mt-2 text-sm text-muted-foreground">
-                <p>{t("steps.identity.coming-soon-description")}</p>
+              <div className="mt-2 text-muted-foreground text-sm">
+                <p>{t('steps.identity.coming-soon-description')}</p>
               </div>
             </div>
           </div>
         </div>
 
-        <Button onClick={onSuccess} className="w-full">
-          {t("general:continue")}
+        <Button className="w-full" onClick={onSuccess}>
+          {t('general:continue')}
         </Button>
       </CardContent>
     </Card>
@@ -69,9 +69,9 @@ function IdentityStep({ onSuccess }: { onSuccess: () => void }) {
 }
 
 function InvestorOnboarding() {
-  const { t } = useTranslation("onboarding");
+  const { t } = useTranslation('onboarding');
   const navigate = useNavigate();
-  const [currentStepId, setCurrentStepId] = useState("wallet");
+  const [currentStepId, setCurrentStepId] = useState('wallet');
 
   // Get user data from loader
   const { user } = Route.useLoaderData();
@@ -79,20 +79,20 @@ function InvestorOnboarding() {
   // Define steps with dynamic statuses
   const steps: Step[] = [
     {
-      id: "wallet",
-      title: t("steps.wallet.title"),
-      description: t("steps.wallet.description"),
+      id: 'wallet',
+      title: t('steps.wallet.title'),
+      description: t('steps.wallet.description'),
       status: user.wallet
-        ? "completed"
-        : currentStepId === "wallet"
-          ? "active"
-          : "pending",
+        ? 'completed'
+        : currentStepId === 'wallet'
+          ? 'active'
+          : 'pending',
     },
     {
-      id: "identity",
-      title: t("steps.identity.title"),
-      description: t("steps.identity.description"),
-      status: currentStepId === "identity" ? "active" : "pending",
+      id: 'identity',
+      title: t('steps.identity.title'),
+      description: t('steps.identity.description'),
+      status: currentStepId === 'identity' ? 'active' : 'pending',
     },
   ];
 
@@ -101,29 +101,29 @@ function InvestorOnboarding() {
   };
 
   const handleWalletSuccess = () => {
-    setCurrentStepId("identity");
+    setCurrentStepId('identity');
   };
 
   const handleIdentitySuccess = () => {
     // Investor onboarding complete, redirect to dashboard
-    void navigate({ to: "/" });
+    navigate({ to: '/' });
   };
 
   return (
-    <OnboardingGuard require="not-onboarded" allowedTypes={["investor"]}>
+    <OnboardingGuard allowedTypes={['investor']} require="not-onboarded">
       <div className="min-h-screen bg-gray-50 p-8 dark:bg-gray-900">
         <div className="mx-auto max-w-6xl">
           <StepWizard
-            steps={steps}
             currentStepId={currentStepId}
-            title={t("investor.title")}
-            description={t("investor.description")}
+            description={t('investor.description')}
             onStepChange={handleStepChange}
+            steps={steps}
+            title={t('investor.title')}
           >
-            {currentStepId === "wallet" && (
+            {currentStepId === 'wallet' && (
               <WalletStep onSuccess={handleWalletSuccess} />
             )}
-            {currentStepId === "identity" && (
+            {currentStepId === 'identity' && (
               <IdentityStep onSuccess={handleIdentitySuccess} />
             )}
           </StepWizard>

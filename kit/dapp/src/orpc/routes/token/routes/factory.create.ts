@@ -18,22 +18,22 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
 
-import { env } from "@/lib/env";
-import { portalGraphql } from "@/lib/settlemint/portal";
-import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { withEventMeta } from "@orpc/server";
-import type { VariablesOf } from "@settlemint/sdk-portal";
-import { createLogger } from "@settlemint/sdk-utils/logging";
+import { withEventMeta } from '@orpc/server';
+import type { VariablesOf } from '@settlemint/sdk-portal';
+import { createLogger } from '@settlemint/sdk-utils/logging';
+import { env } from '@/lib/env';
+import { portalGraphql } from '@/lib/settlemint/portal';
+import { handleChallenge } from '@/orpc/helpers/challenge-response';
+import { permissionsMiddleware } from '@/orpc/middlewares/auth/permissions.middleware';
+import { portalMiddleware } from '@/orpc/middlewares/services/portal.middleware';
+import { theGraphMiddleware } from '@/orpc/middlewares/services/the-graph.middleware';
+import { systemMiddleware } from '@/orpc/middlewares/system/system.middleware';
+import { onboardedRouter } from '@/orpc/procedures/onboarded.router';
 import {
   FactoryCreateMessagesSchema,
   type FactoryCreateOutput,
   getDefaultImplementations,
-} from "./factory.create.schema";
+} from './factory.create.schema';
 
 const logger = createLogger({
   level: env.SETTLEMINT_LOG_LEVEL,
@@ -132,7 +132,7 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  * ```
  */
 export const factoryCreate = onboardedRouter.token.factoryCreate
-  .use(permissionsMiddleware({ system: ["create"] }))
+  .use(permissionsMiddleware({ system: ['create'] }))
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .use(systemMiddleware)
@@ -150,11 +150,11 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
     // Yield initial loading message
     yield withEventMeta(
       {
-        status: "pending",
+        status: 'pending',
         message: messages.initialLoading,
         progress: { current: 0, total: totalFactories },
       },
-      { id: "factory-creation", retry: 1000 }
+      { id: 'factory-creation', retry: 1000 }
     );
 
     // Query existing token factories using the ORPC client
@@ -173,7 +173,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
       logger.debug(`Could not fetch existing factories: ${error}`);
     }
 
-    const results: FactoryCreateOutput["results"] = [];
+    const results: FactoryCreateOutput['results'] = [];
 
     /**
      * Checks if an error contains a specific pattern
@@ -185,7 +185,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           (error.stack?.includes(pattern) ?? false)
         );
       }
-      if (typeof error === "string") {
+      if (typeof error === 'string') {
         return error.includes(pattern);
       }
       return false;
@@ -205,12 +205,12 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
 
       // Yield initial progress message for this factory
       const progressMessage = messages.batchProgress
-        .replace("{{current}}", String(progress.current))
-        .replace("{{total}}", String(progress.total));
+        .replace('{{current}}', String(progress.current))
+        .replace('{{total}}', String(progress.total));
 
       yield withEventMeta(
         {
-          status: "pending" as const,
+          status: 'pending' as const,
           message: progressMessage,
           currentFactory: { type, name },
           progress,
@@ -221,18 +221,18 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
       // Check if factory already exists
       if (existingFactoryNames.has(name.toLowerCase())) {
         const skipMessage = messages.factoryAlreadyExists.replace(
-          "{{name}}",
+          '{{name}}',
           name
         );
 
         yield withEventMeta(
           {
-            status: "completed" as const,
+            status: 'completed' as const,
             message: skipMessage,
             currentFactory: {
               type,
               name,
-              transactionHash: "",
+              transactionHash: '',
             },
             progress,
           },
@@ -242,8 +242,8 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
         results.push({
           type,
           name,
-          transactionHash: "",
-          error: "Factory already exists",
+          transactionHash: '',
+          error: 'Factory already exists',
         });
 
         continue; // Skip to next factory
@@ -253,17 +253,17 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
         // Execute the factory creation transaction
         const variables: VariablesOf<typeof CREATE_TOKEN_FACTORY_MUTATION> = {
           address: contract,
-          from: sender.wallet ?? "",
-          factoryImplementation: factoryImplementation,
-          tokenImplementation: tokenImplementation,
-          name: name,
+          from: sender.wallet ?? '',
+          factoryImplementation,
+          tokenImplementation,
+          name,
           ...(await handleChallenge(sender, {
             code: verification.verificationCode,
             type: verification.verificationType,
           })),
         };
 
-        let validatedHash = "";
+        let validatedHash = '';
 
         // Use the Portal client's mutate method that returns an async generator
         // This enables real-time transaction tracking for each factory creation
@@ -277,11 +277,11 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           validatedHash = event.transactionHash;
 
           // Handle different event statuses and yield appropriate progress updates
-          if (event.status === "pending") {
+          if (event.status === 'pending') {
             // Yield pending events to show transaction progress
             yield withEventMeta(
               {
-                status: "pending" as const,
+                status: 'pending' as const,
                 message: event.message,
                 currentFactory: {
                   type,
@@ -292,10 +292,10 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
               },
               { id: `factory-${factory.type}-${index}`, retry: 1000 }
             );
-          } else if (event.status === "confirmed") {
+          } else if (event.status === 'confirmed') {
             yield withEventMeta(
               {
-                status: "confirmed" as const,
+                status: 'confirmed' as const,
                 message: messages.factoryCreated,
                 currentFactory: {
                   type,
@@ -316,7 +316,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
             // event.status === "failed"
             yield withEventMeta(
               {
-                status: "failed" as const,
+                status: 'failed' as const,
                 message: event.message,
                 currentFactory: {
                   type,
@@ -345,7 +345,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
         if (error instanceof Error) {
           errorDetail = error.message;
           // Check for SystemNotBootstrapped error
-          if (containsErrorPattern(error, "SystemNotBootstrapped")) {
+          if (containsErrorPattern(error, 'SystemNotBootstrapped')) {
             errorMessage = messages.systemNotBootstrapped;
             // For critical errors like system not bootstrapped, throw proper error
             throw errors.INTERNAL_SERVER_ERROR({
@@ -356,7 +356,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
         }
 
         const errorResult = {
-          status: "failed" as const,
+          status: 'failed' as const,
           message: errorMessage,
           currentFactory: {
             type,
@@ -382,10 +382,10 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
     // Final completion message
     const successCount = results.filter((r) => !r.error).length;
     const skippedCount = results.filter(
-      (r) => r.error === "Factory already exists"
+      (r) => r.error === 'Factory already exists'
     ).length;
     const failureCount = results.filter(
-      (r) => r.error && r.error !== "Factory already exists"
+      (r) => r.error && r.error !== 'Factory already exists'
     ).length;
 
     let completionMessage = messages.factoryCreationCompleted;
@@ -393,55 +393,55 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
     // All succeeded
     if (successCount > 0 && failureCount === 0 && skippedCount === 0) {
       completionMessage = messages.allFactoriesSucceeded.replace(
-        "{{count}}",
+        '{{count}}',
         String(successCount)
       );
     }
     // All skipped
     else if (skippedCount > 0 && successCount === 0 && failureCount === 0) {
       completionMessage = messages.allFactoriesSkipped.replace(
-        "{{count}}",
+        '{{count}}',
         String(skippedCount)
       );
     }
     // All failed
     else if (failureCount > 0 && successCount === 0 && skippedCount === 0) {
       completionMessage = messages.allFactoriesFailed.replace(
-        "{{count}}",
+        '{{count}}',
         String(failureCount)
       );
     }
     // Mixed results with all three types
     else if (successCount > 0 && skippedCount > 0 && failureCount > 0) {
       completionMessage = messages.someFactoriesSkipped
-        .replace("{{success}}", String(successCount))
-        .replace("{{skipped}}", String(skippedCount))
-        .replace("{{failed}}", String(failureCount));
+        .replace('{{success}}', String(successCount))
+        .replace('{{skipped}}', String(skippedCount))
+        .replace('{{failed}}', String(failureCount));
     }
     // Success and skipped only
     else if (successCount > 0 && skippedCount > 0 && failureCount === 0) {
       completionMessage = messages.someFactoriesSkipped
-        .replace("{{success}}", String(successCount))
-        .replace("{{skipped}}", String(skippedCount))
-        .replace("{{failed}}", "0");
+        .replace('{{success}}', String(successCount))
+        .replace('{{skipped}}', String(skippedCount))
+        .replace('{{failed}}', '0');
     }
     // Success and failed only
     else if (successCount > 0 && failureCount > 0 && skippedCount === 0) {
       completionMessage = messages.someFactoriesFailed
-        .replace("{{success}}", String(successCount))
-        .replace("{{failed}}", String(failureCount));
+        .replace('{{success}}', String(successCount))
+        .replace('{{failed}}', String(failureCount));
     }
     // Skipped and failed only
     else if (skippedCount > 0 && failureCount > 0 && successCount === 0) {
       completionMessage = messages.someFactoriesSkipped
-        .replace("{{success}}", "0")
-        .replace("{{skipped}}", String(skippedCount))
-        .replace("{{failed}}", String(failureCount));
+        .replace('{{success}}', '0')
+        .replace('{{skipped}}', String(skippedCount))
+        .replace('{{failed}}', String(failureCount));
     }
 
     yield withEventMeta(
       {
-        status: "completed" as const,
+        status: 'completed' as const,
         message: completionMessage,
         results,
         result: results, // Added for useStreamingMutation hook compatibility
@@ -450,6 +450,6 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           total: totalFactories,
         },
       },
-      { id: "factory-creation-complete", retry: 1000 }
+      { id: 'factory-creation-complete', retry: 1000 }
     );
   });

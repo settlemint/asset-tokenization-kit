@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-core";
-import { z } from "zod/v4";
+import { createEnv } from '@t3-oss/env-core';
+import { z } from 'zod/v4';
 
 /**
  * Environment configuration using t3-env for type-safe environment variables.
@@ -27,7 +27,7 @@ import { z } from "zod/v4";
  * @module
  */
 export const env = createEnv({
-  clientPrefix: "VITE_",
+  clientPrefix: 'VITE_',
   /**
    * Server-side environment variables schema.
    *
@@ -55,7 +55,7 @@ export const env = createEnv({
         process.env.VITE_APP_URL ??
           process.env.BETTER_AUTH_URL ??
           process.env.NEXTAUTH_URL ??
-          "http://localhost:3000"
+          'http://localhost:3000'
       ),
 
     /**
@@ -65,7 +65,7 @@ export const env = createEnv({
      */
     SETTLEMINT_HASURA_ADMIN_SECRET: z
       .string()
-      .nonempty("SETTLEMINT_HASURA_ADMIN_SECRET is required"),
+      .nonempty('SETTLEMINT_HASURA_ADMIN_SECRET is required'),
 
     /**
      * Resend API key for email services.
@@ -92,13 +92,13 @@ export const env = createEnv({
       .string()
       .regex(
         /^[a-z0-9-]+$/,
-        "SETTLEMINT_HD_PRIVATE_KEY can only contain lowercase letters, digits, and hyphens with no spaces"
+        'SETTLEMINT_HD_PRIVATE_KEY can only contain lowercase letters, digits, and hyphens with no spaces'
       )
-      .default("atk-hd-private-key"),
+      .default('atk-hd-private-key'),
 
     SETTLEMINT_LOG_LEVEL: z
-      .enum(["debug", "info", "warn", "error"])
-      .default("info"),
+      .enum(['debug', 'info', 'warn', 'error'])
+      .default('info'),
 
     SETTLEMINT_INSTANCE: z.string().optional(),
   },
@@ -123,7 +123,7 @@ export const env = createEnv({
         process.env.VITE_APP_URL ??
           process.env.BETTER_AUTH_URL ??
           process.env.NEXTAUTH_URL ??
-          "http://localhost:3000"
+          'http://localhost:3000'
       ),
 
     /**
@@ -133,8 +133,8 @@ export const env = createEnv({
     VITE_EXPLORER_URL: z.url().optional(),
 
     VITE_SETTLEMINT_LOG_LEVEL: z
-      .enum(["debug", "info", "warn", "error"])
-      .default("info"),
+      .enum(['debug', 'info', 'warn', 'error'])
+      .default('info'),
   },
 
   /**

@@ -1,8 +1,8 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
-import { TopicSchemeRegistry } from "../../../generated/schema";
-import { TopicSchemeRegistry as TopicSchemeRegistryTemplate } from "../../../generated/templates";
-import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
-import { fetchAccount } from "../../account/fetch/account";
+import { type Address, Bytes } from '@graphprotocol/graph-ts';
+import { TopicSchemeRegistry } from '../../../generated/schema';
+import { TopicSchemeRegistry as TopicSchemeRegistryTemplate } from '../../../generated/templates';
+import { fetchAccessControl } from '../../access-control/fetch/accesscontrol';
+import { fetchAccount } from '../../account/fetch/account';
 
 export function fetchTopicSchemeRegistry(
   address: Address

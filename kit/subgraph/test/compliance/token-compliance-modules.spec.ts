@@ -1,8 +1,8 @@
-import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { describe, expect, it } from 'bun:test';
+import { theGraphClient, theGraphGraphql } from '../utils/thegraph-client';
 
-describe("Token Compliance Modules", () => {
-  it("should receive the compliance modules for the assets", async () => {
+describe('Token Compliance Modules', () => {
+  it('should receive the compliance modules for the assets', async () => {
     const query = theGraphGraphql(
       `query {
         tokens(where: {}) {
@@ -24,14 +24,14 @@ describe("Token Compliance Modules", () => {
     const response = await theGraphClient.request(query, {});
 
     for (const token of response.tokens) {
-      if (token.name === "Paused Stablecoin") {
+      if (token.name === 'Paused Stablecoin') {
         continue;
       }
 
       const complianceModules = token.tokenComplianceModules;
 
       const countryAllowListModule = complianceModules.find(
-        (m) => m.complianceModule.name === "Country AllowList Compliance Module"
+        (m) => m.complianceModule.name === 'Country AllowList Compliance Module'
       );
       expect(countryAllowListModule).toBeDefined();
       expect(countryAllowListModule.countries.map(Number).sort()).toEqual(
@@ -40,19 +40,19 @@ describe("Token Compliance Modules", () => {
 
       const identityBlockListModule = complianceModules.find(
         (m) =>
-          m.complianceModule.name === "Identity BlockList Compliance Module"
+          m.complianceModule.name === 'Identity BlockList Compliance Module'
       );
       expect(identityBlockListModule).toBeDefined();
 
       const identityVerificationModule = complianceModules.find(
-        (m) => m.complianceModule.name === "Identity Verification Module"
+        (m) => m.complianceModule.name === 'Identity Verification Module'
       );
       expect(identityVerificationModule).toBeDefined();
 
       const countryBlockListModule = complianceModules.find(
-        (m) => m.complianceModule.name === "Country BlockList Compliance Module"
+        (m) => m.complianceModule.name === 'Country BlockList Compliance Module'
       );
-      if (token.name === "Euro Deposits") {
+      if (token.name === 'Euro Deposits') {
         expect(countryBlockListModule).toBeDefined();
       } else {
         expect(countryBlockListModule).toBeUndefined();
@@ -60,7 +60,7 @@ describe("Token Compliance Modules", () => {
     }
   });
 
-  it("should receive the required claim topics for the assets", async () => {
+  it('should receive the required claim topics for the assets', async () => {
     const query = theGraphGraphql(
       `query {
         tokens(orderBy: name) {
@@ -76,35 +76,35 @@ describe("Token Compliance Modules", () => {
     expect(response.tokens.length).toBe(6);
     expect(response.tokens).toEqual([
       {
-        name: "Apple",
+        name: 'Apple',
         requiredClaimTopics: [],
       },
       {
-        name: "Bens Bugs",
+        name: 'Bens Bugs',
         requiredClaimTopics: [
           {
-            name: "kyc",
+            name: 'kyc',
           },
         ],
       },
       {
-        name: "Euro Bonds",
+        name: 'Euro Bonds',
         requiredClaimTopics: [
           {
-            name: "kyc",
+            name: 'kyc',
           },
         ],
       },
       {
-        name: "Euro Deposits",
+        name: 'Euro Deposits',
         requiredClaimTopics: [],
       },
       {
-        name: "Paused Stablecoin",
+        name: 'Paused Stablecoin',
         requiredClaimTopics: [],
       },
       {
-        name: "Tether",
+        name: 'Tether',
         requiredClaimTopics: [],
       },
     ]);

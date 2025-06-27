@@ -1,2 +1,2 @@
-export const ATK_BASE_CURRENCY_CODE = "EUR";
+export const ATK_BASE_CURRENCY_CODE = 'EUR';
 export const ATK_BASE_CURRENCY_DECIMALS = 18;

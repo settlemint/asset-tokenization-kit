@@ -1,8 +1,8 @@
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
-import { getPagination } from "@/orpc/routes/utils/pagination";
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+import { theGraphGraphql } from '@/lib/settlemint/the-graph';
+import { theGraphMiddleware } from '@/orpc/middlewares/services/the-graph.middleware';
+import { authRouter } from '@/orpc/procedures/auth.router';
+import { getPagination } from '@/orpc/routes/utils/pagination';
 
 /**
  * GraphQL query for retrieving SMART systems from TheGraph.
@@ -64,7 +64,7 @@ export const list = authRouter.system.list
     // Using nullish coalescing for type-safe default values
     const { offset, limit, orderDirection } = {
       ...getPagination(input),
-      orderDirection: input?.orderDirection ?? "asc",
+      orderDirection: input?.orderDirection ?? 'asc',
     };
 
     // Define response schema for type-safe GraphQL response validation
@@ -89,7 +89,7 @@ export const list = authRouter.system.list
         first: limit,
       },
       SystemsResponseSchema,
-      "Failed to retrieve systems"
+      'Failed to retrieve systems'
     );
 
     // Return the array of system contracts

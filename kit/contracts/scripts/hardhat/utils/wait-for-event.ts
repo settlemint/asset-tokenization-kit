@@ -1,17 +1,17 @@
-import type { ExtractAbiEventNames } from "abitype";
+import type { ExtractAbiEventNames } from 'abitype';
 import {
-  Account,
-  Chain,
-  Hex,
-  PublicClient,
-  TransactionReceipt,
-  Transport,
-  WalletClient,
+  type Account,
+  type Chain,
   decodeEventLog,
-} from "viem";
-import { ATKContracts } from "../constants/contracts";
-import { ViemContract } from "../services/deployer";
-import { waitForSuccess } from "./wait-for-success";
+  type Hex,
+  type PublicClient,
+  type TransactionReceipt,
+  type Transport,
+  type WalletClient,
+} from 'viem';
+import type { ATKContracts } from '../constants/contracts';
+import type { ViemContract } from '../services/deployer';
+import { waitForSuccess } from './wait-for-success';
 
 type Contracts = {
   [K in keyof typeof ATKContracts]: ViemContract<
@@ -23,7 +23,7 @@ type Contracts = {
 // Utility function to find specific event arguments from a transaction
 export async function waitForEvent<
   Key extends keyof Contracts,
-  EventName extends ExtractAbiEventNames<Contracts[Key]["abi"]>,
+  EventName extends ExtractAbiEventNames<Contracts[Key]['abi']>,
 >(params: {
   contract: Contracts[Key];
   transactionHash: Hex;
@@ -39,7 +39,7 @@ export async function waitForEvent<
     if (log.address.toLowerCase() === contractAddress.toLowerCase()) {
       try {
         const decodedEvent = decodeEventLog({
-          abi: abi,
+          abi,
           data: log.data,
           topics: log.topics,
         });

@@ -1,8 +1,8 @@
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+import { theGraphGraphql } from '@/lib/settlemint/the-graph';
+import { permissionsMiddleware } from '@/orpc/middlewares/auth/permissions.middleware';
+import { theGraphMiddleware } from '@/orpc/middlewares/services/the-graph.middleware';
+import { onboardedRouter } from '@/orpc/procedures/onboarded.router';
 
 /**
  * GraphQL query for retrieving SMART systems from TheGraph.
@@ -35,7 +35,7 @@ query ReadAccountQuery($walletAddress: ID!) {
 export const read = onboardedRouter.account.read
   .use(
     permissionsMiddleware({
-      user: ["list"],
+      user: ['list'],
     })
   )
   .use(theGraphMiddleware)
@@ -61,12 +61,12 @@ export const read = onboardedRouter.account.read
         walletAddress: wallet,
       },
       AccountResponseSchema,
-      "Failed to retrieve account"
+      'Failed to retrieve account'
     );
 
     if (!result.account) {
       throw errors.NOT_FOUND({
-        message: "Account not found",
+        message: 'Account not found',
       });
     }
 

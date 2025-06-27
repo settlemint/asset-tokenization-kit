@@ -29,7 +29,16 @@
       "dependsOn": ["package:pack"]
     },
     "helm": {
-      "dependsOn": ["helm:check-context", "dependencies", "helm:secrets", "^codegen", "codegen", "compile", "^compile","helm:subgraph"],
+      "dependsOn": [
+        "helm:check-context",
+        "dependencies",
+        "helm:secrets",
+        "^codegen",
+        "codegen",
+        "compile",
+        "^compile",
+        "helm:subgraph"
+      ],
       "cache": false
     },
     "helm:check-context": {

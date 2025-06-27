@@ -20,14 +20,14 @@
  * @see {@link https://better-auth.com} - Better Auth documentation
  */
 
-import { authClient } from "@/lib/auth/auth.client";
-import { AuthQueryProvider } from "@daveyplate/better-auth-tanstack";
-import { AuthUIProviderTanstack } from "@daveyplate/better-auth-ui/tanstack";
-import { Link, useRouter } from "@tanstack/react-router";
-import type { PropsWithChildren } from "react";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import enAuthTranslations from "../../locales/en/auth.json";
+import { AuthQueryProvider } from '@daveyplate/better-auth-tanstack';
+import { AuthUIProviderTanstack } from '@daveyplate/better-auth-ui/tanstack';
+import { Link, useRouter } from '@tanstack/react-router';
+import type { PropsWithChildren } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { authClient } from '@/lib/auth/auth.client';
+import enAuthTranslations from '../../locales/en/auth.json';
 
 /**
  * Authentication provider that wraps the application with auth context.
@@ -65,7 +65,7 @@ import enAuthTranslations from "../../locales/en/auth.json";
  */
 export function AuthProvider({ children }: PropsWithChildren) {
   const router = useRouter();
-  const { t } = useTranslation("auth");
+  const { t } = useTranslation('auth');
 
   const localization = Object.fromEntries(
     Object.keys(enAuthTranslations).map((key) => [
@@ -81,58 +81,58 @@ export function AuthProvider({ children }: PropsWithChildren) {
          * The configured auth client instance.
          * Handles all authentication operations and state management.
          */
-        authClient={authClient}
+        apiKey={true}
         /**
          * Navigation function for redirects after auth actions.
          * Integrates with TanStack Router for type-safe navigation.
          */
-        navigate={(href) => router.navigate({ href })}
+        authClient={authClient}
         /**
          * Replace navigation for auth flows.
          * Replaces the current history entry instead of pushing a new one.
          */
-        replace={(href) => router.navigate({ href, replace: true })}
+        credentials={true}
         /**
          * Link component for auth UI navigation.
          * Uses TanStack Router's Link for client-side navigation.
          */
-        Link={({ href, ...props }) => <Link to={href} {...props} />}
+        gravatar={true}
         /**
          * Enable optimistic updates for auth operations.
          * Updates UI immediately before server confirmation for better UX.
          */
-        optimistic={true}
+        Link={({ href, ...props }) => <Link to={href} {...props} />}
         /**
          * Disable client persistence.
          * Auth state is managed by cookies, not localStorage.
          */
-        persistClient={false}
+        localization={localization}
         /**
          * Enable passkey/WebAuthn support.
          * Allows users to authenticate with biometrics or security keys.
          */
-        passkey={true}
         nameRequired={true}
-        gravatar={true}
+        navigate={(href) => router.navigate({ href })}
+        optimistic={true}
+        passkey={true}
+        persistClient={false}
         redirectTo="/"
-        apiKey={true}
-        credentials={true}
         /**
          * Toast notification handler for auth events.
          * Displays success, error, warning, and info messages using Sonner.
          */
+        replace={(href) => router.navigate({ href, replace: true })}
         toast={({ variant, message }) => {
-          if (variant === "success") {
+          if (variant === 'success') {
             toast.success(message);
-          } else if (variant === "error") {
+          } else if (variant === 'error') {
             toast.error(message);
-          } else if (variant === "warning") {
+          } else if (variant === 'warning') {
             toast.warning(message);
           } else {
             toast.info(message);
           }
         }}
-        localization={localization}
       >
         {children}
       </AuthUIProviderTanstack>

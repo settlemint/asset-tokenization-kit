@@ -42,11 +42,11 @@
  * @see {@link ../orpc} - ORPC client integration
  */
 
-import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimental";
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
-import { persistQueryClient } from "@tanstack/react-query-persist-client";
-import superjson from "superjson";
+import { broadcastQueryClient } from '@tanstack/query-broadcast-client-experimental';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
+import { persistQueryClient } from '@tanstack/react-query-persist-client';
+import superjson from 'superjson';
 
 /**
  * Query cache configuration constants.
@@ -74,13 +74,13 @@ const QUERY_STALE_TIME = 5 * 60 * 1000; // 5 minutes
  * excessive wait times while still providing reasonable retry intervals.
  */
 const MUTATION_RETRY_DELAY = (attemptIndex: number): number =>
-  Math.min(1000 * 2 ** attemptIndex, 30000);
+  Math.min(1000 * 2 ** attemptIndex, 30_000);
 
 /**
  * Maximum number of retry attempts for failed requests.
  * Limited to 3 to balance reliability with performance.
  */
-const MAX_RETRIES = process.env.NODE_ENV === "production" ? 3 : 1; // during development, we don't want to retry too many times
+const MAX_RETRIES = process.env.NODE_ENV === 'production' ? 3 : 1; // during development, we don't want to retry too many times
 
 /**
  * Enhanced error interface for query operations.
@@ -105,12 +105,12 @@ interface QueryError extends Error {
 const handleUnauthorizedError = (error: unknown) => {
   const queryError = error as QueryError;
   if (
-    (queryError.code === "UNAUTHORIZED" || queryError.status === 401) &&
-    typeof window !== "undefined" &&
-    !window.location.pathname.startsWith("/auth/") &&
-    !window.location.pathname.startsWith("/api/auth")
+    (queryError.code === 'UNAUTHORIZED' || queryError.status === 401) &&
+    typeof window !== 'undefined' &&
+    !window.location.pathname.startsWith('/auth/') &&
+    !window.location.pathname.startsWith('/api/auth')
   ) {
-    window.location.href = "/auth/sign-in";
+    window.location.href = '/auth/sign-in';
   }
 };
 
@@ -140,13 +140,13 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       // Only refetch on window focus in production to reduce development noise
-      refetchOnWindowFocus: process.env.NODE_ENV === "production",
+      refetchOnWindowFocus: process.env.NODE_ENV === 'production',
 
       // Disable background refetching to conserve resources
       refetchIntervalInBackground: false,
 
       // Offline-first strategy for better UX when network is unreliable
-      networkMode: "offlineFirst",
+      networkMode: 'offlineFirst',
       structuralSharing: true,
 
       /**
@@ -159,7 +159,7 @@ export const queryClient = new QueryClient({
       retry: (failureCount, error) => {
         const queryError = error as QueryError;
         // Don't retry on UNAUTHORIZED errors
-        if (queryError.code === "UNAUTHORIZED" || queryError.status === 401) {
+        if (queryError.code === 'UNAUTHORIZED' || queryError.status === 401) {
           return false;
         }
         // Don't retry on 4xx errors (except 408 Request Timeout)
@@ -194,7 +194,9 @@ export const queryClient = new QueryClient({
        */
       refetchOnMount: (query) => {
         // Always refetch if invalidated
-        if (query.state.isInvalidated) return true;
+        if (query.state.isInvalidated) {
+          return true;
+        }
         // Otherwise, only refetch if this is the first fetch
         return query.state.dataUpdateCount === 0;
       },
@@ -211,7 +213,7 @@ export const queryClient = new QueryClient({
         const mutationError = error as QueryError;
         // Don't retry on UNAUTHORIZED errors
         if (
-          mutationError.code === "UNAUTHORIZED" ||
+          mutationError.code === 'UNAUTHORIZED' ||
           mutationError.status === 401
         ) {
           return false;
@@ -231,7 +233,7 @@ export const queryClient = new QueryClient({
       retryDelay: MUTATION_RETRY_DELAY,
 
       // Offline-first strategy for mutations too
-      networkMode: "offlineFirst",
+      networkMode: 'offlineFirst',
     },
   },
 });
@@ -240,8 +242,8 @@ export const queryClient = new QueryClient({
  * Storage persister for offline support
  */
 const persister = createSyncStoragePersister({
-  storage: typeof window !== "undefined" ? window.localStorage : undefined,
-  key: "atk-query-cache",
+  storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+  key: 'atk-query-cache',
   throttleTime: 1000,
   serialize: (data) => superjson.stringify(data),
   deserialize: (data) => superjson.parse(data),
@@ -250,13 +252,13 @@ const persister = createSyncStoragePersister({
 /**
  * Persist queries for offline support and sync across tabs
  */
-if (typeof window !== "undefined" && process.env.NODE_ENV !== "development") {
+if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'development') {
   // Check and clear stale cache based on build ID
   // In development, use a stable build ID to avoid unnecessary cache busting
   const buildId = process.env.BUILD_ID ?? new Date().toISOString();
 
   // Enable query persistence for offline support
-  void persistQueryClient({
+  persistQueryClient({
     queryClient,
     persister,
     maxAge: QUERY_CACHE_TIME,
@@ -264,13 +266,13 @@ if (typeof window !== "undefined" && process.env.NODE_ENV !== "development") {
     dehydrateOptions: {
       shouldDehydrateQuery: (query) => {
         // Only persist successful queries
-        return query.state.status === "success";
+        return query.state.status === 'success';
       },
     },
   });
 }
 
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   /**
    * Set up broadcast channel for cross-tab synchronization.
    *
@@ -290,6 +292,6 @@ if (typeof window !== "undefined") {
 
   broadcastQueryClient({
     queryClient,
-    broadcastChannel: "atk-query-sync",
+    broadcastChannel: 'atk-query-sync',
   });
 }

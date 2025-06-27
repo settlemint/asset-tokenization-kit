@@ -1,6 +1,6 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { TimeBoundAirdrop } from "../../../../../generated/schema";
-import { TimeBoundAirdrop as TimeBoundAirdropContract } from "../../../../../generated/templates/TimeBoundAirdropFactory/TimeBoundAirdrop";
+import { type Address, BigInt } from '@graphprotocol/graph-ts';
+import { TimeBoundAirdrop } from '../../../../../generated/schema';
+import { TimeBoundAirdrop as TimeBoundAirdropContract } from '../../../../../generated/templates/TimeBoundAirdropFactory/TimeBoundAirdrop';
 
 export function fetchTimeBoundAirdrop(id: Address): TimeBoundAirdrop {
   let entity = TimeBoundAirdrop.load(id);

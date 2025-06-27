@@ -1,8 +1,8 @@
-import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { describe, expect, it } from 'bun:test';
+import { theGraphClient, theGraphGraphql } from '../utils/thegraph-client';
 
-describe("Fixed yield", () => {
-  it("should fetch a list of all fixed yield tokens", async () => {
+describe('Fixed yield', () => {
+  it('should fetch a list of all fixed yield tokens', async () => {
     const query = theGraphGraphql(
       `query($where: Token_filter) {
         tokens(where: $where, orderBy: name) {
@@ -53,10 +53,10 @@ describe("Fixed yield", () => {
       {
         createdAt: expect.any(String),
         createdBy: { id: expect.any(String) },
-        name: "Euro Bonds",
-        type: "bond",
-        totalSupply: "117",
-        totalSupplyExact: "117000000",
+        name: 'Euro Bonds',
+        type: 'bond',
+        totalSupply: '117',
+        totalSupplyExact: '117000000',
         yield_: {
           schedule: {
             startDate: expect.any(String),
@@ -66,62 +66,62 @@ describe("Fixed yield", () => {
               endDate: expect.any(String),
             },
             nextPeriod: null,
-            totalYield: "359.775",
-            totalClaimed: "184.5",
-            totalUnclaimedYield: "31.365",
+            totalYield: '359.775',
+            totalClaimed: '184.5',
+            totalUnclaimedYield: '31.365',
             periods: [
               {
                 startDate: expect.any(String),
                 endDate: expect.any(String),
-                totalYield: "71.955",
-                totalClaimed: "67.035",
-                totalUnclaimedYield: "4.92",
+                totalYield: '71.955',
+                totalClaimed: '67.035',
+                totalUnclaimedYield: '4.92',
               },
               {
                 startDate: expect.any(String),
                 endDate: expect.any(String),
-                totalYield: "71.955",
-                totalClaimed: "61.5",
-                totalUnclaimedYield: "10.455",
+                totalYield: '71.955',
+                totalClaimed: '61.5',
+                totalUnclaimedYield: '10.455',
               },
               {
                 startDate: expect.any(String),
                 endDate: expect.any(String),
-                totalYield: "71.955",
-                totalClaimed: "55.965",
-                totalUnclaimedYield: "15.99",
+                totalYield: '71.955',
+                totalClaimed: '55.965',
+                totalUnclaimedYield: '15.99',
               },
               {
                 startDate: expect.any(String),
                 endDate: expect.any(String),
-                totalYield: "71.955",
-                totalClaimed: "0",
-                totalUnclaimedYield: "0",
+                totalYield: '71.955',
+                totalClaimed: '0',
+                totalUnclaimedYield: '0',
               },
               {
                 startDate: expect.any(String),
                 endDate: expect.any(String),
-                totalYield: "71.955",
-                totalClaimed: "0",
-                totalUnclaimedYield: "0",
+                totalYield: '71.955',
+                totalClaimed: '0',
+                totalUnclaimedYield: '0',
               },
               {
                 startDate: expect.any(String),
                 endDate: expect.any(String),
-                totalYield: "0",
-                totalClaimed: "0",
-                totalUnclaimedYield: "0",
+                totalYield: '0',
+                totalClaimed: '0',
+                totalUnclaimedYield: '0',
               },
               {
                 startDate: expect.any(String),
                 endDate: expect.any(String),
-                totalYield: "0",
-                totalClaimed: "0",
-                totalUnclaimedYield: "0",
+                totalYield: '0',
+                totalClaimed: '0',
+                totalUnclaimedYield: '0',
               },
             ],
             underlyingAsset: {
-              name: "Euro Deposits",
+              name: 'Euro Deposits',
             },
           },
         },
@@ -131,7 +131,7 @@ describe("Fixed yield", () => {
     // the first period should start at the same time as the schedule
     for (const token of response.tokens) {
       expect(token.yield_?.schedule.startDate).toBe(
-        token.yield_?.schedule.periods[0]?.startDate ?? "0"
+        token.yield_?.schedule.periods[0]?.startDate ?? '0'
       );
     }
 
@@ -167,7 +167,7 @@ describe("Fixed yield", () => {
         totalYieldPeriods += Number(period.totalYield);
       }
       expect(totalYieldPeriods.toFixed(3)).toBe(
-        Number(token.yield_?.schedule.totalYield ?? "0").toFixed(3)
+        Number(token.yield_?.schedule.totalYield ?? '0').toFixed(3)
       );
     }
 
@@ -179,7 +179,7 @@ describe("Fixed yield", () => {
         totalClaimedPeriods += Number(period.totalClaimed);
       }
       expect(totalClaimedPeriods.toFixed(3)).toBe(
-        Number(token.yield_?.schedule.totalClaimed ?? "0").toFixed(3)
+        Number(token.yield_?.schedule.totalClaimed ?? '0').toFixed(3)
       );
     }
 
@@ -191,7 +191,7 @@ describe("Fixed yield", () => {
         totalUnclaimedYieldPeriods += Number(period.totalUnclaimedYield);
       }
       expect(totalUnclaimedYieldPeriods.toFixed(3)).toBe(
-        Number(token.yield_?.schedule.totalUnclaimedYield ?? "0").toFixed(3)
+        Number(token.yield_?.schedule.totalUnclaimedYield ?? '0').toFixed(3)
       );
     }
   });

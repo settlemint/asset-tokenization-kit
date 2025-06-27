@@ -1,5 +1,5 @@
-import { auth } from "@/lib/auth";
-import { baseRouter } from "../../procedures/base.router";
+import { auth } from '@/lib/auth';
+import { baseRouter } from '../../procedures/base.router';
 
 /**
  * Session middleware for optional authentication context.

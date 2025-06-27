@@ -1,14 +1,14 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { type Address, BigInt, Bytes } from '@graphprotocol/graph-ts';
 import {
   XvPSettlement,
   XvPSettlementApproval,
   XvPSettlementFlow,
-} from "../../../../generated/schema";
-import { XvPSettlement as XvPSettlementTemplate } from "../../../../generated/templates";
-import { XvPSettlement as XvPSettlementContract } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
-import { fetchAccount } from "../../../account/fetch/account";
-import { fetchToken } from "../../../token/fetch/token";
-import { setBigNumber } from "../../../utils/bignumber";
+} from '../../../../generated/schema';
+import { XvPSettlement as XvPSettlementTemplate } from '../../../../generated/templates';
+import { XvPSettlement as XvPSettlementContract } from '../../../../generated/templates/XvPSettlement/XvPSettlement';
+import { fetchAccount } from '../../../account/fetch/account';
+import { fetchToken } from '../../../token/fetch/token';
+import { setBigNumber } from '../../../utils/bignumber';
 
 /**
  * Fetches or creates a Flow entity
@@ -41,7 +41,7 @@ export function fetchXvPSettlementFlow(
   flow.to = fetchAccount(to).id;
 
   const token = fetchToken(asset);
-  setBigNumber(flow, "amount", amountExact, token.decimals);
+  setBigNumber(flow, 'amount', amountExact, token.decimals);
   flow.save();
   return flow;
 }
@@ -95,7 +95,7 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     xvpSettlement.createdAt = createdAt.reverted
       ? BigInt.zero()
       : createdAt.value;
-    xvpSettlement.name = name.reverted ? "" : name.value;
+    xvpSettlement.name = name.reverted ? '' : name.value;
     xvpSettlement.deployedInTransaction = Bytes.empty();
 
     const approvers: Address[] = [];

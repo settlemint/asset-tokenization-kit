@@ -8,8 +8,7 @@
     "shardulm94.trailing-spaces",
     "nomicfoundation.hardhat-solidity",
     "nize.oklch-preview",
-    "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
-    "lokalise.i18n-ally"
+    "lokalise.i18n-ally",
+    "biomejs.biome"
   ]
 }

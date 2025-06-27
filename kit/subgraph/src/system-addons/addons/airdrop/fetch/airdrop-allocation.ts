@@ -1,8 +1,8 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { AirdropAllocation } from "../../../../../generated/schema";
-import { setBigNumber } from "../../../../utils/bignumber";
-import { getTokenDecimals } from "../../../../utils/token-decimals";
-import { fetchAirdrop } from "./airdrop";
+import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { AirdropAllocation } from '../../../../../generated/schema';
+import { setBigNumber } from '../../../../utils/bignumber';
+import { getTokenDecimals } from '../../../../utils/token-decimals';
+import { fetchAirdrop } from './airdrop';
 
 export function fetchAirdropAllocation(
   airdrop: Bytes,
@@ -20,7 +20,7 @@ export function fetchAirdropAllocation(
     entity.airdrop = airdropEntity.id;
     const tokenAddress = Address.fromBytes(airdropEntity.token);
     const tokenDecimals = getTokenDecimals(tokenAddress);
-    setBigNumber(entity, "amountTransferred", BigInt.zero(), tokenDecimals);
+    setBigNumber(entity, 'amountTransferred', BigInt.zero(), tokenDecimals);
     entity.index = index;
     entity.initialized = true;
     entity.recipient = recipient;

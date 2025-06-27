@@ -1,10 +1,10 @@
-import { ATKContracts } from "../../../constants/contracts";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
-import { Asset } from "../../../entities/asset";
-import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { formatBaseUnits } from "../../../utils/format-base-units";
-import { toBaseUnits } from "../../../utils/to-base-units";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import { ATKContracts } from '../../../constants/contracts';
+import type { AbstractActor } from '../../../entities/actors/abstract-actor';
+import type { Asset } from '../../../entities/asset';
+import { withDecodedRevertReason } from '../../../utils/decode-revert-reason';
+import { formatBaseUnits } from '../../../utils/format-base-units';
+import { toBaseUnits } from '../../../utils/to-base-units';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
 export const forcedTransfer = async (
   asset: Asset<any>,
@@ -13,7 +13,7 @@ export const forcedTransfer = async (
   to: AbstractActor | Asset<any>,
   amount: bigint
 ) => {
-  console.log(`[Forced transfer] → Starting forced transfer...`);
+  console.log('[Forced transfer] → Starting forced transfer...');
 
   const custodianContract = custodian.getContractInstance({
     address: asset.address,

@@ -9,11 +9,11 @@
  * Excludes .metadata.json files.
  */
 
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { $, Glob } from "bun";
-import { existsSync } from "node:fs";
-import { basename, dirname, join } from "node:path";
-import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
+import { existsSync } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
+import { createLogger, type LogLevel } from '@settlemint/sdk-utils/logging';
+import { $, Glob } from 'bun';
+import { findTurboRoot, getKitProjectPath } from '../../../tools/root';
 
 // =============================================================================
 // CONFIGURATION
@@ -33,15 +33,15 @@ const logger = createLogger({
   level:
     (process.env.LOG_LEVEL as LogLevel) ||
     (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ||
-    "info",
+    'info',
 });
 
 // File paths
-const CONTRACTS_ROOT = await getKitProjectPath("contracts");
-const OUT_DIR = join(CONTRACTS_ROOT, ".generated", "out");
-const CONTRACTS_DIR = join(CONTRACTS_ROOT, "contracts");
-const OUTPUT_DIR = join(CONTRACTS_ROOT, ".generated");
-const PORTAL_DIR = join(OUTPUT_DIR, "portal");
+const CONTRACTS_ROOT = await getKitProjectPath('contracts');
+const OUT_DIR = join(CONTRACTS_ROOT, '.generated', 'out');
+const CONTRACTS_DIR = join(CONTRACTS_ROOT, 'contracts');
+const OUTPUT_DIR = join(CONTRACTS_ROOT, '.generated');
+const PORTAL_DIR = join(OUTPUT_DIR, 'portal');
 const ROOT_DIR = (await findTurboRoot())?.monorepoRoot;
 
 // =============================================================================
@@ -66,10 +66,10 @@ class AbiCollector {
   }
 
   async findContractFiles(): Promise<string[]> {
-    logger.debug("Finding contract files in contracts directory...");
+    logger.debug('Finding contract files in contracts directory...');
 
     // Use Bun's Glob API to find all .sol files
-    const glob = new Glob("**/*.sol");
+    const glob = new Glob('**/*.sol');
     const contractFiles: string[] = [];
 
     for await (const file of glob.scan(CONTRACTS_DIR)) {
@@ -82,7 +82,7 @@ class AbiCollector {
   }
 
   async findAbiFiles(): Promise<AbiFile[]> {
-    logger.debug("Finding ABI files in out directory...");
+    logger.debug('Finding ABI files in out directory...');
     const abiFiles: AbiFile[] = [];
 
     // Check if out directory exists
@@ -95,23 +95,23 @@ class AbiCollector {
     const contractFiles = await this.findContractFiles();
 
     // Use Bun's Glob API to find all JSON files (excluding metadata)
-    const glob = new Glob("**/*.json");
+    const glob = new Glob('**/*.json');
 
     for await (const file of glob.scan(OUT_DIR)) {
       const fullPath = join(OUT_DIR, file);
       const fileName = basename(file);
 
       // Skip metadata files and files starting with underscore
-      if (fileName.endsWith(".metadata.json") || fileName.startsWith("_")) {
+      if (fileName.endsWith('.metadata.json') || fileName.startsWith('_')) {
         continue;
       }
 
-      const contractName = basename(fileName, ".json");
+      const contractName = basename(fileName, '.json');
       const parentDir = basename(dirname(fullPath));
 
       // Look for corresponding .sol file
       const correspondingSolFile = contractFiles.find((solFile) => {
-        const solBasename = basename(solFile, ".sol");
+        const solBasename = basename(solFile, '.sol');
         return solBasename === parentDir || solBasename === contractName;
       });
 
@@ -178,13 +178,13 @@ class AbiCollector {
   }
 
   async initializePortalDir(): Promise<void> {
-    logger.info("Initializing portal directory...");
+    logger.info('Initializing portal directory...');
 
     if (this.config.cleanPortalDir) {
       try {
         // Check if directory exists
         if (existsSync(PORTAL_DIR)) {
-          logger.debug("Cleaning existing portal directory...");
+          logger.debug('Cleaning existing portal directory...');
           await $`rm -rf ${PORTAL_DIR}`.quiet();
         }
       } catch {
@@ -195,17 +195,17 @@ class AbiCollector {
     // Create directory structure
     await $`mkdir -p ${PORTAL_DIR}`.quiet();
     logger.debug(`Created portal directory: ${PORTAL_DIR}`);
-    logger.info("Portal directory initialized");
+    logger.info('Portal directory initialized');
   }
 
   async processAllAbis(): Promise<void> {
-    logger.info("Processing all ABI files...");
+    logger.info('Processing all ABI files...');
 
     const abiFiles = await this.findAbiFiles();
     const totalFiles = abiFiles.length;
 
     if (totalFiles === 0) {
-      logger.warn("No ABI files found to process");
+      logger.warn('No ABI files found to process');
       return;
     }
 
@@ -232,12 +232,12 @@ class AbiCollector {
     }
 
     if (this.collectedCount === 0) {
-      throw new Error("No ABI files were collected successfully");
+      throw new Error('No ABI files were collected successfully');
     }
   }
 
   async verifyCollection(): Promise<void> {
-    logger.info("Verifying ABI collection...");
+    logger.info('Verifying ABI collection...');
 
     try {
       // Check if directory exists
@@ -249,7 +249,7 @@ class AbiCollector {
     }
 
     // Use Bun's Glob API to find JSON files in portal directory
-    const glob = new Glob("*.json");
+    const glob = new Glob('*.json');
     const abiFiles: string[] = [];
 
     for await (const file of glob.scan(PORTAL_DIR)) {
@@ -292,9 +292,9 @@ class AbiCollector {
   async showPortalContents(): Promise<void> {
     if (!this.config.showOutput) return;
 
-    logger.info("Portal directory contents:");
+    logger.info('Portal directory contents:');
     // Use Bun's Glob API to find and sort JSON files
-    const glob = new Glob("*.json");
+    const glob = new Glob('*.json');
     const abiFiles: string[] = [];
 
     for await (const file of glob.scan(PORTAL_DIR)) {
@@ -361,7 +361,7 @@ function parseCliArgs(): Config {
   // Parse environment variables
   if (process.env.LOG_LEVEL) {
     const level = process.env.LOG_LEVEL.toUpperCase();
-    if (["DEBUG", "INFO", "WARN", "ERROR"].includes(level)) {
+    if (['DEBUG', 'INFO', 'WARN', 'ERROR'].includes(level)) {
       // Note: SettleMint SDK logger level is set at creation time
       // Use LOG_LEVEL or SETTLEMINT_LOG_LEVEL env var instead
     }
@@ -374,28 +374,28 @@ function parseCliArgs(): Config {
     const arg = args[i];
 
     switch (arg) {
-      case "-h":
-      case "--help":
+      case '-h':
+      case '--help':
         showUsage();
         process.exit(0);
 
-      case "-v":
-      case "--verbose":
+      case '-v':
+      case '--verbose':
         // Note: SettleMint SDK logger level is set at creation time
         // Use LOG_LEVEL=debug env var instead
         break;
 
-      case "-q":
-      case "--quiet":
+      case '-q':
+      case '--quiet':
         // Note: SettleMint SDK logger level is set at creation time
         // Use LOG_LEVEL=error env var instead
         break;
 
-      case "--show-output":
+      case '--show-output':
         config.showOutput = true;
         break;
 
-      case "--no-clean":
+      case '--no-clean':
         config.cleanPortalDir = false;
         break;
 
@@ -416,25 +416,25 @@ function parseCliArgs(): Config {
 async function main(): Promise<void> {
   const config = parseCliArgs();
 
-  logger.info("Starting ABI Collection Generator...");
+  logger.info('Starting ABI Collection Generator...');
   logger.info(`Contracts root: ${CONTRACTS_ROOT}`);
   logger.info(`Out directory: ${OUT_DIR}`);
   logger.info(`Portal directory: ${PORTAL_DIR}`);
 
   // Check prerequisites
-  logger.info("Checking prerequisites...");
+  logger.info('Checking prerequisites...');
 
-  const contractsDirFile = Bun.file(join(CONTRACTS_DIR, ".gitkeep"));
+  const contractsDirFile = Bun.file(join(CONTRACTS_DIR, '.gitkeep'));
   try {
-    await Bun.write(join(CONTRACTS_DIR, ".gitkeep"), "");
+    await Bun.write(join(CONTRACTS_DIR, '.gitkeep'), '');
     await contractsDirFile.unlink();
   } catch {
     throw new Error(`Contracts directory not found: ${CONTRACTS_DIR}`);
   }
 
-  const outDirFile = Bun.file(join(OUT_DIR, ".gitkeep"));
+  const outDirFile = Bun.file(join(OUT_DIR, '.gitkeep'));
   try {
-    await Bun.write(join(OUT_DIR, ".gitkeep"), "");
+    await Bun.write(join(OUT_DIR, '.gitkeep'), '');
     await outDirFile.unlink();
   } catch {
     throw new Error(
@@ -458,7 +458,7 @@ async function main(): Promise<void> {
     await collector.showPortalContents();
 
     const stats = collector.getStats();
-    logger.info("ABI collection completed successfully!");
+    logger.info('ABI collection completed successfully!');
     logger.info(
       `Collection summary: ${stats.collected} collected, ${stats.skipped} skipped, ${stats.failed} failed`
     );
@@ -472,7 +472,7 @@ async function main(): Promise<void> {
 // Run the script
 if (import.meta.main) {
   main().catch((error) => {
-    logger.error("Unhandled error:", error);
+    logger.error('Unhandled error:', error);
     process.exit(1);
   });
 }

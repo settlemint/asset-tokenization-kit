@@ -7,7 +7,7 @@
  *
  * @module DurationValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Creates a Zod schema that validates duration values in milliseconds.
@@ -39,9 +39,9 @@ import { z } from "zod/v4";
 export const duration = () =>
   z
     .number()
-    .int("Duration must be a whole number of milliseconds")
-    .positive("Duration must be greater than zero") // Greater than 0
-    .describe("Duration in milliseconds");
+    .int('Duration must be a whole number of milliseconds')
+    .positive('Duration must be greater than zero') // Greater than 0
+    .describe('Duration in milliseconds');
 
 /**
  * Type representing a validated duration in milliseconds.

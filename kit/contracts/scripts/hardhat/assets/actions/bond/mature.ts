@@ -1,11 +1,11 @@
-import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
-import type { Asset } from "../../../entities/asset";
-import { getAnvilTimeSeconds, increaseAnvilTime } from "../../../utils/anvil";
-import { waitForSuccess } from "../../../utils/wait-for-success";
+import { ATKContracts } from '../../../constants/contracts';
+import { owner } from '../../../entities/actors/owner';
+import type { Asset } from '../../../entities/asset';
+import { getAnvilTimeSeconds, increaseAnvilTime } from '../../../utils/anvil';
+import { waitForSuccess } from '../../../utils/wait-for-success';
 
-export const mature = async (asset: Asset<"bondFactory">) => {
-  console.log(`[Bond matured] → Starting bond maturation...`);
+export const mature = async (asset: Asset<'bondFactory'>) => {
+  console.log('[Bond matured] → Starting bond maturation...');
 
   const bondContract = owner.getContractInstance({
     address: asset.address,

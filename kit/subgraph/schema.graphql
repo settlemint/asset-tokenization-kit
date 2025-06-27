@@ -576,7 +576,8 @@ type SystemStatsData @entity(timeseries: true) {
 }
 
 type SystemStats
-  @aggregation(intervals: ["hour", "day"], source: "SystemStatsData") {
+  @aggregation(intervals: ["hour", "day"], source: "SystemStatsData")
+{
   id: Int8!
   timestamp: Timestamp!
 
@@ -605,7 +606,8 @@ type AccountStatsData @entity(timeseries: true) {
 }
 
 type AccountStats
-  @aggregation(intervals: ["hour", "day"], source: "AccountStatsData") {
+  @aggregation(intervals: ["hour", "day"], source: "AccountStatsData")
+{
   id: Int8!
   timestamp: Timestamp!
 
@@ -632,7 +634,8 @@ type EventStatsData @entity(timeseries: true) {
 }
 
 type EventStats
-  @aggregation(intervals: ["hour", "day"], source: "EventStatsData") {
+  @aggregation(intervals: ["hour", "day"], source: "EventStatsData")
+{
   id: Int8!
   timestamp: Timestamp!
 
@@ -659,7 +662,8 @@ type TokenTypeStatsData @entity(timeseries: true) {
 }
 
 type TokenTypeStats
-  @aggregation(intervals: ["hour", "day"], source: "TokenTypeStatsData") {
+  @aggregation(intervals: ["hour", "day"], source: "TokenTypeStatsData")
+{
   id: Int8!
   timestamp: Timestamp!
 
@@ -693,7 +697,8 @@ type TokenStatsData @entity(timeseries: true) {
 }
 
 type TokenStats
-  @aggregation(intervals: ["hour", "day"], source: "TokenStatsData") {
+  @aggregation(intervals: ["hour", "day"], source: "TokenStatsData")
+{
   id: Int8!
   timestamp: Timestamp!
 
@@ -730,7 +735,8 @@ type TokenCollateralStatsData @entity(timeseries: true) {
 }
 
 type TokenCollateralStats
-  @aggregation(intervals: ["hour", "day"], source: "TokenCollateralStatsData") {
+  @aggregation(intervals: ["hour", "day"], source: "TokenCollateralStatsData")
+{
   id: Int8!
   timestamp: Timestamp!
 
@@ -761,7 +767,8 @@ type TokenBondStatsData @entity(timeseries: true) {
 }
 
 type TokenBondStats
-  @aggregation(intervals: ["hour", "day"], source: "TokenBondStatsData") {
+  @aggregation(intervals: ["hour", "day"], source: "TokenBondStatsData")
+{
   id: Int8!
   timestamp: Timestamp!
 
@@ -820,10 +827,8 @@ type TokenDistributionStatsData @entity(timeseries: true) {
 }
 
 type TokenDistributionStats
-  @aggregation(
-    intervals: ["hour", "day"]
-    source: "TokenDistributionStatsData"
-  ) {
+  @aggregation(intervals: ["hour", "day"], source: "TokenDistributionStatsData")
+{
   id: Int8!
   timestamp: Timestamp!
 

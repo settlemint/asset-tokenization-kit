@@ -1,9 +1,9 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { TokenFixedYieldSchedule } from "../../../../generated/schema";
-import { FixedYieldSchedule as FixedYieldScheduleTemplate } from "../../../../generated/templates";
-import { fetchAccount } from "../../../account/fetch/account";
-import { DEFAULT_TOKEN_DECIMALS } from "../../../config/token";
-import { setBigNumber } from "../../../utils/bignumber";
+import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { TokenFixedYieldSchedule } from '../../../../generated/schema';
+import { FixedYieldSchedule as FixedYieldScheduleTemplate } from '../../../../generated/templates';
+import { fetchAccount } from '../../../account/fetch/account';
+import { DEFAULT_TOKEN_DECIMALS } from '../../../config/token';
+import { setBigNumber } from '../../../utils/bignumber';
 
 export function fetchFixedYieldSchedule(
   address: Address
@@ -22,19 +22,19 @@ export function fetchFixedYieldSchedule(
     fixedYieldSchedule.interval = BigInt.zero();
     setBigNumber(
       fixedYieldSchedule,
-      "totalClaimed",
+      'totalClaimed',
       BigInt.zero(),
       DEFAULT_TOKEN_DECIMALS
     );
     setBigNumber(
       fixedYieldSchedule,
-      "totalUnclaimedYield",
+      'totalUnclaimedYield',
       BigInt.zero(),
       DEFAULT_TOKEN_DECIMALS
     );
     setBigNumber(
       fixedYieldSchedule,
-      "totalYield",
+      'totalYield',
       BigInt.zero(),
       DEFAULT_TOKEN_DECIMALS
     );

@@ -1,9 +1,9 @@
-import type { PlaywrightTestConfig } from "@playwright/test";
-import baseConfig from "./playwright.base.config";
+import type { PlaywrightTestConfig } from '@playwright/test';
+import baseConfig from './playwright.base.config';
 
 const uiConfig: PlaywrightTestConfig = {
   ...baseConfig,
-  testDir: "./ui-tests",
+  testDir: './ui-tests',
 
   use: {
     ...baseConfig.use,
@@ -14,7 +14,7 @@ const uiConfig: PlaywrightTestConfig = {
   },
   projects: [
     {
-      name: "ui-tests",
+      name: 'ui-tests',
     },
   ],
 };

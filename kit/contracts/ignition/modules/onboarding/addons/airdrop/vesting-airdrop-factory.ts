@@ -1,9 +1,9 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ATKModule from "../../../main";
-import ATKOnboardingSystemModule from "../../system";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ATKModule from '../../../main';
+import ATKOnboardingSystemModule from '../../system';
 
 const ATKOnboardingVestingAirdropFactoryModule = buildModule(
-  "ATKOnboardingVestingAirdropFactoryModule",
+  'ATKOnboardingVestingAirdropFactoryModule',
   (m) => {
     const { system, systemAddonRegistry } = m.useModule(
       ATKOnboardingSystemModule
@@ -14,30 +14,30 @@ const ATKOnboardingVestingAirdropFactoryModule = buildModule(
 
     const encodedInitializationData = m.encodeFunctionCall(
       vestingAirdropFactoryImplementation,
-      "initialize",
+      'initialize',
       [system.address, platformAdmin]
     );
 
     const createVestingAirdropFactoryAddon = m.call(
       systemAddonRegistry,
-      "registerSystemAddon",
+      'registerSystemAddon',
       [
-        "vesting-airdrop-factory",
+        'vesting-airdrop-factory',
         vestingAirdropFactoryImplementation,
         encodedInitializationData,
       ]
     );
     const vestingAirdropFactoryAddress = m.readEventArgument(
       createVestingAirdropFactoryAddon,
-      "SystemAddonRegistered",
-      "proxyAddress",
-      { id: "vestingAirdropFactoryAddress" }
+      'SystemAddonRegistered',
+      'proxyAddress',
+      { id: 'vestingAirdropFactoryAddress' }
     );
     const vestingAirdropFactoryProxy = m.contractAt(
-      "IATKVestingAirdropFactory",
+      'IATKVestingAirdropFactory',
       vestingAirdropFactoryAddress,
       {
-        id: "vestingAirdropFactory",
+        id: 'vestingAirdropFactory',
       }
     );
 

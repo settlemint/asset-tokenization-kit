@@ -1,7 +1,7 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
-import { TokenComplianceModule } from "../../../generated/schema";
-import { fetchComplianceModule } from "../../compliance/fetch/compliance-module";
-import { fetchToken } from "./token";
+import { type Address, Bytes } from '@graphprotocol/graph-ts';
+import { TokenComplianceModule } from '../../../generated/schema';
+import { fetchComplianceModule } from '../../compliance/fetch/compliance-module';
+import { fetchToken } from './token';
 
 export function fetchTokenComplianceModule(
   tokenAddress: Address,

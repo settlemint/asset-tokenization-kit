@@ -27,14 +27,14 @@
  * @see https://www.i18next.com/overview/typescript - i18next TypeScript documentation
  */
 
-import type enAuthTranslations from "@/locales/en/auth.json";
-import type enGeneralTranslations from "@/locales/en/general.json";
-import type enLanguageTranslations from "@/locales/en/language.json";
-import type enOnboardingTranslations from "@/locales/en/onboarding.json";
-import type enThemeTranslations from "@/locales/en/theme.json";
-import type enTokensTranslations from "@/locales/en/tokens.json";
+import type enAuthTranslations from '@/locales/en/auth.json';
+import type enGeneralTranslations from '@/locales/en/general.json';
+import type enLanguageTranslations from '@/locales/en/language.json';
+import type enOnboardingTranslations from '@/locales/en/onboarding.json';
+import type enThemeTranslations from '@/locales/en/theme.json';
+import type enTokensTranslations from '@/locales/en/tokens.json';
 
-declare module "i18next" {
+declare module 'i18next' {
   /**
    * Custom type options for i18next.
    *
@@ -50,7 +50,7 @@ declare module "i18next" {
      * Default namespace for translations.
      * When using t('key') without a namespace, this namespace is used.
      */
-    defaultNS: "translation";
+    defaultNS: 'translation';
 
     /**
      * Resource type definition based on English translations.

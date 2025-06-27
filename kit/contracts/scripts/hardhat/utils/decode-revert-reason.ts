@@ -1,14 +1,14 @@
-import { readdir, readFile, stat } from "node:fs/promises";
-import path, { join } from "node:path";
+import { readdir, readFile, stat } from 'node:fs/promises';
+import path, { join } from 'node:path';
 import {
   ContractFunctionExecutionError,
   ContractFunctionRevertedError,
   decodeErrorResult,
-  Hex,
-} from "viem";
-import { ATKContracts } from "../constants/contracts";
+  type Hex,
+} from 'viem';
+import { ATKContracts } from '../constants/contracts';
 
-const ARTIFACTS_DIR = join(__dirname, "../../../.generated/artifacts");
+const ARTIFACTS_DIR = join(__dirname, '../../../.generated/artifacts');
 
 export const withDecodedRevertReason = async <ReturnType>(
   fn: () => Promise<ReturnType>
@@ -33,9 +33,9 @@ async function tryDecodeRevertReason(error: Error): Promise<never> {
     if (parsedRevertReason) {
       throw parsedRevertReason;
     }
-    console.log("Failed to decode revert reason");
+    console.log('Failed to decode revert reason');
   } else {
-    console.log("Unknown error, cannot parse revert reason", error);
+    console.log('Unknown error, cannot parse revert reason', error);
   }
   throw error;
 }
@@ -63,10 +63,10 @@ function decodeRevertReason(revertReason: Hex | undefined, abi: any) {
   try {
     const decoded = decodeErrorResult({
       abi,
-      data: revertReason ?? "0x",
+      data: revertReason ?? '0x',
     });
     return new Error(
-      `The contract reverted with reason: ${decoded.errorName ? `${decoded.errorName} (args: ${decoded.args.join(", ") || "/"})` : JSON.stringify(decoded, undefined, 2)}`
+      `The contract reverted with reason: ${decoded.errorName ? `${decoded.errorName} (args: ${decoded.args.join(', ') || '/'})` : JSON.stringify(decoded, undefined, 2)}`
     );
   } catch {
     // ignore
@@ -93,11 +93,11 @@ async function getAllAbis() {
           const fileInfo = await stat(filePath);
           if (
             fileInfo.isDirectory() ||
-            !fileName.toLowerCase().endsWith(".json")
+            !fileName.toLowerCase().endsWith('.json')
           ) {
             return null;
           }
-          const contents = JSON.parse(await readFile(filePath, "utf8"));
+          const contents = JSON.parse(await readFile(filePath, 'utf8'));
           if (!contents.abi) {
             return null;
           }

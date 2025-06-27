@@ -1,4 +1,4 @@
-import { baseRouter } from "../../procedures/base.router";
+import { baseRouter } from '../../procedures/base.router';
 
 /**
  * Authentication enforcement middleware.
@@ -41,7 +41,7 @@ import { baseRouter } from "../../procedures/base.router";
  * @see {@link ../../routes/procedures/auth.contract} - UNAUTHORIZED error definition
  */
 export const authMiddleware = baseRouter.middleware(
-  async ({ context, next, errors }) => {
+  ({ context, next, errors }) => {
     // Check if valid authentication context exists
     if (context.auth) {
       // Authentication is valid, proceed with the authenticated context

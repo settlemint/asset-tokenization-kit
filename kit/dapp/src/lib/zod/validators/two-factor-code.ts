@@ -7,7 +7,9 @@
  *
  * @module TwoFactorCodeValidation
  */
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
+
+const TWO_FACTOR_CODE_REGEX = /^\d{6}$/;
 
 /**
  * Creates a Zod schema that validates 6-digit two-factor authentication codes.
@@ -46,9 +48,12 @@ import { z } from "zod/v4";
 export const twoFactorCode = () =>
   z
     .string()
-    .length(6, "Two-factor code must be exactly 6 digits")
-    .regex(/^\d{6}$/, "Two-factor code must contain only numeric digits (0-9)")
-    .describe("Two-factor authentication code");
+    .length(6, 'Two-factor code must be exactly 6 digits')
+    .regex(
+      TWO_FACTOR_CODE_REGEX,
+      'Two-factor code must contain only numeric digits (0-9)'
+    )
+    .describe('Two-factor authentication code');
 
 /**
  * Type representing a validated 6-digit 2FA code.

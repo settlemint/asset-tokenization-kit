@@ -1,5 +1,5 @@
-import { Address, Bytes, log } from "@graphprotocol/graph-ts";
-import { IERC165 } from "../../generated/templates/GenericERC165/IERC165";
+import { type Address, Bytes, log } from '@graphprotocol/graph-ts';
+import { IERC165 } from '../../generated/templates/GenericERC165/IERC165';
 
 /**
  * Utility function to check if a contract supports a specific interface
@@ -18,7 +18,7 @@ export function checkSupportsInterface(
   if (result.reverted) {
     // Contract doesn't implement ERC165 or call failed - return false
     log.warning(
-      "Failed to check interface support for contract {} - interface {}",
+      'Failed to check interface support for contract {} - interface {}',
       [contractAddress.toHexString(), interfaceId.toHexString()]
     );
     return false;
@@ -34,7 +34,7 @@ export function checkSupportsInterface(
  */
 export function isERC165Compliant(contractAddress: Address): boolean {
   // ERC165 interface ID is 0x01ffc9a7
-  const erc165InterfaceId = Bytes.fromHexString("0x01ffc9a7");
+  const erc165InterfaceId = Bytes.fromHexString('0x01ffc9a7');
   const supportsERC165 = checkSupportsInterface(
     contractAddress,
     erc165InterfaceId
@@ -45,7 +45,7 @@ export function isERC165Compliant(contractAddress: Address): boolean {
   }
 
   // ERC165 spec requires that contracts return false for 0xffffffff
-  const invalidInterfaceId = Bytes.fromHexString("0xffffffff");
+  const invalidInterfaceId = Bytes.fromHexString('0xffffffff');
   const supportsInvalid = checkSupportsInterface(
     contractAddress,
     invalidInterfaceId

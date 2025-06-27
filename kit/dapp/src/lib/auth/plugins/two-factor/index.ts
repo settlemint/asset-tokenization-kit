@@ -1,21 +1,21 @@
-import {
-  disableTwoFactor,
-  enableTwoFactor,
-  verifyTwoFactorOTP,
-} from "@/lib/auth/plugins/two-factor/queries";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import type { BetterAuthPlugin, GenericEndpointContext } from "better-auth";
+import type { BetterAuthPlugin, GenericEndpointContext } from 'better-auth';
 import {
   APIError,
   createAuthEndpoint,
   sessionMiddleware,
-} from "better-auth/api";
-import z from "zod/v4";
-import { revokeSession, validatePassword } from "../utils";
+} from 'better-auth/api';
+import z from 'zod/v4';
+import {
+  disableTwoFactor,
+  enableTwoFactor,
+  verifyTwoFactorOTP,
+} from '@/lib/auth/plugins/two-factor/queries';
+import type { EthereumAddress } from '@/lib/zod/validators/ethereum-address';
+import { revokeSession, validatePassword } from '../utils';
 
 const OTP_DIGITS = 6;
 const OTP_PERIOD = 30;
-const OTP_ALGORITHM = "SHA256";
+const OTP_ALGORITHM = 'SHA256';
 
 export interface UserWithTwoFactorContext {
   id: string;
@@ -27,41 +27,41 @@ export interface UserWithTwoFactorContext {
 
 export const twoFactor = () => {
   return {
-    id: "two-factor",
+    id: 'two-factor',
     endpoints: {
       enableTwoFactor: createAuthEndpoint(
-        "/two-factor/enable",
+        '/two-factor/enable',
         {
-          method: "POST",
+          method: 'POST',
           body: z.object({
             password: z
               .string()
               .describe(
-                "User password, only required if the user has done the initial onboarding"
+                'User password, only required if the user has done the initial onboarding'
               )
               .optional(),
             issuer: z
               .string()
-              .describe("Custom issuer for the TOTP URI")
+              .describe('Custom issuer for the TOTP URI')
               .optional(),
           }),
           use: [sessionMiddleware],
           metadata: {
             openapi: {
-              summary: "Enable two factor authentication",
+              summary: 'Enable two factor authentication',
               description:
-                "Use this endpoint to enable two factor authentication. This will generate a TOTP URI and backup codes. Once the user verifies the TOTP URI, the two factor authentication will be enabled.",
+                'Use this endpoint to enable two factor authentication. This will generate a TOTP URI and backup codes. Once the user verifies the TOTP URI, the two factor authentication will be enabled.',
               responses: {
                 200: {
-                  description: "Successful response",
+                  description: 'Successful response',
                   content: {
-                    "application/json": {
+                    'application/json': {
                       schema: {
-                        type: "object",
+                        type: 'object',
                         properties: {
                           totpURI: {
-                            type: "string",
-                            description: "TOTP URI",
+                            type: 'string',
+                            description: 'TOTP URI',
                           },
                         },
                       },
@@ -77,8 +77,8 @@ export const twoFactor = () => {
           const { password } = ctx.body;
           if (user.initialOnboardingFinished) {
             if (!password) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Password is required",
+              throw new APIError('BAD_REQUEST', {
+                message: 'Password is required',
               });
             }
             const isPasswordValid = await validatePassword(ctx, {
@@ -86,8 +86,8 @@ export const twoFactor = () => {
               userId: user.id,
             });
             if (!isPasswordValid) {
-              throw new APIError("BAD_REQUEST", {
-                message: "Invalid password",
+              throw new APIError('BAD_REQUEST', {
+                message: 'Invalid password',
               });
             }
           }
@@ -107,28 +107,28 @@ export const twoFactor = () => {
         }
       ),
       disableTwoFactor: createAuthEndpoint(
-        "/two-factor/disable",
+        '/two-factor/disable',
         {
-          method: "POST",
+          method: 'POST',
           body: z.object({
-            password: z.string().describe("User password"),
+            password: z.string().describe('User password'),
           }),
           use: [sessionMiddleware],
           metadata: {
             openapi: {
-              summary: "Disable two factor authentication",
+              summary: 'Disable two factor authentication',
               description:
-                "Use this endpoint to disable two factor authentication.",
+                'Use this endpoint to disable two factor authentication.',
               responses: {
                 200: {
-                  description: "Successful response",
+                  description: 'Successful response',
                   content: {
-                    "application/json": {
+                    'application/json': {
                       schema: {
-                        type: "object",
+                        type: 'object',
                         properties: {
                           status: {
-                            type: "boolean",
+                            type: 'boolean',
                           },
                         },
                       },
@@ -146,8 +146,8 @@ export const twoFactor = () => {
             userId: user.id,
           });
           if (!isPasswordValid) {
-            throw new APIError("BAD_REQUEST", {
-              message: "Invalid password",
+            throw new APIError('BAD_REQUEST', {
+              message: 'Invalid password',
             });
           }
           await disableTwoFactor(user);
@@ -160,27 +160,27 @@ export const twoFactor = () => {
         }
       ),
       verifyTOTP: createAuthEndpoint(
-        "/two-factor/verify-totp",
+        '/two-factor/verify-totp',
         {
-          method: "POST",
+          method: 'POST',
           body: z.object({
-            code: z.string().describe("The otp code to verify"),
+            code: z.string().describe('The otp code to verify'),
           }),
           use: [sessionMiddleware],
           metadata: {
             openapi: {
-              summary: "Verify two factor TOTP",
-              description: "Verify two factor TOTP",
+              summary: 'Verify two factor TOTP',
+              description: 'Verify two factor TOTP',
               responses: {
                 200: {
-                  description: "Successful response",
+                  description: 'Successful response',
                   content: {
-                    "application/json": {
+                    'application/json': {
                       schema: {
-                        type: "object",
+                        type: 'object',
                         properties: {
                           status: {
-                            type: "boolean",
+                            type: 'boolean',
                           },
                         },
                       },
@@ -196,8 +196,8 @@ export const twoFactor = () => {
           const { code } = ctx.body;
           const result = await verifyTwoFactorOTP(user, code);
           if (!result.verified) {
-            throw new APIError("UNAUTHORIZED", {
-              message: "Invalid two factor code",
+            throw new APIError('UNAUTHORIZED', {
+              message: 'Invalid two factor code',
             });
           }
           if (!user.twoFactorEnabled) {
@@ -213,7 +213,7 @@ export const twoFactor = () => {
     rateLimit: [
       {
         pathMatcher(path) {
-          return path.startsWith("/two-factor/");
+          return path.startsWith('/two-factor/');
         },
         window: 10,
         max: 3,

@@ -1,17 +1,16 @@
-import type { Address } from "viem";
-import { ATKContracts } from "../constants/contracts";
-import type { AbstractActor } from "../entities/actors/abstract-actor";
-import { claimIssuer } from "../entities/actors/claim-issuer";
-
-import { ATKTopic } from "../constants/topics";
-import { atkDeployer } from "../services/deployer";
-import { topicManager } from "../services/topic-manager";
-import { encodeClaimData } from "../utils/claim-scheme-utils";
-import { waitForSuccess } from "../utils/wait-for-success";
+import type { Address } from 'viem';
+import { ATKContracts } from '../constants/contracts';
+import { ATKTopic } from '../constants/topics';
+import type { AbstractActor } from '../entities/actors/abstract-actor';
+import { claimIssuer } from '../entities/actors/claim-issuer';
+import { atkDeployer } from '../services/deployer';
+import { topicManager } from '../services/topic-manager';
+import { encodeClaimData } from '../utils/claim-scheme-utils';
+import { waitForSuccess } from '../utils/wait-for-success';
 
 export const issueVerificationClaims = async (actor: AbstractActor) => {
   console.log(
-    `[Verification claims] → Starting verification claims issuance...`
+    '[Verification claims] → Starting verification claims issuance...'
   );
 
   const claimIssuerIdentity = await claimIssuer.getIdentity();
@@ -41,7 +40,7 @@ export const issueVerificationClaims = async (actor: AbstractActor) => {
     ]);
 
   if (!isVerified) {
-    throw new Error("Identity is not verified");
+    throw new Error('Identity is not verified');
   }
 
   console.log(
@@ -76,7 +75,7 @@ async function _issueClaim(
     claimIssuerIdentity,
     claimSignature,
     encodedClaimData,
-    "",
+    '',
   ]);
 
   await waitForSuccess(transactionHash);

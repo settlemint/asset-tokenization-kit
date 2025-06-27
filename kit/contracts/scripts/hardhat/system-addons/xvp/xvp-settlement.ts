@@ -1,8 +1,8 @@
-import { formatEther, type Abi, type Address } from "viem";
-import type { AbstractActor } from "../../entities/actors/abstract-actor";
-import { atkDeployer } from "../../services/deployer";
-import { getPublicClient } from "../../utils/public-client";
-import { waitForEvent } from "../../utils/wait-for-event";
+import { type Abi, type Address, formatEther } from 'viem';
+import type { AbstractActor } from '../../entities/actors/abstract-actor';
+import { atkDeployer } from '../../services/deployer';
+import { getPublicClient } from '../../utils/public-client';
+import { waitForEvent } from '../../utils/wait-for-event';
 
 // Define the Flow struct type for XVP settlements
 type FlowStruct = {
@@ -32,9 +32,9 @@ export async function createXvpSettlement(
   toAssetAddress: Address,
   fromAmount: bigint,
   toAmount: bigint,
-  autoExecute: boolean = false
+  autoExecute = false
 ): Promise<Address> {
-  console.log(`\n=== Creating XVP Settlement ===`);
+  console.log('\n=== Creating XVP Settlement ===');
   console.log(`From: ${fromActor.name} (${fromActor.address})`);
   console.log(`To: ${toActor.name} (${toActor.address})`);
   console.log(
@@ -91,14 +91,14 @@ export async function createXvpSettlement(
     const eventArgs = await waitForEvent({
       transactionHash: txHash,
       contract: xvpFactory,
-      eventName: "ATKXvPSettlementCreated",
+      eventName: 'ATKXvPSettlementCreated',
     });
 
     const typedEventArgs = eventArgs as { settlement: Address };
 
-    if (!eventArgs || !typedEventArgs.settlement) {
+    if (!(eventArgs && typedEventArgs.settlement)) {
       throw new Error(
-        "Failed to extract settlement address from ATKXvPSettlementCreated event"
+        'Failed to extract settlement address from ATKXvPSettlementCreated event'
       );
     }
 
@@ -111,7 +111,7 @@ export async function createXvpSettlement(
 
     return settlementAddress;
   } catch (error) {
-    console.error("❌ Failed to create XVP settlement:", error);
+    console.error('❌ Failed to create XVP settlement:', error);
     throw error;
   }
 }
@@ -137,7 +137,7 @@ export async function approveAndExecuteXvpSettlement(
 
   try {
     // Get the ERC20 token contract
-    const { ismartAbi } = await import("../../abi/ismart");
+    const { ismartAbi } = await import('../../abi/ismart');
     const tokenContract = actor.getContractInstance({
       address: assetAddress,
       abi: ismartAbi,
@@ -146,27 +146,27 @@ export async function approveAndExecuteXvpSettlement(
     console.log(`Approving ${formatEther(amount)} tokens for settlement...`);
     await tokenContract.write.approve([settlementAddress, amount]);
 
-    console.log(`✅ Token approval successful`);
+    console.log('✅ Token approval successful');
 
     // Get the XVP settlement contract
-    const { xvpSettlementAbi } = await import("../../abi/xvpSettlement");
+    const { xvpSettlementAbi } = await import('../../abi/xvpSettlement');
     const settlementContract = actor.getContractInstance({
       address: settlementAddress,
       abi: xvpSettlementAbi as Abi,
     });
 
-    console.log(`Approving settlement...`);
+    console.log('Approving settlement...');
     await settlementContract.write.approve();
 
-    console.log(`✅ Settlement approval successful`);
+    console.log('✅ Settlement approval successful');
 
     // Check if settlement is fully approved and can be executed
     const isFullyApproved = await settlementContract.read.isFullyApproved();
 
     if (isFullyApproved) {
-      console.log(`🎯 Settlement is fully approved - executing...`);
+      console.log('🎯 Settlement is fully approved - executing...');
       await settlementContract.write.execute();
-      console.log(`✅ Settlement executed successfully!`);
+      console.log('✅ Settlement executed successfully!');
     } else {
       console.log(
         `⏳ Settlement approved by ${actor.name}, waiting for other parties...`

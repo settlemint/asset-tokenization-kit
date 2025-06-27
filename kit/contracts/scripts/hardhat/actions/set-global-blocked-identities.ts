@@ -1,10 +1,10 @@
-import { Address } from "viem";
-import { atkDeployer } from "../services/deployer";
-import { waitForSuccess } from "../utils/wait-for-success";
+import type { Address } from 'viem';
+import { atkDeployer } from '../services/deployer';
+import { waitForSuccess } from '../utils/wait-for-success';
 
 export const setGlobalBlockedIdentities = async (identities: Address[]) => {
   console.log(
-    `[Set global blocked identities] → Starting identity blocking...`
+    '[Set global blocked identities] → Starting identity blocking...'
   );
 
   const identityBlockListModule =
@@ -19,6 +19,6 @@ export const setGlobalBlockedIdentities = async (identities: Address[]) => {
   await waitForSuccess(transactionHash);
 
   console.log(
-    `[Set global blocked identities] ✓ ${identities.join(", ")} blocked globally`
+    `[Set global blocked identities] ✓ ${identities.join(', ')} blocked globally`
   );
 };

@@ -1,18 +1,5 @@
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
-import { useSettings } from "@/hooks/use-settings";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
-import { queryClient } from "@/lib/query.client";
-import { orpc } from "@/orpc";
-import { TokenTypeEnum } from "@/orpc/routes/token/routes/factory.create.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
 import {
   BarChart3,
   Building,
@@ -20,15 +7,28 @@ import {
   Package,
   PiggyBank,
   Wallet,
-} from "lucide-react";
-import { useCallback, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import { z } from "zod/v4";
+} from 'lucide-react';
+import { useCallback, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { z } from 'zod/v4';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form';
+import { useSettings } from '@/hooks/use-settings';
+import { useStreamingMutation } from '@/hooks/use-streaming-mutation';
+import { queryClient } from '@/lib/query.client';
+import { orpc } from '@/orpc';
+import { TokenTypeEnum } from '@/orpc/routes/token/routes/factory.create.schema';
 
 const assetSelectionSchema = z.object({
-  assets: z.array(TokenTypeEnum).min(1, "Select at least one asset type"),
+  assets: z.array(TokenTypeEnum).min(1, 'Select at least one asset type'),
 });
 
 type AssetSelectionFormValues = z.infer<typeof assetSelectionSchema>;
@@ -51,12 +51,12 @@ export function AssetSelectionStep({
   onSuccess,
   onRegisterAction,
 }: AssetSelectionStepProps) {
-  const { t } = useTranslation(["onboarding", "general", "tokens"]);
-  const [systemAddress] = useSettings("SYSTEM_ADDRESS");
+  const { t } = useTranslation(['onboarding', 'general', 'tokens']);
+  const [systemAddress] = useSettings('SYSTEM_ADDRESS');
 
   const { data: systemDetails } = useQuery({
     ...orpc.system.read.queryOptions({
-      input: { id: systemAddress ?? "" },
+      input: { id: systemAddress ?? '' },
     }),
     enabled: !!systemAddress,
   });
@@ -71,29 +71,29 @@ export function AssetSelectionStep({
   const { mutate: createFactories } = useStreamingMutation({
     mutationOptions: orpc.token.factoryCreate.mutationOptions(),
     onSuccess: async () => {
-      toast.success(t("assets.deployed"));
+      toast.success(t('assets.deployed'));
       await queryClient.invalidateQueries({
         queryKey: orpc.system.read.key(),
       });
       await queryClient.invalidateQueries({
         queryKey: orpc.system.read.queryOptions({
-          input: { id: systemAddress ?? "" },
+          input: { id: systemAddress ?? '' },
         }).queryKey,
-        refetchType: "all",
+        refetchType: 'all',
       });
       onSuccess?.();
     },
   });
 
   const handleDeployFactories = useCallback(() => {
-    if (!systemAddress || !systemDetails?.tokenFactoryRegistry) {
-      toast.error(t("assets.no-system"));
+    if (!(systemAddress && systemDetails?.tokenFactoryRegistry)) {
+      toast.error(t('assets.no-system'));
       return;
     }
 
     const values = form.getValues();
     if (values.assets.length === 0) {
-      void form.trigger("assets");
+      form.trigger('assets');
       return;
     }
 
@@ -105,50 +105,50 @@ export function AssetSelectionStep({
     createFactories({
       // TODO: add user pincode
       verification: {
-        verificationCode: "111111",
-        verificationType: "pincode",
+        verificationCode: '111111',
+        verificationType: 'pincode',
       },
       contract: systemDetails.tokenFactoryRegistry,
       factories,
       messages: {
-        initialLoading: t("assets.factory-messages.initial-loading"),
-        factoryCreated: t("assets.factory-messages.factory-created"),
-        creatingFactory: t("assets.factory-messages.creating-factory"),
+        initialLoading: t('assets.factory-messages.initial-loading'),
+        factoryCreated: t('assets.factory-messages.factory-created'),
+        creatingFactory: t('assets.factory-messages.creating-factory'),
         factoryCreationFailed: t(
-          "assets.factory-messages.factory-creation-failed"
+          'assets.factory-messages.factory-creation-failed'
         ),
-        batchProgress: t("assets.factory-messages.batch-progress"),
-        batchCompleted: t("assets.factory-messages.batch-completed"),
-        noResultError: t("assets.factory-messages.no-result-error"),
-        defaultError: t("assets.factory-messages.default-error"),
+        batchProgress: t('assets.factory-messages.batch-progress'),
+        batchCompleted: t('assets.factory-messages.batch-completed'),
+        noResultError: t('assets.factory-messages.no-result-error'),
+        defaultError: t('assets.factory-messages.default-error'),
         systemNotBootstrapped: t(
-          "assets.factory-messages.system-not-bootstrapped"
+          'assets.factory-messages.system-not-bootstrapped'
         ),
         transactionSubmitted: t(
-          "assets.factory-messages.transaction-submitted"
+          'assets.factory-messages.transaction-submitted'
         ),
         factoryCreationCompleted: t(
-          "assets.factory-messages.factory-creation-completed"
+          'assets.factory-messages.factory-creation-completed'
         ),
         allFactoriesSucceeded: t(
-          "assets.factory-messages.all-factories-succeeded"
+          'assets.factory-messages.all-factories-succeeded'
         ),
-        someFactoriesFailed: t("assets.factory-messages.some-factories-failed"),
-        allFactoriesFailed: t("assets.factory-messages.all-factories-failed"),
+        someFactoriesFailed: t('assets.factory-messages.some-factories-failed'),
+        allFactoriesFailed: t('assets.factory-messages.all-factories-failed'),
         factoryAlreadyExists: t(
-          "assets.factory-messages.factory-already-exists"
+          'assets.factory-messages.factory-already-exists'
         ),
-        allFactoriesSkipped: t("assets.factory-messages.all-factories-skipped"),
+        allFactoriesSkipped: t('assets.factory-messages.all-factories-skipped'),
         someFactoriesSkipped: t(
-          "assets.factory-messages.some-factories-skipped"
+          'assets.factory-messages.some-factories-skipped'
         ),
-        waitingForMining: t("assets.factory-messages.waiting-for-mining"),
-        transactionFailed: t("assets.factory-messages.transaction-failed"),
-        transactionDropped: t("assets.factory-messages.transaction-dropped"),
-        waitingForIndexing: t("assets.factory-messages.waiting-for-indexing"),
-        transactionIndexed: t("assets.factory-messages.transaction-indexed"),
-        streamTimeout: t("assets.factory-messages.stream-timeout"),
-        indexingTimeout: t("assets.factory-messages.indexing-timeout"),
+        waitingForMining: t('assets.factory-messages.waiting-for-mining'),
+        transactionFailed: t('assets.factory-messages.transaction-failed'),
+        transactionDropped: t('assets.factory-messages.transaction-dropped'),
+        waitingForIndexing: t('assets.factory-messages.waiting-for-indexing'),
+        transactionIndexed: t('assets.factory-messages.transaction-indexed'),
+        streamTimeout: t('assets.factory-messages.stream-timeout'),
+        indexingTimeout: t('assets.factory-messages.indexing-timeout'),
       },
     });
   }, [
@@ -172,28 +172,28 @@ export function AssetSelectionStep({
   }, [onRegisterAction, hasDeployedAssets, handleDeployFactories]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold">
+        <h2 className="font-semibold text-xl">
           {hasDeployedAssets
-            ? t("assets.asset-types-deployed")
-            : t("assets.select-asset-types")}
+            ? t('assets.asset-types-deployed')
+            : t('assets.select-asset-types')}
         </h2>
-        <p className="text-sm text-muted-foreground pt-2">
+        <p className="pt-2 text-muted-foreground text-sm">
           {hasDeployedAssets
-            ? t("assets.your-asset-factories-ready")
-            : t("assets.choose-asset-types")}
+            ? t('assets.your-asset-factories-ready')
+            : t('assets.choose-asset-types')}
         </p>
       </div>
       <div
         className="flex-1 overflow-y-auto"
-        style={{ minHeight: "450px", maxHeight: "550px" }}
+        style={{ minHeight: '450px', maxHeight: '550px' }}
       >
         <div className="space-y-6 pr-2">
           {hasDeployedAssets ? (
             <div className="space-y-4">
-              <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4">
-                <div className="flex items-center gap-3 mb-3">
+              <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+                <div className="mb-3 flex items-center gap-3">
                   <svg
                     className="h-5 w-5 text-green-600 dark:text-green-400"
                     fill="none"
@@ -201,19 +201,19 @@ export function AssetSelectionStep({
                     viewBox="0 0 24 24"
                   >
                     <path
+                      d="M5 13l4 4L19 7"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M5 13l4 4L19 7"
                     />
                   </svg>
                   <span className="font-medium text-green-800 dark:text-green-300">
-                    {t("assets.asset-factories-deployed-successfully")}
+                    {t('assets.asset-factories-deployed-successfully')}
                   </span>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                    {t("assets.deployed-factories")}
+                  <p className="text-gray-600 text-xs uppercase tracking-wider dark:text-gray-400">
+                    {t('assets.deployed-factories')}
                   </p>
                   <div className="grid gap-2">
                     {systemDetails?.tokenFactories.map((factory) => {
@@ -222,8 +222,8 @@ export function AssetSelectionStep({
                         iconKey in assetIcons ? assetIcons[iconKey] : Package;
                       return (
                         <div
+                          className="flex items-center gap-2 text-gray-700 text-sm dark:text-gray-300"
                           key={factory.id}
-                          className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
                         >
                           <Icon className="h-4 w-4" />
                           <span className="font-medium">{factory.name}</span>
@@ -237,29 +237,29 @@ export function AssetSelectionStep({
           ) : (
             <div className="space-y-4">
               {/* Info box */}
-              <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
+              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
                 <div className="flex gap-3">
                   <div className="flex-shrink-0">
                     <svg
-                      className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5"
+                      className="mt-0.5 h-5 w-5 text-blue-600 dark:text-blue-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
                       <path
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-                      {t("assets.what-are-asset-factories")}
+                    <h3 className="mb-1 font-medium text-blue-900 text-sm dark:text-blue-100">
+                      {t('assets.what-are-asset-factories')}
                     </h3>
-                    <p className="text-sm text-blue-800 dark:text-blue-200">
-                      {t("assets.asset-factories-description")}
+                    <p className="text-blue-800 text-sm dark:text-blue-200">
+                      {t('assets.asset-factories-description')}
                     </p>
                   </div>
                 </div>
@@ -275,11 +275,11 @@ export function AssetSelectionStep({
                       <FormItem>
                         <div className="space-y-4">
                           <div>
-                            <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
-                              {t("assets.available-asset-types")}
+                            <h3 className="mb-1 font-medium text-base text-gray-900 dark:text-gray-100">
+                              {t('assets.available-asset-types')}
                             </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {t("assets.select-all-asset-types")}
+                            <p className="text-gray-600 text-sm dark:text-gray-400">
+                              {t('assets.select-all-asset-types')}
                             </p>
                           </div>
                           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -291,13 +291,13 @@ export function AssetSelectionStep({
                                   : Package;
                               return (
                                 <FormField
-                                  key={assetType}
                                   control={form.control}
+                                  key={assetType}
                                   name="assets"
                                   render={({ field }) => (
                                     <FormItem
+                                      className="flex cursor-pointer flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 transition-colors hover:bg-accent/50"
                                       key={assetType}
-                                      className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 hover:bg-accent/50 transition-colors cursor-pointer"
                                       onClick={() => {
                                         const isCurrentlyChecked =
                                           field.value.includes(assetType);
@@ -317,43 +317,39 @@ export function AssetSelectionStep({
                                       }}
                                     >
                                       <FormControl>
-                                        <div
+                                        <Checkbox
+                                          checked={field.value.includes(
+                                            assetType
+                                          )}
+                                          onCheckedChange={(checked) => {
+                                            if (checked) {
+                                              field.onChange([
+                                                ...field.value,
+                                                assetType,
+                                              ]);
+                                            } else {
+                                              field.onChange(
+                                                field.value.filter(
+                                                  (value) => value !== assetType
+                                                )
+                                              );
+                                            }
+                                          }}
                                           onClick={(e) => {
                                             e.stopPropagation();
                                           }}
-                                        >
-                                          <Checkbox
-                                            checked={field.value.includes(
-                                              assetType
-                                            )}
-                                            onCheckedChange={(checked) => {
-                                              if (checked) {
-                                                field.onChange([
-                                                  ...field.value,
-                                                  assetType,
-                                                ]);
-                                              } else {
-                                                field.onChange(
-                                                  field.value.filter(
-                                                    (value) =>
-                                                      value !== assetType
-                                                  )
-                                                );
-                                              }
-                                            }}
-                                          />
-                                        </div>
+                                        />
                                       </FormControl>
                                       <div className="flex-1 space-y-1 leading-none">
                                         <div className="flex items-center gap-2">
                                           <Icon className="h-4 w-4 text-muted-foreground" />
-                                          <FormLabel className="text-sm font-medium cursor-pointer">
+                                          <FormLabel className="cursor-pointer font-medium text-sm">
                                             {t(`asset-types.${assetType}`, {
-                                              ns: "tokens",
+                                              ns: 'tokens',
                                             })}
                                           </FormLabel>
                                         </div>
-                                        <p className="text-sm text-muted-foreground">
+                                        <p className="text-muted-foreground text-sm">
                                           {t(
                                             `assets.descriptions.${assetType}`
                                           )}
@@ -372,7 +368,7 @@ export function AssetSelectionStep({
 
                   {/* Validation message */}
                   {form.formState.errors.assets && (
-                    <p className="text-sm text-red-600 dark:text-red-400">
+                    <p className="text-red-600 text-sm dark:text-red-400">
                       {form.formState.errors.assets.message}
                     </p>
                   )}

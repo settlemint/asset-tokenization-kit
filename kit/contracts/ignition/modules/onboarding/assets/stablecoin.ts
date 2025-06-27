@@ -1,9 +1,9 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import ATKModule from "../../main";
-import ATKOnboardingSystemModule from "../system";
+import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
+import ATKModule from '../../main';
+import ATKOnboardingSystemModule from '../system';
 
 const ATKOnboardingStableCoinModule = buildModule(
-  "ATKOnboardingStableCoinModule",
+  'ATKOnboardingStableCoinModule',
   (m) => {
     const { tokenFactoryRegistry } = m.useModule(ATKOnboardingSystemModule);
     const { stablecoinFactoryImplementation, stablecoinImplementation } =
@@ -11,20 +11,20 @@ const ATKOnboardingStableCoinModule = buildModule(
 
     const createStableCoinFactory = m.call(
       tokenFactoryRegistry,
-      "registerTokenFactory",
-      ["stablecoin", stablecoinFactoryImplementation, stablecoinImplementation]
+      'registerTokenFactory',
+      ['stablecoin', stablecoinFactoryImplementation, stablecoinImplementation]
     );
     const stablecoinFactoryAddress = m.readEventArgument(
       createStableCoinFactory,
-      "TokenFactoryRegistered",
-      "proxyAddress",
-      { id: "stablecoinFactoryAddress" }
+      'TokenFactoryRegistered',
+      'proxyAddress',
+      { id: 'stablecoinFactoryAddress' }
     );
     const stablecoinFactoryProxy = m.contractAt(
-      "ATKStableCoinFactoryImplementation",
+      'ATKStableCoinFactoryImplementation',
       stablecoinFactoryAddress,
       {
-        id: "stablecoinFactory",
+        id: 'stablecoinFactory',
       }
     );
 

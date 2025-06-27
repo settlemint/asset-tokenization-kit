@@ -15,10 +15,10 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
-import { orpc } from "@/orpc";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router';
+import { orpc } from '@/orpc';
 
-export const Route = createFileRoute("/_private/_onboarded/")({
+export const Route = createFileRoute('/_private/_onboarded/')({
   /**
    * Data loader that runs when navigating to this route.
    *

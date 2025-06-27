@@ -1,17 +1,17 @@
-import type { SessionUser } from "@/lib/auth";
-import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import type { VerificationCode } from "@/lib/zod/validators/verification-code";
-import type { VerificationType } from "@/lib/zod/validators/verification-type";
-import { ORPCError } from "@orpc/server";
-import { handleWalletVerificationChallenge } from "@settlemint/sdk-portal";
+import { ORPCError } from '@orpc/server';
+import { handleWalletVerificationChallenge } from '@settlemint/sdk-portal';
+import type { SessionUser } from '@/lib/auth';
+import { portalClient, portalGraphql } from '@/lib/settlemint/portal';
+import type { VerificationCode } from '@/lib/zod/validators/verification-code';
+import type { VerificationType } from '@/lib/zod/validators/verification-type';
 
 /**
  * Maps frontend verification types to portal verification types
  */
 const PORTAL_VERIFICATION_TYPE_MAP = {
-  pincode: "pincode",
-  "secret-code": "secret-code",
-  "two-factor": "otp",
+  pincode: 'pincode',
+  'secret-code': 'secret-code',
+  'two-factor': 'otp',
 } as const satisfies Record<VerificationType, string>;
 
 /**
@@ -56,15 +56,15 @@ export async function handleChallenge(
   }
 ) {
   if (!user.wallet) {
-    throw new ORPCError("USER_NOT_ONBOARDED", {
-      message: "User not onboarded",
+    throw new ORPCError('USER_NOT_ONBOARDED', {
+      message: 'User not onboarded',
     });
   }
 
   const verificationId = getVerificationId(user, verification.type);
 
   if (!verificationId) {
-    throw new ORPCError("VERIFICATION_ID_NOT_FOUND", {
+    throw new ORPCError('VERIFICATION_ID_NOT_FOUND', {
       message: `Verification ID not found for ${verification.type} authentication`,
       data: { verificationType: verification.type },
     });
@@ -80,8 +80,8 @@ export async function handleChallenge(
       portalGraphql,
     });
   } catch (error) {
-    throw new ORPCError("CHALLENGE_FAILED", {
-      message: `Challenge verification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+    throw new ORPCError('CHALLENGE_FAILED', {
+      message: `Challenge verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       data: { verificationType: verification.type },
     });
   }
@@ -101,10 +101,10 @@ function getVerificationId(
   user: SessionUser,
   verificationType: VerificationType
 ) {
-  if (verificationType === "pincode") {
+  if (verificationType === 'pincode') {
     return user.pincodeVerificationId;
   }
-  if (verificationType === "secret-code") {
+  if (verificationType === 'secret-code') {
     return user.secretCodeVerificationId;
   }
   return user.twoFactorVerificationId;

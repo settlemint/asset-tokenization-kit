@@ -1,30 +1,30 @@
-import { ByteArray, Bytes, crypto, ethereum } from "@graphprotocol/graph-ts";
-import { GlobalAddressListChange as GlobalAddressListChangeEvent } from "../../../generated/templates/AbstractAddressListComplianceModule/AbstractAddressListComplianceModule";
-import { fetchEvent } from "../../event/fetch/event";
-import { fetchComplianceModule } from "../fetch/compliance-module";
+import { ByteArray, Bytes, crypto, ethereum } from '@graphprotocol/graph-ts';
+import type { GlobalAddressListChange as GlobalAddressListChangeEvent } from '../../../generated/templates/AbstractAddressListComplianceModule/AbstractAddressListComplianceModule';
+import { fetchEvent } from '../../event/fetch/event';
+import { fetchComplianceModule } from '../fetch/compliance-module';
 
 export function isAddressListComplianceModule(typeId: Bytes): boolean {
   return (
     typeId ==
       crypto.keccak256(
-        ByteArray.fromUTF8("AddressBlockListComplianceModule")
+        ByteArray.fromUTF8('AddressBlockListComplianceModule')
       ) ||
     typeId ==
       crypto.keccak256(
-        ByteArray.fromUTF8("IdentityAllowListComplianceModule")
+        ByteArray.fromUTF8('IdentityAllowListComplianceModule')
       ) ||
     typeId ==
-      crypto.keccak256(ByteArray.fromUTF8("IdentityBlockListComplianceModule"))
+      crypto.keccak256(ByteArray.fromUTF8('IdentityBlockListComplianceModule'))
   );
 }
 
 export function decodeAddressListParams(data: Bytes): Array<Bytes> {
-  const result = new Array<Bytes>();
+  const result: Bytes[] = [];
 
   let offset = 32;
 
   const lenBytes = Bytes.fromUint8Array(data.subarray(offset, offset + 32));
-  const lenVal = ethereum.decode("uint256", lenBytes);
+  const lenVal = ethereum.decode('uint256', lenBytes);
 
   if (lenVal === null) {
     return result;
@@ -46,7 +46,7 @@ export function decodeAddressListParams(data: Bytes): Array<Bytes> {
 export function handleGlobalAddressListChange(
   event: GlobalAddressListChangeEvent
 ): void {
-  fetchEvent(event, "GlobalAddressListChange");
+  fetchEvent(event, 'GlobalAddressListChange');
 
   const complianceModule = fetchComplianceModule(event.address);
   let addresses = complianceModule.addresses;

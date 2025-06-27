@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from 'zod/v4';
 
 /**
  * Available airdrop distribution mechanisms.
@@ -9,7 +9,7 @@ import { z } from "zod/v4";
  * - `merkle`: Merkle tree-based distribution for gas-efficient claims
  * - `claim`: Open claiming mechanism where users can request tokens
  */
-export const airdropTypes = ["whitelist", "merkle", "claim"] as const;
+export const airdropTypes = ['whitelist', 'merkle', 'claim'] as const;
 
 /**
  * Creates a Zod schema for validating airdrop types.
@@ -24,7 +24,7 @@ export const airdropTypes = ["whitelist", "merkle", "claim"] as const;
  * ```
  */
 export const airdropType = () =>
-  z.enum(airdropTypes).describe("Type of airdrop mechanism");
+  z.enum(airdropTypes).describe('Type of airdrop mechanism');
 
 /**
  * Type representing valid airdrop mechanisms.

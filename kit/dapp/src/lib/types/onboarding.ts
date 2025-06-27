@@ -7,9 +7,9 @@
  * - Investor: Users who can invest (requires wallet + identity)
  */
 
-import { type UserRole } from "@/lib/zod/validators/user-roles";
+import type { UserRole } from '@/lib/zod/validators/user-roles';
 
-export type OnboardingType = "platform" | "issuer" | "investor";
+export type OnboardingType = 'platform' | 'issuer' | 'investor';
 
 export interface OnboardingStatus {
   type: OnboardingType;
@@ -44,24 +44,24 @@ export function determineOnboardingType(
 ): OnboardingType {
   // Platform onboarding is needed if user is admin and platform setup is incomplete
   if (
-    userRole === "admin" &&
+    userRole === 'admin' &&
     !isPlatformOnboardingComplete(platformRequirements)
   ) {
-    return "platform";
+    return 'platform';
   }
 
   // Issuer onboarding for issuers
-  if (userRole === "issuer") {
-    return "issuer";
+  if (userRole === 'issuer') {
+    return 'issuer';
   }
 
   // Investor onboarding for investors (users)
-  if (userRole === "investor") {
-    return "investor";
+  if (userRole === 'investor') {
+    return 'investor';
   }
 
   // Default to issuer for any other case
-  return "issuer";
+  return 'issuer';
 }
 
 /**
@@ -104,11 +104,16 @@ export function isInvestorOnboardingComplete(
  */
 export function getOnboardingSteps(type: OnboardingType): string[] {
   switch (type) {
-    case "platform":
-      return ["wallet", "system", "assets"];
-    case "issuer":
-      return ["wallet"];
-    case "investor":
-      return ["wallet", "identity"]; // Identity step to be implemented
+    case 'platform':
+      return ['wallet', 'system', 'assets'];
+    case 'issuer':
+      return ['wallet'];
+    case 'investor':
+      return ['wallet', 'identity']; // Identity step to be implemented
+    default: {
+      // This should never happen as TypeScript ensures all cases are covered
+      const exhaustiveCheck: never = type;
+      throw new Error(`Unhandled onboarding type: ${exhaustiveCheck}`);
+    }
   }
 }

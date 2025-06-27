@@ -1,8 +1,8 @@
-import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
+import { describe, expect, it } from 'bun:test';
+import { theGraphClient, theGraphGraphql } from '../utils/thegraph-client';
 
-describe("XVP Settlements", () => {
-  it("should fetch a list of all XVP settlements", async () => {
+describe('XVP Settlements', () => {
+  it('should fetch a list of all XVP settlements', async () => {
     const query = theGraphGraphql(
       `query {
         xvPSettlements(orderBy: createdAt, orderDirection: desc) {
@@ -81,7 +81,7 @@ describe("XVP Settlements", () => {
     });
   });
 
-  it("should fetch XVP settlement creation events", async () => {
+  it('should fetch XVP settlement creation events', async () => {
     const query = theGraphGraphql(
       `query {
         events(
@@ -118,7 +118,7 @@ describe("XVP Settlements", () => {
     // Verify event structure
     events.forEach((event: any) => {
       expect(event.id).toBeDefined();
-      expect(event.eventName).toBe("XvPSettlementCreated");
+      expect(event.eventName).toBe('XvPSettlementCreated');
       expect(event.blockNumber).toBeDefined();
       expect(event.blockTimestamp).toBeDefined();
       expect(event.transactionHash).toBeDefined();
@@ -128,7 +128,7 @@ describe("XVP Settlements", () => {
     });
   });
 
-  it("should have proper flow asset relationships", async () => {
+  it('should have proper flow asset relationships', async () => {
     const query = theGraphGraphql(
       `query {
         xvPSettlementFlows(orderBy: amount, orderDirection: desc) {
@@ -179,7 +179,7 @@ describe("XVP Settlements", () => {
 
     // The flows should represent our expected asset types from the script
     const assetTypes = flows.map((flow: any) => flow.asset.type);
-    expect(assetTypes).toContain("stablecoin");
-    expect(assetTypes).toContain("equity");
+    expect(assetTypes).toContain('stablecoin');
+    expect(assetTypes).toContain('equity');
   });
 });

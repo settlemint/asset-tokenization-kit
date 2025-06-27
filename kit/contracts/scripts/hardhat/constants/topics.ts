@@ -6,10 +6,10 @@
  */
 
 export enum ATKTopic {
-  kyc = "kyc",
-  aml = "aml",
-  collateral = "collateral",
-  isin = "isin",
-  assetClassification = "assetClassification",
-  basePrice = "basePrice",
+  kyc = 'kyc',
+  aml = 'aml',
+  collateral = 'collateral',
+  isin = 'isin',
+  assetClassification = 'assetClassification',
+  basePrice = 'basePrice',
 }

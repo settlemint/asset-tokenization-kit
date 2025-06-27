@@ -1,8 +1,8 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
-import { ComplianceModuleRegistry } from "../../../generated/schema";
-import { ComplianceModuleRegistry as ComplianceModuleRegistryTemplate } from "../../../generated/templates";
-import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
-import { fetchAccount } from "../../account/fetch/account";
+import { type Address, Bytes } from '@graphprotocol/graph-ts';
+import { ComplianceModuleRegistry } from '../../../generated/schema';
+import { ComplianceModuleRegistry as ComplianceModuleRegistryTemplate } from '../../../generated/templates';
+import { fetchAccessControl } from '../../access-control/fetch/accesscontrol';
+import { fetchAccount } from '../../account/fetch/account';
 
 export function fetchComplianceModuleRegistry(
   address: Address
