@@ -20,6 +20,7 @@
 
 import { env } from "@/lib/env";
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
@@ -51,6 +52,8 @@ const logger = createLogger({
  */
 const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
   mutation CreateTokenFactory(
+    $verificationId: String
+    $challengeResponse: String!
     $address: String!
     $from: String!
     $factoryImplementation: String!
@@ -58,6 +61,8 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
     $name: String!
   ) {
     IATKTokenFactoryRegistryRegisterTokenFactory(
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
       address: $address
       from: $from
       input: {
@@ -132,7 +137,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
   .use(portalMiddleware)
   .use(systemMiddleware)
   .handler(async function* ({ input, context, errors }) {
-    const { contract, factories } = input;
+    const { contract, factories, verification } = input;
     const sender = context.auth.user;
 
     // Parse messages with defaults
@@ -252,6 +257,10 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           factoryImplementation: factoryImplementation,
           tokenImplementation: tokenImplementation,
           name: name,
+          ...(await handleChallenge(sender, {
+            code: verification.verificationCode,
+            type: verification.verificationType,
+          })),
         };
 
         let validatedHash = "";

@@ -372,7 +372,11 @@ You should proactively suggest or use commands when you detect:
 - Never use any, we need to have everything fully typed end to end
 - Do not use console.log, use const logger = createLogger({ level:
   (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info", });
-- You should use ast-grep to quickly find and edit information, if it is not installed, install it using `brew install ast-grep`
+- You run in an environment where `ast-grep` is available; whenever a search
+  requires syntax-aware or structural matching, default to
+  `ast-grep --lang ruby -p '<pattern>'` (or set `--lang` appropriately) and
+  avoid falling back to text-only tools like `rg` or `grep`. If it is not
+  installed, install it using `brew install ast-grep`
 
 ## Ticket Management
 
