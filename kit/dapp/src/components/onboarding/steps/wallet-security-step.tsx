@@ -61,7 +61,7 @@ export function WalletSecurityStep({
       onSuccess?.();
     },
     onError: (error: Error) => {
-      toast.error(error?.message ?? "Failed to set PIN code");
+      toast.error(error.message ?? "Failed to set PIN code");
     },
   });
 
@@ -88,7 +88,7 @@ export function WalletSecurityStep({
         });
       }
     }
-  }, [onRegisterAction, hasPincode, isPincodeSet]);
+  }, [onRegisterAction, hasPincode, isPincodeSet, handleSetPincode]);
 
   return (
     <div className="h-full flex flex-col">

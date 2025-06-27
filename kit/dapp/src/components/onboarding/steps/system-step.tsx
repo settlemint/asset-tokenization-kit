@@ -154,7 +154,15 @@ export function SystemStep({
         });
       }
     }
-  }, [onRegisterAction, hasSystem, isDeploying, showPincodePrompt, form]);
+  }, [
+    onRegisterAction,
+    hasSystem,
+    isDeploying,
+    showPincodePrompt,
+    form,
+    handleDeploySystem,
+    handlePincodeSubmit,
+  ]);
 
   // Define Circle component
   const Circle = forwardRef<
