@@ -1,0 +1,100 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Ultracite Rules
+
+## Accessibility
+- Valid ARIA usage: roles, properties, required attributes
+- Keyboard support: focusable elements, handlers (onClick→onKey*)
+- Required attributes: lang (html), title (iframe/SVG), type (button)
+- Meaningful content: alt text, labels, headings
+- No: accessKey, aria-hidden on focusable, distracting elements
+
+## TypeScript
+- Forbidden: any, @ts-ignore, enums, namespaces, var
+- Required: import/export type, const for single assignment
+- No: non-null assertions (!), parameter reassignment, type annotations on literals
+- Arrays: T[] or Array<T> consistently
+
+## React/Next.js
+- Keys: no array indices
+- Hooks: complete deps, top-level only
+- No: nested components, prop assignment, <img> in Next.js
+- Use: <></> over Fragment
+
+## Code Quality
+- No unused: imports, variables, parameters, labels, members
+- No duplicates: cases, members, conditions, JSX props, keys
+- No empty: blocks, interfaces, destructuring
+- Required: === over ==, isNaN() for NaN, exhaustive switches
+
+## Modern Practices
+- Prefer: for...of, String.slice(), .at(), Date.now(), template literals
+- Use: node: protocol, object spread, numeric separators
+- Include: radix in parseInt(), Symbol descriptions
+- No: delete, eval, console, debugger, hardcoded secrets
+
+## Clean Code
+- No: nested ternaries, yoda expressions, unnecessary code
+- Group: getters/setters, overload signatures
+- Handle: promises, errors (new Error), import cycles
+- Consistent: object literals, curly braces, accessibility modifiers
+
+# TypeScript Guidelines
+
+## Core Principles
+
+- **Strict mode always** (all strict compiler options)
+- **Never use `any`** without exceptional justification (OK in generic function bodies)
+- **Prefer `type` over `interface`** unless you need declaration merging
+- **Use `readonly` by default**
+- **No default exports** (unless framework requires)
+- **Import type** for type-only imports
+
+## Key Patterns
+
+### Discriminated Unions (prevent impossible states)
+```ts
+type FetchState<T> =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "success"; data: T }
+  | { status: "error"; error: Error };
+```
+
+### Const Assertions over Enums
+```ts
+const Status = { PENDING: "PENDING", APPROVED: "APPROVED" } as const;
+type Status = typeof Status[keyof typeof Status];
+```
+
+### Result Types for Error Handling
+```ts
+type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };
+```
+
+### Branded Types
+```ts
+type UserId = string & { readonly brand: unique symbol };
+const UserId = (id: string): UserId => id as UserId;
+```
+
+## Naming Conventions
+
+- **Files:** `kebab-case.ts`
+- **Variables/Functions:** `camelCase`
+- **Types/Classes:** `PascalCase`
+- **Constants:** `UPPER_SNAKE_CASE`
+- **Type Parameters:** `TKey`, `TValue` (prefix with T)
+
+## Important Rules
+
+- Return types on top-level functions (except JSX components)
+- Parameter objects over multiple parameters
+- Optional properties sparingly (prefer `T | undefined`)
+- `noUncheckedIndexedAccess` aware (changes array/object access behavior)
+- Schema-first with Zod: define schema → derive type
+- Type guards for runtime checking
+- Install packages with `bun add` for latest versions

@@ -3,6 +3,7 @@
 ## Role: Quality Assurance Lead
 
 You are acting as a **Quality Assurance Lead** with expertise in:
+
 - Test automation and strategy
 - Continuous integration/deployment
 - Code quality metrics and standards
@@ -11,6 +12,7 @@ You are acting as a **Quality Assurance Lead** with expertise in:
 - Test coverage optimization
 
 Your quality philosophy:
+
 - "Quality is everyone's responsibility"
 - "Prevent defects, don't just find them"
 - "Automate everything that can be automated"
@@ -21,6 +23,7 @@ Your quality philosophy:
 When running quality assurance, delegate to specialized agents:
 
 ### Agent 1: Test Execution Specialist
+
 ```
 OBJECTIVE: Run all test suites efficiently
 TASKS:
@@ -32,6 +35,7 @@ OUTPUT: Complete test results
 ```
 
 ### Agent 2: Static Analysis Expert
+
 ```
 OBJECTIVE: Ensure code quality standards
 TASKS:
@@ -43,6 +47,7 @@ OUTPUT: Code quality report
 ```
 
 ### Agent 3: Coverage Analyst
+
 ```
 OBJECTIVE: Assess test coverage
 TASKS:
@@ -54,6 +59,7 @@ OUTPUT: Coverage analysis report
 ```
 
 ### Agent 4: Failure Investigator
+
 ```
 OBJECTIVE: Diagnose test failures
 TASKS:
@@ -67,6 +73,7 @@ OUTPUT: Failure analysis and fixes
 ## QA Execution Phases
 
 ### Phase 1: Pre-flight Checks
+
 ```
 FOCUS: Environment readiness
 CHECKS:
@@ -77,6 +84,7 @@ CHECKS:
 ```
 
 ### Phase 2: Quality Gates
+
 ```
 FOCUS: Automated quality checks
 GATES:
@@ -88,6 +96,7 @@ GATES:
 ```
 
 ### Phase 3: Results Analysis
+
 ```
 FOCUS: Actionable insights
 OUTPUTS:
@@ -98,15 +107,18 @@ OUTPUTS:
 ```
 
 ## Purpose
-Run the complete QA test suite to ensure code quality and prevent regressions. ALL tests must pass before proceeding with any work.
+
+Run the complete QA test suite to ensure code quality and prevent regressions.
+ALL tests must pass before proceeding with any work.
 
 ## Pre-execution Setup
 
 1. **Check Test Environment**
+
    ```bash
    # Ensure dependencies are installed
    bun install
-   
+
    # Verify test configuration exists
    test -f CLAUDE.md || echo "WARNING: CLAUDE.md not found"
    ```
@@ -119,6 +131,7 @@ Run the complete QA test suite to ensure code quality and prevent regressions. A
 ## Execution Protocol
 
 ### Step 1: Run Full Test Suite
+
 ```bash
 # Start with the CI command if available
 bun run ci
@@ -130,10 +143,12 @@ bun run test:e2e           # End-to-end tests
 ```
 
 ### Step 2: Monitor Results
+
 - **Green Path**: All tests pass → Proceed with confidence
 - **Red Path**: ANY test fails → STOP and investigate
 
 ### Step 3: Failure Response Protocol
+
 If any test fails:
 
 1. **Immediate Actions**
@@ -142,13 +157,14 @@ If any test fails:
    - Note which test(s) failed
 
 2. **Investigation**
+
    ```bash
    # Re-run failed test in isolation
    bun test path/to/failed.test.ts
-   
+
    # Run with verbose output
    bun test --verbose
-   
+
    # Check for environment issues
    bun run lint
    bun run typecheck
@@ -167,23 +183,21 @@ If any test fails:
 
 ## Common Issues and Solutions
 
-| Issue | Solution |
-|-------|----------|
-| Dependency errors | Run `bun install --force` |
-| Type errors | Run `bun run typecheck` and fix |
-| Lint errors | Run `bun run lint --fix` |
-| Database issues | Check migrations: `bun run db:migrate` |
-| Port conflicts | Kill processes on required ports |
+| Issue             | Solution                               |
+| ----------------- | -------------------------------------- |
+| Dependency errors | Run `bun install --force`              |
+| Type errors       | Run `bun run typecheck` and fix        |
+| Lint errors       | Run `bun run lint --fix`               |
+| Database issues   | Check migrations: `bun run db:migrate` |
+| Port conflicts    | Kill processes on required ports       |
 
 ## Success Criteria
-✅ All unit tests pass
-✅ All integration tests pass
-✅ All E2E tests pass
-✅ No type errors
-✅ No lint errors
-✅ Coverage thresholds met (if configured)
+
+✅ All unit tests pass ✅ All integration tests pass ✅ All E2E tests pass ✅ No
+type errors ✅ No lint errors ✅ Coverage thresholds met (if configured)
 
 ## Important Rules
+
 - **NEVER** skip or comment out failing tests
 - **NEVER** modify test expectations to make them pass
 - **ALWAYS** fix the actual issue causing test failure
@@ -208,8 +222,7 @@ If any test fails:
 
 ### Code Quality
 - TypeScript: ✅ No errors
-- ESLint: ✅ No errors, 0 warnings
-- Prettier: ✅ All files formatted
+- Biome: ✅ No errors, 0 warnings
 - Bundle Size: 2.4MB (↓ 0.1MB from baseline)
 
 ### Coverage Report
