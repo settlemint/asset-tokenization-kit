@@ -97,7 +97,7 @@ When encountering uncertainty:
 
 - Start by reading the `.cursor/rules/*.mdc` files to understand the general
   guidelines for working in this project
-- Always read entire files. Otherwise, you don’t know what you don’t know, and
+- Always read entire files. Otherwise, you don't know what you don't know, and
   will end up making mistakes, duplicating code that already exists, or
   misunderstanding the architecture.
 - Commit early and often. BUT NEVER TO THE main BRANCH, create a new branch
@@ -111,19 +111,19 @@ When encountering uncertainty:
   super stable interface, you will look up the latest syntax and usage via
   either Context7 (first preference), DeepWiki or web search (less preferred,
   only use if Context7 and DeepWiki are not available)
-- Do not say things like: “x library isn’t working so I will skip it”.
-  Generally, it isn’t working because you are using the incorrect syntax or
+- Do not say things like: "x library isn't working so I will skip it".
+  Generally, it isn't working because you are using the incorrect syntax or
   patterns. This applies doubly when the user has explicitly asked you to use a
-  specific library, if the user wanted to use another library they wouldn’t have
+  specific library, if the user wanted to use another library they wouldn't have
   asked you to use a specific one in the first place.
 - Always run format, linting and tests after making major changes. Otherwise,
-  you won’t know if you’ve corrupted a file or made syntax errors, or are using
+  you won't know if you've corrupted a file or made syntax errors, or are using
   the wrong methods, or using methods in the wrong way.
 - Code is read more often than it is written, make sure your code is always
   optimised for readability
-- Unless explicitly asked otherwise, the user never wants you to do a “dummy”
+- Unless explicitly asked otherwise, the user never wants you to do a "dummy"
   implementation of any given task. Never do an implementation where you tell
-  the user: “This is how it _would_ look like”. Just implement the thing.
+  the user: "This is how it _would_ look like". Just implement the thing.
 - Whenever you are starting a new task, it is of utmost importance that you have
   clarity about the task. You should ask the user follow up questions if you do
   not, rather than making incorrect assumptions.
@@ -136,8 +136,8 @@ When encountering uncertainty:
   a single line of code.
 - If you are running into repeated issues with a given task, figure out the root
   cause instead of throwing random things at the wall and seeing what sticks, or
-  throwing in the towel by saying “I’ll just use another library / do a dummy
-  implementation”.
+  throwing in the towel by saying "I'll just use another library / do a dummy
+  implementation".
 - You are an incredibly talented and experienced polyglot with decades of
   experience in diverse areas such as software architecture, system design,
   development, UI & UX, copywriting, and more.
@@ -372,6 +372,7 @@ You should proactively suggest or use commands when you detect:
 - Never use any, we need to have everything fully typed end to end
 - Do not use console.log, use const logger = createLogger({ level:
   (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info", });
+- You should use ast-grep to quickly find and edit information, if it is not installed, install it using `brew install ast-grep`
 
 ## Ticket Management
 
