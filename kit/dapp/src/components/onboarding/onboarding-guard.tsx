@@ -1,17 +1,17 @@
 import { authClient } from "@/lib/auth/auth.client";
 import {
-  type OnboardingType,
-  type PlatformOnboardingRequirements,
   determineOnboardingType,
   isInvestorOnboardingComplete,
   isIssuerOnboardingComplete,
   isPlatformOnboardingComplete,
+  type OnboardingType,
+  type PlatformOnboardingRequirements,
 } from "@/lib/types/onboarding";
 import { useMounted } from "@/lib/utils/use-mounted";
 import { orpc } from "@/orpc";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { type PropsWithChildren, useEffect } from "react";
+import { useEffect, type PropsWithChildren } from "react";
 
 type OnboardingGuardProps = PropsWithChildren<{
   require: "onboarded" | "not-onboarded" | "platform-onboarded";
@@ -34,13 +34,13 @@ export function OnboardingGuard({
   const userLoading = isPending;
 
   // Fetch system address from settings
-  const { data: systemAddress } = useQuery({
+  const { data: systemAddress, isLoading: systemAddressLoading } = useQuery({
     ...orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } }),
     enabled: !!user,
   });
 
   // Fetch system details including token factories
-  const { data: systemDetails } = useQuery({
+  const { data: systemDetails, isLoading: systemDetailsLoading } = useQuery({
     ...orpc.system.read.queryOptions({
       input: { id: systemAddress ?? "" },
     }),
@@ -89,7 +89,11 @@ export function OnboardingGuard({
 
   const isPlatformOnboarded =
     isPlatformOnboardingComplete(platformRequirements);
-  const isCheckComplete = !userLoading && user !== undefined;
+  const isCheckComplete =
+    !userLoading &&
+    user !== undefined &&
+    !systemAddressLoading &&
+    !systemDetailsLoading;
 
   useEffect(() => {
     if (!isCheckComplete) {
