@@ -24,7 +24,7 @@
     "db:track": "settlemint hasura track -a",
     "db:studio": "drizzle-kit studio",
     "db:auth:generate": "bunx --bun @better-auth/cli generate -y --config=src/lib/auth/index.ts --output=src/lib/db/schemas/auth.ts",
-    "test": "bun --bun test ./src",
+    "test": "BETTER_AUTH_URL=http://localhost:3000 bun --bun test ./src --preload ./test/setup-dom.ts",
     "test:integration": "bun --bun test ./test --preload ./test/scripts/setup.ts"
   },
   "devDependencies": {
