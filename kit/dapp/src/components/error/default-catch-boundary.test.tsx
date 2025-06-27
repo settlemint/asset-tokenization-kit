@@ -29,7 +29,7 @@ describe("DefaultCatchBoundary", () => {
   };
 
   it("renders error information correctly", () => {
-    render(<DefaultCatchBoundary error={mockError} />);
+    render(<DefaultCatchBoundary {...mockError} />);
 
     expect(screen.getByText("error.genericError")).toBeInTheDocument();
     expect(screen.getByText("error.genericErrorMessage")).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe("DefaultCatchBoundary", () => {
       }),
     };
 
-    render(<DefaultCatchBoundary error={customError} />);
+    render(<DefaultCatchBoundary {...customError} />);
 
     expect(screen.getByText("Custom error occurred")).toBeInTheDocument();
   });
@@ -56,7 +56,7 @@ describe("DefaultCatchBoundary", () => {
       invalidate: mockInvalidate,
     });
 
-    render(<DefaultCatchBoundary error={mockError} />);
+    render(<DefaultCatchBoundary {...mockError} />);
 
     const retryButton = screen.getByText("error.tryAgain");
     expect(retryButton).toBeInTheDocument();
@@ -68,7 +68,7 @@ describe("DefaultCatchBoundary", () => {
   });
 
   it("renders with proper error code display", () => {
-    render(<DefaultCatchBoundary error={mockError} />);
+    render(<DefaultCatchBoundary {...mockError} />);
 
     const errorCodeDisplay = screen.getByText("500");
     expect(errorCodeDisplay).toHaveClass("text-9xl");
@@ -81,13 +81,13 @@ describe("DefaultCatchBoundary", () => {
       error: new Error(),
     };
 
-    render(<DefaultCatchBoundary error={errorWithoutMessage} />);
+    render(<DefaultCatchBoundary {...errorWithoutMessage} />);
 
     expect(screen.getByText("error.genericErrorMessage")).toBeInTheDocument();
   });
 
   it("applies correct styling and layout", () => {
-    render(<DefaultCatchBoundary error={mockError} />);
+    render(<DefaultCatchBoundary {...mockError} />);
 
     const container = screen.getByText("error.genericError").closest("div");
     expect(container).toHaveClass(

@@ -1,12 +1,14 @@
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
 import { expect } from "bun:test";
 import * as matchers from "@testing-library/jest-dom/matchers";
+import "./bun-test-dom";
 
 // Register Happy DOM globally for React component testing
 GlobalRegistrator.register();
 
 // Add custom matchers from @testing-library/jest-dom
-expect.extend(matchers);
+// These matchers provide better assertions for DOM testing
+expect.extend(matchers as any);
 
 // Mock navigator.clipboard
 if (typeof navigator !== "undefined") {

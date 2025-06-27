@@ -2,7 +2,11 @@ import { describe, expect, it, mock, beforeEach } from "bun:test";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { LanguageSwitcher } from "./language-switcher";
-import type { ButtonProps } from "../ui/button";
+
+type ButtonProps = {
+  children: React.ReactNode;
+  [key: string]: unknown;
+};
 
 // Mock i18next
 const mockChangeLanguage = mock(() => Promise.resolve());
@@ -107,7 +111,7 @@ describe("LanguageSwitcher", () => {
 
     const germanOption = screen.getAllByTestId("dropdown-item")[1]; // Deutsch
     const user = userEvent.setup();
-    await user.click(germanOption);
+    await user.click(germanOption!);
 
     expect(mockChangeLanguage).toHaveBeenCalledWith("de");
   });

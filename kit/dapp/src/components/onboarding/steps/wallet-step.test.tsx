@@ -1,6 +1,5 @@
 import { describe, expect, it, mock, beforeEach } from "bun:test";
 import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
 // Mock better-auth/react first to prevent initialization errors
 void mock.module("better-auth/react", () => ({
