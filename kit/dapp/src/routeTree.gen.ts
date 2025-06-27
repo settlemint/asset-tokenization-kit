@@ -21,6 +21,7 @@ import { Route as PrivateOnboardedIndexRouteImport } from './routes/_private/_on
 import { Route as PrivateOnboardingPlatformRouteImport } from './routes/_private/onboarding/platform'
 import { Route as PrivateOnboardingIssuerRouteImport } from './routes/_private/onboarding/issuer'
 import { Route as PrivateOnboardingInvestorRouteImport } from './routes/_private/onboarding/investor'
+import { Route as PrivateOnboardedAssetDesignerIndexRouteImport } from './routes/_private/_onboarded/asset-designer/index'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -77,6 +78,12 @@ const PrivateOnboardingInvestorRoute =
     path: '/investor',
     getParentRoute: () => PrivateOnboardingRoute,
   } as any)
+const PrivateOnboardedAssetDesignerIndexRoute =
+  PrivateOnboardedAssetDesignerIndexRouteImport.update({
+    id: '/asset-designer/',
+    path: '/asset-designer/',
+    getParentRoute: () => PrivateOnboardedRoute,
+  } as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -102,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/': typeof PrivateOnboardedIndexRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
+  '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
@@ -111,6 +119,7 @@ export interface FileRoutesByTo {
   '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/': typeof PrivateOnboardedIndexRoute
   '/onboarding': typeof PrivateOnboardingIndexRoute
+  '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -124,6 +133,7 @@ export interface FileRoutesById {
   '/_private/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/_private/_onboarded/': typeof PrivateOnboardedIndexRoute
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
+  '/_private/_onboarded/asset-designer/': typeof PrivateOnboardedAssetDesignerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/onboarding/platform'
     | '/'
     | '/onboarding/'
+    | '/asset-designer'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/onboarding/platform'
     | '/'
     | '/onboarding'
+    | '/asset-designer'
   id:
     | '__root__'
     | '/_private'
@@ -157,6 +169,7 @@ export interface FileRouteTypes {
     | '/_private/onboarding/platform'
     | '/_private/_onboarded/'
     | '/_private/onboarding/'
+    | '/_private/_onboarded/asset-designer/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardingInvestorRouteImport
       parentRoute: typeof PrivateOnboardingRoute
     }
+    '/_private/_onboarded/asset-designer/': {
+      id: '/_private/_onboarded/asset-designer/'
+      path: '/asset-designer'
+      fullPath: '/asset-designer'
+      preLoaderRoute: typeof PrivateOnboardedAssetDesignerIndexRouteImport
+      parentRoute: typeof PrivateOnboardedRoute
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -295,10 +315,13 @@ declare module '@tanstack/react-start/server' {
 
 interface PrivateOnboardedRouteChildren {
   PrivateOnboardedIndexRoute: typeof PrivateOnboardedIndexRoute
+  PrivateOnboardedAssetDesignerIndexRoute: typeof PrivateOnboardedAssetDesignerIndexRoute
 }
 
 const PrivateOnboardedRouteChildren: PrivateOnboardedRouteChildren = {
   PrivateOnboardedIndexRoute: PrivateOnboardedIndexRoute,
+  PrivateOnboardedAssetDesignerIndexRoute:
+    PrivateOnboardedAssetDesignerIndexRoute,
 }
 
 const PrivateOnboardedRouteWithChildren =
