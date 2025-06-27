@@ -8309,6 +8309,511 @@ type ATKTokenIdentityProxyTransactionReceiptOutput {
   userOperationReceipts: [UserOperationReceipt!]
 }
 
+type ATKTokenSale {
+  DEFAULT_ADMIN_ROLE: String
+
+  """Role for withdrawing funds from the sale."""
+  FUNDS_MANAGER_ROLE: String
+
+  """Role for managing the token sale parameters and operations."""
+  SALE_ADMIN_ROLE: String
+
+  """Base price of the token in smallest units."""
+  basePrice: String
+
+  """
+  Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+  """
+  getRoleAdmin(role: String!): String
+
+  """
+  Returns various sale parameters.
+  Number of tokens remaining for sale, Timestamp when the sale ends, Timestamp when the sale starts, Total number of tokens sold.
+  """
+  getSaleInfo: ATKTokenSaleGetSaleInfoOutput
+
+  """
+  Returns the token price in a specific payment currency.
+  The price in the specified currency.
+  """
+  getTokenPrice(amount: String!, currency: String!): ATKTokenSaleGetTokenPriceOutput
+
+  """Maximum number of tokens that can be sold."""
+  hardCap: String
+
+  """Returns `true` if `account` has been granted `role`."""
+  hasRole(account: String!, role: String!): Boolean
+  id: ID
+
+  """Indicates whether any particular address is the trusted forwarder."""
+  isTrustedForwarder(forwarder: String!): Boolean
+
+  """Maximum purchase amount per buyer in tokens."""
+  maxPurchase: String
+
+  """Minimum purchase amount in tokens."""
+  minPurchase: String
+
+  """Returns true if the contract is paused, and false otherwise."""
+  paused: Boolean
+
+  """Mapping of payment currencies to their configurations."""
+  paymentCurrencies(address0: String!): ATKTokenSalePaymentCurrenciesOutput
+
+  """
+  Returns the amount of tokens a buyer has purchased.
+  Amount of tokens purchased.
+  """
+  purchasedAmount(buyer: String!): ATKTokenSalePurchasedAmountOutput
+
+  """Mapping of buyers to their purchase records."""
+  purchases(address0: String!): ATKTokenSalePurchasesOutput
+
+  """End time of the sale (Unix timestamp)."""
+  saleEndTime: String
+
+  """Start time of the sale (Unix timestamp)."""
+  saleStartTime: String
+
+  """
+  Returns the current sale status.
+  Current status of the sale (e.g., setup, active, paused, ended).
+  """
+  saleStatus: Int
+
+  """Current status of the sale."""
+  status: Int
+
+  """See {IERC165-supportsInterface}."""
+  supportsInterface(interfaceId: String!): Boolean
+
+  """The SMART token being sold."""
+  token: String
+
+  """Total number of tokens sold so far."""
+  totalSold: String
+
+  """Returns the address of the trusted forwarder."""
+  trustedForwarder: String
+
+  """Vesting configuration."""
+  vesting: ATKTokenSaleVestingOutput
+
+  """
+  Returns the amount of tokens a buyer can withdraw based on vesting.
+  Amount of tokens withdrawable.
+  """
+  withdrawableAmount(buyer: String!): ATKTokenSaleWithdrawableAmountOutput
+}
+
+input ATKTokenSaleAddPaymentCurrencyInput {
+  """Address of the ERC20 token to be used as payment"""
+  currency: String!
+
+  """Price ratio compared to the base price (scaled by 10^18)"""
+  priceRatio: String!
+}
+
+input ATKTokenSaleBuyTokensWithERC20Input {
+  """Amount of payment currency to spend"""
+  amount: String!
+
+  """Address of the ERC20 token used for payment"""
+  currency: String!
+}
+
+input ATKTokenSaleConfigureVestingInput {
+  """Duration before any tokens can be claimed (in seconds)"""
+  vestingCliff: String!
+
+  """Duration of the full vesting period in seconds"""
+  vestingDuration: String!
+
+  """Timestamp when vesting begins"""
+  vestingStart: String!
+}
+
+type ATKTokenSaleFactory {
+  DEFAULT_ADMIN_ROLE: String
+
+  """Role for deploying new token sales."""
+  DEPLOYER_ROLE: String
+
+  """
+  Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+  """
+  getRoleAdmin(role: String!): String
+
+  """Returns `true` if `account` has been granted `role`."""
+  hasRole(account: String!, role: String!): Boolean
+  id: ID
+
+  """The address of the token sale implementation contract."""
+  implementation: String
+
+  """
+  Mapping to track if an address is a token sale deployed by this factory.
+  """
+  isTokenSale(address0: String!): Boolean
+
+  """Indicates whether any particular address is the trusted forwarder."""
+  isTrustedForwarder(forwarder: String!): Boolean
+
+  """See {IERC165-supportsInterface}."""
+  supportsInterface(interfaceId: String!): Boolean
+
+  """Returns the address of the trusted forwarder."""
+  trustedForwarder: String
+}
+
+input ATKTokenSaleFactoryDeployTokenSaleInput {
+  """Base price of tokens in smallest units"""
+  basePrice: String!
+
+  """Maximum amount of tokens to be sold"""
+  hardCap: String!
+
+  """The address that will be granted admin roles for the sale"""
+  saleAdmin: String!
+
+  """Duration of the sale in seconds"""
+  saleDuration: String!
+
+  """Timestamp when the sale starts"""
+  saleStart: String!
+
+  """A nonce to use in the salt for CREATE2 deployment"""
+  saltNonce: String!
+
+  """The address of the token to be sold"""
+  tokenAddress: String!
+}
+
+input ATKTokenSaleFactoryGrantRoleInput {
+  account: String!
+  role: String!
+}
+
+input ATKTokenSaleFactoryInitializeInput {
+  """The address of the token sale implementation contract"""
+  implementation_: String!
+}
+
+input ATKTokenSaleFactoryRenounceRoleInput {
+  callerConfirmation: String!
+  role: String!
+}
+
+input ATKTokenSaleFactoryRevokeRoleInput {
+  account: String!
+  role: String!
+}
+
+"""Returns the transaction hash"""
+type ATKTokenSaleFactoryTransactionOutput {
+  transactionHash: String
+}
+
+"""Returns the transaction receipt"""
+type ATKTokenSaleFactoryTransactionReceiptOutput {
+  """Blob Gas Price"""
+  blobGasPrice: String
+
+  """Blob Gas Used"""
+  blobGasUsed: String
+
+  """Block Hash"""
+  blockHash: String!
+
+  """Block Number"""
+  blockNumber: String!
+
+  """Contract Address"""
+  contractAddress: String
+
+  """Cumulative Gas Used"""
+  cumulativeGasUsed: String!
+
+  """Effective Gas Price"""
+  effectiveGasPrice: String!
+
+  """Events (decoded from the logs)"""
+  events: JSON!
+
+  """From"""
+  from: String!
+
+  """Gas Used"""
+  gasUsed: String!
+
+  """Logs"""
+  logs: JSON!
+
+  """Logs Bloom"""
+  logsBloom: String!
+
+  """ABI-encoded string containing the revert reason"""
+  revertReason: String
+
+  """Decoded revert reason"""
+  revertReasonDecoded: String
+
+  """Root"""
+  root: String
+
+  """Status"""
+  status: TransactionReceiptStatus!
+
+  """To"""
+  to: String
+
+  """Transaction Hash"""
+  transactionHash: String!
+
+  """Transaction Index"""
+  transactionIndex: Int!
+
+  """Type"""
+  type: String!
+
+  """List of user operation receipts associated with this transaction"""
+  userOperationReceipts: [UserOperationReceipt!]
+}
+
+input ATKTokenSaleFactoryUpdateImplementationInput {
+  """The address of the new implementation"""
+  newImplementation: String!
+}
+
+type ATKTokenSaleGetSaleInfoOutput {
+  remainingTokens: String
+  saleEndTime_: String
+  saleStartTime_: String
+  soldAmount: String
+}
+
+type ATKTokenSaleGetTokenPriceOutput {
+  price: String
+}
+
+input ATKTokenSaleGrantRoleInput {
+  account: String!
+  role: String!
+}
+
+input ATKTokenSaleInitializeInput {
+  basePrice_: String!
+  hardCap_: String!
+
+  """Duration of the sale in seconds"""
+  saleDuration: String!
+
+  """Timestamp when the sale starts"""
+  saleStart: String!
+
+  """The address of the SMART token being sold"""
+  tokenAddress: String!
+}
+
+type ATKTokenSalePaymentCurrenciesOutput {
+  accepted: Boolean
+  priceRatio: String
+}
+
+type ATKTokenSaleProxy {
+  id: ID
+}
+
+"""Returns the transaction hash"""
+type ATKTokenSaleProxyTransactionOutput {
+  transactionHash: String
+}
+
+"""Returns the transaction receipt"""
+type ATKTokenSaleProxyTransactionReceiptOutput {
+  """Blob Gas Price"""
+  blobGasPrice: String
+
+  """Blob Gas Used"""
+  blobGasUsed: String
+
+  """Block Hash"""
+  blockHash: String!
+
+  """Block Number"""
+  blockNumber: String!
+
+  """Contract Address"""
+  contractAddress: String
+
+  """Cumulative Gas Used"""
+  cumulativeGasUsed: String!
+
+  """Effective Gas Price"""
+  effectiveGasPrice: String!
+
+  """Events (decoded from the logs)"""
+  events: JSON!
+
+  """From"""
+  from: String!
+
+  """Gas Used"""
+  gasUsed: String!
+
+  """Logs"""
+  logs: JSON!
+
+  """Logs Bloom"""
+  logsBloom: String!
+
+  """ABI-encoded string containing the revert reason"""
+  revertReason: String
+
+  """Decoded revert reason"""
+  revertReasonDecoded: String
+
+  """Root"""
+  root: String
+
+  """Status"""
+  status: TransactionReceiptStatus!
+
+  """To"""
+  to: String
+
+  """Transaction Hash"""
+  transactionHash: String!
+
+  """Transaction Index"""
+  transactionIndex: Int!
+
+  """Type"""
+  type: String!
+
+  """List of user operation receipts associated with this transaction"""
+  userOperationReceipts: [UserOperationReceipt!]
+}
+
+type ATKTokenSalePurchasedAmountOutput {
+  purchased: String
+}
+
+type ATKTokenSalePurchasesOutput {
+  purchased: String
+  withdrawn: String
+}
+
+input ATKTokenSaleRemovePaymentCurrencyInput {
+  """Address of the ERC20 token to remove"""
+  currency: String!
+}
+
+input ATKTokenSaleRenounceRoleInput {
+  callerConfirmation: String!
+  role: String!
+}
+
+input ATKTokenSaleRevokeRoleInput {
+  account: String!
+  role: String!
+}
+
+input ATKTokenSaleSetPurchaseLimitsInput {
+  maxPurchase_: String!
+  minPurchase_: String!
+}
+
+"""Returns the transaction hash"""
+type ATKTokenSaleTransactionOutput {
+  transactionHash: String
+}
+
+"""Returns the transaction receipt"""
+type ATKTokenSaleTransactionReceiptOutput {
+  """Blob Gas Price"""
+  blobGasPrice: String
+
+  """Blob Gas Used"""
+  blobGasUsed: String
+
+  """Block Hash"""
+  blockHash: String!
+
+  """Block Number"""
+  blockNumber: String!
+
+  """Contract Address"""
+  contractAddress: String
+
+  """Cumulative Gas Used"""
+  cumulativeGasUsed: String!
+
+  """Effective Gas Price"""
+  effectiveGasPrice: String!
+
+  """Events (decoded from the logs)"""
+  events: JSON!
+
+  """From"""
+  from: String!
+
+  """Gas Used"""
+  gasUsed: String!
+
+  """Logs"""
+  logs: JSON!
+
+  """Logs Bloom"""
+  logsBloom: String!
+
+  """ABI-encoded string containing the revert reason"""
+  revertReason: String
+
+  """Decoded revert reason"""
+  revertReasonDecoded: String
+
+  """Root"""
+  root: String
+
+  """Status"""
+  status: TransactionReceiptStatus!
+
+  """To"""
+  to: String
+
+  """Transaction Hash"""
+  transactionHash: String!
+
+  """Transaction Index"""
+  transactionIndex: Int!
+
+  """Type"""
+  type: String!
+
+  """List of user operation receipts associated with this transaction"""
+  userOperationReceipts: [UserOperationReceipt!]
+}
+
+type ATKTokenSaleVestingOutput {
+  cliff: String
+  duration: String
+  enabled: Boolean
+  startTime: String
+}
+
+input ATKTokenSaleWithdrawFundsInput {
+  """Address of the currency to withdraw (address(0) for native currency)"""
+  currency: String!
+
+  """Address to receive the funds"""
+  recipient: String!
+}
+
+type ATKTokenSaleWithdrawableAmountOutput {
+  withdrawable: String
+}
+
 type ATKTopicSchemeRegistryImplementation {
   DEFAULT_ADMIN_ROLE: String
 
@@ -12510,6 +13015,29 @@ input DeployContractATKTokenIdentityProxyInput {
 
   """The address of the `IATKSystem` contract."""
   systemAddress: String!
+}
+
+input DeployContractATKTokenSaleFactoryInput {
+  """The address of the forwarder contract for ERC2771"""
+  forwarder: String!
+}
+
+input DeployContractATKTokenSaleInput {
+  """The address of the forwarder contract for ERC2771"""
+  forwarder: String!
+}
+
+input DeployContractATKTokenSaleProxyInput {
+  """The address of the admin of the proxy"""
+  _admin: String!
+
+  """
+  Data to pass to the implementation for initialization function call, or empty bytes if no call
+  """
+  _data: String!
+
+  """The address of the initial implementation of the proxy"""
+  _logic: String!
 }
 
 input DeployContractATKTopicSchemeRegistryImplementationInput {
@@ -18795,6 +19323,270 @@ type IATKTokenIdentityTransactionReceiptOutput {
 
   """List of user operation receipts associated with this transaction"""
   userOperationReceipts: [UserOperationReceipt!]
+}
+
+type IATKTokenSale {
+  """
+  Returns the base price of the token.
+  The base price in smallest units.
+  """
+  basePrice: String
+
+  """
+  Returns various sale parameters.
+  Number of tokens remaining for sale, Timestamp when the sale ends, Timestamp when the sale starts, Total number of tokens sold.
+  """
+  getSaleInfo: IATKTokenSaleGetSaleInfoOutput
+
+  """
+  Returns the token price in a specific payment currency.
+  The price in the specified currency.
+  """
+  getTokenPrice(amount: String!, currency: String!): IATKTokenSaleGetTokenPriceOutput
+
+  """
+  Returns the maximum number of tokens that can be sold.
+  The hard cap amount.
+  """
+  hardCap: String
+  id: ID
+
+  """
+  Returns the maximum purchase amount per buyer in tokens.
+  The maximum purchase amount.
+  """
+  maxPurchase: String
+
+  """
+  Returns the minimum purchase amount in tokens.
+  The minimum purchase amount.
+  """
+  minPurchase: String
+
+  """
+  Returns the payment currency configuration.
+  Whether the currency is accepted, The price ratio for the currency.
+  """
+  paymentCurrencies(currency: String!): IATKTokenSalePaymentCurrenciesOutput
+
+  """
+  Returns the amount of tokens a buyer has purchased.
+  Amount of tokens purchased.
+  """
+  purchasedAmount(buyer: String!): IATKTokenSalePurchasedAmountOutput
+
+  """
+  Returns the end time of the sale.
+  The sale end timestamp.
+  """
+  saleEndTime: String
+
+  """
+  Returns the start time of the sale.
+  The sale start timestamp.
+  """
+  saleStartTime: String
+
+  """
+  Returns the current sale status.
+  Current status of the sale (e.g., setup, active, paused, ended).
+  """
+  saleStatus: IATKTokenSaleSaleStatusOutput
+
+  """
+  Returns the SMART token being sold.
+  The SMART token contract.
+  """
+  token: String
+
+  """
+  Returns the total number of tokens sold so far.
+  The total sold amount.
+  """
+  totalSold: String
+
+  """
+  Returns the vesting configuration.
+  Vesting cliff in seconds, Vesting duration in seconds, Whether vesting is enabled, Vesting start timestamp.
+  """
+  vesting: IATKTokenSaleVestingOutput
+
+  """
+  Returns the amount of tokens a buyer can withdraw based on vesting.
+  Amount of tokens withdrawable.
+  """
+  withdrawableAmount(buyer: String!): IATKTokenSaleWithdrawableAmountOutput
+}
+
+input IATKTokenSaleAddPaymentCurrencyInput {
+  """Address of the ERC20 token to be used as payment"""
+  currency: String!
+
+  """Price ratio compared to the base price (scaled by 10^18)"""
+  priceRatio: String!
+}
+
+input IATKTokenSaleBuyTokensWithERC20Input {
+  """Amount of payment currency to spend"""
+  amount: String!
+
+  """Address of the ERC20 token used for payment"""
+  currency: String!
+}
+
+input IATKTokenSaleConfigureVestingInput {
+  """Duration before any tokens can be claimed (in seconds)"""
+  vestingCliff: String!
+
+  """Duration of the full vesting period in seconds"""
+  vestingDuration: String!
+
+  """Timestamp when vesting begins"""
+  vestingStart: String!
+}
+
+type IATKTokenSaleGetSaleInfoOutput {
+  remainingTokens: String
+  saleEndTime: String
+  saleStartTime: String
+  soldAmount: String
+}
+
+type IATKTokenSaleGetTokenPriceOutput {
+  price: String
+}
+
+input IATKTokenSaleInitializeInput {
+  """Base price of tokens in smallest units (e.g. wei, satoshi)"""
+  basePrice: String!
+
+  """Maximum amount of tokens to be sold"""
+  hardCap: String!
+
+  """Duration of the sale in seconds"""
+  saleDuration: String!
+
+  """Timestamp when the sale starts"""
+  saleStart: String!
+
+  """The address of the SMART token being sold"""
+  tokenAddress: String!
+}
+
+type IATKTokenSalePaymentCurrenciesOutput {
+  accepted: Boolean
+  priceRatio: String
+}
+
+type IATKTokenSalePurchasedAmountOutput {
+  purchased: String
+}
+
+input IATKTokenSaleRemovePaymentCurrencyInput {
+  """Address of the ERC20 token to remove"""
+  currency: String!
+}
+
+type IATKTokenSaleSaleStatusOutput {
+  status: Int
+}
+
+input IATKTokenSaleSetPurchaseLimitsInput {
+  """Maximum amount of tokens that can be purchased per buyer"""
+  maxPurchase: String!
+
+  """Minimum amount of tokens that can be purchased"""
+  minPurchase: String!
+}
+
+"""Returns the transaction hash"""
+type IATKTokenSaleTransactionOutput {
+  transactionHash: String
+}
+
+"""Returns the transaction receipt"""
+type IATKTokenSaleTransactionReceiptOutput {
+  """Blob Gas Price"""
+  blobGasPrice: String
+
+  """Blob Gas Used"""
+  blobGasUsed: String
+
+  """Block Hash"""
+  blockHash: String!
+
+  """Block Number"""
+  blockNumber: String!
+
+  """Contract Address"""
+  contractAddress: String
+
+  """Cumulative Gas Used"""
+  cumulativeGasUsed: String!
+
+  """Effective Gas Price"""
+  effectiveGasPrice: String!
+
+  """Events (decoded from the logs)"""
+  events: JSON!
+
+  """From"""
+  from: String!
+
+  """Gas Used"""
+  gasUsed: String!
+
+  """Logs"""
+  logs: JSON!
+
+  """Logs Bloom"""
+  logsBloom: String!
+
+  """ABI-encoded string containing the revert reason"""
+  revertReason: String
+
+  """Decoded revert reason"""
+  revertReasonDecoded: String
+
+  """Root"""
+  root: String
+
+  """Status"""
+  status: TransactionReceiptStatus!
+
+  """To"""
+  to: String
+
+  """Transaction Hash"""
+  transactionHash: String!
+
+  """Transaction Index"""
+  transactionIndex: Int!
+
+  """Type"""
+  type: String!
+
+  """List of user operation receipts associated with this transaction"""
+  userOperationReceipts: [UserOperationReceipt!]
+}
+
+type IATKTokenSaleVestingOutput {
+  cliff: String
+  duration: String
+  enabled: Boolean
+  startTime: String
+}
+
+input IATKTokenSaleWithdrawFundsInput {
+  """Address of the currency to withdraw (address(0) for native currency)"""
+  currency: String!
+
+  """Address to receive the funds"""
+  recipient: String!
+}
+
+type IATKTokenSaleWithdrawableAmountOutput {
+  withdrawable: String
 }
 
 type IATKTopicSchemeRegistry {
@@ -35965,6 +36757,763 @@ type Mutation {
     verificationId: String
   ): ATKTokenIdentityImplementationTransactionOutput
 
+  """Activates the sale, allowing purchases to be made."""
+  ATKTokenSaleActivateSale(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """Adds a payment currency that can be used to purchase tokens."""
+  ATKTokenSaleAddPaymentCurrency(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleAddPaymentCurrencyInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """
+  Allows a buyer to purchase tokens using native currency (e.g., ETH).
+  The amount of tokens purchased.
+  """
+  ATKTokenSaleBuyTokens(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """
+  Allows a buyer to purchase tokens using an ERC20 token.
+  The amount of tokens purchased.
+  """
+  ATKTokenSaleBuyTokensWithERC20(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleBuyTokensWithERC20Input!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """Configures vesting parameters if tokens should vest over time."""
+  ATKTokenSaleConfigureVesting(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleConfigureVestingInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """Ends the sale permanently before its scheduled end time."""
+  ATKTokenSaleEndSale(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """
+  Deploys a new token sale contract.
+  The address of the deployed token sale.
+  """
+  ATKTokenSaleFactoryDeployTokenSale(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleFactoryDeployTokenSaleInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleFactoryTransactionOutput
+
+  """
+  Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleGranted} event.
+  """
+  ATKTokenSaleFactoryGrantRole(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleFactoryGrantRoleInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleFactoryTransactionOutput
+
+  """Initializes the factory contract."""
+  ATKTokenSaleFactoryInitialize(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleFactoryInitializeInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleFactoryTransactionOutput
+
+  """
+  Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `callerConfirmation`. May emit a {RoleRevoked} event.
+  """
+  ATKTokenSaleFactoryRenounceRole(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleFactoryRenounceRoleInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleFactoryTransactionOutput
+
+  """
+  Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleRevoked} event.
+  """
+  ATKTokenSaleFactoryRevokeRole(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleFactoryRevokeRoleInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleFactoryTransactionOutput
+
+  """Updates the implementation address."""
+  ATKTokenSaleFactoryUpdateImplementation(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleFactoryUpdateImplementationInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleFactoryTransactionOutput
+
+  """
+  Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleGranted} event.
+  """
+  ATKTokenSaleGrantRole(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleGrantRoleInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """Initializes the token sale contract."""
+  ATKTokenSaleInitialize(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleInitializeInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """Pauses the sale, temporarily preventing purchases."""
+  ATKTokenSalePauseSale(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """Removes a payment currency from the list of accepted currencies."""
+  ATKTokenSaleRemovePaymentCurrency(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleRemovePaymentCurrencyInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """
+  Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `callerConfirmation`. May emit a {RoleRevoked} event.
+  """
+  ATKTokenSaleRenounceRole(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleRenounceRoleInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """
+  Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleRevoked} event.
+  """
+  ATKTokenSaleRevokeRole(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleRevokeRoleInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """Sets individual purchase limits per buyer."""
+  ATKTokenSaleSetPurchaseLimits(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleSetPurchaseLimitsInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """
+  Allows the issuer to withdraw accumulated funds from sales.
+  The amount withdrawn.
+  """
+  ATKTokenSaleWithdrawFunds(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: ATKTokenSaleWithdrawFundsInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
+  """
+  Allows a buyer to withdraw their vested tokens.
+  The amount of tokens withdrawn.
+  """
+  ATKTokenSaleWithdrawTokens(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ATKTokenSaleTransactionOutput
+
   """
   Registers multiple topic schemes in a single transaction.
   topicIds are generated from names using keccak256 hash.
@@ -41436,6 +42985,84 @@ type Mutation {
     verificationId: String
   ): ContractDeploymentTransactionOutput
 
+  """Deploy a ATKTokenSale contract"""
+  DeployContractATKTokenSale(
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+    constructorArguments: DeployContractATKTokenSaleInput!
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ContractDeploymentTransactionOutput
+
+  """Deploy a ATKTokenSaleFactory contract"""
+  DeployContractATKTokenSaleFactory(
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+    constructorArguments: DeployContractATKTokenSaleFactoryInput!
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ContractDeploymentTransactionOutput
+
+  """Deploy a ATKTokenSaleProxy contract"""
+  DeployContractATKTokenSaleProxy(
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+    constructorArguments: DeployContractATKTokenSaleProxyInput!
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ContractDeploymentTransactionOutput
+
   """Deploy a ATKTopicSchemeRegistryImplementation contract"""
   DeployContractATKTopicSchemeRegistryImplementation(
     """
@@ -42778,6 +44405,31 @@ type Mutation {
 
   """Deploy a IATKTokenIdentity contract"""
   DeployContractIATKTokenIdentity(
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): ContractDeploymentTransactionOutput
+
+  """Deploy a IATKTokenSale contract"""
+  DeployContractIATKTokenSale(
     """
     Challenge response that is used to verify access to the private key of the from address
     """
@@ -53609,6 +55261,433 @@ type Mutation {
     """
     verificationId: String
   ): IATKTokenIdentityTransactionOutput
+
+  """Activates the sale, allowing purchases to be made."""
+  IATKTokenSaleActivateSale(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
+
+  """Adds a payment currency that can be used to purchase tokens."""
+  IATKTokenSaleAddPaymentCurrency(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: IATKTokenSaleAddPaymentCurrencyInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
+
+  """
+  Allows a buyer to purchase tokens using native currency (e.g., ETH).
+  The amount of tokens purchased.
+  """
+  IATKTokenSaleBuyTokens(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
+
+  """
+  Allows a buyer to purchase tokens using an ERC20 token.
+  The amount of tokens purchased.
+  """
+  IATKTokenSaleBuyTokensWithERC20(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: IATKTokenSaleBuyTokensWithERC20Input!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
+
+  """Configures vesting parameters if tokens should vest over time."""
+  IATKTokenSaleConfigureVesting(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: IATKTokenSaleConfigureVestingInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
+
+  """Ends the sale permanently before its scheduled end time."""
+  IATKTokenSaleEndSale(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
+
+  """Initializes the token sale contract."""
+  IATKTokenSaleInitialize(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: IATKTokenSaleInitializeInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
+
+  """Pauses the sale, temporarily preventing purchases."""
+  IATKTokenSalePauseSale(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
+
+  """Removes a payment currency from the list of accepted currencies."""
+  IATKTokenSaleRemovePaymentCurrency(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: IATKTokenSaleRemovePaymentCurrencyInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
+
+  """Sets individual purchase limits per buyer."""
+  IATKTokenSaleSetPurchaseLimits(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: IATKTokenSaleSetPurchaseLimitsInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
+
+  """
+  Allows the issuer to withdraw accumulated funds from sales.
+  The amount withdrawn.
+  """
+  IATKTokenSaleWithdrawFunds(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+    input: IATKTokenSaleWithdrawFundsInput!
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
+
+  """
+  Allows a buyer to withdraw their vested tokens.
+  The amount of tokens withdrawn.
+  """
+  IATKTokenSaleWithdrawTokens(
+    """The address of the contract"""
+    address: String!
+
+    """
+    Challenge response that is used to verify access to the private key of the from address
+    """
+    challengeResponse: String
+
+    """The address of the sender"""
+    from: String!
+
+    """Gas limit"""
+    gasLimit: String
+
+    """Gas price"""
+    gasPrice: String
+
+    """Metadata (store custom metadata from your application)"""
+    metadata: JSON
+
+    """Simulate the transaction before sending it"""
+    simulate: Boolean
+
+    """Payable value (wei)"""
+    value: String
+
+    """
+    Verification ID that is used to verify access to the private key of the from address
+    """
+    verificationId: String
+  ): IATKTokenSaleTransactionOutput
 
   """
   Registers multiple topic schemes in a single transaction.
@@ -76499,6 +78578,144 @@ type Query {
     """The address of the contract"""
     address: String!
   ): ATKTokenIdentityProxy
+  ATKTokenSale(
+    """The address of the contract"""
+    address: String!
+  ): ATKTokenSale
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleActivateSaleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleAddPaymentCurrencyReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleBuyTokensReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleBuyTokensWithERC20Receipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleConfigureVestingReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleEndSaleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+  ATKTokenSaleFactory(
+    """The address of the contract"""
+    address: String!
+  ): ATKTokenSaleFactory
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleFactoryDeployTokenSaleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleFactoryTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleFactoryGrantRoleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleFactoryTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleFactoryInitializeReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleFactoryTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleFactoryRenounceRoleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleFactoryTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleFactoryRevokeRoleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleFactoryTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleFactoryUpdateImplementationReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleFactoryTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleGrantRoleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleInitializeReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSalePauseSaleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+  ATKTokenSaleProxy(
+    """The address of the contract"""
+    address: String!
+  ): ATKTokenSaleProxy
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleRemovePaymentCurrencyReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleRenounceRoleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleRevokeRoleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleSetPurchaseLimitsReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleWithdrawFundsReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  ATKTokenSaleWithdrawTokensReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): ATKTokenSaleTransactionReceiptOutput
   ATKTopicSchemeRegistryImplementation(
     """The address of the contract"""
     address: String!
@@ -78881,6 +81098,82 @@ type Query {
     """The transaction hash"""
     transactionHash: String!
   ): IATKTokenIdentityTransactionReceiptOutput
+  IATKTokenSale(
+    """The address of the contract"""
+    address: String!
+  ): IATKTokenSale
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSaleActivateSaleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSaleAddPaymentCurrencyReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSaleBuyTokensReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSaleBuyTokensWithERC20Receipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSaleConfigureVestingReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSaleEndSaleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSaleInitializeReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSalePauseSaleReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSaleRemovePaymentCurrencyReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSaleSetPurchaseLimitsReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSaleWithdrawFundsReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
+
+  """Fetches the receipt for the given transaction hash"""
+  IATKTokenSaleWithdrawTokensReceipt(
+    """The transaction hash"""
+    transactionHash: String!
+  ): IATKTokenSaleTransactionReceiptOutput
   IATKTopicSchemeRegistry(
     """The address of the contract"""
     address: String!
@@ -83061,6 +85354,42 @@ type Query {
     transactionHash: String
   ): ContractsPaginatedOutput
 
+  """Get all contracts for the ATKTokenSale ABI"""
+  getContractsAtkTokenSale(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsPaginatedOutput
+
+  """Get all contracts for the ATKTokenSaleFactory ABI"""
+  getContractsAtkTokenSaleFactory(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsPaginatedOutput
+
+  """Get all contracts for the ATKTokenSaleProxy ABI"""
+  getContractsAtkTokenSaleProxy(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsPaginatedOutput
+
   """Get all contracts for the ATKTopicSchemeRegistryImplementation ABI"""
   getContractsAtkTopicSchemeRegistryImplementation(
     """Page number, starts from 0"""
@@ -83997,6 +86326,48 @@ type Query {
   ): ContractsDeployStatusPaginatedOutput
 
   """
+  Get all contracts with their deployment status for the ATKTokenSale ABI
+  """
+  getContractsDeployStatusAtkTokenSale(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the ATKTokenSaleFactory ABI
+  """
+  getContractsDeployStatusAtkTokenSaleFactory(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the ATKTokenSaleProxy ABI
+  """
+  getContractsDeployStatusAtkTokenSaleProxy(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
   Get all contracts with their deployment status for the ATKTopicSchemeRegistryImplementation ABI
   """
   getContractsDeployStatusAtkTopicSchemeRegistryImplementation(
@@ -84624,6 +86995,20 @@ type Query {
   Get all contracts with their deployment status for the IATKTokenIdentity ABI
   """
   getContractsDeployStatusIatkTokenIdentity(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the IATKTokenSale ABI
+  """
+  getContractsDeployStatusIatkTokenSale(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -85916,6 +88301,18 @@ type Query {
 
   """Get all contracts for the IATKTokenIdentity ABI"""
   getContractsIatkTokenIdentity(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsPaginatedOutput
+
+  """Get all contracts for the IATKTokenSale ABI"""
+  getContractsIatkTokenSale(
     """Page number, starts from 0"""
     page: Int = 0
 
@@ -95088,6 +97485,48 @@ type Subscription {
   ): ContractsDeployStatusPaginatedOutput
 
   """
+  Get all contracts with their deployment status for the ATKTokenSale ABI
+  """
+  getContractsDeployStatusAtkTokenSale(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the ATKTokenSaleFactory ABI
+  """
+  getContractsDeployStatusAtkTokenSaleFactory(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the ATKTokenSaleProxy ABI
+  """
+  getContractsDeployStatusAtkTokenSaleProxy(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
   Get all contracts with their deployment status for the ATKTopicSchemeRegistryImplementation ABI
   """
   getContractsDeployStatusAtkTopicSchemeRegistryImplementation(
@@ -95715,6 +98154,20 @@ type Subscription {
   Get all contracts with their deployment status for the IATKTokenIdentity ABI
   """
   getContractsDeployStatusIatkTokenIdentity(
+    """Page number, starts from 0"""
+    page: Int = 0
+
+    """Number of items per page"""
+    pageSize: Int = 100
+
+    """Transaction hash filter"""
+    transactionHash: String
+  ): ContractsDeployStatusPaginatedOutput
+
+  """
+  Get all contracts with their deployment status for the IATKTokenSale ABI
+  """
+  getContractsDeployStatusIatkTokenSale(
     """Page number, starts from 0"""
     page: Int = 0
 
