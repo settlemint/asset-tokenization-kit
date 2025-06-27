@@ -98,42 +98,47 @@ export function SystemStep({
   }, [hasSystem, isDeploying]);
 
   // Handle pincode submission
-  const handlePincodeSubmit = (values: PincodeFormValues) => {
-    createSystem({
-      verification: {
-        verificationCode: values.pincode,
-        verificationType: "pincode",
-      },
-      messages: {
-        // Transaction tracking messages
-        streamTimeout: t("system.transaction-tracking.stream-timeout"),
-        waitingForMining: t("system.transaction-tracking.waiting-for-mining"),
-        transactionFailed: t("system.transaction-tracking.transaction-failed"),
-        transactionDropped: t(
-          "system.transaction-tracking.transaction-dropped"
-        ),
-        waitingForIndexing: t(
-          "system.transaction-tracking.waiting-for-indexing"
-        ),
-        transactionIndexed: t(
-          "system.transaction-tracking.transaction-indexed"
-        ),
-        indexingTimeout: t("system.transaction-tracking.indexing-timeout"),
-        // System-specific messages
-        systemCreated: t("system.messages.created"),
-        creatingSystem: t("system.messages.creating"),
-        systemCreationFailed: t("system.messages.creation-failed"),
-        bootstrappingSystem: t("system.messages.bootstrapping-system"),
-        bootstrapFailed: t("system.messages.bootstrap-failed"),
-        systemCreatedBootstrapFailed: t(
-          "system.messages.system-created-bootstrap-failed"
-        ),
-        initialLoading: t("system.messages.initial-loading"),
-        noResultError: t("system.messages.no-result-error"),
-        defaultError: t("system.messages.default-error"),
-      },
-    });
-  };
+  const handlePincodeSubmit = useCallback(
+    (values: PincodeFormValues) => {
+      createSystem({
+        verification: {
+          verificationCode: values.pincode,
+          verificationType: "pincode",
+        },
+        messages: {
+          // Transaction tracking messages
+          streamTimeout: t("system.transaction-tracking.stream-timeout"),
+          waitingForMining: t("system.transaction-tracking.waiting-for-mining"),
+          transactionFailed: t(
+            "system.transaction-tracking.transaction-failed"
+          ),
+          transactionDropped: t(
+            "system.transaction-tracking.transaction-dropped"
+          ),
+          waitingForIndexing: t(
+            "system.transaction-tracking.waiting-for-indexing"
+          ),
+          transactionIndexed: t(
+            "system.transaction-tracking.transaction-indexed"
+          ),
+          indexingTimeout: t("system.transaction-tracking.indexing-timeout"),
+          // System-specific messages
+          systemCreated: t("system.messages.created"),
+          creatingSystem: t("system.messages.creating"),
+          systemCreationFailed: t("system.messages.creation-failed"),
+          bootstrappingSystem: t("system.messages.bootstrapping-system"),
+          bootstrapFailed: t("system.messages.bootstrap-failed"),
+          systemCreatedBootstrapFailed: t(
+            "system.messages.system-created-bootstrap-failed"
+          ),
+          initialLoading: t("system.messages.initial-loading"),
+          noResultError: t("system.messages.no-result-error"),
+          defaultError: t("system.messages.default-error"),
+        },
+      });
+    },
+    [createSystem, t]
+  );
 
   // Register the action with parent
   useEffect(() => {

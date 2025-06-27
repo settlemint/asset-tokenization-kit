@@ -12,7 +12,7 @@ import { queryClient } from "@/lib/query.client";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -65,7 +65,7 @@ export function WalletSecurityStep({
     },
   });
 
-  const handleSetPincode = () => {
+  const handleSetPincode = useCallback(() => {
     if (!isPending && !hasPincode) {
       const values = form.getValues();
       if (values.pincode.length === 6) {
@@ -74,7 +74,7 @@ export function WalletSecurityStep({
         void form.trigger("pincode");
       }
     }
-  };
+  }, [isPending, hasPincode, form, enablePincode]);
 
   // Register the action with parent
   useEffect(() => {

@@ -11,7 +11,7 @@ import { useSettings } from "@/hooks/use-settings";
 import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/platform")({
@@ -127,29 +127,29 @@ function PlatformOnboarding() {
     },
   ];
 
-  const handleStepChange = (stepId: string) => {
+  const handleStepChange = useCallback((stepId: string) => {
     setCurrentStepId(stepId);
-  };
+  }, []);
 
-  const handleWalletSuccess = () => {
+  const handleWalletSuccess = useCallback(() => {
     // Auto-advance to security step after wallet generation
     setCurrentStepId("security");
-  };
+  }, []);
 
-  const handleSecuritySuccess = () => {
+  const handleSecuritySuccess = useCallback(() => {
     // Auto-advance to system step after PIN setup
     setCurrentStepId("system");
-  };
+  }, []);
 
-  const handleSystemSuccess = () => {
+  const handleSystemSuccess = useCallback(() => {
     // Auto-advance to next step after successful system deployment
     setCurrentStepId("assets");
-  };
+  }, []);
 
-  const handleAssetsSuccess = () => {
+  const handleAssetsSuccess = useCallback(() => {
     // Don't navigate away immediately - let the user see the success state
     // They can click "Complete" to finish
-  };
+  }, []);
 
   // Navigation handlers
   const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
@@ -160,7 +160,7 @@ function PlatformOnboarding() {
   const systemActionRef = useRef<(() => void) | null>(null);
   const assetsActionRef = useRef<(() => void) | null>(null);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     // Check if current step needs special action
     if (
       currentStepId === "wallet" &&
@@ -238,16 +238,29 @@ function PlatformOnboarding() {
         void navigate({ to: "/" });
       }
     }
-  };
+  }, [
+    currentStepId,
+    user,
+    session?.user?.pincodeEnabled,
+    systemAddress,
+    systemDetails,
+    currentStepIndex,
+    steps,
+    navigate,
+    walletActionRef,
+    securityActionRef,
+    systemActionRef,
+    assetsActionRef,
+  ]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     if (currentStepIndex > 0) {
       const prevStep = steps[currentStepIndex - 1];
       if (prevStep) {
         setCurrentStepId(prevStep.id);
       }
     }
-  };
+  }, [currentStepIndex, steps]);
 
   // Determine if next button should be disabled
   const isNextDisabled = () => {
