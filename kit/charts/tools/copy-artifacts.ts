@@ -8,7 +8,8 @@
  */
 
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { Glob } from "bun";
+import { $, Glob } from "bun";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { getKitProjectPath } from "../../../tools/root";
 
@@ -53,26 +54,17 @@ const CHARTS_GENESIS_FILE = join(CHARTS_GENESIS_DIR, "genesis-output.json");
 // =============================================================================
 
 /**
- * Check if a directory exists using Bun's APIs
+ * Check if a directory exists using Node.js standard fs
  */
 async function directoryExists(path: string): Promise<boolean> {
-  try {
-    const glob = new Glob("*");
-    const scanner = glob.scan({ cwd: path, onlyFiles: false });
-    await scanner.next();
-    return true;
-  } catch {
-    return false;
-  }
+  return existsSync(path);
 }
 
 /**
- * Create a directory using Bun's file I/O
+ * Create a directory using Bun's shell command
  */
 async function createDirectory(path: string): Promise<void> {
-  const tempFile = join(path, ".gitkeep");
-  await Bun.write(tempFile, "");
-  await Bun.file(tempFile).unlink();
+  await $`mkdir -p ${path}`.quiet();
 }
 
 // =============================================================================

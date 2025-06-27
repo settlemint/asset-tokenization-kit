@@ -13,6 +13,7 @@
 
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { $ } from "bun";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { getKitProjectPath } from "../../../tools/root";
 
@@ -223,7 +224,7 @@ AVAILABLE ABI NAMES:
     Asset Tokens:
       ${AVAILABLE_ABIS.assetTokens.join(", ")}
 
-    Core SMART:
+    Core ATK:
       ${AVAILABLE_ABIS.coreSmart.join(", ")}
 
     Open Zeppelin:
@@ -374,10 +375,10 @@ export const ${contractName}Abi = ${JSON.stringify(artifact.abi, null, 2)} as co
 export type ${contractName}Abi = typeof ${contractName}Abi;
 `;
 
-    // Ensure output directory exists by writing a temporary file
-    const tempPath = join(OUTPUT_DIR, ".gitkeep");
-    await Bun.write(tempPath, "");
-    await Bun.file(tempPath).unlink();
+    // Ensure output directory exists
+    if (!existsSync(OUTPUT_DIR)) {
+      await $`mkdir -p ${OUTPUT_DIR}`.quiet();
+    }
 
     const outputPath = join(OUTPUT_DIR, `${contractName}.ts`);
     await Bun.write(outputPath, abiContent);

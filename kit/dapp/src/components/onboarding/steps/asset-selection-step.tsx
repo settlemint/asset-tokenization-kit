@@ -297,28 +297,52 @@ export function AssetSelectionStep({
                                   render={({ field }) => (
                                     <FormItem
                                       key={assetType}
-                                      className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 hover:bg-accent/50 transition-colors"
+                                      className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 hover:bg-accent/50 transition-colors cursor-pointer"
+                                      onClick={() => {
+                                        const isCurrentlyChecked =
+                                          field.value.includes(assetType);
+                                        const checked = !isCurrentlyChecked;
+                                        if (checked) {
+                                          field.onChange([
+                                            ...field.value,
+                                            assetType,
+                                          ]);
+                                        } else {
+                                          field.onChange(
+                                            field.value.filter(
+                                              (value) => value !== assetType
+                                            )
+                                          );
+                                        }
+                                      }}
                                     >
                                       <FormControl>
-                                        <Checkbox
-                                          checked={field.value.includes(
-                                            assetType
-                                          )}
-                                          onCheckedChange={(checked) => {
-                                            if (checked) {
-                                              field.onChange([
-                                                ...field.value,
-                                                assetType,
-                                              ]);
-                                            } else {
-                                              field.onChange(
-                                                field.value.filter(
-                                                  (value) => value !== assetType
-                                                )
-                                              );
-                                            }
+                                        <div
+                                          onClick={(e) => {
+                                            e.stopPropagation();
                                           }}
-                                        />
+                                        >
+                                          <Checkbox
+                                            checked={field.value.includes(
+                                              assetType
+                                            )}
+                                            onCheckedChange={(checked) => {
+                                              if (checked) {
+                                                field.onChange([
+                                                  ...field.value,
+                                                  assetType,
+                                                ]);
+                                              } else {
+                                                field.onChange(
+                                                  field.value.filter(
+                                                    (value) =>
+                                                      value !== assetType
+                                                  )
+                                                );
+                                              }
+                                            }}
+                                          />
+                                        </div>
                                       </FormControl>
                                       <div className="flex-1 space-y-1 leading-none">
                                         <div className="flex items-center gap-2">

@@ -127,14 +127,10 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  * ```
  */
 export const factoryCreate = onboardedRouter.token.factoryCreate
+  .use(permissionsMiddleware({ system: ["create"] }))
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .use(systemMiddleware)
-  .use(
-    permissionsMiddleware({
-      system: ["create"],
-    })
-  )
   .handler(async function* ({ input, context, errors }) {
     const { contract, factories } = input;
     const sender = context.auth.user;

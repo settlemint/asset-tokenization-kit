@@ -3,21 +3,26 @@ import { Logo } from "@/components/logo/logo";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import { AssetSelectionStep } from "@/components/onboarding/steps/asset-selection-step";
 import { SystemStep } from "@/components/onboarding/steps/system-step";
+import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
 import { WalletStep } from "@/components/onboarding/steps/wallet-step";
 import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { useSettings } from "@/hooks/use-settings";
 import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/platform")({
   loader: async ({ context }) => {
     // Load user and system address in parallel
-    const systemAddress = await context.queryClient.ensureQueryData(
-      orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
-    );
+    const [user, systemAddress] = await Promise.all([
+      context.queryClient.ensureQueryData(orpc.user.me.queryOptions()),
+      context.queryClient.ensureQueryData(
+        orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
+      ),
+    ]);
 
     // If we have a system address, ensure system details are loaded
     let systemDetails = null;
@@ -29,42 +34,53 @@ export const Route = createFileRoute("/_private/onboarding/platform")({
       );
     }
 
-    return { systemAddress, systemDetails };
+    return { user, systemAddress, systemDetails };
   },
   component: PlatformOnboarding,
 });
 
 function PlatformOnboarding() {
-  const { data: session } = authClient.useSession();
   const { t } = useTranslation(["general", "onboarding"]);
   const navigate = useNavigate();
+  const { data: session } = authClient.useSession();
 
   // Get data from loader
-  const { systemAddress, systemDetails } = Route.useLoaderData();
+  const {
+    user,
+    systemAddress: loaderSystemAddress,
+    systemDetails,
+  } = Route.useLoaderData();
 
-  const user = session?.user;
+  // Get real-time system address from settings hook
+  const [liveSystemAddress] = useSettings("SYSTEM_ADDRESS");
 
-  // Initialize with "wallet" as default, will update when session data loads
+  // Use live system address if available, otherwise fall back to loader data
+  const systemAddress = liveSystemAddress ?? loaderSystemAddress;
+
+  // Start with first step, will update when data loads
   const [currentStepId, setCurrentStepId] = useState("wallet");
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Update the current step when session data becomes available
+  // Determine initial step based on what's completed
+  const getInitialStep = () => {
+    if (!user?.wallet) return "wallet";
+    if (!session?.user?.pincodeEnabled) return "security";
+    if (!systemAddress) return "system";
+    if ((systemDetails?.tokenFactories?.length ?? 0) === 0) return "assets";
+    return "assets"; // Default to last step if all complete
+  };
+
+  // Set initial step once when data is loaded
   useEffect(() => {
-    // Only update if we haven't initialized yet and session data is loaded
-    if (!hasInitialized && session) {
-      // Determine initial step based on what's completed
-      const getInitialStep = () => {
-        if (!user?.initialOnboardingFinished) return "wallet";
-        if (!systemAddress) return "system";
-        if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
-        return "assets"; // Default to last step if all complete
-      };
-      
+    // Only set initial step once when we have all necessary data
+    if (!hasInitialized && user && session?.user) {
       const initialStep = getInitialStep();
       setCurrentStepId(initialStep);
       setHasInitialized(true);
     }
-  }, [session, user?.initialOnboardingFinished, systemAddress, systemDetails?.tokenFactories.length, hasInitialized]);
+  }, [user, systemAddress, systemDetails, hasInitialized, session?.user]);
+
+  // Note: Auto-navigation after system deployment is now handled in the SystemStep's onSuccess callback
 
   // Define steps with dynamic statuses
   const steps: Step[] = [
@@ -75,6 +91,16 @@ function PlatformOnboarding() {
       status: user?.initialOnboardingFinished
         ? "completed"
         : currentStepId === "wallet"
+          ? "active"
+          : "pending",
+    },
+    {
+      id: "security",
+      title: "Secure Your Wallet",
+      description: "Set up PIN code protection",
+      status: session?.user?.pincodeEnabled
+        ? "completed"
+        : currentStepId === "security"
           ? "active"
           : "pending",
     },
@@ -106,11 +132,18 @@ function PlatformOnboarding() {
   };
 
   const handleWalletSuccess = () => {
-    // Don't auto-advance
+    // Auto-advance to security step after wallet generation
+    setCurrentStepId("security");
+  };
+
+  const handleSecuritySuccess = () => {
+    // Auto-advance to system step after PIN setup
+    setCurrentStepId("system");
   };
 
   const handleSystemSuccess = () => {
-    // Don't auto-advance
+    // Auto-advance to next step after successful system deployment
+    setCurrentStepId("assets");
   };
 
   const handleAssetsSuccess = () => {
@@ -123,6 +156,7 @@ function PlatformOnboarding() {
 
   // Store references to step action functions
   const walletActionRef = useRef<(() => void) | null>(null);
+  const securityActionRef = useRef<(() => void) | null>(null);
   const systemActionRef = useRef<(() => void) | null>(null);
   const assetsActionRef = useRef<(() => void) | null>(null);
 
@@ -137,12 +171,48 @@ function PlatformOnboarding() {
       return;
     }
 
+    // If we're on wallet step and wallet already exists, move to next step
+    if (currentStepId === "wallet" && user.wallet) {
+      const nextStep = steps[currentStepIndex + 1];
+      if (nextStep) {
+        setCurrentStepId(nextStep.id);
+      }
+      return;
+    }
+
+    if (
+      currentStepId === "security" &&
+      !session?.user?.pincodeEnabled &&
+      securityActionRef.current
+    ) {
+      securityActionRef.current();
+      return;
+    }
+
+    // If we're on security step and pincode already exists, move to next step
+    if (currentStepId === "security" && session?.user?.pincodeEnabled) {
+      const nextStep = steps[currentStepIndex + 1];
+      if (nextStep) {
+        setCurrentStepId(nextStep.id);
+      }
+      return;
+    }
+
     if (
       currentStepId === "system" &&
       !systemAddress &&
       systemActionRef.current
     ) {
       systemActionRef.current();
+      return;
+    }
+
+    // If we're on system step and system already exists, move to next step
+    if (currentStepId === "system" && systemAddress) {
+      const nextStep = steps[currentStepIndex + 1];
+      if (nextStep) {
+        setCurrentStepId(nextStep.id);
+      }
       return;
     }
 
@@ -181,14 +251,19 @@ function PlatformOnboarding() {
 
   // Determine if next button should be disabled
   const isNextDisabled = () => {
-    // For wallet step, enable button if no wallet
-    if (currentStepId === "wallet" && !user?.initialOnboardingFinished) {
-      return false; // Enable the "Generate Wallet" button
+    // For wallet step, enable button if no wallet (for generation) or if wallet exists (for navigation)
+    if (currentStepId === "wallet") {
+      return false; // Always enable button on wallet step
     }
 
-    // For system step, enable button if no system
-    if (currentStepId === "system" && !systemAddress) {
-      return false; // Enable the "Deploy System" button
+    // For security step, enable button if no pincode (for setup) or if pincode exists (for navigation)
+    if (currentStepId === "security") {
+      return false; // Always enable button on security step
+    }
+
+    // For system step, enable button if no system (for deployment) or if system exists (for navigation)
+    if (currentStepId === "system") {
+      return false; // Always enable button on system step
     }
 
     // For assets step, enable button if no assets deployed
@@ -208,8 +283,20 @@ function PlatformOnboarding() {
     if (currentStepId === "wallet" && !user?.initialOnboardingFinished) {
       return "Generate Wallet";
     }
+    if (currentStepId === "wallet" && user.wallet) {
+      return t("onboarding:next", "Next");
+    }
+    if (currentStepId === "security" && !session?.user?.pincodeEnabled) {
+      return "Set PIN Code";
+    }
+    if (currentStepId === "security" && session?.user?.pincodeEnabled) {
+      return t("onboarding:next", "Next");
+    }
     if (currentStepId === "system" && !systemAddress) {
       return "Deploy System";
+    }
+    if (currentStepId === "system" && systemAddress) {
+      return t("onboarding:next", "Next");
     }
     if (
       currentStepId === "assets" &&
@@ -254,7 +341,7 @@ function PlatformOnboarding() {
               steps={steps}
               currentStepId={currentStepId}
               title="Let's get you set up!"
-              description="You will need a wallet and an identity on the blockchain to use this platform."
+              description="You will need a wallet, security, and an identity on the blockchain to use this platform."
               onStepChange={handleStepChange}
               showBackButton={currentStepIndex > 0}
               showNextButton={true}
@@ -265,30 +352,49 @@ function PlatformOnboarding() {
               nextLabel={getNextLabel()}
               backLabel={t("onboarding:back", "Back")}
             >
-              {currentStepId === "wallet" && (
-                <WalletStep
-                  onSuccess={handleWalletSuccess}
-                  onRegisterAction={(action) => {
-                    walletActionRef.current = action;
-                  }}
-                />
-              )}
-              {currentStepId === "system" && (
-                <SystemStep
-                  onSuccess={handleSystemSuccess}
-                  onRegisterAction={(action) => {
-                    systemActionRef.current = action;
-                  }}
-                />
-              )}
-              {currentStepId === "assets" && (
-                <AssetSelectionStep
-                  onSuccess={handleAssetsSuccess}
-                  onRegisterAction={(action) => {
-                    assetsActionRef.current = action;
-                  }}
-                />
-              )}
+              {(() => {
+                if (currentStepId === "wallet") {
+                  return (
+                    <WalletStep
+                      onSuccess={handleWalletSuccess}
+                      onRegisterAction={(action) => {
+                        walletActionRef.current = action;
+                      }}
+                    />
+                  );
+                } else if (currentStepId === "security") {
+                  return (
+                    <WalletSecurityStep
+                      onSuccess={handleSecuritySuccess}
+                      onRegisterAction={(action) => {
+                        securityActionRef.current = action;
+                      }}
+                    />
+                  );
+                } else if (currentStepId === "system") {
+                  return (
+                    <SystemStep
+                      systemAddress={systemAddress}
+                      isSystemDeployed={!!systemAddress}
+                      onSuccess={handleSystemSuccess}
+                      onRegisterAction={(action) => {
+                        systemActionRef.current = action;
+                      }}
+                    />
+                  );
+                } else if (currentStepId === "assets") {
+                  return (
+                    <AssetSelectionStep
+                      onSuccess={handleAssetsSuccess}
+                      onRegisterAction={(action) => {
+                        assetsActionRef.current = action;
+                      }}
+                    />
+                  );
+                } else {
+                  return null;
+                }
+              })()}
             </StepWizard>
           </div>
         </div>

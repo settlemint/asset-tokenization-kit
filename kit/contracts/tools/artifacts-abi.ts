@@ -9,9 +9,10 @@
  * Excludes .metadata.json files.
  */
 
-import { $, Glob } from "bun";
-import { basename, dirname, join } from "node:path";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { $, Glob } from "bun";
+import { existsSync } from "node:fs";
+import { basename, dirname, join } from "node:path";
 import { findTurboRoot, getKitProjectPath } from "../../../tools/root";
 
 // =============================================================================
@@ -84,11 +85,8 @@ class AbiCollector {
     logger.debug("Finding ABI files in out directory...");
     const abiFiles: AbiFile[] = [];
 
-    const outDirFile = Bun.file(join(OUT_DIR, ".gitkeep"));
-    try {
-      await Bun.write(join(OUT_DIR, ".gitkeep"), "");
-      await outDirFile.unlink();
-    } catch {
+    // Check if out directory exists
+    if (!existsSync(OUT_DIR)) {
       throw new Error(
         `Out directory not found: ${OUT_DIR}. Please run 'forge build' first.`
       );
@@ -183,21 +181,20 @@ class AbiCollector {
     logger.info("Initializing portal directory...");
 
     if (this.config.cleanPortalDir) {
-      const portalFile = Bun.file(join(PORTAL_DIR, ".gitkeep"));
       try {
-        // Check if directory exists by trying to write a file
-        await Bun.write(join(PORTAL_DIR, ".gitkeep"), "");
-        await portalFile.unlink();
-        logger.debug("Cleaning existing portal directory...");
-        await $`rm -rf ${PORTAL_DIR}`.quiet();
+        // Check if directory exists
+        if (existsSync(PORTAL_DIR)) {
+          logger.debug("Cleaning existing portal directory...");
+          await $`rm -rf ${PORTAL_DIR}`.quiet();
+        }
       } catch {
         // Directory doesn't exist, nothing to clean
       }
     }
 
-    // Create directory by writing a temporary file
-    await Bun.write(join(PORTAL_DIR, ".gitkeep"), "");
-    await Bun.file(join(PORTAL_DIR, ".gitkeep")).unlink();
+    // Create directory structure
+    await $`mkdir -p ${PORTAL_DIR}`.quiet();
+    logger.debug(`Created portal directory: ${PORTAL_DIR}`);
     logger.info("Portal directory initialized");
   }
 
@@ -242,11 +239,12 @@ class AbiCollector {
   async verifyCollection(): Promise<void> {
     logger.info("Verifying ABI collection...");
 
-    const portalDirFile = Bun.file(join(PORTAL_DIR, ".gitkeep"));
     try {
-      await Bun.write(join(PORTAL_DIR, ".gitkeep"), "");
-      await portalDirFile.unlink();
-    } catch {
+      // Check if directory exists
+      if (!existsSync(PORTAL_DIR)) {
+        throw new Error(`Portal directory not found: ${PORTAL_DIR}`);
+      }
+    } catch (error) {
       throw new Error(`Portal directory not found: ${PORTAL_DIR}`);
     }
 

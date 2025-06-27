@@ -4156,8 +4156,6 @@ type ATKFundProxyTransactionReceiptOutput {
 }
 
 type ATKIdentityFactoryImplementation {
-  DEFAULT_ADMIN_ROLE: String
-
   """
   Prefix used in salt calculation for creating token identities with metadata-based salts.
   """
@@ -4194,11 +4192,6 @@ type ATKIdentityFactoryImplementation {
   getIdentity(_wallet: String!): String
 
   """
-  Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
-  """
-  getRoleAdmin(role: String!): String
-
-  """
   Returns the address of the `IATKSystem` contract that this factory uses.
   The `IATKSystem` contract provides the addresses for the actual logic implementations      of `ATKIdentity` and `ATKTokenIdentity` that the deployed proxies will delegate to.
   address The address of the configured `IATKSystem` contract.
@@ -4210,9 +4203,6 @@ type ATKIdentityFactoryImplementation {
   address The address of the `ATKTokenIdentityProxy` if one has been created for the `_token`, otherwise `address(0)`.
   """
   getTokenIdentity(_token: String!): String
-
-  """Returns `true` if `account` has been granted `role`."""
-  hasRole(account: String!, role: String!): Boolean
   id: ID
 
   """Indicates whether any particular address is the trusted forwarder."""
@@ -4220,7 +4210,7 @@ type ATKIdentityFactoryImplementation {
 
   """
   Checks if the contract supports a given interface ID.
-  This function is part of the ERC165 standard, allowing other contracts to query what interfaces this contract implements. It declares support for the `IATKIdentityFactory` interface and any interfaces supported by its parent contracts (like `AccessControlUpgradeable` and `ERC165Upgradeable`).
+  This function is part of the ERC165 standard, allowing other contracts to query what interfaces this contract implements. It declares support for the `IATKIdentityFactory` interface and any interfaces supported by its parent contracts (like `ERC165Upgradeable`).
   `true` if the contract supports the `interfaceId`, `false` otherwise.
   """
   supportsInterface(interfaceId: String!): Boolean
@@ -4253,31 +4243,11 @@ input ATKIdentityFactoryImplementationCreateTokenIdentityInput {
   _token: String!
 }
 
-input ATKIdentityFactoryImplementationGrantRoleInput {
-  account: String!
-  role: String!
-}
-
 input ATKIdentityFactoryImplementationInitializeInput {
-  """
-  The address that will be granted initial administrative and registrar privileges over this factory.
-  """
-  initialAdmin: String!
-
   """
   The address of the central `IATKSystem` contract. This contract is crucial as it dictates                      which identity logic implementation contracts the new identity proxies will point to.
   """
   systemAddress: String!
-}
-
-input ATKIdentityFactoryImplementationRenounceRoleInput {
-  callerConfirmation: String!
-  role: String!
-}
-
-input ATKIdentityFactoryImplementationRevokeRoleInput {
-  account: String!
-  role: String!
 }
 
 """Returns the transaction hash"""
@@ -5032,7 +5002,7 @@ input ATKIdentityRegistryStorageImplementationInitializeInput {
   initialAdmin: String!
 
   """
-  The address of the system-level contract (e.g., `SMARTSystem` or a factory) that will be granted the `MANAGE_REGISTRIES_ROLE`. This role allows it to control which identity registry contracts can interact with and modify the data in this storage.
+  The address of the system-level contract (e.g., `SMARTSystem` or a factory) that will be granted the `REGISTRY_MANAGER_ROLE`. This role allows it to control which identity registry contracts can interact with and modify the data in this storage.
   """
   system: String!
 }
@@ -5755,11 +5725,11 @@ type ATKRoles {
   """
   EMERGENCY_ROLE: String
 
+  """Role for managing token governance, verification, and compliance."""
+  GOVERNANCE_ROLE: String
+
   """Role for managing token supply operations."""
   SUPPLY_MANAGEMENT_ROLE: String
-
-  """Role for managing token governance, verification, and compliance."""
-  TOKEN_GOVERNANCE_ROLE: String
   id: ID
 }
 
@@ -7172,13 +7142,13 @@ type ATKSystemRoles {
   """Role for managing implementation addresses."""
   IMPLEMENTATION_MANAGER_ROLE: String
 
+  """Role for managing registration operations."""
+  REGISTRAR_ROLE: String
+
   """
   A unique identifier (hash) for the role that grants permission to manage the list of bound identity registry contracts.
   """
-  MANAGE_REGISTRIES_ROLE: String
-
-  """Role for managing registration operations."""
-  REGISTRAR_ROLE: String
+  REGISTRY_MANAGER_ROLE: String
 
   """
   A unique identifier (hash) for the role that grants permission to modify the data stored in this contract.
@@ -8901,6 +8871,8 @@ type ATKTypedImplementationProxyTransactionReceiptOutput {
 
 type ATKVault {
   DEFAULT_ADMIN_ROLE: String
+  EMERGENCY_ROLE: String
+  GOVERNANCE_ROLE: String
 
   """Role identifier for signers who can submit and confirm transactions."""
   SIGNER_ROLE: String
@@ -16095,7 +16067,6 @@ type IATKIdentityFactoryGetTokenIdentityOutput {
 }
 
 input IATKIdentityFactoryInitializeInput {
-  initialAdmin: String!
   systemAddress: String!
 }
 
@@ -30710,7 +30681,7 @@ type Mutation {
 
   """
   Creates a deterministic on-chain identity (a `ATKIdentityProxy`) for a given investor wallet address.
-  This function can only be called by an address with the `REGISTRAR_ROLE`. It performs several steps: 1. Validates that `_wallet` is not the zero address and that an identity doesn't already exist for this wallet. 2. Calls `_createAndRegisterWalletIdentity` to handle the deterministic deployment of the `ATKIdentityProxy`.    The `_wallet` itself is passed as the `_initialManager` to the proxy constructor. 3. Interacts with the newly deployed identity contract (as `IERC734`) to add any additional `_managementKeys` provided.    It ensures a management key is not the wallet itself (which is already a manager). 4. Stores the mapping from the `_wallet` address to the new `identity` contract address. 5. Emits an `IdentityCreated` event.
+  This function performs several steps: 1. Validates that `_wallet` is not the zero address and that an identity doesn't already exist for this wallet. 2. Calls `_createAndRegisterWalletIdentity` to handle the deterministic deployment of the `ATKIdentityProxy`.    The `_wallet` itself is passed as the `_initialManager` to the proxy constructor. 3. Interacts with the newly deployed identity contract (as `IERC734`) to add any additional `_managementKeys` provided.    It ensures a management key is not the wallet itself (which is already a manager). 4. Stores the mapping from the `_wallet` address to the new `identity` contract address. 5. Emits an `IdentityCreated` event.
   address The address of the newly created and registered `ATKIdentityProxy` contract.
   """
   ATKIdentityFactoryImplementationCreateIdentity(
@@ -30749,7 +30720,7 @@ type Mutation {
 
   """
   Creates a deterministic on-chain identity (a `ATKTokenIdentityProxy`) for a given token contract.
-  This function can only be called by an address with the `REGISTRAR_ROLE`. It performs several steps: 1. Validates that `_token` and `_tokenOwner` are not zero addresses and that an identity doesn't already exist for this token. 2. Calls `_createAndRegisterTokenIdentityWithMetadata` to handle the deterministic deployment of the `ATKTokenIdentityProxy`.    The `_tokenOwner` is passed as the `_initialManager` to the proxy constructor. 3. Stores the mapping from the `_token` address to the new `identity` contract address. 4. Emits a `TokenIdentityCreated` event.
+  This function performs several steps: 1. Validates that `_token` and `_tokenOwner` are not zero addresses and that an identity doesn't already exist for this token. 2. Calls `_createAndRegisterTokenIdentityWithMetadata` to handle the deterministic deployment of the `ATKTokenIdentityProxy`.    The `_tokenOwner` is passed as the `_initialManager` to the proxy constructor. 3. Stores the mapping from the `_token` address to the new `identity` contract address. 4. Emits a `TokenIdentityCreated` event.
   address The address of the newly created and registered `ATKTokenIdentityProxy` contract.
   """
   ATKIdentityFactoryImplementationCreateTokenIdentity(
@@ -30787,45 +30758,8 @@ type Mutation {
   ): ATKIdentityFactoryImplementationTransactionOutput
 
   """
-  Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleGranted} event.
-  """
-  ATKIdentityFactoryImplementationGrantRole(
-    """The address of the contract"""
-    address: String!
-
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-    input: ATKIdentityFactoryImplementationGrantRoleInput!
-
-    """Metadata (store custom metadata from your application)"""
-    metadata: JSON
-
-    """Simulate the transaction before sending it"""
-    simulate: Boolean
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ATKIdentityFactoryImplementationTransactionOutput
-
-  """
   Initializes the `ATKIdentityFactoryImplementation` contract, typically called once by the proxy after deployment.
-  Sets up essential state for the factory: 1. Validates that `systemAddress` is not the zero address. 2. Initializes ERC165 for interface detection. 3. Initializes AccessControl, granting `DEFAULT_ADMIN_ROLE` and `REGISTRAR_ROLE` to `initialAdmin`.    The `DEFAULT_ADMIN_ROLE` can manage other roles, while `REGISTRAR_ROLE` allows identity creation. 4. Stores the `systemAddress` which provides identity logic implementations.The `initializer` modifier ensures this function can only be called once.
+  Sets up essential state for the factory: 1. Validates that `systemAddress` is not the zero address. 2. Initializes ERC165 for interface detection. 3. Stores the `systemAddress` which provides identity logic implementations.The `initializer` modifier ensures this function can only be called once.
   """
   ATKIdentityFactoryImplementationInitialize(
     """The address of the contract"""
@@ -30845,80 +30779,6 @@ type Mutation {
     """Gas price"""
     gasPrice: String
     input: ATKIdentityFactoryImplementationInitializeInput!
-
-    """Metadata (store custom metadata from your application)"""
-    metadata: JSON
-
-    """Simulate the transaction before sending it"""
-    simulate: Boolean
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ATKIdentityFactoryImplementationTransactionOutput
-
-  """
-  Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been revoked `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `callerConfirmation`. May emit a {RoleRevoked} event.
-  """
-  ATKIdentityFactoryImplementationRenounceRole(
-    """The address of the contract"""
-    address: String!
-
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-    input: ATKIdentityFactoryImplementationRenounceRoleInput!
-
-    """Metadata (store custom metadata from your application)"""
-    metadata: JSON
-
-    """Simulate the transaction before sending it"""
-    simulate: Boolean
-
-    """Payable value (wei)"""
-    value: String
-
-    """
-    Verification ID that is used to verify access to the private key of the from address
-    """
-    verificationId: String
-  ): ATKIdentityFactoryImplementationTransactionOutput
-
-  """
-  Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role. May emit a {RoleRevoked} event.
-  """
-  ATKIdentityFactoryImplementationRevokeRole(
-    """The address of the contract"""
-    address: String!
-
-    """
-    Challenge response that is used to verify access to the private key of the from address
-    """
-    challengeResponse: String
-
-    """The address of the sender"""
-    from: String!
-
-    """Gas limit"""
-    gasLimit: String
-
-    """Gas price"""
-    gasPrice: String
-    input: ATKIdentityFactoryImplementationRevokeRoleInput!
 
     """Metadata (store custom metadata from your application)"""
     metadata: JSON
@@ -31378,7 +31238,7 @@ type Mutation {
 
   """
   Initializes the `SMARTIdentityRegistryImplementation` contract after it has been deployed (typically called via a proxy).
-  This function sets up the core components of the identity registry: 1.  Initializes `ERC165Upgradeable` for interface detection. 2.  Initializes `AccessControlUpgradeable` for role-based access management. 3.  Grants the `DEFAULT_ADMIN_ROLE` and `REGISTRAR_ROLE` to the `initialAdmin` address.     The `DEFAULT_ADMIN_ROLE` allows managing other roles and system parameters.     The `REGISTRAR_ROLE` allows managing identities. 4.  Sets the addresses for the `_identityStorage`, `_trustedIssuersRegistry`, and `_topicSchemeRegistry` contracts.     These addresses must not be zero addresses. It is protected by the `initializer` modifier from OpenZeppelin, ensuring it can only be called once.
+  This function sets up the core components of the identity registry: 1.  Initializes `ERC165Upgradeable` for interface detection. 2.  Initializes `AccessControlUpgradeable` for role-based access management. 3.  Grants the `DEFAULT_ADMIN_ROLE`, `REGISTRY_MANAGER_ROLE` and `REGISTRAR_ROLE` to the `initialAdmin` address.     The `DEFAULT_ADMIN_ROLE` allows managing other roles.     The `REGISTRY_MANAGER_ROLE` allows managing the registry contracts.     The `REGISTRAR_ROLE` allows managing identities. 4.  Sets the addresses for the `_identityStorage`, `_trustedIssuersRegistry`, and `_topicSchemeRegistry` contracts.     These addresses must not be zero addresses. It is protected by the `initializer` modifier from OpenZeppelin, ensuring it can only be called once.
   """
   ATKIdentityRegistryImplementationInitialize(
     """The address of the contract"""
@@ -31566,7 +31426,7 @@ type Mutation {
 
   """
   Updates the address of the identity storage contract.
-  This function can only be called by an address holding the `DEFAULT_ADMIN_ROLE`. It performs a check to ensure the new `identityStorage_` address is not the zero address. Emits an `IdentityStorageSet` event upon successful update.
+  This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE`. It performs a check to ensure the new `identityStorage_` address is not the zero address. Emits an `IdentityStorageSet` event upon successful update.
   """
   ATKIdentityRegistryImplementationSetIdentityRegistryStorage(
     """The address of the contract"""
@@ -31604,7 +31464,7 @@ type Mutation {
 
   """
   Updates the address of the topic scheme registry contract.
-  This function can only be called by an address holding the `DEFAULT_ADMIN_ROLE`. It performs a check to ensure the new `topicSchemeRegistry_` address is not the zero address. Emits a `TopicSchemeRegistrySet` event upon successful update.
+  This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE`. It performs a check to ensure the new `topicSchemeRegistry_` address is not the zero address. Emits a `TopicSchemeRegistrySet` event upon successful update.
   """
   ATKIdentityRegistryImplementationSetTopicSchemeRegistry(
     """The address of the contract"""
@@ -31642,7 +31502,7 @@ type Mutation {
 
   """
   Updates the address of the trusted issuers registry contract.
-  This function can only be called by an address holding the `DEFAULT_ADMIN_ROLE`. It performs a check to ensure the new `trustedIssuersRegistry_` address is not the zero address. Emits a `TrustedIssuersRegistrySet` event upon successful update.
+  This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE`. It performs a check to ensure the new `trustedIssuersRegistry_` address is not the zero address. Emits a `TrustedIssuersRegistrySet` event upon successful update.
   """
   ATKIdentityRegistryImplementationSetTrustedIssuersRegistry(
     """The address of the contract"""
@@ -31794,7 +31654,7 @@ type Mutation {
 
   """
   Authorizes a `SMARTIdentityRegistry` contract to modify data in this storage contract. This is achieved by granting the `STORAGE_MODIFIER_ROLE` to the specified registry address.
-  This function can only be called by an address holding the `MANAGE_REGISTRIES_ROLE` (e.g., a `SMARTSystem` contract or an identity factory). It performs several checks: -   The `_identityRegistry` address must not be the zero address. -   The `_identityRegistry` must not already be bound to this storage. If the checks pass, the function: 1.  Sets `_boundIdentityRegistries[_identityRegistry]` to `true`. 2.  Adds `_identityRegistry` to the `_boundIdentityRegistryAddresses` array. 3.  Updates `_boundIdentityRegistriesIndex` for the new registry. 4.  Grants the `STORAGE_MODIFIER_ROLE` to `_identityRegistry` using the access control mechanism. 5.  Emits an `IdentityRegistryBound` event.Reverts with:      - `InvalidIdentityRegistryAddress()` if `_identityRegistry` is `address(0)`.      - `IdentityRegistryAlreadyBound(_identityRegistry)` if the registry is already bound.
+  This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE` (e.g., a `SMARTSystem` contract or an identity factory). It performs several checks: -   The `_identityRegistry` address must not be the zero address. -   The `_identityRegistry` must not already be bound to this storage. If the checks pass, the function: 1.  Sets `_boundIdentityRegistries[_identityRegistry]` to `true`. 2.  Adds `_identityRegistry` to the `_boundIdentityRegistryAddresses` array. 3.  Updates `_boundIdentityRegistriesIndex` for the new registry. 4.  Grants the `STORAGE_MODIFIER_ROLE` to `_identityRegistry` using the access control mechanism. 5.  Emits an `IdentityRegistryBound` event.Reverts with:      - `InvalidIdentityRegistryAddress()` if `_identityRegistry` is `address(0)`.      - `IdentityRegistryAlreadyBound(_identityRegistry)` if the registry is already bound.
   """
   ATKIdentityRegistryStorageImplementationBindIdentityRegistry(
     """The address of the contract"""
@@ -31869,7 +31729,7 @@ type Mutation {
 
   """
   Initializes the `SMARTIdentityRegistryStorageImplementation` contract. This function acts as the constructor for an upgradeable contract and can only be called once.
-  This function is typically called by the deployer immediately after the proxy contract pointing to this implementation is deployed. It sets up the initial state: 1.  `__ERC165_init_unchained()`: Initializes the ERC165 interface detection mechanism, allowing other contracts     to query what interfaces this contract supports (e.g., `IERC3643IdentityRegistryStorage`). 2.  `__AccessControlEnumerable_init_unchained()`: Initializes the role-based access control system. It sets up     the structures needed to grant, revoke, and check roles. 3.  `_grantRole(DEFAULT_ADMIN_ROLE, initialAdmin)`: Grants the `DEFAULT_ADMIN_ROLE` to the `initialAdmin`     address. The admin can manage all other roles and aspects of the access control. 4.  `_grantRole(STORAGE_MODIFIER_ROLE, initialAdmin)`: Grants the `STORAGE_MODIFIER_ROLE` to the `initialAdmin`.     This is often a temporary measure for bootstrapping; the `initialAdmin` (or the `DEFAULT_ADMIN_ROLE`     holder) would typically later grant this role to operational contracts like bound identity registries and     revoke it from themselves if direct modification by the admin is not intended long-term. 5.  `_grantRole(MANAGE_REGISTRIES_ROLE, system)`: Grants the `MANAGE_REGISTRIES_ROLE` to the `system` address.     The `system` address (e.g., a `SMARTSystem` contract or an identity factory contract) is then responsible     for binding and unbinding `SMARTIdentityRegistry` contracts, which in turn modify the storage. The `initializer` modifier from `Initializable` ensures this function can only be executed once, preventing re-initialization.
+  This function is typically called by the deployer immediately after the proxy contract pointing to this implementation is deployed. It sets up the initial state: 1.  `__ERC165_init_unchained()`: Initializes the ERC165 interface detection mechanism, allowing other contracts     to query what interfaces this contract supports (e.g., `IERC3643IdentityRegistryStorage`). 2.  `__AccessControlEnumerable_init_unchained()`: Initializes the role-based access control system. It sets up     the structures needed to grant, revoke, and check roles. 3.  `_grantRole(DEFAULT_ADMIN_ROLE, initialAdmin)`: Grants the `DEFAULT_ADMIN_ROLE` to the `initialAdmin`     address. The admin can manage all other roles and aspects of the access control. 4.  `_grantRole(STORAGE_MODIFIER_ROLE, initialAdmin)`: Grants the `STORAGE_MODIFIER_ROLE` to the `initialAdmin`.     This is often a temporary measure for bootstrapping; the `initialAdmin` (or the `DEFAULT_ADMIN_ROLE`     holder) would typically later grant this role to operational contracts like bound identity registries and     revoke it from themselves if direct modification by the admin is not intended long-term. 5.  `_grantRole(REGISTRY_MANAGER_ROLE, system)`: Grants the `REGISTRY_MANAGER_ROLE` to the `system` address.     The `system` address (e.g., a `SMARTSystem` contract or an identity factory contract) is then responsible     for binding and unbinding `SMARTIdentityRegistry` contracts, which in turn modify the storage. The `initializer` modifier from `Initializable` ensures this function can only be executed once, preventing re-initialization.
   """
   ATKIdentityRegistryStorageImplementationInitialize(
     """The address of the contract"""
@@ -32171,7 +32031,7 @@ type Mutation {
 
   """
   Revokes the authorization for a `SMARTIdentityRegistry` contract to modify data in this storage. This is achieved by revoking the `STORAGE_MODIFIER_ROLE` from the specified registry address.
-  This function can only be called by an address holding the `MANAGE_REGISTRIES_ROLE`. It first checks if the `_identityRegistry` is currently bound. If not, it reverts. If the registry is bound, the function: 1.  Revokes the `STORAGE_MODIFIER_ROLE` from `_identityRegistry`. 2.  Removes `_identityRegistry` from the `_boundIdentityRegistryAddresses` array using the "swap-and-pop" technique (O(1) complexity). 3.  Updates `_boundIdentityRegistriesIndex` accordingly. 4.  Sets `_boundIdentityRegistries[_identityRegistry]` to `false`. 5.  Emits an `IdentityRegistryUnbound` event.Reverts with `IdentityRegistryNotBound(_identityRegistry)` if the registry is not currently bound.
+  This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE`. It first checks if the `_identityRegistry` is currently bound. If not, it reverts. If the registry is bound, the function: 1.  Revokes the `STORAGE_MODIFIER_ROLE` from `_identityRegistry`. 2.  Removes `_identityRegistry` from the `_boundIdentityRegistryAddresses` array using the "swap-and-pop" technique (O(1) complexity). 3.  Updates `_boundIdentityRegistriesIndex` accordingly. 4.  Sets `_boundIdentityRegistries[_identityRegistry]` to `false`. 5.  Emits an `IdentityRegistryUnbound` event.Reverts with `IdentityRegistryNotBound(_identityRegistry)` if the registry is not currently bound.
   """
   ATKIdentityRegistryStorageImplementationUnbindIdentityRegistry(
     """The address of the contract"""
@@ -75705,25 +75565,7 @@ type Query {
   ): ATKIdentityFactoryImplementationTransactionReceiptOutput
 
   """Fetches the receipt for the given transaction hash"""
-  ATKIdentityFactoryImplementationGrantRoleReceipt(
-    """The transaction hash"""
-    transactionHash: String!
-  ): ATKIdentityFactoryImplementationTransactionReceiptOutput
-
-  """Fetches the receipt for the given transaction hash"""
   ATKIdentityFactoryImplementationInitializeReceipt(
-    """The transaction hash"""
-    transactionHash: String!
-  ): ATKIdentityFactoryImplementationTransactionReceiptOutput
-
-  """Fetches the receipt for the given transaction hash"""
-  ATKIdentityFactoryImplementationRenounceRoleReceipt(
-    """The transaction hash"""
-    transactionHash: String!
-  ): ATKIdentityFactoryImplementationTransactionReceiptOutput
-
-  """Fetches the receipt for the given transaction hash"""
-  ATKIdentityFactoryImplementationRevokeRoleReceipt(
     """The transaction hash"""
     transactionHash: String!
   ): ATKIdentityFactoryImplementationTransactionReceiptOutput
@@ -90132,9 +89974,17 @@ type SMARTFixedYieldSchedule {
   DEFAULT_ADMIN_ROLE: String
 
   """
+  Role for emergency operations including pausing the contract and ERC20 recovery.
+  """
+  EMERGENCY_ROLE: String
+
+  """
   The denominator used for rate calculations. `10_000` represents 100% (since rate is in basis points).
   """
   RATE_BASIS_POINTS: String
+
+  """Role for managing token supply operations."""
+  SUPPLY_MANAGEMENT_ROLE: String
 
   """
   Returns an array of all period end timestamps for this yield schedule.
@@ -90595,9 +90445,17 @@ type SMARTFixedYieldScheduleUpgradeable {
   DEFAULT_ADMIN_ROLE: String
 
   """
+  Role for emergency operations including pausing the contract and ERC20 recovery.
+  """
+  EMERGENCY_ROLE: String
+
+  """
   The denominator used for rate calculations. `10_000` represents 100% (since rate is in basis points).
   """
   RATE_BASIS_POINTS: String
+
+  """Role for managing token supply operations."""
+  SUPPLY_MANAGEMENT_ROLE: String
 
   """
   Returns an array of all period end timestamps for this yield schedule.
