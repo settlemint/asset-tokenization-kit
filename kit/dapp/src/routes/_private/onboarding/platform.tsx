@@ -25,20 +25,16 @@ export const Route = createFileRoute('/_private/onboarding/platform')({
     ]);
 
     // If we have a system address, ensure system details are loaded
-    let systemDetails: {
-      id: string;
-      tokenFactoryRegistry: string;
-      tokenFactories: { id: string; name: string; typeId: string }[];
-    } | null = null;
     if (systemAddress) {
-      systemDetails = await context.queryClient.ensureQueryData(
+      const systemDetails = await context.queryClient.ensureQueryData(
         orpc.system.read.queryOptions({
           input: { id: systemAddress },
         })
       );
+      return { user, systemAddress, systemDetails };
     }
 
-    return { user, systemAddress, systemDetails };
+    return { user, systemAddress, systemDetails: null };
   },
   component: PlatformOnboarding,
 });
