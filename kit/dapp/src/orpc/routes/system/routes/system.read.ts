@@ -9,7 +9,6 @@
  * 1. Validates user authentication
  * 2. Queries TheGraph for system and token factory data
  * 3. Returns structured system information
- *
  * @see {@link ./system.read.schema} - Input/output validation schemas
  */
 
@@ -22,7 +21,6 @@ import type { SystemReadOutput } from "./system.read.schema";
 
 /**
  * GraphQL query to fetch system details with token factories.
- *
  * @param id - The system contract address to query
  * @returns System object with token factories
  */
@@ -44,18 +42,13 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
 
 /**
  * Reads system contract details including token factories.
- *
  * @auth Required - User must be authenticated
  * @middleware theGraphMiddleware - Provides TheGraph client
- *
  * @param input.id - The system contract address to query
- *
  * @returns System details with associated token factories
- *
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
  * @throws {ORPCError} NOT_FOUND - If system doesn't exist
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If TheGraph query fails
- *
  * @example
  * ```typescript
  * const system = await client.system.read({

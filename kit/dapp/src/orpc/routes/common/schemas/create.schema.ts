@@ -8,7 +8,6 @@
  * The schema is designed to be extended by specific create operations that need
  * additional fields while maintaining consistent authentication and contract
  * targeting patterns.
- *
  * @example
  * ```typescript
  * // Extend for specific create operations
@@ -21,7 +20,6 @@
  * // Usage in a handler
  * const { contract, verification, ...specificData } = input;
  * ```
- *
  * @see {@link @/lib/zod/validators/ethereum-address} - Ethereum address validation
  * @see {@link @/lib/zod/validators/verification-code} - Verification code validation
  * @see {@link @/lib/zod/validators/verification-type} - Verification type options
@@ -38,7 +36,6 @@ export const CreateSchema = z.object({
    * When provided, the create operation will target this specific contract
    * instance. When omitted, the operation may use a default contract or
    * deploy a new one, depending on the specific implementation.
-   *
    * @optional
    */
   contract: ethereumAddress

@@ -12,6 +12,9 @@ export const Route = createFileRoute("/_private/_onboarded")({
   component: LayoutComponent,
 });
 
+/**
+ *
+ */
 function LayoutComponent() {
   return (
     <OnboardingGuard require="onboarded">

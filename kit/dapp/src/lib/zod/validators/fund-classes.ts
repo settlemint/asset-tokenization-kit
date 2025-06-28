@@ -4,14 +4,12 @@
  * This module provides Zod schemas for validating fund share classes,
  * which differentiate investor types based on qualification requirements,
  * minimum investments, and fee structures.
- *
  * @module FundClassValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Available fund share classes based on investor qualification.
- *
  * @remarks
  * Investor classifications for fund participation:
  * - `institutional`: For large institutional investors (pension funds, endowments)
@@ -22,9 +20,7 @@ export const fundClasses = ["institutional", "retail", "accredited"] as const;
 
 /**
  * Creates a Zod schema that validates fund share classes.
- *
  * @returns A Zod enum schema for fund class validation
- *
  * @example
  * ```typescript
  * const schema = fundClass();
@@ -49,10 +45,8 @@ export type FundClass = z.infer<ReturnType<typeof fundClass>>;
 
 /**
  * Type guard to check if a value is a valid fund class.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid fund class, `false` otherwise
- *
  * @example
  * ```typescript
  * const shareClass: unknown = "retail";
@@ -75,11 +69,9 @@ export function isFundClass(value: unknown): value is FundClass {
 
 /**
  * Safely parse and return a fund class or throw an error.
- *
  * @param value - The value to parse as a fund class
  * @returns The validated fund class
  * @throws {Error} If the value is not a valid fund class
- *
  * @example
  * ```typescript
  * try {

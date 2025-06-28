@@ -4,14 +4,12 @@
  * This module provides Zod schemas for validating monetary price values,
  * commonly used in financial applications for asset pricing, order books,
  * and trading systems. Ensures precision and format consistency.
- *
  * @module PriceValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Creates a Zod schema that validates price values.
- *
  * @remarks
  * Price validation requirements:
  * - Must be positive (greater than 0)
@@ -23,9 +21,7 @@ import { z } from "zod/v4";
  * - Traditional stock markets (2-4 decimals)
  * - Forex markets (4-5 pips)
  * - Most cryptocurrency exchanges
- *
  * @returns A Zod schema for price validation
- *
  * @example
  * ```typescript
  * const schema = price();
@@ -63,10 +59,8 @@ export type Price = z.infer<ReturnType<typeof price>>;
 
 /**
  * Type guard to check if a value is a valid price.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid price, `false` otherwise
- *
  * @example
  * ```typescript
  * const userInput: unknown = 99.99;
@@ -90,11 +84,9 @@ export function isPrice(value: unknown): value is Price {
 
 /**
  * Safely parse and return a price or throw an error.
- *
  * @param value - The value to parse as a price
  * @returns The validated price value
  * @throws {Error} If the value is not a valid price
- *
  * @example
  * ```typescript
  * try {

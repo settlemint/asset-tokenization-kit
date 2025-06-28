@@ -4,6 +4,17 @@ interface SolidityIconProps {
   className?: string;
 }
 
+/**
+ * Solidity icon component that renders an SVG logo with theme-aware colors.
+ *
+ * This component displays the official Solidity programming language logo,
+ * automatically adapting its colors based on the current theme (light/dark).
+ * The icon consists of multiple geometric shapes with varying opacity levels
+ * to create the distinctive Solidity diamond pattern.
+ * @param {object} props - The component props
+ * @param {string} [props.className] - Optional CSS classes to apply to the SVG element
+ * @returns {JSX.Element} A React component that renders the Solidity icon as an SVG
+ */
 export function SolidityIcon({ className }: SolidityIconProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";

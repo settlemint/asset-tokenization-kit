@@ -21,7 +21,6 @@ import { baseRouter } from "../../procedures/base.router";
  * 1. Session middleware loads auth context (optional)
  * 2. Auth middleware validates auth context (required)
  * 3. Protected procedure executes with guaranteed auth context
- *
  * @example
  * ```typescript
  * // Used in authenticated router
@@ -34,9 +33,7 @@ import { baseRouter } from "../../procedures/base.router";
  *   return updateUserProfile(userId, input);
  * });
  * ```
- *
  * @throws UNAUTHORIZED - When authentication is missing or invalid
- *
  * @see {@link ./session.middleware} - Session loading middleware (should run first)
  * @see {@link ../../routes/procedures/auth.contract} - UNAUTHORIZED error definition
  */

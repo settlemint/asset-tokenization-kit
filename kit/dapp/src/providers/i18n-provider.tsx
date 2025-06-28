@@ -14,7 +14,6 @@
  * The provider uses a two-component structure to ensure proper initialization:
  * 1. I18nProvider - Handles initial language setup and provides i18n context
  * 2. I18nProviderContent - Activates language detection after context is established
- *
  * @see {@link @/lib/i18n/index} - i18n configuration and resources
  * @see {@link @/lib/i18n/use-language-detection} - Language detection logic
  * @see {@link https://react.i18next.com} - React i18next documentation
@@ -55,8 +54,6 @@ interface I18nProviderProps {
  * - Automatic language detection on mount
  * - Language persistence to localStorage
  * - RTL support for applicable languages
- *
- * @param children - Components to render after language detection is activated
  */
 function I18nProviderContent({ children }: { children: React.ReactNode }) {
   // Activate language detection hook
@@ -88,10 +85,6 @@ function I18nProviderContent({ children }: { children: React.ReactNode }) {
  * - Switch languages dynamically
  * - Render translated content with `Trans` component
  * - Format dates, numbers, and currencies according to locale
- *
- * @param children - Components that need translation capabilities
- * @param initialLanguage - Optional language to set on mount
- *
  * @example
  * ```tsx
  * // Basic usage with automatic language detection

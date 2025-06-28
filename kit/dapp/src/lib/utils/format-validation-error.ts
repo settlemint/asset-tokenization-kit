@@ -25,6 +25,7 @@ type ValidationError = ORPCError<
 
 /**
  * Checks if an error is a validation error with structured data
+ * @param error
  */
 export function isValidationError(error: unknown): error is ValidationError {
   if (!(error instanceof Error)) return false;
@@ -45,7 +46,6 @@ export function isValidationError(error: unknown): error is ValidationError {
 
 /**
  * Formats a validation error into a user-friendly message
- *
  * @param error - The error to format
  * @returns A formatted error message
  */
@@ -90,7 +90,6 @@ export function formatValidationError(error: unknown): string {
 /**
  * Gets field-specific errors from a validation error
  * Useful for form field error display
- *
  * @param error - The validation error
  * @returns A map of field paths to error messages
  */

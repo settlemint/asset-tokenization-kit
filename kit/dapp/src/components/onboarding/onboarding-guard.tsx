@@ -18,6 +18,14 @@ type OnboardingGuardProps = PropsWithChildren<{
   allowedTypes?: OnboardingType[];
 }>;
 
+/**
+ * Guards routes based on onboarding status requirements
+ * @param {object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to render if guard passes
+ * @param {"onboarded" | "not-onboarded" | "platform-onboarded"} props.require - Onboarding status requirement
+ * @param {Array<import("@/lib/types/onboarding").OnboardingType>} [props.allowedTypes] - Allowed onboarding types for this route
+ * @returns {JSX.Element | null} Child components if guard passes, null otherwise
+ */
 export function OnboardingGuard({
   children,
   require,

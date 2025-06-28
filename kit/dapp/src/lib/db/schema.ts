@@ -15,7 +15,6 @@
  *
  * This pattern allows for modular schema organization while maintaining
  * a clean import structure throughout the application.
- *
  * @see {@link ./schemas/auth} - Authentication and authorization schemas
  */
 

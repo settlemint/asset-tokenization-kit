@@ -37,6 +37,8 @@ export interface InvestorOnboardingRequirements {
 
 /**
  * Determines the type of onboarding needed based on platform state and user role
+ * @param userRole
+ * @param platformRequirements
  */
 export function determineOnboardingType(
   userRole: UserRole,
@@ -66,6 +68,7 @@ export function determineOnboardingType(
 
 /**
  * Checks if platform onboarding is complete
+ * @param requirements
  */
 export function isPlatformOnboardingComplete(
   requirements: PlatformOnboardingRequirements
@@ -79,6 +82,7 @@ export function isPlatformOnboardingComplete(
 
 /**
  * Checks if issuer onboarding is complete
+ * @param requirements
  */
 export function isIssuerOnboardingComplete(
   requirements: IssuerOnboardingRequirements
@@ -88,6 +92,7 @@ export function isIssuerOnboardingComplete(
 
 /**
  * Checks if investor onboarding is complete
+ * @param requirements
  */
 export function isInvestorOnboardingComplete(
   requirements: InvestorOnboardingRequirements
@@ -101,6 +106,7 @@ export function isInvestorOnboardingComplete(
 
 /**
  * Gets the onboarding steps for a given type
+ * @param type
  */
 export function getOnboardingSteps(type: OnboardingType): string[] {
   switch (type) {

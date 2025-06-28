@@ -11,6 +11,9 @@ type PincodeInputProps = Omit<
   "render" | "minLength" | "maxLength" | "pattern" | "autoComplete" | "required"
 >;
 
+/**
+ * A 6-digit PIN code input component
+ */
 export function PincodeInput(props: PincodeInputProps) {
   return (
     <InputOTP

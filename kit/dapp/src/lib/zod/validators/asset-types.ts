@@ -4,14 +4,12 @@
  * This module provides comprehensive Zod schemas for validating financial asset types,
  * ensuring they match predefined enumerations. It's designed to support the
  * asset tokenization platform's various asset categories.
- *
  * @module AssetTypeValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Tuple of valid asset types for type-safe iteration.
- *
  * @remarks
  * This constant defines all supported asset types in the platform:
  * - `bond`: Fixed-income debt securities
@@ -31,7 +29,6 @@ export const assetTypes = [
 /**
  * Enum-like object for dot notation access to asset types.
  * Provides a convenient way to reference asset types in code.
- *
  * @example
  * ```typescript
  * // Use for comparisons and assignments
@@ -60,16 +57,13 @@ export const AssetTypeEnum = {
 
 /**
  * Creates a Zod schema that validates an asset type.
- *
  * @remarks
  * Features:
  * - Strict enum validation against predefined asset types
  * - Type-safe inference
  * - Descriptive error messages for invalid inputs
  * - Case-sensitive matching (must be lowercase)
- *
  * @returns A Zod enum schema for asset type validation
- *
  * @example
  * ```typescript
  * const schema = assetType();
@@ -89,9 +83,7 @@ export const assetType = () =>
 /**
  * Creates an array validator for multiple asset types.
  * Ensures at least one asset type is selected.
- *
  * @returns A Zod array schema that validates a list of asset types
- *
  * @example
  * ```typescript
  * const schema = assetTypeArray();
@@ -109,9 +101,7 @@ export const assetTypeArray = () =>
 /**
  * Creates a set validator for unique asset types.
  * Automatically removes duplicates and ensures at least one type.
- *
  * @returns A Zod set schema that validates unique asset types
- *
  * @example
  * ```typescript
  * const schema = assetTypeSet();
@@ -129,10 +119,8 @@ export const assetTypeSet = () =>
 /**
  * Creates an asset type validator with an optional default value.
  * Useful for forms where a default selection is needed.
- *
  * @param defaultValue - The default asset type (defaults to "bond")
  * @returns A Zod schema with a default value
- *
  * @example
  * ```typescript
  * const schema = assetTypeWithDefault("equity");
@@ -147,11 +135,9 @@ export const assetTypeWithDefault = (
 /**
  * Creates a record validator for asset type to value mappings.
  * Creates a partial record where not all asset types need to be present.
- *
  * @template T - The Zod type for the values in the record
  * @param valueSchema - The schema to validate each value
  * @returns A Zod object schema with optional fields for each asset type
- *
  * @example
  * ```typescript
  * // Create a schema for asset allocations
@@ -200,10 +186,8 @@ export type AssetTypeSet = z.infer<ReturnType<typeof assetTypeSet>>;
 
 /**
  * Type guard to check if a value is a valid asset type.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid asset type, `false` otherwise
- *
  * @example
  * ```typescript
  * const userInput: unknown = "bond";
@@ -219,11 +203,9 @@ export function isAssetType(value: unknown): value is AssetType {
 
 /**
  * Safely parse and return an asset type or throw an error.
- *
  * @param value - The value to parse
  * @returns The validated asset type
  * @throws {Error} If the value is not a valid asset type
- *
  * @example
  * ```typescript
  * try {
@@ -240,10 +222,8 @@ export function getAssetType(value: unknown): AssetType {
 
 /**
  * Type guard to check if a value is a valid asset type array.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid asset type array, `false` otherwise
- *
  * @example
  * ```typescript
  * if (isAssetTypeArray(["bond", "equity"])) {
@@ -257,11 +237,9 @@ export function isAssetTypeArray(value: unknown): value is AssetTypeArray {
 
 /**
  * Safely parse and return an asset type array or throw an error.
- *
  * @param value - The value to parse
  * @returns The validated asset type array
  * @throws {Error} If the value is not a valid asset type array
- *
  * @example
  * ```typescript
  * const types = getAssetTypeArray(["bond", "fund"]); // Valid
@@ -274,10 +252,8 @@ export function getAssetTypeArray(value: unknown): AssetTypeArray {
 
 /**
  * Type guard to check if a value is a valid asset type set.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid asset type set, `false` otherwise
- *
  * @example
  * ```typescript
  * const mySet = new Set(["bond", "equity"]);
@@ -292,11 +268,9 @@ export function isAssetTypeSet(value: unknown): value is AssetTypeSet {
 
 /**
  * Safely parse and return an asset type set or throw an error.
- *
  * @param value - The value to parse
  * @returns The validated asset type set
  * @throws {Error} If the value is not a valid asset type set
- *
  * @example
  * ```typescript
  * const types = getAssetTypeSet(new Set(["bond", "equity"])); // Valid

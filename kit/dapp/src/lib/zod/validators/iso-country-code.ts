@@ -3,7 +3,6 @@
  *
  * This module provides Zod schemas for validating ISO 3166-1 alpha-2 country codes
  * using the i18n-iso-countries library to ensure only valid country codes are accepted.
- *
  * @module ISOCountryCodeValidation
  */
 
@@ -51,7 +50,6 @@ const validCountryCodes = Object.keys(countries.getAlpha2Codes()) as [
  *
  * Validates that a string is a valid ISO 3166-1 alpha-2 country code
  * by checking against the complete list from i18n-iso-countries.
- *
  * @example
  * ```typescript
  * // Valid codes
@@ -76,12 +74,10 @@ export type ISOCountryCode = z.infer<typeof isoCountryCode>;
 
 /**
  * Get the country name for a given ISO 3166-1 alpha-2 code.
- *
  * @param code - The ISO 3166-1 alpha-2 country code
  * @param locale - The locale for the country name (default: "en")
  *                 Supported locales: "en", "ar", "de", "ja"
  * @returns The country name in the specified locale, or undefined if not found
- *
  * @example
  * ```typescript
  * getCountryName("US"); // "United States of America"
@@ -100,10 +96,8 @@ export function getCountryName(
 
 /**
  * Check if a string is a valid ISO 3166-1 alpha-2 country code.
- *
  * @param code - The string to check
  * @returns True if the code is valid, false otherwise
- *
  * @example
  * ```typescript
  * isValidCountryCode("US"); // true
@@ -116,7 +110,6 @@ export function isValidCountryCode(code: string): code is ISOCountryCode {
 
 /**
  * Get all supported locales that have been preloaded.
- *
  * @returns Array of supported locale codes
  */
 export function getSupportedLocales(): SupportedLocale[] {

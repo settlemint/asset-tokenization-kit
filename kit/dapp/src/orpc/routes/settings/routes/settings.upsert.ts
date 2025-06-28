@@ -12,15 +12,12 @@ import { authRouter } from "@/orpc/procedures/auth.router";
  * Authentication: Required (uses authenticated router)
  * Permissions: Requires "update" permission - available to admin role only
  * Method: PUT /settings/:key
- *
  * @param input - Update parameters containing the setting key and new value
  * @param context - Request context with database connection and authenticated user
  * @returns Promise<string> - The updated or newly created setting value
- *
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws FORBIDDEN - If user lacks required update permissions
  * @throws INTERNAL_SERVER_ERROR - If the database operation fails
- *
  * @example
  * ```typescript
  * // Client usage:

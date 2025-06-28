@@ -7,7 +7,6 @@
  *
  * The component is designed to be flexible, allowing custom error messages while
  * providing sensible defaults for common 404 scenarios.
- *
  * @see {@link https://tanstack.com/router/latest/docs/guide/not-found-errors} - TanStack Router not found handling
  */
 
@@ -25,10 +24,10 @@ import type { ReactNode } from "react";
  * The component provides two recovery options:
  * 1. "Go back" - Uses browser history to return to the previous page
  * 2. "Start Over" - Navigates to the application's home page
- *
- * @param children - Optional custom error message or content to display.
- *                   If not provided, displays a default "page not found" message.
- *
+ * @param {object} props - The component props
+ * @param {import("react").ReactNode} [props.children] - Optional custom error message or content to display.
+ *                                       If not provided, displays a default "page not found" message.
+ * @returns {JSX.Element} A React component that displays the 404 error page UI
  * @example
  * ```tsx
  * // With default message

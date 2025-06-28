@@ -23,7 +23,6 @@
  * - Network requests can be expensive (RPC calls)
  * - Users expect responsive UI with cached data
  * - Background updates maintain data consistency
- *
  * @example
  * ```typescript
  * // Using the query client in a component
@@ -37,16 +36,15 @@
  *   });
  * }
  * ```
- *
  * @see {@link https://tanstack.com/query} - TanStack Query documentation
  * @see {@link ../orpc} - ORPC client integration
  */
 
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimental";
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
-import superjson from "superjson";
+import { parse, stringify } from "superjson";
 
 /**
  * Query cache configuration constants.
@@ -72,6 +70,7 @@ const QUERY_STALE_TIME = 5 * 60 * 1000; // 5 minutes
  * Exponential backoff retry delay calculation.
  * Implements exponential backoff with a maximum delay cap to prevent
  * excessive wait times while still providing reasonable retry intervals.
+ * @param attemptIndex
  */
 const MUTATION_RETRY_DELAY = (attemptIndex: number): number =>
   Math.min(1000 * 2 ** attemptIndex, 30000);
@@ -101,6 +100,7 @@ interface QueryError extends Error {
 /**
  * Global error handler for UNAUTHORIZED errors.
  * Redirects to the sign-in page when authentication fails.
+ * @param error
  */
 const handleUnauthorizedError = (error: unknown) => {
   const queryError = error as QueryError;
@@ -155,6 +155,8 @@ export const queryClient = new QueryClient({
        * Avoids retrying client errors (4xx) except for 408 Request Timeout,
        * which is often a temporary network issue. Server errors (5xx) and
        * network errors are retried with exponential backoff.
+       * @param failureCount
+       * @param error
        */
       retry: (failureCount, error) => {
         const queryError = error as QueryError;
@@ -191,6 +193,7 @@ export const queryClient = new QueryClient({
        * Only refetches if this is the first time the query is being used
        * or if the data has been explicitly invalidated. This prevents
        * unnecessary refetches when navigating between pages.
+       * @param query
        */
       refetchOnMount: (query) => {
         // Always refetch if invalidated
@@ -206,6 +209,8 @@ export const queryClient = new QueryClient({
        * Similar to queries, but more conservative since mutations
        * can have side effects. Only retries on server errors and
        * network issues, never on client errors.
+       * @param failureCount
+       * @param error
        */
       retry: (failureCount, error) => {
         const mutationError = error as QueryError;
@@ -239,12 +244,12 @@ export const queryClient = new QueryClient({
 /**
  * Storage persister for offline support
  */
-const persister = createSyncStoragePersister({
+const persister = createAsyncStoragePersister({
   storage: typeof window !== "undefined" ? window.localStorage : undefined,
   key: "atk-query-cache",
   throttleTime: 1000,
-  serialize: (data) => superjson.stringify(data),
-  deserialize: (data) => superjson.parse(data),
+  serialize: (data) => stringify(data),
+  deserialize: async (data) => parse(data),
 });
 
 /**

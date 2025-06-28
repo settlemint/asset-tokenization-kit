@@ -13,7 +13,6 @@ import { me } from "@/orpc/routes/user/routes/user.me";
  *
  * The router is designed to be extended with additional user management
  * endpoints such as profile updates, preference management, and session control.
- *
  * @see {@link ./user.contract} - Type-safe contract definitions
  * @see {@link ./routes/user.me} - Current user endpoint implementation
  */

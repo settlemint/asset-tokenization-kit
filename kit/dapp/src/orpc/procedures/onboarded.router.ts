@@ -16,7 +16,6 @@
  * - A verified user wallet address
  * - Interactions with blockchain contracts
  * - Operations specific to onboarded users
- *
  * @see {@link ./auth.router} - Authenticated router that this extends
  * @see {@link ../middlewares/auth/wallet.middleware} - Wallet verification middleware
  */

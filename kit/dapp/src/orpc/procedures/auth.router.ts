@@ -25,7 +25,6 @@ import { publicRouter } from "./public.router";
  * - Access to user-specific data
  * - Protected operations (create, update, delete)
  * - User permission checks
- *
  * @see {@link ./public.router} - Public router that this extends
  * @see {@link ../../middlewares/auth/auth.middleware} - Authentication middleware
  */

@@ -45,7 +45,6 @@ export interface Context {
    *
    * Optional because not all procedures require authentication, and
    * unauthenticated requests will have this as undefined.
-   *
    * @see {@link @/lib/auth/auth} - Authentication system implementation
    */
   auth?: {
@@ -62,7 +61,6 @@ export interface Context {
    *
    * Optional to support procedures that don't need database access,
    * such as utility functions or external API integrations.
-   *
    * @see {@link @/lib/db} - Database configuration and connection
    */
   db?: typeof db;
@@ -79,7 +77,6 @@ export interface Context {
    * - The client maintains full compatibility with the underlying GraphQL operations
    *
    * Injected by theGraphMiddleware when a procedure requires blockchain data access.
-   *
    * @optional - Only available in procedures that use theGraphMiddleware
    * @see {@link @/orpc/middlewares/services/the-graph.middleware} - The Graph middleware implementation
    * @see {@link ValidatedTheGraphClient} - Type definition with validation methods
@@ -102,7 +99,6 @@ export interface Context {
    * - Invalid API responses are caught before they can cause downstream errors
    *
    * Injected by portalMiddleware when a procedure needs Portal API access.
-   *
    * @optional - Only available in procedures that use portalMiddleware
    * @see {@link @/orpc/middlewares/services/portal.middleware} - Portal middleware implementation
    * @see {@link ValidatedPortalClient} - Type definition with validation methods

@@ -4,7 +4,6 @@
  * This module provides comprehensive Zod-based validation for trading symbols
  * used to identify financial assets, ensuring they conform to standard
  * market conventions and format requirements.
- *
  * @module AssetSymbolValidation
  */
 import { z } from "zod/v4";
@@ -31,7 +30,6 @@ import { z } from "zod/v4";
  * 2. Check maximum length (at most 12 characters)
  * 3. Validate format using regex (uppercase alphanumeric only)
  * 4. Return as validated AssetSymbol type
- *
  * @example
  * ```typescript
  * // Valid asset symbol parsing
@@ -63,7 +61,6 @@ import { z } from "zod/v4";
  *   console.log(`Valid symbol: ${userInput}`);
  * }
  * ```
- *
  * @throws {ZodError} When the input fails validation at any step
  */
 export const assetSymbol = () =>
@@ -91,10 +88,8 @@ export type AssetSymbol = z.infer<ReturnType<typeof assetSymbol>>;
  *
  * This function provides runtime type checking for asset symbols,
  * useful for conditional logic and type narrowing in TypeScript.
- *
  * @param value - The value to validate (can be any type)
  * @returns `true` if the value is a valid asset symbol, `false` otherwise
- *
  * @example
  * ```typescript
  * const userInput: unknown = "AAPL";
@@ -117,11 +112,9 @@ export function isAssetSymbol(value: unknown): value is AssetSymbol {
  * This function attempts to parse and validate an asset symbol,
  * throwing a ZodError if validation fails. Use this when you expect
  * the input to be valid and want to handle errors at a higher level.
- *
  * @param value - The value to parse and validate (can be any type)
  * @returns The validated asset symbol
  * @throws {Error} When the input fails validation
- *
  * @example
  * ```typescript
  * try {

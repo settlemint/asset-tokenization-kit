@@ -29,7 +29,6 @@ export const contract = {
    * Accounts represent blockchain wallet addresses with associated identity
    * claims in the ERC-3643 compliance system. This contract provides type-safe
    * access to wallet creation and account information retrieval operations.
-   *
    * @see {@link ./account/account.contract} - Account contract implementation
    * @see {@link ./account/account.router} - Corresponding router implementation
    */
@@ -39,7 +38,6 @@ export const contract = {
    * Settings-related API contract.
    *
    * Contains type definitions for settings management procedures.
-   *
    * @see {@link ./settings/settings.contract} - Settings contract implementation
    * @see {@link ./settings/settings.router} - Corresponding router implementation
    */
@@ -52,7 +50,6 @@ export const contract = {
    * Systems are the core entities that manage the lifecycle and compliance
    * of tokenized assets on the blockchain. This contract provides type-safe
    * access to system listing and management operations.
-   *
    * @see {@link ./system/system.contract} - System contract implementation
    * @see {@link ./system/system.router} - Corresponding router implementation
    */
@@ -62,7 +59,6 @@ export const contract = {
    * Token-related API contract.
    *
    * Contains type definitions for token-related procedures.
-   *
    * @see {@link ./token/token.contract} - Token contract implementation
    * @see {@link ./token/token.router} - Corresponding router implementation
    */
@@ -72,7 +68,6 @@ export const contract = {
    * User-related API contract.
    *
    * Contains type definitions for user-related procedures.
-   *
    * @see {@link ./user/user.contract} - User contract implementation
    * @see {@link ./user/user.router} - Corresponding router implementation
    */

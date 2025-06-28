@@ -4,7 +4,6 @@
  * This module provides a centralized safe parsing utility for Zod schemas
  * with enhanced error logging and sensitive data redaction. It serves as
  * the main entry point for common validation operations.
- *
  * @module ZodUtilities
  */
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
@@ -17,7 +16,6 @@ const logger = createLogger({
 
 /**
  * Safe parse function that provides detailed error logging with pretty printing.
- *
  * @remarks
  * This function enhances Zod's safeParse with:
  * - Automatic error logging with structured output
@@ -34,7 +32,6 @@ const logger = createLogger({
  *
  * For promise schemas, note that Zod requires async parsing methods.
  * Using promise schemas with this synchronous method will throw an error.
- *
  * @template T - The Zod schema type
  * @param schema - The Zod schema to validate against
  * @param value - The value to validate
@@ -42,7 +39,6 @@ const logger = createLogger({
  * @param options.errorFormatter - Custom error formatter function
  * @returns The parsed and validated data matching the schema type
  * @throws {Error} If validation fails (with details logged)
- *
  * @example
  * ```typescript
  * import { safeParse } from './zod';

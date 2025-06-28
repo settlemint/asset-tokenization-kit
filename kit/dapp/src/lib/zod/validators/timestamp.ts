@@ -5,14 +5,12 @@
  * in various formats (ISO string, milliseconds, seconds, or Date objects). It's designed
  * to handle the complexity of timestamp formats commonly encountered in APIs, databases,
  * and blockchain applications.
- *
  * @module TimestampValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Creates a Zod schema that validates and normalizes timestamps in various formats.
- *
  * @remarks
  * Features:
  * - Accepts ISO date strings (e.g., "2023-04-01T12:00:00Z")
@@ -28,9 +26,7 @@ import { z } from "zod/v4";
  * - Unix milliseconds: 13 digits (e.g., 1680354000000)
  * - Microseconds: 16 digits (converted to milliseconds)
  * - Nanoseconds: 19 digits (converted to milliseconds)
- *
  * @returns A Zod schema that transforms various inputs to Date objects
- *
  * @example
  * ```typescript
  * const schema = timestamp();
@@ -125,10 +121,8 @@ export type Timestamp = z.infer<ReturnType<typeof timestamp>>;
 
 /**
  * Type guard to check if a value is a valid timestamp.
- *
  * @param value - The value to check
  * @returns `true` if the value can be parsed as a valid timestamp, `false` otherwise
- *
  * @example
  * ```typescript
  * const input: unknown = "2023-04-01T12:00:00Z";
@@ -155,11 +149,9 @@ export function isTimestamp(value: unknown): value is Timestamp {
 
 /**
  * Safely parse and return a timestamp or throw an error.
- *
  * @param value - The value to parse as a timestamp
  * @returns The normalized Date object
  * @throws {Error} If the value cannot be parsed as a valid timestamp
- *
  * @example
  * ```typescript
  * try {

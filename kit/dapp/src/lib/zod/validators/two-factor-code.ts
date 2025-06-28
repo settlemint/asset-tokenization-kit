@@ -4,14 +4,12 @@
  * This module provides Zod schemas for validating 6-digit two-factor authentication (2FA)
  * codes, commonly used in time-based one-time password (TOTP) systems like Google
  * Authenticator, Authy, and similar security applications.
- *
  * @module TwoFactorCodeValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Creates a Zod schema that validates 6-digit two-factor authentication codes.
- *
  * @remarks
  * 2FA code requirements:
  * - Exactly 6 digits (standard TOTP length)
@@ -24,9 +22,7 @@ import { z } from "zod/v4";
  * - Microsoft Authenticator
  * - Authy
  * - Most TOTP-based 2FA systems
- *
  * @returns A Zod schema for 2FA code validation
- *
  * @example
  * ```typescript
  * const schema = twoFactorCode();
@@ -58,10 +54,8 @@ export type TwoFactorCode = z.infer<ReturnType<typeof twoFactorCode>>;
 
 /**
  * Type guard to check if a value is a valid two-factor code.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid 2FA code, `false` otherwise
- *
  * @example
  * ```typescript
  * const userInput: unknown = "123456";
@@ -85,11 +79,9 @@ export function isTwoFactorCode(value: unknown): value is TwoFactorCode {
 
 /**
  * Safely parse and return a two-factor code or throw an error.
- *
  * @param value - The value to parse as a 2FA code
  * @returns The validated 2FA code
  * @throws {Error} If the value is not a valid 2FA code
- *
  * @example
  * ```typescript
  * try {

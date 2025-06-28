@@ -8,7 +8,6 @@
  *
  * The component integrates with TanStack Router to provide navigation-aware error
  * handling, adjusting the recovery options based on the current route context.
- *
  * @see {@link https://tanstack.com/router/latest/docs/guide/error-boundaries} - TanStack Router error boundaries
  */
 
@@ -21,6 +20,7 @@ import {
 } from "@/hooks/use-error-info";
 import { cn } from "@/lib/utils";
 import { useRouter, type ErrorComponentProps } from "@tanstack/react-router";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -38,9 +38,9 @@ import { useTranslation } from "react-i18next";
  * navigation options accordingly:
  * - Root route errors: Shows "Home" link for navigation
  * - Non-root errors: Shows "Go Back" link using browser history
- *
- * @param error - The error object containing error details from TanStack Router
- *
+ * @param {object} props - The error component props from TanStack Router
+ * @param {Error} props.error - The error object containing error details
+ * @returns {JSX.Element} A React component that displays the error boundary UI
  * @example
  * ```tsx
  * // This component is typically used in route configurations
@@ -58,6 +58,10 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
 
   // Log error to console for debugging
   console.error(error);
+
+  const handleRetry = useCallback(() => {
+    void router.invalidate();
+  }, [router]);
 
   return (
     // Full-screen container with theme-aware background images
@@ -87,9 +91,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
             errorCode={getErrorCode(error)}
             title={errorTitle}
             description={errorDescription}
-            onRetry={() => {
-              void router.invalidate();
-            }}
+            onRetry={handleRetry}
           />
         </div>
       </div>

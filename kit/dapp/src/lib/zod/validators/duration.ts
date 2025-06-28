@@ -4,22 +4,18 @@
  * This module provides Zod schemas for validating time duration values,
  * typically used for timeouts, intervals, and scheduling in applications.
  * All durations are expressed in milliseconds for precision.
- *
  * @module DurationValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Creates a Zod schema that validates duration values in milliseconds.
- *
  * @remarks
  * - Must be an integer (no fractional milliseconds)
  * - Must be positive (greater than 0)
  * - Common use cases: animation durations, API timeouts, polling intervals
  * - For human-readable time periods, convert: 1000ms = 1s, 60000ms = 1m
- *
  * @returns A Zod schema for duration validation
- *
  * @example
  * ```typescript
  * const schema = duration();
@@ -51,10 +47,8 @@ export type Duration = z.infer<ReturnType<typeof duration>>;
 
 /**
  * Type guard to check if a value is a valid duration.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid duration, `false` otherwise
- *
  * @example
  * ```typescript
  * const userInput: unknown = 5000;
@@ -75,11 +69,9 @@ export function isDuration(value: unknown): value is Duration {
 
 /**
  * Safely parse and return a duration or throw an error.
- *
  * @param value - The value to parse as a duration
  * @returns The validated duration in milliseconds
  * @throws {Error} If the value is not a valid duration
- *
  * @example
  * ```typescript
  * try {

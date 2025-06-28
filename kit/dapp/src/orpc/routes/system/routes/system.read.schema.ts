@@ -4,7 +4,6 @@
  * This schema defines the structure for reading system contract details
  * including associated token factories. It provides access to the system's
  * configuration and deployed token factories.
- *
  * @example
  * ```typescript
  * const system = await client.system.read({

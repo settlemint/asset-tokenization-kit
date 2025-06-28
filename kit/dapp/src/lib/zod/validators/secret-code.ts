@@ -4,14 +4,12 @@
  * This module provides Zod schemas for validating secret authentication codes,
  * commonly used for API keys, recovery codes, and secure tokens in authentication
  * systems. Ensures appropriate length for security without being impractical.
- *
  * @module SecretCodeValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Creates a Zod schema that validates secret authentication codes.
- *
  * @remarks
  * Security requirements:
  * - Minimum 8 characters: Basic security threshold
@@ -24,9 +22,7 @@ import { z } from "zod/v4";
  * - Account recovery codes
  * - Two-factor backup codes
  * - Webhook signing secrets
- *
  * @returns A Zod schema for secret code validation
- *
  * @example
  * ```typescript
  * const schema = secretCode();
@@ -57,10 +53,8 @@ export type SecretCode = z.infer<ReturnType<typeof secretCode>>;
 
 /**
  * Type guard to check if a value is a valid secret code.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid secret code, `false` otherwise
- *
  * @example
  * ```typescript
  * const apiKey: unknown = process.env.API_KEY;
@@ -84,11 +78,9 @@ export function isSecretCode(value: unknown): value is SecretCode {
 
 /**
  * Safely parse and return a secret code or throw an error.
- *
  * @param value - The value to parse as a secret code
  * @returns The validated secret code
  * @throws {Error} If the value is not a valid secret code
- *
  * @example
  * ```typescript
  * try {

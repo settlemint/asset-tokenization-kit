@@ -10,7 +10,7 @@ import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
 import { TokenMintSchema } from "@/orpc/routes/token/routes/token.mint.schema";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { eventIterator } from "@orpc/server";
-import z from "zod/v4";
+import { z } from "zod/v4";
 
 const factoryCreate = baseContract
   .route({

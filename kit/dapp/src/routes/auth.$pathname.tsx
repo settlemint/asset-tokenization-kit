@@ -14,7 +14,6 @@
  *
  * The route uses Better Auth's AuthCard component which automatically
  * renders the appropriate authentication form based on the pathname.
- *
  * @see {@link https://better-auth.com/docs/ui/auth-card} - AuthCard documentation
  */
 

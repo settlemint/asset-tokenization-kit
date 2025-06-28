@@ -4,7 +4,6 @@
  * This module provides comprehensive Zod-based validation for International Securities
  * Identification Numbers (ISIN), ensuring they conform to the ISO 6166 standard
  * with proper format validation and checksum verification capabilities.
- *
  * @module ISINValidation
  */
 import { z } from "zod/v4";
@@ -84,7 +83,6 @@ function validateIsinChecksum(isin: string): boolean {
  * 4. Validate NSIN format (9 alphanumeric characters)
  * 5. Validate check digit format (1 numeric character)
  * 6. Return as branded ISIN type
- *
  * @example
  * ```typescript
  * // Valid ISIN parsing
@@ -112,7 +110,6 @@ function validateIsinChecksum(isin: string): boolean {
  *   console.log(`Valid ISIN: ${userInput}`);
  * }
  * ```
- *
  * @throws {ZodError} When the input fails validation at any step
  */
 export const isin = () =>
@@ -146,10 +143,8 @@ export type ISIN = z.infer<ReturnType<typeof isin>>;
  *
  * This function provides runtime type checking for ISIN codes,
  * useful for conditional logic and type narrowing in TypeScript.
- *
  * @param value - The value to validate (can be any type)
  * @returns `true` if the value is a valid ISIN, `false` otherwise
- *
  * @example
  * ```typescript
  * const userInput: unknown = "US0378331005";
@@ -173,11 +168,9 @@ export function isISIN(value: unknown): value is ISIN {
  * This function attempts to parse and validate an ISIN code,
  * throwing a ZodError if validation fails. Use this when you expect
  * the input to be valid and want to handle errors at a higher level.
- *
  * @param value - The value to parse and validate (can be any type)
  * @returns The validated ISIN code
  * @throws {Error} When the input fails validation
- *
  * @example
  * ```typescript
  * try {

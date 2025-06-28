@@ -4,14 +4,12 @@
  * This module provides Zod schemas for validating 8-character verification codes,
  * commonly used for email verification, account confirmation, and similar
  * authentication workflows requiring secure, human-readable codes.
- *
  * @module VerificationCodeValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Creates a Zod schema that validates 8-character alphanumeric verification codes.
- *
  * @remarks
  * Verification code format:
  * - Exactly 8 characters long
@@ -24,9 +22,7 @@ import { z } from "zod/v4";
  * - Account activation codes
  * - Password reset codes
  * - Transaction confirmation codes
- *
  * @returns A Zod schema for verification code validation
- *
  * @example
  * ```typescript
  * const schema = verificationCode();
@@ -61,10 +57,8 @@ export type VerificationCode = z.infer<typeof verificationCode>;
 
 /**
  * Type guard to check if a value is a valid verification code.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid verification code, `false` otherwise
- *
  * @example
  * ```typescript
  * const code: unknown = "ABC12345";
@@ -88,11 +82,9 @@ export function isVerificationCode(value: unknown): value is VerificationCode {
 
 /**
  * Safely parse and return a verification code or throw an error.
- *
  * @param value - The value to parse as a verification code
  * @returns The validated verification code
  * @throws {Error} If the value is not a valid verification code
- *
  * @example
  * ```typescript
  * try {

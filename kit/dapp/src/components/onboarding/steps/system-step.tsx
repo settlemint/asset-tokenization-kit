@@ -13,7 +13,7 @@ import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { forwardRef, useCallback, useEffect, useState } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
@@ -32,6 +32,15 @@ interface SystemStepProps {
   onRegisterAction?: (action: () => void) => void;
 }
 
+/**
+ * Step component for deploying the system smart contract during onboarding
+ * @param {object} props - Component props
+ * @param {string | null} [props.systemAddress] - Pre-existing system address if available
+ * @param {boolean} [props.isSystemDeployed] - Whether system is already deployed
+ * @param {() => void} [props.onSuccess] - Callback when system deployment is successful
+ * @param {(action: () => void) => void} [props.onRegisterAction] - Callback to register the deployment action with parent
+ * @returns {JSX.Element} The system deployment step component
+ */
 export function SystemStep({
   systemAddress: propSystemAddress,
   isSystemDeployed = false,
@@ -90,6 +99,32 @@ export function SystemStep({
     invalidateSetting();
   }, [invalidateSetting]);
 
+  const renderPincodeField = useCallback(
+    ({
+      field,
+    }: {
+      field: { value: string; onChange: (value: string) => void };
+    }) => {
+      return (
+        <FormItem className="flex flex-col items-center space-y-4">
+          <FormLabel className="text-base font-medium">
+            Enter your PIN code
+          </FormLabel>
+          <FormControl>
+            <PincodeInput
+              value={field.value}
+              onChange={field.onChange}
+              autoFocus
+              disabled={isDeploying}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      );
+    },
+    [isDeploying]
+  );
+
   // Handle deploy system when button is clicked
   const handleDeploySystem = useCallback(() => {
     if (!hasSystem && !isDeploying) {
@@ -98,42 +133,47 @@ export function SystemStep({
   }, [hasSystem, isDeploying]);
 
   // Handle pincode submission
-  const handlePincodeSubmit = (values: PincodeFormValues) => {
-    createSystem({
-      verification: {
-        verificationCode: values.pincode,
-        verificationType: "pincode",
-      },
-      messages: {
-        // Transaction tracking messages
-        streamTimeout: t("system.transaction-tracking.stream-timeout"),
-        waitingForMining: t("system.transaction-tracking.waiting-for-mining"),
-        transactionFailed: t("system.transaction-tracking.transaction-failed"),
-        transactionDropped: t(
-          "system.transaction-tracking.transaction-dropped"
-        ),
-        waitingForIndexing: t(
-          "system.transaction-tracking.waiting-for-indexing"
-        ),
-        transactionIndexed: t(
-          "system.transaction-tracking.transaction-indexed"
-        ),
-        indexingTimeout: t("system.transaction-tracking.indexing-timeout"),
-        // System-specific messages
-        systemCreated: t("system.messages.created"),
-        creatingSystem: t("system.messages.creating"),
-        systemCreationFailed: t("system.messages.creation-failed"),
-        bootstrappingSystem: t("system.messages.bootstrapping-system"),
-        bootstrapFailed: t("system.messages.bootstrap-failed"),
-        systemCreatedBootstrapFailed: t(
-          "system.messages.system-created-bootstrap-failed"
-        ),
-        initialLoading: t("system.messages.initial-loading"),
-        noResultError: t("system.messages.no-result-error"),
-        defaultError: t("system.messages.default-error"),
-      },
-    });
-  };
+  const handlePincodeSubmit = useCallback(
+    (values: PincodeFormValues) => {
+      createSystem({
+        verification: {
+          verificationCode: values.pincode,
+          verificationType: "pincode",
+        },
+        messages: {
+          // Transaction tracking messages
+          streamTimeout: t("system.transaction-tracking.stream-timeout"),
+          waitingForMining: t("system.transaction-tracking.waiting-for-mining"),
+          transactionFailed: t(
+            "system.transaction-tracking.transaction-failed"
+          ),
+          transactionDropped: t(
+            "system.transaction-tracking.transaction-dropped"
+          ),
+          waitingForIndexing: t(
+            "system.transaction-tracking.waiting-for-indexing"
+          ),
+          transactionIndexed: t(
+            "system.transaction-tracking.transaction-indexed"
+          ),
+          indexingTimeout: t("system.transaction-tracking.indexing-timeout"),
+          // System-specific messages
+          systemCreated: t("system.messages.created"),
+          creatingSystem: t("system.messages.creating"),
+          systemCreationFailed: t("system.messages.creation-failed"),
+          bootstrappingSystem: t("system.messages.bootstrapping-system"),
+          bootstrapFailed: t("system.messages.bootstrap-failed"),
+          systemCreatedBootstrapFailed: t(
+            "system.messages.system-created-bootstrap-failed"
+          ),
+          initialLoading: t("system.messages.initial-loading"),
+          noResultError: t("system.messages.no-result-error"),
+          defaultError: t("system.messages.default-error"),
+        },
+      });
+    },
+    [createSystem, t]
+  );
 
   // Register the action with parent
   useEffect(() => {
@@ -199,7 +239,7 @@ export function SystemStep({
       </div>
       <div
         className="flex-1 overflow-y-auto"
-        style={{ minHeight: "450px", maxHeight: "550px" }}
+        style={useMemo(() => ({ minHeight: "450px", maxHeight: "550px" }), [])}
       >
         <div className="max-w-3xl space-y-6 pr-2">
           {/* Animated deployment visualization - show during deployment only */}
@@ -277,22 +317,7 @@ export function SystemStep({
                   <FormField
                     control={form.control}
                     name="pincode"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col items-center space-y-4">
-                        <FormLabel className="text-base font-medium">
-                          Enter your PIN code
-                        </FormLabel>
-                        <FormControl>
-                          <PincodeInput
-                            value={field.value}
-                            onChange={field.onChange}
-                            autoFocus
-                            disabled={isDeploying}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={renderPincodeField}
                   />
                 </form>
               </Form>

@@ -19,20 +19,6 @@ import { twMerge } from "tailwind-merge";
  * The function ensures that when conflicting Tailwind utility classes are
  * provided, the last one takes precedence, matching Tailwind's behavior.
  * This is crucial for component composition and conditional styling.
- *
- * @param inputs - Any number of class values including:
- *   - String literals: `'text-red-500 p-4'`
- *   - Conditionals: `isActive && 'bg-blue-500'`
- *   - Objects: `{ 'text-lg': isLarge, 'font-bold': isBold }`
- *   - Arrays: `['base-class', someCondition && 'conditional-class']`
- *   - Undefined/null values (automatically filtered out)
- *
- * @returns A single string with merged class names, properly handling:
- *   - Removal of duplicate classes
- *   - Resolution of conflicting Tailwind utilities
- *   - Filtering of falsy values
- *   - Preservation of non-Tailwind classes
- *
  * @example
  * ```typescript
  * // Basic usage - conflicting padding classes
@@ -72,7 +58,6 @@ import { twMerge } from "tailwind-merge";
  *   );
  * }
  * ```
- *
  * @see {@link https://github.com/lukeed/clsx} - clsx documentation
  * @see {@link https://github.com/dcastil/tailwind-merge} - tailwind-merge documentation
  */
