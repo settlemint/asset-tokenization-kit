@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,7 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Web3Avatar } from "@/components/web3-avatar/web3-avatar";
 import {
@@ -41,7 +41,7 @@ export function UserDropdown({
             name={user?.name}
             address={user?.address}
             size={32}
-            className="h-8 w-8 rounded-lg"
+            className="h-8 w-8"
           />
           <div className="hidden sm:grid flex-1 text-left text-sm leading-tight">
             {user?.name ? (
@@ -72,7 +72,7 @@ export function UserDropdown({
               name={user?.name}
               address={user?.address}
               size={32}
-              className="h-8 w-8 rounded-lg"
+              className="h-8 w-8"
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
               {user?.name ? (

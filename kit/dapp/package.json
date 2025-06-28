@@ -118,6 +118,9 @@
     "tailwind-merge": "3.3.1",
     "tailwindcss": "4.1.11",
     "tw-animate-css": "1.3.4",
-    "zod": "3.25.67"
+    "zod": "3.25.67",
+    "@types/crypto-js": "4.2.2",
+    "crypto-js": "4.2.0",
+    "react-jazzicon": "1.0.4"
   }
 }

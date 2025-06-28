@@ -1,9 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
+import MD5 from "crypto-js/md5";
 import { memo, useMemo } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import MD5 from "crypto-js/md5";
 
 interface Web3AvatarProps {
   email?: string;
@@ -83,8 +83,11 @@ const Web3AvatarComponent = memo(function Web3Avatar({
   if (gravatarUrl) {
     return (
       <Avatar className={className} style={avatarStyle}>
-        <AvatarImage src={gravatarUrl} alt={name ?? email ?? "User avatar"} />
-        <AvatarFallback>
+        <AvatarImage 
+          src={gravatarUrl} 
+          alt={name ?? email ?? "User avatar"} 
+        />
+        <AvatarFallback className="flex items-center justify-center">
           <Jazzicon diameter={size} seed={jazziconSeed} />
         </AvatarFallback>
       </Avatar>
