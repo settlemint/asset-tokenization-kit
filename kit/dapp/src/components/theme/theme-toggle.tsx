@@ -8,7 +8,36 @@ import {
 import { useMounted } from "@/lib/utils/use-mounted";
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+
+/**
+ * Props for the ThemeMenuItem component.
+ */
+interface ThemeMenuItemProps {
+  theme: string;
+  onThemeChange: (theme: string) => void;
+}
+
+/**
+ * A single theme menu item component.
+ */
+const ThemeMenuItem = ({ theme, onThemeChange }: ThemeMenuItemProps) => {
+  const handleClick = useCallback(() => {
+    onThemeChange(theme);
+  }, [theme, onThemeChange]);
+  const { t } = useTranslation("theme");
+
+  return (
+    <DropdownMenuItem onClick={handleClick} className="capitalize">
+      {theme === "dark"
+        ? t("dark")
+        : theme === "light"
+          ? t("light")
+          : t("system")}
+    </DropdownMenuItem>
+  );
+};
 
 /**
  * Props for the ThemeToggle component.
@@ -36,6 +65,13 @@ export function ThemeToggle({
   const { setTheme, resolvedTheme, themes } = useTheme();
   const { t } = useTranslation("theme");
 
+  const handleThemeChange = useCallback(
+    (theme: string) => {
+      setTheme(theme);
+    },
+    [setTheme]
+  );
+
   // Show skeleton during SSR to prevent hydration mismatch
   if (!mounted) {
     return null;
@@ -57,19 +93,11 @@ export function ThemeToggle({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {themes.map((theme) => (
-          <DropdownMenuItem
+          <ThemeMenuItem
             key={theme}
-            onClick={() => {
-              setTheme(theme);
-            }}
-            className="capitalize"
-          >
-            {theme === "dark"
-              ? t("dark")
-              : theme === "light"
-                ? t("light")
-                : t("system")}
-          </DropdownMenuItem>
+            theme={theme}
+            onThemeChange={handleThemeChange}
+          />
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { orpc } from "@/orpc";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
@@ -26,22 +26,31 @@ function IssuerOnboarding() {
   const { user } = Route.useLoaderData();
 
   // Define steps with dynamic statuses
-  const steps: Step[] = [
-    {
-      id: "wallet",
-      title: t("steps.wallet.title"),
-      description: t("steps.wallet.description"),
-      status: user.wallet ? "completed" : "active",
-    },
-  ];
+  const steps: Step[] = useMemo(
+    () => [
+      {
+        id: "wallet",
+        title: t("steps.wallet.title"),
+        description: t("steps.wallet.description"),
+        status: user.wallet ? "completed" : "active",
+      },
+    ],
+    [user.wallet, t]
+  );
 
-  const handleWalletSuccess = () => {
+  const handleWalletSuccess = useCallback(() => {
     // Issuer onboarding complete, redirect to dashboard
     void navigate({ to: "/" });
-  };
+  }, [navigate]);
+
+  const handleStepChange = useCallback(() => {
+    // Only one step for issuer onboarding
+  }, []);
+
+  const allowedTypes = useMemo(() => ["issuer"], []);
 
   return (
-    <OnboardingGuard require="not-onboarded" allowedTypes={["issuer"]}>
+    <OnboardingGuard require="not-onboarded" allowedTypes={allowedTypes}>
       <div className="min-h-screen bg-gray-50 p-8 dark:bg-gray-900">
         <div className="mx-auto max-w-6xl">
           <StepWizard
@@ -49,9 +58,7 @@ function IssuerOnboarding() {
             currentStepId={currentStepId}
             title={t("issuer.title")}
             description={t("issuer.description")}
-            onStepChange={() => {
-              // Only one step for issuer onboarding
-            }}
+            onStepChange={handleStepChange}
           >
             <WalletStep onSuccess={handleWalletSuccess} />
           </StepWizard>

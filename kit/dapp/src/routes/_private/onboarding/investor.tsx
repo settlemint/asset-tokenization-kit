@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { orpc } from "@/orpc";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
@@ -77,40 +77,45 @@ function InvestorOnboarding() {
   const { user } = Route.useLoaderData();
 
   // Define steps with dynamic statuses
-  const steps: Step[] = [
-    {
-      id: "wallet",
-      title: t("steps.wallet.title"),
-      description: t("steps.wallet.description"),
-      status: user.wallet
-        ? "completed"
-        : currentStepId === "wallet"
-          ? "active"
-          : "pending",
-    },
-    {
-      id: "identity",
-      title: t("steps.identity.title"),
-      description: t("steps.identity.description"),
-      status: currentStepId === "identity" ? "active" : "pending",
-    },
-  ];
+  const steps: Step[] = useMemo(
+    () => [
+      {
+        id: "wallet",
+        title: t("steps.wallet.title"),
+        description: t("steps.wallet.description"),
+        status: user.wallet
+          ? "completed"
+          : currentStepId === "wallet"
+            ? "active"
+            : "pending",
+      },
+      {
+        id: "identity",
+        title: t("steps.identity.title"),
+        description: t("steps.identity.description"),
+        status: currentStepId === "identity" ? "active" : "pending",
+      },
+    ],
+    [currentStepId, user.wallet, t]
+  );
 
-  const handleStepChange = (stepId: string) => {
+  const handleStepChange = useCallback((stepId: string) => {
     setCurrentStepId(stepId);
-  };
+  }, []);
 
-  const handleWalletSuccess = () => {
+  const handleWalletSuccess = useCallback(() => {
     setCurrentStepId("identity");
-  };
+  }, []);
 
-  const handleIdentitySuccess = () => {
+  const handleIdentitySuccess = useCallback(() => {
     // Investor onboarding complete, redirect to dashboard
     void navigate({ to: "/" });
-  };
+  }, [navigate]);
+
+  const allowedTypes = useMemo(() => ["investor"], []);
 
   return (
-    <OnboardingGuard require="not-onboarded" allowedTypes={["investor"]}>
+    <OnboardingGuard require="not-onboarded" allowedTypes={allowedTypes}>
       <div className="min-h-screen bg-gray-50 p-8 dark:bg-gray-900">
         <div className="mx-auto max-w-6xl">
           <StepWizard

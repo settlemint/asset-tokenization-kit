@@ -21,6 +21,7 @@ import {
 } from "@/hooks/use-error-info";
 import { cn } from "@/lib/utils";
 import { useRouter, type ErrorComponentProps } from "@tanstack/react-router";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -59,6 +60,10 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   // Log error to console for debugging
   console.error(error);
 
+  const handleRetry = useCallback(() => {
+    void router.invalidate();
+  }, [router]);
+
   return (
     // Full-screen container with theme-aware background images
     <div className="min-h-screen w-full bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
@@ -87,9 +92,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
             errorCode={getErrorCode(error)}
             title={errorTitle}
             description={errorDescription}
-            onRetry={() => {
-              void router.invalidate();
-            }}
+            onRetry={handleRetry}
           />
         </div>
       </div>

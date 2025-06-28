@@ -12,7 +12,7 @@ import { queryClient } from "@/lib/query.client";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -61,7 +61,7 @@ export function WalletSecurityStep({
       onSuccess?.();
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? "Failed to set PIN code");
+      toast.error(error.message || "Failed to set PIN code");
     },
   });
 
@@ -90,6 +90,32 @@ export function WalletSecurityStep({
     }
   }, [onRegisterAction, hasPincode, isPincodeSet, handleSetPincode]);
 
+  const renderPincodeField = useCallback(
+    ({
+      field,
+    }: {
+      field: { value: string; onChange: (value: string) => void };
+    }) => {
+      return (
+        <FormItem className="flex flex-col items-center space-y-4">
+          <FormLabel className="text-base font-medium">
+            Enter a 6-digit PIN code
+          </FormLabel>
+          <FormControl>
+            <PincodeInput
+              value={field.value}
+              onChange={field.onChange}
+              autoFocus
+              disabled={isPending}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      );
+    },
+    [isPending]
+  );
+
   return (
     <div className="h-full flex flex-col">
       <div className="mb-6">
@@ -104,7 +130,7 @@ export function WalletSecurityStep({
       </div>
       <div
         className="flex-1 overflow-y-auto"
-        style={{ minHeight: "450px", maxHeight: "550px" }}
+        style={useMemo(() => ({ minHeight: "450px", maxHeight: "550px" }), [])}
       >
         <div className="max-w-3xl space-y-6 pr-2">
           {hasPincode || isPincodeSet ? (
@@ -172,22 +198,7 @@ export function WalletSecurityStep({
                   <FormField
                     control={form.control}
                     name="pincode"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col items-center space-y-4">
-                        <FormLabel className="text-base font-medium">
-                          Enter a 6-digit PIN code
-                        </FormLabel>
-                        <FormControl>
-                          <PincodeInput
-                            value={field.value}
-                            onChange={field.onChange}
-                            autoFocus
-                            disabled={isPending}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={renderPincodeField}
                   />
 
                   {/* Security features */}

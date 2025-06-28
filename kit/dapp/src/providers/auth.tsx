@@ -24,7 +24,7 @@ import { authClient } from "@/lib/auth/auth.client";
 import { AuthQueryProvider } from "@daveyplate/better-auth-tanstack";
 import { AuthUIProviderTanstack } from "@daveyplate/better-auth-ui/tanstack";
 import { Link, useRouter } from "@tanstack/react-router";
-import type { PropsWithChildren } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import enAuthTranslations from "../../locales/en/auth.json";
@@ -63,16 +63,60 @@ import enAuthTranslations from "../../locales/en/auth.json";
  * }
  * ```
  */
-export function AuthProvider({ children }: PropsWithChildren) {
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
   const { t } = useTranslation("auth");
 
-  const localization = Object.fromEntries(
-    Object.keys(enAuthTranslations).map((key) => [
-      key,
-      t(key as keyof typeof enAuthTranslations),
-    ])
-  ) as { [K in keyof typeof enAuthTranslations]: string };
+  const localization = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.keys(enAuthTranslations).map((key) => [
+          key,
+          t(key as keyof typeof enAuthTranslations),
+        ])
+      ) as { [K in keyof typeof enAuthTranslations]: string },
+    [t]
+  );
+
+  const handleNavigate = useCallback(
+    (href: string) => {
+      void router.navigate({ href });
+    },
+    [router]
+  );
+
+  const handleReplace = useCallback(
+    (href: string) => {
+      void router.navigate({ href, replace: true });
+    },
+    [router]
+  );
+
+  const LinkComponent = useCallback(
+    ({ href, ...props }: React.ComponentProps<typeof Link>) => (
+      <Link to={href} {...props} />
+    ),
+    []
+  );
+
+  const handleToast = useCallback(
+    ({ variant, message }: { variant: string; message: string }) => {
+      if (variant === "success") {
+        toast.success(message);
+      } else if (variant === "error") {
+        toast.error(message);
+      } else if (variant === "warning") {
+        toast.warning(message);
+      } else {
+        toast.info(message);
+      }
+    },
+    []
+  );
 
   return (
     <AuthQueryProvider>
@@ -86,17 +130,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
          * Navigation function for redirects after auth actions.
          * Integrates with TanStack Router for type-safe navigation.
          */
-        navigate={(href) => router.navigate({ href })}
+        navigate={handleNavigate}
         /**
          * Replace navigation for auth flows.
          * Replaces the current history entry instead of pushing a new one.
          */
-        replace={(href) => router.navigate({ href, replace: true })}
+        replace={handleReplace}
         /**
          * Link component for auth UI navigation.
          * Uses TanStack Router's Link for client-side navigation.
          */
-        Link={({ href, ...props }) => <Link to={href} {...props} />}
+        Link={LinkComponent}
         /**
          * Enable optimistic updates for auth operations.
          * Updates UI immediately before server confirmation for better UX.
@@ -121,17 +165,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
          * Toast notification handler for auth events.
          * Displays success, error, warning, and info messages using Sonner.
          */
-        toast={({ variant, message }) => {
-          if (variant === "success") {
-            toast.success(message);
-          } else if (variant === "error") {
-            toast.error(message);
-          } else if (variant === "warning") {
-            toast.warning(message);
-          } else {
-            toast.info(message);
-          }
-        }}
+        toast={handleToast}
         localization={localization}
       >
         {children}

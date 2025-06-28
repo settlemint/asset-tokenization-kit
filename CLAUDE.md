@@ -14,3 +14,4 @@
 - never use barrel files
 - Do not use console.log, use const logger = createLogger({ level:
   (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info", });
+- do not modify code in kit/dapp/src/components/ui, this is where we store shadcn components we want to keep immutable for easy upgrading

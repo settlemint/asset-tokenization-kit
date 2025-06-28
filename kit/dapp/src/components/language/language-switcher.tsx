@@ -8,7 +8,7 @@ import {
 import { supportedLanguages } from "@/lib/i18n";
 import { useMounted } from "@/lib/utils/use-mounted";
 import { Check, Languages } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 // Language display names mapping
@@ -17,6 +17,41 @@ const LANGUAGE_NAMES: Record<string, string> = {
   de: "Deutsch",
   ar: "العربية",
   ja: "日本語",
+};
+
+/**
+ * Props for the LanguageMenuItem component.
+ */
+interface LanguageMenuItemProps {
+  locale: string;
+  currentLanguage: string;
+  isPending: boolean;
+  onLanguageChange: (locale: string) => void;
+}
+
+/**
+ * A single language menu item component.
+ */
+const LanguageMenuItem = ({
+  locale,
+  currentLanguage,
+  isPending,
+  onLanguageChange,
+}: LanguageMenuItemProps) => {
+  const handleClick = useCallback(() => {
+    onLanguageChange(locale);
+  }, [locale, onLanguageChange]);
+
+  return (
+    <DropdownMenuItem
+      onClick={handleClick}
+      className="flex items-center justify-between"
+      disabled={isPending || locale === currentLanguage}
+    >
+      {LANGUAGE_NAMES[locale] ?? locale}
+      {locale === currentLanguage && <Check className="ml-2 size-4" />}
+    </DropdownMenuItem>
+  );
 };
 
 /**
@@ -45,6 +80,17 @@ export function LanguageSwitcher({
   const { i18n, t } = useTranslation("language");
   const [isPending, setIsPending] = useState(false);
 
+  const handleLanguageChange = useCallback(
+    (locale: string) => {
+      if (locale === i18n.language) return;
+      setIsPending(true);
+      void i18n.changeLanguage(locale).then(() => {
+        setIsPending(false);
+      });
+    },
+    [i18n]
+  );
+
   // Show skeleton during SSR to prevent hydration mismatch
   if (!mounted) {
     return null;
@@ -72,21 +118,13 @@ export function LanguageSwitcher({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {supportedLanguages.map((locale) => (
-          <DropdownMenuItem
+          <LanguageMenuItem
             key={locale}
-            onClick={() => {
-              if (locale === i18n.language) return;
-              setIsPending(true);
-              void i18n.changeLanguage(locale).then(() => {
-                setIsPending(false);
-              });
-            }}
-            className="flex items-center justify-between"
-            disabled={isPending || locale === i18n.language}
-          >
-            {LANGUAGE_NAMES[locale] ?? locale}
-            {locale === i18n.language && <Check className="ml-2 size-4" />}
-          </DropdownMenuItem>
+            locale={locale}
+            currentLanguage={i18n.language}
+            isPending={isPending}
+            onLanguageChange={handleLanguageChange}
+          />
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

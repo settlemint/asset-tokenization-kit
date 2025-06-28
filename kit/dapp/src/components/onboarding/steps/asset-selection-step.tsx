@@ -21,8 +21,8 @@ import {
   PiggyBank,
   Wallet,
 } from "lucide-react";
-import { useCallback, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { memo, useCallback, useEffect, useMemo } from "react";
+import { type Control, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod/v4";
@@ -45,7 +45,132 @@ const assetIcons = {
   fund: PiggyBank,
   stablecoin: Coins,
   deposit: Wallet,
-};
+} as const;
+
+// Component for the checkbox area to prevent event propagation
+const CheckboxWrapper = memo(
+  ({
+    onClick,
+    children,
+  }: {
+    onClick: (e: React.MouseEvent) => void;
+    children: React.ReactNode;
+  }) => <div onClick={onClick}>{children}</div>
+);
+CheckboxWrapper.displayName = "CheckboxWrapper";
+
+// Memoized component for each asset type item
+const AssetTypeFormField = memo(
+  ({
+    assetType,
+    control,
+    t,
+  }: {
+    assetType: TokenTypeEnum;
+    control: Control<AssetSelectionFormValues>;
+    t: (key: string, options?: { ns?: string }) => string;
+  }) => {
+    const iconKey = assetType;
+    const Icon = iconKey in assetIcons ? assetIcons[iconKey] : Package;
+
+    const handleCheckboxClick = useCallback((e: React.MouseEvent) => {
+      e.stopPropagation();
+    }, []);
+
+    const createItemClickHandler = useCallback(
+      (
+        field: { value: string[]; onChange: (value: string[]) => void },
+        isChecked: boolean
+      ) =>
+        () => {
+          const checked = !isChecked;
+          if (checked) {
+            field.onChange([...field.value, assetType]);
+          } else {
+            field.onChange(
+              field.value.filter((value: string) => value !== assetType)
+            );
+          }
+        },
+      [assetType]
+    );
+
+    const createCheckboxChangeHandler = useCallback(
+      (field: { value: string[]; onChange: (value: string[]) => void }) =>
+        (checked: boolean) => {
+          if (checked) {
+            field.onChange([...field.value, assetType]);
+          } else {
+            field.onChange(
+              field.value.filter((value: string) => value !== assetType)
+            );
+          }
+        },
+      [assetType]
+    );
+
+    const renderField = useCallback(
+      ({
+        field,
+      }: {
+        field: { value: string[]; onChange: (value: string[]) => void };
+      }) => {
+        const isChecked = field.value.includes(assetType);
+        const itemClickHandler = createItemClickHandler(field, isChecked);
+        const checkboxChangeHandler = createCheckboxChangeHandler(field);
+
+        return (
+          <FormItem
+            key={assetType}
+            className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 hover:bg-accent/50 transition-colors cursor-pointer"
+            onClick={itemClickHandler}
+          >
+            <FormControl>
+              <CheckboxWrapper onClick={handleCheckboxClick}>
+                <Checkbox
+                  checked={isChecked}
+                  onCheckedChange={checkboxChangeHandler}
+                />
+              </CheckboxWrapper>
+            </FormControl>
+            <div className="flex-1 space-y-1 leading-none">
+              <div className="flex items-center gap-2">
+                <Icon className="h-4 w-4 text-muted-foreground" />
+                <FormLabel className="text-sm font-medium cursor-pointer">
+                  {t(`asset-types.${assetType}`, {
+                    ns: "tokens",
+                  })}
+                </FormLabel>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {t(`assets.descriptions.${assetType}`)}
+              </p>
+            </div>
+          </FormItem>
+        );
+      },
+      [
+        assetType,
+        t,
+        Icon,
+        handleCheckboxClick,
+        createItemClickHandler,
+        createCheckboxChangeHandler,
+      ]
+    );
+
+    return (
+      <FormField
+        key={assetType}
+        control={control}
+        name="assets"
+        render={renderField}
+      />
+    );
+  }
+);
+
+AssetTypeFormField.displayName = "AssetTypeFormField";
 
 export function AssetSelectionStep({
   onSuccess,
@@ -164,6 +289,34 @@ export function AssetSelectionStep({
 
   const hasDeployedAssets = (systemDetails?.tokenFactories.length ?? 0) > 0;
 
+  const renderAssetTypeField = useCallback(
+    () => (
+      <FormItem>
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
+              {t("assets.available-asset-types")}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {t("assets.select-all-asset-types")}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {availableAssets.map((assetType) => (
+              <AssetTypeFormField
+                key={assetType}
+                assetType={assetType}
+                control={form.control}
+                t={t}
+              />
+            ))}
+          </div>
+        </div>
+      </FormItem>
+    ),
+    [availableAssets, form.control, t]
+  );
+
   // Register the action with parent when not deployed
   useEffect(() => {
     if (onRegisterAction && !hasDeployedAssets) {
@@ -187,7 +340,7 @@ export function AssetSelectionStep({
       </div>
       <div
         className="flex-1 overflow-y-auto"
-        style={{ minHeight: "450px", maxHeight: "550px" }}
+        style={useMemo(() => ({ minHeight: "450px", maxHeight: "550px" }), [])}
       >
         <div className="space-y-6 pr-2">
           {hasDeployedAssets ? (
@@ -271,103 +424,7 @@ export function AssetSelectionStep({
                   <FormField
                     control={form.control}
                     name="assets"
-                    render={() => (
-                      <FormItem>
-                        <div className="space-y-4">
-                          <div>
-                            <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
-                              {t("assets.available-asset-types")}
-                            </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {t("assets.select-all-asset-types")}
-                            </p>
-                          </div>
-                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {availableAssets.map((assetType) => {
-                              const iconKey = assetType;
-                              const Icon =
-                                iconKey in assetIcons
-                                  ? assetIcons[iconKey]
-                                  : Package;
-                              return (
-                                <FormField
-                                  key={assetType}
-                                  control={form.control}
-                                  name="assets"
-                                  render={({ field }) => (
-                                    <FormItem
-                                      key={assetType}
-                                      className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 hover:bg-accent/50 transition-colors cursor-pointer"
-                                      onClick={() => {
-                                        const isCurrentlyChecked =
-                                          field.value.includes(assetType);
-                                        const checked = !isCurrentlyChecked;
-                                        if (checked) {
-                                          field.onChange([
-                                            ...field.value,
-                                            assetType,
-                                          ]);
-                                        } else {
-                                          field.onChange(
-                                            field.value.filter(
-                                              (value) => value !== assetType
-                                            )
-                                          );
-                                        }
-                                      }}
-                                    >
-                                      <FormControl>
-                                        <div
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                          }}
-                                        >
-                                          <Checkbox
-                                            checked={field.value.includes(
-                                              assetType
-                                            )}
-                                            onCheckedChange={(checked) => {
-                                              if (checked) {
-                                                field.onChange([
-                                                  ...field.value,
-                                                  assetType,
-                                                ]);
-                                              } else {
-                                                field.onChange(
-                                                  field.value.filter(
-                                                    (value) =>
-                                                      value !== assetType
-                                                  )
-                                                );
-                                              }
-                                            }}
-                                          />
-                                        </div>
-                                      </FormControl>
-                                      <div className="flex-1 space-y-1 leading-none">
-                                        <div className="flex items-center gap-2">
-                                          <Icon className="h-4 w-4 text-muted-foreground" />
-                                          <FormLabel className="text-sm font-medium cursor-pointer">
-                                            {t(`asset-types.${assetType}`, {
-                                              ns: "tokens",
-                                            })}
-                                          </FormLabel>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">
-                                          {t(
-                                            `assets.descriptions.${assetType}`
-                                          )}
-                                        </p>
-                                      </div>
-                                    </FormItem>
-                                  )}
-                                />
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </FormItem>
-                    )}
+                    render={renderAssetTypeField}
                   />
 
                   {/* Validation message */}

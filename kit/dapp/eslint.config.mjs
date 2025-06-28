@@ -2,7 +2,9 @@ import js from "@eslint/js";
 import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginRouter from "@tanstack/eslint-plugin-router";
 import pluginReact from "eslint-plugin-react";
+import reactCompiler from "eslint-plugin-react-compiler";
 import reactHooks from "eslint-plugin-react-hooks";
+import reactPerf from "eslint-plugin-react-perf";
 import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -18,6 +20,7 @@ export default defineConfig([
       "node_modules/",
       ".generated/",
       ".generated/**",
+      "src/components/ui/**",
     ],
   },
   {
@@ -51,6 +54,29 @@ export default defineConfig([
     files: ["src/**/*.{ts,mts,cts,tsx}"],
   })),
   reactHooks.configs["recommended-latest"],
+  // React Performance plugin
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    plugins: {
+      "react-perf": reactPerf,
+    },
+    rules: {
+      "react-perf/jsx-no-new-object-as-prop": "warn",
+      "react-perf/jsx-no-new-array-as-prop": "warn",
+      "react-perf/jsx-no-new-function-as-prop": "warn",
+      "react-perf/jsx-no-jsx-as-prop": "warn",
+    },
+  },
+  // React Compiler plugin
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    plugins: {
+      "react-compiler": reactCompiler,
+    },
+    rules: {
+      "react-compiler/react-compiler": "error",
+    },
+  },
   {
     files: ["src/**/*.{ts,mts,cts,tsx}"],
     languageOptions: {

@@ -222,7 +222,7 @@ type errors ✅ No lint errors ✅ Coverage thresholds met (if configured)
 
 ### Code Quality
 - TypeScript: ✅ No errors
-- Biome: ✅ No errors, 0 warnings
+- Eslint: ✅ No errors, 0 warnings
 - Bundle Size: 2.4MB (↓ 0.1MB from baseline)
 
 ### Coverage Report

@@ -30,7 +30,7 @@ import {
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
-import { lazy, Suspense, type ReactNode } from "react";
+import { lazy, Suspense, useMemo, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
 // Lazy load dev tools to reduce bundle size in production
@@ -141,8 +141,9 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
          * the user's theme preference from localStorage or system settings.
          */}
         <script
-          dangerouslySetInnerHTML={{
-            __html: `
+          dangerouslySetInnerHTML={useMemo(
+            () => ({
+              __html: `
               (function() {
                 // Storage key matches the one used by next-themes provider
                 const storageKey = 'vite-ui-theme';
@@ -171,7 +172,9 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
                 }
               })();
             `.trim(),
-          }}
+            }),
+            []
+          )}
         />
       </head>
       <body>
