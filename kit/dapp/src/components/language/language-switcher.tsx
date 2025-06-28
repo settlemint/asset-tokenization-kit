@@ -8,7 +8,7 @@ import {
 import { supportedLanguages } from "@/lib/i18n";
 import { useMounted } from "@/lib/utils/use-mounted";
 import { Check, Languages } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 // Language display names mapping
@@ -17,6 +17,47 @@ const LANGUAGE_NAMES: Record<string, string> = {
   de: "Deutsch",
   ar: "العربية",
   ja: "日本語",
+};
+
+/**
+ * Props for the LanguageMenuItem component.
+ */
+interface LanguageMenuItemProps {
+  locale: string;
+  currentLanguage: string;
+  isPending: boolean;
+  onLanguageChange: (locale: string) => void;
+}
+
+/**
+ * A single language menu item component.
+ * @param {object} props - The component props.
+ * @param {string} props.locale - The locale code for the language.
+ * @param {string} props.currentLanguage - The currently selected language code.
+ * @param {boolean} props.isPending - Whether a language change is in progress.
+ * @param {(locale: string) => void} props.onLanguageChange - Callback function to handle language changes.
+ * @returns {JSX.Element} A dropdown menu item for language selection.
+ */
+const LanguageMenuItem = ({
+  locale,
+  currentLanguage,
+  isPending,
+  onLanguageChange,
+}: LanguageMenuItemProps) => {
+  const handleClick = useCallback(() => {
+    onLanguageChange(locale);
+  }, [locale, onLanguageChange]);
+
+  return (
+    <DropdownMenuItem
+      onClick={handleClick}
+      className="flex items-center justify-between"
+      disabled={isPending || locale === currentLanguage}
+    >
+      {LANGUAGE_NAMES[locale] ?? locale}
+      {locale === currentLanguage && <Check className="ml-2 size-4" />}
+    </DropdownMenuItem>
+  );
 };
 
 /**
@@ -33,8 +74,11 @@ interface LanguageSwitcherProps {
 
 /**
  * A component that allows users to switch between different languages.
- * @param props - The component props.
- * @returns A dropdown menu for language selection.
+ * @param {object} [props] - The component props.
+ * @param {import("@/components/ui/button").ButtonProps["variant"]} [props.variant] - The variant of the button.
+ * @param {import("@/components/ui/button").ButtonProps["size"]} [props.size] - The size of the button.
+ * @param {string} [props.className] - Additional CSS classes to apply to the button.
+ * @returns {JSX.Element} A dropdown menu for language selection.
  */
 export function LanguageSwitcher({
   variant = "outline",
@@ -44,6 +88,17 @@ export function LanguageSwitcher({
   const mounted = useMounted();
   const { i18n, t } = useTranslation("language");
   const [isPending, setIsPending] = useState(false);
+
+  const handleLanguageChange = useCallback(
+    (locale: string) => {
+      if (locale === i18n.language) return;
+      setIsPending(true);
+      void i18n.changeLanguage(locale).then(() => {
+        setIsPending(false);
+      });
+    },
+    [i18n]
+  );
 
   // Show skeleton during SSR to prevent hydration mismatch
   if (!mounted) {
@@ -72,21 +127,13 @@ export function LanguageSwitcher({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {supportedLanguages.map((locale) => (
-          <DropdownMenuItem
+          <LanguageMenuItem
             key={locale}
-            onClick={() => {
-              if (locale === i18n.language) return;
-              setIsPending(true);
-              void i18n.changeLanguage(locale).then(() => {
-                setIsPending(false);
-              });
-            }}
-            className="flex items-center justify-between"
-            disabled={isPending || locale === i18n.language}
-          >
-            {LANGUAGE_NAMES[locale] ?? locale}
-            {locale === i18n.language && <Check className="ml-2 size-4" />}
-          </DropdownMenuItem>
+            locale={locale}
+            currentLanguage={i18n.language}
+            isPending={isPending}
+            onLanguageChange={handleLanguageChange}
+          />
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

@@ -2,7 +2,7 @@ import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 import { useMutation } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -11,6 +11,13 @@ interface WalletStepProps {
   onRegisterAction?: (action: () => void) => void;
 }
 
+/**
+ * Step component for generating a blockchain wallet during onboarding
+ * @param {object} props - Component props
+ * @param {() => void} [props.onSuccess] - Callback when wallet is successfully generated
+ * @param {(action: () => void) => void} [props.onRegisterAction] - Callback to register the wallet generation action with parent
+ * @returns {JSX.Element} The wallet generation step component
+ */
 export function WalletStep({ onSuccess, onRegisterAction }: WalletStepProps) {
   const { data: session } = authClient.useSession();
   const { sessionKey } = useContext(AuthQueryContext);
@@ -83,7 +90,7 @@ export function WalletStep({ onSuccess, onRegisterAction }: WalletStepProps) {
       </div>
       <div
         className="flex-1 overflow-y-auto"
-        style={{ minHeight: "450px", maxHeight: "550px" }}
+        style={useMemo(() => ({ minHeight: "450px", maxHeight: "550px" }), [])}
       >
         <div className="max-w-3xl space-y-6 pr-2">
           {/* Wallet display or generation */}

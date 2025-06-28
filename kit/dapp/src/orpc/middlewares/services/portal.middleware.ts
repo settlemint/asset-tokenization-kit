@@ -1,5 +1,4 @@
-import { portalClient } from "@/lib/settlemint/portal";
-import { portalGraphql } from "@/lib/settlemint/portal";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
@@ -16,7 +15,6 @@ const logger = createLogger({
 
 /**
  * Represents an event emitted during transaction processing.
- *
  * @interface TransactionEvent
  * @property {("pending" | "confirmed" | "failed")} status - Current status of the transaction
  *   - `pending`: Transaction is submitted but not yet confirmed
@@ -40,14 +38,11 @@ interface TransactionEvent {
  * - Zod schema validation for queries
  * - Consistent error handling and logging
  * - Integration with TheGraph for indexing status monitoring
- *
- * @param {Object} errors - ORPC error constructors for consistent error handling
+ * @param {object} errors - ORPC error constructors for consistent error handling
  * @param {ValidatedTheGraphClient} [theGraphClient] - Optional TheGraph client for indexing monitoring.
  *   If provided, mutations will track both blockchain confirmation and indexing status.
  *   If omitted, mutations will only track blockchain confirmation.
- *
- * @returns {Object} A validated Portal client with `mutate` and `query` methods
- *
+ * @returns {object} A validated Portal client with `mutate` and `query` methods
  * @example
  * ```typescript
  * const client = createValidatedPortalClient(errors, theGraphClient);
@@ -76,11 +71,10 @@ function createValidatedPortalClient(
      * 1. **Submission Phase**: Mutation is sent to Portal and transaction hash is extracted
      * 2. **Mining Phase**: Transaction is monitored until mined and confirmed on-chain
      * 3. **Indexing Phase**: (Optional) Transaction is monitored until indexed by TheGraph
-     *
      * @param {TadaDocumentNode} document - The GraphQL mutation document
      * @param {TVariables} variables - Variables for the GraphQL mutation
      * @param {string} userMessage - User-friendly error message to show if operation fails
-     * @param {Object} [trackingMessages] - Optional custom messages for each tracking phase
+     * @param {object} [trackingMessages] - Optional custom messages for each tracking phase
      * @param {string} [trackingMessages.streamTimeout] - Message when tracking times out
      * @param {string} [trackingMessages.waitingForMining] - Message while waiting for mining
      * @param {string} [trackingMessages.transactionFailed] - Message when transaction fails
@@ -88,13 +82,10 @@ function createValidatedPortalClient(
      * @param {string} [trackingMessages.waitingForIndexing] - Message while waiting for indexing
      * @param {string} [trackingMessages.transactionIndexed] - Message when indexing completes
      * @param {string} [trackingMessages.indexingTimeout] - Message when indexing times out
-     *
      * @yields {TransactionEvent} Real-time transaction status updates
      * @returns {string} The transaction hash once tracking is complete
-     *
      * @throws {PORTAL_ERROR} When Portal GraphQL operation fails
      * @throws {INTERNAL_SERVER_ERROR} When transaction fails, times out, or has invalid format
-     *
      * @example
      * ```typescript
      * // Basic usage with default messages
@@ -484,18 +475,14 @@ function createValidatedPortalClient(
      * This method performs a GraphQL query operation and validates the response
      * against a provided Zod schema. This ensures type safety at runtime and
      * helps catch API response format changes early.
-     *
      * @param {TadaDocumentNode} document - The GraphQL query document
      * @param {TVariables} variables - Variables for the GraphQL query
      * @param {z.ZodType} schema - Zod schema to validate the response against
      * @param {string} userMessage - User-friendly error message to show if operation fails
-     *
      * @returns {Promise<TValidated>} The validated query response data
-     *
      * @throws {PORTAL_ERROR} When the Portal service encounters an error
      * @throws {NOT_FOUND} When the requested resource is not found
      * @throws {INTERNAL_SERVER_ERROR} When the query fails or response validation fails
-     *
      * @example
      * ```typescript
      * // Define the expected response schema
@@ -638,13 +625,10 @@ function createValidatedPortalClient(
  * This helper function performs a depth-first search through an object structure
  * to locate a `transactionHash` field. This is necessary because different GraphQL
  * mutations may return the transaction hash at different nesting levels in the response.
- *
  * @param {unknown} obj - The object to search through (typically a GraphQL response)
- * @param {string} [path=""] - The current path in the object tree (used for recursion and error reporting)
- *
+ * @param {string} [path] - The current path in the object tree (used for recursion and error reporting)
  * @returns {{ value: unknown; path: string } | null} An object containing the found value and its path,
  *   or null if no transactionHash field is found
- *
  * @example
  * ```typescript
  * // Example mutation response structures this function handles:
@@ -714,7 +698,6 @@ function findTransactionHash(
  * - Mutations automatically extract and validate transaction hashes
  * - Queries require and enforce Zod schema validation
  * - All operations include consistent error handling and logging
- *
  * @example
  * ```typescript
  * // For mutations - automatic transaction hash extraction

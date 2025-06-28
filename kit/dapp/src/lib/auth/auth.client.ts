@@ -10,7 +10,6 @@
  * - API key authentication for programmatic access
  * - Passkey/WebAuthn support for passwordless authentication
  * - Custom user fields (wallet, pincode settings, etc.) via type inference
- *
  * @see {@link ./index} - Server-side authentication configuration
  * @see https://better-auth.com - Better Auth documentation
  */
@@ -46,7 +45,6 @@ import {
  *
  * The client automatically includes credentials with requests and
  * manages authentication state across the application.
- *
  * @example
  * ```typescript
  * // In a React component

@@ -7,7 +7,6 @@
  * - Client-side: Uses OpenAPI link with automatic cookie inclusion for authentication
  *
  * The client is integrated with TanStack Query for data fetching and caching.
- *
  * @see {@link ./routes/contract} - Type-safe contract definitions
  * @see {@link ./routes/router} - Main router with all endpoints
  */
@@ -47,8 +46,8 @@ const getORPCClient = createIsomorphicFn()
   .client((): RouterClient<typeof router> => {
     const link = new RPCLink({
       url: `${window.location.origin}/api/rpc`,
-      fetch(url, options) {
-        return globalThis.fetch(url, {
+      async fetch(url, options) {
+        return await globalThis.fetch(url, {
           ...options,
           // Include cookies in all requests for authentication
           credentials: "include",
@@ -65,7 +64,6 @@ const getORPCClient = createIsomorphicFn()
  * This client is fully type-safe and provides access to all API endpoints
  * defined in the contract. It automatically handles JSON serialization
  * and deserialization for all requests and responses.
- *
  * @example
  * ```typescript
  * // Fetch current user
@@ -89,7 +87,6 @@ export const client: ContractRouterClient<typeof contract> = getORPCClient();
  * - Optimistic updates
  * - Request deduplication
  * - Error and loading states
- *
  * @example
  * ```typescript
  * // In a React component

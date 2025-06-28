@@ -4,14 +4,12 @@
  * This module provides Zod schemas for validating verification method types,
  * used to categorize different identity verification channels in KYC/AML
  * processes and multi-factor authentication systems.
- *
  * @module VerificationTypeValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Available verification method types.
- *
  * @remarks
  * Different channels for identity verification:
  * - `email`: Email address verification via confirmation link or code
@@ -26,9 +24,7 @@ export const verificationTypes = [
 
 /**
  * Creates a Zod schema that validates verification types.
- *
  * @returns A Zod enum schema for verification type validation
- *
  * @example
  * ```typescript
  * const schema = verificationType();
@@ -54,10 +50,8 @@ export type VerificationType = z.infer<typeof verificationType>;
 
 /**
  * Type guard to check if a value is a valid verification type.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid verification type, `false` otherwise
- *
  * @example
  * ```typescript
  * const method: unknown = "email";
@@ -86,11 +80,9 @@ export function isVerificationType(value: unknown): value is VerificationType {
 
 /**
  * Safely parse and return a verification type or throw an error.
- *
  * @param value - The value to parse as a verification type
  * @returns The validated verification type
  * @throws {Error} If the value is not a valid verification type
- *
  * @example
  * ```typescript
  * try {

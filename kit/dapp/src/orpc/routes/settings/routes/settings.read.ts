@@ -13,14 +13,11 @@ import { eq } from "drizzle-orm";
  * Authentication: Required (uses authenticated router)
  * Permissions: Requires "read" permission - available to admin, issuer, user, and auditor roles
  * Method: GET /settings/:key
- *
  * @param input - Read parameters containing the setting key
  * @param context - Request context with database connection and authenticated user
  * @returns Promise<string | null> - The setting value, or null if not found
- *
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws FORBIDDEN - If user lacks required read permissions
- *
  * @example
  * ```typescript
  * // Client usage:

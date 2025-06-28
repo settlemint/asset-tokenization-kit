@@ -15,7 +15,6 @@ import { z } from "zod/v4";
  *
  * Defines the structure of user data returned by the me endpoint,
  * including essential profile information and blockchain wallet address.
- *
  * @example
  * ```typescript
  * const userData: User = {

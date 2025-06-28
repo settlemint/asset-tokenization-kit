@@ -10,7 +10,6 @@
  * - Different data loading strategies (prefetch vs. ensure)
  * - Internationalization with react-i18next
  * - Suspense-based data fetching with React Query
- *
  * @see {@link https://tanstack.com/router/latest/docs/guide/data-loading} - TanStack Router data loading
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
@@ -37,6 +36,8 @@ export const Route = createFileRoute("/_private/_onboarded/")({
    *
    * The current implementation uses prefetchQuery for non-blocking
    * data loading, allowing the page to render while data loads.
+   * @param root0
+   * @param root0.context
    */
   loader: async ({ context }) => {
     // User data is available from parent _private route

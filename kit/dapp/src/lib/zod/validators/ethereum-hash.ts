@@ -4,7 +4,6 @@
  * This module provides comprehensive Zod-based validation for Ethereum hashes (32 bytes),
  * ensuring they conform to the standard hex format and integrating seamlessly
  * with viem's type system for enhanced type safety.
- *
  * @module EthereumHashValidation
  */
 import { isHash, type Hex } from "viem";
@@ -24,7 +23,6 @@ import { z } from "zod/v4";
  * 2. Validate hexadecimal format with regex
  * 3. Verify hash validity using viem's isHash
  * 4. Return as validated Hash type
- *
  * @example
  * ```typescript
  * // Valid hash parsing
@@ -40,7 +38,6 @@ import { z } from "zod/v4";
  *   console.error(result.error.issues); // Validation errors
  * }
  * ```
- *
  * @throws {ZodError} When the input fails validation at any step
  */
 export const ethereumHash = z
@@ -69,10 +66,8 @@ export type EthereumHash = Hex;
  *
  * This function provides runtime type checking for Ethereum hashes,
  * useful for conditional logic and type narrowing in TypeScript.
- *
  * @param value - The value to validate (can be any type)
  * @returns `true` if the value is a valid Ethereum hash, `false` otherwise
- *
  * @example
  * ```typescript
  * const userInput: unknown = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
@@ -95,11 +90,9 @@ export function isEthereumHash(value: unknown): value is EthereumHash {
  * This function attempts to parse and validate an Ethereum hash,
  * throwing a ZodError if validation fails. Use this when you expect
  * the input to be valid and want to handle errors at a higher level.
- *
  * @param value - The value to parse and validate (can be any type)
  * @returns The validated Ethereum hash
  * @throws {ZodError} When the input fails validation
- *
  * @example
  * ```typescript
  * try {

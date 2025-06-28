@@ -17,13 +17,13 @@ dependencies:
     version: "16.0.15"
     repository: oci://registry-1.docker.io/bitnamicharts
   - name: redis
-    version: "21.2.5"
+    version: "21.2.6"
     repository: oci://registry-1.docker.io/bitnamicharts
   - name: reloader
     version: 2.1.4
     repository: https://stakater.github.io/stakater-charts
   - name: minio
-    version: 17.0.8
+    version: 17.0.9
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: minio.enabled
 

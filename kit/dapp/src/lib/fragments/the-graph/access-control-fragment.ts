@@ -2,7 +2,6 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 
 /**
  * GraphQL fragment for access control data from The Graph
- *
  * @remarks
  * Contains the roles and permissions for the access control system
  */

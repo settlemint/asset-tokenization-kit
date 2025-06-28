@@ -51,7 +51,7 @@ interface StreamingMutationOptions<TData, TError, TVariables, TContext> {
 
 /**
  * React hook for ORPC streaming mutations with automatic event processing.
- *
+ * @param options
  * @example
  * ```tsx
  * const { mutate, isTracking } = useStreamingMutation({

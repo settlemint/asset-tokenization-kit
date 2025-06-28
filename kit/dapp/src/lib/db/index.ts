@@ -10,7 +10,6 @@
  * - Enable query logging in development for debugging
  * - Provide full TypeScript type safety through schema integration
  * - Ensure server-only execution to prevent client-side database access
- *
  * @see {@link ./schema} - Database schema definitions
  * @see {@link ../settlemint/postgres} - PostgreSQL connection pool configuration
  */
@@ -59,7 +58,6 @@ const getDb = serverOnly(() =>
  * - Automatic query result typing based on schema definitions
  * - Connection pooling for optimal performance
  * - Transaction support for complex operations
- *
  * @example
  * ```typescript
  * // Select users

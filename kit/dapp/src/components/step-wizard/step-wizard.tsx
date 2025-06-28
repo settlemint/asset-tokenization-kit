@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { useMemo, type ReactNode } from "react";
+import { useCallback, useMemo, type ReactNode } from "react";
 
 export interface Step {
   id: string;
@@ -28,6 +28,9 @@ interface StepWizardProps {
   isBackDisabled?: boolean;
 }
 
+/**
+ * A multi-step wizard component with sidebar navigation
+ */
 export function StepWizard({
   steps,
   currentStepId,
@@ -57,6 +60,22 @@ export function StepWizard({
 
   const currentStepIndex = steps.findIndex((step) => step.id === currentStepId);
   const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
+
+  const handleStepClick = useCallback(
+    (stepId: string, isAccessible: boolean) => {
+      if (isAccessible) {
+        onStepChange(stepId);
+      }
+    },
+    [onStepChange]
+  );
+
+  const createStepClickHandler = useCallback(
+    (stepId: string, isAccessible: boolean) => () => {
+      handleStepClick(stepId, isAccessible);
+    },
+    [handleStepClick]
+  );
 
   return (
     <div className="flex h-full min-h-[600px]">
@@ -227,11 +246,7 @@ export function StepWizard({
                           !isCurrent &&
                           "cursor-pointer hover:bg-white/10"
                       )}
-                      onClick={() => {
-                        if (!finalDisabled) {
-                          onStepChange(step.id);
-                        }
-                      }}
+                      onClick={createStepClickHandler(step.id, !finalDisabled)}
                       disabled={finalDisabled}
                     >
                       <div className="flex items-center justify-between">
@@ -285,7 +300,10 @@ export function StepWizard({
         {/* Content area */}
         <div
           className="flex-1 flex flex-col transition-all duration-300 relative overflow-hidden"
-          style={{ backgroundColor: "var(--sm-background-lightest)" }}
+          style={useMemo(
+            () => ({ backgroundColor: "var(--sm-background-lightest)" }),
+            []
+          )}
         >
           <div className="flex-1 overflow-y-auto p-8">
             <div className="w-full h-full">{children}</div>

@@ -7,7 +7,6 @@
  *
  * Each token type requires specific implementation addresses which are set
  * as defaults based on the SettleMint deployment configuration.
- *
  * @example
  * ```typescript
  * // Create a single bond factory
@@ -263,6 +262,7 @@ export type SingleFactory = z.infer<typeof SingleFactorySchema>;
  * - Const assertion on DEFAULT_IMPLEMENTATIONS ensures literal types
  * - TokenType union ensures only valid token types are accepted
  * - Return type is automatically inferred from the const object
+ * @param type
  */
 export function getDefaultImplementations(type: TokenType) {
   return DEFAULT_IMPLEMENTATIONS[type];

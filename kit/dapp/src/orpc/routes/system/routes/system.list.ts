@@ -38,14 +38,11 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
  * Authentication: Required (uses authenticated router)
  * Permissions: Requires "read" permission - available to admin, issuer, user, and auditor roles
  * Method: GET /systems
- *
  * @param input - List parameters including pagination and sorting options
  * @param context - Request context with TheGraph client and authenticated user
  * @returns Promise<System[]> - Array of system objects with their blockchain addresses
- *
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws FORBIDDEN - If user lacks required read permissions
- *
  * @example
  * ```typescript
  * // Client usage:

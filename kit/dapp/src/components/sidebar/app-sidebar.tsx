@@ -152,6 +152,11 @@ const data = {
   ],
 };
 
+/**
+ * The main application sidebar component.
+ * @param {React.ComponentProps<typeof Sidebar>} props - The props for the Sidebar component.
+ * @returns {JSX.Element} A sidebar component with header, navigation, and rail.
+ */
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>

@@ -7,7 +7,6 @@ import { z } from "zod/v4";
  * Systems are the core infrastructure contracts in the SMART protocol that
  * orchestrate the deployment and management of tokenized assets. Each system
  * manages its own set of factories, registries, and compliance modules.
- *
  * @remarks
  * The system ID is the blockchain address where the system contract is deployed.
  * This address serves as the unique identifier for all operations within that

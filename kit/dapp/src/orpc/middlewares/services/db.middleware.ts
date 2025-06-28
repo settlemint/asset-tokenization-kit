@@ -23,7 +23,6 @@ import { baseRouter } from "../../procedures/base.router";
  * - Testability through dependency injection
  * - Centralized database connection management
  * - Optional database context (procedures can work without DB if needed)
- *
  * @example
  * ```typescript
  * // Used in router setup
@@ -36,7 +35,6 @@ import { baseRouter } from "../../procedures/base.router";
  *   return users;
  * });
  * ```
- *
  * @example
  * ```typescript
  * // Testing with mock database
@@ -45,7 +43,6 @@ import { baseRouter } from "../../procedures/base.router";
  *
  * // The middleware will use the existing mock db instead of injecting the real one
  * ```
- *
  * @see {@link @/lib/db} - Database configuration and connection
  */
 export const databaseMiddleware = baseRouter.middleware(

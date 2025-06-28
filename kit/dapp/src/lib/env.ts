@@ -14,15 +14,13 @@ import { z } from "zod/v4";
  * - Clear separation between server and client variables
  * - Automatic handling of empty strings as undefined
  * - Support for skipping validation in CI/CD environments
- *
  * @example
  * ```typescript
  * // Direct usage (recommended)
  * import { env } from '@/lib/config/env';
  * console.log(env.SETTLEMINT_HASURA_ADMIN_SECRET);
-
+ 
  * ```
- *
  * @see https://env.t3.gg/docs/introduction
  * @module
  */
@@ -34,8 +32,7 @@ export const env = createEnv({
    * These variables are only available on the server and typically contain
    * sensitive information like API keys, secrets, and OAuth credentials.
    * They are never exposed to the client bundle.
-   *
-   * @private Server-only access
+   * @private
    */
   server: {
     /**
@@ -109,8 +106,7 @@ export const env = createEnv({
    * These variables are exposed to the browser bundle and must be prefixed
    * with NEXT_PUBLIC_ for Next.js to include them in the client build.
    * Never put sensitive information in these variables.
-   *
-   * @public Browser-accessible
+   * @public
    */
   client: {
     /**
@@ -152,7 +148,6 @@ export const env = createEnv({
    * When set to true (via SKIP_ENV_VALIDATION=true), t3-env will skip
    * all validation checks. This is useful in CI/CD environments where
    * environment variables might not be available during the build step.
-   *
    * @default false
    */
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
@@ -163,7 +158,6 @@ export const env = createEnv({
    * When true, t3-env treats empty strings as undefined values.
    * This is useful for environment variables that might be set to
    * empty strings in certain deployment environments.
-   *
    * @default true
    */
   emptyStringAsUndefined: true,

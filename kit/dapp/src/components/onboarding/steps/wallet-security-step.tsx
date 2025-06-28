@@ -12,7 +12,7 @@ import { queryClient } from "@/lib/query.client";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -28,6 +28,13 @@ interface WalletSecurityStepProps {
   onRegisterAction?: (action: () => void) => void;
 }
 
+/**
+ * Step component for setting up wallet PIN code security during onboarding
+ * @param {object} props - Component props
+ * @param {() => void} [props.onSuccess] - Callback when PIN code is successfully set
+ * @param {(action: () => void) => void} [props.onRegisterAction] - Callback to register the PIN setup action with parent
+ * @returns {JSX.Element} The wallet security setup step component
+ */
 export function WalletSecurityStep({
   onSuccess,
   onRegisterAction,
@@ -47,7 +54,7 @@ export function WalletSecurityStep({
   });
 
   const { mutate: enablePincode, isPending } = useMutation({
-    mutationFn: (data: PincodeFormValues) =>
+    mutationFn: async (data: PincodeFormValues) =>
       authClient.pincode.enable({
         pincode: data.pincode,
         // Password is not required during initial onboarding
@@ -61,11 +68,11 @@ export function WalletSecurityStep({
       onSuccess?.();
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? "Failed to set PIN code");
+      toast.error(error.message || "Failed to set PIN code");
     },
   });
 
-  const handleSetPincode = () => {
+  const handleSetPincode = useCallback(() => {
     if (!isPending && !hasPincode) {
       const values = form.getValues();
       if (values.pincode.length === 6) {
@@ -74,7 +81,7 @@ export function WalletSecurityStep({
         void form.trigger("pincode");
       }
     }
-  };
+  }, [isPending, hasPincode, form, enablePincode]);
 
   // Register the action with parent
   useEffect(() => {
@@ -90,6 +97,32 @@ export function WalletSecurityStep({
     }
   }, [onRegisterAction, hasPincode, isPincodeSet, handleSetPincode]);
 
+  const renderPincodeField = useCallback(
+    ({
+      field,
+    }: {
+      field: { value: string; onChange: (value: string) => void };
+    }) => {
+      return (
+        <FormItem className="flex flex-col items-center space-y-4">
+          <FormLabel className="text-base font-medium">
+            Enter a 6-digit PIN code
+          </FormLabel>
+          <FormControl>
+            <PincodeInput
+              value={field.value}
+              onChange={field.onChange}
+              autoFocus
+              disabled={isPending}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      );
+    },
+    [isPending]
+  );
+
   return (
     <div className="h-full flex flex-col">
       <div className="mb-6">
@@ -104,7 +137,7 @@ export function WalletSecurityStep({
       </div>
       <div
         className="flex-1 overflow-y-auto"
-        style={{ minHeight: "450px", maxHeight: "550px" }}
+        style={useMemo(() => ({ minHeight: "450px", maxHeight: "550px" }), [])}
       >
         <div className="max-w-3xl space-y-6 pr-2">
           {hasPincode || isPincodeSet ? (
@@ -172,22 +205,7 @@ export function WalletSecurityStep({
                   <FormField
                     control={form.control}
                     name="pincode"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col items-center space-y-4">
-                        <FormLabel className="text-base font-medium">
-                          Enter a 6-digit PIN code
-                        </FormLabel>
-                        <FormControl>
-                          <PincodeInput
-                            value={field.value}
-                            onChange={field.onChange}
-                            autoFocus
-                            disabled={isPending}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={renderPincodeField}
                   />
 
                   {/* Security features */}

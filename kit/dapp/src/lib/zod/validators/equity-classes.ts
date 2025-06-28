@@ -4,14 +4,12 @@
  * This module provides Zod schemas for validating equity share classes,
  * which differentiate shares with varying voting rights, dividend preferences,
  * and control structures within a company.
- *
  * @module EquityClassValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Available equity share classes.
- *
  * @remarks
  * Standard classification system for multi-class share structures:
  * - `A`: Typically common shares with standard voting rights
@@ -24,9 +22,7 @@ export const equityClasses = ["A", "B", "C"] as const;
 
 /**
  * Creates a Zod schema that validates equity share classes.
- *
  * @returns A Zod enum schema for equity class validation
- *
  * @example
  * ```typescript
  * const schema = equityClass();
@@ -52,10 +48,8 @@ export type EquityClass = z.infer<ReturnType<typeof equityClass>>;
 
 /**
  * Type guard to check if a value is a valid equity class.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid equity class, `false` otherwise
- *
  * @example
  * ```typescript
  * const shareClass: unknown = "B";
@@ -76,11 +70,9 @@ export function isEquityClass(value: unknown): value is EquityClass {
 
 /**
  * Safely parse and return an equity class or throw an error.
- *
  * @param value - The value to parse as an equity class
  * @returns The validated equity class
  * @throws {Error} If the value is not a valid equity class
- *
  * @example
  * ```typescript
  * try {

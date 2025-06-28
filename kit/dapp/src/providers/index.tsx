@@ -14,7 +14,6 @@
  * - Translation services are available to all components, including theme and auth UI
  * - Theme preferences are persisted and accessible throughout the app
  * - Authentication state is available to all application components
- *
  * @see {@link ./i18n-provider} - Internationalization provider
  * @see {@link ./auth} - Authentication provider
  * @see {@link https://github.com/pacocoursey/next-themes} - Next Themes documentation
@@ -31,9 +30,6 @@ import { I18nProvider } from "./i18n-provider";
  * - Multi-language support with automatic language detection
  * - Theme switching between light, dark, and system preference
  * - Authentication state management and user session handling
- *
- * @param children - The application components to wrap with providers
- *
  * @example
  * ```tsx
  * // In your root layout or App component

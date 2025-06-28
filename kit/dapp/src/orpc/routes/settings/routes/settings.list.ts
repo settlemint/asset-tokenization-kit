@@ -13,14 +13,11 @@ import { asc, desc } from "drizzle-orm";
  * Authentication: Required (uses authenticated router)
  * Permissions: Requires "read" permission - available to admin, issuer, user, and auditor roles
  * Method: GET /settings
- *
  * @param input - List parameters including pagination and sorting options
  * @param context - Request context with database connection and authenticated user
  * @returns Promise<Setting[]> - Array of setting objects
- *
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws FORBIDDEN - If user lacks required read permissions
- *
  * @example
  * ```typescript
  * // Client usage:

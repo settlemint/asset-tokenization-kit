@@ -27,6 +27,11 @@ const REMOVE_PINCODE_MUTATION = portalGraphql(`
   }
 `);
 
+/**
+ *
+ * @param user
+ * @param pincode
+ */
 export async function setPincode(
   user: UserWithPincodeContext,
   pincode: string
@@ -48,6 +53,11 @@ export async function setPincode(
   return result.createWalletVerification.id;
 }
 
+/**
+ *
+ * @param user
+ * @param verificationId
+ */
 export async function removePincode(
   user: UserWithPincodeContext,
   verificationId: string
@@ -64,6 +74,11 @@ export async function removePincode(
   return result.deleteWalletVerification?.success ?? false;
 }
 
+/**
+ *
+ * @param user
+ * @param newPincode
+ */
 export async function updatePincode(
   user: UserWithPincodeContext,
   newPincode: string

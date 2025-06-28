@@ -4,7 +4,6 @@
  * This module provides comprehensive Zod-based validation for arbitrary precision
  * decimal numbers using the dnum library, ensuring accurate representation and
  * manipulation of large or highly precise numerical values.
- *
  * @module BigDecimalValidation
  */
 import { from } from "dnum";
@@ -33,7 +32,6 @@ import { z } from "zod/v4";
  * - Negative numbers: "-123.456"
  * - Very large numbers: "999999999999999999999999999999.99"
  * - Very small numbers: "0.000000000000000001"
- *
  * @example
  * ```typescript
  * // Valid decimal parsing
@@ -61,7 +59,6 @@ import { z } from "zod/v4";
  * const large = bigDecimal().parse("999999999999999999999999999999.99");
  * // Works correctly without precision loss
  * ```
- *
  * @throws {ZodError} When the input fails validation at any step
  */
 export const bigDecimal = () =>
@@ -105,10 +102,8 @@ export type BigDecimal = z.infer<ReturnType<typeof bigDecimal>>;
  *
  * This function provides runtime type checking for big decimal values,
  * useful for conditional logic and type narrowing in TypeScript.
- *
  * @param value - The value to validate (can be any type)
  * @returns `true` if the value is a valid big decimal, `false` otherwise
- *
  * @example
  * ```typescript
  * const userInput: unknown = "123.456789012345678901234567890";
@@ -131,11 +126,9 @@ export function isBigDecimal(value: unknown): value is BigDecimal {
  * This function attempts to parse and validate a big decimal value,
  * throwing a ZodError if validation fails. Use this when you expect
  * the input to be valid and want to handle errors at a higher level.
- *
  * @param value - The value to parse and validate (can be any type)
  * @returns The validated big decimal as Dnum type
  * @throws {Error} When the input fails validation
- *
  * @example
  * ```typescript
  * try {

@@ -12,7 +12,6 @@
  *
  * The underscore prefix (_private) makes this a pathless route in TanStack Router,
  * meaning it doesn't add to the URL path but provides layout and data loading.
- *
  * @see {@link https://tanstack.com/router/latest/docs/guide/route-trees#pathless-routes} - TanStack Router pathless routes
  */
 

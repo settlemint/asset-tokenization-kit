@@ -5,14 +5,12 @@
  * with configurable boundaries, matching the TypeBox amount validator.
  * It's commonly used for validating monetary values, token amounts,
  * and other numerical quantities in financial applications.
- *
  * @module AmountValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Configuration options for amount validation.
- *
  * @interface AmountOptions
  * @property {number} [min] - Minimum allowed value (defaults based on decimals or 0)
  * @property {number} [max] - Maximum allowed value (defaults to Number.MAX_SAFE_INTEGER)
@@ -26,13 +24,11 @@ export interface AmountOptions {
 
 /**
  * Creates a Zod schema that validates positive numerical amounts with specific boundaries.
- *
  * @param options - Configuration options for amount validation
  * @param options.min - Minimum allowed value (defaults based on decimals or 0)
  * @param options.max - Maximum allowed value (defaults to Number.MAX_SAFE_INTEGER)
  * @param options.decimals - Used to calculate minimum if min not provided
  * @returns A Zod schema that validates positive amounts with specific boundaries
- *
  * @example
  * ```typescript
  * // Basic amount validation (allows zero by default)
@@ -82,11 +78,9 @@ export type Amount = z.infer<ReturnType<typeof amount>>;
 
 /**
  * Type guard function to check if a value is a valid amount.
- *
  * @param value - The value to check
  * @param options - Optional configuration for amount validation
  * @returns `true` if the value is a valid amount according to the options, `false` otherwise
- *
  * @example
  * ```typescript
  * if (isAmount(100.50, { decimals: 2 })) {
@@ -109,12 +103,10 @@ export function isAmount(
 
 /**
  * Safely parse and validate an amount with error throwing.
- *
  * @param value - The value to parse as an amount
  * @param options - Optional configuration for amount validation
  * @returns The validated amount value
  * @throws {Error} If the value is not a valid amount according to the options
- *
  * @example
  * ```typescript
  * try {

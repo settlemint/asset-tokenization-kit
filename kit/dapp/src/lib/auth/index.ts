@@ -12,7 +12,6 @@
  *
  * The configuration includes custom user fields specific to the blockchain
  * application, such as wallet addresses and various verification methods.
- *
  * @see {@link ./auth.client} - Client-side authentication configuration
  * @see {@link ../db/schemas/auth} - Database schema for authentication
  */

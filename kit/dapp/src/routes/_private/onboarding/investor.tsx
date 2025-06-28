@@ -1,10 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { orpc } from "@/orpc";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
-import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { WalletStep } from "@/components/onboarding/steps/wallet-step";
+import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,8 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import type { OnboardingType } from "@/lib/types/onboarding";
+import { orpc } from "@/orpc";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AlertCircle, UserCheck } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/investor")({
   loader: async ({ context }) => {
@@ -27,6 +28,11 @@ export const Route = createFileRoute("/_private/onboarding/investor")({
 });
 
 // Placeholder component for identity verification
+/**
+ *
+ * @param root0
+ * @param root0.onSuccess
+ */
 function IdentityStep({ onSuccess }: { onSuccess: () => void }) {
   const { t } = useTranslation(["onboarding", "general"]);
 
@@ -68,6 +74,9 @@ function IdentityStep({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
+/**
+ *
+ */
 function InvestorOnboarding() {
   const { t } = useTranslation("onboarding");
   const navigate = useNavigate();
@@ -77,40 +86,45 @@ function InvestorOnboarding() {
   const { user } = Route.useLoaderData();
 
   // Define steps with dynamic statuses
-  const steps: Step[] = [
-    {
-      id: "wallet",
-      title: t("steps.wallet.title"),
-      description: t("steps.wallet.description"),
-      status: user.wallet
-        ? "completed"
-        : currentStepId === "wallet"
-          ? "active"
-          : "pending",
-    },
-    {
-      id: "identity",
-      title: t("steps.identity.title"),
-      description: t("steps.identity.description"),
-      status: currentStepId === "identity" ? "active" : "pending",
-    },
-  ];
+  const steps: Step[] = useMemo(
+    () => [
+      {
+        id: "wallet",
+        title: t("steps.wallet.title"),
+        description: t("steps.wallet.description"),
+        status: user.wallet
+          ? "completed"
+          : currentStepId === "wallet"
+            ? "active"
+            : "pending",
+      },
+      {
+        id: "identity",
+        title: t("steps.identity.title"),
+        description: t("steps.identity.description"),
+        status: currentStepId === "identity" ? "active" : "pending",
+      },
+    ],
+    [currentStepId, user.wallet, t]
+  );
 
-  const handleStepChange = (stepId: string) => {
+  const handleStepChange = useCallback((stepId: string) => {
     setCurrentStepId(stepId);
-  };
+  }, []);
 
-  const handleWalletSuccess = () => {
+  const handleWalletSuccess = useCallback(() => {
     setCurrentStepId("identity");
-  };
+  }, []);
 
-  const handleIdentitySuccess = () => {
+  const handleIdentitySuccess = useCallback(() => {
     // Investor onboarding complete, redirect to dashboard
     void navigate({ to: "/" });
-  };
+  }, [navigate]);
+
+  const allowedTypes: OnboardingType[] = useMemo(() => ["investor"], []);
 
   return (
-    <OnboardingGuard require="not-onboarded" allowedTypes={["investor"]}>
+    <OnboardingGuard require="not-onboarded" allowedTypes={allowedTypes}>
       <div className="min-h-screen bg-gray-50 p-8 dark:bg-gray-900">
         <div className="mx-auto max-w-6xl">
           <StepWizard

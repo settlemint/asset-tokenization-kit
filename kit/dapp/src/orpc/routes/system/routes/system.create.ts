@@ -12,8 +12,7 @@
  * 3. Queries TheGraph to get the deployed system contract address
  * 4. Bootstraps the system contract to initialize its state
  * 5. Yields progress events throughout the process
- *
- * @generator Yields progress events during system creation and bootstrapping
+ * @generator
  * @see {@link ../system.create.schema} - Input validation schema
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
@@ -33,12 +32,10 @@ import { SystemCreateMessagesSchema } from "./system.create.schema";
 
 /**
  * GraphQL mutation for creating a new system contract instance.
- *
  * @param address - The factory contract address to call
  * @param from - The wallet address initiating the transaction
  * @param challengeResponse - The MFA challenge response for transaction authorization
  * @param verificationId - Optional verification ID for the challenge
- *
  * @returns transactionHash - The blockchain transaction hash for tracking
  */
 const CREATE_SYSTEM_MUTATION = portalGraphql(`
@@ -61,10 +58,8 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
 
 /**
  * GraphQL mutation for bootstrapping a system contract.
- *
  * @param address - The system contract address to bootstrap
  * @param from - The wallet address initiating the transaction
- *
  * @returns transactionHash - The blockchain transaction hash for tracking
  */
 const BOOTSTRAP_SYSTEM_MUTATION = portalGraphql(`
@@ -91,7 +86,6 @@ const BOOTSTRAP_SYSTEM_MUTATION = portalGraphql(`
  * Used to retrieve the system contract address after deployment by matching
  * the deployment transaction hash. This ensures we get the correct contract
  * instance when multiple systems might be deployed.
- *
  * @param deployedInTransaction - The transaction hash where the system was deployed
  * @returns Array of system objects containing their IDs (contract addresses)
  */
@@ -108,21 +102,16 @@ const FIND_SYSTEM_FOR_TRANSACTION_QUERY = theGraphGraphql(`
  *
  * This handler uses a generator pattern to yield progress updates during the multi-step
  * system creation process, including contract deployment and bootstrapping.
- *
  * @auth Required - User must be authenticated
  * @middleware portalMiddleware - Provides Portal GraphQL client with transaction tracking
  * @middleware theGraphMiddleware - Provides TheGraph client for querying deployed contracts
- *
  * @param input.contract - The system factory contract address (defaults to standard address)
  * @param input.messages - Optional custom messages for localization
  * @param input.verification - The verification code and type for the transaction
- *
  * @yields {TransactionEvent} Progress events during system creation and bootstrapping
  * @returns {AsyncGenerator} Generator that yields events and completes with the system contract address
- *
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system creation or bootstrapping fails
- *
  * @example
  * ```typescript
  * // Create system with async iteration for progress tracking

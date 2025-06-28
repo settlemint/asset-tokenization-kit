@@ -12,8 +12,7 @@
  * 3. Executes transactions via Portal GraphQL with real-time tracking
  * 4. Yields progress events for each factory creation
  * 5. Returns a summary of all created factories
- *
- * @generator Yields progress events during factory creation
+ * @generator
  * @see {@link ./factory.create.schema} - Input validation schema
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
@@ -41,13 +40,11 @@ const logger = createLogger({
 
 /**
  * GraphQL mutation for creating a token factory.
- *
  * @param address - The system contract address to call
  * @param from - The wallet address initiating the transaction
  * @param _factoryImplementation - The factory implementation address
  * @param _tokenImplementation - The token implementation address
  * @param _name - The name for the token factory
- *
  * @returns transactionHash - The blockchain transaction hash for tracking
  */
 const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
@@ -82,21 +79,16 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  * This handler uses a generator pattern to yield real-time progress updates during
  * factory creation, supporting both single and batch operations with detailed status
  * for each factory being created.
- *
  * @auth Required - User must be authenticated
  * @middleware portalMiddleware - Provides Portal GraphQL client with transaction tracking
  * @middleware theGraphMiddleware - Provides TheGraph client
- *
  * @param input.contract - The system contract address (defaults to standard address)
  * @param input.factories - Single factory or array of factories to create
  * @param input.messages - Optional custom messages for localization
- *
  * @yields {FactoryCreationEvent} Progress events with status, message, and current factory info
  * @returns {AsyncGenerator} Generator that yields events and completes with creation summary
- *
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system not bootstrapped or transaction fails
- *
  * @example
  * ```typescript
  * // Create a single bond factory with progress tracking
@@ -177,6 +169,8 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
 
     /**
      * Checks if an error contains a specific pattern
+     * @param error
+     * @param pattern
      */
     function containsErrorPattern(error: unknown, pattern: string): boolean {
       if (error instanceof Error) {

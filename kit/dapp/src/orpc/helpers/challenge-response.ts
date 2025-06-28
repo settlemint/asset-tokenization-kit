@@ -20,17 +20,16 @@ const PORTAL_VERIFICATION_TYPE_MAP = {
  * This function orchestrates the verification process for different authentication methods
  * (pincode, secret code, or two-factor authentication) by retrieving the appropriate
  * verification ID and delegating to the portal's challenge handler.
- *
  * @param user - The user object containing verification IDs
  * @param userWalletAddress - The Ethereum wallet address to verify ownership of
+ * @param verification
  * @param code - The verification code entered by the user (pincode, 2FA code, or secret code)
  * @param verificationType - The type of verification being performed
- *
+ * @param verification.code
+ * @param verification.type
  * @returns Promise resolving to the challenge response from the portal
- *
  * @throws {ORPCError} VERIFICATION_ID_NOT_FOUND when the verification ID is not found for the user
  * @throws {ORPCError} CHALLENGE_FAILED when the portal challenge handler fails
- *
  * @example
  * ```ts
  * try {
@@ -89,12 +88,9 @@ export async function handleChallenge(
 
 /**
  * Retrieves the appropriate verification ID from the user object based on the verification type
- *
  * @param user - The user object containing verification IDs
  * @param verificationType - The type of verification to get the ID for
- *
  * @returns The verification ID string if found, undefined otherwise
- *
  * @internal
  */
 function getVerificationId(

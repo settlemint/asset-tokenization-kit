@@ -11,7 +11,6 @@
  * - SSR-compatible configuration
  * - Automatic language detection (via use-language-detection hook)
  * - Fallback language support
- *
  * @see {@link ./types} - TypeScript type augmentation for translations
  * @see {@link ./use-language-detection} - Browser language detection hook
  * @see {@link ../../../locales/} - Translation JSON files
@@ -124,7 +123,10 @@ export const fallbackLng = "en";
  * The void operator is used to explicitly discard the promise,
  * as initialization happens synchronously for our use case.
  */
-void i18n.use(initReactI18next).init({
+// eslint-disable-next-line import/no-named-as-default-member
+i18n.use(initReactI18next);
+// eslint-disable-next-line import/no-named-as-default-member
+void i18n.init({
   resources,
   lng: fallbackLng,
   fallbackLng,
@@ -144,7 +146,6 @@ void i18n.use(initReactI18next).init({
  * - useTranslation: Access translation function
  * - Trans: Component for complex translations with JSX
  * - I18nextProvider: Context provider (auto-configured by react-i18next)
- *
  * @example
  * ```typescript
  * import { useTranslation } from 'react-i18next';

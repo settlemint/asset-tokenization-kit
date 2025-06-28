@@ -4,7 +4,6 @@
  * This module provides comprehensive Zod-based validation for Ethereum addresses,
  * ensuring they conform to the EIP-55 checksummed format and integrating seamlessly
  * with viem's type system for enhanced type safety.
- *
  * @module EthereumAddressValidation
  */
 import { type Address, getAddress, isAddress } from "viem";
@@ -27,7 +26,6 @@ import { z } from "zod/v4";
  * 3. Verify address validity using viem's isAddress
  * 4. Transform to checksummed format using viem's getAddress
  * 5. Return as Address type
- *
  * @example
  * ```typescript
  * // Valid address parsing
@@ -43,7 +41,6 @@ import { z } from "zod/v4";
  *   console.error(result.error.issues); // Validation errors
  * }
  * ```
- *
  * @throws {ZodError} When the input fails validation at any step
  */
 export const ethereumAddress = z
@@ -76,10 +73,18 @@ export const ethereumAddress = z
  */
 export type EthereumAddress = Address;
 
+/**
+ *
+ * @param value
+ */
 export function isEthereumAddress(value: unknown): value is EthereumAddress {
   return ethereumAddress.safeParse(value).success;
 }
 
+/**
+ *
+ * @param value
+ */
 export function getEthereumAddress(value: unknown): EthereumAddress {
   return ethereumAddress.parse(value);
 }

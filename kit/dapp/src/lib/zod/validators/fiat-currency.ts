@@ -4,14 +4,12 @@
  * This module provides Zod schemas for validating ISO 4217 fiat currency codes,
  * commonly used in financial applications for representing traditional currencies
  * in digital asset platforms and stablecoin systems.
- *
  * @module FiatCurrencyValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Supported fiat currency codes (ISO 4217).
- *
  * @remarks
  * Major global currencies supported by the platform:
  * - `USD`: United States Dollar
@@ -35,9 +33,7 @@ export const fiatCurrencies = [
 /**
  * Creates a Zod schema that validates fiat currency codes.
  * Automatically converts input to uppercase before validation.
- *
  * @returns A Zod schema for fiat currency validation
- *
  * @example
  * ```typescript
  * const schema = fiatCurrency();
@@ -68,10 +64,8 @@ export type FiatCurrency = z.infer<ReturnType<typeof fiatCurrency>>;
 
 /**
  * Type guard to check if a value is a valid fiat currency.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid fiat currency, `false` otherwise
- *
  * @example
  * ```typescript
  * const userInput: unknown = "eur";
@@ -93,11 +87,9 @@ export function isFiatCurrency(value: unknown): value is FiatCurrency {
 
 /**
  * Safely parse and return a fiat currency or throw an error.
- *
  * @param value - The value to parse as a fiat currency
  * @returns The validated fiat currency code (uppercase)
  * @throws {Error} If the value is not a valid fiat currency
- *
  * @example
  * ```typescript
  * try {

@@ -5,6 +5,7 @@ import { baseRouter } from "@/orpc/procedures/base.router";
  * Middleware to check if the user has the required permission to interact with the token factory.
  * @param type - The type of the token factory.
  * @param requiredPermission - The permission required to interact with the token factory.
+ * @param requiredRoles
  * @returns The middleware function.
  */
 export const tokenFactoryPermissionMiddleware = (
