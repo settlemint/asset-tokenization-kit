@@ -309,24 +309,24 @@ function PlatformOnboarding() {
   ]);
 
   // Determine button labels
-  const getNextLabel = useCallback(() => {
+  const getNextLabel = useCallback((): string => {
     if (currentStepId === "wallet" && !user.initialOnboardingFinished) {
       return "Generate Wallet";
     }
     if (currentStepId === "wallet" && user.wallet) {
-      return t("onboarding:next", "Next");
+      return t("onboarding:ui.next");
     }
     if (currentStepId === "security" && !session?.user.pincodeEnabled) {
       return "Set PIN Code";
     }
     if (currentStepId === "security" && session?.user.pincodeEnabled) {
-      return t("onboarding:next", "Next");
+      return t("onboarding:ui.next");
     }
     if (currentStepId === "system" && !systemAddress) {
       return "Deploy System";
     }
     if (currentStepId === "system" && systemAddress) {
-      return t("onboarding:next", "Next");
+      return t("onboarding:ui.next");
     }
     if (
       currentStepId === "assets" &&
@@ -335,9 +335,9 @@ function PlatformOnboarding() {
       return "Deploy Asset Factories";
     }
     if (currentStepIndex === steps.length - 1) {
-      return t("onboarding:complete", "Complete");
+      return t("onboarding:ui.complete");
     }
-    return t("onboarding:next", "Next");
+    return t("onboarding:ui.next");
   }, [
     currentStepId,
     user.initialOnboardingFinished,
@@ -408,7 +408,7 @@ function PlatformOnboarding() {
               isBackDisabled={false}
               isNextDisabled={isNextDisabled()}
               nextLabel={getNextLabel()}
-              backLabel={t("onboarding:back", "Back")}
+              backLabel={t("onboarding:ui.back")}
             >
               {(() => {
                 if (currentStepId === "wallet") {
