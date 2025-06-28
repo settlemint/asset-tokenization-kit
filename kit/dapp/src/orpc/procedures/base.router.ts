@@ -18,7 +18,6 @@ import { contract } from "../routes/contract";
  *
  * Other routers should extend this base router by adding middleware layers
  * for authentication, error handling, logging, and other cross-cutting concerns.
- *
  * @see {@link ../context} - Context type definition
  * @see {@link ../contract} - Main contract definition
  */

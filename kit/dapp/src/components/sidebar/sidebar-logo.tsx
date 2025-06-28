@@ -6,6 +6,9 @@ import {
 } from "@/components/ui/sidebar";
 import { useTranslation } from "react-i18next";
 
+/**
+ * Sidebar logo component that displays the SettleMint logo and app name.
+ */
 export function SidebarLogo() {
   const { t } = useTranslation("general");
   return (

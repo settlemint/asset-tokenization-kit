@@ -53,8 +53,6 @@ interface ThemeToggleProps {
 
 /**
  * A component that allows users to toggle between different theme options.
- * @param props - The component props.
- * @returns A dropdown menu for theme selection.
  */
 export function ThemeToggle({
   variant = "outline",

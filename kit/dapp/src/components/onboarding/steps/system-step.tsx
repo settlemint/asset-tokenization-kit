@@ -32,6 +32,15 @@ interface SystemStepProps {
   onRegisterAction?: (action: () => void) => void;
 }
 
+/**
+ * Step component for deploying the system smart contract during onboarding
+ * @param {object} props - Component props
+ * @param {string | null} [props.systemAddress] - Pre-existing system address if available
+ * @param {boolean} [props.isSystemDeployed] - Whether system is already deployed
+ * @param {() => void} [props.onSuccess] - Callback when system deployment is successful
+ * @param {(action: () => void) => void} [props.onRegisterAction] - Callback to register the deployment action with parent
+ * @returns {JSX.Element} The system deployment step component
+ */
 export function SystemStep({
   systemAddress: propSystemAddress,
   isSystemDeployed = false,

@@ -6,7 +6,7 @@ import { baseRouter } from "@/orpc/procedures/base.router";
  * - The user is compliant with the token's required claim topics.
  * - The user has the required roles to interact with the token.
  * - The user is allowed to interact with the token. (eg not in the blocked list or blocked countries list)
- *
+ * @param requiredRoles.requiredRoles
  * @param requiredRoles - The roles required to interact with the token.
  * @returns The middleware function.
  */

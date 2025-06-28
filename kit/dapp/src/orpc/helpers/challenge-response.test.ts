@@ -11,7 +11,6 @@
  * - Error handling for portal API failures
  * - Proper error type creation and properties
  * - Correct mapping of verification types to portal API expectations
- *
  * @see {@link ./challenge-response} - Implementation being tested
  */
 
@@ -26,7 +25,7 @@ import { handleChallenge } from "./challenge-response";
 
 // Mock the external dependencies
 mock.module("@settlemint/sdk-portal", () => ({
-  handleWalletVerificationChallenge: mock(() =>
+  handleWalletVerificationChallenge: mock(async () =>
     Promise.resolve({
       challengeResponse: "mocked-response",
       verificationId: "mocked-verification-id",

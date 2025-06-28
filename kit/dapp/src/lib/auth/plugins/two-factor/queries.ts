@@ -56,6 +56,10 @@ const CREATE_WALLET_VERIFICATION_MUTATION = portalGraphql(`
   }
 `);
 
+/**
+ *
+ * @param user
+ */
 export async function disableTwoFactor(user: UserWithTwoFactorContext) {
   if (!user.wallet) {
     throw new APIError("BAD_REQUEST", {
@@ -77,6 +81,11 @@ export async function disableTwoFactor(user: UserWithTwoFactorContext) {
   return result.deleteWalletVerification;
 }
 
+/**
+ *
+ * @param user
+ * @param code
+ */
 export async function verifyTwoFactorOTP(
   user: UserWithTwoFactorContext,
   code: string
@@ -108,6 +117,14 @@ type OTPAlgorithm = VariablesOf<
   typeof CREATE_WALLET_VERIFICATION_MUTATION
 >["algorithm"];
 
+/**
+ *
+ * @param root0
+ * @param root0.algorithm
+ * @param root0.digits
+ * @param root0.period
+ * @param user
+ */
 export async function enableTwoFactor(
   {
     algorithm,

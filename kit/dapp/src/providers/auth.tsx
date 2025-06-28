@@ -15,7 +15,6 @@
  * The provider wraps two key contexts:
  * 1. AuthQueryProvider - Manages auth state with TanStack Query
  * 2. AuthUIProviderTanstack - Provides pre-built auth UI components
- *
  * @see {@link @/lib/auth/auth.client} - Authentication client configuration
  * @see {@link https://better-auth.com} - Better Auth documentation
  */
@@ -38,9 +37,6 @@ import enAuthTranslations from "../../locales/en/auth.json";
  * - Auth operations (`useSignIn`, `useSignUp`, `useSignOut`)
  * - Pre-built UI components (`<SignIn />`, `<SignUp />`, etc.)
  * - Automatic session refresh and persistence
- *
- * @param children - Child components that need access to authentication
- *
  * @example
  * ```tsx
  * // Using auth hooks in a component

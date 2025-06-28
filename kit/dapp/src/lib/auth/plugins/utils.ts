@@ -2,6 +2,11 @@ import type { SessionUser } from "@/lib/auth";
 import type { GenericEndpointContext } from "better-auth";
 import { setSessionCookie } from "better-auth/cookies";
 
+/**
+ *
+ * @param ctx
+ * @param updatedUserFields
+ */
 export async function revokeSession(
   ctx: GenericEndpointContext,
   updatedUserFields: Partial<SessionUser>
@@ -30,6 +35,13 @@ export async function revokeSession(
   });
 }
 
+/**
+ *
+ * @param ctx
+ * @param data
+ * @param data.password
+ * @param data.userId
+ */
 export async function validatePassword(
   ctx: GenericEndpointContext,
   data: {

@@ -23,6 +23,12 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+/**
+ * Navigation component for project items in the sidebar.
+ * @param {{ projects: { name: string; url: string; icon: LucideIcon; }[] }} props - The component props.
+ * @param {{ name: string; url: string; icon: LucideIcon; }[]} props.projects - Array of project items with name, URL, and icon.
+ * @returns {JSX.Element} A sidebar menu for project navigation.
+ */
 export function NavProjects({
   projects,
 }: {

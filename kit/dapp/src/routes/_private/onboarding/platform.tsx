@@ -40,6 +40,9 @@ export const Route = createFileRoute("/_private/onboarding/platform")({
   component: PlatformOnboarding,
 });
 
+/**
+ *
+ */
 function PlatformOnboarding() {
   const { t } = useTranslation(["general", "onboarding"]);
   const navigate = useNavigate();

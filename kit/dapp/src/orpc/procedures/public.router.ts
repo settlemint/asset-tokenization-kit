@@ -23,7 +23,6 @@ import { baseRouter } from "./base.router";
  * - Public content retrieval
  * - Health checks and status endpoints
  * - Public API endpoints with optional user context
- *
  * @see {@link ../../middlewares/monitoring/error.middleware} - Error handling middleware
  * @see {@link ../../middlewares/monitoring/sentry-tracing.middleware} - Sentry tracing middleware
  * @see {@link ../../middlewares/auth/session.middleware} - Session loading middleware

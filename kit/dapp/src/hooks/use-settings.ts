@@ -8,10 +8,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
  *
  * Provides a tuple similar to React's useState but backed by the settings API.
  * The hook automatically handles loading states, caching, and cache invalidation.
- *
  * @param key - The setting key to manage
  * @returns A tuple containing the current setting value and a setter function
- *
  * @example
  * ```typescript
  * const [systemAddress, setSystemAddress] = useSettings("SYSTEM_ADDRESS");

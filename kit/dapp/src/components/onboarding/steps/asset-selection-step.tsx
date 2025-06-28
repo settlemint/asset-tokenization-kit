@@ -172,6 +172,13 @@ const AssetTypeFormField = memo(
 
 AssetTypeFormField.displayName = "AssetTypeFormField";
 
+/**
+ * Step component for selecting and deploying asset types during onboarding
+ * @param {object} props - Component props
+ * @param {() => void} [props.onSuccess] - Callback when asset deployment is successful
+ * @param {(action: () => void) => void} [props.onRegisterAction] - Callback to register the deployment action with parent
+ * @returns {JSX.Element} The asset selection step component
+ */
 export function AssetSelectionStep({
   onSuccess,
   onRegisterAction,

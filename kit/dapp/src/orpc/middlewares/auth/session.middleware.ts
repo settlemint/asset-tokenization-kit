@@ -17,7 +17,6 @@ import { baseRouter } from "../../procedures/base.router";
  *
  * This is typically used in public routers where authentication is optional
  * but beneficial when available (e.g., personalized content, user preferences).
- *
  * @example
  * ```typescript
  * // Used in public router
@@ -33,7 +32,6 @@ import { baseRouter } from "../../procedures/base.router";
  *   return getPublicContent();
  * });
  * ```
- *
  * @see {@link ./auth.middleware} - Strict authentication middleware
  * @see {@link @/lib/auth/auth} - Authentication system
  */

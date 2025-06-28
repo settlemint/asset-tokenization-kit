@@ -1,10 +1,13 @@
 import js from "@eslint/js";
 import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginRouter from "@tanstack/eslint-plugin-router";
+import boundaries from "eslint-plugin-boundaries";
+import importPlugin from "eslint-plugin-import";
 import pluginReact from "eslint-plugin-react";
 import reactCompiler from "eslint-plugin-react-compiler";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactPerfPlugin from "eslint-plugin-react-perf";
+import pluginSecurity from "eslint-plugin-security";
 import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -39,6 +42,44 @@ export default defineConfig([
       },
     },
   },
+  {
+    plugins: {
+      boundaries,
+    },
+    settings: {
+      "boundaries/element-types": [
+        "error",
+        {
+          default: "disallow",
+          rules: [
+            {
+              from: "orpc",
+              allow: ["lib", "config"],
+            },
+            {
+              from: "routes",
+              allow: [
+                "components",
+                "hooks",
+                "lib",
+                "providers",
+                "config",
+                "styles",
+              ],
+            },
+            {
+              from: "components",
+              allow: ["components", "hooks", "lib", "config", "styles"],
+            },
+            {
+              from: "lib",
+              allow: ["lib", "config"],
+            },
+          ],
+        },
+      ],
+    },
+  },
   pluginReact.configs.flat.recommended,
   // Base TypeScript config without type checking for all files
   ...tseslint.configs.recommended,
@@ -54,7 +95,10 @@ export default defineConfig([
     files: ["src/**/*.{ts,mts,cts,tsx}"],
   })),
   reactHooks.configs["recommended-latest"],
+  pluginSecurity.configs.recommended,
   reactPerfPlugin.configs.flat.recommended,
+  importPlugin.flatConfigs.recommended,
+  importPlugin.flatConfigs.typescript,
   // React Compiler plugin
   {
     files: ["src/**/*.{ts,tsx}"],
@@ -74,6 +118,23 @@ export default defineConfig([
       },
     },
     rules: {
+      // Prevent large component files
+      "max-lines": [
+        "warn",
+        {
+          max: 500,
+          skipBlankLines: true,
+          skipComments: true,
+        },
+      ],
+      "react/no-multi-comp": [
+        "error",
+        {
+          ignoreStateless: true,
+        },
+      ],
+      "import/no-unresolved": "off",
+      "security/detect-object-injection": "off",
       // React rules
       "react/react-in-jsx-scope": "off",
 
@@ -92,9 +153,31 @@ export default defineConfig([
           fixMixedExportsWithInlineTypeSpecifier: true,
         },
       ],
+      // Ensure proper query key usage
+      "@tanstack/query/exhaustive-deps": "error",
+      // Router specific
+      "@tanstack/router/create-route-property-order": "error",
 
       // Additional strict TypeScript rules
       "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-floating-promises": [
+        "error",
+        {
+          ignoreVoid: true,
+          ignoreIIFE: true,
+        },
+      ],
+      "@typescript-eslint/promise-function-async": "error",
+      "@typescript-eslint/require-await": "error",
+      "@typescript-eslint/no-misused-promises": [
+        "error",
+        {
+          checksVoidReturn: {
+            attributes: false,
+            returns: true,
+          },
+        },
+      ],
       "@typescript-eslint/restrict-template-expressions": "off",
       "react/no-unescaped-entities": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",

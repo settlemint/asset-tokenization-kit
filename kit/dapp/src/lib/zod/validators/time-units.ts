@@ -4,14 +4,12 @@
  * This module provides Zod schemas for validating time measurement units,
  * essential for scheduling, vesting periods, lock durations, and other
  * time-based operations in financial applications.
- *
  * @module TimeUnitValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Available time measurement units from seconds to years.
- *
  * @remarks
  * Standard time units for various use cases:
  * - `seconds`: Precise timing, short intervals
@@ -34,9 +32,7 @@ export const timeUnits = [
 
 /**
  * Creates a Zod schema that validates time measurement units.
- *
  * @returns A Zod enum schema for time unit validation
- *
  * @example
  * ```typescript
  * const schema = timeUnit();
@@ -62,10 +58,8 @@ export type TimeUnit = z.infer<ReturnType<typeof timeUnit>>;
 
 /**
  * Type guard to check if a value is a valid time unit.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid time unit, `false` otherwise
- *
  * @example
  * ```typescript
  * const unit: unknown = "days";
@@ -89,11 +83,9 @@ export function isTimeUnit(value: unknown): value is TimeUnit {
 
 /**
  * Safely parse and return a time unit or throw an error.
- *
  * @param value - The value to parse as a time unit
  * @returns The validated time unit
  * @throws {Error} If the value is not a valid time unit
- *
  * @example
  * ```typescript
  * try {

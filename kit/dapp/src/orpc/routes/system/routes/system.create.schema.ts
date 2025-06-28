@@ -9,7 +9,6 @@
  * The default address (0x5e771e1417100000000000000000000000020088) is a
  * deterministic address used across SettleMint deployments for the system
  * registry contract, ensuring consistency across different environments.
- *
  * @example
  * ```typescript
  * // Using default system registry
@@ -23,7 +22,6 @@
  *   verification: { code: "123456", type: "pincode" }
  * };
  * ```
- *
  * @see {@link ../../common/schemas/create.schema} - Base create schema
  */
 

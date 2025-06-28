@@ -6,12 +6,10 @@ import { baseRouter } from "../../procedures/base.router";
  *
  * This middleware ensures that all procedures have access to the Hasura client
  * for executing GraphQL queries and mutations against the Hasura endpoint.
- *
  * @remarks
  * - Uses dependency injection pattern to allow overriding in tests
  * - Falls back to the default hasuraClient if none provided in context
  * - Essential for procedures that need to interact with Hasura's GraphQL API
- *
  * @example
  * ```typescript
  * const myProcedure = pr

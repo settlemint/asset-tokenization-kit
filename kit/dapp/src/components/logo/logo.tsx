@@ -7,7 +7,6 @@
  *
  * The component handles theme-aware logo rendering, ensuring the logo remains
  * visible and aesthetically appropriate across different color schemes.
- *
  * @see {@link https://github.com/pacocoursey/next-themes} - Next Themes for theme detection
  */
 import { cn } from "@/lib/utils";
@@ -57,11 +56,6 @@ interface LogoProps {
  * - `settlemint-logo-{variant}-{mode}.svg`
  * - Where variant is: h (horizontal), v (vertical), or i (icon)
  * - Where mode is: lm (light mode) or dm (dark mode)
- *
- * @param className - Additional CSS classes for the container
- * @param variant - Logo layout variant (defaults to "horizontal")
- * @param forcedColorMode - Override theme detection with specific color mode
- *
  * @example
  * ```tsx
  * // Default horizontal logo

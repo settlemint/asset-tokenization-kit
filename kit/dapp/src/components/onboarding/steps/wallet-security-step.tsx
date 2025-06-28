@@ -28,6 +28,13 @@ interface WalletSecurityStepProps {
   onRegisterAction?: (action: () => void) => void;
 }
 
+/**
+ * Step component for setting up wallet PIN code security during onboarding
+ * @param {object} props - Component props
+ * @param {() => void} [props.onSuccess] - Callback when PIN code is successfully set
+ * @param {(action: () => void) => void} [props.onRegisterAction] - Callback to register the PIN setup action with parent
+ * @returns {JSX.Element} The wallet security setup step component
+ */
 export function WalletSecurityStep({
   onSuccess,
   onRegisterAction,
@@ -47,7 +54,7 @@ export function WalletSecurityStep({
   });
 
   const { mutate: enablePincode, isPending } = useMutation({
-    mutationFn: (data: PincodeFormValues) =>
+    mutationFn: async (data: PincodeFormValues) =>
       authClient.pincode.enable({
         pincode: data.pincode,
         // Password is not required during initial onboarding

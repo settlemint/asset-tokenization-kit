@@ -13,7 +13,6 @@
  *
  * This route serves as a parent for all /auth/* routes, ensuring they
  * share the same visual styling and layout structure.
- *
  * @see {@link ./auth.$pathname} - Dynamic auth route for specific auth pages
  */
 

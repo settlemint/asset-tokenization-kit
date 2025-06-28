@@ -12,7 +12,6 @@
  *
  * The augmentation uses the English translations as the source of truth
  * for available keys, ensuring all translations have the same structure.
- *
  * @example
  * ```typescript
  * // With this augmentation, TypeScript will validate translation keys:
@@ -22,7 +21,6 @@
  * // Also provides type safety for interpolation:
  * t('user.greeting', { name: 'John' }) // TypeScript knows 'name' is required
  * ```
- *
  * @see {@link ./index} - Main i18n configuration
  * @see https://www.i18next.com/overview/typescript - i18next TypeScript documentation
  */

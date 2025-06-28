@@ -28,6 +28,9 @@ interface StepWizardProps {
   isBackDisabled?: boolean;
 }
 
+/**
+ * A multi-step wizard component with sidebar navigation
+ */
 export function StepWizard({
   steps,
   currentStepId,

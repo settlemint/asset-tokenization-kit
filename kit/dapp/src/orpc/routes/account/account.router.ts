@@ -15,7 +15,6 @@ import { read } from "./routes/account.read";
  * The router is designed to be extended with additional account management
  * endpoints such as identity claim updates, account verification, and
  * compliance-related operations.
- *
  * @see {@link ./account.contract} - Type-safe contract definitions
  * @see {@link ./account.create} - Wallet creation implementation
  * @see {@link ./account.read} - Account information retrieval

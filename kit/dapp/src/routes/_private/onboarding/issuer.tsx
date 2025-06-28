@@ -18,6 +18,9 @@ export const Route = createFileRoute("/_private/onboarding/issuer")({
   component: IssuerOnboarding,
 });
 
+/**
+ *
+ */
 function IssuerOnboarding() {
   const { t } = useTranslation("onboarding");
   const navigate = useNavigate();

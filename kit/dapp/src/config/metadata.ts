@@ -8,7 +8,6 @@
  * The module exports:
  * - Default metadata constants for the application
  * - A utility function for generating page-specific meta tags
- *
  * @see {@link https://ogp.me/} - Open Graph Protocol documentation
  * @see {@link https://developer.twitter.com/en/docs/twitter-for-websites/cards} - Twitter Cards documentation
  */
@@ -77,14 +76,6 @@ export const metadata = {
  * - Titles are appended to the base application title
  * - Keywords are combined with default keywords
  * - Missing values fall back to application defaults
- *
- * @param title - Page-specific title to prepend to the base title
- * @param description - Page-specific description (overrides default)
- * @param keywords - Additional keywords to include with defaults
- * @param image - Page-specific Open Graph image (overrides default)
- *
- * @returns Array of meta tag objects compatible with TanStack Router's meta function
- *
  * @example
  * ```tsx
  * // In a route file

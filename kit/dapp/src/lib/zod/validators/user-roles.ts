@@ -4,14 +4,12 @@
  * This module provides Zod schemas for validating user roles in the application,
  * implementing a simple role-based access control (RBAC) system for managing
  * user permissions and access levels.
- *
  * @module UserRoleValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Available user roles with different permission levels.
- *
  * @remarks
  * Simple role hierarchy for application access:
  * - `admin`: Full administrative access, can manage users and settings
@@ -25,9 +23,7 @@ export const userRoleNames = ["admin", "investor", "issuer"] as const;
 
 /**
  * Creates a Zod schema that validates user roles.
- *
  * @returns A Zod enum schema for user role validation
- *
  * @example
  * ```typescript
  * const schema = userRoles();
@@ -52,10 +48,8 @@ export type UserRole = z.infer<ReturnType<typeof userRoles>>;
 
 /**
  * Type guard to check if a value is a valid user role.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid user role, `false` otherwise
- *
  * @example
  * ```typescript
  * const role: unknown = "admin";
@@ -78,11 +72,9 @@ export function isUserRole(value: unknown): value is UserRole {
 
 /**
  * Safely parse and return a user role or throw an error.
- *
  * @param value - The value to parse as a user role
  * @returns The validated user role
  * @throws {Error} If the value is not a valid user role
- *
  * @example
  * ```typescript
  * try {

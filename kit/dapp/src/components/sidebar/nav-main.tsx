@@ -18,6 +18,9 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
+/**
+ * Navigation component for main menu items in the sidebar.
+ */
 export function NavMain({
   items,
 }: {

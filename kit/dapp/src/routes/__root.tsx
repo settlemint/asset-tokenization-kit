@@ -12,7 +12,6 @@
  *
  * The root route wraps all other routes and provides essential context like
  * QueryClient for data fetching throughout the application.
- *
  * @see {@link https://tanstack.com/router/latest/docs/guide/route-trees#the-root-route} - TanStack Router root routes
  */
 
@@ -34,13 +33,13 @@ import { lazy, Suspense, useMemo, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
 // Lazy load dev tools to reduce bundle size in production
-const ReactQueryDevtools = lazy(() =>
+const ReactQueryDevtools = lazy(async () =>
   import("@tanstack/react-query-devtools").then((m) => ({
     default: m.ReactQueryDevtools,
   }))
 );
 
-const TanStackRouterDevtools = lazy(() =>
+const TanStackRouterDevtools = lazy(async () =>
   import("@tanstack/react-router-devtools").then((m) => ({
     default: m.TanStackRouterDevtools,
   }))
@@ -127,7 +126,7 @@ function RootComponent() {
  *
  * The theme script runs before React hydration to immediately apply the
  * user's theme preference, preventing any visual flicker during page load.
- *
+ * @param children.children
  * @param children - The route content to render within the document
  */
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {

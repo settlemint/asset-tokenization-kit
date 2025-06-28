@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 /**
  * Check if error is an ORPC error
+ * @param error
  */
 export function isORPCError(
   error: unknown
@@ -17,6 +18,7 @@ export function isORPCError(
 
 /**
  * Helper function to extract error code from error object
+ * @param error
  */
 export function getErrorCode(error: unknown): string | number {
   // For ORPC errors, use the status code
@@ -43,6 +45,7 @@ export function getErrorCode(error: unknown): string | number {
 
 /**
  * Hook to get error title from error object
+ * @param error
  */
 export function useErrorTitle(error: unknown): string {
   const { t } = useTranslation("general");
@@ -153,6 +156,7 @@ export function useErrorTitle(error: unknown): string {
 
 /**
  * Hook to get error description from error object
+ * @param error
  */
 export function useErrorDescription(error: unknown): string {
   const { t } = useTranslation("general");

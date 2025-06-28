@@ -12,7 +12,7 @@ import {
 } from "better-auth/api";
 import { createPublicClient, http, toHex } from "viem";
 import { anvil } from "viem/chains";
-import z from "zod/v4";
+import { z } from "zod/v4";
 import { revokeSession } from "../utils";
 
 const CREATE_ACCOUNT_MUTATION = portalGraphql(`

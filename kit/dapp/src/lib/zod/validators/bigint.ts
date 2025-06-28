@@ -3,7 +3,6 @@
  *
  * Provides Zod schemas for validating and transforming BigInt values from various input types.
  * Designed for blockchain applications handling large numeric values like token amounts.
- *
  * @module BigIntValidation
  */
 import { abs, floor, from, multiply, toString, type Numberish } from "dnum";
@@ -13,7 +12,6 @@ import { z } from "zod/v4";
  * Flexible BigInt validator that accepts strings, numbers, or bigints.
  * Uses dnum for precise decimal handling and scientific notation support.
  * Automatically truncates decimal values when converting to BigInt.
- *
  * @example
  * ```typescript
  * apiBigInt.parse("123456789012345678901234567890"); // 123456789012345678901234567890n
@@ -99,7 +97,7 @@ export type ApiBigInt = z.infer<typeof apiBigInt>;
 
 /**
  * Type guard to check if a value can be parsed as a BigInt.
- *
+ * @param value
  * @example
  * ```typescript
  * if (isApiBigInt("123456789")) {
@@ -113,9 +111,8 @@ export function isApiBigInt(value: unknown): value is ApiBigInt {
 
 /**
  * Parse a value as BigInt or throw an error.
- *
+ * @param value
  * @throws {ZodError} If the value cannot be parsed as a BigInt
- *
  * @example
  * ```typescript
  * const bigint = getApiBigInt("123456789"); // 123456789n

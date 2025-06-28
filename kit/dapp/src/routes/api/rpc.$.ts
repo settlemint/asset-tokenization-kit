@@ -13,7 +13,6 @@
  *
  * The route uses ORPC's OpenAPI handler to automatically transform typed
  * RPC procedures into RESTful endpoints with proper HTTP semantics.
- *
  * @see {@link https://github.com/unjs/orpc} - ORPC documentation
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
@@ -60,7 +59,7 @@ const handler = new RPCHandler(router, {
  * which maps them to appropriate procedures based on the URL path.
  * Includes request headers in the context for authentication and
  * other middleware to access.
- *
+ * @param request.request
  * @param request - The incoming HTTP request
  * @returns HTTP response from the matched procedure or 404 if not found
  */

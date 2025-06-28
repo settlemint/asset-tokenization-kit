@@ -4,23 +4,19 @@
  * This module provides Zod schemas for validating decimal precision values,
  * commonly used in blockchain and financial applications to specify the number
  * of decimal places for token amounts and monetary values.
- *
  * @module DecimalsValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Creates a Zod schema that validates decimal precision values.
- *
  * @remarks
  * - Must be an integer (no fractional values)
  * - Range: 0 to 18 (standard ERC20 token maximum)
  * - 0 decimals = whole units only (e.g., no cents)
  * - 18 decimals = maximum precision (Ethereum standard)
  * - Common values: 2 (fiat currencies), 6 (USDC), 18 (ETH)
- *
  * @returns A Zod schema for decimal validation
- *
  * @example
  * ```typescript
  * const schema = decimals();
@@ -53,10 +49,8 @@ export type Decimals = z.infer<ReturnType<typeof decimals>>;
 
 /**
  * Type guard to check if a value is valid decimals.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid decimal precision, `false` otherwise
- *
  * @example
  * ```typescript
  * const userInput: unknown = 6;
@@ -78,11 +72,9 @@ export function isDecimals(value: unknown): value is Decimals {
 
 /**
  * Safely parse and return decimals or throw an error.
- *
  * @param value - The value to parse as decimals
  * @returns The validated decimal precision
  * @throws {Error} If the value is not valid decimals
- *
  * @example
  * ```typescript
  * try {

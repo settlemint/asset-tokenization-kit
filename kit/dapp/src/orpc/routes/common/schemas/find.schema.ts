@@ -17,7 +17,6 @@ import { z } from "zod/v4";
  * - GET /users/{id}
  * - GET /assets/{id}
  * - Any other single-entity lookup endpoint
- *
  * @example
  * ```typescript
  * // Usage in route contracts:

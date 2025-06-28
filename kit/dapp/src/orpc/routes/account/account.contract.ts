@@ -7,7 +7,6 @@
  *
  * All endpoints in this contract require authentication, ensuring that account
  * data is properly protected and only accessible to authorized users.
- *
  * @see {@link @/orpc/procedures/auth.contract} - Base authenticated contract
  * @see {@link ./account.router} - Implementation router
  */
@@ -22,16 +21,12 @@ import { AccountReadSchema, AccountSchema } from "./routes/account.read.schema";
  * including the account's identity claims and their verification status.
  * Identity claims are part of the ERC-3643 compliance system and contain
  * key-value pairs that represent verified attributes about the account holder.
- *
  * @auth Required - User must be authenticated
- * @method GET
+ * @function GET
  * @endpoint /account/read
- *
  * @input AccountReadSchema - Wallet address to query
  * @returns AccountSchema - Account information including identity claims
- *
  * @throws ORPCError - If account is not found
- *
  * @example
  * ```typescript
  * // Read account information

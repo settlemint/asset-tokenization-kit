@@ -28,6 +28,11 @@ export const Route = createFileRoute("/_private/onboarding/investor")({
 });
 
 // Placeholder component for identity verification
+/**
+ *
+ * @param root0
+ * @param root0.onSuccess
+ */
 function IdentityStep({ onSuccess }: { onSuccess: () => void }) {
   const { t } = useTranslation(["onboarding", "general"]);
 
@@ -69,6 +74,9 @@ function IdentityStep({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
+/**
+ *
+ */
 function InvestorOnboarding() {
   const { t } = useTranslation("onboarding");
   const navigate = useNavigate();

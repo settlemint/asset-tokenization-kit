@@ -31,6 +31,12 @@ interface LanguageMenuItemProps {
 
 /**
  * A single language menu item component.
+ * @param {object} props - The component props.
+ * @param {string} props.locale - The locale code for the language.
+ * @param {string} props.currentLanguage - The currently selected language code.
+ * @param {boolean} props.isPending - Whether a language change is in progress.
+ * @param {(locale: string) => void} props.onLanguageChange - Callback function to handle language changes.
+ * @returns {JSX.Element} A dropdown menu item for language selection.
  */
 const LanguageMenuItem = ({
   locale,
@@ -68,8 +74,11 @@ interface LanguageSwitcherProps {
 
 /**
  * A component that allows users to switch between different languages.
- * @param props - The component props.
- * @returns A dropdown menu for language selection.
+ * @param {object} [props] - The component props.
+ * @param {import("@/components/ui/button").ButtonProps["variant"]} [props.variant] - The variant of the button.
+ * @param {import("@/components/ui/button").ButtonProps["size"]} [props.size] - The size of the button.
+ * @param {string} [props.className] - Additional CSS classes to apply to the button.
+ * @returns {JSX.Element} A dropdown menu for language selection.
  */
 export function LanguageSwitcher({
   variant = "outline",

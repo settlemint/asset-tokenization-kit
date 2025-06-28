@@ -4,14 +4,12 @@
  * This module provides Zod schemas for validating equity categories,
  * which classify different types of equity shares based on their rights
  * and restrictions in corporate structures.
- *
  * @module EquityCategoryValidation
  */
 import { z } from "zod/v4";
 
 /**
  * Available equity categories in corporate share structures.
- *
  * @remarks
  * - `common`: Standard shares with voting rights and residual claims
  * - `preferred`: Shares with priority in dividends and liquidation
@@ -21,9 +19,7 @@ export const equityCategories = ["common", "preferred", "restricted"] as const;
 
 /**
  * Creates a Zod schema that validates equity categories.
- *
  * @returns A Zod enum schema for equity category validation
- *
  * @example
  * ```typescript
  * const schema = equityCategory();
@@ -48,10 +44,8 @@ export type EquityCategory = z.infer<ReturnType<typeof equityCategory>>;
 
 /**
  * Type guard to check if a value is a valid equity category.
- *
  * @param value - The value to check
  * @returns `true` if the value is a valid equity category, `false` otherwise
- *
  * @example
  * ```typescript
  * const shareType: unknown = "preferred";
@@ -72,11 +66,9 @@ export function isEquityCategory(value: unknown): value is EquityCategory {
 
 /**
  * Safely parse and return an equity category or throw an error.
- *
  * @param value - The value to parse as an equity category
  * @returns The validated equity category
  * @throws {Error} If the value is not a valid equity category
- *
  * @example
  * ```typescript
  * try {

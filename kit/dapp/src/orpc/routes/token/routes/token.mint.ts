@@ -7,7 +7,7 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import z from "zod/v4";
+import { z } from "zod/v4";
 
 const MINT_BOND_MUTATION = portalGraphql(`
   mutation MintToken(

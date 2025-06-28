@@ -4,7 +4,6 @@
  * This module provides a custom React hook for automatic language detection
  * and persistence. It implements a smart language selection strategy that
  * respects user preferences while providing sensible defaults.
- *
  * @see {@link ./index} - Main i18n configuration with supported languages
  */
 
@@ -24,9 +23,6 @@ import { fallbackLng, supportedLanguages } from "./index";
  * - Persists language changes to localStorage for future visits
  * - Validates that detected languages are actually supported
  * - Returns the current active language for component use
- *
- * @returns {string} The current active language code
- *
  * @example
  * ```typescript
  * function App() {

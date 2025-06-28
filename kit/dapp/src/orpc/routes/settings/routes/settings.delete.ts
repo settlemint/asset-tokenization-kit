@@ -12,15 +12,12 @@ import { eq } from "drizzle-orm";
  * Authentication: Required (uses authenticated router)
  * Permissions: Requires "delete" permission - available to admin role only
  * Method: DELETE /settings/:key
- *
  * @param input - Delete parameters containing the setting key
  * @param context - Request context with database connection and authenticated user
  * @returns Promise<{ success: boolean }> - Success status of the deletion
- *
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws FORBIDDEN - If user lacks required delete permissions
  * @throws NOT_FOUND - If the setting key does not exist
- *
  * @example
  * ```typescript
  * // Client usage:

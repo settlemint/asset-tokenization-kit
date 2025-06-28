@@ -36,6 +36,7 @@ interface ORPCValidationIssue {
 
 /**
  * Formats Zod validation errors using Zod's built-in pretty printing.
+ * @param zodError
  */
 function formatZodError(zodError: z.ZodError): FormattedValidationError {
   const formattedErrors = zodError.issues.map((err) => ({
@@ -55,6 +56,7 @@ function formatZodError(zodError: z.ZodError): FormattedValidationError {
 
 /**
  * Formats ORPC validation issues into a consistent structure.
+ * @param issues
  */
 function formatORPCValidationIssues(
   issues: ORPCValidationIssue[]
@@ -79,10 +81,8 @@ function formatORPCValidationIssues(
  * This utility function transforms authentication errors from the Better Auth
  * library into standardized ORPC errors, ensuring consistent error handling
  * and response formats across the application.
- *
  * @param error - The Better Auth API error to convert
  * @returns Standardized ORPC error with proper status code and message
- *
  * @example
  * ```typescript
  * try {
@@ -103,6 +103,7 @@ export function betterAuthErrorToORPCError(error: APIError) {
 
 /**
  * Gets formatted validation data from a ValidationError.
+ * @param validationError
  */
 function getFormattedValidationData(
   validationError: ValidationError
@@ -125,6 +126,9 @@ function getFormattedValidationData(
 
 /**
  * Logs validation errors with consistent format.
+ * @param type
+ * @param formattedData
+ * @param validationError
  */
 function logValidationError(
   type: string,
@@ -159,7 +163,6 @@ function logValidationError(
  * - Better Auth errors: Converted to ORPC errors with proper status codes
  * - ORPC validation errors: Transformed into structured failure responses
  * - Unknown errors: Wrapped in INTERNAL_SERVER_ERROR with details
- *
  * @example
  * ```typescript
  * export const pr = baseRouter.use(errorMiddleware).use(sessionMiddleware);

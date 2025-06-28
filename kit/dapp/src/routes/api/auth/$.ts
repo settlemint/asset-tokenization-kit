@@ -17,7 +17,6 @@
  * Both GET and POST methods are supported to handle various auth flows:
  * - GET: OAuth callbacks, email verification links, etc.
  * - POST: Login, registration, password changes, etc.
- *
  * @see {@link @/lib/auth} - Authentication configuration
  * @see {@link https://better-auth.com} - Better Auth documentation
  */
@@ -34,8 +33,10 @@ export const ServerRoute = createServerFileRoute("/api/auth/$").methods({
    * - Email verification links
    * - Magic link authentication
    * - Password reset token validation
+   * @param root0
+   * @param root0.request
    */
-  GET: ({ request }) => {
+  GET: async ({ request }) => {
     return auth.handler(request);
   },
 
@@ -49,8 +50,10 @@ export const ServerRoute = createServerFileRoute("/api/auth/$").methods({
    * - Session refresh
    * - Logout operations
    * - Multi-factor authentication verification
+   * @param root0
+   * @param root0.request
    */
-  POST: ({ request }) => {
+  POST: async ({ request }) => {
     return auth.handler(request);
   },
 });

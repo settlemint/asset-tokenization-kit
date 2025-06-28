@@ -11,7 +11,6 @@
  * - Not found component for 404 pages
  * - Intent-based preloading for better performance
  * - Type-safe routing through generated route tree
- *
  * @see {@link https://tanstack.com/router/latest} - TanStack Router documentation
  * @see {@link https://tanstack.com/router/latest/docs/framework/react/guide/data-loading} - Router with Query integration
  */
@@ -37,9 +36,7 @@ import { routeTree } from "./routeTree.gen";
  * - Automatic query prefetching on route navigation
  * - Shared query client context between router and components
  * - Coordinated loading states between routing and data fetching
- *
  * @returns Configured router instance with React Query integration
- *
  * @example
  * ```tsx
  * // In your app entry point

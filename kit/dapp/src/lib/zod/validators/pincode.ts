@@ -4,7 +4,6 @@
  * This module provides comprehensive Zod-based validation for 6-digit PIN codes
  * used in authentication systems, ensuring they conform to security standards
  * and format requirements for reliable user verification.
- *
  * @module PincodeValidation
  */
 import { z } from "zod/v4";
@@ -29,7 +28,6 @@ import { z } from "zod/v4";
  * 1. Check exact length (must be 6 characters)
  * 2. Validate format using regex (digits only)
  * 3. Ensure no non-numeric characters
- *
  * @example
  * ```typescript
  * // Valid PIN code parsing
@@ -63,7 +61,6 @@ import { z } from "zod/v4";
  * pincode().parse("12345a");   // throws - contains letter
  * pincode().parse("123 456");  // throws - contains space
  * ```
- *
  * @throws {ZodError} When the input fails validation at any step
  */
 export const pincode = () =>
@@ -87,10 +84,8 @@ export type Pincode = z.infer<ReturnType<typeof pincode>>;
  *
  * This function provides runtime type checking for PIN codes,
  * useful for conditional logic and type narrowing in TypeScript.
- *
  * @param value - The value to validate (can be any type)
  * @returns `true` if the value is a valid PIN code, `false` otherwise
- *
  * @example
  * ```typescript
  * const userInput: unknown = "123456";
@@ -113,11 +108,9 @@ export function isPincode(value: unknown): value is Pincode {
  * This function attempts to parse and validate a PIN code,
  * throwing a ZodError if validation fails. Use this when you expect
  * the input to be valid and want to handle errors at a higher level.
- *
  * @param value - The value to parse and validate (can be any type)
  * @returns The validated PIN code
  * @throws {Error} When the input fails validation
- *
  * @example
  * ```typescript
  * try {
