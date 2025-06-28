@@ -40,11 +40,11 @@
  * @see {@link ../orpc} - ORPC client integration
  */
 
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimental";
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
-import { stringify, parse } from "superjson";
+import { parse, stringify } from "superjson";
 
 /**
  * Query cache configuration constants.
@@ -244,12 +244,12 @@ export const queryClient = new QueryClient({
 /**
  * Storage persister for offline support
  */
-const persister = createSyncStoragePersister({
+const persister = createAsyncStoragePersister({
   storage: typeof window !== "undefined" ? window.localStorage : undefined,
   key: "atk-query-cache",
   throttleTime: 1000,
   serialize: (data) => stringify(data),
-  deserialize: (data) => parse(data),
+  deserialize: async (data) => parse(data),
 });
 
 /**
