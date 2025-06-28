@@ -81,7 +81,7 @@
     "@settlemint/sdk-thegraph": "2.4.0",
     "@settlemint/sdk-utils": "2.4.0",
     "@t3-oss/env-core": "0.13.8",
-    "@tailwindcss/postcss": "4.1.10",
+    "@tailwindcss/postcss": "4.1.11",
     "@tanstack/query-broadcast-client-experimental": "5.81.2",
     "@tanstack/query-sync-storage-persister": "5.81.2",
     "@tanstack/react-query": "5.81.2",
@@ -110,7 +110,7 @@
     "sonner": "2.0.5",
     "superjson": "2.2.2",
     "tailwind-merge": "3.3.1",
-    "tailwindcss": "4.1.10",
+    "tailwindcss": "4.1.11",
     "tw-animate-css": "1.3.4",
     "zod": "3.25.67"
   },
