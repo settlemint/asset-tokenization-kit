@@ -206,7 +206,12 @@ export function FormOtpDialog<T extends FieldValues>({
                 )}
               </div>
               <DialogFooter className="gap-2 mt-4">
-                <Button variant="outline" onClick={() => onOpenChange(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    onOpenChange(false);
+                  }}
+                >
                   {t("cancel")}
                 </Button>
                 <Button
