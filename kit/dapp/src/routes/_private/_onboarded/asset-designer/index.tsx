@@ -17,7 +17,7 @@ function AssetDesigner() {
   const { data: session } = authClient.useSession();
 
   // Start with first step, will update when data loads
-  const [currentStepId, setCurrentStepId] = useState("basics");
+  const [currentStepId, setCurrentStepId] = useState("type");
   const [hasInitialized, setHasInitialized] = useState(false);
 
   return (
@@ -49,6 +49,11 @@ function AssetDesigner() {
           <StepWizard
             steps={[
               {
+                id: "type",
+                title: "Type",
+                description: "Select the type of asset you want to create",
+              },
+              {
                 id: "basics",
                 title: "Basics",
                 description: "Enter the basic details for your asset",
@@ -73,8 +78,6 @@ function AssetDesigner() {
             title="Design your asset"
             description="Create digital assets with custom features, lifecycle management, and compliance settings"
             onStepChange={setCurrentStepId}
-            showBackButton={currentStepId !== "basics"}
-            showNextButton={true}
             onBack={() => {
               if (currentStepId === "basics") {
                 setCurrentStepId("configuration");
