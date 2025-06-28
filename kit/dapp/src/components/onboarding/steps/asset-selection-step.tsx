@@ -61,6 +61,80 @@ const CheckboxWrapper = memo(
 CheckboxWrapper.displayName = "CheckboxWrapper";
 
 // Memoized component for each asset type item
+// Create a separate inner component to handle the field rendering
+const AssetTypeFieldInner = memo(
+  ({
+    assetType,
+    field,
+    t,
+    Icon,
+    handleCheckboxClick,
+  }: {
+    assetType: AssetType;
+    field: { value: string[]; onChange: (value: string[]) => void };
+    t: ReturnType<typeof useTranslation>["t"];
+    Icon: React.ElementType;
+    handleCheckboxClick: (e: React.MouseEvent) => void;
+  }) => {
+    const isChecked = field.value.includes(assetType);
+
+    const handleItemClick = useCallback(() => {
+      const newChecked = !field.value.includes(assetType);
+      if (newChecked) {
+        field.onChange([...field.value, assetType]);
+      } else {
+        field.onChange(
+          field.value.filter((value: string) => value !== assetType)
+        );
+      }
+    }, [field, assetType]);
+
+    const handleCheckboxChange = useCallback(
+      (checked: boolean) => {
+        if (checked) {
+          field.onChange([...field.value, assetType]);
+        } else {
+          field.onChange(
+            field.value.filter((value: string) => value !== assetType)
+          );
+        }
+      },
+      [field, assetType]
+    );
+
+    return (
+      <FormItem
+        key={assetType}
+        className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 hover:bg-accent/50 transition-colors cursor-pointer"
+        onClick={handleItemClick}
+      >
+        <FormControl>
+          <CheckboxWrapper onClick={handleCheckboxClick}>
+            <Checkbox
+              checked={isChecked}
+              onCheckedChange={handleCheckboxChange}
+            />
+          </CheckboxWrapper>
+        </FormControl>
+        <div className="flex-1 space-y-1 leading-none">
+          <div className="flex items-center gap-2">
+            <Icon className="h-4 w-4 text-muted-foreground" />
+            <FormLabel className="text-sm font-medium cursor-pointer">
+              {t(`asset-types.${assetType}`, {
+                ns: "tokens",
+              })}
+            </FormLabel>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {t(`assets.descriptions.${assetType}`)}
+          </p>
+        </div>
+      </FormItem>
+    );
+  }
+);
+AssetTypeFieldInner.displayName = "AssetTypeFieldInner";
+
 const AssetTypeFormField = memo(
   ({
     assetType,
@@ -78,67 +152,15 @@ const AssetTypeFormField = memo(
     }, []);
 
     const renderField = useCallback(
-      ({
-        field,
-      }: {
-        field: { value: string[]; onChange: (value: string[]) => void };
-      }) => {
-        const isChecked = field.value.includes(assetType);
-
-        const handleItemClick = useCallback(() => {
-          const newChecked = !isChecked;
-          if (newChecked) {
-            field.onChange([...field.value, assetType]);
-          } else {
-            field.onChange(
-              field.value.filter((value: string) => value !== assetType)
-            );
-          }
-        }, [field, isChecked]);
-
-        const handleCheckboxChange = useCallback(
-          (checked: boolean) => {
-            if (checked) {
-              field.onChange([...field.value, assetType]);
-            } else {
-              field.onChange(
-                field.value.filter((value: string) => value !== assetType)
-              );
-            }
-          },
-          [field]
-        );
-
-        return (
-          <FormItem
-            key={assetType}
-            className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 hover:bg-accent/50 transition-colors cursor-pointer"
-            onClick={handleItemClick}
-          >
-            <FormControl>
-              <CheckboxWrapper onClick={handleCheckboxClick}>
-                <Checkbox
-                  checked={isChecked}
-                  onCheckedChange={handleCheckboxChange}
-                />
-              </CheckboxWrapper>
-            </FormControl>
-            <div className="flex-1 space-y-1 leading-none">
-              <div className="flex items-center gap-2">
-                <Icon className="h-4 w-4 text-muted-foreground" />
-                <FormLabel className="text-sm font-medium cursor-pointer">
-                  {t(`asset-types.${assetType}`, {
-                    ns: "tokens",
-                  })}
-                </FormLabel>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {t(`assets.descriptions.${assetType}`)}
-              </p>
-            </div>
-          </FormItem>
-        );
-      },
+      ({ field }: { field: { value: string[]; onChange: (value: string[]) => void } }) => (
+        <AssetTypeFieldInner
+          assetType={assetType}
+          field={field}
+          t={t}
+          Icon={Icon}
+          handleCheckboxClick={handleCheckboxClick}
+        />
+      ),
       [assetType, t, Icon, handleCheckboxClick]
     );
 
