@@ -40,7 +40,7 @@
     "dotenv": "16.5.0",
     "eslint": "9.29.0",
     "eslint-plugin-react": "7.37.5",
-    "eslint-plugin-react-hooks": "6.0.0-rc.1",
+    "eslint-plugin-react-hooks": "6.0.0-rc1",
     "globals": "16.2.0",
     "languine": "3.1.4",
     "typescript": "5.8.3",
