@@ -105,7 +105,7 @@
     "postcss": "8.5.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-hook-form": "7.58.1",
+    "react-hook-form": "7.59.0",
     "react-i18next": "15.5.3",
     "sonner": "2.0.5",
     "superjson": "2.2.2",
