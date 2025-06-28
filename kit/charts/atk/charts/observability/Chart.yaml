@@ -15,7 +15,7 @@ dependencies:
     repository: https://victoriametrics.github.io/helm-charts/
     condition: victoria-metrics-single.enabled
   - name: alloy
-    version: 1.1.1
+    version: 1.1.2
     repository: https://grafana.github.io/helm-charts
     condition: alloy.enabled
   - name: metrics-server
@@ -23,11 +23,11 @@ dependencies:
     repository: https://kubernetes-sigs.github.io/metrics-server/
     condition: metrics-server.enabled
   - name: kube-state-metrics
-    version: 6.0.0
+    version: 6.1.0
     repository: https://prometheus-community.github.io/helm-charts
     condition: kube-state-metrics.enabled
   - name: grafana
-    version: 9.2.7
+    version: 9.2.9
     repository: https://grafana.github.io/helm-charts
     condition: grafana.enabled
   - name: loki
@@ -39,6 +39,6 @@ dependencies:
     repository: https://prometheus-community.github.io/helm-charts
     condition: prometheus-node-exporter.enabled
   - name: tempo
-    version: 1.23.1
+    version: 1.23.2
     repository: https://grafana.github.io/helm-charts
     condition: tempo.enabled
