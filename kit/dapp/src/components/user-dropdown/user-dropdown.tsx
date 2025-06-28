@@ -37,7 +37,7 @@ export function UserDropdown({
     await authClient.signOut();
     await navigate({
       to: "/auth/$pathname",
-      params: { pathname: "/sign-in" },
+      params: { pathname: "sign-in" },
     });
   }, [navigate]);
 
