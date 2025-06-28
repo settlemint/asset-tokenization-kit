@@ -7,8 +7,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { UserDropdown } from "@/components/user-dropdown/user-dropdown";
+import { authClient } from "@/lib/auth/auth.client";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { useMemo } from "react";
 
 export const Route = createFileRoute("/_private/_onboarded")({
   component: LayoutComponent,
@@ -18,14 +18,9 @@ export const Route = createFileRoute("/_private/_onboarded")({
  *
  */
 function LayoutComponent() {
-  const user = useMemo(
-    () => ({
-      name: "John Doe",
-      email: "john.doe@example.com",
-      address: "0x1234567890123456789012345678901234567890",
-    }),
-    []
-  );
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
   return (
     <OnboardingGuard require="onboarded">
       <SidebarProvider>

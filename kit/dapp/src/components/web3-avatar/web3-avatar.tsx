@@ -1,9 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
+import MD5 from "crypto-js/md5";
 import { memo, useMemo } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
-import MD5 from "crypto-js/md5";
 
 interface Web3AvatarProps {
   email?: string;
@@ -75,7 +75,7 @@ const Web3AvatarComponent = memo(function Web3Avatar({
   // Show skeleton while checking gravatar or if no identifier
   if (isLoading || !identifier) {
     return (
-      <Skeleton className={`rounded-full ${className}`} style={avatarStyle} />
+      <Skeleton className={`rounded-lg ${className}`} style={avatarStyle} />
     );
   }
 
@@ -83,9 +83,15 @@ const Web3AvatarComponent = memo(function Web3Avatar({
   if (gravatarUrl) {
     return (
       <Avatar className={className} style={avatarStyle}>
-        <AvatarImage src={gravatarUrl} alt={name ?? email ?? "User avatar"} />
-        <AvatarFallback>
-          <Jazzicon diameter={size} seed={jazziconSeed} />
+        <AvatarImage 
+          src={gravatarUrl} 
+          alt={name ?? email ?? "User avatar"} 
+          className="rounded-lg"
+        />
+        <AvatarFallback className="flex items-center justify-center p-0">
+          <div className="overflow-hidden rounded-lg">
+            <Jazzicon diameter={size} seed={jazziconSeed} />
+          </div>
         </AvatarFallback>
       </Avatar>
     );
@@ -94,8 +100,10 @@ const Web3AvatarComponent = memo(function Web3Avatar({
   // Otherwise, use Jazzicon as primary avatar
   return (
     <Avatar className={className} style={avatarStyle}>
-      <AvatarFallback className="flex items-center justify-center">
-        <Jazzicon diameter={size} seed={jazziconSeed} />
+      <AvatarFallback className="flex items-center justify-center p-0">
+        <div className="overflow-hidden rounded-lg">
+          <Jazzicon diameter={size} seed={jazziconSeed} />
+        </div>
       </AvatarFallback>
     </Avatar>
   );
