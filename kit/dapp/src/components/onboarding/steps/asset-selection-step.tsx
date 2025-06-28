@@ -9,6 +9,7 @@ import {
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { queryClient } from "@/lib/query.client";
+import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
 import { TokenTypeEnum } from "@/orpc/routes/token/routes/factory.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,12 +65,11 @@ const AssetTypeFormField = memo(
   ({
     assetType,
     control,
-    t,
   }: {
-    assetType: TokenTypeEnum;
+    assetType: AssetType;
     control: Control<AssetSelectionFormValues>;
-    t: (key: string, options?: { ns?: string }) => string;
   }) => {
+    const { t } = useTranslation(["onboarding", "general", "tokens"]);
     const iconKey = assetType;
     const Icon = iconKey in assetIcons ? assetIcons[iconKey] : Package;
 
@@ -307,7 +307,6 @@ export function AssetSelectionStep({
                 key={assetType}
                 assetType={assetType}
                 control={form.control}
-                t={t}
               />
             ))}
           </div>

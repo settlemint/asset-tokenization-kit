@@ -104,7 +104,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 
   const handleToast = useCallback(
-    ({ variant, message }: { variant: string; message: string }) => {
+    ({ variant, message }: { variant?: string; message?: string }) => {
+      if (!message) return;
+
       if (variant === "success") {
         toast.success(message);
       } else if (variant === "error") {

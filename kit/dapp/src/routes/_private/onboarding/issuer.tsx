@@ -1,10 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { orpc } from "@/orpc";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
-import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { WalletStep } from "@/components/onboarding/steps/wallet-step";
+import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
+import type { OnboardingType } from "@/lib/types/onboarding";
+import { orpc } from "@/orpc";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/issuer")({
   loader: async ({ context }) => {
@@ -47,7 +48,7 @@ function IssuerOnboarding() {
     // Only one step for issuer onboarding
   }, []);
 
-  const allowedTypes = useMemo(() => ["issuer"], []);
+  const allowedTypes: OnboardingType[] = useMemo(() => ["issuer"], []);
 
   return (
     <OnboardingGuard require="not-onboarded" allowedTypes={allowedTypes}>

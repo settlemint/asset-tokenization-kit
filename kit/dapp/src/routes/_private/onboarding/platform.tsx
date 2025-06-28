@@ -9,9 +9,10 @@ import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useSettings } from "@/hooks/use-settings";
 import { authClient } from "@/lib/auth/auth.client";
+import type { OnboardingType } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/platform")({
@@ -349,7 +350,7 @@ function PlatformOnboarding() {
     t,
   ]);
 
-  const allowedTypes = useMemo(() => ["platform"], []);
+  const allowedTypes: OnboardingType[] = useMemo(() => ["platform"], []);
 
   const onRegisterWalletAction = useCallback((action: () => void) => {
     walletActionRef.current = action;

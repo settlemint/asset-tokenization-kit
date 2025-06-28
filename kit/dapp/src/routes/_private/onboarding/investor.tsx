@@ -1,10 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { orpc } from "@/orpc";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
-import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { WalletStep } from "@/components/onboarding/steps/wallet-step";
+import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,8 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import type { OnboardingType } from "@/lib/types/onboarding";
+import { orpc } from "@/orpc";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AlertCircle, UserCheck } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/investor")({
   loader: async ({ context }) => {
@@ -112,7 +113,7 @@ function InvestorOnboarding() {
     void navigate({ to: "/" });
   }, [navigate]);
 
-  const allowedTypes = useMemo(() => ["investor"], []);
+  const allowedTypes: OnboardingType[] = useMemo(() => ["investor"], []);
 
   return (
     <OnboardingGuard require="not-onboarded" allowedTypes={allowedTypes}>
