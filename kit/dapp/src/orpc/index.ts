@@ -46,8 +46,8 @@ const getORPCClient = createIsomorphicFn()
   .client((): RouterClient<typeof router> => {
     const link = new RPCLink({
       url: `${window.location.origin}/api/rpc`,
-      fetch(url, options) {
-        return globalThis.fetch(url, {
+      async fetch(url, options) {
+        return await globalThis.fetch(url, {
           ...options,
           // Include cookies in all requests for authentication
           credentials: "include",
