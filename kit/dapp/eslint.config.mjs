@@ -29,13 +29,13 @@ export default defineConfig([
       ".tanstack/",
       ".generated/",
       ".generated/**",
-      
+
       // Build outputs
       ".output/",
       ".nitro/",
       "dist/",
       "node_modules/",
-      
+
       // Third-party UI components (shadcn)
       "src/components/ui/**",
     ],
@@ -114,17 +114,17 @@ export default defineConfig([
   pluginReact.configs.flat.recommended,
   reactHooks.configs["recommended-latest"],
   reactPerfPlugin.configs.flat.recommended,
-  
+
   // TypeScript (base - no type checking)
   ...tseslint.configs.recommended,
-  
+
   // TanStack
   ...pluginQuery.configs["flat/recommended"],
   ...pluginRouter.configs["flat/recommended"],
-  
+
   // Security
   pluginSecurity.configs.recommended,
-  
+
   // Import
   importPlugin.flatConfigs.recommended,
   importPlugin.flatConfigs.typescript,

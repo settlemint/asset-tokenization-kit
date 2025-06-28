@@ -123,7 +123,9 @@ export const fallbackLng = "en";
  * The void operator is used to explicitly discard the promise,
  * as initialization happens synchronously for our use case.
  */
+// eslint-disable-next-line import/no-named-as-default-member
 i18n.use(initReactI18next);
+// eslint-disable-next-line import/no-named-as-default-member
 void i18n.init({
   resources,
   lng: fallbackLng,
