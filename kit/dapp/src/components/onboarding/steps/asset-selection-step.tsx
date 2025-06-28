@@ -152,7 +152,11 @@ const AssetTypeFormField = memo(
     }, []);
 
     const renderField = useCallback(
-      ({ field }: { field: { value: string[]; onChange: (value: string[]) => void } }) => (
+      ({
+        field,
+      }: {
+        field: { value: string[]; onChange: (value: string[]) => void };
+      }) => (
         <AssetTypeFieldInner
           assetType={assetType}
           field={field}

@@ -65,7 +65,11 @@
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@types/crypto-js": "4.2.2",
+    "crypto-js": "4.2.0",
+    "react-jazzicon": "1.0.4"
+  },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
     "@settlemint/sdk-cli": "2.4.0",
