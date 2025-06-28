@@ -77,38 +77,6 @@ const AssetTypeFormField = memo(
       e.stopPropagation();
     }, []);
 
-    const createItemClickHandler = useCallback(
-      (
-        field: { value: string[]; onChange: (value: string[]) => void },
-        isChecked: boolean
-      ) =>
-        () => {
-          const checked = !isChecked;
-          if (checked) {
-            field.onChange([...field.value, assetType]);
-          } else {
-            field.onChange(
-              field.value.filter((value: string) => value !== assetType)
-            );
-          }
-        },
-      [assetType]
-    );
-
-    const createCheckboxChangeHandler = useCallback(
-      (field: { value: string[]; onChange: (value: string[]) => void }) =>
-        (checked: boolean) => {
-          if (checked) {
-            field.onChange([...field.value, assetType]);
-          } else {
-            field.onChange(
-              field.value.filter((value: string) => value !== assetType)
-            );
-          }
-        },
-      [assetType]
-    );
-
     const renderField = useCallback(
       ({
         field,
@@ -116,20 +84,42 @@ const AssetTypeFormField = memo(
         field: { value: string[]; onChange: (value: string[]) => void };
       }) => {
         const isChecked = field.value.includes(assetType);
-        const itemClickHandler = createItemClickHandler(field, isChecked);
-        const checkboxChangeHandler = createCheckboxChangeHandler(field);
+
+        const handleItemClick = useCallback(() => {
+          const newChecked = !isChecked;
+          if (newChecked) {
+            field.onChange([...field.value, assetType]);
+          } else {
+            field.onChange(
+              field.value.filter((value: string) => value !== assetType)
+            );
+          }
+        }, [field, isChecked]);
+
+        const handleCheckboxChange = useCallback(
+          (checked: boolean) => {
+            if (checked) {
+              field.onChange([...field.value, assetType]);
+            } else {
+              field.onChange(
+                field.value.filter((value: string) => value !== assetType)
+              );
+            }
+          },
+          [field]
+        );
 
         return (
           <FormItem
             key={assetType}
             className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 hover:bg-accent/50 transition-colors cursor-pointer"
-            onClick={itemClickHandler}
+            onClick={handleItemClick}
           >
             <FormControl>
               <CheckboxWrapper onClick={handleCheckboxClick}>
                 <Checkbox
                   checked={isChecked}
-                  onCheckedChange={checkboxChangeHandler}
+                  onCheckedChange={handleCheckboxChange}
                 />
               </CheckboxWrapper>
             </FormControl>
@@ -149,14 +139,7 @@ const AssetTypeFormField = memo(
           </FormItem>
         );
       },
-      [
-        assetType,
-        t,
-        Icon,
-        handleCheckboxClick,
-        createItemClickHandler,
-        createCheckboxChangeHandler,
-      ]
+      [assetType, t, Icon, handleCheckboxClick]
     );
 
     return (
