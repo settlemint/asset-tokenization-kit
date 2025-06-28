@@ -83,25 +83,15 @@ const Web3AvatarComponent = memo(function Web3Avatar({
   if (gravatarUrl) {
     return (
       <Avatar className={className} style={avatarStyle}>
-        <AvatarImage 
-          src={gravatarUrl} 
-          alt={name ?? email ?? "User avatar"} 
-<<<<<<< HEAD
-        />
-        <AvatarFallback className="flex items-center justify-center">
-          <Jazzicon diameter={size} seed={jazziconSeed} />
-||||||| parent of 53f7d1f5 (fix: ensure consistent rounded-lg styling for all avatar states)
-        <AvatarImage src={gravatarUrl} alt={name ?? email ?? "User avatar"} />
-        <AvatarFallback>
-          <Jazzicon diameter={size} seed={jazziconSeed} />
-=======
+        <AvatarImage
+          src={gravatarUrl}
+          alt={name ?? email ?? "User avatar"}
           className="rounded-lg"
         />
         <AvatarFallback className="flex items-center justify-center p-0">
           <div className="overflow-hidden rounded-lg">
             <Jazzicon diameter={size} seed={jazziconSeed} />
           </div>
->>>>>>> 53f7d1f5 (fix: ensure consistent rounded-lg styling for all avatar states)
         </AvatarFallback>
       </Avatar>
     );
