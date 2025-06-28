@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-## General rules
+## CRITICAL: Read the rules
 
 - Start by reading the `.cursor/rules/*.mdc` files to understand the general
   guidelines for working in this project
@@ -9,6 +9,18 @@
 - ALWAYS adhere to @.cursor/rules/qa.mdc (QA rules)
 - ALWAYS adhere to @.cursor/rules/mpc.mdc (MCP usage guide)
 - ALWAYS adhere to @.cursor/rules/tools.mdc (Tools available in the environment)
+
+## CRITICAL: Use Automated Commands
+
+- **ALWAYS use `/pr` command** when creating pull requests (NOT manual
+  `gh pr create`)
+- **ALWAYS use `/qa` command** before finalizing any task with code changes
+- **ALWAYS use `/comments` command** when adding new functions
+- **ALWAYS use `/stuck` command** after 5+ minutes on the same issue
+- **NEVER bypass these commands** - they contain important workflows and checks
+
+## General rules
+
 - Always read entire files. Otherwise, you don't know what you don't know, and
   will end up making mistakes, duplicating code that already exists, or
   misunderstanding the architecture.
