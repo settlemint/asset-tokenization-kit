@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Web3Avatar } from "@/components/web3-avatar/web3-avatar";
+import { authClient } from "@/lib/auth/auth.client";
+import { useNavigate } from "@tanstack/react-router";
 import {
   BadgeCheck,
   Bell,
@@ -18,6 +20,7 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
+import { useCallback } from "react";
 
 export function UserDropdown({
   user,
@@ -28,6 +31,16 @@ export function UserDropdown({
     address?: string;
   };
 }) {
+  const navigate = useNavigate();
+
+  const handleSignOut = useCallback(async () => {
+    await authClient.signOut();
+    await navigate({
+      to: "/auth/$pathname",
+      params: { pathname: "sign-in" },
+    });
+  }, [navigate]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -111,7 +124,7 @@ export function UserDropdown({
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>
           <LogOut />
           Log out
         </DropdownMenuItem>
