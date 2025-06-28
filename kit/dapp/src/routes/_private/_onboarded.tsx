@@ -7,7 +7,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { UserDropdown } from "@/components/user-dropdown/user-dropdown";
-import { authClient } from "@/lib/auth/auth.client";
+// import { authClient } from "@/lib/auth/auth.client";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded")({
@@ -18,8 +18,14 @@ export const Route = createFileRoute("/_private/_onboarded")({
  *
  */
 function LayoutComponent() {
-  const { data: session } = authClient.useSession();
-  const user = session?.user;
+  // const { data: session } = authClient.useSession();
+  // const user = session?.user;
+
+  const user = {
+    name: "John Doe",
+    email: "ccc@settlemint.com",
+    address: "0x1234567890123456789012345678901234567890",
+  };
 
   return (
     <OnboardingGuard require="onboarded">

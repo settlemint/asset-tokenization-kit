@@ -41,7 +41,7 @@ export function UserDropdown({
             name={user?.name}
             address={user?.address}
             size={32}
-            className="h-8 w-8 rounded-lg"
+            className="h-8 w-8"
           />
           <div className="hidden sm:grid flex-1 text-left text-sm leading-tight">
             {user?.name ? (
@@ -72,7 +72,7 @@ export function UserDropdown({
               name={user?.name}
               address={user?.address}
               size={32}
-              className="h-8 w-8 rounded-lg"
+              className="h-8 w-8"
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
               {user?.name ? (
