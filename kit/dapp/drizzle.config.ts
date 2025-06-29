@@ -1,8 +1,12 @@
 import { config } from "@dotenvx/dotenvx";
 import { defineConfig } from "drizzle-kit";
 
-// Load with Next.js convention: .env, .env.local (and .env.development, .env.development.local in dev)
-config();
+// Load .env and .env.local files
+// Ignore missing files to match dotenv behavior
+config({ 
+  path: [".env", ".env.local"],
+  ignore: ["MISSING_ENV_FILE"]
+});
 
 export default defineConfig({
   out: "./drizzle",

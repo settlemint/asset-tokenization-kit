@@ -12,11 +12,13 @@ const projectRoot = path.resolve(
 );
 
 // Load .env and .env.local from project root
+// Ignore missing files to match dotenv behavior
 dotenvConfig({ 
   path: [
     path.join(projectRoot, ".env"),
     path.join(projectRoot, ".env.local")
-  ]
+  ],
+  ignore: ["MISSING_ENV_FILE"]
 });
 
 const databaseUrl = process.env.SETTLEMINT_HASURA_DATABASE_URL;

@@ -65,6 +65,16 @@ export const env = createEnv({
       .nonempty("SETTLEMINT_HASURA_ADMIN_SECRET is required"),
 
     /**
+     * Hasura database connection URL.
+     * Required for direct database access via Drizzle ORM.
+     * @required
+     */
+    SETTLEMINT_HASURA_DATABASE_URL: z
+      .string()
+      .url()
+      .nonempty("SETTLEMINT_HASURA_DATABASE_URL is required"),
+
+    /**
      * Resend API key for email services.
      * Optional - if not provided, email functionality will be disabled.
      */

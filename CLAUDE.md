@@ -90,3 +90,4 @@
 - do not modify code in kit/dapp/src/components/ui, this is where we store
   shadcn components we want to keep immutable for easy upgrading
 - NEVER, EVER commit to main, if you are not on a branch, make a new one
+- always check the PR comments if something is listed that needs fixing, but VERIFY FIRST and do not blindly follow them

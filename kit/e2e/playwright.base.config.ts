@@ -8,11 +8,13 @@ const e2eDir = path.dirname(__filename);
 const projectRoot = path.resolve(e2eDir, "../../");
 
 // Load .env and .env.local from project root
+// Ignore missing files to match dotenv behavior
 dotenv.config({ 
   path: [
     path.join(projectRoot, ".env"),
     path.join(projectRoot, ".env.local")
-  ]
+  ],
+  ignore: ["MISSING_ENV_FILE"]
 });
 
 const requiredEnvVars = [
