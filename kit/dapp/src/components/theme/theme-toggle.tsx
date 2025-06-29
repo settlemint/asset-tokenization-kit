@@ -85,7 +85,7 @@ export function ThemeToggle({
   className,
 }: ThemeToggleProps) {
   const mounted = useMounted();
-  const { setTheme, theme, themes } = useTheme();
+  const { setTheme, theme, resolvedTheme, themes } = useTheme();
   const { t } = useTranslation("theme");
 
   const handleThemeChange = useCallback(
@@ -133,7 +133,7 @@ export function ThemeToggle({
         >
           <SunIcon className="dark:-rotate-90 h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:scale-0" />
           <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          {size !== "icon" && <span className="ml-2">{theme}</span>}
+          {size !== "icon" && <span className="ml-2">{resolvedTheme}</span>}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">{themeMenuItems}</DropdownMenuContent>
