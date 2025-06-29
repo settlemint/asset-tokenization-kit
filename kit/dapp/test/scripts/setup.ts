@@ -1,4 +1,14 @@
+import { config } from "@dotenvx/dotenvx";
 import { afterAll, beforeAll } from "bun:test";
+import * as path from "node:path";
+
+// Load environment variables for tests
+config({ 
+  path: [
+    path.join(process.cwd(), ".env"),
+    path.join(process.cwd(), ".env.local")
+  ]
+});
 import { getOrpcClient } from "../utils/orpc-client";
 import { bootstrapSystem } from "../utils/system-bootstrap";
 import {
