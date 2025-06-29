@@ -3,6 +3,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { supportedLanguages } from "@/lib/i18n";
@@ -64,6 +67,8 @@ const LanguageMenuItem = ({
  * Props for the LanguageSwitcher component.
  */
 interface LanguageSwitcherProps {
+  /** The mode of the component - dropdown or menuItem. */
+  mode?: "dropdown" | "menuItem";
   /** The variant of the button. */
   variant?: Parameters<typeof Button>[0]["variant"];
   /** The size of the button. */
@@ -81,6 +86,7 @@ interface LanguageSwitcherProps {
  * @returns {JSX.Element} A dropdown menu for language selection.
  */
 export function LanguageSwitcher({
+  mode = "dropdown" as "dropdown" | "menuItem",
   variant = "outline",
   size = "icon",
   className,
@@ -105,6 +111,28 @@ export function LanguageSwitcher({
     return null;
   }
 
+  const languageMenuItems = supportedLanguages.map((locale) => (
+    <LanguageMenuItem
+      key={locale}
+      locale={locale}
+      currentLanguage={i18n.language}
+      isPending={isPending}
+      onLanguageChange={handleLanguageChange}
+    />
+  ));
+
+  if (mode === "menuItem") {
+    return (
+      <DropdownMenuSub>
+        <DropdownMenuSubTrigger disabled={isPending}>
+          <Languages />
+          {t("switch")}
+        </DropdownMenuSubTrigger>
+        <DropdownMenuSubContent>{languageMenuItems}</DropdownMenuSubContent>
+      </DropdownMenuSub>
+    );
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -125,17 +153,7 @@ export function LanguageSwitcher({
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {supportedLanguages.map((locale) => (
-          <LanguageMenuItem
-            key={locale}
-            locale={locale}
-            currentLanguage={i18n.language}
-            isPending={isPending}
-            onLanguageChange={handleLanguageChange}
-          />
-        ))}
-      </DropdownMenuContent>
+      <DropdownMenuContent align="end">{languageMenuItems}</DropdownMenuContent>
     </DropdownMenu>
   );
 }
