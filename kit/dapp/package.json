@@ -58,7 +58,7 @@
   "peerDependencies": {},
   "dependencies": {
     "@daveyplate/better-auth-tanstack": "1.3.6",
-    "@daveyplate/better-auth-ui": "2.0.9",
+    "@daveyplate/better-auth-ui": "2.0.11",
     "@fontsource-variable/figtree": "5.2.8",
     "@fontsource-variable/roboto-mono": "5.2.6",
     "@hookform/resolvers": "5.1.1",
