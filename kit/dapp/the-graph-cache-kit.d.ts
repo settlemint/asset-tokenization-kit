@@ -14,6 +14,10 @@ declare module 'gql.tada' {
       TadaDocumentNode<{ token: { id: string; name: string; symbol: string; decimals: number; requiredClaimTopics: { name: string; }[]; accessControl: { admin: { id: string; }[]; registrar: { id: string; }[]; claimManager: { id: string; }[]; deployer: { id: string; }[]; storageModifier: { id: string; }[]; registryManager: { id: string; }[]; governance: { id: string; }[]; supplyManagement: { id: string; }[]; custodian: { id: string; }[]; emergency: { id: string; }[]; implementationManager: { id: string; }[]; bypassListManager: { id: string; }[]; } | null; } | null; }, { id: string; }, void>;
     "\nquery ReadAccountQuery($walletAddress: ID!) {\n  account(id: $walletAddress) {\n    id\n  }\n}\n":
       TadaDocumentNode<{ account: { id: string; } | null; }, { walletAddress: string; }, void>;
+    "\n  query ListTokenFactories {\n    tokenFactories {\n      id\n      name\n      typeId\n    }\n  }\n":
+      TadaDocumentNode<{ tokenFactories: { id: string; name: string; typeId: string; }[]; }, {}, void>;
+    "\n  query ReadTokenFactory($id: ID!) {\n    tokenFactory(id: $id) {\n      id\n      name\n      typeId\n    }\n  }\n":
+      TadaDocumentNode<{ tokenFactory: { id: string; name: string; typeId: string; } | null; }, { id: string; }, void>;
     "\n  query ListTokenQuery($skip: Int!, $orderDirection: OrderDirection = asc, $first: Int = 20) {\n    tokens(\n        first: $first\n        orderDirection: $orderDirection\n        skip: $skip\n      ) {\n        id\n        name\n        symbol\n        decimals\n      }\n    }\n  ":
       TadaDocumentNode<{ tokens: { id: string; name: string; symbol: string; decimals: number; }[]; }, { first?: number | null | undefined; orderDirection?: "asc" | "desc" | null | undefined; skip: number; }, void>;
     "\n  query ReadAccountQuery($id: ID!) {\n    account(id: $id) {\n      id\n      identity {\n        claims {\n          name\n        }\n      }\n    }\n  }\n  ":
