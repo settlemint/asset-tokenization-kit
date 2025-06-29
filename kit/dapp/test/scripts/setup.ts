@@ -1,13 +1,19 @@
 import { config } from "@dotenvx/dotenvx";
 import { afterAll, beforeAll } from "bun:test";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Get the project root directory (3 levels up from this file)
+const __filename = fileURLToPath(import.meta.url);
+const testScriptsDir = path.dirname(__filename);
+const projectRoot = path.resolve(testScriptsDir, "../../../");
 
 // Load environment variables for tests
 // Use ignore option to handle missing files gracefully in CI
 config({ 
   path: [
-    path.join(process.cwd(), ".env"),
-    path.join(process.cwd(), ".env.local")
+    path.join(projectRoot, ".env"),
+    path.join(projectRoot, ".env.local")
   ],
   ignore: ["MISSING_ENV_FILE"]
 });
