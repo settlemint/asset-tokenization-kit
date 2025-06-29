@@ -6,6 +6,11 @@ import {
   FactoryCreateOutputSchema,
   FactoryCreateSchema,
 } from "@/orpc/routes/token/routes/factory.create.schema";
+import { FactoryListSchema } from "@/orpc/routes/token/routes/factory.list.schema";
+import {
+  FactoryReadSchema,
+  TokenFactoryDetailSchema,
+} from "@/orpc/routes/token/routes/factory.read.schema";
 import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
 import { TokenMintSchema } from "@/orpc/routes/token/routes/token.mint.schema";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
@@ -22,6 +27,28 @@ const factoryCreate = baseContract
   })
   .input(FactoryCreateSchema)
   .output(eventIterator(FactoryCreateOutputSchema));
+
+const factoryList = baseContract
+  .route({
+    method: "GET",
+    path: "/token/factory",
+    description: "List all token factories",
+    successDescription: "List of token factories",
+    tags: ["token"],
+  })
+  .input(ListSchema)
+  .output(FactoryListSchema);
+
+const factoryRead = baseContract
+  .route({
+    method: "GET",
+    path: "/token/factory/{id}",
+    description: "Get a token factory by ID",
+    successDescription: "Token factory details",
+    tags: ["token"],
+  })
+  .input(FactoryReadSchema)
+  .output(TokenFactoryDetailSchema);
 
 const bondCreate = baseContract
   .route({
@@ -69,6 +96,8 @@ const mint = baseContract
 
 export const tokenContract = {
   factoryCreate,
+  factoryList,
+  factoryRead,
   bondCreate,
   list,
   read,
