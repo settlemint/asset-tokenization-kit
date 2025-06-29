@@ -1,7 +1,8 @@
 import { config } from "@dotenvx/dotenvx";
 import { defineConfig } from "drizzle-kit";
 
-config({ path: [".env", ".env.local"] });
+// Load with Next.js convention: .env, .env.local (and .env.development, .env.development.local in dev)
+config();
 
 export default defineConfig({
   out: "./drizzle",

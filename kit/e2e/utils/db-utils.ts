@@ -11,8 +11,13 @@ const projectRoot = path.resolve(
   "../../../"
 );
 
-dotenvConfig({ path: path.join(projectRoot, ".env") });
-dotenvConfig({ path: path.join(projectRoot, ".env.local"), override: true });
+// Load .env and .env.local from project root
+dotenvConfig({ 
+  path: [
+    path.join(projectRoot, ".env"),
+    path.join(projectRoot, ".env.local")
+  ]
+});
 
 const databaseUrl = process.env.SETTLEMINT_HASURA_DATABASE_URL;
 if (!databaseUrl) {
