@@ -3,13 +3,15 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
 import { getPagination } from "@/orpc/routes/utils/pagination";
+import type { VariablesOf } from "@settlemint/sdk-thegraph";
 
 const LIST_TOKEN_QUERY = theGraphGraphql(`
-  query ListTokenQuery($skip: Int!, $orderDirection: OrderDirection = asc, $first: Int = 20) {
+  query ListTokenQuery($skip: Int!, $first: Int!, $orderBy: Token_orderBy = id, $orderDirection: OrderDirection = asc) {
     tokens(
-        first: $first
-        orderDirection: $orderDirection
         skip: $skip
+        first: $first
+        orderBy: $orderBy
+        orderDirection: $orderDirection
       ) {
         id
         name
@@ -22,18 +24,20 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
 export const list = authRouter.token.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    const { offset, limit, orderDirection } = {
-      ...getPagination(input),
-      orderDirection: input?.orderDirection ?? "asc",
+    const { offset, limit } = getPagination(input);
+    const orderBy = input?.orderBy ?? "id";
+    const orderDirection = input?.orderDirection ?? "asc";
+
+    const variables: VariablesOf<typeof LIST_TOKEN_QUERY> = {
+      skip: offset,
+      first: limit,
+      orderBy: orderBy as VariablesOf<typeof LIST_TOKEN_QUERY>['orderBy'],
+      orderDirection,
     };
 
     return context.theGraphClient.query(
       LIST_TOKEN_QUERY,
-      {
-        skip: offset,
-        orderDirection,
-        first: limit,
-      },
+      variables,
       TokenListSchema,
       "Failed to list tokens"
     );
