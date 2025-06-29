@@ -10,16 +10,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Web3Avatar } from "@/components/web3-avatar/web3-avatar";
+import { LanguageSwitcher } from "@/components/language/language-switcher";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { authClient } from "@/lib/auth/auth.client";
 import { useNavigate } from "@tanstack/react-router";
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
+import { BadgeCheck, ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
 import { useCallback } from "react";
 
 export function UserDropdown({
@@ -114,14 +109,8 @@ export function UserDropdown({
             <BadgeCheck />
             Account
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
-          </DropdownMenuItem>
+          <LanguageSwitcher mode="menuItem" />
+          <ThemeToggle mode="menuItem" />
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
