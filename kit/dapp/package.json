@@ -28,6 +28,7 @@
     "test:integration": "bun --bun test ./test --preload ./test/scripts/setup.ts"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "1.45.1",
     "@eslint/js": "9.30.0",
     "@tanstack/eslint-plugin-query": "5.81.2",
     "@tanstack/eslint-plugin-router": "1.121.21",
@@ -37,7 +38,6 @@
     "@types/react-dom": "19.1.6",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "contracts": "workspace:*",
-    "dotenv": "16.6.1",
     "eslint": "9.30.0",
     "eslint-plugin-boundaries": "5.0.1",
     "eslint-plugin-import": "2.32.0",

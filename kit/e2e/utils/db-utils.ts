@@ -1,4 +1,4 @@
-import { config as dotenvConfig } from "dotenv";
+import { config as dotenvConfig } from "@dotenvx/dotenvx";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { ClientConfig } from "pg";

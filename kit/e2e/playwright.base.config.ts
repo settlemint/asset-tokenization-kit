@@ -1,5 +1,5 @@
 import type { PlaywrightTestConfig } from "@playwright/test";
-import * as dotenv from "dotenv";
+import * as dotenv from "@dotenvx/dotenvx";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
