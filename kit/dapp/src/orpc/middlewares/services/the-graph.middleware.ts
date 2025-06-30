@@ -103,7 +103,7 @@ function createValidatedTheGraphClient(
      * @param {object} options - Query configuration object
      * @param {object} options.input - Input data including the base input and optional transformations
      * @param {TInput} options.input.input - The base input data
-     * @param {object} options.input.filter - Optional where clause for filtering results
+     * @param {object|array} options.input.filter - Optional where clause for filtering results (object) or array of keys to pick from input
      * @param {function} options.input.transform - Optional function to transform input before sending
      * @param {z.ZodType} options.output - Zod schema to validate the response against
      * @param {string} options.error - User-friendly error message to show if the operation fails
@@ -115,7 +115,7 @@ function createValidatedTheGraphClient(
      * const response = await client.query(LIST_FACTORIES_QUERY, {
      *   input: {
      *     input,
-     *     filter: buildFilter({ hasTokens: input.hasTokens })
+     *     filter: ['hasTokens'] // or { hasTokens: input.hasTokens }
      *   },
      *   output: FactoriesSchema,
      *   error: "Failed to list factories"
@@ -142,7 +142,10 @@ function createValidatedTheGraphClient(
       options: {
         input: {
           input: TInput;
-          filter?: Record<string, unknown> | undefined;
+          filter?:
+            | Record<string, unknown>
+            | readonly (keyof TInput)[]
+            | undefined;
           transform?: (input: TInput) => TVariables;
         };
         output: z.ZodType<TValidated>;
@@ -182,15 +185,27 @@ function createValidatedTheGraphClient(
           baseVariables.orderBy = input.orderBy;
         }
 
-        // Add filter if provided, removing undefined values
+        // Add filter if provided
         if (filter) {
           const cleanFilter: Record<string, unknown> = {};
           let hasValidFields = false;
 
-          for (const [key, value] of Object.entries(filter)) {
-            if (value !== undefined) {
-              cleanFilter[key] = value;
-              hasValidFields = true;
+          if (Array.isArray(filter)) {
+            // If filter is an array of keys, pick those from input
+            for (const key of filter) {
+              const value = input[key];
+              if (value !== undefined) {
+                cleanFilter[key as string] = value;
+                hasValidFields = true;
+              }
+            }
+          } else {
+            // If filter is an object, remove undefined values
+            for (const [key, value] of Object.entries(filter)) {
+              if (value !== undefined) {
+                cleanFilter[key] = value;
+                hasValidFields = true;
+              }
             }
           }
 
