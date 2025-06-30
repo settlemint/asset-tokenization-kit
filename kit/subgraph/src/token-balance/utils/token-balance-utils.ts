@@ -101,6 +101,11 @@ export function freezeOrUnfreezeTokenBalance(
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
+  if (balance.valueExact.equals(BigInt.zero()) && !isFrozen) {
+    removeTokenBalance(balance);
+    return;
+  }
+
   balance.isFrozen = isFrozen;
   updateAvailableAmount(balance, token.decimals);
 
@@ -116,15 +121,18 @@ export function moveTokenBalanceToNewAccount(
   timestamp: BigInt
 ): void {
   const oldBalance = fetchTokenBalance(token, fetchAccount(oldAccount));
-  const newBalance = fetchTokenBalance(token, fetchAccount(newAccount));
 
-  setBigNumber(newBalance, "value", oldBalance.valueExact, token.decimals);
-  setBigNumber(newBalance, "frozen", oldBalance.frozenExact, token.decimals);
-  updateAvailableAmount(newBalance, token.decimals);
+  if (oldBalance.valueExact.gt(BigInt.zero())) {
+    const newBalance = fetchTokenBalance(token, fetchAccount(newAccount));
 
-  newBalance.lastUpdatedAt = timestamp;
+    setBigNumber(newBalance, "value", oldBalance.valueExact, token.decimals);
+    setBigNumber(newBalance, "frozen", oldBalance.frozenExact, token.decimals);
+    updateAvailableAmount(newBalance, token.decimals);
 
-  newBalance.save();
+    newBalance.lastUpdatedAt = timestamp;
+
+    newBalance.save();
+  }
 
   removeTokenBalance(oldBalance);
 }

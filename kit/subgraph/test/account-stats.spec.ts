@@ -69,15 +69,11 @@ describe("AccountStats", () => {
   it("should fetch account stats state entity", async () => {
     const query = theGraphGraphql(
       `query {
-        accountStatsStates(first: 10) {
-          id
+        accountStatsStates {
           account {
-            id
             balances {
-              id
               value
               token {
-                id
                 symbol
               }
             }
@@ -97,7 +93,7 @@ describe("AccountStats", () => {
     // First get accounts with balances
     const accountsQuery = theGraphGraphql(
       `query {
-        accounts(where: { isContract: false, balances_: { value_gt: "0" } }) {
+        accounts(where: { balances_: { value_gt: "0" } }) {
           id
           isContract
           identity { id }
@@ -121,7 +117,13 @@ describe("AccountStats", () => {
     `
     );
     const accountsResponse = await theGraphClient.request(accountsQuery, {});
-    expect(accountsResponse.accounts.length).toBe(3); // Investor A, Investor B and admin hold balances
+    // Holders
+    // - Owner
+    // - Investor A New
+    // - Investor B
+    // - Bond contract (underlying deposit asset)
+    // - Fixed yield schedule contract (underlying deposit asset)
+    expect(accountsResponse.accounts.length).toBe(5);
 
     const account = accountsResponse.accounts[0];
 
@@ -154,9 +156,11 @@ describe("AccountStats", () => {
     });
 
     if (statsResponse.accountStatsState) {
-      expect(statsResponse.accountStatsState.totalValueInBaseCurrency).toEqual(
-        expectedTotalValue.toFixed(2)
-      );
+      expect(
+        Number(
+          statsResponse.accountStatsState.totalValueInBaseCurrency
+        ).toFixed(2)
+      ).toEqual(expectedTotalValue.toFixed(2));
       expect(statsResponse.accountStatsState.balancesCount).toBe(
         account.balances.length
       );
