@@ -70,5 +70,14 @@ export function encodeClaimData(
     throw new Error(`Unknown claim topic: ${topicId}`);
   }
 
-  return encodeAbiParameters(parseAbiParameters(signature), values);
+  const abiParams = parseAbiParameters(signature);
+
+  // Need to wrap it in a tuple so it can be decoded by The Graph
+  // To get the "0x...20..." format (like The Graph's ethereum.decode expects for a tuple)
+  const encodedViemTuple = encodeAbiParameters(
+    [{ type: "tuple", components: abiParams }], // Explicitly encode as a single tuple
+    [values] // Wrap the args in an array because the main type is now a single tuple
+  );
+
+  return encodedViemTuple;
 }

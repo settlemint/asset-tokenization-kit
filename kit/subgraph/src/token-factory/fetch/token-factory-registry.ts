@@ -11,6 +11,7 @@ export function fetchTokenFactoryRegistry(
 
   if (!tokenFactoryRegistry) {
     tokenFactoryRegistry = new TokenFactoryRegistry(address);
+    tokenFactoryRegistry.system = Address.zero();
     tokenFactoryRegistry.accessControl = fetchAccessControl(address).id;
     tokenFactoryRegistry.account = fetchAccount(address).id;
     tokenFactoryRegistry.deployedInTransaction = Bytes.empty();

@@ -2,7 +2,7 @@ import { DEFAULT_PINCODE } from "test/utils/user";
 import { OrpcClient } from "./orpc-client";
 
 export async function bootstrapSystem(orpClient: OrpcClient) {
-  const systems = await orpClient.system.list();
+  const systems = await orpClient.system.list({});
   if (systems.length > 0) {
     console.log("System already created");
     return systems[0]?.id;

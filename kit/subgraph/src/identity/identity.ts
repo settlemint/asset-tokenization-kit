@@ -1,4 +1,4 @@
-import { Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, Bytes } from "@graphprotocol/graph-ts";
 import {
   Approved,
   ClaimAdded,
@@ -12,9 +12,14 @@ import {
 } from "../../generated/templates/Identity/Identity";
 import { fetchEvent } from "../event/fetch/event";
 import {
+  getTokenBasePrice,
+  updateSystemStatsForPriceChange,
+} from "../stats/system-stats";
+import {
   isCollateralClaim,
   updateCollateral,
 } from "../token-extensions/collateral/utils/collateral-utils";
+import { fetchToken } from "../token/fetch/token";
 import { updateBasePrice } from "../token/utils/token-utils";
 import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
@@ -44,6 +49,18 @@ export function handleClaimAdded(event: ClaimAdded): void {
   }
   if (isBasePriceClaim(identityClaim)) {
     updateBasePrice(identityClaim);
+
+    // Update system stats for price change
+    if (identity.token) {
+      const token = fetchToken(Address.fromBytes(identity.token!));
+      const newPrice = getTokenBasePrice(identityClaim.id);
+      updateSystemStatsForPriceChange(
+        token,
+        BigDecimal.zero(),
+        newPrice,
+        event.block.timestamp
+      );
+    }
   }
 }
 
@@ -55,6 +72,11 @@ export function handleClaimChanged(event: ClaimChanged): void {
   identityClaim.uri = event.params.uri;
   identityClaim.save();
 
+  // Get old price before updating claim
+  const oldPrice = isBasePriceClaim(identityClaim)
+    ? getTokenBasePrice(identityClaim.id)
+    : BigDecimal.zero();
+
   // Decode claim data and create IdentityClaimValue entities
   decodeClaimValues(identityClaim, event.params.topic, event.params.data);
 
@@ -63,6 +85,20 @@ export function handleClaimChanged(event: ClaimChanged): void {
   }
   if (isBasePriceClaim(identityClaim)) {
     updateBasePrice(identityClaim);
+
+    const token = identity.token
+      ? fetchToken(Address.fromBytes(identity.token!))
+      : null;
+    // Update system stats for price change
+    if (token) {
+      const newPrice = getTokenBasePrice(identityClaim.id);
+      updateSystemStatsForPriceChange(
+        token,
+        oldPrice,
+        newPrice,
+        event.block.timestamp
+      );
+    }
   }
 }
 
@@ -77,7 +113,25 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
     updateCollateral(identityClaim);
   }
   if (isBasePriceClaim(identityClaim)) {
+    const token = identity.token
+      ? fetchToken(Address.fromBytes(identity.token!))
+      : null;
+    // Get old price before updating claim (should be 0 for new claims)
+    const oldPrice = token
+      ? getTokenBasePrice(token.basePriceClaim)
+      : BigDecimal.zero();
+
     updateBasePrice(identityClaim);
+
+    // Update system stats for price change (price goes to 0 when claim removed)
+    if (token && oldPrice.notEqual(BigDecimal.zero())) {
+      updateSystemStatsForPriceChange(
+        token,
+        oldPrice,
+        BigDecimal.zero(), // Price becomes 0 when claim is removed
+        event.block.timestamp
+      );
+    }
   }
 }
 

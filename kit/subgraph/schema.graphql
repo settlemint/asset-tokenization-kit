@@ -272,6 +272,7 @@ type ComplianceModule @entity(immutable: false) {
 
 type TokenFactoryRegistry @entity(immutable: false) {
   id: Bytes!
+  system: System!
   accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
@@ -286,6 +287,10 @@ type TokenFactory @entity(immutable: false) {
   tokenFactoryRegistry: TokenFactoryRegistry
   account: Account!
   tokens: [Token!]! @derivedFrom(field: "tokenFactory")
+  # Indicates whether this factory has created any tokens
+  # This field is used for efficient filtering without expensive joins
+  # Set to false when factory is created, true when first token is deployed
+  hasTokens: Boolean!
 }
 
 type Token @entity(immutable: false) {
@@ -564,6 +569,17 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
 # ==================================================
 # SYSTEM STATISTICS
 # ==================================================
+
+# Persistent entity to store current system state for efficient calculations
+type SystemStatsState @entity(immutable: false) {
+  id: Bytes! # System address
+  system: System!
+
+  # Current total value in base currency
+  totalValueInBaseCurrency: BigDecimal!
+
+  lastUpdatedAt: BigInt!
+}
 
 type SystemStatsData @entity(timeseries: true) {
   id: Int8!

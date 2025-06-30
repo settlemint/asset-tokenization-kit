@@ -20,11 +20,13 @@ import {
   isCountryListComplianceModule,
 } from "../compliance/modules/country-list-compliance-module";
 import { fetchEvent } from "../event/fetch/event";
+import { updateSystemStatsForSupplyChange } from "../stats/system-stats";
 import {
   decreaseTokenBalanceValue,
   increaseTokenBalanceValue,
 } from "../token-balance/utils/token-balance-utils";
 import { updateYield } from "../token-extensions/fixed-yield-schedule/utils/fixed-yield-schedule-utils";
+import { toBigDecimal } from "../utils/token-decimals";
 import { fetchToken } from "./fetch/token";
 import { fetchTokenComplianceModule } from "./fetch/token-compliance-module";
 import { increaseTokenSupply } from "./utils/token-utils";
@@ -93,6 +95,10 @@ export function handleMintCompleted(event: MintCompleted): void {
     event.params.amount,
     event.block.timestamp
   );
+
+  // Update system stats
+  const supplyDelta = toBigDecimal(event.params.amount, token.decimals);
+  updateSystemStatsForSupplyChange(token, supplyDelta, event.block.timestamp);
 }
 
 export function handleModuleParametersUpdated(

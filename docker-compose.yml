@@ -287,6 +287,9 @@ services:
     image: ghcr.io/blockscout/blockscout:8.1.1
     container_name: atk-blockscout-backend
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     command: |
       sh -c "bin/blockscout eval \"Elixir.Explorer.ReleaseTasks.create_and_migrate()\" && bin/blockscout start"
     environment:
