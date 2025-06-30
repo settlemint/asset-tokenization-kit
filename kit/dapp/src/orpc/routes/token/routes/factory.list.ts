@@ -1,5 +1,8 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import {
+  buildFilter,
+  theGraphMiddleware,
+} from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { FactoryListSchema } from "@/orpc/routes/token/routes/factory.list.schema";
 import { z } from "zod/v4";
@@ -31,14 +34,13 @@ export const factoryList = authRouter.token.factoryList
   .handler(async ({ input, context }) => {
     const response = await context.theGraphClient.query(
       LIST_TOKEN_FACTORIES_QUERY,
-      input,
-      GraphQLResponseSchema,
-      "Failed to list token factories",
       {
-        filter: (input) =>
-          input.hasTokens !== undefined
-            ? { hasTokens: input.hasTokens }
-            : undefined,
+        input: {
+          input,
+          filter: (input) => buildFilter({ hasTokens: input.hasTokens }),
+        },
+        output: GraphQLResponseSchema,
+        error: "Failed to list token factories",
       }
     );
 

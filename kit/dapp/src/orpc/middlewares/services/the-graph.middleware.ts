@@ -24,6 +24,40 @@ function isListInput(input: unknown): input is ListInput {
 }
 
 /**
+ * Helper to create a filter object from optional input fields.
+ * Only includes fields that are not undefined.
+ *
+ * @param fields - Object mapping field names to their values
+ * @returns Filter object with only defined fields, or undefined if all fields are undefined
+ *
+ * @example
+ * ```typescript
+ * // Instead of:
+ * filter: (input) => input.hasTokens !== undefined
+ *   ? { hasTokens: input.hasTokens }
+ *   : undefined
+ *
+ * // Use:
+ * filter: (input) => buildFilter({ hasTokens: input.hasTokens })
+ * ```
+ */
+export function buildFilter(
+  fields: Record<string, unknown>
+): Record<string, unknown> | undefined {
+  const filter: Record<string, unknown> = {};
+  let hasFields = false;
+
+  for (const [key, value] of Object.entries(fields)) {
+    if (value !== undefined) {
+      filter[key] = value;
+      hasFields = true;
+    }
+  }
+
+  return hasFields ? filter : undefined;
+}
+
+/**
  * Creates a validated TheGraph client with built-in error handling and validation.
  *
  * This function returns a client that wraps TheGraph GraphQL queries with:
@@ -66,37 +100,36 @@ function createValidatedTheGraphClient(
      * 5. **Consistent Error Messages**: User-friendly messages are shown while technical details are logged
      *
      * @param {TadaDocumentNode} document - The GraphQL query document with TypeScript types
-     * @param {TInput | TVariables} input - Either raw variables or input to be transformed
-     * @param {z.ZodType} schema - Zod schema to validate the response against
-     * @param {string} userMessage - User-friendly error message to show if the operation fails
-     * @param {object} options - Optional configuration for variable transformation
-     * @param {function} options.filter - Function to build where clause from input
-     * @param {function} options.transform - Function to transform input before sending
+     * @param {object} options - Query configuration object
+     * @param {object} options.input - Input data including the base input and optional transformations
+     * @param {TInput} options.input.input - The base input data
+     * @param {function} options.input.filter - Optional function to build where clause from input
+     * @param {function} options.input.transform - Optional function to transform input before sending
+     * @param {z.ZodType} options.output - Zod schema to validate the response against
+     * @param {string} options.error - User-friendly error message to show if the operation fails
      * @returns {Promise<TValidated>} The validated query response data
      *
      * @example
      * ```typescript
      * // List query with automatic pagination transformation
-     * const factories = await client.query(
-     *   LIST_FACTORIES_QUERY,
-     *   input, // ListSchema input with offset/limit
-     *   FactoriesSchema,
-     *   "Failed to list factories",
-     *   {
-     *     filter: (input) => ({ hasTokens: input.hasTokens })
-     *   }
-     * );
+     * const response = await client.query(LIST_FACTORIES_QUERY, {
+     *   input: {
+     *     input,
+     *     filter: (input) => buildFilter({ hasTokens: input.hasTokens })
+     *   },
+     *   output: FactoriesSchema,
+     *   error: "Failed to list factories"
+     * });
      *
      * // Read query with ID transformation
-     * const factory = await client.query(
-     *   READ_FACTORY_QUERY,
-     *   { id },
-     *   FactorySchema,
-     *   "Failed to read factory",
-     *   {
-     *     transform: (vars) => ({ ...vars, id: vars.id.toLowerCase() })
-     *   }
-     * );
+     * const factory = await client.query(READ_FACTORY_QUERY, {
+     *   input: {
+     *     input: { id },
+     *     transform: (input) => ({ id: input.id.toLowerCase() })
+     *   },
+     *   output: FactorySchema,
+     *   error: "Failed to read factory"
+     * });
      * ```
      */
     async query<
@@ -106,14 +139,23 @@ function createValidatedTheGraphClient(
       TInput = TVariables,
     >(
       document: TadaDocumentNode<TResult, TVariables>,
-      input: TInput,
-      schema: z.ZodType<TValidated>,
-      userMessage: string,
-      options?: {
-        filter?: (input: TInput) => Record<string, unknown> | undefined;
-        transform?: (input: TInput) => TVariables;
+      options: {
+        input: {
+          input: TInput;
+          filter?: (input: TInput) => Record<string, unknown> | undefined;
+          transform?: (input: TInput) => TVariables;
+        };
+        output: z.ZodType<TValidated>;
+        error: string;
       }
     ): Promise<TValidated> {
+      const {
+        input: inputOptions,
+        output: schema,
+        error: userMessage,
+      } = options;
+      const { input, filter, transform } = inputOptions;
+
       // Extract operation name from the GraphQL document metadata for better error messages
       const operation =
         (
@@ -125,9 +167,9 @@ function createValidatedTheGraphClient(
       // Transform variables based on options
       let variables: TVariables;
 
-      if (options?.transform) {
+      if (transform) {
         // Use custom transform function
-        variables = options.transform(input);
+        variables = transform(input);
       } else if (isListInput(input)) {
         // Automatic transformation for ListSchema inputs
         const baseVariables: Record<string, unknown> = {
@@ -141,8 +183,8 @@ function createValidatedTheGraphClient(
         }
 
         // Add filter if provided
-        if (options?.filter) {
-          const where = options.filter(input);
+        if (filter) {
+          const where = filter(input);
           if (where && Object.keys(where).length > 0) {
             baseVariables.where = where;
           }

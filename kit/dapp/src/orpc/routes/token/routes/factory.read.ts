@@ -16,15 +16,14 @@ const READ_TOKEN_FACTORY_QUERY = theGraphGraphql(`
 export const factoryRead = authRouter.token.factoryRead
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    return context.theGraphClient.query(
-      READ_TOKEN_FACTORY_QUERY,
-      input,
-      TokenFactoryDetailSchema,
-      "Failed to read token factory",
-      {
+    return context.theGraphClient.query(READ_TOKEN_FACTORY_QUERY, {
+      input: {
+        input,
         transform: (input) => ({
           id: input.id.toLowerCase(), // The Graph uses lowercase addresses
         }),
-      }
-    );
+      },
+      output: TokenFactoryDetailSchema,
+      error: "Failed to read token factory",
+    });
   });

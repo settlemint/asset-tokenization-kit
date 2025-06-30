@@ -22,10 +22,9 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
 export const list = authRouter.token.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    return context.theGraphClient.query(
-      LIST_TOKEN_QUERY,
-      input,
-      TokenListSchema,
-      "Failed to list tokens"
-    );
+    return context.theGraphClient.query(LIST_TOKEN_QUERY, {
+      input: { input },
+      output: TokenListSchema,
+      error: "Failed to list tokens",
+    });
   });

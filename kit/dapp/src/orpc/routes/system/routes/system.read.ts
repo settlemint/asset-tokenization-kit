@@ -89,17 +89,16 @@ export const read = onboardedRouter.system.read
     });
 
     // Query system details from TheGraph with automatic ID transformation
-    const result = await context.theGraphClient.query(
-      SYSTEM_DETAILS_QUERY,
-      input,
-      SystemResponseSchema,
-      `Failed to retrieve system: ${input.id}`,
-      {
+    const result = await context.theGraphClient.query(SYSTEM_DETAILS_QUERY, {
+      input: {
+        input,
         transform: (input) => ({
           id: input.id.toLowerCase(), // TheGraph stores addresses in lowercase
         }),
-      }
-    );
+      },
+      output: SystemResponseSchema,
+      error: `Failed to retrieve system: ${input.id}`,
+    });
 
     // Check if system exists
     if (!result.system) {

@@ -70,12 +70,11 @@ export const list = authRouter.system.list
 
     // Execute TheGraph query with automatic variable transformation
     // The middleware handles offset/limit to skip/first conversion
-    const result = await context.theGraphClient.query(
-      LIST_SYSTEM_QUERY,
-      input,
-      SystemsResponseSchema,
-      "Failed to retrieve systems"
-    );
+    const result = await context.theGraphClient.query(LIST_SYSTEM_QUERY, {
+      input: { input },
+      output: SystemsResponseSchema,
+      error: "Failed to retrieve systems",
+    });
 
     // Return the array of system contracts
     return result.systems;
