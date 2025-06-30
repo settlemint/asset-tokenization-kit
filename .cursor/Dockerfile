@@ -1,7 +1,7 @@
 # Use Node as base image
 FROM node:24.3.0
 
-# Install system dependencies and development tools
+# Install system dependencies and development tools as root
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -26,37 +26,53 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /
     apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Homebrew (Linuxbrew)
-RUN git clone https://github.com/Homebrew/brew /home/linuxbrew/.linuxbrew && \
-    chmod -R go-w /home/linuxbrew/.linuxbrew
+# Create cursor user with sudo privileges
+RUN useradd -m -s /bin/bash cursor && \
+    usermod -aG sudo cursor && \
+    usermod -aG docker cursor && \
+    echo "cursor ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH"
-ENV HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
-ENV HOMEBREW_CELLAR="/home/linuxbrew/.linuxbrew/Cellar"
-ENV HOMEBREW_REPOSITORY="/home/linuxbrew/.linuxbrew/Homebrew"
+# Switch to cursor user
+USER cursor
+WORKDIR /home/cursor
 
-# Install Bun
+# Install Homebrew (Linuxbrew) as cursor user
+RUN git clone https://github.com/Homebrew/brew /home/cursor/.linuxbrew && \
+    /home/cursor/.linuxbrew/bin/brew shellenv >> /home/cursor/.bashrc && \
+    /home/cursor/.linuxbrew/bin/brew shellenv >> /home/cursor/.profile
+
+ENV PATH="/home/cursor/.linuxbrew/bin:/home/cursor/.linuxbrew/sbin:$PATH"
+ENV HOMEBREW_PREFIX="/home/cursor/.linuxbrew"
+ENV HOMEBREW_CELLAR="/home/cursor/.linuxbrew/Cellar"
+ENV HOMEBREW_REPOSITORY="/home/cursor/.linuxbrew/Homebrew"
+
+# Install Bun as cursor user
 RUN curl -fsSL https://bun.sh/install | bash
-ENV PATH="/root/.bun/bin:$PATH"
+ENV PATH="/home/cursor/.bun/bin:$PATH"
 
-# Install global development tools
+# Configure npm to install global packages in user directory
+RUN mkdir -p /home/cursor/.npm-global && \
+    npm config set prefix '/home/cursor/.npm-global'
+ENV PATH="/home/cursor/.npm-global/bin:$PATH"
+
+# Install global development tools as cursor user
 RUN npm install -g turbo
 
-# Install SettleMint CLI
+# Install SettleMint CLI as cursor user
 RUN npm install -g @settlemint/sdk-cli
 
-# Install Foundry for smart contract development
+# Install Foundry for smart contract development as cursor user
 RUN curl -L https://foundry.paradigm.xyz | bash && \
-    /root/.foundry/bin/foundryup
+    /home/cursor/.foundry/bin/foundryup
+
+# Add Foundry to PATH
+ENV PATH="/home/cursor/.foundry/bin:$PATH"
 
 # Install helm-docs using Homebrew (matching GitHub Actions workflow)
 RUN brew install norwoodj/tap/helm-docs ast-grep yq helm
 
-# Add Foundry to PATH
-ENV PATH="/root/.foundry/bin:$PATH"
-
 # Set working directory
-WORKDIR /root
+WORKDIR /home/cursor
 
 # Add any additional development tools or configurations needed
 # Note: Do NOT copy code - it will be cloned by the agent later
