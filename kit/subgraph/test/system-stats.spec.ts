@@ -124,7 +124,7 @@ describe("SystemStats", () => {
     expect(statsResponse).toEqual({
       systemStatsStates: [
         {
-          totalValueInBaseCurrency: expectedTotalValue.toString(),
+          totalValueInBaseCurrency: expectedTotalValue.toFixed(2),
         },
       ],
     });
