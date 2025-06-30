@@ -5,6 +5,7 @@ import {
   SystemStatsState,
   Token,
   TokenFactory,
+  TokenFactoryRegistry,
 } from "../../generated/schema";
 import { fetchIdentityClaimValue } from "../identity/fetch/identity-claim-value";
 import { fetchSystem } from "../system/fetch/system";
@@ -131,5 +132,16 @@ function getSystemAddress(token: Token): Address {
     return Address.zero();
   }
 
-  return Address.fromBytes(tokenFactory.system);
+  if (!tokenFactory.tokenFactoryRegistry) {
+    return Address.zero();
+  }
+
+  const tokenFactoryRegistry = TokenFactoryRegistry.load(
+    tokenFactory.tokenFactoryRegistry!
+  );
+  if (!tokenFactoryRegistry) {
+    return Address.zero();
+  }
+
+  return Address.fromBytes(tokenFactoryRegistry.system);
 }

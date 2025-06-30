@@ -272,6 +272,7 @@ type ComplianceModule @entity(immutable: false) {
 
 type TokenFactoryRegistry @entity(immutable: false) {
   id: Bytes!
+  system: System!
   accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
@@ -280,7 +281,6 @@ type TokenFactoryRegistry @entity(immutable: false) {
 
 type TokenFactory @entity(immutable: false) {
   id: Bytes!
-  system: System!
   accessControl: AccessControl!
   name: String!
   typeId: Bytes!
