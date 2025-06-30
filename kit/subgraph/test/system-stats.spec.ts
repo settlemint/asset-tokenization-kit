@@ -134,7 +134,7 @@ describe("SystemStats", () => {
     // Get tokens with base price claims
     const eventsQuery = theGraphGraphql(
       `query {
-       events(where: {eventName_in: ["ClaimAdded", "ClaimChanged", "ClaimRemoved", "Mint", "BurnCompleted"]}) {
+       events(where: {eventName_in: ["ClaimAdded", "ClaimChanged", "ClaimRemoved", "MintCompleted", "BurnCompleted"]}) {
           eventName
           involved {
             id
@@ -149,7 +149,7 @@ describe("SystemStats", () => {
     const eventNames = eventsResponse.events.map((event) => event.eventName);
 
     expect(eventNames).toContain("BurnCompleted");
-    expect(eventNames).toContain("Mint");
+    expect(eventNames).toContain("MintCompleted");
     expect(eventNames).toContain("ClaimAdded");
     expect(eventNames).toContain("ClaimRemoved");
     expect(eventNames).toContain("ClaimChanged");

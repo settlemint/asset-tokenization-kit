@@ -607,6 +607,20 @@ type SystemStats
 # ACCOUNT STATISTICS
 # ==================================================
 
+# Persistent entity to store current account state for efficient calculations
+type AccountStatsState @entity(immutable: false) {
+  id: Bytes! # Account address
+  account: Account!
+
+  # Current total value in base currency
+  totalValueInBaseCurrency: BigDecimal!
+
+  # Current balance count
+  balancesCount: Int!
+
+  lastUpdatedAt: BigInt!
+}
+
 type AccountStatsData @entity(timeseries: true) {
   id: Int8!
   timestamp: Timestamp!

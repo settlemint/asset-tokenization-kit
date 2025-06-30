@@ -15,6 +15,7 @@ import {
   getTokenBasePrice,
   updateSystemStatsForPriceChange,
 } from "../stats/system-stats";
+import { updateAccountStatsForPriceChange } from "../stats/account-stats";
 import {
   isCollateralClaim,
   updateCollateral,
@@ -25,6 +26,35 @@ import { fetchIdentity } from "./fetch/identity";
 import { fetchIdentityClaim } from "./fetch/identity-claim";
 import { decodeClaimValues } from "./utils/decode-claim";
 import { isBasePriceClaim } from "./utils/is-claim";
+import { TokenBalance } from "../../generated/schema";
+
+/**
+ * Update account stats for all holders of a token when its base price changes
+ */
+function updateAccountStatsForAllTokenHolders(
+  tokenAddress: Address,
+  oldPrice: BigDecimal,
+  newPrice: BigDecimal,
+  timestamp: BigInt
+): void {
+  // Load all token balances for this token
+  const token = fetchToken(tokenAddress);
+  const balances = token.balances.load();
+  
+  for (let i = 0; i < balances.length; i++) {
+    const balance = balances[i];
+    if (balance.valueExact.gt(BigInt.zero())) {
+      // Update account stats for this holder
+      updateAccountStatsForPriceChange(
+        Address.fromBytes(balance.account),
+        balance,
+        oldPrice,
+        newPrice,
+        timestamp
+      );
+    }
+  }
+}
 
 export function handleApproved(event: Approved): void {
   fetchEvent(event, "Approved");
@@ -56,6 +86,14 @@ export function handleClaimAdded(event: ClaimAdded): void {
       const newPrice = getTokenBasePrice(identityClaim.id);
       updateSystemStatsForPriceChange(
         token,
+        BigDecimal.zero(),
+        newPrice,
+        event.block.timestamp
+      );
+      
+      // Update account stats for all token holders
+      updateAccountStatsForAllTokenHolders(
+        Address.fromBytes(identity.token!),
         BigDecimal.zero(),
         newPrice,
         event.block.timestamp
@@ -98,6 +136,14 @@ export function handleClaimChanged(event: ClaimChanged): void {
         newPrice,
         event.block.timestamp
       );
+      
+      // Update account stats for all token holders
+      updateAccountStatsForAllTokenHolders(
+        Address.fromBytes(identity.token!),
+        oldPrice,
+        newPrice,
+        event.block.timestamp
+      );
     }
   }
 }
@@ -127,6 +173,14 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
     if (token && oldPrice.notEqual(BigDecimal.zero())) {
       updateSystemStatsForPriceChange(
         token,
+        oldPrice,
+        BigDecimal.zero(), // Price becomes 0 when claim is removed
+        event.block.timestamp
+      );
+      
+      // Update account stats for all token holders
+      updateAccountStatsForAllTokenHolders(
+        Address.fromBytes(identity.token!),
         oldPrice,
         BigDecimal.zero(), // Price becomes 0 when claim is removed
         event.block.timestamp
