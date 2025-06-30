@@ -46,18 +46,6 @@ ENV HOMEBREW_PREFIX="/home/cursor/.linuxbrew"
 ENV HOMEBREW_CELLAR="/home/cursor/.linuxbrew/Cellar"
 ENV HOMEBREW_REPOSITORY="/home/cursor/.linuxbrew/Homebrew"
 
-# Install Bun as cursor user
-RUN curl -fsSL https://bun.sh/install | bash && \
-    echo 'export BUN_INSTALL="$HOME/.bun"' >> /home/cursor/.bashrc && \
-    echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> /home/cursor/.bashrc
-
-# Set Bun environment variables
-ENV BUN_INSTALL="/home/cursor/.bun"
-ENV PATH="/home/cursor/.bun/bin:$PATH"
-
-# Verify Bun installation
-RUN bun --version
-
 # Configure npm to install global packages in user directory
 RUN mkdir -p /home/cursor/.npm-global && \
     npm config set prefix '/home/cursor/.npm-global'
@@ -69,15 +57,8 @@ RUN npm install -g turbo
 # Install SettleMint CLI as cursor user
 RUN npm install -g @settlemint/sdk-cli
 
-# Install Foundry for smart contract development as cursor user
-RUN curl -L https://foundry.paradigm.xyz | bash && \
-    /home/cursor/.foundry/bin/foundryup
-
-# Add Foundry to PATH
-ENV PATH="/home/cursor/.foundry/bin:$PATH"
-
 # Install helm-docs using Homebrew (matching GitHub Actions workflow)
-RUN brew install norwoodj/tap/helm-docs ast-grep yq helm
+RUN brew install norwoodj/tap/helm-docs ast-grep yq helm oven-sh/bun/bun foundry
 
 # Set working directory
 WORKDIR /home/cursor
