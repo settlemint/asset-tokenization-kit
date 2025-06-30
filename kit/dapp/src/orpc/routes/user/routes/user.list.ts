@@ -3,6 +3,7 @@ import { getUserRole } from "@/lib/zod/validators/user-roles";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { asc, desc, type AnyColumn } from "drizzle-orm";
 
 /**
  * User listing route handler.
@@ -16,7 +17,7 @@ import { authRouter } from "@/orpc/procedures/auth.router";
  * Method: GET /users
  *
  * @param input - List parameters including pagination and sorting
- * @param context - Request context with enhanced database client and authenticated user
+ * @param context - Request context with database connection and authenticated user
  * @returns Promise<User[]> - Array of user objects with roles mapped to display names
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws FORBIDDEN - If user lacks required list permissions
@@ -49,10 +50,23 @@ export const list = authRouter.user.list
   .use(permissionsMiddleware({ user: ["list"] }))
   .use(databaseMiddleware)
   .handler(async ({ context, input }) => {
-    // Use the enhanced database client's list method
-    const result = await context.db.list(user, input, {
-      defaultOrderBy: "createdAt",
-    });
+    const { limit, offset, orderDirection, orderBy } = input;
+
+    // Configure sort direction based on input
+    const order = orderDirection === "desc" ? desc : asc;
+
+    // Safely access the order column, defaulting to createdAt if invalid
+    const orderColumn =
+      (user[orderBy as keyof typeof user] as AnyColumn | undefined) ??
+      user.createdAt;
+
+    // Execute paginated query with sorting
+    const result = await context.db
+      .select()
+      .from(user)
+      .orderBy(order(orderColumn))
+      .limit(limit)
+      .offset(offset);
 
     // Transform results to include human-readable roles
     return result.map((user) => ({
