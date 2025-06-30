@@ -59,6 +59,10 @@ export function updateSystemStatsForSupplyChange(
   // Calculate value delta = supplyDelta * basePrice
   const valueDelta = supplyDelta.times(basePrice);
 
+  if (valueDelta.equals(BigDecimal.zero())) {
+    return;
+  }
+
   // Update total value
   state.totalValueInBaseCurrency =
     state.totalValueInBaseCurrency.plus(valueDelta);

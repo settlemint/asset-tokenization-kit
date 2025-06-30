@@ -129,4 +129,32 @@ describe("SystemStats", () => {
       ],
     });
   });
+
+  it("should have processed all events leading to a price change", async () => {
+    // Get tokens with base price claims
+    const eventsQuery = theGraphGraphql(
+      `query {
+       events(where: {eventName_in: ["ClaimAdded", "ClaimChanged", "ClaimRemoved", "Mint", "BurnCompleted"]}) {
+          eventName
+          involved {
+            id
+          }
+        }
+      }
+    `
+    );
+    const eventsResponse = await theGraphClient.request(eventsQuery, {});
+
+    // Check that all expected event types are present
+    const eventNames = eventsResponse.events.map((event) => event.eventName);
+
+    expect(eventNames).toContain("BurnCompleted");
+    expect(eventNames).toContain("Mint");
+    expect(eventNames).toContain("ClaimAdded");
+    expect(eventNames).toContain("ClaimRemoved");
+    expect(eventNames).toContain("ClaimChanged");
+
+    // Verify we have the expected number of events
+    expect(eventsResponse.events.length).toBeGreaterThan(0);
+  });
 });
