@@ -63,7 +63,9 @@ RUN npm install -g @settlemint/sdk-cli
 # Install Foundry for smart contract development as cursor user
 ENV FOUNDRY_DIR="/home/cursor/.foundry"
 # Download and run the installer, then immediately run foundryup in the same shell session
-RUN bash -c "curl -L https://foundry.paradigm.xyz | bash && source /home/cursor/.bashrc && foundryup"
+RUN curl -L https://foundry.paradigm.xyz | bash && \
+    PATH="/home/cursor/.foundry/bin:$PATH" && \
+    /home/cursor/.foundry/bin/foundryup
 
 # Add Foundry to PATH
 ENV PATH="/home/cursor/.foundry/bin:$PATH"
