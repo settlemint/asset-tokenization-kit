@@ -52,7 +52,7 @@ interface FormProps<
     context: {
       step: number;
       goToStep: (step: number) => void;
-      changedFieldName: Path<S extends Schema ? Infer<S> : any> | undefined;
+      changedFieldName: Path<S extends Schema ? Infer<S> : unknown> | undefined;
     }
   ) => void;
   onStepChange?: (newStep: number) => void;
@@ -104,9 +104,9 @@ export function Form<
       typeof error.schema.error === "string" &&
       // Type assertion is safe here as we're verifying at runtime with t.has()
       // that the key exists in our translations before using it
-      t.has(error.schema.error as any)
+      t.has(error.schema.error)
     ) {
-      return t(error.schema.error as any);
+      return t(error.schema.error);
     }
 
     // Otherwise fall back to default error messages
@@ -277,7 +277,7 @@ export function Form<
         return t("error.symbol");
       case ValueErrorType.TupleLength:
         return t("error.tuple-length", {
-          maxItems: error.schema.maxItems || 0,
+          maxItems: error.schema.maxItems ?? 0,
         });
       case ValueErrorType.Tuple:
         return t("error.tuple");
@@ -297,7 +297,8 @@ export function Form<
         // Check for min/max in anyOf schemas
         if (error.schema.anyOf) {
           const integerSchema = error.schema.anyOf.find(
-            (schema: any) => schema.type === "integer"
+            (schema: { type?: string; minimum?: number; maximum?: number }) =>
+              schema.type === "integer"
           );
           if (
             integerSchema?.minimum !== undefined &&
@@ -321,7 +322,7 @@ export function Form<
 
   const { form, handleSubmitWithAction } = useHookFormAction(
     action,
-    resolver as Resolver<S extends Schema ? Infer<S> : any, FormContext>,
+    resolver as Resolver<S extends Schema ? Infer<S> : unknown, FormContext>,
     {
       formProps: {
         mode: "onSubmit",
@@ -332,7 +333,7 @@ export function Form<
     }
   );
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (toast?.disabled) {
       await handleSubmitWithAction();
       onSuccess?.();
@@ -341,13 +342,13 @@ export function Form<
       sonnerToast.promise(handleSubmitWithAction, {
         ...(showLoading
           ? {
-              loading: toast?.loading || t("transactions.sending"),
+              loading: toast?.loading ?? t("transactions.sending"),
             }
           : {}),
-        success: async () => {
+        success: () => {
           // await revalidate();
           onSuccess?.();
-          const successMessage = toast?.success || t("transactions.success");
+          const successMessage = toast?.success ?? t("transactions.success");
           return successMessage;
         },
         error: (error) => {
@@ -363,29 +364,29 @@ export function Form<
     }
 
     onOpenChange?.(false);
-  };
+  }, [toast, secureForm, handleSubmitWithAction, onSuccess, onOpenChange, t]);
 
   const isLastStep = currentStep === totalSteps - 1;
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     const newStep = Math.max(currentStep - 1, 0);
     setCurrentStep(newStep);
     onStepChange?.(newStep);
-  };
+  }, [currentStep, onStepChange]);
 
   const handleNext = useCallback(async () => {
     const CurrentStep = Array.isArray(children)
       ? children[currentStep]?.type
-      : children?.type;
+      : children.type;
 
     if (!CurrentStep) {
       return;
     }
 
-    const fieldsToValidate = CurrentStep.validatedFields ?? [];
+    const fieldsToValidate = CurrentStep.validatedFields;
     const customValidation = CurrentStep.customValidation ?? [];
 
-    const shouldValidate = fieldsToValidate?.length || customValidation?.length;
+    const shouldValidate = fieldsToValidate.length || customValidation.length;
     if (!shouldValidate) {
       if (isLastStep && secureForm) {
         setShowFormSecurityConfirmation(true);
@@ -398,29 +399,33 @@ export function Form<
 
     // Validate using the custom validation function
     const customValidationResults = await Promise.all(
-      customValidation.map((validate) =>
+      customValidation.map(async (validate) =>
         validate(form as UseFormReturn<Infer<S>>)
       )
     );
-    if (customValidationResults.some((result) => result === false)) {
+    if (customValidationResults.some((result) => !result)) {
       return;
     }
 
     // Validate using the schema
     for (const field of fieldsToValidate) {
       const value = form.getValues(
-        field as Path<S extends Schema ? Infer<S> : any>
+        field as Path<S extends Schema ? Infer<S> : unknown>
       );
 
-      form.setValue(field as Path<S extends Schema ? Infer<S> : any>, value, {
-        shouldValidate: true,
-        shouldTouch: true,
-      });
+      form.setValue(
+        field as Path<S extends Schema ? Infer<S> : unknown>,
+        value,
+        {
+          shouldValidate: true,
+          shouldTouch: true,
+        }
+      );
     }
 
     const results = await Promise.all(
-      fieldsToValidate.map((field) =>
-        form.trigger(field as Path<S extends Schema ? Infer<S> : any>, {
+      fieldsToValidate.map(async (field) =>
+        form.trigger(field as Path<S extends Schema ? Infer<S> : unknown>, {
           shouldFocus: true,
         })
       )
@@ -479,12 +484,20 @@ export function Form<
     return `${errorKey}${translatedErrorMessage}`;
   };
 
+  const onNextStep = useCallback(() => {
+    handleNext().catch((error: unknown) => {
+      console.error("Error in handleNext:", error);
+    });
+  }, [handleNext]);
+
   return (
     <div className="h-full space-y-6">
       <div className="container flex h-full flex-col p-6">
         <UIForm {...form}>
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={useCallback((e: React.FormEvent) => {
+              e.preventDefault();
+            }, [])}
             noValidate
             className="flex flex-1 flex-col"
           >
@@ -533,11 +546,7 @@ export function Form<
                 currentStep={currentStep}
                 totalSteps={totalSteps}
                 onPreviousStep={handlePrev}
-                onNextStep={() => {
-                  handleNext().catch((error: Error) => {
-                    console.error("Error in handleNext:", error);
-                  });
-                }}
+                onNextStep={onNextStep}
                 labels={buttonLabels}
                 onLastStep={secureForm ? handleNext : handleSubmit}
                 isSecurityDialogOpen={showFormSecurityConfirmation}
