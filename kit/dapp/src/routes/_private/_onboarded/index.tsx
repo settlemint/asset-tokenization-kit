@@ -33,16 +33,13 @@ export const Route = createFileRoute("/_private/_onboarded/")({
    * @param root0.context
    */
   loader: async ({ context }) => {
-    // User data is available from parent _private route
-    // const user: User = context.user;
+    // User data is already loaded in parent _private route
+    const user = context.queryClient.getQueryData(orpc.user.me.queryKey());
 
-    // Ensure both user and systems data are loaded
-    const [user, systems] = await Promise.all([
-      context.queryClient.ensureQueryData(orpc.user.me.queryOptions()),
-      context.queryClient.ensureQueryData(
-        orpc.system.list.queryOptions({ input: {} })
-      ),
-    ]);
+    // Ensure systems data is loaded
+    const systems = await context.queryClient.ensureQueryData(
+      orpc.system.list.queryOptions({ input: {} })
+    );
 
     return { user, systems };
   },

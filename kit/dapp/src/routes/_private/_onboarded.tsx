@@ -8,14 +8,14 @@ import {
 } from "@/components/ui/sidebar";
 import { UserDropdown } from "@/components/user-dropdown/user-dropdown";
 import { authClient } from "@/lib/auth/auth.client";
-import { queryClient } from "@/lib/query.client";
 import { orpc } from "@/orpc";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded")({
   component: LayoutComponent,
-  loader: () => {
-    void queryClient.prefetchQuery(
+  beforeLoad: async ({ context }) => {
+    // Ensure factory list is loaded for the sidebar navigation
+    await context.queryClient.ensureQueryData(
       orpc.token.factoryList.queryOptions({ input: { hasTokens: true } })
     );
   },
