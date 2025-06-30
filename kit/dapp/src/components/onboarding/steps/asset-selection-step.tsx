@@ -28,18 +28,34 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod/v4";
 
+/**
+ * Zod schema for asset selection form validation.
+ * Ensures at least one asset type is selected.
+ */
 const assetSelectionSchema = z.object({
   assets: z.array(TokenTypeEnum).min(1, "Select at least one asset type"),
 });
 
+/**
+ * Type representing the form values for asset selection.
+ * Derived from the asset selection schema.
+ */
 type AssetSelectionFormValues = z.infer<typeof assetSelectionSchema>;
 
+/**
+ * Props for the AssetSelectionStep component.
+ * @property {() => void} [onSuccess] - Callback invoked when asset deployment completes successfully
+ * @property {(action: () => void) => void} [onRegisterAction] - Callback to register the deployment action with parent component
+ */
 interface AssetSelectionStepProps {
   onSuccess?: () => void;
   onRegisterAction?: (action: () => void) => void;
 }
 
-// Asset type icon mapping
+/**
+ * Mapping of asset types to their corresponding Lucide React icons.
+ * Used for visual representation of different asset classes in the UI.
+ */
 const assetIcons = {
   bond: Building,
   equity: BarChart3,
@@ -48,7 +64,14 @@ const assetIcons = {
   deposit: Wallet,
 } as const;
 
-// Component for the checkbox area to prevent event propagation
+/**
+ * Wrapper component for checkbox elements to prevent event propagation.
+ * Ensures checkbox clicks don't bubble up to parent containers.
+ * @param {object} props - Component props
+ * @param {(e: React.MouseEvent) => void} props.onClick - Click handler that stops propagation
+ * @param {React.ReactNode} props.children - Child elements to render
+ * @returns {JSX.Element} Wrapped checkbox element
+ */
 const CheckboxWrapper = memo(
   ({
     onClick,
@@ -60,8 +83,17 @@ const CheckboxWrapper = memo(
 );
 CheckboxWrapper.displayName = "CheckboxWrapper";
 
-// Memoized component for each asset type item
-// Create a separate inner component to handle the field rendering
+/**
+ * Inner component for rendering individual asset type selection items.
+ * Handles checkbox state and click interactions for asset selection.
+ * @param {object} props - Component props
+ * @param {AssetType} props.assetType - The type of asset being rendered
+ * @param {object} props.field - React Hook Form field object with value and onChange
+ * @param {Function} props.t - Translation function from react-i18next
+ * @param {React.ElementType} props.Icon - Icon component for the asset type
+ * @param {(e: React.MouseEvent) => void} props.handleCheckboxClick - Handler to prevent event bubbling
+ * @returns {JSX.Element} Rendered asset type selection item
+ */
 const AssetTypeFieldInner = memo(
   ({
     assetType,
@@ -135,6 +167,14 @@ const AssetTypeFieldInner = memo(
 );
 AssetTypeFieldInner.displayName = "AssetTypeFieldInner";
 
+/**
+ * Form field component for individual asset type selection.
+ * Integrates with React Hook Form to manage form state.
+ * @param {object} props - Component props
+ * @param {AssetType} props.assetType - The asset type to render
+ * @param {Control<AssetSelectionFormValues>} props.control - React Hook Form control object
+ * @returns {JSX.Element} Asset type form field with checkbox and description
+ */
 const AssetTypeFormField = memo(
   ({
     assetType,
@@ -240,7 +280,9 @@ export function AssetSelectionStep({
 
     const factories = values.assets.map((assetType) => ({
       type: assetType,
-      name: `${assetType.charAt(0).toUpperCase() + assetType.slice(1)} Factory`,
+      name: t(`asset-types.${assetType}`, {
+        ns: "tokens",
+      }),
     }));
 
     createFactories({

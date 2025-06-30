@@ -4,6 +4,12 @@
   "generating": "生成中...",
   "deploying": "デプロイ中...",
   "continue": "続ける",
+  "navigation": {
+    "assetManagement": "アセット管理",
+    "asset": "アセット",
+    "assetClasses": "アセットクラス",
+    "statistics": "統計"
+  },
   "errors": {
     "unauthorized": {
       "title": "認証が必要です",
