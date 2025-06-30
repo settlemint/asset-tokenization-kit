@@ -157,10 +157,8 @@ describe("AccountStats", () => {
 
     if (statsResponse.accountStatsState) {
       expect(
-        Number(
-          statsResponse.accountStatsState.totalValueInBaseCurrency
-        ).toFixed(2)
-      ).toEqual(expectedTotalValue.toFixed(2));
+        Number(statsResponse.accountStatsState.totalValueInBaseCurrency)
+      ).toBeCloseTo(expectedTotalValue, 2);
       expect(statsResponse.accountStatsState.balancesCount).toBe(
         account.balances.length
       );

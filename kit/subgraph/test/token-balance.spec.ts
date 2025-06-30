@@ -45,15 +45,16 @@ describe("TokenBalances", () => {
     // - Owner
     // - Investor A New
     // - Investor B
+    // - Frozen investor
     // - Bond contract (underlying deposit asset)
     // - Fixed yield schedule contract (underlying deposit asset)
-    expect(Object.keys(balancesByAccount).length).toBe(5);
+    expect(Object.keys(balancesByAccount).length).toBe(6);
   });
 
   it("there should be no balances with a zero value unless the balance is frozen", async () => {
     const query = theGraphGraphql(
       `query {
-        tokenBalances(where: { value: "0", isFrozen: true }) {
+        tokenBalances(where: { value: "0", isFrozen: false }) {
           id
           value
           valueExact

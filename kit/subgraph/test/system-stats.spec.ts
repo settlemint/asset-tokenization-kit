@@ -119,13 +119,9 @@ describe("SystemStats", () => {
       `
     );
     const statsResponse = await theGraphClient.request(statsQuery, {});
-    expect(statsResponse).toEqual({
-      systemStatsStates: [
-        {
-          totalValueInBaseCurrency: expectedTotalValue.toFixed(2),
-        },
-      ],
-    });
+    expect(
+      Number(statsResponse?.systemStatsStates[0]?.totalValueInBaseCurrency)
+    ).toBeCloseTo(expectedTotalValue, 2);
   });
 
   it("should have processed all events leading to a price change", async () => {
