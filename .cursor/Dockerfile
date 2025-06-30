@@ -57,8 +57,15 @@ RUN npm install -g turbo
 # Install SettleMint CLI as cursor user
 RUN npm install -g @settlemint/sdk-cli
 
+# Install Foundry for smart contract development as cursor user
+RUN curl -L https://foundry.paradigm.xyz | bash && \
+    /home/cursor/.foundry/bin/foundryup
+
+# Add Foundry to PATH
+ENV PATH="/home/cursor/.foundry/bin:$PATH"
+
 # Install helm-docs using Homebrew (matching GitHub Actions workflow)
-RUN brew install norwoodj/tap/helm-docs ast-grep yq helm oven-sh/bun/bun foundry
+RUN brew install norwoodj/tap/helm-docs ast-grep yq helm oven-sh/bun/bun
 
 # Set working directory
 WORKDIR /home/cursor
