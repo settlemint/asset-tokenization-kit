@@ -82,9 +82,10 @@ export function updateSystemStatsForPriceChange(
   const systemAddress = getSystemAddress(token);
   const state = fetchSystemStatsState(systemAddress);
 
-  // Calculate value delta = totalSupply * (newPrice - oldPrice)
-  const priceDelta = newPrice.minus(oldPrice);
-  const valueDelta = token.totalSupply.times(priceDelta);
+  // Calculate value delta
+  const oldValue = oldPrice.times(token.totalSupply);
+  const newValue = newPrice.times(token.totalSupply);
+  const valueDelta = newValue.minus(oldValue);
 
   // Update total value
   state.totalValueInBaseCurrency =
