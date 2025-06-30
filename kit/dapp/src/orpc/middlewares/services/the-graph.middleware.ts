@@ -103,7 +103,7 @@ function createValidatedTheGraphClient(
      * @param {object} options - Query configuration object
      * @param {object} options.input - Input data including the base input and optional transformations
      * @param {TInput} options.input.input - The base input data
-     * @param {function} options.input.filter - Optional function to build where clause from input
+     * @param {object} options.input.filter - Optional where clause for filtering results
      * @param {function} options.input.transform - Optional function to transform input before sending
      * @param {z.ZodType} options.output - Zod schema to validate the response against
      * @param {string} options.error - User-friendly error message to show if the operation fails
@@ -115,7 +115,7 @@ function createValidatedTheGraphClient(
      * const response = await client.query(LIST_FACTORIES_QUERY, {
      *   input: {
      *     input,
-     *     filter: (input) => buildFilter({ hasTokens: input.hasTokens })
+     *     filter: buildFilter({ hasTokens: input.hasTokens })
      *   },
      *   output: FactoriesSchema,
      *   error: "Failed to list factories"
@@ -142,7 +142,7 @@ function createValidatedTheGraphClient(
       options: {
         input: {
           input: TInput;
-          filter?: (input: TInput) => Record<string, unknown> | undefined;
+          filter?: Record<string, unknown> | undefined;
           transform?: (input: TInput) => TVariables;
         };
         output: z.ZodType<TValidated>;
@@ -183,11 +183,8 @@ function createValidatedTheGraphClient(
         }
 
         // Add filter if provided
-        if (filter) {
-          const where = filter(input);
-          if (where && Object.keys(where).length > 0) {
-            baseVariables.where = where;
-          }
+        if (filter && Object.keys(filter).length > 0) {
+          baseVariables.where = filter;
         }
 
         variables = baseVariables as TVariables;

@@ -37,7 +37,7 @@ export const factoryList = authRouter.token.factoryList
       {
         input: {
           input,
-          filter: (input) => buildFilter({ hasTokens: input.hasTokens }),
+          filter: buildFilter({ hasTokens: input.hasTokens }),
         },
         output: GraphQLResponseSchema,
         error: "Failed to list token factories",
