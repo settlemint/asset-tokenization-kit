@@ -78,6 +78,7 @@ export function handleBootstrapped(event: Bootstrapped): void {
   if (tokenFactoryRegistry.deployedInTransaction.equals(Bytes.empty())) {
     tokenFactoryRegistry.deployedInTransaction = event.transaction.hash;
   }
+  tokenFactoryRegistry.system = system.id;
   tokenFactoryRegistry.save();
 
   const complianceModuleRegistry = fetchComplianceModuleRegistry(

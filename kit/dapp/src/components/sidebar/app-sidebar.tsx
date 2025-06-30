@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
+import { NavAsset } from "@/components/sidebar/nav-asset";
 import { NavMain } from "@/components/sidebar/nav-main";
 import { NavProjects } from "@/components/sidebar/nav-projects";
 import { SidebarLogo } from "@/components/sidebar/sidebar-logo.tsx";
@@ -165,6 +166,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent className="pt-4">
         <NavMain items={data.navMain} />
+        <NavAsset />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarRail />

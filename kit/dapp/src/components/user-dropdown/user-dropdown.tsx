@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,17 +8,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Web3Avatar } from "@/components/web3-avatar/web3-avatar";
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
+import { LanguageSwitcher } from "@/components/language/language-switcher";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { authClient } from "@/lib/auth/auth.client";
+import { useNavigate } from "@tanstack/react-router";
+import { BadgeCheck, ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
+import { useCallback } from "react";
 
 export function UserDropdown({
   user,
@@ -28,6 +26,16 @@ export function UserDropdown({
     address?: string;
   };
 }) {
+  const navigate = useNavigate();
+
+  const handleSignOut = useCallback(async () => {
+    await authClient.signOut();
+    await navigate({
+      to: "/auth/$pathname",
+      params: { pathname: "sign-in" },
+    });
+  }, [navigate]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -41,7 +49,7 @@ export function UserDropdown({
             name={user?.name}
             address={user?.address}
             size={32}
-            className="h-8 w-8 rounded-lg"
+            className="h-8 w-8"
           />
           <div className="hidden sm:grid flex-1 text-left text-sm leading-tight">
             {user?.name ? (
@@ -72,7 +80,7 @@ export function UserDropdown({
               name={user?.name}
               address={user?.address}
               size={32}
-              className="h-8 w-8 rounded-lg"
+              className="h-8 w-8"
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
               {user?.name ? (
@@ -101,17 +109,11 @@ export function UserDropdown({
             <BadgeCheck />
             Account
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
-          </DropdownMenuItem>
+          <LanguageSwitcher mode="menuItem" />
+          <ThemeToggle mode="menuItem" />
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}>
           <LogOut />
           Log out
         </DropdownMenuItem>

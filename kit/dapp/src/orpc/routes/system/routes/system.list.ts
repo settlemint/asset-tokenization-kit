@@ -1,7 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { getPagination } from "@/orpc/routes/utils/pagination";
 import { z } from "zod/v4";
 
 /**
@@ -16,11 +15,12 @@ import { z } from "zod/v4";
  * tokenized assets and their associated compliance infrastructure.
  */
 const LIST_SYSTEM_QUERY = theGraphGraphql(`
-  query ListSystemQuery($skip: Int!, $orderDirection: OrderDirection = asc, $first: Int = 20) {
+  query ListSystemQuery($skip: Int!, $first: Int!, $orderBy: System_orderBy, $orderDirection: OrderDirection) {
     systems(
-        first: $first
-        orderDirection: $orderDirection
         skip: $skip
+        first: $first
+        orderBy: $orderBy
+        orderDirection: $orderDirection
       ) {
       id
     }
@@ -57,13 +57,6 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
 export const list = authRouter.system.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    // Extract and validate pagination parameters from the request
-    // Using nullish coalescing for type-safe default values
-    const { offset, limit, orderDirection } = {
-      ...getPagination(input),
-      orderDirection: input?.orderDirection ?? "asc",
-    };
-
     // Define response schema for type-safe GraphQL response validation
     // Zod schema provides both runtime validation and TypeScript type inference
     // This ensures the data structure matches our expectations before usage
@@ -75,19 +68,13 @@ export const list = authRouter.system.list
       ),
     });
 
-    // Execute TheGraph query with type-safe pagination and sorting parameters
-    // The Zod schema validates the response and provides proper TypeScript types
-    // This eliminates the need for manual type assertions or runtime errors from malformed data
-    const result = await context.theGraphClient.query(
-      LIST_SYSTEM_QUERY,
-      {
-        skip: offset,
-        orderDirection,
-        first: limit,
-      },
-      SystemsResponseSchema,
-      "Failed to retrieve systems"
-    );
+    // Execute TheGraph query with automatic variable transformation
+    // The middleware handles offset/limit to skip/first conversion
+    const result = await context.theGraphClient.query(LIST_SYSTEM_QUERY, {
+      input: { input },
+      output: SystemsResponseSchema,
+      error: "Failed to retrieve systems",
+    });
 
     // Return the array of system contracts
     return result.systems;

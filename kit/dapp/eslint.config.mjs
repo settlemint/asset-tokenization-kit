@@ -256,6 +256,8 @@ export default defineConfig([
       // SECURITY RULES
       // ========================================================================
       "security/detect-object-injection": "off", // Too many false positives
+
+      "react-perf/jsx-no-new-object-as-prop": "off",
     },
   },
 

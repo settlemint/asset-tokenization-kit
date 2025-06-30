@@ -1,5 +1,6 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { Account, Token, TokenBalance } from "../../../generated/schema";
+import { increaseAccountStatsBalanceCount } from "../../stats/account-stats";
 import { setBigNumber } from "../../utils/bignumber";
 
 export function fetchTokenBalance(
@@ -20,6 +21,9 @@ export function fetchTokenBalance(
     setBigNumber(tokenBalance, "frozen", BigInt.zero(), token.decimals);
     setBigNumber(tokenBalance, "available", BigInt.zero(), token.decimals);
     tokenBalance.save();
+
+    // Increase account stats balance count
+    increaseAccountStatsBalanceCount(Address.fromBytes(account.id));
   }
 
   return tokenBalance;

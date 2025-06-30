@@ -1,14 +1,13 @@
-import { db } from "@/lib/db";
-import { settings } from "@/lib/db/schema";
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { assetTypes } from "@/lib/zod/validators/asset-types";
+import {
+  getEthereumAddress,
+  type EthereumAddress,
+} from "@/lib/zod/validators/ethereum-address";
+import { orpc } from "@/orpc";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
-import { eq } from "drizzle-orm";
-import { getAddress, type Address } from "viem";
-
-const SYSTEM_ADDRESS_KEY = "SYSTEM_ADDRESS";
 
 const TOKEN_FACTORIES_QUERY = theGraphGraphql(
   `
@@ -47,7 +46,7 @@ export type SystemAccessControl = NonNullable<
 export interface TokenFactory {
   type: (typeof assetTypes)[number];
   name: string;
-  address: Address;
+  address: EthereumAddress;
   accessControl: SystemAccessControl;
 }
 
@@ -60,15 +59,19 @@ export const systemMiddleware = baseRouter.middleware(
     if (context.system) {
       return next();
     }
-    const systemAddress = await getSystemAddress(db);
+    const systemAddress = await orpc.settings.read.call({
+      key: "SYSTEM_ADDRESS" as const,
+    });
     if (!systemAddress) {
       throw errors.SYSTEM_NOT_CREATED();
     }
-    const tokenFactories = await getTokenFactories(systemAddress);
+    const tokenFactories = await getTokenFactories(
+      getEthereumAddress(systemAddress)
+    );
     const systemContext: typeof context = {
       ...context,
       system: {
-        address: systemAddress,
+        address: getEthereumAddress(systemAddress),
         tokenFactories,
       },
     };
@@ -78,22 +81,8 @@ export const systemMiddleware = baseRouter.middleware(
   }
 );
 
-const getSystemAddress = async (dbContext: typeof db) => {
-  const [setting] = await dbContext
-    .select()
-    .from(settings)
-    .where(eq(settings.key, SYSTEM_ADDRESS_KEY))
-    .limit(1);
-
-  if (setting?.value) {
-    return getAddress(setting.value);
-  }
-
-  return null;
-};
-
 const getTokenFactories = async (
-  systemAddress: Address
+  systemAddress: EthereumAddress
 ): Promise<TokenFactory[]> => {
   const { system } = await theGraphClient.request({
     document: TOKEN_FACTORIES_QUERY,
@@ -106,7 +95,7 @@ const getTokenFactories = async (
       ({ id, name, accessControl }) => ({
         type: name as (typeof assetTypes)[number],
         name,
-        address: getAddress(id),
+        address: getEthereumAddress(id),
         accessControl,
       })
     ) ?? []

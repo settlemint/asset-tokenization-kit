@@ -1,6 +1,7 @@
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
+import { consoleForwardPlugin } from "vite-console-forward-plugin";
 import tsConfigPaths from "vite-tsconfig-paths";
 
 // Generate a build ID
@@ -20,9 +21,6 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-  },
-  optimizeDeps: {
-    entries: ["src/**/*.tsx", "src/**/*.ts"],
   },
   build: {
     chunkSizeWarningLimit: 600,
@@ -80,5 +78,6 @@ export default defineConfig({
     analyzer({
       enabled: process.env.ANALYZE === "true",
     }),
+    consoleForwardPlugin(),
   ],
 });

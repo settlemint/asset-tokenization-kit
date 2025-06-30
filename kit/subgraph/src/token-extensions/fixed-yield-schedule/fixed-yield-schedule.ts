@@ -90,47 +90,12 @@ export function handleFixedYieldScheduleSet(
 
 export function handleUnderlyingAssetTopUp(event: UnderlyingAssetTopUp): void {
   fetchEvent(event, "UnderlyingAssetTopUp");
-  /* TODO: implement stats
-  const underlyingAsset = fetchToken(
-  const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
-  const underlyingAsset = fetchToken(
-    Address.fromBytes(fixedYieldSchedule.underlyingAsset)
-  );
-  const tokenBalance = fetchTokenBalance(
-    underlyingAsset,
-    fetchAccount(event.address)
-  );
-  setBigNumber(
-    fixedYieldSchedule,
-    "underlyingAssetBalanceAvailable",
-    tokenBalance.availableExact,
-    underlyingAsset.decimals
-  );
-  fixedYieldSchedule.save();
-  */
 }
 
 export function handleUnderlyingAssetWithdrawn(
   event: UnderlyingAssetWithdrawn
 ): void {
   fetchEvent(event, "UnderlyingAssetWithdrawn");
-  /* TODO: implement stats
-  const fixedYieldSchedule = fetchFixedYieldSchedule(event.address);
-  const underlyingAsset = fetchToken(
-    Address.fromBytes(fixedYieldSchedule.underlyingAsset)
-  );
-  const tokenBalance = fetchTokenBalance(
-    underlyingAsset,
-    fetchAccount(event.address)
-  );
-  setBigNumber(
-    fixedYieldSchedule,
-    "underlyingAssetBalanceAvailable",
-    tokenBalance.availableExact,
-    underlyingAsset.decimals
-  );
-  fixedYieldSchedule.save();
-  */
 }
 
 export function handleYieldClaimed(event: YieldClaimed): void {

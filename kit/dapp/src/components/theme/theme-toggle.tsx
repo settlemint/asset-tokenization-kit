@@ -3,10 +3,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useMounted } from "@/lib/utils/use-mounted";
-import { MoonIcon, SunIcon } from "lucide-react";
+import { Check, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,19 +25,38 @@ interface ThemeMenuItemProps {
 /**
  * A single theme menu item component.
  */
-const ThemeMenuItem = ({ theme, onThemeChange }: ThemeMenuItemProps) => {
+const ThemeMenuItem = ({
+  theme,
+  onThemeChange,
+  currentTheme,
+}: ThemeMenuItemProps & { currentTheme?: string }) => {
   const handleClick = useCallback(() => {
     onThemeChange(theme);
   }, [theme, onThemeChange]);
   const { t } = useTranslation("theme");
 
+  const getThemeIcon = (themeOption: string) => {
+    if (themeOption === "light") return <SunIcon className="size-4" />;
+    if (themeOption === "dark") return <MoonIcon className="size-4" />;
+    return <div className="size-4" />;
+  };
+
+  const getThemeLabel = (themeOption: string) => {
+    if (themeOption === "dark") return t("dark");
+    if (themeOption === "light") return t("light");
+    return t("system");
+  };
+
   return (
-    <DropdownMenuItem onClick={handleClick} className="capitalize">
-      {theme === "dark"
-        ? t("dark")
-        : theme === "light"
-          ? t("light")
-          : t("system")}
+    <DropdownMenuItem
+      onClick={handleClick}
+      className="flex items-center justify-between"
+    >
+      <div className="flex items-center gap-2">
+        {getThemeIcon(theme)}
+        {getThemeLabel(theme)}
+      </div>
+      {currentTheme === theme && <Check className="ml-2 size-4" />}
     </DropdownMenuItem>
   );
 };
@@ -43,6 +65,8 @@ const ThemeMenuItem = ({ theme, onThemeChange }: ThemeMenuItemProps) => {
  * Props for the ThemeToggle component.
  */
 interface ThemeToggleProps {
+  /** The mode of the component - dropdown or menuItem. */
+  mode?: "dropdown" | "menuItem";
   /** The variant of the button. */
   variant?: Parameters<typeof Button>[0]["variant"];
   /** The size of the button. */
@@ -55,17 +79,18 @@ interface ThemeToggleProps {
  * A component that allows users to toggle between different theme options.
  */
 export function ThemeToggle({
+  mode = "dropdown" as "dropdown" | "menuItem",
   variant = "outline",
   size = "icon",
   className,
 }: ThemeToggleProps) {
   const mounted = useMounted();
-  const { setTheme, resolvedTheme, themes } = useTheme();
+  const { setTheme, theme, resolvedTheme, themes } = useTheme();
   const { t } = useTranslation("theme");
 
   const handleThemeChange = useCallback(
-    (theme: string) => {
-      setTheme(theme);
+    (newTheme: string) => {
+      setTheme(newTheme);
     },
     [setTheme]
   );
@@ -73,6 +98,28 @@ export function ThemeToggle({
   // Show skeleton during SSR to prevent hydration mismatch
   if (!mounted) {
     return null;
+  }
+
+  const themeMenuItems = themes.map((themeOption) => (
+    <ThemeMenuItem
+      key={themeOption}
+      theme={themeOption}
+      onThemeChange={handleThemeChange}
+      currentTheme={theme}
+    />
+  ));
+
+  if (mode === "menuItem") {
+    return (
+      <DropdownMenuSub>
+        <DropdownMenuSubTrigger>
+          <SunIcon className="dark:-rotate-90 size-4 rotate-0 scale-100 transition-all dark:scale-0" />
+          <MoonIcon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          {t("toggle-label")}
+        </DropdownMenuSubTrigger>
+        <DropdownMenuSubContent>{themeMenuItems}</DropdownMenuSubContent>
+      </DropdownMenuSub>
+    );
   }
 
   return (
@@ -89,15 +136,7 @@ export function ThemeToggle({
           {size !== "icon" && <span className="ml-2">{resolvedTheme}</span>}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {themes.map((theme) => (
-          <ThemeMenuItem
-            key={theme}
-            theme={theme}
-            onThemeChange={handleThemeChange}
-          />
-        ))}
-      </DropdownMenuContent>
+      <DropdownMenuContent align="end">{themeMenuItems}</DropdownMenuContent>
     </DropdownMenu>
   );
 }

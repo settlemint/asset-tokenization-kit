@@ -272,6 +272,7 @@ type ComplianceModule @entity(immutable: false) {
 
 type TokenFactoryRegistry @entity(immutable: false) {
   id: Bytes!
+  system: System!
   accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
@@ -286,6 +287,10 @@ type TokenFactory @entity(immutable: false) {
   tokenFactoryRegistry: TokenFactoryRegistry
   account: Account!
   tokens: [Token!]! @derivedFrom(field: "tokenFactory")
+  # Indicates whether this factory has created any tokens
+  # This field is used for efficient filtering without expensive joins
+  # Set to false when factory is created, true when first token is deployed
+  hasTokens: Boolean!
 }
 
 type Token @entity(immutable: false) {
@@ -565,6 +570,15 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
 # SYSTEM STATISTICS
 # ==================================================
 
+# Persistent entity to store current system state for efficient calculations
+type SystemStatsState @entity(immutable: false) {
+  id: Bytes! # System address
+  system: System!
+
+  # Value of all tokens in the system in base FIAT currency
+  totalValueInBaseCurrency: BigDecimal!
+}
+
 type SystemStatsData @entity(timeseries: true) {
   id: Int8!
   timestamp: Timestamp!
@@ -590,6 +604,18 @@ type SystemStats
 # ==================================================
 # ACCOUNT STATISTICS
 # ==================================================
+
+# Persistent entity to store current account state for efficient calculations
+type AccountStatsState @entity(immutable: false) {
+  id: Bytes! # Account address
+  account: Account!
+
+  # Value of all tokens for the account in base FIAT currency
+  totalValueInBaseCurrency: BigDecimal!
+
+  # Balance metrics
+  balancesCount: Int!
+}
 
 type AccountStatsData @entity(timeseries: true) {
   id: Int8!

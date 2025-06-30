@@ -1,4 +1,4 @@
-import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
 import { IdentityClaim } from "../../../generated/schema";
 import { convertEthereumValue } from "../../event/fetch/event";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
@@ -60,6 +60,10 @@ export function decodeClaimValues(
 
   let decoded = ethereum.decode(decodingSignature, data);
   if (decoded == null) {
+    log.warning("Decoding claim values for topic {} with signature {} failed", [
+      topicScheme.name,
+      decodingSignature,
+    ]);
     // If decoding fails, create a single claim value with the raw hex data
     const claimValue = fetchIdentityClaimValue(claim, "rawData");
     claimValue.value = data.toHexString();
