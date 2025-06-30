@@ -17,6 +17,7 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
       id
       name
       typeId
+      hasTokens
     }
   }
 `);

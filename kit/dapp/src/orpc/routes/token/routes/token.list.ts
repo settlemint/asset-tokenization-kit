@@ -31,7 +31,7 @@ export const list = authRouter.token.list
     const variables: VariablesOf<typeof LIST_TOKEN_QUERY> = {
       skip: offset,
       first: limit,
-      orderBy: orderBy as VariablesOf<typeof LIST_TOKEN_QUERY>['orderBy'],
+      orderBy: orderBy as VariablesOf<typeof LIST_TOKEN_QUERY>["orderBy"],
       orderDirection,
     };
 

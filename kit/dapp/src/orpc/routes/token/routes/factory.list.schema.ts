@@ -19,6 +19,11 @@ export const TokenFactorySchema = z.object({
    * The type ID of the token factory
    */
   typeId: z.string().describe("The type ID of the token factory"),
+
+  /**
+   * Whether the factory has created any tokens
+   */
+  hasTokens: z.boolean().describe("Whether the factory has created any tokens"),
 });
 
 /**
