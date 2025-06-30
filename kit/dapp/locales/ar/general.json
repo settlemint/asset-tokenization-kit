@@ -4,6 +4,12 @@
   "generating": "جاري الإنشاء...",
   "deploying": "جاري النشر...",
   "continue": "استمر",
+  "navigation": {
+    "assetManagement": "إدارة الأصول",
+    "asset": "أصل",
+    "assetClasses": "فئات الأصول",
+    "statistics": "إحصائيات"
+  },
   "errors": {
     "unauthorized": {
       "title": "مطلوب المصادقة",

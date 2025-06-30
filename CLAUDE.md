@@ -309,3 +309,4 @@ const UserId = (id: string): UserId => id as UserId;
   shadcn components we want to keep immutable for easy upgrading
 - NEVER, EVER commit to main, if you are not on a branch, make a new one
 - Run `bun artifacts` and `bun codegen` before running any testing/linting/formatting tasks
+- `routeTree.gen.ts` is auto generated, ignore it

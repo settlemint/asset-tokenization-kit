@@ -4,6 +4,12 @@
   "generating": "Generiere...",
   "deploying": "Bereitstellen...",
   "continue": "Fortfahren",
+  "navigation": {
+    "assetManagement": "Asset-Verwaltung",
+    "asset": "Asset",
+    "assetClasses": "Asset-Klassen",
+    "statistics": "Statistiken"
+  },
   "errors": {
     "unauthorized": {
       "title": "Authentifizierung erforderlich",
