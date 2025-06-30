@@ -35,10 +35,6 @@ export function WalletStep({ onSuccess, onRegisterAction }: WalletStepProps) {
           walletCreationFailed: t("onboarding:wallet.creation-failed"),
         },
       });
-      // TODO: Remove this once we have a proper pincode setup flow
-      await authClient.pincode.enable({
-        pincode: "111111",
-      });
     },
     onSuccess: () => {
       toast.success(t("onboarding:wallet.generated"));
