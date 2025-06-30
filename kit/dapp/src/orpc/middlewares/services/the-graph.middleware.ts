@@ -1,4 +1,5 @@
 import { theGraphClient } from "@/lib/settlemint/the-graph";
+import type { ListInput } from "@/orpc/routes/common/schemas/list.schema";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import type { TadaDocumentNode } from "gql.tada";
 import type { Variables } from "graphql-request";
@@ -8,6 +9,54 @@ import { baseRouter } from "../../procedures/base.router";
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
 });
+
+/**
+ * Type guard to check if input matches ListInput structure
+ */
+function isListInput(input: unknown): input is ListInput {
+  return (
+    typeof input === "object" &&
+    input !== null &&
+    "offset" in input &&
+    "limit" in input &&
+    "orderDirection" in input &&
+    "orderBy" in input
+  );
+}
+
+/**
+ * Helper to create a filter object from optional input fields.
+ * Only includes fields that are not undefined.
+ *
+ * @param fields - Object mapping field names to their values
+ * @returns Filter object with only defined fields, or undefined if all fields are undefined
+ *
+ * @example
+ * ```typescript
+ * // Instead of:
+ * filter: (input) => input.hasTokens !== undefined
+ *   ? { hasTokens: input.hasTokens }
+ *   : undefined
+ *
+ * // Use:
+ * filter: (input) => buildFilter({ hasTokens: input.hasTokens })
+ * ```
+ */
+export function buildFilter(
+  fields: Record<string, unknown>
+): Record<string, unknown> | undefined {
+  const filter: Record<string, unknown> = {};
+  let hasFields = false;
+
+  for (const [key, value] of Object.entries(fields)) {
+    if (value !== undefined) {
+      filter[key] = value;
+      hasFields = true;
+    }
+  }
+
+  return hasFields ? filter : undefined;
+}
 
 /**
  * Creates a validated TheGraph client with built-in error handling and validation.
@@ -37,87 +86,80 @@ function createValidatedTheGraphClient(
 ) {
   return {
     /**
-     * Executes a GraphQL query against TheGraph with automatic response validation.
+     * Executes a GraphQL query against TheGraph with automatic response validation
+     * and variable transformation.
      *
      * This method performs a GraphQL query operation against TheGraph's indexed blockchain data
-     * and validates the response against a provided Zod schema. Unlike raw GraphQL queries,
-     * this method ensures:
+     * and validates the response against a provided Zod schema. It supports automatic
+     * transformation of input variables for common patterns like pagination and filtering.
      *
+     * Features:
      * 1. **Type Safety**: Response data is validated at runtime against the provided schema
-     * 2. **Error Categorization**: Errors are automatically categorized (NOT_FOUND vs INTERNAL_SERVER_ERROR)
-     * 3. **Operation Tracking**: Operation names are extracted for better logging and debugging
-     * 4. **Consistent Error Messages**: User-friendly messages are shown while technical details are logged
+     * 2. **Variable Transformation**: Automatically transforms ListSchema inputs to TheGraph format
+     * 3. **Error Categorization**: Errors are automatically categorized (NOT_FOUND vs INTERNAL_SERVER_ERROR)
+     * 4. **Operation Tracking**: Operation names are extracted for better logging and debugging
+     * 5. **Consistent Error Messages**: User-friendly messages are shown while technical details are logged
+     *
      * @param {TadaDocumentNode} document - The GraphQL query document with TypeScript types
-     * @param {TVariables} variables - Variables for the GraphQL query
-     * @param {z.ZodType} schema - Zod schema to validate the response against. This schema
-     *   must match the expected response structure from TheGraph
-     * @param {string} userMessage - User-friendly error message to show if the operation fails.
-     *   This message is shown to end users, while technical details are logged separately
-     * @returns {Promise<TValidated>} The validated query response data matching the provided schema
-     * @throws {NOT_FOUND} When TheGraph returns a 404 error or "not found" message,
-     *   typically indicating the subgraph doesn't exist or the entity wasn't found
-     * @throws {INTERNAL_SERVER_ERROR} When the query fails for other reasons or when
-     *   the response doesn't match the expected schema structure
+     * @param {object} options - Query configuration object
+     * @param {object} options.input - Input data including the base input and optional transformations
+     * @param {TInput} options.input.input - The base input data
+     * @param {object|array} options.input.filter - Optional where clause for filtering results (object) or array of keys to pick from input
+     * @param {function} options.input.transform - Optional function to transform input before sending
+     * @param {z.ZodType} options.output - Zod schema to validate the response against
+     * @param {string} options.error - User-friendly error message to show if the operation fails
+     * @returns {Promise<TValidated>} The validated query response data
+     *
      * @example
      * ```typescript
-     * // Define the expected response schema
-     * const TokenTransfersSchema = z.object({
-     *   transfers: z.array(z.object({
-     *     id: z.string(),
-     *     from: z.string(),
-     *     to: z.string(),
-     *     value: z.string(),
-     *     timestamp: z.string(),
-     *     transactionHash: z.string()
-     *   }))
-     * });
-     *
-     * // Execute query with validation
-     * const transfers = await client.query(
-     *   GET_TOKEN_TRANSFERS_QUERY,
-     *   {
-     *     tokenAddress: "0x123...",
-     *     first: 100,
-     *     orderBy: "timestamp",
-     *     orderDirection: "desc"
+     * // List query with automatic pagination transformation
+     * const response = await client.query(LIST_FACTORIES_QUERY, {
+     *   input: {
+     *     input,
+     *     filter: ['hasTokens'] // or { hasTokens: input.hasTokens }
      *   },
-     *   TokenTransfersSchema,
-     *   "Failed to fetch token transfer history"
-     * );
-     *
-     * // TypeScript knows transfers matches TokenTransfersSchema
-     * transfers.transfers.forEach(transfer => {
-     *   console.log(`${transfer.from} → ${transfer.to}: ${transfer.value}`);
+     *   output: FactoriesSchema,
+     *   error: "Failed to list factories"
      * });
      *
-     * // Complex aggregation query example
-     * const StatsSchema = z.object({
-     *   token: z.object({
-     *     id: z.string(),
-     *     totalSupply: z.string(),
-     *     holdersCount: z.number()
-     *   }),
-     *   dailySnapshots: z.array(z.object({
-     *     date: z.string(),
-     *     volume: z.string(),
-     *     priceUSD: z.string()
-     *   }))
+     * // Read query with ID transformation
+     * const factory = await client.query(READ_FACTORY_QUERY, {
+     *   input: {
+     *     input: { id },
+     *     transform: (input) => ({ id: input.id.toLowerCase() })
+     *   },
+     *   output: FactorySchema,
+     *   error: "Failed to read factory"
      * });
-     *
-     * const stats = await client.query(
-     *   GET_TOKEN_ANALYTICS_QUERY,
-     *   { tokenId: tokenAddress, days: 30 },
-     *   StatsSchema,
-     *   "Failed to load token analytics"
-     * );
      * ```
      */
-    async query<TResult, TVariables extends Variables, TValidated>(
+    async query<
+      TResult,
+      TVariables extends Variables,
+      TValidated,
+      TInput = TVariables,
+    >(
       document: TadaDocumentNode<TResult, TVariables>,
-      variables: TVariables,
-      schema: z.ZodType<TValidated>,
-      userMessage: string
+      options: {
+        input: {
+          input: TInput;
+          filter?:
+            | Record<string, unknown>
+            | readonly (keyof TInput)[]
+            | undefined;
+          transform?: (input: TInput) => TVariables;
+        };
+        output: z.ZodType<TValidated>;
+        error: string;
+      }
     ): Promise<TValidated> {
+      const {
+        input: inputOptions,
+        output: schema,
+        error: userMessage,
+      } = options;
+      const { input, filter, transform } = inputOptions;
+
       // Extract operation name from the GraphQL document metadata for better error messages
       const operation =
         (
@@ -125,6 +167,59 @@ function createValidatedTheGraphClient(
             __meta?: { operationName?: string };
           }
         ).__meta?.operationName ?? "GraphQL Query";
+
+      // Transform variables based on options
+      let variables: TVariables;
+
+      if (transform) {
+        // Use custom transform function
+        variables = transform(input);
+      } else if (isListInput(input)) {
+        // Automatic transformation for ListSchema inputs
+        const baseVariables: Record<string, unknown> = {
+          skip: input.offset,
+          first: input.limit,
+          orderDirection: input.orderDirection,
+        };
+
+        if (input.orderBy) {
+          baseVariables.orderBy = input.orderBy;
+        }
+
+        // Add filter if provided
+        if (filter) {
+          const cleanFilter: Record<string, unknown> = {};
+          let hasValidFields = false;
+
+          if (Array.isArray(filter)) {
+            // If filter is an array of keys, pick those from input
+            for (const key of filter) {
+              const value = (input as Record<string, unknown>)[key as string];
+              if (value !== undefined) {
+                cleanFilter[key as string] = value;
+                hasValidFields = true;
+              }
+            }
+          } else {
+            // If filter is an object, remove undefined values
+            for (const [key, value] of Object.entries(filter)) {
+              if (value !== undefined) {
+                cleanFilter[key] = value;
+                hasValidFields = true;
+              }
+            }
+          }
+
+          if (hasValidFields) {
+            baseVariables.where = cleanFilter;
+          }
+        }
+
+        variables = baseVariables as TVariables;
+      } else {
+        // No transformation needed
+        variables = input as unknown as TVariables;
+      }
 
       let result: TResult;
       try {

@@ -33,17 +33,13 @@ export const list = authRouter.settings.list
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
     // Extract pagination parameters
-    const {
-      offset = 0,
-      limit = 100,
-      orderDirection = "asc",
-      orderBy = "key",
-    } = input ?? {};
+    const { offset, limit, orderDirection, orderBy } = input;
 
     // Determine sort order
     const order = orderDirection === "desc" ? desc : asc;
 
     // Map orderBy field to the correct column
+    // Support both 'key' and 'lastUpdated' as valid sort fields
     const orderColumn =
       orderBy === "lastUpdated" ? settings.lastUpdated : settings.key;
 
