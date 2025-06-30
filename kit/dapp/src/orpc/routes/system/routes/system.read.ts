@@ -65,8 +65,6 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
 export const read = onboardedRouter.system.read
   .use(theGraphMiddleware)
   .handler(async ({ input, context, errors }) => {
-    const { id } = input;
-
     // Define response schema for type-safe validation
     // This Zod schema ensures the GraphQL response matches our expected structure
     // and provides compile-time type inference for the validated data
@@ -90,21 +88,23 @@ export const read = onboardedRouter.system.read
         .nullable(),
     });
 
-    // Query system details from TheGraph with type-safe validation
-    // The Zod schema validates the response at runtime and infers the TypeScript type
+    // Query system details from TheGraph with automatic ID transformation
     const result = await context.theGraphClient.query(
       SYSTEM_DETAILS_QUERY,
-      {
-        id: id.toLowerCase(), // TheGraph stores addresses in lowercase
-      },
+      input,
       SystemResponseSchema,
-      `Failed to retrieve system: ${id}`
+      `Failed to retrieve system: ${input.id}`,
+      {
+        transform: (input) => ({
+          id: input.id.toLowerCase(), // TheGraph stores addresses in lowercase
+        }),
+      }
     );
 
     // Check if system exists
     if (!result.system) {
       throw errors.NOT_FOUND({
-        message: `System not found: ${id}`,
+        message: `System not found: ${input.id}`,
       });
     }
 

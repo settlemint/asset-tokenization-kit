@@ -1,7 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { toTheGraphVariables } from "@/orpc/routes/utils/thegraph-variables";
 import { z } from "zod/v4";
 
 /**
@@ -58,9 +57,6 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
 export const list = authRouter.system.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    // Transform input to TheGraph query variables
-    const variables = toTheGraphVariables(input, LIST_SYSTEM_QUERY);
-
     // Define response schema for type-safe GraphQL response validation
     // Zod schema provides both runtime validation and TypeScript type inference
     // This ensures the data structure matches our expectations before usage
@@ -72,12 +68,11 @@ export const list = authRouter.system.list
       ),
     });
 
-    // Execute TheGraph query with type-safe pagination and sorting parameters
-    // The Zod schema validates the response and provides proper TypeScript types
-    // This eliminates the need for manual type assertions or runtime errors from malformed data
+    // Execute TheGraph query with automatic variable transformation
+    // The middleware handles offset/limit to skip/first conversion
     const result = await context.theGraphClient.query(
       LIST_SYSTEM_QUERY,
-      variables,
+      input,
       SystemsResponseSchema,
       "Failed to retrieve systems"
     );

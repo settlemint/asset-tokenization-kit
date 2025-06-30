@@ -1,4 +1,5 @@
 import { theGraphClient } from "@/lib/settlemint/the-graph";
+import type { ListInput } from "@/orpc/routes/common/schemas/list.schema";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import type { TadaDocumentNode } from "gql.tada";
 import type { Variables } from "graphql-request";
@@ -8,6 +9,19 @@ import { baseRouter } from "../../procedures/base.router";
 const logger = createLogger({
   level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
 });
+
+/**
+ * Type guard to check if input matches ListInput structure
+ */
+function isListInput(input: unknown): input is ListInput {
+  return (
+    typeof input === "object" &&
+    input !== null &&
+    "offset" in input &&
+    "limit" in input &&
+    "orderDirection" in input
+  );
+}
 
 /**
  * Creates a validated TheGraph client with built-in error handling and validation.
@@ -37,86 +51,68 @@ function createValidatedTheGraphClient(
 ) {
   return {
     /**
-     * Executes a GraphQL query against TheGraph with automatic response validation.
+     * Executes a GraphQL query against TheGraph with automatic response validation
+     * and variable transformation.
      *
      * This method performs a GraphQL query operation against TheGraph's indexed blockchain data
-     * and validates the response against a provided Zod schema. Unlike raw GraphQL queries,
-     * this method ensures:
+     * and validates the response against a provided Zod schema. It supports automatic
+     * transformation of input variables for common patterns like pagination and filtering.
      *
+     * Features:
      * 1. **Type Safety**: Response data is validated at runtime against the provided schema
-     * 2. **Error Categorization**: Errors are automatically categorized (NOT_FOUND vs INTERNAL_SERVER_ERROR)
-     * 3. **Operation Tracking**: Operation names are extracted for better logging and debugging
-     * 4. **Consistent Error Messages**: User-friendly messages are shown while technical details are logged
+     * 2. **Variable Transformation**: Automatically transforms ListSchema inputs to TheGraph format
+     * 3. **Error Categorization**: Errors are automatically categorized (NOT_FOUND vs INTERNAL_SERVER_ERROR)
+     * 4. **Operation Tracking**: Operation names are extracted for better logging and debugging
+     * 5. **Consistent Error Messages**: User-friendly messages are shown while technical details are logged
+     *
      * @param {TadaDocumentNode} document - The GraphQL query document with TypeScript types
-     * @param {TVariables} variables - Variables for the GraphQL query
-     * @param {z.ZodType} schema - Zod schema to validate the response against. This schema
-     *   must match the expected response structure from TheGraph
-     * @param {string} userMessage - User-friendly error message to show if the operation fails.
-     *   This message is shown to end users, while technical details are logged separately
-     * @returns {Promise<TValidated>} The validated query response data matching the provided schema
-     * @throws {NOT_FOUND} When TheGraph returns a 404 error or "not found" message,
-     *   typically indicating the subgraph doesn't exist or the entity wasn't found
-     * @throws {INTERNAL_SERVER_ERROR} When the query fails for other reasons or when
-     *   the response doesn't match the expected schema structure
+     * @param {TInput | TVariables} input - Either raw variables or input to be transformed
+     * @param {z.ZodType} schema - Zod schema to validate the response against
+     * @param {string} userMessage - User-friendly error message to show if the operation fails
+     * @param {object} options - Optional configuration for variable transformation
+     * @param {function} options.filter - Function to build where clause from input
+     * @param {function} options.transform - Function to transform input before sending
+     * @returns {Promise<TValidated>} The validated query response data
+     *
      * @example
      * ```typescript
-     * // Define the expected response schema
-     * const TokenTransfersSchema = z.object({
-     *   transfers: z.array(z.object({
-     *     id: z.string(),
-     *     from: z.string(),
-     *     to: z.string(),
-     *     value: z.string(),
-     *     timestamp: z.string(),
-     *     transactionHash: z.string()
-     *   }))
-     * });
-     *
-     * // Execute query with validation
-     * const transfers = await client.query(
-     *   GET_TOKEN_TRANSFERS_QUERY,
+     * // List query with automatic pagination transformation
+     * const factories = await client.query(
+     *   LIST_FACTORIES_QUERY,
+     *   input, // ListSchema input with offset/limit
+     *   FactoriesSchema,
+     *   "Failed to list factories",
      *   {
-     *     tokenAddress: "0x123...",
-     *     first: 100,
-     *     orderBy: "timestamp",
-     *     orderDirection: "desc"
-     *   },
-     *   TokenTransfersSchema,
-     *   "Failed to fetch token transfer history"
+     *     filter: (input) => ({ hasTokens: input.hasTokens })
+     *   }
      * );
      *
-     * // TypeScript knows transfers matches TokenTransfersSchema
-     * transfers.transfers.forEach(transfer => {
-     *   console.log(`${transfer.from} → ${transfer.to}: ${transfer.value}`);
-     * });
-     *
-     * // Complex aggregation query example
-     * const StatsSchema = z.object({
-     *   token: z.object({
-     *     id: z.string(),
-     *     totalSupply: z.string(),
-     *     holdersCount: z.number()
-     *   }),
-     *   dailySnapshots: z.array(z.object({
-     *     date: z.string(),
-     *     volume: z.string(),
-     *     priceUSD: z.string()
-     *   }))
-     * });
-     *
-     * const stats = await client.query(
-     *   GET_TOKEN_ANALYTICS_QUERY,
-     *   { tokenId: tokenAddress, days: 30 },
-     *   StatsSchema,
-     *   "Failed to load token analytics"
+     * // Read query with ID transformation
+     * const factory = await client.query(
+     *   READ_FACTORY_QUERY,
+     *   { id },
+     *   FactorySchema,
+     *   "Failed to read factory",
+     *   {
+     *     transform: (vars) => ({ ...vars, id: vars.id.toLowerCase() })
+     *   }
      * );
      * ```
      */
-    async query<TResult, TVariables extends Variables, TValidated>(
+    async query<
+      TResult,
+      TVariables extends Variables,
+      TValidated,
+      TInput = TVariables,
+    >(
       document: TadaDocumentNode<TResult, TVariables>,
-      variables: TVariables,
+      input: TInput,
       schema: z.ZodType<TValidated>,
-      userMessage: string
+      userMessage: string,
+      options?: {
+        filter?: (input: TInput) => Record<string, unknown> | undefined;
+        transform?: (input: TInput) => TVariables;
+      }
     ): Promise<TValidated> {
       // Extract operation name from the GraphQL document metadata for better error messages
       const operation =
@@ -125,6 +121,38 @@ function createValidatedTheGraphClient(
             __meta?: { operationName?: string };
           }
         ).__meta?.operationName ?? "GraphQL Query";
+
+      // Transform variables based on options
+      let variables: TVariables;
+
+      if (options?.transform) {
+        // Use custom transform function
+        variables = options.transform(input);
+      } else if (isListInput(input)) {
+        // Automatic transformation for ListSchema inputs
+        const baseVariables: Record<string, unknown> = {
+          skip: input.offset,
+          first: input.limit,
+          orderDirection: input.orderDirection,
+        };
+
+        if (input.orderBy) {
+          baseVariables.orderBy = input.orderBy;
+        }
+
+        // Add filter if provided
+        if (options?.filter) {
+          const where = options.filter(input);
+          if (where && Object.keys(where).length > 0) {
+            baseVariables.where = where;
+          }
+        }
+
+        variables = baseVariables as TVariables;
+      } else {
+        // No transformation needed
+        variables = input as unknown as TVariables;
+      }
 
       let result: TResult;
       try {
