@@ -47,8 +47,16 @@ ENV HOMEBREW_CELLAR="/home/cursor/.linuxbrew/Cellar"
 ENV HOMEBREW_REPOSITORY="/home/cursor/.linuxbrew/Homebrew"
 
 # Install Bun as cursor user
-RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://bun.sh/install | bash && \
+    echo 'export BUN_INSTALL="$HOME/.bun"' >> /home/cursor/.bashrc && \
+    echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> /home/cursor/.bashrc
+
+# Set Bun environment variables
+ENV BUN_INSTALL="/home/cursor/.bun"
 ENV PATH="/home/cursor/.bun/bin:$PATH"
+
+# Verify Bun installation
+RUN bun --version
 
 # Configure npm to install global packages in user directory
 RUN mkdir -p /home/cursor/.npm-global && \
