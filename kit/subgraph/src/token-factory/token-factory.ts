@@ -20,9 +20,21 @@ import { fetchYield } from "../token-extensions/yield/fetch/yield";
 import { fetchToken } from "../token/fetch/token";
 import { fetchTokenFactory } from "./fetch/token-factory";
 
+/**
+ * Handles the TokenAssetCreated event emitted when a new token is deployed by a factory.
+ *
+ * This handler performs several important operations:
+ * 1. Updates the factory's hasTokens flag to true (enabling efficient filtering)
+ * 2. Links the token to its factory
+ * 3. Sets up token metadata and access control
+ * 4. Initializes token extensions based on supported interfaces
+ *
+ * @param event - The TokenAssetCreated event containing token deployment details
+ */
 export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   fetchEvent(event, "TokenAssetCreated");
   const tokenFactory = fetchTokenFactory(event.address);
+  // Mark that this factory has created tokens - used for efficient UI filtering
   tokenFactory.hasTokens = true;
   tokenFactory.save();
 

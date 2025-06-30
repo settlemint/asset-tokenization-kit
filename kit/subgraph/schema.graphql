@@ -286,6 +286,9 @@ type TokenFactory @entity(immutable: false) {
   tokenFactoryRegistry: TokenFactoryRegistry
   account: Account!
   tokens: [Token!]! @derivedFrom(field: "tokenFactory")
+  # Indicates whether this factory has created any tokens
+  # This field is used for efficient filtering without expensive joins
+  # Set to false when factory is created, true when first token is deployed
   hasTokens: Boolean!
 }
 
