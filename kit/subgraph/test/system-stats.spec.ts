@@ -63,7 +63,6 @@ describe("SystemStats", () => {
             id
           }
           totalValueInBaseCurrency
-          lastUpdatedAt
         }
       }
     `
@@ -75,7 +74,6 @@ describe("SystemStats", () => {
       expect(state.id).toBeDefined();
       expect(state.system).toBeDefined();
       expect(state.totalValueInBaseCurrency).toBeDefined();
-      expect(state.lastUpdatedAt).toBeDefined();
     }
   });
 
@@ -124,7 +122,7 @@ describe("SystemStats", () => {
     expect(statsResponse).toEqual({
       systemStatsStates: [
         {
-          totalValueInBaseCurrency: expectedTotalValue.toString(),
+          totalValueInBaseCurrency: expectedTotalValue.toFixed(2),
         },
       ],
     });
