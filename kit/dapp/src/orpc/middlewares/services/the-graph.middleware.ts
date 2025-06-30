@@ -182,9 +182,21 @@ function createValidatedTheGraphClient(
           baseVariables.orderBy = input.orderBy;
         }
 
-        // Add filter if provided
-        if (filter && Object.keys(filter).length > 0) {
-          baseVariables.where = filter;
+        // Add filter if provided, removing undefined values
+        if (filter) {
+          const cleanFilter: Record<string, unknown> = {};
+          let hasValidFields = false;
+
+          for (const [key, value] of Object.entries(filter)) {
+            if (value !== undefined) {
+              cleanFilter[key] = value;
+              hasValidFields = true;
+            }
+          }
+
+          if (hasValidFields) {
+            baseVariables.where = cleanFilter;
+          }
         }
 
         variables = baseVariables as TVariables;
