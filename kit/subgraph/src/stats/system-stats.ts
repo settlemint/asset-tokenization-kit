@@ -9,11 +9,18 @@ import {
 } from "../../generated/schema";
 import { fetchIdentityClaimValue } from "../identity/fetch/identity-claim-value";
 import { fetchSystem } from "../system/fetch/system";
+import { toBigDecimal } from "../utils/token-decimals";
+
+const BASE_PRICE_DECIMALS = 18;
 
 /**
  * Get base price for a token from its basePriceClaim
  */
-export function getTokenBasePrice(token: Token): BigDecimal {
+export function getTokenBasePrice(token: Token | null): BigDecimal {
+  if (!token) {
+    return BigDecimal.zero();
+  }
+
   if (!token.basePriceClaim) {
     return BigDecimal.zero();
   }
@@ -24,13 +31,16 @@ export function getTokenBasePrice(token: Token): BigDecimal {
     return BigDecimal.zero();
   }
 
-  const basePriceClaimValue = fetchIdentityClaimValue(claim, "price");
+  const basePriceClaimValue = fetchIdentityClaimValue(claim, "amount");
 
   if (!basePriceClaimValue || !basePriceClaimValue.value) {
     return BigDecimal.zero();
   }
 
-  return BigDecimal.fromString(basePriceClaimValue.value);
+  return toBigDecimal(
+    BigInt.fromString(basePriceClaimValue.value),
+    BASE_PRICE_DECIMALS
+  );
 }
 
 /**

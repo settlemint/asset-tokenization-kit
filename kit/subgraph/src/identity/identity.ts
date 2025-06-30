@@ -1,5 +1,5 @@
 import { BigDecimal, Bytes } from "@graphprotocol/graph-ts";
-import { Identity, Token } from "../../generated/schema";
+import { Token } from "../../generated/schema";
 import {
   Approved,
   ClaimAdded,
@@ -26,31 +26,6 @@ import { fetchIdentityClaim } from "./fetch/identity-claim";
 import { decodeClaimValues } from "./utils/decode-claim";
 import { isBasePriceClaim } from "./utils/is-claim";
 
-/**
- * Get the current base price for a token before claim update
- */
-function getOldBasePriceForToken(
-  identity: Identity,
-  claimId: Bytes
-): BigDecimal {
-  // Check if this identity is associated with a token
-  if (!identity.token) {
-    return BigDecimal.zero();
-  }
-
-  const token = Token.load(identity.token!);
-  if (
-    !token ||
-    !token.basePriceClaim ||
-    !token.basePriceClaim!.equals(claimId)
-  ) {
-    return BigDecimal.zero();
-  }
-
-  // Get current price before update
-  return getTokenBasePrice(token);
-}
-
 export function handleApproved(event: Approved): void {
   fetchEvent(event, "Approved");
 }
@@ -73,25 +48,21 @@ export function handleClaimAdded(event: ClaimAdded): void {
     updateCollateral(identityClaim);
   }
   if (isBasePriceClaim(identityClaim)) {
+    const token = identity.token ? Token.load(identity.token!) : null;
+    // Get old price before updating claim (should be 0 for new claims)
+    const oldPrice = getTokenBasePrice(token);
+
     updateBasePrice(identityClaim);
 
     // Update system stats for price change
-    if (identity.token) {
-      const token = Token.load(identity.token!);
-      if (token) {
-        // Get old price before updating claim (should be 0 for new claims)
-        const oldPrice = getOldBasePriceForToken(
-          identity,
-          event.params.claimId
-        );
-        const newPrice = getTokenBasePrice(token);
-        updateSystemStatsForPriceChange(
-          token,
-          oldPrice,
-          newPrice,
-          event.block.timestamp
-        );
-      }
+    if (token) {
+      const newPrice = getTokenBasePrice(token);
+      updateSystemStatsForPriceChange(
+        token,
+        oldPrice,
+        newPrice,
+        event.block.timestamp
+      );
     }
   }
 }
@@ -111,25 +82,21 @@ export function handleClaimChanged(event: ClaimChanged): void {
     updateCollateral(identityClaim);
   }
   if (isBasePriceClaim(identityClaim)) {
+    const token = identity.token ? Token.load(identity.token!) : null;
+    // Get old price before updating claim
+    const oldPrice = token ? getTokenBasePrice(token) : BigDecimal.zero();
+
     updateBasePrice(identityClaim);
 
     // Update system stats for price change
-    if (identity.token) {
-      const token = Token.load(identity.token!);
-      if (token) {
-        // Get old price before updating claim
-        const oldPrice = getOldBasePriceForToken(
-          identity,
-          event.params.claimId
-        );
-        const newPrice = getTokenBasePrice(token);
-        updateSystemStatsForPriceChange(
-          token,
-          oldPrice,
-          newPrice,
-          event.block.timestamp
-        );
-      }
+    if (token) {
+      const newPrice = getTokenBasePrice(token);
+      updateSystemStatsForPriceChange(
+        token,
+        oldPrice,
+        newPrice,
+        event.block.timestamp
+      );
     }
   }
 }
@@ -145,26 +112,20 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
     updateCollateral(identityClaim);
   }
   if (isBasePriceClaim(identityClaim)) {
+    const token = identity.token ? Token.load(identity.token!) : null;
+    // Get old price before updating claim (should be 0 for new claims)
+    const oldPrice = getTokenBasePrice(token);
+
     updateBasePrice(identityClaim);
 
     // Update system stats for price change (price goes to 0 when claim removed)
-    if (identity.token) {
-      const token = Token.load(identity.token!);
-      if (token) {
-        // Get old price before removing claim
-        const oldPrice = getOldBasePriceForToken(
-          identity,
-          event.params.claimId
-        );
-        if (oldPrice.gt(BigDecimal.zero())) {
-          updateSystemStatsForPriceChange(
-            token,
-            oldPrice,
-            BigDecimal.zero(), // Price becomes 0 when claim is removed
-            event.block.timestamp
-          );
-        }
-      }
+    if (token && oldPrice.gt(BigDecimal.zero())) {
+      updateSystemStatsForPriceChange(
+        token,
+        oldPrice,
+        BigDecimal.zero(), // Price becomes 0 when claim is removed
+        event.block.timestamp
+      );
     }
   }
 }
