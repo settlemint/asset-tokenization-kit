@@ -421,10 +421,9 @@ function createValidatedPortalClient(
           });
         }
 
-        const result = await theGraphClient.query(
-          GET_INDEXING_STATUS_QUERY,
-          {},
-          z.object({
+        const result = await theGraphClient.query(GET_INDEXING_STATUS_QUERY, {
+          input: { input: {} },
+          output: z.object({
             _meta: z
               .object({
                 block: z.object({
@@ -433,8 +432,8 @@ function createValidatedPortalClient(
               })
               .nullable(),
           }),
-          messages.waitingForIndexing
-        );
+          error: messages.waitingForIndexing,
+        });
 
         const indexedBlock = result._meta?.block.number ?? 0;
 

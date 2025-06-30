@@ -55,14 +55,13 @@ export const read = onboardedRouter.account.read
 
     // Execute TheGraph query with type-safe parameters
     // The Zod schema ensures type safety at both compile-time and runtime
-    const result = await context.theGraphClient.query(
-      READ_ACCOUNT_QUERY,
-      {
-        walletAddress: wallet,
+    const result = await context.theGraphClient.query(READ_ACCOUNT_QUERY, {
+      input: {
+        input: { walletAddress: wallet },
       },
-      AccountResponseSchema,
-      "Failed to retrieve account"
-    );
+      output: AccountResponseSchema,
+      error: "Failed to retrieve account",
+    });
 
     if (!result.account) {
       throw errors.NOT_FOUND({

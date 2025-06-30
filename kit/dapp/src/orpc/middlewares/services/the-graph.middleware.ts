@@ -19,7 +19,8 @@ function isListInput(input: unknown): input is ListInput {
     input !== null &&
     "offset" in input &&
     "limit" in input &&
-    "orderDirection" in input
+    "orderDirection" in input &&
+    "orderBy" in input
   );
 }
 
@@ -193,7 +194,7 @@ function createValidatedTheGraphClient(
           if (Array.isArray(filter)) {
             // If filter is an array of keys, pick those from input
             for (const key of filter) {
-              const value = input[key];
+              const value = (input as Record<string, unknown>)[key as string];
               if (value !== undefined) {
                 cleanFilter[key as string] = value;
                 hasValidFields = true;

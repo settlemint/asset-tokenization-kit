@@ -223,9 +223,13 @@ export const create = onboardedRouter.system.create
 
     const result = await context.theGraphClient.query(
       FIND_SYSTEM_FOR_TRANSACTION_QUERY,
-      queryVariables,
-      SystemQueryResultSchema,
-      messages.systemCreationFailed
+      {
+        input: {
+          input: queryVariables,
+        },
+        output: SystemQueryResultSchema,
+        error: messages.systemCreationFailed,
+      }
     );
 
     const systems = result.systems;
