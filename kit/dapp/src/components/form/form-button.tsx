@@ -1,6 +1,3 @@
-"use client";
-"use no memo"; // fixes rerendering with react compiler
-
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
