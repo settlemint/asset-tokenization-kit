@@ -13,6 +13,7 @@ export function fetchTokenFactory(address: Address): TokenFactory {
     tokenFactory.account = fetchAccount(address).id;
     tokenFactory.name = "unknown";
     tokenFactory.typeId = Bytes.fromHexString("0x00");
+    tokenFactory.hasTokens = false;
     tokenFactory.save();
     TokenFactoryTemplate.create(address);
   }

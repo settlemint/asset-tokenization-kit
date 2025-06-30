@@ -286,6 +286,7 @@ type TokenFactory @entity(immutable: false) {
   tokenFactoryRegistry: TokenFactoryRegistry
   account: Account!
   tokens: [Token!]! @derivedFrom(field: "tokenFactory")
+  hasTokens: Boolean!
 }
 
 type Token @entity(immutable: false) {
