@@ -1,19 +1,50 @@
+import { Address, BigDecimal } from "@graphprotocol/graph-ts";
 import {
-  Address,
-  BigDecimal,
-  BigInt,
-  Bytes,
-  log,
-} from "@graphprotocol/graph-ts";
-import {
-  Account,
   AccountStatsData,
   AccountStatsState,
   Token,
   TokenBalance,
 } from "../../generated/schema";
-import { getTokenBasePrice } from "./system-stats";
 import { fetchAccount } from "../account/fetch/account";
+import { getTokenBasePrice } from "./system-stats";
+
+/**
+ * Increase the balance count for an account
+ * @param accountAddress - The address of the account to increase the balance count for
+ */
+export function increaseAccountStatsBalanceCount(
+  accountAddress: Address
+): void {
+  const state = fetchAccountStatsState(accountAddress);
+  state.balancesCount = state.balancesCount + 1;
+  state.save();
+
+  // Create timeseries entry
+  trackAccountStats(
+    accountAddress,
+    state.totalValueInBaseCurrency,
+    state.balancesCount
+  );
+}
+
+/**
+ * Decrease the balance count for an account
+ * @param accountAddress - The address of the account to decrease the balance count for
+ */
+export function decreaseAccountStatsBalanceCount(
+  accountAddress: Address
+): void {
+  const state = fetchAccountStatsState(accountAddress);
+  state.balancesCount = state.balancesCount - 1;
+  state.save();
+
+  // Create timeseries entry
+  trackAccountStats(
+    accountAddress,
+    state.totalValueInBaseCurrency,
+    state.balancesCount
+  );
+}
 
 /**
  * Update account stats when token balance changes (transfer/mint/burn)
@@ -22,10 +53,7 @@ import { fetchAccount } from "../account/fetch/account";
 export function updateAccountStatsForBalanceChange(
   accountAddress: Address,
   token: Token,
-  balanceDelta: BigDecimal,
-  oldBalanceCount: i32,
-  newBalanceCount: i32,
-  timestamp: BigInt
+  balanceDelta: BigDecimal
 ): void {
   const state = fetchAccountStatsState(accountAddress);
   const basePrice = getTokenBasePrice(token.basePriceClaim);
@@ -37,10 +65,6 @@ export function updateAccountStatsForBalanceChange(
   state.totalValueInBaseCurrency =
     state.totalValueInBaseCurrency.plus(valueDelta);
 
-  // Update balance count
-  state.balancesCount = state.balancesCount + (newBalanceCount - oldBalanceCount);
-  
-  state.lastUpdatedAt = timestamp;
   state.save();
 
   // Create timeseries entry
@@ -59,8 +83,7 @@ export function updateAccountStatsForPriceChange(
   accountAddress: Address,
   tokenBalance: TokenBalance,
   oldPrice: BigDecimal,
-  newPrice: BigDecimal,
-  timestamp: BigInt
+  newPrice: BigDecimal
 ): void {
   const state = fetchAccountStatsState(accountAddress);
 
@@ -73,22 +96,10 @@ export function updateAccountStatsForPriceChange(
     return;
   }
 
-  log.info(
-    "updateAccountStatsForPriceChange: account {}, token {}, oldPrice {}, newPrice {}, balance {}, valueDelta {}",
-    [
-      accountAddress.toHexString(),
-      tokenBalance.token.toHexString(),
-      oldPrice.toString(),
-      newPrice.toString(),
-      tokenBalance.value.toString(),
-      valueDelta.toString(),
-    ]
-  );
-
   // Update total value
   state.totalValueInBaseCurrency =
     state.totalValueInBaseCurrency.plus(valueDelta);
-  state.lastUpdatedAt = timestamp;
+
   state.save();
 
   // Create timeseries entry
@@ -110,7 +121,6 @@ function fetchAccountStatsState(accountAddress: Address): AccountStatsState {
     state.account = fetchAccount(accountAddress).id;
     state.totalValueInBaseCurrency = BigDecimal.zero();
     state.balancesCount = 0;
-    state.lastUpdatedAt = BigInt.zero();
     state.save();
   }
 

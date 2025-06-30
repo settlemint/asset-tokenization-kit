@@ -1,6 +1,7 @@
 import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 import { Token, TokenBalance } from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
+import { decreaseAccountStatsBalanceCount } from "../../stats/account-stats";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchTokenBalance } from "../fetch/token-balance";
 
@@ -12,12 +13,14 @@ export function increaseTokenBalanceValue(
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
-  setBigNumber(
-    balance,
-    "value",
-    balance.valueExact.plus(value),
-    token.decimals
-  );
+  const newValue = balance.valueExact.plus(value);
+
+  if (newValue.equals(BigInt.zero())) {
+    removeTokenBalance(balance);
+    return;
+  }
+
+  setBigNumber(balance, "value", newValue, token.decimals);
   updateAvailableAmount(balance, token.decimals);
 
   balance.lastUpdatedAt = timestamp;
@@ -33,12 +36,14 @@ export function decreaseTokenBalanceValue(
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
-  setBigNumber(
-    balance,
-    "value",
-    balance.valueExact.minus(value),
-    token.decimals
-  );
+  const newValue = balance.valueExact.minus(value);
+
+  if (newValue.equals(BigInt.zero())) {
+    removeTokenBalance(balance);
+    return;
+  }
+
+  setBigNumber(balance, "value", newValue, token.decimals);
   updateAvailableAmount(balance, token.decimals);
 
   balance.lastUpdatedAt = timestamp;
@@ -120,7 +125,8 @@ export function moveTokenBalanceToNewAccount(
   newBalance.lastUpdatedAt = timestamp;
 
   newBalance.save();
-  store.remove("TokenBalance", oldBalance.id.toHexString());
+
+  removeTokenBalance(oldBalance);
 }
 
 function updateAvailableAmount(
@@ -137,4 +143,9 @@ function updateAvailableAmount(
       decimals
     );
   }
+}
+
+function removeTokenBalance(tokenBalance: TokenBalance): void {
+  store.remove("TokenBalance", tokenBalance.id.toHexString());
+  decreaseAccountStatsBalanceCount(Address.fromBytes(tokenBalance.account));
 }
