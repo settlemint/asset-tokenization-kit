@@ -3,26 +3,20 @@ import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/token/stats")({
   loader: async ({ context }) => {
-    // Prefetch all token factories for statistics overview
+    // Ensure all token factories are loaded for statistics overview
     const factories = await context.queryClient.ensureQueryData(
       orpc.token.factoryList.queryOptions({ input: {} })
     );
 
-    // Prefetch token lists for each factory that has tokens
-    const factoriesWithTokens = factories.filter((f) => f.hasTokens);
-
-    // Batch prefetch token lists for better performance
-    await Promise.all(
-      factoriesWithTokens.slice(0, 5).map(async () =>
-        context.queryClient.prefetchQuery(
-          orpc.token.list.queryOptions({
-            input: {
-              offset: 0,
-              limit: 10,
-            },
-          })
-        )
-      )
+    // Prefetch the global token list once for potential use in statistics
+    // Note: Currently token.list doesn't support filtering by factory
+    void context.queryClient.prefetchQuery(
+      orpc.token.list.queryOptions({
+        input: {
+          offset: 0,
+          limit: 50,
+        },
+      })
     );
 
     return { factories };

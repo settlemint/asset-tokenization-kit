@@ -8,15 +8,8 @@ export const Route = createFileRoute("/_private/_onboarded/token/$id")({
       orpc.token.factoryRead.queryOptions({ input: { id: params.id } })
     );
 
-    // Prefetch token list that might be needed on this page
-    void context.queryClient.prefetchQuery(
-      orpc.token.list.queryOptions({
-        input: {
-          offset: 0,
-          limit: 20,
-        },
-      })
-    );
+    // TODO: When token.list supports filtering by factory, prefetch tokens for this specific factory
+    // Currently the API doesn't support this, so we'll need to fetch all tokens and filter client-side
 
     return { factory };
   },
