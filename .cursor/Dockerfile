@@ -50,6 +50,9 @@ ENV HOMEBREW_REPOSITORY="/home/cursor/.linuxbrew/Homebrew"
 RUN mkdir -p /home/cursor/.npm-global && \
     npm config set prefix '/home/cursor/.npm-global'
 ENV PATH="/home/cursor/.npm-global/bin:$PATH"
+# Also add npm-global to bashrc and profile for shell sessions
+RUN echo 'export PATH="/home/cursor/.npm-global/bin:$PATH"' >> /home/cursor/.bashrc && \
+    echo 'export PATH="/home/cursor/.npm-global/bin:$PATH"' >> /home/cursor/.profile
 
 # Install global development tools as cursor user
 RUN npm install -g turbo
@@ -58,11 +61,18 @@ RUN npm install -g turbo
 RUN npm install -g @settlemint/sdk-cli
 
 # Install Foundry for smart contract development as cursor user
-RUN curl -L https://foundry.paradigm.xyz | bash && \
-    /home/cursor/.foundry/bin/foundryup
+ENV FOUNDRY_DIR="/home/cursor/.foundry"
+# Download and run the installer, then immediately run foundryup in the same shell session
+RUN bash -c "curl -L https://foundry.paradigm.xyz | bash && source /home/cursor/.foundry/bin/foundry && foundryup"
 
 # Add Foundry to PATH
 ENV PATH="/home/cursor/.foundry/bin:$PATH"
+# Also add to bashrc and profile for shell sessions
+RUN echo 'export PATH="/home/cursor/.foundry/bin:$PATH"' >> /home/cursor/.bashrc && \
+    echo 'export PATH="/home/cursor/.foundry/bin:$PATH"' >> /home/cursor/.profile
+
+# Verify Foundry installation
+RUN forge --version && cast --version && anvil --version
 
 # Install helm-docs using Homebrew (matching GitHub Actions workflow)
 RUN brew install norwoodj/tap/helm-docs ast-grep yq helm oven-sh/bun/bun
