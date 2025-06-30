@@ -58,7 +58,6 @@ export const createFund = async () => {
   await transfer(fund, investorA, investorB, 5n);
 
   // Change the base price
-  await removeClaim(fund, ATKTopic.basePrice);
   await issueBasePriceClaim(fund, 19.7);
 
   // burnable
@@ -74,7 +73,7 @@ export const createFund = async () => {
   await collectManagementFee(fund, 30);
   await collectManagementFee(fund, 8);
 
-  // Change the base price
+  // Change the base price (first remove the claim)
   await removeClaim(fund, ATKTopic.basePrice);
   await issueBasePriceClaim(fund, 20.8);
 

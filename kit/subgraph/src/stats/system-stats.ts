@@ -1,4 +1,10 @@
-import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+  log,
+} from "@graphprotocol/graph-ts";
 import {
   IdentityClaim,
   SystemStatsData,
@@ -11,27 +17,21 @@ import { fetchIdentityClaimValue } from "../identity/fetch/identity-claim-value"
 import { fetchSystem } from "../system/fetch/system";
 import { toBigDecimal } from "../utils/token-decimals";
 
-const BASE_PRICE_DECIMALS = 18;
-
 /**
  * Get base price for a token from its basePriceClaim
  */
-export function getTokenBasePrice(token: Token | null): BigDecimal {
-  if (!token) {
+export function getTokenBasePrice(basePriceClaim: Bytes | null): BigDecimal {
+  if (!basePriceClaim) {
     return BigDecimal.zero();
   }
 
-  if (!token.basePriceClaim) {
-    return BigDecimal.zero();
-  }
-
-  // Get base price from claim
-  const claim = IdentityClaim.load(token.basePriceClaim!);
+  const claim = IdentityClaim.load(basePriceClaim);
   if (!claim) {
     return BigDecimal.zero();
   }
 
   const basePriceClaimValue = fetchIdentityClaimValue(claim, "amount");
+  const basePriceClaimDecimals = fetchIdentityClaimValue(claim, "decimals");
 
   if (!basePriceClaimValue || !basePriceClaimValue.value) {
     return BigDecimal.zero();
@@ -39,7 +39,7 @@ export function getTokenBasePrice(token: Token | null): BigDecimal {
 
   return toBigDecimal(
     BigInt.fromString(basePriceClaimValue.value),
-    BASE_PRICE_DECIMALS
+    I32.parseInt(basePriceClaimDecimals.value)
   );
 }
 
@@ -54,7 +54,7 @@ export function updateSystemStatsForSupplyChange(
 ): void {
   const systemAddress = getSystemAddress(token);
   const state = fetchSystemStatsState(systemAddress);
-  const basePrice = getTokenBasePrice(token);
+  const basePrice = getTokenBasePrice(token.basePriceClaim);
 
   // Calculate value delta = supplyDelta * basePrice
   const valueDelta = supplyDelta.times(basePrice);
@@ -86,6 +86,21 @@ export function updateSystemStatsForPriceChange(
   const oldValue = oldPrice.times(token.totalSupply);
   const newValue = newPrice.times(token.totalSupply);
   const valueDelta = newValue.minus(oldValue);
+
+  if (valueDelta.equals(BigDecimal.zero())) {
+    return;
+  }
+
+  log.info(
+    "updateSystemStatsForPriceChange: address {}, oldPrice {}, newPrice {}, totalSupply {}, valueDelta {}",
+    [
+      token.id.toHexString(),
+      oldPrice.toString(),
+      newPrice.toString(),
+      token.totalSupply.toString(),
+      valueDelta.toString(),
+    ]
+  );
 
   // Update total value
   state.totalValueInBaseCurrency =
