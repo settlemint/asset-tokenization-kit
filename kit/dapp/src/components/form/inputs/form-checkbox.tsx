@@ -10,7 +10,13 @@ import {
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import type { ComponentPropsWithoutRef } from "react";
-import type { FieldValues } from "react-hook-form";
+import { useCallback } from "react";
+import type {
+  ControllerFieldState,
+  ControllerRenderProps,
+  FieldValues,
+  Path,
+} from "react-hook-form";
 import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import { type BaseFormInputProps, getAriaAttributes } from "./types";
 
@@ -43,52 +49,57 @@ export function FormCheckbox<T extends FieldValues>({
   disabled,
   ...props
 }: FormCheckboxProps<T>) {
-  return (
-    <FormField
-      {...props}
-      rules={rules}
-      render={({ field, fieldState }) => {
-        return (
-          <FormItem className="flex flex-row items-start space-x-3 space-y-1 rounded-md">
-            <FormControl>
-              <Checkbox
-                {...field}
-                disabled={disabled}
-                checked={field.value}
-                onCheckedChange={field.onChange}
-                className={cn(className)}
-                {...getAriaAttributes(field.name, !!fieldState.error, disabled)}
-              />
-            </FormControl>
-            <div className="space-y-1 leading-none">
-              {label && (
-                <FormLabel
-                  className={cn(
-                    "font-medium text-sm leading-none",
-                    disabled && "cursor-not-allowed opacity-70"
-                  )}
-                  htmlFor={field.name}
-                  id={`${field.name}-label`}
-                >
-                  <span>{label}</span>
-                  {props.required && (
-                    <span className="ml-1 text-destructive">*</span>
-                  )}
-                </FormLabel>
-              )}
-              {description && (
-                <FormDescription
-                  id={`${field.name}-description`}
-                  className="text-sm"
-                >
-                  {description}
-                </FormDescription>
-              )}
-              <TranslatableFormFieldMessage />
-            </div>
-          </FormItem>
-        );
-      }}
-    />
+  const renderField = useCallback(
+    ({
+      field,
+      fieldState,
+    }: {
+      field: ControllerRenderProps<T, Path<T>>;
+      fieldState: ControllerFieldState;
+    }) => {
+      return (
+        <FormItem className="flex flex-row items-start space-x-3 space-y-1 rounded-md">
+          <FormControl>
+            <Checkbox
+              {...field}
+              disabled={disabled}
+              checked={field.value}
+              onCheckedChange={field.onChange}
+              className={cn(className)}
+              {...getAriaAttributes(field.name, !!fieldState.error, disabled)}
+            />
+          </FormControl>
+          <div className="space-y-1 leading-none">
+            {label && (
+              <FormLabel
+                className={cn(
+                  "font-medium text-sm leading-none",
+                  disabled && "cursor-not-allowed opacity-70"
+                )}
+                htmlFor={field.name}
+                id={`${field.name}-label`}
+              >
+                <span>{label}</span>
+                {props.required && (
+                  <span className="ml-1 text-destructive">*</span>
+                )}
+              </FormLabel>
+            )}
+            {description && (
+              <FormDescription
+                id={`${field.name}-description`}
+                className="text-sm"
+              >
+                {description}
+              </FormDescription>
+            )}
+            <TranslatableFormFieldMessage />
+          </div>
+        </FormItem>
+      );
+    },
+    [disabled, className, label, props.required, description]
   );
+
+  return <FormField {...props} rules={rules} render={renderField} />;
 }

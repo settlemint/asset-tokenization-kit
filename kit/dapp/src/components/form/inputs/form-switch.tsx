@@ -10,7 +10,13 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import type { ComponentPropsWithoutRef } from "react";
-import type { FieldValues } from "react-hook-form";
+import { useCallback } from "react";
+import type {
+  ControllerFieldState,
+  ControllerRenderProps,
+  FieldValues,
+  Path,
+} from "react-hook-form";
 import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import {
   type BaseFormInputProps,
@@ -50,59 +56,60 @@ export function FormSwitch<T extends FieldValues>({
   disabled,
   ...props
 }: FormSwitchProps<T>) {
-  return (
-    <FormField
-      {...props}
-      rules={rules}
-      render={({ field, fieldState }) => {
-        return (
-          <FormItem className="flex flex-col space-y-1">
-            {label && (
-              <FormLabel
-                className={cn(disabled && "cursor-not-allowed opacity-70")}
-                htmlFor={field.name}
-                id={`${field.name}-label`}
-              >
-                <span>{label}</span>
-                {props.required && (
-                  <span className="ml-1 text-destructive">*</span>
-                )}
-              </FormLabel>
-            )}
-            <FormControl>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  {...field}
-                  {...props}
-                  disabled={disabled}
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  className={cn("w-9", className)}
-                  {...getAriaAttributes(
-                    field.name,
-                    !!fieldState.error,
-                    disabled
-                  )}
-                />
-                {helperText && (
-                  <span
-                    className="text-muted-foreground text-sm"
-                    id={`${field.name}-helper`}
-                  >
-                    {helperText}
-                  </span>
-                )}
-              </div>
-            </FormControl>
-            {description && (
-              <FormDescription id={`${field.name}-description`}>
-                {description}
-              </FormDescription>
-            )}
-            <TranslatableFormFieldMessage />
-          </FormItem>
-        );
-      }}
-    />
+  const renderField = useCallback(
+    ({
+      field,
+      fieldState,
+    }: {
+      field: ControllerRenderProps<T, Path<T>>;
+      fieldState: ControllerFieldState;
+    }) => {
+      return (
+        <FormItem className="flex flex-col space-y-1">
+          {label && (
+            <FormLabel
+              className={cn(disabled && "cursor-not-allowed opacity-70")}
+              htmlFor={field.name}
+              id={`${field.name}-label`}
+            >
+              <span>{label}</span>
+              {props.required && (
+                <span className="ml-1 text-destructive">*</span>
+              )}
+            </FormLabel>
+          )}
+          <FormControl>
+            <div className="flex items-center space-x-2">
+              <Switch
+                {...field}
+                {...props}
+                disabled={disabled}
+                checked={field.value}
+                onCheckedChange={field.onChange}
+                className={cn("w-9", className)}
+                {...getAriaAttributes(field.name, !!fieldState.error, disabled)}
+              />
+              {helperText && (
+                <span
+                  className="text-muted-foreground text-sm"
+                  id={`${field.name}-helper`}
+                >
+                  {helperText}
+                </span>
+              )}
+            </div>
+          </FormControl>
+          {description && (
+            <FormDescription id={`${field.name}-description`}>
+              {description}
+            </FormDescription>
+          )}
+          <TranslatableFormFieldMessage />
+        </FormItem>
+      );
+    },
+    [label, disabled, props, className, helperText, description]
   );
+
+  return <FormField {...props} rules={rules} render={renderField} />;
 }

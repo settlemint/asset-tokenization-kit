@@ -16,8 +16,13 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { useRef } from "react";
-import type { FieldValues } from "react-hook-form";
+import { useCallback, useRef } from "react";
+import type {
+  ControllerFieldState,
+  ControllerRenderProps,
+  FieldValues,
+  Path,
+} from "react-hook-form";
 import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import {
   type BaseFormInputProps,
@@ -73,65 +78,77 @@ export function FormSelect<T extends FieldValues>({
   const t = useTranslations("components.form.select");
   const defaultPlaceholder = t("default-placeholder");
 
-  return (
-    <FormField
-      {...props}
-      defaultValue={defaultValue}
-      render={({ field, fieldState }) => {
-        return (
-          <FormItem className="flex flex-col">
-            {label && (
-              <FormLabel
-                className={cn(disabled && "cursor-not-allowed opacity-70")}
-                htmlFor={field.name}
-                id={`${field.name}-label`}
-              >
-                <span>{label}</span>
-                {required && <span className="ml-1 text-destructive">*</span>}
-              </FormLabel>
-            )}
-            <Select
-              onValueChange={field.onChange}
-              defaultValue={defaultValue}
-              value={field.value ?? defaultValue}
-              disabled={disabled}
-              name={field.name}
+  const renderField = useCallback(
+    ({
+      field,
+      fieldState,
+    }: {
+      field: ControllerRenderProps<T, Path<T>>;
+      fieldState: ControllerFieldState;
+    }) => {
+      return (
+        <FormItem className="flex flex-col">
+          {label && (
+            <FormLabel
+              className={cn(disabled && "cursor-not-allowed opacity-70")}
+              htmlFor={field.name}
+              id={`${field.name}-label`}
             >
-              <FormControl>
-                <SelectTrigger
-                  ref={triggerRef}
-                  className={cn(
-                    disabled && "cursor-not-allowed opacity-50",
-                    className
-                  )}
-                  {...getAriaAttributes(
-                    field.name,
-                    !!fieldState.error,
-                    disabled
-                  )}
-                >
-                  <SelectValue
-                    placeholder={placeholder ?? defaultPlaceholder}
-                  />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {options.map(({ value, label }) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {description && (
-              <FormDescription id={`${field.name}-description`}>
-                {description}
-              </FormDescription>
-            )}
-            <TranslatableFormFieldMessage />
-          </FormItem>
-        );
-      }}
-    />
+              <span>{label}</span>
+              {required && <span className="ml-1 text-destructive">*</span>}
+            </FormLabel>
+          )}
+          <Select
+            onValueChange={field.onChange}
+            defaultValue={defaultValue}
+            value={field.value ?? defaultValue}
+            disabled={disabled}
+            name={field.name}
+          >
+            <FormControl>
+              <SelectTrigger
+                ref={triggerRef}
+                className={cn(
+                  disabled && "cursor-not-allowed opacity-50",
+                  className
+                )}
+                {...getAriaAttributes(field.name, !!fieldState.error, disabled)}
+              >
+                <SelectValue placeholder={placeholder ?? defaultPlaceholder} />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {options.map(({ value, label }) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {description && (
+            <FormDescription id={`${field.name}-description`}>
+              {description}
+            </FormDescription>
+          )}
+          <TranslatableFormFieldMessage />
+        </FormItem>
+      );
+    },
+    [
+      label,
+      disabled,
+      required,
+      defaultValue,
+      triggerRef,
+      className,
+      placeholder,
+      defaultPlaceholder,
+      options,
+      description,
+    ]
+  );
+
+  return (
+    <FormField {...props} defaultValue={defaultValue} render={renderField} />
   );
 }
