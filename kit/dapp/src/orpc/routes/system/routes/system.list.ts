@@ -1,8 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { getPagination } from "@/orpc/routes/utils/pagination";
-import type { VariablesOf } from "@settlemint/sdk-thegraph";
+import { toTheGraphVariables } from "@/orpc/routes/utils/thegraph-variables";
 import { z } from "zod/v4";
 
 /**
@@ -17,7 +16,7 @@ import { z } from "zod/v4";
  * tokenized assets and their associated compliance infrastructure.
  */
 const LIST_SYSTEM_QUERY = theGraphGraphql(`
-  query ListSystemQuery($skip: Int!, $first: Int!, $orderBy: System_orderBy = id, $orderDirection: OrderDirection = asc) {
+  query ListSystemQuery($skip: Int!, $first: Int!, $orderBy: System_orderBy, $orderDirection: OrderDirection) {
     systems(
         skip: $skip
         first: $first
@@ -59,11 +58,8 @@ const LIST_SYSTEM_QUERY = theGraphGraphql(`
 export const list = authRouter.system.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    // Extract and validate pagination parameters from the request
-    // Using nullish coalescing for type-safe default values
-    const { offset, limit } = getPagination(input);
-    const orderBy = input?.orderBy ?? "id";
-    const orderDirection = input?.orderDirection ?? "asc";
+    // Transform input to TheGraph query variables
+    const variables = toTheGraphVariables(input, LIST_SYSTEM_QUERY);
 
     // Define response schema for type-safe GraphQL response validation
     // Zod schema provides both runtime validation and TypeScript type inference
@@ -75,13 +71,6 @@ export const list = authRouter.system.list
         })
       ),
     });
-
-    const variables: VariablesOf<typeof LIST_SYSTEM_QUERY> = {
-      skip: offset,
-      first: limit,
-      orderBy: orderBy as VariablesOf<typeof LIST_SYSTEM_QUERY>["orderBy"],
-      orderDirection,
-    };
 
     // Execute TheGraph query with type-safe pagination and sorting parameters
     // The Zod schema validates the response and provides proper TypeScript types

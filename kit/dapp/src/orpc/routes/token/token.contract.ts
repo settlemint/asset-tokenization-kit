@@ -6,7 +6,10 @@ import {
   FactoryCreateOutputSchema,
   FactoryCreateSchema,
 } from "@/orpc/routes/token/routes/factory.create.schema";
-import { FactoryListSchema } from "@/orpc/routes/token/routes/factory.list.schema";
+import {
+  FactoryListSchema,
+  TokenFactoryListSchema,
+} from "@/orpc/routes/token/routes/factory.list.schema";
 import {
   FactoryReadSchema,
   TokenFactoryDetailSchema,
@@ -36,7 +39,7 @@ const factoryList = baseContract
     successDescription: "List of token factories",
     tags: ["token"],
   })
-  .input(ListSchema)
+  .input(TokenFactoryListSchema)
   .output(FactoryListSchema);
 
 const factoryRead = baseContract

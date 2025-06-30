@@ -1,4 +1,5 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { z } from "zod/v4";
 
 /**
@@ -32,6 +33,25 @@ export const TokenFactorySchema = z.object({
  */
 export const FactoryListSchema = z.array(TokenFactorySchema);
 
+/**
+ * List schema for token factories that extends the base ListSchema
+ * with an optional filter for factories that have created tokens.
+ */
+export const TokenFactoryListSchema = ListSchema.extend({
+  /**
+   * Filter factories by whether they have created tokens.
+   *
+   * When not specified, all factories are returned.
+   * When true, only factories with tokens are returned.
+   * When false, only factories without tokens are returned.
+   */
+  hasTokens: z
+    .boolean()
+    .optional()
+    .describe("Filter factories by whether they have created tokens"),
+});
+
 // Type exports
 export type TokenFactory = z.infer<typeof TokenFactorySchema>;
 export type FactoryList = z.infer<typeof FactoryListSchema>;
+export type TokenFactoryListInput = z.infer<typeof TokenFactoryListSchema>;
