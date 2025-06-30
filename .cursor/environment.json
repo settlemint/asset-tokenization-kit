@@ -1,6 +1,9 @@
 {
-  "snapshot": "snapshot-20250608-a628ab1f-6f20-4431-b451-a36f10911e61",
   "install": "bun install",
-  "start": "sudo systemctl start docker && docker-compose up -d",
-  "terminals": []
+  "start": "sudo systemctl start docker && docker-compose up -d && bun run artifacts && bun run codegen",
+  "terminals": [],
+  "build": {
+    "context": ".",
+    "dockerfile": "Dockerfile"
+  }
 }
