@@ -11,7 +11,9 @@ import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burnable/burn";
+import { issueBasePriceClaim } from "./actions/core/issue-base-price-claim";
 import { mint } from "./actions/core/mint";
+import { removeClaim } from "./actions/core/remove-claim";
 import { transfer } from "./actions/core/transfer";
 import { forcedTransfer } from "./actions/custodian/forced-transfer";
 import { freezePartialTokens } from "./actions/custodian/freeze-partial-tokens";
@@ -55,6 +57,10 @@ export const createFund = async () => {
   await mint(fund, investorA, 10n);
   await transfer(fund, investorA, investorB, 5n);
 
+  // Change the base price
+  await removeClaim(fund, ATKTopic.basePrice);
+  await issueBasePriceClaim(fund, 19.7);
+
   // burnable
   await burn(fund, investorB, 2n);
 
@@ -67,6 +73,10 @@ export const createFund = async () => {
   // management fee
   await collectManagementFee(fund, 30);
   await collectManagementFee(fund, 8);
+
+  // Change the base price
+  await removeClaim(fund, ATKTopic.basePrice);
+  await issueBasePriceClaim(fund, 20.8);
 
   return fund;
 };
