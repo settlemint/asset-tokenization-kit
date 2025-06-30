@@ -21,6 +21,8 @@ import { Route as PrivateOnboardedIndexRouteImport } from './routes/_private/_on
 import { Route as PrivateOnboardingPlatformRouteImport } from './routes/_private/onboarding/platform'
 import { Route as PrivateOnboardingIssuerRouteImport } from './routes/_private/onboarding/issuer'
 import { Route as PrivateOnboardingInvestorRouteImport } from './routes/_private/onboarding/investor'
+import { Route as PrivateOnboardedTokenStatsRouteImport } from './routes/_private/_onboarded/token/stats'
+import { Route as PrivateOnboardedTokenIdRouteImport } from './routes/_private/_onboarded/token/$id'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -77,6 +79,17 @@ const PrivateOnboardingInvestorRoute =
     path: '/investor',
     getParentRoute: () => PrivateOnboardingRoute,
   } as any)
+const PrivateOnboardedTokenStatsRoute =
+  PrivateOnboardedTokenStatsRouteImport.update({
+    id: '/token/stats',
+    path: '/token/stats',
+    getParentRoute: () => PrivateOnboardedRoute,
+  } as any)
+const PrivateOnboardedTokenIdRoute = PrivateOnboardedTokenIdRouteImport.update({
+  id: '/token/$id',
+  path: '/token/$id',
+  getParentRoute: () => PrivateOnboardedRoute,
+} as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -102,6 +115,8 @@ export interface FileRoutesByFullPath {
   '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/': typeof PrivateOnboardedIndexRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
+  '/token/$id': typeof PrivateOnboardedTokenIdRoute
+  '/token/stats': typeof PrivateOnboardedTokenStatsRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
@@ -111,6 +126,8 @@ export interface FileRoutesByTo {
   '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/': typeof PrivateOnboardedIndexRoute
   '/onboarding': typeof PrivateOnboardingIndexRoute
+  '/token/$id': typeof PrivateOnboardedTokenIdRoute
+  '/token/stats': typeof PrivateOnboardedTokenStatsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -124,6 +141,8 @@ export interface FileRoutesById {
   '/_private/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/_private/_onboarded/': typeof PrivateOnboardedIndexRoute
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
+  '/_private/_onboarded/token/$id': typeof PrivateOnboardedTokenIdRoute
+  '/_private/_onboarded/token/stats': typeof PrivateOnboardedTokenStatsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -136,6 +155,8 @@ export interface FileRouteTypes {
     | '/onboarding/platform'
     | '/'
     | '/onboarding/'
+    | '/token/$id'
+    | '/token/stats'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -145,6 +166,8 @@ export interface FileRouteTypes {
     | '/onboarding/platform'
     | '/'
     | '/onboarding'
+    | '/token/$id'
+    | '/token/stats'
   id:
     | '__root__'
     | '/_private'
@@ -157,6 +180,8 @@ export interface FileRouteTypes {
     | '/_private/onboarding/platform'
     | '/_private/_onboarded/'
     | '/_private/onboarding/'
+    | '/_private/_onboarded/token/$id'
+    | '/_private/_onboarded/token/stats'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -265,6 +290,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardingInvestorRouteImport
       parentRoute: typeof PrivateOnboardingRoute
     }
+    '/_private/_onboarded/token/stats': {
+      id: '/_private/_onboarded/token/stats'
+      path: '/token/stats'
+      fullPath: '/token/stats'
+      preLoaderRoute: typeof PrivateOnboardedTokenStatsRouteImport
+      parentRoute: typeof PrivateOnboardedRoute
+    }
+    '/_private/_onboarded/token/$id': {
+      id: '/_private/_onboarded/token/$id'
+      path: '/token/$id'
+      fullPath: '/token/$id'
+      preLoaderRoute: typeof PrivateOnboardedTokenIdRouteImport
+      parentRoute: typeof PrivateOnboardedRoute
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -295,10 +334,14 @@ declare module '@tanstack/react-start/server' {
 
 interface PrivateOnboardedRouteChildren {
   PrivateOnboardedIndexRoute: typeof PrivateOnboardedIndexRoute
+  PrivateOnboardedTokenIdRoute: typeof PrivateOnboardedTokenIdRoute
+  PrivateOnboardedTokenStatsRoute: typeof PrivateOnboardedTokenStatsRoute
 }
 
 const PrivateOnboardedRouteChildren: PrivateOnboardedRouteChildren = {
   PrivateOnboardedIndexRoute: PrivateOnboardedIndexRoute,
+  PrivateOnboardedTokenIdRoute: PrivateOnboardedTokenIdRoute,
+  PrivateOnboardedTokenStatsRoute: PrivateOnboardedTokenStatsRoute,
 }
 
 const PrivateOnboardedRouteWithChildren =
