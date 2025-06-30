@@ -272,6 +272,7 @@ type ComplianceModule @entity(immutable: false) {
 
 type TokenFactoryRegistry @entity(immutable: false) {
   id: Bytes!
+  system: System!
   accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
@@ -568,6 +569,17 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
 # ==================================================
 # SYSTEM STATISTICS
 # ==================================================
+
+# Persistent entity to store current system state for efficient calculations
+type SystemStatsState @entity(immutable: false) {
+  id: Bytes! # System address
+  system: System!
+
+  # Current total value in base currency
+  totalValueInBaseCurrency: BigDecimal!
+
+  lastUpdatedAt: BigInt!
+}
 
 type SystemStatsData @entity(timeseries: true) {
   id: Int8!
