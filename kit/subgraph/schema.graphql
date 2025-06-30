@@ -575,10 +575,8 @@ type SystemStatsState @entity(immutable: false) {
   id: Bytes! # System address
   system: System!
 
-  # Current total value in base currency
+  # Value of all tokens in the system in base FIAT currency
   totalValueInBaseCurrency: BigDecimal!
-
-  lastUpdatedAt: BigInt!
 }
 
 type SystemStatsData @entity(timeseries: true) {
@@ -606,6 +604,18 @@ type SystemStats
 # ==================================================
 # ACCOUNT STATISTICS
 # ==================================================
+
+# Persistent entity to store current account state for efficient calculations
+type AccountStatsState @entity(immutable: false) {
+  id: Bytes! # Account address
+  account: Account!
+
+  # Value of all tokens for the account in base FIAT currency
+  totalValueInBaseCurrency: BigDecimal!
+
+  # Balance metrics
+  balancesCount: Int!
+}
 
 type AccountStatsData @entity(timeseries: true) {
   id: Int8!

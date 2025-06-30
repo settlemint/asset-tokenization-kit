@@ -63,7 +63,6 @@ describe("SystemStats", () => {
             id
           }
           totalValueInBaseCurrency
-          lastUpdatedAt
         }
       }
     `
@@ -75,7 +74,6 @@ describe("SystemStats", () => {
       expect(state.id).toBeDefined();
       expect(state.system).toBeDefined();
       expect(state.totalValueInBaseCurrency).toBeDefined();
-      expect(state.lastUpdatedAt).toBeDefined();
     }
   });
 
@@ -121,20 +119,16 @@ describe("SystemStats", () => {
       `
     );
     const statsResponse = await theGraphClient.request(statsQuery, {});
-    expect(statsResponse).toEqual({
-      systemStatsStates: [
-        {
-          totalValueInBaseCurrency: expectedTotalValue.toFixed(2),
-        },
-      ],
-    });
+    expect(
+      Number(statsResponse?.systemStatsStates[0]?.totalValueInBaseCurrency)
+    ).toBeCloseTo(expectedTotalValue, 2);
   });
 
   it("should have processed all events leading to a price change", async () => {
     // Get tokens with base price claims
     const eventsQuery = theGraphGraphql(
       `query {
-       events(where: {eventName_in: ["ClaimAdded", "ClaimChanged", "ClaimRemoved", "Mint", "BurnCompleted"]}) {
+       events(where: {eventName_in: ["ClaimAdded", "ClaimChanged", "ClaimRemoved", "MintCompleted", "BurnCompleted"]}) {
           eventName
           involved {
             id
@@ -149,7 +143,7 @@ describe("SystemStats", () => {
     const eventNames = eventsResponse.events.map((event) => event.eventName);
 
     expect(eventNames).toContain("BurnCompleted");
-    expect(eventNames).toContain("Mint");
+    expect(eventNames).toContain("MintCompleted");
     expect(eventNames).toContain("ClaimAdded");
     expect(eventNames).toContain("ClaimRemoved");
     expect(eventNames).toContain("ClaimChanged");

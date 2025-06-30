@@ -1,10 +1,4 @@
-import {
-  Address,
-  BigDecimal,
-  BigInt,
-  Bytes,
-  log,
-} from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   IdentityClaim,
   SystemStatsData,
@@ -49,8 +43,7 @@ export function getTokenBasePrice(basePriceClaim: Bytes | null): BigDecimal {
  */
 export function updateSystemStatsForSupplyChange(
   token: Token,
-  supplyDelta: BigDecimal,
-  timestamp: BigInt
+  supplyDelta: BigDecimal
 ): void {
   const systemAddress = getSystemAddress(token);
   const state = fetchSystemStatsState(systemAddress);
@@ -66,7 +59,7 @@ export function updateSystemStatsForSupplyChange(
   // Update total value
   state.totalValueInBaseCurrency =
     state.totalValueInBaseCurrency.plus(valueDelta);
-  state.lastUpdatedAt = timestamp;
+
   state.save();
 
   // Create timeseries entry
@@ -80,8 +73,7 @@ export function updateSystemStatsForSupplyChange(
 export function updateSystemStatsForPriceChange(
   token: Token,
   oldPrice: BigDecimal,
-  newPrice: BigDecimal,
-  timestamp: BigInt
+  newPrice: BigDecimal
 ): void {
   const systemAddress = getSystemAddress(token);
   const state = fetchSystemStatsState(systemAddress);
@@ -95,21 +87,10 @@ export function updateSystemStatsForPriceChange(
     return;
   }
 
-  log.info(
-    "updateSystemStatsForPriceChange: address {}, oldPrice {}, newPrice {}, totalSupply {}, valueDelta {}",
-    [
-      token.id.toHexString(),
-      oldPrice.toString(),
-      newPrice.toString(),
-      token.totalSupply.toString(),
-      valueDelta.toString(),
-    ]
-  );
-
   // Update total value
   state.totalValueInBaseCurrency =
     state.totalValueInBaseCurrency.plus(valueDelta);
-  state.lastUpdatedAt = timestamp;
+
   state.save();
 
   // Create timeseries entry
@@ -126,7 +107,6 @@ function fetchSystemStatsState(systemAddress: Address): SystemStatsState {
     state = new SystemStatsState(systemAddress);
     state.system = fetchSystem(systemAddress).id;
     state.totalValueInBaseCurrency = BigDecimal.zero();
-    state.lastUpdatedAt = BigInt.zero();
     state.save();
   }
 

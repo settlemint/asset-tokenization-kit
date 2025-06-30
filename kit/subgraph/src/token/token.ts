@@ -20,6 +20,7 @@ import {
   isCountryListComplianceModule,
 } from "../compliance/modules/country-list-compliance-module";
 import { fetchEvent } from "../event/fetch/event";
+import { updateAccountStatsForBalanceChange } from "../stats/account-stats";
 import { updateSystemStatsForSupplyChange } from "../stats/system-stats";
 import {
   decreaseTokenBalanceValue,
@@ -86,9 +87,10 @@ export function handleIdentityRegistryAdded(
 }
 
 export function handleMintCompleted(event: MintCompleted): void {
-  fetchEvent(event, "Mint");
+  fetchEvent(event, "MintCompleted");
   const token = fetchToken(event.address);
   increaseTokenSupply(token, event.params.amount);
+
   increaseTokenBalanceValue(
     token,
     event.params.to,
@@ -96,9 +98,13 @@ export function handleMintCompleted(event: MintCompleted): void {
     event.block.timestamp
   );
 
+  const amountDelta = toBigDecimal(event.params.amount, token.decimals);
+
   // Update system stats
-  const supplyDelta = toBigDecimal(event.params.amount, token.decimals);
-  updateSystemStatsForSupplyChange(token, supplyDelta, event.block.timestamp);
+  updateSystemStatsForSupplyChange(token, amountDelta);
+
+  // Update account stats
+  updateAccountStatsForBalanceChange(event.params.to, token, amountDelta);
 }
 
 export function handleModuleParametersUpdated(
@@ -131,6 +137,8 @@ export function handleModuleParametersUpdated(
 export function handleTransferCompleted(event: TransferCompleted): void {
   fetchEvent(event, "Transfer");
   const token = fetchToken(event.address);
+
+  // Execute the transfer
   decreaseTokenBalanceValue(
     token,
     event.params.from,
@@ -143,6 +151,20 @@ export function handleTransferCompleted(event: TransferCompleted): void {
     event.params.amount,
     event.block.timestamp
   );
+
+  // Calculate amount delta
+  const amountDelta = toBigDecimal(event.params.amount, token.decimals);
+
+  // Update account stats for sender (negative delta)
+  updateAccountStatsForBalanceChange(
+    event.params.from,
+    token,
+    amountDelta.neg()
+  );
+
+  // Update account stats for receiver (positive delta)
+  updateAccountStatsForBalanceChange(event.params.to, token, amountDelta);
+
   if (token.yield_) {
     updateYield(token);
   }
