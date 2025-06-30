@@ -33,8 +33,11 @@ export const Route = createFileRoute("/_private/_onboarded/")({
    * @param root0.context
    */
   loader: async ({ context }) => {
-    // User data is already loaded in parent _private route
-    const user = context.queryClient.getQueryData(orpc.user.me.queryKey());
+    // User data should be loaded in parent _private route, but we need to ensure it exists
+    // to handle cache misses, invalidation, or direct navigation
+    const user =
+      context.queryClient.getQueryData(orpc.user.me.queryKey()) ??
+      (await context.queryClient.ensureQueryData(orpc.user.me.queryOptions()));
 
     // Ensure systems data is loaded
     const systems = await context.queryClient.ensureQueryData(
