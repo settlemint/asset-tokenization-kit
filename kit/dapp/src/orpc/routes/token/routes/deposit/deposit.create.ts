@@ -8,7 +8,7 @@ import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware"
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { tokenFactoryMiddleware } from "@/orpc/middlewares/system/token-factory.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import z from "zod/v4";
+import { z } from "zod/v4";
 
 const CREATE_DEPOSIT_MUTATION = portalGraphql(`
   mutation CreateTokenMutation($address: String!, $from: String!, $input: ATKDepositFactoryImplementationCreateDepositInput!) {
