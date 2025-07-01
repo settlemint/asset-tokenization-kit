@@ -32,17 +32,27 @@ import { DepositCreateMessagesSchema } from "./deposit.create.schema";
  * GraphQL mutation for creating a deposit token.
  * @param address - The deposit factory contract address to call
  * @param from - The wallet address initiating the transaction
- * @param input - The deposit creation parameters
+ * @param symbol_ - The symbol of the deposit token
+ * @param name_ - The name of the deposit token
+ * @param decimals_ - The number of decimal places for the token
+ * @param initialModulePairs_ - Initial module pairs for the deposit
+ * @param requiredClaimTopics_ - Required claim topics for compliance
  * @param verificationId - Optional verification ID for the challenge
  * @param challengeResponse - The MFA challenge response for transaction authorization
  * @returns transactionHash - The blockchain transaction hash for tracking
  */
 const CREATE_DEPOSIT_MUTATION = portalGraphql(`
-  mutation CreateTokenMutation($address: String!, $from: String!, $input: ATKDepositFactoryImplementationCreateDepositInput!, $verificationId: String, $challengeResponse: String!) {
-    CreateToken: ATKDepositFactoryImplementationCreateDeposit(
+  mutation CreateDepositMutation($address: String!, $from: String!, $symbol_: String!, $name_: String!, $decimals_: Int!, $initialModulePairs_: [ATKDepositFactoryImplementationATKDepositFactoryImplementationCreateDepositInitialModulePairsInput!]!, $requiredClaimTopics_: [String!]!, $verificationId: String, $challengeResponse: String!) {
+    CreateDeposit: ATKDepositFactoryImplementationCreateDeposit(
       address: $address
       from: $from
-      input: $input
+      input: {
+        symbol_: $symbol_
+        name_: $name_
+        decimals_: $decimals_
+        initialModulePairs_: $initialModulePairs_
+        requiredClaimTopics_: $requiredClaimTopics_
+      }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
     ) {
@@ -107,16 +117,14 @@ export const depositCreate = onboardedRouter.token.depositCreate
     const variables: VariablesOf<typeof CREATE_DEPOSIT_MUTATION> = {
       address: context.tokenFactory.address,
       from: sender.wallet,
-      input: {
-        symbol_: input.symbol,
-        name_: input.name,
-        decimals_: input.decimals,
-        initialModulePairs_: [],
-        requiredClaimTopics_: [],
-      },
+      symbol_: input.symbol,
+      name_: input.name,
+      decimals_: input.decimals,
+      initialModulePairs_: [],
+      requiredClaimTopics_: [],
       ...(await handleChallenge(sender, {
-        code: "111111",
-        type: "pincode",
+        code: input.verification.verificationCode,
+        type: input.verification.verificationType,
       })),
     };
 

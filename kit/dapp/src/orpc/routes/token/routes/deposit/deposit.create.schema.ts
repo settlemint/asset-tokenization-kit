@@ -12,6 +12,7 @@
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { isin } from "@/lib/zod/validators/isin";
+import { CreateSchema } from "@/orpc/routes/common/schemas/create.schema";
 import { z } from "zod/v4";
 import { TransactionTrackingMessagesSchema } from "../../../common/schemas/transaction-messages.schema";
 
@@ -45,7 +46,7 @@ export const DepositCreateMessagesSchema =
       .default("Failed to create the deposit."),
   });
 
-export const DepositTokenCreateSchema = z.object({
+export const DepositTokenCreateSchema = CreateSchema.extend({
   type: z.literal(AssetTypeEnum.deposit),
   name: z.string().describe("The name of the deposit"),
   symbol: z.string().describe("The symbol of the deposit"),
