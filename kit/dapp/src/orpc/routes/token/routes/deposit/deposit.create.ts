@@ -19,7 +19,6 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { tokenFactoryPermissionMiddleware } from "@/orpc/middlewares/auth/token-factory-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { tokenFactoryMiddleware } from "@/orpc/middlewares/system/token-factory.middleware";
@@ -97,7 +96,7 @@ export const depositCreate = onboardedRouter.token.depositCreate
   .use(portalMiddleware)
   .use(systemMiddleware)
   .use(tokenFactoryMiddleware("deposit"))
-  .use(tokenFactoryPermissionMiddleware(["deployer"]))
+  // .use(tokenFactoryPermissionMiddleware(["deployer"]))
   .handler(async function* ({ input, context }) {
     const sender = context.auth.user;
 
@@ -129,6 +128,7 @@ export const depositCreate = onboardedRouter.token.depositCreate
     };
 
     let validatedHash = "";
+    let hasConfirmedEvent = false;
 
     // Use the Portal client's mutate method that returns an async generator
     // This enables real-time transaction tracking for deposit creation
@@ -153,6 +153,7 @@ export const depositCreate = onboardedRouter.token.depositCreate
           { id: "deposit-creation", retry: 1000 }
         );
       } else if (event.status === "confirmed") {
+        hasConfirmedEvent = true;
         yield withEventMeta(
           {
             status: "confirmed" as const,
@@ -175,7 +176,18 @@ export const depositCreate = onboardedRouter.token.depositCreate
       }
     }
 
-    // TODO: other operations to create a deposit (issue isin claim, grant roles, etc)
+    // Ensure we always yield a final result if no confirmed event was received
+    if (!hasConfirmedEvent && validatedHash) {
+      yield withEventMeta(
+        {
+          status: "confirmed" as const,
+          message: messages.depositCreated,
+          transactionHash: validatedHash,
+          result: getEthereumHash(validatedHash),
+        },
+        { id: "deposit-creation", retry: 1000 }
+      );
+    }
 
-    return getEthereumHash(validatedHash);
+    // TODO: other operations to create a deposit (issue isin claim, grant roles, etc)
   });
