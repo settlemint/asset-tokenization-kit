@@ -59,6 +59,14 @@ export const Route = createFileRoute("/_private/_onboarded/")({
 function Home() {
   const { user, systems } = Route.useLoaderData();
 
+  if (!user) {
+    return (
+      <div className="p-2">
+        <h3>Loading user data...</h3>
+      </div>
+    );
+  }
+
   return (
     <div className="p-2">
       <h3>{user.name}</h3>
