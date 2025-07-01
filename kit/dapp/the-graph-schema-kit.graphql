@@ -434,7 +434,7 @@ type Airdrop {
   name: String!
   token: Token!
   merkleRoot: Bytes!
-  typeId: String!
+  typeId: Bytes!
   amountTransferred: BigDecimal!
   amountTransferredExact: BigInt!
   recipients(skip: Int = 0, first: Int = 100, orderBy: AirdropRecipient_orderBy, orderDirection: OrderDirection, where: AirdropRecipient_filter): [AirdropRecipient!]!
@@ -819,26 +819,16 @@ input Airdrop_filter {
   merkleRoot_not_in: [Bytes!]
   merkleRoot_contains: Bytes
   merkleRoot_not_contains: Bytes
-  typeId: String
-  typeId_not: String
-  typeId_gt: String
-  typeId_lt: String
-  typeId_gte: String
-  typeId_lte: String
-  typeId_in: [String!]
-  typeId_not_in: [String!]
-  typeId_contains: String
-  typeId_contains_nocase: String
-  typeId_not_contains: String
-  typeId_not_contains_nocase: String
-  typeId_starts_with: String
-  typeId_starts_with_nocase: String
-  typeId_not_starts_with: String
-  typeId_not_starts_with_nocase: String
-  typeId_ends_with: String
-  typeId_ends_with_nocase: String
-  typeId_not_ends_with: String
-  typeId_not_ends_with_nocase: String
+  typeId: Bytes
+  typeId_not: Bytes
+  typeId_gt: Bytes
+  typeId_lt: Bytes
+  typeId_gte: Bytes
+  typeId_lte: Bytes
+  typeId_in: [Bytes!]
+  typeId_not_in: [Bytes!]
+  typeId_contains: Bytes
+  typeId_not_contains: Bytes
   amountTransferred: BigDecimal
   amountTransferred_not: BigDecimal
   amountTransferred_gt: BigDecimal
@@ -999,7 +989,7 @@ type ComplianceModule {
   id: Bytes!
   accessControl: AccessControl!
   name: String!
-  typeId: String!
+  typeId: Bytes!
   account: Account!
   deployedInTransaction: Bytes!
   complianceModuleRegistry: ComplianceModuleRegistry
@@ -1151,26 +1141,16 @@ input ComplianceModule_filter {
   name_ends_with_nocase: String
   name_not_ends_with: String
   name_not_ends_with_nocase: String
-  typeId: String
-  typeId_not: String
-  typeId_gt: String
-  typeId_lt: String
-  typeId_gte: String
-  typeId_lte: String
-  typeId_in: [String!]
-  typeId_not_in: [String!]
-  typeId_contains: String
-  typeId_contains_nocase: String
-  typeId_not_contains: String
-  typeId_not_contains_nocase: String
-  typeId_starts_with: String
-  typeId_starts_with_nocase: String
-  typeId_not_starts_with: String
-  typeId_not_starts_with_nocase: String
-  typeId_ends_with: String
-  typeId_ends_with_nocase: String
-  typeId_not_ends_with: String
-  typeId_not_ends_with_nocase: String
+  typeId: Bytes
+  typeId_not: Bytes
+  typeId_gt: Bytes
+  typeId_lt: Bytes
+  typeId_gte: Bytes
+  typeId_lte: Bytes
+  typeId_in: [Bytes!]
+  typeId_not_in: [Bytes!]
+  typeId_contains: Bytes
+  typeId_not_contains: Bytes
   account: String
   account_not: String
   account_gt: String
@@ -4509,7 +4489,7 @@ type SystemAddon {
   deployedInTransaction: Bytes!
   accessControl: AccessControl!
   name: String!
-  typeId: String!
+  typeId: Bytes!
   system: System
   account: Account!
 }
@@ -4664,26 +4644,16 @@ input SystemAddon_filter {
   name_ends_with_nocase: String
   name_not_ends_with: String
   name_not_ends_with_nocase: String
-  typeId: String
-  typeId_not: String
-  typeId_gt: String
-  typeId_lt: String
-  typeId_gte: String
-  typeId_lte: String
-  typeId_in: [String!]
-  typeId_not_in: [String!]
-  typeId_contains: String
-  typeId_contains_nocase: String
-  typeId_not_contains: String
-  typeId_not_contains_nocase: String
-  typeId_starts_with: String
-  typeId_starts_with_nocase: String
-  typeId_not_starts_with: String
-  typeId_not_starts_with_nocase: String
-  typeId_ends_with: String
-  typeId_ends_with_nocase: String
-  typeId_not_ends_with: String
-  typeId_not_ends_with_nocase: String
+  typeId: Bytes
+  typeId_not: Bytes
+  typeId_gt: Bytes
+  typeId_lt: Bytes
+  typeId_gte: Bytes
+  typeId_lte: Bytes
+  typeId_in: [Bytes!]
+  typeId_not_in: [Bytes!]
+  typeId_contains: Bytes
+  typeId_not_contains: Bytes
   system: String
   system_not: String
   system_gt: String
@@ -6403,7 +6373,7 @@ type TokenFactory {
   id: Bytes!
   accessControl: AccessControl!
   name: String!
-  typeId: String!
+  typeId: Bytes!
   tokenFactoryRegistry: TokenFactoryRegistry
   account: Account!
   tokens(skip: Int = 0, first: Int = 100, orderBy: Token_orderBy, orderDirection: OrderDirection, where: Token_filter): [Token!]!
@@ -6578,26 +6548,16 @@ input TokenFactory_filter {
   name_ends_with_nocase: String
   name_not_ends_with: String
   name_not_ends_with_nocase: String
-  typeId: String
-  typeId_not: String
-  typeId_gt: String
-  typeId_lt: String
-  typeId_gte: String
-  typeId_lte: String
-  typeId_in: [String!]
-  typeId_not_in: [String!]
-  typeId_contains: String
-  typeId_contains_nocase: String
-  typeId_not_contains: String
-  typeId_not_contains_nocase: String
-  typeId_starts_with: String
-  typeId_starts_with_nocase: String
-  typeId_not_starts_with: String
-  typeId_not_starts_with_nocase: String
-  typeId_ends_with: String
-  typeId_ends_with_nocase: String
-  typeId_not_ends_with: String
-  typeId_not_ends_with_nocase: String
+  typeId: Bytes
+  typeId_not: Bytes
+  typeId_gt: Bytes
+  typeId_lt: Bytes
+  typeId_gte: Bytes
+  typeId_lte: Bytes
+  typeId_in: [Bytes!]
+  typeId_not_in: [Bytes!]
+  typeId_contains: Bytes
+  typeId_not_contains: Bytes
   tokenFactoryRegistry: String
   tokenFactoryRegistry_not: String
   tokenFactoryRegistry_gt: String

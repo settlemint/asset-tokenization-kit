@@ -15,12 +15,8 @@
  */
 
 import { CreateDepositForm } from "@/components/asset-designer/deposit/form";
-import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc";
-import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback } from "react";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/_private/_onboarded/")({
   /**
@@ -64,26 +60,6 @@ export const Route = createFileRoute("/_private/_onboarded/")({
 function Home() {
   const { user, systems } = Route.useLoaderData();
 
-  const { mutate: grantDeployerRole, isPending: isGrantingRole } = useMutation({
-    mutationFn: async () => {
-      return await orpc.token.factoryGrantRole.call({
-        account: user.wallet,
-      });
-    },
-    onSuccess: (transactionHash) => {
-      toast.success("Deployer role granted successfully!");
-      console.log("Grant role transaction hash:", transactionHash);
-    },
-    onError: (error) => {
-      toast.error("Failed to grant deployer role");
-      console.error("Grant role error:", error);
-    },
-  });
-
-  const grantDeployerRoleFn = useCallback(() => {
-    grantDeployerRole();
-  }, [grantDeployerRole]);
-
   return (
     <div className="p-2">
       <h3>{user.name}</h3>
@@ -102,12 +78,6 @@ function Home() {
         </pre>
       </div>
       <pre>{JSON.stringify(systems, null, 2)}</pre>
-
-      <div className="mb-4">
-        <Button onClick={grantDeployerRoleFn} variant="outline">
-          {isGrantingRole ? "Granting..." : "Grant Deployer Role to Me"}
-        </Button>
-      </div>
 
       <CreateDepositForm />
     </div>
