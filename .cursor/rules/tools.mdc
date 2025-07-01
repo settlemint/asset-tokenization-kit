@@ -1,5 +1,5 @@
 ---
-description: 
+description: CLI tooling, commands, and workflow automation for enhanced development efficiency
 globs: 
 alwaysApply: true
 ---
@@ -44,7 +44,7 @@ bun install/run/test  # instead of npm/yarn/pnpm
 
 **Note:** Commands are comprehensive workflows, not single actions. Read full command files for details.
 
-## Sub Agents (Use More!)
+## Sub Agents and parallel tasks (Use More!)
 
 Ideal for:
 - **Multi-file operations**: Pattern searches, relationship mapping

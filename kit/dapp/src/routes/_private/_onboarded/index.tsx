@@ -87,20 +87,28 @@ function Home() {
     grantDeployerRole();
   }, [grantDeployerRole]);
 
+  if (!user) {
+    return (
+      <div className="p-2">
+        <h3>Loading user data...</h3>
+      </div>
+    );
+  }
+
   return (
     <div className="p-2">
-      <h3>{user?.name}</h3>
+      <h3>{user.name}</h3>
       <pre>{JSON.stringify(systems, null, 2)}</pre>
 
       <div className="mb-4">
         <Button
           onClick={grantDeployerRoleFn}
-          disabled={isGrantingRole || !user?.wallet}
+          disabled={isGrantingRole || !user.wallet}
           variant="outline"
         >
           {isGrantingRole ? "Granting..." : "Grant Deployer Role to Me"}
         </Button>
-        {!user?.wallet && (
+        {!user.wallet && (
           <p className="text-sm text-gray-500 mt-1">
             Wallet address required to grant role
           </p>

@@ -1,312 +1,224 @@
 # CLAUDE.md
 
-## General rules
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
-- Always read entire files. Otherwise, you don't know what you don't know, and
-  will end up making mistakes, duplicating code that already exists, or
-  misunderstanding the architecture.
-- Commit early and often. BUT NEVER TO THE main BRANCH, create a new branch
-  first!!! When working on large tasks, your task could be broken down into
-  multiple logical milestones. After a certain milestone is completed you should
-  commit it. If you do not, if something goes wrong in further steps, we would
-  need to end up throwing away all the code, which is expensive and time
-  consuming.
-- Your internal knowledgebase of libraries might not be up to date. When working
-  with any external library, unless you are 100% sure that the library has a
-  super stable interface, you will look up the latest syntax and usage via
-  either Context7 (first preference), DeepWiki or web search (less preferred,
-  only use if Context7 and DeepWiki are not available)
-- Do not say things like: "x library isn't working so I will skip it".
-  Generally, it isn't working because you are using the incorrect syntax or
-  patterns. This applies doubly when the user has explicitly asked you to use a
-  specific library, if the user wanted to use another library they wouldn't have
-  asked you to use a specific one in the first place.
-- Always run format, linting and tests after making major changes. Otherwise,
-  you won't know if you've corrupted a file or made syntax errors, or are using
-  the wrong methods, or using methods in the wrong way.
-- Code is read more often than it is written, make sure your code is always
-  optimised for readability
-- Unless explicitly asked otherwise, the user never wants you to do a "dummy"
-  implementation of any given task. Never do an implementation where you tell
-  the user: "This is how it _would_ look like". Just implement the thing.
-- Whenever you are starting a new task, it is of utmost importance that you have
-  clarity about the task. You should ask the user follow up questions if you do
-  not, rather than making incorrect assumptions.
-- Do not carry out large refactors unless explicitly instructed to do so.
-- When starting on a new task, you should first understand the current
-  architecture, identify the files you will need to modify, and come up with a
-  Plan. In the Plan, you will think through architectural aspects related to the
-  changes you will be making, consider edge cases, and identify the best
-  approach for the given task. Get your Plan approved by the user before writing
-  a single line of code.
-- If you are running into repeated issues with a given task, figure out the root
-  cause instead of throwing random things at the wall and seeing what sticks, or
-  throwing in the towel by saying "I'll just use another library / do a dummy
-  implementation".
-- You are an incredibly talented and experienced polyglot with decades of
-  experience in diverse areas such as software architecture, system design,
-  development, UI & UX, copywriting, and more.
-- When doing UI & UX work, make sure your designs are both aesthetically
-  pleasing, easy to use, and follow UI / UX best practices. You pay attention to
-  interaction patterns, micro-interactions, and are proactive about creating
-  smooth, engaging user interfaces that delight users. The more you can stick to
-  existing components and styles in the project, the happier your users will be.
-- When you receive a task that is very large in scope or too vague, you will
-  first try to break it down into smaller subtasks. If that feels difficult or
-  still leaves you with too many open questions, push back to the user and ask
-  them to consider breaking down the task for you, or guide them through that
-  process. This is important because the larger the task, the more likely it is
-  that things go wrong, wasting time and energy for everyone involved.
-- When doing similar tasks across multiple files, always try to spawn a fleet of
-  sub agents to handle the work more quickly
+These rules are project specific rules for the SettleMint Asset Tokenization
+Kit.
 
-# Git Commit & Branch Rules
+## Project Overview
 
-## Commit Format
+The SettleMint Asset Tokenization Kit is a comprehensive blockchain solution for
+tokenizing real-world assets. It's built as a Turborepo monorepo with the
+following core components:
 
-`type(scope): description` (scope optional, description lowercase)
+- **Smart Contracts** (`kit/contracts/`): Solidity contracts for various asset
+  types (bonds, deposits, equity, funds, stablecoins) with compliance and
+  identity management
+- **dApp Frontend** (`kit/dapp/`): Next.js application with TypeScript, TanStack
+  Router, and Vite
+- **Subgraph** (`kit/subgraph/`): TheGraph indexing layer for blockchain data
+- **E2E Tests** (`kit/e2e/`): Playwright tests for UI and API testing
+- **Helm Charts** (`kit/charts/`): Kubernetes deployment configurations
 
-**Types:** feat, fix, chore, docs, style, refactor, perf, test, build, ci,
-revert
+## Essential Commands
 
-## Branch Rules (CRITICAL)
+### Development Workflow
 
 ```bash
-# Check current branch FIRST
-current_branch=$(git branch --show-current)
-[[ "$current_branch" == "main" || "$current_branch" == "master" ]] && git checkout -b feature/name || echo "Using: $current_branch"
+# Initial setup
+bun install
+bun turbo link  # Enable remote caching
+
+# Start local development environment
+bun run dev:up    # Starts Docker Compose stack
+bun run dev       # Starts dApp in development mode
+
+# Clean restart (if needed)
+bun run dev:reset # Removes Docker volumes and restarts
 ```
 
-✅ One feature = one branch = one PR ❌ NO nested branches or multiple PRs per
-feature
-
-## Special Patterns
-
-- Dependencies: `chore(deps):`, `fix(deps):`, `build(deps):`
-- Breaking changes: `BREAKING CHANGE:` in body
-- PR title = first commit message
-
-## Examples
-
-✅ feat: add user authentication ✅ fix(api): resolve timeout issue ✅
-chore(deps): update react to v18 ✅ feat: redesign API endpoints ❌ Feature: Add
-user auth ❌ added new feature
-
-# MCP Server Usage
-
-## Linear (Project Management)
-
-- **Search/Get:** `mcp_linear_list_issues(query="ENG-3236")`,
-  `mcp_linear_get_issue(id="ENG-3236")`
-- **Update:** `mcp_linear_update_issue(id, stateId?, description?)`
-- **Comment:** `mcp_linear_create_comment(issueId, body="PR: https://...")`
-
-## Sentry (Error Tracking)
-
-- **Find:** `mcp_sentry_find_organizations()`,
-  `mcp_sentry_find_issues(organizationSlug, query="is:unresolved")`
-- **Details:** `mcp_sentry_get_issue_details(organizationSlug, issueId)`
-- **Update:** `mcp_sentry_update_issue(organizationSlug, issueId, status)`
-
-## Context7 & DeepWiki (Documentation)
-
-- **Context7:** `resolve-library-id(libraryName)` →
-  `get-library-docs(libraryID, topic?)`
-- **DeepWiki:** `read_wiki_structure(repoName)`, `read_wiki_contents(repoName)`,
-  `ask_question(repoName, question)`
-
-**Note:** Always link PRs in Linear comments and include Linear IDs in PR
-descriptions.
-
-## Ticket Management
-
-- Use Linear to manage the metadata of a Linear ticket that you are asked to
-  manage. Do this when you start and during the lifecycle of your work/pr so we
-  can keep track of progress.
-
-# Quality control
-
-- Before deciding the task is done, make sure `bun run ci` completes sucessfully
-- Before opening a PR, make sure `bun run ci` completes sucessfully
-
-# Tooling & Commands
-
-## Turborepo
-
-- this is a tuborepo mono repo
-- run all package.json scripts from the root so the correct pre/post and turbo
-  dependencies run
-
-## Package Manager: Bun (Default)
+### Pre-Development Tasks
 
 ```bash
-bun <file>            # instead of node/ts-node
-bun install/run/test  # instead of npm/yarn/pnpm
-# Auto-loads .env files (no dotenv needed)
+# CRITICAL: Run these before any linting/testing/formatting
+bun artifacts     # Generate contract artifacts and genesis file
+bun codegen      # Generate TypeScript types from GraphQL schemas
 ```
 
-## CLI Tools
+### Quality Assurance
 
-- **jq**: JSON parsing (`brew install jq`)
-- **yq**: YAML parsing (`brew install yq`)
-- **ast-grep**: Syntax-aware search (`brew install ast-grep`)
-  ```bash
-  ast-grep --lang typescript -p 'function $NAME($_) { $$$ }'
-  ```
+```bash
+# Complete QA pipeline (run before creating PRs)
+bun run ci       # Runs: format, compile, codegen, lint, test
 
-## Automatic Command Usage
-
-### Core Commands (@/.claude/commands/)
-
-| Command     | When to Use                            |
-| ----------- | -------------------------------------- |
-| `/pr`       | Creating pull requests                 |
-| `/qa`       | Before PR or after significant changes |
-| `/comments` | When code lacks documentation          |
-| `/setup`    | Configure MCP servers                  |
-| `/stuck`    | After 5+ mins debugging same issue     |
-
-### Proactive Usage
-
-- Multiple code changes → Run `/qa`
-- New functions without docs → Run `/comments`
-- Complex debugging → Run `/stuck`
-- Major refactoring → Run `/qa` before completion
-
-**Note:** Commands are comprehensive workflows, not single actions. Read full
-command files for details.
-
-## Sub Agents (Use More!)
-
-Ideal for:
-
-- **Multi-file operations**: Pattern searches, relationship mapping
-- **Refactoring**: Breaking down steps, impact analysis
-- **Architecture**: Dependencies, data flows, API discovery
-- **Debugging**: Error patterns, log analysis, execution tracing
-- **Impact analysis**: Usage finding, test coverage gaps
-
-💡 Sub agents work in parallel and handle open-ended searches better than
-sequential tools.
-
-# Ultracite Rules
-
-## Accessibility
-
-- Valid ARIA usage: roles, properties, required attributes
-- Keyboard support: focusable elements, handlers (onClick→onKey\*)
-- Required attributes: lang (html), title (iframe/SVG), type (button)
-- Meaningful content: alt text, labels, headings
-- No: accessKey, aria-hidden on focusable, distracting elements
-
-## TypeScript
-
-- Forbidden: any, @ts-ignore, enums, namespaces, var
-- Required: import/export type, const for single assignment
-- No: non-null assertions (!), parameter reassignment, type annotations on
-  literals
-- Arrays: T[] or Array<T> consistently
-
-## React/Next.js
-
-- Keys: no array indices
-- Hooks: complete deps, top-level only
-- No: nested components, prop assignment, <img> in Next.js
-- Use: <></> over Fragment
-
-## Code Quality
-
-- No unused: imports, variables, parameters, labels, members
-- No duplicates: cases, members, conditions, JSX props, keys
-- No empty: blocks, interfaces, destructuring
-- Required: === over ==, isNaN() for NaN, exhaustive switches
-
-## Modern Practices
-
-- Prefer: for...of, String.slice(), .at(), Date.now(), template literals
-- Use: node: protocol, object spread, numeric separators
-- Include: radix in parseInt(), Symbol descriptions
-- No: delete, eval, console, debugger, hardcoded secrets
-
-## Clean Code
-
-- No: nested ternaries, yoda expressions, unnecessary code
-- Group: getters/setters, overload signatures
-- Handle: promises, errors (new Error), import cycles
-- Consistent: object literals, curly braces, accessibility modifiers
-
-# TypeScript Guidelines
-
-## Core Principles
-
-- **Strict mode always** (all strict compiler options)
-- **Never use `any`** without exceptional justification (OK in generic function
-  bodies)
-- **Prefer `type` over `interface`** unless you need declaration merging
-- **Use `readonly` by default**
-- **No default exports** (unless framework requires)
-- **Import type** for type-only imports
-
-## Key Patterns
-
-### Discriminated Unions (prevent impossible states)
-
-```ts
-type FetchState<T> =
-  | { status: "idle" }
-  | { status: "loading" }
-  | { status: "success"; data: T }
-  | { status: "error"; error: Error };
+# Individual tasks
+bun run format   # Prettier formatting
+bun run lint     # ESLint
+bun run test     # Unit tests (uses bun:test, not vitest)
+bun run compile  # Compile smart contracts
 ```
 
-### Const Assertions over Enums
+### Testing
 
-```ts
-const Status = { PENDING: "PENDING", APPROVED: "APPROVED" } as const;
-type Status = (typeof Status)[keyof typeof Status];
+```bash
+# Unit tests
+bun run test
+
+# E2E tests
+bun run test:e2e:ui        # UI tests with Playwright
+bun run test:e2e:ui:debug  # UI tests with debug mode
+bun run test:e2e:api       # API tests with Playwright
+
+# Integration tests
+bun run test:integration
+
+# Single test file
+bun test path/to/test.spec.ts
 ```
 
-### Result Types for Error Handling
+### Contract Development
 
-```ts
-type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };
+```bash
+# Deploy contracts to local Anvil
+bunx turbo contracts#publish
+
+# Test subgraph integration
+bunx turbo subgraph#test:integration
 ```
 
-### Branded Types
+## Architecture
 
-```ts
-type UserId = string & { readonly brand: unique symbol };
-const UserId = (id: string): UserId => id as UserId;
+### Directory Structure
+
+```
+kit/
+├── contracts/           # Smart contracts (Foundry + Hardhat)
+│   ├── contracts/      # Solidity source files
+│   ├── scripts/        # Deployment and management scripts
+│   └── test/          # Contract tests
+├── dapp/              # Next.js frontend application
+│   ├── src/
+│   │   ├── components/ # React components
+│   │   ├── routes/    # TanStack Router routes
+│   │   └── lib/       # Utilities and configuration
+│   └── locales/       # Internationalization files
+├── subgraph/          # TheGraph indexing
+├── e2e/              # End-to-end tests
+└── charts/           # Helm charts for deployment
 ```
 
-## Naming Conventions
+### Tech Stack
 
-- **Files:** `kebab-case.ts`
-- **Variables/Functions:** `camelCase`
-- **Types/Classes:** `PascalCase`
-- **Constants:** `UPPER_SNAKE_CASE`
-- **Type Parameters:** `TKey`, `TValue` (prefix with T)
+- **Package Manager**: Bun (default)
+- **Monorepo**: Turborepo
+- **Smart Contracts**: Solidity with Foundry and Hardhat
+- **Frontend**: Next.js, TypeScript, Tanstack Start, Tanstack Query, TanStack
+  Router, Vite
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **Testing**: bun:test for unit tests, Playwright for E2E
+- **Blockchain**: Local Anvil node for development
+- **Database**: PostgreSQL with Hasura GraphQL API
 
-## Important Rules
+### Key Architectural Patterns
 
-- Return types on top-level functions (except JSX components)
-- Parameter objects over multiple parameters
-- Optional properties sparingly (prefer `T | undefined`)
-- `noUncheckedIndexedAccess` aware (changes array/object access behavior)
-- Schema-first with Zod: define schema → derive type
-- Type guards for runtime checking
-- Install packages with `bun add` for latest versions
+- **Asset Types**: Centralized in Zod validators (bonds, deposits, equity,
+  funds, stablecoins)
+- **Identity & Compliance**: OnChainID-based identity management with SMART
+  token compliance
+- **Proxy Pattern**: Upgradeable contracts using proxy implementations
+- **Factory Pattern**: Dedicated factory contracts for asset creation
+- **Access Control**: Role-based access with AccessManager integration
+
+## Development Guidelines
+
+### TypeScript (Ultracite Rules)
+
+- **Strict mode always** - all strict compiler options enabled
+- **Forbidden**: `any`, `@ts-ignore`, enums, namespaces, `var`
+- **Preferred**: `type` over `interface`, `readonly` by default, no default exports
+- **Naming**: kebab-case files, camelCase variables, PascalCase types, UPPER_SNAKE_CASE constants
+- **Return types required** on top-level functions (except JSX components)
+- **Modern patterns**: Discriminated unions, const assertions over enums, Result types, branded types
+- **Code quality**: No unused imports/variables/parameters, === over ==, exhaustive switches
+- **Schema-first**: Define Zod schemas, derive TypeScript types, use type guards
+- **Error handling**: Use Result types, proper error handling with `new Error`
+
+### React/Next.js Rules
+
+- **Keys**: Never use array indices
+- **Hooks**: Complete dependencies, top-level only
+- **Components**: No nested components, prefer `<></>` over Fragment
+- **Forbidden**: `<img>` in Next.js, prop assignment
+
+### Git Workflow
+
+- **Branch Rule**: NEVER commit to main - always create feature branches
+- **Commit Format**: `type(scope): description` (lowercase description)
+- **Types**: feat, fix, chore, docs, style, refactor, perf, test, build, ci,
+  revert
+- **Pattern**: One feature = one branch = one PR
+
+### Code Quality
+
+- **Logging**: Use
+  `createLogger({ level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info" })`
+  instead of console.log
+- **No unused**: imports, variables, parameters, members
+- **Modern practices**: for...of, template literals, async/await, object spread, numeric separators
+- **Accessibility**: Valid ARIA usage, keyboard support (onClick→onKey*), meaningful labels/alt text, required attributes (lang, title, type), no accessKey or aria-hidden on focusable elements
+- **Forbidden**: console.log, debugger, delete, eval, hardcoded secrets
+
+## Important Constraints
+
+### Files to Never Modify
+
+- `kit/dapp/src/components/ui/` - shadcn components (kept immutable for
+  upgrades)
+- `routeTree.gen.ts` - Auto-generated by TanStack Router
+- `dapp-v1/` - Deprecated folder (completely ignore)
+
+### Required Patterns
+
+- **No barrel files** - Avoid index.ts re-exports
+- **No default exports** - Unless framework requires it
+- **Schema-first** - Define Zod schemas, derive TypeScript types
+- **Error handling** - Use Result types, proper error boundaries
+
+### MCP Integration
+
+- **Linear**: Project management, ticket updates, PR linking
+- **Sentry**: Error tracking and issue management
+- **Context7/DeepWiki**: Up-to-date library documentation
+
+## Local Development Stack
+
+The Docker Compose setup includes:
+
+- **Anvil**: Local Ethereum node (port 8545)
+- **PostgreSQL**: Database with Hasura GraphQL API
+- **Redis**: Caching layer
+- **Blockscout**: Block explorer
+- **Portal**: SettleMint platform services
+
+## Quality Control
+
+Before any PR:
+
+1. Run `bun run ci` successfully
+2. Ensure all tests pass
+3. Check TypeScript compilation
+4. Verify contract deployment works locally
 
 ## Memories
 
 - Completely ignore dapp-v1 folder - it's deprecated
 - Do not use vitest to make tests, use bun:test
 - Asset types are centralized in the zod validator (no more cryptocurrency)
-- never use barrel files
-- Do not use console.log, use const logger = createLogger({ level:
-  (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info", });
-- do not modify code in kit/dapp/src/components/ui, this is where we store
-  shadcn components we want to keep immutable for easy upgrading
+- Never use barrel files
+- Do not use console.log, use createLogger with SETTLEMINT_LOG_LEVEL
+- Do not modify code in kit/dapp/src/components/ui (shadcn components)
 - NEVER, EVER commit to main, if you are not on a branch, make a new one
-- Run `bun artifacts` and `bun codegen` before running any testing/linting/formatting tasks
+- Run `bun artifacts` and `bun codegen` before running any
+  testing/linting/formatting tasks
 - `routeTree.gen.ts` is auto generated, ignore it

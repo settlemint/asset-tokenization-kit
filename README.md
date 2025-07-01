@@ -36,6 +36,23 @@ the kit simplifies the creation of secure and scalable tokenization solutions.
 **Note**: The `dapp-v1` folder is deprecated and no longer used. All development
 should focus on the modern stack in `kit/dapp`.
 
+## Documentation & Development Guidelines
+
+This repository includes comprehensive documentation to ensure consistent, high-quality development:
+
+- **[CLAUDE.md](./CLAUDE.md)** - Complete project guide for Claude Code with architecture, commands, and development standards
+- **[CLAUDE.local.md](./CLAUDE.local.md)** - Organizational rules and modular development framework
+- **[.cursor/rules/](./cursor/rules/)** - Specialized rule modules for different aspects of development (git, QA, review, tools)
+- **[.claude/commands/](./claude/commands/)** - Automated workflow commands for common development tasks
+
+### Key Features:
+- 🏗️ **Complete Architecture Documentation** - Understand the monorepo structure and design patterns
+- 🔧 **Essential Command Reference** - All critical development workflows in one place  
+- 📋 **Quality Control Checklists** - Comprehensive pre-PR requirements and testing standards
+- 🔄 **Self-Improving System** - Documentation that evolves based on lessons learned
+- 🛡️ **Security Standards** - Enhanced review process with security considerations
+- 🎯 **Modular Rule System** - Organized, maintainable development guidelines
+
 ## Local development
 
 ### Setting up
