@@ -21,7 +21,9 @@ export const tokenFactoryPermissionMiddleware = (
     const userRoles = auth
       ? Object.entries(tokenFactory.accessControl)
           .filter(([, accounts]) =>
-            accounts.some((account) => account.id === auth.user.wallet)
+            accounts.some(
+              (account) => account.id === auth.user.wallet.toLowerCase()
+            )
           )
           .map(([role]) => role as keyof typeof tokenFactory.accessControl)
       : [];

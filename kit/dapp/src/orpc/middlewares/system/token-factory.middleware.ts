@@ -1,4 +1,4 @@
-import type { AssetType } from "@/lib/zod/validators/asset-types";
+import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { baseRouter } from "@/orpc/procedures/base.router";
 
 /**
@@ -6,7 +6,7 @@ import { baseRouter } from "@/orpc/procedures/base.router";
  * @param type - The type of the token factory.
  * @returns The middleware function.
  */
-export const tokenFactoryMiddleware = (type: AssetType) =>
+export const tokenFactoryMiddleware = (typeId: AssetFactoryTypeId) =>
   baseRouter.middleware(async ({ context, next, errors }) => {
     const { system } = context;
     if (!system) {
@@ -14,7 +14,7 @@ export const tokenFactoryMiddleware = (type: AssetType) =>
     }
 
     const tokenFactory = system.tokenFactories.find(
-      (tokenFactory) => tokenFactory.type === type
+      (tokenFactory) => tokenFactory.typeId === typeId
     );
     if (!tokenFactory) {
       throw errors.INTERNAL_SERVER_ERROR({

@@ -96,7 +96,7 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
 export const depositCreate = onboardedRouter.token.depositCreate
   .use(portalMiddleware)
   .use(systemMiddleware)
-  .use(tokenFactoryMiddleware("deposit"))
+  .use(tokenFactoryMiddleware("ATKDepositFactory"))
   .use(tokenFactoryPermissionMiddleware(["deployer"]))
   .handler(async function* ({ input, context }) {
     const sender = context.auth.user;

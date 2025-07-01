@@ -25,7 +25,7 @@ const CREATE_BOND_MUTATION = portalGraphql(`
 export const bondCreate = onboardedRouter.token.bondCreate
   .use(portalMiddleware)
   .use(systemMiddleware)
-  .use(tokenFactoryMiddleware("bond"))
+  .use(tokenFactoryMiddleware("ATKBondFactory"))
   .use(tokenFactoryPermissionMiddleware(["deployer"]))
   .handler(async ({ input, context }) => {
     const sender = context.auth.user;
