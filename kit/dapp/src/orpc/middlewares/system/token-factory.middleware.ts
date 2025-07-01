@@ -13,17 +13,8 @@ export const tokenFactoryMiddleware = (type: AssetType) =>
       throw errors.SYSTEM_NOT_CREATED();
     }
 
-    // TODO: This is a temporary solution to map the token factory name to the asset type
-    const tokenFactoryNamesMap: Record<string, AssetType> = {
-      Funds: "fund",
-      Equities: "equity",
-      Bonds: "bond",
-      Stablecoins: "stablecoin",
-      Deposits: "deposit",
-    };
-
     const tokenFactory = system.tokenFactories.find(
-      (tokenFactory) => tokenFactoryNamesMap[tokenFactory.name] === type
+      (tokenFactory) => tokenFactory.name === type
     );
     if (!tokenFactory) {
       throw errors.INTERNAL_SERVER_ERROR({
