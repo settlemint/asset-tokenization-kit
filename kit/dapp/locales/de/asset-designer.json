@@ -1,0 +1,46 @@
+{
+  "streaming-messages": {
+    "initial-loading": "Vorbereitung zur Erstellung von {{type}}...",
+    "no-result-error": "Keine Transaktions-Hash von der {{type}}-Erstellung erhalten.",
+    "default-error": "Fehler beim Erstellen von {{type}}.",
+    "creation-failed": "Fehler beim Erstellen des {{type}}.",
+    "creation-success": "{{type}} erfolgreich erstellt."
+  },
+  "form": {
+    "title": "{{type}} Token erstellen",
+    "description": "Konfigurieren Sie Ihr {{type}} Token, indem Sie die grundlegenden Informationen unten angeben.",
+    "fields": {
+      "name": {
+        "label": "Token-Name",
+        "placeholder": "z.B. Staatsanleihe {{type}} Serie A",
+        "description": "Der Name des Tokens. Wird zur Identifizierung des Tokens in der Benutzeroberfläche verwendet und kann nach der Erstellung nicht geändert werden."
+      },
+      "symbol": {
+        "label": "Token-Symbol",
+        "placeholder": "z.B. GBSA",
+        "description": "Ein kurzes Symbol für den Token (normalerweise 3-5 Zeichen)"
+      },
+      "decimals": {
+        "label": "Dezimalstellen",
+        "placeholder": "18",
+        "description": "Anzahl der Dezimalstellen für den Token (0-18, Standard ist 18)"
+      },
+      "isin": {
+        "label": "ISIN (Optional)",
+        "placeholder": "z.B. US0378331005",
+        "description": "Die ISIN des Vermögenswerts. Dies ist eine optionale eindeutige Kennung für den Vermögenswert im Finanzsystem."
+      }
+    },
+    "actions": {
+      "create": "{{type}} Token erstellen",
+      "creating": "Erstelle..."
+    }
+  },
+  "messages": {
+    "creating": "Erstelle {{type}}...",
+    "created": "{{type}} erfolgreich erstellt.",
+    "creation-failed": "Fehler beim Erstellen von {{type}}.",
+    "success-toast": "{{type}} Token erfolgreich erstellt!",
+    "error-toast": "Fehler beim Erstellen des {{type}} Tokens"
+  }
+}

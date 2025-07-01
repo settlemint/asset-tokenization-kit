@@ -3,48 +3,73 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
-import type { DepositTokenCreateSchema } from "@/orpc/routes/token/routes/deposit/deposit.create.schema";
-import { DepositTokenCreateSchema as schema } from "@/orpc/routes/token/routes/deposit/deposit.create.schema";
+import {
+  DepositTokenCreateSchema as schema,
+  type DepositCreateInput,
+} from "@/orpc/routes/token/routes/deposit/deposit.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import type { z } from "zod/v4";
 
 interface CreateDepositFormProps {
   onSuccess?: () => void;
 }
 
-type DepositFormData = z.infer<typeof DepositTokenCreateSchema>;
-
 export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
-  const form = useForm<DepositFormData>({
+  const { t } = useTranslation("asset-designer");
+
+  const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       type: AssetTypeEnum.deposit,
+      messages: {
+        initialLoading: t("streaming-messages.initial-loading", {
+          type: AssetTypeEnum.deposit,
+        }),
+        noResultError: t("streaming-messages.no-result-error", {
+          type: AssetTypeEnum.deposit,
+        }),
+        defaultError: t("streaming-messages.default-error", {
+          type: AssetTypeEnum.deposit,
+        }),
+        creatingDeposit: t("messages.creating", {
+          type: AssetTypeEnum.deposit,
+        }),
+        depositCreated: t("messages.created", {
+          type: AssetTypeEnum.deposit,
+        }),
+        depositCreationFailed: t("messages.creation-failed", {
+          type: AssetTypeEnum.deposit,
+        }),
+      },
     },
+    mode: "onChange",
   });
 
   const { mutate: createDeposit, isPending } = useMutation({
-    mutationFn: async (data: DepositFormData) => {
+    mutationFn: async (data: DepositCreateInput) => {
       return await orpc.token.depositCreate.call(data);
     },
     onSuccess: (transactionHash) => {
-      toast.success("Deposit token created successfully!");
+      toast.success(
+        t("messages.success-toast", { type: AssetTypeEnum.deposit })
+      );
       console.log("Transaction hash:", transactionHash);
       form.reset();
       onSuccess?.();
     },
     onError: (error) => {
-      toast.error("Failed to create deposit token");
+      toast.error(t("messages.error-toast", { type: AssetTypeEnum.deposit }));
       console.error("Deposit creation error:", error);
     },
   });
 
   // Handle form submission
   const onSubmit = useCallback(
-    (data: DepositFormData) => {
+    (data: DepositCreateInput) => {
       createDeposit(data);
     },
     [createDeposit]
@@ -53,9 +78,11 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h3 className="text-lg font-medium">Create Deposit Token</h3>
+        <h3 className="text-lg font-medium">
+          {t("form.title", { type: AssetTypeEnum.deposit })}
+        </h3>
         <p className="text-sm text-muted-foreground mt-2">
-          Configure your deposit token by providing the basic information below.
+          {t("form.description", { type: AssetTypeEnum.deposit })}
         </p>
       </div>
 
@@ -66,18 +93,20 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
               <FormInput
                 control={form.control}
                 name="name"
-                label="Token Name"
-                placeholder="e.g., Government Bond Series A"
-                description="The name of the token. This is used to identify the token in the UI and cannot be changed after creation."
+                label={t("form.fields.name.label")}
+                placeholder={t("form.fields.name.placeholder", {
+                  type: AssetTypeEnum.deposit,
+                })}
+                description={t("form.fields.name.description")}
                 required
                 maxLength={50}
               />
               <FormInput
                 control={form.control}
                 name="symbol"
-                label="Token Symbol"
-                placeholder="e.g., GBSA"
-                description="A short symbol for the token (usually 3-5 characters)"
+                label={t("form.fields.symbol.label")}
+                placeholder={t("form.fields.symbol.placeholder")}
+                description={t("form.fields.symbol.description")}
                 required
                 maxLength={10}
               />
@@ -86,20 +115,20 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
             <FormInput
               control={form.control}
               name="decimals"
-              label="Decimals"
+              label={t("form.fields.decimals.label")}
               type="number"
               min={0}
               max={18}
-              placeholder="18"
-              description="Number of decimal places for the token (0-18, default is 18)"
+              placeholder={t("form.fields.decimals.placeholder")}
+              description={t("form.fields.decimals.description")}
               required
             />
             <FormInput
               control={form.control}
               name="isin"
-              label="ISIN (Optional)"
-              placeholder="e.g., US0378331005"
-              description="The ISIN of the asset. This is an optional unique identifier for the asset in the financial system."
+              label={t("form.fields.isin.label")}
+              placeholder={t("form.fields.isin.placeholder")}
+              description={t("form.fields.isin.description")}
               maxLength={12}
               required={false}
             />
@@ -107,7 +136,9 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
 
           {/* Submit Button */}
           <Button type="submit" disabled={isPending}>
-            {isPending ? "Creating..." : "Create Deposit Token"}
+            {isPending
+              ? t("form.actions.creating")
+              : t("form.actions.create", { type: AssetTypeEnum.deposit })}
           </Button>
         </form>
       </Form>
