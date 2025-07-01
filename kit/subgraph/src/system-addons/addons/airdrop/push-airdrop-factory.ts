@@ -1,4 +1,3 @@
-import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
 import { ATKPushAirdropCreated } from "../../../../generated/templates/PushAirdropFactory/PushAirdropFactory";
 import { fetchEvent } from "../../../event/fetch/event";
 import { fetchAirdrop } from "./fetch/airdrop";
@@ -15,9 +14,7 @@ export function handleATKPushAirdropCreated(
   airdrop.factory = event.address;
   airdrop.deployedInTransaction = event.transaction.hash;
   airdrop.pushAirdrop = pushAirdrop.id;
-  airdrop.typeId = Bytes.fromByteArray(
-    crypto.keccak256(ByteArray.fromUTF8("ATKPushAirdrop"))
-  );
+  airdrop.typeId = "ATKPushAirdrop";
 
   airdrop.save();
 }

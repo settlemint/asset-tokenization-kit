@@ -67,7 +67,7 @@ export const list = authRouter.user.list
       .select()
       .from(user)
       .orderBy(order(orderColumn))
-      .limit(limit)
+      .limit(limit ?? 1000)
       .offset(offset);
 
     // Transform results to include human-readable roles

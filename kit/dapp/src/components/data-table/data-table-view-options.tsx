@@ -1,0 +1,72 @@
+"use client";
+"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
+
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { Table } from "@tanstack/react-table";
+import { Settings2 } from "lucide-react";
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+
+interface DataTableViewOptionsProps<TData> {
+  table: Table<TData>;
+}
+
+export function DataTableViewOptions<TData>({
+  table,
+}: DataTableViewOptionsProps<TData>) {
+  const { t } = useTranslation("general");
+
+  const handleColumnVisibilityChange = useCallback(
+    (columnId: string) => (value: boolean) => {
+      table.getColumn(columnId)?.toggleVisibility(!!value);
+    },
+    [table]
+  );
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="ml-auto hidden h-8 border-muted-foreground text-muted-foreground lg:flex"
+        >
+          <Settings2 />
+          {t("components.data-table.view")}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[150px]">
+        <DropdownMenuLabel>
+          {t("components.data-table.toggle-columns")}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {table
+          .getAllColumns()
+          .filter(
+            (column) =>
+              typeof column.accessorFn !== "undefined" && column.getCanHide()
+          )
+          .map((column) => {
+            return (
+              <DropdownMenuCheckboxItem
+                key={column.id}
+                className="capitalize"
+                checked={column.getIsVisible()}
+                onCheckedChange={handleColumnVisibilityChange(column.id)}
+              >
+                {column.id}
+              </DropdownMenuCheckboxItem>
+            );
+          })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

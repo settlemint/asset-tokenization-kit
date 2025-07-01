@@ -367,7 +367,7 @@ const getAuthConfig = serverOnly(() => {
           user: {
             ...user,
             isOnboarded: isOnboarded(user as SessionUser),
-          },
+          } as SessionUser,
           session,
         });
       }, enhancedOptions),

@@ -1,20 +1,14 @@
-import { ByteArray, Bytes, crypto, ethereum } from "@graphprotocol/graph-ts";
+import { Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { GlobalAddressListChange as GlobalAddressListChangeEvent } from "../../../generated/templates/AbstractAddressListComplianceModule/AbstractAddressListComplianceModule";
 import { fetchEvent } from "../../event/fetch/event";
+import { getEncodedTypeId } from "../../type-identifier/type-identifier";
 import { fetchComplianceModule } from "../fetch/compliance-module";
 
 export function isAddressListComplianceModule(typeId: Bytes): boolean {
   return (
-    typeId ==
-      crypto.keccak256(
-        ByteArray.fromUTF8("AddressBlockListComplianceModule")
-      ) ||
-    typeId ==
-      crypto.keccak256(
-        ByteArray.fromUTF8("IdentityAllowListComplianceModule")
-      ) ||
-    typeId ==
-      crypto.keccak256(ByteArray.fromUTF8("IdentityBlockListComplianceModule"))
+    typeId.equals(getEncodedTypeId("AddressBlockListComplianceModule")) ||
+    typeId.equals(getEncodedTypeId("IdentityAllowListComplianceModule")) ||
+    typeId.equals(getEncodedTypeId("IdentityBlockListComplianceModule"))
   );
 }
 

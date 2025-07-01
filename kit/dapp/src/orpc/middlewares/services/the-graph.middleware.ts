@@ -18,7 +18,6 @@ function isListInput(input: unknown): input is ListInput {
     typeof input === "object" &&
     input !== null &&
     "offset" in input &&
-    "limit" in input &&
     "orderDirection" in input &&
     "orderBy" in input
   );
@@ -26,20 +25,32 @@ function isListInput(input: unknown): input is ListInput {
 
 /**
  * Helper to create a filter object from optional input fields.
- * Only includes fields that are not undefined.
  *
- * @param fields - Object mapping field names to their values
+ * This utility function removes undefined values from an object to create clean
+ * GraphQL query filters. It's particularly useful for building dynamic where
+ * clauses in auto-paginated queries where filters must be preserved across
+ * multiple batch requests.
+ *
+ * @param fields - Object mapping field names to their values (may include undefined)
  * @returns Filter object with only defined fields, or undefined if all fields are undefined
  *
  * @example
  * ```typescript
- * // Instead of:
- * filter: (input) => input.hasTokens !== undefined
+ * // Manual approach (verbose):
+ * const filter = input.hasTokens !== undefined
  *   ? { hasTokens: input.hasTokens }
- *   : undefined
+ *   : undefined;
  *
- * // Use:
- * filter: (input) => buildFilter({ hasTokens: input.hasTokens })
+ * // Using buildFilter (concise):
+ * const filter = buildFilter({
+ *   hasTokens: input.hasTokens,
+ *   isActive: input.isActive
+ * });
+ * // Result: { hasTokens: true } if hasTokens is defined and isActive is undefined
+ *
+ * // Auto-pagination usage:
+ * const cleanFilter = buildFilter({ category: input.category });
+ * // This filter is automatically preserved across all paginated batch requests
  * ```
  */
 export function buildFilter(
@@ -66,8 +77,7 @@ export function buildFilter(
  * - Operation name extraction from GraphQL documents
  * - Comprehensive error logging and categorization
  * - User-friendly error messages
- * @param {object} errors - ORPC error constructors for consistent error handling
- * @returns {object} A validated TheGraph client with a `query` method
+ * @returns A validated TheGraph client with a `query` method
  * @example
  * ```typescript
  * const client = createValidatedTheGraphClient(errors);
@@ -86,6 +96,102 @@ function createValidatedTheGraphClient(
 ) {
   return {
     /**
+     * Executes auto-paginated GraphQL queries for large result sets.
+     *
+     * This method handles queries that request more than 1000 records or unlimited records
+     * by automatically breaking them into multiple batched requests and merging the results.
+     *
+     * @param document - The GraphQL query document
+     * @param baseVariables - Base query variables
+     * @param input - Original list input with limit > 1000 or undefined limit
+     * @param operation - Operation name for logging
+     * @returns Promise<TResult> - Merged results from all paginated requests
+     */
+    async executeWithAutoPagination<TResult, TVariables extends Variables>(
+      document: TadaDocumentNode<TResult, TVariables>,
+      baseVariables: TVariables,
+      input: ListInput,
+      operation: string
+    ): Promise<TResult> {
+      const allResults: unknown[] = [];
+      let currentSkip = input.offset;
+      const totalLimit = input.limit;
+      const isUnlimited = totalLimit === undefined;
+      let remainingLimit = isUnlimited ? Number.MAX_SAFE_INTEGER : totalLimit;
+      let resultFieldName = "";
+
+      logger.debug(`Starting auto-pagination for ${operation}`, {
+        totalLimit: isUnlimited ? "unlimited" : totalLimit,
+        offset: input.offset,
+      });
+
+      while (remainingLimit > 0) {
+        const batchSize = Math.min(remainingLimit, 1000);
+        const batchVariables = {
+          ...baseVariables,
+          skip: currentSkip,
+          first: batchSize,
+        } as TVariables;
+
+        const batchResult = await (
+          theGraphClient.request as <D, V extends Variables>(
+            doc: TadaDocumentNode<D, V>,
+            vars: V
+          ) => Promise<D>
+        )(document, batchVariables);
+
+        // Extract the array field from the result
+        // Find the first array field in the GraphQL response
+        const resultObj = batchResult as Record<string, unknown>;
+        const arrayFieldEntry = Object.entries(resultObj).find(([, value]) =>
+          Array.isArray(value)
+        );
+
+        if (!arrayFieldEntry) {
+          throw new Error(
+            `No array field found in GraphQL response for ${operation}`
+          );
+        }
+
+        const [fieldName, arrayField] = arrayFieldEntry;
+        const batchData = arrayField as unknown[];
+
+        // Store field name for result reconstruction (only on first iteration)
+        if (!resultFieldName) {
+          resultFieldName = fieldName;
+        }
+
+        allResults.push(...batchData);
+
+        // Stop if we got fewer results than requested (end of data)
+        if (batchData.length < batchSize) {
+          logger.debug(
+            `Auto-pagination complete for ${operation} - reached end of data`,
+            {
+              totalFetched: allResults.length,
+              lastBatchSize: batchData.length,
+            }
+          );
+          break;
+        }
+
+        currentSkip += batchSize;
+        if (!isUnlimited) {
+          remainingLimit -= batchSize;
+        }
+
+        logger.debug(`Auto-pagination progress for ${operation}`, {
+          currentSkip,
+          remainingLimit: isUnlimited ? "unlimited" : remainingLimit,
+          fetchedSoFar: allResults.length,
+        });
+      }
+
+      // Reconstruct the result with all paginated data
+      return { [resultFieldName]: allResults } as TResult;
+    },
+
+    /**
      * Executes a GraphQL query against TheGraph with automatic response validation
      * and variable transformation.
      *
@@ -93,43 +199,49 @@ function createValidatedTheGraphClient(
      * and validates the response against a provided Zod schema. It supports automatic
      * transformation of input variables for common patterns like pagination and filtering.
      *
+     * Enhanced Type Safety:
+     * - Input must exactly match the GraphQL query's expected variables at compile time
+     * - TypeScript will catch mismatches between variable names and input properties
+     * - No runtime transformation needed - direct mapping ensures type safety
+     *
      * Features:
-     * 1. **Type Safety**: Response data is validated at runtime against the provided schema
-     * 2. **Variable Transformation**: Automatically transforms ListSchema inputs to TheGraph format
+     * 1. **Strict Type Safety**: Input must match GraphQL variables exactly - no exceptions
+     * 2. **Compile-time Validation**: TypeScript catches variable name mismatches immediately
      * 3. **Error Categorization**: Errors are automatically categorized (NOT_FOUND vs INTERNAL_SERVER_ERROR)
      * 4. **Operation Tracking**: Operation names are extracted for better logging and debugging
      * 5. **Consistent Error Messages**: User-friendly messages are shown while technical details are logged
      *
      * @param {TadaDocumentNode} document - The GraphQL query document with TypeScript types
      * @param {object} options - Query configuration object
-     * @param {object} options.input - Input data including the base input and optional transformations
-     * @param {TInput} options.input.input - The base input data
-     * @param {object|array} options.input.filter - Optional where clause for filtering results (object) or array of keys to pick from input
-     * @param {function} options.input.transform - Optional function to transform input before sending
+     * @param {TVariables} options.input - GraphQL variables that must exactly match the query parameters
      * @param {z.ZodType} options.output - Zod schema to validate the response against
      * @param {string} options.error - User-friendly error message to show if the operation fails
      * @returns {Promise<TValidated>} The validated query response data
      *
      * @example
      * ```typescript
-     * // List query with automatic pagination transformation
-     * const response = await client.query(LIST_FACTORIES_QUERY, {
+     * // Type-safe query - input must match GraphQL variables exactly
+     * const response = await client.query(LIST_TOKEN_QUERY, {
      *   input: {
-     *     input,
-     *     filter: ['hasTokens'] // or { hasTokens: input.hasTokens }
+     *     tokenFactory: "0x123...", // Must match $tokenFactory in GraphQL query
+     *     skip: 0,                  // Must match $skip in GraphQL query
+     *     first: 50,                // Must match $first in GraphQL query
+     *     orderBy: "name",          // Must match $orderBy in GraphQL query
+     *     orderDirection: "asc"     // Must match $orderDirection in GraphQL query
      *   },
-     *   output: FactoriesSchema,
-     *   error: "Failed to list factories"
+     *   output: TokensResponseSchema,
+     *   error: "Failed to list tokens"
      * });
      *
-     * // Read query with ID transformation
-     * const factory = await client.query(READ_FACTORY_QUERY, {
+     * // TypeScript error - variable name mismatch
+     * const badResponse = await client.query(LIST_TOKEN_QUERY, {
      *   input: {
-     *     input: { id },
-     *     transform: (input) => ({ id: input.id.toLowerCase() })
+     *     tokenFacdtory: "0x123...", // ERROR: Property 'tokenFacdtory' does not exist
+     *     skip: 0,
+     *     first: 50
      *   },
-     *   output: FactorySchema,
-     *   error: "Failed to read factory"
+     *   output: TokensResponseSchema,
+     *   error: "Failed to list tokens"
      * });
      * ```
      */
@@ -176,54 +288,43 @@ function createValidatedTheGraphClient(
         variables = transform(input);
       } else if (isListInput(input)) {
         // Automatic transformation for ListSchema inputs
+        // Copy all fields except offset/limit, transform those to skip/first
+        const { offset, limit, ...otherFields } = input;
+
         const baseVariables: Record<string, unknown> = {
-          skip: input.offset,
-          first: input.limit,
-          orderDirection: input.orderDirection,
+          ...otherFields,
+          skip: offset,
+          first: limit ? Math.min(limit, 1000) : 1000,
         };
 
-        if (input.orderBy) {
-          baseVariables.orderBy = input.orderBy;
-        }
-
-        // Add filter if provided
+        // Add filter fields if specified
         if (filter) {
-          const cleanFilter: Record<string, unknown> = {};
-          let hasValidFields = false;
-
           if (Array.isArray(filter)) {
-            // If filter is an array of keys, pick those from input
+            // Filter is array of keys - pick only those fields from input
             for (const key of filter) {
-              const value = (input as Record<string, unknown>)[key as string];
+              const value = input[key as keyof typeof input];
               if (value !== undefined) {
-                cleanFilter[key as string] = value;
-                hasValidFields = true;
+                baseVariables[key as string] = value;
               }
             }
           } else {
-            // If filter is an object, remove undefined values
-            for (const [key, value] of Object.entries(filter)) {
-              if (value !== undefined) {
-                cleanFilter[key] = value;
-                hasValidFields = true;
-              }
-            }
-          }
-
-          if (hasValidFields) {
-            baseVariables.where = cleanFilter;
+            // Filter is an object - merge directly
+            Object.assign(
+              baseVariables,
+              buildFilter(filter as Record<string, unknown>)
+            );
           }
         }
 
         variables = baseVariables as TVariables;
       } else {
-        // No transformation needed
+        // No transformation - input must be compatible with GraphQL variables
         variables = input as unknown as TVariables;
       }
 
       let result: TResult;
       try {
-        // Execute the GraphQL query against TheGraph
+        // Execute single GraphQL query against TheGraph
         // The type assertion is needed because graphql-request has complex conditional types
         result = await (
           theGraphClient.request as <D, V extends Variables>(
@@ -342,10 +443,18 @@ export const theGraphMiddleware = baseRouter.middleware((options) => {
 });
 
 /**
- * Type representing a validated TheGraph client instance.
+ * Type representing a validated TheGraph client instance with auto-pagination.
  *
  * This type is inferred from the return type of `createValidatedTheGraphClient`
- * and provides TypeScript type information for the client's methods.
+ * and provides TypeScript type information for the enhanced client methods.
+ * The client automatically handles pagination, validation, and error management.
+ *
+ * Key capabilities:
+ * - **Auto-pagination**: Transparent handling of queries >1000 results
+ * - **Type Safety**: Runtime validation with Zod schemas
+ * - **Error Handling**: Categorized errors with user-friendly messages
+ * - **Performance**: Optimized batching and early termination
+ *
  * @example
  * ```typescript
  * // In a procedure that uses theGraphMiddleware
@@ -353,16 +462,39 @@ export const theGraphMiddleware = baseRouter.middleware((options) => {
  *   theGraphClient: ValidatedTheGraphClient;
  * }
  *
+ * // Single item query (no pagination)
  * async function fetchTokenData(
  *   context: Context,
  *   tokenAddress: string
  * ) {
- *   return context.theGraphClient.query(
- *     GET_TOKEN_QUERY,
- *     { id: tokenAddress },
- *     TokenSchema,
- *     "Token not found"
- *   );
+ *   return context.theGraphClient.query(GET_TOKEN_QUERY, {
+ *     input: { input: { id: tokenAddress } },
+ *     output: TokenSchema,
+ *     error: "Token not found"
+ *   });
+ * }
+ *
+ * // Auto-paginated list query
+ * async function fetchAllTokens(context: Context) {
+ *   return context.theGraphClient.query(LIST_TOKENS_QUERY, {
+ *     input: {
+ *       input: { offset: 0 } // No limit = unlimited auto-pagination
+ *     },
+ *     output: TokensResponseSchema,
+ *     error: "Failed to fetch tokens"
+ *   });
+ * }
+ *
+ * // Large bounded query with filtering
+ * async function fetchActiveFactories(context: Context) {
+ *   return context.theGraphClient.query(LIST_FACTORIES_QUERY, {
+ *     input: {
+ *       input: { offset: 0, limit: 5000 }, // Auto-paginated into 5 batches
+ *       filter: ["hasTokens"] // Filter preserved across all batches
+ *     },
+ *     output: FactoriesResponseSchema,
+ *     error: "Failed to fetch active factories"
+ *   });
  * }
  * ```
  */

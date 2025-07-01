@@ -1,4 +1,3 @@
-import { ByteArray, Bytes, crypto } from "@graphprotocol/graph-ts";
 import { ATKVestingAirdropCreated } from "../../../../generated/templates/VestingAirdropFactory/VestingAirdropFactory";
 import { fetchEvent } from "../../../event/fetch/event";
 import { fetchAirdrop } from "./fetch/airdrop";
@@ -15,9 +14,7 @@ export function handleATKVestingAirdropCreated(
   airdrop.factory = event.address;
   airdrop.deployedInTransaction = event.transaction.hash;
   airdrop.vestingAirdrop = vestingAirdrop.id;
-  airdrop.typeId = Bytes.fromByteArray(
-    crypto.keccak256(ByteArray.fromUTF8("ATKVestingAirdrop"))
-  );
+  airdrop.typeId = "ATKVestingAirdrop";
 
   airdrop.save();
 }

@@ -18,7 +18,7 @@ export function fetchAirdrop(id: Bytes): Airdrop {
     entity.name = name.reverted ? "unknown" : name.value;
     entity.token = token.reverted ? Address.zero() : token.value;
     entity.merkleRoot = merkleRoot.reverted ? Bytes.empty() : merkleRoot.value;
-    entity.typeId = Bytes.fromHexString("0x00");
+    entity.typeId = "unknown";
     entity.deployedInTransaction = Bytes.empty();
     entity.factory = Address.zero();
 

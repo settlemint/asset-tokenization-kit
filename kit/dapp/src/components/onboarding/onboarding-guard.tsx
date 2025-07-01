@@ -65,8 +65,7 @@ export function OnboardingGuard({
   // Determine user's onboarding status
   const userOnboarded = !!user?.isOnboarded;
   const userHasIdentity = false; // TODO: Implement identity check
-  const userRole =
-    (user?.role as undefined | "issuer" | "investor" | "admin") ?? "investor";
+  const userRole = user?.role ?? "investor";
 
   const onboardingType = user
     ? determineOnboardingType(userRole, platformRequirements)

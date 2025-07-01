@@ -1,4 +1,4 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
+import { Address } from "@graphprotocol/graph-ts";
 import { TokenFactory } from "../../../generated/schema";
 import { TokenFactory as TokenFactoryTemplate } from "../../../generated/templates";
 import { fetchAccessControl } from "../../access-control/fetch/accesscontrol";
@@ -28,7 +28,7 @@ export function fetchTokenFactory(address: Address): TokenFactory {
     tokenFactory.accessControl = fetchAccessControl(address).id;
     tokenFactory.account = fetchAccount(address).id;
     tokenFactory.name = "unknown";
-    tokenFactory.typeId = Bytes.fromHexString("0x00");
+    tokenFactory.typeId = "unknown";
     // Initialize hasTokens to false - will be set to true when first token is created
     tokenFactory.hasTokens = false;
     tokenFactory.save();

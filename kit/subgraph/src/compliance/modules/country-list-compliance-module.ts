@@ -1,22 +1,13 @@
-import {
-  BigInt,
-  ByteArray,
-  Bytes,
-  crypto,
-  ethereum,
-} from "@graphprotocol/graph-ts";
+import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { GlobalCountryListChange as GlobalCountryListChangeEvent } from "../../../generated/templates/AbstractCountryComplianceModule/AbstractCountryComplianceModule";
 import { fetchEvent } from "../../event/fetch/event";
+import { getEncodedTypeId } from "../../type-identifier/type-identifier";
 import { fetchComplianceModule } from "../fetch/compliance-module";
 
 export function isCountryListComplianceModule(typeId: Bytes): boolean {
   return (
-    typeId ==
-      crypto.keccak256(
-        ByteArray.fromUTF8("CountryAllowListComplianceModule")
-      ) ||
-    typeId ==
-      crypto.keccak256(ByteArray.fromUTF8("CountryBlockListComplianceModule"))
+    typeId.equals(getEncodedTypeId("CountryAllowListComplianceModule")) ||
+    typeId.equals(getEncodedTypeId("CountryBlockListComplianceModule"))
   );
 }
 
