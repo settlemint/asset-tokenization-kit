@@ -123,12 +123,18 @@ export function moveTokenBalanceToNewAccount(
 ): void {
   const oldBalance = fetchTokenBalance(token, fetchAccount(oldAccount));
 
+  if (oldBalance.valueExact.le(BigInt.zero()) && !oldBalance.isFrozen) {
+    removeTokenBalance(oldBalance);
+    return;
+  }
+
   const newBalance = fetchTokenBalance(token, fetchAccount(newAccount));
 
   setBigNumber(newBalance, "value", oldBalance.valueExact, token.decimals);
   setBigNumber(newBalance, "frozen", oldBalance.frozenExact, token.decimals);
   updateAvailableAmount(newBalance, token.decimals);
 
+  newBalance.isFrozen = oldBalance.isFrozen;
   newBalance.lastUpdatedAt = timestamp;
 
   newBalance.save();
