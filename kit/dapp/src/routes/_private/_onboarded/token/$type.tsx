@@ -1,11 +1,11 @@
 import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_private/_onboarded/token/$id")({
+export const Route = createFileRoute("/_private/_onboarded/token/$type")({
   loader: async ({ context, params }) => {
     // Ensure factory data is loaded
     const factory = await context.queryClient.ensureQueryData(
-      orpc.token.factoryRead.queryOptions({ input: { id: params.id } })
+      orpc.token.factoryRead.queryOptions({ input: { id: params.type } })
     );
 
     // TODO: When token.list supports filtering by factory, prefetch tokens for this specific factory
@@ -18,13 +18,13 @@ export const Route = createFileRoute("/_private/_onboarded/token/$id")({
 
 function RouteComponent() {
   const { factory } = Route.useLoaderData();
-  const { id } = Route.useParams();
+  const { type } = Route.useParams();
 
   return (
     <div>
       <h1>Token Factory: {factory.name}</h1>
-      <p>ID: {id}</p>
-      <p>Type: {factory.typeId}</p>
+      <p>Type: {type}</p>
+      <p>Type ID: {factory.typeId}</p>
       <pre>{JSON.stringify(factory, null, 2)}</pre>
     </div>
   );
