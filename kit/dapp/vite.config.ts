@@ -3,6 +3,22 @@ import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import { consoleForwardPlugin } from "vite-console-forward-plugin";
 import tsConfigPaths from "vite-tsconfig-paths";
+import { config } from "dotenv";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Load environment variables from project root
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, "../../");
+
+config({ 
+  path: [
+    path.join(projectRoot, ".env"),
+    path.join(projectRoot, ".env.local")
+  ], 
+  quiet: true 
+});
 
 // Generate a build ID
 // In development: use stable "dev" to avoid unnecessary cache busting
