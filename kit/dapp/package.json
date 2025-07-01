@@ -37,7 +37,7 @@
     "@types/react-dom": "19.1.6",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "contracts": "workspace:*",
-    "dotenv": "16.6.1",
+    "dotenv": "^17.0.0",
     "eslint": "9.30.0",
     "eslint-plugin-boundaries": "5.0.1",
     "eslint-plugin-import": "2.32.0",
