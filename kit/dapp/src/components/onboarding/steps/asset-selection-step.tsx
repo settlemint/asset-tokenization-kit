@@ -280,7 +280,9 @@ export function AssetSelectionStep({
 
     const factories = values.assets.map((assetType) => ({
       type: assetType,
-      name: assetType,
+      name: t(`asset-types.${assetType}`, {
+        ns: "tokens",
+      }),
     }));
 
     createFactories({

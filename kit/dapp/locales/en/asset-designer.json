@@ -7,16 +7,16 @@
     "creation-success": "{{type}} successfully created."
   },
   "form": {
-    "title": "Create {{type}} Token",
-    "description": "Configure your {{type}} token by providing the basic information below.",
+    "title": "Create {{type}}",
+    "description": "Configure your {{type}} by providing the basic information below.",
     "fields": {
       "name": {
-        "label": "Token Name",
+        "label": "Name",
         "placeholder": "e.g., Government {{type}} Series A",
         "description": "The name of the token. This is used to identify the token in the UI and cannot be changed after creation."
       },
       "symbol": {
-        "label": "Token Symbol", 
+        "label": "Symbol",
         "placeholder": "e.g., GBSA",
         "description": "A short symbol for the token (usually 3-5 characters)"
       },
@@ -28,11 +28,11 @@
       "isin": {
         "label": "ISIN (Optional)",
         "placeholder": "e.g., US0378331005",
-        "description": "The ISIN of the asset. This is an optional unique identifier for the asset in the financial system."
+        "description": "The ISIN of the token. This is an optional unique identifier for the token in the financial system."
       }
     },
     "actions": {
-      "create": "Create {{type}} Token",
+      "create": "Create {{type}}",
       "creating": "Creating..."
     }
   },
@@ -40,7 +40,7 @@
     "creating": "Creating the {{type}}...",
     "created": "{{type}} successfully created.",
     "creation-failed": "Failed to create the {{type}}.",
-    "success-toast": "{{type}} token created successfully!",
-    "error-toast": "Failed to create {{type}} token"
+    "success-toast": "{{type}} created successfully!",
+    "error-toast": "Failed to create {{type}}"
   }
 }
