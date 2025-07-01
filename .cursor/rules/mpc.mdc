@@ -23,6 +23,4 @@ alwaysApply: true
 
 ## Ticket Management
 
-- Use Linear to manage the metadata of a Linear ticket that you are asked to
-  manage. Do this when you start and during the lifecycle of your work/pr so we
-  can keep track of progress.
+- Use Linear to manage the metadata of a Linear ticket if you have been provided one. Do this when you start and during the lifecycle of your work/pr so we can keep track of progress.
