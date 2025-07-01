@@ -2,13 +2,14 @@ import { BurnCompleted } from "../../../generated/templates/Burnable/Burnable";
 import { fetchEvent } from "../../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../../stats/account-stats";
 import { updateSystemStatsForSupplyChange } from "../../stats/system-stats";
+import { trackTokenStats } from "../../stats/token-stats";
 import { decreaseTokenBalanceValue } from "../../token-balance/utils/token-balance-utils";
 import { fetchToken } from "../../token/fetch/token";
 import { decreaseTokenSupply } from "../../token/utils/token-utils";
 import { toBigDecimal } from "../../utils/token-decimals";
 
 export function handleBurnCompleted(event: BurnCompleted): void {
-  fetchEvent(event, "BurnCompleted");
+  const eventEntry = fetchEvent(event, "BurnCompleted");
   const token = fetchToken(event.address);
 
   // Execute the burn
@@ -27,4 +28,7 @@ export function handleBurnCompleted(event: BurnCompleted): void {
 
   // Update account stats (negative delta for burn)
   updateAccountStatsForBalanceChange(event.params.from, token, amountDelta);
+
+  // Update token stats
+  trackTokenStats(token, eventEntry);
 }

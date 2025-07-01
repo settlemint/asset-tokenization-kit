@@ -22,6 +22,7 @@ import {
 import { fetchEvent } from "../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../stats/account-stats";
 import { updateSystemStatsForSupplyChange } from "../stats/system-stats";
+import { trackTokenStats } from "../stats/token-stats";
 import {
   decreaseTokenBalanceValue,
   increaseTokenBalanceValue,
@@ -87,7 +88,7 @@ export function handleIdentityRegistryAdded(
 }
 
 export function handleMintCompleted(event: MintCompleted): void {
-  fetchEvent(event, "MintCompleted");
+  const eventEntry = fetchEvent(event, "MintCompleted");
   const token = fetchToken(event.address);
   increaseTokenSupply(token, event.params.amount);
 
@@ -105,6 +106,9 @@ export function handleMintCompleted(event: MintCompleted): void {
 
   // Update account stats
   updateAccountStatsForBalanceChange(event.params.to, token, amountDelta);
+
+  // Update token stats
+  trackTokenStats(token, eventEntry);
 }
 
 export function handleModuleParametersUpdated(
@@ -135,7 +139,7 @@ export function handleModuleParametersUpdated(
 }
 
 export function handleTransferCompleted(event: TransferCompleted): void {
-  fetchEvent(event, "Transfer");
+  const eventEntry = fetchEvent(event, "TransferCompleted");
   const token = fetchToken(event.address);
 
   // Execute the transfer
@@ -164,6 +168,9 @@ export function handleTransferCompleted(event: TransferCompleted): void {
 
   // Update account stats for receiver (positive delta)
   updateAccountStatsForBalanceChange(event.params.to, token, amountDelta);
+
+  // Update token stats for transfer
+  trackTokenStats(token, eventEntry);
 
   if (token.yield_) {
     updateYield(token);
