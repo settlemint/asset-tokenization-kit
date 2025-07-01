@@ -22,7 +22,7 @@ First, add search parameter validation to your route:
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router";
-import { dataTableSearchParamsSchema } from "@/types/search-params";
+import { dataTableSearchParamsSchema } from "@/components/data-table/utils/search-params";
 
 export const Route = createFileRoute("/your-route")({
   validateSearch: dataTableSearchParamsSchema,
@@ -132,7 +132,7 @@ function UsersPage() {
 For simpler use cases, you can use the minimal schema:
 
 ```tsx
-import { minimalDataTableSearchParamsSchema } from "@/types/search-params";
+import { minimalDataTableSearchParamsSchema } from "@/components/data-table/utils/search-params";
 
 export const Route = createFileRoute("/simple-table")({
   validateSearch: minimalDataTableSearchParamsSchema,

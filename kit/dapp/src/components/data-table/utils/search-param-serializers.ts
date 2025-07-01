@@ -18,7 +18,7 @@ import type {
   ColumnFilter,
   DataTableSearchParams,
   SortState,
-} from "@/types/search-params";
+} from "./search-params";
 
 /**
  * Safely encode an object to JSON string for URL parameter

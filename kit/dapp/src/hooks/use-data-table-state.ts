@@ -41,14 +41,14 @@ import type {
   VisibilityState,
 } from "@tanstack/react-table";
 
-import type { DataTableSearchParams } from "@/types/search-params";
+import type { DataTableSearchParams } from "@/components/data-table/utils/search-params";
 import {
   createDebouncedUrlUpdate,
   deserializeDataTableState,
   searchParamsToTableState,
   serializeDataTableState,
   tableStateToSearchParams,
-} from "@/utils/search-param-serializers";
+} from "@/components/data-table/utils/search-param-serializers";
 
 /**
  * Configuration options for the DataTable state hook

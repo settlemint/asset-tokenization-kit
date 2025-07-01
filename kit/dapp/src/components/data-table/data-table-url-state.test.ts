@@ -11,8 +11,8 @@ import {
   deserializeDataTableState,
   tableStateToSearchParams,
   searchParamsToTableState,
-} from "@/utils/search-param-serializers";
-import type { DataTableSearchParams } from "@/types/search-params";
+} from "./utils/search-param-serializers";
+import type { DataTableSearchParams } from "./utils/search-params";
 
 test("serializes table state to URL parameters", () => {
   const state: DataTableSearchParams = {
