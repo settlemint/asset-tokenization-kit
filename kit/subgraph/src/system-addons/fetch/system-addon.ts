@@ -11,7 +11,7 @@ export function fetchSystemAddon(address: Address): SystemAddon {
     systemAddon.accessControl = fetchAccessControl(address).id;
     systemAddon.account = fetchAccount(address).id;
     systemAddon.name = "unknown";
-    systemAddon.typeId = Bytes.fromHexString("0x00");
+    systemAddon.typeId = "unknown";
     systemAddon.deployedInTransaction = Bytes.empty();
     systemAddon.save();
     // FixedYieldScheduleFactoryTemplate.create(address);

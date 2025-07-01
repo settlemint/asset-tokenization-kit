@@ -5,8 +5,9 @@ describe("Compliance Modules", () => {
   it("should fetch a list of all compliance modules registered", async () => {
     const query = theGraphGraphql(
       `query {
-        complianceModules {
+        complianceModules(orderBy: name) {
           name
+          typeId
           countries
           addresses
         }
@@ -17,19 +18,44 @@ describe("Compliance Modules", () => {
     const complianceModules = response.complianceModules;
     expect(complianceModules.length).toBe(6);
 
-    const moduleNames = complianceModules.map((m) => m.name);
-    expect(moduleNames).toContain("Country AllowList Compliance Module");
-    expect(moduleNames).toContain("Country BlockList Compliance Module");
-    expect(moduleNames).toContain("Identity Verification Module");
-    expect(moduleNames).toContain("Identity AllowList Compliance Module");
-    expect(moduleNames).toContain("Identity BlockList Compliance Module");
-    expect(moduleNames).toContain("Address BlockList Compliance Module");
-
-    const countryBlockListModule = complianceModules.find(
-      (m) => m.name === "Country BlockList Compliance Module"
-    );
-    expect(countryBlockListModule).toBeDefined();
-    expect(countryBlockListModule.countries.map(Number)).toContain(643);
+    expect(complianceModules).toEqual([
+      {
+        name: "Address BlockList Compliance Module",
+        typeId: "AddressBlockListComplianceModule",
+        countries: [],
+        addresses: expect.any(Array),
+      },
+      {
+        name: "Country AllowList Compliance Module",
+        typeId: "CountryAllowListComplianceModule",
+        countries: [],
+        addresses: [],
+      },
+      {
+        name: "Country BlockList Compliance Module",
+        typeId: "CountryBlockListComplianceModule",
+        countries: [643],
+        addresses: [],
+      },
+      {
+        name: "Identity AllowList Compliance Module",
+        typeId: "IdentityAllowListComplianceModule",
+        countries: [],
+        addresses: [],
+      },
+      {
+        name: "Identity BlockList Compliance Module",
+        typeId: "IdentityBlockListComplianceModule",
+        countries: [],
+        addresses: ["0xf6e7e4d52dd2e71adc16bac55cb79c467ab56376"],
+      },
+      {
+        name: "Identity Verification Module",
+        typeId: "SMARTIdentityVerificationComplianceModule",
+        countries: [],
+        addresses: [],
+      },
+    ]);
   });
 
   it("should receive the list of blocked countries", async () => {

@@ -11,7 +11,7 @@ export function fetchComplianceModule(address: Address): ComplianceModule {
     complianceModule.accessControl = fetchAccessControl(address).id;
     complianceModule.account = fetchAccount(address).id;
     complianceModule.name = "unknown";
-    complianceModule.typeId = Bytes.fromHexString("0x00");
+    complianceModule.typeId = "unknown";
     complianceModule.deployedInTransaction = Bytes.empty();
     complianceModule.addresses = [];
     complianceModule.countries = [];

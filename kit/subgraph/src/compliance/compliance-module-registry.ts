@@ -5,6 +5,7 @@ import {
 } from "../../generated/templates";
 import { ComplianceModuleRegistered as ComplianceModuleRegisteredEvent } from "../../generated/templates/ComplianceModuleRegistry/ComplianceModuleRegistry";
 import { fetchEvent } from "../event/fetch/event";
+import { getDecodedTypeId } from "../type-identifier/type-identifier";
 import { fetchComplianceModule } from "./fetch/compliance-module";
 import { fetchComplianceModuleRegistry } from "./fetch/compliance-module-registry";
 import { isAddressListComplianceModule } from "./modules/address-list-compliance-module";
@@ -20,7 +21,7 @@ export function handleComplianceModuleRegistered(
     complianceModule.deployedInTransaction = event.transaction.hash;
   }
   complianceModule.name = event.params.name;
-  complianceModule.typeId = event.params.typeId;
+  complianceModule.typeId = getDecodedTypeId(event.params.typeId);
 
   if (isAddressListComplianceModule(event.params.typeId)) {
     AddressListComplianceModuleTemplate.create(event.params.moduleAddress);
