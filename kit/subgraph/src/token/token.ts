@@ -28,6 +28,7 @@ import {
   increaseTokenBalanceValue,
 } from "../token-balance/utils/token-balance-utils";
 import { updateYield } from "../token-extensions/fixed-yield-schedule/utils/fixed-yield-schedule-utils";
+import { getEncodedTypeId } from "../type-identifier/type-identifier";
 import { toBigDecimal } from "../utils/token-decimals";
 import { fetchToken } from "./fetch/token";
 import { fetchTokenComplianceModule } from "./fetch/token-compliance-module";
@@ -54,12 +55,16 @@ export function handleComplianceModuleAdded(
   const complianceModule = fetchComplianceModule(event.params._module);
   tokenComplianceModule.encodedParams = event.params._params;
 
-  if (isAddressListComplianceModule(complianceModule.typeId)) {
+  if (
+    isAddressListComplianceModule(getEncodedTypeId(complianceModule.typeId))
+  ) {
     tokenComplianceModule.addresses = decodeAddressListParams(
       event.params._params
     );
   }
-  if (isCountryListComplianceModule(complianceModule.typeId)) {
+  if (
+    isCountryListComplianceModule(getEncodedTypeId(complianceModule.typeId))
+  ) {
     tokenComplianceModule.countries = decodeCountryListParams(
       event.params._params
     );
@@ -124,12 +129,16 @@ export function handleModuleParametersUpdated(
   const complianceModule = fetchComplianceModule(event.params._module);
   tokenComplianceModule.encodedParams = event.params._params;
 
-  if (isAddressListComplianceModule(complianceModule.typeId)) {
+  if (
+    isAddressListComplianceModule(getEncodedTypeId(complianceModule.typeId))
+  ) {
     tokenComplianceModule.addresses = decodeAddressListParams(
       event.params._params
     );
   }
-  if (isCountryListComplianceModule(complianceModule.typeId)) {
+  if (
+    isCountryListComplianceModule(getEncodedTypeId(complianceModule.typeId))
+  ) {
     tokenComplianceModule.countries = decodeCountryListParams(
       event.params._params
     );

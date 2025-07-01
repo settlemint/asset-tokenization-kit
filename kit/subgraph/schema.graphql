@@ -78,7 +78,7 @@ type SystemAddon @entity(immutable: false) {
   deployedInTransaction: Bytes!
   accessControl: AccessControl!
   name: String!
-  typeId: Bytes!
+  typeId: String!
   system: System
   account: Account!
 }
@@ -259,7 +259,7 @@ type ComplianceModule @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
   name: String!
-  typeId: Bytes!
+  typeId: String!
   account: Account!
   deployedInTransaction: Bytes!
   complianceModuleRegistry: ComplianceModuleRegistry
@@ -285,7 +285,7 @@ type TokenFactory @entity(immutable: false) {
   id: Bytes!
   accessControl: AccessControl!
   name: String!
-  typeId: Bytes!
+  typeId: String!
   tokenFactoryRegistry: TokenFactoryRegistry
   account: Account!
   tokens: [Token!]! @derivedFrom(field: "tokenFactory")
@@ -465,7 +465,7 @@ type Airdrop @entity(immutable: false) {
   name: String!
   token: Token!
   merkleRoot: Bytes!
-  typeId: Bytes!
+  typeId: String!
   amountTransferred: BigDecimal!
   amountTransferredExact: BigInt!
   recipients: [AirdropRecipient!]! @derivedFrom(field: "airdrop")

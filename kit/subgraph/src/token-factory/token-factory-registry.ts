@@ -1,4 +1,3 @@
-import { ByteArray, crypto } from "@graphprotocol/graph-ts";
 import {
   BondFactory as BondFactoryTemplate,
   FundFactory as FundFactoryTemplate,
@@ -8,6 +7,10 @@ import {
   TokenFactoryRegistered as TokenFactoryRegisteredEvent,
 } from "../../generated/templates/TokenFactoryRegistry/TokenFactoryRegistry";
 import { fetchEvent } from "../event/fetch/event";
+import {
+  getDecodedTypeId,
+  getEncodedTypeId,
+} from "../type-identifier/type-identifier";
 import { fetchTokenFactory } from "./fetch/token-factory";
 import { fetchTokenFactoryRegistry } from "./fetch/token-factory-registry";
 
@@ -23,18 +26,12 @@ export function handleTokenFactoryRegistered(
   fetchEvent(event, "TokenFactoryRegistered");
   const tokenFactory = fetchTokenFactory(event.params.proxyAddress);
   tokenFactory.name = event.params.name;
-  tokenFactory.typeId = event.params.typeId;
+  tokenFactory.typeId = getDecodedTypeId(event.params.typeId);
 
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKBondFactory"))
-  ) {
+  if (event.params.typeId.equals(getEncodedTypeId("ATKBondFactory"))) {
     BondFactoryTemplate.create(event.params.proxyAddress);
   }
-  if (
-    event.params.typeId ==
-    crypto.keccak256(ByteArray.fromUTF8("ATKFundFactory"))
-  ) {
+  if (event.params.typeId.equals(getEncodedTypeId("ATKFundFactory"))) {
     FundFactoryTemplate.create(event.params.proxyAddress);
   }
 

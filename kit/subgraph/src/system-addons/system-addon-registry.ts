@@ -13,6 +13,7 @@ import {
 } from "../../generated/templates/SystemAddonRegistry/SystemAddonRegistry";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchSystem } from "../system/fetch/system";
+import { getDecodedTypeId } from "../type-identifier/type-identifier";
 import { fetchSystemAddon } from "./fetch/system-addon";
 
 export function handleAddonImplementationUpdated(
@@ -30,7 +31,7 @@ export function handleSystemAddonRegistered(
     systemAddon.deployedInTransaction = event.transaction.hash;
   }
   systemAddon.name = event.params.name;
-  systemAddon.typeId = event.params.typeId;
+  systemAddon.typeId = getDecodedTypeId(event.params.typeId);
   if (
     event.params.typeId.equals(
       crypto.keccak256(ByteArray.fromUTF8("ATKFixedYieldScheduleFactory"))
