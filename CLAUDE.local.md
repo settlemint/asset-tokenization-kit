@@ -21,3 +21,5 @@ copied over in every repository.
 - Do not add comments for the user to files in @.cursor/rules,
   @.claude/commands, CLAUDE.md or CLAUDE.local.md, it's for the agent to use, do
   add more information for agents if needed.
+- You cannot run `bun dev`, it is a long running process that will block your
+  state.
