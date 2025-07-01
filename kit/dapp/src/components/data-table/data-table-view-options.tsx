@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Table } from "@tanstack/react-table";
 import { Settings2 } from "lucide-react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 interface DataTableViewOptionsProps<TData> {
@@ -22,6 +23,10 @@ export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
   const { t } = useTranslation("general");
+
+  const handleColumnVisibilityChange = useCallback((columnId: string) => (value: boolean) => {
+    table.getColumn(columnId)?.toggleVisibility(!!value);
+  }, [table]);
 
   return (
     <DropdownMenu>
@@ -50,7 +55,7 @@ export function DataTableViewOptions<TData>({
                 key={column.id}
                 className="capitalize"
                 checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                onCheckedChange={handleColumnVisibilityChange(column.id)}
               >
                 {column.id}
               </DropdownMenuCheckboxItem>

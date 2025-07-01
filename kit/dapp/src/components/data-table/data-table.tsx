@@ -162,7 +162,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
   });
 
   const renderTableBody = () => {
-    if (table.getRowModel().rows?.length) {
+    if (table.getRowModel().rows.length) {
       return table.getRowModel().rows.map((row) => (
         <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
           {row.getVisibleCells().map((cell) => {
@@ -238,7 +238,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
           <TableBody>{renderTableBody()}</TableBody>
         </Table>
       </div>
-      {table.getRowModel().rows?.length > 0 && (
+      {table.getRowModel().rows.length > 0 && (
         <DataTablePagination table={table} {...pagination} />
       )}
     </div>

@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { MoreHorizontal } from "lucide-react";
-import { Fragment, type HTMLAttributes, type ReactNode, useState } from "react";
+import { Fragment, type HTMLAttributes, type ReactNode, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
 
@@ -55,15 +55,25 @@ export function DataTableRowActions({
   const { t } = useTranslation("general");
   const [isOpen, setIsOpen] = useState(false);
   const [openItem, setOpenItem] = useState<string | null>(null);
+
+  const handleMenuItemClick = useCallback((actionId: string) => {
+    setIsOpen(false); // Close the dropdown menu
+    setOpenItem(actionId); // Set the open item
+  }, []);
+
   const actions = actionsProp?.filter((action) => !action.hidden);
+  
+  const menuItemHandlers = useMemo(() => {
+    if (!actions) return {};
+    return actions.reduce((acc, action) => {
+      acc[action.id] = () => { handleMenuItemClick(action.id); };
+      return acc;
+    }, {} as Record<string, () => void>);
+  }, [actions, handleMenuItemClick]);
+
   if (!actions && !detailUrl) {
     return null;
   }
-
-  const handleMenuItemClick = (actionId: string) => {
-    setIsOpen(false); // Close the dropdown menu
-    setOpenItem(actionId); // Set the open item
-  };
 
   const actionItem = openItem
     ? actions?.find((action) => action.id === openItem)
@@ -103,9 +113,7 @@ export function DataTableRowActions({
             {actions?.map((action) => (
               <Fragment key={action.id}>
                 <DropdownMenuItem
-                  onSelect={() => {
-                    handleMenuItemClick(action.id);
-                  }}
+                  onSelect={menuItemHandlers[action.id]}
                   disabled={action.disabled}
                 >
                   {action.label}

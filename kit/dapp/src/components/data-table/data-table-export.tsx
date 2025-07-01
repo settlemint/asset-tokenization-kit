@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import type { Column, Table } from "@tanstack/react-table";
 import { Download } from "lucide-react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -25,10 +26,17 @@ function formatCellValue(value: unknown): string {
 
   // At this point, value can only be number, boolean, bigint, symbol, or function
   // Functions shouldn't be in table data, and we can safely stringify primitives
-  return String(value);
+  if (typeof value === 'function') {
+    return '""';
+  }
+  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+    return String(value);
+  }
+  // Handle other types safely
+  return '""';
 }
 
-function getColumnHeader<TData>(column: Column<TData, unknown>): string {
+function getColumnHeader<TData>(column: Column<TData>): string {
   const header = column.columnDef.header;
 
   if (typeof header === "string") {
@@ -79,7 +87,7 @@ function exportTableToCSV<TData>(
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setTimeout(() => URL.revokeObjectURL(url), 100);
+    setTimeout(() => { URL.revokeObjectURL(url); }, 100);
   } catch {
     toast.error(errorMessage);
   }
@@ -92,12 +100,16 @@ interface DataTableExportProps<TData> {
 export function DataTableExport<TData>({ table }: DataTableExportProps<TData>) {
   const { t } = useTranslation("general");
 
+  const handleExport = useCallback(() => {
+    exportTableToCSV(table, t("components.data-table.failed-export"));
+  }, [table, t]);
+
   return (
     <div className="ml-2 flex items-center gap-2">
       <Button
         variant="outline"
         size="sm"
-        onClick={() => exportTableToCSV(table, t("components.data-table.failed-export"))}
+        onClick={handleExport}
         className="gap-2 border-muted-foreground text-muted-foreground"
       >
         <Download className="size-4" aria-hidden="true" />

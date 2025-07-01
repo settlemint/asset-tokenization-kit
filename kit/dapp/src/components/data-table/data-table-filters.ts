@@ -55,7 +55,7 @@ export function defineMeta<
   TData,
   /* Only accessorFn - WORKS */
   TAccessor extends AccessorFn<TData>,
-  TVal extends ReturnType<TAccessor>,
+  TVal extends ReturnType<TAccessor>
   /* Only accessorKey - WORKS */
   // TAccessor extends DeepKeys<TData>,
   // TVal extends DeepValue<TData, TAccessor>,
@@ -68,11 +68,10 @@ export function defineMeta<
   // : TAccessor extends DeepKeys<TData>
   // ? DeepValue<TData, TAccessor>
   // : never,
-  TType extends ColumnDataType,
 >(
   _accessor: TAccessor,
   meta: Omit<ColumnMeta<TData, TVal>, "type"> & {
-    type: TType;
+    type: ColumnDataType;
   }
 ): ColumnMeta<TData, TVal> {
   return meta;
@@ -627,7 +626,8 @@ export function optionFilterFn<TData>(
 
   if (!value) return false;
 
-  const columnMeta = filterValue.columnMeta!;
+  const columnMeta = filterValue.columnMeta;
+  if (!columnMeta) return false;
 
   if (typeof value === "string") {
     return __optionFilterFn(value, filterValue);
@@ -637,7 +637,8 @@ export function optionFilterFn<TData>(
     return __optionFilterFn(value.value, filterValue);
   }
 
-  const sanitizedValue = columnMeta.transformOptionFn!(value as never);
+  if (!columnMeta.transformOptionFn) return false;
+  const sanitizedValue = columnMeta.transformOptionFn(value as never);
   return __optionFilterFn(sanitizedValue.value, filterValue);
 }
 
@@ -688,7 +689,8 @@ export function multiOptionFilterFn<TData>(
 
   if (!value) return false;
 
-  const columnMeta = filterValue.columnMeta!;
+  const columnMeta = filterValue.columnMeta;
+  if (!columnMeta) return false;
 
   if (isStringArray(value)) {
     return __multiOptionFilterFn(value, filterValue);
@@ -701,9 +703,10 @@ export function multiOptionFilterFn<TData>(
     );
   }
 
+  if (!columnMeta.transformOptionFn) return false;
   const sanitizedValue = (value as never[]).map((v) =>
-    columnMeta.transformOptionFn!(v)
-  );
+    columnMeta.transformOptionFn?.(v)
+  ).filter(Boolean);
 
   return __multiOptionFilterFn(
     sanitizedValue.map((v) => v.value),
@@ -715,7 +718,7 @@ export function __multiOptionFilterFn<TData>(
   inputData: string[],
   filterValue: FilterValue<"multiOption", TData>
 ) {
-  if (!inputData) return false;
+  if (inputData.length === 0) return false;
 
   if (
     filterValue.values.length === 0 ||
@@ -758,7 +761,7 @@ export function __dateFilterFn<TData>(
   inputData: Date,
   filterValue: FilterValue<"date", TData>
 ) {
-  if (!filterValue || filterValue.values.length === 0) return true;
+  if (filterValue.values.length === 0) return true;
 
   if (
     dateFilterDetails[filterValue.operator].target === "single" &&
@@ -778,6 +781,8 @@ export function __dateFilterFn<TData>(
 
   const value = inputData;
 
+  if (!d1) return false;
+
   switch (filterValue.operator) {
     case "is":
       return isSameDay(value, d1);
@@ -792,14 +797,16 @@ export function __dateFilterFn<TData>(
     case "is on or before":
       return isSameDay(value, d1) || isBefore(value, startOfDay(d1));
     case "is between":
+      if (!d2) return false;
       return isWithinInterval(value, {
         start: startOfDay(d1),
         end: endOfDay(d2),
       });
     case "is not between":
+      if (!d2) return false;
       return !isWithinInterval(value, {
-        start: startOfDay(filterValue.values[0]),
-        end: endOfDay(filterValue.values[1]),
+        start: startOfDay(d1),
+        end: endOfDay(d2),
       });
   }
 }
@@ -818,10 +825,10 @@ export function __textFilterFn<TData>(
   inputData: string,
   filterValue: FilterValue<"text", TData>
 ) {
-  if (!filterValue || filterValue.values.length === 0) return true;
+  if (filterValue.values.length === 0) return true;
 
   const value = inputData.toLowerCase().trim();
-  const filterStr = filterValue.values[0].toLowerCase().trim();
+  const filterStr = filterValue.values[0]?.toLowerCase().trim() ?? "";
 
   if (filterStr === "") return true;
 
@@ -849,12 +856,14 @@ export function __numberFilterFn<TData>(
   inputData: number,
   filterValue: FilterValue<"number", TData>
 ) {
-  if (!filterValue?.values || filterValue.values.length === 0) {
+  if (filterValue.values.length === 0) {
     return true;
   }
 
   const value = inputData;
   const filterVal = filterValue.values[0];
+  
+  if (filterVal === undefined) return true;
 
   switch (filterValue.operator) {
     case "is":
@@ -872,11 +881,13 @@ export function __numberFilterFn<TData>(
     case "is between": {
       const lowerBound = filterValue.values[0];
       const upperBound = filterValue.values[1];
+      if (lowerBound === undefined || upperBound === undefined) return true;
       return value >= lowerBound && value <= upperBound;
     }
     case "is not between": {
       const lowerBound = filterValue.values[0];
       const upperBound = filterValue.values[1];
+      if (lowerBound === undefined || upperBound === undefined) return true;
       return value < lowerBound || value > upperBound;
     }
     default:
@@ -890,10 +901,10 @@ export function createNumberRange(values: number[] | undefined) {
 
   if (!values || values.length === 0) return [a, b];
   if (values.length === 1) {
-    a = values[0];
+    a = values[0] ?? 0;
   } else {
-    a = values[0];
-    b = values[1];
+    a = values[0] ?? 0;
+    b = values[1] ?? 0;
   }
 
   const [min, max] = a < b ? [a, b] : [b, a];

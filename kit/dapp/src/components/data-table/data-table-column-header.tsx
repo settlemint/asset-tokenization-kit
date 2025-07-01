@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import type { Column } from "@tanstack/react-table";
 import { type VariantProps, cva } from "class-variance-authority";
 import { ArrowDownUp, EyeOff, SortAsc, SortDesc } from "lucide-react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import type { HTMLAttributes, PropsWithChildren } from "react";
 
@@ -84,6 +85,18 @@ export function DataTableColumnHeader<TData, TValue>({
 }: PropsWithChildren<DataTableColumnHeaderProps<TData, TValue>>) {
   const { t } = useTranslation("general");
 
+  const handleSortAscending = useCallback(() => {
+    column.toggleSorting(false);
+  }, [column]);
+
+  const handleSortDescending = useCallback(() => {
+    column.toggleSorting(true);
+  }, [column]);
+
+  const handleHideColumn = useCallback(() => {
+    column.toggleVisibility(false);
+  }, [column]);
+
   if (!column.getCanSort()) {
     return (
       <div className={cn("text-sm", headerVariants({ variant, className }))}>
@@ -117,16 +130,16 @@ export function DataTableColumnHeader<TData, TValue>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
+          <DropdownMenuItem onClick={handleSortAscending}>
             <SortAsc className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
             {t("components.data-table.sort-ascending")}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
+          <DropdownMenuItem onClick={handleSortDescending}>
             <SortDesc className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
             {t("components.data-table.sort-descending")}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
+          <DropdownMenuItem onClick={handleHideColumn}>
             <EyeOff className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
             {t("components.data-table.hide")}
           </DropdownMenuItem>
