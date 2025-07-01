@@ -54,12 +54,6 @@ export async function handleChallenge(
     type: VerificationType;
   }
 ) {
-  if (!user.wallet) {
-    throw new ORPCError("USER_NOT_ONBOARDED", {
-      message: "User not onboarded",
-    });
-  }
-
   const verificationId = getVerificationId(user, verification.type);
 
   if (!verificationId) {

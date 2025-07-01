@@ -36,7 +36,7 @@ export const depositCreate = onboardedRouter.token.depositCreate
       CREATE_DEPOSIT_MUTATION,
       {
         address: context.tokenFactory.address,
-        from: sender.wallet ?? "",
+        from: sender.wallet,
         input: {
           symbol_: input.symbol,
           name_: input.name,

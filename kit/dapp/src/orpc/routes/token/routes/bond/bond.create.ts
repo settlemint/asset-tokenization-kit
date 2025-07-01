@@ -34,7 +34,7 @@ export const bondCreate = onboardedRouter.token.bondCreate
       CREATE_BOND_MUTATION,
       {
         address: context.tokenFactory.address,
-        from: sender.wallet ?? "",
+        from: sender.wallet,
         input: {
           symbol_: input.symbol,
           name_: input.name,

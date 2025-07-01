@@ -39,10 +39,10 @@ export const factoryGrantRole = onboardedRouter.token.factoryGrantRole
       GRANT_ROLE_MUTATION,
       {
         address: context.tokenFactory.address,
-        from: sender.wallet ?? "",
+        from: sender.wallet,
         input: {
           role: DEPLOYER_ROLE,
-          account: sender.wallet ?? "",
+          account: sender.wallet,
         },
         ...(await handleChallenge(sender, {
           code: "111111",
