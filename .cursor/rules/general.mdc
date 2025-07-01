@@ -5,31 +5,6 @@ alwaysApply: true
 ---
 ## General rules
 
-<!-- 
-FOUNDATIONAL DEVELOPMENT PRINCIPLES
-==================================
-This file contains the core principles that guide ALL development work
-across SettleMint projects. These rules ensure:
-
-1. CODE QUALITY - Consistent standards for readability and maintainability
-2. ARCHITECTURAL INTEGRITY - Proper planning and execution of changes
-3. DEVELOPMENT EFFICIENCY - Avoiding common pitfalls and repeated mistakes
-4. COLLABORATION STANDARDS - Clear communication and task management
-
-These principles are learned from years of complex blockchain development
-where small mistakes can have significant consequences for security,
-compliance, and system reliability.
-
-RULE CATEGORIES:
-- File Reading: Complete understanding before making changes
-- Git Workflow: Safe branching and commit practices  
-- Library Usage: Staying current with dependency documentation
-- Quality Assurance: Testing and validation requirements
-- Architecture: Planning and change management
-- UI/UX: Design principles and user experience standards
-- Task Management: Scope control and parallel processing
--->
-
 - Always read entire files. Otherwise, you don't know what you don't know, and
   will end up making mistakes, duplicating code that already exists, or
   misunderstanding the architecture.

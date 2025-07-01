@@ -5,30 +5,6 @@ alwaysApply: true
 ---
 # Tooling & Commands
 
-<!-- 
-COMPREHENSIVE TOOLING AND AUTOMATION FRAMEWORK
-==============================================
-This file documents the complete tooling ecosystem that enhances
-development efficiency and reduces common mistakes. It includes:
-
-1. MONOREPO MANAGEMENT - Turborepo configuration and usage patterns
-2. PACKAGE MANAGEMENT - Bun-specific workflows and optimizations  
-3. CLI UTILITIES - Essential command-line tools for development
-4. AUTOMATED WORKFLOWS - Claude commands for common development tasks
-5. PARALLEL PROCESSING - Sub-agent coordination for complex operations
-
-BENEFITS:
-- CONSISTENCY: Standardized tooling across all developers
-- EFFICIENCY: Automated workflows reduce repetitive tasks
-- RELIABILITY: Proper dependency management and task coordination
-- SCALABILITY: Sub-agent patterns for handling complex operations
-
-RECENT IMPROVEMENTS:
-- Enhanced command documentation with usage patterns
-- Expanded sub-agent coordination guidelines
-- Clarified automation triggers and best practices
--->
-
 ## Turborepo
 
 - this is a tuborepo mono repo

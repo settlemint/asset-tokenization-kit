@@ -145,6 +145,7 @@ bun run ci
 bun run test                    # Unit tests
 bun run lint                    # Linting
 bun run format                  # Formatting
+bun run typecheck               # Typescript errors
 ```
 
 ### Step 2: Monitor Results
@@ -198,8 +199,12 @@ If any test fails:
 
 ## Success Criteria
 
-✅ All unit tests pass ✅ All integration tests pass ✅ All E2E tests pass ✅ No
-type errors ✅ No lint errors ✅ Coverage thresholds met (if configured)
+- ✅ All unit tests pass 
+- ✅ All integration tests pass 
+- ✅ All E2E tests pass 
+- ✅ No type errors 
+- ✅ No lint errors 
+- ✅ Coverage thresholds met (if configured)
 
 ## Important Rules
 
