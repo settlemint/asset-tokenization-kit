@@ -12,7 +12,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
 interface CreateDepositFormProps {
   onSuccess?: () => void;
@@ -25,6 +24,10 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
     resolver: zodResolver(schema),
     defaultValues: {
       type: AssetTypeEnum.deposit,
+      verification: {
+        verificationCode: "111111",
+        verificationType: "pincode",
+      },
       messages: {
         initialLoading: t("streaming-messages.initial-loading", {
           type: AssetTypeEnum.deposit,
@@ -52,9 +55,6 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
   const { mutate: createDeposit, isPending } = useStreamingMutation({
     mutationOptions: orpc.token.depositCreate.mutationOptions(),
     onSuccess: (transactionHash) => {
-      toast.success(
-        t("messages.success-toast", { type: AssetTypeEnum.deposit })
-      );
       console.log("Transaction hash:", transactionHash);
       form.reset();
       onSuccess?.();
