@@ -58,7 +58,10 @@ export function NavAsset() {
                 {factories.map((factory) => (
                   <SidebarMenuSubItem key={factory.id}>
                     <SidebarMenuSubButton asChild>
-                      <Link to="/token/$type" params={{ type: factory.typeId }}>
+                      <Link
+                        to="/token/$factoryAddress"
+                        params={{ factoryAddress: factory.id }}
+                      >
                         <span>{factory.name}</span>
                       </Link>
                     </SidebarMenuSubButton>

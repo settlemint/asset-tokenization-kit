@@ -160,6 +160,7 @@ type Account {
   identity: Identity
   country: Int
   balances(skip: Int = 0, first: Int = 100, orderBy: TokenBalance_orderBy, orderDirection: OrderDirection, where: TokenBalance_filter): [TokenBalance!]!
+  stats: AccountStatsState
 }
 
 type AccountStats {
@@ -400,6 +401,7 @@ input Account_filter {
   country_in: [Int!]
   country_not_in: [Int!]
   balances_: TokenBalance_filter
+  stats_: AccountStatsState_filter
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -415,6 +417,10 @@ enum Account_orderBy {
   identity__deployedInTransaction
   country
   balances
+  stats
+  stats__id
+  stats__totalValueInBaseCurrency
+  stats__balancesCount
 }
 
 enum Aggregation_interval {
@@ -4147,6 +4153,36 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenTypeStatsData!]!
+  tokenStatsState(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TokenStatsState
+  tokenStatsStates(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenStatsState_orderBy
+    orderDirection: OrderDirection
+    where: TokenStatsState_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenStatsState!]!
   tokenStatsData(
     id: ID!
 
@@ -5222,6 +5258,7 @@ type Token {
   basePriceClaim: IdentityClaim
   requiredClaimTopics(skip: Int = 0, first: Int = 100, orderBy: TopicScheme_orderBy, orderDirection: OrderDirection, where: TopicScheme_filter): [TopicScheme!]!
   tokenComplianceModules(skip: Int = 0, first: Int = 100, orderBy: TokenComplianceModule_orderBy, orderDirection: OrderDirection, where: TokenComplianceModule_filter): [TokenComplianceModule!]!
+  stats: TokenStatsState
 }
 
 type TokenBalance {
@@ -7205,8 +7242,8 @@ type TokenStats {
   totalMintedExact: BigInt!
   totalBurned: BigDecimal!
   totalBurnedExact: BigInt!
-  totalTransfered: BigDecimal!
-  totalTransferedExact: BigInt!
+  totalTransferred: BigDecimal!
+  totalTransferredExact: BigInt!
 }
 
 type TokenStatsData {
@@ -7221,8 +7258,8 @@ type TokenStatsData {
   mintedExact: BigInt!
   burned: BigDecimal!
   burnedExact: BigInt!
-  transfered: BigDecimal!
-  transferedExact: BigInt!
+  transferred: BigDecimal!
+  transferredExact: BigInt!
 }
 
 input TokenStatsData_filter {
@@ -7339,22 +7376,22 @@ input TokenStatsData_filter {
   burnedExact_lte: BigInt
   burnedExact_in: [BigInt!]
   burnedExact_not_in: [BigInt!]
-  transfered: BigDecimal
-  transfered_not: BigDecimal
-  transfered_gt: BigDecimal
-  transfered_lt: BigDecimal
-  transfered_gte: BigDecimal
-  transfered_lte: BigDecimal
-  transfered_in: [BigDecimal!]
-  transfered_not_in: [BigDecimal!]
-  transferedExact: BigInt
-  transferedExact_not: BigInt
-  transferedExact_gt: BigInt
-  transferedExact_lt: BigInt
-  transferedExact_gte: BigInt
-  transferedExact_lte: BigInt
-  transferedExact_in: [BigInt!]
-  transferedExact_not_in: [BigInt!]
+  transferred: BigDecimal
+  transferred_not: BigDecimal
+  transferred_gt: BigDecimal
+  transferred_lt: BigDecimal
+  transferred_gte: BigDecimal
+  transferred_lte: BigDecimal
+  transferred_in: [BigDecimal!]
+  transferred_not_in: [BigDecimal!]
+  transferredExact: BigInt
+  transferredExact_not: BigInt
+  transferredExact_gt: BigInt
+  transferredExact_lt: BigInt
+  transferredExact_gte: BigInt
+  transferredExact_lte: BigInt
+  transferredExact_in: [BigInt!]
+  transferredExact_not_in: [BigInt!]
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -7383,8 +7420,76 @@ enum TokenStatsData_orderBy {
   mintedExact
   burned
   burnedExact
-  transfered
-  transferedExact
+  transferred
+  transferredExact
+}
+
+type TokenStatsState {
+  id: Bytes!
+  token: Token!
+  balancesCount: Int!
+}
+
+input TokenStatsState_filter {
+  id: Bytes
+  id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
+  id_in: [Bytes!]
+  id_not_in: [Bytes!]
+  id_contains: Bytes
+  id_not_contains: Bytes
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_contains_nocase: String
+  token_not_contains: String
+  token_not_contains_nocase: String
+  token_starts_with: String
+  token_starts_with_nocase: String
+  token_not_starts_with: String
+  token_not_starts_with_nocase: String
+  token_ends_with: String
+  token_ends_with_nocase: String
+  token_not_ends_with: String
+  token_not_ends_with_nocase: String
+  token_: Token_filter
+  balancesCount: Int
+  balancesCount_not: Int
+  balancesCount_gt: Int
+  balancesCount_lt: Int
+  balancesCount_gte: Int
+  balancesCount_lte: Int
+  balancesCount_in: [Int!]
+  balancesCount_not_in: [Int!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenStatsState_filter]
+  or: [TokenStatsState_filter]
+}
+
+enum TokenStatsState_orderBy {
+  id
+  token
+  token__id
+  token__createdAt
+  token__deployedInTransaction
+  token__type
+  token__name
+  token__symbol
+  token__decimals
+  token__totalSupply
+  token__totalSupplyExact
+  balancesCount
 }
 
 input TokenStats_filter {
@@ -7431,8 +7536,8 @@ enum TokenStats_orderBy {
   totalMintedExact
   totalBurned
   totalBurnedExact
-  totalTransfered
-  totalTransferedExact
+  totalTransferred
+  totalTransferredExact
 }
 
 type TokenTypeStats {
@@ -8005,6 +8110,7 @@ input Token_filter {
   requiredClaimTopics_not_contains_nocase: [String!]
   requiredClaimTopics_: TopicScheme_filter
   tokenComplianceModules_: TokenComplianceModule_filter
+  stats_: TokenStatsState_filter
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -8073,6 +8179,9 @@ enum Token_orderBy {
   basePriceClaim__deployedInTransaction
   requiredClaimTopics
   tokenComplianceModules
+  stats
+  stats__id
+  stats__balancesCount
 }
 
 type TopicScheme {
