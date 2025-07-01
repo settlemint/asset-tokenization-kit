@@ -324,6 +324,8 @@ type Token @entity(immutable: false) {
   requiredClaimTopics: [TopicScheme!]!
   # Compliance
   tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
+  # Stats
+  stats: TokenStatsState! @derivedFrom(field: "token")
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -697,6 +699,15 @@ type TokenTypeStats
     @aggregate(fn: "last", arg: "percentageOfTotalSupply")
 }
 
+# Persistent entity to store current token state for efficient calculations
+type TokenStatsState @entity(immutable: false) {
+  id: Bytes! # Token address
+  token: Token!
+
+  # Balance metrics
+  balancesCount: Int!
+}
+
 type TokenStatsData @entity(timeseries: true) {
   id: Int8!
   timestamp: Timestamp!
@@ -714,8 +725,8 @@ type TokenStatsData @entity(timeseries: true) {
   mintedExact: BigInt!
   burned: BigDecimal!
   burnedExact: BigInt!
-  transfered: BigDecimal!
-  transferedExact: BigInt!
+  transferred: BigDecimal!
+  transferredExact: BigInt!
 }
 
 type TokenStats
@@ -736,8 +747,8 @@ type TokenStats
   totalMintedExact: BigInt! @aggregate(fn: "sum", arg: "mintedExact")
   totalBurned: BigDecimal! @aggregate(fn: "sum", arg: "burned")
   totalBurnedExact: BigInt! @aggregate(fn: "sum", arg: "burnedExact")
-  totalTransfered: BigDecimal! @aggregate(fn: "sum", arg: "transfered")
-  totalTransferedExact: BigInt! @aggregate(fn: "sum", arg: "transferedExact")
+  totalTransferred: BigDecimal! @aggregate(fn: "sum", arg: "transferred")
+  totalTransferredExact: BigInt! @aggregate(fn: "sum", arg: "transferredExact")
 }
 
 # Collateral statistics for tokens

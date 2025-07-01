@@ -42,9 +42,9 @@ describe("XVP Settlements", () => {
     const response = await theGraphClient.request(query);
 
     // Verify we have at least one XVP settlement from the hardhat script
-    expect((response as any).xvPSettlements.length).toBeGreaterThanOrEqual(1);
+    expect(response.xvPSettlements.length).toBeGreaterThanOrEqual(1);
 
-    const settlement = (response as any).xvPSettlements[0];
+    const settlement = response.xvPSettlements[0];
 
     // Verify settlement structure
     expect(settlement.id).toBeDefined();
@@ -111,9 +111,9 @@ describe("XVP Settlements", () => {
     const response = await theGraphClient.request(query);
 
     // Should have at least 1 creation event
-    expect((response as any).events.length).toBeGreaterThanOrEqual(1);
+    expect(response.events.length).toBeGreaterThanOrEqual(1);
 
-    const events = (response as any).events;
+    const events = response.events;
 
     // Verify event structure
     events.forEach((event: any) => {
@@ -157,11 +157,9 @@ describe("XVP Settlements", () => {
     const response = await theGraphClient.request(query);
 
     // Should have at least 2 flows from our settlement
-    expect((response as any).xvPSettlementFlows.length).toBeGreaterThanOrEqual(
-      2
-    );
+    expect(response.xvPSettlementFlows.length).toBeGreaterThanOrEqual(2);
 
-    const flows = (response as any).xvPSettlementFlows;
+    const flows = response.xvPSettlementFlows;
 
     // Verify flow structure and relationships
     flows.forEach((flow: any) => {

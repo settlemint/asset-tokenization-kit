@@ -2,6 +2,7 @@ import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 import { Token, TokenBalance } from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
 import { decreaseAccountStatsBalanceCount } from "../../stats/account-stats";
+import { decreaseTokenStatsBalanceCount } from "../../stats/token-stats";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchTokenBalance } from "../fetch/token-balance";
 
@@ -15,7 +16,7 @@ export function increaseTokenBalanceValue(
 
   const newValue = balance.valueExact.plus(value);
 
-  if (newValue.equals(BigInt.zero())) {
+  if (newValue.le(BigInt.zero())) {
     removeTokenBalance(balance);
     return;
   }
@@ -38,7 +39,7 @@ export function decreaseTokenBalanceValue(
 
   const newValue = balance.valueExact.minus(value);
 
-  if (newValue.equals(BigInt.zero())) {
+  if (newValue.le(BigInt.zero())) {
     removeTokenBalance(balance);
     return;
   }
@@ -101,7 +102,7 @@ export function freezeOrUnfreezeTokenBalance(
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
-  if (balance.valueExact.equals(BigInt.zero()) && !isFrozen) {
+  if (balance.valueExact.le(BigInt.zero()) && !isFrozen) {
     removeTokenBalance(balance);
     return;
   }
@@ -122,17 +123,15 @@ export function moveTokenBalanceToNewAccount(
 ): void {
   const oldBalance = fetchTokenBalance(token, fetchAccount(oldAccount));
 
-  if (oldBalance.valueExact.gt(BigInt.zero())) {
-    const newBalance = fetchTokenBalance(token, fetchAccount(newAccount));
+  const newBalance = fetchTokenBalance(token, fetchAccount(newAccount));
 
-    setBigNumber(newBalance, "value", oldBalance.valueExact, token.decimals);
-    setBigNumber(newBalance, "frozen", oldBalance.frozenExact, token.decimals);
-    updateAvailableAmount(newBalance, token.decimals);
+  setBigNumber(newBalance, "value", oldBalance.valueExact, token.decimals);
+  setBigNumber(newBalance, "frozen", oldBalance.frozenExact, token.decimals);
+  updateAvailableAmount(newBalance, token.decimals);
 
-    newBalance.lastUpdatedAt = timestamp;
+  newBalance.lastUpdatedAt = timestamp;
 
-    newBalance.save();
-  }
+  newBalance.save();
 
   removeTokenBalance(oldBalance);
 }
@@ -156,4 +155,5 @@ function updateAvailableAmount(
 function removeTokenBalance(tokenBalance: TokenBalance): void {
   store.remove("TokenBalance", tokenBalance.id.toHexString());
   decreaseAccountStatsBalanceCount(Address.fromBytes(tokenBalance.account));
+  decreaseTokenStatsBalanceCount(Address.fromBytes(tokenBalance.token));
 }
