@@ -1,6 +1,7 @@
 import { FormInput } from "@/components/form/inputs/form-input";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
 import {
@@ -8,7 +9,6 @@ import {
   type DepositCreateInput,
 } from "@/orpc/routes/token/routes/deposit/deposit.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -49,10 +49,8 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
     mode: "onChange",
   });
 
-  const { mutate: createDeposit, isPending } = useMutation({
-    mutationFn: async (data: DepositCreateInput) => {
-      return await orpc.token.depositCreate.call(data);
-    },
+  const { mutate: createDeposit, isPending } = useStreamingMutation({
+    mutationOptions: orpc.token.depositCreate.mutationOptions(),
     onSuccess: (transactionHash) => {
       toast.success(
         t("messages.success-toast", { type: AssetTypeEnum.deposit })
@@ -61,16 +59,14 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
       form.reset();
       onSuccess?.();
     },
-    onError: (error) => {
-      toast.error(t("messages.error-toast", { type: AssetTypeEnum.deposit }));
-      console.error("Deposit creation error:", error);
-    },
   });
 
   // Handle form submission
   const onSubmit = useCallback(
     (data: DepositCreateInput) => {
-      createDeposit(data);
+      createDeposit({
+        ...data,
+      });
     },
     [createDeposit]
   );
