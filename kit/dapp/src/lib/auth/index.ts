@@ -27,7 +27,11 @@ import { pincode } from "@/lib/auth/plugins/pincode-plugin";
 import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
 import { twoFactor } from "@/lib/auth/plugins/two-factor";
 import { wallet } from "@/lib/auth/plugins/wallet-plugin";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import {
+  getEthereumAddress,
+  type EthereumAddress,
+} from "@/lib/zod/validators/ethereum-address";
 import type { UserRole } from "@/lib/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
 import { betterAuth } from "better-auth";
@@ -37,6 +41,9 @@ import { admin, apiKey, openAPI } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
+import { createPublicClient, http } from "viem";
+import { anvil } from "viem/chains";
+import { toHex } from "viem/utils";
 import { db } from "../db";
 import * as authSchema from "../db/schemas/auth";
 import { env } from "../env";
@@ -101,10 +108,10 @@ const getAuthConfig = serverOnly(() =>
       },
 
       /**
-       * Allow users to change their email addresses.
+       * Do not allow users to change their email addresses because the email is used to identify the user's wallet.
        */
       changeEmail: {
-        enabled: true,
+        enabled: false,
       },
 
       /**
@@ -229,9 +236,55 @@ const getAuthConfig = serverOnly(() =>
           before: async (user) => {
             try {
               const firstUser = await db.query.user.findFirst();
+
+              const CREATE_ACCOUNT_MUTATION = portalGraphql(`
+                mutation CreateAccountMutation($keyVaultId: String!, $userId: String!) {
+                  createWallet(keyVaultId: $keyVaultId, walletInfo: {name: $userId}) {
+                    address
+                  }
+                }
+              `);
+
+              const result = await portalClient.request(
+                CREATE_ACCOUNT_MUTATION,
+                {
+                  userId: user.email,
+                  keyVaultId: env.SETTLEMINT_HD_PRIVATE_KEY,
+                }
+              );
+              if (!result.createWallet?.address) {
+                throw new APIError("BAD_REQUEST", {
+                  message: "Failed to create wallet",
+                });
+              }
+
+              const walletAddress = getEthereumAddress(
+                result.createWallet.address
+              );
+
+              // When developping locally we need to fund the wallet
+              const isLocal = env.SETTLEMINT_INSTANCE === "local";
+              if (isLocal) {
+                try {
+                  const balanceInHex = toHex(1000000000000000000n);
+                  const client = createPublicClient({
+                    chain: anvil,
+                    transport: http("http://localhost:8545"),
+                  });
+
+                  await client.request({
+                    method: "anvil_setBalance",
+                    params: [walletAddress, balanceInHex],
+                  } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+                } catch (error) {
+                  console.error("Failed to fund wallet", error);
+                }
+              }
+
               return {
                 data: {
                   ...user,
+                  wallet: walletAddress,
                   role: firstUser ? "investor" : "admin",
                 },
               };
@@ -254,6 +307,7 @@ const getAuthConfig = serverOnly(() =>
                 lastLoginAt,
               })
               .where(eq(authSchema.user.id, session.userId));
+
             return {
               data: session,
             };
@@ -360,6 +414,6 @@ export type Session = typeof auth.$Infer.Session;
  * Enhanced type for session users with proper typing.
  */
 export type SessionUser = Omit<Session["user"], "wallet" | "role"> & {
-  wallet?: EthereumAddress | null;
+  wallet: EthereumAddress;
   role: UserRole;
 };

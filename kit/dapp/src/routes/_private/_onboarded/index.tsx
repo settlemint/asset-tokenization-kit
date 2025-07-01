@@ -40,9 +40,9 @@ export const Route = createFileRoute("/_private/_onboarded/")({
   loader: async ({ context }) => {
     // User data should be loaded in parent _private route, but we need to ensure it exists
     // to handle cache misses, invalidation, or direct navigation
-    const user =
-      context.queryClient.getQueryData(orpc.user.me.queryKey()) ??
-      (await context.queryClient.ensureQueryData(orpc.user.me.queryOptions()));
+    const user = await context.queryClient.ensureQueryData(
+      orpc.user.me.queryOptions()
+    );
 
     // Ensure systems data is loaded
     const systems = await context.queryClient.ensureQueryData(
@@ -66,11 +66,8 @@ function Home() {
 
   const { mutate: grantDeployerRole, isPending: isGrantingRole } = useMutation({
     mutationFn: async () => {
-      if (!user?.wallet) {
-        throw new Error("User wallet not found");
-      }
       return await orpc.token.factoryGrantRole.call({
-        account: user.wallet ?? "",
+        account: user.wallet,
       });
     },
     onSuccess: (transactionHash) => {
@@ -86,14 +83,6 @@ function Home() {
   const grantDeployerRoleFn = useCallback(() => {
     grantDeployerRole();
   }, [grantDeployerRole]);
-
-  if (!user) {
-    return (
-      <div className="p-2">
-        <h3>Loading user data...</h3>
-      </div>
-    );
-  }
 
   return (
     <div className="p-2">
@@ -115,18 +104,9 @@ function Home() {
       <pre>{JSON.stringify(systems, null, 2)}</pre>
 
       <div className="mb-4">
-        <Button
-          onClick={grantDeployerRoleFn}
-          // disabled={isGrantingRole || !user.wallet}
-          variant="outline"
-        >
+        <Button onClick={grantDeployerRoleFn} variant="outline">
           {isGrantingRole ? "Granting..." : "Grant Deployer Role to Me"}
         </Button>
-        {/* {!user.wallet && (
-          <p className="text-sm text-gray-500 mt-1">
-            Wallet address required to grant role
-          </p>
-        )} */}
       </div>
 
       <CreateDepositForm />
