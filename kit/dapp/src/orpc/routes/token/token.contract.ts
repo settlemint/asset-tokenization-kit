@@ -7,6 +7,7 @@ import {
   FactoryCreateOutputSchema,
   FactoryCreateSchema,
 } from "@/orpc/routes/token/routes/factory.create.schema";
+import { FactoryGrantRoleSchema } from "@/orpc/routes/token/routes/factory.grant-role.schema";
 import {
   FactoryListSchema,
   TokenFactoryListSchema,
@@ -53,6 +54,17 @@ const factoryRead = baseContract
   })
   .input(FactoryReadSchema)
   .output(TokenFactoryDetailSchema);
+
+const factoryGrantRole = baseContract
+  .route({
+    method: "POST",
+    path: "/token/factory/grant-role",
+    description: "Grant a role to an account in a token factory",
+    successDescription: "Role granted successfully",
+    tags: ["token"],
+  })
+  .input(FactoryGrantRoleSchema)
+  .output(ethereumHash);
 
 const bondCreate = baseContract
   .route({
@@ -111,6 +123,7 @@ const mint = baseContract
 
 export const tokenContract = {
   factoryCreate,
+  factoryGrantRole,
   factoryList,
   factoryRead,
   bondCreate,
