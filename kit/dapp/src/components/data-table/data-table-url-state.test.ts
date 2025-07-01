@@ -119,7 +119,14 @@ test("converts between TanStack Table state and search params", () => {
   expect(searchParams.sorting).toEqual([{ id: "name", desc: true }]);
 
   // Convert back to table state format
-  const backToTableState = searchParamsToTableState(searchParams);
+  const backToTableState = searchParamsToTableState({
+    ...searchParams,
+    sorting: searchParams.sorting ?? [],
+    columnFilters: searchParams.columnFilters ?? [],
+    globalFilter: searchParams.globalFilter ?? "",
+    columnVisibility: searchParams.columnVisibility ?? {},
+    rowSelection: searchParams.rowSelection ?? {},
+  });
 
   expect(backToTableState.pagination?.pageIndex).toBe(1);
   expect(backToTableState.pagination?.pageSize).toBe(25);

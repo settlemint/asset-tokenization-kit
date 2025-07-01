@@ -32,7 +32,9 @@ export function multiOptionFilterFn<TData>(
     .filter(Boolean);
 
   return __multiOptionFilterFn(
-    sanitizedValue.map((v) => v.value),
+    sanitizedValue
+      .map((v) => v?.value)
+      .filter((v): v is string => v !== undefined),
     filterValue
   );
 }

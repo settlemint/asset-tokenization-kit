@@ -48,7 +48,7 @@ export const list = authRouter.settings.list
       .select()
       .from(settings)
       .orderBy(order(orderColumn))
-      .limit(limit)
+      .limit(limit ?? 1000)
       .offset(offset);
 
     return result;

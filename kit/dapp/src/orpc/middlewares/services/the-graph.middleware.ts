@@ -77,8 +77,7 @@ export function buildFilter(
  * - Operation name extraction from GraphQL documents
  * - Comprehensive error logging and categorization
  * - User-friendly error messages
- * @param {object} errors - ORPC error constructors for consistent error handling
- * @returns {object} A validated TheGraph client with a `query` method
+ * @returns A validated TheGraph client with a `query` method
  * @example
  * ```typescript
  * const client = createValidatedTheGraphClient(errors);
@@ -200,52 +199,49 @@ function createValidatedTheGraphClient(
      * and validates the response against a provided Zod schema. It supports automatic
      * transformation of input variables for common patterns like pagination and filtering.
      *
+     * Enhanced Type Safety:
+     * - Input must exactly match the GraphQL query's expected variables at compile time
+     * - TypeScript will catch mismatches between variable names and input properties
+     * - No runtime transformation needed - direct mapping ensures type safety
+     *
      * Features:
-     * 1. **Type Safety**: Response data is validated at runtime against the provided schema
-     * 2. **Variable Transformation**: Automatically transforms ListSchema inputs to TheGraph format
+     * 1. **Strict Type Safety**: Input must match GraphQL variables exactly - no exceptions
+     * 2. **Compile-time Validation**: TypeScript catches variable name mismatches immediately
      * 3. **Error Categorization**: Errors are automatically categorized (NOT_FOUND vs INTERNAL_SERVER_ERROR)
      * 4. **Operation Tracking**: Operation names are extracted for better logging and debugging
      * 5. **Consistent Error Messages**: User-friendly messages are shown while technical details are logged
-     * 6. **Auto-pagination**: Automatically handles queries requesting >1000 records or unlimited records
      *
      * @param {TadaDocumentNode} document - The GraphQL query document with TypeScript types
      * @param {object} options - Query configuration object
-     * @param {object} options.input - Input data including the base input and optional transformations
-     * @param {TInput} options.input.input - The base input data
-     * @param {object|array} options.input.filter - Optional where clause for filtering results (object) or array of keys to pick from input
-     * @param {function} options.input.transform - Optional function to transform input before sending
+     * @param {TVariables} options.input - GraphQL variables that must exactly match the query parameters
      * @param {z.ZodType} options.output - Zod schema to validate the response against
      * @param {string} options.error - User-friendly error message to show if the operation fails
      * @returns {Promise<TValidated>} The validated query response data
      *
      * @example
      * ```typescript
-     * // List query with automatic pagination transformation
-     * const response = await client.query(LIST_FACTORIES_QUERY, {
+     * // Type-safe query - input must match GraphQL variables exactly
+     * const response = await client.query(LIST_TOKEN_QUERY, {
      *   input: {
-     *     input,
-     *     filter: ['hasTokens'] // or { hasTokens: input.hasTokens }
+     *     tokenFactory: "0x123...", // Must match $tokenFactory in GraphQL query
+     *     skip: 0,                  // Must match $skip in GraphQL query
+     *     first: 50,                // Must match $first in GraphQL query
+     *     orderBy: "name",          // Must match $orderBy in GraphQL query
+     *     orderDirection: "asc"     // Must match $orderDirection in GraphQL query
      *   },
-     *   output: FactoriesSchema,
-     *   error: "Failed to list factories"
+     *   output: TokensResponseSchema,
+     *   error: "Failed to list tokens"
      * });
      *
-     * // Large result set (auto-paginated behind the scenes)
-     * const allTokens = await client.query(LIST_TOKENS_QUERY, {
+     * // TypeScript error - variable name mismatch
+     * const badResponse = await client.query(LIST_TOKEN_QUERY, {
      *   input: {
-     *     input: { offset: 0, limit: 5000 } // Will auto-paginate
+     *     tokenFacdtory: "0x123...", // ERROR: Property 'tokenFacdtory' does not exist
+     *     skip: 0,
+     *     first: 50
      *   },
-     *   output: TokensSchema,
-     *   error: "Failed to list all tokens"
-     * });
-     *
-     * // Unlimited result set (gets ALL available records)
-     * const everythingTokens = await client.query(LIST_TOKENS_QUERY, {
-     *   input: {
-     *     input: { offset: 0 } // No limit = get all records
-     *   },
-     *   output: TokensSchema,
-     *   error: "Failed to list all tokens"
+     *   output: TokensResponseSchema,
+     *   error: "Failed to list tokens"
      * });
      * ```
      */
@@ -292,74 +288,50 @@ function createValidatedTheGraphClient(
         variables = transform(input);
       } else if (isListInput(input)) {
         // Automatic transformation for ListSchema inputs
+        // Copy all fields except offset/limit, transform those to skip/first
+        const { offset, limit, ...otherFields } = input;
+
         const baseVariables: Record<string, unknown> = {
-          skip: input.offset,
-          first: input.limit ? Math.min(input.limit, 1000) : 1000, // Limit to 1000 per request, or 1000 if unlimited
-          orderDirection: input.orderDirection,
+          ...otherFields,
+          skip: offset,
+          first: limit ? Math.min(limit, 1000) : 1000,
         };
 
-        if (input.orderBy) {
-          baseVariables.orderBy = input.orderBy;
-        }
-
-        // Add filter if provided
+        // Add filter fields if specified
         if (filter) {
-          const cleanFilter: Record<string, unknown> = {};
-          let hasValidFields = false;
-
           if (Array.isArray(filter)) {
-            // If filter is an array of keys, pick those from input
+            // Filter is array of keys - pick only those fields from input
             for (const key of filter) {
-              const value = (input as Record<string, unknown>)[key as string];
+              const value = input[key as keyof typeof input];
               if (value !== undefined) {
-                cleanFilter[key as string] = value;
-                hasValidFields = true;
+                baseVariables[key as string] = value;
               }
             }
           } else {
-            // If filter is an object, remove undefined values
-            for (const [key, value] of Object.entries(filter)) {
-              if (value !== undefined) {
-                cleanFilter[key] = value;
-                hasValidFields = true;
-              }
-            }
-          }
-
-          if (hasValidFields) {
-            baseVariables.where = cleanFilter;
+            // Filter is an object - merge directly
+            Object.assign(
+              baseVariables,
+              buildFilter(filter as Record<string, unknown>)
+            );
           }
         }
 
         variables = baseVariables as TVariables;
       } else {
-        // No transformation needed
+        // No transformation - input must be compatible with GraphQL variables
         variables = input as unknown as TVariables;
       }
 
       let result: TResult;
       try {
-        // Check if this is a list query that might need auto-pagination
-        if (
-          isListInput(input) &&
-          (input.limit === undefined || input.limit > 1000)
-        ) {
-          result = await this.executeWithAutoPagination(
-            document,
-            variables,
-            input,
-            operation
-          );
-        } else {
-          // Execute single GraphQL query against TheGraph
-          // The type assertion is needed because graphql-request has complex conditional types
-          result = await (
-            theGraphClient.request as <D, V extends Variables>(
-              doc: TadaDocumentNode<D, V>,
-              vars: V
-            ) => Promise<D>
-          )(document, variables);
-        }
+        // Execute single GraphQL query against TheGraph
+        // The type assertion is needed because graphql-request has complex conditional types
+        result = await (
+          theGraphClient.request as <D, V extends Variables>(
+            doc: TadaDocumentNode<D, V>,
+            vars: V
+          ) => Promise<D>
+        )(document, variables);
       } catch (error) {
         // Log the error with full context for debugging
         logger.error(`GraphQL ${operation} failed`, {

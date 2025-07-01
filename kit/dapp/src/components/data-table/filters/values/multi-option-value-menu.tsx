@@ -105,7 +105,7 @@ export function PropertyFilterMultiOptionValueMenu<
             return {
               operator: newOperator,
               values: [uniq(newVals)],
-            };
+            } as FilterValue<"multiOption", TData>;
           }
 
           const newVals = old?.values[0]?.filter((v) => v !== value) ?? [];
@@ -123,7 +123,7 @@ export function PropertyFilterMultiOptionValueMenu<
           return {
             operator: newOperator,
             values: [newVals],
-          };
+          } as FilterValue<"multiOption", TData>;
         }
       );
     },

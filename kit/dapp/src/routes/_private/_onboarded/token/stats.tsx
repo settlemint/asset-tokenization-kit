@@ -8,16 +8,18 @@ export const Route = createFileRoute("/_private/_onboarded/token/stats")({
       orpc.token.factoryList.queryOptions({ input: {} })
     );
 
-    // Prefetch the global token list once for potential use in statistics
-    // Note: Currently token.list doesn't support filtering by factory
-    void context.queryClient.prefetchQuery(
-      orpc.token.list.queryOptions({
-        input: {
-          offset: 0,
-          limit: 50,
-        },
-      })
-    );
+    // Get tokens from the first factory for demonstration
+    if (factories.length > 0 && factories[0]) {
+      void context.queryClient.prefetchQuery(
+        orpc.token.list.queryOptions({
+          input: {
+            tokenFactory: factories[0].id,
+            offset: 0,
+            limit: 50,
+          },
+        })
+      );
+    }
 
     return { factories };
   },

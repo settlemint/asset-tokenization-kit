@@ -1,6 +1,5 @@
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { baseContract } from "@/orpc/procedures/base.contract";
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { BondTokenCreateSchema } from "@/orpc/routes/token/routes/bond/bond.create.schema";
 import {
   FactoryCreateOutputSchema,
@@ -14,7 +13,10 @@ import {
   FactoryReadSchema,
   TokenFactoryDetailSchema,
 } from "@/orpc/routes/token/routes/factory.read.schema";
-import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
+import {
+  TokenListInputSchema,
+  TokenListSchema,
+} from "@/orpc/routes/token/routes/token.list.schema";
 import { TokenMintSchema } from "@/orpc/routes/token/routes/token.mint.schema";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { eventIterator } from "@orpc/server";
@@ -72,7 +74,7 @@ const list = baseContract
     successDescription: "List of tokens",
     tags: ["token"],
   })
-  .input(ListSchema)
+  .input(TokenListInputSchema)
   .output(TokenListSchema);
 
 const read = baseContract

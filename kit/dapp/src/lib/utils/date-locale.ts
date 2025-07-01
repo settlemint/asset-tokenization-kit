@@ -12,7 +12,7 @@ const localeMap: Record<SupportedLocaleCode, Locale> = {
 
 export function getDateLocale(localeCode: string): Locale {
   const code = localeCode.split("-")[0];
-  if (code in localeMap) {
+  if (code && code in localeMap) {
     return localeMap[code as SupportedLocaleCode];
   }
   return localeMap.en;
