@@ -51,6 +51,16 @@ TASKS:
 OUTPUT: Quality report with pass/fail status
 ```
 
+### Agent 4: Reviewer
+
+```
+OBJECTIVE: Review the PR and provide feedback
+TASKS:
+- Review the PR and provide feedback (use the /review command)
+- Ensure all results of the review are addressed before creating the PR
+OUTPUT: Review report with feedback
+```
+
 ## Pre-flight Checks
 
 1. **Branch Status** (CRITICAL)
@@ -58,14 +68,17 @@ OUTPUT: Quality report with pass/fail status
    ```bash
    git branch --show-current
    ```
+
    - ✅ If on `main`/`master`: Create new feature branch
    - ❌ If on feature branch: Stay on current branch (DO NOT create nested
      branches)
 
 2. **Working Directory Status**
+
    ```bash
    git status
    ```
+
    - Ensure all changes are tracked
 
 ## Execution Steps
