@@ -1,5 +1,3 @@
-"use client";
-
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { PropertyFilterDateValueMenu } from "./date-value-menu";
 import { PropertyFilterMultiOptionValueMenu } from "./multi-option-value-menu";

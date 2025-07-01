@@ -1,5 +1,3 @@
-"use client";
-
 import { Command, CommandGroup, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";

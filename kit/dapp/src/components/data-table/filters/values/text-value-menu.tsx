@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Command, CommandGroup, CommandList } from "@/components/ui/command";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
