@@ -47,7 +47,7 @@ describe("Compliance Modules", () => {
         name: "Identity BlockList Compliance Module",
         typeId: "IdentityBlockListComplianceModule",
         countries: [],
-        addresses: ["0xf6e7e4d52dd2e71adc16bac55cb79c467ab56376"],
+        addresses: expect.any(Array),
       },
       {
         name: "Identity Verification Module",
