@@ -93,7 +93,7 @@ function Home() {
           {JSON.stringify(
             {
               wallet: user.wallet,
-              onboardingFinished: user.initialOnboardingFinished,
+              onboardingFinished: user.isOnboarded,
               userId: user.id,
             },
             null,

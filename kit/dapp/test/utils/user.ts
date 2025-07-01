@@ -60,15 +60,6 @@ export async function setupUser(user: User) {
     if (signUpError && signUpError.code !== "USER_ALREADY_EXISTS") {
       throw signUpError;
     }
-    const { error: walletError } = await authClient.wallet(
-      { messages: {} },
-      {
-        headers: await signInWithUser(user),
-      }
-    );
-    if (walletError && walletError.code !== "USER_WALLET_ALREADY_EXISTS") {
-      throw walletError;
-    }
     const { error: pincodeError } = await authClient.pincode.enable(
       {
         pincode: DEFAULT_PINCODE,

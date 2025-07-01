@@ -4,6 +4,7 @@ import { getUserRole } from "@/lib/zod/validators/user-roles";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import type { User } from "@/orpc/routes/user/routes/user.me.schema";
 import { asc, desc, type AnyColumn } from "drizzle-orm";
 
 /**
@@ -70,9 +71,14 @@ export const list = authRouter.user.list
       .offset(offset);
 
     // Transform results to include human-readable roles
-    return result.map((user) => ({
-      ...user,
-      isOnboarded: isOnboarded(user),
-      role: getUserRole(user.role),
-    }));
+    return result.map((user) => {
+      if (!user.wallet) {
+        throw new Error(`User ${user.id} has no wallet`);
+      }
+      return {
+        ...user,
+        isOnboarded: isOnboarded({ ...user, wallet: user.wallet }),
+        role: getUserRole(user.role),
+      } as User;
+    });
   });
