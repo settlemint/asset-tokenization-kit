@@ -83,7 +83,7 @@ export async function setupUser(user: User) {
         headers: await signInWithUser(user),
       },
     });
-    if (!session.data?.user.initialOnboardingFinished) {
+    if (!session.data?.user.isOnboarded) {
       throw new Error("User is not onboarded");
     }
   } catch (err) {

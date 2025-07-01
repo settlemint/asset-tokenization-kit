@@ -57,13 +57,13 @@ export function OnboardingGuard({
 
   // Determine platform onboarding requirements
   const platformRequirements: PlatformOnboardingRequirements = {
-    hasWallet: !!user?.initialOnboardingFinished,
+    userOnboarded: !!user?.isOnboarded,
     hasSystem: !!systemAddress,
     hasTokenFactories: (systemDetails?.tokenFactories.length ?? 0) > 0,
   };
 
   // Determine user's onboarding status
-  const userHasWallet = !!user?.initialOnboardingFinished;
+  const userOnboarded = !!user?.isOnboarded;
   const userHasIdentity = false; // TODO: Implement identity check
   const userRole =
     (user?.role as undefined | "issuer" | "investor" | "admin") ?? "investor";
@@ -81,13 +81,13 @@ export function OnboardingGuard({
         return isPlatformOnboardingComplete(platformRequirements);
       case "issuer":
         return isIssuerOnboardingComplete({
-          hasWallet: userHasWallet,
+          userOnboarded,
           platformOnboardingComplete:
             isPlatformOnboardingComplete(platformRequirements),
         });
       case "investor":
         return isInvestorOnboardingComplete({
-          hasWallet: userHasWallet,
+          userOnboarded,
           hasIdentity: userHasIdentity,
           platformOnboardingComplete:
             isPlatformOnboardingComplete(platformRequirements),

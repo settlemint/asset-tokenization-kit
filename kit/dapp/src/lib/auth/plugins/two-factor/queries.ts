@@ -1,6 +1,6 @@
 import { metadata } from "@/config/metadata";
-import type { UserWithTwoFactorContext } from "@/lib/auth/plugins/two-factor/index";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { APIError } from "better-auth/api";
 
@@ -56,9 +56,15 @@ const CREATE_WALLET_VERIFICATION_MUTATION = portalGraphql(`
   }
 `);
 
+interface UserWithTwoFactorContext {
+  wallet?: EthereumAddress | null;
+  twoFactorEnabled?: boolean | null;
+  twoFactorVerificationId?: string | null;
+}
+
 /**
- *
- * @param user
+ * Disables two-factor authentication for a user
+ * @param user - The user to disable two-factor authentication for
  */
 export async function disableTwoFactor(user: UserWithTwoFactorContext) {
   if (!user.wallet) {
@@ -82,9 +88,9 @@ export async function disableTwoFactor(user: UserWithTwoFactorContext) {
 }
 
 /**
- *
- * @param user
- * @param code
+ * Verifies a two-factor authentication code
+ * @param user - The user to verify the code for
+ * @param code - The code to verify
  */
 export async function verifyTwoFactorOTP(
   user: UserWithTwoFactorContext,
@@ -118,12 +124,10 @@ type OTPAlgorithm = VariablesOf<
 >["algorithm"];
 
 /**
- *
- * @param root0
- * @param root0.algorithm
- * @param root0.digits
- * @param root0.period
- * @param user
+ * Enables two-factor authentication for a user
+ * @param params - The parameters for the two-factor authentication
+ * @param user - The user to enable two-factor authentication for
+ * @returns The verification ID and the TOTP URI
  */
 export async function enableTwoFactor(
   {

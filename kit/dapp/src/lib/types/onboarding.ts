@@ -19,18 +19,18 @@ export interface OnboardingStatus {
 }
 
 export interface PlatformOnboardingRequirements {
-  hasWallet: boolean;
+  userOnboarded: boolean;
   hasSystem: boolean;
   hasTokenFactories: boolean;
 }
 
 export interface IssuerOnboardingRequirements {
-  hasWallet: boolean;
+  userOnboarded: boolean;
   platformOnboardingComplete: boolean;
 }
 
 export interface InvestorOnboardingRequirements {
-  hasWallet: boolean;
+  userOnboarded: boolean;
   hasIdentity: boolean;
   platformOnboardingComplete: boolean;
 }
@@ -74,7 +74,7 @@ export function isPlatformOnboardingComplete(
   requirements: PlatformOnboardingRequirements
 ): boolean {
   return (
-    requirements.hasWallet &&
+    requirements.userOnboarded &&
     requirements.hasSystem &&
     requirements.hasTokenFactories
   );
@@ -87,7 +87,7 @@ export function isPlatformOnboardingComplete(
 export function isIssuerOnboardingComplete(
   requirements: IssuerOnboardingRequirements
 ): boolean {
-  return requirements.hasWallet && requirements.platformOnboardingComplete;
+  return requirements.userOnboarded && requirements.platformOnboardingComplete;
 }
 
 /**
@@ -98,7 +98,7 @@ export function isInvestorOnboardingComplete(
   requirements: InvestorOnboardingRequirements
 ): boolean {
   return (
-    requirements.hasWallet &&
+    requirements.userOnboarded &&
     requirements.hasIdentity &&
     requirements.platformOnboardingComplete
   );

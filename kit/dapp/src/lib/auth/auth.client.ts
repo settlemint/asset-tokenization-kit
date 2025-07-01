@@ -21,6 +21,7 @@ import { walletClient } from "@/lib/auth/plugins/wallet-plugin/client";
 import {
   adminClient,
   apiKeyClient,
+  customSessionClient,
   inferAdditionalFields,
   passkeyClient,
 } from "better-auth/client/plugins";
@@ -64,6 +65,11 @@ import {
  */
 export const authClient = createAuthClient({
   plugins: [
+    /**
+     * Custom session plugin for the application.
+     */
+    customSessionClient<typeof auth>(),
+
     /**
      * Infers additional user fields from the server configuration.
      */
