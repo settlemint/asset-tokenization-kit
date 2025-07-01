@@ -14,7 +14,7 @@ export const tokenFactoryMiddleware = (type: AssetType) =>
     }
 
     const tokenFactory = system.tokenFactories.find(
-      (tokenFactory) => tokenFactory.name === type
+      (tokenFactory) => tokenFactory.type === type
     );
     if (!tokenFactory) {
       throw errors.INTERNAL_SERVER_ERROR({

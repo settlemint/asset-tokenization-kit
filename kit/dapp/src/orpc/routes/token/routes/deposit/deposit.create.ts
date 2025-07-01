@@ -19,6 +19,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { tokenFactoryPermissionMiddleware } from "@/orpc/middlewares/auth/token-factory-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { tokenFactoryMiddleware } from "@/orpc/middlewares/system/token-factory.middleware";
@@ -96,7 +97,7 @@ export const depositCreate = onboardedRouter.token.depositCreate
   .use(portalMiddleware)
   .use(systemMiddleware)
   .use(tokenFactoryMiddleware("deposit"))
-  // .use(tokenFactoryPermissionMiddleware(["deployer"]))
+  .use(tokenFactoryPermissionMiddleware(["deployer"]))
   .handler(async function* ({ input, context }) {
     const sender = context.auth.user;
 
@@ -176,7 +177,7 @@ export const depositCreate = onboardedRouter.token.depositCreate
       }
     }
 
-    // Ensure we always yield a final result if no confirmed event was received
+    // Ensure we always yield a result if no confirmed event was received
     if (!hasConfirmedEvent && validatedHash) {
       yield withEventMeta(
         {
