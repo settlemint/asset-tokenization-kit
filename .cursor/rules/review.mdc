@@ -1,6 +1,11 @@
-# Review Pull Request
+---
+description: PR Quality control before submitting
+globs: 
+alwaysApply: false
+---
+# Reviews
 
-Please review this pull request and provide comprehensive feedback.
+Before openening a PR, always perform a detailed review, this is the moment to ultrathink.
 
 ## Focus on:
 

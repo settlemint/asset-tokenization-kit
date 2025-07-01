@@ -6,3 +6,4 @@ alwaysApply: true
 # Quality control
 
 - Before deciding the task is done, make sure `bun run ci` completes sucessfully
+- Before opening a PR, make sure `bun run ci` completes sucessfully
