@@ -33,9 +33,6 @@ export const user = pgTable("user", {
   twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
   twoFactorVerificationId: text("two_factor_verification_id").unique(),
   secretCodeVerificationId: text("secret_code_verification_id").unique(),
-  initialOnboardingFinished: boolean("initial_onboarding_finished")
-    .notNull()
-    .default(false),
 });
 
 export const session = pgTable("session", {

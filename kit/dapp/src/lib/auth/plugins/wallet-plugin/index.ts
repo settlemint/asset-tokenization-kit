@@ -13,7 +13,7 @@ import {
 import { createPublicClient, http, toHex } from "viem";
 import { anvil } from "viem/chains";
 import { z } from "zod/v4";
-import { revokeSession } from "../utils";
+import { updateSession } from "../utils";
 
 const CREATE_ACCOUNT_MUTATION = portalGraphql(`
   mutation CreateAccountMutation($keyVaultId: String!, $userId: String!) {
@@ -120,7 +120,7 @@ export const wallet = () => {
             }
           }
 
-          await revokeSession(ctx, {
+          await updateSession(ctx, {
             wallet: walletAddress,
           });
           return ctx.json({

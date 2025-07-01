@@ -1,6 +1,6 @@
-import { validatePassword } from "@/lib/auth/plugins/utils";
+import type { SessionUser } from "@/lib/auth";
+import { isOnboarded, validatePassword } from "@/lib/auth/plugins/utils";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { BetterAuthPlugin } from "better-auth";
 import {
   APIError,
@@ -8,7 +8,7 @@ import {
   sessionMiddleware,
 } from "better-auth/api";
 import { z } from "zod/v4";
-import { revokeSession } from "../utils";
+import { updateSession } from "../utils";
 
 const GENERATE_SECRET_CODES_MUTATION = portalGraphql(`
   mutation GenerateSecretCodes($address: String!) {
@@ -34,13 +34,6 @@ const REMOVE_SECRET_CODES_MUTATION = portalGraphql(`
     }
   }
 `);
-
-export interface UserWithSecretCodesContext {
-  id: string;
-  wallet?: EthereumAddress;
-  secretCodeVerificationId?: string;
-  initialOnboardingFinished?: boolean;
-}
 
 export const secretCodes = () => {
   return {
@@ -84,14 +77,14 @@ export const secretCodes = () => {
           },
         },
         async (ctx) => {
-          const user = ctx.context.session.user as UserWithSecretCodesContext;
+          const user = ctx.context.session.user as SessionUser;
           const { password } = ctx.body;
           if (!user.wallet) {
             throw new APIError("BAD_REQUEST", {
               message: "User wallet not found",
             });
           }
-          if (user.initialOnboardingFinished) {
+          if (isOnboarded(user)) {
             if (!password) {
               throw new APIError("BAD_REQUEST", {
                 message: "Password is required",
@@ -125,7 +118,7 @@ export const secretCodes = () => {
             });
           }
 
-          await revokeSession(ctx, {
+          await updateSession(ctx, {
             secretCodeVerificationId: result.createWalletVerification.id,
           });
           const parameters = result.createWalletVerification.parameters as {

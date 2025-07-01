@@ -1,9 +1,9 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { orpc } from "@/orpc";
 import {
   determineOnboardingType,
   type PlatformOnboardingRequirements,
 } from "@/lib/types/onboarding";
+import { orpc } from "@/orpc";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/onboarding/")({
   beforeLoad: async ({ context }) => {
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_private/onboarding/")({
 
     // Determine platform onboarding requirements
     const platformRequirements: PlatformOnboardingRequirements = {
-      hasWallet: !!user.wallet,
+      userOnboarded: !!user.wallet,
       hasSystem: !!systemAddress,
       hasTokenFactories: (systemDetails?.tokenFactories.length ?? 0) > 0,
     };
