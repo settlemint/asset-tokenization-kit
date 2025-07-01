@@ -25,7 +25,11 @@ Your quality philosophy:
 
 ## Multi-Agent QA Framework
 
-When running quality assurance, delegate to specialized agents:
+When running quality assurance with `bun run ci`, the following specialized agents work in parallel:
+
+### Automated Coordination via `bun run ci`
+
+The `bun run ci` command automatically orchestrates all quality assurance agents using Turborepo's task pipeline, ensuring optimal parallel execution and dependency management.
 
 ### Agent 1: Test Execution Specialist
 
@@ -92,12 +96,17 @@ CHECKS:
 
 ```
 FOCUS: Automated quality checks
-GATES:
+COMMAND: bun run ci
+
+The 'bun run ci' command automatically executes ALL quality gates:
 1. Static analysis (types, lint)
 2. Unit tests (fast feedback)
 3. Integration tests (component interaction)
 4. E2E tests (user workflows)
 5. Performance tests (if applicable)
+6. Code coverage analysis
+
+No need to run these individually - 'bun run ci' handles everything!
 ```
 
 ### Phase 3: Results Analysis
@@ -113,7 +122,8 @@ OUTPUTS:
 
 ## Purpose
 
-Run the complete QA test suite to ensure code quality and prevent regressions.
+Run the complete QA test suite using `bun run ci` to ensure code quality and prevent regressions.
+This single command encompasses all testing, linting, type checking, and code quality checks.
 ALL tests must pass before proceeding with any work.
 
 ## Pre-execution Setup
@@ -124,29 +134,35 @@ ALL tests must pass before proceeding with any work.
    # Ensure dependencies are installed
    bun install
 
+   # Verify the CI command is available
+   bun run --help | grep -q "ci" || echo "WARNING: 'bun run ci' command not found"
+   
    # Verify test configuration exists
    test -f CLAUDE.md || echo "WARNING: CLAUDE.md not found"
    ```
 
-2. **Identify Test Commands**
-   - Look for CI/test commands in `package.json`
-   - Check CLAUDE.md for specific QA instructions
-   - Common commands: `bun run ci`, `bun test`, `bun run test:e2e`
+2. **Understand the CI Command**
+   - `bun run ci` is the comprehensive QA command that runs ALL quality checks
+   - It's defined in the root `package.json` and uses Turborepo for optimal execution
+   - Individual test commands should only be used for debugging specific failures
 
 ## Execution Protocol
 
 ### Step 1: Run Full Test Suite
 
 ```bash
-# Start with the CI command if available
+# ALWAYS use the CI command - it runs all QA tasks comprehensively
 bun run ci
-
-# Or run individual test types
-bun run test                    # Unit tests
-bun run lint                    # Linting
-bun run format                  # Formatting
-bun run typecheck               # Typescript errors
 ```
+
+This single command executes:
+- Type checking (`typecheck`)
+- Linting (`lint`)
+- Code formatting checks (`format`)
+- Unit tests (`test`)
+- Integration tests
+- E2E tests (if configured)
+- Coverage reporting
 
 ### Step 2: Monitor Results
 
@@ -163,6 +179,8 @@ If any test fails:
    - Note which test(s) failed
 
 2. **Investigation**
+   
+   Only run individual commands when debugging specific failures:
 
    ```bash
    # Re-run failed test in isolation
@@ -171,9 +189,10 @@ If any test fails:
    # Run with verbose output
    bun test --verbose
 
-   # Check for environment issues
-   bun run lint
-   bun run typecheck
+   # Check specific issue types
+   bun run typecheck              # For type errors only
+   bun run lint                    # For linting errors only
+   bun run format                  # For formatting errors only
    ```
 
 3. **Root Cause Analysis**
@@ -184,18 +203,20 @@ If any test fails:
 
 4. **Fix and Verify**
    - Apply minimal fix to resolve issue
-   - Re-run specific failed test
-   - Run full suite again to ensure no side effects
+   - Re-run specific failed test to confirm fix
+   - **ALWAYS run `bun run ci` again to ensure no side effects**
 
 ## Common Issues and Solutions
 
-| Issue             | Solution                               |
-| ----------------- | -------------------------------------- |
-| Dependency errors | Run `bun install --force`              |
-| Type errors       | Run `bun run typecheck` and fix        |
-| Lint errors       | Run `bun run lint --fix`               |
-| Database issues   | Check migrations: `bun run db:migrate` |
-| Port conflicts    | Kill processes on required ports       |
+| Issue             | Solution                                        |
+| ----------------- | ----------------------------------------------- |
+| Dependency errors | Run `bun install --force`, then `bun run ci`   |
+| Type errors       | Run `bun run typecheck`, fix, then `bun run ci`|
+| Lint errors       | Run `bun run lint --fix`, then `bun run ci`    |
+| Database issues   | Check migrations: `bun run db:migrate`, then `bun run ci` |
+| Port conflicts    | Kill processes on required ports, then `bun run ci` |
+
+**Note:** After fixing any issue, ALWAYS run `bun run ci` to verify the complete suite passes.
 
 ## Success Criteria
 

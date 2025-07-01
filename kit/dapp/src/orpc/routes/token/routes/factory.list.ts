@@ -1,8 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { FactoryListSchema } from "@/orpc/routes/token/routes/factory.list.schema";
-import { z } from "zod/v4";
+import { FactoriesResponseSchema } from "@/orpc/routes/token/routes/factory.list.schema";
 
 /**
  * GraphQL query for retrieving token factories from TheGraph.
@@ -34,17 +33,6 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
     }
   }
 `);
-
-/**
- * Schema for validating the GraphQL query response.
- *
- * Wraps the array of token factories in a response object to match
- * TheGraph's response structure. This ensures type safety and runtime
- * validation of the data returned from the subgraph.
- */
-const GraphQLResponseSchema = z.object({
-  tokenFactories: FactoryListSchema,
-});
 
 /**
  * Token factory listing route handler.
@@ -99,7 +87,7 @@ export const factoryList = authRouter.token.factoryList
           input,
           filter: ["hasTokens"],
         },
-        output: GraphQLResponseSchema,
+        output: FactoriesResponseSchema,
         error: "Failed to list token factories",
       }
     );

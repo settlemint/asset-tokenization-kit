@@ -3,10 +3,7 @@ import { baseRouter } from "@/orpc/procedures/base.router";
 export const walletMiddleware = baseRouter.middleware(
   async ({ context, next, errors }) => {
     // Check if valid authentication context exists
-    if (
-      context.auth?.user.wallet &&
-      context.auth.user.initialOnboardingFinished
-    ) {
+    if (context.auth?.user.wallet && context.auth.user.isOnboarded) {
       // Authentication is valid, proceed with the authenticated context
       return next();
     }

@@ -1,38 +1,48 @@
 import { z } from "zod/v4";
 
 /**
- * Common list schema for paginated entity retrieval.
+ * Common list schema for paginated entity retrieval with auto-pagination support.
  *
  * This schema provides a standardized way to handle pagination across all
  * API endpoints that return lists of entities. It implements offset-based
- * pagination with configurable limits and sensible defaults to ensure
- * consistent behavior and performance across the application.
+ * pagination with configurable limits and automatic batching for large queries.
  *
- * The schema enforces reasonable constraints to prevent abuse:
+ * Auto-pagination features:
+ * - Queries requesting >1000 items or unlimited queries are automatically split into batches
+ * - Each batch is limited to 1000 items (GraphQL query limit)
+ * - Results are merged transparently without client-side changes
+ * - Optimal performance through parallel batch processing
+ *
+ * The schema enforces reasonable constraints:
  * - Offset must be non-negative (prevents invalid pagination)
- * - Limit is capped at 100 items (prevents excessive data transfer)
- * - Default values provide good UX without requiring parameters
+ * - Limit is optional (undefined = get all records) or capped at 100,000 items (with auto-pagination)
+ * - Default values optimized for GraphQL performance
  *
  * Used by endpoints like:
- * - GET /planets (list all planets)
- * - GET /users (list all users)
- * - GET /assets (list all assets)
+ * - GET /tokens (list all tokens - auto-paginated for large datasets)
+ * - GET /systems (list all systems)
+ * - GET /factories (list all token factories)
  * - Any other multi-entity listing endpoint
  *
  * Usage in route contracts:
  * ```typescript
- * const listPlanets = contract.route({
+ * const listTokens = contract.route({
  *   method: "GET",
- *   path: "/planets"
+ *   path: "/tokens"
  * }).input(ListSchema);
  *
- * // Client usage with defaults:
- * const planets = await api.planets.list.query({}); // offset: 0, limit: 25
+ * // Client usage with defaults (single batch):
+ * const tokens = await api.tokens.list.query({}); // offset: 0, no limit = get all
  *
- * // Client usage with custom pagination:
- * const planets = await api.planets.list.query({
- *   offset: 20,
- *   limit: 50
+ * // Client usage with auto-pagination (transparent):
+ * const someTokens = await api.tokens.list.query({
+ *   offset: 0,
+ *   limit: 5000 // Automatically batched into 5 requests
+ * });
+ *
+ * // Get all available records (unlimited):
+ * const allTokens = await api.tokens.list.query({
+ *   offset: 0 // No limit specified = get everything
  * });
  * ```
  */
@@ -55,18 +65,20 @@ export const ListSchema = z.object({
   /**
    * Maximum number of items to return.
    *
-   * Controls the page size for pagination and prevents excessive
-   * data transfer that could impact performance. The limit is
-   * enforced both for client convenience and server protection.
+   * Controls the page size for pagination. Auto-pagination is triggered
+   * for queries requesting more than 1000 items or when no limit is specified
+   * to work around GraphQL query limits while maintaining optimal performance.
    *
    * Constraints:
-   * - Must be a positive integer (>= 1)
-   * - Maximum allowed is 100 items per request
-   * - Defaults to 25 (reasonable page size for most UIs)
+   * - Must be a positive integer (>= 1) when specified
+   * - Maximum allowed is 100,000 items per request (with auto-pagination)
+   * - Optional - when undefined, fetches ALL available records
    *
-   * Example: limit: 25 returns up to 25 items in the response
+   * Examples:
+   * - limit: 5000 automatically uses batched pagination behind the scenes
+   * - limit: undefined (or omitted) gets all available records
    */
-  limit: z.number().int().positive().max(100).default(25),
+  limit: z.number().int().positive().max(100000).optional(),
 
   /**
    * Sort order direction for the results.

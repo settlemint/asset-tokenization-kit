@@ -25,7 +25,7 @@ export function WalletStep({ onSuccess, onRegisterAction }: WalletStepProps) {
   const [justGenerated, setJustGenerated] = useState(false);
 
   const user = session?.user;
-  const hasWallet = !!user?.initialOnboardingFinished;
+  const isUserOnboarded = !!user?.isOnboarded;
 
   const { mutate: generateWallet, isPending } = useMutation({
     mutationFn: async () => {
@@ -53,15 +53,15 @@ export function WalletStep({ onSuccess, onRegisterAction }: WalletStepProps) {
 
   // Handle generate wallet
   const handleGenerateWallet = useCallback(() => {
-    if (!isPending && !hasWallet) {
+    if (!isPending && !isUserOnboarded) {
       generateWallet();
     }
-  }, [isPending, hasWallet, generateWallet]);
+  }, [isPending, isUserOnboarded, generateWallet]);
 
   // Register the action with parent when conditions change
   useEffect(() => {
     if (onRegisterAction) {
-      if (!hasWallet) {
+      if (!isUserOnboarded) {
         onRegisterAction(handleGenerateWallet);
       } else {
         // Unregister by passing a no-op function when wallet exists
@@ -70,7 +70,7 @@ export function WalletStep({ onSuccess, onRegisterAction }: WalletStepProps) {
         });
       }
     }
-  }, [onRegisterAction, hasWallet, handleGenerateWallet]);
+  }, [onRegisterAction, isUserOnboarded, handleGenerateWallet]);
 
   // Don't auto-advance - removed the auto success callback
 
@@ -78,12 +78,12 @@ export function WalletStep({ onSuccess, onRegisterAction }: WalletStepProps) {
     <div className="h-full flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
-          {hasWallet
+          {isUserOnboarded
             ? t("wallet.your-wallet")
             : t("wallet.generate-your-wallet")}
         </h2>
         <p className="text-sm text-muted-foreground pt-2">
-          {hasWallet
+          {isUserOnboarded
             ? t("wallet.blockchain-identity-ready")
             : t("wallet.create-secure-wallet")}
         </p>
@@ -94,7 +94,7 @@ export function WalletStep({ onSuccess, onRegisterAction }: WalletStepProps) {
       >
         <div className="max-w-3xl space-y-6 pr-2">
           {/* Wallet display or generation */}
-          {hasWallet ? (
+          {isUserOnboarded ? (
             <div className="space-y-4">
               <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4">
                 <div className="flex items-center gap-3 mb-3">

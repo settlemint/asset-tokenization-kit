@@ -18,7 +18,6 @@ function isListInput(input: unknown): input is ListInput {
     typeof input === "object" &&
     input !== null &&
     "offset" in input &&
-    "limit" in input &&
     "orderDirection" in input &&
     "orderBy" in input
   );
@@ -26,20 +25,32 @@ function isListInput(input: unknown): input is ListInput {
 
 /**
  * Helper to create a filter object from optional input fields.
- * Only includes fields that are not undefined.
  *
- * @param fields - Object mapping field names to their values
+ * This utility function removes undefined values from an object to create clean
+ * GraphQL query filters. It's particularly useful for building dynamic where
+ * clauses in auto-paginated queries where filters must be preserved across
+ * multiple batch requests.
+ *
+ * @param fields - Object mapping field names to their values (may include undefined)
  * @returns Filter object with only defined fields, or undefined if all fields are undefined
  *
  * @example
  * ```typescript
- * // Instead of:
- * filter: (input) => input.hasTokens !== undefined
+ * // Manual approach (verbose):
+ * const filter = input.hasTokens !== undefined
  *   ? { hasTokens: input.hasTokens }
- *   : undefined
+ *   : undefined;
  *
- * // Use:
- * filter: (input) => buildFilter({ hasTokens: input.hasTokens })
+ * // Using buildFilter (concise):
+ * const filter = buildFilter({
+ *   hasTokens: input.hasTokens,
+ *   isActive: input.isActive
+ * });
+ * // Result: { hasTokens: true } if hasTokens is defined and isActive is undefined
+ *
+ * // Auto-pagination usage:
+ * const cleanFilter = buildFilter({ category: input.category });
+ * // This filter is automatically preserved across all paginated batch requests
  * ```
  */
 export function buildFilter(
@@ -86,6 +97,102 @@ function createValidatedTheGraphClient(
 ) {
   return {
     /**
+     * Executes auto-paginated GraphQL queries for large result sets.
+     *
+     * This method handles queries that request more than 1000 records or unlimited records
+     * by automatically breaking them into multiple batched requests and merging the results.
+     *
+     * @param document - The GraphQL query document
+     * @param baseVariables - Base query variables
+     * @param input - Original list input with limit > 1000 or undefined limit
+     * @param operation - Operation name for logging
+     * @returns Promise<TResult> - Merged results from all paginated requests
+     */
+    async executeWithAutoPagination<TResult, TVariables extends Variables>(
+      document: TadaDocumentNode<TResult, TVariables>,
+      baseVariables: TVariables,
+      input: ListInput,
+      operation: string
+    ): Promise<TResult> {
+      const allResults: unknown[] = [];
+      let currentSkip = input.offset;
+      const totalLimit = input.limit;
+      const isUnlimited = totalLimit === undefined;
+      let remainingLimit = isUnlimited ? Number.MAX_SAFE_INTEGER : totalLimit;
+      let resultFieldName = "";
+
+      logger.debug(`Starting auto-pagination for ${operation}`, {
+        totalLimit: isUnlimited ? "unlimited" : totalLimit,
+        offset: input.offset,
+      });
+
+      while (remainingLimit > 0) {
+        const batchSize = Math.min(remainingLimit, 1000);
+        const batchVariables = {
+          ...baseVariables,
+          skip: currentSkip,
+          first: batchSize,
+        } as TVariables;
+
+        const batchResult = await (
+          theGraphClient.request as <D, V extends Variables>(
+            doc: TadaDocumentNode<D, V>,
+            vars: V
+          ) => Promise<D>
+        )(document, batchVariables);
+
+        // Extract the array field from the result
+        // Find the first array field in the GraphQL response
+        const resultObj = batchResult as Record<string, unknown>;
+        const arrayFieldEntry = Object.entries(resultObj).find(([, value]) =>
+          Array.isArray(value)
+        );
+
+        if (!arrayFieldEntry) {
+          throw new Error(
+            `No array field found in GraphQL response for ${operation}`
+          );
+        }
+
+        const [fieldName, arrayField] = arrayFieldEntry;
+        const batchData = arrayField as unknown[];
+
+        // Store field name for result reconstruction (only on first iteration)
+        if (!resultFieldName) {
+          resultFieldName = fieldName;
+        }
+
+        allResults.push(...batchData);
+
+        // Stop if we got fewer results than requested (end of data)
+        if (batchData.length < batchSize) {
+          logger.debug(
+            `Auto-pagination complete for ${operation} - reached end of data`,
+            {
+              totalFetched: allResults.length,
+              lastBatchSize: batchData.length,
+            }
+          );
+          break;
+        }
+
+        currentSkip += batchSize;
+        if (!isUnlimited) {
+          remainingLimit -= batchSize;
+        }
+
+        logger.debug(`Auto-pagination progress for ${operation}`, {
+          currentSkip,
+          remainingLimit: isUnlimited ? "unlimited" : remainingLimit,
+          fetchedSoFar: allResults.length,
+        });
+      }
+
+      // Reconstruct the result with all paginated data
+      return { [resultFieldName]: allResults } as TResult;
+    },
+
+    /**
      * Executes a GraphQL query against TheGraph with automatic response validation
      * and variable transformation.
      *
@@ -99,6 +206,7 @@ function createValidatedTheGraphClient(
      * 3. **Error Categorization**: Errors are automatically categorized (NOT_FOUND vs INTERNAL_SERVER_ERROR)
      * 4. **Operation Tracking**: Operation names are extracted for better logging and debugging
      * 5. **Consistent Error Messages**: User-friendly messages are shown while technical details are logged
+     * 6. **Auto-pagination**: Automatically handles queries requesting >1000 records or unlimited records
      *
      * @param {TadaDocumentNode} document - The GraphQL query document with TypeScript types
      * @param {object} options - Query configuration object
@@ -122,14 +230,22 @@ function createValidatedTheGraphClient(
      *   error: "Failed to list factories"
      * });
      *
-     * // Read query with ID transformation
-     * const factory = await client.query(READ_FACTORY_QUERY, {
+     * // Large result set (auto-paginated behind the scenes)
+     * const allTokens = await client.query(LIST_TOKENS_QUERY, {
      *   input: {
-     *     input: { id },
-     *     transform: (input) => ({ id: input.id.toLowerCase() })
+     *     input: { offset: 0, limit: 5000 } // Will auto-paginate
      *   },
-     *   output: FactorySchema,
-     *   error: "Failed to read factory"
+     *   output: TokensSchema,
+     *   error: "Failed to list all tokens"
+     * });
+     *
+     * // Unlimited result set (gets ALL available records)
+     * const everythingTokens = await client.query(LIST_TOKENS_QUERY, {
+     *   input: {
+     *     input: { offset: 0 } // No limit = get all records
+     *   },
+     *   output: TokensSchema,
+     *   error: "Failed to list all tokens"
      * });
      * ```
      */
@@ -178,7 +294,7 @@ function createValidatedTheGraphClient(
         // Automatic transformation for ListSchema inputs
         const baseVariables: Record<string, unknown> = {
           skip: input.offset,
-          first: input.limit,
+          first: input.limit ? Math.min(input.limit, 1000) : 1000, // Limit to 1000 per request, or 1000 if unlimited
           orderDirection: input.orderDirection,
         };
 
@@ -223,14 +339,27 @@ function createValidatedTheGraphClient(
 
       let result: TResult;
       try {
-        // Execute the GraphQL query against TheGraph
-        // The type assertion is needed because graphql-request has complex conditional types
-        result = await (
-          theGraphClient.request as <D, V extends Variables>(
-            doc: TadaDocumentNode<D, V>,
-            vars: V
-          ) => Promise<D>
-        )(document, variables);
+        // Check if this is a list query that might need auto-pagination
+        if (
+          isListInput(input) &&
+          (input.limit === undefined || input.limit > 1000)
+        ) {
+          result = await this.executeWithAutoPagination(
+            document,
+            variables,
+            input,
+            operation
+          );
+        } else {
+          // Execute single GraphQL query against TheGraph
+          // The type assertion is needed because graphql-request has complex conditional types
+          result = await (
+            theGraphClient.request as <D, V extends Variables>(
+              doc: TadaDocumentNode<D, V>,
+              vars: V
+            ) => Promise<D>
+          )(document, variables);
+        }
       } catch (error) {
         // Log the error with full context for debugging
         logger.error(`GraphQL ${operation} failed`, {
@@ -342,10 +471,18 @@ export const theGraphMiddleware = baseRouter.middleware((options) => {
 });
 
 /**
- * Type representing a validated TheGraph client instance.
+ * Type representing a validated TheGraph client instance with auto-pagination.
  *
  * This type is inferred from the return type of `createValidatedTheGraphClient`
- * and provides TypeScript type information for the client's methods.
+ * and provides TypeScript type information for the enhanced client methods.
+ * The client automatically handles pagination, validation, and error management.
+ *
+ * Key capabilities:
+ * - **Auto-pagination**: Transparent handling of queries >1000 results
+ * - **Type Safety**: Runtime validation with Zod schemas
+ * - **Error Handling**: Categorized errors with user-friendly messages
+ * - **Performance**: Optimized batching and early termination
+ *
  * @example
  * ```typescript
  * // In a procedure that uses theGraphMiddleware
@@ -353,16 +490,39 @@ export const theGraphMiddleware = baseRouter.middleware((options) => {
  *   theGraphClient: ValidatedTheGraphClient;
  * }
  *
+ * // Single item query (no pagination)
  * async function fetchTokenData(
  *   context: Context,
  *   tokenAddress: string
  * ) {
- *   return context.theGraphClient.query(
- *     GET_TOKEN_QUERY,
- *     { id: tokenAddress },
- *     TokenSchema,
- *     "Token not found"
- *   );
+ *   return context.theGraphClient.query(GET_TOKEN_QUERY, {
+ *     input: { input: { id: tokenAddress } },
+ *     output: TokenSchema,
+ *     error: "Token not found"
+ *   });
+ * }
+ *
+ * // Auto-paginated list query
+ * async function fetchAllTokens(context: Context) {
+ *   return context.theGraphClient.query(LIST_TOKENS_QUERY, {
+ *     input: {
+ *       input: { offset: 0 } // No limit = unlimited auto-pagination
+ *     },
+ *     output: TokensResponseSchema,
+ *     error: "Failed to fetch tokens"
+ *   });
+ * }
+ *
+ * // Large bounded query with filtering
+ * async function fetchActiveFactories(context: Context) {
+ *   return context.theGraphClient.query(LIST_FACTORIES_QUERY, {
+ *     input: {
+ *       input: { offset: 0, limit: 5000 }, // Auto-paginated into 5 batches
+ *       filter: ["hasTokens"] // Filter preserved across all batches
+ *     },
+ *     output: FactoriesResponseSchema,
+ *     error: "Failed to fetch active factories"
+ *   });
  * }
  * ```
  */

@@ -50,10 +50,13 @@ function PlatformOnboarding() {
 
   // Get data from loader
   const {
-    user,
+    user: preloadedUser,
     systemAddress: loaderSystemAddress,
     systemDetails,
   } = Route.useLoaderData();
+
+  // Get user from session or loader data
+  const user = session?.user ?? preloadedUser;
 
   // Get real-time system address from settings hook
   const [liveSystemAddress] = useSettings("SYSTEM_ADDRESS");
@@ -73,8 +76,8 @@ function PlatformOnboarding() {
     if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
     return "assets"; // Default to last step if all complete
   }, [
-    user.wallet,
-    session?.user.pincodeEnabled,
+    user,
+    session?.user,
     systemAddress,
     systemDetails?.tokenFactories.length,
   ]);
@@ -98,7 +101,7 @@ function PlatformOnboarding() {
         id: "wallet",
         title: "Generate Wallet",
         description: "Create your secure blockchain wallet",
-        status: user.initialOnboardingFinished
+        status: user.isOnboarded
           ? "completed"
           : currentStepId === "wallet"
             ? "active"
@@ -137,7 +140,7 @@ function PlatformOnboarding() {
       },
     ],
     [
-      user.initialOnboardingFinished,
+      user.isOnboarded,
       currentStepId,
       session?.user.pincodeEnabled,
       systemAddress,
@@ -183,7 +186,7 @@ function PlatformOnboarding() {
     // Check if current step needs special action
     if (
       currentStepId === "wallet" &&
-      !user.initialOnboardingFinished &&
+      !user.isOnboarded &&
       walletActionRef.current
     ) {
       walletActionRef.current();
@@ -313,7 +316,7 @@ function PlatformOnboarding() {
 
   // Determine button labels
   const getNextLabel = useCallback((): string => {
-    if (currentStepId === "wallet" && !user.initialOnboardingFinished) {
+    if (currentStepId === "wallet" && !user.isOnboarded) {
       return "Generate Wallet";
     }
     if (currentStepId === "wallet" && user.wallet) {
@@ -343,7 +346,7 @@ function PlatformOnboarding() {
     return t("onboarding:ui.next");
   }, [
     currentStepId,
-    user.initialOnboardingFinished,
+    user.isOnboarded,
     user.wallet,
     session?.user.pincodeEnabled,
     systemAddress,

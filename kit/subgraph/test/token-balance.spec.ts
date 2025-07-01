@@ -65,4 +65,28 @@ describe("TokenBalances", () => {
     const response = await theGraphClient.request(query, {});
     expect(response.tokenBalances.length).toBe(0);
   });
+
+  it("tracks balances for frozen accounts", async () => {
+    const query = theGraphGraphql(
+      `query {
+        tokenBalances(where: { isFrozen: true }) {
+          id
+          isFrozen
+          value
+          valueExact
+          account {
+            id
+          }
+        }
+      }`
+    );
+    const response = await theGraphClient.request(query, {});
+    expect(response.tokenBalances.length).toBe(5);
+    // Should be all from the same account
+    expect(
+      response.tokenBalances.every(
+        (balance) => balance.account.id === response.tokenBalances[0].account.id
+      )
+    ).toBe(true);
+  });
 });

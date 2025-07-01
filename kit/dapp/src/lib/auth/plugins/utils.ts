@@ -7,7 +7,7 @@ import { setSessionCookie } from "better-auth/cookies";
  * @param ctx
  * @param updatedUserFields
  */
-export async function revokeSession(
+export async function updateSession(
   ctx: GenericEndpointContext,
   updatedUserFields: Partial<SessionUser>
 ) {
@@ -62,4 +62,31 @@ export async function validatePassword(
     password: data.password,
   });
   return compare;
+}
+
+/**
+ * Checks if the user is onboarded.
+ *
+ * @param user - The user to check.
+ * @returns True if the user is onboarded, false otherwise.
+ */
+export function isOnboarded(
+  user: Pick<
+    SessionUser,
+    | "pincodeEnabled"
+    | "pincodeVerificationId"
+    | "twoFactorEnabled"
+    | "twoFactorVerificationId"
+    | "secretCodeVerificationId"
+    | "wallet"
+  >
+): boolean {
+  const pincodeSet =
+    (user.pincodeEnabled && !!user.pincodeVerificationId) ?? false;
+  const twoFactorSet =
+    (user.twoFactorEnabled && !!user.twoFactorVerificationId) ?? false;
+  const secretCodeSet = !!user.secretCodeVerificationId;
+  const isVerificationSet = pincodeSet || twoFactorSet || secretCodeSet;
+  const hasWallet = !!user.wallet;
+  return hasWallet && isVerificationSet;
 }
