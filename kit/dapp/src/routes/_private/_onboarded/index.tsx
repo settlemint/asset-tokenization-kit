@@ -98,7 +98,7 @@ function Home() {
   return (
     <div className="p-2">
       <h3>{user.name}</h3>
-      <div className="mb-4 p-2 bg-gray-100 rounded">
+      <div className="mb-4 p-2 rounded">
         <h4>Debug Info:</h4>
         <pre>
           {JSON.stringify(
