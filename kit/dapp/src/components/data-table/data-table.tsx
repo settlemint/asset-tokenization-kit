@@ -25,7 +25,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
-import { type ComponentType, useMemo, useState } from "react";
+import { type ComponentType, useCallback, useMemo, useState } from "react";
 import { DataTableColumnCell } from "./data-table-column-cell";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import {
@@ -44,6 +44,9 @@ import {
   DataTableToolbar,
   type DataTableToolbarOptions,
 } from "./data-table-toolbar";
+import { DataTableActionBar } from "./data-table-action-bar";
+import type { BulkAction, BulkActionGroup } from "./types/bulk-actions";
+import { useDataTableState, type UseDataTableStateOptions } from "@/hooks/use-data-table-state";
 
 interface DataTableProps<TData, CParams extends Record<string, unknown>> {
   columnParams?: CParams;
@@ -66,6 +69,21 @@ interface DataTableProps<TData, CParams extends Record<string, unknown>> {
   initialPageSize?: number;
   className?: string;
   customEmptyState?: DataTableEmptyStateProps;
+  /** Bulk actions configuration */
+  bulkActions?: {
+    enabled?: boolean;
+    actions?: BulkAction<TData>[];
+    actionGroups?: BulkActionGroup<TData>[];
+    position?: "bottom" | "top";
+    showSelectionCount?: boolean;
+    enableSelectAll?: boolean;
+    actionBarClassName?: string;
+  };
+  /** URL state persistence configuration */
+  urlState?: UseDataTableStateOptions & {
+    /** Whether to enable URL state persistence */
+    enabled?: boolean;
+  };
 }
 
 declare module "@tanstack/table-core" {
@@ -111,15 +129,61 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
   initialPageSize,
   className,
   customEmptyState,
+  bulkActions,
+  urlState,
 }: DataTableProps<TData, CParams>) {
   const { t } = useTranslation("general");
-  const [rowSelection, setRowSelection] = useState({});
-  const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+  
+  // Use URL state management if enabled, otherwise use local state
+  const tableState = useDataTableState({
+    enableUrlPersistence: urlState?.enabled ?? false,
+    defaultPageSize: initialPageSize ?? urlState?.defaultPageSize ?? 10,
+    initialSorting: initialSorting ?? urlState?.initialSorting ?? [],
+    initialColumnFilters: initialColumnFilters ?? urlState?.initialColumnFilters ?? [],
+    initialColumnVisibility: urlState?.initialColumnVisibility ?? {},
+    debounceMs: urlState?.debounceMs ?? 300,
+    enableGlobalFilter: urlState?.enableGlobalFilter ?? true,
+    enableRowSelection: urlState?.enableRowSelection ?? true,
+    routePath: urlState?.routePath,
+  });
+
+  // Fallback to local state for compatibility when URL state is disabled
+  const [localRowSelection, setLocalRowSelection] = useState({});
+  const [localSorting, setLocalSorting] = useState<SortingState>(initialSorting ?? []);
+  const [localColumnFilters, setLocalColumnFilters] = useState<ColumnFiltersState>(
     initialColumnFilters ?? []
   );
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [localColumnVisibility, setLocalColumnVisibility] = useState<VisibilityState>({});
+  const [localGlobalFilter, setLocalGlobalFilter] = useState("");
+
+  // Choose between URL state or local state
+  const isUsingUrlState = urlState?.enabled ?? false;
+  const currentState = isUsingUrlState ? tableState.tableOptions.state : {
+    rowSelection: localRowSelection,
+    sorting: localSorting,
+    columnFilters: localColumnFilters,
+    columnVisibility: localColumnVisibility,
+    globalFilter: localGlobalFilter,
+    pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
+  };
+
+  const stateHandlers = isUsingUrlState ? {
+    onRowSelectionChange: tableState.setRowSelection,
+    onSortingChange: tableState.setSorting,
+    onColumnFiltersChange: tableState.setColumnFilters,
+    onColumnVisibilityChange: tableState.setColumnVisibility,
+    onGlobalFilterChange: tableState.setGlobalFilter,
+    onPaginationChange: tableState.setPagination,
+  } : {
+    onRowSelectionChange: setLocalRowSelection,
+    onSortingChange: setLocalSorting,
+    onColumnFiltersChange: setLocalColumnFilters,
+    onColumnVisibilityChange: setLocalColumnVisibility,
+    onGlobalFilterChange: setLocalGlobalFilter,
+    onPaginationChange: () => {
+      // Local pagination is handled differently
+    },
+  };
 
   const memoizedData = useMemo(() => data, [data]);
 
@@ -143,29 +207,35 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
 
     initialState: {
       pagination: {
-        pageSize: initialPageSize ?? 5,
+        pageSize: initialPageSize ?? 10,
       },
     },
 
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-      globalFilter,
-    },
+    state: currentState,
 
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setGlobalFilter,
+    ...stateHandlers,
 
     meta: {
       name,
       icons,
     },
   });
+
+  // Bulk actions state and handlers (after table creation)
+  const isBulkActionsEnabled = bulkActions?.enabled ?? false;
+  const selectedRowIds = Object.keys(currentState.rowSelection);
+  const selectedRows = useMemo(() => {
+    if (!isBulkActionsEnabled || selectedRowIds.length === 0) return [];
+    return table.getSelectedRowModel().rows.map((row) => row.original);
+  }, [isBulkActionsEnabled, selectedRowIds, table]);
+
+  const handleSelectionClear = useCallback(() => {
+    if (isUsingUrlState) {
+      tableState.setRowSelection({});
+    } else {
+      setLocalRowSelection({});
+    }
+  }, [isUsingUrlState, tableState]);
 
   const renderTableBody = () => {
     if (table.getRowModel().rows.length) {
@@ -256,6 +326,22 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
       </div>
       {table.getRowModel().rows.length > 0 && (
         <DataTablePagination table={table} {...pagination} />
+      )}
+
+      {/* Bulk Actions Bar */}
+      {isBulkActionsEnabled && (
+        <DataTableActionBar
+          selectedRowIds={selectedRowIds}
+          selectedRows={selectedRows}
+          table={table}
+          actions={bulkActions?.actions}
+          actionGroups={bulkActions?.actionGroups}
+          onSelectionClear={handleSelectionClear}
+          position={bulkActions?.position}
+          className={bulkActions?.actionBarClassName}
+          showSelectionCount={bulkActions?.showSelectionCount}
+          enableSelectAll={bulkActions?.enableSelectAll}
+        />
       )}
     </div>
   );

@@ -60,7 +60,41 @@
       "go-to-next-page": "Go to next page",
       "go-to-last-page": "Go to last page",
       "details": "Details",
-      "open-menu": "Open menu"
+      "open-menu": "Open menu",
+      "bulk-actions": {
+        "selected-count": "{{count}} selected",
+        "selected-count_one": "{{count}} item selected",
+        "selected-count_other": "{{count}} items selected",
+        "select-all": "Select all",
+        "clear-selection": "Clear selection",
+        "select-row": "Select row {{row}}",
+        "actions": "Actions",
+        "processing": "Processing...",
+        "error": "Failed to execute {{action}}",
+        "export-csv": "Export CSV",
+        "export-json": "Export JSON",
+        "export-xlsx": "Export Excel",
+        "delete-selected": "Delete selected",
+        "archive-selected": "Archive selected",
+        "unarchive-selected": "Unarchive selected",
+        "duplicate-selected": "Duplicate selected",
+        "assign-to": "Assign to {{name}}",
+        "add-tags": "Add tags",
+        "remove-tags": "Remove tags",
+        "set-tags": "Set tags",
+        "confirmation": {
+          "delete": {
+            "title": "Delete selected items",
+            "description": "This action cannot be undone. Are you sure you want to delete the selected items?",
+            "action": "Delete"
+          },
+          "archive": {
+            "title": "Archive selected items",
+            "description": "Are you sure you want to archive the selected items?",
+            "action": "Archive"
+          }
+        }
+      }
     }
   },
   "errors": {
