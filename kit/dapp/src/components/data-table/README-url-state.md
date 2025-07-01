@@ -1,10 +1,13 @@
 # DataTable URL State Management
 
-This document explains how to use URL-based state persistence with the DataTable component using TanStack Router's search parameters.
+This document explains how to use URL-based state persistence with the DataTable
+component using TanStack Router's search parameters.
 
 ## Overview
 
-The DataTable component now supports optional URL state persistence, allowing table state (filters, sorting, pagination, etc.) to be stored in and synchronized with URL search parameters. This enables:
+The DataTable component now supports optional URL state persistence, allowing
+table state (filters, sorting, pagination, etc.) to be stored in and
+synchronized with URL search parameters. This enables:
 
 - **Shareable URLs**: Users can share links with exact table state
 - **Browser Navigation**: Back/forward buttons work correctly
@@ -35,10 +38,10 @@ export const Route = createFileRoute("/your-route")({
   data={data}
   columns={() => columns}
   urlState={{
-    enabled: true,                    // Enable URL persistence
-    defaultPageSize: 10,             // Default page size
-    debounceMs: 300,                 // URL update delay (ms)
-    routePath: Route.fullPath,       // Type-safe route path
+    enabled: true, // Enable URL persistence
+    defaultPageSize: 10, // Default page size
+    debounceMs: 300, // URL update delay (ms)
+    routePath: Route.fullPath, // Type-safe route path
   }}
 />
 ```
@@ -47,31 +50,31 @@ export const Route = createFileRoute("/your-route")({
 
 ### `urlState` Props
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `enabled` | `boolean` | `false` | Enable/disable URL state persistence |
-| `defaultPageSize` | `number` | `10` | Default number of items per page |
-| `initialSorting` | `SortingState` | `[]` | Initial sorting configuration |
-| `initialColumnFilters` | `ColumnFiltersState` | `[]` | Initial column filters |
-| `initialColumnVisibility` | `VisibilityState` | `{}` | Initial column visibility |
-| `debounceMs` | `number` | `300` | Debounce delay for URL updates |
-| `enableGlobalFilter` | `boolean` | `true` | Enable global search/filter |
-| `enableRowSelection` | `boolean` | `true` | Enable row selection persistence |
-| `routePath` | `string` | `undefined` | Route path for type-safe access |
+| Property                  | Type                 | Default     | Description                          |
+| ------------------------- | -------------------- | ----------- | ------------------------------------ |
+| `enabled`                 | `boolean`            | `false`     | Enable/disable URL state persistence |
+| `defaultPageSize`         | `number`             | `10`        | Default number of items per page     |
+| `initialSorting`          | `SortingState`       | `[]`        | Initial sorting configuration        |
+| `initialColumnFilters`    | `ColumnFiltersState` | `[]`        | Initial column filters               |
+| `initialColumnVisibility` | `VisibilityState`    | `{}`        | Initial column visibility            |
+| `debounceMs`              | `number`             | `300`       | Debounce delay for URL updates       |
+| `enableGlobalFilter`      | `boolean`            | `true`      | Enable global search/filter          |
+| `enableRowSelection`      | `boolean`            | `true`      | Enable row selection persistence     |
+| `routePath`               | `string`             | `undefined` | Route path for type-safe access      |
 
 ## URL Parameters
 
 When URL state is enabled, the following parameters are managed:
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `page` | Current page (1-based) | `?page=2` |
-| `pageSize` | Items per page | `?pageSize=20` |
-| `search` | Global search term | `?search=john` |
-| `sorting` | Sort configuration (JSON) | `?sorting=[{"id":"name","desc":false}]` |
-| `filters` | Column filters (JSON) | `?filters=[{"id":"status","value":"active"}]` |
-| `columns` | Column visibility (JSON) | `?columns={"email":false}` |
-| `selected` | Selected rows (JSON) | `?selected={"1":true,"2":true}` |
+| Parameter  | Description               | Example                                       |
+| ---------- | ------------------------- | --------------------------------------------- |
+| `page`     | Current page (1-based)    | `?page=2`                                     |
+| `pageSize` | Items per page            | `?pageSize=20`                                |
+| `search`   | Global search term        | `?search=john`                                |
+| `sorting`  | Sort configuration (JSON) | `?sorting=[{"id":"name","desc":false}]`       |
+| `filters`  | Column filters (JSON)     | `?filters=[{"id":"status","value":"active"}]` |
+| `columns`  | Column visibility (JSON)  | `?columns={"email":false}`                    |
+| `selected` | Selected rows (JSON)      | `?selected={"1":true,"2":true}`               |
 
 ## Examples
 
@@ -109,12 +112,14 @@ function UsersPage() {
   urlState={{
     enabled: true,
     defaultPageSize: 50,
-    debounceMs: 500,                 // Slower URL updates
-    enableRowSelection: false,       // Disable row selection
-    initialSorting: [                // Default sort
-      { id: "createdAt", desc: true }
+    debounceMs: 500, // Slower URL updates
+    enableRowSelection: false, // Disable row selection
+    initialSorting: [
+      // Default sort
+      { id: "createdAt", desc: true },
     ],
-    initialColumnVisibility: {       // Hide some columns initially
+    initialColumnVisibility: {
+      // Hide some columns initially
       id: false,
       internalNotes: false,
     },
@@ -142,6 +147,7 @@ export const Route = createFileRoute("/simple-table")({
 ### From Local State to URL State
 
 1. **Add route validation**:
+
    ```tsx
    // Before
    export const Route = createFileRoute("/table")({
@@ -156,13 +162,14 @@ export const Route = createFileRoute("/simple-table")({
    ```
 
 2. **Enable URL state**:
+
    ```tsx
    // Before
    <DataTable data={data} columns={columns} />
 
    // After
-   <DataTable 
-     data={data} 
+   <DataTable
+     data={data}
      columns={columns}
      urlState={{ enabled: true }}
    />
@@ -293,13 +300,15 @@ import { z } from "zod";
 const customTableSchema = z.object({
   // Include base table state
   ...dataTableSearchParamsSchema.shape,
-  
+
   // Add custom parameters
   viewMode: z.enum(["grid", "list"]).default("grid"),
-  dateRange: z.object({
-    from: z.string().optional(),
-    to: z.string().optional(),
-  }).optional(),
+  dateRange: z
+    .object({
+      from: z.string().optional(),
+      to: z.string().optional(),
+    })
+    .optional(),
 });
 
 export const Route = createFileRoute("/custom-table")({
@@ -312,12 +321,12 @@ export const Route = createFileRoute("/custom-table")({
 
 ```tsx
 // Use different parameter namespaces
-const usersTableSchema = dataTableSearchParamsSchema.transform(data => ({
-  users: data
+const usersTableSchema = dataTableSearchParamsSchema.transform((data) => ({
+  users: data,
 }));
 
-const ordersTableSchema = dataTableSearchParamsSchema.transform(data => ({
-  orders: data  
+const ordersTableSchema = dataTableSearchParamsSchema.transform((data) => ({
+  orders: data,
 }));
 
 // Combine schemas

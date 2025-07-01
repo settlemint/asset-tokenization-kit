@@ -47,7 +47,7 @@ export function decodeObjectParam<T>(
   fallback: T
 ): T {
   if (!param) return fallback;
-  
+
   try {
     const parsed = JSON.parse(param);
     return parsed ?? fallback;
@@ -78,12 +78,16 @@ export function serializeDataTableState(
 
   // Sorting - only include if not empty
   if (state.sorting && state.sorting.length > 0) {
-    result.sorting = encodeObjectParam(state.sorting as Record<string, unknown>);
+    result.sorting = encodeObjectParam(
+      state.sorting as Record<string, unknown>
+    );
   }
 
   // Column filters - only include if not empty
   if (state.columnFilters && state.columnFilters.length > 0) {
-    result.filters = encodeObjectParam(state.columnFilters as Record<string, unknown>);
+    result.filters = encodeObjectParam(
+      state.columnFilters as Record<string, unknown>
+    );
   }
 
   // Global filter - only include if not empty
@@ -92,7 +96,10 @@ export function serializeDataTableState(
   }
 
   // Column visibility - only include if not empty
-  if (state.columnVisibility && Object.keys(state.columnVisibility).length > 0) {
+  if (
+    state.columnVisibility &&
+    Object.keys(state.columnVisibility).length > 0
+  ) {
     result.columns = encodeObjectParam(state.columnVisibility);
   }
 
@@ -113,30 +120,23 @@ export function deserializeDataTableState(
 ): DataTableSearchParams {
   const page = Number(searchParams.page) || 1;
   const rawPageSize = Number(searchParams.pageSize);
-  const pageSize = Number.isNaN(rawPageSize) ? 10 : Math.min(100, Math.max(1, rawPageSize));
+  const pageSize = Number.isNaN(rawPageSize)
+    ? 10
+    : Math.min(100, Math.max(1, rawPageSize));
 
   return {
     pagination: {
       pageIndex: Math.max(0, page - 1), // Convert from 1-based to 0-based
       pageSize,
     },
-    sorting: decodeObjectParam<SortState[]>(
-      searchParams.sorting as string,
-      []
-    ),
+    sorting: decodeObjectParam<SortState[]>(searchParams.sorting as string, []),
     columnFilters: decodeObjectParam<ColumnFilter[]>(
       searchParams.filters as string,
       []
     ),
     globalFilter: (searchParams.search as string) || "",
-    columnVisibility: decodeObjectParam(
-      searchParams.columns as string,
-      {}
-    ),
-    rowSelection: decodeObjectParam(
-      searchParams.selected as string,
-      {}
-    ),
+    columnVisibility: decodeObjectParam(searchParams.columns as string, {}),
+    rowSelection: decodeObjectParam(searchParams.selected as string, {}),
   };
 }
 
@@ -153,12 +153,17 @@ export function tableStateToSearchParams(tableState: {
   rowSelection?: Record<string, boolean>;
 }): Partial<DataTableSearchParams> {
   return {
-    pagination: tableState.pagination ? {
-      pageIndex: tableState.pagination.pageIndex,
-      pageSize: tableState.pagination.pageSize,
-    } : undefined,
+    pagination: tableState.pagination
+      ? {
+          pageIndex: tableState.pagination.pageIndex,
+          pageSize: tableState.pagination.pageSize,
+        }
+      : undefined,
     sorting: tableState.sorting ?? [],
-    columnFilters: (tableState.columnFilters ?? []) as { id: string; value: string | number | boolean | (string | number | boolean)[] }[],
+    columnFilters: (tableState.columnFilters ?? []) as {
+      id: string;
+      value: string | number | boolean | (string | number | boolean)[];
+    }[],
     globalFilter: tableState.globalFilter ?? "",
     columnVisibility: tableState.columnVisibility ?? {},
     rowSelection: tableState.rowSelection ?? {},

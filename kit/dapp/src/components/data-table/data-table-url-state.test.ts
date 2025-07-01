@@ -69,7 +69,7 @@ test("handles empty and default values correctly", () => {
   };
 
   const serialized = serializeDataTableState(emptyState);
-  
+
   // Should only include non-default values
   expect(serialized.page).toBeUndefined(); // pageIndex 0 is default
   expect(serialized.pageSize).toBeUndefined(); // pageSize 10 is default
@@ -113,18 +113,20 @@ test("converts between TanStack Table state and search params", () => {
 
   // Convert to search params format
   const searchParams = tableStateToSearchParams(tableState);
-  
+
   expect(searchParams.pagination?.pageIndex).toBe(1);
   expect(searchParams.pagination?.pageSize).toBe(25);
   expect(searchParams.sorting).toEqual([{ id: "name", desc: true }]);
-  
+
   // Convert back to table state format
   const backToTableState = searchParamsToTableState(searchParams);
-  
+
   expect(backToTableState.pagination?.pageIndex).toBe(1);
   expect(backToTableState.pagination?.pageSize).toBe(25);
   expect(backToTableState.sorting).toEqual([{ id: "name", desc: true }]);
-  expect(backToTableState.columnFilters).toEqual([{ id: "status", value: "inactive" }]);
+  expect(backToTableState.columnFilters).toEqual([
+    { id: "status", value: "inactive" },
+  ]);
   expect(backToTableState.globalFilter).toBe("search term");
 });
 

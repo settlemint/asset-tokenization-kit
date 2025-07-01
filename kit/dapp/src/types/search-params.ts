@@ -7,7 +7,7 @@
  *
  * The search param state includes:
  * - Pagination (page, pageSize)
- * - Sorting (sortBy, sortDirection)  
+ * - Sorting (sortBy, sortDirection)
  * - Filtering (columnFilters, globalFilter)
  * - Column visibility
  * - Row selection
@@ -127,4 +127,6 @@ export const minimalDataTableSearchParamsSchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).catch("asc"),
 });
 
-export type MinimalDataTableSearchParams = z.infer<typeof minimalDataTableSearchParamsSchema>;
+export type MinimalDataTableSearchParams = z.infer<
+  typeof minimalDataTableSearchParamsSchema
+>;

@@ -46,7 +46,10 @@ import {
 } from "./data-table-toolbar";
 import { DataTableActionBar } from "./data-table-action-bar";
 import type { BulkAction, BulkActionGroup } from "./types/bulk-actions";
-import { useDataTableState, type UseDataTableStateOptions } from "@/hooks/use-data-table-state";
+import {
+  useDataTableState,
+  type UseDataTableStateOptions,
+} from "@/hooks/use-data-table-state";
 
 interface DataTableProps<TData, CParams extends Record<string, unknown>> {
   columnParams?: CParams;
@@ -133,13 +136,14 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
   urlState,
 }: DataTableProps<TData, CParams>) {
   const { t } = useTranslation("general");
-  
+
   // Use URL state management if enabled, otherwise use local state
   const tableState = useDataTableState({
     enableUrlPersistence: urlState?.enabled ?? false,
     defaultPageSize: initialPageSize ?? urlState?.defaultPageSize ?? 10,
     initialSorting: initialSorting ?? urlState?.initialSorting ?? [],
-    initialColumnFilters: initialColumnFilters ?? urlState?.initialColumnFilters ?? [],
+    initialColumnFilters:
+      initialColumnFilters ?? urlState?.initialColumnFilters ?? [],
     initialColumnVisibility: urlState?.initialColumnVisibility ?? {},
     debounceMs: urlState?.debounceMs ?? 300,
     enableGlobalFilter: urlState?.enableGlobalFilter ?? true,
@@ -149,41 +153,47 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
 
   // Fallback to local state for compatibility when URL state is disabled
   const [localRowSelection, setLocalRowSelection] = useState({});
-  const [localSorting, setLocalSorting] = useState<SortingState>(initialSorting ?? []);
-  const [localColumnFilters, setLocalColumnFilters] = useState<ColumnFiltersState>(
-    initialColumnFilters ?? []
+  const [localSorting, setLocalSorting] = useState<SortingState>(
+    initialSorting ?? []
   );
-  const [localColumnVisibility, setLocalColumnVisibility] = useState<VisibilityState>({});
+  const [localColumnFilters, setLocalColumnFilters] =
+    useState<ColumnFiltersState>(initialColumnFilters ?? []);
+  const [localColumnVisibility, setLocalColumnVisibility] =
+    useState<VisibilityState>({});
   const [localGlobalFilter, setLocalGlobalFilter] = useState("");
 
   // Choose between URL state or local state
   const isUsingUrlState = urlState?.enabled ?? false;
-  const currentState = isUsingUrlState ? tableState.tableOptions.state : {
-    rowSelection: localRowSelection,
-    sorting: localSorting,
-    columnFilters: localColumnFilters,
-    columnVisibility: localColumnVisibility,
-    globalFilter: localGlobalFilter,
-    pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
-  };
+  const currentState = isUsingUrlState
+    ? tableState.tableOptions.state
+    : {
+        rowSelection: localRowSelection,
+        sorting: localSorting,
+        columnFilters: localColumnFilters,
+        columnVisibility: localColumnVisibility,
+        globalFilter: localGlobalFilter,
+        pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
+      };
 
-  const stateHandlers = isUsingUrlState ? {
-    onRowSelectionChange: tableState.setRowSelection,
-    onSortingChange: tableState.setSorting,
-    onColumnFiltersChange: tableState.setColumnFilters,
-    onColumnVisibilityChange: tableState.setColumnVisibility,
-    onGlobalFilterChange: tableState.setGlobalFilter,
-    onPaginationChange: tableState.setPagination,
-  } : {
-    onRowSelectionChange: setLocalRowSelection,
-    onSortingChange: setLocalSorting,
-    onColumnFiltersChange: setLocalColumnFilters,
-    onColumnVisibilityChange: setLocalColumnVisibility,
-    onGlobalFilterChange: setLocalGlobalFilter,
-    onPaginationChange: () => {
-      // Local pagination is handled differently
-    },
-  };
+  const stateHandlers = isUsingUrlState
+    ? {
+        onRowSelectionChange: tableState.setRowSelection,
+        onSortingChange: tableState.setSorting,
+        onColumnFiltersChange: tableState.setColumnFilters,
+        onColumnVisibilityChange: tableState.setColumnVisibility,
+        onGlobalFilterChange: tableState.setGlobalFilter,
+        onPaginationChange: tableState.setPagination,
+      }
+    : {
+        onRowSelectionChange: setLocalRowSelection,
+        onSortingChange: setLocalSorting,
+        onColumnFiltersChange: setLocalColumnFilters,
+        onColumnVisibilityChange: setLocalColumnVisibility,
+        onGlobalFilterChange: setLocalGlobalFilter,
+        onPaginationChange: () => {
+          // Local pagination is handled differently
+        },
+      };
 
   const memoizedData = useMemo(() => data, [data]);
 
