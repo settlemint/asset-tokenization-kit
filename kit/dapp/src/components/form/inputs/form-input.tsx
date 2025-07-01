@@ -1,6 +1,3 @@
-"use client";
-
-import { TranslatableFormFieldMessage } from "@/components/form/form-field-translatable-message";
 import {
   FormControl,
   FormDescription,
@@ -10,7 +7,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
@@ -23,6 +19,7 @@ import {
   type Path,
   useFormContext,
 } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import {
   type BaseFormInputProps,
   type WithPostfixProps,
@@ -69,7 +66,7 @@ export function FormInput<T extends FieldValues>({
 }: FormInputProps<T>) {
   const form = useFormContext<T>();
   const { register } = form;
-  const t = useTranslations("components.form.input");
+  const { t } = useTranslation("form");
 
   const onInputChange = useCallback(
     (field: ControllerRenderProps<T, Path<T>>, inputProps: InputProps) => {
@@ -203,7 +200,6 @@ export function FormInput<T extends FieldValues>({
               {description}
             </FormDescription>
           )}
-          <TranslatableFormFieldMessage />
         </FormItem>
       );
     },

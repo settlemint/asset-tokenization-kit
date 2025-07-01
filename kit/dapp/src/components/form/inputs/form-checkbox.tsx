@@ -17,7 +17,6 @@ import type {
   FieldValues,
   Path,
 } from "react-hook-form";
-import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import { type BaseFormInputProps, getAriaAttributes } from "./types";
 
 type CheckboxProps = ComponentPropsWithoutRef<typeof Checkbox>;
@@ -93,7 +92,6 @@ export function FormCheckbox<T extends FieldValues>({
                 {description}
               </FormDescription>
             )}
-            <TranslatableFormFieldMessage />
           </div>
         </FormItem>
       );

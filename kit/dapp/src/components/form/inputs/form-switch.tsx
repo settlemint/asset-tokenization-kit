@@ -1,5 +1,3 @@
-"use client";
-
 import {
   FormControl,
   FormDescription,
@@ -17,7 +15,6 @@ import type {
   FieldValues,
   Path,
 } from "react-hook-form";
-import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import {
   type BaseFormInputProps,
   type WithHelperTextProps,
@@ -104,7 +101,6 @@ export function FormSwitch<T extends FieldValues>({
               {description}
             </FormDescription>
           )}
-          <TranslatableFormFieldMessage />
         </FormItem>
       );
     },

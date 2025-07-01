@@ -26,6 +26,7 @@
  */
 
 import type enAuthTranslations from "@/locales/en/auth.json";
+import type enFormTranslations from "@/locales/en/form.json";
 import type enGeneralTranslations from "@/locales/en/general.json";
 import type enLanguageTranslations from "@/locales/en/language.json";
 import type enOnboardingTranslations from "@/locales/en/onboarding.json";
@@ -56,6 +57,7 @@ declare module "i18next" {
      */
     resources: {
       auth: typeof enAuthTranslations;
+      form: typeof enFormTranslations;
       general: typeof enGeneralTranslations;
       theme: typeof enThemeTranslations;
       language: typeof enLanguageTranslations;

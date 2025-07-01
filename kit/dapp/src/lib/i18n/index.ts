@@ -20,24 +20,28 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 import arAuthTranslations from "@/locales/ar/auth.json";
+import arFormTranslations from "@/locales/ar/form.json";
 import arGeneralTranslations from "@/locales/ar/general.json";
 import arLanguageTranslations from "@/locales/ar/language.json";
 import arOnboardingTranslations from "@/locales/ar/onboarding.json";
 import arThemeTranslations from "@/locales/ar/theme.json";
 import arTokensTranslations from "@/locales/ar/tokens.json";
 import deAuthTranslations from "@/locales/de/auth.json";
+import deFormTranslations from "@/locales/de/form.json";
 import deGeneralTranslations from "@/locales/de/general.json";
 import deLanguageTranslations from "@/locales/de/language.json";
 import deOnboardingTranslations from "@/locales/de/onboarding.json";
 import deThemeTranslations from "@/locales/de/theme.json";
 import deTokensTranslations from "@/locales/de/tokens.json";
 import enAuthTranslations from "@/locales/en/auth.json";
+import enFormTranslations from "@/locales/en/form.json";
 import enGeneralTranslations from "@/locales/en/general.json";
 import enLanguageTranslations from "@/locales/en/language.json";
 import enOnboardingTranslations from "@/locales/en/onboarding.json";
 import enThemeTranslations from "@/locales/en/theme.json";
 import enTokensTranslations from "@/locales/en/tokens.json";
 import jaAuthTranslations from "@/locales/ja/auth.json";
+import jaFormTranslations from "@/locales/ja/form.json";
 import jaGeneralTranslations from "@/locales/ja/general.json";
 import jaLanguageTranslations from "@/locales/ja/language.json";
 import jaOnboardingTranslations from "@/locales/ja/onboarding.json";
@@ -65,6 +69,7 @@ export const defaultNS = "general";
 export const resources = {
   en: {
     auth: enAuthTranslations,
+    form: enFormTranslations,
     general: enGeneralTranslations,
     theme: enThemeTranslations,
     language: enLanguageTranslations,
@@ -73,6 +78,7 @@ export const resources = {
   },
   de: {
     auth: deAuthTranslations,
+    form: deFormTranslations,
     general: deGeneralTranslations,
     theme: deThemeTranslations,
     language: deLanguageTranslations,
@@ -81,6 +87,7 @@ export const resources = {
   },
   ar: {
     auth: arAuthTranslations,
+    form: arFormTranslations,
     general: arGeneralTranslations,
     theme: arThemeTranslations,
     language: arLanguageTranslations,
@@ -89,6 +96,7 @@ export const resources = {
   },
   ja: {
     auth: jaAuthTranslations,
+    form: jaFormTranslations,
     general: jaGeneralTranslations,
     theme: jaThemeTranslations,
     language: jaLanguageTranslations,

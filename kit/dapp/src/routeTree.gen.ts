@@ -21,7 +21,6 @@ import { Route as PrivateOnboardedIndexRouteImport } from './routes/_private/_on
 import { Route as PrivateOnboardingPlatformRouteImport } from './routes/_private/onboarding/platform'
 import { Route as PrivateOnboardingIssuerRouteImport } from './routes/_private/onboarding/issuer'
 import { Route as PrivateOnboardingInvestorRouteImport } from './routes/_private/onboarding/investor'
-import { Route as PrivateOnboardedAssetDesignerIndexRouteImport } from './routes/_private/_onboarded/asset-designer/index'
 import { Route as PrivateOnboardedTokenStatsRouteImport } from './routes/_private/_onboarded/token/stats'
 import { Route as PrivateOnboardedTokenIdRouteImport } from './routes/_private/_onboarded/token/$id'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
@@ -80,12 +79,6 @@ const PrivateOnboardingInvestorRoute =
     path: '/investor',
     getParentRoute: () => PrivateOnboardingRoute,
   } as any)
-const PrivateOnboardedAssetDesignerIndexRoute =
-  PrivateOnboardedAssetDesignerIndexRouteImport.update({
-    id: '/asset-designer/',
-    path: '/asset-designer/',
-    getParentRoute: () => PrivateOnboardedRoute,
-  } as any)
 const PrivateOnboardedTokenStatsRoute =
   PrivateOnboardedTokenStatsRouteImport.update({
     id: '/token/stats',
@@ -124,7 +117,6 @@ export interface FileRoutesByFullPath {
   '/onboarding/': typeof PrivateOnboardingIndexRoute
   '/token/$id': typeof PrivateOnboardedTokenIdRoute
   '/token/stats': typeof PrivateOnboardedTokenStatsRoute
-  '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
@@ -136,7 +128,6 @@ export interface FileRoutesByTo {
   '/onboarding': typeof PrivateOnboardingIndexRoute
   '/token/$id': typeof PrivateOnboardedTokenIdRoute
   '/token/stats': typeof PrivateOnboardedTokenStatsRoute
-  '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -152,7 +143,6 @@ export interface FileRoutesById {
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
   '/_private/_onboarded/token/$id': typeof PrivateOnboardedTokenIdRoute
   '/_private/_onboarded/token/stats': typeof PrivateOnboardedTokenStatsRoute
-  '/_private/_onboarded/asset-designer/': typeof PrivateOnboardedAssetDesignerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -167,7 +157,6 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/token/$id'
     | '/token/stats'
-    | '/asset-designer'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -179,7 +168,6 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/token/$id'
     | '/token/stats'
-    | '/asset-designer'
   id:
     | '__root__'
     | '/_private'
@@ -194,7 +182,6 @@ export interface FileRouteTypes {
     | '/_private/onboarding/'
     | '/_private/_onboarded/token/$id'
     | '/_private/_onboarded/token/stats'
-    | '/_private/_onboarded/asset-designer/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -303,13 +290,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardingInvestorRouteImport
       parentRoute: typeof PrivateOnboardingRoute
     }
-    '/_private/_onboarded/asset-designer/': {
-      id: '/_private/_onboarded/asset-designer/'
-      path: '/asset-designer'
-      fullPath: '/asset-designer'
-      preLoaderRoute: typeof PrivateOnboardedAssetDesignerIndexRouteImport
-      parentRoute: typeof PrivateOnboardedRoute
-    }
     '/_private/_onboarded/token/stats': {
       id: '/_private/_onboarded/token/stats'
       path: '/token/stats'
@@ -356,15 +336,12 @@ interface PrivateOnboardedRouteChildren {
   PrivateOnboardedIndexRoute: typeof PrivateOnboardedIndexRoute
   PrivateOnboardedTokenIdRoute: typeof PrivateOnboardedTokenIdRoute
   PrivateOnboardedTokenStatsRoute: typeof PrivateOnboardedTokenStatsRoute
-  PrivateOnboardedAssetDesignerIndexRoute: typeof PrivateOnboardedAssetDesignerIndexRoute
 }
 
 const PrivateOnboardedRouteChildren: PrivateOnboardedRouteChildren = {
   PrivateOnboardedIndexRoute: PrivateOnboardedIndexRoute,
   PrivateOnboardedTokenIdRoute: PrivateOnboardedTokenIdRoute,
   PrivateOnboardedTokenStatsRoute: PrivateOnboardedTokenStatsRoute,
-  PrivateOnboardedAssetDesignerIndexRoute:
-    PrivateOnboardedAssetDesignerIndexRoute,
 }
 
 const PrivateOnboardedRouteWithChildren =

@@ -1,6 +1,7 @@
 import { FormInput } from "@/components/form/inputs/form-input";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
 import type { DepositTokenCreateSchema } from "@/orpc/routes/token/routes/deposit/deposit.create.schema";
 import { DepositTokenCreateSchema as schema } from "@/orpc/routes/token/routes/deposit/deposit.create.schema";
@@ -18,19 +19,13 @@ interface CreateDepositFormProps {
 type DepositFormData = z.infer<typeof DepositTokenCreateSchema>;
 
 export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
-  // Initialize form with react-hook-form
   const form = useForm<DepositFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      type: "deposit",
-      name: "",
-      symbol: "",
-      decimals: 18,
-      isin: "",
+      type: AssetTypeEnum.deposit,
     },
   });
 
-  // Set up mutation for deposit creation
   const { mutate: createDeposit, isPending } = useMutation({
     mutationFn: async (data: DepositFormData) => {
       return await orpc.token.depositCreate.call(data);
@@ -106,6 +101,7 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
               placeholder="e.g., US0378331005"
               description="The ISIN of the asset. This is an optional unique identifier for the asset in the financial system."
               maxLength={12}
+              required={false}
             />
           </div>
 

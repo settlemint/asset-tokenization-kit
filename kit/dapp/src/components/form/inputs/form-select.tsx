@@ -1,5 +1,3 @@
-"use client";
-
 import {
   FormControl,
   FormDescription,
@@ -15,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
 import { useCallback, useRef } from "react";
 import type {
   ControllerFieldState,
@@ -23,7 +20,6 @@ import type {
   FieldValues,
   Path,
 } from "react-hook-form";
-import { TranslatableFormFieldMessage } from "../form-field-translatable-message";
 import {
   type BaseFormInputProps,
   type WithPlaceholderProps,
@@ -75,8 +71,6 @@ export function FormSelect<T extends FieldValues>({
   ...props
 }: FormSelectProps<T>) {
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const t = useTranslations("components.form.select");
-  const defaultPlaceholder = t("default-placeholder");
 
   const renderField = useCallback(
     ({
@@ -114,7 +108,7 @@ export function FormSelect<T extends FieldValues>({
                 )}
                 {...getAriaAttributes(field.name, !!fieldState.error, disabled)}
               >
-                <SelectValue placeholder={placeholder ?? defaultPlaceholder} />
+                <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
@@ -130,7 +124,6 @@ export function FormSelect<T extends FieldValues>({
               {description}
             </FormDescription>
           )}
-          <TranslatableFormFieldMessage />
         </FormItem>
       );
     },
@@ -142,7 +135,6 @@ export function FormSelect<T extends FieldValues>({
       triggerRef,
       className,
       placeholder,
-      defaultPlaceholder,
       options,
       description,
     ]
