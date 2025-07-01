@@ -70,7 +70,7 @@ function Home() {
         throw new Error("User wallet not found");
       }
       return await orpc.token.factoryGrantRole.call({
-        account: user.wallet,
+        account: user.wallet ?? "",
       });
     },
     onSuccess: (transactionHash) => {
@@ -98,21 +98,35 @@ function Home() {
   return (
     <div className="p-2">
       <h3>{user.name}</h3>
+      <div className="mb-4 p-2 bg-gray-100 rounded">
+        <h4>Debug Info:</h4>
+        <pre>
+          {JSON.stringify(
+            {
+              wallet: user.wallet,
+              onboardingFinished: user.initialOnboardingFinished,
+              userId: user.id,
+            },
+            null,
+            2
+          )}
+        </pre>
+      </div>
       <pre>{JSON.stringify(systems, null, 2)}</pre>
 
       <div className="mb-4">
         <Button
           onClick={grantDeployerRoleFn}
-          disabled={isGrantingRole || !user.wallet}
+          // disabled={isGrantingRole || !user.wallet}
           variant="outline"
         >
           {isGrantingRole ? "Granting..." : "Grant Deployer Role to Me"}
         </Button>
-        {!user.wallet && (
+        {/* {!user.wallet && (
           <p className="text-sm text-gray-500 mt-1">
             Wallet address required to grant role
           </p>
-        )}
+        )} */}
       </div>
 
       <CreateDepositForm />
