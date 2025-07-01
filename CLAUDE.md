@@ -222,3 +222,4 @@ Before any PR:
 - Run `bun artifacts` and `bun codegen` before running any
   testing/linting/formatting tasks
 - `routeTree.gen.ts` is auto generated, ignore it
+- Before starting any work, run `bunx settlemint connect --instance local` and `bun run codegen`

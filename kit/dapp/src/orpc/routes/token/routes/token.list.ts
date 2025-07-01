@@ -1,8 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { TokenListSchema } from "@/orpc/routes/token/routes/token.list.schema";
-import { z } from "zod/v4";
+import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.schema";
 
 /**
  * GraphQL query for retrieving tokenized assets from TheGraph.
@@ -36,17 +35,6 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
       }
     }
   `);
-
-/**
- * Schema for validating the GraphQL query response.
- *
- * Wraps the array of tokens in a response object to match
- * TheGraph's response structure. This ensures type safety and runtime
- * validation of the data returned from the subgraph.
- */
-const GraphQLResponseSchema = z.object({
-  tokens: TokenListSchema,
-});
 
 /**
  * Token listing route handler.
@@ -92,7 +80,7 @@ export const list = authRouter.token.list
   .handler(async ({ input, context }) => {
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
       input: { input },
-      output: GraphQLResponseSchema,
+      output: TokensResponseSchema,
       error: "Failed to list tokens",
     });
 
