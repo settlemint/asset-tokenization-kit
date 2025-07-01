@@ -20,6 +20,7 @@ import { twoFactorClient } from "@/lib/auth/plugins/two-factor/client";
 import {
   adminClient,
   apiKeyClient,
+  customSessionClient,
   inferAdditionalFields,
   passkeyClient,
 } from "better-auth/client/plugins";
@@ -63,6 +64,11 @@ import {
  */
 export const authClient = createAuthClient({
   plugins: [
+    /**
+     * Custom session plugin for the application.
+     */
+    customSessionClient<typeof auth>(),
+
     /**
      * Infers additional user fields from the server configuration.
      */

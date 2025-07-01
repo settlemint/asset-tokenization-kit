@@ -1,5 +1,5 @@
-import type { UserWithPincodeContext } from "@/lib/auth/plugins/pincode-plugin";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { APIError } from "better-auth/api";
 
 const SET_PINCODE_MUTATION = portalGraphql(`
@@ -27,10 +27,16 @@ const REMOVE_PINCODE_MUTATION = portalGraphql(`
   }
 `);
 
+interface UserWithPincodeContext {
+  wallet?: EthereumAddress | null;
+  pincodeEnabled?: boolean | null;
+  pincodeVerificationId?: string | null;
+}
+
 /**
- *
- * @param user
- * @param pincode
+ * Sets a pincode for a user
+ * @param user - The user to set the pincode for
+ * @param pincode - The pincode to set
  */
 export async function setPincode(
   user: UserWithPincodeContext,
@@ -54,9 +60,9 @@ export async function setPincode(
 }
 
 /**
- *
- * @param user
- * @param verificationId
+ * Removes a pincode for a user
+ * @param user - The user to remove the pincode for
+ * @param verificationId - The verification ID of the pincode to remove
  */
 export async function removePincode(
   user: UserWithPincodeContext,
@@ -75,9 +81,9 @@ export async function removePincode(
 }
 
 /**
- *
- * @param user
- * @param newPincode
+ * Updates a pincode for a user
+ * @param user - The user to update the pincode for
+ * @param newPincode - The new pincode to set
  */
 export async function updatePincode(
   user: UserWithPincodeContext,

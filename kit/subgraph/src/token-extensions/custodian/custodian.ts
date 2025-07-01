@@ -7,6 +7,7 @@ import {
 } from "../../../generated/templates/Custodian/Custodian";
 import { fetchEvent } from "../../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../../stats/account-stats";
+import { trackTokenStats } from "../../stats/token-stats";
 import {
   decreaseTokenBalanceFrozen,
   decreaseTokenBalanceValue,
@@ -30,7 +31,7 @@ export function handleAddressFrozen(event: AddressFrozen): void {
 }
 
 export function handleForcedTransfer(event: ForcedTransfer): void {
-  fetchEvent(event, "ForcedTransfer");
+  const eventEntry = fetchEvent(event, "ForcedTransfer");
   const token = fetchToken(event.address);
 
   // Execute the forced transfer (same as regular transfer)
@@ -59,6 +60,9 @@ export function handleForcedTransfer(event: ForcedTransfer): void {
 
   // Update account stats for receiver (positive delta)
   updateAccountStatsForBalanceChange(event.params.to, token, amountDelta);
+
+  // Update token stats for forced transfer
+  trackTokenStats(token, eventEntry);
 }
 
 export function handleRecoverySuccess(event: RecoverySuccess): void {

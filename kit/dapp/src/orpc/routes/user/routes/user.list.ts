@@ -1,3 +1,4 @@
+import { isOnboarded } from "@/lib/auth/plugins/utils";
 import { user } from "@/lib/db/schema";
 import { getUserRole } from "@/lib/zod/validators/user-roles";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
@@ -71,6 +72,7 @@ export const list = authRouter.user.list
     // Transform results to include human-readable roles
     return result.map((user) => ({
       ...user,
+      isOnboarded: isOnboarded(user),
       role: getUserRole(user.role),
     }));
   });

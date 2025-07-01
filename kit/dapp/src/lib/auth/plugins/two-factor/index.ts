@@ -1,9 +1,9 @@
+import type { SessionUser } from "@/lib/auth";
 import {
   disableTwoFactor,
   enableTwoFactor,
   verifyTwoFactorOTP,
 } from "@/lib/auth/plugins/two-factor/queries";
-import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { BetterAuthPlugin, GenericEndpointContext } from "better-auth";
 import {
   APIError,
@@ -11,19 +11,11 @@ import {
   sessionMiddleware,
 } from "better-auth/api";
 import { z } from "zod/v4";
-import { revokeSession, validatePassword } from "../utils";
+import { isOnboarded, updateSession, validatePassword } from "../utils";
 
 const OTP_DIGITS = 6;
 const OTP_PERIOD = 30;
 const OTP_ALGORITHM = "SHA256";
-
-export interface UserWithTwoFactorContext {
-  id: string;
-  initialOnboardingFinished?: boolean;
-  twoFactorEnabled?: boolean;
-  twoFactorVerificationId?: string;
-  wallet?: EthereumAddress;
-}
 
 export const twoFactor = () => {
   return {
@@ -73,9 +65,9 @@ export const twoFactor = () => {
           },
         },
         async (ctx) => {
-          const user = ctx.context.session.user as UserWithTwoFactorContext;
+          const user = ctx.context.session.user as SessionUser;
           const { password } = ctx.body;
-          if (user.initialOnboardingFinished) {
+          if (isOnboarded(user)) {
             if (!password) {
               throw new APIError("BAD_REQUEST", {
                 message: "Password is required",
@@ -99,7 +91,7 @@ export const twoFactor = () => {
             },
             user
           );
-          await revokeSession(ctx, {
+          await updateSession(ctx, {
             twoFactorEnabled: false, // Set when first otp is verified successfully
             twoFactorVerificationId: verificationId,
           });
@@ -140,7 +132,7 @@ export const twoFactor = () => {
           },
         },
         async (ctx) => {
-          const user = ctx.context.session.user as UserWithTwoFactorContext;
+          const user = ctx.context.session.user as SessionUser;
           const isPasswordValid = await validatePassword(ctx, {
             password: ctx.body.password,
             userId: user.id,
@@ -151,7 +143,7 @@ export const twoFactor = () => {
             });
           }
           await disableTwoFactor(user);
-          await revokeSession(ctx, {
+          await updateSession(ctx, {
             twoFactorEnabled: false,
             twoFactorVerificationId: null,
           });
@@ -192,7 +184,7 @@ export const twoFactor = () => {
           },
         },
         async (ctx) => {
-          const user = ctx.context.session.user as UserWithTwoFactorContext;
+          const user = ctx.context.session.user as SessionUser;
           const { code } = ctx.body;
           const result = await verifyTwoFactorOTP(user, code);
           if (!result.verified) {
@@ -201,8 +193,7 @@ export const twoFactor = () => {
             });
           }
           if (!user.twoFactorEnabled) {
-            await revokeSession(ctx as GenericEndpointContext, {
-              initialOnboardingFinished: true,
+            await updateSession(ctx as GenericEndpointContext, {
               twoFactorEnabled: true,
             });
           }

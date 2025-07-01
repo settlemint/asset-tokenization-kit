@@ -2910,7 +2910,6 @@ type user {
   email_verified: Boolean!
   id: String!
   image: String
-  initial_onboarding_finished: Boolean!
   last_login_at: timestamptz
   name: String!
   pincode_enabled: Boolean!
@@ -2955,7 +2954,6 @@ input user_bool_exp {
   email_verified: Boolean_comparison_exp
   id: String_comparison_exp
   image: String_comparison_exp
-  initial_onboarding_finished: Boolean_comparison_exp
   last_login_at: timestamptz_comparison_exp
   name: String_comparison_exp
   pincode_enabled: Boolean_comparison_exp
@@ -3015,7 +3013,6 @@ input user_insert_input {
   email_verified: Boolean
   id: String
   image: String
-  initial_onboarding_finished: Boolean
   last_login_at: timestamptz
   name: String
   pincode_enabled: Boolean
@@ -3094,7 +3091,6 @@ input user_order_by {
   email_verified: order_by
   id: order_by
   image: order_by
-  initial_onboarding_finished: order_by
   last_login_at: order_by
   name: order_by
   pincode_enabled: order_by
@@ -3141,9 +3137,6 @@ enum user_select_column {
   image
 
   """column name"""
-  initial_onboarding_finished
-
-  """column name"""
   last_login_at
 
   """column name"""
@@ -3186,7 +3179,6 @@ input user_set_input {
   email_verified: Boolean
   id: String
   image: String
-  initial_onboarding_finished: Boolean
   last_login_at: timestamptz
   name: String
   pincode_enabled: Boolean
@@ -3220,7 +3212,6 @@ input user_stream_cursor_value_input {
   email_verified: Boolean
   id: String
   image: String
-  initial_onboarding_finished: Boolean
   last_login_at: timestamptz
   name: String
   pincode_enabled: Boolean
@@ -3260,9 +3251,6 @@ enum user_update_column {
 
   """column name"""
   image
-
-  """column name"""
-  initial_onboarding_finished
 
   """column name"""
   last_login_at

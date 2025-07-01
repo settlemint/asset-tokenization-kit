@@ -8,6 +8,7 @@ export async function waitForSuccess(transactionHash: Hex) {
     await publicClient.waitForTransactionReceipt({
       hash: transactionHash,
       pollingInterval: 50,
+      retryCount: 10,
     });
 
   if (receipt.status === "success") {

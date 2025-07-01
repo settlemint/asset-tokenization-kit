@@ -11,6 +11,7 @@ import { twoFactorClient } from "@/lib/auth/plugins/two-factor/client";
 import {
   adminClient,
   apiKeyClient,
+  customSessionClient,
   inferAdditionalFields,
   passkeyClient,
 } from "better-auth/client/plugins";
@@ -19,6 +20,7 @@ import { createAuthClient } from "better-auth/react";
 export const authClient = createAuthClient({
   baseURL: "http://localhost:3000/api/auth",
   plugins: [
+    customSessionClient<typeof auth>(),
     inferAdditionalFields<typeof auth>(),
     adminClient({
       ac: accessControl,

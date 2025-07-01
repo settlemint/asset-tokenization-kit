@@ -49,10 +49,13 @@ function PlatformOnboarding() {
 
   // Get data from loader
   const {
-    user,
+    user: preloadedUser,
     systemAddress: loaderSystemAddress,
     systemDetails,
   } = Route.useLoaderData();
+
+  // Get user from session or loader data
+  const user = session?.user ?? preloadedUser;
 
   // Get real-time system address from settings hook
   const [liveSystemAddress] = useSettings("SYSTEM_ADDRESS");
@@ -71,7 +74,8 @@ function PlatformOnboarding() {
     if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
     return "assets"; // Default to last step if all complete
   }, [
-    session?.user.pincodeEnabled,
+    user,
+    session?.user,
     systemAddress,
     systemDetails?.tokenFactories.length,
   ]);
@@ -124,6 +128,7 @@ function PlatformOnboarding() {
       },
     ],
     [
+      user.isOnboarded,
       currentStepId,
       session?.user.pincodeEnabled,
       systemAddress,
@@ -292,7 +297,6 @@ function PlatformOnboarding() {
     return t("onboarding:ui.next");
   }, [
     currentStepId,
-
     session?.user.pincodeEnabled,
     systemAddress,
     systemDetails?.tokenFactories.length,

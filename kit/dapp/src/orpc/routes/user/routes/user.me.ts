@@ -46,6 +46,6 @@ export const me = authRouter.user.me.handler(({ context }) => {
     email: user.email,
     role: user.role,
     wallet: user.wallet,
-    initialOnboardingFinished: user.initialOnboardingFinished ?? false,
+    isOnboarded: user.isOnboarded,
   };
 });

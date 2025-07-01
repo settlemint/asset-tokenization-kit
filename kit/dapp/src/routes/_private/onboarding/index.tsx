@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_private/onboarding/")({
 
     // Determine platform onboarding requirements
     const platformRequirements: PlatformOnboardingRequirements = {
-      hasWallet: !!user.wallet,
+      userOnboarded: !!user.isOnboarded,
       hasSystem: !!systemAddress,
       hasTokenFactories: (systemDetails?.tokenFactories.length ?? 0) > 0,
     };

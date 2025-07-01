@@ -67,7 +67,7 @@ export const UserMeSchema = z.object({
   /**
    * Whether the user has completed the onboarding process.
    */
-  initialOnboardingFinished: z.boolean(),
+  isOnboarded: z.boolean(),
 });
 
 /**
