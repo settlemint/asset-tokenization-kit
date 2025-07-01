@@ -10,7 +10,14 @@ import {
 import { cn } from "@/lib/utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { MoreHorizontal } from "lucide-react";
-import { Fragment, type HTMLAttributes, type ReactNode, useCallback, useMemo, useState } from "react";
+import {
+  Fragment,
+  type HTMLAttributes,
+  type ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
 
@@ -62,13 +69,18 @@ export function DataTableRowActions({
   }, []);
 
   const actions = actionsProp?.filter((action) => !action.hidden);
-  
+
   const menuItemHandlers = useMemo(() => {
     if (!actions) return {};
-    return actions.reduce((acc, action) => {
-      acc[action.id] = () => { handleMenuItemClick(action.id); };
-      return acc;
-    }, {} as Record<string, () => void>);
+    return actions.reduce(
+      (acc, action) => {
+        acc[action.id] = () => {
+          handleMenuItemClick(action.id);
+        };
+        return acc;
+      },
+      {} as Record<string, () => void>
+    );
   }, [actions, handleMenuItemClick]);
 
   if (!actions && !detailUrl) {
@@ -89,9 +101,7 @@ export function DataTableRowActions({
     >
       {detailUrl && (
         <Button variant="outline" size="sm" className="border-muted" asChild>
-          <Link to={detailUrl}>
-            {t("components.data-table.details")}
-          </Link>
+          <Link to={detailUrl}>{t("components.data-table.details")}</Link>
         </Button>
       )}
 
@@ -103,7 +113,9 @@ export function DataTableRowActions({
               className="flex size-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
             >
               <MoreHorizontal />
-              <span className="sr-only">{t("components.data-table.open-menu")}</span>
+              <span className="sr-only">
+                {t("components.data-table.open-menu")}
+              </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent

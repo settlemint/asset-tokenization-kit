@@ -24,9 +24,12 @@ export function DataTableViewOptions<TData>({
 }: DataTableViewOptionsProps<TData>) {
   const { t } = useTranslation("general");
 
-  const handleColumnVisibilityChange = useCallback((columnId: string) => (value: boolean) => {
-    table.getColumn(columnId)?.toggleVisibility(!!value);
-  }, [table]);
+  const handleColumnVisibilityChange = useCallback(
+    (columnId: string) => (value: boolean) => {
+      table.getColumn(columnId)?.toggleVisibility(!!value);
+    },
+    [table]
+  );
 
   return (
     <DropdownMenu>
@@ -41,7 +44,9 @@ export function DataTableViewOptions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>{t("components.data-table.toggle-columns")}</DropdownMenuLabel>
+        <DropdownMenuLabel>
+          {t("components.data-table.toggle-columns")}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()

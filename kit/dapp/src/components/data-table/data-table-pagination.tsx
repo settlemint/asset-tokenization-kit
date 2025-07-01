@@ -32,9 +32,12 @@ export function DataTablePagination<TData>({
 }: DataTablePaginationProps<TData>) {
   const { t } = useTranslation("general");
 
-  const handlePageSizeChange = useCallback((value: string) => {
-    table.setPageSize(Number(value));
-  }, [table]);
+  const handlePageSizeChange = useCallback(
+    (value: string) => {
+      table.setPageSize(Number(value));
+    },
+    [table]
+  );
 
   const handleFirstPage = useCallback(() => {
     table.setPageIndex(0);
@@ -102,7 +105,9 @@ export function DataTablePagination<TData>({
             onClick={handleFirstPage}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">{t("components.data-table.go-to-first-page")}</span>
+            <span className="sr-only">
+              {t("components.data-table.go-to-first-page")}
+            </span>
             <ChevronsLeft />
           </Button>
           <Button
@@ -111,7 +116,9 @@ export function DataTablePagination<TData>({
             onClick={handlePreviousPage}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">{t("components.data-table.go-to-previous-page")}</span>
+            <span className="sr-only">
+              {t("components.data-table.go-to-previous-page")}
+            </span>
             <ChevronLeft />
           </Button>
           <Button
@@ -120,7 +127,9 @@ export function DataTablePagination<TData>({
             onClick={handleNextPage}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">{t("components.data-table.go-to-next-page")}</span>
+            <span className="sr-only">
+              {t("components.data-table.go-to-next-page")}
+            </span>
             <ChevronRight />
           </Button>
           <Button
@@ -129,7 +138,9 @@ export function DataTablePagination<TData>({
             onClick={handleLastPage}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">{t("components.data-table.go-to-last-page")}</span>
+            <span className="sr-only">
+              {t("components.data-table.go-to-last-page")}
+            </span>
             <ChevronsRight />
           </Button>
         </div>

@@ -39,6 +39,7 @@
     "codegen": "turbo run codegen",
     "build": "turbo build",
     "docs": "turbo run docs",
+    "typecheck": "turbo run typecheck",
     "ci:gha": "turbo run ci:gha",
     "ci:gha:main": "turbo run ci:gha:main",
     "ci": "turbo run ci",

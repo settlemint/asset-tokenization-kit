@@ -56,7 +56,7 @@
       "selected-rows-info": "{{selected}} of {{total}} row(s) selected",
       "page-info": "Page {{current}} of {{total}}",
       "go-to-first-page": "Go to first page",
-      "go-to-previous-page": "Go to previous page", 
+      "go-to-previous-page": "Go to previous page",
       "go-to-next-page": "Go to next page",
       "go-to-last-page": "Go to last page",
       "details": "Details",

@@ -26,10 +26,14 @@ function formatCellValue(value: unknown): string {
 
   // At this point, value can only be number, boolean, bigint, symbol, or function
   // Functions shouldn't be in table data, and we can safely stringify primitives
-  if (typeof value === 'function') {
+  if (typeof value === "function") {
     return '""';
   }
-  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+  if (
+    typeof value === "number" ||
+    typeof value === "boolean" ||
+    typeof value === "bigint"
+  ) {
     return String(value);
   }
   // Handle other types safely
@@ -87,7 +91,9 @@ function exportTableToCSV<TData>(
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setTimeout(() => { URL.revokeObjectURL(url); }, 100);
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 100);
   } catch {
     toast.error(errorMessage);
   }
