@@ -23,3 +23,5 @@ copied over in every repository.
   add more information for agents if needed.
 - You cannot run `bun dev`, it is a long running process that will block your
   state.
+- Make sure to ask me for any additional information you need to implement any
+  functionality or fix any issues.

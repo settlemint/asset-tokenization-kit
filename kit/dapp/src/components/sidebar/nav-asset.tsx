@@ -26,7 +26,6 @@ import { useTranslation } from "react-i18next";
  * Navigation component for asset management in the sidebar.
  * Displays a collapsible list of asset factories with tokens and a link to statistics.
  * Only renders when there are factories with tokens available.
- * @returns {JSX.Element | null} Sidebar navigation group for assets or null if no factories with tokens
  * @example
  * // Used within AppSidebar component
  * <NavAsset />
@@ -59,7 +58,10 @@ export function NavAsset() {
                 {factories.map((factory) => (
                   <SidebarMenuSubItem key={factory.id}>
                     <SidebarMenuSubButton asChild>
-                      <Link to="/token/$id" params={{ id: factory.id }}>
+                      <Link
+                        to="/token/$factoryAddress"
+                        params={{ factoryAddress: factory.id }}
+                      >
                         <span>{factory.name}</span>
                       </Link>
                     </SidebarMenuSubButton>

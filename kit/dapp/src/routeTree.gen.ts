@@ -22,7 +22,8 @@ import { Route as PrivateOnboardingPlatformRouteImport } from './routes/_private
 import { Route as PrivateOnboardingIssuerRouteImport } from './routes/_private/onboarding/issuer'
 import { Route as PrivateOnboardingInvestorRouteImport } from './routes/_private/onboarding/investor'
 import { Route as PrivateOnboardedTokenStatsRouteImport } from './routes/_private/_onboarded/token/stats'
-import { Route as PrivateOnboardedTokenIdRouteImport } from './routes/_private/_onboarded/token/$id'
+import { Route as PrivateOnboardedTokenFactoryAddressRouteImport } from './routes/_private/_onboarded/token/$factoryAddress'
+import { Route as PrivateOnboardedTokenFactoryAddressTokenAddressRouteImport } from './routes/_private/_onboarded/token/$factoryAddress.$tokenAddress'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -85,11 +86,18 @@ const PrivateOnboardedTokenStatsRoute =
     path: '/token/stats',
     getParentRoute: () => PrivateOnboardedRoute,
   } as any)
-const PrivateOnboardedTokenIdRoute = PrivateOnboardedTokenIdRouteImport.update({
-  id: '/token/$id',
-  path: '/token/$id',
-  getParentRoute: () => PrivateOnboardedRoute,
-} as any)
+const PrivateOnboardedTokenFactoryAddressRoute =
+  PrivateOnboardedTokenFactoryAddressRouteImport.update({
+    id: '/token/$factoryAddress',
+    path: '/token/$factoryAddress',
+    getParentRoute: () => PrivateOnboardedRoute,
+  } as any)
+const PrivateOnboardedTokenFactoryAddressTokenAddressRoute =
+  PrivateOnboardedTokenFactoryAddressTokenAddressRouteImport.update({
+    id: '/$tokenAddress',
+    path: '/$tokenAddress',
+    getParentRoute: () => PrivateOnboardedTokenFactoryAddressRoute,
+  } as any)
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -115,8 +123,9 @@ export interface FileRoutesByFullPath {
   '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/': typeof PrivateOnboardedIndexRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
-  '/token/$id': typeof PrivateOnboardedTokenIdRoute
+  '/token/$factoryAddress': typeof PrivateOnboardedTokenFactoryAddressRouteWithChildren
   '/token/stats': typeof PrivateOnboardedTokenStatsRoute
+  '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedTokenFactoryAddressTokenAddressRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
@@ -126,8 +135,9 @@ export interface FileRoutesByTo {
   '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/': typeof PrivateOnboardedIndexRoute
   '/onboarding': typeof PrivateOnboardingIndexRoute
-  '/token/$id': typeof PrivateOnboardedTokenIdRoute
+  '/token/$factoryAddress': typeof PrivateOnboardedTokenFactoryAddressRouteWithChildren
   '/token/stats': typeof PrivateOnboardedTokenStatsRoute
+  '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedTokenFactoryAddressTokenAddressRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -141,8 +151,9 @@ export interface FileRoutesById {
   '/_private/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/_private/_onboarded/': typeof PrivateOnboardedIndexRoute
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
-  '/_private/_onboarded/token/$id': typeof PrivateOnboardedTokenIdRoute
+  '/_private/_onboarded/token/$factoryAddress': typeof PrivateOnboardedTokenFactoryAddressRouteWithChildren
   '/_private/_onboarded/token/stats': typeof PrivateOnboardedTokenStatsRoute
+  '/_private/_onboarded/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedTokenFactoryAddressTokenAddressRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -155,8 +166,9 @@ export interface FileRouteTypes {
     | '/onboarding/platform'
     | '/'
     | '/onboarding/'
-    | '/token/$id'
+    | '/token/$factoryAddress'
     | '/token/stats'
+    | '/token/$factoryAddress/$tokenAddress'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -166,8 +178,9 @@ export interface FileRouteTypes {
     | '/onboarding/platform'
     | '/'
     | '/onboarding'
-    | '/token/$id'
+    | '/token/$factoryAddress'
     | '/token/stats'
+    | '/token/$factoryAddress/$tokenAddress'
   id:
     | '__root__'
     | '/_private'
@@ -180,8 +193,9 @@ export interface FileRouteTypes {
     | '/_private/onboarding/platform'
     | '/_private/_onboarded/'
     | '/_private/onboarding/'
-    | '/_private/_onboarded/token/$id'
+    | '/_private/_onboarded/token/$factoryAddress'
     | '/_private/_onboarded/token/stats'
+    | '/_private/_onboarded/token/$factoryAddress/$tokenAddress'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -297,12 +311,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedTokenStatsRouteImport
       parentRoute: typeof PrivateOnboardedRoute
     }
-    '/_private/_onboarded/token/$id': {
-      id: '/_private/_onboarded/token/$id'
-      path: '/token/$id'
-      fullPath: '/token/$id'
-      preLoaderRoute: typeof PrivateOnboardedTokenIdRouteImport
+    '/_private/_onboarded/token/$factoryAddress': {
+      id: '/_private/_onboarded/token/$factoryAddress'
+      path: '/token/$factoryAddress'
+      fullPath: '/token/$factoryAddress'
+      preLoaderRoute: typeof PrivateOnboardedTokenFactoryAddressRouteImport
       parentRoute: typeof PrivateOnboardedRoute
+    }
+    '/_private/_onboarded/token/$factoryAddress/$tokenAddress': {
+      id: '/_private/_onboarded/token/$factoryAddress/$tokenAddress'
+      path: '/$tokenAddress'
+      fullPath: '/token/$factoryAddress/$tokenAddress'
+      preLoaderRoute: typeof PrivateOnboardedTokenFactoryAddressTokenAddressRouteImport
+      parentRoute: typeof PrivateOnboardedTokenFactoryAddressRoute
     }
   }
 }
@@ -332,15 +353,31 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface PrivateOnboardedTokenFactoryAddressRouteChildren {
+  PrivateOnboardedTokenFactoryAddressTokenAddressRoute: typeof PrivateOnboardedTokenFactoryAddressTokenAddressRoute
+}
+
+const PrivateOnboardedTokenFactoryAddressRouteChildren: PrivateOnboardedTokenFactoryAddressRouteChildren =
+  {
+    PrivateOnboardedTokenFactoryAddressTokenAddressRoute:
+      PrivateOnboardedTokenFactoryAddressTokenAddressRoute,
+  }
+
+const PrivateOnboardedTokenFactoryAddressRouteWithChildren =
+  PrivateOnboardedTokenFactoryAddressRoute._addFileChildren(
+    PrivateOnboardedTokenFactoryAddressRouteChildren,
+  )
+
 interface PrivateOnboardedRouteChildren {
   PrivateOnboardedIndexRoute: typeof PrivateOnboardedIndexRoute
-  PrivateOnboardedTokenIdRoute: typeof PrivateOnboardedTokenIdRoute
+  PrivateOnboardedTokenFactoryAddressRoute: typeof PrivateOnboardedTokenFactoryAddressRouteWithChildren
   PrivateOnboardedTokenStatsRoute: typeof PrivateOnboardedTokenStatsRoute
 }
 
 const PrivateOnboardedRouteChildren: PrivateOnboardedRouteChildren = {
   PrivateOnboardedIndexRoute: PrivateOnboardedIndexRoute,
-  PrivateOnboardedTokenIdRoute: PrivateOnboardedTokenIdRoute,
+  PrivateOnboardedTokenFactoryAddressRoute:
+    PrivateOnboardedTokenFactoryAddressRouteWithChildren,
   PrivateOnboardedTokenStatsRoute: PrivateOnboardedTokenStatsRoute,
 }
 

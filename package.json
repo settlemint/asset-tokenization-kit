@@ -39,6 +39,7 @@
     "codegen": "turbo run codegen",
     "build": "turbo build",
     "docs": "turbo run docs",
+    "typecheck": "turbo run typecheck",
     "ci:gha": "turbo run ci:gha",
     "ci:gha:main": "turbo run ci:gha:main",
     "ci": "turbo run ci",
@@ -65,7 +66,9 @@
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@tanstack/react-table": "8.20.5"
+  },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
     "@settlemint/sdk-cli": "2.4.0",
