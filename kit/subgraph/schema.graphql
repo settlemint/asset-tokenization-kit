@@ -12,6 +12,8 @@ type Account @entity(immutable: false) {
   identity: Identity
   country: Int
   balances: [TokenBalance!]! @derivedFrom(field: "account")
+  # Stats
+  stats: AccountStatsState @derivedFrom(field: "account")
 }
 
 type Event @entity(immutable: true) {
@@ -325,7 +327,7 @@ type Token @entity(immutable: false) {
   # Compliance
   tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
   # Stats
-  stats: TokenStatsState! @derivedFrom(field: "token")
+  stats: TokenStatsState @derivedFrom(field: "token")
 }
 
 type TokenBalance @entity(immutable: false) {
