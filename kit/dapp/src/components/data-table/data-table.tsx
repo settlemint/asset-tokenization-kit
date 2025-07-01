@@ -37,6 +37,10 @@ import {
   type DataTablePaginationOptions,
 } from "./data-table-pagination";
 import {
+  DataTableAdvancedToolbar,
+  type DataTableAdvancedToolbarOptions,
+} from "./data-table-advanced-toolbar";
+import {
   DataTableToolbar,
   type DataTableToolbarOptions,
 } from "./data-table-toolbar";
@@ -54,7 +58,8 @@ interface DataTableProps<TData, CParams extends Record<string, unknown>> {
   isLoading?: boolean;
   icons?: Record<string, ComponentType<{ className?: string }>>;
   name: string;
-  toolbar?: DataTableToolbarOptions;
+  toolbar?: DataTableToolbarOptions & { useAdvanced?: boolean };
+  advancedToolbar?: DataTableAdvancedToolbarOptions;
   pagination?: DataTablePaginationOptions;
   initialSorting?: SortingState;
   initialColumnFilters?: ColumnFiltersState;
@@ -99,6 +104,7 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
   icons,
   name,
   toolbar,
+  advancedToolbar,
   pagination,
   initialSorting,
   initialColumnFilters,
@@ -198,9 +204,19 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
     return <DataTableEmptyState {...customEmptyState} />;
   }
 
+  const shouldUseAdvancedToolbar = toolbar?.useAdvanced ?? advancedToolbar;
+
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} {...toolbar} />
+      {shouldUseAdvancedToolbar ? (
+        <DataTableAdvancedToolbar
+          table={table}
+          {...(advancedToolbar ?? {})}
+          {...(toolbar?.useAdvanced ? toolbar : {})}
+        />
+      ) : (
+        <DataTableToolbar table={table} {...toolbar} />
+      )}
       <div
         data-slot="data-table"
         className={cn(
