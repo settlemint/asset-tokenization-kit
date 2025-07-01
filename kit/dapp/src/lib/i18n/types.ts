@@ -48,7 +48,7 @@ declare module "i18next" {
      * Default namespace for translations.
      * When using t('key') without a namespace, this namespace is used.
      */
-    defaultNS: "translation";
+    defaultNS: "general";
 
     /**
      * Resource type definition based on English translations.
