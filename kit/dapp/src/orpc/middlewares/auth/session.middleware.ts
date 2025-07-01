@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth, type Session, type SessionUser } from "@/lib/auth";
 import { baseRouter } from "../../procedures/base.router";
 
 /**
@@ -37,6 +37,10 @@ import { baseRouter } from "../../procedures/base.router";
  */
 export const sessionMiddleware = baseRouter.middleware(
   async ({ context, next }) => {
+    if (context.auth) {
+      return next();
+    }
+
     const headers = new Headers();
     for (const [key, value] of Object.entries(context.headers)) {
       if (value) {
@@ -47,13 +51,12 @@ export const sessionMiddleware = baseRouter.middleware(
     const session = await auth.api.getSession({
       headers,
     });
-
     return next({
       context: {
-        auth:
-          context.auth ??
-          (session as unknown as typeof context.auth) ??
-          undefined,
+        auth: {
+          user: session?.user as SessionUser,
+          session: session as Session,
+        },
       },
     });
   }
