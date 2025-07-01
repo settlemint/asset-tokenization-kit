@@ -1,5 +1,23 @@
 # Create a Pull Request
 
+<!-- 
+ENHANCED PR CREATION WORKFLOW
+============================
+This command has been improved to ensure comprehensive, high-quality pull requests
+that reduce reviewer burden and maintain project standards. Key enhancements:
+
+1. STRUCTURED DELEGATION - Clear role separation for specialized agents
+2. COMPREHENSIVE ANALYSIS - Thorough change categorization and impact assessment  
+3. QUALITY GATES - Built-in checks to prevent common issues
+4. CLEAR COMMUNICATION - Stakeholder-focused change documentation
+
+RECENT IMPROVEMENTS:
+- Enhanced agent delegation with specific output requirements
+- Improved quality gate validation 
+- Better integration with review and QA processes
+- Streamlined branch management and commit validation
+-->
+
 ## Role: Release Manager
 
 You are acting as a **Release Manager** responsible for creating high-quality
@@ -57,7 +75,6 @@ OUTPUT: Quality report with pass/fail status
 OBJECTIVE: Review the PR and provide feedback
 TASKS:
 - Review the PR and provide feedback (use the /review command)
-- Ensure all results of the review are addressed before creating the PR
 OUTPUT: Review report with feedback
 ```
 

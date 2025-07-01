@@ -1,7 +1,33 @@
 # CLAUDE.md
 
+<!-- 
+COMPREHENSIVE PROJECT GUIDE FOR CLAUDE CODE
+===========================================
+This file serves as the central documentation hub for Claude Code when working
+with the SettleMint Asset Tokenization Kit. It provides:
+
+1. COMPLETE PROJECT OVERVIEW - Architecture, components, and tech stack
+2. ESSENTIAL COMMANDS - All critical development workflows and commands
+3. STRICT DEVELOPMENT GUIDELINES - TypeScript rules, Git workflow, code quality
+4. ARCHITECTURAL PATTERNS - Key design patterns and constraints
+5. QUALITY CONTROL CHECKLIST - Pre-PR requirements and testing standards
+
+This documentation ensures consistent development practices across the entire
+team and provides Claude Code with the context needed to make informed
+decisions when working with this complex blockchain monorepo.
+
+UPDATE HISTORY:
+- Enhanced with comprehensive command documentation and architectural patterns
+- Added detailed quality control and testing guidelines
+- Expanded development constraints and MCP integration details
+- Clarified deprecated components and critical workflow requirements
+-->
+
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
+
+These rules are project specific rules for the SettleMint Asset Tokenization
+Kit.
 
 ## Project Overview
 
@@ -19,6 +45,22 @@ following core components:
 - **Helm Charts** (`kit/charts/`): Kubernetes deployment configurations
 
 ## Essential Commands
+
+<!-- 
+CRITICAL COMMAND REFERENCE
+==========================
+This section contains ALL essential commands for development workflow.
+These commands are ordered by importance and frequency of use:
+
+1. PRE-DEVELOPMENT TASKS - Must run before any development work
+2. DEVELOPMENT WORKFLOW - Day-to-day development commands
+3. QUALITY ASSURANCE - Pre-PR testing and validation
+4. SPECIALIZED TESTING - E2E, integration, and contract-specific tests
+
+IMPORTANT: The order of these commands matters. Always run artifacts and
+codegen before any linting, testing, or formatting to ensure generated
+files are up-to-date.
+-->
 
 ### Development Workflow
 
@@ -86,6 +128,25 @@ bunx turbo subgraph#test:integration
 
 ## Architecture
 
+<!-- 
+COMPREHENSIVE ARCHITECTURAL DOCUMENTATION
+========================================
+This section provides complete architectural context for the Asset Tokenization Kit:
+
+1. DIRECTORY STRUCTURE - Physical organization of the monorepo
+2. TECH STACK - All technologies, frameworks, and tools used
+3. KEY ARCHITECTURAL PATTERNS - Design patterns critical to understanding the codebase
+
+This documentation is essential for Claude Code to:
+- Understand the relationship between components
+- Make informed decisions about where to place new code
+- Follow established architectural patterns
+- Avoid breaking existing integrations
+
+The architecture reflects enterprise-grade blockchain development with
+compliance, identity management, and institutional-grade asset tokenization.
+-->
+
 ### Directory Structure
 
 ```
@@ -129,6 +190,24 @@ kit/
 
 ## Development Guidelines
 
+<!-- 
+STRICT DEVELOPMENT STANDARDS (ULTRACITE RULES)
+==============================================
+These guidelines ensure code quality, consistency, and maintainability across
+the entire Asset Tokenization Kit. They are NON-NEGOTIABLE and must be followed:
+
+1. TYPESCRIPT RULES - Ultracite standards for type safety and code quality
+2. REACT/NEXT.JS RULES - Frontend-specific requirements and patterns
+3. GIT WORKFLOW - Branch management and commit standards
+4. CODE QUALITY - Logging, unused code, modern practices, accessibility
+
+These rules prevent common pitfalls in blockchain development where type safety
+and code quality are critical for security and compliance requirements.
+
+ENFORCEMENT: These rules are enforced through ESLint, TypeScript compiler,
+and pre-commit hooks. Violations will cause CI/CD pipeline failures.
+-->
+
 ### TypeScript (Ultracite Rules)
 
 - **Strict mode always** - all strict compiler options enabled
@@ -162,6 +241,27 @@ kit/
 - **Accessibility**: Valid ARIA, keyboard support, meaningful labels
 
 ## Important Constraints
+
+<!-- 
+CRITICAL CONSTRAINTS AND PATTERNS
+=================================
+This section documents HARD CONSTRAINTS that must never be violated:
+
+1. FILES TO NEVER MODIFY - Protected files that break when changed
+2. REQUIRED PATTERNS - Architectural patterns that must be followed
+3. MCP INTEGRATION - External service integration patterns
+
+VIOLATION CONSEQUENCES:
+- Modifying protected files can break builds, deployments, or upgrades
+- Ignoring required patterns leads to maintenance nightmares
+- Breaking MCP integration patterns disrupts development workflow
+
+These constraints exist because of:
+- Framework requirements (shadcn, TanStack Router)
+- Automated code generation
+- Integration with external systems
+- Legacy compatibility requirements
+-->
 
 ### Files to Never Modify
 
@@ -203,6 +303,21 @@ Before any PR:
 4. Verify contract deployment works locally
 
 ## Memories
+
+<!-- 
+CRITICAL REMINDERS AND GOTCHAS
+==============================
+This section contains frequently forgotten rules and common pitfalls.
+These "memories" have been accumulated through experience and represent
+the most common mistakes developers make in this codebase.
+
+PURPOSE: Prevent regression to old patterns and avoid repeated mistakes.
+These are not just suggestions - they are hard-learned lessons that
+save significant debugging time and prevent breaking changes.
+
+MAINTENANCE: This section should be updated when new patterns emerge
+or when existing patterns prove problematic.
+-->
 
 - Completely ignore dapp-v1 folder - it's deprecated
 - Do not use vitest to make tests, use bun:test

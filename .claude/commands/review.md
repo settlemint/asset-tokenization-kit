@@ -1,24 +1,22 @@
-# Review Pull Request
+# Reviews
 
-Please review this pull request and provide comprehensive feedback.
+<!-- 
+STREAMLINED REVIEW COMMAND
+==========================
+This command has been simplified to directly execute the comprehensive review
+process defined in @.cursor/rules/review.mdc. This approach provides:
 
-## Focus on:
+1. SINGLE SOURCE OF TRUTH - All review logic centralized in review.mdc
+2. CONSISTENT EXECUTION - Same review process every time
+3. EASY MAINTENANCE - Updates to review process happen in one place
+4. MODULAR ARCHITECTURE - Review rules separated from command execution
 
-- Code quality and best practices (use context7 for the latest documentation)
-- Consistency with with rest of the codebase
-- Verify any rules defined in the .cursor/rules folder or the CLAUDE.md file are
-  adhered to
-- Potential bugs or issues
-- Performance considerations
-- Security implications
-- Test coverage
-- Documentation updates if needed
-- Compare the new code with the main branch and check if we didn't break
-  anything.
+The review.mdc file contains the complete enhanced review process including:
+- Comprehensive quality gates
+- Documentation reflection requirements
+- Security and performance considerations  
+- Structured feedback mechanisms
+- Continuous improvement loops
+-->
 
-Provide constructive feedback with specific suggestions for improvement. Be
-brutally honest, don't be a yes man. If I am wrong, point it out bluntly. I need
-honest feedback on my code.
-
-Ask me which items I want implemented, then do so step by step with a subagent
-per item.
+Execute @.cursor/rules/review.mdc

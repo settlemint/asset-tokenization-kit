@@ -5,6 +5,27 @@ alwaysApply: false
 ---
 # Reviews
 
+<!-- 
+COMPREHENSIVE PR REVIEW PROCESS
+===============================
+This enhanced review process ensures high-quality code delivery and
+continuous improvement of development practices. Key improvements include:
+
+1. COMPREHENSIVE QUALITY GATES - Extended checklist covering all critical areas
+2. CONTINUOUS IMPROVEMENT - Self-reflective process to improve documentation
+3. STRUCTURED FEEDBACK - Clear expectations for honest, constructive criticism
+4. PARALLEL EXECUTION - Efficient implementation through sub-agent coordination
+
+RECENT ENHANCEMENTS:
+- Added documentation reflection requirement (line 21)
+- Enhanced quality gates with security and performance considerations
+- Structured feedback process with specific implementation workflow
+- Integration with Context7 for up-to-date best practices
+
+PURPOSE: Prevent issues before they reach production and continuously
+improve our development processes through reflective analysis.
+-->
+
 Before opening a PR, always perform a detailed review, this is the moment to ultrathink.
 
 ## Focus on:
@@ -18,6 +39,7 @@ Before opening a PR, always perform a detailed review, this is the moment to ult
 - Security implications
 - Test coverage
 - Documentation updates if needed
+- Reflect on information missing, outdated or wrong in @.claude/commands @.cursor/rules CLAUDE.local.md and CLAUDE.md to keep improving over time. <!-- CRITICAL ENHANCEMENT: This self-reflection requirement ensures our documentation stays current and accurate, creating a feedback loop for continuous improvement -->
 - Compare the new code with the main branch and check if we didn't break
   anything.
 
