@@ -214,7 +214,7 @@ describe("EventStats", () => {
 
     // Get unique event names
     const eventNames = new Set(
-      response.eventStats_collection.map((stat: EventStat) => stat.eventName)
+      response.eventStats_collection.map((stat) => stat.eventName)
     );
 
     // Should have multiple different event types
