@@ -43,10 +43,76 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
 
   return (
     <div className="flex w-full items-start justify-between gap-2">
-      <div className="flex md:flex-wrap gap-2 w-full flex-1">
-        <TableFilter table={table} />
+      <TableFilter table={table} />
+      <DataTableFilterDesktopContainer>
         <PropertyFilterList table={table} />
+      </DataTableFilterDesktopContainer>
+    </div>
+  );
+}
+
+export function DataTableFilterDesktopContainer({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftBlur, setShowLeftBlur] = useState(false);
+  const [showRightBlur, setShowRightBlur] = useState(true);
+
+  // Check if there's content to scroll and update blur states
+  const checkScroll = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } =
+        scrollContainerRef.current;
+
+      // Show left blur if scrolled to the right
+      setShowLeftBlur(scrollLeft > 0);
+
+      // Show right blur if there's more content to scroll to the right
+      // Add a small buffer (1px) to account for rounding errors
+      setShowRightBlur(scrollLeft + clientWidth < scrollWidth - 1);
+    }
+  }, []);
+
+  // Set up ResizeObserver to monitor container size
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const resizeObserver = new ResizeObserver(() => {
+        checkScroll();
+      });
+      resizeObserver.observe(scrollContainerRef.current);
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [checkScroll]);
+
+  // Update blur states when children change
+  useEffect(() => {
+    checkScroll();
+  }, [children, checkScroll]);
+
+  return (
+    <div className="relative flex-1 overflow-hidden">
+      {/* Left blur effect */}
+      {showLeftBlur && (
+        <div className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none bg-gradient-to-r from-background to-transparent animate-in fade-in-0" />
+      )}
+
+      {/* Scrollable container */}
+      <div
+        ref={scrollContainerRef}
+        className="flex gap-2 overflow-x-auto no-scrollbar"
+        onScroll={checkScroll}
+      >
+        {children}
       </div>
+
+      {/* Right blur effect */}
+      {showRightBlur && (
+        <div className="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none bg-gradient-to-l from-background to-transparent animate-in fade-in-0 " />
+      )}
     </div>
   );
 }
@@ -264,6 +330,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
           case "text":
             return (
               <RenderFilter<TData, "text">
+                key={`filter-${id}`}
                 filter={
                   filter as { id: string; value: FilterValue<"text", TData> }
                 }
@@ -276,6 +343,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
           case "number":
             return (
               <RenderFilter<TData, "number">
+                key={`filter-${id}`}
                 filter={
                   filter as { id: string; value: FilterValue<"number", TData> }
                 }
@@ -288,6 +356,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
           case "date":
             return (
               <RenderFilter<TData, "date">
+                key={`filter-${id}`}
                 filter={
                   filter as { id: string; value: FilterValue<"date", TData> }
                 }
@@ -300,6 +369,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
           case "option":
             return (
               <RenderFilter<TData, "option">
+                key={`filter-${id}`}
                 filter={
                   filter as { id: string; value: FilterValue<"option", TData> }
                 }
@@ -312,6 +382,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
           case "multiOption":
             return (
               <RenderFilter<TData, "multiOption">
+                key={`filter-${id}`}
                 filter={
                   filter as {
                     id: string;
@@ -359,26 +430,26 @@ function RenderFilter<TData, T extends ColumnDataType>({
   return (
     <div
       key={`filter-${filter.id}`}
-      className="flex h-8 items-center rounded-2xl border border-border bg-background shadow-xs text-xs"
+      className="flex h-8 items-center rounded-md border border-dashed border-border bg-background shadow-xs text-xs"
     >
       <PropertyFilterSubject meta={meta} />
-      <Separator orientation="vertical" />
+      <Separator orientation="vertical" className="h-5" />
       <PropertyFilterOperatorController
         column={column}
         columnMeta={meta}
         filter={value} // Typed as FilterValue<T>
       />
-      <Separator orientation="vertical" />
+      <Separator orientation="vertical" className="h-5" />
       <PropertyFilterValueController
         id={filter.id}
         column={column}
         columnMeta={meta}
         table={table}
       />
-      <Separator orientation="vertical" />
+      <Separator orientation="vertical" className="h-5" />
       <Button
         variant="ghost"
-        className="rounded-none rounded-r-2xl text-xs w-7 h-full"
+        className="rounded-none rounded-r-md text-xs w-7 h-full hover:bg-destructive/10"
         onClick={handleRemoveFilter}
       >
         <X className="size-4 -translate-x-0.5" />

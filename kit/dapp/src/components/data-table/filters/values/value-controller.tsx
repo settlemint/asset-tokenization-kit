@@ -19,8 +19,7 @@ import { take, uniq } from "../../data-table-array";
 import { isColumnOptionArray } from "../utils/type-guards";
 import type { ColumnOption, ElementType } from "../types/column-types";
 import type { FilterValue } from "../types/filter-types";
-// Note: PropertyFilterValueMenu will be imported from another file after extraction
-// import { PropertyFilterValueMenu } from "./value-menu";
+import { PropertyFilterValueMenu } from "./value-menu";
 
 interface PropertyFilterValueDisplayProps<TData, TValue> {
   id: string;
@@ -46,7 +45,7 @@ export function PropertyFilterValueController<TData, TValue>({
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          className="m-0 h-full w-fit whitespace-nowrap rounded-none p-0 px-2 text-xs"
+          className="m-0 h-full w-fit whitespace-nowrap rounded-none p-0 px-2 text-xs font-normal"
         >
           <PropertyFilterValueDisplay
             id={id}
@@ -61,8 +60,12 @@ export function PropertyFilterValueController<TData, TValue>({
         side="bottom"
         className="w-fit p-0 origin-(--radix-popover-content-transform-origin)"
       >
-        {/* TODO: PropertyFilterValueMenu will be imported from value-menu.tsx */}
-        <div>Value menu placeholder</div>
+        <PropertyFilterValueMenu
+          id={id}
+          column={column}
+          columnMeta={columnMeta}
+          table={table}
+        />
       </PopoverContent>
     </Popover>
   );
@@ -181,12 +184,12 @@ export function PropertyFilterOptionValueDisplay<TData, TValue>({
     const { label, icon: Icon } = selectedOption;
     const hasIcon = !!Icon;
     return (
-      <span className="inline-flex items-center gap-1">
+      <span className="inline-flex items-center gap-1 text-xs">
         {hasIcon &&
           (isValidElement(Icon) ? (
             Icon
           ) : (
-            <Icon className="size-4 text-primary" />
+            <Icon className="size-3.5 text-primary" />
           ))}
         <span>{label}</span>
       </span>
@@ -198,7 +201,7 @@ export function PropertyFilterOptionValueDisplay<TData, TValue>({
   const hasOptionIcons = options.every((o) => o.icon);
 
   return (
-    <div className="inline-flex items-center gap-0.5">
+    <div className="inline-flex items-center gap-0.5 text-xs">
       {hasOptionIcons &&
         take(selected, 3).map(({ value, icon }) => {
           if (!icon) return null;
@@ -206,7 +209,7 @@ export function PropertyFilterOptionValueDisplay<TData, TValue>({
           return isValidElement(Icon) ? (
             Icon
           ) : (
-            <Icon key={value} className="size-4" />
+            <Icon key={value} className="size-3.5" />
           );
         })}
       <span className={cn(hasOptionIcons && "ml-1.5")}>
@@ -265,12 +268,12 @@ export function PropertyFilterMultiOptionValueDisplay<TData, TValue>({
     const { label, icon: Icon } = selectedOption;
     const hasIcon = !!Icon;
     return (
-      <span className="inline-flex items-center gap-1.5">
+      <span className="inline-flex items-center gap-1.5 text-xs">
         {hasIcon &&
           (isValidElement(Icon) ? (
             Icon
           ) : (
-            <Icon className="size-4 text-primary" />
+            <Icon className="size-3.5 text-primary" />
           ))}
 
         <span>{label}</span>
@@ -283,7 +286,7 @@ export function PropertyFilterMultiOptionValueDisplay<TData, TValue>({
   const hasOptionIcons = columnMeta.options?.every((o) => o.icon) ?? false;
 
   return (
-    <div className="inline-flex items-center gap-1.5">
+    <div className="inline-flex items-center gap-1.5 text-xs">
       {hasOptionIcons && (
         <div key="icons" className="inline-flex items-center gap-0.5">
           {take(selected, 3).map(({ value, icon }) => {
@@ -292,7 +295,7 @@ export function PropertyFilterMultiOptionValueDisplay<TData, TValue>({
             return isValidElement(Icon) ? (
               cloneElement(Icon, { key: value })
             ) : (
-              <Icon key={value} className="size-4" />
+              <Icon key={value} className="size-3.5" />
             );
           })}
         </div>
@@ -313,26 +316,26 @@ export function PropertyFilterDateValueDisplay<TData, TValue>({
     ? (column.getFilterValue() as FilterValue<"date", TData>)
     : undefined;
 
-  if (!filter) return null;
-  if (filter.values.length === 0) return <Ellipsis className="size-4" />;
+  if (!filter) return <span className="text-xs">empty</span>;
+  if (filter.values.length === 0) return <Ellipsis className="size-3.5" />;
   if (filter.values.length === 1) {
     const value = filter.values[0];
-    if (!value) return <Ellipsis className="size-4" />;
+    if (!value) return <Ellipsis className="size-3.5" />;
     const dateLocale = getDateLocale(locale);
     const formattedDateStr = formatDate(value, "MMM d, yyyy", {
       locale: dateLocale,
     });
 
-    return <span>{formattedDateStr}</span>;
+    return <span className="text-xs">{formattedDateStr}</span>;
   }
 
   const firstValue = filter.values[0];
   const secondValue = filter.values[1];
-  if (!firstValue || !secondValue) return <Ellipsis className="size-4" />;
+  if (!firstValue || !secondValue) return <Ellipsis className="size-3.5" />;
 
   const formattedRangeStr = formatDateRange(firstValue, secondValue, locale);
 
-  return <span>{formattedRangeStr}</span>;
+  return <span className="text-xs">{formattedRangeStr}</span>;
 }
 
 export function PropertyFilterTextValueDisplay<TData, TValue>({
@@ -342,13 +345,13 @@ export function PropertyFilterTextValueDisplay<TData, TValue>({
     ? (column.getFilterValue() as FilterValue<"text", TData>)
     : undefined;
 
-  if (!filter) return null;
+  if (!filter) return <span className="text-xs">empty</span>;
   if (filter.values.length === 0 || filter.values[0]?.trim() === "")
-    return <Ellipsis className="size-4" />;
+    return <Ellipsis className="size-3.5" />;
 
   const value = filter.values[0];
 
-  return <span>{value}</span>;
+  return <span className="text-xs">{value}</span>;
 }
 
 export function PropertyFilterNumberValueDisplay<TData, TValue>({
@@ -362,7 +365,7 @@ export function PropertyFilterNumberValueDisplay<TData, TValue>({
     ? (column.getFilterValue() as FilterValue<"number", TData>)
     : undefined;
 
-  if (!filter) return null;
+  if (!filter) return <span className="text-xs">empty</span>;
 
   if (
     filter.operator === "is between" ||
@@ -376,12 +379,12 @@ export function PropertyFilterNumberValueDisplay<TData, TValue>({
         : filter.values[1];
 
     return (
-      <span className="tabular-nums tracking-tight">
+      <span className="text-xs tabular-nums tracking-tight">
         {minValue} and {maxValue}
       </span>
     );
   }
 
   const value = filter.values[0];
-  return <span className="tabular-nums tracking-tight">{value}</span>;
+  return <span className="text-xs tabular-nums tracking-tight">{value}</span>;
 }

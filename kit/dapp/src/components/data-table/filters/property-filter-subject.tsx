@@ -7,10 +7,16 @@ export function PropertyFilterSubject<TData>({
 }: {
   meta: ColumnMeta<TData, string>;
 }) {
+  if (!meta) {
+    return <span className="px-2">Filter</span>;
+  }
+  
+  const Icon = meta.icon;
+  
   return (
-    <span className="flex select-none items-center gap-1 whitespace-nowrap px-2 font-medium">
-      <meta.icon className="size-4 stroke-[2.25px]" />
-      <span>{meta.displayName}</span>
+    <span className="flex select-none items-center gap-1 whitespace-nowrap px-2 font-medium text-xs">
+      {Icon && <Icon className="size-3.5 stroke-[2.25px]" />}
+      <span>{meta.displayName || "Filter"}</span>
     </span>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 "use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -47,7 +46,6 @@ export function DataTableAdvancedToolbar<TData>({
 
   const hasFilters = table.getState().columnFilters.length > 0;
   const hasGlobalFilter = table.getState().globalFilter?.length > 0;
-  const activeFiltersCount = table.getState().columnFilters.length;
 
   const handleSearchChange = useCallback(
     (value: string) => {
@@ -69,10 +67,6 @@ export function DataTableAdvancedToolbar<TData>({
     table.setGlobalFilter("");
     setSearchValue("");
   }, [table]);
-
-  const clearSearch = useCallback(() => {
-    handleSearchChange("");
-  }, [handleSearchChange]);
 
   if (!enableToolbar) {
     return null;
@@ -102,21 +96,15 @@ export function DataTableAdvancedToolbar<TData>({
           <div className="space-y-2">
             <DataTableFilter table={table} />
             {(hasFilters || hasGlobalFilter) && (
-              <div className="flex items-center justify-between">
-                <Badge variant="secondary" className="text-xs">
-                  {activeFiltersCount}{" "}
-                  {activeFiltersCount === 1 ? "filter" : "filters"} active
-                </Badge>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearAllFilters}
-                  className="h-7 text-xs"
-                >
-                  <FilterXIcon className="h-3 w-3" />
-                  Clear all
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearAllFilters}
+                className="h-7 text-xs ml-auto"
+              >
+                <FilterXIcon className="h-3 w-3" />
+                Clear all
+              </Button>
             )}
           </div>
         )}
@@ -176,16 +164,6 @@ export function DataTableAdvancedToolbar<TData>({
 
         {/* Right Section: Actions and View Options */}
         <div className="flex items-center gap-2">
-          {/* Active Filters Badge */}
-          {activeFiltersCount > 0 && (
-            <>
-              <Badge variant="secondary" className="text-xs font-medium">
-                {activeFiltersCount}{" "}
-                {activeFiltersCount === 1 ? "filter" : "filters"}
-              </Badge>
-              <Separator orientation="vertical" className="h-6" />
-            </>
-          )}
 
           {/* Custom Actions */}
           {customActions && (
@@ -203,31 +181,6 @@ export function DataTableAdvancedToolbar<TData>({
         </div>
       </div>
 
-      {/* Active Filters Display Row (only when filters are active) */}
-      {(hasFilters || hasGlobalFilter) && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="font-medium">Active filters:</span>
-          {hasGlobalFilter && (
-            <Badge variant="outline" className="gap-1">
-              Search: "{table.getState().globalFilter}"
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-4 w-4 p-0 hover:bg-transparent"
-                onClick={clearSearch}
-              >
-                <FilterXIcon className="h-3 w-3" />
-              </Button>
-            </Badge>
-          )}
-          {activeFiltersCount > 0 && (
-            <Badge variant="outline">
-              {activeFiltersCount} column{" "}
-              {activeFiltersCount === 1 ? "filter" : "filters"}
-            </Badge>
-          )}
-        </div>
-      )}
     </div>
   );
 }

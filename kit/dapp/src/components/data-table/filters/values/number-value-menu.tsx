@@ -1,10 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { Command, CommandGroup, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
-import { DebouncedInput } from "../debounced-input";
 import { numberFilterDetails } from "../operators/number-operators";
 import type { FilterValue } from "../types/filter-types";
 
@@ -43,60 +43,46 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
 
   const [inputValues, setInputValues] = useState<string[]>(initialValues);
 
-  const changeNumber = useCallback(
-    (value: number[]) => {
-      const sortedValues = [...value].sort((a, b) => a - b);
+  const [tabValue, setTabValue] = useState(isNumberRange ? "range" : "single");
 
-      column.setFilterValue((old: undefined | FilterValue<"number", TData>) => {
-        if (!old || old.values.length === 0) {
-          return {
-            operator: "is",
-            values: sortedValues,
-          };
-        }
+  const handleApply = useCallback(() => {
+    const parsedValues = inputValues.map((val) => {
+      if (val.includes("+")) {
+        return cappedMax;
+      }
+      const parsed = Number.parseFloat(val);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    });
 
-        const operator = numberFilterDetails[old.operator];
-        let newValues: number[];
+    const sortedValues = [...parsedValues].sort((a, b) => a - b);
 
-        if (operator.target === "single") {
-          newValues = [sortedValues[0] ?? 0];
-        } else {
-          newValues = [
-            (sortedValues[0] ?? 0) >= cappedMax
-              ? cappedMax
-              : (sortedValues[0] ?? 0),
-            (sortedValues[1] ?? 0) >= cappedMax
-              ? cappedMax
-              : (sortedValues[1] ?? 0),
-          ];
-        }
+    const operator = tabValue === "range" ? "is between" : "is";
+    const newValues = tabValue === "single" 
+      ? [sortedValues[0] ?? 0]
+      : [
+          (sortedValues[0] ?? 0) >= cappedMax ? cappedMax : (sortedValues[0] ?? 0),
+          (sortedValues[1] ?? 0) >= cappedMax ? cappedMax : (sortedValues[1] ?? 0),
+        ];
 
-        return {
-          ...old,
-          values: newValues,
-        };
-      });
-    },
-    [column, cappedMax]
-  );
+    column.setFilterValue({
+      operator,
+      values: newValues,
+      columnMeta: column.columnDef.meta,
+    } satisfies FilterValue<"number", TData>);
+  }, [column, inputValues, cappedMax, tabValue]);
+
+  const handleClear = useCallback(() => {
+    setInputValues([safeDatasetMin.toString()]);
+    column.setFilterValue(undefined);
+  }, [column, safeDatasetMin]);
 
   const handleInputChange = useCallback(
     (index: number, value: string) => {
       const newValues = [...inputValues];
       newValues[index] = value;
       setInputValues(newValues);
-
-      const parsedValues = newValues.map((val) => {
-        if (val.includes("+")) {
-          return cappedMax;
-        }
-        const parsed = Number.parseFloat(val);
-        return Number.isNaN(parsed) ? 0 : parsed;
-      });
-
-      changeNumber(parsedValues);
     },
-    [inputValues, cappedMax, changeNumber]
+    [inputValues]
   );
 
   const sliderValueSingle = useMemo(
@@ -106,20 +92,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
 
   const changeType = useCallback(
     (type: "single" | "range") => {
-      column.setFilterValue((old: undefined | FilterValue<"number", TData>) => {
-        if (type === "single") {
-          return {
-            operator: "is",
-            values: [old?.values[0] ?? 0],
-          };
-        }
-        const newMaxValue = old?.values[0] ?? cappedMax;
-        return {
-          operator: "is between",
-          values: [0, newMaxValue],
-        };
-      });
-
+      setTabValue(type);
       if (type === "single") {
         setInputValues([inputValues[0] ?? "0"]);
       } else {
@@ -127,7 +100,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
         setInputValues(["0", maxValue]);
       }
     },
-    [column, cappedMax, inputValues]
+    [cappedMax, inputValues]
   );
 
   const handleTabsValueChange = useCallback(
@@ -166,13 +139,6 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
     [handleInputChange]
   );
 
-  const handleSingleValueChange = useCallback(
-    (value: string | number) => {
-      handleInputChange(0, value.toString());
-    },
-    [handleInputChange]
-  );
-
   const sliderValueRange = useMemo(
     () => [
       Number(inputValues[0] ?? "0"),
@@ -181,13 +147,20 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
     [inputValues, cappedMax]
   );
 
+  const handleSingleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      handleInputChange(0, e.target.value);
+    },
+    [handleInputChange]
+  );
+
   return (
     <Command>
       <CommandList className="max-h-fit">
         <CommandGroup>
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full p-2">
             <Tabs
-              value={isNumberRange ? "range" : "single"}
+              value={tabValue}
               onValueChange={handleTabsValueChange}
             >
               <TabsList className="w-full *:text-xs">
@@ -203,10 +176,10 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                   step={1}
                   className="w-full"
                 />
-                <DebouncedInput
+                <Input
                   type="number"
                   value={inputValues[0] ?? "0"}
-                  onChange={handleSingleValueChange}
+                  onChange={handleSingleInputChange}
                   placeholder="Enter value"
                   className="w-full"
                   min={safeDatasetMin}
@@ -247,6 +220,24 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                 </div>
               </TabsContent>
             </Tabs>
+            <div className="flex gap-2 mt-4">
+              <Button
+                size="sm"
+                variant="default"
+                onClick={handleApply}
+                className="flex-1"
+              >
+                Apply
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleClear}
+                className="flex-1"
+              >
+                Clear
+              </Button>
+            </div>
           </div>
         </CommandGroup>
       </CommandList>

@@ -1,25 +1,8 @@
+import { createSelectionColumn } from "@/components/data-table/columns/selection-column";
 import { DataTable } from "@/components/data-table/data-table";
+import { useBulkActions } from "@/components/data-table/data-table-bulk-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { orpc } from "@/orpc";
-import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { createColumnHelper } from "@tanstack/react-table";
-import {
-  ExternalLink,
-  Eye,
-  Package,
-  Plus,
-  Copy,
-  MoreHorizontal,
-  Type,
-  Hash,
-  Coins,
-} from "lucide-react";
-import { createSelectionColumn } from "@/components/data-table/columns/selection-column";
-import { useBulkActions } from "@/components/data-table/data-table-bulk-actions";
-import { useCallback, useMemo } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +11,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { orpc } from "@/orpc";
+import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { createColumnHelper } from "@tanstack/react-table";
+import {
+  Coins,
+  Copy,
+  ExternalLink,
+  Eye,
+  Hash,
+  MoreHorizontal,
+  Package,
+  Plus,
+  Type,
+} from "lucide-react";
+import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute(
@@ -310,7 +310,7 @@ function RouteComponent() {
             debounceMs: 300,
           }}
           advancedToolbar={{
-            enableGlobalSearch: true,
+            enableGlobalSearch: false,
             enableFilters: true,
             enableExport: true,
             enableViewOptions: true,

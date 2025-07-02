@@ -92,9 +92,17 @@ export function PropertyFilterOperatorDisplay<TData, T extends ColumnDataType>({
   filter: FilterValue<T, TData>;
   filterType: T;
 }) {
-  const details = filterTypeOperatorDetails[filterType][filter.operator];
+  const operatorDetails = filterTypeOperatorDetails[filterType];
+  if (!operatorDetails || !filter?.operator) {
+    return <span className="text-xs">is</span>;
+  }
+  
+  const details = operatorDetails[filter.operator];
+  if (!details) {
+    return <span className="text-xs">{filter.operator}</span>;
+  }
 
-  return <span>{details.label}</span>;
+  return <span className="text-xs">{details.label}</span>;
 }
 
 interface PropertyFilterOperatorMenuProps<TData> {
