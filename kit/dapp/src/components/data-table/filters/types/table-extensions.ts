@@ -39,14 +39,7 @@ declare module "@tanstack/react-table" {
     variant?: "default" | "numeric";
     detailUrl?: string;
 
-    // Auto-cell properties
-    cellType?:
-      | "address"
-      | "badge"
-      | "currency"
-      | "date"
-      | "status"
-      | "text"
-      | "number";
+    // Currency code for currency type columns (e.g. "USD", "EUR")
+    currency?: string;
   }
 }

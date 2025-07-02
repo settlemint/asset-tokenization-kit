@@ -1,9 +1,9 @@
 "use client";
 
-import type { CellContext } from "@tanstack/react-table";
-import { AddressCell } from "./address-cell";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import type { CellContext } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
+import { AddressCell } from "./address-cell";
 
 interface AutoCellProps<TData, TValue> {
   context: CellContext<TData, TValue>;
@@ -18,21 +18,23 @@ export function AutoCell<TData, TValue>({
   context,
   children,
 }: AutoCellProps<TData, TValue>) {
+  const { i18n } = useTranslation();
   const meta = context.column.columnDef.meta;
   const value = context.getValue();
+  const locale = i18n.language;
 
   // If children are provided, use them (allows override)
   if (children) {
     return <>{children}</>;
   }
 
-  // If no meta or cellType, render value as is
-  if (!meta?.cellType) {
+  // If no meta or type, render value as is
+  if (!meta?.type) {
     return <>{String(value ?? "")}</>;
   }
 
-  // Auto-render based on cellType with intelligent defaults
-  switch (meta.cellType) {
+  // Auto-render based on type with intelligent defaults
+  switch (meta.type) {
     case "address":
       return (
         <AddressCell
@@ -48,18 +50,12 @@ export function AutoCell<TData, TValue>({
         "default";
 
       // For symbol columns, use secondary variant
-      if (
-        meta.displayName?.toLowerCase().includes("symbol") ||
-        meta.type === "symbol"
-      ) {
+      if (meta.displayName?.toLowerCase().includes("symbol")) {
         variant = "secondary";
       }
 
       // For status columns, determine based on value
-      if (
-        meta.type === "status" ||
-        meta.displayName?.toLowerCase().includes("status")
-      ) {
+      if (meta.displayName?.toLowerCase().includes("status")) {
         const statusValue = String(value).toLowerCase();
         if (
           ["active", "success", "completed", "approved", "enabled"].includes(
@@ -87,9 +83,7 @@ export function AutoCell<TData, TValue>({
       }
 
       // Apply font-mono for symbol-like badges
-      const isSymbol =
-        meta.type === "symbol" ||
-        meta.displayName?.toLowerCase().includes("symbol");
+      const isSymbol = meta.displayName?.toLowerCase().includes("symbol");
 
       return (
         <Badge variant={variant} className={isSymbol ? "font-mono" : undefined}>
@@ -101,10 +95,10 @@ export function AutoCell<TData, TValue>({
     case "currency": {
       const currencyValue = Number(value);
       return (
-        <span className="font-mono text-right">
-          {new Intl.NumberFormat("en-US", {
+        <span className="font-mono text-right block tabular-nums">
+          {new Intl.NumberFormat(locale, {
             style: "currency",
-            currency: "USD",
+            currency: meta.currency ?? "EUR",
             minimumFractionDigits: 2,
           }).format(currencyValue)}
         </span>
@@ -113,13 +107,11 @@ export function AutoCell<TData, TValue>({
 
     case "date": {
       const dateValue = value instanceof Date ? value : new Date(String(value));
-      const includeTime =
-        meta.type === "datetime" ||
-        meta.displayName?.toLowerCase().includes("time");
+      const includeTime = meta.displayName?.toLowerCase().includes("time");
 
       return (
         <span className="text-muted-foreground">
-          {new Intl.DateTimeFormat("en-US", {
+          {new Intl.DateTimeFormat(locale, {
             dateStyle: "medium",
             timeStyle: includeTime ? "short" : undefined,
           }).format(dateValue)}
@@ -178,39 +170,29 @@ export function AutoCell<TData, TValue>({
       const numberValue = Number(value);
 
       // Determine formatting based on column metadata
-      let decimals = 2;
-      let useCompact = false;
+      let minimumFractionDigits = 0;
+      let maximumFractionDigits = 2;
 
       // No decimals for "decimals" columns
-      if (
-        meta.type === "decimals" ||
-        meta.displayName?.toLowerCase().includes("decimal")
-      ) {
-        decimals = 0;
+      if (meta.displayName?.toLowerCase().includes("decimal")) {
+        minimumFractionDigits = 0;
+        maximumFractionDigits = 0;
       }
 
       // Use compact notation for large numbers
-      if (
-        meta.type === "count" ||
-        meta.displayName?.toLowerCase().includes("count")
-      ) {
-        useCompact = numberValue > 9999;
-      }
+      const useCompact =
+        meta.displayName?.toLowerCase().includes("count") && numberValue > 9999;
 
-      const formatted = useCompact
-        ? new Intl.NumberFormat("en-US", {
-            notation: "compact",
-            maximumFractionDigits: 1,
-          }).format(numberValue)
-        : numberValue.toFixed(decimals);
+      // Format with proper locale
+      const formatted = new Intl.NumberFormat(locale, {
+        notation: useCompact ? "compact" : "standard",
+        minimumFractionDigits,
+        maximumFractionDigits,
+        ...(useCompact && { maximumFractionDigits: 1 }),
+      }).format(numberValue);
 
       return (
-        <span
-          className={cn(
-            "font-mono",
-            meta.variant === "numeric" && "text-right"
-          )}
-        >
+        <span className="font-mono text-right block tabular-nums">
           {formatted}
         </span>
       );

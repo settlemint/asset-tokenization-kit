@@ -42,11 +42,33 @@ export function withAutoCells<TData>(
 }
 
 /**
+ * Automatically sets the variant based on column type
+ */
+export function withAutoVariant<TData, TValue = unknown>(
+  column: ColumnDef<TData, TValue>
+): ColumnDef<TData, TValue> {
+  // If column has number or currency type, set variant to numeric
+  if (column.meta?.type === "number" || column.meta?.type === "currency") {
+    return {
+      ...column,
+      meta: {
+        ...column.meta,
+        variant: "numeric",
+      },
+    };
+  }
+
+  return column;
+}
+
+/**
  * Applies both auto cell rendering and auto filter functions to columns
  * This is the recommended function to use for maximum automation
  */
 export function withAutoFeatures<TData>(
   columns: ColumnDef<TData>[]
 ): ColumnDef<TData>[] {
-  return columns.map((column) => withAutoFilterFn(withAutoCell(column)));
+  return columns.map((column) =>
+    withAutoVariant(withAutoFilterFn(withAutoCell(column)))
+  );
 }

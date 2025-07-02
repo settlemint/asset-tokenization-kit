@@ -142,16 +142,14 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
             displayName: t("components.deposits-table.columns.token-name"),
             type: "text",
             icon: Type,
-            cellType: "text",
           },
         }),
         columnHelper.accessor("symbol", {
           header: t("components.deposits-table.columns.symbol"),
           meta: {
             displayName: t("components.deposits-table.columns.token-symbol"),
-            type: "text",
+            type: "badge",
             icon: Coins,
-            cellType: "badge",
           },
         }),
         columnHelper.accessor("decimals", {
@@ -161,7 +159,6 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
             type: "number",
             icon: Hash,
             max: 18,
-            cellType: "number",
           },
         }),
         columnHelper.accessor("id", {
@@ -172,7 +169,6 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
             ),
             type: "address",
             icon: Copy,
-            cellType: "address",
           },
         }),
         columnHelper.display({
