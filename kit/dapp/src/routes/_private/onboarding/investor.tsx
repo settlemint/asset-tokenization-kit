@@ -1,5 +1,6 @@
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
+import { WalletStep } from "@/components/onboarding/steps/wallet-step";
 import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { Button } from "@/components/ui/button";
 import {
@@ -81,12 +82,18 @@ function IdentityStep({ onSuccess }: { onSuccess: () => void }) {
 function InvestorOnboarding() {
   const { t } = useTranslation("onboarding");
   const navigate = useNavigate();
-  const [currentStepId, setCurrentStepId] = useState("security");
+  const [currentStepId, setCurrentStepId] = useState("wallet");
   const { data: session } = authClient.useSession();
 
   // Define steps with dynamic statuses
   const steps: Step[] = useMemo(
     () => [
+      {
+        id: "wallet",
+        title: t("steps.wallet.title"),
+        description: t("steps.wallet.description"),
+        status: currentStepId === "wallet" ? "active" : "completed",
+      },
       {
         id: "security",
         title: t("steps.security.title"),
@@ -111,6 +118,10 @@ function InvestorOnboarding() {
     setCurrentStepId(stepId);
   }, []);
 
+  const handleWalletSuccess = useCallback(() => {
+    setCurrentStepId("security");
+  }, []);
+
   const handleSecuritySuccess = useCallback(() => {
     setCurrentStepId("identity");
   }, []);
@@ -133,6 +144,9 @@ function InvestorOnboarding() {
             description={t("investor.description")}
             onStepChange={handleStepChange}
           >
+            {currentStepId === "wallet" && (
+              <WalletStep onSuccess={handleWalletSuccess} />
+            )}
             {currentStepId === "security" && (
               <WalletSecurityStep onSuccess={handleSecuritySuccess} />
             )}
