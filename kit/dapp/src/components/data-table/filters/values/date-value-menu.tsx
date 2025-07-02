@@ -1,5 +1,6 @@
 import { Calendar } from "@/components/ui/calendar";
 import { Command, CommandGroup, CommandList } from "@/components/ui/command";
+import { Separator } from "@/components/ui/separator";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { isEqual } from "date-fns";
 import { useCallback, useState } from "react";
@@ -16,6 +17,7 @@ interface PropertyFilterDateValueMenuProps<TData, TValue> {
 
 export function PropertyFilterDateValueMenu<TData, TValue>({
   column,
+  columnMeta,
 }: PropertyFilterDateValueMenuProps<TData, TValue>) {
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"date", TData>)
@@ -63,11 +65,20 @@ export function PropertyFilterDateValueMenu<TData, TValue>({
     [column]
   );
 
+  const Icon = columnMeta.icon;
+  const displayName = columnMeta.displayName ?? "Filter";
+
   return (
     <Command>
       <CommandList className="max-h-fit">
         <CommandGroup>
           <div className="flex flex-col space-y-4 p-4">
+            {/* Header with field title and icon */}
+            <div className="flex items-center gap-2 -mx-2 -mt-2 pb-2">
+              {Icon && <Icon className="size-4 text-muted-foreground" />}
+              <span className="font-medium text-sm">{displayName}</span>
+            </div>
+            <Separator className="-mx-2" />
             <Calendar
               mode="range"
               defaultMonth={date?.from}

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Command, CommandGroup, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
@@ -167,11 +168,20 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
     [handleInputChange]
   );
 
+  const Icon = columnMeta.icon;
+  const displayName = columnMeta.displayName ?? "Filter";
+
   return (
     <Command>
       <CommandList className="max-h-fit">
         <CommandGroup>
           <div className="flex flex-col w-full p-2">
+            {/* Header with field title and icon */}
+            <div className="flex items-center gap-2 px-1 pb-1">
+              {Icon && <Icon className="size-4 text-muted-foreground" />}
+              <span className="font-medium text-sm">{displayName}</span>
+            </div>
+            <Separator className="mb-3" />
             <Tabs value={tabValue} onValueChange={handleTabsValueChange}>
               <TabsList className="w-full *:text-xs">
                 <TabsTrigger value="single">{t("components.data-table.filters.number.single")}</TabsTrigger>

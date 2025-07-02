@@ -95,8 +95,16 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
     [column]
   );
 
+  const Icon = columnMeta.icon;
+  const displayName = columnMeta.displayName ?? "Filter";
+
   return (
     <Command loop>
+      {/* Header with field title and icon */}
+      <div className="flex items-center gap-2 px-3 py-2 border-b">
+        {Icon && <Icon className="size-4 text-muted-foreground" />}
+        <span className="font-medium text-sm">{displayName}</span>
+      </div>
       <CommandInput autoFocus placeholder={t("components.data-table.search")} />
       <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
       <CommandList className="max-h-fit">

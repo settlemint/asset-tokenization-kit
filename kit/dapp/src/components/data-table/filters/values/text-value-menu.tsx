@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Command, CommandGroup, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,7 @@ interface PropertyFilterTextValueMenuProps<TData, TValue> {
 
 export function PropertyFilterTextValueMenu<TData, TValue>({
   column,
+  columnMeta,
   onClose,
 }: PropertyFilterTextValueMenuProps<TData, TValue>) {
   const { t } = useTranslation("general");
@@ -73,11 +75,20 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
     [handleApply]
   );
 
+  const Icon = columnMeta.icon;
+  const displayName = columnMeta.displayName ?? "Filter";
+
   return (
     <Command>
       <CommandList className="max-h-fit">
         <CommandGroup>
           <div className="flex flex-col gap-2 p-2">
+            {/* Header with field title and icon */}
+            <div className="flex items-center gap-2 px-1 pb-1">
+              {Icon && <Icon className="size-4 text-muted-foreground" />}
+              <span className="font-medium text-sm">{displayName}</span>
+            </div>
+            <Separator className="mb-1" />
             <div className="grid grid-cols-2 gap-2">
               <Button
                 variant={operator === "contains" ? "default" : "outline"}
