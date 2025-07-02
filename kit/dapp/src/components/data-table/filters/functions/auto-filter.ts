@@ -59,7 +59,7 @@ export function withAutoFilterFn<TData, TValue = unknown>(
   if (columnType) {
     return {
       ...column,
-      filterFn: getAutoFilterFn(columnType) as any,
+      filterFn: getAutoFilterFn(columnType) as FilterFn<TData>,
     };
   }
 
@@ -67,7 +67,7 @@ export function withAutoFilterFn<TData, TValue = unknown>(
   if ("accessorKey" in column || "accessorFn" in column) {
     return {
       ...column,
-      filterFn: flexibleTextFilterFn as any,
+      filterFn: flexibleTextFilterFn as FilterFn<TData>,
     };
   }
 

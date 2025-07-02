@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Command, CommandGroup, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Separator } from "@/components/ui/separator";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { ChevronLeft } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -119,6 +118,14 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
     [cappedMax, inputValues]
   );
 
+  const handleSingleClick = useCallback(() => {
+    changeType("single");
+  }, [changeType]);
+
+  const handleRangeClick = useCallback(() => {
+    changeType("range");
+  }, [changeType]);
+
   const handleSingleSliderChange = useCallback(
     (value: number[]) => {
       handleInputChange(0, value[0]?.toString() ?? "0");
@@ -190,7 +197,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
               <Button
                 variant={tabValue === "single" ? "default" : "outline"}
                 size="sm"
-                onClick={() => changeType("single")}
+                onClick={handleSingleClick}
                 className="text-xs"
               >
                 {t("components.data-table.filters.number.single")}
@@ -198,7 +205,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
               <Button
                 variant={tabValue === "range" ? "default" : "outline"}
                 size="sm"
-                onClick={() => changeType("range")}
+                onClick={handleRangeClick}
                 className="text-xs"
               >
                 {t("components.data-table.filters.number.range")}

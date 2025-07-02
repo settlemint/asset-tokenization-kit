@@ -220,6 +220,10 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
     if (!value) setProperty(undefined);
   }, []);
 
+  const handleBack = useCallback(() => {
+    setProperty(undefined);
+  }, []);
+
   useEffect(() => {
     if (property) {
       inputRef.current?.focus();
@@ -239,7 +243,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
           column={column}
           columnMeta={columnMeta}
           table={table}
-          onBack={() => setProperty(undefined)}
+          onBack={handleBack}
         />
       ) : (
         <Command loop className="min-w-[280px]">
@@ -263,7 +267,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
           </CommandList>
         </Command>
       ),
-    [property, column, columnMeta, value, table, properties, t]
+    [property, column, columnMeta, value, table, properties, t, handleBack]
   );
 
   if (!hasFilters) return null;

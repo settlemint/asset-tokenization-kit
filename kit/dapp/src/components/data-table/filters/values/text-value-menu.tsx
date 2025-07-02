@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Command, CommandGroup, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { ChevronLeft } from "lucide-react";
 import { useCallback, useState } from "react";

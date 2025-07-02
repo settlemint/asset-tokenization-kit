@@ -12,7 +12,7 @@ declare module "@tanstack/react-table" {
     icon?: LucideIcon | React.ComponentType<{ className?: string }>;
 
     /* The data type of the column. */
-    type?: ColumnDataType | string;
+    type?: ColumnDataType | (string & {});
 
     /* An optional list of options for the column. */
     /* This is used for columns with type 'option' or 'multiOption'. */

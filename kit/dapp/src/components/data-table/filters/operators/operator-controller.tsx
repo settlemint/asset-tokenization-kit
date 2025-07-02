@@ -95,9 +95,13 @@ export function PropertyFilterOperatorDisplay<TData, T extends ColumnDataType>({
   filterType: T;
 }) {
   const { t } = useTranslation("general");
-  const operatorDetails = filterTypeOperatorDetails[filterType];
-  if (!operatorDetails || !filter?.operator) {
+  if (!filter?.operator) {
     return <span className="text-xs">{t("components.data-table.is")}</span>;
+  }
+
+  const operatorDetails = filterTypeOperatorDetails[filterType];
+  if (!operatorDetails) {
+    return <span className="text-xs">{filter.operator}</span>;
   }
 
   const details = operatorDetails[filter.operator];

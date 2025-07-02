@@ -1,6 +1,5 @@
 import { Calendar } from "@/components/ui/calendar";
 import { Command, CommandGroup, CommandList } from "@/components/ui/command";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { ChevronLeft } from "lucide-react";

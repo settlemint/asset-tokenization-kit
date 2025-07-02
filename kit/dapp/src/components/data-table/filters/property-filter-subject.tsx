@@ -7,10 +7,6 @@ export function PropertyFilterSubject<TData>({
 }: {
   meta: ColumnMeta<TData, string>;
 }) {
-  if (!meta) {
-    return <span className="px-2">Filter</span>;
-  }
-
   const Icon = meta.icon;
 
   return (
