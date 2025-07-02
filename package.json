@@ -67,7 +67,7 @@
     "db:studio": "turbo run db:studio"
   },
   "dependencies": {
-    "@tanstack/react-table": "8.20.5"
+    "@tanstack/react-table": "8.21.3"
   },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
