@@ -48,6 +48,5 @@ declare module "@tanstack/react-table" {
       | "status"
       | "text"
       | "number";
-    cellProps?: Record<string, unknown>;
   }
 }

@@ -31,52 +31,81 @@ export function AutoCell<TData, TValue>({
     return <>{String(value ?? "")}</>;
   }
 
-  // Auto-render based on cellType
+  // Auto-render based on cellType with intelligent defaults
   switch (meta.cellType) {
     case "address":
       return (
         <AddressCell
           address={String(value)}
-          {...(meta.cellProps as {
-            showCopyButton?: boolean;
-            truncateLength?: number;
-          })}
+          showCopyButton={true}
+          truncateLength={6}
         />
       );
 
-    case "badge":
+    case "badge": {
+      // Determine variant based on column type or name
+      let variant: "default" | "secondary" | "destructive" | "outline" =
+        "default";
+
+      // For symbol columns, use secondary variant
+      if (
+        meta.displayName?.toLowerCase().includes("symbol") ||
+        meta.type === "symbol"
+      ) {
+        variant = "secondary";
+      }
+
+      // For status columns, determine based on value
+      if (
+        meta.type === "status" ||
+        meta.displayName?.toLowerCase().includes("status")
+      ) {
+        const statusValue = String(value).toLowerCase();
+        if (
+          ["active", "success", "completed", "approved", "enabled"].includes(
+            statusValue
+          )
+        ) {
+          variant = "default";
+        } else if (
+          ["inactive", "disabled", "archived", "paused"].includes(statusValue)
+        ) {
+          variant = "secondary";
+        } else if (
+          ["error", "failed", "rejected", "cancelled", "expired"].includes(
+            statusValue
+          )
+        ) {
+          variant = "destructive";
+        } else if (
+          ["pending", "draft", "processing", "review", "waiting"].includes(
+            statusValue
+          )
+        ) {
+          variant = "outline";
+        }
+      }
+
+      // Apply font-mono for symbol-like badges
+      const isSymbol =
+        meta.type === "symbol" ||
+        meta.displayName?.toLowerCase().includes("symbol");
+
       return (
-        <Badge
-          variant={
-            (
-              meta.cellProps as {
-                variant?: "default" | "secondary" | "destructive" | "outline";
-              }
-            )?.variant ?? "default"
-          }
-          className={(meta.cellProps as { className?: string })?.className}
-        >
+        <Badge variant={variant} className={isSymbol ? "font-mono" : undefined}>
           {String(value)}
         </Badge>
       );
+    }
 
     case "currency": {
       const currencyValue = Number(value);
-      const {
-        currency = "USD",
-        locale = "en-US",
-        minimumFractionDigits = 2,
-      } = (meta.cellProps ?? {}) as {
-        currency?: string;
-        locale?: string;
-        minimumFractionDigits?: number;
-      };
       return (
         <span className="font-mono text-right">
-          {new Intl.NumberFormat(locale, {
+          {new Intl.NumberFormat("en-US", {
             style: "currency",
-            currency,
-            minimumFractionDigits,
+            currency: "USD",
+            minimumFractionDigits: 2,
           }).format(currencyValue)}
         </span>
       );
@@ -84,38 +113,60 @@ export function AutoCell<TData, TValue>({
 
     case "date": {
       const dateValue = value instanceof Date ? value : new Date(String(value));
-      const { dateStyle = "medium", timeStyle } = (meta.cellProps ?? {}) as {
-        dateStyle?: "full" | "long" | "medium" | "short";
-        timeStyle?: "full" | "long" | "medium" | "short";
-      };
+      const includeTime =
+        meta.type === "datetime" ||
+        meta.displayName?.toLowerCase().includes("time");
+
       return (
         <span className="text-muted-foreground">
-          {new Intl.DateTimeFormat("en-US", { dateStyle, timeStyle }).format(
-            dateValue
-          )}
+          {new Intl.DateTimeFormat("en-US", {
+            dateStyle: "medium",
+            timeStyle: includeTime ? "short" : undefined,
+          }).format(dateValue)}
         </span>
       );
     }
 
     case "status": {
+      const statusValue = String(value).toLowerCase();
       const statusVariants: Record<
         string,
         "default" | "secondary" | "destructive" | "outline"
       > = {
+        // Success states
         active: "default",
+        success: "default",
+        completed: "default",
+        approved: "default",
+        enabled: "default",
+        online: "default",
+        available: "default",
+
+        // Neutral/Inactive states
         inactive: "secondary",
+        disabled: "secondary",
+        archived: "secondary",
+        offline: "secondary",
+        unavailable: "secondary",
+        paused: "secondary",
+
+        // Error states
         error: "destructive",
+        failed: "destructive",
+        rejected: "destructive",
+        cancelled: "destructive",
+        expired: "destructive",
+        blocked: "destructive",
+
+        // Pending states
         pending: "outline",
-        ...(
-          meta.cellProps as {
-            variants?: Record<
-              string,
-              "default" | "secondary" | "destructive" | "outline"
-            >;
-          }
-        )?.variants,
+        draft: "outline",
+        processing: "outline",
+        review: "outline",
+        waiting: "outline",
+        scheduled: "outline",
       };
-      const statusValue = String(value).toLowerCase();
+
       return (
         <Badge variant={statusVariants[statusValue] ?? "default"}>
           {String(value)}
@@ -125,16 +176,34 @@ export function AutoCell<TData, TValue>({
 
     case "number": {
       const numberValue = Number(value);
-      const { precision = 0, compact = false } = (meta.cellProps ?? {}) as {
-        precision?: number;
-        compact?: boolean;
-      };
-      const formatted = compact
+
+      // Determine formatting based on column metadata
+      let decimals = 2;
+      let useCompact = false;
+
+      // No decimals for "decimals" columns
+      if (
+        meta.type === "decimals" ||
+        meta.displayName?.toLowerCase().includes("decimal")
+      ) {
+        decimals = 0;
+      }
+
+      // Use compact notation for large numbers
+      if (
+        meta.type === "count" ||
+        meta.displayName?.toLowerCase().includes("count")
+      ) {
+        useCompact = numberValue > 9999;
+      }
+
+      const formatted = useCompact
         ? new Intl.NumberFormat("en-US", {
             notation: "compact",
-            maximumFractionDigits: precision,
+            maximumFractionDigits: 1,
           }).format(numberValue)
-        : numberValue.toFixed(precision);
+        : numberValue.toFixed(decimals);
+
       return (
         <span
           className={cn(
@@ -149,10 +218,6 @@ export function AutoCell<TData, TValue>({
 
     case "text":
     default:
-      return (
-        <span className={(meta.cellProps as { className?: string })?.className}>
-          {String(value)}
-        </span>
-      );
+      return <span>{String(value)}</span>;
   }
 }

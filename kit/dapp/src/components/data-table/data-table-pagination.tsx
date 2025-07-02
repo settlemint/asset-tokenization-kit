@@ -60,8 +60,8 @@ export function DataTablePagination<TData>({
   }
 
   return (
-    <div className="flex items-center justify-between px-2">
-      <div className="flex-1 text-muted-foreground text-sm">
+    <div className="flex items-center justify-between px-2 py-1">
+      <div className="flex-1 text-muted-foreground text-xs">
         {table.getAllColumns().some((column) => column.id === "select") &&
           table.getFilteredSelectedRowModel().rows.length > 0 && (
             <span>
@@ -72,77 +72,80 @@ export function DataTablePagination<TData>({
             </span>
           )}
       </div>
-      <div className="flex items-center space-x-6 lg:space-x-8">
-        <div className="flex items-center space-x-2">
-          <p className="font-medium text-muted-foreground text-sm">
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <p className="text-muted-foreground text-xs">
             {t("components.data-table.rows-per-page")}
           </p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={handlePageSizeChange}
           >
-            <SelectTrigger className="h-8 w-[70px] border-muted-foreground">
+            <SelectTrigger className="h-6 w-[65px] text-xs px-2 py-1">
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
-            <SelectContent side="top">
-              {[5, 10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
+            <SelectContent side="top" className="max-h-[200px]">
+              {[10, 20, 30, 50, 100].map((pageSize) => (
+                <SelectItem key={pageSize} value={`${pageSize}`} className="text-xs">
                   {pageSize}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-        <div className="flex w-[100px] items-center justify-center font-medium text-muted-foreground text-sm">
-          {t("components.data-table.page-info", {
-            current: table.getState().pagination.pageIndex + 1,
-            total: table.getPageCount(),
-          })}
-        </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-1">
           <Button
-            variant="outline"
-            className="hidden size-8 border-muted-foreground p-0 lg:flex"
+            variant="ghost"
+            size="icon"
+            className="hidden h-7 w-7 p-0 lg:flex"
             onClick={handleFirstPage}
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">
               {t("components.data-table.go-to-first-page")}
             </span>
-            <ChevronsLeft />
+            <ChevronsLeft className="h-3.5 w-3.5" />
           </Button>
           <Button
-            variant="outline"
-            className="size-8 border-muted-foreground p-0"
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 p-0"
             onClick={handlePreviousPage}
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">
               {t("components.data-table.go-to-previous-page")}
             </span>
-            <ChevronLeft />
+            <ChevronLeft className="h-3.5 w-3.5" />
           </Button>
+          <div className="flex items-center gap-1 text-muted-foreground text-xs px-2">
+            <span>{table.getState().pagination.pageIndex + 1}</span>
+            <span>/</span>
+            <span>{table.getPageCount()}</span>
+          </div>
           <Button
-            variant="outline"
-            className="size-8 border-muted-foreground p-0"
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 p-0"
             onClick={handleNextPage}
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">
               {t("components.data-table.go-to-next-page")}
             </span>
-            <ChevronRight />
+            <ChevronRight className="h-3.5 w-3.5" />
           </Button>
           <Button
-            variant="outline"
-            className="hidden size-8 border-muted-foreground p-0 lg:flex"
+            variant="ghost"
+            size="icon"
+            className="hidden h-7 w-7 p-0 lg:flex"
             onClick={handleLastPage}
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">
               {t("components.data-table.go-to-last-page")}
             </span>
-            <ChevronsRight />
+            <ChevronsRight className="h-3.5 w-3.5" />
           </Button>
         </div>
       </div>
