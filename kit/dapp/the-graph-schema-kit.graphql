@@ -5753,16 +5753,12 @@ enum TokenCapped_orderBy {
 type TokenCollateral {
   id: Bytes!
   identityClaim: IdentityClaim
-  expiryTimestamp: BigInt
-  collateral: BigDecimal
-  collateralExact: BigInt
 }
 
 type TokenCollateralStats {
   id: Int8!
   timestamp: Timestamp!
   token: Token!
-  expiryTimestamp: BigInt!
   collateral: BigDecimal!
   collateralExact: BigInt!
   collateralAvailable: BigDecimal!
@@ -5775,7 +5771,6 @@ type TokenCollateralStatsData {
   id: Int8!
   timestamp: Timestamp!
   token: Token!
-  expiryTimestamp: BigInt!
   collateral: BigDecimal!
   collateralExact: BigInt!
   collateralAvailable: BigDecimal!
@@ -5822,14 +5817,6 @@ input TokenCollateralStatsData_filter {
   token_not_ends_with: String
   token_not_ends_with_nocase: String
   token_: Token_filter
-  expiryTimestamp: BigInt
-  expiryTimestamp_not: BigInt
-  expiryTimestamp_gt: BigInt
-  expiryTimestamp_lt: BigInt
-  expiryTimestamp_gte: BigInt
-  expiryTimestamp_lte: BigInt
-  expiryTimestamp_in: [BigInt!]
-  expiryTimestamp_not_in: [BigInt!]
   collateral: BigDecimal
   collateral_not: BigDecimal
   collateral_gt: BigDecimal
@@ -5898,7 +5885,6 @@ enum TokenCollateralStatsData_orderBy {
   token__decimals
   token__totalSupply
   token__totalSupplyExact
-  expiryTimestamp
   collateral
   collateralExact
   collateralAvailable
@@ -5942,7 +5928,6 @@ enum TokenCollateralStats_orderBy {
   token__decimals
   token__totalSupply
   token__totalSupplyExact
-  expiryTimestamp
   collateral
   collateralExact
   collateralAvailable
@@ -5983,30 +5968,6 @@ input TokenCollateral_filter {
   identityClaim_not_ends_with: String
   identityClaim_not_ends_with_nocase: String
   identityClaim_: IdentityClaim_filter
-  expiryTimestamp: BigInt
-  expiryTimestamp_not: BigInt
-  expiryTimestamp_gt: BigInt
-  expiryTimestamp_lt: BigInt
-  expiryTimestamp_gte: BigInt
-  expiryTimestamp_lte: BigInt
-  expiryTimestamp_in: [BigInt!]
-  expiryTimestamp_not_in: [BigInt!]
-  collateral: BigDecimal
-  collateral_not: BigDecimal
-  collateral_gt: BigDecimal
-  collateral_lt: BigDecimal
-  collateral_gte: BigDecimal
-  collateral_lte: BigDecimal
-  collateral_in: [BigDecimal!]
-  collateral_not_in: [BigDecimal!]
-  collateralExact: BigInt
-  collateralExact_not: BigInt
-  collateralExact_gt: BigInt
-  collateralExact_lt: BigInt
-  collateralExact_gte: BigInt
-  collateralExact_lte: BigInt
-  collateralExact_in: [BigInt!]
-  collateralExact_not_in: [BigInt!]
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -6022,9 +5983,6 @@ enum TokenCollateral_orderBy {
   identityClaim__uri
   identityClaim__revoked
   identityClaim__deployedInTransaction
-  expiryTimestamp
-  collateral
-  collateralExact
 }
 
 type TokenComplianceModule {
@@ -8234,9 +8192,6 @@ enum Token_orderBy {
   pausable__paused
   collateral
   collateral__id
-  collateral__expiryTimestamp
-  collateral__collateral
-  collateral__collateralExact
   capped
   capped__id
   capped__cap
