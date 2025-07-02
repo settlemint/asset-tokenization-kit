@@ -1,4 +1,5 @@
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
+import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
 import { WalletStep } from "@/components/onboarding/steps/wallet-step";
 import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -81,9 +83,7 @@ function InvestorOnboarding() {
   const { t } = useTranslation("onboarding");
   const navigate = useNavigate();
   const [currentStepId, setCurrentStepId] = useState("wallet");
-
-  // Get user data from loader
-  const { user } = Route.useLoaderData();
+  const { data: session } = authClient.useSession();
 
   // Define steps with dynamic statuses
   const steps: Step[] = useMemo(
@@ -92,9 +92,15 @@ function InvestorOnboarding() {
         id: "wallet",
         title: t("steps.wallet.title"),
         description: t("steps.wallet.description"),
-        status: user.wallet
+        status: currentStepId === "wallet" ? "active" : "completed",
+      },
+      {
+        id: "security",
+        title: t("steps.security.title"),
+        description: t("steps.security.description"),
+        status: session?.user.pincodeEnabled
           ? "completed"
-          : currentStepId === "wallet"
+          : currentStepId === "security"
             ? "active"
             : "pending",
       },
@@ -105,7 +111,7 @@ function InvestorOnboarding() {
         status: currentStepId === "identity" ? "active" : "pending",
       },
     ],
-    [currentStepId, user.wallet, t]
+    [currentStepId, session?.user.pincodeEnabled, t]
   );
 
   const handleStepChange = useCallback((stepId: string) => {
@@ -113,6 +119,10 @@ function InvestorOnboarding() {
   }, []);
 
   const handleWalletSuccess = useCallback(() => {
+    setCurrentStepId("security");
+  }, []);
+
+  const handleSecuritySuccess = useCallback(() => {
     setCurrentStepId("identity");
   }, []);
 
@@ -136,6 +146,9 @@ function InvestorOnboarding() {
           >
             {currentStepId === "wallet" && (
               <WalletStep onSuccess={handleWalletSuccess} />
+            )}
+            {currentStepId === "security" && (
+              <WalletSecurityStep onSuccess={handleSecuritySuccess} />
             )}
             {currentStepId === "identity" && (
               <IdentityStep onSuccess={handleIdentitySuccess} />

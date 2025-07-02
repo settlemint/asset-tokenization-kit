@@ -70,17 +70,11 @@ function PlatformOnboarding() {
 
   // Determine initial step based on what's completed
   const getInitialStep = useCallback(() => {
-    if (!user.wallet) return "wallet";
-    if (!session?.user.pincodeEnabled) return "security";
+    if (!session?.user.pincodeEnabled) return "wallet";
     if (!systemAddress) return "system";
     if ((systemDetails?.tokenFactories.length ?? 0) === 0) return "assets";
     return "assets"; // Default to last step if all complete
-  }, [
-    user,
-    session?.user,
-    systemAddress,
-    systemDetails?.tokenFactories.length,
-  ]);
+  }, [session?.user, systemAddress, systemDetails?.tokenFactories.length]);
 
   // Set initial step once when data is loaded
   useEffect(() => {
@@ -101,11 +95,7 @@ function PlatformOnboarding() {
         id: "wallet",
         title: "Generate Wallet",
         description: "Create your secure blockchain wallet",
-        status: user.isOnboarded
-          ? "completed"
-          : currentStepId === "wallet"
-            ? "active"
-            : "pending",
+        status: currentStepId === "wallet" ? "active" : "completed",
       },
       {
         id: "security",
@@ -140,7 +130,6 @@ function PlatformOnboarding() {
       },
     ],
     [
-      user.isOnboarded,
       currentStepId,
       session?.user.pincodeEnabled,
       systemAddress,
@@ -183,18 +172,8 @@ function PlatformOnboarding() {
   const assetsActionRef = useRef<(() => void) | null>(null);
 
   const handleNext = useCallback(() => {
-    // Check if current step needs special action
-    if (
-      currentStepId === "wallet" &&
-      !user.isOnboarded &&
-      walletActionRef.current
-    ) {
-      walletActionRef.current();
-      return;
-    }
-
-    // If we're on wallet step and wallet already exists, move to next step
-    if (currentStepId === "wallet" && user.wallet) {
+    // If we're on wallet step and wallet, move to next step
+    if (currentStepId === "wallet") {
       const nextStep = steps[currentStepIndex + 1];
       if (nextStep) {
         setCurrentStepId(nextStep.id);
@@ -262,7 +241,6 @@ function PlatformOnboarding() {
     }
   }, [
     currentStepId,
-    user,
     session?.user.pincodeEnabled,
     systemAddress,
     systemDetails,
@@ -316,10 +294,7 @@ function PlatformOnboarding() {
 
   // Determine button labels
   const getNextLabel = useCallback((): string => {
-    if (currentStepId === "wallet" && !user.isOnboarded) {
-      return "Generate Wallet";
-    }
-    if (currentStepId === "wallet" && user.wallet) {
+    if (currentStepId === "wallet") {
       return t("onboarding:ui.next");
     }
     if (currentStepId === "security" && !session?.user.pincodeEnabled) {
@@ -346,8 +321,6 @@ function PlatformOnboarding() {
     return t("onboarding:ui.next");
   }, [
     currentStepId,
-    user.isOnboarded,
-    user.wallet,
     session?.user.pincodeEnabled,
     systemAddress,
     systemDetails?.tokenFactories.length,

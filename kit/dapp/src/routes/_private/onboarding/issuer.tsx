@@ -1,6 +1,8 @@
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
+import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
 import { WalletStep } from "@/components/onboarding/steps/wallet-step";
 import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
+import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -24,10 +26,8 @@ export const Route = createFileRoute("/_private/onboarding/issuer")({
 function IssuerOnboarding() {
   const { t } = useTranslation("onboarding");
   const navigate = useNavigate();
-  const [currentStepId] = useState("wallet");
-
-  // Get user data from loader
-  const { user } = Route.useLoaderData();
+  const [currentStepId, setCurrentStepId] = useState("wallet");
+  const { data: session } = authClient.useSession();
 
   // Define steps with dynamic statuses
   const steps: Step[] = useMemo(
@@ -36,20 +36,30 @@ function IssuerOnboarding() {
         id: "wallet",
         title: t("steps.wallet.title"),
         description: t("steps.wallet.description"),
-        status: user.wallet ? "completed" : "active",
+        status: currentStepId === "wallet" ? "active" : "completed",
+      },
+      {
+        id: "security",
+        title: t("steps.security.title"),
+        description: t("steps.security.description"),
+        status: session?.user.pincodeEnabled
+          ? "completed"
+          : currentStepId === "security"
+            ? "active"
+            : "pending",
       },
     ],
-    [user.wallet, t]
+    [currentStepId, session?.user.pincodeEnabled, t]
   );
 
   const handleWalletSuccess = useCallback(() => {
+    setCurrentStepId("security");
+  }, []);
+
+  const handleSecuritySuccess = useCallback(() => {
     // Issuer onboarding complete, redirect to dashboard
     void navigate({ to: "/" });
   }, [navigate]);
-
-  const handleStepChange = useCallback(() => {
-    // Only one step for issuer onboarding
-  }, []);
 
   const allowedTypes: OnboardingType[] = useMemo(() => ["issuer"], []);
 
@@ -62,9 +72,14 @@ function IssuerOnboarding() {
             currentStepId={currentStepId}
             title={t("issuer.title")}
             description={t("issuer.description")}
-            onStepChange={handleStepChange}
+            onStepChange={setCurrentStepId}
           >
-            <WalletStep onSuccess={handleWalletSuccess} />
+            {currentStepId === "wallet" && (
+              <WalletStep onSuccess={handleWalletSuccess} />
+            )}
+            {currentStepId === "security" && (
+              <WalletSecurityStep onSuccess={handleSecuritySuccess} />
+            )}
           </StepWizard>
         </div>
       </div>
