@@ -3,6 +3,7 @@ import { Command, CommandGroup, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
+import { ChevronLeft } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { FilterValue, TextFilterOperator } from "../types/filter-types";
@@ -13,12 +14,14 @@ interface PropertyFilterTextValueMenuProps<TData, TValue> {
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
   onClose?: () => void;
+  onBack?: () => void;
 }
 
 export function PropertyFilterTextValueMenu<TData, TValue>({
   column,
   columnMeta,
   onClose,
+  onBack,
 }: PropertyFilterTextValueMenuProps<TData, TValue>) {
   const { t } = useTranslation("general");
   const filter = column.getFilterValue()
@@ -82,13 +85,23 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
     <Command>
       <CommandList className="max-h-fit">
         <CommandGroup>
-          <div className="flex flex-col gap-2 p-2">
+          <div className="flex flex-col p-2 space-y-2 min-w-[280px]">
             {/* Header with field title and icon */}
-            <div className="flex items-center gap-2 px-1 pb-1">
-              {Icon && <Icon className="size-4 text-muted-foreground" />}
-              <span className="font-medium text-sm">{displayName}</span>
+            <div className="flex items-center gap-1 -mt-1">
+              {onBack && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-4 w-4 p-0 hover:bg-transparent"
+                  onClick={onBack}
+                >
+                  <ChevronLeft className="h-3 w-3" />
+                </Button>
+              )}
+              {Icon && <Icon className="size-3 text-muted-foreground" />}
+              <span className="text-xs text-muted-foreground">{displayName}</span>
             </div>
-            <Separator className="mb-1" />
+            <Separator className="-mx-2" />
             <div className="grid grid-cols-2 gap-2">
               <Button
                 variant={operator === "contains" ? "default" : "outline"}
@@ -113,10 +126,10 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
               value={value}
               onChange={handleValueChange}
               placeholder={t("components.data-table.filters.text.placeholder")}
-              className="w-full mt-1"
+              className="w-full"
               onKeyDown={handleKeyDown}
             />
-            <div className="flex gap-2 mt-2">
+            <div className="flex gap-2">
               <Button
                 size="sm"
                 variant="default"

@@ -3,8 +3,8 @@ import { Command, CommandGroup, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
+import { ChevronLeft } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { numberFilterDetails } from "../operators/number-operators";
@@ -16,12 +16,14 @@ interface PropertyFilterNumberValueMenuProps<TData, TValue> {
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
   onClose?: () => void;
+  onBack?: () => void;
 }
 
 export function PropertyFilterNumberValueMenu<TData, TValue>({
   column,
   columnMeta,
   onClose,
+  onBack,
 }: PropertyFilterNumberValueMenuProps<TData, TValue>) {
   const { t } = useTranslation("general");
   const maxFromMeta = columnMeta.max;
@@ -117,12 +119,6 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
     [cappedMax, inputValues]
   );
 
-  const handleTabsValueChange = useCallback(
-    (value: string) => {
-      changeType(value as "single" | "range");
-    },
-    [changeType]
-  );
 
   const handleSingleSliderChange = useCallback(
     (value: number[]) => {
@@ -175,19 +171,43 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
     <Command>
       <CommandList className="max-h-fit">
         <CommandGroup>
-          <div className="flex flex-col w-full p-2">
+          <div className="flex flex-col w-full p-2 space-y-2 min-w-[280px]">
             {/* Header with field title and icon */}
-            <div className="flex items-center gap-2 px-1 pb-1">
-              {Icon && <Icon className="size-4 text-muted-foreground" />}
-              <span className="font-medium text-sm">{displayName}</span>
+            <div className="flex items-center gap-1 -mt-1">
+              {onBack && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-4 w-4 p-0 hover:bg-transparent"
+                  onClick={onBack}
+                >
+                  <ChevronLeft className="h-3 w-3" />
+                </Button>
+              )}
+              {Icon && <Icon className="size-3 text-muted-foreground" />}
+              <span className="text-xs text-muted-foreground">{displayName}</span>
             </div>
-            <Separator className="mb-3" />
-            <Tabs value={tabValue} onValueChange={handleTabsValueChange}>
-              <TabsList className="w-full *:text-xs">
-                <TabsTrigger value="single">{t("components.data-table.filters.number.single")}</TabsTrigger>
-                <TabsTrigger value="range">{t("components.data-table.filters.number.range")}</TabsTrigger>
-              </TabsList>
-              <TabsContent value="single" className="flex flex-col gap-4 mt-4">
+            <Separator className="-mx-2" />
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant={tabValue === "single" ? "default" : "outline"}
+                size="sm"
+                onClick={() => changeType("single")}
+                className="text-xs"
+              >
+                {t("components.data-table.filters.number.single")}
+              </Button>
+              <Button
+                variant={tabValue === "range" ? "default" : "outline"}
+                size="sm"
+                onClick={() => changeType("range")}
+                className="text-xs"
+              >
+                {t("components.data-table.filters.number.range")}
+              </Button>
+            </div>
+            {tabValue === "single" ? (
+              <div className="flex flex-col gap-2">
                 <Slider
                   value={sliderValueSingle}
                   onValueChange={handleSingleSliderChange}
@@ -205,8 +225,9 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                   min={safeDatasetMin}
                   max={cappedMax}
                 />
-              </TabsContent>
-              <TabsContent value="range" className="flex flex-col gap-4 mt-4">
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
                 <Slider
                   value={sliderValueRange}
                   onValueChange={handleRangeSliderChange}
@@ -238,9 +259,9 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                     />
                   </div>
                 </div>
-              </TabsContent>
-            </Tabs>
-            <div className="flex gap-2 mt-4">
+              </div>
+            )}
+            <div className="flex gap-2">
               <Button
                 size="sm"
                 variant="default"

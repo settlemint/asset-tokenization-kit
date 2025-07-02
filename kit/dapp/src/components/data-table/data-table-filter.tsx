@@ -239,6 +239,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
           column={column}
           columnMeta={columnMeta}
           table={table}
+          onBack={() => setProperty(undefined)}
         />
       ) : (
         <Command loop>

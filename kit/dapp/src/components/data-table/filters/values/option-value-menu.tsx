@@ -5,7 +5,9 @@ import {
   CommandInput,
   CommandList,
 } from "@/components/ui/command";
+import { Button } from "@/components/ui/button";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
+import { ChevronLeft } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { uniq } from "../../data-table-array";
@@ -20,6 +22,7 @@ interface PropertyFilterOptionValueMenuProps<TData, TValue> {
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
   onClose?: () => void;
+  onBack?: () => void;
 }
 
 export function PropertyFilterOptionValueMenu<TData, TValue>({
@@ -27,6 +30,7 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
   column,
   columnMeta,
   table,
+  onBack,
 }: PropertyFilterOptionValueMenuProps<TData, TValue>) {
   const { t } = useTranslation("general");
   const filter = column.getFilterValue()
@@ -99,11 +103,21 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
   const displayName = columnMeta.displayName ?? "Filter";
 
   return (
-    <Command loop>
+    <Command loop className="min-w-[280px]">
       {/* Header with field title and icon */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b">
-        {Icon && <Icon className="size-4 text-muted-foreground" />}
-        <span className="font-medium text-sm">{displayName}</span>
+      <div className="flex items-center gap-1 px-3 py-1 border-b">
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-4 w-4 p-0 hover:bg-transparent -ml-1"
+            onClick={onBack}
+          >
+            <ChevronLeft className="h-3 w-3" />
+          </Button>
+        )}
+        {Icon && <Icon className="size-3 text-muted-foreground" />}
+        <span className="text-xs text-muted-foreground">{displayName}</span>
       </div>
       <CommandInput autoFocus placeholder={t("components.data-table.search")} />
       <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
