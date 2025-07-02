@@ -21,10 +21,13 @@ export const tokenFactoryPermissionMiddleware = (
     const userRoles = auth
       ? Object.entries(tokenFactory.accessControl)
           .filter(([, accounts]) =>
-            accounts.some((account) => account.id === auth.user.id)
+            accounts.some(
+              (account) => account.id === auth.user.wallet.toLowerCase()
+            )
           )
           .map(([role]) => role as keyof typeof tokenFactory.accessControl)
       : [];
+
     if (!userRoles.some((role) => requiredRoles.includes(role))) {
       throw errors.FORBIDDEN();
     }

@@ -1,0 +1,46 @@
+{
+  "streaming-messages": {
+    "initial-loading": "Preparing to create {{type}}...",
+    "no-result-error": "No transaction hash received from {{type}} creation.",
+    "default-error": "Failed to create {{type}}.",
+    "creation-failed": "Failed to create the {{type}}.",
+    "creation-success": "{{type}} successfully created."
+  },
+  "form": {
+    "title": "Create {{type}}",
+    "description": "Configure your {{type}} by providing the basic information below.",
+    "fields": {
+      "name": {
+        "label": "Name",
+        "placeholder": "e.g., Government {{type}} Series A",
+        "description": "The name of the token. This is used to identify the token in the UI and cannot be changed after creation."
+      },
+      "symbol": {
+        "label": "Symbol",
+        "placeholder": "e.g., GBSA",
+        "description": "A short symbol for the token (usually 3-5 characters)"
+      },
+      "decimals": {
+        "label": "Decimals",
+        "placeholder": "18",
+        "description": "Number of decimal places for the token (0-18, default is 18)"
+      },
+      "isin": {
+        "label": "ISIN (Optional)",
+        "placeholder": "e.g., US0378331005",
+        "description": "The ISIN of the token. This is an optional unique identifier for the token in the financial system."
+      }
+    },
+    "actions": {
+      "create": "Create {{type}}",
+      "creating": "Creating..."
+    }
+  },
+  "messages": {
+    "creating": "Creating the {{type}}...",
+    "created": "{{type}} successfully created.",
+    "creation-failed": "Failed to create the {{type}}.",
+    "success-toast": "{{type}} created successfully!",
+    "error-toast": "Failed to create {{type}}"
+  }
+}

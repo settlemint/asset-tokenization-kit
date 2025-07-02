@@ -247,7 +247,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
         // Execute the factory creation transaction
         const variables: VariablesOf<typeof CREATE_TOKEN_FACTORY_MUTATION> = {
           address: contract,
-          from: sender.wallet ?? "",
+          from: sender.wallet,
           factoryImplementation: factoryImplementation,
           tokenImplementation: tokenImplementation,
           name: name,

@@ -42,7 +42,7 @@ export const mint = tokenRouter.token.mint
       MINT_BOND_MUTATION,
       {
         address: contract,
-        from: sender.wallet ?? "",
+        from: sender.wallet,
         to,
         amount: amount.toString(),
         ...(await handleChallenge(sender, {

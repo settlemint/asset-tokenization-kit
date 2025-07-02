@@ -1,4 +1,5 @@
 import { bondCreate } from "@/orpc/routes/token/routes/bond/bond.create";
+import { depositCreate } from "@/orpc/routes/token/routes/deposit/deposit.create";
 import { factoryCreate } from "@/orpc/routes/token/routes/factory.create";
 import { factoryList } from "@/orpc/routes/token/routes/factory.list";
 import { factoryRead } from "@/orpc/routes/token/routes/factory.read";
@@ -8,6 +9,7 @@ import { read } from "@/orpc/routes/token/routes/token.read";
 
 const routes = {
   bondCreate,
+  depositCreate,
   factoryCreate,
   factoryList,
   factoryRead,
