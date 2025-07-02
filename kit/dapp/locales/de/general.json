@@ -60,7 +60,25 @@
       "go-to-next-page": "Zur nächsten Seite",
       "go-to-last-page": "Zur letzten Seite",
       "details": "Details",
-      "open-menu": "Menü öffnen"
+      "open-menu": "Menü öffnen",
+      "address-copied": "Adresse in Zwischenablage kopiert",
+      "clear-all": "Alle löschen",
+      "is": "ist",
+      "clear": "Löschen",
+      "filters": {
+        "text": {
+          "contains": "Enthält",
+          "does-not-contain": "Enthält nicht",
+          "placeholder": "Wert eingeben..."
+        },
+        "number": {
+          "single": "Einzeln",
+          "range": "Bereich",
+          "placeholder": "Wert eingeben",
+          "min": "Min",
+          "max": "Max"
+        }
+      }
     },
     "deposits-table": {
       "columns": {

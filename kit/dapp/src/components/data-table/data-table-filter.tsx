@@ -20,6 +20,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { ArrowRight, Filter, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ColumnDataType } from "./filters/types/column-types";
 import type { FilterValue } from "./filters/types/filter-types";
 import { getColumn, getColumnMeta } from "./filters/utils/table-helpers";
@@ -199,6 +200,7 @@ export function DataTableFilterMobileContainer({
 }
 
 export function TableFilter<TData>({ table }: { table: Table<TData> }) {
+  const { t } = useTranslation("general");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [property, setProperty] = useState<string | undefined>(undefined);
@@ -244,9 +246,9 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
             value={value}
             onValueChange={setValue}
             ref={inputRef}
-            placeholder="Search..."
+            placeholder={t("components.data-table.search")}
           />
-          <CommandEmpty>No results.</CommandEmpty>
+          <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
           <CommandList className="max-h-fit">
             <CommandGroup>
               {properties.map((column) => (
@@ -260,7 +262,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
           </CommandList>
         </Command>
       ),
-    [property, column, columnMeta, value, table, properties]
+    [property, column, columnMeta, value, table, properties, t]
   );
 
   if (!hasFilters) return null;
@@ -273,7 +275,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
           className="h-8 w-fit px-2 text-muted-foreground"
         >
           <Filter className="size-4" />
-          <span className="hidden md:block">Filter</span>
+          <span className="hidden md:block">{t("components.data-table.filter")}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent

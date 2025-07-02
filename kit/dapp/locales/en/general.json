@@ -61,6 +61,24 @@
       "go-to-last-page": "Go to last page",
       "details": "Details",
       "open-menu": "Open menu",
+      "address-copied": "Address copied to clipboard",
+      "clear-all": "Clear all",
+      "is": "is",
+      "clear": "Clear",
+      "filters": {
+        "text": {
+          "contains": "Contains",
+          "does-not-contain": "Does not contain",
+          "placeholder": "Enter value..."
+        },
+        "number": {
+          "single": "Single",
+          "range": "Range",
+          "placeholder": "Enter value",
+          "min": "Min",
+          "max": "Max"
+        }
+      },
       "bulk-actions": {
         "selected-count": "{{count}} selected",
         "selected-count_one": "{{count}} item selected",

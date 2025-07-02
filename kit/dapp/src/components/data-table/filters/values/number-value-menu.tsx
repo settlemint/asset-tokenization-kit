@@ -5,6 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { numberFilterDetails } from "../operators/number-operators";
 import type { FilterValue } from "../types/filter-types";
 
@@ -21,6 +22,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
   columnMeta,
   onClose,
 }: PropertyFilterNumberValueMenuProps<TData, TValue>) {
+  const { t } = useTranslation("general");
   const maxFromMeta = columnMeta.max;
   const cappedMax = maxFromMeta ?? Number.MAX_SAFE_INTEGER;
 
@@ -172,8 +174,8 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
           <div className="flex flex-col w-full p-2">
             <Tabs value={tabValue} onValueChange={handleTabsValueChange}>
               <TabsList className="w-full *:text-xs">
-                <TabsTrigger value="single">Single</TabsTrigger>
-                <TabsTrigger value="range">Range</TabsTrigger>
+                <TabsTrigger value="single">{t("components.data-table.filters.number.single")}</TabsTrigger>
+                <TabsTrigger value="range">{t("components.data-table.filters.number.range")}</TabsTrigger>
               </TabsList>
               <TabsContent value="single" className="flex flex-col gap-4 mt-4">
                 <Slider
@@ -188,7 +190,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                   type="number"
                   value={inputValues[0] ?? "0"}
                   onChange={handleSingleInputChange}
-                  placeholder="Enter value"
+                  placeholder={t("components.data-table.filters.number.placeholder")}
                   className="w-full"
                   min={safeDatasetMin}
                   max={cappedMax}
@@ -205,7 +207,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                 />
                 <div className="flex gap-2">
                   <div className="flex flex-col gap-1 flex-1">
-                    <label className="text-xs text-muted-foreground">Min</label>
+                    <label className="text-xs text-muted-foreground">{t("components.data-table.filters.number.min")}</label>
                     <Input
                       type="number"
                       value={inputValues[0] ?? "0"}
@@ -216,7 +218,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                     />
                   </div>
                   <div className="flex flex-col gap-1 flex-1">
-                    <label className="text-xs text-muted-foreground">Max</label>
+                    <label className="text-xs text-muted-foreground">{t("components.data-table.filters.number.max")}</label>
                     <Input
                       type="number"
                       value={inputValues[1] ?? `${cappedMax}+`}
@@ -235,7 +237,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                 onClick={handleApply}
                 className="flex-1"
               >
-                Apply
+                {t("components.data-table.apply")}
               </Button>
               <Button
                 size="sm"
@@ -243,7 +245,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                 onClick={handleClear}
                 className="flex-1"
               >
-                Clear
+                {t("components.data-table.clear")}
               </Button>
             </div>
           </div>

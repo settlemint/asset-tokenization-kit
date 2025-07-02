@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/command";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { uniq } from "../../data-table-array";
 import { isColumnOptionArray } from "../utils/type-guards";
 import type { ColumnOption, ElementType } from "../types/column-types";
@@ -27,6 +28,7 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
   columnMeta,
   table,
 }: PropertyFilterOptionValueMenuProps<TData, TValue>) {
+  const { t } = useTranslation("general");
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"option", TData>)
     : undefined;
@@ -95,8 +97,8 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
 
   return (
     <Command loop>
-      <CommandInput autoFocus placeholder="Search..." />
-      <CommandEmpty>No results.</CommandEmpty>
+      <CommandInput autoFocus placeholder={t("components.data-table.search")} />
+      <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
       <CommandList className="max-h-fit">
         <CommandGroup>
           {options.map((v) => {

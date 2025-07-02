@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface AddressCellProps {
   address: string;
@@ -23,11 +24,13 @@ export function AddressCell({
   className,
   onCopy,
 }: AddressCellProps) {
+  const { t } = useTranslation("general");
+  
   const handleCopy = useCallback(() => {
     void navigator.clipboard.writeText(address);
-    toast.success("Address copied to clipboard");
+    toast.success(t("components.data-table.address-copied"));
     onCopy?.(address);
-  }, [address, onCopy]);
+  }, [address, onCopy, t]);
 
   const truncatedAddress = `${address.slice(0, truncateLength)}...${address.slice(-truncateLength + 2)}`;
 

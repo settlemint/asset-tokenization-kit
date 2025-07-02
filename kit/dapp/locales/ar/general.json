@@ -60,7 +60,25 @@
       "go-to-next-page": "انتقل إلى الصفحة التالية",
       "go-to-last-page": "انتقل إلى الصفحة الأخيرة",
       "details": "تفاصيل",
-      "open-menu": "فتح القائمة"
+      "open-menu": "فتح القائمة",
+      "address-copied": "تم نسخ العنوان إلى الحافظة",
+      "clear-all": "مسح الكل",
+      "is": "هو",
+      "clear": "مسح",
+      "filters": {
+        "text": {
+          "contains": "يحتوي على",
+          "does-not-contain": "لا يحتوي على",
+          "placeholder": "أدخل القيمة..."
+        },
+        "number": {
+          "single": "مفرد",
+          "range": "نطاق",
+          "placeholder": "أدخل القيمة",
+          "min": "الحد الأدنى",
+          "max": "الحد الأقصى"
+        }
+      }
     },
     "deposits-table": {
       "columns": {

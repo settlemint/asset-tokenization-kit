@@ -17,6 +17,7 @@ import {
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import type { Column, ColumnMeta } from "@tanstack/react-table";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { dateFilterDetails } from "./date-operators";
 import { filterTypeOperatorDetails } from "./operator-mapping";
 import { multiOptionFilterDetails } from "./multi-option-operators";
@@ -48,6 +49,7 @@ export function PropertyFilterOperatorController<
   filter: FilterValue<T, TData>;
 }) {
   const [open, setOpen] = useState<boolean>(false);
+  const { t } = useTranslation("general");
 
   const close = useCallback(() => {
     setOpen(false);
@@ -71,8 +73,8 @@ export function PropertyFilterOperatorController<
         className="w-fit p-0 origin-(--radix-popover-content-transform-origin)"
       >
         <Command loop>
-          <CommandInput placeholder="Search..." />
-          <CommandEmpty>No results.</CommandEmpty>
+          <CommandInput placeholder={t("components.data-table.search")} />
+          <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
           <CommandList className="max-h-fit">
             <PropertyFilterOperatorMenu
               column={column}
@@ -92,9 +94,10 @@ export function PropertyFilterOperatorDisplay<TData, T extends ColumnDataType>({
   filter: FilterValue<T, TData>;
   filterType: T;
 }) {
+  const { t } = useTranslation("general");
   const operatorDetails = filterTypeOperatorDetails[filterType];
   if (!operatorDetails || !filter?.operator) {
-    return <span className="text-xs">is</span>;
+    return <span className="text-xs">{t("components.data-table.is")}</span>;
   }
 
   const details = operatorDetails[filter.operator];

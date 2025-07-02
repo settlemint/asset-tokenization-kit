@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/command";
 import type { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { uniq } from "../../data-table-array";
 import { determineNewOperator } from "../operators/operator-utils";
 import { isColumnOptionArray } from "../utils/type-guards";
@@ -31,6 +32,7 @@ export function PropertyFilterMultiOptionValueMenu<
   columnMeta,
   table,
 }: PropertyFilterMultiOptionValueMenuProps<TData, TValue>) {
+  const { t } = useTranslation("general");
   const filter = column.getFilterValue() as
     | FilterValue<"multiOption", TData>
     | undefined;
@@ -133,8 +135,8 @@ export function PropertyFilterMultiOptionValueMenu<
 
   return (
     <Command>
-      <CommandInput autoFocus placeholder="Search..." />
-      <CommandEmpty>No results.</CommandEmpty>
+      <CommandInput autoFocus placeholder={t("components.data-table.search")} />
+      <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
       <CommandList>
         <CommandGroup>
           {options.map((v) => {

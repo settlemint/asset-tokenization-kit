@@ -103,7 +103,7 @@ export function DataTableAdvancedToolbar<TData>({
                 className="h-7 text-xs ml-auto"
               >
                 <FilterXIcon className="h-3 w-3" />
-                Clear all
+                {t("components.data-table.clear-all")}
               </Button>
             )}
           </div>
@@ -155,7 +155,7 @@ export function DataTableAdvancedToolbar<TData>({
                   className="h-8 gap-2 text-muted-foreground hover:text-foreground"
                 >
                   <FilterXIcon className="h-4 w-4" />
-                  Clear all
+                  {t("components.data-table.clear-all")}
                 </Button>
               )}
             </div>

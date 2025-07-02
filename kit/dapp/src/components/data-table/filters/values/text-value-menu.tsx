@@ -3,6 +3,7 @@ import { Command, CommandGroup, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { FilterValue, TextFilterOperator } from "../types/filter-types";
 
 interface PropertyFilterTextValueMenuProps<TData, TValue> {
@@ -17,6 +18,7 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
   column,
   onClose,
 }: PropertyFilterTextValueMenuProps<TData, TValue>) {
+  const { t } = useTranslation("general");
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"text", TData>)
     : undefined;
@@ -83,7 +85,7 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
                 onClick={handleContainsClick}
                 className="text-xs"
               >
-                Contains
+                {t("components.data-table.filters.text.contains")}
               </Button>
               <Button
                 variant={
@@ -93,13 +95,13 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
                 onClick={handleDoesNotContainClick}
                 className="text-xs"
               >
-                Does not contain
+                {t("components.data-table.filters.text.does-not-contain")}
               </Button>
             </div>
             <Input
               value={value}
               onChange={handleValueChange}
-              placeholder="Type to search..."
+              placeholder={t("components.data-table.filters.text.placeholder")}
               className="w-full mt-1"
               onKeyDown={handleKeyDown}
             />
@@ -110,7 +112,7 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
                 onClick={handleApply}
                 className="flex-1"
               >
-                Apply
+                {t("components.data-table.apply")}
               </Button>
               <Button
                 size="sm"
@@ -118,7 +120,7 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
                 onClick={handleClear}
                 className="flex-1"
               >
-                Clear
+                {t("components.data-table.clear")}
               </Button>
             </div>
           </div>

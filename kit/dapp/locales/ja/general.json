@@ -60,7 +60,25 @@
       "go-to-next-page": "次のページに移動",
       "go-to-last-page": "最後のページに移動",
       "details": "詳細",
-      "open-menu": "メニューを開く"
+      "open-menu": "メニューを開く",
+      "address-copied": "アドレスがクリップボードにコピーされました",
+      "clear-all": "すべてクリア",
+      "is": "は",
+      "clear": "クリア",
+      "filters": {
+        "text": {
+          "contains": "含む",
+          "does-not-contain": "含まない",
+          "placeholder": "値を入力..."
+        },
+        "number": {
+          "single": "単一",
+          "range": "範囲",
+          "placeholder": "値を入力",
+          "min": "最小",
+          "max": "最大"
+        }
+      }
     },
     "deposits-table": {
       "columns": {
