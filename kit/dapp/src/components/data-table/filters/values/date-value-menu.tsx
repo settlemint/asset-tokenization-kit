@@ -11,10 +11,12 @@ interface PropertyFilterDateValueMenuProps<TData, TValue> {
   column: Column<TData>;
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
+  onClose?: () => void;
 }
 
 export function PropertyFilterDateValueMenu<TData, TValue>({
   column,
+  onClose: _onClose,
 }: PropertyFilterDateValueMenuProps<TData, TValue>) {
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"date", TData>)

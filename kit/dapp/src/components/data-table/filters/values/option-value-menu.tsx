@@ -18,6 +18,7 @@ interface PropertyFilterOptionValueMenuProps<TData, TValue> {
   column: Column<TData>;
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
+  onClose?: () => void;
 }
 
 export function PropertyFilterOptionValueMenu<TData, TValue>({
@@ -25,6 +26,7 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
   column,
   columnMeta,
   table,
+  onClose: _onClose,
 }: PropertyFilterOptionValueMenuProps<TData, TValue>) {
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"option", TData>)

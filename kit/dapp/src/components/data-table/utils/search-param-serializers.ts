@@ -189,11 +189,18 @@ export function deserializeDataTableState(
   // Filters from filter_ prefixed params
   const columnFilters: ColumnFilter[] = [];
   Object.entries(searchParams).forEach(([key, value]) => {
-    if (key.startsWith("filter_") && value !== undefined && value !== null && value !== "") {
+    if (
+      key.startsWith("filter_") &&
+      value !== undefined &&
+      value !== null &&
+      value !== ""
+    ) {
       const filterKey = key.substring(7); // Remove 'filter_' prefix
-      columnFilters.push({ 
-        id: filterKey, 
-        value: String(value) 
+      // For now, store as simple string values
+      // The actual filter function will handle the comparison
+      columnFilters.push({
+        id: filterKey,
+        value: String(value),
       });
     }
   });
@@ -282,14 +289,7 @@ export function searchParamsToTableState(searchParams: DataTableSearchParams) {
   return {
     pagination: searchParams.pagination,
     sorting: searchParams.sorting,
-    columnFilters: searchParams.columnFilters.map(filter => ({
-      id: filter.id,
-      value: {
-        operator: "eq", // Default operator
-        values: [filter.value],
-        columnMeta: undefined, // Will be populated by the table
-      }
-    })),
+    columnFilters: searchParams.columnFilters,
     globalFilter: searchParams.globalFilter,
     columnVisibility: searchParams.columnVisibility,
     rowSelection: searchParams.rowSelection,

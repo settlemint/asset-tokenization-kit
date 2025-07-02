@@ -19,6 +19,7 @@ interface PropertyFilterMultiOptionValueMenuProps<TData, TValue> {
   column: Column<TData>;
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
+  onClose?: () => void;
 }
 
 export function PropertyFilterMultiOptionValueMenu<
@@ -29,6 +30,7 @@ export function PropertyFilterMultiOptionValueMenu<
   column,
   columnMeta,
   table,
+  onClose: _onClose,
 }: PropertyFilterMultiOptionValueMenuProps<TData, TValue>) {
   const filter = column.getFilterValue() as
     | FilterValue<"multiOption", TData>

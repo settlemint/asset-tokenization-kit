@@ -14,7 +14,7 @@ import { getDateLocale } from "@/lib/utils/date-locale";
 import { formatDateRange } from "../date-utils";
 import { useTranslation } from "react-i18next";
 import { Ellipsis } from "lucide-react";
-import { cloneElement, isValidElement } from "react";
+import { cloneElement, isValidElement, useState } from "react";
 import { take, uniq } from "../../data-table-array";
 import { isColumnOptionArray } from "../utils/type-guards";
 import type { ColumnOption, ElementType } from "../types/column-types";
@@ -39,8 +39,10 @@ export function PropertyFilterValueController<TData, TValue>({
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
 }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverAnchor className="h-full" />
       <PopoverTrigger asChild>
         <Button
@@ -59,12 +61,20 @@ export function PropertyFilterValueController<TData, TValue>({
         align="start"
         side="bottom"
         className="w-fit p-0 origin-(--radix-popover-content-transform-origin)"
+        onInteractOutside={(e) => {
+          // Prevent closing when clicking inside the menu
+          const target = e.target as HTMLElement;
+          if (target.closest('[role="dialog"]')) {
+            e.preventDefault();
+          }
+        }}
       >
         <PropertyFilterValueMenu
           id={id}
           column={column}
           columnMeta={columnMeta}
           table={table}
+          onClose={() => setOpen(false)}
         />
       </PopoverContent>
     </Popover>

@@ -13,11 +13,13 @@ interface PropertyFilterNumberValueMenuProps<TData, TValue> {
   column: Column<TData>;
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
+  onClose?: () => void;
 }
 
 export function PropertyFilterNumberValueMenu<TData, TValue>({
   column,
   columnMeta,
+  onClose,
 }: PropertyFilterNumberValueMenuProps<TData, TValue>) {
   const maxFromMeta = columnMeta.max;
   const cappedMax = maxFromMeta ?? Number.MAX_SAFE_INTEGER;
@@ -69,17 +71,21 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
               : (sortedValues[1] ?? 0),
           ];
 
-    column.setFilterValue({
+    const filterValue = {
       operator,
       values: newValues,
       columnMeta: column.columnDef.meta,
-    } satisfies FilterValue<"number", TData>);
-  }, [column, inputValues, cappedMax, tabValue]);
+    } satisfies FilterValue<"number", TData>;
+
+    column.setFilterValue(filterValue);
+    onClose?.();
+  }, [column, inputValues, cappedMax, tabValue, onClose]);
 
   const handleClear = useCallback(() => {
     setInputValues([safeDatasetMin.toString()]);
     column.setFilterValue(undefined);
-  }, [column, safeDatasetMin]);
+    onClose?.();
+  }, [column, safeDatasetMin, onClose]);
 
   const handleInputChange = useCallback(
     (index: number, value: string) => {

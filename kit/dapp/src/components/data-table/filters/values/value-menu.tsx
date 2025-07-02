@@ -10,6 +10,7 @@ interface PropertyFilterValueMenuProps<TData, TValue> {
   column: Column<TData>;
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
+  onClose?: () => void;
 }
 
 export function PropertyFilterValueMenu<TData, TValue>({
@@ -17,6 +18,7 @@ export function PropertyFilterValueMenu<TData, TValue>({
   column,
   columnMeta,
   table,
+  onClose,
 }: PropertyFilterValueMenuProps<TData, TValue>) {
   switch (columnMeta.type) {
     case "option":
@@ -26,6 +28,7 @@ export function PropertyFilterValueMenu<TData, TValue>({
           column={column}
           columnMeta={columnMeta}
           table={table}
+          onClose={onClose}
         />
       );
     case "multiOption":
@@ -35,6 +38,7 @@ export function PropertyFilterValueMenu<TData, TValue>({
           column={column}
           columnMeta={columnMeta}
           table={table}
+          onClose={onClose}
         />
       );
     case "date":
@@ -44,6 +48,7 @@ export function PropertyFilterValueMenu<TData, TValue>({
           column={column}
           columnMeta={columnMeta}
           table={table}
+          onClose={onClose}
         />
       );
     case "text":
@@ -53,6 +58,7 @@ export function PropertyFilterValueMenu<TData, TValue>({
           column={column}
           columnMeta={columnMeta}
           table={table}
+          onClose={onClose}
         />
       );
     case "number":
@@ -62,6 +68,7 @@ export function PropertyFilterValueMenu<TData, TValue>({
           column={column}
           columnMeta={columnMeta}
           table={table}
+          onClose={onClose}
         />
       );
     default:

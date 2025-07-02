@@ -181,17 +181,17 @@ export function createDataTableSearchParams(options?: {
     // First parse the base schema to get standard params
     const baseParams: Record<string, unknown> = {};
     const filterParams: Record<string, string> = {};
-    
+
     // Separate filter parameters from other params
     for (const [key, value] of Object.entries(search)) {
-      if (key.startsWith('filter_')) {
+      if (key.startsWith("filter_")) {
         const filterKey = key.substring(7); // Remove 'filter_' prefix
         filterParams[filterKey] = String(value);
       } else {
         baseParams[key] = value;
       }
     }
-    
+
     const parsed = baseSchema.parse(baseParams);
 
     // Transform flat params to internal structure

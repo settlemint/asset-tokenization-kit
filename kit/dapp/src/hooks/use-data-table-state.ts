@@ -41,7 +41,6 @@ import type {
   VisibilityState,
 } from "@tanstack/react-table";
 
-import type { DataTableSearchParams } from "@/components/data-table/utils/search-params";
 import {
   createDebouncedUrlUpdate,
   deserializeDataTableState,
@@ -271,11 +270,7 @@ export function useDataTableState(
         debouncedUrlUpdate(serializedState);
       }
     },
-    [
-      enableUrlPersistence,
-      debouncedUrlUpdate,
-      defaultPageSize,
-    ]
+    [enableUrlPersistence, debouncedUrlUpdate, defaultPageSize]
   );
 
   // State setters that also update URL
@@ -296,7 +291,14 @@ export function useDataTableState(
         return newState;
       });
     },
-    [updateUrl, sorting, columnFilters, globalFilter, columnVisibility, rowSelection]
+    [
+      updateUrl,
+      sorting,
+      columnFilters,
+      globalFilter,
+      columnVisibility,
+      rowSelection,
+    ]
   );
 
   const setSorting = useCallback(
@@ -314,7 +316,14 @@ export function useDataTableState(
         return newState;
       });
     },
-    [updateUrl, pagination, columnFilters, globalFilter, columnVisibility, rowSelection]
+    [
+      updateUrl,
+      pagination,
+      columnFilters,
+      globalFilter,
+      columnVisibility,
+      rowSelection,
+    ]
   );
 
   const setColumnFilters = useCallback(
@@ -336,7 +345,14 @@ export function useDataTableState(
         return newState;
       });
     },
-    [updateUrl, pagination, sorting, globalFilter, columnVisibility, rowSelection]
+    [
+      updateUrl,
+      pagination,
+      sorting,
+      globalFilter,
+      columnVisibility,
+      rowSelection,
+    ]
   );
 
   const setGlobalFilter = useCallback(
@@ -354,7 +370,14 @@ export function useDataTableState(
         return newState;
       });
     },
-    [updateUrl, pagination, sorting, columnFilters, columnVisibility, rowSelection]
+    [
+      updateUrl,
+      pagination,
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    ]
   );
 
   const setColumnVisibility = useCallback(
@@ -396,7 +419,14 @@ export function useDataTableState(
         return newState;
       });
     },
-    [updateUrl, pagination, sorting, columnFilters, globalFilter, columnVisibility]
+    [
+      updateUrl,
+      pagination,
+      sorting,
+      columnFilters,
+      globalFilter,
+      columnVisibility,
+    ]
   );
 
   // Reset all state to defaults

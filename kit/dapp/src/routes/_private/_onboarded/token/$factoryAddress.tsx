@@ -31,6 +31,52 @@ import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
 
 import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
+import { numberFilterFn } from "@/components/data-table/filters/functions/number-filter";
+import { textFilterFn } from "@/components/data-table/filters/functions/text-filter";
+import type { Row } from "@tanstack/react-table";
+import type { FilterValue } from "@/components/data-table/filters/types/filter-types";
+
+// Wrapper to handle both simple values from URL and complex filter objects
+function flexibleNumberFilterFn<TData>(
+  row: Row<TData>,
+  columnId: string,
+  filterValue: string | number | FilterValue<"number", TData>
+) {
+  // If it's a simple value (from URL), convert to complex structure
+  if (typeof filterValue === "string" || typeof filterValue === "number") {
+    const numValue =
+      typeof filterValue === "string" ? Number(filterValue) : filterValue;
+    if (isNaN(numValue)) return true; // If not a valid number, show all
+
+    return numberFilterFn(row, columnId, {
+      operator: "is",
+      values: [numValue],
+      columnMeta: undefined, // Will be populated by the filter function if needed
+    });
+  }
+
+  // Otherwise it's already a complex filter object
+  return numberFilterFn(row, columnId, filterValue);
+}
+
+// Similar wrapper for text filters
+function flexibleTextFilterFn<TData>(
+  row: Row<TData>,
+  columnId: string,
+  filterValue: string | FilterValue<"text", TData>
+) {
+  // If it's a simple value (from URL), convert to complex structure
+  if (typeof filterValue === "string") {
+    return textFilterFn(row, columnId, {
+      operator: "contains",
+      values: [filterValue],
+      columnMeta: undefined, // Will be populated by the filter function if needed
+    });
+  }
+
+  // Otherwise it's already a complex filter object
+  return textFilterFn(row, columnId, filterValue);
+}
 
 export const Route = createFileRoute(
   "/_private/_onboarded/token/$factoryAddress"
@@ -164,6 +210,7 @@ const createTokenColumns = (params: {
     columnHelper.accessor("name", {
       header: "Name",
       cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
+      filterFn: flexibleTextFilterFn,
       meta: {
         displayName: "Token Name",
         type: "text",
@@ -178,6 +225,7 @@ const createTokenColumns = (params: {
           {getValue()}
         </Badge>
       ),
+      filterFn: flexibleTextFilterFn,
       meta: {
         displayName: "Token Symbol",
         type: "text",
@@ -190,6 +238,7 @@ const createTokenColumns = (params: {
       cell: ({ getValue }) => (
         <span className="font-mono text-muted-foreground">{getValue()}</span>
       ),
+      filterFn: flexibleNumberFilterFn,
       meta: {
         displayName: "Decimals",
         type: "number",
@@ -203,6 +252,7 @@ const createTokenColumns = (params: {
       cell: ({ getValue }) => (
         <AddressCellRenderer address={getValue()} onCopy={onCopyAddress} />
       ),
+      filterFn: flexibleTextFilterFn,
       meta: {
         displayName: "Contract Address",
         type: "text",

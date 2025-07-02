@@ -10,10 +10,12 @@ interface PropertyFilterTextValueMenuProps<TData, TValue> {
   column: Column<TData>;
   columnMeta: ColumnMeta<TData, TValue>;
   table: Table<TData>;
+  onClose?: () => void;
 }
 
 export function PropertyFilterTextValueMenu<TData, TValue>({
   column,
+  onClose,
 }: PropertyFilterTextValueMenuProps<TData, TValue>) {
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"text", TData>)
@@ -36,12 +38,14 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
         columnMeta: column.columnDef.meta,
       } satisfies FilterValue<"text", TData>);
     }
-  }, [column, operator, value]);
+    onClose?.();
+  }, [column, operator, value, onClose]);
 
   const handleClear = useCallback(() => {
     setValue("");
     column.setFilterValue(undefined);
-  }, [column]);
+    onClose?.();
+  }, [column, onClose]);
 
   const handleContainsClick = useCallback(() => {
     setOperator("contains");
