@@ -30,13 +30,16 @@ import { PropertyFilterValueMenu } from "./filters/values/value-menu";
 
 export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   const isMobile = useIsMobile();
-  
+
   // Key by filter count to force re-render when filters change
   const filterCount = table.getState().columnFilters.length;
 
   if (isMobile) {
     return (
-      <div key={`mobile-${filterCount}`} className="flex w-full items-start justify-between gap-2">
+      <div
+        key={`mobile-${filterCount}`}
+        className="flex w-full items-start justify-between gap-2"
+      >
         <TableFilter table={table} />
         <DataTableFilterMobileContainer>
           <PropertyFilterList table={table} />
@@ -46,7 +49,10 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   }
 
   return (
-    <div key={`desktop-${filterCount}`} className="flex w-full items-start justify-between gap-2">
+    <div
+      key={`desktop-${filterCount}`}
+      className="flex w-full items-start justify-between gap-2"
+    >
       <TableFilter table={table} />
       <DataTableFilterDesktopContainer>
         <PropertyFilterList table={table} />
@@ -311,7 +317,7 @@ export function TableFilterMenuItem<TData>({
 export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
   // Get filters directly from table state - this will re-render when table updates
   const filters = table.getState().columnFilters;
-  
+
   const handleRemoveFilter = useCallback(
     (filterId: string) => {
       // Get the column and set its filter to undefined
@@ -436,10 +442,13 @@ function RenderFilter<TData, T extends ColumnDataType>({
 }) {
   const { value } = filter;
 
-  const handleRemoveFilter = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    onRemoveFilter(filter.id);
-  }, [onRemoveFilter, filter.id]);
+  const handleRemoveFilter = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onRemoveFilter(filter.id);
+    },
+    [onRemoveFilter, filter.id]
+  );
 
   return (
     <div

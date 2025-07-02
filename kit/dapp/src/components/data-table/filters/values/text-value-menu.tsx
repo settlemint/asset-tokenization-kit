@@ -28,6 +28,8 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
     if (value.trim() === "") {
       column.setFilterValue(undefined);
     } else {
+      // Set the filter value as a simple value for URL serialization
+      // The complex filter structure is stored internally
       column.setFilterValue({
         operator,
         values: [value],
@@ -49,15 +51,21 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
     setOperator("does not contain");
   }, []);
 
-  const handleValueChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  }, []);
+  const handleValueChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+    },
+    []
+  );
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleApply();
-    }
-  }, [handleApply]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        handleApply();
+      }
+    },
+    [handleApply]
+  );
 
   return (
     <Command>

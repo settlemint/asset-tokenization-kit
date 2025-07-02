@@ -164,7 +164,6 @@ export function DataTableAdvancedToolbar<TData>({
 
         {/* Right Section: Actions and View Options */}
         <div className="flex items-center gap-2">
-
           {/* Custom Actions */}
           {customActions && (
             <>
@@ -180,7 +179,6 @@ export function DataTableAdvancedToolbar<TData>({
           </div>
         </div>
       </div>
-
     </div>
   );
 }

@@ -47,7 +47,6 @@ import {
   deserializeDataTableState,
   searchParamsToTableState,
   serializeDataTableState,
-  tableStateToSearchParams,
 } from "@/components/data-table/utils/search-param-serializers";
 
 /**
@@ -255,13 +254,28 @@ export function useDataTableState(
 
   // Update URL when state changes
   const updateUrl = useCallback(
-    (newState: Partial<DataTableSearchParams>) => {
+    (newTableState: {
+      pagination?: PaginationState;
+      sorting?: SortingState;
+      columnFilters?: ColumnFiltersState;
+      globalFilter?: string;
+      columnVisibility?: VisibilityState;
+      rowSelection?: RowSelectionState;
+    }) => {
       if (enableUrlPersistence) {
-        const serializedState = serializeDataTableState(newState);
+        // Use the new state directly without merging
+        const serializedState = serializeDataTableState(
+          newTableState,
+          defaultPageSize
+        );
         debouncedUrlUpdate(serializedState);
       }
     },
-    [enableUrlPersistence, debouncedUrlUpdate]
+    [
+      enableUrlPersistence,
+      debouncedUrlUpdate,
+      defaultPageSize,
+    ]
   );
 
   // State setters that also update URL
@@ -271,22 +285,36 @@ export function useDataTableState(
     ) => {
       setPaginationState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ pagination: newState }));
+        updateUrl({
+          pagination: newState,
+          sorting,
+          columnFilters,
+          globalFilter,
+          columnVisibility,
+          rowSelection,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [updateUrl, sorting, columnFilters, globalFilter, columnVisibility, rowSelection]
   );
 
   const setSorting = useCallback(
     (updater: SortingState | ((old: SortingState) => SortingState)) => {
       setSortingState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ sorting: newState }));
+        updateUrl({
+          pagination,
+          sorting: newState,
+          columnFilters,
+          globalFilter,
+          columnVisibility,
+          rowSelection,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [updateUrl, pagination, columnFilters, globalFilter, columnVisibility, rowSelection]
   );
 
   const setColumnFilters = useCallback(
@@ -297,22 +325,36 @@ export function useDataTableState(
     ) => {
       setColumnFiltersState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ columnFilters: newState }));
+        updateUrl({
+          pagination,
+          sorting,
+          columnFilters: newState,
+          globalFilter,
+          columnVisibility,
+          rowSelection,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [updateUrl, pagination, sorting, globalFilter, columnVisibility, rowSelection]
   );
 
   const setGlobalFilter = useCallback(
     (updater: string | ((old: string) => string)) => {
       setGlobalFilterState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ globalFilter: newState }));
+        updateUrl({
+          pagination,
+          sorting,
+          columnFilters,
+          globalFilter: newState,
+          columnVisibility,
+          rowSelection,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [updateUrl, pagination, sorting, columnFilters, columnVisibility, rowSelection]
   );
 
   const setColumnVisibility = useCallback(
@@ -321,11 +363,18 @@ export function useDataTableState(
     ) => {
       setColumnVisibilityState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ columnVisibility: newState }));
+        updateUrl({
+          pagination,
+          sorting,
+          columnFilters,
+          globalFilter,
+          columnVisibility: newState,
+          rowSelection,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [updateUrl, pagination, sorting, columnFilters, globalFilter, rowSelection]
   );
 
   const setRowSelection = useCallback(
@@ -336,11 +385,18 @@ export function useDataTableState(
     ) => {
       setRowSelectionState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ rowSelection: newState }));
+        updateUrl({
+          pagination,
+          sorting,
+          columnFilters,
+          globalFilter,
+          columnVisibility,
+          rowSelection: newState,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [updateUrl, pagination, sorting, columnFilters, globalFilter, columnVisibility]
   );
 
   // Reset all state to defaults

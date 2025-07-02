@@ -20,7 +20,7 @@ test("serializes table state to URL parameters", () => {
     sorting: [{ id: "name", desc: false }],
     columnFilters: [{ id: "status", value: "active" }],
     globalFilter: "test search",
-    columnVisibility: { email: false },
+    columnVisibility: { email: false, name: true, id: true },
     rowSelection: { "1": true, "2": true },
   };
 
@@ -29,10 +29,11 @@ test("serializes table state to URL parameters", () => {
   expect(result.page).toBe(3); // 0-based to 1-based conversion
   expect(result.pageSize).toBe(20);
   expect(result.search).toBe("test search");
-  expect(typeof result.sorting).toBe("string");
-  expect(typeof result.filters).toBe("string");
-  expect(typeof result.columns).toBe("string");
-  expect(typeof result.selected).toBe("string");
+  expect(result.sortBy).toBe("name");
+  expect(result.sortOrder).toBeUndefined(); // asc is default, not included
+  expect(result.filter).toEqual({ status: "active" });
+  expect(result.columns).toBe("name,id"); // visible columns are listed
+  expect(result.selected).toBe("1,2");
 });
 
 test("deserializes URL parameters to table state", () => {
@@ -40,10 +41,11 @@ test("deserializes URL parameters to table state", () => {
     page: 2,
     pageSize: 15,
     search: "john",
-    sorting: JSON.stringify([{ id: "createdAt", desc: true }]),
-    filters: JSON.stringify([{ id: "role", value: "admin" }]),
-    columns: JSON.stringify({ id: false }),
-    selected: JSON.stringify({ "3": true }),
+    sortBy: "createdAt",
+    sortOrder: "desc",
+    filter: { role: "admin" },
+    columns: "id,name,email", // visible columns
+    selected: "3",
   };
 
   const result = deserializeDataTableState(searchParams);
@@ -53,7 +55,11 @@ test("deserializes URL parameters to table state", () => {
   expect(result.globalFilter).toBe("john");
   expect(result.sorting).toEqual([{ id: "createdAt", desc: true }]);
   expect(result.columnFilters).toEqual([{ id: "role", value: "admin" }]);
-  expect(result.columnVisibility).toEqual({ id: false });
+  expect(result.columnVisibility).toEqual({
+    id: true,
+    name: true,
+    email: true,
+  });
   expect(result.rowSelection).toEqual({ "3": true });
 });
 
@@ -84,9 +90,10 @@ test("handles malformed URL parameters gracefully", () => {
   const malformedParams = {
     page: "invalid",
     pageSize: -5,
-    sorting: "invalid json",
-    filters: "also invalid",
-    columns: "{invalid}",
+    sortBy: null,
+    sortOrder: "invalid",
+    filter: "not an object",
+    columns: null,
     selected: null,
   };
 

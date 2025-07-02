@@ -57,12 +57,17 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
     const sortedValues = [...parsedValues].sort((a, b) => a - b);
 
     const operator = tabValue === "range" ? "is between" : "is";
-    const newValues = tabValue === "single" 
-      ? [sortedValues[0] ?? 0]
-      : [
-          (sortedValues[0] ?? 0) >= cappedMax ? cappedMax : (sortedValues[0] ?? 0),
-          (sortedValues[1] ?? 0) >= cappedMax ? cappedMax : (sortedValues[1] ?? 0),
-        ];
+    const newValues =
+      tabValue === "single"
+        ? [sortedValues[0] ?? 0]
+        : [
+            (sortedValues[0] ?? 0) >= cappedMax
+              ? cappedMax
+              : (sortedValues[0] ?? 0),
+            (sortedValues[1] ?? 0) >= cappedMax
+              ? cappedMax
+              : (sortedValues[1] ?? 0),
+          ];
 
     column.setFilterValue({
       operator,
@@ -159,10 +164,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
       <CommandList className="max-h-fit">
         <CommandGroup>
           <div className="flex flex-col w-full p-2">
-            <Tabs
-              value={tabValue}
-              onValueChange={handleTabsValueChange}
-            >
+            <Tabs value={tabValue} onValueChange={handleTabsValueChange}>
               <TabsList className="w-full *:text-xs">
                 <TabsTrigger value="single">Single</TabsTrigger>
                 <TabsTrigger value="range">Range</TabsTrigger>

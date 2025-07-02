@@ -96,7 +96,7 @@ export function PropertyFilterOperatorDisplay<TData, T extends ColumnDataType>({
   if (!operatorDetails || !filter?.operator) {
     return <span className="text-xs">is</span>;
   }
-  
+
   const details = operatorDetails[filter.operator];
   if (!details) {
     return <span className="text-xs">{filter.operator}</span>;

@@ -61,7 +61,15 @@ export function decodeObjectParam<T>(
  * Omits default values to keep URLs clean
  */
 export function serializeDataTableState(
-  state: Partial<DataTableSearchParams>
+  state: Partial<{
+    pagination?: { pageIndex: number; pageSize: number };
+    sorting?: { id: string; desc: boolean }[];
+    columnFilters?: { id: string; value: unknown }[];
+    globalFilter?: string;
+    columnVisibility?: Record<string, boolean>;
+    rowSelection?: Record<string, boolean>;
+  }>,
+  defaultPageSize = 10
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
 
@@ -71,23 +79,57 @@ export function serializeDataTableState(
     if (pageIndex > 0) {
       result.page = pageIndex + 1; // Convert to 1-based for user-friendly URLs
     }
-    if (pageSize !== 10) {
+    if (pageSize !== defaultPageSize) {
       result.pageSize = pageSize;
     }
   }
 
-  // Sorting - only include if not empty
+  // Sorting - use flat parameters
   if (state.sorting && state.sorting.length > 0) {
-    result.sorting = encodeObjectParam(
-      state.sorting as unknown as Record<string, unknown>
-    );
+    // Support only single column sorting for flat params
+    const firstSort = state.sorting[0];
+    if (firstSort) {
+      result.sortBy = firstSort.id;
+      if (firstSort.desc) {
+        result.sortOrder = "desc";
+      }
+    }
   }
 
-  // Column filters - only include if not empty
+  // Column filters - use filter_ prefix for each filter
   if (state.columnFilters && state.columnFilters.length > 0) {
-    result.filters = encodeObjectParam(
-      state.columnFilters as unknown as Record<string, unknown>
-    );
+    state.columnFilters.forEach((filter) => {
+      if (
+        filter.value !== undefined &&
+        filter.value !== null &&
+        filter.value !== ""
+      ) {
+        // Handle complex filter structures
+        if (
+          typeof filter.value === "object" &&
+          "values" in filter.value &&
+          "operator" in filter.value
+        ) {
+          const complexFilter = filter.value as {
+            operator: string;
+            values: unknown[];
+          };
+          if (
+            complexFilter.values.length > 0 &&
+            complexFilter.values[0] !== ""
+          ) {
+            result[`filter_${filter.id}`] = String(complexFilter.values[0]);
+          }
+        } else if (
+          typeof filter.value === "string" ||
+          typeof filter.value === "number" ||
+          typeof filter.value === "boolean"
+        ) {
+          // Simple value - convert to string
+          result[`filter_${filter.id}`] = String(filter.value);
+        }
+      }
+    });
   }
 
   // Global filter - only include if not empty
@@ -95,17 +137,27 @@ export function serializeDataTableState(
     result.search = state.globalFilter;
   }
 
-  // Column visibility - only include if not empty
-  if (
-    state.columnVisibility &&
-    Object.keys(state.columnVisibility).length > 0
-  ) {
-    result.columns = encodeObjectParam(state.columnVisibility);
+  // Column visibility - only include visible columns (not hidden)
+  const visibilityKeys = state.columnVisibility
+    ? Object.keys(state.columnVisibility)
+    : [];
+  if (visibilityKeys.length > 0 && state.columnVisibility) {
+    const visibleColumns = Object.entries(state.columnVisibility)
+      .filter(([, visible]) => visible)
+      .map(([col]) => col);
+    if (visibleColumns.length > 0) {
+      result.columns = visibleColumns.join(",");
+    }
   }
 
-  // Row selection - only include if not empty
+  // Row selection - comma separated list
   if (state.rowSelection && Object.keys(state.rowSelection).length > 0) {
-    result.selected = encodeObjectParam(state.rowSelection);
+    const selectedIds = Object.entries(state.rowSelection)
+      .filter(([, selected]) => selected)
+      .map(([id]) => id);
+    if (selectedIds.length > 0) {
+      result.selected = selectedIds.join(",");
+    }
   }
 
   return result;
@@ -124,19 +176,54 @@ export function deserializeDataTableState(
     ? 10
     : Math.min(100, Math.max(1, rawPageSize));
 
+  // Sorting from flat params
+  const sorting: SortState[] = searchParams.sortBy
+    ? [
+        {
+          id: searchParams.sortBy as string,
+          desc: searchParams.sortOrder === "desc",
+        },
+      ]
+    : [];
+
+  // Filters from filter_ prefixed params
+  const columnFilters: ColumnFilter[] = [];
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (key.startsWith("filter_") && value !== undefined && value !== null && value !== "") {
+      const filterKey = key.substring(7); // Remove 'filter_' prefix
+      columnFilters.push({ 
+        id: filterKey, 
+        value: String(value) 
+      });
+    }
+  });
+
+  // Column visibility from comma-separated list
+  const columnVisibility: Record<string, boolean> = {};
+  if (searchParams.columns && typeof searchParams.columns === "string") {
+    searchParams.columns.split(",").forEach((col) => {
+      columnVisibility[col] = true;
+    });
+  }
+
+  // Row selection from comma-separated list
+  const rowSelection: Record<string, boolean> = {};
+  if (searchParams.selected && typeof searchParams.selected === "string") {
+    searchParams.selected.split(",").forEach((id) => {
+      rowSelection[id] = true;
+    });
+  }
+
   return {
     pagination: {
       pageIndex: Math.max(0, page - 1), // Convert from 1-based to 0-based
       pageSize,
     },
-    sorting: decodeObjectParam<SortState[]>(searchParams.sorting as string, []),
-    columnFilters: decodeObjectParam<ColumnFilter[]>(
-      searchParams.filters as string,
-      []
-    ),
+    sorting,
+    columnFilters,
     globalFilter: (searchParams.search as string) || "",
-    columnVisibility: decodeObjectParam(searchParams.columns as string, {}),
-    rowSelection: decodeObjectParam(searchParams.selected as string, {}),
+    columnVisibility,
+    rowSelection,
   };
 }
 
@@ -160,10 +247,28 @@ export function tableStateToSearchParams(tableState: {
         }
       : undefined,
     sorting: tableState.sorting ?? [],
-    columnFilters: (tableState.columnFilters ?? []) as {
-      id: string;
-      value: string | number | boolean | (string | number | boolean)[];
-    }[],
+    columnFilters: (tableState.columnFilters ?? []).map((filter) => {
+      // Handle complex filter structures
+      let value = filter.value;
+      if (
+        typeof value === "object" &&
+        value !== null &&
+        "values" in value &&
+        "operator" in value
+      ) {
+        // Extract the first value from complex filter
+        const complexFilter = value as { values: unknown[]; operator: string };
+        value = complexFilter.values[0];
+      }
+      return {
+        id: filter.id,
+        value: value as
+          | string
+          | number
+          | boolean
+          | (string | number | boolean)[],
+      };
+    }),
     globalFilter: tableState.globalFilter ?? "",
     columnVisibility: tableState.columnVisibility ?? {},
     rowSelection: tableState.rowSelection ?? {},
@@ -177,7 +282,14 @@ export function searchParamsToTableState(searchParams: DataTableSearchParams) {
   return {
     pagination: searchParams.pagination,
     sorting: searchParams.sorting,
-    columnFilters: searchParams.columnFilters,
+    columnFilters: searchParams.columnFilters.map(filter => ({
+      id: filter.id,
+      value: {
+        operator: "eq", // Default operator
+        values: [filter.value],
+        columnMeta: undefined, // Will be populated by the table
+      }
+    })),
     globalFilter: searchParams.globalFilter,
     columnVisibility: searchParams.columnVisibility,
     rowSelection: searchParams.rowSelection,

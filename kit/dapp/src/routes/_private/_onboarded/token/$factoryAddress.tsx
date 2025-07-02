@@ -30,9 +30,12 @@ import {
 import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
 
+import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
+
 export const Route = createFileRoute(
   "/_private/_onboarded/token/$factoryAddress"
 )({
+  validateSearch: createDataTableSearchParams({ defaultPageSize: 20 }),
   loader: async ({ context, params }) => {
     // Ensure factory data is loaded
     const factory = await context.queryClient.ensureQueryData(

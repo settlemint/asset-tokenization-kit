@@ -1,0 +1,262 @@
+/**
+ * Data Table URL State Utilities
+ *
+ * Provides a reusable system for managing data table state in URLs
+ * across the entire application. Handles type conversions, empty value
+ * filtering, and complex filter structures.
+ */
+
+import { z } from "zod";
+import type { DataTableSearchParams } from "./search-params";
+
+/**
+ * Creates a clean search params validator that removes empty values
+ * This prevents URLs from being cluttered with empty arrays and objects
+ */
+export function createCleanSearchParamsValidator() {
+  return (search: Record<string, unknown>) => {
+    // Parse with the base schema
+    const parsed = dataTableSearchParamsSchema.parse(search);
+
+    // Remove empty values
+    return cleanEmptyValues(parsed);
+  };
+}
+
+/**
+ * Removes empty arrays, objects, and falsy values from an object
+ * Also removes default pagination values
+ */
+export function cleanEmptyValues(
+  obj: Record<string, unknown>,
+  defaultPageSize = 10
+): Record<string, unknown> {
+  const cleaned: Record<string, unknown> = {};
+
+  // Fields that are handled by flat params and should be skipped
+  const internalFields = [
+    "pagination",
+    "sorting",
+    "columnFilters",
+    "globalFilter",
+    "columnVisibility",
+    "rowSelection",
+  ];
+
+  for (const [key, value] of Object.entries(obj)) {
+    // Skip internal data table state fields
+    if (internalFields.includes(key)) {
+      continue;
+    }
+
+    // Skip if undefined, null, or empty string
+    if (value === undefined || value === null || value === "") {
+      continue;
+    }
+
+    // Skip empty arrays
+    if (Array.isArray(value) && value.length === 0) {
+      continue;
+    }
+
+    // Skip empty objects
+    if (
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      Object.keys(value).length === 0
+    ) {
+      continue;
+    }
+
+    // For flat params, check defaults
+    if (key === "page" && value === 1) {
+      continue;
+    }
+    if (key === "pageSize" && value === defaultPageSize) {
+      continue;
+    }
+    if (key === "sortOrder" && value === "asc") {
+      continue; // asc is default
+    }
+
+    // Recursively clean nested objects
+    if (typeof value === "object" && !Array.isArray(value)) {
+      const cleanedNested = cleanEmptyValues(
+        value as Record<string, unknown>,
+        defaultPageSize
+      );
+      if (Object.keys(cleanedNested).length > 0) {
+        cleaned[key] = cleanedNested;
+      }
+    } else {
+      cleaned[key] = value;
+    }
+  }
+
+  return cleaned;
+}
+
+/**
+ * Base schema for all data table search params
+ * Can be extended for specific table needs
+ */
+export const dataTableSearchParamsSchema = z
+  .object({
+    // Pagination
+    page: z.coerce.number().min(1).optional(),
+    pageSize: z.coerce.number().min(1).max(100).optional(),
+
+    // Sorting
+    sorting: z.string().optional(),
+
+    // Filters
+    filters: z.string().optional(),
+
+    // Global search
+    search: z.string().optional(),
+
+    // Column visibility
+    columns: z.string().optional(),
+
+    // Row selection
+    selected: z.string().optional(),
+  })
+  .transform((data) => {
+    // Transform the flat URL params into the nested structure expected by DataTable
+    return {
+      pagination:
+        data.page || data.pageSize
+          ? {
+              pageIndex: (data.page ?? 1) - 1,
+              pageSize: data.pageSize ?? 10,
+            }
+          : undefined,
+      sorting: data.sorting ? JSON.parse(data.sorting) : [],
+      columnFilters: data.filters ? JSON.parse(data.filters) : [],
+      globalFilter: data.search ?? "",
+      columnVisibility: data.columns ? JSON.parse(data.columns) : {},
+      rowSelection: data.selected ? JSON.parse(data.selected) : {},
+    };
+  });
+
+/**
+ * Creates a route-specific search params validator
+ * @param options Additional options for the validator
+ */
+export function createDataTableSearchParams(options?: {
+  defaultPageSize?: number;
+  maxPageSize?: number;
+  additionalParams?: z.ZodRawShape;
+}) {
+  const baseSchema = z.object({
+    // Pagination
+    page: z.coerce.number().min(1).optional(),
+    pageSize: z.coerce
+      .number()
+      .min(1)
+      .max(options?.maxPageSize ?? 100)
+      .optional(),
+
+    // Sorting - flat parameters
+    sortBy: z.string().optional(),
+    sortOrder: z.enum(["asc", "desc"]).optional(),
+
+    // Filters - as individual parameters with filter_ prefix
+    // This allows filter_status=active&filter_type=bond format
+
+    // Global search
+    search: z.string().optional(),
+
+    // Column visibility - comma separated list of visible columns
+    columns: z.string().optional(),
+
+    // Row selection - comma separated list of selected row ids
+    selected: z.string().optional(),
+
+    // Additional params if needed
+    ...(options?.additionalParams ?? {}),
+  });
+
+  return (search: Record<string, unknown>) => {
+    // First parse the base schema to get standard params
+    const baseParams: Record<string, unknown> = {};
+    const filterParams: Record<string, string> = {};
+    
+    // Separate filter parameters from other params
+    for (const [key, value] of Object.entries(search)) {
+      if (key.startsWith('filter_')) {
+        const filterKey = key.substring(7); // Remove 'filter_' prefix
+        filterParams[filterKey] = String(value);
+      } else {
+        baseParams[key] = value;
+      }
+    }
+    
+    const parsed = baseSchema.parse(baseParams);
+
+    // Transform flat params to internal structure
+    const transformed: DataTableSearchParams & Record<string, unknown> = {
+      pagination: {
+        pageIndex: (parsed.page ?? 1) - 1,
+        pageSize: parsed.pageSize ?? options?.defaultPageSize ?? 10,
+      },
+      sorting: parsed.sortBy
+        ? [
+            {
+              id: parsed.sortBy,
+              desc: parsed.sortOrder === "desc",
+            },
+          ]
+        : [],
+      columnFilters: Object.entries(filterParams).map(([id, value]) => ({
+        id,
+        value,
+      })),
+      globalFilter: parsed.search ?? "",
+      columnVisibility: parsed.columns
+        ? parsed.columns
+            .split(",")
+            .reduce((acc, col) => ({ ...acc, [col]: true }), {})
+        : {},
+      rowSelection: parsed.selected
+        ? parsed.selected
+            .split(",")
+            .reduce((acc, id) => ({ ...acc, [id]: true }), {})
+        : {},
+    };
+
+    // Add any additional params
+    for (const [key, value] of Object.entries(parsed)) {
+      if (
+        ![
+          "page",
+          "pageSize",
+          "sortBy",
+          "sortOrder",
+          "search",
+          "columns",
+          "selected",
+        ].includes(key)
+      ) {
+        transformed[key] = value;
+      }
+    }
+
+    return cleanEmptyValues(transformed, options?.defaultPageSize);
+  };
+}
+
+/**
+ * Helper to create type-safe route definitions with data table search params
+ */
+export function withDataTableSearchParams<
+  T extends Record<string, unknown> = Record<string, unknown>,
+>(
+  routeConfig: T,
+  searchParamsOptions?: Parameters<typeof createDataTableSearchParams>[0]
+) {
+  return {
+    ...routeConfig,
+    validateSearch: createDataTableSearchParams(searchParamsOptions),
+  };
+}
