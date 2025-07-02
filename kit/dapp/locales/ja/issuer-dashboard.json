@@ -1,0 +1,22 @@
+{
+  "title": "ダッシュボード",
+  "description": "アセット管理",
+  "stats": {
+    "title": "プラットフォーム統計",
+    "assets": "アセット",
+    "transactions": "トランザクション",
+    "users": "ユーザー",
+    "totalValue": "総価値",
+    "loading": "統計を読み込み中..."
+  },
+  "charts": {
+    "assetSupply": "アセット供給",
+    "assetActivity": "アセット活動",
+    "usersHistory": "ユーザー成長",
+    "transactionsHistory": "トランザクション履歴"
+  },
+  "tables": {
+    "latestEvents": "最新イベント",
+    "actions": "保留中のアクション"
+  }
+}

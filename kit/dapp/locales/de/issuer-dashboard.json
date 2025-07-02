@@ -1,0 +1,22 @@
+{
+  "title": "Dashboard",
+  "description": "Asset-Management",
+  "stats": {
+    "title": "Plattform-Statistiken",
+    "assets": "Assets",
+    "transactions": "Transaktionen",
+    "users": "Benutzer",
+    "totalValue": "Gesamtwert",
+    "loading": "Statistiken werden geladen..."
+  },
+  "charts": {
+    "assetSupply": "Asset-Angebot",
+    "assetActivity": "Asset-Aktivität",
+    "usersHistory": "Benutzerwachstum",
+    "transactionsHistory": "Transaktionsverlauf"
+  },
+  "tables": {
+    "latestEvents": "Neueste Ereignisse",
+    "actions": "Ausstehende Aktionen"
+  }
+}

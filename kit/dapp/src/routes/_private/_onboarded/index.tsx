@@ -15,6 +15,7 @@
  */
 
 import { CreateDepositForm } from "@/components/asset-designer/deposit/form";
+import { Dashboard } from "@/components/issuer-dashboard/dashboard";
 import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -61,25 +62,32 @@ function Home() {
   const { user, systems } = Route.useLoaderData();
 
   return (
-    <div className="p-2">
-      <h3>{user.name}</h3>
-      <div className="mb-4 p-2 rounded">
-        <h4>Debug Info:</h4>
-        <pre>
-          {JSON.stringify(
-            {
-              wallet: user.wallet,
-              onboardingFinished: user.isOnboarded,
-              userId: user.id,
-            },
-            null,
-            2
-          )}
-        </pre>
+    <div className="p-6 space-y-8">
+      <div className="mb-8">
+        <h3 className="text-xl font-semibold mb-2">{user.name}</h3>
+        <div className="mb-4 p-4 rounded-lg bg-muted">
+          <h4 className="font-medium mb-2">Debug Info:</h4>
+          <pre className="text-sm">
+            {JSON.stringify(
+              {
+                wallet: user.wallet,
+                onboardingFinished: user.isOnboarded,
+                userId: user.id,
+              },
+              null,
+              2
+            )}
+          </pre>
+        </div>
+        <pre className="text-sm bg-muted p-4 rounded-lg">{JSON.stringify(systems, null, 2)}</pre>
       </div>
-      <pre>{JSON.stringify(systems, null, 2)}</pre>
 
-      <CreateDepositForm />
+      <div className="mb-8">
+        <h4 className="text-lg font-semibold mb-4">Create New Asset</h4>
+        <CreateDepositForm />
+      </div>
+
+      <Dashboard />
     </div>
   );
 }

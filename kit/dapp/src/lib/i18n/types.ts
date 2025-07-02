@@ -29,6 +29,7 @@ import type enAssetDesignerTranslations from "@/locales/en/asset-designer.json";
 import type enAuthTranslations from "@/locales/en/auth.json";
 import type enFormTranslations from "@/locales/en/form.json";
 import type enGeneralTranslations from "@/locales/en/general.json";
+import type enIssuerDashboardTranslations from "@/locales/en/issuer-dashboard.json";
 import type enLanguageTranslations from "@/locales/en/language.json";
 import type enOnboardingTranslations from "@/locales/en/onboarding.json";
 import type enThemeTranslations from "@/locales/en/theme.json";
@@ -61,6 +62,7 @@ declare module "i18next" {
       auth: typeof enAuthTranslations;
       form: typeof enFormTranslations;
       general: typeof enGeneralTranslations;
+      "issuer-dashboard": typeof enIssuerDashboardTranslations;
       theme: typeof enThemeTranslations;
       language: typeof enLanguageTranslations;
       onboarding: typeof enOnboardingTranslations;
