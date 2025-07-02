@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "./utils/thegraph-client";
+import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
 
 // TypeScript interfaces for EventStats data structures
 interface Account {

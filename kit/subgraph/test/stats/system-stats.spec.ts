@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { theGraphClient, theGraphGraphql } from "./utils/thegraph-client";
+import { theGraphClient, theGraphGraphql } from "../utils/thegraph-client";
 
 describe("SystemStats", () => {
   it("should fetch system stats aggregated by hour", async () => {
