@@ -1,4 +1,5 @@
 "use client";
+"use no memo"; // fixes rerendering with react compiler
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,10 +30,13 @@ import { PropertyFilterValueMenu } from "./filters/values/value-menu";
 
 export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   const isMobile = useIsMobile();
+  
+  // Key by filter count to force re-render when filters change
+  const filterCount = table.getState().columnFilters.length;
 
   if (isMobile) {
     return (
-      <div className="flex w-full items-start justify-between gap-2">
+      <div key={`mobile-${filterCount}`} className="flex w-full items-start justify-between gap-2">
         <TableFilter table={table} />
         <DataTableFilterMobileContainer>
           <PropertyFilterList table={table} />
@@ -42,7 +46,7 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   }
 
   return (
-    <div className="flex w-full items-start justify-between gap-2">
+    <div key={`desktop-${filterCount}`} className="flex w-full items-start justify-between gap-2">
       <TableFilter table={table} />
       <DataTableFilterDesktopContainer>
         <PropertyFilterList table={table} />
@@ -305,17 +309,26 @@ export function TableFilterMenuItem<TData>({
 }
 
 export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
+  // Get filters directly from table state - this will re-render when table updates
   const filters = table.getState().columnFilters;
-
+  
   const handleRemoveFilter = useCallback(
     (filterId: string) => {
-      table.getColumn(filterId)?.setFilterValue(undefined);
+      // Get the column and set its filter to undefined
+      // This will trigger the proper onColumnFiltersChange handler
+      const column = table.getColumn(filterId);
+      if (column) {
+        column.setFilterValue(undefined);
+      }
     },
     [table]
   );
 
+  // Key the entire list by the filter count to force re-render
+  const filterKey = filters.length;
+
   return (
-    <>
+    <div key={filterKey} className="contents">
       {filters.map((filter) => {
         const { id } = filter;
 
@@ -403,7 +416,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
             return null; // Handle unknown types gracefully
         }
       })}
-    </>
+    </div>
   );
 }
 
@@ -423,7 +436,8 @@ function RenderFilter<TData, T extends ColumnDataType>({
 }) {
   const { value } = filter;
 
-  const handleRemoveFilter = useCallback(() => {
+  const handleRemoveFilter = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
     onRemoveFilter(filter.id);
   }, [onRemoveFilter, filter.id]);
 
@@ -449,10 +463,12 @@ function RenderFilter<TData, T extends ColumnDataType>({
       <Separator orientation="vertical" className="h-5" />
       <Button
         variant="ghost"
-        className="rounded-none rounded-r-md text-xs w-7 h-full hover:bg-destructive/10"
+        size="sm"
+        className="rounded-none rounded-r-md h-full px-2 hover:bg-destructive/10"
         onClick={handleRemoveFilter}
+        type="button"
       >
-        <X className="size-4 -translate-x-0.5" />
+        <X className="size-3.5" />
       </Button>
     </div>
   );
