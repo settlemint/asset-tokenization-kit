@@ -23,8 +23,12 @@
     "description": "Set up your account to start investing in digital assets"
   },
   "steps": {
+    "wallet": {
+      "title": "Create Wallet",
+      "description": "Generate your blockchain wallet"
+    },
     "security": {
-      "title": "Secure your wallet",
+      "title": "Secure your Wallet",
       "description": "Set up protection for your wallet"
     },
     "system": {
