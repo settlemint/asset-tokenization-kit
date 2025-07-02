@@ -3,9 +3,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
-import { createColumnHelper } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { createColumnHelper } from "@tanstack/react-table";
 import { ExternalLink, Eye, Package } from "lucide-react";
 
 export const Route = createFileRoute(
@@ -127,7 +127,7 @@ function RouteComponent() {
           columns={createTokenColumns}
           urlState={{
             enabled: true,
-            routePath: "/token/$factoryAddress",
+            routePath: "/_private/_onboarded/token/$factoryAddress",
             defaultPageSize: 10,
           }}
           toolbar={{}}
