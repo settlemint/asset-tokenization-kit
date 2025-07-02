@@ -95,6 +95,33 @@
           }
         }
       }
+    },
+    "deposits-table": {
+      "columns": {
+        "name": "Name",
+        "token-name": "Token Name",
+        "symbol": "Symbol",
+        "token-symbol": "Token Symbol",
+        "decimals": "Decimals",
+        "contract-address": "Contract Address",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view-details": "View Details",
+        "copy-address": "Copy Address",
+        "address-copied": "Token address copied to clipboard",
+        "view-on-etherscan": "View on Etherscan",
+        "create-token": "Create Token"
+      },
+      "bulk-actions": {
+        "archive-message": "Would archive {{count}} token(s). This is a demo action.",
+        "duplicate-message": "Would duplicate {{count}} token(s). This is a demo action."
+      },
+      "search-placeholder": "Search tokens by name, symbol, or address...",
+      "empty-state": {
+        "title": "No tokens found",
+        "description": "This factory has not created any tokens yet. Create your first token to get started."
+      }
     }
   },
   "errors": {

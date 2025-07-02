@@ -61,6 +61,33 @@
       "go-to-last-page": "最後のページに移動",
       "details": "詳細",
       "open-menu": "メニューを開く"
+    },
+    "deposits-table": {
+      "columns": {
+        "name": "名前",
+        "token-name": "トークン名",
+        "symbol": "シンボル",
+        "token-symbol": "トークンシンボル",
+        "decimals": "小数点以下桁数",
+        "contract-address": "コントラクトアドレス",
+        "actions": "アクション"
+      },
+      "actions": {
+        "view-details": "詳細を表示",
+        "copy-address": "アドレスをコピー",
+        "address-copied": "トークンアドレスがクリップボードにコピーされました",
+        "view-on-etherscan": "Etherscanで表示",
+        "create-token": "トークンを作成"
+      },
+      "bulk-actions": {
+        "archive-message": "{{count}}個のトークンをアーカイブします。これはデモアクションです。",
+        "duplicate-message": "{{count}}個のトークンを複製します。これはデモアクションです。"
+      },
+      "search-placeholder": "名前、シンボル、またはアドレスでトークンを検索...",
+      "empty-state": {
+        "title": "トークンが見つかりません",
+        "description": "このファクトリーはまだトークンを作成していません。最初のトークンを作成して始めましょう。"
+      }
     }
   },
   "errors": {

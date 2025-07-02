@@ -23,6 +23,7 @@ import {
   Type,
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import "@/components/data-table/filters/types/table-extensions";
 
@@ -38,108 +39,13 @@ const INITIAL_SORTING = [
   },
 ];
 
-// Factory function for row actions
-const createRowActions = (
-  row: { original: Token },
-  factoryAddress: string,
-  router: ReturnType<typeof useRouter>,
-  toast: { success: (message: string) => void }
-): ActionItem[] => [
-  {
-    label: "View Details",
-    icon: <Eye className="h-4 w-4" />,
-    onClick: () => {
-      void router.navigate({
-        to: "/token/$factoryAddress/$tokenAddress",
-        params: {
-          factoryAddress,
-          tokenAddress: row.original.id,
-        },
-      });
-    },
-  },
-  {
-    label: "Copy Address",
-    icon: <Copy className="h-4 w-4" />,
-    onClick: () => {
-      void navigator.clipboard.writeText(row.original.id);
-      toast.success("Token address copied to clipboard");
-    },
-  },
-  {
-    label: "View on Etherscan",
-    icon: <ExternalLink className="h-4 w-4" />,
-    href: `https://etherscan.io/token/${row.original.id}`,
-    separator: "before",
-  },
-];
-
-const createTokenColumns = (params: {
-  factoryAddress: string;
-  router: ReturnType<typeof useRouter>;
-}): ColumnDef<Token>[] => {
-  const { factoryAddress, router } = params;
-
-  return withAutoFeatures([
-    createSelectionColumn<Token>(),
-    columnHelper.accessor("name", {
-      header: "Name",
-      meta: {
-        displayName: "Token Name",
-        type: "text",
-        icon: Type,
-        cellType: "text",
-      },
-    }),
-    columnHelper.accessor("symbol", {
-      header: "Symbol",
-      meta: {
-        displayName: "Token Symbol",
-        type: "text",
-        icon: Coins,
-        cellType: "badge",
-      },
-    }),
-    columnHelper.accessor("decimals", {
-      header: "Decimals",
-      meta: {
-        displayName: "Decimals",
-        type: "number",
-        icon: Hash,
-        max: 18,
-        cellType: "number",
-      },
-    }),
-    columnHelper.accessor("id", {
-      header: "Contract Address",
-      meta: {
-        displayName: "Contract Address",
-        type: "address",
-        icon: Copy,
-        cellType: "address",
-      },
-    }),
-    columnHelper.display({
-      id: "actions",
-      header: "Actions",
-      meta: {
-        enableCsvExport: false, // Disable CSV export for actions column
-      },
-      cell: ({ row }) => (
-        <ActionsCell
-          actions={createRowActions(row, factoryAddress, router, toast)}
-        />
-      ),
-    }),
-  ] as ColumnDef<Token>[]);
-};
-
 interface DepositsTableProps {
   factoryAddress: string;
 }
 
 export function DepositsTable({ factoryAddress }: DepositsTableProps) {
   const router = useRouter();
+  const { t } = useTranslation("general");
   // Get the current route's path pattern from the matched route
   const routePath = router.state.matches[router.state.matches.length - 1]?.pathname;
 
@@ -153,17 +59,48 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
 
   const tokens = tokensResponse ?? [];
 
+  // Factory function for row actions - defined inside component to access `t`
+  const createRowActions = useCallback((row: { original: Token }): ActionItem[] => [
+    {
+      label: t("components.deposits-table.actions.view-details"),
+      icon: <Eye className="h-4 w-4" />,
+      onClick: () => {
+        void router.navigate({
+          to: "/token/$factoryAddress/$tokenAddress",
+          params: {
+            factoryAddress,
+            tokenAddress: row.original.id,
+          },
+        });
+      },
+    },
+    {
+      label: t("components.deposits-table.actions.copy-address"),
+      icon: <Copy className="h-4 w-4" />,
+      onClick: () => {
+        void navigator.clipboard.writeText(row.original.id);
+        toast.success(t("components.deposits-table.actions.address-copied"));
+      },
+    },
+    {
+      label: t("components.deposits-table.actions.view-on-etherscan"),
+      icon: <ExternalLink className="h-4 w-4" />,
+      href: `https://etherscan.io/token/${row.original.id}`,
+      separator: "before",
+    },
+  ], [t, router, factoryAddress]);
+
   const handleArchive = useCallback((selectedTokens: Token[]) => {
     toast.info(
-      `Would archive ${selectedTokens.length} token(s). This is a demo action.`
+      t("components.deposits-table.bulk-actions.archive-message", { count: selectedTokens.length })
     );
-  }, []);
+  }, [t]);
 
   const handleDuplicate = useCallback((selectedTokens: Token[]) => {
     toast.info(
-      `Would duplicate ${selectedTokens.length} token(s). This is a demo action.`
+      t("components.deposits-table.bulk-actions.duplicate-message", { count: selectedTokens.length })
     );
-  }, []);
+  }, [t]);
 
   const { actions, actionGroups } = useBulkActions<Token>({
     onArchive: handleArchive,
@@ -174,15 +111,67 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
     () => (
       <Button variant="default" size="sm">
         <Plus className="h-4 w-4 mr-2" />
-        Create Token
+        {t("components.deposits-table.actions.create-token")}
       </Button>
     ),
-    []
+    [t]
   );
 
+  // Define columns inside component to access `t`
   const columns = useMemo(
-    () => createTokenColumns({ factoryAddress, router }),
-    [factoryAddress, router]
+    () => withAutoFeatures([
+      createSelectionColumn<Token>(),
+      columnHelper.accessor("name", {
+        header: t("components.deposits-table.columns.name"),
+        meta: {
+          displayName: t("components.deposits-table.columns.token-name"),
+          type: "text",
+          icon: Type,
+          cellType: "text",
+        },
+      }),
+      columnHelper.accessor("symbol", {
+        header: t("components.deposits-table.columns.symbol"),
+        meta: {
+          displayName: t("components.deposits-table.columns.token-symbol"),
+          type: "text",
+          icon: Coins,
+          cellType: "badge",
+        },
+      }),
+      columnHelper.accessor("decimals", {
+        header: t("components.deposits-table.columns.decimals"),
+        meta: {
+          displayName: t("components.deposits-table.columns.decimals"),
+          type: "number",
+          icon: Hash,
+          max: 18,
+          cellType: "number",
+        },
+      }),
+      columnHelper.accessor("id", {
+        header: t("components.deposits-table.columns.contract-address"),
+        meta: {
+          displayName: t("components.deposits-table.columns.contract-address"),
+          type: "address",
+          icon: Copy,
+          cellType: "address",
+        },
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: t("components.deposits-table.columns.actions"),
+        meta: {
+          enableCsvExport: false, // Disable CSV export for actions column
+        },
+        cell: ({ row }) => (
+          <ActionsCell
+            actions={createRowActions(row)}
+          />
+        ),
+      }),
+    ] as ColumnDef<Token>[]),
+    [t, createRowActions]
   );
 
   return (
@@ -204,7 +193,7 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
         enableFilters: true,
         enableExport: true,
         enableViewOptions: true,
-        placeholder: "Search tokens by name, symbol, or address...",
+        placeholder: t("components.deposits-table.search-placeholder"),
         customActions,
       }}
       bulkActions={{
@@ -220,9 +209,8 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
       }}
       initialSorting={INITIAL_SORTING}
       customEmptyState={{
-        title: "No tokens found",
-        description:
-          "This factory has not created any tokens yet. Create your first token to get started.",
+        title: t("components.deposits-table.empty-state.title"),
+        description: t("components.deposits-table.empty-state.description"),
         icon: Package,
       }}
     />

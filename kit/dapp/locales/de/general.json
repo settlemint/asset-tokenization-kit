@@ -61,6 +61,33 @@
       "go-to-last-page": "Zur letzten Seite",
       "details": "Details",
       "open-menu": "Menü öffnen"
+    },
+    "deposits-table": {
+      "columns": {
+        "name": "Name",
+        "token-name": "Token-Name",
+        "symbol": "Symbol",
+        "token-symbol": "Token-Symbol",
+        "decimals": "Dezimalstellen",
+        "contract-address": "Vertragsadresse",
+        "actions": "Aktionen"
+      },
+      "actions": {
+        "view-details": "Details anzeigen",
+        "copy-address": "Adresse kopieren",
+        "address-copied": "Token-Adresse in die Zwischenablage kopiert",
+        "view-on-etherscan": "Auf Etherscan anzeigen",
+        "create-token": "Token erstellen"
+      },
+      "bulk-actions": {
+        "archive-message": "Würde {{count}} Token archivieren. Dies ist eine Demo-Aktion.",
+        "duplicate-message": "Würde {{count}} Token duplizieren. Dies ist eine Demo-Aktion."
+      },
+      "search-placeholder": "Tokens nach Name, Symbol oder Adresse suchen...",
+      "empty-state": {
+        "title": "Keine Tokens gefunden",
+        "description": "Diese Fabrik hat noch keine Tokens erstellt. Erstellen Sie Ihren ersten Token, um zu beginnen."
+      }
     }
   },
   "errors": {
