@@ -1,0 +1,46 @@
+{
+  "streaming-messages": {
+    "initial-loading": "جاري التحضير لإنشاء {{type}}...",
+    "no-result-error": "لم يتم تلقي معرف المعاملة من إنشاء {{type}}.",
+    "default-error": "فشل في إنشاء {{type}}.",
+    "creation-failed": "فشل في إنشاء {{type}}.",
+    "creation-success": "تم إنشاء {{type}} بنجاح."
+  },
+  "form": {
+    "title": "إنشاء رمز {{type}}",
+    "description": "قم بتكوين رمز {{type}} الخاص بك من خلال توفير المعلومات الأساسية أدناه.",
+    "fields": {
+      "name": {
+        "label": "اسم الرمز",
+        "placeholder": "مثال: سندات حكومية {{type}} السلسلة أ",
+        "description": "اسم الرمز. يُستخدم هذا لتحديد الرمز في واجهة المستخدم ولا يمكن تغييره بعد الإنشاء."
+      },
+      "symbol": {
+        "label": "رمز الرمز",
+        "placeholder": "مثال: GBSA",
+        "description": "رمز قصير للرمز (عادة 3-5 أحرف)"
+      },
+      "decimals": {
+        "label": "الأرقام العشرية",
+        "placeholder": "18",
+        "description": "عدد الأماكن العشرية للرمز (0-18، الافتراضي هو 18)"
+      },
+      "isin": {
+        "label": "ISIN (اختياري)",
+        "placeholder": "مثال: US0378331005",
+        "description": "رقم ISIN للأصل. هذا معرف فريد اختياري للأصل في النظام المالي."
+      }
+    },
+    "actions": {
+      "create": "إنشاء رمز {{type}}",
+      "creating": "جاري الإنشاء..."
+    }
+  },
+  "messages": {
+    "creating": "جاري إنشاء {{type}}...",
+    "created": "تم إنشاء {{type}} بنجاح.",
+    "creation-failed": "فشل في إنشاء {{type}}.",
+    "success-toast": "تم إنشاء رمز {{type}} بنجاح!",
+    "error-toast": "فشل في إنشاء رمز {{type}}"
+  }
+}

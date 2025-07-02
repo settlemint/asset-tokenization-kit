@@ -26,7 +26,7 @@ import { pincode } from "@/lib/auth/plugins/pincode-plugin";
 import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
 import { twoFactor } from "@/lib/auth/plugins/two-factor";
 import { isOnboarded } from "@/lib/auth/plugins/utils";
-import { wallet } from "@/lib/auth/plugins/wallet-plugin";
+import { createWallet } from "@/lib/auth/wallet";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { UserRole } from "@/lib/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
@@ -34,6 +34,7 @@ import {
   betterAuth,
   type BetterAuthOptions,
   type InferUser,
+  type User,
 } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
@@ -317,11 +318,6 @@ const options = {
      * Plugin for secret codes authentication.
      */
     secretCodes(),
-
-    /**
-     * Plugin for wallet integration.
-     */
-    wallet(),
   ],
 } satisfies BetterAuthOptions;
 
@@ -331,11 +327,41 @@ const options = {
  * This function is wrapped with `serverOnly` to ensure it only runs on the server,
  * preventing sensitive configuration like secrets from being exposed to the client.
  */
-const getAuthConfig = serverOnly(() =>
-  betterAuth({
+const getAuthConfig = serverOnly(() => {
+  // Override the databaseHooks to add wallet creation
+  const enhancedOptions = {
     ...options,
+    databaseHooks: {
+      ...options.databaseHooks,
+      user: {
+        create: {
+          before: async (user: User) => {
+            try {
+              const firstUser = await db.query.user.findFirst();
+              const walletAddress = await createWallet(user.email);
+              return {
+                data: {
+                  ...user,
+                  wallet: walletAddress,
+                  role: firstUser ? "investor" : "admin",
+                },
+              };
+            } catch (error) {
+              throw new APIError("BAD_REQUEST", {
+                message: "Failed to set the user role",
+                cause: error instanceof Error ? error : undefined,
+              });
+            }
+          },
+        },
+      },
+    },
+  };
+
+  return betterAuth({
+    ...enhancedOptions,
     plugins: [
-      ...options.plugins,
+      ...enhancedOptions.plugins,
       customSession(async ({ user, session }) => {
         return Promise.resolve({
           user: {
@@ -344,10 +370,10 @@ const getAuthConfig = serverOnly(() =>
           } as SessionUser,
           session,
         });
-      }, options),
+      }, enhancedOptions),
     ],
-  })
-);
+  });
+});
 
 /**
  * The main authentication instance.
@@ -370,7 +396,7 @@ export type Session = typeof auth.$Infer.Session;
  * Enhanced type for session users with proper typing.
  */
 export interface SessionUser extends InferUser<typeof options> {
-  wallet?: EthereumAddress | null;
+  wallet: EthereumAddress;
   role: UserRole;
   isOnboarded: boolean;
 }

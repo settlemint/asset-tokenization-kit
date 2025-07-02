@@ -14,6 +14,7 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
+import { CreateDepositForm } from "@/components/asset-designer/deposit/form";
 import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -35,9 +36,9 @@ export const Route = createFileRoute("/_private/_onboarded/")({
   loader: async ({ context }) => {
     // User data should be loaded in parent _private route, but we need to ensure it exists
     // to handle cache misses, invalidation, or direct navigation
-    const user =
-      context.queryClient.getQueryData(orpc.user.me.queryKey()) ??
-      (await context.queryClient.ensureQueryData(orpc.user.me.queryOptions()));
+    const user = await context.queryClient.ensureQueryData(
+      orpc.user.me.queryOptions()
+    );
 
     // Ensure systems data is loaded
     const systems = await context.queryClient.ensureQueryData(
@@ -59,18 +60,26 @@ export const Route = createFileRoute("/_private/_onboarded/")({
 function Home() {
   const { user, systems } = Route.useLoaderData();
 
-  if (!user) {
-    return (
-      <div className="p-2">
-        <h3>Loading user data...</h3>
-      </div>
-    );
-  }
-
   return (
     <div className="p-2">
       <h3>{user.name}</h3>
+      <div className="mb-4 p-2 rounded">
+        <h4>Debug Info:</h4>
+        <pre>
+          {JSON.stringify(
+            {
+              wallet: user.wallet,
+              onboardingFinished: user.isOnboarded,
+              userId: user.id,
+            },
+            null,
+            2
+          )}
+        </pre>
+      </div>
       <pre>{JSON.stringify(systems, null, 2)}</pre>
+
+      <CreateDepositForm />
     </div>
   );
 }

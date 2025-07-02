@@ -19,30 +19,39 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
+import arAssetDesignerTranslations from "@/locales/ar/asset-designer.json";
 import arAuthTranslations from "@/locales/ar/auth.json";
+import arFormTranslations from "@/locales/ar/form.json";
 import arGeneralTranslations from "@/locales/ar/general.json";
 import arLanguageTranslations from "@/locales/ar/language.json";
 import arOnboardingTranslations from "@/locales/ar/onboarding.json";
 import arThemeTranslations from "@/locales/ar/theme.json";
 import arTokensTranslations from "@/locales/ar/tokens.json";
+import deAssetDesignerTranslations from "@/locales/de/asset-designer.json";
 import deAuthTranslations from "@/locales/de/auth.json";
+import deFormTranslations from "@/locales/de/form.json";
 import deGeneralTranslations from "@/locales/de/general.json";
 import deLanguageTranslations from "@/locales/de/language.json";
 import deOnboardingTranslations from "@/locales/de/onboarding.json";
 import deThemeTranslations from "@/locales/de/theme.json";
 import deTokensTranslations from "@/locales/de/tokens.json";
+import enAssetDesignerTranslations from "@/locales/en/asset-designer.json";
 import enAuthTranslations from "@/locales/en/auth.json";
+import enFormTranslations from "@/locales/en/form.json";
 import enGeneralTranslations from "@/locales/en/general.json";
 import enLanguageTranslations from "@/locales/en/language.json";
 import enOnboardingTranslations from "@/locales/en/onboarding.json";
 import enThemeTranslations from "@/locales/en/theme.json";
 import enTokensTranslations from "@/locales/en/tokens.json";
+import jaAssetDesignerTranslations from "@/locales/ja/asset-designer.json";
 import jaAuthTranslations from "@/locales/ja/auth.json";
+import jaFormTranslations from "@/locales/ja/form.json";
 import jaGeneralTranslations from "@/locales/ja/general.json";
 import jaLanguageTranslations from "@/locales/ja/language.json";
 import jaOnboardingTranslations from "@/locales/ja/onboarding.json";
 import jaThemeTranslations from "@/locales/ja/theme.json";
 import jaTokensTranslations from "@/locales/ja/tokens.json";
+
 import "./types";
 
 /**
@@ -64,7 +73,9 @@ export const defaultNS = "general";
  */
 export const resources = {
   en: {
+    "asset-designer": enAssetDesignerTranslations,
     auth: enAuthTranslations,
+    form: enFormTranslations,
     general: enGeneralTranslations,
     theme: enThemeTranslations,
     language: enLanguageTranslations,
@@ -72,7 +83,9 @@ export const resources = {
     tokens: enTokensTranslations,
   },
   de: {
+    "asset-designer": deAssetDesignerTranslations,
     auth: deAuthTranslations,
+    form: deFormTranslations,
     general: deGeneralTranslations,
     theme: deThemeTranslations,
     language: deLanguageTranslations,
@@ -80,7 +93,9 @@ export const resources = {
     tokens: deTokensTranslations,
   },
   ar: {
+    "asset-designer": arAssetDesignerTranslations,
     auth: arAuthTranslations,
+    form: arFormTranslations,
     general: arGeneralTranslations,
     theme: arThemeTranslations,
     language: arLanguageTranslations,
@@ -88,7 +103,9 @@ export const resources = {
     tokens: arTokensTranslations,
   },
   ja: {
+    "asset-designer": jaAssetDesignerTranslations,
     auth: jaAuthTranslations,
+    form: jaFormTranslations,
     general: jaGeneralTranslations,
     theme: jaThemeTranslations,
     language: jaLanguageTranslations,

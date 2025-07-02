@@ -162,7 +162,7 @@ export const create = onboardedRouter.system.create
     // Execute the system creation transaction
     const createSystemVariables: VariablesOf<typeof CREATE_SYSTEM_MUTATION> = {
       address: contract,
-      from: sender.wallet ?? "",
+      from: sender.wallet,
       ...(await handleChallenge(sender, {
         code: verification.verificationCode,
         type: verification.verificationType,
@@ -258,7 +258,7 @@ export const create = onboardedRouter.system.create
     // Execute the bootstrap transaction
     const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> = {
       address: system.id,
-      from: sender.wallet ?? "",
+      from: sender.wallet,
       ...(await handleChallenge(sender, {
         code: verification.verificationCode,
         type: verification.verificationType,

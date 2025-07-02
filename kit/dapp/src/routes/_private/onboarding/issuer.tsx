@@ -1,6 +1,7 @@
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
-import { WalletStep } from "@/components/onboarding/steps/wallet-step";
+import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
 import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
+import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -24,25 +25,27 @@ export const Route = createFileRoute("/_private/onboarding/issuer")({
 function IssuerOnboarding() {
   const { t } = useTranslation("onboarding");
   const navigate = useNavigate();
-  const [currentStepId] = useState("wallet");
-
-  // Get user data from loader
-  const { user } = Route.useLoaderData();
+  const [currentStepId] = useState("security");
+  const { data: session } = authClient.useSession();
 
   // Define steps with dynamic statuses
   const steps: Step[] = useMemo(
     () => [
       {
-        id: "wallet",
-        title: t("steps.wallet.title"),
-        description: t("steps.wallet.description"),
-        status: user.wallet ? "completed" : "active",
+        id: "security",
+        title: t("steps.security.title"),
+        description: t("steps.security.description"),
+        status: session?.user.pincodeEnabled
+          ? "completed"
+          : currentStepId === "security"
+            ? "active"
+            : "pending",
       },
     ],
-    [user.wallet, t]
+    [currentStepId, session?.user.pincodeEnabled, t]
   );
 
-  const handleWalletSuccess = useCallback(() => {
+  const handleSecuritySuccess = useCallback(() => {
     // Issuer onboarding complete, redirect to dashboard
     void navigate({ to: "/" });
   }, [navigate]);
@@ -64,7 +67,9 @@ function IssuerOnboarding() {
             description={t("issuer.description")}
             onStepChange={handleStepChange}
           >
-            <WalletStep onSuccess={handleWalletSuccess} />
+            {currentStepId === "security" && (
+              <WalletSecurityStep onSuccess={handleSecuritySuccess} />
+            )}
           </StepWizard>
         </div>
       </div>

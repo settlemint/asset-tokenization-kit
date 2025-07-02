@@ -25,7 +25,9 @@
  * @see https://www.i18next.com/overview/typescript - i18next TypeScript documentation
  */
 
+import type enAssetDesignerTranslations from "@/locales/en/asset-designer.json";
 import type enAuthTranslations from "@/locales/en/auth.json";
+import type enFormTranslations from "@/locales/en/form.json";
 import type enGeneralTranslations from "@/locales/en/general.json";
 import type enLanguageTranslations from "@/locales/en/language.json";
 import type enOnboardingTranslations from "@/locales/en/onboarding.json";
@@ -55,7 +57,9 @@ declare module "i18next" {
      * This provides the structure that all translations must follow.
      */
     resources: {
+      "asset-designer": typeof enAssetDesignerTranslations;
       auth: typeof enAuthTranslations;
+      form: typeof enFormTranslations;
       general: typeof enGeneralTranslations;
       theme: typeof enThemeTranslations;
       language: typeof enLanguageTranslations;

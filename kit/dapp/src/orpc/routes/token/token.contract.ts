@@ -2,6 +2,10 @@ import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { BondTokenCreateSchema } from "@/orpc/routes/token/routes/bond/bond.create.schema";
 import {
+  DepositCreateOutputSchema,
+  DepositTokenCreateSchema,
+} from "@/orpc/routes/token/routes/deposit/deposit.create.schema";
+import {
   FactoryCreateOutputSchema,
   FactoryCreateSchema,
 } from "@/orpc/routes/token/routes/factory.create.schema";
@@ -66,6 +70,17 @@ const bondCreate = baseContract
   .input(BondTokenCreateSchema)
   .output(ethereumHash);
 
+const depositCreate = baseContract
+  .route({
+    method: "POST",
+    path: "/token/deposit",
+    description: "Create a new deposit token",
+    successDescription: "Deposit token created",
+    tags: ["token", "deposit"],
+  })
+  .input(DepositTokenCreateSchema)
+  .output(eventIterator(DepositCreateOutputSchema));
+
 const list = baseContract
   .route({
     method: "GET",
@@ -104,6 +119,7 @@ export const tokenContract = {
   factoryList,
   factoryRead,
   bondCreate,
+  depositCreate,
   list,
   read,
   mint,

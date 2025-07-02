@@ -24,7 +24,7 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(
  */
 export const userClaimsMiddleware = baseRouter.middleware(
   async ({ next, context }) => {
-    if (!context.auth?.user.wallet) {
+    if (!context.auth) {
       return next();
     }
 

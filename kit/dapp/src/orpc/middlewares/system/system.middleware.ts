@@ -1,6 +1,6 @@
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
-import type { assetTypes } from "@/lib/zod/validators/asset-types";
+import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import {
   getEthereumAddress,
   type EthereumAddress,
@@ -17,6 +17,7 @@ const TOKEN_FACTORIES_QUERY = theGraphGraphql(
         tokenFactories {
           id
           name
+          typeId
           accessControl {
             ...AccessControlFragment
           }
@@ -44,8 +45,8 @@ export type SystemAccessControl = NonNullable<
  * @param accessControl - The access control of the token factory.
  */
 export interface TokenFactory {
-  type: (typeof assetTypes)[number];
   name: string;
+  typeId: AssetFactoryTypeId;
   address: EthereumAddress;
   accessControl: SystemAccessControl;
 }
@@ -92,9 +93,9 @@ const getTokenFactories = async (
   });
   return (
     system?.tokenFactoryRegistry?.tokenFactories.map(
-      ({ id, name, accessControl }) => ({
-        type: name as (typeof assetTypes)[number],
+      ({ id, name, typeId, accessControl }) => ({
         name,
+        typeId: typeId as AssetFactoryTypeId,
         address: getEthereumAddress(id),
         accessControl,
       })

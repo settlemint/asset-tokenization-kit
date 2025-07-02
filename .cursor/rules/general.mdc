@@ -1,8 +1,10 @@
 ---
-description: Core development principles and architectural guidance for Claude Code
-globs: 
+description:
+  Core development principles and architectural guidance for Claude Code
+globs:
 alwaysApply: true
 ---
+
 ## General rules
 
 - Always read entire files. Otherwise, you don't know what you don't know, and
