@@ -3,7 +3,9 @@ import { Token, TokenBalance } from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
 import { decreaseAccountStatsBalanceCount } from "../../stats/account-stats";
 import { decreaseTokenStatsBalanceCount } from "../../stats/token-stats";
+import { updateTokenDistributionStats } from "../../stats/token-distribution-stats";
 import { setBigNumber } from "../../utils/bignumber";
+import { toBigDecimal } from "../../utils/token-decimals";
 import { fetchTokenBalance } from "../fetch/token-balance";
 
 export function increaseTokenBalanceValue(
@@ -14,10 +16,13 @@ export function increaseTokenBalanceValue(
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
+  // Store old balance for distribution stats
+  const oldBalance = toBigDecimal(balance.valueExact, token.decimals);
+
   const newValue = balance.valueExact.plus(value);
 
   if (newValue.le(BigInt.zero())) {
-    removeTokenBalance(balance);
+    removeTokenBalanceWithDistributionStats(balance, oldBalance);
     return;
   }
 
@@ -27,6 +32,10 @@ export function increaseTokenBalanceValue(
   balance.lastUpdatedAt = timestamp;
 
   balance.save();
+
+  // Update distribution stats with old and new balance
+  const newBalance = toBigDecimal(newValue, token.decimals);
+  updateTokenDistributionStats(token, account, oldBalance, newBalance);
 }
 
 export function decreaseTokenBalanceValue(
@@ -37,10 +46,13 @@ export function decreaseTokenBalanceValue(
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
+  // Store old balance for distribution stats
+  const oldBalance = toBigDecimal(balance.valueExact, token.decimals);
+
   const newValue = balance.valueExact.minus(value);
 
   if (newValue.le(BigInt.zero())) {
-    removeTokenBalance(balance);
+    removeTokenBalanceWithDistributionStats(balance, oldBalance);
     return;
   }
 
@@ -50,6 +62,10 @@ export function decreaseTokenBalanceValue(
   balance.lastUpdatedAt = timestamp;
 
   balance.save();
+
+  // Update distribution stats with old and new balance
+  const newBalance = toBigDecimal(newValue, token.decimals);
+  updateTokenDistributionStats(token, account, oldBalance, newBalance);
 }
 
 export function increaseTokenBalanceFrozen(
@@ -103,7 +119,8 @@ export function freezeOrUnfreezeTokenBalance(
   const balance = fetchTokenBalance(token, fetchAccount(account));
 
   if (balance.valueExact.le(BigInt.zero()) && !isFrozen) {
-    removeTokenBalance(balance);
+    const oldBalanceValue = toBigDecimal(balance.valueExact, token.decimals);
+    removeTokenBalanceWithDistributionStats(balance, oldBalanceValue);
     return;
   }
 
@@ -124,7 +141,8 @@ export function moveTokenBalanceToNewAccount(
   const oldBalance = fetchTokenBalance(token, fetchAccount(oldAccount));
 
   if (oldBalance.valueExact.le(BigInt.zero()) && !oldBalance.isFrozen) {
-    removeTokenBalance(oldBalance);
+    const oldBalanceValue = toBigDecimal(oldBalance.valueExact, token.decimals);
+    removeTokenBalanceWithDistributionStats(oldBalance, oldBalanceValue);
     return;
   }
 
@@ -139,7 +157,8 @@ export function moveTokenBalanceToNewAccount(
 
   newBalance.save();
 
-  removeTokenBalance(oldBalance);
+  const oldBalanceValue = toBigDecimal(oldBalance.valueExact, token.decimals);
+  removeTokenBalanceWithDistributionStats(oldBalance, oldBalanceValue);
 }
 
 function updateAvailableAmount(
@@ -156,6 +175,24 @@ function updateAvailableAmount(
       decimals
     );
   }
+}
+
+function removeTokenBalanceWithDistributionStats(
+  tokenBalance: TokenBalance,
+  oldBalance: BigDecimal
+): void {
+  // Update distribution stats before removing (balance goes to zero)
+  const token = Token.load(tokenBalance.token)!;
+  updateTokenDistributionStats(
+    token,
+    Address.fromBytes(tokenBalance.account),
+    oldBalance,
+    toBigDecimal(BigInt.zero(), token.decimals)
+  );
+
+  store.remove("TokenBalance", tokenBalance.id.toHexString());
+  decreaseAccountStatsBalanceCount(Address.fromBytes(tokenBalance.account));
+  decreaseTokenStatsBalanceCount(Address.fromBytes(tokenBalance.token));
 }
 
 function removeTokenBalance(tokenBalance: TokenBalance): void {
