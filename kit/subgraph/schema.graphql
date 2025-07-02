@@ -365,6 +365,9 @@ type TokenPausable @entity(immutable: false) {
 type TokenCollateral @entity(immutable: false) {
   id: Bytes!
   identityClaim: IdentityClaim
+  expiryTimestamp: BigInt
+  collateral: BigDecimal
+  collateralExact: BigInt
 }
 
 type TokenCapped @entity(immutable: false) {
@@ -760,6 +763,7 @@ type TokenCollateralStatsData @entity(timeseries: true) {
 
   token: Token!
 
+  expiryTimestamp: BigInt!
   collateral: BigDecimal!
   collateralExact: BigInt!
   collateralAvailable: BigDecimal!
@@ -775,6 +779,7 @@ type TokenCollateralStats
 
   token: Token!
 
+  expiryTimestamp: BigInt! @aggregate(fn: "last", arg: "expiryTimestamp")
   collateral: BigDecimal! @aggregate(fn: "last", arg: "collateral")
   collateralExact: BigInt! @aggregate(fn: "last", arg: "collateralExact")
   collateralAvailable: BigDecimal!
