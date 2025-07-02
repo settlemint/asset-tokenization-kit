@@ -8,11 +8,11 @@ interface WalletStepProps {
 }
 
 /**
- * Step component for generating a blockchain wallet during onboarding
+ * Step component for displaying the user's blockchain wallet during onboarding
  * @param {object} props - Component props
- * @param {() => void} [props.onSuccess] - Callback when wallet is successfully generated
- * @param {(action: () => void) => void} [props.onRegisterAction] - Callback to register the wallet generation action with parent
- * @returns {JSX.Element} The wallet generation step component
+ * @param {() => void} [props.onSuccess] - Callback when wallet step is completed
+ * @param {(action: () => void) => void} [props.onRegisterAction] - Callback to register the step action with parent
+ * @returns {JSX.Element} The wallet display step component
  */
 export function WalletStep({ onRegisterAction }: WalletStepProps) {
   const { data: session } = authClient.useSession();

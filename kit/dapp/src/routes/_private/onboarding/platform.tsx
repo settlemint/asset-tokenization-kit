@@ -93,14 +93,14 @@ function PlatformOnboarding() {
     () => [
       {
         id: "wallet",
-        title: "Generate Wallet",
-        description: "Create your secure blockchain wallet",
+        title: t("onboarding:steps.wallet.title"),
+        description: t("onboarding:steps.wallet.description"),
         status: currentStepId === "wallet" ? "active" : "completed",
       },
       {
         id: "security",
-        title: "Secure Your Wallet",
-        description: "Set up PIN code protection",
+        title: t("onboarding:steps.security.title"),
+        description: t("onboarding:steps.security.description"),
         status: session?.user.pincodeEnabled
           ? "completed"
           : currentStepId === "security"
@@ -109,8 +109,8 @@ function PlatformOnboarding() {
       },
       {
         id: "system",
-        title: "Deploy System",
-        description: "Deploy your SMART tokenization system",
+        title: t("onboarding:steps.system.title"),
+        description: t("onboarding:steps.system.description"),
         status: systemAddress
           ? "completed"
           : currentStepId === "system"
@@ -377,8 +377,8 @@ function PlatformOnboarding() {
             <StepWizard
               steps={steps}
               currentStepId={currentStepId}
-              title="Let's get you set up!"
-              description="You will need a wallet, security, and an identity on the blockchain to use this platform."
+              title={t("onboarding:card-title")}
+              description={t("onboarding:card-description")}
               onStepChange={handleStepChange}
               showBackButton={currentStepIndex > 0}
               showNextButton={true}

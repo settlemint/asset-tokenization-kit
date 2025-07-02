@@ -1,5 +1,5 @@
 {
-  "card-description": "You will need a wallet and an identity on the blockchain to use this platform.",
+  "card-description": "We've set up your wallet and will configure your identity on the blockchain to use this platform.",
   "card-title": "Let's get you set up!",
   "ui": {
     "next": "Next",
@@ -24,8 +24,8 @@
   },
   "steps": {
     "wallet": {
-      "title": "Create Wallet",
-      "description": "Generate your blockchain wallet"
+      "title": "Your Wallet",
+      "description": "View your blockchain wallet"
     },
     "security": {
       "title": "Secure your Wallet",
@@ -48,20 +48,20 @@
     }
   },
   "wallet": {
-    "title": "Generate Wallet",
+    "title": "Your Wallet",
     "your-wallet": "Your Wallet",
-    "generate-your-wallet": "Generate Your Wallet",
-    "description": "Create your blockchain wallet for transactions",
-    "blockchain-identity-ready": "Your blockchain identity is ready",
-    "create-secure-wallet": "Create a secure blockchain wallet to interact with the platform",
+    "generate-your-wallet": "Your Wallet",
+    "description": "Your blockchain wallet for secure transactions",
+    "blockchain-identity-ready": "Your blockchain identity is ready to use",
+    "create-secure-wallet": "We've created a secure blockchain wallet for you to interact with the platform",
     "info": "Your wallet is your gateway to the blockchain. It allows you to hold digital assets and execute transactions securely.",
     "generate": "Generate Wallet",
     "success": "Wallet successfully created!",
     "generated": "Wallet generated successfully",
-    "wallet-generated-successfully": "Wallet Generated Successfully",
+    "wallet-generated-successfully": "Your Wallet is ready",
     "already-exists": "Wallet already exists for this user",
     "creation-failed": "Failed to create wallet. Please try again.",
-    "address-label": "Address",
+    "address-label": "Wallet Address",
     "what-is-wallet": "What is a wallet?",
     "wallet-description": "A blockchain wallet is your digital identity that allows you to interact with smart contracts and manage digital assets securely.",
     "features": {
