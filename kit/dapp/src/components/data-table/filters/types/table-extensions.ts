@@ -6,13 +6,13 @@ declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     /* The display name of the column. */
-    displayName: string;
+    displayName?: string;
 
     /* The column icon. */
-    icon: LucideIcon;
+    icon?: LucideIcon | React.ComponentType<{ className?: string }>;
 
     /* The data type of the column. */
-    type: ColumnDataType;
+    type?: ColumnDataType | string;
 
     /* An optional list of options for the column. */
     /* This is used for columns with type 'option' or 'multiOption'. */
@@ -29,5 +29,25 @@ declare module "@tanstack/react-table" {
     /* An optional "soft" max for the number range slider. */
     /* This is used for columns with type 'number'. */
     max?: number;
+
+    // Additional properties from table-meta.ts
+    filterComponentOptions?: {
+      title: string;
+      options: { label: string; value: string }[];
+    };
+    enableCsvExport?: boolean; // Default is true, only set to false to disable
+    variant?: "default" | "numeric";
+    detailUrl?: string;
+
+    // Auto-cell properties
+    cellType?:
+      | "address"
+      | "badge"
+      | "currency"
+      | "date"
+      | "status"
+      | "text"
+      | "number";
+    cellProps?: Record<string, unknown>;
   }
 }

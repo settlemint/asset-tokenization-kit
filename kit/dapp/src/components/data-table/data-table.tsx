@@ -97,18 +97,8 @@ declare module "@tanstack/table-core" {
   }
 }
 
-declare module "@tanstack/react-table" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ColumnMeta<TData extends RowData, TValue> {
-    filterComponentOptions?: {
-      title: string;
-      options: { label: string; value: string }[];
-    };
-    enableCsvExport?: boolean;
-    variant?: "default" | "numeric";
-    detailUrl?: string;
-  }
-}
+// Import extended table meta types
+import "./types/table-meta";
 
 /**
 /**
@@ -233,8 +223,8 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
 
   // Bulk actions state and handlers (after table creation)
   const isBulkActionsEnabled = bulkActions?.enabled ?? false;
-  const selectedRowIds = Object.keys(currentState.rowSelection).filter(
-    (key) => currentState.rowSelection[key] === true
+  const selectedRowIds = Object.keys(currentState.rowSelection ?? {}).filter(
+    (key) => currentState.rowSelection?.[key as keyof typeof currentState.rowSelection] === true
   );
   const selectedRows = useMemo(() => {
     if (!isBulkActionsEnabled || selectedRowIds.length === 0) return [];

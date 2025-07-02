@@ -198,9 +198,16 @@ export function deserializeDataTableState(
       const filterKey = key.substring(7); // Remove 'filter_' prefix
       // For now, store as simple string values
       // The actual filter function will handle the comparison
+      const filterValue =
+        typeof value === "string"
+          ? value
+          : typeof value === "number" || typeof value === "boolean"
+            ? String(value)
+            : JSON.stringify(value);
+
       columnFilters.push({
         id: filterKey,
-        value: String(value),
+        value: filterValue,
       });
     }
   });

@@ -43,6 +43,9 @@ export function createBasicSelectionColumn<TData>(): ColumnDef<TData> {
     size: 40,
     minSize: 40,
     maxSize: 40,
+    meta: {
+      enableCsvExport: false,
+    },
   };
 }
 
@@ -108,5 +111,8 @@ export function createSelectionColumn<TData>(
     size: 40,
     minSize: 40,
     maxSize: 40,
+    meta: {
+      enableCsvExport: false,
+    },
   };
 }

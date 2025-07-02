@@ -26,7 +26,6 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
   column,
   columnMeta,
   table,
-  onClose: _onClose,
 }: PropertyFilterOptionValueMenuProps<TData, TValue>) {
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"option", TData>)

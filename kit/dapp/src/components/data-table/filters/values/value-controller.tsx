@@ -14,7 +14,7 @@ import { getDateLocale } from "@/lib/utils/date-locale";
 import { formatDateRange } from "../date-utils";
 import { useTranslation } from "react-i18next";
 import { Ellipsis } from "lucide-react";
-import { cloneElement, isValidElement, useState } from "react";
+import { cloneElement, isValidElement, useState, useCallback } from "react";
 import { take, uniq } from "../../data-table-array";
 import { isColumnOptionArray } from "../utils/type-guards";
 import type { ColumnOption, ElementType } from "../types/column-types";
@@ -41,6 +41,20 @@ export function PropertyFilterValueController<TData, TValue>({
 }) {
   const [open, setOpen] = useState(false);
 
+  const handleClose = useCallback(() => {
+    setOpen(false);
+  }, []);
+  const handleInteractOutside = useCallback(
+    (e: { target: unknown; preventDefault: () => void }) => {
+      // Prevent closing when clicking inside the menu
+      const target = e.target as HTMLElement;
+      if (target.closest('[role="dialog"]')) {
+        e.preventDefault();
+      }
+    },
+    []
+  );
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverAnchor className="h-full" />
@@ -61,20 +75,14 @@ export function PropertyFilterValueController<TData, TValue>({
         align="start"
         side="bottom"
         className="w-fit p-0 origin-(--radix-popover-content-transform-origin)"
-        onInteractOutside={(e) => {
-          // Prevent closing when clicking inside the menu
-          const target = e.target as HTMLElement;
-          if (target.closest('[role="dialog"]')) {
-            e.preventDefault();
-          }
-        }}
+        onInteractOutside={handleInteractOutside}
       >
         <PropertyFilterValueMenu
           id={id}
           column={column}
           columnMeta={columnMeta}
           table={table}
-          onClose={() => setOpen(false)}
+          onClose={handleClose}
         />
       </PopoverContent>
     </Popover>
@@ -205,7 +213,7 @@ export function PropertyFilterOptionValueDisplay<TData, TValue>({
       </span>
     );
   }
-  const name = columnMeta.displayName.toLowerCase();
+  const name = (columnMeta.displayName ?? "item").toLowerCase();
   const pluralName = name.endsWith("s") ? `${name}es` : `${name}s`;
 
   const hasOptionIcons = options.every((o) => o.icon);
@@ -291,7 +299,7 @@ export function PropertyFilterMultiOptionValueDisplay<TData, TValue>({
     );
   }
 
-  const name = columnMeta.displayName.toLowerCase();
+  const name = (columnMeta.displayName ?? "item").toLowerCase();
 
   const hasOptionIcons = columnMeta.options?.every((o) => o.icon) ?? false;
 

@@ -305,7 +305,7 @@ export function TableFilterMenuItem<TData>({
     <CommandItem onSelect={handleSelect} className="group">
       <div className="flex w-full items-center justify-between">
         <div className="inline-flex items-center gap-1.5">
-          {Icon && <Icon strokeWidth={2.25} className="size-4" />}
+          {Icon && <Icon className="size-4" />}
           <span>{displayName ?? column.id}</span>
         </div>
         <ArrowRight className="size-4 opacity-0 group-aria-selected:opacity-100" />

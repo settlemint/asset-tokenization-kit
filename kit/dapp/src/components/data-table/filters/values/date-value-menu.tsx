@@ -16,7 +16,6 @@ interface PropertyFilterDateValueMenuProps<TData, TValue> {
 
 export function PropertyFilterDateValueMenu<TData, TValue>({
   column,
-  onClose: _onClose,
 }: PropertyFilterDateValueMenuProps<TData, TValue>) {
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"date", TData>)

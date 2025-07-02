@@ -61,7 +61,11 @@ function exportTableToCSV<TData>(
     // Retrieve headers (column names)
     const headers = table
       .getAllLeafColumns()
-      .filter((column) => !["select", "actions"].includes(column.id))
+      .filter((column) => {
+        // Check enableCsvExport meta property (default is true)
+        const enableExport = column.columnDef.meta?.enableCsvExport;
+        return enableExport !== false;
+      })
       .map((column) => ({
         id: column.id,
         header: getColumnHeader(column),

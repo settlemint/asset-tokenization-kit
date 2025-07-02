@@ -62,7 +62,7 @@ export function PropertyFilterOperatorController<
         >
           <PropertyFilterOperatorDisplay
             filter={filter}
-            filterType={columnMeta.type}
+            filterType={columnMeta.type as ColumnDataType}
           />
         </Button>
       </PopoverTrigger>

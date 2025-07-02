@@ -16,7 +16,7 @@ export function PropertyFilterSubject<TData>({
   return (
     <span className="flex select-none items-center gap-1 whitespace-nowrap px-2 font-medium text-xs">
       {Icon && <Icon className="size-3.5 stroke-[2.25px]" />}
-      <span>{meta.displayName || "Filter"}</span>
+      <span>{meta.displayName ?? "Filter"}</span>
     </span>
   );
 }

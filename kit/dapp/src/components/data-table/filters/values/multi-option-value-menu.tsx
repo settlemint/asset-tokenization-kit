@@ -30,7 +30,6 @@ export function PropertyFilterMultiOptionValueMenu<
   column,
   columnMeta,
   table,
-  onClose: _onClose,
 }: PropertyFilterMultiOptionValueMenuProps<TData, TValue>) {
   const filter = column.getFilterValue() as
     | FilterValue<"multiOption", TData>

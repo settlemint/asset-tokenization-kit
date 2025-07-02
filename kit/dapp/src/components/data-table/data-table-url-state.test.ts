@@ -31,7 +31,7 @@ test("serializes table state to URL parameters", () => {
   expect(result.search).toBe("test search");
   expect(result.sortBy).toBe("name");
   expect(result.sortOrder).toBeUndefined(); // asc is default, not included
-  expect(result.filter).toEqual({ status: "active" });
+  expect(result.filter_status).toBe("active"); // Now uses filter_ prefix
   expect(result.columns).toBe("name,id"); // visible columns are listed
   expect(result.selected).toBe("1,2");
 });
@@ -43,7 +43,7 @@ test("deserializes URL parameters to table state", () => {
     search: "john",
     sortBy: "createdAt",
     sortOrder: "desc",
-    filter: { role: "admin" },
+    filter_role: "admin", // Now uses filter_ prefix
     columns: "id,name,email", // visible columns
     selected: "3",
   };
@@ -92,7 +92,7 @@ test("handles malformed URL parameters gracefully", () => {
     pageSize: -5,
     sortBy: null,
     sortOrder: "invalid",
-    filter: "not an object",
+    filter_test: "not an object", // Using filter_ prefix
     columns: null,
     selected: null,
   };
@@ -103,7 +103,9 @@ test("handles malformed URL parameters gracefully", () => {
   expect(result.pagination?.pageIndex).toBe(0);
   expect(result.pagination?.pageSize).toBe(1); // -5 clamped to 1
   expect(result.sorting).toEqual([]);
-  expect(result.columnFilters).toEqual([]);
+  expect(result.columnFilters).toEqual([
+    { id: "test", value: "not an object" },
+  ]); // Filter still parsed
   expect(result.columnVisibility).toEqual({});
   expect(result.rowSelection).toEqual({});
 });
