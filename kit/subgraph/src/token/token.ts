@@ -22,11 +22,13 @@ import {
 import { fetchEvent } from "../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../stats/account-stats";
 import { updateSystemStatsForSupplyChange } from "../stats/system-stats";
+import { trackTokenCollateralStats } from "../stats/token-collateral-stats";
 import { trackTokenStats } from "../stats/token-stats";
 import {
   decreaseTokenBalanceValue,
   increaseTokenBalanceValue,
 } from "../token-balance/utils/token-balance-utils";
+import { fetchCollateral } from "../token-extensions/collateral/fetch/collateral";
 import { updateYield } from "../token-extensions/fixed-yield-schedule/utils/fixed-yield-schedule-utils";
 import { getEncodedTypeId } from "../type-identifier/type-identifier";
 import { toBigDecimal } from "../utils/token-decimals";
@@ -114,6 +116,12 @@ export function handleMintCompleted(event: MintCompleted): void {
 
   // Update token stats
   trackTokenStats(token, eventEntry);
+
+  // Update token collateral stats
+  if (token.collateral) {
+    const collateral = fetchCollateral(event.address);
+    trackTokenCollateralStats(token, collateral);
+  }
 }
 
 export function handleModuleParametersUpdated(

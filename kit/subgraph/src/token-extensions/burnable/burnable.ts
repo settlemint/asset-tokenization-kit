@@ -2,11 +2,13 @@ import { BurnCompleted } from "../../../generated/templates/Burnable/Burnable";
 import { fetchEvent } from "../../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../../stats/account-stats";
 import { updateSystemStatsForSupplyChange } from "../../stats/system-stats";
+import { trackTokenCollateralStats } from "../../stats/token-collateral-stats";
 import { trackTokenStats } from "../../stats/token-stats";
 import { decreaseTokenBalanceValue } from "../../token-balance/utils/token-balance-utils";
 import { fetchToken } from "../../token/fetch/token";
 import { decreaseTokenSupply } from "../../token/utils/token-utils";
 import { toBigDecimal } from "../../utils/token-decimals";
+import { fetchCollateral } from "../collateral/fetch/collateral";
 
 export function handleBurnCompleted(event: BurnCompleted): void {
   const eventEntry = fetchEvent(event, "BurnCompleted");
@@ -31,4 +33,10 @@ export function handleBurnCompleted(event: BurnCompleted): void {
 
   // Update token stats
   trackTokenStats(token, eventEntry);
+
+  // Update token collateral stats
+  if (token.collateral) {
+    const collateral = fetchCollateral(event.address);
+    trackTokenCollateralStats(token, collateral);
+  }
 }
