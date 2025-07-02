@@ -42,11 +42,11 @@ const wrapperVariants = cva("flex items-center space-x-2", {
 });
 
 const buttonVariants = cva(
-  "-ml-3 h-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
+  "h-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
   {
     variants: {
       variant: {
-        default: "",
+        default: "-ml-2",
         numeric: "ml-auto",
       },
     },

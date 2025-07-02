@@ -233,7 +233,9 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
 
   // Bulk actions state and handlers (after table creation)
   const isBulkActionsEnabled = bulkActions?.enabled ?? false;
-  const selectedRowIds = Object.keys(currentState.rowSelection);
+  const selectedRowIds = Object.keys(currentState.rowSelection).filter(
+    (key) => currentState.rowSelection[key] === true
+  );
   const selectedRows = useMemo(() => {
     if (!isBulkActionsEnabled || selectedRowIds.length === 0) return [];
     return table.getSelectedRowModel().rows.map((row) => row.original);

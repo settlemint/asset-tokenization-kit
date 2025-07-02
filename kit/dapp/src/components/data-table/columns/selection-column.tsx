@@ -15,17 +15,14 @@ export function createBasicSelectionColumn<TData>(): ColumnDef<TData> {
       }
 
       return (
-        <div className="flex items-center">
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={handleToggleAll}
-            aria-label="Select all rows on this page"
-            className="translate-y-[2px]"
-          />
-        </div>
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={handleToggleAll}
+          aria-label="Select all rows on this page"
+        />
       );
     },
     cell: ({ row }) => {
@@ -34,21 +31,18 @@ export function createBasicSelectionColumn<TData>(): ColumnDef<TData> {
       }
 
       return (
-        <div className="flex items-center">
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={handleToggleRow}
-            aria-label={`Select row ${row.index + 1}`}
-            className="translate-y-[2px]"
-          />
-        </div>
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={handleToggleRow}
+          aria-label={`Select row ${row.index + 1}`}
+        />
       );
     },
     enableSorting: false,
     enableHiding: false,
-    size: 50,
-    minSize: 50,
-    maxSize: 50,
+    size: 40,
+    minSize: 40,
+    maxSize: 40,
   };
 }
 
@@ -80,19 +74,17 @@ export function createSelectionColumn<TData>(
       }
 
       return (
-        <div className="flex items-center justify-center">
-          <Checkbox
-            checked={isAllSelected || (isSomeSelected && "indeterminate")}
-            onCheckedChange={handleToggleAll}
-            aria-label={
-              ariaLabel ??
-              `Select all ${table.getRowModel().rows.length} rows${
-                isSomeSelected && !isAllSelected ? " (some selected)" : ""
-              }`
-            }
-            className={className}
-          />
-        </div>
+        <Checkbox
+          checked={isAllSelected || (isSomeSelected && "indeterminate")}
+          onCheckedChange={handleToggleAll}
+          aria-label={
+            ariaLabel ??
+            `Select all ${table.getRowModel().rows.length} rows${
+              isSomeSelected && !isAllSelected ? " (some selected)" : ""
+            }`
+          }
+          className={className}
+        />
       );
     },
     cell: ({ row, table }) => {
@@ -101,22 +93,20 @@ export function createSelectionColumn<TData>(
       }
 
       return (
-        <div className="flex items-center justify-center">
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={handleToggleRow}
-            aria-label={`Select row ${row.index + 1} of ${table.getRowModel().rows.length}`}
-            className={className}
-          />
-        </div>
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={handleToggleRow}
+          aria-label={`Select row ${row.index + 1} of ${table.getRowModel().rows.length}`}
+          className={className}
+        />
       );
     },
     enableSorting: false,
     enableHiding: false,
     enableColumnFilter: false,
     enableGlobalFilter: false,
-    size: 50,
-    minSize: 50,
-    maxSize: 50,
+    size: 40,
+    minSize: 40,
+    maxSize: 40,
   };
 }

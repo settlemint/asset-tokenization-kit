@@ -62,14 +62,15 @@ export function DataTablePagination<TData>({
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-muted-foreground text-sm">
-        {table.getAllColumns().some((column) => column.id === "select") && (
-          <span>
-            {t("components.data-table.selected-rows-info", {
-              selected: table.getFilteredSelectedRowModel().rows.length,
-              total: table.getFilteredRowModel().rows.length,
-            })}
-          </span>
-        )}
+        {table.getAllColumns().some((column) => column.id === "select") &&
+          table.getFilteredSelectedRowModel().rows.length > 0 && (
+            <span>
+              {t("components.data-table.selected-rows-info", {
+                selected: table.getFilteredSelectedRowModel().rows.length,
+                total: table.getFilteredRowModel().rows.length,
+              })}
+            </span>
+          )}
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
