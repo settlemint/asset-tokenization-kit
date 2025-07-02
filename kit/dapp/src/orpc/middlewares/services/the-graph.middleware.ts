@@ -301,11 +301,21 @@ function createValidatedTheGraphClient(
         if (filter) {
           if (Array.isArray(filter)) {
             // Filter is array of keys - pick only those fields from input
+            // Build where clause from filter fields
+            const whereClause: Record<string, unknown> = {};
+            let hasWhereFields = false;
+            
             for (const key of filter) {
               const value = input[key as keyof typeof input];
               if (value !== undefined) {
-                baseVariables[key as string] = value;
+                whereClause[key as string] = value;
+                hasWhereFields = true;
               }
+            }
+            
+            // Add where clause if we have any filter fields
+            if (hasWhereFields) {
+              baseVariables.where = whereClause;
             }
           } else {
             // Filter is an object - merge directly
