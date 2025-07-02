@@ -57,6 +57,7 @@ export function PropertyFilterValueMenu<TData, TValue>({
         />
       );
     case "text":
+    case "address": // Treat address as text for filtering
       return (
         <PropertyFilterTextValueMenu
           id={id}

@@ -25,7 +25,7 @@ export function AddressCell({
   onCopy,
 }: AddressCellProps) {
   const { t } = useTranslation("general");
-  
+
   const handleCopy = useCallback(() => {
     void navigator.clipboard.writeText(address);
     toast.success(t("components.data-table.address-copied"));

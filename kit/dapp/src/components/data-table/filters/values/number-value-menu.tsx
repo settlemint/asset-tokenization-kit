@@ -119,7 +119,6 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
     [cappedMax, inputValues]
   );
 
-
   const handleSingleSliderChange = useCallback(
     (value: number[]) => {
       handleInputChange(0, value[0]?.toString() ?? "0");
@@ -168,26 +167,25 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
   const displayName = columnMeta.displayName ?? "Filter";
 
   return (
-    <Command>
+    <Command className="min-w-[280px]">
+      {/* Header with field title and icon - match CommandInput styling */}
+      <div className="flex h-9 items-center gap-2 border-b px-3">
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-4 w-4 p-0 hover:bg-transparent -ml-1"
+            onClick={onBack}
+          >
+            <ChevronLeft className="h-3 w-3" />
+          </Button>
+        )}
+        {Icon && <Icon className="size-4 shrink-0 opacity-50" />}
+        <span className="text-sm text-muted-foreground">{displayName}</span>
+      </div>
       <CommandList className="max-h-fit">
         <CommandGroup>
-          <div className="flex flex-col w-full p-2 space-y-2 min-w-[280px]">
-            {/* Header with field title and icon */}
-            <div className="flex items-center gap-1 -mt-1">
-              {onBack && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-4 w-4 p-0 hover:bg-transparent"
-                  onClick={onBack}
-                >
-                  <ChevronLeft className="h-3 w-3" />
-                </Button>
-              )}
-              {Icon && <Icon className="size-3 text-muted-foreground" />}
-              <span className="text-xs text-muted-foreground">{displayName}</span>
-            </div>
-            <Separator className="-mx-2" />
+          <div className="flex flex-col w-full p-2 space-y-2">
             <div className="grid grid-cols-2 gap-2">
               <Button
                 variant={tabValue === "single" ? "default" : "outline"}
@@ -220,7 +218,9 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                   type="number"
                   value={inputValues[0] ?? "0"}
                   onChange={handleSingleInputChange}
-                  placeholder={t("components.data-table.filters.number.placeholder")}
+                  placeholder={t(
+                    "components.data-table.filters.number.placeholder"
+                  )}
                   className="w-full"
                   min={safeDatasetMin}
                   max={cappedMax}
@@ -238,7 +238,9 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                 />
                 <div className="flex gap-2">
                   <div className="flex flex-col gap-1 flex-1">
-                    <label className="text-xs text-muted-foreground">{t("components.data-table.filters.number.min")}</label>
+                    <label className="text-xs text-muted-foreground">
+                      {t("components.data-table.filters.number.min")}
+                    </label>
                     <Input
                       type="number"
                       value={inputValues[0] ?? "0"}
@@ -249,7 +251,9 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                     />
                   </div>
                   <div className="flex flex-col gap-1 flex-1">
-                    <label className="text-xs text-muted-foreground">{t("components.data-table.filters.number.max")}</label>
+                    <label className="text-xs text-muted-foreground">
+                      {t("components.data-table.filters.number.max")}
+                    </label>
                     <Input
                       type="number"
                       value={inputValues[1] ?? `${cappedMax}+`}

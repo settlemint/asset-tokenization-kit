@@ -242,7 +242,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
           onBack={() => setProperty(undefined)}
         />
       ) : (
-        <Command loop>
+        <Command loop className="min-w-[280px]">
           <CommandInput
             value={value}
             onValueChange={setValue}
@@ -276,7 +276,9 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
           className="h-8 w-fit px-2 text-muted-foreground"
         >
           <Filter className="size-4" />
-          <span className="hidden md:block">{t("components.data-table.filter")}</span>
+          <span className="hidden md:block">
+            {t("components.data-table.filter")}
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent

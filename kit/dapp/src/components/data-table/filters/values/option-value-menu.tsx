@@ -104,8 +104,8 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
 
   return (
     <Command loop className="min-w-[280px]">
-      {/* Header with field title and icon */}
-      <div className="flex items-center gap-1 px-3 py-1 border-b">
+      {/* Header with field title and icon - match CommandInput styling */}
+      <div className="flex h-9 items-center gap-2 border-b px-3">
         {onBack && (
           <Button
             variant="ghost"
@@ -116,8 +116,8 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
             <ChevronLeft className="h-3 w-3" />
           </Button>
         )}
-        {Icon && <Icon className="size-3 text-muted-foreground" />}
-        <span className="text-xs text-muted-foreground">{displayName}</span>
+        {Icon && <Icon className="size-4 shrink-0 opacity-50" />}
+        <span className="text-sm text-muted-foreground">{displayName}</span>
       </div>
       <CommandInput autoFocus placeholder={t("components.data-table.search")} />
       <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>

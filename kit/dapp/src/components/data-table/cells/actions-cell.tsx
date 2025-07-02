@@ -37,17 +37,21 @@ export function ActionsCell({
   align = "end",
 }: ActionsCellProps) {
   const { t } = useTranslation("general");
-  
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">{t("components.data-table.open-menu")}</span>
+          <span className="sr-only">
+            {t("components.data-table.open-menu")}
+          </span>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={align}>
-        <DropdownMenuLabel>{label ?? t("components.data-table.actions")}</DropdownMenuLabel>
+        <DropdownMenuLabel>
+          {label ?? t("components.data-table.actions")}
+        </DropdownMenuLabel>
         {actions.map((action, index) => (
           <div key={index}>
             {action.separator === "before" && <DropdownMenuSeparator />}

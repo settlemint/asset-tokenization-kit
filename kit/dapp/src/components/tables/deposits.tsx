@@ -47,7 +47,8 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
   const router = useRouter();
   const { t } = useTranslation("general");
   // Get the current route's path pattern from the matched route
-  const routePath = router.state.matches[router.state.matches.length - 1]?.pathname;
+  const routePath =
+    router.state.matches[router.state.matches.length - 1]?.pathname;
 
   const { data: tokensResponse } = useQuery({
     ...orpc.token.list.queryOptions({
@@ -60,47 +61,60 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
   const tokens = tokensResponse ?? [];
 
   // Factory function for row actions - defined inside component to access `t`
-  const createRowActions = useCallback((row: { original: Token }): ActionItem[] => [
-    {
-      label: t("components.deposits-table.actions.view-details"),
-      icon: <Eye className="h-4 w-4" />,
-      onClick: () => {
-        void router.navigate({
-          to: "/token/$factoryAddress/$tokenAddress",
-          params: {
-            factoryAddress,
-            tokenAddress: row.original.id,
-          },
-        });
+  const createRowActions = useCallback(
+    (row: { original: Token }): ActionItem[] => [
+      {
+        label: t("components.deposits-table.actions.view-details"),
+        icon: <Eye className="h-4 w-4" />,
+        onClick: () => {
+          void router.navigate({
+            to: "/token/$factoryAddress/$tokenAddress",
+            params: {
+              factoryAddress,
+              tokenAddress: row.original.id,
+            },
+          });
+        },
       },
-    },
-    {
-      label: t("components.deposits-table.actions.copy-address"),
-      icon: <Copy className="h-4 w-4" />,
-      onClick: () => {
-        void navigator.clipboard.writeText(row.original.id);
-        toast.success(t("components.deposits-table.actions.address-copied"));
+      {
+        label: t("components.deposits-table.actions.copy-address"),
+        icon: <Copy className="h-4 w-4" />,
+        onClick: () => {
+          void navigator.clipboard.writeText(row.original.id);
+          toast.success(t("components.deposits-table.actions.address-copied"));
+        },
       },
-    },
-    {
-      label: t("components.deposits-table.actions.view-on-etherscan"),
-      icon: <ExternalLink className="h-4 w-4" />,
-      href: `https://etherscan.io/token/${row.original.id}`,
-      separator: "before",
-    },
-  ], [t, router, factoryAddress]);
+      {
+        label: t("components.deposits-table.actions.view-on-etherscan"),
+        icon: <ExternalLink className="h-4 w-4" />,
+        href: `https://etherscan.io/token/${row.original.id}`,
+        separator: "before",
+      },
+    ],
+    [t, router, factoryAddress]
+  );
 
-  const handleArchive = useCallback((selectedTokens: Token[]) => {
-    toast.info(
-      t("components.deposits-table.bulk-actions.archive-message", { count: selectedTokens.length })
-    );
-  }, [t]);
+  const handleArchive = useCallback(
+    (selectedTokens: Token[]) => {
+      toast.info(
+        t("components.deposits-table.bulk-actions.archive-message", {
+          count: selectedTokens.length,
+        })
+      );
+    },
+    [t]
+  );
 
-  const handleDuplicate = useCallback((selectedTokens: Token[]) => {
-    toast.info(
-      t("components.deposits-table.bulk-actions.duplicate-message", { count: selectedTokens.length })
-    );
-  }, [t]);
+  const handleDuplicate = useCallback(
+    (selectedTokens: Token[]) => {
+      toast.info(
+        t("components.deposits-table.bulk-actions.duplicate-message", {
+          count: selectedTokens.length,
+        })
+      );
+    },
+    [t]
+  );
 
   const { actions, actionGroups } = useBulkActions<Token>({
     onArchive: handleArchive,
@@ -119,58 +133,57 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
 
   // Define columns inside component to access `t`
   const columns = useMemo(
-    () => withAutoFeatures([
-      createSelectionColumn<Token>(),
-      columnHelper.accessor("name", {
-        header: t("components.deposits-table.columns.name"),
-        meta: {
-          displayName: t("components.deposits-table.columns.token-name"),
-          type: "text",
-          icon: Type,
-          cellType: "text",
-        },
-      }),
-      columnHelper.accessor("symbol", {
-        header: t("components.deposits-table.columns.symbol"),
-        meta: {
-          displayName: t("components.deposits-table.columns.token-symbol"),
-          type: "text",
-          icon: Coins,
-          cellType: "badge",
-        },
-      }),
-      columnHelper.accessor("decimals", {
-        header: t("components.deposits-table.columns.decimals"),
-        meta: {
-          displayName: t("components.deposits-table.columns.decimals"),
-          type: "number",
-          icon: Hash,
-          max: 18,
-          cellType: "number",
-        },
-      }),
-      columnHelper.accessor("id", {
-        header: t("components.deposits-table.columns.contract-address"),
-        meta: {
-          displayName: t("components.deposits-table.columns.contract-address"),
-          type: "address",
-          icon: Copy,
-          cellType: "address",
-        },
-      }),
-      columnHelper.display({
-        id: "actions",
-        header: t("components.deposits-table.columns.actions"),
-        meta: {
-          enableCsvExport: false, // Disable CSV export for actions column
-        },
-        cell: ({ row }) => (
-          <ActionsCell
-            actions={createRowActions(row)}
-          />
-        ),
-      }),
-    ] as ColumnDef<Token>[]),
+    () =>
+      withAutoFeatures([
+        createSelectionColumn<Token>(),
+        columnHelper.accessor("name", {
+          header: t("components.deposits-table.columns.name"),
+          meta: {
+            displayName: t("components.deposits-table.columns.token-name"),
+            type: "text",
+            icon: Type,
+            cellType: "text",
+          },
+        }),
+        columnHelper.accessor("symbol", {
+          header: t("components.deposits-table.columns.symbol"),
+          meta: {
+            displayName: t("components.deposits-table.columns.token-symbol"),
+            type: "text",
+            icon: Coins,
+            cellType: "badge",
+          },
+        }),
+        columnHelper.accessor("decimals", {
+          header: t("components.deposits-table.columns.decimals"),
+          meta: {
+            displayName: t("components.deposits-table.columns.decimals"),
+            type: "number",
+            icon: Hash,
+            max: 18,
+            cellType: "number",
+          },
+        }),
+        columnHelper.accessor("id", {
+          header: t("components.deposits-table.columns.contract-address"),
+          meta: {
+            displayName: t(
+              "components.deposits-table.columns.contract-address"
+            ),
+            type: "address",
+            icon: Copy,
+            cellType: "address",
+          },
+        }),
+        columnHelper.display({
+          id: "actions",
+          header: t("components.deposits-table.columns.actions"),
+          meta: {
+            enableCsvExport: false, // Disable CSV export for actions column
+          },
+          cell: ({ row }) => <ActionsCell actions={createRowActions(row)} />,
+        }),
+      ] as ColumnDef<Token>[]),
     [t, createRowActions]
   );
 
