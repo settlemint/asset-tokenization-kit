@@ -7,5 +7,7 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  return <div>Hello "/_private/_onboarded/token/$type/$address"!</div>;
+  return (
+    <div>Hello "/_private/_onboarded/token/$factoryAddress/$tokenAddress"!</div>
+  );
 }

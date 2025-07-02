@@ -304,7 +304,7 @@ function createValidatedTheGraphClient(
             // Build where clause from filter fields
             const whereClause: Record<string, unknown> = {};
             let hasWhereFields = false;
-            
+
             for (const key of filter) {
               const value = input[key as keyof typeof input];
               if (value !== undefined) {
@@ -312,7 +312,7 @@ function createValidatedTheGraphClient(
                 hasWhereFields = true;
               }
             }
-            
+
             // Add where clause if we have any filter fields
             if (hasWhereFields) {
               baseVariables.where = whereClause;

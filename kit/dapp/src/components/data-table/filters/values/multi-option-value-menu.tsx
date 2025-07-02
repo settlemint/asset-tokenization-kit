@@ -97,8 +97,8 @@ export function PropertyFilterMultiOptionValueMenu<
               : [value];
             const newOperator = determineNewOperator(
               "multiOption",
-              old?.values[0] ?? [],
-              newVals,
+              old?.values ?? [],
+              [newVals],
               old?.operator ?? "include"
             );
 
@@ -111,8 +111,8 @@ export function PropertyFilterMultiOptionValueMenu<
           const newVals = old?.values[0]?.filter((v) => v !== value) ?? [];
           const newOperator = determineNewOperator(
             "multiOption",
-            old?.values[0] ?? [],
-            newVals,
+            old?.values ?? [],
+            [newVals],
             old?.operator ?? "include"
           );
 

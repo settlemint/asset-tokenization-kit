@@ -152,13 +152,13 @@ const AssetTypeFieldInner = memo(
           <div className="flex items-center gap-2">
             <Icon className="h-4 w-4 text-muted-foreground" />
             <FormLabel className="text-sm font-medium cursor-pointer">
-              {t(`asset-types.${assetType}`, {
-                ns: "tokens",
-              })}
+              {(
+                t as (key: string, options?: Record<string, unknown>) => string
+              )(`asset-types.${assetType}`, { ns: "tokens" })}
             </FormLabel>
           </div>
           <p className="text-sm text-muted-foreground">
-            {t(`assets.descriptions.${assetType}`)}
+            {(t as (key: string) => string)(`assets.descriptions.${assetType}`)}
           </p>
         </div>
       </FormItem>
@@ -280,9 +280,10 @@ export function AssetSelectionStep({
 
     const factories = values.assets.map((assetType) => ({
       type: assetType,
-      name: t(`asset-types.${assetType}`, {
-        ns: "tokens",
-      }),
+      name: (t as (key: string, options?: Record<string, unknown>) => string)(
+        `asset-types.${assetType}`,
+        { ns: "tokens" }
+      ),
     }));
 
     createFactories({

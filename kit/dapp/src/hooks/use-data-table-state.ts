@@ -164,12 +164,11 @@ export function useDataTableState(
     routePath,
   } = options;
 
-  const navigate = useNavigate({ from: routePath });
+  const navigate = useNavigate({ from: routePath as never });
 
   // Get search params from URL - always call hook, but conditionally use the result
   const rawUrlSearchParams = useSearch({
     strict: false,
-    from: routePath,
   });
   const urlSearchParams = useMemo(() => {
     return enableUrlPersistence ? rawUrlSearchParams : {};

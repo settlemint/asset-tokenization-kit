@@ -1,3 +1,4 @@
+import { useMounted } from "@/hooks/use-mounted";
 import { authClient } from "@/lib/auth/auth.client";
 import {
   determineOnboardingType,
@@ -7,7 +8,6 @@ import {
   type OnboardingType,
   type PlatformOnboardingRequirements,
 } from "@/lib/types/onboarding";
-import { useMounted } from "@/lib/utils/use-mounted";
 import { orpc } from "@/orpc";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";

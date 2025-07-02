@@ -23,7 +23,7 @@ import { Route as PrivateOnboardingIssuerRouteImport } from './routes/_private/o
 import { Route as PrivateOnboardingInvestorRouteImport } from './routes/_private/onboarding/investor'
 import { Route as PrivateOnboardedTokenStatsRouteImport } from './routes/_private/_onboarded/token/stats'
 import { Route as PrivateOnboardedTokenFactoryAddressRouteImport } from './routes/_private/_onboarded/token/$factoryAddress'
-import { Route as PrivateOnboardedTokenFactoryAddressTokenAddressRouteImport } from './routes/_private/_onboarded/token/$factoryAddress.$tokenAddress'
+import { Route as PrivateOnboardedTokenFactoryAddressTokenAddressRouteImport } from './routes/_private/_onboarded/token/$factoryAddress/$tokenAddress'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'

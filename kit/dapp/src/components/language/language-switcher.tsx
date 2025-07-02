@@ -8,8 +8,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useMounted } from "@/hooks/use-mounted";
 import { supportedLanguages } from "@/lib/i18n";
-import { useMounted } from "@/lib/utils/use-mounted";
 import { Check, Languages } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";

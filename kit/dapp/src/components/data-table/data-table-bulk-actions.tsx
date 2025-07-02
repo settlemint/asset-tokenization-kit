@@ -270,9 +270,10 @@ export function createManagementActionGroup<TData>(
   const { assignees = [], availableTags = [] } = options;
 
   if (handlers.onAssign && assignees.length > 0) {
+    const onAssign = handlers.onAssign;
     assignees.forEach((assignee) => {
       actions.push(
-        createAssignAction(handlers.onAssign, {
+        createAssignAction(onAssign, {
           assigneeId: assignee.id,
           assigneeName: assignee.name,
         })
@@ -281,8 +282,9 @@ export function createManagementActionGroup<TData>(
   }
 
   if (handlers.onTag && availableTags.length > 0) {
+    const onTag = handlers.onTag;
     actions.push(
-      createTagAction(handlers.onTag, {
+      createTagAction(onTag, {
         tags: availableTags,
         action: "add",
       })

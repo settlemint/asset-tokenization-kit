@@ -79,14 +79,14 @@ export function serializeDataTableState(
   // Sorting - only include if not empty
   if (state.sorting && state.sorting.length > 0) {
     result.sorting = encodeObjectParam(
-      state.sorting as Record<string, unknown>
+      state.sorting as unknown as Record<string, unknown>
     );
   }
 
   // Column filters - only include if not empty
   if (state.columnFilters && state.columnFilters.length > 0) {
     result.filters = encodeObjectParam(
-      state.columnFilters as Record<string, unknown>
+      state.columnFilters as unknown as Record<string, unknown>
     );
   }
 

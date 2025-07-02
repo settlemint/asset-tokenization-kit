@@ -46,5 +46,6 @@ export const TokenSchema = z.object({
         .boolean()
         .describe("Whether the user is allowed to interact with the token"),
     })
+    .optional()
     .describe("The permissions of the user for the token"),
 });
