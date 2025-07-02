@@ -25,3 +25,5 @@ copied over in every repository.
   state.
 - Make sure to ask me for any additional information you need to implement any
   functionality or fix any issues.
+- CRITICAL: NEVER COMMIT TO THE MAIN BRANCH, ALWAYS PUSH TO A FEATURE BRANCH.
+  More info in @.cursor/rules/git.mdc
