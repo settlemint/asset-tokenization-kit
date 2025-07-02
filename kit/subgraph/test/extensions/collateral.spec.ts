@@ -22,6 +22,9 @@ describe("Token collateral extension", () => {
               }
               revoked
             }
+            expiryTimestamp
+            collateral
+            collateralExact
           }
         }
       }
@@ -47,12 +50,20 @@ describe("Token collateral extension", () => {
             ],
             revoked: false,
           },
+          expiryTimestamp: expect.any(String),
+          collateral: "100000",
+          collateralExact: "100000000000",
         },
       },
       {
         name: "Paused Stablecoin",
         type: "stablecoin",
-        collateral: { identityClaim: null },
+        collateral: {
+          identityClaim: null,
+          expiryTimestamp: null,
+          collateral: null,
+          collateralExact: null,
+        },
       },
       {
         name: "Tether",
@@ -67,6 +78,9 @@ describe("Token collateral extension", () => {
             ],
             revoked: false,
           },
+          expiryTimestamp: expect.any(String),
+          collateral: "1000",
+          collateralExact: "1000000000",
         },
       },
     ]);
