@@ -54,7 +54,7 @@ const wrapperVariants = cva("flex items-center space-x-2", {
  * Handles different margin alignments based on column type.
  */
 const buttonVariants = cva(
-  "h-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
+  "h-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground transition-all duration-200 hover:bg-muted/50",
   {
     variants: {
       variant: {
@@ -131,13 +131,14 @@ export function DataTableColumnHeader<TData, TValue>({
    * @returns The appropriate sort icon component
    */
   const sortIcon = () => {
+    const iconClass = "ml-2 size-4 transition-all duration-200";
     if (column.getIsSorted() === "desc") {
-      return <SortDesc className="ml-2 size-4" />;
+      return <SortDesc className={cn(iconClass, "rotate-0")} />;
     }
     if (column.getIsSorted() === "asc") {
-      return <SortAsc className="ml-2 size-4" />;
+      return <SortAsc className={cn(iconClass, "rotate-0")} />;
     }
-    return <ArrowDownUp className="ml-2 size-4" />;
+    return <ArrowDownUp className={cn(iconClass, "opacity-50")} />;
   };
 
   return (

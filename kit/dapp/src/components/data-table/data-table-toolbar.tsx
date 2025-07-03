@@ -40,9 +40,9 @@ export function DataTableToolbar<TData>({
             variant="outline"
             size="sm"
             onClick={clearFilters}
-            className="group h-8 w-8 p-0 border-none hover:bg-primary"
+            className="group h-8 w-8 p-0 border-none hover:bg-primary transition-all duration-200 animate-in fade-in-0 zoom-in-95"
           >
-            <FilterXIcon className="h-4 w-4 text-muted-foreground group-hover:text-white" />
+            <FilterXIcon className="h-4 w-4 text-muted-foreground group-hover:text-white transition-colors duration-200 group-hover:rotate-90" />
           </Button>
         )}
       </div>

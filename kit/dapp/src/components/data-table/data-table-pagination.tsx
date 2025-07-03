@@ -144,55 +144,59 @@ export function DataTablePagination<TData>({
           <Button
             variant="ghost"
             size="icon"
-            className="hidden h-7 w-7 p-0 lg:flex"
+            className="hidden h-7 w-7 p-0 lg:flex transition-all duration-200 hover:bg-muted/50 active:scale-95"
             onClick={handleFirstPage}
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">
               {t("components.data-table.go-to-first-page")}
             </span>
-            <ChevronsLeft className="h-3.5 w-3.5" />
+            <ChevronsLeft className="h-3.5 w-3.5 transition-transform duration-200 hover:-translate-x-0.5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 p-0"
+            className="h-7 w-7 p-0 transition-all duration-200 hover:bg-muted/50 active:scale-95"
             onClick={handlePreviousPage}
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">
               {t("components.data-table.go-to-previous-page")}
             </span>
-            <ChevronLeft className="h-3.5 w-3.5" />
+            <ChevronLeft className="h-3.5 w-3.5 transition-transform duration-200 hover:-translate-x-0.5" />
           </Button>
-          <div className="flex items-center gap-1 text-muted-foreground text-xs px-2">
-            <span>{table.getState().pagination.pageIndex + 1}</span>
+          <div className="flex items-center gap-1 text-muted-foreground text-xs px-2 tabular-nums">
+            <span className="transition-all duration-200">
+              {table.getState().pagination.pageIndex + 1}
+            </span>
             <span>/</span>
-            <span>{table.getPageCount()}</span>
+            <span className="transition-all duration-200">
+              {table.getPageCount()}
+            </span>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 p-0"
+            className="h-7 w-7 p-0 transition-all duration-200 hover:bg-muted/50 active:scale-95"
             onClick={handleNextPage}
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">
               {t("components.data-table.go-to-next-page")}
             </span>
-            <ChevronRight className="h-3.5 w-3.5" />
+            <ChevronRight className="h-3.5 w-3.5 transition-transform duration-200 hover:translate-x-0.5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="hidden h-7 w-7 p-0 lg:flex"
+            className="hidden h-7 w-7 p-0 lg:flex transition-all duration-200 hover:bg-muted/50 active:scale-95"
             onClick={handleLastPage}
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">
               {t("components.data-table.go-to-last-page")}
             </span>
-            <ChevronsRight className="h-3.5 w-3.5" />
+            <ChevronsRight className="h-3.5 w-3.5 transition-transform duration-200 hover:translate-x-0.5" />
           </Button>
         </div>
       </div>
