@@ -347,7 +347,15 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
             data-state={row.getIsSelected() && "selected"}
             onClick={createRowClickHandler(row.original)}
             className={cn(
-              onRowClick && "cursor-pointer hover:bg-muted/50 transition-colors"
+              "transition-transform transition-shadow duration-200 ease-out",
+              onRowClick && [
+                "cursor-pointer",
+                "hover:bg-muted/50",
+                "hover:shadow-sm",
+                "hover:scale-[1.001]",
+                "active:scale-[0.999]",
+              ],
+              row.getIsSelected() && "bg-muted/30"
             )}
           >
             {row.getVisibleCells().map((cell) => {
@@ -401,6 +409,7 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
         data-slot="data-table"
         className={cn(
           "w-full overflow-x-auto rounded-xl bg-card text-sidebar-foreground shadow-sm",
+          "animate-in fade-in-0 slide-in-from-bottom-1 duration-300 fill-mode-both",
           className
         )}
       >
