@@ -4,9 +4,13 @@
   "stats": {
     "title": "إحصائيات المنصة",
     "assets": "الأصول",
+    "assetsDescription": "إجمالي الأصول المرمزة",
     "transactions": "المعاملات",
+    "transactionsDescription": "إجمالي المعاملات المعالجة",
     "users": "المستخدمون",
+    "usersDescription": "المستخدمون النشطون على المنصة",
     "totalValue": "القيمة الإجمالية",
+    "totalValueDescription": "إجمالي قيمة المنصة",
     "loading": "جاري تحميل الإحصائيات..."
   },
   "charts": {

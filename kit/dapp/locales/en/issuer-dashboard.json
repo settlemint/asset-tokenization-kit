@@ -4,9 +4,13 @@
   "stats": {
     "title": "Platform Statistics",
     "assets": "Assets",
+    "assetsDescription": "Total tokenized assets",
     "transactions": "Transactions",
+    "transactionsDescription": "Total transactions processed",
     "users": "Users",
+    "usersDescription": "Active platform users",
     "totalValue": "Total Value",
+    "totalValueDescription": "Total platform value",
     "loading": "Loading statistics..."
   },
   "charts": {

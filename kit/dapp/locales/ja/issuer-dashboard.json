@@ -4,9 +4,13 @@
   "stats": {
     "title": "プラットフォーム統計",
     "assets": "アセット",
+    "assetsDescription": "トークン化された総アセット",
     "transactions": "トランザクション",
+    "transactionsDescription": "処理された総トランザクション",
     "users": "ユーザー",
+    "usersDescription": "アクティブなプラットフォームユーザー",
     "totalValue": "総価値",
+    "totalValueDescription": "プラットフォーム総価値",
     "loading": "統計を読み込み中..."
   },
   "charts": {
