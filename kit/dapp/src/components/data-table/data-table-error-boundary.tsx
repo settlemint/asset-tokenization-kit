@@ -109,7 +109,7 @@ export class DataTableErrorBoundary extends Component<
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     const { onError, tableName } = this.props;
 
     // Log the error with context
@@ -141,7 +141,7 @@ export class DataTableErrorBoundary extends Component<
     });
   };
 
-  render(): ReactNode {
+  override render(): ReactNode {
     if (this.state.hasError) {
       const { fallback: FallbackComponent, tableName } = this.props;
 

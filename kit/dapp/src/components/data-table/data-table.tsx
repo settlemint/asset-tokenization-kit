@@ -468,7 +468,7 @@ export const DataTable = withDataTableErrorBoundary(DataTableComponent, {
   tableName: "DataTable",
 }) as <TData, CParams extends Record<string, unknown>>(
   props: DataTableProps<TData, CParams>
-) => JSX.Element;
+) => React.JSX.Element;
 
 /**
  * Raw DataTable component without error boundary.

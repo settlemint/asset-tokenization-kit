@@ -1,5 +1,4 @@
 import { describe, it, expect, mock } from "bun:test";
-import React from "react";
 import {
   DataTableErrorBoundary,
   withDataTableErrorBoundary,
@@ -21,7 +20,7 @@ describe("DataTableErrorBoundary", () => {
     // For now, we'll test the component structure
 
     const errorBoundary = new DataTableErrorBoundary({
-      children: <div>Test</div>,
+      children: null,
     });
 
     // Test initial state
@@ -40,7 +39,7 @@ describe("DataTableErrorBoundary", () => {
 
   it("should reset state on handleReset", () => {
     const errorBoundary = new DataTableErrorBoundary({
-      children: <div>Test</div>,
+      children: null,
     });
 
     // Set error state
@@ -62,7 +61,7 @@ describe("DataTableErrorBoundary", () => {
 
 describe("withDataTableErrorBoundary", () => {
   it("should preserve component display name", () => {
-    const TestComponent = () => <div>Test</div>;
+    const TestComponent = () => null;
     TestComponent.displayName = "TestComponent";
 
     const WrappedComponent = withDataTableErrorBoundary(TestComponent);
@@ -73,7 +72,7 @@ describe("withDataTableErrorBoundary", () => {
   });
 
   it("should handle components without display name", () => {
-    const TestComponent = () => <div>Test</div>;
+    const TestComponent = () => null;
     const WrappedComponent = withDataTableErrorBoundary(TestComponent);
 
     // Arrow functions have empty name, so it falls back to "Component"
@@ -83,7 +82,7 @@ describe("withDataTableErrorBoundary", () => {
   });
 
   it("should pass error boundary props", () => {
-    const TestComponent = () => <div>Test</div>;
+    const TestComponent = () => null;
     const onError = mock(() => {
       // Mock onError function
     });
