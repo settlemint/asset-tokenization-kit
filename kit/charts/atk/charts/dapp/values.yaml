@@ -51,7 +51,7 @@ service:
 
 ingress:
   enabled: false
-  className: "settlemint-nginx"
+  className: "atk-nginx"
   # Add other annotations as needed
   annotations: {}
   hosts:

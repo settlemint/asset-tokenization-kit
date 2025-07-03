@@ -26,7 +26,7 @@ blockscout-stack:
       tag: "8.1.1"
     ingress:
       enabled: true
-      className: "settlemint-nginx"
+      className: "atk-nginx"
       hostname: explorer.k8s.orb.local
     resources: {}
     env:
@@ -89,5 +89,5 @@ blockscout-stack:
       NEXT_PUBLIC_FONT_FAMILY_BODY: "{'name':'Figtree','url':'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap'}"
     ingress:
       enabled: true
-      className: "settlemint-nginx"
+      className: "atk-nginx"
       hostname: explorer.k8s.orb.local

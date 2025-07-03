@@ -89,11 +89,11 @@ A Helm chart for the supporting components
 | ingress-nginx.controller.config.use-http2 | string | `"true"` |  |
 | ingress-nginx.controller.config.worker-processes | string | `"auto"` |  |
 | ingress-nginx.controller.extraArgs.enable-ssl-passthrough | string | `"true"` |  |
-| ingress-nginx.controller.ingressClass | string | `"settlemint-nginx"` |  |
-| ingress-nginx.controller.ingressClassResource.controllerValue | string | `"k8s.io/settlemint-nginx"` |  |
+| ingress-nginx.controller.ingressClass | string | `"atk-nginx"` |  |
+| ingress-nginx.controller.ingressClassResource.controllerValue | string | `"k8s.io/atk-nginx"` |  |
 | ingress-nginx.controller.ingressClassResource.default | bool | `false` |  |
 | ingress-nginx.controller.ingressClassResource.enabled | bool | `true` |  |
-| ingress-nginx.controller.ingressClassResource.name | string | `"settlemint-nginx"` | If you run more than one platform versions on a single cluster, you need to make sure these are unique |
+| ingress-nginx.controller.ingressClassResource.name | string | `"atk-nginx"` | If you run more than one platform versions on a single cluster, you need to make sure these are unique |
 | ingress-nginx.controller.metrics.enabled | bool | `true` |  |
 | ingress-nginx.controller.metrics.service.annotations."prometheus.io/port" | string | `"10254"` |  |
 | ingress-nginx.controller.metrics.service.annotations."prometheus.io/scrape" | string | `"true"` |  |
