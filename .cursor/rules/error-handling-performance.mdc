@@ -1,0 +1,243 @@
+---
+description: Error handling and performance optimization patterns for the SettleMint Asset Tokenization Kit
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+
+# Error Handling & Performance Patterns
+
+## Error Handling
+
+### Logging
+
+Always use the SDK logger instead of console methods:
+
+```typescript
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+
+const logger = createLogger({
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info"
+});
+
+// ✅ Correct usage
+logger.debug("Debug information", { context });
+logger.info("General information");
+logger.warn("Warning message");
+logger.error("Error occurred", { error, additionalContext });
+
+// ❌ Never use
+console.log("Forbidden");
+console.error("Use logger.error instead");
+```
+
+### Error Boundaries
+
+Use appropriate error boundaries based on context:
+
+```typescript
+// Route-level error handling
+export const Route = createFileRoute('/path')({
+  errorComponent: DefaultCatchBoundary,
+  component: MyComponent,
+});
+
+// Data table error handling
+<DataTableErrorBoundary>
+  <DataTable {...props} />
+</DataTableErrorBoundary>
+```
+
+### User Feedback
+
+Format errors appropriately for users:
+
+```typescript
+import { toast } from "sonner";
+import { formatValidationError } from "@/lib/utils/format-validation-error";
+
+try {
+  const result = await operation();
+  toast.success("Success!");
+} catch (error) {
+  // Format error for user display
+  const userMessage = formatValidationError(error);
+  
+  // Show toast with proper settings
+  toast.error(userMessage, {
+    duration: 10000, // Longer for errors
+    description: "Check browser console for details"
+  });
+  
+  // Log full details for debugging
+  logger.error("Operation failed", { 
+    error, 
+    context: { userId, operation: "operationName" } 
+  });
+}
+```
+
+### Streaming Mutations
+
+Use the custom hook for ORPC streaming operations:
+
+```typescript
+const { mutate, isTracking, latestMessage } = useStreamingMutation({
+  mutationOptions: orpc.token.create.mutationOptions(),
+  onSuccess: (result) => {
+    // Result is properly typed
+    router.navigate({ 
+      to: "/tokens/$address", 
+      params: { address: result } 
+    });
+  }
+});
+
+// The hook automatically:
+// - Shows loading toasts with progress messages
+// - Handles errors with proper formatting
+// - Provides type-safe results
+```
+
+### Validation with Zod
+
+Use the safe parse utility for consistent error handling:
+
+```typescript
+import { safeParse } from '@/lib/zod';
+import { ethereumAddress } from '@/lib/zod/ethereum-address';
+
+try {
+  // Automatic error logging on failure
+  const address = safeParse(ethereumAddress(), userInput);
+  // Use validated address
+} catch (error) {
+  // Error is already logged
+  // Show user-friendly message
+  toast.error("Invalid Ethereum address");
+}
+```
+
+## Performance Optimization
+
+### When to Optimize
+
+1. **Measure First**: Use React DevTools Profiler before optimizing
+2. **Identify Bottlenecks**: Look for components with long render times
+3. **Apply Targeted Fixes**: Only optimize what actually needs it
+
+### State Management Strategy
+
+#### URL State (Persistent, Shareable)
+
+```typescript
+// ✅ Use for persistent UI configuration
+const tableState = useDataTableState({
+  enableUrlPersistence: true,
+  defaultPageSize: 20,
+  debounceMs: 300, // Prevent URL thrashing
+});
+
+// Ideal for:
+// - Table filters, sorting, pagination
+// - Search queries
+// - View preferences
+// - Any state users might want to share
+```
+
+#### Local State (Ephemeral)
+
+```typescript
+// ✅ Use for temporary UI state
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [pendingChanges, setPendingChanges] = useState({});
+
+// Ideal for:
+// - Modal/dialog visibility
+// - Form data before submission
+// - Hover states
+// - Animation states
+```
+
+### Memoization Patterns
+
+```typescript
+// ✅ Memoize expensive computations
+const expensiveResult = useMemo(() => {
+  return processLargeDataset(data);
+}, [data]);
+
+// ✅ Memoize callbacks to prevent re-renders
+const handleSubmit = useCallback(async (values: FormData) => {
+  await submitForm(values);
+}, [submitForm]);
+
+// ✅ Memoize components with complex props
+const MemoizedTable = React.memo(DataTable, (prev, next) => {
+  return prev.data === next.data && 
+         prev.columns === next.columns;
+});
+
+// ❌ Don't memoize prematurely
+const simpleValue = useMemo(() => x + y, [x, y]); // Unnecessary
+```
+
+### List Rendering
+
+```typescript
+// ✅ Use virtualization for large lists
+import { useVirtualizer } from '@tanstack/react-virtual';
+
+// ✅ Provide stable keys
+items.map(item => (
+  <Item key={item.id} {...item} />
+));
+
+// ❌ Never use index as key for dynamic lists
+items.map((item, index) => (
+  <Item key={index} {...item} /> // Will cause issues
+));
+```
+
+### Debouncing & Throttling
+
+```typescript
+// ✅ Debounce search inputs
+const debouncedSearch = useMemo(
+  () => debounce((query: string) => {
+    performSearch(query);
+  }, 300),
+  [performSearch]
+);
+
+// ✅ Throttle scroll handlers
+const throttledScroll = useMemo(
+  () => throttle(handleScroll, 100),
+  [handleScroll]
+);
+```
+
+### Code Splitting
+
+```typescript
+// ✅ Lazy load heavy components
+const HeavyChart = lazy(() => import('./components/HeavyChart'));
+
+// ✅ Use Suspense with proper fallbacks
+<Suspense fallback={<ChartSkeleton />}>
+  <HeavyChart data={data} />
+</Suspense>
+```
+
+## Common Pitfalls
+
+### Error Handling
+- ❌ Swallowing errors silently
+- ❌ Showing technical errors to users
+- ❌ Using console.log for production logging
+- ❌ Missing error boundaries
+
+### Performance
+- ❌ Optimizing without measuring
+- ❌ Over-memoizing simple values
+- ❌ Using index as key in dynamic lists
+- ❌ Unnecessary re-renders from inline objects/functions
