@@ -6,13 +6,13 @@ import { useTranslation } from "react-i18next";
 
 /**
  * User Statistics Widget
- * 
+ *
  * Displays user-related metrics.
  * For now shows a calculated user count based on system activity.
  */
 export function UserStatsWidget() {
-  const { t } = useTranslation("general");
-  
+  const { t } = useTranslation("issuer-dashboard");
+
   // Fetch systems to get user-related metrics
   const { data: systems } = useSuspenseQuery(
     orpc.system.list.queryOptions({ input: {} })
@@ -25,7 +25,7 @@ export function UserStatsWidget() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">
-          {t("dashboard.stats.users")}
+          {t("stats.users")}
         </CardTitle>
         <Users className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
@@ -37,4 +37,4 @@ export function UserStatsWidget() {
       </CardContent>
     </Card>
   );
-} 
+}

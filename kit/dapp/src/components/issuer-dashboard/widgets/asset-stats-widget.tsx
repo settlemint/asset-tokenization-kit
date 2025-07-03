@@ -6,13 +6,13 @@ import { useTranslation } from "react-i18next";
 
 /**
  * Asset Statistics Widget
- * 
+ *
  * Displays the total number of tokenized assets across all factories.
  * Shows both the count and a meaningful description.
  */
 export function AssetStatsWidget() {
-  const { t } = useTranslation("general");
-  
+  const { t } = useTranslation("issuer-dashboard");
+
   // Fetch all factories to get the count of factories with tokens
   const { data: factories } = useSuspenseQuery(
     orpc.token.factoryList.queryOptions({ input: {} })
@@ -25,7 +25,7 @@ export function AssetStatsWidget() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">
-          {t("dashboard.stats.assets")}
+          {t("stats.assets")}
         </CardTitle>
         <Package className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
@@ -37,4 +37,4 @@ export function AssetStatsWidget() {
       </CardContent>
     </Card>
   );
-} 
+}

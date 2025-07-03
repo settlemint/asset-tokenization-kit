@@ -6,18 +6,18 @@ import { useTranslation } from "react-i18next";
 
 /**
  * Value Statistics Widget
- * 
+ *
  * Displays total value metrics for the platform.
  * Calculates estimated total value based on factory and system activity.
  */
 export function ValueStatsWidget() {
-  const { t } = useTranslation("general");
-  
+  const { t } = useTranslation("issuer-dashboard");
+
   // Fetch factories and systems to calculate total value
   const { data: factories } = useSuspenseQuery(
     orpc.token.factoryList.queryOptions({ input: {} })
   );
-  
+
   const { data: systems } = useSuspenseQuery(
     orpc.system.list.queryOptions({ input: {} })
   );
@@ -35,7 +35,7 @@ export function ValueStatsWidget() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">
-          {t("dashboard.stats.totalValue")}
+          {t("stats.totalValue")}
         </CardTitle>
         <DollarSign className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
@@ -47,4 +47,4 @@ export function ValueStatsWidget() {
       </CardContent>
     </Card>
   );
-} 
+}
