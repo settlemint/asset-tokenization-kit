@@ -328,6 +328,7 @@ type Token @entity(immutable: false) {
   tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
   # Stats
   stats: TokenStatsState @derivedFrom(field: "token")
+  distributionStats: TokenDistributionStatsState @derivedFrom(field: "token")
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -819,6 +820,57 @@ type TokenBondStats
       fn: "last"
       arg: "(underlyingAssetBalanceAvailable / underlyingAssetBalanceRequired) * 100"
     )
+}
+
+# Persistent entity to store current token distribution state for efficient calculations
+type TokenDistributionStatsState @entity(immutable: false) {
+  id: Bytes! # Token address
+  token: Token!
+
+  # Last update timestamp
+  lastUpdated: BigInt!
+
+  # Top holders tracking
+  holdersCount: Int! # Total holders with >0 balance
+  percentageOwnedByTop5Holders: BigDecimal!
+
+  # Distribution segments (by percentage of total supply)
+  # Segment 1: 0-2%
+  balancesCountSegment1: Int!
+  totalValueSegment1: BigDecimal!
+  totalValueSegment1Exact: BigInt!
+
+  # Segment 2: 2-10%
+  balancesCountSegment2: Int!
+  totalValueSegment2: BigDecimal!
+  totalValueSegment2Exact: BigInt!
+
+  # Segment 3: 10-20%
+  balancesCountSegment3: Int!
+  totalValueSegment3: BigDecimal!
+  totalValueSegment3Exact: BigInt!
+
+  # Segment 4: 20-40%
+  balancesCountSegment4: Int!
+  totalValueSegment4: BigDecimal!
+  totalValueSegment4Exact: BigInt!
+
+  # Segment 5: 40-100%
+  balancesCountSegment5: Int!
+  totalValueSegment5: BigDecimal!
+  totalValueSegment5Exact: BigInt!
+}
+
+# Entity to efficiently track top token holders
+type TokenTopHolder @entity(immutable: false) {
+  id: Bytes! # token-account composite key
+  token: Token!
+  account: Account!
+  balance: BigDecimal!
+  balanceExact: BigInt!
+  percentageOfSupply: BigDecimal!
+  rank: Int! # 1-5 for top 5 holders
+  lastUpdated: BigInt!
 }
 
 # Token distribution statistics by concentration segments
