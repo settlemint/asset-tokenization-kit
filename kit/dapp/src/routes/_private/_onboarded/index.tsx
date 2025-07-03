@@ -15,7 +15,7 @@
  */
 
 import { CreateDepositForm } from "@/components/asset-designer/deposit/form";
-import { Dashboard } from "@/components/issuer-dashboard/dashboard";
+import { Dashboard as IssuerDashboard } from "@/components/issuer-dashboard/dashboard";
 import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -87,7 +87,7 @@ function Home() {
         <CreateDepositForm />
       </div>
 
-      <Dashboard />
+      <IssuerDashboard />
     </div>
   );
 }
