@@ -132,9 +132,14 @@ describe("TokenDistributionStats", () => {
        * Segment 5: 40-100%
        */
       const stats = token.distributionStats;
+      const topHolder = token.balances.sort((a, b) => {
+        return Number(b.value) - Number(a.value);
+      })[0];
+      const topBalance = topHolder ? BigInt(topHolder.value) : BigInt(0);
+
       const expectedPerSegment = token.balances.reduce(
         (acc, balance) => {
-          const percentage = Number(balance.value) / Number(token.totalSupply);
+          const percentage = Number(balance.value) / Number(topBalance);
           if (percentage <= 0.02) {
             acc.segment1 += 1;
             acc.segment1Value = acc.segment1Value + BigInt(balance.value);

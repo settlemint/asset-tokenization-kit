@@ -47,12 +47,20 @@ export function updateTokenDistributionStats(
     return;
   }
 
+  // Load the state
+  const tokenAddress = Address.fromBytes(token.id);
+  const state = fetchTokenDistributionStatsState(tokenAddress);
+
+  const topHolders = state.topHolders.load();
+  const topHolder = getTopHolderAtRank(topHolders, 1);
+  const topBalance = topHolder ? topHolder.balanceExact : BigInt.zero();
+
   // Calculate old and new percentages
   const oldPercentage = oldBalance.gt(BigInt.zero())
-    ? oldBalance.times(BigInt.fromI32(100)).div(token.totalSupplyExact)
+    ? oldBalance.times(BigInt.fromI32(100)).div(topBalance)
     : BigInt.zero();
   const newPercentage = newBalance.gt(BigInt.zero())
-    ? newBalance.times(BigInt.fromI32(100)).div(token.totalSupplyExact)
+    ? newBalance.times(BigInt.fromI32(100)).div(topBalance)
     : BigInt.zero();
 
   // Determine segment changes
@@ -63,10 +71,6 @@ export function updateTokenDistributionStats(
   if (oldSegment == newSegment) {
     return;
   }
-
-  // Load the state
-  const tokenAddress = Address.fromBytes(token.id);
-  const state = fetchTokenDistributionStatsState(tokenAddress);
 
   // Calculate exact values if not provided
   const precision = BigInt.fromI32(10).pow(<u8>token.decimals);
