@@ -5,8 +5,11 @@ import {
   CommandInput,
   CommandList,
 } from "@/components/ui/command";
+import { Button } from "@/components/ui/button";
 import type { Column, ColumnMeta, RowData, Table } from "@tanstack/react-table";
+import { ChevronLeft } from "lucide-react";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { uniq } from "../../data-table-array";
 import { determineNewOperator } from "../operators/operator-utils";
 import { isColumnOptionArray } from "../utils/type-guards";
@@ -14,13 +17,50 @@ import type { ColumnOption, ElementType } from "../types/column-types";
 import type { FilterValue } from "../types/filter-types";
 import { MultiOptionItem } from "./multi-option-item";
 
+/**
+ * Props for the PropertyFilterMultiOptionValueMenu component
+ * @template TData - The data type of the table rows
+ * @template TValue - The value type of the column
+ */
 interface PropertyFilterMultiOptionValueMenuProps<TData, TValue> {
+  /** Column identifier */
   id: string;
+  /** Column instance from TanStack Table */
   column: Column<TData>;
+  /** Column metadata containing display and filter configuration */
   columnMeta: ColumnMeta<TData, TValue>;
+  /** Table instance from TanStack Table */
   table: Table<TData>;
+  /** Callback fired when the menu should close */
+  onClose?: () => void;
+  /** Callback fired when navigating back to parent menu */
+  onBack?: () => void;
 }
 
+/**
+ * A multi-select filter value menu component that allows users to select multiple
+ * options for filtering table data. Supports both static options and dynamically
+ * generated options from column data.
+ *
+ * @template TData - The data type of the table rows (must extend RowData)
+ * @template TValue - The value type of the column
+ *
+ * @example
+ * ```tsx
+ * <PropertyFilterMultiOptionValueMenu
+ *   id="tags"
+ *   column={column}
+ *   columnMeta={{
+ *     type: "multiOption",
+ *     options: [
+ *       { value: "active", label: "Active" },
+ *       { value: "inactive", label: "Inactive" }
+ *     ]
+ *   }}
+ *   table={table}
+ * />
+ * ```
+ */
 export function PropertyFilterMultiOptionValueMenu<
   TData extends RowData,
   TValue,
@@ -29,7 +69,9 @@ export function PropertyFilterMultiOptionValueMenu<
   column,
   columnMeta,
   table,
+  onBack,
 }: PropertyFilterMultiOptionValueMenuProps<TData, TValue>) {
+  const { t } = useTranslation("general");
   const filter = column.getFilterValue() as
     | FilterValue<"multiOption", TData>
     | undefined;
@@ -87,6 +129,13 @@ export function PropertyFilterMultiOptionValueMenu<
     {} as Record<string, number>
   );
 
+  /**
+   * Handles the selection/deselection of an option.
+   * Updates the filter value by adding or removing the option from the selected values.
+   *
+   * @param value - The value of the option being toggled
+   * @param checked - Whether the option should be selected or deselected
+   */
   const handleOptionSelect = useCallback(
     (value: string, checked: boolean) => {
       column.setFilterValue(
@@ -97,8 +146,8 @@ export function PropertyFilterMultiOptionValueMenu<
               : [value];
             const newOperator = determineNewOperator(
               "multiOption",
-              old?.values[0] ?? [],
-              newVals,
+              old?.values ?? [],
+              [newVals],
               old?.operator ?? "include"
             );
 
@@ -111,8 +160,8 @@ export function PropertyFilterMultiOptionValueMenu<
           const newVals = old?.values[0]?.filter((v) => v !== value) ?? [];
           const newOperator = determineNewOperator(
             "multiOption",
-            old?.values[0] ?? [],
-            newVals,
+            old?.values ?? [],
+            [newVals],
             old?.operator ?? "include"
           );
 
@@ -130,10 +179,28 @@ export function PropertyFilterMultiOptionValueMenu<
     [column]
   );
 
+  const Icon = columnMeta.icon;
+  const displayName = columnMeta.displayName ?? "Filter";
+
   return (
-    <Command>
-      <CommandInput autoFocus placeholder="Search..." />
-      <CommandEmpty>No results.</CommandEmpty>
+    <Command className="min-w-[280px]">
+      {/* Header with field title and icon - match CommandInput styling */}
+      <div className="flex h-9 items-center gap-2 border-b px-3">
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-4 w-4 p-0 hover:bg-transparent -ml-1"
+            onClick={onBack}
+          >
+            <ChevronLeft className="h-3 w-3" />
+          </Button>
+        )}
+        {Icon && <Icon className="size-4 shrink-0 opacity-50" />}
+        <span className="text-sm text-muted-foreground">{displayName}</span>
+      </div>
+      <CommandInput autoFocus placeholder={t("components.data-table.search")} />
+      <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
       <CommandList>
         <CommandGroup>
           {options.map((v) => {

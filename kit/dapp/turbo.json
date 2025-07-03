@@ -5,23 +5,11 @@
       "dependsOn": ["codegen:gql-tada"]
     },
     "codegen:settlemint": {
-      "inputs": [
-        ".env.local",
-        ".env",
-        "../subgraph/schema.graphql",
-        ".generated/database-export.sql",
-        "../contracts/.generated/portal/*.json"
-      ],
-      "outputs": [
-        "*-env-*.d.ts",
-        "*-schema.graphql",
-        "*-schema-*.graphql",
-        "src/lib/settlemint/**"
-      ]
+      "cache": false
     },
     "codegen:gql-tada": {
-      "dependsOn": ["codegen:settlemint"],
-      "outputs": ["*-cache.d.ts"]
+      "cache": false,
+      "dependsOn": ["codegen:settlemint"]
     },
     "build": {
       "dependsOn": ["codegen:settlemint"],

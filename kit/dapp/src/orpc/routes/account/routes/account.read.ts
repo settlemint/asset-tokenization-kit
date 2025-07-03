@@ -2,7 +2,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { z } from "zod/v4";
+import { AccountResponseSchema } from "@/orpc/routes/account/routes/account.read.schema";
 
 /**
  * GraphQL query for retrieving SMART systems from TheGraph.
@@ -41,17 +41,6 @@ export const read = onboardedRouter.account.read
   .use(theGraphMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { wallet } = input;
-
-    // Define response schema for type-safe GraphQL validation
-    // Using Zod for runtime validation with automatic TypeScript type inference
-    // The nullable modifier handles cases where the account doesn't exist
-    const AccountResponseSchema = z.object({
-      account: z
-        .object({
-          id: z.string(),
-        })
-        .nullable(),
-    });
 
     // Execute TheGraph query with type-safe parameters
     // The Zod schema ensures type safety at both compile-time and runtime

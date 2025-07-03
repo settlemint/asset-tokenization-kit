@@ -102,7 +102,7 @@ const options = {
      * Allow users to change their email addresses.
      */
     changeEmail: {
-      enabled: true,
+      enabled: false,
     },
 
     /**
@@ -217,10 +217,12 @@ const options = {
         before: async (user) => {
           try {
             const firstUser = await db.query.user.findFirst();
+            const walletAddress = await createWallet(user.email);
             return {
               data: {
                 ...user,
-                role: firstUser ? "investor" : "admin",
+                role: firstUser ? "admin" : "investor",
+                wallet: walletAddress,
               },
             };
           } catch (error) {
