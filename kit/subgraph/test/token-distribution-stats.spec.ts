@@ -208,6 +208,9 @@ describe("TokenDistributionStats", () => {
           symbol
           totalSupply
           balances(orderBy: value, orderDirection: desc, first: 10) {
+            account {
+              id
+            }
             value
           }
           distributionStats {
@@ -244,6 +247,17 @@ describe("TokenDistributionStats", () => {
       );
       const topHolders = stats?.topHolders ?? [];
       expect(topHolders.length).toBeLessThanOrEqual(6); // Never track more than 6 holders
+      expect(
+        topHolders.map((holder) => ({
+          account: holder.account.id,
+          rank: holder.rank,
+        }))
+      ).toEqual(
+        top5Holders.map((holder, index) => ({
+          account: holder.account.id,
+          rank: index + 1,
+        }))
+      );
     }
   });
 });

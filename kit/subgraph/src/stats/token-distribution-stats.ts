@@ -62,14 +62,14 @@ export function updateTokenDistributionStats(
 
   // Calculate old and new percentages
   const oldPercentage = oldBalance.gt(BigInt.zero())
-    ? oldBalance.div(topBalance)
-    : BigInt.zero();
+    ? oldBalance.toBigDecimal().div(topBalance.toBigDecimal())
+    : BigDecimal.zero();
   const newPercentage = newBalance.gt(BigInt.zero())
-    ? newBalance.div(topBalance)
-    : BigInt.zero();
+    ? newBalance.toBigDecimal().div(topBalance.toBigDecimal())
+    : BigDecimal.zero();
 
   // Determine segment changes
-  const oldSegment = oldBalance.gt(BigInt.zero())
+  const oldSegment = oldBalance.le(BigInt.zero())
     ? -1 // If it is zero it was never in a segment
     : getSegmentIndex(oldPercentage);
   const newSegment = getSegmentIndex(newPercentage);
@@ -234,11 +234,11 @@ function trackTokenDistributionStats(
 /**
  * Calculate which segment a balance belongs to based on percentage of total supply
  */
-function getSegmentIndex(percentage: BigInt): i32 {
-  if (percentage.le(BigInt.fromString("0.02"))) return 0;
-  if (percentage.le(BigInt.fromString("0.1"))) return 1;
-  if (percentage.le(BigInt.fromString("0.2"))) return 2;
-  if (percentage.le(BigInt.fromString("0.4"))) return 3;
+function getSegmentIndex(percentage: BigDecimal): i32 {
+  if (percentage.le(BigDecimal.fromString("0.02"))) return 0;
+  if (percentage.le(BigDecimal.fromString("0.1"))) return 1;
+  if (percentage.le(BigDecimal.fromString("0.2"))) return 2;
+  if (percentage.le(BigDecimal.fromString("0.4"))) return 3;
   return 4;
 }
 
@@ -264,9 +264,9 @@ function calculateTop5HoldersPercentage(
     }
   }
   return totalBalanceTopHolders
-    .div(token.totalSupplyExact)
-    .times(BigInt.fromI32(100))
-    .toBigDecimal();
+    .toBigDecimal()
+    .div(token.totalSupplyExact.toBigDecimal())
+    .times(BigDecimal.fromString("100"));
 }
 
 /**
