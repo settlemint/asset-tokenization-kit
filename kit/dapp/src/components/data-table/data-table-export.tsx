@@ -7,6 +7,14 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
+/**
+ * Formats a cell value for CSV export.
+ * Handles various data types including dates, objects, and primitives.
+ * Escapes double quotes and wraps values in quotes as needed.
+ *
+ * @param value - The cell value to format
+ * @returns CSV-formatted string value
+ */
 function formatCellValue(value: unknown): string {
   if (value == null) {
     return '""';
@@ -40,6 +48,13 @@ function formatCellValue(value: unknown): string {
   return '""';
 }
 
+/**
+ * Extracts the display header text from a column definition.
+ * Falls back to column ID if no header is defined.
+ *
+ * @param column - The table column
+ * @returns The column header text
+ */
 function getColumnHeader<TData>(column: Column<TData>): string {
   const header = column.columnDef.header;
 
@@ -50,6 +65,13 @@ function getColumnHeader<TData>(column: Column<TData>): string {
   return column.id;
 }
 
+/**
+ * Exports table data to a CSV file.
+ * Includes BOM for Excel compatibility and respects column export settings.
+ *
+ * @param table - The TanStack table instance
+ * @param errorMessage - Error message to display if export fails
+ */
 function exportTableToCSV<TData>(
   table: Table<TData>,
   errorMessage: string
@@ -61,7 +83,11 @@ function exportTableToCSV<TData>(
     // Retrieve headers (column names)
     const headers = table
       .getAllLeafColumns()
-      .filter((column) => !["select", "actions"].includes(column.id))
+      .filter((column) => {
+        // Check enableCsvExport meta property (default is true)
+        const enableExport = column.columnDef.meta?.enableCsvExport;
+        return enableExport !== false;
+      })
       .map((column) => ({
         id: column.id,
         header: getColumnHeader(column),
@@ -99,10 +125,26 @@ function exportTableToCSV<TData>(
   }
 }
 
+/**
+ * Props for the DataTableExport component.
+ */
 interface DataTableExportProps<TData> {
+  /** The TanStack table instance to export data from. */
   table: Table<TData>;
 }
 
+/**
+ * Export button component for data tables.
+ * Exports visible table data to CSV format with proper formatting.
+ *
+ * @example
+ * ```tsx
+ * <DataTableExport table={table} />
+ * ```
+ *
+ * @param props - Component props
+ * @returns Export button component
+ */
 export function DataTableExport<TData>({ table }: DataTableExportProps<TData>) {
   const { t } = useTranslation("general");
 

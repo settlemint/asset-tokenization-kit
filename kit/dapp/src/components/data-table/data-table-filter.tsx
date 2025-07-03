@@ -1,4 +1,5 @@
 "use client";
+"use no memo"; // fixes rerendering with react compiler
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { ArrowRight, Filter, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ColumnDataType } from "./filters/types/column-types";
 import type { FilterValue } from "./filters/types/filter-types";
 import { getColumn, getColumnMeta } from "./filters/utils/table-helpers";
@@ -27,12 +29,27 @@ import { PropertyFilterSubject } from "./filters/property-filter-subject";
 import { PropertyFilterValueController } from "./filters/values/value-controller";
 import { PropertyFilterValueMenu } from "./filters/values/value-menu";
 
+/**
+ * Main filter component for data tables.
+ * Provides a filter button that opens a menu for column-based filtering.
+ * Automatically adapts layout for mobile and desktop views.
+ *
+ * @param props - Component props
+ * @param props.table - The TanStack table instance
+ * @returns Filter UI with responsive layout
+ */
 export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   const isMobile = useIsMobile();
 
+  // Key by filter count to force re-render when filters change
+  const filterCount = table.getState().columnFilters.length;
+
   if (isMobile) {
     return (
-      <div className="flex w-full items-start justify-between gap-2">
+      <div
+        key={`mobile-${filterCount}`}
+        className="flex w-full items-start justify-between gap-2"
+      >
         <TableFilter table={table} />
         <DataTableFilterMobileContainer>
           <PropertyFilterList table={table} />
@@ -42,15 +59,100 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   }
 
   return (
-    <div className="flex w-full items-start justify-between gap-2">
-      <div className="flex md:flex-wrap gap-2 w-full flex-1">
-        <TableFilter table={table} />
+    <div
+      key={`desktop-${filterCount}`}
+      className="flex w-full items-start justify-between gap-2"
+    >
+      <TableFilter table={table} />
+      <DataTableFilterDesktopContainer>
         <PropertyFilterList table={table} />
-      </div>
+      </DataTableFilterDesktopContainer>
     </div>
   );
 }
 
+/**
+ * Desktop container for filter chips with horizontal scroll and blur effects.
+ * Shows gradient blur on edges when content is scrollable.
+ *
+ * @param props - Component props
+ * @param props.children - Filter chip components to display
+ * @returns Scrollable container with edge blur effects
+ */
+export function DataTableFilterDesktopContainer({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftBlur, setShowLeftBlur] = useState(false);
+  const [showRightBlur, setShowRightBlur] = useState(true);
+
+  // Check if there's content to scroll and update blur states
+  const checkScroll = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } =
+        scrollContainerRef.current;
+
+      // Show left blur if scrolled to the right
+      setShowLeftBlur(scrollLeft > 0);
+
+      // Show right blur if there's more content to scroll to the right
+      // Add a small buffer (1px) to account for rounding errors
+      setShowRightBlur(scrollLeft + clientWidth < scrollWidth - 1);
+    }
+  }, []);
+
+  // Set up ResizeObserver to monitor container size
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const resizeObserver = new ResizeObserver(() => {
+        checkScroll();
+      });
+      resizeObserver.observe(scrollContainerRef.current);
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [checkScroll]);
+
+  // Update blur states when children change
+  useEffect(() => {
+    checkScroll();
+  }, [children, checkScroll]);
+
+  return (
+    <div className="relative flex-1 overflow-hidden">
+      {/* Left blur effect */}
+      {showLeftBlur && (
+        <div className="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none bg-gradient-to-r from-background to-transparent animate-in fade-in-0" />
+      )}
+
+      {/* Scrollable container */}
+      <div
+        ref={scrollContainerRef}
+        className="flex gap-2 overflow-x-auto no-scrollbar"
+        onScroll={checkScroll}
+      >
+        {children}
+      </div>
+
+      {/* Right blur effect */}
+      {showRightBlur && (
+        <div className="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none bg-gradient-to-l from-background to-transparent animate-in fade-in-0 " />
+      )}
+    </div>
+  );
+}
+
+/**
+ * Mobile container for filter chips with horizontal scroll and stronger blur effects.
+ * Optimized for touch interactions with wider blur gradients.
+ *
+ * @param props - Component props
+ * @param props.children - Filter chip components to display
+ * @returns Mobile-optimized scrollable container
+ */
 export function DataTableFilterMobileContainer({
   children,
 }: {
@@ -122,7 +224,16 @@ export function DataTableFilterMobileContainer({
   );
 }
 
+/**
+ * Filter button component that opens a popover menu for column selection.
+ * Displays available filterable columns and manages filter value input.
+ *
+ * @param props - Component props
+ * @param props.table - The TanStack table instance
+ * @returns Filter button with popover menu
+ */
 export function TableFilter<TData>({ table }: { table: Table<TData> }) {
+  const { t } = useTranslation("general");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [property, setProperty] = useState<string | undefined>(undefined);
@@ -140,6 +251,14 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
   const handleOpenChange = useCallback((value: boolean) => {
     setOpen(value);
     if (!value) setProperty(undefined);
+  }, []);
+
+  const handleBack = useCallback(() => {
+    setProperty(undefined);
+  }, []);
+
+  const handleFilterButtonClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
   }, []);
 
   useEffect(() => {
@@ -161,16 +280,17 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
           column={column}
           columnMeta={columnMeta}
           table={table}
+          onBack={handleBack}
         />
       ) : (
-        <Command loop>
+        <Command loop className="min-w-[280px]">
           <CommandInput
             value={value}
             onValueChange={setValue}
             ref={inputRef}
-            placeholder="Search..."
+            placeholder={t("components.data-table.search")}
           />
-          <CommandEmpty>No results.</CommandEmpty>
+          <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
           <CommandList className="max-h-fit">
             <CommandGroup>
               {properties.map((column) => (
@@ -184,7 +304,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
           </CommandList>
         </Command>
       ),
-    [property, column, columnMeta, value, table, properties]
+    [property, column, columnMeta, value, table, properties, t, handleBack]
   );
 
   if (!hasFilters) return null;
@@ -195,9 +315,12 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
         <Button
           variant="outline"
           className="h-8 w-fit px-2 text-muted-foreground"
+          onClick={handleFilterButtonClick}
         >
           <Filter className="size-4" />
-          <span className="hidden md:block">Filter</span>
+          <span className="hidden md:block">
+            {t("components.data-table.filter")}
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -211,6 +334,15 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
   );
 }
 
+/**
+ * Menu item component for column selection in the filter popover.
+ * Displays column name with icon and handles selection.
+ *
+ * @param props - Component props
+ * @param props.column - The table column
+ * @param props.setProperty - Callback to set the selected column
+ * @returns Menu item component
+ */
 export function TableFilterMenuItem<TData>({
   column,
   setProperty,
@@ -229,7 +361,7 @@ export function TableFilterMenuItem<TData>({
     <CommandItem onSelect={handleSelect} className="group">
       <div className="flex w-full items-center justify-between">
         <div className="inline-flex items-center gap-1.5">
-          {Icon && <Icon strokeWidth={2.25} className="size-4" />}
+          {Icon && <Icon className="size-4" />}
           <span>{displayName ?? column.id}</span>
         </div>
         <ArrowRight className="size-4 opacity-0 group-aria-selected:opacity-100" />
@@ -238,18 +370,35 @@ export function TableFilterMenuItem<TData>({
   );
 }
 
+/**
+ * Renders the list of active filter chips.
+ * Each chip displays the column, operator, and value with a remove button.
+ *
+ * @param props - Component props
+ * @param props.table - The TanStack table instance
+ * @returns List of filter chip components
+ */
 export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
+  // Get filters directly from table state - this will re-render when table updates
   const filters = table.getState().columnFilters;
 
   const handleRemoveFilter = useCallback(
     (filterId: string) => {
-      table.getColumn(filterId)?.setFilterValue(undefined);
+      // Get the column and set its filter to undefined
+      // This will trigger the proper onColumnFiltersChange handler
+      const column = table.getColumn(filterId);
+      if (column) {
+        column.setFilterValue(undefined);
+      }
     },
     [table]
   );
 
+  // Key the entire list by the filter count to force re-render
+  const filterKey = filters.length;
+
   return (
-    <>
+    <div key={filterKey} className="contents">
       {filters.map((filter) => {
         const { id } = filter;
 
@@ -264,6 +413,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
           case "text":
             return (
               <RenderFilter<TData, "text">
+                key={`filter-${id}`}
                 filter={
                   filter as { id: string; value: FilterValue<"text", TData> }
                 }
@@ -276,6 +426,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
           case "number":
             return (
               <RenderFilter<TData, "number">
+                key={`filter-${id}`}
                 filter={
                   filter as { id: string; value: FilterValue<"number", TData> }
                 }
@@ -288,6 +439,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
           case "date":
             return (
               <RenderFilter<TData, "date">
+                key={`filter-${id}`}
                 filter={
                   filter as { id: string; value: FilterValue<"date", TData> }
                 }
@@ -300,6 +452,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
           case "option":
             return (
               <RenderFilter<TData, "option">
+                key={`filter-${id}`}
                 filter={
                   filter as { id: string; value: FilterValue<"option", TData> }
                 }
@@ -312,6 +465,7 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
           case "multiOption":
             return (
               <RenderFilter<TData, "multiOption">
+                key={`filter-${id}`}
                 filter={
                   filter as {
                     id: string;
@@ -332,11 +486,22 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
             return null; // Handle unknown types gracefully
         }
       })}
-    </>
+    </div>
   );
 }
 
-// Generic render component for a filter with type-safe value
+/**
+ * Generic component for rendering a filter chip with type-safe value handling.
+ * Displays the filter subject, operator, value, and remove button.
+ *
+ * @param props - Component props
+ * @param props.filter - The filter configuration with ID and value
+ * @param props.column - The table column being filtered
+ * @param props.meta - Column metadata with type information
+ * @param props.table - The TanStack table instance
+ * @param props.onRemoveFilter - Callback to remove the filter
+ * @returns Filter chip component
+ */
 function RenderFilter<TData, T extends ColumnDataType>({
   filter,
   column,
@@ -352,36 +517,47 @@ function RenderFilter<TData, T extends ColumnDataType>({
 }) {
   const { value } = filter;
 
-  const handleRemoveFilter = useCallback(() => {
-    onRemoveFilter(filter.id);
-  }, [onRemoveFilter, filter.id]);
+  const handleRemoveFilter = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onRemoveFilter(filter.id);
+    },
+    [onRemoveFilter, filter.id]
+  );
+
+  const handleFilterChipClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
 
   return (
     <div
       key={`filter-${filter.id}`}
-      className="flex h-8 items-center rounded-2xl border border-border bg-background shadow-xs text-xs"
+      className="flex h-8 items-center rounded-md border border-dashed border-border bg-background shadow-xs text-xs"
+      onClick={handleFilterChipClick}
     >
       <PropertyFilterSubject meta={meta} />
-      <Separator orientation="vertical" />
+      <Separator orientation="vertical" className="h-5" />
       <PropertyFilterOperatorController
         column={column}
         columnMeta={meta}
         filter={value} // Typed as FilterValue<T>
       />
-      <Separator orientation="vertical" />
+      <Separator orientation="vertical" className="h-5" />
       <PropertyFilterValueController
         id={filter.id}
         column={column}
         columnMeta={meta}
         table={table}
       />
-      <Separator orientation="vertical" />
+      <Separator orientation="vertical" className="h-5" />
       <Button
         variant="ghost"
-        className="rounded-none rounded-r-2xl text-xs w-7 h-full"
+        size="sm"
+        className="rounded-none rounded-r-md h-full px-2 hover:bg-destructive/10"
         onClick={handleRemoveFilter}
+        type="button"
       >
-        <X className="size-4 -translate-x-0.5" />
+        <X className="size-3.5" />
       </Button>
     </div>
   );

@@ -116,3 +116,60 @@ IMPORTANT: you SHOULD NOT refactor out a separate function unless there is a com
   - the refactored function is used in more than one place
   - the refactored function is easily unit testable while the original function is not AND you can't test it any other way
   - the original function is extremely hard to follow and you resort to putting comments everywhere just to explain it
+
+## Error Handling Patterns
+
+### Safe Parse with Logging
+```ts
+import { safeParse } from '@/lib/zod';
+import { z } from 'zod';
+
+// ✅ Use safeParse for validation with automatic error logging
+try {
+  const validated = safeParse(schema, input);
+  // Use validated data safely
+} catch (error) {
+  // Error is already logged by safeParse
+  // Handle user-facing error (e.g., show toast)
+}
+```
+
+### Error Formatting
+```ts
+import { formatValidationError } from '@/lib/utils/format-validation-error';
+
+// ✅ Format errors for user display
+catch (error) {
+  const userMessage = formatValidationError(error);
+  toast.error(userMessage);
+}
+```
+
+## React Performance Patterns
+
+### Memoization Guidelines
+```ts
+// ✅ Memoize expensive computations
+const result = useMemo(() => expensiveComputation(data), [data]);
+
+// ✅ Memoize callbacks to prevent child re-renders
+const handleClick = useCallback((id: string) => {
+  // handler logic
+}, [dependencies]);
+
+// ✅ Memoize components with complex props
+const MemoizedComponent = React.memo(Component);
+
+// ❌ Don't memoize everything - measure first!
+```
+
+### State Management
+```ts
+// ✅ URL state for persistent, shareable UI state
+const tableState = useDataTableState({ 
+  enableUrlPersistence: true 
+});
+
+// ✅ Local state for ephemeral UI
+const [isOpen, setIsOpen] = useState(false);
+```

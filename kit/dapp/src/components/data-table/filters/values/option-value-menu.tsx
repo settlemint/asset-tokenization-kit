@@ -5,27 +5,72 @@ import {
   CommandInput,
   CommandList,
 } from "@/components/ui/command";
+import { Button } from "@/components/ui/button";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
+import { ChevronLeft } from "lucide-react";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { uniq } from "../../data-table-array";
 import { isColumnOptionArray } from "../utils/type-guards";
 import type { ColumnOption, ElementType } from "../types/column-types";
 import type { FilterValue } from "../types/filter-types";
 import { OptionItem } from "./option-item";
 
+/**
+ * Props for the PropertyFilterOptionValueMenu component
+ * @template TData - The data type of the table rows
+ * @template TValue - The value type of the column
+ */
 interface PropertyFilterOptionValueMenuProps<TData, TValue> {
+  /** Column identifier */
   id: string;
+  /** Column instance from TanStack Table */
   column: Column<TData>;
+  /** Column metadata containing display and filter configuration */
   columnMeta: ColumnMeta<TData, TValue>;
+  /** Table instance from TanStack Table */
   table: Table<TData>;
+  /** Callback fired when the menu should close */
+  onClose?: () => void;
+  /** Callback fired when navigating back to parent menu */
+  onBack?: () => void;
 }
 
+/**
+ * A single-select filter value menu component that allows users to select one option
+ * for filtering table data. Supports:
+ * - Static options defined in column metadata
+ * - Dynamic options generated from column data
+ * - Custom transformation functions for option generation
+ * - Search functionality for large option lists
+ *
+ * @template TData - The data type of the table rows
+ * @template TValue - The value type of the column
+ *
+ * @example
+ * ```tsx
+ * <PropertyFilterOptionValueMenu
+ *   id="status"
+ *   column={column}
+ *   columnMeta={{
+ *     type: "option",
+ *     options: [
+ *       { value: "active", label: "Active", icon: CheckIcon },
+ *       { value: "inactive", label: "Inactive", icon: XIcon }
+ *     ]
+ *   }}
+ *   table={table}
+ * />
+ * ```
+ */
 export function PropertyFilterOptionValueMenu<TData, TValue>({
   id,
   column,
   columnMeta,
   table,
+  onBack,
 }: PropertyFilterOptionValueMenuProps<TData, TValue>) {
+  const { t } = useTranslation("general");
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"option", TData>)
     : undefined;
@@ -76,6 +121,13 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
     {} as Record<string, number>
   );
 
+  /**
+   * Handles the selection of an option.
+   * Sets the filter value to the selected option or clears it if deselected.
+   *
+   * @param value - The value of the option being selected
+   * @param checked - Whether the option is being selected or deselected
+   */
   const handleOptionSelect = useCallback(
     (value: string, checked: boolean) => {
       column.setFilterValue(() => {
@@ -92,10 +144,28 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
     [column]
   );
 
+  const Icon = columnMeta.icon;
+  const displayName = columnMeta.displayName ?? "Filter";
+
   return (
-    <Command loop>
-      <CommandInput autoFocus placeholder="Search..." />
-      <CommandEmpty>No results.</CommandEmpty>
+    <Command loop className="min-w-[280px]">
+      {/* Header with field title and icon - match CommandInput styling */}
+      <div className="flex h-9 items-center gap-2 border-b px-3">
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-4 w-4 p-0 hover:bg-transparent -ml-1"
+            onClick={onBack}
+          >
+            <ChevronLeft className="h-3 w-3" />
+          </Button>
+        )}
+        {Icon && <Icon className="size-4 shrink-0 opacity-50" />}
+        <span className="text-sm text-muted-foreground">{displayName}</span>
+      </div>
+      <CommandInput autoFocus placeholder={t("components.data-table.search")} />
+      <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
       <CommandList className="max-h-fit">
         <CommandGroup>
           {options.map((v) => {

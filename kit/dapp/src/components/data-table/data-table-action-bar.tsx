@@ -15,6 +15,7 @@ import { CheckIcon, ChevronDownIcon, LoaderIcon, XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import type {
   BulkAction,
   BulkActionBarProps,
@@ -54,10 +55,14 @@ export function DataTableActionBar<TData>({
       onError: (error: Error) => {
         setLoadingAction(null);
         console.error("Bulk action failed:", error);
-        // TODO: Show toast notification
+        toast.error(
+          t("components.data-table.bulk-actions.error", {
+            error: error.message,
+          })
+        );
       },
     }),
-    [selectedRows, selectedRowIds, table, onSelectionClear]
+    [selectedRows, selectedRowIds, table, onSelectionClear, t]
   );
 
   // Combine individual actions and grouped actions
@@ -105,8 +110,7 @@ export function DataTableActionBar<TData>({
         await action.execute(actionContext);
         // Show success message if provided
         if (action.successMessage) {
-          // TODO: Show toast notification
-          console.log(action.successMessage);
+          toast.success(action.successMessage);
         }
       } catch (error) {
         // Show error message if provided
@@ -116,7 +120,7 @@ export function DataTableActionBar<TData>({
             action: action.label,
           });
         console.error(errorMessage, error);
-        // TODO: Show toast notification
+        toast.error(errorMessage);
         actionContext.onError(
           error instanceof Error ? error : new Error(String(error))
         );

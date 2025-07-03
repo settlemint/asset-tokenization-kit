@@ -1,3 +1,17 @@
+/**
+ * Language switcher component for internationalization support.
+ *
+ * This component provides a UI for users to switch between different languages in the application.
+ * It supports two modes of operation:
+ * - Dropdown mode: Displays as a standalone button with a dropdown menu
+ * - MenuItem mode: Displays as a sub-menu item within another dropdown menu
+ *
+ * The component handles language persistence and prevents hydration mismatches by
+ * only rendering after the component has mounted on the client side.
+ *
+ * @module components/language/language-switcher
+ */
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,13 +22,16 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useMounted } from "@/hooks/use-mounted";
 import { supportedLanguages } from "@/lib/i18n";
-import { useMounted } from "@/lib/utils/use-mounted";
 import { Check, Languages } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-// Language display names mapping
+/**
+ * Mapping of language codes to their display names.
+ * Used to show human-readable language names in the UI.
+ */
 const LANGUAGE_NAMES: Record<string, string> = {
   en: "English",
   de: "Deutsch",
@@ -78,12 +95,40 @@ interface LanguageSwitcherProps {
 }
 
 /**
- * A component that allows users to switch between different languages.
- * @param {object} [props] - The component props.
- * @param {import("@/components/ui/button").ButtonProps["variant"]} [props.variant] - The variant of the button.
- * @param {import("@/components/ui/button").ButtonProps["size"]} [props.size] - The size of the button.
- * @param {string} [props.className] - Additional CSS classes to apply to the button.
- * @returns {JSX.Element} A dropdown menu for language selection.
+ * LanguageSwitcher component that provides language selection functionality.
+ *
+ * This component can be used in two modes:
+ * 1. As a standalone dropdown button (default)
+ * 2. As a submenu item within another dropdown menu
+ *
+ * The component automatically detects available languages from the i18n configuration
+ * and displays them with their native names. It handles language switching with loading
+ * states and prevents hydration mismatches by only rendering after mount.
+ *
+ * @param {LanguageSwitcherProps} [props] - Component configuration options
+ * @param {"dropdown" | "menuItem"} [props.mode="dropdown"] - Display mode of the switcher
+ * @param {string} [props.variant="outline"] - Visual style variant for the button
+ * @param {string} [props.size="icon"] - Size preset for the button
+ * @param {string} [props.className] - Additional CSS classes for styling
+ * @returns {JSX.Element | null} The language switcher component or null during SSR
+ *
+ * @example
+ * // As a standalone dropdown button
+ * <LanguageSwitcher />
+ *
+ * @example
+ * // As a menu item within another dropdown
+ * <DropdownMenuContent>
+ *   <LanguageSwitcher mode="menuItem" />
+ * </DropdownMenuContent>
+ *
+ * @example
+ * // With custom styling
+ * <LanguageSwitcher
+ *   variant="ghost"
+ *   size="sm"
+ *   className="custom-class"
+ * />
  */
 export function LanguageSwitcher({
   mode = "dropdown" as "dropdown" | "menuItem",

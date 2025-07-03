@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { z } from "zod/v4";
 import { TokenFactoryDetailSchema } from "./factory.read.schema";
 
 /**
@@ -61,14 +62,20 @@ const READ_TOKEN_FACTORY_QUERY = theGraphGraphql(`
 export const factoryRead = authRouter.token.factoryRead
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    return context.theGraphClient.query(READ_TOKEN_FACTORY_QUERY, {
-      input: {
-        input,
-        transform: (input) => ({
-          id: input.id.toLowerCase(), // The Graph uses lowercase addresses
+    const result = await context.theGraphClient.query(
+      READ_TOKEN_FACTORY_QUERY,
+      {
+        input: {
+          input,
+          transform: (input) => ({
+            id: input.id.toLowerCase(), // The Graph uses lowercase addresses
+          }),
+        },
+        output: z.object({
+          tokenFactory: TokenFactoryDetailSchema,
         }),
-      },
-      output: TokenFactoryDetailSchema,
-      error: "Failed to read token factory",
-    });
+        error: "Failed to read token factory",
+      }
+    );
+    return result.tokenFactory;
   });

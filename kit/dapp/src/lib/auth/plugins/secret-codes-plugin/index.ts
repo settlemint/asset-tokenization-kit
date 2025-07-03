@@ -79,11 +79,6 @@ export const secretCodes = () => {
         async (ctx) => {
           const user = ctx.context.session.user as SessionUser;
           const { password } = ctx.body;
-          if (!user.wallet) {
-            throw new APIError("BAD_REQUEST", {
-              message: "User wallet not found",
-            });
-          }
           if (isOnboarded(user)) {
             if (!password) {
               throw new APIError("BAD_REQUEST", {

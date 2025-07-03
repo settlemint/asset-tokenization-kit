@@ -15,17 +15,14 @@ export function createBasicSelectionColumn<TData>(): ColumnDef<TData> {
       }
 
       return (
-        <div className="flex items-center">
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={handleToggleAll}
-            aria-label="Select all rows on this page"
-            className="translate-y-[2px]"
-          />
-        </div>
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={handleToggleAll}
+          aria-label="Select all rows on this page"
+        />
       );
     },
     cell: ({ row }) => {
@@ -33,28 +30,52 @@ export function createBasicSelectionColumn<TData>(): ColumnDef<TData> {
         row.toggleSelected(!!value);
       }
 
+      function handleClick(e: React.MouseEvent) {
+        e.stopPropagation();
+      }
+
       return (
-        <div className="flex items-center">
+        <div onClick={handleClick}>
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={handleToggleRow}
             aria-label={`Select row ${row.index + 1}`}
-            className="translate-y-[2px]"
           />
         </div>
       );
     },
     enableSorting: false,
     enableHiding: false,
-    size: 50,
-    minSize: 50,
-    maxSize: 50,
+    size: 40,
+    minSize: 40,
+    maxSize: 40,
+    meta: {
+      enableCsvExport: false,
+    },
   };
 }
 
 /**
- * Creates a selection column for data tables with enhanced accessibility and styling
- * This is the default SOTA implementation
+ * Creates a selection column for data tables with enhanced accessibility and styling.
+ * This is the default SOTA (State of the Art) implementation with improved accessibility.
+ *
+ * @template TData The type of data in the table rows
+ * @param options Configuration options for the selection column
+ * @param options.enableSelectAll Whether to enable the "select all" checkbox in the header. Defaults to true
+ * @param options.ariaLabel Custom aria-label for the select all checkbox. If not provided, a descriptive label is generated
+ * @param options.className Custom CSS class name to apply to the checkboxes
+ * @returns A column definition configured for row selection with enhanced accessibility
+ *
+ * @example
+ * ```tsx
+ * const columns = [
+ *   createSelectionColumn<User>({
+ *     enableSelectAll: true,
+ *     className: "my-checkbox-class"
+ *   }),
+ *   // ... other columns
+ * ];
+ * ```
  */
 export function createSelectionColumn<TData>(
   options: {
@@ -80,19 +101,17 @@ export function createSelectionColumn<TData>(
       }
 
       return (
-        <div className="flex items-center justify-center">
-          <Checkbox
-            checked={isAllSelected || (isSomeSelected && "indeterminate")}
-            onCheckedChange={handleToggleAll}
-            aria-label={
-              ariaLabel ??
-              `Select all ${table.getRowModel().rows.length} rows${
-                isSomeSelected && !isAllSelected ? " (some selected)" : ""
-              }`
-            }
-            className={className}
-          />
-        </div>
+        <Checkbox
+          checked={isAllSelected || (isSomeSelected && "indeterminate")}
+          onCheckedChange={handleToggleAll}
+          aria-label={
+            ariaLabel ??
+            `Select all ${table.getRowModel().rows.length} rows${
+              isSomeSelected && !isAllSelected ? " (some selected)" : ""
+            }`
+          }
+          className={className}
+        />
       );
     },
     cell: ({ row, table }) => {
@@ -100,8 +119,12 @@ export function createSelectionColumn<TData>(
         row.toggleSelected(!!value);
       }
 
+      function handleClick(e: React.MouseEvent) {
+        e.stopPropagation();
+      }
+
       return (
-        <div className="flex items-center justify-center">
+        <div onClick={handleClick}>
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={handleToggleRow}
@@ -115,8 +138,11 @@ export function createSelectionColumn<TData>(
     enableHiding: false,
     enableColumnFilter: false,
     enableGlobalFilter: false,
-    size: 50,
-    minSize: 50,
-    maxSize: 50,
+    size: 40,
+    minSize: 40,
+    maxSize: 40,
+    meta: {
+      enableCsvExport: false,
+    },
   };
 }

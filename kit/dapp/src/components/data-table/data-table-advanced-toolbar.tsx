@@ -1,7 +1,6 @@
 "use client";
 "use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -14,21 +13,54 @@ import { DataTableExport } from "./data-table-export";
 import { DataTableFilter } from "./data-table-filter";
 import { DataTableViewOptions } from "./data-table-view-options";
 
+/**
+ * Configuration options for the DataTableAdvancedToolbar component.
+ * Allows fine-grained control over which features are enabled in the toolbar.
+ */
 export interface DataTableAdvancedToolbarOptions {
+  /** Whether to render the toolbar at all. Defaults to true. */
   enableToolbar?: boolean;
+  /** Whether to show the global search input. Defaults to true. */
   enableGlobalSearch?: boolean;
+  /** Whether to show the filter button and filter chips. Defaults to true. */
   enableFilters?: boolean;
+  /** Whether to show the export to CSV button. Defaults to true. */
   enableExport?: boolean;
+  /** Whether to show the column visibility toggle. Defaults to true. */
   enableViewOptions?: boolean;
+  /** Custom action buttons to display in the toolbar. */
   customActions?: React.ReactNode;
+  /** Placeholder text for the search input. Defaults to i18n translation. */
   placeholder?: string;
 }
 
+/**
+ * Props for the DataTableAdvancedToolbar component.
+ * Extends the options interface with the required table instance.
+ */
 interface DataTableAdvancedToolbarProps<TData>
   extends DataTableAdvancedToolbarOptions {
+  /** The TanStack Table instance to control. */
   table: Table<TData>;
 }
 
+/**
+ * Advanced toolbar component for data tables with search, filters, export, and view options.
+ * Provides responsive layouts for desktop and mobile devices.
+ *
+ * @example
+ * ```tsx
+ * <DataTableAdvancedToolbar
+ *   table={table}
+ *   enableGlobalSearch={true}
+ *   enableFilters={true}
+ *   customActions={<Button>Custom Action</Button>}
+ * />
+ * ```
+ *
+ * @param props - The component props
+ * @returns A responsive toolbar component
+ */
 export function DataTableAdvancedToolbar<TData>({
   table,
   enableToolbar = true,
@@ -47,7 +79,6 @@ export function DataTableAdvancedToolbar<TData>({
 
   const hasFilters = table.getState().columnFilters.length > 0;
   const hasGlobalFilter = table.getState().globalFilter?.length > 0;
-  const activeFiltersCount = table.getState().columnFilters.length;
 
   const handleSearchChange = useCallback(
     (value: string) => {
@@ -64,15 +95,19 @@ export function DataTableAdvancedToolbar<TData>({
     [handleSearchChange]
   );
 
-  const clearAllFilters = useCallback(() => {
-    table.setColumnFilters([]);
-    table.setGlobalFilter("");
-    setSearchValue("");
-  }, [table]);
+  const clearAllFilters = useCallback(
+    (e?: React.MouseEvent) => {
+      e?.stopPropagation();
+      table.setColumnFilters([]);
+      table.setGlobalFilter("");
+      setSearchValue("");
+    },
+    [table]
+  );
 
-  const clearSearch = useCallback(() => {
-    handleSearchChange("");
-  }, [handleSearchChange]);
+  const handleInputClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
 
   if (!enableToolbar) {
     return null;
@@ -91,6 +126,7 @@ export function DataTableAdvancedToolbar<TData>({
                 placeholder={placeholder ?? t("components.data-table.search")}
                 value={searchValue}
                 onChange={handleInputChange}
+                onClick={handleInputClick}
                 className="pl-9 h-9"
               />
             </div>
@@ -102,21 +138,15 @@ export function DataTableAdvancedToolbar<TData>({
           <div className="space-y-2">
             <DataTableFilter table={table} />
             {(hasFilters || hasGlobalFilter) && (
-              <div className="flex items-center justify-between">
-                <Badge variant="secondary" className="text-xs">
-                  {activeFiltersCount}{" "}
-                  {activeFiltersCount === 1 ? "filter" : "filters"} active
-                </Badge>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearAllFilters}
-                  className="h-7 text-xs"
-                >
-                  <FilterXIcon className="h-3 w-3" />
-                  Clear all
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearAllFilters}
+                className="h-7 text-xs ml-auto"
+              >
+                <FilterXIcon className="h-3 w-3" />
+                {t("components.data-table.clear-all")}
+              </Button>
             )}
           </div>
         )}
@@ -145,6 +175,7 @@ export function DataTableAdvancedToolbar<TData>({
                 placeholder={placeholder ?? t("components.data-table.search")}
                 value={searchValue}
                 onChange={handleInputChange}
+                onClick={handleInputClick}
                 className="pl-9 h-9 bg-background"
               />
             </div>
@@ -167,7 +198,7 @@ export function DataTableAdvancedToolbar<TData>({
                   className="h-8 gap-2 text-muted-foreground hover:text-foreground"
                 >
                   <FilterXIcon className="h-4 w-4" />
-                  Clear all
+                  {t("components.data-table.clear-all")}
                 </Button>
               )}
             </div>
@@ -176,17 +207,6 @@ export function DataTableAdvancedToolbar<TData>({
 
         {/* Right Section: Actions and View Options */}
         <div className="flex items-center gap-2">
-          {/* Active Filters Badge */}
-          {activeFiltersCount > 0 && (
-            <>
-              <Badge variant="secondary" className="text-xs font-medium">
-                {activeFiltersCount}{" "}
-                {activeFiltersCount === 1 ? "filter" : "filters"}
-              </Badge>
-              <Separator orientation="vertical" className="h-6" />
-            </>
-          )}
-
           {/* Custom Actions */}
           {customActions && (
             <>
@@ -202,32 +222,6 @@ export function DataTableAdvancedToolbar<TData>({
           </div>
         </div>
       </div>
-
-      {/* Active Filters Display Row (only when filters are active) */}
-      {(hasFilters || hasGlobalFilter) && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="font-medium">Active filters:</span>
-          {hasGlobalFilter && (
-            <Badge variant="outline" className="gap-1">
-              Search: "{table.getState().globalFilter}"
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-4 w-4 p-0 hover:bg-transparent"
-                onClick={clearSearch}
-              >
-                <FilterXIcon className="h-3 w-3" />
-              </Button>
-            </Badge>
-          )}
-          {activeFiltersCount > 0 && (
-            <Badge variant="outline">
-              {activeFiltersCount} column{" "}
-              {activeFiltersCount === 1 ? "filter" : "filters"}
-            </Badge>
-          )}
-        </div>
-      )}
     </div>
   );
 }
