@@ -827,12 +827,8 @@ type TokenDistributionStatsState @entity(immutable: false) {
   id: Bytes! # Token address
   token: Token!
 
-  # Last update timestamp
-  lastUpdated: BigInt!
-
-  # Top holders tracking
-  holdersCount: Int! # Total holders with >0 balance
-  percentageOwnedByTop5Holders: BigDecimal!
+  # Top holders tracking (we store the top 6 to be able to add and remove holders incrementally)
+  topHolders: [TokenTopHolder!]! @derivedFrom(field: "state")
 
   # Distribution segments (by percentage of total supply)
   # Segment 1: 0-2%
@@ -864,13 +860,11 @@ type TokenDistributionStatsState @entity(immutable: false) {
 # Entity to efficiently track top token holders
 type TokenTopHolder @entity(immutable: false) {
   id: Bytes! # token-account composite key
-  token: Token!
+  state: TokenDistributionStatsState!
   account: Account!
   balance: BigDecimal!
   balanceExact: BigInt!
-  percentageOfSupply: BigDecimal!
   rank: Int! # 1-5 for top 5 holders
-  lastUpdated: BigInt!
 }
 
 # Token distribution statistics by concentration segments

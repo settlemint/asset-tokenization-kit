@@ -303,41 +303,4 @@ describe("TokenDistributionStats", () => {
       }
     }
   });
-
-  it("should have processed events that affect distribution", async () => {
-    // Check for events that should trigger distribution stats updates
-    const eventsQuery = theGraphGraphql(
-      `query {
-        events(
-          where: {
-            eventName_in: ["MintCompleted", "BurnCompleted", "TransferCompleted"]
-          }
-          first: 10
-        ) {
-          eventName
-          involved {
-            id
-          }
-          emitter {
-            id
-          }
-        }
-      }
-    `
-    );
-    const eventsResponse = await theGraphClient.request(eventsQuery, {});
-
-    // Check that distribution-affecting events are present
-    const eventNames = eventsResponse.events.map((event) => event.eventName);
-
-    if (eventNames.length > 0) {
-      // At least one of these events should be present if there's any activity
-      const hasDistributionEvents =
-        eventNames.includes("MintCompleted") ||
-        eventNames.includes("BurnCompleted") ||
-        eventNames.includes("TransferCompleted");
-
-      expect(hasDistributionEvents).toBe(true);
-    }
-  });
 });
