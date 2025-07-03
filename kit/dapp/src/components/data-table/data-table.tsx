@@ -347,7 +347,7 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
             data-state={row.getIsSelected() && "selected"}
             onClick={createRowClickHandler(row.original)}
             className={cn(
-              "transition-all duration-200 ease-out",
+              "transition-transform transition-shadow duration-200 ease-out",
               onRowClick && [
                 "cursor-pointer",
                 "hover:bg-muted/50",
