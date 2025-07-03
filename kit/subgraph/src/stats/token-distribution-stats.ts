@@ -49,19 +49,15 @@ export function updateTokenDistributionStats(
 
   // Calculate old and new percentages
   const oldPercentage = oldBalance.gt(BigInt.zero())
-    ? oldBalance.times(BigInt.fromString("100")).div(token.totalSupplyExact)
+    ? oldBalance.times(BigInt.fromI32(100)).div(token.totalSupplyExact)
     : BigInt.zero();
   const newPercentage = newBalance.gt(BigInt.zero())
-    ? newBalance.times(BigInt.fromString("100")).div(token.totalSupplyExact)
+    ? newBalance.times(BigInt.fromI32(100)).div(token.totalSupplyExact)
     : BigInt.zero();
 
   // Determine segment changes
-  const oldSegment = oldBalance.gt(BigInt.zero())
-    ? getSegmentIndex(oldPercentage)
-    : -1;
-  const newSegment = newBalance.gt(BigInt.zero())
-    ? getSegmentIndex(newPercentage)
-    : -1;
+  const oldSegment = getSegmentIndex(oldPercentage);
+  const newSegment = getSegmentIndex(newPercentage);
 
   // If segment hasn't changed and balances are the same, skip
   if (oldSegment == newSegment) {

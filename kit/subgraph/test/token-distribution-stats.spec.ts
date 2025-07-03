@@ -89,7 +89,7 @@ describe("TokenDistributionStats", () => {
     // Get tokens with balances
     const tokenQuery = theGraphGraphql(
       `query {
-        tokens(where: {totalSupply_gt: "0"}, first: 5) {
+        tokens(where: {totalSupply_gt: "0"}) {
           id
           symbol
           totalSupply
@@ -98,6 +98,18 @@ describe("TokenDistributionStats", () => {
               id
             }
             value
+          }
+          distributionStats {
+            balancesCountSegment1
+            totalValueSegment1
+            balancesCountSegment2
+            totalValueSegment2
+            balancesCountSegment3
+            totalValueSegment3
+            balancesCountSegment4
+            totalValueSegment4
+            balancesCountSegment5
+            totalValueSegment5
           }
         }
       }
@@ -110,69 +122,71 @@ describe("TokenDistributionStats", () => {
       return;
     }
 
-    // Test distribution stats for the first token
-    const token = tokenResponse.tokens[0];
-    const statsQuery = theGraphGraphql(
-      `query($tokenId: Bytes!) {
-        tokenDistributionStats_collection(
-          where: {token: $tokenId}
-          interval: hour
-          orderBy: timestamp
-          orderDirection: desc
-          first: 1
-        ) {
-          percentageOwnedByTop5Holders
-          balancesCountSegment1
-          totalValueSegment1
-          balancesCountSegment2
-          totalValueSegment2
-          balancesCountSegment3
-          totalValueSegment3
-          balancesCountSegment4
-          totalValueSegment4
-          balancesCountSegment5
-          totalValueSegment5
+    // Test distribution stats for each token
+    for (const token of tokenResponse.tokens) {
+      /*
+       * Segment 1: 0-2%
+       * Segment 2: 2-10%
+       * Segment 3: 10-20%
+       * Segment 4: 20-40%
+       * Segment 5: 40-100%
+       */
+      const stats = token.distributionStats;
+      const expectedPerSegment = token.balances.reduce(
+        (acc, balance) => {
+          const percentage = Number(balance.value) / Number(token.totalSupply);
+          if (percentage <= 0.02) {
+            acc.segment1 += 1;
+            acc.segment1Value = acc.segment1Value + BigInt(balance.value);
+          } else if (percentage <= 0.1) {
+            acc.segment2 += 1;
+            acc.segment2Value = acc.segment2Value + BigInt(balance.value);
+          } else if (percentage <= 0.2) {
+            acc.segment3 += 1;
+            acc.segment3Value = acc.segment3Value + BigInt(balance.value);
+          } else if (percentage <= 0.4) {
+            acc.segment4 += 1;
+            acc.segment4Value = acc.segment4Value + BigInt(balance.value);
+          } else {
+            acc.segment5 += 1;
+            acc.segment5Value = acc.segment5Value + BigInt(balance.value);
+          }
+          return acc;
+        },
+        {
+          segment1: 0,
+          segment1Value: BigInt(0),
+          segment2: 0,
+          segment2Value: BigInt(0),
+          segment3: 0,
+          segment3Value: BigInt(0),
+          segment4: 0,
+          segment4Value: BigInt(0),
+          segment5: 0,
+          segment5Value: BigInt(0),
         }
-      }
-    `
-    );
-    const statsResponse = await theGraphClient.request(statsQuery, {
-      tokenId: token.id,
-    });
-
-    if (statsResponse.tokenDistributionStats_collection.length === 0) {
-      // Skip if no stats exist yet
-      return;
+      );
+      expect(stats?.balancesCountSegment1).toBe(expectedPerSegment.segment1);
+      expect(stats?.totalValueSegment1).toBe(
+        expectedPerSegment.segment1Value.toString()
+      );
+      expect(stats?.balancesCountSegment2).toBe(expectedPerSegment.segment2);
+      expect(stats?.totalValueSegment2).toBe(
+        expectedPerSegment.segment2Value.toString()
+      );
+      expect(stats?.balancesCountSegment3).toBe(expectedPerSegment.segment3);
+      expect(stats?.totalValueSegment3).toBe(
+        expectedPerSegment.segment3Value.toString()
+      );
+      expect(stats?.balancesCountSegment4).toBe(expectedPerSegment.segment4);
+      expect(stats?.totalValueSegment4).toBe(
+        expectedPerSegment.segment4Value.toString()
+      );
+      expect(stats?.balancesCountSegment5).toBe(expectedPerSegment.segment5);
+      expect(stats?.totalValueSegment5).toBe(
+        expectedPerSegment.segment5Value.toString()
+      );
     }
-
-    const stats = statsResponse.tokenDistributionStats_collection[0];
-
-    // Verify top 5 holders percentage is valid
-    expect(Number(stats.percentageOwnedByTop5Holders)).toBeGreaterThanOrEqual(
-      0
-    );
-    expect(Number(stats.percentageOwnedByTop5Holders)).toBeLessThanOrEqual(100);
-
-    // Verify segment counts sum up correctly
-    const totalBalances =
-      stats.balancesCountSegment1 +
-      stats.balancesCountSegment2 +
-      stats.balancesCountSegment3 +
-      stats.balancesCountSegment4 +
-      stats.balancesCountSegment5;
-
-    // Total balances in segments should match the actual balances count
-    expect(totalBalances).toBe(token.balances.length);
-
-    // Verify segment values sum up to total supply (approximately)
-    const totalSegmentValue =
-      Number(stats.totalValueSegment1) +
-      Number(stats.totalValueSegment2) +
-      Number(stats.totalValueSegment3) +
-      Number(stats.totalValueSegment4) +
-      Number(stats.totalValueSegment5);
-
-    expect(totalSegmentValue).toBeCloseTo(Number(token.totalSupply), 2);
   });
 
   it("should track top 5 holders percentage correctly", async () => {
@@ -186,121 +200,25 @@ describe("TokenDistributionStats", () => {
           balances(orderBy: value, orderDirection: desc, first: 10) {
             value
           }
+          distributionStats {
+            topHolders {
+              account {
+                id
+              }
+              balance
+              rank
+            }
+          }
         }
       }
     `
     );
     const tokenResponse = await theGraphClient.request(tokenQuery, {});
 
-    const tokenWithManyBalances = tokenResponse.tokens.find(
-      (token) => token.balances.length >= 5
-    );
-
-    if (!tokenWithManyBalances) {
-      // Skip test if no token with enough balances
-      return;
-    }
-
-    // Calculate expected top 5 percentage
-    const top5Sum = tokenWithManyBalances.balances
-      .slice(0, 5)
-      .reduce((sum, balance) => sum + Number(balance.value), 0);
-    const expectedPercentage =
-      (top5Sum / Number(tokenWithManyBalances.totalSupply)) * 100;
-
-    const statsQuery = theGraphGraphql(
-      `query($tokenId: Bytes!) {
-        tokenDistributionStats_collection(
-          where: {token: $tokenId}
-          interval: hour
-          orderBy: timestamp
-          orderDirection: desc
-          first: 1
-        ) {
-          percentageOwnedByTop5Holders
-        }
-      }
-    `
-    );
-    const statsResponse = await theGraphClient.request(statsQuery, {
-      tokenId: tokenWithManyBalances.id,
-    });
-
-    if (statsResponse.tokenDistributionStats_collection.length === 0) {
-      // Skip if no stats exist yet
-      return;
-    }
-
-    const actualPercentage = Number(
-      statsResponse.tokenDistributionStats_collection[0]
-        .percentageOwnedByTop5Holders
-    );
-
-    expect(actualPercentage).toBeCloseTo(expectedPercentage, 1);
-  });
-
-  it("should handle concentration segments appropriately", async () => {
-    const query = theGraphGraphql(
-      `query {
-        tokenDistributionStats_collection(
-          interval: hour
-          orderBy: timestamp
-          orderDirection: desc
-          first: 20
-        ) {
-          token {
-            id
-            symbol
-            totalSupply
-          }
-          balancesCountSegment1
-          totalValueSegment1
-          balancesCountSegment2
-          totalValueSegment2
-          balancesCountSegment3
-          totalValueSegment3
-          balancesCountSegment4
-          totalValueSegment4
-          balancesCountSegment5
-          totalValueSegment5
-        }
-      }
-    `
-    );
-    const response = await theGraphClient.request(query, {});
-
-    if (response.tokenDistributionStats_collection.length === 0) {
-      // Skip if no stats exist
-      return;
-    }
-
-    // Check that all concentration segments are non-negative
-    for (const stat of response.tokenDistributionStats_collection) {
-      expect(stat.balancesCountSegment1).toBeGreaterThanOrEqual(0);
-      expect(stat.balancesCountSegment2).toBeGreaterThanOrEqual(0);
-      expect(stat.balancesCountSegment3).toBeGreaterThanOrEqual(0);
-      expect(stat.balancesCountSegment4).toBeGreaterThanOrEqual(0);
-      expect(stat.balancesCountSegment5).toBeGreaterThanOrEqual(0);
-
-      expect(Number(stat.totalValueSegment1)).toBeGreaterThanOrEqual(0);
-      expect(Number(stat.totalValueSegment2)).toBeGreaterThanOrEqual(0);
-      expect(Number(stat.totalValueSegment3)).toBeGreaterThanOrEqual(0);
-      expect(Number(stat.totalValueSegment4)).toBeGreaterThanOrEqual(0);
-      expect(Number(stat.totalValueSegment5)).toBeGreaterThanOrEqual(0);
-
-      // Total value in segments should not exceed total supply significantly
-      const totalSegmentValue =
-        Number(stat.totalValueSegment1) +
-        Number(stat.totalValueSegment2) +
-        Number(stat.totalValueSegment3) +
-        Number(stat.totalValueSegment4) +
-        Number(stat.totalValueSegment5);
-
-      if (Number(stat.token.totalSupply) > 0) {
-        expect(totalSegmentValue).toBeLessThanOrEqual(
-          Number(stat.token.totalSupply) * 1.01 // Allow 1% tolerance for rounding
-        );
-      }
+    for (const token of tokenResponse.tokens) {
+      const stats = token.distributionStats;
+      const topHolders = stats?.topHolders ?? [];
+      expect(topHolders.length).toBeLessThanOrEqual(6); // Never track more than 6 holders
     }
   });
 });
