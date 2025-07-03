@@ -1,16 +1,20 @@
 {
   "title": "لوحة القيادة",
   "description": "إدارة الأصول",
+  "asset-management": "إدارة الأصول",
+  "stats-heading": "الإحصائيات",
+  "actions-heading": "الإجراءات المعلقة",
+  "latest-events-heading": "الأحداث الأخيرة",
   "stats": {
     "title": "إحصائيات المنصة",
     "assets": "الأصول",
-    "assetsDescription": "إجمالي الأصول المرمزة",
+    "assetsDescription": "{bonds} سندات | {cryptocurrencies} عملات مشفرة | {equities} أسهم | {funds} صناديق | {stableCoins} عملات مستقرة | {deposits} ودائع",
     "transactions": "المعاملات",
-    "transactionsDescription": "إجمالي المعاملات المعالجة",
+    "transactionsDescription": "{count} معاملات معالجة في آخر {days} أيام",
     "users": "المستخدمون",
-    "usersDescription": "المستخدمون النشطون على المنصة",
+    "usersDescription": "{count} مستخدمين في آخر {days} أيام",
     "totalValue": "القيمة الإجمالية",
-    "totalValueDescription": "إجمالي قيمة المنصة",
+    "totalValueDescription": "إجمالي القيمة عبر جميع الأصول",
     "loading": "جاري تحميل الإحصائيات..."
   },
   "charts": {

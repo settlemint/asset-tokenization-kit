@@ -1,16 +1,20 @@
 {
   "title": "ダッシュボード",
   "description": "アセット管理",
+  "asset-management": "アセット管理",
+  "stats-heading": "統計",
+  "actions-heading": "保留中のアクション",
+  "latest-events-heading": "最新イベント",
   "stats": {
     "title": "プラットフォーム統計",
     "assets": "アセット",
-    "assetsDescription": "トークン化された総アセット",
+    "assetsDescription": "{bonds} 債券 | {cryptocurrencies} 暗号通貨 | {equities} 株式 | {funds} ファンド | {stableCoins} ステーブルコイン | {deposits} 預金",
     "transactions": "トランザクション",
-    "transactionsDescription": "処理された総トランザクション",
+    "transactionsDescription": "過去{days}日間で処理された{count}トランザクション",
     "users": "ユーザー",
-    "usersDescription": "アクティブなプラットフォームユーザー",
+    "usersDescription": "過去{days}日間の{count}ユーザー",
     "totalValue": "総価値",
-    "totalValueDescription": "プラットフォーム総価値",
+    "totalValueDescription": "すべてのアセットの総価値",
     "loading": "統計を読み込み中..."
   },
   "charts": {

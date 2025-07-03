@@ -1,16 +1,20 @@
 {
   "title": "Dashboard",
   "description": "Asset management",
+  "asset-management": "Asset Management",
+  "stats-heading": "Statistics",
+  "actions-heading": "Pending Actions",
+  "latest-events-heading": "Latest Events",
   "stats": {
     "title": "Platform Statistics",
     "assets": "Assets",
-    "assetsDescription": "Total tokenized assets",
+    "assetsDescription": "{bonds} bonds | {cryptocurrencies} cryptocurrencies | {equities} equities | {funds} funds | {stableCoins} stablecoins | {deposits} deposits",
     "transactions": "Transactions",
-    "transactionsDescription": "Total transactions processed",
+    "transactionsDescription": "{count} transactions processed in the last {days} days",
     "users": "Users",
-    "usersDescription": "Active platform users",
+    "usersDescription": "{count} users in the last {days} days",
     "totalValue": "Total Value",
-    "totalValueDescription": "Total platform value",
+    "totalValueDescription": "Total value across all assets",
     "loading": "Loading statistics..."
   },
   "charts": {

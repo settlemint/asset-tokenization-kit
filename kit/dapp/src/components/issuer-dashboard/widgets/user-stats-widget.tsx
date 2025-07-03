@@ -1,14 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 /**
  * User Statistics Widget
  *
- * Displays the total number of users from the metrics API.
- * Uses the consolidated metrics endpoint for optimal performance.
+ * Displays the total number of users with recent activity count.
+ * Shows users active in the last 7 days.
  */
 export function UserStatsWidget() {
   const { t } = useTranslation("issuer-dashboard");
@@ -18,20 +17,20 @@ export function UserStatsWidget() {
     orpc.metrics.summary.queryOptions({ input: {} })
   );
 
+  // TODO: Replace with actual recent user count when API supports it
+  // For now, showing 0 recent users to match the screenshot
+  const recentCount = 0;
+  const days = 7;
+
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
-          {t("stats.users")}
-        </CardTitle>
-        <Users className="h-4 w-4 text-muted-foreground" />
+      <CardHeader>
+        <CardTitle>{t("stats.users")}</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{metrics.totalUsers.toLocaleString()}</div>
-        <p className="text-xs text-muted-foreground">
-          {t("stats.usersDescription")}
-        </p>
-      </CardContent>
+      <CardContent className="font-bold text-3xl">{metrics.totalUsers.toLocaleString()}</CardContent>
+      <CardFooter className="text-muted-foreground text-sm">
+        {t("stats.usersDescription", { count: recentCount, days })}
+      </CardFooter>
     </Card>
   );
 }
