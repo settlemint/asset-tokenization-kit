@@ -41,14 +41,12 @@ import type {
   VisibilityState,
 } from "@tanstack/react-table";
 
-import type { DataTableSearchParams } from "@/components/data-table/utils/search-params";
 import {
-  createDebouncedUrlUpdate,
   deserializeDataTableState,
   searchParamsToTableState,
   serializeDataTableState,
-  tableStateToSearchParams,
 } from "@/components/data-table/utils/search-param-serializers";
+import { debounce } from "@/lib/utils/debounce";
 
 /**
  * Configuration options for the DataTable state hook
@@ -164,12 +162,11 @@ export function useDataTableState(
     routePath,
   } = options;
 
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: routePath as never });
 
   // Get search params from URL - always call hook, but conditionally use the result
   const rawUrlSearchParams = useSearch({
     strict: false,
-    from: routePath as undefined,
   });
   const urlSearchParams = useMemo(() => {
     return enableUrlPersistence ? rawUrlSearchParams : {};
@@ -237,32 +234,57 @@ export function useDataTableState(
     initialState.rowSelection
   );
 
-  // Ref to track if we're updating from URL to prevent update loops
-  const isUpdatingFromUrlRef = useRef(false);
+  // Version counter to track URL updates and prevent race conditions
+  const updateVersionRef = useRef(0);
+  const currentVersionRef = useRef(0);
 
-  // Debounced URL update function
+  // Debounced URL update function with proper cleanup
   const debouncedUrlUpdate = useMemo(
     () =>
-      createDebouncedUrlUpdate((newSearchParams: Record<string, unknown>) => {
-        if (enableUrlPersistence && !isUpdatingFromUrlRef.current) {
+      debounce((newSearchParams: Record<string, unknown>) => {
+        if (enableUrlPersistence) {
+          // Increment version for this update
+          const updateVersion = ++updateVersionRef.current;
+
           void navigate({
             search: newSearchParams as never,
             replace: true,
+          }).then(() => {
+            // Update current version after navigation completes
+            currentVersionRef.current = updateVersion;
           });
         }
       }, debounceMs),
     [navigate, enableUrlPersistence, debounceMs]
   );
 
+  // Cleanup debounced function on unmount
+  useEffect(() => {
+    return () => {
+      debouncedUrlUpdate.cancel();
+    };
+  }, [debouncedUrlUpdate]);
+
   // Update URL when state changes
   const updateUrl = useCallback(
-    (newState: Partial<DataTableSearchParams>) => {
+    (newTableState: {
+      pagination?: PaginationState;
+      sorting?: SortingState;
+      columnFilters?: ColumnFiltersState;
+      globalFilter?: string;
+      columnVisibility?: VisibilityState;
+      rowSelection?: RowSelectionState;
+    }) => {
       if (enableUrlPersistence) {
-        const serializedState = serializeDataTableState(newState);
+        // Use the new state directly without merging
+        const serializedState = serializeDataTableState(
+          newTableState,
+          defaultPageSize
+        );
         debouncedUrlUpdate(serializedState);
       }
     },
-    [enableUrlPersistence, debouncedUrlUpdate]
+    [enableUrlPersistence, debouncedUrlUpdate, defaultPageSize]
   );
 
   // State setters that also update URL
@@ -272,22 +294,50 @@ export function useDataTableState(
     ) => {
       setPaginationState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ pagination: newState }));
+        updateUrl({
+          pagination: newState,
+          sorting,
+          columnFilters,
+          globalFilter,
+          columnVisibility,
+          rowSelection,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [
+      updateUrl,
+      sorting,
+      columnFilters,
+      globalFilter,
+      columnVisibility,
+      rowSelection,
+    ]
   );
 
   const setSorting = useCallback(
     (updater: SortingState | ((old: SortingState) => SortingState)) => {
       setSortingState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ sorting: newState }));
+        updateUrl({
+          pagination,
+          sorting: newState,
+          columnFilters,
+          globalFilter,
+          columnVisibility,
+          rowSelection,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [
+      updateUrl,
+      pagination,
+      columnFilters,
+      globalFilter,
+      columnVisibility,
+      rowSelection,
+    ]
   );
 
   const setColumnFilters = useCallback(
@@ -298,22 +348,50 @@ export function useDataTableState(
     ) => {
       setColumnFiltersState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ columnFilters: newState }));
+        updateUrl({
+          pagination,
+          sorting,
+          columnFilters: newState,
+          globalFilter,
+          columnVisibility,
+          rowSelection,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [
+      updateUrl,
+      pagination,
+      sorting,
+      globalFilter,
+      columnVisibility,
+      rowSelection,
+    ]
   );
 
   const setGlobalFilter = useCallback(
     (updater: string | ((old: string) => string)) => {
       setGlobalFilterState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ globalFilter: newState }));
+        updateUrl({
+          pagination,
+          sorting,
+          columnFilters,
+          globalFilter: newState,
+          columnVisibility,
+          rowSelection,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [
+      updateUrl,
+      pagination,
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    ]
   );
 
   const setColumnVisibility = useCallback(
@@ -322,11 +400,18 @@ export function useDataTableState(
     ) => {
       setColumnVisibilityState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ columnVisibility: newState }));
+        updateUrl({
+          pagination,
+          sorting,
+          columnFilters,
+          globalFilter,
+          columnVisibility: newState,
+          rowSelection,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [updateUrl, pagination, sorting, columnFilters, globalFilter, rowSelection]
   );
 
   const setRowSelection = useCallback(
@@ -337,11 +422,25 @@ export function useDataTableState(
     ) => {
       setRowSelectionState((old) => {
         const newState = typeof updater === "function" ? updater(old) : updater;
-        updateUrl(tableStateToSearchParams({ rowSelection: newState }));
+        updateUrl({
+          pagination,
+          sorting,
+          columnFilters,
+          globalFilter,
+          columnVisibility,
+          rowSelection: newState,
+        });
         return newState;
       });
     },
-    [updateUrl]
+    [
+      updateUrl,
+      pagination,
+      sorting,
+      columnFilters,
+      globalFilter,
+      columnVisibility,
+    ]
   );
 
   // Reset all state to defaults
@@ -379,25 +478,26 @@ export function useDataTableState(
 
   // Sync state when URL changes (for back/forward navigation)
   useEffect(() => {
-    if (enableUrlPersistence && Object.keys(urlSearchParams).length > 0) {
-      isUpdatingFromUrlRef.current = true;
+    if (enableUrlPersistence) {
+      // Check if this is an external navigation (browser back/forward)
+      // by comparing versions - if current version is behind update version,
+      // it means we have pending updates that shouldn't be overwritten
+      const isExternalNavigation =
+        currentVersionRef.current === updateVersionRef.current;
 
-      const deserializedState = deserializeDataTableState(urlSearchParams);
-      const tableState = searchParamsToTableState(deserializedState);
+      if (isExternalNavigation && Object.keys(urlSearchParams).length > 0) {
+        const deserializedState = deserializeDataTableState(urlSearchParams);
+        const tableState = searchParamsToTableState(deserializedState);
 
-      setPaginationState(
-        tableState.pagination ?? { pageIndex: 0, pageSize: defaultPageSize }
-      );
-      setSortingState(tableState.sorting);
-      setColumnFiltersState(tableState.columnFilters);
-      setGlobalFilterState(tableState.globalFilter);
-      setColumnVisibilityState(tableState.columnVisibility);
-      setRowSelectionState(tableState.rowSelection);
-
-      // Reset the flag after a brief delay
-      setTimeout(() => {
-        isUpdatingFromUrlRef.current = false;
-      }, 50);
+        setPaginationState(
+          tableState.pagination ?? { pageIndex: 0, pageSize: defaultPageSize }
+        );
+        setSortingState(tableState.sorting);
+        setColumnFiltersState(tableState.columnFilters);
+        setGlobalFilterState(tableState.globalFilter);
+        setColumnVisibilityState(tableState.columnVisibility);
+        setRowSelectionState(tableState.rowSelection);
+      }
     }
   }, [enableUrlPersistence, urlSearchParams, defaultPageSize]);
 

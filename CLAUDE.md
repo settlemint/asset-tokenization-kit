@@ -169,6 +169,79 @@ kit/
 - **Accessibility**: Valid ARIA usage, keyboard support (onClick→onKey*), meaningful labels/alt text, required attributes (lang, title, type), no accessKey or aria-hidden on focusable elements
 - **Forbidden**: console.log, debugger, delete, eval, hardcoded secrets
 
+### Logging Best Practices
+
+```typescript
+// ✅ Correct usage
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+
+const logger = createLogger({
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info"
+});
+
+// Use appropriate log levels
+logger.debug("Detailed debugging information");
+logger.info("General informational messages");
+logger.warn("Warning messages for potential issues");
+logger.error("Error messages with structured output", { error, context });
+
+// ❌ Never use
+console.log("This is forbidden");
+console.error("Use logger.error instead");
+```
+
+### Error Handling Patterns
+
+#### Error Boundaries
+
+```typescript
+// Use DefaultCatchBoundary for route-level error handling
+export const Route = createFileRoute('/path')({ 
+  errorComponent: DefaultCatchBoundary,
+  component: MyComponent,
+});
+
+// For data table components, use DataTableErrorBoundary
+<DataTableErrorBoundary>
+  <DataTable {...props} />
+</DataTableErrorBoundary>
+```
+
+#### Toast Notifications
+
+```typescript
+// ✅ Correct toast usage with proper error formatting
+import { toast } from "sonner";
+import { formatValidationError } from "@/lib/utils/format-validation-error";
+
+try {
+  await someOperation();
+  toast.success("Operation completed successfully");
+} catch (error) {
+  const errorMessage = formatValidationError(error);
+  toast.error(errorMessage, {
+    duration: 10000, // Longer duration for errors
+    description: "Check browser console for details"
+  });
+  
+  // Also log to console for debugging
+  logger.error("Operation failed", { error, context: additionalContext });
+}
+```
+
+#### Streaming Mutations
+
+```typescript
+// Use useStreamingMutation for ORPC mutations with progress tracking
+const { mutate, isTracking } = useStreamingMutation({
+  mutationOptions: orpc.token.create.mutationOptions(),
+  onSuccess: (result) => {
+    // Handle success with properly typed result
+    router.navigate({ to: "/tokens/$address", params: { address: result } });
+  }
+});
+```
+
 ## Important Constraints
 
 ### Files to Never Modify
@@ -184,6 +257,71 @@ kit/
 - **No default exports** - Unless framework requires it
 - **Schema-first** - Define Zod schemas, derive TypeScript types
 - **Error handling** - Use Result types, proper error boundaries
+
+### State Management Patterns
+
+#### URL State vs Local State
+
+```typescript
+// ✅ Use URL state for shareable, persistent UI state
+const tableState = useDataTableState({
+  enableUrlPersistence: true,  // Enables URL-based state
+  defaultPageSize: 20,
+  debounceMs: 300,  // Prevent excessive URL updates
+});
+
+// URL state is ideal for:
+// - Table filters, sorting, pagination
+// - Search queries
+// - UI configuration that should persist across navigation
+// - States you want users to share via URLs
+
+// ❌ Use local state for ephemeral UI state
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [formData, setFormData] = useState({});
+
+// Local state is ideal for:
+// - Modal/dialog visibility
+// - Form inputs before submission
+// - Temporary UI interactions
+// - Animation states
+```
+
+#### Performance Optimization Guidelines
+
+```typescript
+// ✅ Memoize expensive computations
+const expensiveResult = useMemo(() => {
+  return computeExpensiveValue(data);
+}, [data]); // Only recompute when data changes
+
+// ✅ Memoize callbacks passed to child components
+const handleClick = useCallback((id: string) => {
+  doSomething(id);
+}, [doSomething]); // Stable reference prevents unnecessary re-renders
+
+// ✅ Memoize components that receive complex props
+const MemoizedComponent = React.memo(ExpensiveComponent, (prevProps, nextProps) => {
+  // Custom comparison for performance
+  return prevProps.id === nextProps.id && 
+         prevProps.version === nextProps.version;
+});
+
+// ✅ Use virtualization for large lists
+import { useVirtualizer } from '@tanstack/react-virtual';
+
+// ✅ Debounce expensive operations
+const debouncedSearch = useMemo(
+  () => debounce((query: string) => {
+    performSearch(query);
+  }, 300),
+  [performSearch]
+);
+
+// ❌ Avoid premature optimization
+// Only optimize after identifying actual performance bottlenecks
+// Use React DevTools Profiler to measure before optimizing
+```
 
 ### MCP Integration
 
@@ -223,3 +361,7 @@ Before any PR:
   testing/linting/formatting tasks
 - `routeTree.gen.ts` is auto generated, ignore it
 - Before starting any work, run `bunx settlemint connect --instance local` and `bun run codegen`
+- Always use error boundaries (DefaultCatchBoundary for routes, DataTableErrorBoundary for tables)
+- Use toast notifications with formatValidationError for user feedback
+- Prefer URL state for persistent UI configuration, local state for ephemeral interactions
+- Only optimize performance after measuring with React DevTools Profiler

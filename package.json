@@ -66,12 +66,10 @@
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
-  "dependencies": {
-    "@tanstack/react-table": "8.21.3"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
-    "@settlemint/sdk-cli": "2.4.0",
+    "@settlemint/sdk-cli": "2.4.1",
     "prettier": "3.6.2",
     "turbo": "2.5.4",
     "typescript": "5.8.3"

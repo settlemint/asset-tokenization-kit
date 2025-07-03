@@ -82,7 +82,52 @@
       "go-to-next-page": "انتقل إلى الصفحة التالية",
       "go-to-last-page": "انتقل إلى الصفحة الأخيرة",
       "details": "تفاصيل",
-      "open-menu": "فتح القائمة"
+      "open-menu": "فتح القائمة",
+      "address-copied": "تم نسخ العنوان إلى الحافظة",
+      "clear-all": "مسح الكل",
+      "is": "هو",
+      "clear": "مسح",
+      "filters": {
+        "text": {
+          "contains": "يحتوي على",
+          "does-not-contain": "لا يحتوي على",
+          "placeholder": "أدخل القيمة..."
+        },
+        "number": {
+          "single": "مفرد",
+          "range": "نطاق",
+          "placeholder": "أدخل القيمة",
+          "min": "الحد الأدنى",
+          "max": "الحد الأقصى"
+        }
+      }
+    },
+    "deposits-table": {
+      "columns": {
+        "name": "الاسم",
+        "token-name": "اسم الرمز",
+        "symbol": "الرمز",
+        "token-symbol": "رمز التوكن",
+        "decimals": "الأرقام العشرية",
+        "contract-address": "عنوان العقد",
+        "actions": "الإجراءات"
+      },
+      "actions": {
+        "view-details": "عرض التفاصيل",
+        "copy-address": "نسخ العنوان",
+        "address-copied": "تم نسخ عنوان الرمز إلى الحافظة",
+        "view-on-etherscan": "عرض على Etherscan",
+        "create-token": "إنشاء رمز"
+      },
+      "bulk-actions": {
+        "archive-message": "سيتم أرشفة {{count}} رمز. هذا إجراء تجريبي.",
+        "duplicate-message": "سيتم تكرار {{count}} رمز. هذا إجراء تجريبي."
+      },
+      "search-placeholder": "البحث عن الرموز بالاسم أو الرمز أو العنوان...",
+      "empty-state": {
+        "title": "لم يتم العثور على رموز",
+        "description": "لم ينشئ هذا المصنع أي رموز بعد. قم بإنشاء أول رمز لديك للبدء."
+      }
     }
   },
   "errors": {

@@ -38,3 +38,14 @@ export const AccountSchema = z.object({
    */
   claims: z.record(z.string(), z.record(z.string(), z.string())).optional(),
 });
+
+// Define response schema for type-safe GraphQL validation
+// Using Zod for runtime validation with automatic TypeScript type inference
+// The nullable modifier handles cases where the account doesn't exist
+export const AccountResponseSchema = z.object({
+  account: z
+    .object({
+      id: z.string(),
+    })
+    .nullable(),
+});

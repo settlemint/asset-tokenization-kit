@@ -82,7 +82,52 @@
       "go-to-next-page": "Zur nächsten Seite",
       "go-to-last-page": "Zur letzten Seite",
       "details": "Details",
-      "open-menu": "Menü öffnen"
+      "open-menu": "Menü öffnen",
+      "address-copied": "Adresse in Zwischenablage kopiert",
+      "clear-all": "Alle löschen",
+      "is": "ist",
+      "clear": "Löschen",
+      "filters": {
+        "text": {
+          "contains": "Enthält",
+          "does-not-contain": "Enthält nicht",
+          "placeholder": "Wert eingeben..."
+        },
+        "number": {
+          "single": "Einzeln",
+          "range": "Bereich",
+          "placeholder": "Wert eingeben",
+          "min": "Min",
+          "max": "Max"
+        }
+      }
+    },
+    "deposits-table": {
+      "columns": {
+        "name": "Name",
+        "token-name": "Token-Name",
+        "symbol": "Symbol",
+        "token-symbol": "Token-Symbol",
+        "decimals": "Dezimalstellen",
+        "contract-address": "Vertragsadresse",
+        "actions": "Aktionen"
+      },
+      "actions": {
+        "view-details": "Details anzeigen",
+        "copy-address": "Adresse kopieren",
+        "address-copied": "Token-Adresse in die Zwischenablage kopiert",
+        "view-on-etherscan": "Auf Etherscan anzeigen",
+        "create-token": "Token erstellen"
+      },
+      "bulk-actions": {
+        "archive-message": "Würde {{count}} Token archivieren. Dies ist eine Demo-Aktion.",
+        "duplicate-message": "Würde {{count}} Token duplizieren. Dies ist eine Demo-Aktion."
+      },
+      "search-placeholder": "Tokens nach Name, Symbol oder Adresse suchen...",
+      "empty-state": {
+        "title": "Keine Tokens gefunden",
+        "description": "Diese Fabrik hat noch keine Tokens erstellt. Erstellen Sie Ihren ersten Token, um zu beginnen."
+      }
     }
   },
   "errors": {
