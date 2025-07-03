@@ -1,5 +1,16 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import { useTranslation } from "react-i18next";
 import { Area, AreaChart, XAxis, YAxis } from "recharts";
 
@@ -19,7 +30,7 @@ const chartData = [
 
 /**
  * Transaction History Chart Component
- * 
+ *
  * Displays transaction volume over time using an area chart.
  * Currently shows mock data for demonstration purposes.
  */
@@ -38,9 +49,9 @@ export function TransactionHistoryChart() {
             <XAxis dataKey="week" tickLine={false} axisLine={false} />
             <YAxis hide />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Area 
-              type="monotone" 
-              dataKey="transactions" 
+            <Area
+              type="monotone"
+              dataKey="transactions"
               stroke={chartConfig.transactions.color}
               fill={chartConfig.transactions.color}
               fillOpacity={0.3}
@@ -50,4 +61,4 @@ export function TransactionHistoryChart() {
       </CardContent>
     </Card>
   );
-} 
+}

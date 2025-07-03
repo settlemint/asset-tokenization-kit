@@ -1,5 +1,16 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -15,30 +26,35 @@ const chartConfig = {
 
 /**
  * Asset Supply Chart Component
- * 
+ *
  * Displays the distribution of different asset types across the platform
  * using a pie chart visualization.
  */
 export function AssetSupplyChart() {
   const { t } = useTranslation("general");
-  
+
   // Fetch factories to analyze asset distribution
   const { data: factories } = useSuspenseQuery(
     orpc.token.factoryList.queryOptions({ input: {} })
   );
 
   // Group factories by asset type
-  const assetTypeCount = factories.reduce((acc, factory) => {
-    const typeId = factory.typeId ?? "other";
-    acc[typeId] = (acc[typeId] ?? 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const assetTypeCount = factories.reduce(
+    (acc, factory) => {
+      const typeId = factory.typeId ?? "other";
+      acc[typeId] = (acc[typeId] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   // Convert to chart data format
   const chartData = Object.entries(assetTypeCount).map(([type, count]) => ({
     assetType: type,
     count,
-    fill: chartConfig[type as keyof typeof chartConfig]?.color ?? "hsl(var(--muted))",
+    fill:
+      chartConfig[type as keyof typeof chartConfig]?.color ??
+      "hsl(var(--muted))",
   }));
 
   return (
@@ -50,7 +66,9 @@ export function AssetSupplyChart() {
       <CardContent>
         <ChartContainer config={chartConfig}>
           <PieChart>
-            <ChartTooltip content={<ChartTooltipContent nameKey="assetType" />} />
+            <ChartTooltip
+              content={<ChartTooltipContent nameKey="assetType" />}
+            />
             <Pie data={chartData} dataKey="count" nameKey="assetType">
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -61,4 +79,4 @@ export function AssetSupplyChart() {
       </CardContent>
     </Card>
   );
-} 
+}

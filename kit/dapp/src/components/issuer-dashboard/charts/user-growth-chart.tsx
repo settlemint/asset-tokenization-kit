@@ -1,5 +1,16 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import { useTranslation } from "react-i18next";
 import { Line, LineChart, XAxis, YAxis } from "recharts";
 
@@ -19,7 +30,7 @@ const chartData = [
 
 /**
  * User Growth Chart Component
- * 
+ *
  * Displays user growth over time using a line chart.
  * Currently shows mock data for demonstration purposes.
  */
@@ -38,10 +49,10 @@ export function UserGrowthChart() {
             <XAxis dataKey="month" tickLine={false} axisLine={false} />
             <YAxis hide />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Line 
-              type="monotone" 
-              dataKey="users" 
-              stroke={chartConfig.users.color} 
+            <Line
+              type="monotone"
+              dataKey="users"
+              stroke={chartConfig.users.color}
               strokeWidth={2}
               dot={{ fill: chartConfig.users.color }}
             />
@@ -50,4 +61,4 @@ export function UserGrowthChart() {
       </CardContent>
     </Card>
   );
-} 
+}

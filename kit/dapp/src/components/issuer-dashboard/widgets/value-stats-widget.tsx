@@ -1,4 +1,10 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -25,10 +31,10 @@ export function ValueStatsWidget() {
   // Format the total value as currency using user's preferred currency
   const totalValueNumber = parseFloat(metrics.totalValue);
   const formattedValue = new Intl.NumberFormat(locale, {
-    style: 'currency',
+    style: "currency",
     currency: userCurrency,
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   }).format(totalValueNumber);
 
   return (

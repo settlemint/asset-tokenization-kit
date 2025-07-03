@@ -16,7 +16,7 @@
     "stats": {
       "title": "Plattform-Statistiken",
       "assets": "Assets",
-      "transactions": "Transaktionen", 
+      "transactions": "Transaktionen",
       "users": "Benutzer",
       "totalValue": "Gesamtwert",
       "loading": "Statistiken werden geladen..."

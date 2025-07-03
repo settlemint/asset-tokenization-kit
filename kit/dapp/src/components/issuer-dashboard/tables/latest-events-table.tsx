@@ -59,8 +59,12 @@ const createEventsColumns = () => [
     header: "Status",
     cell: (info) => {
       const status = info.getValue();
-      const variant = status === "completed" ? "default" :
-                    status === "pending" ? "secondary" : "destructive";
+      const variant =
+        status === "completed"
+          ? "default"
+          : status === "pending"
+            ? "secondary"
+            : "destructive";
       return <Badge variant={variant}>{status}</Badge>;
     },
   }),

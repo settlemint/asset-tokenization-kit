@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * Skeleton loading component for dashboard charts.
- * 
+ *
  * Provides a consistent loading state for all dashboard chart components
  * with appropriate aspect ratio and shimmer effects.
  */
@@ -19,4 +19,4 @@ export function ChartSkeleton() {
       </CardContent>
     </Card>
   );
-} 
+}

@@ -1,31 +1,43 @@
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
-import { baseRouter } from "@/orpc/procedures/base.router";
-import { authMiddleware } from "@/orpc/middlewares/auth/auth.middleware";
-import { errorMiddleware } from "@/orpc/middlewares/monitoring/error.middleware";
-import { sessionMiddleware } from "@/orpc/middlewares/auth/session.middleware";
 import { user } from "@/lib/db/schema";
-import { count } from "drizzle-orm";
+import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { authMiddleware } from "@/orpc/middlewares/auth/auth.middleware";
+import { sessionMiddleware } from "@/orpc/middlewares/auth/session.middleware";
+import { errorMiddleware } from "@/orpc/middlewares/monitoring/error.middleware";
+import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { baseRouter } from "@/orpc/procedures/base.router";
+import { count, gte } from "drizzle-orm";
 import { z } from "zod/v4";
+
+/**
+ * Configuration constant for recent activity calculation
+ * This value is used to determine what constitutes "recent" activity for both users and transactions
+ */
+const RECENT_ACTIVITY_DAYS = 7;
 
 /**
  * GraphQL query to fetch comprehensive metrics for the dashboard
  * This query aggregates data from multiple entities to provide a complete overview
  */
 const METRICS_SUMMARY_QUERY = theGraphGraphql(`
-  query MetricsSummaryQuery {
-    # Count of tokens (assets)
+  query MetricsSummaryQuery($recentEventsTimestamp: BigInt!) {
+    # Count of tokens (assets) with their type
     tokens(first: 1000) {
       id
+      type
       totalSupply
     }
-    
-    # Count of transfer events (transactions)
+
+    # Count of all transfer events (transactions)
     events(first: 1000, where: { eventName: "Transfer" }) {
       id
     }
-    
+
+    # Count of recent transfer events (transactions in last 7 days)
+    recentEvents: events(first: 1000, where: { eventName: "Transfer", blockTimestamp_gte: $recentEventsTimestamp }) {
+      id
+    }
+
     # System stats for total value
     systemStatsStates(first: 1) {
       totalValueInBaseCurrency
@@ -35,25 +47,59 @@ const METRICS_SUMMARY_QUERY = theGraphGraphql(`
 
 // Schema for the GraphQL response
 const MetricsResponseSchema = z.object({
-  tokens: z.array(z.object({
-    id: z.string(),
-    totalSupply: z.string(),
-  })),
-  events: z.array(z.object({
-    id: z.string(),
-  })),
-  systemStatsStates: z.array(z.object({
-    totalValueInBaseCurrency: z.string(),
-  })),
+  tokens: z.array(
+    z.object({
+      id: z.string(),
+      type: z.string(),
+      totalSupply: z.string(),
+    })
+  ),
+  events: z.array(
+    z.object({
+      id: z.string(),
+    })
+  ),
+  recentEvents: z.array(
+    z.object({
+      id: z.string(),
+    })
+  ),
+  systemStatsStates: z.array(
+    z.object({
+      totalValueInBaseCurrency: z.string(),
+    })
+  ),
 });
+
+/**
+ * Helper function to create asset breakdown from tokens
+ * Dynamically counts all asset types found in the system
+ * This is future-proof and doesn't require hardcoding specific asset types
+ * @param tokens Array of tokens with their types
+ * @returns Object with counts per asset type (e.g., { "bond": 5, "fund": 3, "deposit": 2 })
+ */
+function createAssetBreakdown(tokens: { type: string }[]) {
+  const breakdown: Record<string, number> = {};
+
+  for (const token of tokens) {
+    if (token.type) {
+      breakdown[token.type] = (breakdown[token.type] ?? 0) + 1;
+    }
+  }
+
+  return breakdown;
+}
 
 /**
  * Metrics summary route handler.
  *
  * Retrieves aggregated metrics for the issuer dashboard including:
  * - Total number of tokenized assets
+ * - Dynamic breakdown of assets by type (counts whatever asset types exist in the system)
  * - Total transaction count
+ * - Recent transaction count (last 7 days)
  * - Total number of registered accounts
+ * - Recent users count (last 7 days)
  * - Total value of all assets
  *
  * This endpoint consolidates multiple queries into a single request
@@ -71,7 +117,7 @@ const MetricsResponseSchema = z.object({
  * ```typescript
  * // Get all dashboard metrics in one call
  * const metrics = await orpc.metrics.summary.query();
- * console.log(metrics.totalAssets, metrics.totalTransactions, metrics.totalUsers);
+ * console.log(metrics.totalAssets, metrics.assetBreakdown, metrics.totalTransactions);
  * ```
  */
 export const summary = baseRouter.metrics.summary
@@ -81,31 +127,57 @@ export const summary = baseRouter.metrics.summary
   .use(theGraphMiddleware)
   .use(databaseMiddleware)
   .handler(async ({ context }) => {
+    // Calculate threshold for recent activity (users and transactions)
+    const recentActivityThreshold = new Date();
+    recentActivityThreshold.setDate(
+      recentActivityThreshold.getDate() - RECENT_ACTIVITY_DAYS
+    );
+    const recentEventsTimestamp = Math.floor(
+      recentActivityThreshold.getTime() / 1000
+    ).toString();
+
     // Fetch blockchain metrics from TheGraph
     const response = await context.theGraphClient.query(METRICS_SUMMARY_QUERY, {
       input: {
-        input: {},
+        input: {
+          recentEventsTimestamp,
+        },
       },
       output: MetricsResponseSchema,
       error: "Failed to fetch metrics summary",
     });
 
-    // Get count of registered accounts from database
-    const [userCountResult] = await context.db
+    // Get count of all registered accounts from database
+    const [totalUserCountResult] = await context.db
       .select({ count: count() })
       .from(user);
 
-    const totalUsers = userCountResult?.count ?? 0;
+    // Get count of users registered in the last X days (using same threshold as transactions)
+    const [recentUserCountResult] = await context.db
+      .select({ count: count() })
+      .from(user)
+      .where(gte(user.createdAt, recentActivityThreshold));
+
+    const totalUsers = totalUserCountResult?.count ?? 0;
+    const recentUsersCount = recentUserCountResult?.count ?? 0;
 
     // Calculate total value, defaulting to "0" if no system stats
-    const totalValue = response.systemStatsStates.length > 0 && response.systemStatsStates[0]
-      ? response.systemStatsStates[0].totalValueInBaseCurrency
-      : "0";
+    const totalValue =
+      response.systemStatsStates.length > 0 && response.systemStatsStates[0]
+        ? response.systemStatsStates[0].totalValueInBaseCurrency
+        : "0";
+
+    // Create asset breakdown from tokens
+    const assetBreakdown = createAssetBreakdown(response.tokens);
 
     return {
       totalAssets: response.tokens.length,
+      assetBreakdown,
       totalTransactions: response.events.length,
+      recentTransactions: response.recentEvents.length,
       totalUsers,
+      recentUsers: recentUsersCount,
+      recentActivityDays: RECENT_ACTIVITY_DAYS,
       totalValue,
     };
   });

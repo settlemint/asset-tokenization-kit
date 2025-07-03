@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * Skeleton loading component for dashboard widgets.
- * 
+ *
  * Provides a consistent loading state across all dashboard stat widgets
  * with appropriate spacing and shimmer effects.
  */
@@ -20,4 +20,4 @@ export function WidgetSkeleton() {
       </CardContent>
     </Card>
   );
-} 
+}

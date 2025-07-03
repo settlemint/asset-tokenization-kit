@@ -8,11 +8,15 @@
   "stats": {
     "title": "إحصائيات المنصة",
     "assets": "الأصول",
-    "assetsDescription": "{bonds} سندات | {cryptocurrencies} عملات مشفرة | {equities} أسهم | {funds} صناديق | {stableCoins} عملات مستقرة | {deposits} ودائع",
+    "assetsDescription": "{{bonds}} سندات | {{cryptocurrencies}} عملات مشفرة | {{equities}} أسهم | {{funds}} صناديق | {{stableCoins}} عملات مستقرة | {{deposits}} ودائع",
     "transactions": "المعاملات",
-    "transactionsDescription": "{count} معاملات معالجة في آخر {days} أيام",
+    "transactionsDescription": "{{count}} معاملات معالجة في آخر {{days}} أيام",
+    "transactionsDescription_one": "{{count}} معاملة معالجة في آخر {{days}} أيام",
+    "transactionsDescription_other": "{{count}} معاملات معالجة في آخر {{days}} أيام",
     "users": "المستخدمون",
-    "usersDescription": "{count} مستخدمين في آخر {days} أيام",
+    "usersDescription": "{{count}} مستخدمين في آخر {{days}} أيام",
+    "usersDescription_one": "{{count}} مستخدم في آخر {{days}} أيام",
+    "usersDescription_other": "{{count}} مستخدمين في آخر {{days}} أيام",
     "totalValue": "القيمة الإجمالية",
     "totalValueDescription": "إجمالي القيمة عبر جميع الأصول",
     "loading": "جاري تحميل الإحصائيات..."

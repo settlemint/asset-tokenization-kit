@@ -1,5 +1,16 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import { useTranslation } from "react-i18next";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
@@ -20,7 +31,7 @@ const chartData = [
 
 /**
  * Asset Activity Chart Component
- * 
+ *
  * Displays asset activity over time using a bar chart.
  * Currently shows mock data for demonstration purposes.
  */
@@ -39,10 +50,14 @@ export function AssetActivityChart() {
             <XAxis dataKey="day" tickLine={false} axisLine={false} />
             <YAxis hide />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Bar dataKey="activity" fill={chartConfig.activity.color} radius={4} />
+            <Bar
+              dataKey="activity"
+              fill={chartConfig.activity.color}
+              radius={4}
+            />
           </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
   );
-} 
+}

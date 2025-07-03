@@ -64,8 +64,12 @@ const createActionsColumns = () => [
     header: "Priority",
     cell: (info) => {
       const priority = info.getValue();
-      const variant = priority === "high" ? "destructive" :
-                    priority === "medium" ? "default" : "secondary";
+      const variant =
+        priority === "high"
+          ? "destructive"
+          : priority === "medium"
+            ? "default"
+            : "secondary";
       return <Badge variant={variant}>{priority}</Badge>;
     },
   }),

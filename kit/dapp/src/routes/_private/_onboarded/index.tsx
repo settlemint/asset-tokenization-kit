@@ -79,7 +79,9 @@ function Home() {
             )}
           </pre>
         </div>
-        <pre className="text-sm bg-muted p-4 rounded-lg">{JSON.stringify(systems, null, 2)}</pre>
+        <pre className="text-sm bg-muted p-4 rounded-lg">
+          {JSON.stringify(systems, null, 2)}
+        </pre>
       </div>
 
       <div className="mb-8">

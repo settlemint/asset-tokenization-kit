@@ -8,11 +8,15 @@
   "stats": {
     "title": "Platform Statistics",
     "assets": "Assets",
-    "assetsDescription": "{bonds} bonds | {cryptocurrencies} cryptocurrencies | {equities} equities | {funds} funds | {stableCoins} stablecoins | {deposits} deposits",
+    "assetsDescription": "{{bonds}} bonds | {{cryptocurrencies}} cryptocurrencies | {{equities}} equities | {{funds}} funds | {{stableCoins}} stablecoins | {{deposits}} deposits",
     "transactions": "Transactions",
-    "transactionsDescription": "{count} transactions processed in the last {days} days",
+    "transactionsDescription": "{{count}} transactions processed in the last {{days}} days",
+    "transactionsDescription_one": "{{count}} transaction processed in the last {{days}} days",
+    "transactionsDescription_other": "{{count}} transactions processed in the last {{days}} days",
     "users": "Users",
-    "usersDescription": "{count} users in the last {days} days",
+    "usersDescription": "{{count}} users in the last {{days}} days",
+    "usersDescription_one": "{{count}} user in the last {{days}} days",
+    "usersDescription_other": "{{count}} users in the last {{days}} days",
     "totalValue": "Total Value",
     "totalValueDescription": "Total value across all assets",
     "loading": "Loading statistics..."

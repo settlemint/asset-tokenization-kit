@@ -16,7 +16,7 @@
     "stats": {
       "title": "プラットフォーム統計",
       "assets": "アセット",
-      "transactions": "トランザクション", 
+      "transactions": "トランザクション",
       "users": "ユーザー",
       "totalValue": "総価値",
       "loading": "統計を読み込み中..."
