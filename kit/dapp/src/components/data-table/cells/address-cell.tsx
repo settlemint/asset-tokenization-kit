@@ -6,16 +6,48 @@ import { useCallback } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
+/**
+ * Props for the AddressCell component
+ * @interface AddressCellProps
+ */
 interface AddressCellProps {
+  /** The blockchain address to display */
   address: string;
+  /** Whether to show the copy button (default: true) */
   showCopyButton?: boolean;
+  /** Number of characters to show at start and end of address (default: 6) */
   truncateLength?: number;
+  /** Additional CSS classes to apply to the address text */
   className?: string;
+  /** Callback function triggered after copying the address */
   onCopy?: (address: string) => void;
 }
 
 /**
- * Reusable cell component for displaying blockchain addresses with copy functionality
+ * Reusable cell component for displaying blockchain addresses with copy functionality.
+ * Automatically truncates long addresses for better display while maintaining full copy capability.
+ *
+ * @example
+ * ```tsx
+ * // Basic usage
+ * <AddressCell address="0x1234567890123456789012345678901234567890" />
+ *
+ * // With custom truncation and copy callback
+ * <AddressCell
+ *   address="0x1234567890123456789012345678901234567890"
+ *   truncateLength={8}
+ *   onCopy={(addr) => console.log(`Copied: ${addr}`)}
+ * />
+ *
+ * // Without copy button
+ * <AddressCell
+ *   address="0x1234567890123456789012345678901234567890"
+ *   showCopyButton={false}
+ * />
+ * ```
+ *
+ * @param props - The component props
+ * @returns A formatted address display with optional copy functionality
  */
 export function AddressCell({
   address,
@@ -26,11 +58,18 @@ export function AddressCell({
 }: AddressCellProps) {
   const { t } = useTranslation("general");
 
-  const handleCopy = useCallback(() => {
-    void navigator.clipboard.writeText(address);
-    toast.success(t("components.data-table.address-copied"));
-    onCopy?.(address);
-  }, [address, onCopy, t]);
+  /**
+   * Handles copying the address to clipboard and showing success toast
+   */
+  const handleCopy = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      void navigator.clipboard.writeText(address);
+      toast.success(t("components.data-table.address-copied"));
+      onCopy?.(address);
+    },
+    [address, onCopy, t]
+  );
 
   const truncatedAddress = `${address.slice(0, truncateLength)}...${address.slice(-truncateLength + 2)}`;
 

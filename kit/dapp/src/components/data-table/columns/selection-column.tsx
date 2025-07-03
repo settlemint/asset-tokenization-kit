@@ -30,12 +30,18 @@ export function createBasicSelectionColumn<TData>(): ColumnDef<TData> {
         row.toggleSelected(!!value);
       }
 
+      function handleClick(e: React.MouseEvent) {
+        e.stopPropagation();
+      }
+
       return (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={handleToggleRow}
-          aria-label={`Select row ${row.index + 1}`}
-        />
+        <div onClick={handleClick}>
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={handleToggleRow}
+            aria-label={`Select row ${row.index + 1}`}
+          />
+        </div>
       );
     },
     enableSorting: false,
@@ -50,8 +56,26 @@ export function createBasicSelectionColumn<TData>(): ColumnDef<TData> {
 }
 
 /**
- * Creates a selection column for data tables with enhanced accessibility and styling
- * This is the default SOTA implementation
+ * Creates a selection column for data tables with enhanced accessibility and styling.
+ * This is the default SOTA (State of the Art) implementation with improved accessibility.
+ *
+ * @template TData The type of data in the table rows
+ * @param options Configuration options for the selection column
+ * @param options.enableSelectAll Whether to enable the "select all" checkbox in the header. Defaults to true
+ * @param options.ariaLabel Custom aria-label for the select all checkbox. If not provided, a descriptive label is generated
+ * @param options.className Custom CSS class name to apply to the checkboxes
+ * @returns A column definition configured for row selection with enhanced accessibility
+ *
+ * @example
+ * ```tsx
+ * const columns = [
+ *   createSelectionColumn<User>({
+ *     enableSelectAll: true,
+ *     className: "my-checkbox-class"
+ *   }),
+ *   // ... other columns
+ * ];
+ * ```
  */
 export function createSelectionColumn<TData>(
   options: {
@@ -95,13 +119,19 @@ export function createSelectionColumn<TData>(
         row.toggleSelected(!!value);
       }
 
+      function handleClick(e: React.MouseEvent) {
+        e.stopPropagation();
+      }
+
       return (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={handleToggleRow}
-          aria-label={`Select row ${row.index + 1} of ${table.getRowModel().rows.length}`}
-          className={className}
-        />
+        <div onClick={handleClick}>
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={handleToggleRow}
+            aria-label={`Select row ${row.index + 1} of ${table.getRowModel().rows.length}`}
+            className={className}
+          />
+        </div>
       );
     },
     enableSorting: false,

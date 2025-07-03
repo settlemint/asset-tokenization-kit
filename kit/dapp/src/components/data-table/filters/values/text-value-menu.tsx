@@ -7,15 +7,50 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { FilterValue, TextFilterOperator } from "../types/filter-types";
 
+/**
+ * Props for the PropertyFilterTextValueMenu component
+ * @template TData - The data type of the table rows
+ * @template TValue - The value type of the column
+ */
 interface PropertyFilterTextValueMenuProps<TData, TValue> {
+  /** Column identifier */
   id: string;
+  /** Column instance from TanStack Table */
   column: Column<TData>;
+  /** Column metadata containing display and filter configuration */
   columnMeta: ColumnMeta<TData, TValue>;
+  /** Table instance from TanStack Table */
   table: Table<TData>;
+  /** Callback fired when the menu should close */
   onClose?: () => void;
+  /** Callback fired when navigating back to parent menu */
   onBack?: () => void;
 }
 
+/**
+ * A text filter value menu component that allows users to filter table data
+ * by text content. Supports:
+ * - "Contains" filtering (case-insensitive)
+ * - "Does not contain" filtering
+ * - Keyboard shortcuts (Enter to apply)
+ *
+ * @template TData - The data type of the table rows
+ * @template TValue - The value type of the column
+ *
+ * @example
+ * ```tsx
+ * <PropertyFilterTextValueMenu
+ *   id="name"
+ *   column={column}
+ *   columnMeta={{
+ *     type: "text",
+ *     displayName: "Name"
+ *   }}
+ *   table={table}
+ *   onClose={() => setShowMenu(false)}
+ * />
+ * ```
+ */
 export function PropertyFilterTextValueMenu<TData, TValue>({
   column,
   columnMeta,
@@ -32,6 +67,10 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
   );
   const [value, setValue] = useState(filter?.values[0] ?? "");
 
+  /**
+   * Applies the text filter to the column.
+   * Clears the filter if the input is empty or only contains whitespace.
+   */
   const handleApply = useCallback(() => {
     if (value.trim() === "") {
       column.setFilterValue(undefined);
@@ -47,20 +86,34 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
     onClose?.();
   }, [column, operator, value, onClose]);
 
+  /**
+   * Clears the filter value and resets the input field.
+   */
   const handleClear = useCallback(() => {
     setValue("");
     column.setFilterValue(undefined);
     onClose?.();
   }, [column, onClose]);
 
+  /**
+   * Sets the filter operator to "contains".
+   */
   const handleContainsClick = useCallback(() => {
     setOperator("contains");
   }, []);
 
+  /**
+   * Sets the filter operator to "does not contain".
+   */
   const handleDoesNotContainClick = useCallback(() => {
     setOperator("does not contain");
   }, []);
 
+  /**
+   * Updates the filter value as the user types.
+   *
+   * @param e - The input change event
+   */
   const handleValueChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setValue(e.target.value);
@@ -68,6 +121,12 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
     []
   );
 
+  /**
+   * Handles keyboard shortcuts in the input field.
+   * Applies the filter when Enter is pressed.
+   *
+   * @param e - The keyboard event
+   */
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {

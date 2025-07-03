@@ -17,6 +17,10 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import type { HTMLAttributes, PropsWithChildren } from "react";
 
+/**
+ * Class variance configuration for the header text styling.
+ * @see {@link https://cva.style/docs} CVA documentation
+ */
 const headerVariants = cva("", {
   variants: {
     variant: {
@@ -29,6 +33,10 @@ const headerVariants = cva("", {
   },
 });
 
+/**
+ * Class variance configuration for the wrapper container styling.
+ * Controls the alignment and spacing of header content.
+ */
 const wrapperVariants = cva("flex items-center space-x-2", {
   variants: {
     variant: {
@@ -41,6 +49,10 @@ const wrapperVariants = cva("flex items-center space-x-2", {
   },
 });
 
+/**
+ * Class variance configuration for the sort button styling.
+ * Handles different margin alignments based on column type.
+ */
 const buttonVariants = cva(
   "h-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
   {
@@ -85,14 +97,23 @@ export function DataTableColumnHeader<TData, TValue>({
 }: PropsWithChildren<DataTableColumnHeaderProps<TData, TValue>>) {
   const { t } = useTranslation("general");
 
+  /**
+   * Toggles the column to ascending sort order.
+   */
   const handleSortAscending = useCallback(() => {
     column.toggleSorting(false);
   }, [column]);
 
+  /**
+   * Toggles the column to descending sort order.
+   */
   const handleSortDescending = useCallback(() => {
     column.toggleSorting(true);
   }, [column]);
 
+  /**
+   * Hides the column from view.
+   */
   const handleHideColumn = useCallback(() => {
     column.toggleVisibility(false);
   }, [column]);
@@ -105,6 +126,10 @@ export function DataTableColumnHeader<TData, TValue>({
     );
   }
 
+  /**
+   * Determines which sort icon to display based on the current sort state.
+   * @returns The appropriate sort icon component
+   */
   const sortIcon = () => {
     if (column.getIsSorted() === "desc") {
       return <SortDesc className="ml-2 size-4" />;

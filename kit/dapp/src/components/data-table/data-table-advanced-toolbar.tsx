@@ -13,21 +13,54 @@ import { DataTableExport } from "./data-table-export";
 import { DataTableFilter } from "./data-table-filter";
 import { DataTableViewOptions } from "./data-table-view-options";
 
+/**
+ * Configuration options for the DataTableAdvancedToolbar component.
+ * Allows fine-grained control over which features are enabled in the toolbar.
+ */
 export interface DataTableAdvancedToolbarOptions {
+  /** Whether to render the toolbar at all. Defaults to true. */
   enableToolbar?: boolean;
+  /** Whether to show the global search input. Defaults to true. */
   enableGlobalSearch?: boolean;
+  /** Whether to show the filter button and filter chips. Defaults to true. */
   enableFilters?: boolean;
+  /** Whether to show the export to CSV button. Defaults to true. */
   enableExport?: boolean;
+  /** Whether to show the column visibility toggle. Defaults to true. */
   enableViewOptions?: boolean;
+  /** Custom action buttons to display in the toolbar. */
   customActions?: React.ReactNode;
+  /** Placeholder text for the search input. Defaults to i18n translation. */
   placeholder?: string;
 }
 
+/**
+ * Props for the DataTableAdvancedToolbar component.
+ * Extends the options interface with the required table instance.
+ */
 interface DataTableAdvancedToolbarProps<TData>
   extends DataTableAdvancedToolbarOptions {
+  /** The TanStack Table instance to control. */
   table: Table<TData>;
 }
 
+/**
+ * Advanced toolbar component for data tables with search, filters, export, and view options.
+ * Provides responsive layouts for desktop and mobile devices.
+ *
+ * @example
+ * ```tsx
+ * <DataTableAdvancedToolbar
+ *   table={table}
+ *   enableGlobalSearch={true}
+ *   enableFilters={true}
+ *   customActions={<Button>Custom Action</Button>}
+ * />
+ * ```
+ *
+ * @param props - The component props
+ * @returns A responsive toolbar component
+ */
 export function DataTableAdvancedToolbar<TData>({
   table,
   enableToolbar = true,
@@ -62,11 +95,19 @@ export function DataTableAdvancedToolbar<TData>({
     [handleSearchChange]
   );
 
-  const clearAllFilters = useCallback(() => {
-    table.setColumnFilters([]);
-    table.setGlobalFilter("");
-    setSearchValue("");
-  }, [table]);
+  const clearAllFilters = useCallback(
+    (e?: React.MouseEvent) => {
+      e?.stopPropagation();
+      table.setColumnFilters([]);
+      table.setGlobalFilter("");
+      setSearchValue("");
+    },
+    [table]
+  );
+
+  const handleInputClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
 
   if (!enableToolbar) {
     return null;
@@ -85,6 +126,7 @@ export function DataTableAdvancedToolbar<TData>({
                 placeholder={placeholder ?? t("components.data-table.search")}
                 value={searchValue}
                 onChange={handleInputChange}
+                onClick={handleInputClick}
                 className="pl-9 h-9"
               />
             </div>
@@ -133,6 +175,7 @@ export function DataTableAdvancedToolbar<TData>({
                 placeholder={placeholder ?? t("components.data-table.search")}
                 value={searchValue}
                 onChange={handleInputChange}
+                onClick={handleInputClick}
                 className="pl-9 h-9 bg-background"
               />
             </div>

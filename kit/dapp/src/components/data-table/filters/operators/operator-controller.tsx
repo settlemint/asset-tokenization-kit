@@ -31,11 +31,31 @@ const logger = createLogger({
   level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel | undefined) ?? "info",
 });
 
-/****** Property Filter Operator ******/
-
-// Renders the filter operator display and menu for a given column filter
-// The filter operator display is the label and icon for the filter operator
-// The filter operator menu is the dropdown menu for the filter operator
+/**
+ * Renders the filter operator display and menu for a given column filter.
+ * This component provides a dropdown interface for selecting filter operators
+ * based on the column's data type.
+ *
+ * @param props - Component props
+ * @param props.column - The table column instance from TanStack Table
+ * @param props.columnMeta - Column metadata containing type and other configuration
+ * @param props.filter - The current filter value with operator and values
+ *
+ * @remarks
+ * The component consists of:
+ * - A button that displays the current operator
+ * - A popover menu with operator options specific to the column type
+ * - Automatic focus management and keyboard navigation
+ *
+ * @example
+ * ```tsx
+ * <PropertyFilterOperatorController
+ *   column={column}
+ *   columnMeta={{ type: 'number', displayName: 'Price' }}
+ *   filter={{ operator: 'is between', values: [10, 100] }}
+ * />
+ * ```
+ */
 export function PropertyFilterOperatorController<
   TData,
   T extends ColumnDataType,
@@ -87,6 +107,23 @@ export function PropertyFilterOperatorController<
   );
 }
 
+/**
+ * Displays the current filter operator in a human-readable format.
+ *
+ * @param props - Component props
+ * @param props.filter - The filter value containing the operator to display
+ * @param props.filterType - The column data type to determine operator display
+ * @returns A span element with the operator label
+ *
+ * @example
+ * ```tsx
+ * <PropertyFilterOperatorDisplay
+ *   filter={{ operator: 'is between', values: [10, 100] }}
+ *   filterType="number"
+ * />
+ * // Renders: <span className="text-xs">is between</span>
+ * ```
+ */
 export function PropertyFilterOperatorDisplay<TData, T extends ColumnDataType>({
   filter,
   filterType,
@@ -117,6 +154,23 @@ interface PropertyFilterOperatorMenuProps<TData> {
   closeController: () => void;
 }
 
+/**
+ * Renders the appropriate operator menu based on the column's data type.
+ * This component acts as a router that delegates to type-specific operator menus.
+ *
+ * @param props - Component props
+ * @param props.column - The table column instance
+ * @param props.closeController - Callback to close the menu
+ * @returns The appropriate operator menu component or null if type is not recognized
+ *
+ * @remarks
+ * Supported column types:
+ * - option: Single select operators (is, is not)
+ * - multiOption: Multi-select operators (include, exclude, include all, etc.)
+ * - date: Date operators (is, is not, is before, is after, etc.)
+ * - text: Text operators (contains, starts with, ends with, etc.)
+ * - number: Number operators (is, is not, is greater than, etc.)
+ */
 export function PropertyFilterOperatorMenu<TData>({
   column,
   closeController,
@@ -166,7 +220,17 @@ export function PropertyFilterOperatorMenu<TData>({
   }
 }
 
-// Helper component for menu items
+/**
+ * Helper component for rendering individual operator menu items.
+ * Provides consistent behavior for all operator menu items.
+ *
+ * @param props - Component props
+ * @param props.value - The operator value to set when selected
+ * @param props.label - The display label for the operator
+ * @param props.onSelect - Callback when the operator is selected
+ *
+ * @internal
+ */
 function PropertyFilterOperatorMenuItem({
   value,
   label,
@@ -187,6 +251,16 @@ function PropertyFilterOperatorMenuItem({
   );
 }
 
+/**
+ * Operator menu for single-select option columns.
+ * Displays operators like "is" and "is not".
+ *
+ * @param props - Component props
+ * @param props.column - The table column instance
+ * @param props.closeController - Callback to close the menu
+ *
+ * @internal
+ */
 function PropertyFilterOptionOperatorMenu<TData>({
   column,
   closeController,
@@ -224,6 +298,16 @@ function PropertyFilterOptionOperatorMenu<TData>({
   );
 }
 
+/**
+ * Operator menu for multi-select option columns.
+ * Displays operators like "include any of", "exclude", "include all of", etc.
+ *
+ * @param props - Component props
+ * @param props.column - The table column instance
+ * @param props.closeController - Callback to close the menu
+ *
+ * @internal
+ */
 function PropertyFilterMultiOptionOperatorMenu<TData>({
   column,
   closeController,
@@ -261,6 +345,16 @@ function PropertyFilterMultiOptionOperatorMenu<TData>({
   );
 }
 
+/**
+ * Operator menu for date columns.
+ * Displays operators like "is", "is before", "is after", "is between", etc.
+ *
+ * @param props - Component props
+ * @param props.column - The table column instance
+ * @param props.closeController - Callback to close the menu
+ *
+ * @internal
+ */
 function PropertyFilterDateOperatorMenu<TData>({
   column,
   closeController,
@@ -293,6 +387,14 @@ function PropertyFilterDateOperatorMenu<TData>({
   );
 }
 
+/**
+ * Operator menu for text columns.
+ * Displays operators like "contains", "starts with", "ends with", etc.
+ *
+ * @param props - Component props
+ * @param props.column - The table column instance
+ * @param props.closeController - Callback to close the menu
+ */
 export function PropertyFilterTextOperatorMenu<TData>({
   column,
   closeController,
@@ -325,6 +427,16 @@ export function PropertyFilterTextOperatorMenu<TData>({
   );
 }
 
+/**
+ * Operator menu for number columns.
+ * Displays operators like "is", "is greater than", "is less than", "is between", etc.
+ *
+ * @param props - Component props
+ * @param props.column - The table column instance
+ * @param props.closeController - Callback to close the menu
+ *
+ * @internal
+ */
 function PropertyFilterNumberOperatorMenu<TData>({
   column,
   closeController,

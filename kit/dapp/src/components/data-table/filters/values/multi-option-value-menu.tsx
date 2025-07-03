@@ -17,15 +17,50 @@ import type { ColumnOption, ElementType } from "../types/column-types";
 import type { FilterValue } from "../types/filter-types";
 import { MultiOptionItem } from "./multi-option-item";
 
+/**
+ * Props for the PropertyFilterMultiOptionValueMenu component
+ * @template TData - The data type of the table rows
+ * @template TValue - The value type of the column
+ */
 interface PropertyFilterMultiOptionValueMenuProps<TData, TValue> {
+  /** Column identifier */
   id: string;
+  /** Column instance from TanStack Table */
   column: Column<TData>;
+  /** Column metadata containing display and filter configuration */
   columnMeta: ColumnMeta<TData, TValue>;
+  /** Table instance from TanStack Table */
   table: Table<TData>;
+  /** Callback fired when the menu should close */
   onClose?: () => void;
+  /** Callback fired when navigating back to parent menu */
   onBack?: () => void;
 }
 
+/**
+ * A multi-select filter value menu component that allows users to select multiple
+ * options for filtering table data. Supports both static options and dynamically
+ * generated options from column data.
+ *
+ * @template TData - The data type of the table rows (must extend RowData)
+ * @template TValue - The value type of the column
+ *
+ * @example
+ * ```tsx
+ * <PropertyFilterMultiOptionValueMenu
+ *   id="tags"
+ *   column={column}
+ *   columnMeta={{
+ *     type: "multiOption",
+ *     options: [
+ *       { value: "active", label: "Active" },
+ *       { value: "inactive", label: "Inactive" }
+ *     ]
+ *   }}
+ *   table={table}
+ * />
+ * ```
+ */
 export function PropertyFilterMultiOptionValueMenu<
   TData extends RowData,
   TValue,
@@ -94,6 +129,13 @@ export function PropertyFilterMultiOptionValueMenu<
     {} as Record<string, number>
   );
 
+  /**
+   * Handles the selection/deselection of an option.
+   * Updates the filter value by adding or removing the option from the selected values.
+   *
+   * @param value - The value of the option being toggled
+   * @param checked - Whether the option should be selected or deselected
+   */
   const handleOptionSelect = useCallback(
     (value: string, checked: boolean) => {
       column.setFilterValue(

@@ -5,14 +5,58 @@ import type { CellContext } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
 import { AddressCell } from "./address-cell";
 
+/**
+ * Props for the AutoCell component
+ * @interface AutoCellProps
+ * @template TData - The type of the data object for the row
+ * @template TValue - The type of the value being rendered
+ */
 interface AutoCellProps<TData, TValue> {
+  /** The cell context from TanStack Table containing column and value information */
   context: CellContext<TData, TValue>;
+  /** Optional children to override automatic rendering */
   children?: React.ReactNode;
 }
 
 /**
- * Automatically renders the appropriate cell component based on column meta type
- * Falls back to children or default text rendering if no type is specified
+ * Automatically renders the appropriate cell component based on column meta type.
+ * Falls back to children or default text rendering if no type is specified.
+ *
+ * Supported column meta types:
+ * - `address`: Renders AddressCell with truncation and copy functionality
+ * - `badge`: Renders Badge with automatic variant selection based on column name/value
+ * - `currency`: Formats as currency with locale support
+ * - `date`: Formats dates with optional time display
+ * - `status`: Renders status badges with semantic color variants
+ * - `number`: Formats numbers with locale support and optional compact notation
+ * - `text`: Default text rendering
+ *
+ * @example
+ * ```tsx
+ * // In your column definition
+ * {
+ *   accessorKey: "walletAddress",
+ *   header: "Wallet",
+ *   meta: { type: "address" },
+ *   cell: ({ cell }) => <AutoCell context={cell} />
+ * }
+ *
+ * // With override
+ * {
+ *   accessorKey: "amount",
+ *   meta: { type: "currency", currency: "USD" },
+ *   cell: ({ cell }) => (
+ *     <AutoCell context={cell}>
+ *       {cell.getValue() > 1000 && <span>🔥</span>}
+ *     </AutoCell>
+ *   )
+ * }
+ * ```
+ *
+ * @template TData - The type of the data object for the row
+ * @template TValue - The type of the value being rendered
+ * @param props - The component props
+ * @returns The appropriate cell component based on the column meta type
  */
 export function AutoCell<TData, TValue>({
   context,

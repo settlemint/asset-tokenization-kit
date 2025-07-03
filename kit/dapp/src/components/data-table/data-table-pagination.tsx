@@ -18,20 +18,51 @@ import {
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
+/**
+ * Configuration options for data table pagination.
+ */
 export interface DataTablePaginationOptions {
+  /** Whether to enable pagination controls. Defaults to true. */
   enablePagination?: boolean;
 }
 
+/**
+ * Props for the DataTablePagination component.
+ * @template TData The type of data in the table
+ */
 interface DataTablePaginationProps<TData> extends DataTablePaginationOptions {
+  /** The table instance from TanStack Table */
   table: Table<TData>;
 }
 
+/**
+ * Renders pagination controls for a data table including page size selector and navigation buttons.
+ * Provides accessible pagination with keyboard navigation support.
+ *
+ * @template TData The type of data in the table
+ * @param props The component props
+ * @param props.table The TanStack table instance
+ * @param props.enablePagination Whether to render pagination controls. Defaults to true
+ * @returns The pagination component or null if pagination is disabled
+ *
+ * @example
+ * ```tsx
+ * <DataTablePagination
+ *   table={table}
+ *   enablePagination={true}
+ * />
+ * ```
+ */
 export function DataTablePagination<TData>({
   table,
   enablePagination = true,
 }: DataTablePaginationProps<TData>) {
   const { t } = useTranslation("general");
 
+  /**
+   * Handles page size selection changes.
+   * @param value The new page size as a string
+   */
   const handlePageSizeChange = useCallback(
     (value: string) => {
       table.setPageSize(Number(value));
@@ -39,18 +70,30 @@ export function DataTablePagination<TData>({
     [table]
   );
 
+  /**
+   * Navigates to the first page of results.
+   */
   const handleFirstPage = useCallback(() => {
     table.setPageIndex(0);
   }, [table]);
 
+  /**
+   * Navigates to the previous page of results.
+   */
   const handlePreviousPage = useCallback(() => {
     table.previousPage();
   }, [table]);
 
+  /**
+   * Navigates to the next page of results.
+   */
   const handleNextPage = useCallback(() => {
     table.nextPage();
   }, [table]);
 
+  /**
+   * Navigates to the last page of results.
+   */
   const handleLastPage = useCallback(() => {
     table.setPageIndex(table.getPageCount() - 1);
   }, [table]);

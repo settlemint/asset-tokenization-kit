@@ -6,7 +6,19 @@ import "../types/table-meta";
 
 /**
  * Wraps a column definition to use AutoCell rendering based on meta.cellType
- * while preserving the ability to override with a custom cell renderer
+ * while preserving the ability to override with a custom cell renderer.
+ *
+ * @example
+ * ```tsx
+ * const column = withAutoCell({
+ *   id: "amount",
+ *   header: "Amount",
+ *   meta: { cellType: "currency" }
+ * });
+ * ```
+ *
+ * @param column - The column definition to enhance
+ * @returns Enhanced column definition with AutoCell rendering
  */
 export function withAutoCell<TData, TValue = unknown>(
   column: ColumnDef<TData, TValue>
@@ -33,7 +45,19 @@ export function withAutoCell<TData, TValue = unknown>(
 }
 
 /**
- * Applies withAutoCell to all columns in an array
+ * Applies withAutoCell to all columns in an array.
+ * Batch operation for enhancing multiple columns at once.
+ *
+ * @example
+ * ```tsx
+ * const enhancedColumns = withAutoCells([
+ *   { id: "name", header: "Name" },
+ *   { id: "amount", header: "Amount", meta: { cellType: "currency" } }
+ * ]);
+ * ```
+ *
+ * @param columns - Array of column definitions to enhance
+ * @returns Array of enhanced column definitions
  */
 export function withAutoCells<TData>(
   columns: ColumnDef<TData>[]
@@ -42,7 +66,21 @@ export function withAutoCells<TData>(
 }
 
 /**
- * Automatically sets the variant based on column type
+ * Automatically sets the variant based on column type.
+ * Numeric columns (number, currency) get the "numeric" variant for right alignment.
+ *
+ * @example
+ * ```tsx
+ * const column = withAutoVariant({
+ *   id: "price",
+ *   header: "Price",
+ *   meta: { type: "currency" }
+ * });
+ * // Result: column.meta.variant === "numeric"
+ * ```
+ *
+ * @param column - The column definition to enhance
+ * @returns Column definition with auto-set variant
  */
 export function withAutoVariant<TData, TValue = unknown>(
   column: ColumnDef<TData, TValue>
@@ -62,8 +100,28 @@ export function withAutoVariant<TData, TValue = unknown>(
 }
 
 /**
- * Applies both auto cell rendering and auto filter functions to columns
- * This is the recommended function to use for maximum automation
+ * Applies both auto cell rendering and auto filter functions to columns.
+ * This is the recommended function to use for maximum automation.
+ * Combines withAutoCell, withAutoFilterFn, and withAutoVariant.
+ *
+ * @example
+ * ```tsx
+ * const columns = withAutoFeatures([
+ *   {
+ *     id: "name",
+ *     header: "Name",
+ *     meta: { type: "text" }
+ *   },
+ *   {
+ *     id: "amount",
+ *     header: "Amount",
+ *     meta: { type: "currency", cellType: "currency" }
+ *   }
+ * ]);
+ * ```
+ *
+ * @param columns - Array of column definitions to enhance
+ * @returns Fully enhanced column definitions with auto features
  */
 export function withAutoFeatures<TData>(
   columns: ColumnDef<TData>[]

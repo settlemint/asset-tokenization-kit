@@ -29,6 +29,15 @@ import { PropertyFilterSubject } from "./filters/property-filter-subject";
 import { PropertyFilterValueController } from "./filters/values/value-controller";
 import { PropertyFilterValueMenu } from "./filters/values/value-menu";
 
+/**
+ * Main filter component for data tables.
+ * Provides a filter button that opens a menu for column-based filtering.
+ * Automatically adapts layout for mobile and desktop views.
+ *
+ * @param props - Component props
+ * @param props.table - The TanStack table instance
+ * @returns Filter UI with responsive layout
+ */
 export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   const isMobile = useIsMobile();
 
@@ -62,6 +71,14 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   );
 }
 
+/**
+ * Desktop container for filter chips with horizontal scroll and blur effects.
+ * Shows gradient blur on edges when content is scrollable.
+ *
+ * @param props - Component props
+ * @param props.children - Filter chip components to display
+ * @returns Scrollable container with edge blur effects
+ */
 export function DataTableFilterDesktopContainer({
   children,
 }: {
@@ -128,6 +145,14 @@ export function DataTableFilterDesktopContainer({
   );
 }
 
+/**
+ * Mobile container for filter chips with horizontal scroll and stronger blur effects.
+ * Optimized for touch interactions with wider blur gradients.
+ *
+ * @param props - Component props
+ * @param props.children - Filter chip components to display
+ * @returns Mobile-optimized scrollable container
+ */
 export function DataTableFilterMobileContainer({
   children,
 }: {
@@ -199,6 +224,14 @@ export function DataTableFilterMobileContainer({
   );
 }
 
+/**
+ * Filter button component that opens a popover menu for column selection.
+ * Displays available filterable columns and manages filter value input.
+ *
+ * @param props - Component props
+ * @param props.table - The TanStack table instance
+ * @returns Filter button with popover menu
+ */
 export function TableFilter<TData>({ table }: { table: Table<TData> }) {
   const { t } = useTranslation("general");
   const [open, setOpen] = useState(false);
@@ -222,6 +255,10 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
 
   const handleBack = useCallback(() => {
     setProperty(undefined);
+  }, []);
+
+  const handleFilterButtonClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
   }, []);
 
   useEffect(() => {
@@ -278,6 +315,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
         <Button
           variant="outline"
           className="h-8 w-fit px-2 text-muted-foreground"
+          onClick={handleFilterButtonClick}
         >
           <Filter className="size-4" />
           <span className="hidden md:block">
@@ -296,6 +334,15 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
   );
 }
 
+/**
+ * Menu item component for column selection in the filter popover.
+ * Displays column name with icon and handles selection.
+ *
+ * @param props - Component props
+ * @param props.column - The table column
+ * @param props.setProperty - Callback to set the selected column
+ * @returns Menu item component
+ */
 export function TableFilterMenuItem<TData>({
   column,
   setProperty,
@@ -323,6 +370,14 @@ export function TableFilterMenuItem<TData>({
   );
 }
 
+/**
+ * Renders the list of active filter chips.
+ * Each chip displays the column, operator, and value with a remove button.
+ *
+ * @param props - Component props
+ * @param props.table - The TanStack table instance
+ * @returns List of filter chip components
+ */
 export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
   // Get filters directly from table state - this will re-render when table updates
   const filters = table.getState().columnFilters;
@@ -435,7 +490,18 @@ export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
   );
 }
 
-// Generic render component for a filter with type-safe value
+/**
+ * Generic component for rendering a filter chip with type-safe value handling.
+ * Displays the filter subject, operator, value, and remove button.
+ *
+ * @param props - Component props
+ * @param props.filter - The filter configuration with ID and value
+ * @param props.column - The table column being filtered
+ * @param props.meta - Column metadata with type information
+ * @param props.table - The TanStack table instance
+ * @param props.onRemoveFilter - Callback to remove the filter
+ * @returns Filter chip component
+ */
 function RenderFilter<TData, T extends ColumnDataType>({
   filter,
   column,
@@ -459,10 +525,15 @@ function RenderFilter<TData, T extends ColumnDataType>({
     [onRemoveFilter, filter.id]
   );
 
+  const handleFilterChipClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
   return (
     <div
       key={`filter-${filter.id}`}
       className="flex h-8 items-center rounded-md border border-dashed border-border bg-background shadow-xs text-xs"
+      onClick={handleFilterChipClick}
     >
       <PropertyFilterSubject meta={meta} />
       <Separator orientation="vertical" className="h-5" />

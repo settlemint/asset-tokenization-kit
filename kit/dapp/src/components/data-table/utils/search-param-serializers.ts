@@ -21,8 +21,11 @@ import type {
 } from "./search-params";
 
 /**
- * Safely encode an object to JSON string for URL parameter
- * Returns undefined if the object is empty or serialization fails
+ * Safely encode an object to JSON string for URL parameter.
+ * Returns undefined if the object is empty or serialization fails.
+ *
+ * @param obj - Object to encode
+ * @returns JSON string or undefined if empty/invalid
  */
 export function encodeObjectParam(
   obj: Record<string, unknown>
@@ -39,8 +42,12 @@ export function encodeObjectParam(
 }
 
 /**
- * Safely decode a JSON string from URL parameter to object
- * Returns fallback value if parsing fails
+ * Safely decode a JSON string from URL parameter to object.
+ * Returns fallback value if parsing fails.
+ *
+ * @param param - JSON string to decode
+ * @param fallback - Default value if decoding fails
+ * @returns Decoded object or fallback value
  */
 export function decodeObjectParam<T>(
   param: string | undefined,
@@ -57,8 +64,23 @@ export function decodeObjectParam<T>(
 }
 
 /**
- * Serialize DataTable state for URL search parameters
- * Omits default values to keep URLs clean
+ * Serialize DataTable state for URL search parameters.
+ * Omits default values to keep URLs clean.
+ * Converts internal table state to flat URL parameters.
+ *
+ * @example
+ * ```tsx
+ * const urlParams = serializeDataTableState({
+ *   pagination: { pageIndex: 1, pageSize: 20 },
+ *   sorting: [{ id: "name", desc: false }],
+ *   columnFilters: [{ id: "status", value: "active" }]
+ * });
+ * // Result: { page: 2, pageSize: 20, sortBy: "name", filter_status: "active" }
+ * ```
+ *
+ * @param state - Table state object to serialize
+ * @param defaultPageSize - Default page size for comparison (default: 10)
+ * @returns Object suitable for URL search parameters
  */
 export function serializeDataTableState(
   state: Partial<{
@@ -164,8 +186,23 @@ export function serializeDataTableState(
 }
 
 /**
- * Deserialize URL search parameters to DataTable state
- * Provides safe fallbacks for all properties
+ * Deserialize URL search parameters to DataTable state.
+ * Provides safe fallbacks for all properties.
+ * Converts flat URL parameters back to internal table state.
+ *
+ * @example
+ * ```tsx
+ * const tableState = deserializeDataTableState({
+ *   page: "2",
+ *   pageSize: "20",
+ *   sortBy: "name",
+ *   sortOrder: "desc",
+ *   filter_status: "active"
+ * });
+ * ```
+ *
+ * @param searchParams - URL search parameters object
+ * @returns Normalized table state with safe defaults
  */
 export function deserializeDataTableState(
   searchParams: Record<string, unknown>
@@ -242,8 +279,11 @@ export function deserializeDataTableState(
 }
 
 /**
- * Convert TanStack Table state to our search param format
- * Handles the conversion between different state structures
+ * Convert TanStack Table state to our search param format.
+ * Handles the conversion between different state structures.
+ *
+ * @param tableState - TanStack table state object
+ * @returns Normalized search params format
  */
 export function tableStateToSearchParams(tableState: {
   pagination?: { pageIndex: number; pageSize: number };
@@ -290,7 +330,10 @@ export function tableStateToSearchParams(tableState: {
 }
 
 /**
- * Convert search params back to TanStack Table state format
+ * Convert search params back to TanStack Table state format.
+ *
+ * @param searchParams - Normalized search params
+ * @returns TanStack table state object
  */
 export function searchParamsToTableState(searchParams: DataTableSearchParams) {
   return {
@@ -304,8 +347,20 @@ export function searchParamsToTableState(searchParams: DataTableSearchParams) {
 }
 
 /**
- * Create a minimal search param object for simpler use cases
- * Useful when you only need basic pagination and search
+ * Create a minimal search param object for simpler use cases.
+ * Useful when you only need basic pagination and search.
+ *
+ * @example
+ * ```tsx
+ * const params = createMinimalSearchParams({
+ *   page: 2,
+ *   search: "john",
+ *   sortBy: "name"
+ * });
+ * ```
+ *
+ * @param params - Basic search parameters
+ * @returns Cleaned URL parameter object
  */
 export function createMinimalSearchParams(params: {
   page?: number;
@@ -336,8 +391,20 @@ export function createMinimalSearchParams(params: {
 }
 
 /**
- * Debounce function for URL updates
- * Prevents excessive navigation calls during rapid state changes
+ * Debounce function for URL updates.
+ * Prevents excessive navigation calls during rapid state changes.
+ *
+ * @example
+ * ```tsx
+ * const debouncedNavigate = createDebouncedUrlUpdate(
+ *   (params) => navigate({ search: params }),
+ *   500
+ * );
+ * ```
+ *
+ * @param fn - Function to debounce
+ * @param delay - Debounce delay in milliseconds (default: 300)
+ * @returns Debounced function
  */
 export function createDebouncedUrlUpdate<T extends readonly unknown[]>(
   fn: (...args: T) => void,

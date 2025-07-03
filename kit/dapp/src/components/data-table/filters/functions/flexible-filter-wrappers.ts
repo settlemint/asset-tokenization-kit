@@ -5,12 +5,30 @@ import { textFilterFn } from "./text-filter";
 
 /**
  * Flexible wrapper for number filters that handles both simple values (from URL)
- * and complex filter objects (from UI)
+ * and complex filter objects (from UI).
  *
  * @param row - The table row to filter
- * @param columnId - The column identifier
+ * @param columnId - The column identifier to apply the filter to
  * @param filterValue - Either a simple string/number or a complex FilterValue object
- * @returns Whether the row passes the filter
+ * @returns Whether the row passes the filter criteria
+ *
+ * @remarks
+ * This function acts as an adapter between simple filter values (typically from URL parameters)
+ * and the complex filter structure used by the UI. When a simple value is provided,
+ * it converts it to a filter object with operator "is" and the numeric value.
+ *
+ * @example
+ * ```ts
+ * // Simple value from URL
+ * flexibleNumberFilterFn(row, 'price', '100'); // Converts to { operator: 'is', values: [100] }
+ *
+ * // Complex filter object from UI
+ * flexibleNumberFilterFn(row, 'price', {
+ *   operator: 'is between',
+ *   values: [50, 150],
+ *   columnMeta: undefined
+ * });
+ * ```
  */
 export function flexibleNumberFilterFn<TData>(
   row: Row<TData>,
@@ -36,12 +54,30 @@ export function flexibleNumberFilterFn<TData>(
 
 /**
  * Flexible wrapper for text filters that handles both simple values (from URL)
- * and complex filter objects (from UI)
+ * and complex filter objects (from UI).
  *
  * @param row - The table row to filter
- * @param columnId - The column identifier
+ * @param columnId - The column identifier to apply the filter to
  * @param filterValue - Either a simple string or a complex FilterValue object
- * @returns Whether the row passes the filter
+ * @returns Whether the row passes the filter criteria
+ *
+ * @remarks
+ * This function acts as an adapter between simple filter values (typically from URL parameters)
+ * and the complex filter structure used by the UI. When a simple string is provided,
+ * it converts it to a filter object with operator "contains" and the string value.
+ *
+ * @example
+ * ```ts
+ * // Simple value from URL
+ * flexibleTextFilterFn(row, 'name', 'John'); // Converts to { operator: 'contains', values: ['John'] }
+ *
+ * // Complex filter object from UI
+ * flexibleTextFilterFn(row, 'name', {
+ *   operator: 'starts with',
+ *   values: ['J'],
+ *   columnMeta: undefined
+ * });
+ * ```
  */
 export function flexibleTextFilterFn<TData>(
   row: Row<TData>,

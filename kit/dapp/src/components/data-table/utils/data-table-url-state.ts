@@ -10,8 +10,10 @@ import { z } from "zod";
 import type { DataTableSearchParams } from "./search-params";
 
 /**
- * Creates a clean search params validator that removes empty values
- * This prevents URLs from being cluttered with empty arrays and objects
+ * Creates a clean search params validator that removes empty values.
+ * This prevents URLs from being cluttered with empty arrays and objects.
+ *
+ * @returns A function that parses and cleans search parameters
  */
 export function createCleanSearchParamsValidator() {
   return (search: Record<string, unknown>) => {
@@ -24,8 +26,12 @@ export function createCleanSearchParamsValidator() {
 }
 
 /**
- * Removes empty arrays, objects, and falsy values from an object
- * Also removes default pagination values
+ * Removes empty arrays, objects, and falsy values from an object.
+ * Also removes default pagination values to keep URLs clean.
+ *
+ * @param obj - The object to clean
+ * @param defaultPageSize - Default page size to check against (default: 10)
+ * @returns Cleaned object with empty values removed
  */
 export function cleanEmptyValues(
   obj: Record<string, unknown>,
@@ -97,8 +103,9 @@ export function cleanEmptyValues(
 }
 
 /**
- * Base schema for all data table search params
- * Can be extended for specific table needs
+ * Base schema for all data table search params.
+ * Can be extended for specific table needs.
+ * Transforms flat URL params into nested structure expected by DataTable.
  */
 export const dataTableSearchParamsSchema = z
   .object({
@@ -140,8 +147,25 @@ export const dataTableSearchParamsSchema = z
   });
 
 /**
- * Creates a route-specific search params validator
- * @param options Additional options for the validator
+ * Creates a route-specific search params validator.
+ * Handles flat URL parameters and transforms them to internal table state.
+ *
+ * @example
+ * ```tsx
+ * const validateSearch = createDataTableSearchParams({
+ *   defaultPageSize: 20,
+ *   maxPageSize: 50,
+ *   additionalParams: {
+ *     status: z.enum(["active", "inactive"]).optional()
+ *   }
+ * });
+ * ```
+ *
+ * @param options - Configuration options
+ * @param options.defaultPageSize - Default page size (default: 10)
+ * @param options.maxPageSize - Maximum allowed page size (default: 100)
+ * @param options.additionalParams - Additional Zod schema fields
+ * @returns Validator function for search parameters
  */
 export function createDataTableSearchParams(options?: {
   defaultPageSize?: number;
@@ -247,7 +271,28 @@ export function createDataTableSearchParams(options?: {
 }
 
 /**
- * Helper to create type-safe route definitions with data table search params
+ * Helper to create type-safe route definitions with data table search params.
+ * Wraps route configuration with a search params validator.
+ *
+ * @example
+ * ```tsx
+ * export const route = withDataTableSearchParams(
+ *   {
+ *     path: "/users",
+ *     component: UsersPage
+ *   },
+ *   {
+ *     defaultPageSize: 25,
+ *     additionalParams: {
+ *       role: z.enum(["admin", "user"]).optional()
+ *     }
+ *   }
+ * );
+ * ```
+ *
+ * @param routeConfig - Base route configuration object
+ * @param searchParamsOptions - Options for the search params validator
+ * @returns Route config with validateSearch function added
  */
 export function withDataTableSearchParams<
   T extends Record<string, unknown> = Record<string, unknown>,

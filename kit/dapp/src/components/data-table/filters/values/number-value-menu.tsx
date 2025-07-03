@@ -9,15 +9,52 @@ import { useTranslation } from "react-i18next";
 import { numberFilterDetails } from "../operators/number-operators";
 import type { FilterValue } from "../types/filter-types";
 
+/**
+ * Props for the PropertyFilterNumberValueMenu component
+ * @template TData - The data type of the table rows
+ * @template TValue - The value type of the column
+ */
 interface PropertyFilterNumberValueMenuProps<TData, TValue> {
+  /** Column identifier */
   id: string;
+  /** Column instance from TanStack Table */
   column: Column<TData>;
+  /** Column metadata containing display and filter configuration */
   columnMeta: ColumnMeta<TData, TValue>;
+  /** Table instance from TanStack Table */
   table: Table<TData>;
+  /** Callback fired when the menu should close */
   onClose?: () => void;
+  /** Callback fired when navigating back to parent menu */
   onBack?: () => void;
 }
 
+/**
+ * A number filter value menu component that allows users to filter by single values
+ * or number ranges. Features include:
+ * - Single value or range selection modes
+ * - Interactive slider controls
+ * - Manual input fields
+ * - Automatic min/max value detection from data
+ *
+ * @template TData - The data type of the table rows
+ * @template TValue - The value type of the column
+ *
+ * @example
+ * ```tsx
+ * <PropertyFilterNumberValueMenu
+ *   id="price"
+ *   column={column}
+ *   columnMeta={{
+ *     type: "number",
+ *     displayName: "Price",
+ *     max: 10000
+ *   }}
+ *   table={table}
+ *   onClose={() => setShowMenu(false)}
+ * />
+ * ```
+ */
 export function PropertyFilterNumberValueMenu<TData, TValue>({
   column,
   columnMeta,
@@ -38,6 +75,12 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
   const [datasetMin] = column.getFacetedMinMaxValues() ?? [0, 0];
   const safeDatasetMin = datasetMin;
 
+  /**
+   * Calculates initial input values based on existing filter or defaults.
+   * Handles values that exceed the maximum by appending a '+' suffix.
+   *
+   * @returns Array of string values for the input fields
+   */
   const initialValues = () => {
     if (filter?.values) {
       return filter.values.map((val) =>
@@ -51,6 +94,10 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
 
   const [tabValue, setTabValue] = useState(isNumberRange ? "range" : "single");
 
+  /**
+   * Applies the current filter values to the column.
+   * Parses string inputs to numbers and handles special '+' suffix for max values.
+   */
   const handleApply = useCallback(() => {
     const parsedValues = inputValues.map((val) => {
       if (val.includes("+")) {
@@ -85,12 +132,21 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
     onClose?.();
   }, [column, inputValues, cappedMax, tabValue, onClose]);
 
+  /**
+   * Clears the filter and resets input values to defaults.
+   */
   const handleClear = useCallback(() => {
     setInputValues([safeDatasetMin.toString()]);
     column.setFilterValue(undefined);
     onClose?.();
   }, [column, safeDatasetMin, onClose]);
 
+  /**
+   * Updates the input value at the specified index.
+   *
+   * @param index - The index of the input to update (0 for single/min, 1 for max)
+   * @param value - The new string value
+   */
   const handleInputChange = useCallback(
     (index: number, value: string) => {
       const newValues = [...inputValues];
@@ -105,6 +161,12 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
     [inputValues]
   );
 
+  /**
+   * Switches between single value and range filter modes.
+   * Adjusts input values accordingly when switching.
+   *
+   * @param type - The filter type to switch to
+   */
   const changeType = useCallback(
     (type: "single" | "range") => {
       setTabValue(type);

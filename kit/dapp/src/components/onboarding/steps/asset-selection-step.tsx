@@ -222,11 +222,34 @@ const AssetTypeFormField = memo(
 AssetTypeFormField.displayName = "AssetTypeFormField";
 
 /**
- * Step component for selecting and deploying asset types during onboarding
- * @param {object} props - Component props
- * @param {() => void} [props.onSuccess] - Callback when asset deployment is successful
- * @param {(action: () => void) => void} [props.onRegisterAction] - Callback to register the deployment action with parent
- * @returns {JSX.Element} The asset selection step component
+ * AssetSelectionStep component for choosing and deploying asset token factories.
+ *
+ * This component is a critical part of the platform onboarding process, allowing
+ * administrators to select which types of tokenized assets the platform will support.
+ * It provides a visual interface for selecting asset types and handles the deployment
+ * of corresponding token factory contracts to the blockchain.
+ *
+ * The component supports the following asset types:
+ * - Bonds - Debt securities with fixed terms
+ * - Deposits - Bank deposit tokenization
+ * - Equity - Company shares and stock
+ * - Funds - Investment fund tokens
+ * - Stablecoins - Fiat-pegged digital currencies
+ *
+ * @param {AssetSelectionStepProps} props - Component configuration
+ * @param {() => void} [props.onSuccess] - Callback invoked after successful factory deployment
+ * @param {(action: () => void) => void} [props.onRegisterAction] - Registers deployment action with parent for external triggering
+ * @returns {JSX.Element} The asset selection interface
+ *
+ * @example
+ * // In a multi-step onboarding flow
+ * <AssetSelectionStep
+ *   onSuccess={() => moveToNextStep()}
+ *   onRegisterAction={(deployAction) => {
+ *     // Parent can trigger deployment via button
+ *     setDeployHandler(deployAction);
+ *   }}
+ * />
  */
 export function AssetSelectionStep({
   onSuccess,
@@ -266,6 +289,18 @@ export function AssetSelectionStep({
     },
   });
 
+  /**
+   * Handles the deployment of selected asset token factories to the blockchain.
+   *
+   * This function orchestrates the factory deployment process:
+   * 1. Validates system configuration and registry existence
+   * 2. Ensures at least one asset type is selected
+   * 3. Prepares factory deployment parameters with localized names
+   * 4. Initiates blockchain transactions via streaming mutation
+   *
+   * The deployment is performed as a batch operation with progress tracking
+   * and comprehensive error handling through localized messages.
+   */
   const handleDeployFactories = useCallback(() => {
     if (!systemAddress || !systemDetails?.tokenFactoryRegistry) {
       toast.error(t("assets.no-system"));
@@ -348,6 +383,15 @@ export function AssetSelectionStep({
 
   const hasDeployedAssets = (systemDetails?.tokenFactories.length ?? 0) > 0;
 
+  /**
+   * Renders the asset type selection grid.
+   *
+   * Creates a responsive grid layout displaying all available asset types
+   * with their descriptions and selection checkboxes. The grid adapts to
+   * different screen sizes for optimal viewing.
+   *
+   * @returns {JSX.Element} Form item containing the asset selection grid
+   */
   const renderAssetTypeField = useCallback(
     () => (
       <FormItem>

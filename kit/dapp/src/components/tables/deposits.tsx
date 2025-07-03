@@ -27,11 +27,18 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import "@/components/data-table/filters/types/table-extensions";
 
+/**
+ * Represents a single token from the TokenList
+ * @typedef {TokenList[number]} Token
+ */
 type Token = TokenList[number];
 
 const columnHelper = createColumnHelper<Token>();
 
-// Constants to avoid inline array creation
+/**
+ * Initial sorting configuration for the deposits table
+ * Sorts tokens by name in ascending order by default
+ */
 const INITIAL_SORTING = [
   {
     id: "name",
@@ -39,10 +46,30 @@ const INITIAL_SORTING = [
   },
 ];
 
+/**
+ * Props for the DepositsTable component
+ * @interface DepositsTableProps
+ */
 interface DepositsTableProps {
+  /** The address of the token factory contract */
   factoryAddress: string;
 }
 
+/**
+ * A data table component for displaying deposit tokens
+ *
+ * This component provides a comprehensive table view of tokens created by a specific factory,
+ * including features like sorting, filtering, pagination, bulk actions, and row actions.
+ *
+ * @param {DepositsTableProps} props - The component props
+ * @param {string} props.factoryAddress - The address of the token factory to fetch tokens from
+ * @returns {JSX.Element} A fully-featured data table displaying deposit tokens
+ *
+ * @example
+ * ```tsx
+ * <DepositsTable factoryAddress="0x1234...abcd" />
+ * ```
+ */
 export function DepositsTable({ factoryAddress }: DepositsTableProps) {
   const router = useRouter();
   const { t } = useTranslation("general");
@@ -60,7 +87,13 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
 
   const tokens = tokensResponse ?? [];
 
-  // Factory function for row actions - defined inside component to access `t`
+  /**
+   * Creates action items for each row in the table
+   *
+   * @param {Object} row - The table row object
+   * @param {Token} row.original - The original token data for the row
+   * @returns {ActionItem[]} Array of action items including view details, copy address, and view on etherscan
+   */
   const createRowActions = useCallback(
     (row: { original: Token }): ActionItem[] => [
       {
@@ -94,6 +127,12 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
     [t, router, factoryAddress]
   );
 
+  /**
+   * Handles the archive bulk action for selected tokens
+   *
+   * @param {Token[]} selectedTokens - Array of tokens selected for archiving
+   * @returns {void}
+   */
   const handleArchive = useCallback(
     (selectedTokens: Token[]) => {
       toast.info(
@@ -105,6 +144,12 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
     [t]
   );
 
+  /**
+   * Handles the duplicate bulk action for selected tokens
+   *
+   * @param {Token[]} selectedTokens - Array of tokens selected for duplication
+   * @returns {void}
+   */
   const handleDuplicate = useCallback(
     (selectedTokens: Token[]) => {
       toast.info(
@@ -131,7 +176,14 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
     [t]
   );
 
-  // Define columns inside component to access `t`
+  /**
+   * Defines the column configuration for the deposits table
+   *
+   * Includes columns for selection, name, symbol, decimals, contract address, and actions.
+   * Uses withAutoFeatures to enhance columns with automatic filtering and sorting capabilities.
+   *
+   * @returns {ColumnDef<Token>[]} Array of column definitions for the table
+   */
   const columns = useMemo(
     () =>
       withAutoFeatures([
@@ -183,6 +235,25 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
     [t, createRowActions]
   );
 
+  /**
+   * Handles row click events to navigate to token details page
+   *
+   * @param {Token} token - The token object from the clicked row
+   * @returns {void}
+   */
+  const handleRowClick = useCallback(
+    (token: Token) => {
+      void router.navigate({
+        to: "/token/$factoryAddress/$tokenAddress",
+        params: {
+          factoryAddress,
+          tokenAddress: token.id,
+        },
+      });
+    },
+    [router, factoryAddress]
+  );
+
   return (
     <DataTable
       name="tokens"
@@ -222,6 +293,7 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
         description: t("components.deposits-table.empty-state.description"),
         icon: Package,
       }}
+      onRowClick={handleRowClick}
     />
   );
 }

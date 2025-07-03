@@ -1,3 +1,18 @@
+/**
+ * Onboarding guard component for route protection based on user onboarding status.
+ *
+ * This component acts as a route guard that ensures users are in the correct onboarding
+ * state before accessing certain routes. It checks:
+ * - Platform onboarding status (system setup, token factories)
+ * - User onboarding status (profile completion)
+ * - User role-specific requirements (admin, issuer, investor)
+ *
+ * The guard automatically redirects users to the appropriate onboarding flow based on
+ * their role and current onboarding progress.
+ *
+ * @module components/onboarding/onboarding-guard
+ */
+
 import { useMounted } from "@/hooks/use-mounted";
 import { authClient } from "@/lib/auth/auth.client";
 import {
@@ -13,18 +28,53 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, type PropsWithChildren } from "react";
 
+/**
+ * Props for the OnboardingGuard component.
+ */
 type OnboardingGuardProps = PropsWithChildren<{
+  /** The onboarding status requirement for accessing the guarded route */
   require: "onboarded" | "not-onboarded" | "platform-onboarded";
+  /** Optional array of allowed onboarding types for the route */
   allowedTypes?: OnboardingType[];
 }>;
 
 /**
- * Guards routes based on onboarding status requirements
- * @param {object} props - Component props
- * @param {React.ReactNode} props.children - Child components to render if guard passes
- * @param {"onboarded" | "not-onboarded" | "platform-onboarded"} props.require - Onboarding status requirement
- * @param {Array<import("@/lib/types/onboarding").OnboardingType>} [props.allowedTypes] - Allowed onboarding types for this route
- * @returns {JSX.Element | null} Child components if guard passes, null otherwise
+ * OnboardingGuard component that protects routes based on onboarding requirements.
+ *
+ * This component performs comprehensive checks to ensure users are in the correct
+ * onboarding state before allowing access to protected routes. It handles three
+ * main requirements:
+ *
+ * 1. **"onboarded"** - User must have completed their full onboarding process
+ * 2. **"not-onboarded"** - User must not have completed onboarding (for onboarding routes)
+ * 3. **"platform-onboarded"** - Platform must be set up (admin only)
+ *
+ * The component automatically determines the user's onboarding type based on their
+ * role and redirects them to the appropriate onboarding flow if requirements aren't met.
+ *
+ * @param {OnboardingGuardProps} props - Component configuration
+ * @param {React.ReactNode} props.children - Child components to render when guard passes
+ * @param {"onboarded" | "not-onboarded" | "platform-onboarded"} props.require - The onboarding requirement
+ * @param {OnboardingType[]} [props.allowedTypes] - Specific onboarding types allowed for this route
+ * @returns {JSX.Element | null} Children if requirements are met, null otherwise
+ *
+ * @example
+ * // Protect a route that requires onboarding completion
+ * <OnboardingGuard require="onboarded">
+ *   <Dashboard />
+ * </OnboardingGuard>
+ *
+ * @example
+ * // Protect onboarding routes from already-onboarded users
+ * <OnboardingGuard require="not-onboarded" allowedTypes={["issuer"]}>
+ *   <IssuerOnboardingFlow />
+ * </OnboardingGuard>
+ *
+ * @example
+ * // Admin-only platform setup routes
+ * <OnboardingGuard require="platform-onboarded">
+ *   <SystemConfiguration />
+ * </OnboardingGuard>
  */
 export function OnboardingGuard({
   children,
