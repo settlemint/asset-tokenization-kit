@@ -53,7 +53,12 @@ export function updateTokenDistributionStats(
 
   const topHolders = state.topHolders.load();
   const topHolder = getTopHolderAtRank(topHolders, 1);
-  const topBalance = topHolder ? topHolder.balanceExact : BigInt.zero();
+  const topBalance = topHolder ? topHolder.balanceExact : newBalance; // If no top holder, then this one is the first one and therefore the top one
+
+  if (topBalance.equals(BigInt.zero())) {
+    // Can't calculate percentages if there is no holder with a balance bigger than 0
+    return;
+  }
 
   // Calculate old and new percentages
   const oldPercentage = oldBalance.gt(BigInt.zero())
