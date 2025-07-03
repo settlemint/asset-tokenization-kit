@@ -75,22 +75,25 @@ export function updateTokenDistributionStats(
   const newSegment = getSegmentIndex(newPercentage);
 
   // If segment hasn't changed and balances are the same, skip
-  if (oldSegment == newSegment) {
+  if (oldSegment != newSegment) {
+    // Remove from old segment
+    if (oldSegment >= 0) {
+      updateSegmentStats(state, oldSegment, oldBalance, token.decimals, false);
+    }
+
+    // Add to new segment
+    if (newSegment >= 0) {
+      updateSegmentStats(state, newSegment, newBalance, token.decimals, true);
+    }
+  }
+
+  // Update top holders
+  const isTopHolder = updateTop5Holders(state, token, account, newBalance);
+
+  // Don't track if nothing changed
+  if (oldSegment == newSegment && !isTopHolder) {
     return;
   }
-
-  // Remove from old segment
-  if (oldSegment >= 0) {
-    updateSegmentStats(state, oldSegment, oldBalance, token.decimals, false);
-  }
-
-  // Add to new segment
-  if (newSegment >= 0) {
-    updateSegmentStats(state, newSegment, newBalance, token.decimals, true);
-  }
-
-  // Update top 5 holders
-  updateTop5Holders(state, token, account, newBalance);
 
   // Update percentage owned by top 5 holders
   state.percentageOwnedByTop5Holders = calculateTop5HoldersPercentage(
@@ -162,7 +165,7 @@ function updateTop5Holders(
   token: Token,
   account: Account,
   newBalance: BigInt
-): void {
+): boolean {
   const tokenAddress = Address.fromBytes(token.id);
   const accountAddress = Address.fromBytes(account.id);
 
@@ -184,13 +187,14 @@ function updateTop5Holders(
     !sixthPlaceHolder || newBalance.gt(sixthPlaceHolder.balanceExact);
   if (!isTop6Holder) {
     store.remove("TokenTopHolder", topHolderId.toHexString());
-    return;
+    return false;
   }
 
   setBigNumber(tokenHolder, "balance", newBalance, token.decimals);
   tokenHolder.save();
 
   updateTopHoldersRanks(state);
+  return true;
 }
 
 /**
