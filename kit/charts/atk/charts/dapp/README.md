@@ -23,7 +23,7 @@ A Helm chart for the ATK DApp frontend
 | imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
 | imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | ingress.annotations | object | `{}` |  |
-| ingress.className | string | `"settlemint-nginx"` |  |
+| ingress.className | string | `"atk-nginx"` |  |
 | ingress.enabled | bool | `false` |  |
 | ingress.hosts[0].host | string | `"dapp.local"` |  |
 | ingress.hosts[0].paths[0].path | string | `"/((?:sm_|bpaas-)[^/]+)?/?(.*)"` |  |

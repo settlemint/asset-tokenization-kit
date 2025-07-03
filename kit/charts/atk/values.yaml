@@ -130,7 +130,7 @@ erpc:
       - name: image-pull-secret-harbor
   ingress:
     enabled: true
-    className: "settlemint-nginx"
+    className: "atk-nginx"
     hosts:
       - host: rpc.k8s.orb.local
         paths:
@@ -364,7 +364,7 @@ support:
         - name: image-pull-secret-harbor
     ingress:
       enabled: true
-      ingressClassName: "settlemint-nginx"
+      ingressClassName: "atk-nginx"
       hostname: minio.k8s.orb.local
 
 observability:
@@ -372,6 +372,7 @@ observability:
 
   # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/values.yaml
   metrics-server:
+    enabled: false
     imagePullSecrets:
       - name: image-pull-secret-docker
       - name: image-pull-secret-ghcr
