@@ -9,10 +9,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { MoreHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+
+const logger = createLogger({
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ?? "info",
+});
 
 /**
  * Represents a single action item in the dropdown menu
@@ -74,14 +79,14 @@ export function ActionsCell({
 
   // Memoize the button click handler
   const handleButtonClick = useCallback((e: React.MouseEvent) => {
-    console.log("Actions button clicked");
+    logger.debug("Actions button clicked");
     e.stopPropagation();
   }, []);
 
   // Memoize the dropdown item click handler
   const createItemClickHandler = useCallback(
     (action: ActionItem) => () => {
-      console.log("Dropdown item clicked:", action.label);
+      logger.debug("Dropdown item clicked:", action.label);
       action.onClick?.();
     },
     []

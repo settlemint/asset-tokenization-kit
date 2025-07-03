@@ -51,13 +51,17 @@ import {
   useDataTableState,
   type UseDataTableStateOptions,
 } from "@/hooks/use-data-table-state";
+import { withDataTableErrorBoundary } from "./data-table-error-boundary";
 
 /**
  * Props for the DataTable component.
  * @template TData The type of data in the table rows
  * @template CParams The type of column parameters passed to column definitions
  */
-interface DataTableProps<TData, CParams extends Record<string, unknown>> {
+export interface DataTableProps<
+  TData,
+  CParams extends Record<string, unknown>,
+> {
   /** Optional parameters to pass to the column definitions function */
   columnParams?: CParams;
   /** The column definitions for the table. Can be a function that receives params or a no-arg function */
@@ -163,7 +167,7 @@ declare module "@tanstack/table-core" {
  * />
  * ```
  */
-export function DataTable<TData, CParams extends Record<string, unknown>>({
+function DataTableComponent<TData, CParams extends Record<string, unknown>>({
   columnParams,
   columns,
   data,
@@ -452,3 +456,25 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
     </div>
   );
 }
+
+/**
+ * DataTable component wrapped with error boundary for production safety.
+ * This is the default export that should be used in most cases.
+ *
+ * @template TData The type of data in the table rows
+ * @template CParams The type of column parameters passed to column definitions
+ */
+export const DataTable = withDataTableErrorBoundary(DataTableComponent, {
+  tableName: "DataTable",
+}) as <TData, CParams extends Record<string, unknown>>(
+  props: DataTableProps<TData, CParams>
+) => JSX.Element;
+
+/**
+ * Raw DataTable component without error boundary.
+ * Use this only if you need to implement custom error handling.
+ *
+ * @template TData The type of data in the table rows
+ * @template CParams The type of column parameters passed to column definitions
+ */
+export const DataTableRaw = DataTableComponent;

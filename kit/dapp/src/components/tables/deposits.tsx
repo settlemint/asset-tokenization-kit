@@ -9,6 +9,7 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
@@ -26,6 +27,10 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import "@/components/data-table/filters/types/table-extensions";
+
+const logger = createLogger({
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ?? "info",
+});
 
 /**
  * Represents a single token from the TokenList
@@ -100,8 +105,8 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
         label: t("components.deposits-table.actions.view-details"),
         icon: <Eye className="h-4 w-4" />,
         onClick: () => {
-          console.log("View details onClick triggered");
-          console.log("Navigating to:", {
+          logger.debug("View details onClick triggered");
+          logger.debug("Navigating to:", {
             to: "/token/$factoryAddress/$tokenAddress",
             params: {
               factoryAddress,
@@ -117,9 +122,9 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
                   tokenAddress: row.original.id,
                 },
               });
-              console.log("Navigation completed");
+              logger.debug("Navigation completed");
             } catch (error) {
-              console.error("Navigation failed:", error);
+              logger.error("Navigation failed:", error);
             }
           })();
         },
@@ -258,7 +263,7 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
    */
   const handleRowClick = useCallback(
     (token: Token) => {
-      console.log("Row clicked, token:", token);
+      logger.debug("Row clicked, token:", token);
       void (async () => {
         try {
           await router.navigate({
@@ -268,9 +273,9 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
               tokenAddress: token.id,
             },
           });
-          console.log("Row click navigation completed");
+          logger.debug("Row click navigation completed");
         } catch (error) {
-          console.error("Row click navigation failed:", error);
+          logger.error("Row click navigation failed:", error);
         }
       })();
     },
