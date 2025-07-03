@@ -7,19 +7,16 @@ import { useTranslation } from "react-i18next";
 /**
  * User Statistics Widget
  *
- * Displays user-related metrics.
- * For now shows a calculated user count based on system activity.
+ * Displays the total number of users from the metrics API.
+ * Uses the consolidated metrics endpoint for optimal performance.
  */
 export function UserStatsWidget() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch systems to get user-related metrics
-  const { data: systems } = useSuspenseQuery(
-    orpc.system.list.queryOptions({ input: {} })
+  // Fetch metrics summary which includes user count
+  const { data: metrics } = useSuspenseQuery(
+    orpc.metrics.summary.queryOptions({ input: {} })
   );
-
-  // Calculate estimated users based on system activity
-  const userCount = systems.length * 25; // Placeholder calculation
 
   return (
     <Card>
@@ -30,9 +27,9 @@ export function UserStatsWidget() {
         <Users className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{userCount.toLocaleString()}</div>
+        <div className="text-2xl font-bold">{metrics.totalUsers.toLocaleString()}</div>
         <p className="text-xs text-muted-foreground">
-          Active platform users
+          {t("stats.usersDescription")}
         </p>
       </CardContent>
     </Card>

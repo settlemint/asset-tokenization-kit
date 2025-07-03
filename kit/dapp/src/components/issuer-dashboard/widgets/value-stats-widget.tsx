@@ -7,29 +7,25 @@ import { useTranslation } from "react-i18next";
 /**
  * Value Statistics Widget
  *
- * Displays total value metrics for the platform.
- * Calculates estimated total value based on factory and system activity.
+ * Displays the total value of all assets from the metrics API.
+ * Uses the consolidated metrics endpoint for optimal performance.
  */
 export function ValueStatsWidget() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch factories and systems to calculate total value
-  const { data: factories } = useSuspenseQuery(
-    orpc.token.factoryList.queryOptions({ input: {} })
+  // Fetch metrics summary which includes total value
+  const { data: metrics } = useSuspenseQuery(
+    orpc.metrics.summary.queryOptions({ input: {} })
   );
 
-  const { data: systems } = useSuspenseQuery(
-    orpc.system.list.queryOptions({ input: {} })
-  );
-
-  // Calculate estimated total value based on platform activity
-  const totalValue = (factories.length * 1000000) + (systems.length * 500000);
+  // Format the total value as currency
+  const totalValueNumber = parseFloat(metrics.totalValue);
   const formattedValue = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     notation: 'compact',
     maximumFractionDigits: 1
-  }).format(totalValue);
+  }).format(totalValueNumber);
 
   return (
     <Card>
@@ -42,7 +38,7 @@ export function ValueStatsWidget() {
       <CardContent>
         <div className="text-2xl font-bold">{formattedValue}</div>
         <p className="text-xs text-muted-foreground">
-          Total platform value
+          {t("stats.totalValueDescription")}
         </p>
       </CardContent>
     </Card>

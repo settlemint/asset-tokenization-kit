@@ -7,19 +7,16 @@ import { useTranslation } from "react-i18next";
 /**
  * Transaction Statistics Widget
  *
- * Displays transaction-related metrics.
- * For now shows the number of active factories as a proxy for transaction activity.
+ * Displays the total number of transactions from the metrics API.
+ * Uses the consolidated metrics endpoint for optimal performance.
  */
 export function TransactionStatsWidget() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch all factories to get transaction-related metrics
-  const { data: factories } = useSuspenseQuery(
-    orpc.token.factoryList.queryOptions({ input: {} })
+  // Fetch metrics summary which includes transaction count
+  const { data: metrics } = useSuspenseQuery(
+    orpc.metrics.summary.queryOptions({ input: {} })
   );
-
-  // Use factory count as a proxy for transaction activity
-  const transactionCount = factories.length * 42; // Placeholder calculation
 
   return (
     <Card>
@@ -30,9 +27,9 @@ export function TransactionStatsWidget() {
         <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{transactionCount.toLocaleString()}</div>
+        <div className="text-2xl font-bold">{metrics.totalTransactions.toLocaleString()}</div>
         <p className="text-xs text-muted-foreground">
-          Total transactions processed
+          {t("stats.transactionsDescription")}
         </p>
       </CardContent>
     </Card>

@@ -7,19 +7,16 @@ import { useTranslation } from "react-i18next";
 /**
  * Asset Statistics Widget
  *
- * Displays the total number of tokenized assets across all factories.
- * Shows both the count and a meaningful description.
+ * Displays the total number of tokenized assets from the metrics API.
+ * Uses the consolidated metrics endpoint for optimal performance.
  */
 export function AssetStatsWidget() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch all factories to get the count of factories with tokens
-  const { data: factories } = useSuspenseQuery(
-    orpc.token.factoryList.queryOptions({ input: {} })
+  // Fetch metrics summary which includes asset count
+  const { data: metrics } = useSuspenseQuery(
+    orpc.metrics.summary.queryOptions({ input: {} })
   );
-
-  // Calculate total assets by counting factories with tokens
-  const totalAssets = factories.filter(factory => factory.hasTokens).length;
 
   return (
     <Card>
@@ -30,9 +27,9 @@ export function AssetStatsWidget() {
         <Package className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{totalAssets.toLocaleString()}</div>
+        <div className="text-2xl font-bold">{metrics.totalAssets.toLocaleString()}</div>
         <p className="text-xs text-muted-foreground">
-          Total tokenized assets
+          {t("stats.assetsDescription")}
         </p>
       </CardContent>
     </Card>
