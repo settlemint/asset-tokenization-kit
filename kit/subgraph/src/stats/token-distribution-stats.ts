@@ -62,14 +62,16 @@ export function updateTokenDistributionStats(
 
   // Calculate old and new percentages
   const oldPercentage = oldBalance.gt(BigInt.zero())
-    ? oldBalance.times(BigInt.fromI32(100)).div(topBalance)
+    ? oldBalance.div(topBalance)
     : BigInt.zero();
   const newPercentage = newBalance.gt(BigInt.zero())
-    ? newBalance.times(BigInt.fromI32(100)).div(topBalance)
+    ? newBalance.div(topBalance)
     : BigInt.zero();
 
   // Determine segment changes
-  const oldSegment = getSegmentIndex(oldPercentage);
+  const oldSegment = oldBalance.gt(BigInt.zero())
+    ? -1 // If it is zero it was never in a segment
+    : getSegmentIndex(oldPercentage);
   const newSegment = getSegmentIndex(newPercentage);
 
   // If segment hasn't changed and balances are the same, skip
@@ -77,19 +79,14 @@ export function updateTokenDistributionStats(
     return;
   }
 
-  // Calculate exact values if not provided
-  const precision = BigInt.fromI32(10).pow(<u8>token.decimals);
-  const oldExact = oldBalance.times(precision);
-  const newExact = newBalance.times(precision);
-
   // Remove from old segment
   if (oldSegment >= 0) {
-    updateSegmentStats(state, oldSegment, oldExact, token.decimals, false);
+    updateSegmentStats(state, oldSegment, oldBalance, token.decimals, false);
   }
 
   // Add to new segment
   if (newSegment >= 0) {
-    updateSegmentStats(state, newSegment, newExact, token.decimals, true);
+    updateSegmentStats(state, newSegment, newBalance, token.decimals, true);
   }
 
   // Update top 5 holders
@@ -238,10 +235,10 @@ function trackTokenDistributionStats(
  * Calculate which segment a balance belongs to based on percentage of total supply
  */
 function getSegmentIndex(percentage: BigInt): i32 {
-  if (percentage.le(BigInt.fromString("2"))) return 0;
-  if (percentage.le(BigInt.fromString("10"))) return 1;
-  if (percentage.le(BigInt.fromString("20"))) return 2;
-  if (percentage.le(BigInt.fromString("40"))) return 3;
+  if (percentage.le(BigInt.fromString("0.02"))) return 0;
+  if (percentage.le(BigInt.fromString("0.1"))) return 1;
+  if (percentage.le(BigInt.fromString("0.2"))) return 2;
+  if (percentage.le(BigInt.fromString("0.4"))) return 3;
   return 4;
 }
 
@@ -267,8 +264,8 @@ function calculateTop5HoldersPercentage(
     }
   }
   return totalBalanceTopHolders
-    .times(BigInt.fromI32(100))
     .div(token.totalSupplyExact)
+    .times(BigInt.fromI32(100))
     .toBigDecimal();
 }
 

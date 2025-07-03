@@ -134,18 +134,21 @@ export function freezeOrUnfreezeTokenBalance(
 
 export function moveTokenBalanceToNewAccount(
   token: Token,
-  oldAccount: Address,
-  newAccount: Address,
+  oldAccountAddress: Address,
+  newAccountAddress: Address,
   timestamp: BigInt
 ): void {
-  const oldBalance = fetchTokenBalance(token, fetchAccount(oldAccount));
+  const oldAccount = fetchAccount(oldAccountAddress);
+  const newAccount = fetchAccount(newAccountAddress);
+
+  const oldBalance = fetchTokenBalance(token, oldAccount);
 
   if (oldBalance.valueExact.le(BigInt.zero()) && !oldBalance.isFrozen) {
     removeTokenBalance(oldBalance);
     return;
   }
 
-  const newBalance = fetchTokenBalance(token, fetchAccount(newAccount));
+  const newBalance = fetchTokenBalance(token, newAccount);
 
   setBigNumber(newBalance, "value", oldBalance.valueExact, token.decimals);
   setBigNumber(newBalance, "frozen", oldBalance.frozenExact, token.decimals);
@@ -157,6 +160,14 @@ export function moveTokenBalanceToNewAccount(
   newBalance.save();
 
   removeTokenBalance(oldBalance);
+
+  // Update distribution stats with old and new balance
+  updateTokenDistributionStats(
+    token,
+    newAccount,
+    BigInt.zero(),
+    oldBalance.valueExact
+  );
 }
 
 function updateAvailableAmount(
