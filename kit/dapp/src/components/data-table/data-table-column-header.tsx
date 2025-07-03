@@ -54,7 +54,7 @@ const wrapperVariants = cva("flex items-center space-x-2", {
  * Handles different margin alignments based on column type.
  */
 const buttonVariants = cva(
-  "h-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground transition-all duration-200 hover:bg-muted/50",
+  "h-8 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground transition-background duration-200 hover:bg-muted/50",
   {
     variants: {
       variant: {
