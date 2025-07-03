@@ -123,10 +123,11 @@ besu-network:
 erpc:
   enabled: true
   resources: {}
-  imagePullSecrets:
-    - name: image-pull-secret-docker
-    - name: image-pull-secret-ghcr
-    - name: image-pull-secret-harbor
+  image:
+    pullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
   ingress:
     enabled: true
     className: "settlemint-nginx"
