@@ -144,7 +144,7 @@ export function DataTablePagination<TData>({
           <Button
             variant="ghost"
             size="icon"
-            className="hidden h-7 w-7 p-0 lg:flex transition-all duration-200 hover:bg-muted/50 active:scale-95"
+            className="hidden h-7 w-7 p-0 lg:flex transition-transform transition-background duration-200 hover:bg-muted/50 active:scale-95"
             onClick={handleFirstPage}
             disabled={!table.getCanPreviousPage()}
           >
