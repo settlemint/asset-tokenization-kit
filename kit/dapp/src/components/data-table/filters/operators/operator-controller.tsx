@@ -131,20 +131,8 @@ export function PropertyFilterOperatorDisplay<TData, T extends ColumnDataType>({
   filter: FilterValue<T, TData>;
   filterType: T;
 }) {
-  const { t } = useTranslation("general");
-  if (!filter?.operator) {
-    return <span className="text-xs">{t("components.data-table.is")}</span>;
-  }
-
   const operatorDetails = filterTypeOperatorDetails[filterType];
-  if (!operatorDetails) {
-    return <span className="text-xs">{filter.operator}</span>;
-  }
-
   const details = operatorDetails[filter.operator];
-  if (!details) {
-    return <span className="text-xs">{filter.operator}</span>;
-  }
 
   return <span className="text-xs">{details.label}</span>;
 }
