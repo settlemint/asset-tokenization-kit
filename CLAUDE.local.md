@@ -18,6 +18,8 @@ copied over in every repository.
 - Your environment has access to some useful CLI tooling and Claude Commands,
   the description of them can be found in @.cursor/rules/tools.mdc
 - We write predominately in typescript, so use the @.cursor/rules/ultracite.mdc
+- For error handling and performance patterns specific to this project, refer to
+  @.cursor/rules/error-handling-performance.mdc
 - Do not add comments for the user to files in @.cursor/rules,
   @.claude/commands, CLAUDE.md or CLAUDE.local.md, it's for the agent to use, do
   add more information for agents if needed.

@@ -154,4 +154,3 @@ describe("debounceLeading", () => {
     expect(fn.mock.calls[1]).toEqual(["second"]);
   });
 });
-

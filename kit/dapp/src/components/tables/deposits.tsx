@@ -7,9 +7,10 @@ import {
 } from "@/components/data-table/cells/actions-cell";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { Button } from "@/components/ui/button";
+import { env } from "@/lib/env";
 import { orpc } from "@/orpc";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
@@ -29,7 +30,7 @@ import { toast } from "sonner";
 import "@/components/data-table/filters/types/table-extensions";
 
 const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ?? "info",
+  level: env.VITE_SETTLEMINT_LOG_LEVEL,
 });
 
 /**

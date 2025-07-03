@@ -9,14 +9,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { env } from "@/lib/env";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { MoreHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ?? "info",
+  level: env.VITE_SETTLEMINT_LOG_LEVEL,
 });
 
 /**

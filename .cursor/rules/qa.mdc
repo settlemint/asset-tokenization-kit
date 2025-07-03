@@ -215,6 +215,10 @@ If any test fails:
 | Lint errors       | Run `bun run lint --fix`, then `bun run ci`    |
 | Database issues   | Check migrations: `bun run db:migrate`, then `bun run ci` |
 | Port conflicts    | Kill processes on required ports, then `bun run ci` |
+| Console.log found | Replace with `createLogger`, then `bun run ci` |
+| Missing error boundary | Add DefaultCatchBoundary or DataTableErrorBoundary |
+| Unformatted errors | Use `formatValidationError` for user messages |
+| Performance issues | Profile with React DevTools, optimize measured bottlenecks |
 
 **Note:** After fixing any issue, ALWAYS run `bun run ci` to verify the complete suite passes.
 

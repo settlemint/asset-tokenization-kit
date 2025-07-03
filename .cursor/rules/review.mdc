@@ -25,6 +25,23 @@ ultrathink.
 - Compare the new code with the main branch and check if we didn't break
   anything.
 
+### Error Handling Checklist
+- ✅ All errors are logged with createLogger (no console.log)
+- ✅ User-facing errors are formatted with formatValidationError
+- ✅ Appropriate error boundaries are in place
+- ✅ Toast notifications have proper duration settings
+- ✅ Streaming mutations use useStreamingMutation hook
+- ✅ Validation uses safeParse with automatic error logging
+
+### Performance Checklist
+- ✅ Performance optimizations are measured, not guessed
+- ✅ URL state is used for persistent UI configuration
+- ✅ Local state is used only for ephemeral interactions
+- ✅ Memoization is applied only where measured as necessary
+- ✅ Large lists use virtualization
+- ✅ Expensive operations are debounced/throttled
+- ✅ Components use stable keys (never array indices)
+
 Provide constructive feedback with specific suggestions for improvement. Be
 brutally honest, don't be a yes man. If I am wrong, point it out bluntly. I need
 honest feedback on my code.

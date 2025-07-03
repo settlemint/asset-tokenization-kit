@@ -15,7 +15,6 @@ void mock.module("@settlemint/sdk-utils/logging", () => ({
 }));
 
 describe("DataTableErrorBoundary", () => {
-
   it("should handle errors and display fallback UI", () => {
     // Testing error boundaries requires integration testing
     // or using React Test Renderer/Testing Library

@@ -64,3 +64,15 @@ alwaysApply: true
   that things go wrong, wasting time and energy for everyone involved.
 - When doing similar tasks across multiple files, always try to spawn a fleet of
   sub agents to handle the work more quickly in parallel tasks.
+- When handling errors in the SettleMint Asset Tokenization Kit:
+  * Always use createLogger for error logging (never console.log)
+  * Use appropriate error boundaries (DefaultCatchBoundary for routes, DataTableErrorBoundary for tables)
+  * Format user-facing errors with formatValidationError utility
+  * Show toast notifications for user feedback with proper duration settings
+  * Log full error details for debugging while showing safe messages to users
+- For performance optimization:
+  * Always measure before optimizing using React DevTools Profiler
+  * Use URL state for persistent UI configuration (filters, sorting, pagination)
+  * Use local state only for ephemeral interactions (modals, temporary UI states)
+  * Apply memoization judiciously - only after identifying actual bottlenecks
+  * Consider virtualization for large lists and debouncing for expensive operations

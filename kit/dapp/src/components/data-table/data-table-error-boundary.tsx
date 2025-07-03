@@ -175,7 +175,8 @@ export function withDataTableErrorBoundary<P extends object>(
     </DataTableErrorBoundary>
   );
 
-  const componentName = Component.displayName ?? (Component.name || "Component");
+  const componentName =
+    Component.displayName ?? (Component.name || "Component");
   WrappedComponent.displayName = `withDataTableErrorBoundary(${componentName})`;
 
   return WrappedComponent;
