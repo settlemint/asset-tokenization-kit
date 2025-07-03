@@ -148,7 +148,7 @@ graph-node:
             features: [archive, traces]
   ingress:
     enabled: true
-    className: "settlemint-nginx"
+    className: "atk-nginx"
     annotations:
       nginx.ingress.kubernetes.io/use-regex: 'true'
       nginx.ingress.kubernetes.io/rewrite-target: /$1

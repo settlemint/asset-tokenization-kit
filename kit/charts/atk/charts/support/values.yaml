@@ -253,11 +253,11 @@ ingress-nginx:
         service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: '/healthz'
     ingressClassResource:
       # -- If you run more than one platform versions on a single cluster, you need to make sure these are unique
-      name: settlemint-nginx
+      name: atk-nginx
       enabled: true
       default: false
-      controllerValue: 'k8s.io/settlemint-nginx'
-    ingressClass: settlemint-nginx
+      controllerValue: 'k8s.io/atk-nginx'
+    ingressClass: atk-nginx
     opentelemetry:
       enabled: true
       image:
