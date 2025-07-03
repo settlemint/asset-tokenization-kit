@@ -47,6 +47,17 @@ export function updateTokenDistributionStats(
     return;
   }
 
+  // TODO:
+  /*ma da was ni op basis van percenten ofzo he
+3:44
+gewoon ge kijkt wa de minste aantal tokens is en ge kijkt naar het maximum aantal tokens
+3:44
+en dan verdeeld ge da in 5 segmenten
+3:44
+en dan toont ge hoeveel personen in elk segment zitten
+zou alleen goed zijn dat ge minimum naar beneden afrond op iets en maximum naar boven afrond ...
+*/
+
   // Load the state
   const tokenAddress = Address.fromBytes(token.id);
   const state = fetchTokenDistributionStatsState(tokenAddress);
