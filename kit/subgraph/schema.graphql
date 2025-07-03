@@ -835,6 +835,9 @@ type TokenDistributionStatsState @entity(immutable: false) {
   # Top holders tracking (we store the top 6 to be able to add and remove holders incrementally)
   topHolders: [TokenTopHolder!]! @derivedFrom(field: "state")
 
+  # Percentage owned by top 5 holders
+  percentageOwnedByTop5Holders: BigDecimal!
+
   # Distribution segments (by percentage of total supply)
   # Segment 1: 0-2%
   balancesCountSegment1: Int!

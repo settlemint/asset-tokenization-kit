@@ -92,10 +92,16 @@ export function updateTokenDistributionStats(
     updateSegmentStats(state, newSegment, newExact, token.decimals, true);
   }
 
-  state.save();
-
   // Update top 5 holders
   updateTop5Holders(state, token, account, newBalance);
+
+  // Update percentage owned by top 5 holders
+  state.percentageOwnedByTop5Holders = calculateTop5HoldersPercentage(
+    state,
+    token
+  );
+
+  state.save();
 
   // Create timeseries entry
   trackTokenDistributionStats(token, state);
@@ -202,7 +208,7 @@ function trackTokenDistributionStats(
 
   distributionStats.token = token.id;
   distributionStats.percentageOwnedByTop5Holders =
-    calculateTop5HoldersPercentage(state, token);
+    state.percentageOwnedByTop5Holders;
 
   // Copy segment data from state
   distributionStats.balancesCountSegment1 = state.balancesCountSegment1;
@@ -241,17 +247,29 @@ function getSegmentIndex(percentage: BigInt): i32 {
 
 /**
  * Calculate percentage owned by top 5 holders
- * Simplified approach - returns zero for now since we can't efficiently query
  */
 function calculateTop5HoldersPercentage(
-  _state: TokenDistributionStatsState,
-  _token: Token
+  state: TokenDistributionStatsState,
+  token: Token
 ): BigDecimal {
-  // In a full implementation, this would sum the percentages of the top 5 holders
-  // For now, return zero as a placeholder
-  // The actual calculation would require querying all TokenTopHolder entities
-  // for this token and summing the top 5 by balance
-  return BigDecimal.zero();
+  if (token.totalSupplyExact.equals(BigInt.zero())) {
+    return BigDecimal.zero();
+  }
+
+  let totalBalanceTopHolders = BigInt.zero();
+  const topHolders = state.topHolders.load();
+  for (let i = 0; i < topHolders.length; i++) {
+    const topHolder = topHolders[i];
+    if (topHolder.rank <= 5) {
+      totalBalanceTopHolders = totalBalanceTopHolders.plus(
+        topHolder.balanceExact
+      );
+    }
+  }
+  return totalBalanceTopHolders
+    .times(BigInt.fromI32(100))
+    .div(token.totalSupplyExact)
+    .toBigDecimal();
 }
 
 /**
@@ -265,6 +283,8 @@ function fetchTokenDistributionStatsState(
   if (!state) {
     state = new TokenDistributionStatsState(tokenAddress);
     state.token = tokenAddress;
+
+    state.percentageOwnedByTop5Holders = BigDecimal.zero();
 
     // Initialize all segments
     state.balancesCountSegment1 = 0;

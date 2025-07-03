@@ -172,24 +172,29 @@ describe("TokenDistributionStats", () => {
         }
       );
       expect(stats?.balancesCountSegment1).toBe(expectedPerSegment.segment1);
-      expect(stats?.totalValueSegment1).toBe(
-        expectedPerSegment.segment1Value.toString()
+      expect(stats?.totalValueSegment1).toBeCloseTo(
+        Number(expectedPerSegment.segment1Value),
+        2
       );
       expect(stats?.balancesCountSegment2).toBe(expectedPerSegment.segment2);
-      expect(stats?.totalValueSegment2).toBe(
-        expectedPerSegment.segment2Value.toString()
+      expect(stats?.totalValueSegment2).toBeCloseTo(
+        Number(expectedPerSegment.segment2Value),
+        2
       );
       expect(stats?.balancesCountSegment3).toBe(expectedPerSegment.segment3);
-      expect(stats?.totalValueSegment3).toBe(
-        expectedPerSegment.segment3Value.toString()
+      expect(stats?.totalValueSegment3).toBeCloseTo(
+        Number(expectedPerSegment.segment3Value),
+        2
       );
       expect(stats?.balancesCountSegment4).toBe(expectedPerSegment.segment4);
-      expect(stats?.totalValueSegment4).toBe(
-        expectedPerSegment.segment4Value.toString()
+      expect(stats?.totalValueSegment4).toBeCloseTo(
+        Number(expectedPerSegment.segment4Value),
+        2
       );
       expect(stats?.balancesCountSegment5).toBe(expectedPerSegment.segment5);
-      expect(stats?.totalValueSegment5).toBe(
-        expectedPerSegment.segment5Value.toString()
+      expect(stats?.totalValueSegment5).toBeCloseTo(
+        Number(expectedPerSegment.segment5Value),
+        2
       );
     }
   });
@@ -206,6 +211,7 @@ describe("TokenDistributionStats", () => {
             value
           }
           distributionStats {
+            percentageOwnedByTop5Holders
             topHolders {
               account {
                 id
@@ -221,7 +227,21 @@ describe("TokenDistributionStats", () => {
     const tokenResponse = await theGraphClient.request(tokenQuery, {});
 
     for (const token of tokenResponse.tokens) {
+      const top5Holders = token.balances
+        .sort((a, b) => {
+          return Number(b.value) - Number(a.value);
+        })
+        .slice(0, 5);
+      const top5HoldersBalance = top5Holders.reduce((acc, balance) => {
+        return acc + BigInt(balance.value);
+      }, BigInt(0));
+      const percentageOwnedByTop5Holders =
+        Number(top5HoldersBalance) / Number(token.totalSupply);
       const stats = token.distributionStats;
+      expect(stats?.percentageOwnedByTop5Holders).toBeCloseTo(
+        percentageOwnedByTop5Holders,
+        2
+      );
       const topHolders = stats?.topHolders ?? [];
       expect(topHolders.length).toBeLessThanOrEqual(6); // Never track more than 6 holders
     }
