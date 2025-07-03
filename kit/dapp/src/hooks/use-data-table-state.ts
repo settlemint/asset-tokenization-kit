@@ -42,11 +42,11 @@ import type {
 } from "@tanstack/react-table";
 
 import {
-  createDebouncedUrlUpdate,
   deserializeDataTableState,
   searchParamsToTableState,
   serializeDataTableState,
 } from "@/components/data-table/utils/search-param-serializers";
+import { debounce } from "@/lib/utils/debounce";
 
 /**
  * Configuration options for the DataTable state hook
@@ -234,22 +234,36 @@ export function useDataTableState(
     initialState.rowSelection
   );
 
-  // Ref to track if we're updating from URL to prevent update loops
-  const isUpdatingFromUrlRef = useRef(false);
+  // Version counter to track URL updates and prevent race conditions
+  const updateVersionRef = useRef(0);
+  const currentVersionRef = useRef(0);
 
-  // Debounced URL update function
+  // Debounced URL update function with proper cleanup
   const debouncedUrlUpdate = useMemo(
     () =>
-      createDebouncedUrlUpdate((newSearchParams: Record<string, unknown>) => {
-        if (enableUrlPersistence && !isUpdatingFromUrlRef.current) {
+      debounce((newSearchParams: Record<string, unknown>) => {
+        if (enableUrlPersistence) {
+          // Increment version for this update
+          const updateVersion = ++updateVersionRef.current;
+
           void navigate({
             search: newSearchParams as never,
             replace: true,
+          }).then(() => {
+            // Update current version after navigation completes
+            currentVersionRef.current = updateVersion;
           });
         }
       }, debounceMs),
     [navigate, enableUrlPersistence, debounceMs]
   );
+
+  // Cleanup debounced function on unmount
+  useEffect(() => {
+    return () => {
+      debouncedUrlUpdate.cancel();
+    };
+  }, [debouncedUrlUpdate]);
 
   // Update URL when state changes
   const updateUrl = useCallback(
@@ -464,25 +478,26 @@ export function useDataTableState(
 
   // Sync state when URL changes (for back/forward navigation)
   useEffect(() => {
-    if (enableUrlPersistence && Object.keys(urlSearchParams).length > 0) {
-      isUpdatingFromUrlRef.current = true;
+    if (enableUrlPersistence) {
+      // Check if this is an external navigation (browser back/forward)
+      // by comparing versions - if current version is behind update version,
+      // it means we have pending updates that shouldn't be overwritten
+      const isExternalNavigation =
+        currentVersionRef.current === updateVersionRef.current;
 
-      const deserializedState = deserializeDataTableState(urlSearchParams);
-      const tableState = searchParamsToTableState(deserializedState);
+      if (isExternalNavigation && Object.keys(urlSearchParams).length > 0) {
+        const deserializedState = deserializeDataTableState(urlSearchParams);
+        const tableState = searchParamsToTableState(deserializedState);
 
-      setPaginationState(
-        tableState.pagination ?? { pageIndex: 0, pageSize: defaultPageSize }
-      );
-      setSortingState(tableState.sorting);
-      setColumnFiltersState(tableState.columnFilters);
-      setGlobalFilterState(tableState.globalFilter);
-      setColumnVisibilityState(tableState.columnVisibility);
-      setRowSelectionState(tableState.rowSelection);
-
-      // Reset the flag after a brief delay
-      setTimeout(() => {
-        isUpdatingFromUrlRef.current = false;
-      }, 50);
+        setPaginationState(
+          tableState.pagination ?? { pageIndex: 0, pageSize: defaultPageSize }
+        );
+        setSortingState(tableState.sorting);
+        setColumnFiltersState(tableState.columnFilters);
+        setGlobalFilterState(tableState.globalFilter);
+        setColumnVisibilityState(tableState.columnVisibility);
+        setRowSelectionState(tableState.rowSelection);
+      }
     }
   }, [enableUrlPersistence, urlSearchParams, defaultPageSize]);
 
