@@ -12,7 +12,7 @@ graphql-engine:
     app.kubernetes.io/component: hasura
   ingress:
     enabled: true
-    ingressClassName: "settlemint-nginx"
+    ingressClassName: "atk-nginx"
     hostName: "hasura.k8s.orb.local"
   config:
     metadataOnly: false

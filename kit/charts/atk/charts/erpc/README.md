@@ -121,7 +121,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | image.registry | string | `"ghcr.io"` | eRPC image registry |
 | image.repository | string | `"erpc/erpc"` | eRPC image repository |
 | image.tag | string | `"0.0.51"` | eRPC image tag (immutable tags are recommended) |
-| ingress | object | `{"annotations":{},"apiVersion":"","enabled":true,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"besu.k8s.orb.local","ingressClassName":"settlemint-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
+| ingress | object | `{"annotations":{},"apiVersion":"","enabled":true,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"besu.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. |
 | ingress.apiVersion | string | `""` | Force Ingress API version (automatically detected if not set) |
 | ingress.enabled | bool | `true` | Enable ingress record generation for eRPC |
@@ -130,7 +130,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ingress.extraRules | list | `[]` | Additional rules to be covered with this ingress record |
 | ingress.extraTls | list | `[]` | TLS configuration for additional hostname(s) to be covered with this ingress record |
 | ingress.hostname | string | `"besu.k8s.orb.local"` | Default host for the ingress record |
-| ingress.ingressClassName | string | `"settlemint-nginx"` | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+) |
+| ingress.ingressClassName | string | `"atk-nginx"` | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+) |
 | ingress.path | string | `"/"` | Default path for the ingress record |
 | ingress.pathType | string | `"ImplementationSpecific"` | Ingress path type |
 | ingress.secrets | list | `[]` | Custom TLS certificates as secrets |

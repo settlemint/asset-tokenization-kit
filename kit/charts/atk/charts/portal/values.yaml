@@ -237,7 +237,7 @@ ingress:
   # -- Default host for the ingress record
   hostname: portal.k8s.orb.local
   # -- IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
-  ingressClassName: "settlemint-nginx"
+  ingressClassName: "atk-nginx"
   # -- Default path for the ingress record
   path: /
   # -- Additional path for GraphQL endpoint
