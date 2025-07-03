@@ -4293,6 +4293,66 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenBondStatsData!]!
+  tokenDistributionStatsState(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TokenDistributionStatsState
+  tokenDistributionStatsStates(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenDistributionStatsState_orderBy
+    orderDirection: OrderDirection
+    where: TokenDistributionStatsState_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenDistributionStatsState!]!
+  tokenTopHolder(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TokenTopHolder
+  tokenTopHolders(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenTopHolder_orderBy
+    orderDirection: OrderDirection
+    where: TokenTopHolder_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenTopHolder!]!
   tokenDistributionStatsData(
     id: ID!
 
@@ -5289,6 +5349,7 @@ type Token {
   requiredClaimTopics(skip: Int = 0, first: Int = 100, orderBy: TopicScheme_orderBy, orderDirection: OrderDirection, where: TopicScheme_filter): [TopicScheme!]!
   tokenComplianceModules(skip: Int = 0, first: Int = 100, orderBy: TokenComplianceModule_orderBy, orderDirection: OrderDirection, where: TokenComplianceModule_filter): [TokenComplianceModule!]!
   stats: TokenStatsState
+  distributionStats: TokenDistributionStatsState
 }
 
 type TokenBalance {
@@ -6371,6 +6432,217 @@ enum TokenDistributionStatsData_orderBy {
   token__totalSupply
   token__totalSupplyExact
   percentageOwnedByTop5Holders
+  balancesCountSegment1
+  totalValueSegment1
+  totalValueSegment1Exact
+  balancesCountSegment2
+  totalValueSegment2
+  totalValueSegment2Exact
+  balancesCountSegment3
+  totalValueSegment3
+  totalValueSegment3Exact
+  balancesCountSegment4
+  totalValueSegment4
+  totalValueSegment4Exact
+  balancesCountSegment5
+  totalValueSegment5
+  totalValueSegment5Exact
+}
+
+type TokenDistributionStatsState {
+  id: Bytes!
+  token: Token!
+  topHolders(skip: Int = 0, first: Int = 100, orderBy: TokenTopHolder_orderBy, orderDirection: OrderDirection, where: TokenTopHolder_filter): [TokenTopHolder!]!
+  balancesCountSegment1: Int!
+  totalValueSegment1: BigDecimal!
+  totalValueSegment1Exact: BigInt!
+  balancesCountSegment2: Int!
+  totalValueSegment2: BigDecimal!
+  totalValueSegment2Exact: BigInt!
+  balancesCountSegment3: Int!
+  totalValueSegment3: BigDecimal!
+  totalValueSegment3Exact: BigInt!
+  balancesCountSegment4: Int!
+  totalValueSegment4: BigDecimal!
+  totalValueSegment4Exact: BigInt!
+  balancesCountSegment5: Int!
+  totalValueSegment5: BigDecimal!
+  totalValueSegment5Exact: BigInt!
+}
+
+input TokenDistributionStatsState_filter {
+  id: Bytes
+  id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
+  id_in: [Bytes!]
+  id_not_in: [Bytes!]
+  id_contains: Bytes
+  id_not_contains: Bytes
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_contains_nocase: String
+  token_not_contains: String
+  token_not_contains_nocase: String
+  token_starts_with: String
+  token_starts_with_nocase: String
+  token_not_starts_with: String
+  token_not_starts_with_nocase: String
+  token_ends_with: String
+  token_ends_with_nocase: String
+  token_not_ends_with: String
+  token_not_ends_with_nocase: String
+  token_: Token_filter
+  topHolders_: TokenTopHolder_filter
+  balancesCountSegment1: Int
+  balancesCountSegment1_not: Int
+  balancesCountSegment1_gt: Int
+  balancesCountSegment1_lt: Int
+  balancesCountSegment1_gte: Int
+  balancesCountSegment1_lte: Int
+  balancesCountSegment1_in: [Int!]
+  balancesCountSegment1_not_in: [Int!]
+  totalValueSegment1: BigDecimal
+  totalValueSegment1_not: BigDecimal
+  totalValueSegment1_gt: BigDecimal
+  totalValueSegment1_lt: BigDecimal
+  totalValueSegment1_gte: BigDecimal
+  totalValueSegment1_lte: BigDecimal
+  totalValueSegment1_in: [BigDecimal!]
+  totalValueSegment1_not_in: [BigDecimal!]
+  totalValueSegment1Exact: BigInt
+  totalValueSegment1Exact_not: BigInt
+  totalValueSegment1Exact_gt: BigInt
+  totalValueSegment1Exact_lt: BigInt
+  totalValueSegment1Exact_gte: BigInt
+  totalValueSegment1Exact_lte: BigInt
+  totalValueSegment1Exact_in: [BigInt!]
+  totalValueSegment1Exact_not_in: [BigInt!]
+  balancesCountSegment2: Int
+  balancesCountSegment2_not: Int
+  balancesCountSegment2_gt: Int
+  balancesCountSegment2_lt: Int
+  balancesCountSegment2_gte: Int
+  balancesCountSegment2_lte: Int
+  balancesCountSegment2_in: [Int!]
+  balancesCountSegment2_not_in: [Int!]
+  totalValueSegment2: BigDecimal
+  totalValueSegment2_not: BigDecimal
+  totalValueSegment2_gt: BigDecimal
+  totalValueSegment2_lt: BigDecimal
+  totalValueSegment2_gte: BigDecimal
+  totalValueSegment2_lte: BigDecimal
+  totalValueSegment2_in: [BigDecimal!]
+  totalValueSegment2_not_in: [BigDecimal!]
+  totalValueSegment2Exact: BigInt
+  totalValueSegment2Exact_not: BigInt
+  totalValueSegment2Exact_gt: BigInt
+  totalValueSegment2Exact_lt: BigInt
+  totalValueSegment2Exact_gte: BigInt
+  totalValueSegment2Exact_lte: BigInt
+  totalValueSegment2Exact_in: [BigInt!]
+  totalValueSegment2Exact_not_in: [BigInt!]
+  balancesCountSegment3: Int
+  balancesCountSegment3_not: Int
+  balancesCountSegment3_gt: Int
+  balancesCountSegment3_lt: Int
+  balancesCountSegment3_gte: Int
+  balancesCountSegment3_lte: Int
+  balancesCountSegment3_in: [Int!]
+  balancesCountSegment3_not_in: [Int!]
+  totalValueSegment3: BigDecimal
+  totalValueSegment3_not: BigDecimal
+  totalValueSegment3_gt: BigDecimal
+  totalValueSegment3_lt: BigDecimal
+  totalValueSegment3_gte: BigDecimal
+  totalValueSegment3_lte: BigDecimal
+  totalValueSegment3_in: [BigDecimal!]
+  totalValueSegment3_not_in: [BigDecimal!]
+  totalValueSegment3Exact: BigInt
+  totalValueSegment3Exact_not: BigInt
+  totalValueSegment3Exact_gt: BigInt
+  totalValueSegment3Exact_lt: BigInt
+  totalValueSegment3Exact_gte: BigInt
+  totalValueSegment3Exact_lte: BigInt
+  totalValueSegment3Exact_in: [BigInt!]
+  totalValueSegment3Exact_not_in: [BigInt!]
+  balancesCountSegment4: Int
+  balancesCountSegment4_not: Int
+  balancesCountSegment4_gt: Int
+  balancesCountSegment4_lt: Int
+  balancesCountSegment4_gte: Int
+  balancesCountSegment4_lte: Int
+  balancesCountSegment4_in: [Int!]
+  balancesCountSegment4_not_in: [Int!]
+  totalValueSegment4: BigDecimal
+  totalValueSegment4_not: BigDecimal
+  totalValueSegment4_gt: BigDecimal
+  totalValueSegment4_lt: BigDecimal
+  totalValueSegment4_gte: BigDecimal
+  totalValueSegment4_lte: BigDecimal
+  totalValueSegment4_in: [BigDecimal!]
+  totalValueSegment4_not_in: [BigDecimal!]
+  totalValueSegment4Exact: BigInt
+  totalValueSegment4Exact_not: BigInt
+  totalValueSegment4Exact_gt: BigInt
+  totalValueSegment4Exact_lt: BigInt
+  totalValueSegment4Exact_gte: BigInt
+  totalValueSegment4Exact_lte: BigInt
+  totalValueSegment4Exact_in: [BigInt!]
+  totalValueSegment4Exact_not_in: [BigInt!]
+  balancesCountSegment5: Int
+  balancesCountSegment5_not: Int
+  balancesCountSegment5_gt: Int
+  balancesCountSegment5_lt: Int
+  balancesCountSegment5_gte: Int
+  balancesCountSegment5_lte: Int
+  balancesCountSegment5_in: [Int!]
+  balancesCountSegment5_not_in: [Int!]
+  totalValueSegment5: BigDecimal
+  totalValueSegment5_not: BigDecimal
+  totalValueSegment5_gt: BigDecimal
+  totalValueSegment5_lt: BigDecimal
+  totalValueSegment5_gte: BigDecimal
+  totalValueSegment5_lte: BigDecimal
+  totalValueSegment5_in: [BigDecimal!]
+  totalValueSegment5_not_in: [BigDecimal!]
+  totalValueSegment5Exact: BigInt
+  totalValueSegment5Exact_not: BigInt
+  totalValueSegment5Exact_gt: BigInt
+  totalValueSegment5Exact_lt: BigInt
+  totalValueSegment5Exact_gte: BigInt
+  totalValueSegment5Exact_lte: BigInt
+  totalValueSegment5Exact_in: [BigInt!]
+  totalValueSegment5Exact_not_in: [BigInt!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenDistributionStatsState_filter]
+  or: [TokenDistributionStatsState_filter]
+}
+
+enum TokenDistributionStatsState_orderBy {
+  id
+  token
+  token__id
+  token__createdAt
+  token__deployedInTransaction
+  token__type
+  token__name
+  token__symbol
+  token__decimals
+  token__totalSupply
+  token__totalSupplyExact
+  topHolders
   balancesCountSegment1
   totalValueSegment1
   totalValueSegment1Exact
@@ -7622,6 +7894,127 @@ enum TokenStats_orderBy {
   totalTransferredExact
 }
 
+type TokenTopHolder {
+  id: Bytes!
+  state: TokenDistributionStatsState!
+  account: Account!
+  balance: BigDecimal!
+  balanceExact: BigInt!
+  rank: Int!
+}
+
+input TokenTopHolder_filter {
+  id: Bytes
+  id_not: Bytes
+  id_gt: Bytes
+  id_lt: Bytes
+  id_gte: Bytes
+  id_lte: Bytes
+  id_in: [Bytes!]
+  id_not_in: [Bytes!]
+  id_contains: Bytes
+  id_not_contains: Bytes
+  state: String
+  state_not: String
+  state_gt: String
+  state_lt: String
+  state_gte: String
+  state_lte: String
+  state_in: [String!]
+  state_not_in: [String!]
+  state_contains: String
+  state_contains_nocase: String
+  state_not_contains: String
+  state_not_contains_nocase: String
+  state_starts_with: String
+  state_starts_with_nocase: String
+  state_not_starts_with: String
+  state_not_starts_with_nocase: String
+  state_ends_with: String
+  state_ends_with_nocase: String
+  state_not_ends_with: String
+  state_not_ends_with_nocase: String
+  state_: TokenDistributionStatsState_filter
+  account: String
+  account_not: String
+  account_gt: String
+  account_lt: String
+  account_gte: String
+  account_lte: String
+  account_in: [String!]
+  account_not_in: [String!]
+  account_contains: String
+  account_contains_nocase: String
+  account_not_contains: String
+  account_not_contains_nocase: String
+  account_starts_with: String
+  account_starts_with_nocase: String
+  account_not_starts_with: String
+  account_not_starts_with_nocase: String
+  account_ends_with: String
+  account_ends_with_nocase: String
+  account_not_ends_with: String
+  account_not_ends_with_nocase: String
+  account_: Account_filter
+  balance: BigDecimal
+  balance_not: BigDecimal
+  balance_gt: BigDecimal
+  balance_lt: BigDecimal
+  balance_gte: BigDecimal
+  balance_lte: BigDecimal
+  balance_in: [BigDecimal!]
+  balance_not_in: [BigDecimal!]
+  balanceExact: BigInt
+  balanceExact_not: BigInt
+  balanceExact_gt: BigInt
+  balanceExact_lt: BigInt
+  balanceExact_gte: BigInt
+  balanceExact_lte: BigInt
+  balanceExact_in: [BigInt!]
+  balanceExact_not_in: [BigInt!]
+  rank: Int
+  rank_not: Int
+  rank_gt: Int
+  rank_lt: Int
+  rank_gte: Int
+  rank_lte: Int
+  rank_in: [Int!]
+  rank_not_in: [Int!]
+
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenTopHolder_filter]
+  or: [TokenTopHolder_filter]
+}
+
+enum TokenTopHolder_orderBy {
+  id
+  state
+  state__id
+  state__balancesCountSegment1
+  state__totalValueSegment1
+  state__totalValueSegment1Exact
+  state__balancesCountSegment2
+  state__totalValueSegment2
+  state__totalValueSegment2Exact
+  state__balancesCountSegment3
+  state__totalValueSegment3
+  state__totalValueSegment3Exact
+  state__balancesCountSegment4
+  state__totalValueSegment4
+  state__totalValueSegment4Exact
+  state__balancesCountSegment5
+  state__totalValueSegment5
+  state__totalValueSegment5Exact
+  account
+  account__id
+  account__isContract
+  account__country
+  balance
+  balanceExact
+  rank
+}
+
 type TokenTypeStats {
   id: Int8!
   timestamp: Timestamp!
@@ -8193,6 +8586,7 @@ input Token_filter {
   requiredClaimTopics_: TopicScheme_filter
   tokenComplianceModules_: TokenComplianceModule_filter
   stats_: TokenStatsState_filter
+  distributionStats_: TokenDistributionStatsState_filter
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -8267,6 +8661,23 @@ enum Token_orderBy {
   stats
   stats__id
   stats__balancesCount
+  distributionStats
+  distributionStats__id
+  distributionStats__balancesCountSegment1
+  distributionStats__totalValueSegment1
+  distributionStats__totalValueSegment1Exact
+  distributionStats__balancesCountSegment2
+  distributionStats__totalValueSegment2
+  distributionStats__totalValueSegment2Exact
+  distributionStats__balancesCountSegment3
+  distributionStats__totalValueSegment3
+  distributionStats__totalValueSegment3Exact
+  distributionStats__balancesCountSegment4
+  distributionStats__totalValueSegment4
+  distributionStats__totalValueSegment4Exact
+  distributionStats__balancesCountSegment5
+  distributionStats__totalValueSegment5
+  distributionStats__totalValueSegment5Exact
 }
 
 type TopicScheme {
