@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -71,10 +72,29 @@ export function ActionsCell({
 }: ActionsCellProps) {
   const { t } = useTranslation("general");
 
+  // Memoize the button click handler
+  const handleButtonClick = useCallback((e: React.MouseEvent) => {
+    console.log("Actions button clicked");
+    e.stopPropagation();
+  }, []);
+
+  // Memoize the dropdown item click handler
+  const createItemClickHandler = useCallback(
+    (action: ActionItem) => () => {
+      console.log("Dropdown item clicked:", action.label);
+      action.onClick?.();
+    },
+    []
+  );
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
+        <Button
+          variant="ghost"
+          className="h-8 w-8 p-0"
+          onClick={handleButtonClick}
+        >
           <span className="sr-only">
             {t("components.data-table.open-menu")}
           </span>
@@ -102,7 +122,7 @@ export function ActionsCell({
               </DropdownMenuItem>
             ) : (
               <DropdownMenuItem
-                onClick={action.onClick}
+                onClick={createItemClickHandler(action)}
                 disabled={action.disabled}
               >
                 {action.icon && <span className="mr-2">{action.icon}</span>}

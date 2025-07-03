@@ -2,7 +2,7 @@
 export { numberFilterFn } from "./number-filter";
 export { textFilterFn } from "./text-filter";
 export { dateFilterFn } from "./date-filter";
-export { multiSelectFilterFn } from "./multi-select-filter";
+export { multiOptionFilterFn } from "./multi-option-filter";
 
 // Flexible wrappers for URL compatibility
 export {

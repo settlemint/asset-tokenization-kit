@@ -130,9 +130,6 @@ declare module "@tanstack/table-core" {
   }
 }
 
-// Import extended table meta types
-import "./types/table-meta";
-
 /**
  * A reusable data table component with sorting, filtering, pagination, and bulk actions.
  * Supports both local and URL-based state management for table configuration.
@@ -315,13 +312,13 @@ export function DataTable<TData, CParams extends Record<string, unknown>>({
       // Don't trigger row click if clicking on interactive elements
       const target = e.target as HTMLElement;
       const isInteractiveElement = !!(
-        target.closest("button") ||
-        target.closest("a") ||
-        target.closest("input") ||
-        target.closest("select") ||
-        target.closest('[role="button"]') ||
-        target.closest('[role="checkbox"]') ||
-        target.closest('[role="menuitem"]') ||
+        target.closest("button") ??
+        target.closest("a") ??
+        target.closest("input") ??
+        target.closest("select") ??
+        target.closest('[role="button"]') ??
+        target.closest('[role="checkbox"]') ??
+        target.closest('[role="menuitem"]') ??
         target.closest("[data-radix-collection-item]")
       );
 

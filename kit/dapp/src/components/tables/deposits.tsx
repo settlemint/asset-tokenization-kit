@@ -100,13 +100,28 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
         label: t("components.deposits-table.actions.view-details"),
         icon: <Eye className="h-4 w-4" />,
         onClick: () => {
-          void router.navigate({
+          console.log("View details onClick triggered");
+          console.log("Navigating to:", {
             to: "/token/$factoryAddress/$tokenAddress",
             params: {
               factoryAddress,
               tokenAddress: row.original.id,
             },
           });
+          void (async () => {
+            try {
+              await router.navigate({
+                to: "/token/$factoryAddress/$tokenAddress",
+                params: {
+                  factoryAddress,
+                  tokenAddress: row.original.id,
+                },
+              });
+              console.log("Navigation completed");
+            } catch (error) {
+              console.error("Navigation failed:", error);
+            }
+          })();
         },
       },
       {
@@ -243,13 +258,21 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
    */
   const handleRowClick = useCallback(
     (token: Token) => {
-      void router.navigate({
-        to: "/token/$factoryAddress/$tokenAddress",
-        params: {
-          factoryAddress,
-          tokenAddress: token.id,
-        },
-      });
+      console.log("Row clicked, token:", token);
+      void (async () => {
+        try {
+          await router.navigate({
+            to: "/token/$factoryAddress/$tokenAddress",
+            params: {
+              factoryAddress,
+              tokenAddress: token.id,
+            },
+          });
+          console.log("Row click navigation completed");
+        } catch (error) {
+          console.error("Row click navigation failed:", error);
+        }
+      })();
     },
     [router, factoryAddress]
   );

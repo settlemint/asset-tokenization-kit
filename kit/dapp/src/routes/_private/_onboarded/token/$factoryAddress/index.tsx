@@ -28,7 +28,7 @@ import { createDataTableSearchParams } from "@/components/data-table/utils/data-
  * ```
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/token/$factoryAddress"
+  "/_private/_onboarded/token/$factoryAddress/"
 )({
   /**
    * Validates search parameters for data table state

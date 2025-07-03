@@ -2,7 +2,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { AutoCell } from "../cells/auto-cell";
 import { flexRender } from "@tanstack/react-table";
 import { withAutoFilterFn } from "../filters/functions/auto-filter";
-import "../types/table-meta";
 
 /**
  * Wraps a column definition to use AutoCell rendering based on meta.cellType

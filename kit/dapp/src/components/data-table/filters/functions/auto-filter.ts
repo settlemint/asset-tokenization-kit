@@ -4,7 +4,7 @@ import {
   flexibleTextFilterFn,
 } from "./flexible-filter-wrappers";
 import { dateFilterFn } from "./date-filter";
-import { multiSelectFilterFn } from "./multi-select-filter";
+import { multiOptionFilterFn } from "./multi-option-filter";
 
 /**
  * Maps column types to their default filter functions.
@@ -17,7 +17,7 @@ import { multiSelectFilterFn } from "./multi-select-filter";
  * // - text, address, email, url → flexibleTextFilterFn
  * // - number, currency, percentage, decimals → flexibleNumberFilterFn
  * // - date, datetime → dateFilterFn
- * // - multiSelect, status, tags, badge → multiSelectFilterFn
+ * // - multiSelect, status, tags, badge → multiOptionFilterFn
  * ```
  */
 const filterFnMap: Record<string, FilterFn<unknown>> = {
@@ -38,10 +38,10 @@ const filterFnMap: Record<string, FilterFn<unknown>> = {
   datetime: dateFilterFn,
 
   // Multi-select filters
-  multiSelect: multiSelectFilterFn,
-  status: multiSelectFilterFn,
-  tags: multiSelectFilterFn,
-  badge: multiSelectFilterFn,
+  multiSelect: multiOptionFilterFn,
+  status: multiOptionFilterFn,
+  tags: multiOptionFilterFn,
+  badge: multiOptionFilterFn,
 };
 
 /**
