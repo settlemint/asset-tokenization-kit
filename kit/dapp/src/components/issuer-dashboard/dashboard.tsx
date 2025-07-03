@@ -1,12 +1,5 @@
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
-import { AssetActivityChart } from "./charts/asset-activity-chart";
-import { AssetSupplyChart } from "./charts/asset-supply-chart";
-import { ChartSkeleton } from "./charts/chart-skeleton";
-import { TransactionHistoryChart } from "./charts/transaction-history-chart";
-import { UserGrowthChart } from "./charts/user-growth-chart";
-import { LatestEventsTable } from "./tables/latest-events-table";
-import { PendingActionsTable } from "./tables/pending-actions-table";
 import { AssetStatsWidget } from "./widgets/asset-stats-widget";
 import { TransactionStatsWidget } from "./widgets/transaction-stats-widget";
 import { UserStatsWidget } from "./widgets/user-stats-widget";
@@ -47,8 +40,9 @@ export function Dashboard() {
         </Suspense>
       </div>
 
+      {/* TODO: Add charts and tables */}
       {/* Charts Section */}
-      <div>
+      {/* <div>
         <h2 className="text-2xl font-semibold mb-4">{t("stats.title")}</h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-4">
           <Suspense fallback={<ChartSkeleton />}>
@@ -64,10 +58,10 @@ export function Dashboard() {
             <TransactionHistoryChart />
           </Suspense>
         </div>
-      </div>
+      </div> */}
 
       {/* Tables Section */}
-      <div className="space-y-8">
+      {/* <div className="space-y-8">
         <div>
           <h2 className="text-2xl font-semibold mb-4">{t("tables.actions")}</h2>
           <Suspense fallback={<div>Loading actions...</div>}>
@@ -81,7 +75,7 @@ export function Dashboard() {
             <LatestEventsTable />
           </Suspense>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
