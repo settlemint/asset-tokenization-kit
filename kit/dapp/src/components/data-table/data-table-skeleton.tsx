@@ -34,9 +34,8 @@ export function DataTableSkeleton() {
             {Array.from({ length: 5 }).map((_, index) => (
               <TableRow
                 key={index}
-                className="animate-in fade-in-0 slide-in-from-left-1"
+                className={`animate-in fade-in-0 slide-in-from-left-1 delay-${index * 50}`}
                 style={{
-                  animationDelay: `${index * 50}ms`,
                   animationFillMode: "both",
                 }}
               >
