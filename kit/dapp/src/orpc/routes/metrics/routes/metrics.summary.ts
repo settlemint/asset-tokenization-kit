@@ -1,11 +1,8 @@
 import { user } from "@/lib/db/schema";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { authMiddleware } from "@/orpc/middlewares/auth/auth.middleware";
-import { sessionMiddleware } from "@/orpc/middlewares/auth/session.middleware";
-import { errorMiddleware } from "@/orpc/middlewares/monitoring/error.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { baseRouter } from "@/orpc/procedures/base.router";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import { count, gte } from "drizzle-orm";
 import { z } from "zod/v4";
 
@@ -120,10 +117,7 @@ function createAssetBreakdown(tokens: { type: string }[]) {
  * console.log(metrics.totalAssets, metrics.assetBreakdown, metrics.totalTransactions);
  * ```
  */
-export const summary = baseRouter.metrics.summary
-  .use(errorMiddleware)
-  .use(sessionMiddleware)
-  .use(authMiddleware)
+export const summary = authRouter.metrics.summary
   .use(theGraphMiddleware)
   .use(databaseMiddleware)
   .handler(async ({ context }) => {
