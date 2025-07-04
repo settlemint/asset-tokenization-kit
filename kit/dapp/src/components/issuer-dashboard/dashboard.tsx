@@ -20,6 +20,8 @@ export function Dashboard() {
   return (
     <>
       <PageHeader title={t("title")} section={t("asset-management")} />
+
+      {/* Widgets Section */}
       <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-4 lg:divide-x lg:divide-y-0">
         <Suspense fallback={<WidgetSkeleton />}>
           <AssetStatsWidget />
@@ -34,25 +36,31 @@ export function Dashboard() {
           <ValueStatsWidget />
         </Suspense>
       </div>
-      {/* <p className="mt-8 mb-4 font-semibold text-2xl">{t("stats-heading")}</p>
-      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0 2xl:grid-cols-4">
-        {/* Charts Section */}
-      {/* <Suspense fallback={<ChartSkeleton />}>
+
+      {/* Charts Section */}
+      {/* <p className="mt-8 mb-4 font-semibold text-2xl">{t("stats-heading")}</p> */}
+      {/* <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0 2xl:grid-cols-4"> */}
+        {/* <Suspense fallback={<ChartSkeleton />}>
           <AssetSupplyChart />
-        </Suspense>
-        <Suspense fallback={<ChartSkeleton />}>
+        </Suspense> */}
+        {/* <Suspense fallback={<ChartSkeleton />}>
           <AssetActivityChart />
-        </Suspense>
-        <Suspense fallback={<ChartSkeleton />}>
+        </Suspense> */}
+        {/* <Suspense fallback={<ChartSkeleton />}>
           <UserGrowthChart />
-        </Suspense>
-        <Suspense fallback={<ChartSkeleton />}>
+        </Suspense> */}
+        {/* <Suspense fallback={<ChartSkeleton />}>
           <TransactionHistoryChart />
-        </Suspense>  */}
-      {/* </div>
+        </Suspense> */}
+      {/* </div> */}
+
+      {/* Actions Section */}
+      {/*
       <p className="mt-8 mb-4 font-semibold text-2xl">{t("actions-heading")}</p>
       <ActionsTable status="PENDING" type="Admin" />
-      <p className="mt-8 mb-4 font-semibold text-2xl">
+
+      {/* Latest Events Section */}
+      {/* <p className="mt-8 mb-4 font-semibold text-2xl">
         {t("latest-events-heading")}
       </p> */}
       {/* <LatestEvents /> */}

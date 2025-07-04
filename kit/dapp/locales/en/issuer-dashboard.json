@@ -1,9 +1,9 @@
 {
   "title": "Dashboard",
   "description": "Asset management",
-  "asset-management": "Asset Management",
-  "stats-heading": "Statistics",
-  "actions-heading": "Pending Actions",
+  "asset-management": "Asset management",
+  "stats-heading": "Stats",
+  "actions-heading": "Actions",
   "latest-events-heading": "Latest Events",
   "stats": {
     "title": "Platform Statistics",
@@ -17,13 +17,16 @@
     "usersDescription": "{{count}} users in the last {{days}} days",
     "usersDescription_one": "{{count}} user in the last {{days}} days",
     "usersDescription_other": "{{count}} users in the last {{days}} days",
-    "totalValue": "Total Value",
+    "totalValue": "Value",
     "totalValueDescription": "Total value across all assets",
     "loading": "Loading statistics...",
     "noAssets": "No assets found"
   },
   "charts": {
-    "assetSupply": "Asset Supply",
+    "assetSupply": {
+      "title": "Asset supply",
+      "description": "The distribution of assets per asset class"
+    },
     "assetActivity": "Asset Activity",
     "usersHistory": "User Growth",
     "transactionsHistory": "Transaction History"
