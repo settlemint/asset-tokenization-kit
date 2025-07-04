@@ -11,3 +11,4 @@ out
 .generated
 kit/contracts/ignition/deloyments
 kit/subgraph/build
+kit/charts
