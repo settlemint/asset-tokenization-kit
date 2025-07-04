@@ -126,30 +126,31 @@ export const summary = authRouter.metrics.summary
     const recentActivityThreshold = subDays(new Date(), RECENT_ACTIVITY_DAYS);
     const recentEventsTimestamp = getUnixTime(recentActivityThreshold).toString();
 
-    // Fetch blockchain metrics from TheGraph
-    const response = await context.theGraphClient.query(METRICS_SUMMARY_QUERY, {
-      input: {
+    // Run all queries in parallel for optimal performance
+    const [response, totalUserCountResult, recentUserCountResult] = await Promise.all([
+      // Fetch blockchain metrics from TheGraph
+      context.theGraphClient.query(METRICS_SUMMARY_QUERY, {
         input: {
-          recentEventsTimestamp,
+          input: {
+            recentEventsTimestamp,
+          },
         },
-      },
-      output: MetricsResponseSchema,
-      error: "Failed to fetch metrics summary",
-    });
+        output: MetricsResponseSchema,
+        error: "Failed to fetch metrics summary",
+      }),
+      // Get count of all registered accounts from database
+      context.db
+        .select({ count: count() })
+        .from(user),
+      // Get count of users registered in the last X days (using same threshold as transactions)
+      context.db
+        .select({ count: count() })
+        .from(user)
+        .where(gte(user.createdAt, recentActivityThreshold)),
+    ]);
 
-    // Get count of all registered accounts from database
-    const [totalUserCountResult] = await context.db
-      .select({ count: count() })
-      .from(user);
-
-    // Get count of users registered in the last X days (using same threshold as transactions)
-    const [recentUserCountResult] = await context.db
-      .select({ count: count() })
-      .from(user)
-      .where(gte(user.createdAt, recentActivityThreshold));
-
-    const totalUsers = totalUserCountResult?.count ?? 0;
-    const recentUsersCount = recentUserCountResult?.count ?? 0;
+    const totalUsers = totalUserCountResult[0]?.count ?? 0;
+    const recentUsersCount = recentUserCountResult[0]?.count ?? 0;
 
     // Calculate total value, defaulting to "0" if no system stats
     const totalValue =
