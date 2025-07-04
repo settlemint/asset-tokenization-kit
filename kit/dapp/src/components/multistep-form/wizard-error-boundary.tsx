@@ -18,7 +18,10 @@ interface ErrorBoundaryProps {
   fallback?: (error: Error, reset: () => void) => ReactNode;
 }
 
-class WizardErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class WizardErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -29,9 +32,26 @@ class WizardErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // Enhanced error logging with more details
     logger.error("MultiStepWizard error boundary caught error", {
+      error: {
+        name: error?.name,
+        message: error?.message,
+        stack: error?.stack,
+        toString: error?.toString(),
+      },
+      errorInfo: {
+        componentStack: errorInfo?.componentStack,
+      },
+    });
+
+    // Also log to console for immediate debugging
+    console.error("MultiStepWizard Error Boundary:", {
       error,
       errorInfo,
+      errorName: error?.name,
+      errorMessage: error?.message,
+      errorStack: error?.stack,
     });
   }
 

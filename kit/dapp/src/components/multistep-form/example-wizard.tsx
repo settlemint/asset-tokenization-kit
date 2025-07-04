@@ -9,16 +9,16 @@ const tokenFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   symbol: z.string().min(1, "Symbol is required"),
   description: z.string().optional(),
-  
+
   // Token Details
   tokenType: z.enum(["equity", "bond", "deposit", "fund", "stablecoin"]),
   totalSupply: z.number().min(1, "Total supply must be positive"),
   decimals: z.number().min(0).max(18, "Decimals must be between 0 and 18"),
-  
+
   // Compliance
   requiresKYC: z.boolean().default(false),
   complianceRegion: z.string().optional(),
-  
+
   // Advanced
   mintable: z.boolean().default(false),
   burnable: z.boolean().default(false),
@@ -195,7 +195,7 @@ const steps: StepDefinition<TokenFormData>[] = [
         // Example mutation - replace with actual ORPC call
         console.log("Creating token:", data);
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         return { success: true, address: "0x123...abc" };
       },
     },
@@ -222,7 +222,7 @@ function ExampleWizardComponent({ onComplete }: ExampleWizardProps) {
           Follow the steps below to create and deploy your token
         </p>
       </div>
-      
+
       <MultiStepWizard<TokenFormData>
         name="token-creation"
         steps={steps}

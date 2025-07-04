@@ -1,11 +1,14 @@
 # MultiStep Wizard Component
 
-A comprehensive multi-step wizard component built with TanStack Form, TanStack Query, and shadcn/ui components. Features URL persistence, collapsible step groups, async field dependencies, and ORPC integration.
+A comprehensive multi-step wizard component built with TanStack Form, TanStack
+Query, and shadcn/ui components. Features URL persistence, collapsible step
+groups, async field dependencies, and ORPC integration.
 
 ## Features
 
 - **TanStack Form Integration**: Uses TanStack Form for type-safe form handling
-- **URL Persistence**: Step progress and form data persisted in URL with debouncing
+- **URL Persistence**: Step progress and form data persisted in URL with
+  debouncing
 - **Collapsible Groups**: Steps can be organized into collapsible sidebar groups
 - **Async Field Dependencies**: Fields can show/hide based on async ORPC calls
 - **ORPC Integration**: Built-in support for streaming mutations at each step
@@ -162,18 +165,18 @@ const steps: StepDefinition<FormData>[] = [
 
 ### MultiStepWizard Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `name` | `string` | - | Unique identifier for URL persistence |
-| `steps` | `StepDefinition[]` | - | Array of step definitions |
-| `groups` | `StepGroup[]` | - | Optional step groups for sidebar organization |
-| `onComplete` | `(data: T) => void \| Promise<void>` | - | Called when wizard is completed |
-| `enableUrlPersistence` | `boolean` | `true` | Enable URL state persistence |
-| `debounceMs` | `number` | `300` | Debounce delay for URL updates |
-| `showProgressBar` | `boolean` | `true` | Show progress bar in sidebar |
-| `allowStepSkipping` | `boolean` | `false` | Allow navigating to any step |
-| `persistFormData` | `boolean` | `true` | Persist form data in URL |
-| `defaultValues` | `Partial<T>` | `{}` | Default form values |
+| Prop                   | Type                                 | Default | Description                                   |
+| ---------------------- | ------------------------------------ | ------- | --------------------------------------------- |
+| `name`                 | `string`                             | -       | Unique identifier for URL persistence         |
+| `steps`                | `StepDefinition[]`                   | -       | Array of step definitions                     |
+| `groups`               | `StepGroup[]`                        | -       | Optional step groups for sidebar organization |
+| `onComplete`           | `(data: T) => void \| Promise<void>` | -       | Called when wizard is completed               |
+| `enableUrlPersistence` | `boolean`                            | `true`  | Enable URL state persistence                  |
+| `debounceMs`           | `number`                             | `300`   | Debounce delay for URL updates                |
+| `showProgressBar`      | `boolean`                            | `true`  | Show progress bar in sidebar                  |
+| `allowStepSkipping`    | `boolean`                            | `false` | Allow navigating to any step                  |
+| `persistFormData`      | `boolean`                            | `true`  | Persist form data in URL                      |
+| `defaultValues`        | `Partial<T>`                         | `{}`    | Default form values                           |
 
 ### StepDefinition
 
@@ -184,7 +187,9 @@ interface StepDefinition<T> {
   description?: string;
   groupId?: string;
   fields?: FieldDefinition<T>[];
-  validate?: (data: Partial<T>) => Promise<string | undefined> | string | undefined;
+  validate?: (
+    data: Partial<T>
+  ) => Promise<string | undefined> | string | undefined;
   onStepComplete?: (data: Partial<T>) => Promise<void> | void;
   mutation?: {
     mutationKey: string;
@@ -202,7 +207,15 @@ interface FieldDefinition<T> {
   name: keyof T;
   label: string;
   description?: string;
-  type: "text" | "number" | "email" | "select" | "checkbox" | "radio" | "textarea" | "custom";
+  type:
+    | "text"
+    | "number"
+    | "email"
+    | "select"
+    | "checkbox"
+    | "radio"
+    | "textarea"
+    | "custom";
   placeholder?: string;
   required?: boolean;
   schema?: z.ZodType;
@@ -218,7 +231,12 @@ interface FieldDefinition<T> {
 ### Custom Step Component
 
 ```tsx
-function CustomStepComponent({ form, stepId, onNext, onPrevious }: StepComponentProps<FormData>) {
+function CustomStepComponent({
+  form,
+  stepId,
+  onNext,
+  onPrevious,
+}: StepComponentProps<FormData>) {
   return (
     <div className="space-y-4">
       <h2>Custom Step</h2>
@@ -235,7 +253,10 @@ function CustomStepComponent({ form, stepId, onNext, onPrevious }: StepComponent
 ### Custom Field Component
 
 ```tsx
-function CustomFieldComponent({ field, fieldDefinition }: FieldComponentProps<FormData>) {
+function CustomFieldComponent({
+  field,
+  fieldDefinition,
+}: FieldComponentProps<FormData>) {
   return (
     <div className="space-y-2">
       <Label>{fieldDefinition.label}</Label>
@@ -294,6 +315,7 @@ The wizard follows the same patterns as the DataTable component:
 ## Examples
 
 See `example-wizard.tsx` for a complete implementation example showing:
+
 - Multi-step token creation wizard
 - Collapsible step groups
 - Field dependencies

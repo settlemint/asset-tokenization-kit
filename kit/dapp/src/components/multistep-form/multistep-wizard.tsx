@@ -1,19 +1,21 @@
 import { useCallback, useMemo, useEffect } from "react";
 import { useForm } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-// Logger import removed as it's not used
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { WizardProvider } from "./wizard-context";
 import { WizardSidebar } from "./wizard-sidebar";
 import { WizardStep } from "./wizard-step";
 import { useMultiStepWizardState } from "./use-multistep-wizard-state";
 import type { MultiStepWizardProps, WizardContextValue } from "./types";
 
-// Note: Logger removed as it's not used in this component
+const logger = createLogger({
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ?? "info",
+});
 
 export function MultiStepWizard<TFormData = Record<string, unknown>>({
   name,
+  description,
   steps,
   groups,
   onComplete,
@@ -27,6 +29,16 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   allowStepSkipping = false,
   persistFormData = true,
 }: MultiStepWizardProps<TFormData>) {
+  logger.debug("MultiStepWizard initialization", {
+    name,
+    stepsCount: steps.length,
+    hasGroups: Boolean(groups),
+    enableUrlPersistence,
+    hasDefaultValues: Boolean(defaultValues),
+  });
+
+  // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
+
   const {
     currentStepIndex,
     completedSteps,
@@ -50,27 +62,43 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   });
 
   // Create form with TanStack Form
-  const form = useForm<TFormData>({
+  const form = useForm({
     defaultValues: (persistFormData ? formData : defaultValues) as TFormData,
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: TFormData }) => {
       await onComplete(value);
       reset();
     },
-    validatorAdapter: zodValidator(),
+  });
+
+  logger.debug("Form created", {
+    hasForm: Boolean(form),
+    formState: form.state ? "available" : "unavailable",
+    defaultValues: persistFormData ? formData : defaultValues,
   });
 
   // Update persisted form data when form values change
   useEffect(() => {
-    if (persistFormData) {
-      const unsubscribe = form.Subscribe({
-        selector: (state) => state.values,
-        fn: (values) => {
-          updateFormData(values as Record<string, unknown>);
-        },
-      });
-      return unsubscribe;
-    }
+    if (!persistFormData) return;
+
+    const unsubscribe = form.store.subscribe(() => {
+      const values = form.state.values;
+      updateFormData(values as Record<string, unknown>);
+    });
+
+    return unsubscribe;
   }, [form, persistFormData, updateFormData]);
+
+  // Ensure currentStepIndex is valid
+  const safeCurrentStepIndex = useMemo(() => {
+    if (currentStepIndex < 0 || currentStepIndex >= steps.length) {
+      logger.warn("Invalid step index detected, resetting to 0", {
+        currentStepIndex,
+        stepsLength: steps.length,
+      });
+      return 0; // Default to first step if index is invalid
+    }
+    return currentStepIndex;
+  }, [currentStepIndex, steps]);
 
   // Calculate progress
   const progress = useMemo(() => {
@@ -81,15 +109,23 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   const canNavigateToStep = useCallback(
     (stepIndex: number) => {
       if (stepIndex < 0 || stepIndex >= steps.length) return false;
-      if (stepIndex === currentStepIndex) return true;
+      if (stepIndex === safeCurrentStepIndex) return true;
       if (allowStepSkipping) return true;
-      
-      // Can only navigate to completed steps or the next step
+
+      // Allow navigation to:
+      // 1. Any previous step (stepIndex < safeCurrentStepIndex)
+      // 2. Completed steps 
+      // 3. The next step after current
       const targetStep = steps[stepIndex];
       if (!targetStep) return false;
-      return completedSteps.includes(targetStep.id) || stepIndex === currentStepIndex + 1;
+      
+      return (
+        stepIndex < safeCurrentStepIndex || // Allow going back to any previous step
+        completedSteps.includes(targetStep.id) ||
+        stepIndex === safeCurrentStepIndex + 1
+      );
     },
-    [steps, currentStepIndex, completedSteps, allowStepSkipping]
+    [steps, safeCurrentStepIndex, completedSteps, allowStepSkipping]
   );
 
   const navigateToStep = useCallback(
@@ -102,16 +138,16 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   );
 
   const nextStep = useCallback(() => {
-    if (currentStepIndex < steps.length - 1) {
-      setCurrentStepIndex(currentStepIndex + 1);
+    if (safeCurrentStepIndex < steps.length - 1) {
+      setCurrentStepIndex(safeCurrentStepIndex + 1);
     }
-  }, [currentStepIndex, steps.length, setCurrentStepIndex]);
+  }, [safeCurrentStepIndex, steps.length, setCurrentStepIndex]);
 
   const previousStep = useCallback(() => {
-    if (currentStepIndex > 0) {
-      setCurrentStepIndex(currentStepIndex - 1);
+    if (safeCurrentStepIndex > 0) {
+      setCurrentStepIndex(safeCurrentStepIndex - 1);
     }
-  }, [currentStepIndex, setCurrentStepIndex]);
+  }, [safeCurrentStepIndex, setCurrentStepIndex]);
 
   const markStepComplete = useCallback(
     (stepId: string) => {
@@ -131,7 +167,8 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   const clearStepError = useCallback(
     (stepId: string) => {
-      const { [stepId]: _, ...rest } = stepErrors;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [stepId]: _unused, ...rest } = stepErrors;
       setStepErrors(rest);
     },
     [stepErrors, setStepErrors]
@@ -142,9 +179,14 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     form.reset();
   }, [reset, form]);
 
+  const handleFormSubmit = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
   // Create context value
   const contextValue: WizardContextValue<TFormData> = {
-    currentStepIndex,
+    currentStepIndex: safeCurrentStepIndex,
     setCurrentStepIndex,
     completedSteps,
     markStepComplete,
@@ -158,40 +200,110 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     navigateToStep,
     nextStep,
     previousStep,
-    isFirstStep: currentStepIndex === 0,
-    isLastStep: currentStepIndex === steps.length - 1,
+    isFirstStep: safeCurrentStepIndex === 0,
+    isLastStep: safeCurrentStepIndex === steps.length - 1,
     resetWizard,
   };
 
+  logger.debug("Context value created", {
+    currentStepIndex: safeCurrentStepIndex,
+    stepsLength: steps.length,
+    hasForm: Boolean(form),
+    hasSteps: Boolean(steps),
+  });
+
+  // Calculate wizard-specific styles matching StepWizard
+  const sidebarStyle = useMemo(() => {
+    return {
+      background: "var(--sm-wizard-sidebar-gradient)",
+      backgroundSize: "cover",
+      backgroundPosition: "top",
+      backgroundRepeat: "no-repeat",
+      minWidth: "320px",
+    };
+  }, []);
+
+  const contentStyle = useMemo(() => {
+    return { backgroundColor: "var(--sm-background-lightest)" };
+  }, []);
+
+  // NOW handle conditional rendering after all hooks have been called
+  if (steps.length === 0) {
+    logger.error("MultiStepWizard requires at least one step");
+    return (
+      <div className="flex items-center justify-center p-8">
+        <p className="text-center text-muted-foreground">
+          No wizard steps configured. Please provide at least one step.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <WizardProvider value={contextValue}>
-      <div className={cn("flex gap-6", className)}>
-        {/* Sidebar */}
-        <aside className={cn("w-64 shrink-0", sidebarClassName)}>
-          <div className="sticky top-4 space-y-4">
-            {showProgressBar && (
-              <div className="px-4">
-                <div className="text-sm font-medium mb-2">
-                  Progress: {Math.round(progress)}%
-                </div>
-                <Progress value={progress} className="h-2" />
-              </div>
+      <div className={cn("flex h-full min-h-[600px]", className)}>
+        <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
+          {/* Sidebar */}
+          <div
+            className={cn(
+              "w-[320px] flex-shrink-0 p-8 flex flex-col transition-all duration-300",
+              sidebarClassName
             )}
+            style={sidebarStyle}
+          >
+            {/* Title and Progress */}
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-primary-foreground mb-2">
+                {name
+                  ? name
+                      .split("-")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ")
+                  : "Setup Wizard"}
+              </h2>
+              <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
+                {description || "Configure your platform step by step"}
+              </p>
+
+              {showProgressBar && (
+                <div>
+                  <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
+                    <span>Step {(safeCurrentStepIndex + 1).toString()}</span>
+                    <span>
+                      {(safeCurrentStepIndex + 1).toString()} /{" "}
+                      {steps.length.toString()}
+                    </span>
+                  </div>
+                  <Progress
+                    value={progress}
+                    className="h-2 bg-primary-foreground/20"
+                  />
+                </div>
+              )}
+            </div>
+
             <WizardSidebar />
           </div>
-        </aside>
 
-        {/* Main content */}
-        <main className={cn("flex-1", contentClassName)}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
+          {/* Main content */}
+          <div
+            className={cn(
+              "flex-1 flex flex-col transition-all duration-300 relative overflow-hidden",
+              contentClassName
+            )}
+            style={contentStyle}
           >
-            <WizardStep />
-          </form>
-        </main>
+            <div className="flex-1 overflow-y-auto p-8">
+              <div className="w-full h-full">
+                <form onSubmit={handleFormSubmit}>
+                  <WizardStep />
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </WizardProvider>
   );

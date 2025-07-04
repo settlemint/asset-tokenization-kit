@@ -1,24 +1,30 @@
 import { useEffect, useState } from "react";
 import { useField } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import type { FieldDefinition } from "./types";
 import { useWizardContext } from "./wizard-context";
+import type { DeepValue } from "@tanstack/react-form";
 
 interface WizardFieldProps<TFormData> {
   fieldDef: FieldDefinition<TFormData>;
   formData: Partial<TFormData>;
 }
 
-export function WizardField<TFormData>({ 
-  fieldDef, 
-  formData 
+export function WizardField<TFormData>({
+  fieldDef,
+  formData,
 }: WizardFieldProps<TFormData>) {
   const [isVisible, setIsVisible] = useState(true);
   const [isChecking, setIsChecking] = useState(false);
@@ -43,12 +49,24 @@ export function WizardField<TFormData>({
     }
   }, [fieldDef, formData]);
 
+  // Safety check for form before creating field
+  if (!form) {
+    return null;
+  }
+
   const field = useField({
     form,
     name: fieldDef.name as string,
-    validators: fieldDef.schema ? {
-      onChange: zodValidator()(fieldDef.schema),
-    } : undefined,
+    validators: fieldDef.schema
+      ? {
+          onChange: ({ value }) => {
+            const result = fieldDef.schema!.safeParse(value);
+            return result.success
+              ? undefined
+              : result.error.issues[0]?.message || "Invalid value";
+          },
+        }
+      : undefined,
   });
 
   if (!isVisible || isChecking) return null;
@@ -70,15 +88,23 @@ export function WizardField<TFormData>({
               id={fieldDef.name as string}
               type={fieldDef.type}
               placeholder={fieldDef.placeholder}
-              value={field.state.value as string || ""}
-              onChange={(e) => field.handleChange(e.target.value)}
+              value={(field.state.value as string) || ""}
+              onChange={(e) =>
+                field.handleChange(
+                  e.target.value as DeepValue<TFormData, string>
+                )
+              }
               onBlur={field.handleBlur}
               className={cn(
-                field.state.meta.isTouched && field.state.meta.errors.length > 0 && "border-destructive"
+                field.state.meta.isTouched &&
+                  field.state.meta.errors.length > 0 &&
+                  "border-destructive"
               )}
             />
             {fieldDef.postfix && (
-              <span className="text-sm text-muted-foreground">{fieldDef.postfix}</span>
+              <span className="text-sm text-muted-foreground">
+                {fieldDef.postfix}
+              </span>
             )}
           </div>
         );
@@ -88,11 +114,15 @@ export function WizardField<TFormData>({
           <Textarea
             id={fieldDef.name as string}
             placeholder={fieldDef.placeholder}
-            value={field.state.value as string || ""}
-            onChange={(e) => field.handleChange(e.target.value)}
+            value={(field.state.value as string) || ""}
+            onChange={(e) =>
+              field.handleChange(e.target.value as DeepValue<TFormData, string>)
+            }
             onBlur={field.handleBlur}
             className={cn(
-              field.state.meta.isTouched && field.state.meta.errors.length > 0 && "border-destructive"
+              field.state.meta.isTouched &&
+                field.state.meta.errors.length > 0 &&
+                "border-destructive"
             )}
             rows={4}
           />
@@ -101,16 +131,20 @@ export function WizardField<TFormData>({
       case "select":
         return (
           <Select
-            value={field.state.value as string || ""}
-            onValueChange={field.handleChange}
+            value={(field.state.value as string) || ""}
+            onValueChange={(value) => field.handleChange(value as any)}
           >
             <SelectTrigger
               id={fieldDef.name as string}
               className={cn(
-                field.state.meta.isTouched && field.state.meta.errors.length > 0 && "border-destructive"
+                field.state.meta.isTouched &&
+                  field.state.meta.errors.length > 0 &&
+                  "border-destructive"
               )}
             >
-              <SelectValue placeholder={fieldDef.placeholder || "Select an option"} />
+              <SelectValue
+                placeholder={fieldDef.placeholder || "Select an option"}
+              />
             </SelectTrigger>
             <SelectContent>
               {fieldDef.options?.map((option) => (
@@ -127,8 +161,8 @@ export function WizardField<TFormData>({
           <div className="flex items-center space-x-2">
             <Checkbox
               id={fieldDef.name as string}
-              checked={field.state.value as boolean || false}
-              onCheckedChange={field.handleChange}
+              checked={(field.state.value as boolean) || false}
+              onCheckedChange={(checked) => field.handleChange(checked as any)}
             />
             <Label
               htmlFor={fieldDef.name as string}
@@ -142,8 +176,8 @@ export function WizardField<TFormData>({
       case "radio":
         return (
           <RadioGroup
-            value={field.state.value as string || ""}
-            onValueChange={field.handleChange}
+            value={(field.state.value as string) || ""}
+            onValueChange={(value) => field.handleChange(value as any)}
           >
             {fieldDef.options?.map((option) => (
               <div key={option.value} className="flex items-center space-x-2">
@@ -166,7 +200,9 @@ export function WizardField<TFormData>({
       {fieldDef.type !== "checkbox" && (
         <Label htmlFor={fieldDef.name as string}>
           {fieldDef.label}
-          {fieldDef.required && <span className="text-destructive ml-1">*</span>}
+          {fieldDef.required && (
+            <span className="text-destructive ml-1">*</span>
+          )}
         </Label>
       )}
       {fieldDef.description && (

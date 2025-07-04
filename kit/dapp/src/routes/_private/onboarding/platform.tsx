@@ -370,7 +370,11 @@ function PlatformOnboarding() {
         {/* Language and theme toggles positioned in top-right - matching auth pages */}
         <div className="absolute top-8 right-8 flex gap-2">
           <Link to="/onboarding/platform-new">
-            <Button variant="outline" size="sm" className="bg-background/10 border-border/20 text-foreground hover:bg-background/20">
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-background/10 border-border/20 text-foreground hover:bg-background/20"
+            >
               Try New Wizard
             </Button>
           </Link>

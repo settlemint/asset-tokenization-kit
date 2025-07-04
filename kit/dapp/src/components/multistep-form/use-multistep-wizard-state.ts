@@ -51,18 +51,18 @@ export function useMultiStepWizardState({
 
       // Parse the wizard state from URL
       const urlState = {
-        currentStepIndex: wizardSearch.step 
-          ? Number(wizardSearch.step) 
-          : defaultState.currentStepIndex ?? 0,
-        completedSteps: wizardSearch.completed 
+        currentStepIndex: wizardSearch.step
+          ? Number(wizardSearch.step)
+          : (defaultState.currentStepIndex ?? 0),
+        completedSteps: wizardSearch.completed
           ? (wizardSearch.completed as string).split(",").filter(Boolean)
-          : defaultState.completedSteps ?? [],
+          : (defaultState.completedSteps ?? []),
         stepErrors: wizardSearch.errors
           ? JSON.parse(wizardSearch.errors as string)
-          : defaultState.stepErrors ?? {},
+          : (defaultState.stepErrors ?? {}),
         formData: wizardSearch.data
           ? JSON.parse(wizardSearch.data as string)
-          : defaultState.formData ?? {},
+          : (defaultState.formData ?? {}),
       };
 
       return wizardStateSchema.parse(urlState);
@@ -86,22 +86,22 @@ export function useMultiStepWizardState({
         if (!enableUrlPersistence) return;
 
         const updatedState = { ...state, ...newState };
-        
+
         // Build the wizard-specific search params
         const wizardParams: Record<string, unknown> = {};
-        
+
         if (updatedState.currentStepIndex > 0) {
           wizardParams.step = updatedState.currentStepIndex;
         }
-        
+
         if (updatedState.completedSteps.length > 0) {
           wizardParams.completed = updatedState.completedSteps.join(",");
         }
-        
+
         if (Object.keys(updatedState.stepErrors).length > 0) {
           wizardParams.errors = JSON.stringify(updatedState.stepErrors);
         }
-        
+
         if (Object.keys(updatedState.formData).length > 0) {
           wizardParams.data = JSON.stringify(updatedState.formData);
         }
@@ -109,7 +109,8 @@ export function useMultiStepWizardState({
         // Build the complete search params object
         const newSearchParams = {
           ...search,
-          [name]: Object.keys(wizardParams).length > 0 ? wizardParams : undefined,
+          [name]:
+            Object.keys(wizardParams).length > 0 ? wizardParams : undefined,
         };
 
         // Navigate with new search params

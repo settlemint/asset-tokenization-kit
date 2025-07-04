@@ -4,7 +4,7 @@ import { debounce, type DebouncedFunction } from "@/lib/utils/debounce";
 /**
  * React hook that returns a debounced version of the provided callback.
  * The debounced function is automatically cleaned up on unmount.
- * 
+ *
  * @param callback - The function to debounce
  * @param delay - The delay in milliseconds
  * @returns A stable debounced version of the callback

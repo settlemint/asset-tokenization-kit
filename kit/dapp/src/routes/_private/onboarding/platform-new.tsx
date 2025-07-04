@@ -3,17 +3,39 @@ import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { MultiStepWizard, withWizardErrorBoundary } from "@/components/multistep-form";
+import {
+  MultiStepWizard,
+  withWizardErrorBoundary,
+} from "@/components/multistep-form";
 import { useSettings } from "@/hooks/use-settings";
 import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import type { StepDefinition, StepGroup } from "@/components/multistep-form/types";
+import type {
+  StepDefinition,
+  StepGroup,
+  StepComponentProps,
+} from "@/components/multistep-form/types";
 import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/query.client";
+import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useContext, useState, useEffect } from "react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { PincodeInput } from "@/components/onboarding/pincode-input";
 
 export const Route = createFileRoute("/_private/onboarding/platform-new")({
   loader: async ({ context }) => {
@@ -42,31 +64,37 @@ export const Route = createFileRoute("/_private/onboarding/platform-new")({
 
 // Define the onboarding form schema
 const onboardingSchema = z.object({
-  // Platform Setup
-  platformName: z.string().min(1, "Platform name is required"),
-  platformDescription: z.string().optional(),
-  
   // Wallet Configuration
   walletGenerated: z.boolean().default(false),
   walletAddress: z.string().optional(),
-  
-  // Security Setup
-  pincodeEnabled: z.boolean().default(false),
-  backupCompleted: z.boolean().default(false),
-  
-  // System Deployment
-  systemDeployed: z.boolean().default(false),
+  walletSecured: z.boolean().default(false),
+
+  // System Bootstrap
+  systemBootstrapped: z.boolean().default(false),
   systemAddress: z.string().optional(),
-  networkSelected: z.enum(["local", "testnet", "mainnet"]).default("local"),
-  
+
   // Asset Configuration
+  selectedAssetTypes: z
+    .array(z.enum(["equity", "bond", "deposit", "fund", "stablecoin"]))
+    .default([]),
   assetFactoriesDeployed: z.boolean().default(false),
-  selectedAssetTypes: z.array(z.enum(["equity", "bond", "deposit", "fund", "stablecoin"])).default([]),
-  
-  // Compliance Settings
-  kycRequired: z.boolean().default(false),
-  complianceRegion: z.string().optional(),
-  regulatoryFramework: z.string().optional(),
+
+  // Add-ons Configuration
+  selectedAddons: z
+    .array(z.enum(["airdrops", "xvp", "yield", "governance", "analytics"]))
+    .default([]),
+  addonsConfigured: z.boolean().default(false),
+
+  // Identity & KYC
+  kycCompleted: z.boolean().default(false),
+  identityRegistered: z.boolean().default(false),
+  // KYC Data
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  dateOfBirth: z.string().optional(),
+  nationality: z.string().optional(),
+  residenceCountry: z.string().optional(),
+  investorType: z.enum(["retail", "professional", "institutional"]).optional(),
 });
 
 type OnboardingFormData = z.infer<typeof onboardingSchema>;
@@ -94,276 +122,412 @@ function PlatformNewOnboarding() {
 
   const allowedTypes: OnboardingType[] = useMemo(() => ["platform"], []);
 
-  // Define step groups
-  const groups: StepGroup[] = [
-    {
-      id: "setup",
-      title: "Platform Setup",
-      description: "Configure your platform basics",
-      collapsible: true,
-      defaultExpanded: true,
-    },
-    {
-      id: "security",
-      title: "Security & Wallet",
-      description: "Secure your platform",
-      collapsible: true,
-      defaultExpanded: false,
-    },
-    {
-      id: "deployment",
-      title: "System Deployment",
-      description: "Deploy blockchain infrastructure",
-      collapsible: true,
-      defaultExpanded: false,
-    },
-    {
-      id: "configuration",
-      title: "Configuration",
-      description: "Configure assets and compliance",
-      collapsible: true,
-      defaultExpanded: false,
-    },
-  ];
+  // Check if steps should be shown based on current state
+  const shouldShowWalletSteps = true; // Always show for demo - in real app: !user?.wallet
+  const shouldShowSystemSteps = !systemAddress;
+  const shouldShowAssetSteps =
+    !systemAddress || (systemDetails?.tokenFactories.length ?? 0) === 0;
+  const shouldShowIdentitySteps = true; // Always show for now - in real app check if user has identity
 
-  // Define wizard steps
-  const steps: StepDefinition<OnboardingFormData>[] = [
-    {
-      id: "platform-info",
-      title: "Platform Information",
-      description: "Set up your platform's basic information",
-      groupId: "setup",
-      fields: [
-        {
-          name: "platformName",
-          label: "Platform Name",
-          type: "text",
-          required: true,
-          placeholder: "My Asset Tokenization Platform",
-          description: "Choose a name for your tokenization platform",
-          schema: z.string().min(1, "Platform name is required"),
-        },
-        {
-          name: "platformDescription",
-          label: "Platform Description",
-          type: "textarea",
-          placeholder: "A platform for tokenizing real-world assets...",
-          description: "Optional description of your platform's purpose",
-        },
-      ],
-    },
-    {
-      id: "wallet-setup",
-      title: "Wallet Generation",
-      description: "Generate your platform wallet",
-      groupId: "security",
-      fields: [
-        {
-          name: "walletGenerated",
-          label: "Generate Platform Wallet",
-          type: "checkbox",
-          description: "Generate a secure wallet for your platform operations",
-        },
-      ],
-      validate: async (data) => {
-        if (!data.walletGenerated) {
-          return "Platform wallet must be generated to continue";
-        }
-        return undefined;
-      },
-      mutation: {
-        mutationKey: "generate-wallet",
-        mutationFn: async (data: Partial<OnboardingFormData>) => {
-          if (data.walletGenerated) {
-            // Simulate wallet generation
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            return { address: "0x" + Math.random().toString(16).slice(2, 42) };
-          }
-          return null;
-        },
-      },
-    },
-    {
-      id: "security-setup",
-      title: "Security Configuration",
-      description: "Set up security measures",
-      groupId: "security",
-      fields: [
-        {
-          name: "pincodeEnabled",
-          label: "Enable PIN Code Protection",
-          type: "checkbox",
-          description: "Require PIN code for sensitive operations",
-        },
-        {
-          name: "backupCompleted",
-          label: "Backup Wallet Phrase",
-          type: "checkbox",
-          description: "Complete wallet backup for recovery",
-          dependsOn: (data) => !!data.pincodeEnabled,
-        },
-      ],
-      validate: async (data) => {
-        if (data.pincodeEnabled && !data.backupCompleted) {
-          return "Wallet backup must be completed when PIN is enabled";
-        }
-        return undefined;
-      },
-    },
-    {
-      id: "network-selection",
-      title: "Network Selection",
-      description: "Choose your deployment network",
-      groupId: "deployment",
-      fields: [
-        {
-          name: "networkSelected",
-          label: "Deployment Network",
-          type: "select",
-          required: true,
-          options: [
-            { label: "Local Development", value: "local" },
-            { label: "Testnet", value: "testnet" },
-            { label: "Mainnet", value: "mainnet" },
-          ],
-          description: "Select the blockchain network for deployment",
-        },
-      ],
-    },
-    {
-      id: "system-deployment",
-      title: "System Deployment",
-      description: "Deploy core system contracts",
-      groupId: "deployment",
-      fields: [
-        {
-          name: "systemDeployed",
-          label: "Deploy System Contracts",
-          type: "checkbox",
-          description: "Deploy the core tokenization system to the blockchain",
-        },
-      ],
-      validate: async (data) => {
-        if (!data.systemDeployed) {
-          return "System contracts must be deployed to continue";
-        }
-        return undefined;
-      },
-      mutation: {
-        mutationKey: "deploy-system",
-        mutationFn: async (data: Partial<OnboardingFormData>) => {
-          if (data.systemDeployed) {
-            // System creation requires PIN verification
-            // In a real implementation, you'd collect the PIN from the user
-            // For now, this is just a placeholder
-            toast.error("System deployment requires PIN verification. Please use the standard onboarding flow.");
-            return null;
-          }
-          return null;
-        },
-      },
-    },
-    {
-      id: "asset-types",
-      title: "Asset Type Selection",
-      description: "Choose which asset types to support",
-      groupId: "configuration",
-      fields: [
-        {
-          name: "selectedAssetTypes",
-          label: "Supported Asset Types",
-          type: "checkbox",
-          description: "Select the types of assets your platform will support",
-          options: [
-            { label: "Equity Tokens", value: "equity" },
-            { label: "Bond Tokens", value: "bond" },
-            { label: "Deposit Tokens", value: "deposit" },
-            { label: "Fund Tokens", value: "fund" },
-            { label: "Stablecoins", value: "stablecoin" },
-          ],
-        },
-      ],
-      validate: async (data) => {
-        if (!data.selectedAssetTypes || data.selectedAssetTypes.length === 0) {
-          return "At least one asset type must be selected";
-        }
-        return undefined;
-      },
-    },
-    {
-      id: "asset-deployment",
-      title: "Asset Factory Deployment",
-      description: "Deploy asset factory contracts",
-      groupId: "configuration",
-      fields: [
-        {
-          name: "assetFactoriesDeployed",
-          label: "Deploy Asset Factories",
-          type: "checkbox",
-          description: "Deploy factory contracts for selected asset types",
-          dependsOn: (data) => (data.selectedAssetTypes?.length || 0) > 0,
-        },
-      ],
-      validate: async (data) => {
-        if (data.selectedAssetTypes && data.selectedAssetTypes.length > 0 && !data.assetFactoriesDeployed) {
-          return "Asset factories must be deployed for selected asset types";
-        }
-        return undefined;
-      },
-      mutation: {
-        mutationKey: "deploy-asset-factories",
-        mutationFn: async (data: Partial<OnboardingFormData>) => {
-          if (data.assetFactoriesDeployed && data.selectedAssetTypes) {
-            // Factory creation requires PIN verification
-            // In a real implementation, you'd collect the PIN from the user
-            toast.error("Factory deployment requires PIN verification. Please use the standard onboarding flow.");
-            return null;
-          }
-          return null;
-        },
-      },
-    },
-    {
-      id: "compliance-setup",
-      title: "Compliance Configuration",
-      description: "Configure regulatory compliance",
-      groupId: "configuration",
-      fields: [
-        {
-          name: "kycRequired",
-          label: "Require KYC Verification",
-          type: "checkbox",
-          description: "Require Know Your Customer verification for users",
-        },
-        {
-          name: "complianceRegion",
-          label: "Primary Compliance Region",
-          type: "select",
-          dependsOn: (data) => !!data.kycRequired,
-          options: [
-            { label: "European Union (GDPR)", value: "eu" },
-            { label: "United States (SEC)", value: "us" },
-            { label: "Asia Pacific", value: "apac" },
-            { label: "Other", value: "other" },
-          ],
-          description: "Select your primary regulatory jurisdiction",
-        },
-        {
-          name: "regulatoryFramework",
-          label: "Regulatory Framework",
-          type: "text",
-          dependsOn: (data) => data.complianceRegion === "other",
-          placeholder: "Specify your regulatory framework",
-          description: "Specify the regulatory framework you'll follow",
-        },
-      ],
-    },
-  ];
+  // Define step groups with conditional logic
+  const groups: StepGroup[] = useMemo(() => {
+    const dynamicGroups: StepGroup[] = [];
 
-  const handleComplete = async (_data: OnboardingFormData) => {
+    if (shouldShowWalletSteps) {
+      dynamicGroups.push({
+        id: "wallet",
+        title: "Wallet Setup",
+        description: "Create and secure your wallet",
+        collapsible: true,
+        defaultExpanded: true,
+      });
+    }
+
+    if (shouldShowSystemSteps) {
+      dynamicGroups.push({
+        id: "system",
+        title: "System Bootstrap",
+        description: "Initialize the blockchain system",
+        collapsible: true,
+        defaultExpanded: !shouldShowWalletSteps,
+      });
+    }
+
+    if (shouldShowAssetSteps) {
+      dynamicGroups.push({
+        id: "assets",
+        title: "System Setup",
+        description: "Configure supported assets and add-ons",
+        collapsible: true,
+        defaultExpanded: !shouldShowWalletSteps && !shouldShowSystemSteps,
+      });
+    }
+
+    if (shouldShowIdentitySteps) {
+      dynamicGroups.push({
+        id: "identity",
+        title: "Identity Setup",
+        description: "Complete KYC and register identity",
+        collapsible: true,
+        defaultExpanded: dynamicGroups.length === 0,
+      });
+    }
+
+    return dynamicGroups;
+  }, [
+    shouldShowWalletSteps,
+    shouldShowSystemSteps,
+    shouldShowAssetSteps,
+    shouldShowIdentitySteps,
+  ]);
+
+  // Define wizard steps with conditional logic
+  const steps: StepDefinition<OnboardingFormData>[] = useMemo(() => {
+    const dynamicSteps: StepDefinition<OnboardingFormData>[] = [];
+
+    // 1. Wallet Steps (if wallet not created or not secured)
+    if (shouldShowWalletSteps) {
+      // Always show wallet creation step for demo - in real app: if (!user?.wallet)
+      dynamicSteps.push({
+        id: "wallet-creation",
+        title: "Create Your Wallet", 
+        description: "Generate a secure wallet for all blockchain operations",
+        groupId: "wallet",
+        fields: [],
+        component: ({ form, onNext, onPrevious, isFirstStep, isLastStep }) => (
+          <WalletDisplayStep
+            form={form}
+            onNext={onNext}
+            onPrevious={onPrevious}
+            isFirstStep={isFirstStep}
+            isLastStep={isLastStep}
+            user={user}
+          />
+        ),
+      });
+
+      // Always add wallet security step for demo
+      dynamicSteps.push({
+        id: "wallet-security",
+        title: "Secure Your Wallet",
+        description: "Set up security verification for all operations",
+        groupId: "wallet",
+        fields: [
+          {
+            name: "walletSecured",
+            label: "Enable Security Verification",
+            type: "checkbox",
+            description:
+              "We will need to execute verification on every step. This shows that we are secure.",
+          },
+        ],
+        validate: (data) => {
+          if (!data.walletSecured) {
+            return "Security verification must be enabled";
+          }
+          return undefined;
+        },
+        mutation: {
+          mutationKey: "secure-wallet",
+          mutationFn: async function* (data: Partial<OnboardingFormData>) {
+            if (data.walletSecured) {
+              yield { status: "pending", message: "Setting up security..." };
+              await new Promise((resolve) => setTimeout(resolve, 800));
+
+              yield {
+                status: "confirmed",
+                message: "Wallet security enabled!",
+              };
+              return { secured: true };
+            }
+            return null;
+          },
+        },
+      });
+    }
+
+    // 2. System Steps (if system not bootstrapped)
+    if (shouldShowSystemSteps) {
+      dynamicSteps.push({
+        id: "system-bootstrap",
+        title: "Bootstrap System",
+        description: "Initialize the blockchain system for first use",
+        groupId: "system",
+        fields: [
+          {
+            name: "systemBootstrapped",
+            label: "Bootstrap System",
+            type: "checkbox",
+            description:
+              "Initialize the core blockchain system (required for first user)",
+          },
+        ],
+        validate: (data) => {
+          if (!data.systemBootstrapped) {
+            return "System bootstrap is required";
+          }
+          return undefined;
+        },
+        mutation: {
+          mutationKey: "bootstrap-system",
+          mutationFn: async function* (data: Partial<OnboardingFormData>) {
+            if (data.systemBootstrapped) {
+              yield { status: "pending", message: "Initializing system..." };
+              await new Promise((resolve) => setTimeout(resolve, 1200));
+
+              yield {
+                status: "pending",
+                message: "Deploying core contracts...",
+              };
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+
+              const systemAddress =
+                "0x" + Math.random().toString(16).slice(2, 42);
+              yield {
+                status: "confirmed",
+                message: "System bootstrapped successfully!",
+                result: { systemAddress },
+              };
+              return { systemAddress };
+            }
+            return null;
+          },
+        },
+      });
+    }
+
+    // 3. Asset Steps (if no assets configured)
+    if (shouldShowAssetSteps) {
+      dynamicSteps.push({
+        id: "asset-selection",
+        title: "Select Assets",
+        description: "Choose which asset types your platform will support",
+        groupId: "assets",
+        fields: [
+          {
+            name: "selectedAssetTypes",
+            label: "Asset Types",
+            type: "checkbox",
+            description:
+              "Which assets do you want to support? At least one is required. Can be edited later in settings.",
+            options: [
+              { label: "Equity Tokens", value: "equity" },
+              { label: "Bond Tokens", value: "bond" },
+              { label: "Deposit Tokens", value: "deposit" },
+              { label: "Fund Tokens", value: "fund" },
+              { label: "Stablecoins", value: "stablecoin" },
+            ],
+          },
+        ],
+        validate: (data) => {
+          if (
+            !data.selectedAssetTypes ||
+            data.selectedAssetTypes.length === 0
+          ) {
+            return "At least one asset type must be selected";
+          }
+          return undefined;
+        },
+      });
+
+      dynamicSteps.push({
+        id: "addon-selection",
+        title: "Select Add-ons",
+        description: "Configure additional platform features",
+        groupId: "assets",
+        fields: [
+          {
+            name: "selectedAddons",
+            label: "Platform Add-ons",
+            type: "checkbox",
+            description:
+              "Which add-ons do you want to support? Can be edited later in settings.",
+            options: [
+              { label: "Airdrops", value: "airdrops" },
+              { label: "XVP (Cross-chain Value Protocol)", value: "xvp" },
+              { label: "Yield Management", value: "yield" },
+              { label: "Governance", value: "governance" },
+              { label: "Analytics", value: "analytics" },
+            ],
+          },
+        ],
+        validate: (data) => {
+          // Yield is required if Bond was selected
+          if (
+            data.selectedAssetTypes?.includes("bond") &&
+            !data.selectedAddons?.includes("yield")
+          ) {
+            return "Yield management is required when Bond tokens are selected";
+          }
+          return undefined;
+        },
+        mutation: {
+          mutationKey: "configure-addons",
+          mutationFn: async function* (data: Partial<OnboardingFormData>) {
+            if (data.selectedAddons && data.selectedAddons.length > 0) {
+              yield {
+                status: "pending",
+                message: "Configuring selected add-ons...",
+              };
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+
+              yield {
+                status: "confirmed",
+                message: `Configured ${data.selectedAddons.length} add-on(s) successfully!`,
+              };
+              return { addons: data.selectedAddons };
+            }
+            return { addons: [] };
+          },
+        },
+      });
+    }
+
+    // 4. Identity Steps (if no identity registered)
+    if (shouldShowIdentitySteps) {
+      dynamicSteps.push({
+        id: "kyc-information",
+        title: "KYC Information",
+        description: "Provide information for identity verification",
+        groupId: "identity",
+        fields: [
+          {
+            name: "firstName",
+            label: "First Name",
+            type: "text",
+            required: true,
+            placeholder: "Enter your first name",
+            schema: z.string().min(1, "First name is required"),
+          },
+          {
+            name: "lastName",
+            label: "Last Name",
+            type: "text",
+            required: true,
+            placeholder: "Enter your last name",
+            schema: z.string().min(1, "Last name is required"),
+          },
+          {
+            name: "dateOfBirth",
+            label: "Date of Birth",
+            type: "text",
+            required: true,
+            placeholder: "YYYY-MM-DD",
+            schema: z.string().min(1, "Date of birth is required"),
+          },
+          {
+            name: "nationality",
+            label: "Nationality",
+            type: "text",
+            required: true,
+            placeholder: "Your nationality",
+            schema: z.string().min(1, "Nationality is required"),
+          },
+          {
+            name: "residenceCountry",
+            label: "Country of Residence",
+            type: "text",
+            required: true,
+            placeholder: "Your country of residence",
+            schema: z.string().min(1, "Country of residence is required"),
+          },
+          {
+            name: "investorType",
+            label: "Investor Type",
+            type: "select",
+            required: true,
+            options: [
+              { label: "Retail Investor", value: "retail" },
+              { label: "Professional Investor", value: "professional" },
+              { label: "Institutional Investor", value: "institutional" },
+            ],
+            description: "Select your investor classification",
+          },
+        ],
+        validate: (data) => {
+          const requiredFields = [
+            "firstName",
+            "lastName",
+            "dateOfBirth",
+            "nationality",
+            "residenceCountry",
+            "investorType",
+          ];
+          for (const field of requiredFields) {
+            if (!data[field as keyof OnboardingFormData]) {
+              return `${field.replace(/([A-Z])/g, " $1").toLowerCase()} is required`;
+            }
+          }
+          return undefined;
+        },
+      });
+
+      dynamicSteps.push({
+        id: "identity-registration",
+        title: "Register Identity",
+        description: "Complete identity registration on the blockchain",
+        groupId: "identity",
+        fields: [
+          {
+            name: "identityRegistered",
+            label: "Register Identity on Blockchain",
+            type: "checkbox",
+            description:
+              "This registers your identity in the factory and completes the onboarding process. This can only be done after system setup.",
+          },
+        ],
+        validate: (data) => {
+          if (!data.identityRegistered) {
+            return "Identity registration is required to complete onboarding";
+          }
+          return undefined;
+        },
+        mutation: {
+          mutationKey: "register-identity",
+          mutationFn: async function* (data: Partial<OnboardingFormData>) {
+            if (data.identityRegistered) {
+              yield {
+                status: "pending",
+                message: "Storing KYC information...",
+              };
+              await new Promise((resolve) => setTimeout(resolve, 800));
+
+              yield {
+                status: "pending",
+                message: "Registering identity on blockchain...",
+              };
+              await new Promise((resolve) => setTimeout(resolve, 1200));
+
+              const identityId = "0x" + Math.random().toString(16).slice(2, 42);
+              yield {
+                status: "confirmed",
+                message: "Identity registered successfully!",
+                result: { identityId },
+              };
+              return { identityId };
+            }
+            return null;
+          },
+        },
+      });
+    }
+
+    return dynamicSteps;
+  }, [
+    shouldShowWalletSteps,
+    shouldShowSystemSteps,
+    shouldShowAssetSteps,
+    shouldShowIdentitySteps,
+    user,
+  ]);
+
+  const handleComplete = async (data: OnboardingFormData) => {
     try {
-      toast.success("Platform onboarding completed successfully!");
-      
+      console.log("Onboarding completed with data:", data);
+      toast.success(
+        "Platform onboarding completed successfully! Welcome to your tokenization platform."
+      );
+
       // Navigate to main dashboard
       await navigate({ to: "/" });
     } catch (error) {
@@ -374,15 +538,16 @@ function PlatformNewOnboarding() {
 
   // Calculate default values based on current state
   const defaultValues: Partial<OnboardingFormData> = {
-    walletGenerated: !!user?.wallet,
+    walletGenerated: Boolean(user?.wallet),
     walletAddress: user?.wallet,
-    pincodeEnabled: !!session?.user.pincodeEnabled,
-    systemDeployed: !!systemAddress,
-    systemAddress: systemAddress || undefined,
-    assetFactoriesDeployed: (systemDetails?.tokenFactories.length || 0) > 0,
-    networkSelected: "local",
+    walletSecured: false, // Default to false for demo
+    systemBootstrapped: Boolean(systemAddress),
+    systemAddress: systemAddress ?? undefined,
+    assetFactoriesDeployed: (systemDetails?.tokenFactories.length ?? 0) > 0,
     selectedAssetTypes: [],
-    kycRequired: false,
+    selectedAddons: [],
+    kycCompleted: false,
+    identityRegistered: false,
   };
 
   return (
@@ -408,7 +573,11 @@ function PlatformNewOnboarding() {
         {/* Language and theme toggles positioned in top-right */}
         <div className="absolute top-8 right-8 flex gap-2">
           <Link to="/onboarding/platform">
-            <Button variant="outline" size="sm" className="bg-background/10 border-border/20 text-foreground hover:bg-background/20">
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-background/10 border-border/20 text-foreground hover:bg-background/20"
+            >
               Use Original
             </Button>
           </Link>
@@ -416,34 +585,21 @@ function PlatformNewOnboarding() {
           <ThemeToggle />
         </div>
 
-        {/* Main content area with MultiStepWizard */}
+        {/* Centered content area with step wizard */}
         <div className="flex min-h-screen items-center justify-center">
-          <div className="w-full max-w-7xl px-4 py-8">
-            <div className="mb-8 text-center">
-              <h1 className="text-3xl font-bold text-primary-foreground mb-2">
-                Platform Setup Wizard
-              </h1>
-              <p className="text-lg text-primary-foreground/80">
-                Configure your asset tokenization platform step by step
-              </p>
-            </div>
-
-            <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/95 rounded-lg shadow-xl">
-              <MultiStepWizard<OnboardingFormData>
-                name="platform-onboarding"
-                steps={steps}
-                groups={groups}
-                onComplete={handleComplete}
-                enableUrlPersistence={true}
-                showProgressBar={true}
-                allowStepSkipping={false}
-                persistFormData={true}
-                defaultValues={defaultValues}
-                className="p-6"
-                sidebarClassName="border-r border-border/40"
-                contentClassName="pl-6"
-              />
-            </div>
+          <div className="w-full max-w-6xl px-4">
+            <MultiStepWizard<OnboardingFormData>
+              name="Let's get you set up!"
+              description="We'll set up your wallet and will configure your identity on the blockchain to use this platform."
+              steps={steps}
+              groups={groups}
+              onComplete={handleComplete}
+              enableUrlPersistence={true}
+              showProgressBar={true}
+              allowStepSkipping={true}
+              persistFormData={true}
+              defaultValues={defaultValues}
+            />
           </div>
         </div>
       </div>
