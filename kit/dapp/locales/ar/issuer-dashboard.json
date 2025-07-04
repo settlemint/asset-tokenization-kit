@@ -31,10 +31,10 @@
     "noAssets": "لا توجد أصول"
   },
   "charts": {
-    "assetSupply": "عرض الأصول",
-    "assetActivity": "نشاط الأصول",
-    "usersHistory": "نمو المستخدمين",
-    "transactionsHistory": "تاريخ المعاملات"
+    "assetSupply": {
+      "title": "عرض الأصول",
+      "description": "توزيع الأصول لكل فئة أصول"
+    }
   },
   "tables": {
     "latestEvents": "أحدث الأحداث",

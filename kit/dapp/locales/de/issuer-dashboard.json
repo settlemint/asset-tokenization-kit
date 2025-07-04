@@ -23,10 +23,10 @@
     "noAssets": "Keine Assets gefunden"
   },
   "charts": {
-    "assetSupply": "Asset-Angebot",
-    "assetActivity": "Asset-Aktivität",
-    "usersHistory": "Benutzerwachstum",
-    "transactionsHistory": "Transaktionsverlauf"
+    "assetSupply": {
+      "title": "Asset-Angebot",
+      "description": "Die Verteilung der Assets nach Asset-Klassen"
+    }
   },
   "tables": {
     "latestEvents": "Neueste Ereignisse",

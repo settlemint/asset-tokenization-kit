@@ -23,10 +23,10 @@
     "noAssets": "アセットが見つかりません"
   },
   "charts": {
-    "assetSupply": "アセット供給",
-    "assetActivity": "アセット活動",
-    "usersHistory": "ユーザー増加",
-    "transactionsHistory": "取引履歴"
+    "assetSupply": {
+      "title": "アセット供給",
+      "description": "アセットクラス別のアセットの分布"
+    }
   },
   "tables": {
     "latestEvents": "最新のイベント",
