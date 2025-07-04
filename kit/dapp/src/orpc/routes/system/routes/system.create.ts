@@ -19,13 +19,14 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { orpc } from "@/orpc";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { withEventMeta } from "@orpc/server";
+import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
+import { call, withEventMeta } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { z } from "zod/v4";
 import { SystemCreateMessagesSchema } from "./system.create.schema";
@@ -145,9 +146,15 @@ export const create = onboardedRouter.system.create
     const messages = SystemCreateMessagesSchema.parse(input.messages ?? {});
 
     // Check if system already exists using orpc
-    const existingSystem = await orpc.settings.read.call({
-      key: "SYSTEM_ADDRESS",
-    });
+    const existingSystem = await call(
+      read,
+      {
+        key: "SYSTEM_ADDRESS",
+      },
+      {
+        context,
+      }
+    );
 
     if (existingSystem) {
       throw errors.RESOURCE_ALREADY_EXISTS({
@@ -304,10 +311,16 @@ export const create = onboardedRouter.system.create
     }
 
     // Save the system address to settings using orpc BEFORE yielding final events
-    await orpc.settings.upsert.call({
-      key: "SYSTEM_ADDRESS",
-      value: system.id,
-    });
+    await call(
+      upsert,
+      {
+        key: "SYSTEM_ADDRESS",
+        value: system.id,
+      },
+      {
+        context,
+      }
+    );
 
     // Always yield the final event with the system ID
     // If bootstrap failed, we still return the system ID but with failed status
