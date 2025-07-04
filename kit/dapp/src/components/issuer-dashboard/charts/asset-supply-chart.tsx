@@ -5,42 +5,34 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 const chartConfig = {
-  bonds: { label: "Bonds", color: "hsl(var(--chart-1))" },
+  bond: { label: "Bonds", color: "hsl(var(--chart-1))" },
   equity: { label: "Equity", color: "hsl(var(--chart-2))" },
-  funds: { label: "Funds", color: "hsl(var(--chart-3))" },
-  stablecoins: { label: "Stablecoins", color: "hsl(var(--chart-4))" },
-  deposits: { label: "Deposits", color: "hsl(var(--chart-5))" },
+  fund: { label: "Funds", color: "hsl(var(--chart-3))" },
+  stablecoin: { label: "Stablecoins", color: "hsl(var(--chart-4))" },
+  deposit: { label: "Deposits", color: "hsl(var(--chart-5))" },
 } satisfies ChartConfig;
 
 /**
  * Asset Supply Chart Component
  *
  * Displays the distribution of different asset types across the platform
- * using a pie chart visualization.
+ * using a pie chart visualization based on actual token statistics.
  */
 export function AssetSupplyChart() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch factories to analyze asset distribution
-  const { data: factories } = useSuspenseQuery(
-    orpc.token.factoryList.queryOptions({ input: {} })
+  // Fetch metrics summary which includes asset breakdown from token stats
+  const { data: metrics } = useSuspenseQuery(
+    orpc.metrics.summary.queryOptions({ input: {} })
   );
 
-  // Group factories by asset type
-  const assetTypeCount = factories.reduce(
-    (acc, factory) => {
-      const typeId = factory.typeId;
-      acc[typeId] = (acc[typeId] ?? 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
-
-  // Convert to chart data format
-  const chartData = Object.entries(assetTypeCount).map(([type, count]) => ({
-    assetType: type,
-    count,
-  }));
+  // Convert asset breakdown to chart data format
+  const chartData = Object.entries(metrics.assetBreakdown)
+    .filter(([, count]) => count > 0) // Only show asset types that exist
+    .map(([type, count]) => ({
+      assetType: type,
+      count,
+    }));
 
   return (
     <PieChartComponent
