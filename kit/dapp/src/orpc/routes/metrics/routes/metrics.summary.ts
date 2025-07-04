@@ -63,9 +63,11 @@ const ALL_TRANSFER_EVENTS_QUERY = theGraphGraphql(`
 
 // Schema for the system stats response
 const SystemStatsResponseSchema = z.object({
-  systemStatsState: z.object({
-    totalValueInBaseCurrency: z.string(),
-  }).nullable(),
+  systemStatsState: z
+    .object({
+      totalValueInBaseCurrency: z.string(),
+    })
+    .nullable(),
 });
 
 // Schema for the tokens response
@@ -114,9 +116,12 @@ function createAssetBreakdown(tokens: { type: string }[]) {
  * @param thresholdTimestamp Unix timestamp threshold
  * @returns Count of events after the threshold
  */
-function countRecentEvents(events: { blockTimestamp: string }[], thresholdTimestamp: string): number {
-  return events.filter(event =>
-    parseInt(event.blockTimestamp) >= parseInt(thresholdTimestamp)
+function countRecentEvents(
+  events: { blockTimestamp: string }[],
+  thresholdTimestamp: string
+): number {
+  return events.filter(
+    (event) => parseInt(event.blockTimestamp) >= parseInt(thresholdTimestamp)
   ).length;
 }
 
@@ -165,10 +170,18 @@ export const summary = authRouter.metrics.summary
 
     // Calculate threshold for recent activity (users and transactions)
     const recentActivityThreshold = subDays(new Date(), RECENT_ACTIVITY_DAYS);
-    const recentEventsTimestamp = getUnixTime(recentActivityThreshold).toString();
+    const recentEventsTimestamp = getUnixTime(
+      recentActivityThreshold
+    ).toString();
 
     // Run all queries in parallel for optimal performance
-    const [systemStatsResponse, tokensResponse, eventsResponse, totalUserCountResult, recentUserCountResult] = await Promise.all([
+    const [
+      systemStatsResponse,
+      tokensResponse,
+      eventsResponse,
+      totalUserCountResult,
+      recentUserCountResult,
+    ] = await Promise.all([
       // Fetch system stats for the specific system from TheGraph
       context.theGraphClient.query(SYSTEM_STATS_QUERY, {
         input: {
@@ -183,8 +196,8 @@ export const summary = authRouter.metrics.summary
       context.theGraphClient.query(ALL_TOKENS_QUERY, {
         input: {
           input: {
-            offset: 0,
-            // No limit specified = unlimited auto-pagination
+            skip: 0,
+            first: 1000,
           },
         },
         output: TokensResponseSchema,
@@ -194,17 +207,15 @@ export const summary = authRouter.metrics.summary
       context.theGraphClient.query(ALL_TRANSFER_EVENTS_QUERY, {
         input: {
           input: {
-            offset: 0,
-            // No limit specified = unlimited auto-pagination
+            skip: 0,
+            first: 1000,
           },
         },
         output: EventsResponseSchema,
         error: "Failed to fetch all transfer events",
       }),
       // Get count of all registered accounts from database
-      context.db
-        .select({ count: count() })
-        .from(user),
+      context.db.select({ count: count() }).from(user),
       // Get count of users registered in the last X days (using same threshold as transactions)
       context.db
         .select({ count: count() })
@@ -216,11 +227,15 @@ export const summary = authRouter.metrics.summary
     const recentUsersCount = recentUserCountResult[0]?.count ?? 0;
 
     // Calculate total value, defaulting to "0" if no system stats or null response
-    const totalValue = systemStatsResponse.systemStatsState?.totalValueInBaseCurrency ?? "0";
+    const totalValue =
+      systemStatsResponse.systemStatsState?.totalValueInBaseCurrency ?? "0";
 
     // Calculate event counts
     const totalTransactions = eventsResponse.events.length;
-    const recentTransactions = countRecentEvents(eventsResponse.events, recentEventsTimestamp);
+    const recentTransactions = countRecentEvents(
+      eventsResponse.events,
+      recentEventsTimestamp
+    );
 
     // Create asset breakdown from all tokens (auto-paginated)
     const assetBreakdown = createAssetBreakdown(tokensResponse.tokens);
