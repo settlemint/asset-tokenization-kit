@@ -5,6 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useSettings } from "@/hooks/use-settings";
+import { DEFAULT_SETTINGS } from "@/lib/db/schemas/settings";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -12,7 +14,7 @@ import { useTranslation } from "react-i18next";
 /**
  * Value Statistics Widget
  *
- * Displays the total value of all assets formatted in the user's preferred currency.
+ * Displays the total value of all assets formatted in the system's base currency.
  * Uses the consolidated metrics endpoint for optimal performance.
  */
 export function ValueStatsWidget() {
@@ -23,12 +25,14 @@ export function ValueStatsWidget() {
     orpc.metrics.summary.queryOptions({ input: {} })
   );
 
-  // TODO: Get user's preferred currency from user profile
-  // For now, use EUR to match the screenshot
-  const userCurrency = "EUR";
+  // Get the system's base currency from settings
+  const [baseCurrency] = useSettings("BASE_CURRENCY");
+
+  // Use the system's base currency, falling back to the default if not set
+  const userCurrency = baseCurrency ?? DEFAULT_SETTINGS.BASE_CURRENCY;
   const locale = i18n.language;
 
-  // Format the total value as currency using user's preferred currency
+  // Format the total value as currency using the system's base currency
   const totalValueNumber = parseFloat(metrics.totalValue);
   const formattedValue = new Intl.NumberFormat(locale, {
     style: "currency",
