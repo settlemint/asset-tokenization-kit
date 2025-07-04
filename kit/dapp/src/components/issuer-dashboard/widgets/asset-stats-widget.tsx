@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getAssetTypePlural } from "@/lib/utils/asset-pluralization";
+import { useAssetTypePlural } from "@/lib/utils/asset-pluralization";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
  */
 export function AssetStatsWidget() {
   const { t } = useTranslation("issuer-dashboard");
+  const pluralizeAsset = useAssetTypePlural();
 
   // Fetch metrics summary which includes asset count and breakdown
   const { data: metrics } = useSuspenseQuery(
@@ -28,7 +29,7 @@ export function AssetStatsWidget() {
   const assetBreakdownText = Object.entries(metrics.assetBreakdown)
     .filter(([, count]) => count > 0) // Only show asset types that exist
     .map(([assetType, count]) => {
-      const translatedType = getAssetTypePlural(assetType, count);
+      const translatedType = pluralizeAsset(assetType, count);
       return `${count} ${translatedType}`;
     })
     .join(", ");

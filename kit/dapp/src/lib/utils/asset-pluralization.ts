@@ -1,4 +1,10 @@
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
+/**
+ * Type for the specific translation function signature we need.
+ * This matches the exact call pattern: t(key, { count, defaultValue })
+ */
+type PluralizationFunction = (key: string, options: { count: number; defaultValue: string }) => string;
 
 /**
  * Get the translated plural form for asset types
@@ -7,35 +13,65 @@ import { t } from "i18next";
  * It uses react-i18next's built-in pluralization features to automatically select
  * the correct plural form based on the current language's pluralization rules.
  *
+ * @param t - The translation function from useTranslation hook
  * @param assetType - The asset type key (e.g., 'bond', 'equity', 'stable-coin')
  * @param count - The count to determine plural form
- * @param namespace - The translation namespace (defaults to 'assets')
  * @returns The translated and properly pluralized asset type string
  *
  * @example
  * ```typescript
- * // English: "bond" / "bonds"
- * getAssetTypePlural('bond', 1) // "bond"
- * getAssetTypePlural('bond', 2) // "bonds"
+ * function MyComponent() {
+ *   const { t } = useTranslation("assets");
  *
- * // German: "Anleihe" / "Anleihen"
- * getAssetTypePlural('bond', 1) // "Anleihe"
- * getAssetTypePlural('bond', 2) // "Anleihen"
+ *   // English: "bond" / "bonds"
+ *   const singleBond = getAssetTypePlural(t, 'bond', 1); // "bond"
+ *   const multipleBonds = getAssetTypePlural(t, 'bond', 2); // "bonds"
  *
- * // Arabic: Complex pluralization with multiple forms
- * getAssetTypePlural('bond', 0) // "سندات"
- * getAssetTypePlural('bond', 1) // "سند"
- * getAssetTypePlural('bond', 2) // "سندان"
+ *   // German: "Anleihe" / "Anleihen"
+ *   // Arabic: Complex pluralization with multiple forms
+ *
+ *   return <div>{singleBond} vs {multipleBonds}</div>;
+ * }
  * ```
  */
 export function getAssetTypePlural(
+  t: PluralizationFunction,
   assetType: string,
-  count: number,
-  namespace = "assets"
+  count: number
 ): string {
   // Use the translation key pattern "assetType_one" and "assetType_other"
   // This allows react-i18next to automatically select the correct plural form
   // based on the language's pluralization rules
-  const translationKey = `${namespace}:${assetType}`;
-  return t(translationKey, { count, defaultValue: assetType });
+  return t(assetType, { count, defaultValue: assetType });
+}
+
+/**
+ * Custom hook for asset type pluralization
+ *
+ * This hook provides a clean interface for pluralizing asset types without
+ * needing to handle i18next type casting in every component.
+ *
+ * @returns A function that takes assetType and count and returns the pluralized translation
+ *
+ * @example
+ * ```typescript
+ * function MyComponent() {
+ *   const pluralizeAsset = useAssetTypePlural();
+ *
+ *   const bondText = pluralizeAsset('bond', 1); // "bond"
+ *   const bondsText = pluralizeAsset('bond', 2); // "bonds"
+ *
+ *   return <div>{bondText} vs {bondsText}</div>;
+ * }
+ * ```
+ */
+export function useAssetTypePlural() {
+  const { t } = useTranslation("assets");
+
+  return (assetType: string, count: number): string => {
+    // Type assertion needed because i18next's TFunction has complex overloads
+    // that don't directly match our PluralizationFunction interface.
+    // This is safe because we know t() supports the (key, options) signature.
+    return getAssetTypePlural(t as PluralizationFunction, assetType, count);
+  };
 }
