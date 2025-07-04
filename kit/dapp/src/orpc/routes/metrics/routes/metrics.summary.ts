@@ -3,6 +3,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { getUnixTime, subDays } from "date-fns";
 import { count, gte } from "drizzle-orm";
 import { z } from "zod/v4";
 
@@ -122,13 +123,8 @@ export const summary = authRouter.metrics.summary
   .use(databaseMiddleware)
   .handler(async ({ context }) => {
     // Calculate threshold for recent activity (users and transactions)
-    const recentActivityThreshold = new Date();
-    recentActivityThreshold.setDate(
-      recentActivityThreshold.getDate() - RECENT_ACTIVITY_DAYS
-    );
-    const recentEventsTimestamp = Math.floor(
-      recentActivityThreshold.getTime() / 1000
-    ).toString();
+    const recentActivityThreshold = subDays(new Date(), RECENT_ACTIVITY_DAYS);
+    const recentEventsTimestamp = getUnixTime(recentActivityThreshold).toString();
 
     // Fetch blockchain metrics from TheGraph
     const response = await context.theGraphClient.query(METRICS_SUMMARY_QUERY, {
