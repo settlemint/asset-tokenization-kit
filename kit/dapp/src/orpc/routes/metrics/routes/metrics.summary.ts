@@ -2,6 +2,7 @@ import { user } from "@/lib/db/schema";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
+import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { getUnixTime, subDays } from "date-fns";
 import { count, gte } from "drizzle-orm";
@@ -14,13 +15,13 @@ import { z } from "zod/v4";
 const RECENT_ACTIVITY_DAYS = 7;
 
 /**
- * GraphQL query to fetch system stats for total value
- * This query is kept separate and simple for the non-paginated system stats
+ * GraphQL query to fetch system stats for a specific system
+ * Uses the system ID parameter to get the exact system stats state
  */
 const SYSTEM_STATS_QUERY = theGraphGraphql(`
-  query SystemStatsQuery {
-    # System stats for total value
-    systemStatsStates(first: 1) {
+  query SystemStatsQuery($systemId: ID!) {
+    # System stats for the specific system
+    systemStatsState(id: $systemId) {
       totalValueInBaseCurrency
     }
   }
@@ -62,11 +63,9 @@ const ALL_TRANSFER_EVENTS_QUERY = theGraphGraphql(`
 
 // Schema for the system stats response
 const SystemStatsResponseSchema = z.object({
-  systemStatsStates: z.array(
-    z.object({
-      totalValueInBaseCurrency: z.string(),
-    })
-  ),
+  systemStatsState: z.object({
+    totalValueInBaseCurrency: z.string(),
+  }).nullable(),
 });
 
 // Schema for the tokens response
@@ -131,17 +130,18 @@ function countRecentEvents(events: { blockTimestamp: string }[], thresholdTimest
  * - Recent transaction count (last 7 days, filtered from all events)
  * - Total number of registered accounts
  * - Recent users count (last 7 days)
- * - Total value of all assets
+ * - Total value of all assets for the current system
  *
  * This endpoint uses auto-pagination for accurate counting of all entities:
  * - Tokens: Unlimited auto-pagination to get ALL tokens
  * - Events: Unlimited auto-pagination to get ALL transfer events
  * - Parallel queries for optimal performance
+ * - System-specific stats: Queries the exact system configured in settings
  *
  * Authentication: Required (uses authenticated router)
  * Method: GET /metrics/summary
  *
- * @param context - Request context with TheGraph client and database
+ * @param context - Request context with TheGraph client, database, and system info
  * @returns Promise<MetricsSummary> - Aggregated metrics for the dashboard
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws INTERNAL_SERVER_ERROR - If TheGraph query or database query fails
@@ -154,19 +154,27 @@ function countRecentEvents(events: { blockTimestamp: string }[], thresholdTimest
  * ```
  */
 export const summary = authRouter.metrics.summary
+  .use(systemMiddleware)
   .use(theGraphMiddleware)
   .use(databaseMiddleware)
-  .handler(async ({ context }) => {
+  .handler(async ({ context, errors }) => {
+    // Ensure system context exists (should be guaranteed by systemMiddleware)
+    if (!context.system) {
+      throw errors.SYSTEM_NOT_CREATED();
+    }
+
     // Calculate threshold for recent activity (users and transactions)
     const recentActivityThreshold = subDays(new Date(), RECENT_ACTIVITY_DAYS);
     const recentEventsTimestamp = getUnixTime(recentActivityThreshold).toString();
 
     // Run all queries in parallel for optimal performance
     const [systemStatsResponse, tokensResponse, eventsResponse, totalUserCountResult, recentUserCountResult] = await Promise.all([
-      // Fetch system stats from TheGraph
+      // Fetch system stats for the specific system from TheGraph
       context.theGraphClient.query(SYSTEM_STATS_QUERY, {
         input: {
-          input: {},
+          input: {
+            systemId: context.system.address.toLowerCase(),
+          },
         },
         output: SystemStatsResponseSchema,
         error: "Failed to fetch system stats",
@@ -207,11 +215,8 @@ export const summary = authRouter.metrics.summary
     const totalUsers = totalUserCountResult[0]?.count ?? 0;
     const recentUsersCount = recentUserCountResult[0]?.count ?? 0;
 
-    // Calculate total value, defaulting to "0" if no system stats
-    const totalValue =
-      systemStatsResponse.systemStatsStates.length > 0 && systemStatsResponse.systemStatsStates[0]
-        ? systemStatsResponse.systemStatsStates[0].totalValueInBaseCurrency
-        : "0";
+    // Calculate total value, defaulting to "0" if no system stats or null response
+    const totalValue = systemStatsResponse.systemStatsState?.totalValueInBaseCurrency ?? "0";
 
     // Calculate event counts
     const totalTransactions = eventsResponse.events.length;
