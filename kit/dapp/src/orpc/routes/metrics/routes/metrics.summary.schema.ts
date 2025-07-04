@@ -10,6 +10,15 @@ export const AssetBreakdownSchema = z.record(z.string(), z.number());
 export type AssetBreakdown = z.infer<typeof AssetBreakdownSchema>;
 
 /**
+ * Schema for asset supply breakdown by type
+ * Dynamic record with total supply values as strings (to handle BigDecimal precision)
+ * This provides the aggregated total supply for each asset type
+ */
+export const AssetSupplyBreakdownSchema = z.record(z.string(), z.string());
+
+export type AssetSupplyBreakdown = z.infer<typeof AssetSupplyBreakdownSchema>;
+
+/**
  * Schema for the metrics summary response
  * Contains aggregated statistics for the issuer dashboard
  */
@@ -24,6 +33,12 @@ export const MetricsSummarySchema = z.object({
    * E.g., { "bond": 5, "fund": 3, "deposit": 2, "equity": 1, "stable-coin": 4 }
    */
   assetBreakdown: AssetBreakdownSchema,
+
+  /**
+   * Breakdown of total supply by asset type - aggregated from all tokens
+   * E.g., { "bond": "1000000.0", "fund": "500000.0", "deposit": "250000.0" }
+   */
+  assetSupplyBreakdown: AssetSupplyBreakdownSchema,
 
   /**
    * Total number of transactions (transfers) across all tokens

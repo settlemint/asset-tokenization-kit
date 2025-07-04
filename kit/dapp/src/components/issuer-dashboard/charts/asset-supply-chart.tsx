@@ -15,23 +15,23 @@ const chartConfig = {
 /**
  * Asset Supply Chart Component
  *
- * Displays the distribution of different asset types across the platform
+ * Displays the distribution of total supply across different asset types
  * using a pie chart visualization based on actual token statistics.
  */
 export function AssetSupplyChart() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch metrics summary which includes asset breakdown from token stats
+  // Fetch metrics summary which includes asset supply breakdown from token stats
   const { data: metrics } = useSuspenseQuery(
     orpc.metrics.summary.queryOptions({ input: {} })
   );
 
-  // Convert asset breakdown to chart data format
-  const chartData = Object.entries(metrics.assetBreakdown)
-    .filter(([, count]) => count > 0) // Only show asset types that exist
-    .map(([type, count]) => ({
+  // Convert asset supply breakdown to chart data format
+  const chartData = Object.entries(metrics.assetSupplyBreakdown)
+    .filter(([, supply]) => parseFloat(supply) > 0) // Only show asset types with supply
+    .map(([type, supply]) => ({
       assetType: type,
-      count,
+      totalSupply: parseFloat(supply),
     }));
 
   return (
@@ -40,7 +40,7 @@ export function AssetSupplyChart() {
       description={t("charts.assetSupply.description")}
       data={chartData}
       config={chartConfig}
-      dataKey="count"
+      dataKey="totalSupply"
       nameKey="assetType"
       showLegend={true}
     />

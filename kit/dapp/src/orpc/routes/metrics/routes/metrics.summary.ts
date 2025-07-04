@@ -32,6 +32,9 @@ const TOKEN_STATS_QUERY = theGraphGraphql(`
     tokenStatsStates {
       token {
         type
+        totalSupply
+        symbol
+        name
       }
     }
   }
@@ -82,6 +85,9 @@ const TokenStatsResponseSchema = z.object({
     z.object({
       token: z.object({
         type: z.string(),
+        totalSupply: z.string(),
+        symbol: z.string(),
+        name: z.string(),
       }),
     })
   ),
@@ -122,6 +128,32 @@ function createAssetBreakdown(
     const type = tokenStat.token.type;
     if (type) {
       breakdown[type] = (breakdown[type] ?? 0) + 1;
+    }
+  }
+
+  return breakdown;
+}
+
+/**
+ * Helper function to create asset supply breakdown from token stats
+ * Sums total supply by asset type from tokenStatsStates
+ * @param tokenStats Array of token stats states with total supply
+ * @returns Object with total supply per asset type (e.g., { "bond": "1000000", "fund": "500000" })
+ */
+function createAssetSupplyBreakdown(
+  tokenStats: { token: { type: string; totalSupply: string } }[]
+): Record<string, string> {
+  const breakdown: Record<string, string> = {};
+
+  for (const tokenStat of tokenStats) {
+    const type = tokenStat.token.type;
+    const supply = tokenStat.token.totalSupply;
+
+    if (type && supply) {
+      // Convert to number for calculation, then back to string
+      const currentSupply = parseFloat(breakdown[type] ?? "0");
+      const newSupply = parseFloat(supply);
+      breakdown[type] = (currentSupply + newSupply).toString();
     }
   }
 
@@ -238,6 +270,9 @@ export const summary = authRouter.metrics.summary
     const assetBreakdown = createAssetBreakdown(
       tokenStatsResponse.tokenStatsStates
     );
+    const assetSupplyBreakdown = createAssetSupplyBreakdown(
+      tokenStatsResponse.tokenStatsStates
+    );
     const totalAssets = tokenStatsResponse.tokenStatsStates.length;
 
     // Calculate transaction counts from event stats
@@ -247,6 +282,7 @@ export const summary = authRouter.metrics.summary
     return {
       totalAssets,
       assetBreakdown,
+      assetSupplyBreakdown,
       totalTransactions,
       recentTransactions,
       totalUsers,
