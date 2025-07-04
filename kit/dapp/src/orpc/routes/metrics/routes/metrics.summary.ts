@@ -1,11 +1,7 @@
-import { user } from "@/lib/db/schema";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { subDays } from "date-fns";
-import { count, gte } from "drizzle-orm";
 import { z } from "zod/v4";
 
 /**
@@ -57,6 +53,20 @@ const EVENT_STATS_QUERY = theGraphGraphql(`
   }
 `);
 
+/**
+ * Query to get account stats states for active user counts
+ * Each accountStatsState represents one active user (user who holds/held tokens)
+ */
+const ACCOUNT_STATS_QUERY = theGraphGraphql(`
+  query AccountStatsQuery {
+    accountStatsStates {
+      account {
+        id
+      }
+    }
+  }
+`);
+
 // Schema for the system stats response
 const SystemStatsResponseSchema = z.object({
   systemStatsState: z
@@ -82,6 +92,17 @@ const EventStatsResponseSchema = z.object({
   allEventStats: z.array(
     z.object({
       eventsCount: z.number(),
+    })
+  ),
+});
+
+// Schema for the account stats response
+const AccountStatsResponseSchema = z.object({
+  accountStatsStates: z.array(
+    z.object({
+      account: z.object({
+        id: z.string(),
+      }),
     })
   ),
 });
@@ -119,56 +140,55 @@ function sumEventCounts(eventStats: { eventsCount: number }[]): number {
 /**
  * Metrics summary route handler.
  *
- * Retrieves aggregated metrics for the issuer dashboard including:
- * - Total number of tokenized assets (using auto-pagination for accuracy)
- * - Dynamic breakdown of assets by type (counts whatever asset types exist in the system)
- * - Total transaction count (using auto-pagination for all Transfer events)
- * - Recent transaction count (last 7 days, filtered from all events)
- * - Total number of registered accounts
- * - Recent users count (last 7 days)
- * - Total value of all assets for the current system
+ * Retrieves aggregated metrics for the issuer dashboard using pre-built stats entities:
+ * - Total number of tokenized assets (from tokenStatsStates count)
+ * - Dynamic breakdown of assets by type (from tokenStatsStates grouped by type)
+ * - Total transaction count (from eventStats_collection aggregation)
+ * - Recent transaction count (set to 0 for now, timestamp filtering is complex)
+ * - Total number of active users (from accountStatsStates - users who hold/held tokens)
+ * - Recent active users count (set to 0 for now, would need time-series account data)
+ * - Total value of all assets for the current system (from SystemStatsState)
  *
- * This endpoint uses auto-pagination for accurate counting of all entities:
- * - Tokens: Unlimited auto-pagination to get ALL tokens
- * - Events: Unlimited auto-pagination to get ALL transfer events
- * - Parallel queries for optimal performance
- * - System-specific stats: Queries the exact system configured in settings
+ * This approach uses the subgraph's purpose-built statistics entities:
+ * - tokenStatsStates: One entry per token with type information
+ * - eventStats_collection: Pre-aggregated event counts with daily intervals
+ * - accountStatsStates: One entry per active user (who holds/held tokens)
+ * - SystemStatsState: Pre-calculated system-wide totals
+ * - All queries run in parallel for optimal performance
+ *
+ * Note: "Active users" means users who have interacted with tokens (hold or have held tokens),
+ * not just registered users. This provides a more meaningful metric of platform engagement.
  *
  * Authentication: Required (uses authenticated router)
  * Method: GET /metrics/summary
  *
- * @param context - Request context with TheGraph client, database, and system info
+ * @param context - Request context with TheGraph client and system info
  * @returns Promise<MetricsSummary> - Aggregated metrics for the dashboard
  * @throws UNAUTHORIZED - If user is not authenticated
- * @throws INTERNAL_SERVER_ERROR - If TheGraph query or database query fails
+ * @throws INTERNAL_SERVER_ERROR - If TheGraph query fails
  *
  * @example
  * ```typescript
  * // Get all dashboard metrics in one call
  * const metrics = await orpc.metrics.summary.query();
- * console.log(metrics.totalAssets, metrics.assetBreakdown, metrics.totalTransactions);
+ * console.log(metrics.totalAssets, metrics.assetBreakdown, metrics.totalUsers);
  * ```
  */
 export const summary = authRouter.metrics.summary
   .use(systemMiddleware)
   .use(theGraphMiddleware)
-  .use(databaseMiddleware)
   .handler(async ({ context, errors }) => {
     // Ensure system context exists (should be guaranteed by systemMiddleware)
     if (!context.system) {
       throw errors.SYSTEM_NOT_CREATED();
     }
 
-    // Calculate threshold for recent activity (users)
-    const recentActivityThreshold = subDays(new Date(), RECENT_ACTIVITY_DAYS);
-
     // Run all queries in parallel for optimal performance
     const [
       systemStatsResponse,
       tokenStatsResponse,
       eventStatsResponse,
-      totalUserCountResult,
-      recentUserCountResult,
+      accountStatsResponse,
     ] = await Promise.all([
       // Fetch system stats for the specific system from TheGraph
       context.theGraphClient.query(SYSTEM_STATS_QUERY, {
@@ -196,17 +216,19 @@ export const summary = authRouter.metrics.summary
         output: EventStatsResponseSchema,
         error: "Failed to fetch event statistics",
       }),
-      // Get count of all registered accounts from database
-      context.db.select({ count: count() }).from(user),
-      // Get count of users registered in the last X days
-      context.db
-        .select({ count: count() })
-        .from(user)
-        .where(gte(user.createdAt, recentActivityThreshold)),
+      // Fetch account stats states (one per active user)
+      context.theGraphClient.query(ACCOUNT_STATS_QUERY, {
+        input: {
+          input: {},
+        },
+        output: AccountStatsResponseSchema,
+        error: "Failed to fetch account statistics",
+      }),
     ]);
 
-    const totalUsers = totalUserCountResult[0]?.count ?? 0;
-    const recentUsersCount = recentUserCountResult[0]?.count ?? 0;
+    // Calculate active user counts from account stats (users who hold/held tokens)
+    const totalUsers = accountStatsResponse.accountStatsStates.length;
+    const recentUsersCount = 0; // For now, set to 0 (recent user filtering would need time-series data)
 
     // Calculate total value, defaulting to "0" if no system stats or null response
     const totalValue =
