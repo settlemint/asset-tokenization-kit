@@ -45,13 +45,13 @@ export function Dashboard() {
         <Suspense fallback={<ChartSkeleton />}>
           <AssetSupplyChart />
         </Suspense>
-      {/* <Suspense fallback={<ChartSkeleton />}>
+        {/* <Suspense fallback={<ChartSkeleton />}>
           <AssetActivityChart />
         </Suspense> */}
-      {/* <Suspense fallback={<ChartSkeleton />}>
+        {/* <Suspense fallback={<ChartSkeleton />}>
           <UserGrowthChart />
         </Suspense> */}
-      {/* <Suspense fallback={<ChartSkeleton />}>
+        {/* <Suspense fallback={<ChartSkeleton />}>
           <TransactionHistoryChart />
         </Suspense> */}
       </div>

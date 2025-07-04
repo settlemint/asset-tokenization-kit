@@ -1,20 +1,8 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
+import { PieChartComponent } from "@/components/charts/pie-chart";
+import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Cell, Pie, PieChart } from "recharts";
 
 const chartConfig = {
   bonds: { label: "Bonds", color: "hsl(var(--chart-1))" },
@@ -41,7 +29,7 @@ export function AssetSupplyChart() {
   // Group factories by asset type
   const assetTypeCount = factories.reduce(
     (acc, factory) => {
-      const typeId = factory.typeId ?? "other";
+      const typeId = factory.typeId;
       acc[typeId] = (acc[typeId] ?? 0) + 1;
       return acc;
     },
@@ -52,31 +40,17 @@ export function AssetSupplyChart() {
   const chartData = Object.entries(assetTypeCount).map(([type, count]) => ({
     assetType: type,
     count,
-    fill:
-      chartConfig[type as keyof typeof chartConfig]?.color ??
-      "hsl(var(--muted))",
   }));
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("charts.assetSupply.title")}</CardTitle>
-        <CardDescription>{t("charts.assetSupply.description")}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <PieChart>
-            <ChartTooltip
-              content={<ChartTooltipContent nameKey="assetType" />}
-            />
-            <Pie data={chartData} dataKey="count" nameKey="assetType">
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
-              ))}
-            </Pie>
-          </PieChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <PieChartComponent
+      title={t("charts.assetSupply.title")}
+      description={t("charts.assetSupply.description")}
+      data={chartData}
+      config={chartConfig}
+      dataKey="count"
+      nameKey="assetType"
+      showLegend={true}
+    />
   );
 }

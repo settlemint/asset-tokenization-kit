@@ -4,7 +4,10 @@ import { useTranslation } from "react-i18next";
  * Type for the specific translation function signature we need.
  * This matches the exact call pattern: t(key, { count, defaultValue })
  */
-type PluralizationFunction = (key: string, options: { count: number; defaultValue: string }) => string;
+type PluralizationFunction = (
+  key: string,
+  options: { count: number; defaultValue: string }
+) => string;
 
 /**
  * Get the translated plural form for asset types
