@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getAssetTypePlural } from "@/lib/utils/asset-pluralization";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -13,7 +14,7 @@ import { useTranslation } from "react-i18next";
  * Asset Statistics Widget
  *
  * Displays the total number of tokenized assets with dynamic breakdown by asset type.
- * Shows counts for all asset types found in the system dynamically.
+ * Shows counts for all asset types found in the system with proper pluralization for all languages.
  */
 export function AssetStatsWidget() {
   const { t } = useTranslation("issuer-dashboard");
@@ -23,19 +24,13 @@ export function AssetStatsWidget() {
     orpc.metrics.summary.queryOptions({ input: {} })
   );
 
-  // Helper function to format asset type names for display
-  const formatAssetType = (assetType: string) => {
-    // Convert "stable-coin" to "Stable Coins", "bond" to "Bonds", etc.
-    return assetType
-      .split("-")
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ") + "s";
-  };
-
-  // Create dynamic breakdown text
+  // Create dynamic breakdown text using proper i18n pluralization
   const assetBreakdownText = Object.entries(metrics.assetBreakdown)
     .filter(([, count]) => count > 0) // Only show asset types that exist
-    .map(([assetType, count]) => `${count} ${formatAssetType(assetType)}`)
+    .map(([assetType, count]) => {
+      const translatedType = getAssetTypePlural(assetType, count);
+      return `${count} ${translatedType}`;
+    })
     .join(", ");
 
   return (
@@ -47,7 +42,7 @@ export function AssetStatsWidget() {
         {metrics.totalAssets.toLocaleString()}
       </CardContent>
       <CardFooter className="text-muted-foreground text-sm">
-        {assetBreakdownText || "No assets found"}
+        {assetBreakdownText || t("stats.noAssets", { defaultValue: "No assets found" })}
       </CardFooter>
     </Card>
   );

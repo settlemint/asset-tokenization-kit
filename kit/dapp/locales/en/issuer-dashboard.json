@@ -19,7 +19,8 @@
     "usersDescription_other": "{{count}} users in the last {{days}} days",
     "totalValue": "Total Value",
     "totalValueDescription": "Total value across all assets",
-    "loading": "Loading statistics..."
+    "loading": "Loading statistics...",
+    "noAssets": "No assets found"
   },
   "charts": {
     "assetSupply": "Asset Supply",

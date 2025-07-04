@@ -19,7 +19,8 @@
     "usersDescription_other": "{{count}} Benutzer in den letzten {{days}} Tagen",
     "totalValue": "Gesamtwert",
     "totalValueDescription": "Gesamtwert aller Assets",
-    "loading": "Statistiken werden geladen..."
+    "loading": "Statistiken werden geladen...",
+    "noAssets": "Keine Assets gefunden"
   },
   "charts": {
     "assetSupply": "Asset-Angebot",

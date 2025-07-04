@@ -4,31 +4,32 @@
   "asset-management": "アセット管理",
   "stats-heading": "統計",
   "actions-heading": "保留中のアクション",
-  "latest-events-heading": "最新イベント",
+  "latest-events-heading": "最新のイベント",
   "stats": {
     "title": "プラットフォーム統計",
     "assets": "アセット",
     "assetsDescription": "{{bonds}} 債券 | {{cryptocurrencies}} 暗号通貨 | {{equities}} 株式 | {{funds}} ファンド | {{stableCoins}} ステーブルコイン | {{deposits}} 預金",
-    "transactions": "トランザクション",
-    "transactionsDescription": "過去{{days}}日間に処理された{{count}}件のトランザクション",
-    "transactionsDescription_one": "過去{{days}}日間に処理された{{count}}件のトランザクション",
-    "transactionsDescription_other": "過去{{days}}日間に処理された{{count}}件のトランザクション",
+    "transactions": "取引",
+    "transactionsDescription": "過去{{days}}日間で{{count}}件の取引が処理されました",
+    "transactionsDescription_one": "過去{{days}}日間で{{count}}件の取引が処理されました",
+    "transactionsDescription_other": "過去{{days}}日間で{{count}}件の取引が処理されました",
     "users": "ユーザー",
-    "usersDescription": "過去{{days}}日間の{{count}}ユーザー",
-    "usersDescription_one": "過去{{days}}日間の{{count}}ユーザー",
-    "usersDescription_other": "過去{{days}}日間の{{count}}ユーザー",
+    "usersDescription": "過去{{days}}日間で{{count}}人のユーザー",
+    "usersDescription_one": "過去{{days}}日間で{{count}}人のユーザー",
+    "usersDescription_other": "過去{{days}}日間で{{count}}人のユーザー",
     "totalValue": "総価値",
     "totalValueDescription": "すべてのアセットの総価値",
-    "loading": "統計を読み込み中..."
+    "loading": "統計を読み込み中...",
+    "noAssets": "アセットが見つかりません"
   },
   "charts": {
-    "assetSupply": "アセット供給量",
+    "assetSupply": "アセット供給",
     "assetActivity": "アセット活動",
     "usersHistory": "ユーザー増加",
-    "transactionsHistory": "トランザクション履歴"
+    "transactionsHistory": "取引履歴"
   },
   "tables": {
-    "latestEvents": "最新イベント",
+    "latestEvents": "最新のイベント",
     "actions": "保留中のアクション"
   }
 }

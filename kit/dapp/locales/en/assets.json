@@ -1,0 +1,14 @@
+{
+  "bond_one": "bond",
+  "bond_other": "bonds",
+  "equity_one": "equity",
+  "equity_other": "equities",
+  "fund_one": "fund",
+  "fund_other": "funds",
+  "stable-coin_one": "stablecoin",
+  "stable-coin_other": "stablecoins",
+  "deposit_one": "deposit",
+  "deposit_other": "deposits",
+  "token-sale_one": "token sale",
+  "token-sale_other": "token sales"
+}

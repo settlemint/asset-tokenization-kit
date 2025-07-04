@@ -26,6 +26,7 @@
  */
 
 import type enAssetDesignerTranslations from "@/locales/en/asset-designer.json";
+import type enAssetsTranslations from "@/locales/en/assets.json";
 import type enAuthTranslations from "@/locales/en/auth.json";
 import type enFormTranslations from "@/locales/en/form.json";
 import type enGeneralTranslations from "@/locales/en/general.json";
@@ -59,6 +60,7 @@ declare module "i18next" {
      */
     resources: {
       "asset-designer": typeof enAssetDesignerTranslations;
+      assets: typeof enAssetsTranslations;
       auth: typeof enAuthTranslations;
       form: typeof enFormTranslations;
       general: typeof enGeneralTranslations;
