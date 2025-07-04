@@ -59,7 +59,7 @@ victoria-metrics-single:
         - name: metrics.settlemint.local
           path: /
           port: http
-      ingressClassName: settlemint-nginx
+      ingressClassName: atk-nginx
       pathType: Prefix
     podLabels:
       kots.io/app-slug: settlemint-atk
@@ -150,7 +150,7 @@ loki:
         requiredDuringSchedulingIgnoredDuringExecution: null
     ingress:
       enabled: false
-      ingressClassName: settlemint-nginx
+      ingressClassName: atk-nginx
       annotations:
         nginx.ingress.kubernetes.io/auth-type: basic
         nginx.ingress.kubernetes.io/auth-secret: observability-logs
@@ -630,7 +630,7 @@ grafana:
     imagePullSecrets: []
   ingress:
     enabled: true
-    ingressClassName: settlemint-nginx
+    ingressClassName: atk-nginx
     hosts:
       - grafana.k8s.orb.local
   persistence:
@@ -762,7 +762,7 @@ tempo:
         nginx.ingress.kubernetes.io/client-body-buffer-size: "500m"
       hosts:
         - traces.k8s.orb.local
-      ingressClassName: settlemint-nginx
+      ingressClassName: atk-nginx
       pathType: Prefix
   persistence:
     enabled: true

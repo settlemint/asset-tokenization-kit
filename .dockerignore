@@ -8,10 +8,7 @@ out
 .cache
 .idea
 .turbo
-kit/contracts/cache
-kit/contracts/cache_forge
-kit/contracts/genesis-output.json
+.generated
 kit/contracts/ignition/deloyments
-kit/contracts/out
-kit/dapp/.next
 kit/subgraph/build
+kit/charts
