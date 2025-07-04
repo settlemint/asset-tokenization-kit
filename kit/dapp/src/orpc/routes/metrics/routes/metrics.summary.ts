@@ -14,28 +14,11 @@ import { z } from "zod/v4";
 const RECENT_ACTIVITY_DAYS = 7;
 
 /**
- * GraphQL query to fetch comprehensive metrics for the dashboard
- * This query aggregates data from multiple entities to provide a complete overview
+ * GraphQL query to fetch system stats for total value
+ * This query is kept separate and simple for the non-paginated system stats
  */
-const METRICS_SUMMARY_QUERY = theGraphGraphql(`
-  query MetricsSummaryQuery($recentEventsTimestamp: BigInt!) {
-    # Count of tokens (assets) with their type
-    tokens(first: 1000) {
-      id
-      type
-      totalSupply
-    }
-
-    # Count of all transfer events (transactions)
-    events(first: 1000, where: { eventName: "Transfer" }) {
-      id
-    }
-
-    # Count of recent transfer events (transactions in last 7 days)
-    recentEvents: events(first: 1000, where: { eventName: "Transfer", blockTimestamp_gte: $recentEventsTimestamp }) {
-      id
-    }
-
+const SYSTEM_STATS_QUERY = theGraphGraphql(`
+  query SystemStatsQuery {
     # System stats for total value
     systemStatsStates(first: 1) {
       totalValueInBaseCurrency
@@ -43,8 +26,51 @@ const METRICS_SUMMARY_QUERY = theGraphGraphql(`
   }
 `);
 
-// Schema for the GraphQL response
-const MetricsResponseSchema = z.object({
+/**
+ * Query to get all tokens with unlimited auto-pagination
+ * This will automatically handle pagination to get ALL tokens, not just first 1000
+ */
+const ALL_TOKENS_QUERY = theGraphGraphql(`
+  query AllTokensQuery($skip: Int!, $first: Int!) {
+    tokens(
+      skip: $skip
+      first: $first
+    ) {
+      id
+      type
+      totalSupply
+    }
+  }
+`);
+
+/**
+ * Query to get all transfer events with unlimited auto-pagination
+ * This will automatically handle pagination to get ALL transfer events
+ */
+const ALL_TRANSFER_EVENTS_QUERY = theGraphGraphql(`
+  query AllTransferEventsQuery($skip: Int!, $first: Int!) {
+    events(
+      skip: $skip
+      first: $first
+      where: { eventName: "Transfer" }
+    ) {
+      id
+      blockTimestamp
+    }
+  }
+`);
+
+// Schema for the system stats response
+const SystemStatsResponseSchema = z.object({
+  systemStatsStates: z.array(
+    z.object({
+      totalValueInBaseCurrency: z.string(),
+    })
+  ),
+});
+
+// Schema for the tokens response
+const TokensResponseSchema = z.object({
   tokens: z.array(
     z.object({
       id: z.string(),
@@ -52,19 +78,14 @@ const MetricsResponseSchema = z.object({
       totalSupply: z.string(),
     })
   ),
+});
+
+// Schema for the events response
+const EventsResponseSchema = z.object({
   events: z.array(
     z.object({
       id: z.string(),
-    })
-  ),
-  recentEvents: z.array(
-    z.object({
-      id: z.string(),
-    })
-  ),
-  systemStatsStates: z.array(
-    z.object({
-      totalValueInBaseCurrency: z.string(),
+      blockTimestamp: z.string(),
     })
   ),
 });
@@ -89,19 +110,33 @@ function createAssetBreakdown(tokens: { type: string }[]) {
 }
 
 /**
+ * Helper function to filter events by timestamp
+ * @param events Array of events with blockTimestamp
+ * @param thresholdTimestamp Unix timestamp threshold
+ * @returns Count of events after the threshold
+ */
+function countRecentEvents(events: { blockTimestamp: string }[], thresholdTimestamp: string): number {
+  return events.filter(event =>
+    parseInt(event.blockTimestamp) >= parseInt(thresholdTimestamp)
+  ).length;
+}
+
+/**
  * Metrics summary route handler.
  *
  * Retrieves aggregated metrics for the issuer dashboard including:
- * - Total number of tokenized assets
+ * - Total number of tokenized assets (using auto-pagination for accuracy)
  * - Dynamic breakdown of assets by type (counts whatever asset types exist in the system)
- * - Total transaction count
- * - Recent transaction count (last 7 days)
+ * - Total transaction count (using auto-pagination for all Transfer events)
+ * - Recent transaction count (last 7 days, filtered from all events)
  * - Total number of registered accounts
  * - Recent users count (last 7 days)
  * - Total value of all assets
  *
- * This endpoint consolidates multiple queries into a single request
- * for optimal dashboard performance.
+ * This endpoint uses auto-pagination for accurate counting of all entities:
+ * - Tokens: Unlimited auto-pagination to get ALL tokens
+ * - Events: Unlimited auto-pagination to get ALL transfer events
+ * - Parallel queries for optimal performance
  *
  * Authentication: Required (uses authenticated router)
  * Method: GET /metrics/summary
@@ -127,16 +162,36 @@ export const summary = authRouter.metrics.summary
     const recentEventsTimestamp = getUnixTime(recentActivityThreshold).toString();
 
     // Run all queries in parallel for optimal performance
-    const [response, totalUserCountResult, recentUserCountResult] = await Promise.all([
-      // Fetch blockchain metrics from TheGraph
-      context.theGraphClient.query(METRICS_SUMMARY_QUERY, {
+    const [systemStatsResponse, tokensResponse, eventsResponse, totalUserCountResult, recentUserCountResult] = await Promise.all([
+      // Fetch system stats from TheGraph
+      context.theGraphClient.query(SYSTEM_STATS_QUERY, {
+        input: {
+          input: {},
+        },
+        output: SystemStatsResponseSchema,
+        error: "Failed to fetch system stats",
+      }),
+      // Fetch ALL tokens using auto-pagination (unlimited results)
+      context.theGraphClient.query(ALL_TOKENS_QUERY, {
         input: {
           input: {
-            recentEventsTimestamp,
+            offset: 0,
+            // No limit specified = unlimited auto-pagination
           },
         },
-        output: MetricsResponseSchema,
-        error: "Failed to fetch metrics summary",
+        output: TokensResponseSchema,
+        error: "Failed to fetch all tokens",
+      }),
+      // Fetch ALL transfer events using auto-pagination (unlimited results)
+      context.theGraphClient.query(ALL_TRANSFER_EVENTS_QUERY, {
+        input: {
+          input: {
+            offset: 0,
+            // No limit specified = unlimited auto-pagination
+          },
+        },
+        output: EventsResponseSchema,
+        error: "Failed to fetch all transfer events",
       }),
       // Get count of all registered accounts from database
       context.db
@@ -154,18 +209,22 @@ export const summary = authRouter.metrics.summary
 
     // Calculate total value, defaulting to "0" if no system stats
     const totalValue =
-      response.systemStatsStates.length > 0 && response.systemStatsStates[0]
-        ? response.systemStatsStates[0].totalValueInBaseCurrency
+      systemStatsResponse.systemStatsStates.length > 0 && systemStatsResponse.systemStatsStates[0]
+        ? systemStatsResponse.systemStatsStates[0].totalValueInBaseCurrency
         : "0";
 
-    // Create asset breakdown from tokens
-    const assetBreakdown = createAssetBreakdown(response.tokens);
+    // Calculate event counts
+    const totalTransactions = eventsResponse.events.length;
+    const recentTransactions = countRecentEvents(eventsResponse.events, recentEventsTimestamp);
+
+    // Create asset breakdown from all tokens (auto-paginated)
+    const assetBreakdown = createAssetBreakdown(tokensResponse.tokens);
 
     return {
-      totalAssets: response.tokens.length,
+      totalAssets: tokensResponse.tokens.length,
       assetBreakdown,
-      totalTransactions: response.events.length,
-      recentTransactions: response.recentEvents.length,
+      totalTransactions,
+      recentTransactions,
       totalUsers,
       recentUsers: recentUsersCount,
       recentActivityDays: RECENT_ACTIVITY_DAYS,
