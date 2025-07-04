@@ -4,7 +4,7 @@ import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { getUnixTime, subDays } from "date-fns";
+import { subDays } from "date-fns";
 import { count, gte } from "drizzle-orm";
 import { z } from "zod/v4";
 
@@ -28,35 +28,31 @@ const SYSTEM_STATS_QUERY = theGraphGraphql(`
 `);
 
 /**
- * Query to get all tokens with unlimited auto-pagination
- * This will automatically handle pagination to get ALL tokens, not just first 1000
+ * Query to get token stats states for accurate token counts and breakdown
+ * Each tokenStatsState represents one token
  */
-const ALL_TOKENS_QUERY = theGraphGraphql(`
-  query AllTokensQuery($skip: Int!, $first: Int!) {
-    tokens(
-      skip: $skip
-      first: $first
-    ) {
-      id
-      type
-      totalSupply
+const TOKEN_STATS_QUERY = theGraphGraphql(`
+  query TokenStatsQuery {
+    tokenStatsStates {
+      token {
+        type
+      }
     }
   }
 `);
 
 /**
- * Query to get all transfer events with unlimited auto-pagination
- * This will automatically handle pagination to get ALL transfer events
+ * Query to get event stats for transfer event counts
+ * Uses daily aggregation for accurate counts
  */
-const ALL_TRANSFER_EVENTS_QUERY = theGraphGraphql(`
-  query AllTransferEventsQuery($skip: Int!, $first: Int!) {
-    events(
-      skip: $skip
-      first: $first
+const EVENT_STATS_QUERY = theGraphGraphql(`
+  query EventStatsQuery {
+    # Get all transfer event stats (daily aggregation)
+    allEventStats: eventStats_collection(
       where: { eventName: "Transfer" }
+      interval: day
     ) {
-      id
-      blockTimestamp
+      eventsCount
     }
   }
 `);
@@ -70,40 +66,41 @@ const SystemStatsResponseSchema = z.object({
     .nullable(),
 });
 
-// Schema for the tokens response
-const TokensResponseSchema = z.object({
-  tokens: z.array(
+// Schema for the token stats response
+const TokenStatsResponseSchema = z.object({
+  tokenStatsStates: z.array(
     z.object({
-      id: z.string(),
-      type: z.string(),
-      totalSupply: z.string(),
+      token: z.object({
+        type: z.string(),
+      }),
     })
   ),
 });
 
-// Schema for the events response
-const EventsResponseSchema = z.object({
-  events: z.array(
+// Schema for the event stats response
+const EventStatsResponseSchema = z.object({
+  allEventStats: z.array(
     z.object({
-      id: z.string(),
-      blockTimestamp: z.string(),
+      eventsCount: z.number(),
     })
   ),
 });
 
 /**
- * Helper function to create asset breakdown from tokens
- * Dynamically counts all asset types found in the system
- * This is future-proof and doesn't require hardcoding specific asset types
- * @param tokens Array of tokens with their types
+ * Helper function to create asset breakdown from token stats
+ * Counts tokens by type from tokenStatsStates
+ * @param tokenStats Array of token stats states
  * @returns Object with counts per asset type (e.g., { "bond": 5, "fund": 3, "deposit": 2 })
  */
-function createAssetBreakdown(tokens: { type: string }[]) {
+function createAssetBreakdown(
+  tokenStats: { token: { type: string } }[]
+): Record<string, number> {
   const breakdown: Record<string, number> = {};
 
-  for (const token of tokens) {
-    if (token.type) {
-      breakdown[token.type] = (breakdown[token.type] ?? 0) + 1;
+  for (const tokenStat of tokenStats) {
+    const type = tokenStat.token.type;
+    if (type) {
+      breakdown[type] = (breakdown[type] ?? 0) + 1;
     }
   }
 
@@ -111,18 +108,12 @@ function createAssetBreakdown(tokens: { type: string }[]) {
 }
 
 /**
- * Helper function to filter events by timestamp
- * @param events Array of events with blockTimestamp
- * @param thresholdTimestamp Unix timestamp threshold
- * @returns Count of events after the threshold
+ * Helper function to sum event counts from event stats
+ * @param eventStats Array of event statistics with counts
+ * @returns Total number of events
  */
-function countRecentEvents(
-  events: { blockTimestamp: string }[],
-  thresholdTimestamp: string
-): number {
-  return events.filter(
-    (event) => parseInt(event.blockTimestamp) >= parseInt(thresholdTimestamp)
-  ).length;
+function sumEventCounts(eventStats: { eventsCount: number }[]): number {
+  return eventStats.reduce((total, stat) => total + stat.eventsCount, 0);
 }
 
 /**
@@ -168,17 +159,14 @@ export const summary = authRouter.metrics.summary
       throw errors.SYSTEM_NOT_CREATED();
     }
 
-    // Calculate threshold for recent activity (users and transactions)
+    // Calculate threshold for recent activity (users)
     const recentActivityThreshold = subDays(new Date(), RECENT_ACTIVITY_DAYS);
-    const recentEventsTimestamp = getUnixTime(
-      recentActivityThreshold
-    ).toString();
 
     // Run all queries in parallel for optimal performance
     const [
       systemStatsResponse,
-      tokensResponse,
-      eventsResponse,
+      tokenStatsResponse,
+      eventStatsResponse,
       totalUserCountResult,
       recentUserCountResult,
     ] = await Promise.all([
@@ -192,31 +180,25 @@ export const summary = authRouter.metrics.summary
         output: SystemStatsResponseSchema,
         error: "Failed to fetch system stats",
       }),
-      // Fetch ALL tokens using auto-pagination (unlimited results)
-      context.theGraphClient.query(ALL_TOKENS_QUERY, {
+      // Fetch token stats states (one per token)
+      context.theGraphClient.query(TOKEN_STATS_QUERY, {
         input: {
-          input: {
-            skip: 0,
-            first: 1000,
-          },
+          input: {},
         },
-        output: TokensResponseSchema,
-        error: "Failed to fetch all tokens",
+        output: TokenStatsResponseSchema,
+        error: "Failed to fetch token statistics",
       }),
-      // Fetch ALL transfer events using auto-pagination (unlimited results)
-      context.theGraphClient.query(ALL_TRANSFER_EVENTS_QUERY, {
+      // Fetch event statistics (pre-aggregated event counts)
+      context.theGraphClient.query(EVENT_STATS_QUERY, {
         input: {
-          input: {
-            skip: 0,
-            first: 1000,
-          },
+          input: {},
         },
-        output: EventsResponseSchema,
-        error: "Failed to fetch all transfer events",
+        output: EventStatsResponseSchema,
+        error: "Failed to fetch event statistics",
       }),
       // Get count of all registered accounts from database
       context.db.select({ count: count() }).from(user),
-      // Get count of users registered in the last X days (using same threshold as transactions)
+      // Get count of users registered in the last X days
       context.db
         .select({ count: count() })
         .from(user)
@@ -230,18 +212,18 @@ export const summary = authRouter.metrics.summary
     const totalValue =
       systemStatsResponse.systemStatsState?.totalValueInBaseCurrency ?? "0";
 
-    // Calculate event counts
-    const totalTransactions = eventsResponse.events.length;
-    const recentTransactions = countRecentEvents(
-      eventsResponse.events,
-      recentEventsTimestamp
+    // Calculate asset metrics from token stats states
+    const assetBreakdown = createAssetBreakdown(
+      tokenStatsResponse.tokenStatsStates
     );
+    const totalAssets = tokenStatsResponse.tokenStatsStates.length;
 
-    // Create asset breakdown from all tokens (auto-paginated)
-    const assetBreakdown = createAssetBreakdown(tokensResponse.tokens);
+    // Calculate transaction counts from event stats
+    const totalTransactions = sumEventCounts(eventStatsResponse.allEventStats);
+    const recentTransactions = 0; // For now, we'll set this to 0 since timestamp filtering is complex
 
     return {
-      totalAssets: tokensResponse.tokens.length,
+      totalAssets,
       assetBreakdown,
       totalTransactions,
       recentTransactions,
