@@ -18,6 +18,7 @@ import { Route as PrivateOnboardingRouteImport } from './routes/_private/onboard
 import { Route as PrivateOnboardedRouteImport } from './routes/_private/_onboarded'
 import { Route as PrivateOnboardingIndexRouteImport } from './routes/_private/onboarding/index'
 import { Route as PrivateOnboardedIndexRouteImport } from './routes/_private/_onboarded/index'
+import { Route as PrivateOnboardingPlatformNewRouteImport } from './routes/_private/onboarding/platform-new'
 import { Route as PrivateOnboardingPlatformRouteImport } from './routes/_private/onboarding/platform'
 import { Route as PrivateOnboardingIssuerRouteImport } from './routes/_private/onboarding/issuer'
 import { Route as PrivateOnboardingInvestorRouteImport } from './routes/_private/onboarding/investor'
@@ -63,6 +64,12 @@ const PrivateOnboardedIndexRoute = PrivateOnboardedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PrivateOnboardedRoute,
 } as any)
+const PrivateOnboardingPlatformNewRoute =
+  PrivateOnboardingPlatformNewRouteImport.update({
+    id: '/platform-new',
+    path: '/platform-new',
+    getParentRoute: () => PrivateOnboardingRoute,
+  } as any)
 const PrivateOnboardingPlatformRoute =
   PrivateOnboardingPlatformRouteImport.update({
     id: '/platform',
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/investor': typeof PrivateOnboardingInvestorRoute
   '/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
   '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
+  '/onboarding/platform-new': typeof PrivateOnboardingPlatformNewRoute
   '/': typeof PrivateOnboardedIndexRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
   '/token/stats': typeof PrivateOnboardedTokenStatsRoute
@@ -133,6 +141,7 @@ export interface FileRoutesByTo {
   '/onboarding/investor': typeof PrivateOnboardingInvestorRoute
   '/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
   '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
+  '/onboarding/platform-new': typeof PrivateOnboardingPlatformNewRoute
   '/': typeof PrivateOnboardedIndexRoute
   '/onboarding': typeof PrivateOnboardingIndexRoute
   '/token/stats': typeof PrivateOnboardedTokenStatsRoute
@@ -149,6 +158,7 @@ export interface FileRoutesById {
   '/_private/onboarding/investor': typeof PrivateOnboardingInvestorRoute
   '/_private/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
   '/_private/onboarding/platform': typeof PrivateOnboardingPlatformRoute
+  '/_private/onboarding/platform-new': typeof PrivateOnboardingPlatformNewRoute
   '/_private/_onboarded/': typeof PrivateOnboardedIndexRoute
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
   '/_private/_onboarded/token/stats': typeof PrivateOnboardedTokenStatsRoute
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/onboarding/investor'
     | '/onboarding/issuer'
     | '/onboarding/platform'
+    | '/onboarding/platform-new'
     | '/'
     | '/onboarding/'
     | '/token/stats'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/onboarding/investor'
     | '/onboarding/issuer'
     | '/onboarding/platform'
+    | '/onboarding/platform-new'
     | '/'
     | '/onboarding'
     | '/token/stats'
@@ -191,6 +203,7 @@ export interface FileRouteTypes {
     | '/_private/onboarding/investor'
     | '/_private/onboarding/issuer'
     | '/_private/onboarding/platform'
+    | '/_private/onboarding/platform-new'
     | '/_private/_onboarded/'
     | '/_private/onboarding/'
     | '/_private/_onboarded/token/stats'
@@ -282,6 +295,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof PrivateOnboardedIndexRouteImport
       parentRoute: typeof PrivateOnboardedRoute
+    }
+    '/_private/onboarding/platform-new': {
+      id: '/_private/onboarding/platform-new'
+      path: '/platform-new'
+      fullPath: '/onboarding/platform-new'
+      preLoaderRoute: typeof PrivateOnboardingPlatformNewRouteImport
+      parentRoute: typeof PrivateOnboardingRoute
     }
     '/_private/onboarding/platform': {
       id: '/_private/onboarding/platform'
@@ -376,6 +396,7 @@ interface PrivateOnboardingRouteChildren {
   PrivateOnboardingInvestorRoute: typeof PrivateOnboardingInvestorRoute
   PrivateOnboardingIssuerRoute: typeof PrivateOnboardingIssuerRoute
   PrivateOnboardingPlatformRoute: typeof PrivateOnboardingPlatformRoute
+  PrivateOnboardingPlatformNewRoute: typeof PrivateOnboardingPlatformNewRoute
   PrivateOnboardingIndexRoute: typeof PrivateOnboardingIndexRoute
 }
 
@@ -383,6 +404,7 @@ const PrivateOnboardingRouteChildren: PrivateOnboardingRouteChildren = {
   PrivateOnboardingInvestorRoute: PrivateOnboardingInvestorRoute,
   PrivateOnboardingIssuerRoute: PrivateOnboardingIssuerRoute,
   PrivateOnboardingPlatformRoute: PrivateOnboardingPlatformRoute,
+  PrivateOnboardingPlatformNewRoute: PrivateOnboardingPlatformNewRoute,
   PrivateOnboardingIndexRoute: PrivateOnboardingIndexRoute,
 }
 
