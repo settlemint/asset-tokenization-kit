@@ -31,7 +31,7 @@ import { t } from "i18next";
 export function getAssetTypePlural(
   assetType: string,
   count: number,
-  namespace = 'assets'
+  namespace = "assets"
 ): string {
   // Use the translation key pattern "assetType_one" and "assetType_other"
   // This allows react-i18next to automatically select the correct plural form

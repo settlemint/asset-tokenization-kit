@@ -42,7 +42,8 @@ export function AssetStatsWidget() {
         {metrics.totalAssets.toLocaleString()}
       </CardContent>
       <CardFooter className="text-muted-foreground text-sm">
-        {assetBreakdownText || t("stats.noAssets", { defaultValue: "No assets found" })}
+        {assetBreakdownText ||
+          t("stats.noAssets", { defaultValue: "No assets found" })}
       </CardFooter>
     </Card>
   );

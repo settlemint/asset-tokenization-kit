@@ -16,10 +16,12 @@ const baseCurrencySchema = z.object({
  */
 const systemAddressSchema = z.object({
   key: z.literal("SYSTEM_ADDRESS"),
-  value: z.string().refine(
-    (value) => value === "" || /^0x[a-fA-F0-9]{40}$/.test(value),
-    "SYSTEM_ADDRESS must be a valid Ethereum address (0x...) or empty string"
-  ),
+  value: z
+    .string()
+    .refine(
+      (value) => value === "" || /^0x[a-fA-F0-9]{40}$/.test(value),
+      "SYSTEM_ADDRESS must be a valid Ethereum address (0x...) or empty string"
+    ),
 });
 
 /**
