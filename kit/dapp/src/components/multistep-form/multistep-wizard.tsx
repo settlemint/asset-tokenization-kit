@@ -114,11 +114,11 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
       // Allow navigation to:
       // 1. Any previous step (stepIndex < safeCurrentStepIndex)
-      // 2. Completed steps 
+      // 2. Completed steps
       // 3. The next step after current
       const targetStep = steps[stepIndex];
       if (!targetStep) return false;
-      
+
       return (
         stepIndex < safeCurrentStepIndex || // Allow going back to any previous step
         completedSteps.includes(targetStep.id) ||
