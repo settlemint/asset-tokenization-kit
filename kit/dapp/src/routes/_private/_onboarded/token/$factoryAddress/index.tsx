@@ -5,6 +5,7 @@ import { TokensTable } from "@/components/tables/tokens";
 import { TopInfo } from "@/components/top-info";
 import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 /**
  * Route configuration for the token factory details page
@@ -71,43 +72,6 @@ export const Route = createFileRoute(
 });
 
 /**
- * Get the TopInfo content based on the factory type
- */
-function getTopInfoContent(
-  factoryType: string
-): { title: string; description: string } | null {
-  const contentMap: Record<string, { title: string; description: string }> = {
-    bond: {
-      title: "A digital fixed-income security asset",
-      description:
-        "A bond is a debt instrument through which an issuer raises capital from investors, agreeing to repay the principal with interest over a defined period. When issued on blockchain, bonds become programmable assets with transparent terms, automated compliance, and efficient end-to-end lifecycle management from issuance to settlement.",
-    },
-    deposit: {
-      title: "Secure and compliant digital deposit management",
-      description:
-        "A deposit is the act of placing funds into a financial account, typically for safekeeping, future use, or to fulfill a contractual obligation. On blockchain platforms, deposits can be represented as digital tokens, enabling automated verification, conditional release, and auditable custody throughout the transaction lifecycle.",
-    },
-    equity: {
-      title: "Institutional-grade digital equity management",
-      description:
-        "Equity refers to the ownership interest in a company or asset, typically entitling the holder to a share of profits and voting rights. When tokenized on blockchain, equity can be issued, managed, and transferred with programmable rules, improving access, liquidity, and operational efficiency in ownership markets.",
-    },
-    fund: {
-      title: "Digital asset for institutional fund management",
-      description:
-        "A fund aggregates capital from multiple investors to invest in a portfolio of assets according to a defined strategy and management structure. Tokenizing funds on blockchain enables granular ownership tracking, efficient distribution of returns, and streamlined operations through smart contracts and real-time reporting.",
-    },
-    stablecoin: {
-      title: "A secure and collateralized digital currency",
-      description:
-        "A stablecoin is a type of cryptocurrency engineered to maintain a stable value, often backed by reserves like fiat currencies or other assets. On blockchain platforms, stablecoins provide a dependable medium of exchange and store of value, facilitating seamless, low-volatility transactions and programmable financial operations.",
-    },
-  };
-
-  return contentMap[factoryType] ?? null;
-}
-
-/**
  * Token factory details page component
  *
  * Displays the factory name and a table of all tokens (deposits) created
@@ -132,8 +96,12 @@ function getTopInfoContent(
 function RouteComponent() {
   const { factory } = Route.useLoaderData();
   const { factoryAddress } = Route.useParams();
+  const { t } = useTranslation("tokens");
 
-  const topInfoContent = getTopInfoContent(factory.assetType);
+  // Check if we have translations for this asset type
+  const hasTranslations =
+    factory.assetType &&
+    t(`factory.info.${factory.assetType}.title`, { defaultValue: "" });
 
   return (
     <div className="space-y-6 p-6">
@@ -141,9 +109,9 @@ function RouteComponent() {
         <h1 className="text-3xl font-bold tracking-tight">{factory.name}</h1>
       </div>
 
-      {topInfoContent && (
-        <TopInfo title={topInfoContent.title}>
-          <p>{topInfoContent.description}</p>
+      {hasTranslations && (
+        <TopInfo title={t(`factory.info.${factory.assetType}.title`)}>
+          <p>{t(`factory.info.${factory.assetType}.description`)}</p>
         </TopInfo>
       )}
 
