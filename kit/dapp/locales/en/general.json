@@ -142,7 +142,7 @@
       }
     }
   },
-  "components.deposits-table.columns.contract-address": "Asset",
+  
   "continue": "Continue",
   "deploying": "Deploying...",
   "errors": {
