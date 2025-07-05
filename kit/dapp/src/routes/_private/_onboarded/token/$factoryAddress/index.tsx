@@ -1,4 +1,6 @@
+import { DataTableErrorBoundary } from "@/components/data-table/data-table-error-boundary";
 import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
+import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { TokensTable } from "@/components/tables/tokens";
 import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
@@ -63,6 +65,7 @@ export const Route = createFileRoute(
 
     return { factory };
   },
+  errorComponent: DefaultCatchBoundary,
   component: RouteComponent,
 });
 
@@ -98,7 +101,9 @@ function RouteComponent() {
         <h1 className="text-3xl font-bold tracking-tight">{factory.name}</h1>
       </div>
 
-      <TokensTable factoryAddress={factoryAddress} />
+      <DataTableErrorBoundary tableName="Tokens">
+        <TokensTable factoryAddress={factoryAddress} />
+      </DataTableErrorBoundary>
     </div>
   );
 }
