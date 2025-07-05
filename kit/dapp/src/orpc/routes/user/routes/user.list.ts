@@ -1,11 +1,12 @@
 import { isOnboarded } from "@/lib/auth/plugins/utils";
 import { user } from "@/lib/db/schema";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getUserRole } from "@/lib/zod/validators/user-roles";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
-import { asc, desc, type AnyColumn } from "drizzle-orm";
+import { asc, desc, eq, type AnyColumn } from "drizzle-orm";
 
 /**
  * User listing route handler.
@@ -52,7 +53,7 @@ export const list = authRouter.user.list
   .use(permissionsMiddleware({ user: ["list"] }))
   .use(databaseMiddleware)
   .handler(async ({ context, input }) => {
-    const { limit, offset, orderDirection, orderBy } = input;
+    const { limit, offset, orderDirection, orderBy, searchByAddress } = input;
 
     // Configure sort direction based on input
     const order = orderDirection === "desc" ? desc : asc;
@@ -66,6 +67,11 @@ export const list = authRouter.user.list
     const result = await context.db
       .select()
       .from(user)
+      .where(
+        searchByAddress
+          ? eq(user.wallet, getEthereumAddress(searchByAddress))
+          : undefined
+      )
       .orderBy(order(orderColumn))
       .limit(limit ?? 1000)
       .offset(offset);

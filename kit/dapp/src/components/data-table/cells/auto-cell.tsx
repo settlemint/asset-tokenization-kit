@@ -1,11 +1,12 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Web3Address } from "@/components/web3/web3-address";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { CellContext } from "@tanstack/react-table";
 import { toNumber } from "dnum";
 import { useTranslation } from "react-i18next";
-import { AddressCell } from "./address-cell";
 
 /**
  * Helper function to safely convert a value to a number for formatting
@@ -106,14 +107,26 @@ export function AutoCell<TData, TValue>({
 
   // Auto-render based on type with intelligent defaults
   switch (meta.type) {
-    case "address":
-      return (
-        <AddressCell
-          address={String(value)}
-          showCopyButton={true}
-          truncateLength={6}
-        />
-      );
+    case "address": {
+      try {
+        const validAddress = getEthereumAddress(value);
+        return (
+          <Web3Address
+            address={validAddress}
+            copyToClipboard={true}
+            showFullAddress={false}
+            size="tiny"
+          />
+        );
+      } catch {
+        // If address is invalid, show the raw value
+        return (
+          <span className="font-mono text-xs text-muted-foreground">
+            {String(value)}
+          </span>
+        );
+      }
+    }
 
     case "badge": {
       // Determine variant based on column type or name

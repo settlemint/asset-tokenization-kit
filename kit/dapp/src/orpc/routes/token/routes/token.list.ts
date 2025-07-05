@@ -21,9 +21,9 @@ import { TokensResponseSchema } from "@/orpc/routes/token/routes/token.list.sche
  * current state or whether they have any holders.
  */
 const LIST_TOKEN_QUERY = theGraphGraphql(`
-  query ListTokenQuery($tokenFactory: String!, $skip: Int!, $first: Int!, $orderBy: Token_orderBy, $orderDirection: OrderDirection) {
+  query ListTokenQuery($skip: Int!, $first: Int!, $orderBy: Token_orderBy, $orderDirection: OrderDirection, $where: Token_filter) {
     tokens(
-        where: {tokenFactory: $tokenFactory}
+        where: $where
         skip: $skip
         first: $first
         orderBy: $orderBy
@@ -33,6 +33,10 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
         name
         symbol
         decimals
+        totalSupply
+        pausable {
+          paused
+        }
       }
     }
   `);
@@ -82,6 +86,10 @@ export const list = authRouter.token.list
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
       input: {
         input,
+        filter: {
+          tokenFactory: input.tokenFactory,
+          searchByAddress: input.searchByAddress?.toLowerCase(),
+        },
       },
       output: TokensResponseSchema,
       error: "Failed to list tokens",
