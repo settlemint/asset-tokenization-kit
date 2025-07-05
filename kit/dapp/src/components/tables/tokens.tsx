@@ -1,11 +1,13 @@
-import { createSelectionColumn } from "@/components/data-table/columns/selection-column";
-import { DataTable } from "@/components/data-table/data-table";
-import { useBulkActions } from "@/components/data-table/data-table-bulk-actions";
 import {
   ActionsCell,
   type ActionItem,
 } from "@/components/data-table/cells/actions-cell";
+import { createSelectionColumn } from "@/components/data-table/columns/selection-column";
+import { DataTable } from "@/components/data-table/data-table";
+import { useBulkActions } from "@/components/data-table/data-table-bulk-actions";
+import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { env } from "@/lib/env";
 import { orpc } from "@/orpc";
@@ -21,13 +23,14 @@ import {
   Eye,
   Hash,
   Package,
+  PauseCircle,
+  PlayCircle,
   Plus,
   Type,
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import "@/components/data-table/filters/types/table-extensions";
 
 const logger = createLogger({
   level: env.VITE_SETTLEMINT_LOG_LEVEL,
@@ -53,10 +56,10 @@ const INITIAL_SORTING = [
 ];
 
 /**
- * Props for the DepositsTable component
- * @interface DepositsTableProps
+ * Props for the TokensTable component
+ * @interface TokensTableProps
  */
-interface DepositsTableProps {
+interface TokensTableProps {
   /** The address of the token factory contract */
   factoryAddress: string;
 }
@@ -67,16 +70,16 @@ interface DepositsTableProps {
  * This component provides a comprehensive table view of tokens created by a specific factory,
  * including features like sorting, filtering, pagination, bulk actions, and row actions.
  *
- * @param {DepositsTableProps} props - The component props
+ * @param {TokensTableProps} props - The component props
  * @param {string} props.factoryAddress - The address of the token factory to fetch tokens from
  * @returns {JSX.Element} A fully-featured data table displaying deposit tokens
  *
  * @example
  * ```tsx
- * <DepositsTable factoryAddress="0x1234...abcd" />
+ * <TokensTable factoryAddress="0x1234...abcd" />
  * ```
  */
-export function DepositsTable({ factoryAddress }: DepositsTableProps) {
+export function TokensTable({ factoryAddress }: TokensTableProps) {
   const router = useRouter();
   const { t } = useTranslation("general");
   // Get the current route's path pattern from the matched route
@@ -209,6 +212,16 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
     () =>
       withAutoFeatures([
         createSelectionColumn<Token>(),
+        columnHelper.accessor("id", {
+          header: t("components.deposits-table.columns.contract-address"),
+          meta: {
+            displayName: t(
+              "components.deposits-table.columns.contract-address"
+            ),
+            type: "address",
+            icon: Copy,
+          },
+        }),
         columnHelper.accessor("name", {
           header: t("components.deposits-table.columns.name"),
           meta: {
@@ -221,7 +234,7 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
           header: t("components.deposits-table.columns.symbol"),
           meta: {
             displayName: t("components.deposits-table.columns.token-symbol"),
-            type: "badge",
+            type: "text",
             icon: Coins,
           },
         }),
@@ -234,14 +247,35 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
             max: 18,
           },
         }),
-        columnHelper.accessor("id", {
-          header: t("components.deposits-table.columns.contract-address"),
+        columnHelper.accessor("totalSupply", {
+          header: t("components.deposits-table.columns.total-supply"),
           meta: {
-            displayName: t(
-              "components.deposits-table.columns.contract-address"
-            ),
-            type: "address",
-            icon: Copy,
+            displayName: t("components.deposits-table.columns.total-supply"),
+            type: "number",
+            icon: Coins,
+          },
+        }),
+        columnHelper.accessor("pausable.paused", {
+          header: t("components.deposits-table.columns.paused"),
+          cell: (cellProps) => {
+            const paused = cellProps.getValue();
+            return (
+              <Badge variant={paused ? "destructive" : "default"}>
+                {paused ? (
+                  <PauseCircle className="h-4 w-4" />
+                ) : (
+                  <PlayCircle className="h-4 w-4" />
+                )}
+                {paused
+                  ? t("components.deposits-table.status.paused")
+                  : t("components.deposits-table.status.active")}
+              </Badge>
+            );
+          },
+          meta: {
+            displayName: t("components.deposits-table.columns.paused"),
+            type: "badge",
+            icon: PauseCircle,
           },
         }),
         columnHelper.display({
@@ -264,7 +298,6 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
    */
   const handleRowClick = useCallback(
     (token: Token) => {
-      logger.debug("Row clicked, token:", token);
       void (async () => {
         try {
           await router.navigate({
@@ -274,9 +307,8 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
               tokenAddress: token.id,
             },
           });
-          logger.debug("Row click navigation completed");
-        } catch (error) {
-          logger.error("Row click navigation failed:", error);
+        } catch {
+          // ignore
         }
       })();
     },
@@ -296,6 +328,9 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
         enableGlobalFilter: true,
         enableRowSelection: true,
         debounceMs: 300,
+        initialColumnVisibility: {
+          name: false,
+        },
       }}
       advancedToolbar={{
         enableGlobalSearch: false,

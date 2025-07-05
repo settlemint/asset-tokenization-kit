@@ -84,6 +84,9 @@
       "details": "Details",
       "open-menu": "Menü öffnen",
       "address-copied": "Adresse in Zwischenablage kopiert",
+      "copy": "Kopieren",
+      "copy-to-clipboard": "In Zwischenablage kopieren",
+      "copied-to-clipboard": "In Zwischenablage kopiert",
       "clear-all": "Alle löschen",
       "is": "ist",
       "clear": "Löschen",
@@ -110,7 +113,9 @@
         "token-symbol": "Token-Symbol",
         "decimals": "Dezimalstellen",
         "contract-address": "Vertragsadresse",
-        "actions": "Aktionen"
+        "total-supply": "Gesamtangebot",
+        "actions": "Aktionen",
+        "paused": "Status"
       },
       "actions": {
         "view-details": "Details anzeigen",
@@ -127,6 +132,10 @@
       "empty-state": {
         "title": "Keine Tokens gefunden",
         "description": "Diese Fabrik hat noch keine Tokens erstellt. Erstellen Sie Ihren ersten Token, um zu beginnen."
+      },
+      "status": {
+        "active": "Aktiv",
+        "paused": "Pausiert"
       }
     }
   },

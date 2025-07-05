@@ -1,8 +1,7 @@
-import { DepositsTable } from "@/components/tables/deposits";
+import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
+import { TokensTable } from "@/components/tables/tokens";
 import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
-
-import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
 
 /**
  * Route configuration for the token factory details page
@@ -99,7 +98,7 @@ function RouteComponent() {
         <h1 className="text-3xl font-bold tracking-tight">{factory.name}</h1>
       </div>
 
-      <DepositsTable factoryAddress={factoryAddress} />
+      <TokensTable factoryAddress={factoryAddress} />
     </div>
   );
 }

@@ -84,6 +84,9 @@
       "details": "تفاصيل",
       "open-menu": "فتح القائمة",
       "address-copied": "تم نسخ العنوان إلى الحافظة",
+      "copy": "نسخ",
+      "copy-to-clipboard": "نسخ إلى الحافظة",
+      "copied-to-clipboard": "تم النسخ إلى الحافظة",
       "clear-all": "مسح الكل",
       "is": "هو",
       "clear": "مسح",
@@ -110,7 +113,9 @@
         "token-symbol": "رمز التوكن",
         "decimals": "الأرقام العشرية",
         "contract-address": "عنوان العقد",
-        "actions": "الإجراءات"
+        "total-supply": "إجمالي العرض",
+        "actions": "الإجراءات",
+        "paused": "الحالة"
       },
       "actions": {
         "view-details": "عرض التفاصيل",
@@ -127,6 +132,10 @@
       "empty-state": {
         "title": "لم يتم العثور على رموز",
         "description": "لم ينشئ هذا المصنع أي رموز بعد. قم بإنشاء أول رمز لديك للبدء."
+      },
+      "status": {
+        "active": "نشط",
+        "paused": "متوقف"
       }
     }
   },

@@ -24,6 +24,12 @@ export interface AmountOptions {
 
 /**
  * Creates a Zod schema that validates positive numerical amounts with specific boundaries.
+ *
+ * This schema accepts both string and number inputs to ensure precision:
+ * - String inputs avoid JavaScript number precision limits
+ * - Number inputs are supported for convenience
+ * - Already-parsed numbers are passed through efficiently
+ *
  * @param options - Configuration options for amount validation
  * @param options.min - Minimum allowed value (defaults based on decimals or 0)
  * @param options.max - Maximum allowed value (defaults to Number.MAX_SAFE_INTEGER)
@@ -34,16 +40,19 @@ export interface AmountOptions {
  * // Basic amount validation (allows zero by default)
  * const schema = amount();
  * schema.parse(100); // Valid
+ * schema.parse("100"); // Valid (string input)
  * schema.parse(0); // Valid
  *
  * // Amount with 2 decimal places minimum
  * const usdAmount = amount({ decimals: 2 });
  * usdAmount.parse(0.01); // Valid (minimum is 0.01)
+ * usdAmount.parse("0.01"); // Valid (string input)
  * usdAmount.parse(0.009); // Invalid - below minimum
  *
  * // Amount with explicit minimum
  * const minAmount = amount({ min: 10 });
  * minAmount.parse(10); // Valid
+ * minAmount.parse("10"); // Valid (string input)
  * minAmount.parse(5); // Invalid
  * ```
  */
@@ -62,9 +71,31 @@ export const amount = ({
         : 0;
 
   return z
-    .number()
-    .min(minimum, { message: `Amount must be at least ${minimum}` })
-    .max(max, { message: `Amount must not exceed ${max}` })
+    .union([z.string(), z.number()])
+    .transform((value, ctx) => {
+      // If already a number, validate it directly
+      if (typeof value === "number") {
+        return value;
+      }
+
+      // Parse string to number
+      const parsed = Number.parseFloat(value);
+      if (Number.isNaN(parsed)) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "Invalid amount format. Please provide a valid numeric string",
+        });
+        return z.NEVER;
+      }
+      return parsed;
+    })
+    .refine((value) => value >= minimum, {
+      message: `Amount must be at least ${minimum}`,
+    })
+    .refine((value) => value <= max, {
+      message: `Amount must not exceed ${max}`,
+    })
     .describe(`A positive numerical amount between ${minimum} and ${max}`);
 };
 
@@ -111,6 +142,7 @@ export function isAmount(
  * ```typescript
  * try {
  *   const validAmount = getAmount(99.99, { decimals: 2 }); // Returns 99.99
+ *   const stringAmount = getAmount("99.99", { decimals: 2 }); // Returns 99.99
  *   const zeroAmount = getAmount(0, { allowZero: true }); // Explicitly allow zero
  *   const invalid = getAmount(-10); // Throws Error
  * } catch (error) {

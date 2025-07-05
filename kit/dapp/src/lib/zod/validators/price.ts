@@ -10,6 +10,12 @@ import { z } from "zod/v4";
 
 /**
  * Creates a Zod schema that validates price values.
+ *
+ * This schema accepts both string and number inputs to ensure precision:
+ * - String inputs avoid JavaScript number precision limits for large prices
+ * - Number inputs are supported for convenience
+ * - Already-parsed numbers are passed through efficiently
+ *
  * @remarks
  * Price validation requirements:
  * - Must be positive (greater than 0)
@@ -28,21 +34,50 @@ import { z } from "zod/v4";
  *
  * // Valid prices
  * schema.parse(100);      // $100.00
+ * schema.parse("100");    // $100.00 (string input)
  * schema.parse(99.99);    // $99.99
+ * schema.parse("99.99");  // $99.99 (string input)
  * schema.parse(0.0001);   // $0.0001 (minimum precision)
- * schema.parse(1234.5678); // $1,234.5678
+ * schema.parse("1234.5678"); // $1,234.5678 (string preserves precision)
  *
  * // Invalid prices
  * schema.parse(0);         // Throws - not positive
  * schema.parse(-10);       // Throws - negative
- * schema.parse(1.23456);   // Throws - too many decimals
+ * schema.parse("1.23456"); // Throws - too many decimals
  * schema.parse(Infinity);  // Throws - not finite
  * ```
  */
 export const price = () =>
   z
-    .number()
-    .positive("Price must be greater than zero")
+    .union([z.string(), z.number()])
+    .transform((value, ctx) => {
+      // If already a number, validate it's finite and return it
+      if (typeof value === "number") {
+        if (!Number.isFinite(value)) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Price must be a finite number",
+          });
+          return z.NEVER;
+        }
+        return value;
+      }
+
+      // Parse string to number
+      const parsed = Number.parseFloat(value);
+      if (Number.isNaN(parsed) || !Number.isFinite(parsed)) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "Invalid price format. Please provide a valid numeric string",
+        });
+        return z.NEVER;
+      }
+      return parsed;
+    })
+    .refine((value) => value > 0, {
+      message: "Price must be greater than zero",
+    })
     .refine((value) => {
       // Check decimal places by converting to string
       // This handles both integer and decimal prices correctly
@@ -91,6 +126,7 @@ export function isPrice(value: unknown): value is Price {
  * ```typescript
  * try {
  *   const assetPrice = getPrice(150.50); // Returns 150.50 as Price
+ *   const stringPrice = getPrice("150.50"); // Returns 150.50 as Price
  *   const invalid = getPrice(-10); // Throws Error
  * } catch (error) {
  *   console.error("Invalid price provided");
@@ -100,7 +136,7 @@ export function isPrice(value: unknown): value is Price {
  * const orderPrice = getPrice(request.price);
  * createLimitOrder(asset, orderPrice, quantity);
  *
- * // Price updates
+ * // Price updates from API (string)
  * const newPrice = getPrice(marketData.lastPrice);
  * updateAssetPrice(assetId, newPrice);
  * ```
