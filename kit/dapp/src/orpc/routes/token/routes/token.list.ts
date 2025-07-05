@@ -92,10 +92,13 @@ export const list = authRouter.token.list
       where.id = input.searchByAddress.toLowerCase();
     }
 
-    // The middleware will automatically transform offset→skip and limit→first
+    // Manually construct GraphQL variables since we need to handle searchByAddress mapping
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
       input: {
-        ...input,
+        skip: input.offset,
+        first: input.limit ? Math.min(input.limit, 1000) : 1000,
+        orderBy: input.orderBy,
+        orderDirection: input.orderDirection,
         where: Object.keys(where).length > 0 ? where : undefined,
       },
       output: TokensResponseSchema,

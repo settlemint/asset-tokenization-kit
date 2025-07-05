@@ -56,10 +56,10 @@ const INITIAL_SORTING = [
 ];
 
 /**
- * Props for the DepositsTable component
- * @interface DepositsTableProps
+ * Props for the TokensTable component
+ * @interface TokensTableProps
  */
-interface DepositsTableProps {
+interface TokensTableProps {
   /** The address of the token factory contract */
   factoryAddress: string;
 }
@@ -70,16 +70,16 @@ interface DepositsTableProps {
  * This component provides a comprehensive table view of tokens created by a specific factory,
  * including features like sorting, filtering, pagination, bulk actions, and row actions.
  *
- * @param {DepositsTableProps} props - The component props
+ * @param {TokensTableProps} props - The component props
  * @param {string} props.factoryAddress - The address of the token factory to fetch tokens from
  * @returns {JSX.Element} A fully-featured data table displaying deposit tokens
  *
  * @example
  * ```tsx
- * <DepositsTable factoryAddress="0x1234...abcd" />
+ * <TokensTable factoryAddress="0x1234...abcd" />
  * ```
  */
-export function DepositsTable({ factoryAddress }: DepositsTableProps) {
+export function TokensTable({ factoryAddress }: TokensTableProps) {
   const router = useRouter();
   const { t } = useTranslation("general");
   // Get the current route's path pattern from the matched route
@@ -247,7 +247,6 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
             max: 18,
           },
         }),
-
         columnHelper.accessor("totalSupply", {
           header: t("components.deposits-table.columns.total-supply"),
           meta: {
@@ -256,7 +255,6 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
             icon: Coins,
           },
         }),
-
         columnHelper.accessor("pausable.paused", {
           header: t("components.deposits-table.columns.paused"),
           cell: (cellProps) => {
@@ -300,7 +298,6 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
    */
   const handleRowClick = useCallback(
     (token: Token) => {
-      logger.debug("Row clicked, token:", token);
       void (async () => {
         try {
           await router.navigate({
@@ -310,9 +307,8 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
               tokenAddress: token.id,
             },
           });
-          logger.debug("Row click navigation completed");
-        } catch (error) {
-          logger.error("Row click navigation failed:", error);
+        } catch {
+          // ignore
         }
       })();
     },
