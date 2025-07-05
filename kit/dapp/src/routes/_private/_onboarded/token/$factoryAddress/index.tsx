@@ -104,7 +104,8 @@ function RouteComponent() {
   // Check if we have translations for this asset type
   const hasTranslations =
     factory.assetType &&
-    t(`factory.info.${factory.assetType}.title`, { defaultValue: "" });
+    t(`factory.info.${factory.assetType}.title`, { defaultValue: "" }) &&
+    t(`factory.info.${factory.assetType}.description`, { defaultValue: "" });
 
   return (
     <div className="space-y-6 p-6">
