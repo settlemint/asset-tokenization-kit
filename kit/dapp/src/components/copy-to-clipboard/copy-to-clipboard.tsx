@@ -94,30 +94,12 @@ export function CopyToClipboard({
   }
 
   if (!showButton) {
-    return (
-      <div
-        className={cn("cursor-pointer", className)}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        role="button"
-        tabIndex={0}
-        aria-label={t("components.data-table.copy-to-clipboard")}
-      >
-        {children}
-      </div>
-    );
+    return <div className={className}>{children}</div>;
   }
 
   return (
     <div className={cn("inline-flex items-center gap-1", className)}>
-      <div
-        className="flex-1 cursor-pointer min-w-0 inline-flex items-center"
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        role="button"
-        tabIndex={0}
-        aria-label={t("components.data-table.copy-to-clipboard")}
-      >
+      <div className="flex-1 min-w-0 inline-flex items-center">
         {children}
       </div>
       <Button
