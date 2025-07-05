@@ -34,7 +34,7 @@
     "turbo.json"
   ],
   "scripts": {
-    "postinstall": "turbo run dependencies && git config merge.ours.driver true && git config merge.ours.name \"Keep ours for generated files\"",
+    "postinstall": "turbo run dependencies",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
     "build": "turbo build",
