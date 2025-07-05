@@ -58,7 +58,7 @@ function Web3AddressComponent({
   const renderAddress = useCallback(
     (addressClassName?: string) => {
       const displayValue = showFullAddress ? address : truncatedAddressDisplay;
-      
+
       return (
         <span className={cn("font-mono", addressClassName)} title={address}>
           {displayValue}
