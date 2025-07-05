@@ -11,6 +11,7 @@
  * @see {@link ./routes/router} - Main router with all endpoints
  */
 
+import { bigDecimalSerializer } from "@/lib/zod/validators/bigdecimal";
 import type { contract } from "@/orpc/routes/contract";
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
@@ -46,6 +47,7 @@ const getORPCClient = createIsomorphicFn()
   .client((): RouterClient<typeof router> => {
     const link = new RPCLink({
       url: `${window.location.origin}/api/rpc`,
+      customJsonSerializers: [bigDecimalSerializer],
       async fetch(url, options) {
         return await globalThis.fetch(url, {
           ...options,

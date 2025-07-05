@@ -1,10 +1,11 @@
-import { createSelectionColumn } from "@/components/data-table/columns/selection-column";
-import { DataTable } from "@/components/data-table/data-table";
-import { useBulkActions } from "@/components/data-table/data-table-bulk-actions";
 import {
   ActionsCell,
   type ActionItem,
 } from "@/components/data-table/cells/actions-cell";
+import { createSelectionColumn } from "@/components/data-table/columns/selection-column";
+import { DataTable } from "@/components/data-table/data-table";
+import { useBulkActions } from "@/components/data-table/data-table-bulk-actions";
+import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { Button } from "@/components/ui/button";
 import { env } from "@/lib/env";
@@ -27,7 +28,6 @@ import {
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import "@/components/data-table/filters/types/table-extensions";
 
 const logger = createLogger({
   level: env.VITE_SETTLEMINT_LOG_LEVEL,
@@ -196,6 +196,105 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
     ),
     [t]
   );
+
+  // columnHelper.accessor("id", {
+  //   header: t("address-header"),
+  //   cell: ({ getValue }) => (
+  //     <EvmAddress address={getValue()} prettyNames={false}>
+  //       <EvmAddressBalances address={getValue()} />
+  //     </EvmAddress>
+  //   ),
+  //   enableColumnFilter: true,
+  //   filterFn: filterFn("text"),
+  //   meta: defineMeta((row) => row.id, {
+  //     displayName: t("address-header"),
+  //     icon: WalletIcon,
+  //     type: "text",
+  //   }),
+  // }),
+  // columnHelper.accessor("name", {
+  //   header: t("name-header"),
+  //   cell: ({ getValue }) => getValue(),
+  //   enableColumnFilter: true,
+  //   filterFn: filterFn("text"),
+  //   meta: defineMeta((row) => row.name, {
+  //     displayName: t("name-header"),
+  //     icon: AsteriskIcon,
+  //     type: "text",
+  //   }),
+  // }),
+  // columnHelper.accessor("symbol", {
+  //   header: t("symbol-header"),
+  //   cell: ({ getValue }) => getValue(),
+  //   enableColumnFilter: true,
+  //   filterFn: filterFn("text"),
+  //   meta: defineMeta((row) => row.symbol, {
+  //     displayName: t("symbol-header"),
+  //     icon: AsteriskIcon,
+  //     type: "text",
+  //   }),
+  // }),
+  // columnHelper.accessor((row) => row.price.amount, {
+  //   header: t("price-header"),
+  //   cell: ({ row }) =>
+  //     formatNumber(row.original.price.amount, {
+  //       currency: row.original.price.currency,
+  //       decimals: 2,
+  //       locale: locale,
+  //     }),
+  //   enableColumnFilter: false,
+  //   meta: defineMeta((row) => row.price.amount, {
+  //     displayName: t("price-header"),
+  //     icon: DollarSignIcon,
+  //     type: "number",
+  //   }),
+  // }),
+  // columnHelper.accessor("totalSupply", {
+  //   header: t("total-supply-header"),
+  //   cell: ({ getValue }) => formatNumber(getValue(), { locale }),
+  //   enableColumnFilter: true,
+  //   filterFn: filterFn("number"),
+  //   meta: defineMeta((row) => Number(row.totalSupply), {
+  //     displayName: t("total-supply-header"),
+  //     icon: CoinsIcon,
+  //     type: "number",
+  //     variant: "numeric",
+  //   }),
+  // }),
+  // columnHelper.accessor((row) => (row.paused ? "paused" : "active"), {
+  //   header: t("status-header"),
+  //   cell: ({ row }) => {
+  //     return <ActivePill paused={row.original.paused} />;
+  //   },
+  //   enableColumnFilter: true,
+  //   filterFn: filterFn("option"),
+  //   meta: defineMeta((row) => (row.paused ? "paused" : "active"), {
+  //     displayName: t("status-header"),
+  //     icon: ActivityIcon,
+  //     type: "option",
+  //     options: ASSET_STATUSES_OPTIONS.map((status) => ({
+  //       label: tAssetStatus(status.value as any),
+  //       value: status.value,
+  //     })),
+  //   }),
+  // }),
+  // columnHelper.display({
+  //   id: "actions",
+  //   header: t("actions-header"),
+  //   cell: ({ row }) => {
+  //     return (
+  //       <DataTableRowActions
+  //         detailUrl={`/assets/deposit/${row.original.id}`}
+  //       />
+  //     );
+  //   },
+  //   meta: {
+  //     displayName: t("actions-header"),
+  //     icon: MoreHorizontal,
+  //     type: "text",
+  //     enableCsvExport: false,
+  //   },
+  // }),
 
   /**
    * Defines the column configuration for the deposits table

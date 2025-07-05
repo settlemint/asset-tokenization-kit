@@ -1,7 +1,6 @@
 import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
-import { from } from "dnum";
 import type { z } from "zod/v4";
 
 export const read = authRouter.token.read
@@ -9,10 +8,5 @@ export const read = authRouter.token.read
   .handler(({ context }): z.infer<typeof TokenSchema> => {
     // Transform the token data to match the contract output schema
     // The middleware returns totalSupply as string, but the contract expects Dnum
-    const transformedToken = {
-      ...context.token,
-      totalSupply: from(context.token.totalSupply),
-    };
-
-    return TokenSchema.parse(transformedToken);
+    return TokenSchema.parse(context.token);
   });
