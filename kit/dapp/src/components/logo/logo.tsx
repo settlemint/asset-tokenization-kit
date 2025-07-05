@@ -84,20 +84,22 @@ export function Logo({
    */
   const getLogoSrc = () => {
     // Check if dark mode should be used (either from theme or forced)
-    const isDark = resolvedTheme === "dark";
+    const isDark =
+      forcedColorMode === "dark" ||
+      (forcedColorMode !== "light" && resolvedTheme === "dark");
 
     // Select logo file based on variant and color mode
     switch (variant) {
       case "horizontal":
-        return isDark || forcedColorMode === "dark"
+        return isDark
           ? "/logos/settlemint-logo-h-dm.svg"
           : "/logos/settlemint-logo-h-lm.svg";
       case "vertical":
-        return isDark || forcedColorMode === "dark"
+        return isDark
           ? "/logos/settlemint-logo-v-dm.svg"
           : "/logos/settlemint-logo-v-lm.svg";
       case "icon":
-        return isDark || forcedColorMode === "dark"
+        return isDark
           ? "/logos/settlemint-logo-i-dm.svg"
           : "/logos/settlemint-logo-i-lm.svg";
       default:
