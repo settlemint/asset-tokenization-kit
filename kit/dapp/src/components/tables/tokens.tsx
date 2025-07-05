@@ -86,7 +86,11 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   const routePath =
     router.state.matches[router.state.matches.length - 1]?.pathname;
 
-  const { data: tokensResponse, isLoading, error } = useQuery({
+  const {
+    data: tokensResponse,
+    isLoading,
+    error,
+  } = useQuery({
     ...orpc.token.list.queryOptions({
       input: {
         tokenFactory: factoryAddress,
