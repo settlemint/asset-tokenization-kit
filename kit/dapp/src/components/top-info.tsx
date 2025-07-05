@@ -58,9 +58,15 @@ export function TopInfo({
       <AccordionItem value="info">
         <AccordionTrigger>
           <div className="flex items-center gap-2">
-            {variant === "default" && <Info className="size-4" />}
-            {variant === "warning" && <AlertTriangle className="size-4" />}
-            {variant === "destructive" && <AlertCircle className="size-4" />}
+            {variant === "default" && (
+              <Info className="size-4" aria-hidden="true" />
+            )}
+            {variant === "warning" && (
+              <AlertTriangle className="size-4" aria-hidden="true" />
+            )}
+            {variant === "destructive" && (
+              <AlertCircle className="size-4" aria-hidden="true" />
+            )}
             {title}
           </div>
         </AccordionTrigger>
