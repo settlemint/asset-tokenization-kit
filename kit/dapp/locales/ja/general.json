@@ -113,7 +113,9 @@
         "token-symbol": "トークンシンボル",
         "decimals": "小数点以下桁数",
         "contract-address": "コントラクトアドレス",
-        "actions": "アクション"
+        "total-supply": "総供給量",
+        "actions": "アクション",
+        "paused": "ステータス"
       },
       "actions": {
         "view-details": "詳細を表示",
@@ -130,6 +132,10 @@
       "empty-state": {
         "title": "トークンが見つかりません",
         "description": "このファクトリーはまだトークンを作成していません。最初のトークンを作成して始めましょう。"
+      },
+      "status": {
+        "active": "アクティブ",
+        "paused": "一時停止"
       }
     }
   },

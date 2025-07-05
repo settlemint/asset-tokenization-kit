@@ -113,7 +113,9 @@
         "token-symbol": "رمز التوكن",
         "decimals": "الأرقام العشرية",
         "contract-address": "عنوان العقد",
-        "actions": "الإجراءات"
+        "total-supply": "إجمالي العرض",
+        "actions": "الإجراءات",
+        "paused": "الحالة"
       },
       "actions": {
         "view-details": "عرض التفاصيل",
@@ -130,6 +132,10 @@
       "empty-state": {
         "title": "لم يتم العثور على رموز",
         "description": "لم ينشئ هذا المصنع أي رموز بعد. قم بإنشاء أول رمز لديك للبدء."
+      },
+      "status": {
+        "active": "نشط",
+        "paused": "متوقف"
       }
     }
   },

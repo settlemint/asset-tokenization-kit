@@ -1,6 +1,5 @@
 import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Web3Avatar } from "@/components/web3/web3-avatar";
 import { cn } from "@/lib/utils";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
@@ -16,6 +15,7 @@ interface Web3AddressProps {
   className?: string;
   avatarOnly?: boolean;
   showBadge?: boolean;
+  showSymbol?: boolean;
 }
 
 function Web3AddressComponent({
@@ -26,8 +26,9 @@ function Web3AddressComponent({
   className,
   avatarOnly = false,
   showBadge = true,
+  showSymbol = true,
 }: Web3AddressProps) {
-  const { data: users, isLoading: isLoadingUser } = useQuery(
+  const { data: users } = useQuery(
     orpc.user.list.queryOptions({
       input: {
         searchByAddress: address,
@@ -38,7 +39,7 @@ function Web3AddressComponent({
 
   const user = users?.[0];
 
-  const { data: tokens, isLoading: isLoadingToken } = useQuery(
+  const { data: tokens } = useQuery(
     orpc.token.list.queryOptions({
       input: {
         searchByAddress: address,
@@ -48,7 +49,6 @@ function Web3AddressComponent({
   );
 
   const token = tokens?.[0];
-  const isLoading = isLoadingUser || isLoadingToken;
 
   // Memoize truncated address display
   const truncatedAddressDisplay = useMemo(() => {
@@ -71,15 +71,11 @@ function Web3AddressComponent({
   const displayContent = useMemo(() => {
     if (avatarOnly) return null;
 
-    if (isLoading) {
-      return <Skeleton className="h-4 w-32" />;
-    }
-
     if (token?.name) {
       return (
         <div className="flex items-center gap-2">
           <span className="font-medium">{token.name}</span>
-          {token.symbol && (
+          {showSymbol && token.symbol && (
             <span className="text-muted-foreground text-xs">
               ({token.symbol})
             </span>
@@ -87,7 +83,7 @@ function Web3AddressComponent({
           {showBadge && (
             <Badge
               className="min-w-0 max-w-24"
-              variant="secondary"
+              variant="outline"
               title={address}
             >
               {renderAddress("text-xs")}
@@ -104,7 +100,7 @@ function Web3AddressComponent({
           {showBadge && (
             <Badge
               className="min-w-0 max-w-24"
-              variant="secondary"
+              variant="outline"
               title={address}
             >
               {renderAddress("text-xs")}
@@ -115,7 +111,7 @@ function Web3AddressComponent({
     }
 
     return renderAddress();
-  }, [avatarOnly, isLoading, token, user, showBadge, renderAddress, address]);
+  }, [avatarOnly, token, user, showBadge, renderAddress, address, showSymbol]);
 
   if (copyToClipboard && !avatarOnly) {
     return (

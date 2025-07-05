@@ -7,6 +7,7 @@ import { DataTable } from "@/components/data-table/data-table";
 import { useBulkActions } from "@/components/data-table/data-table-bulk-actions";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { env } from "@/lib/env";
 import { orpc } from "@/orpc";
@@ -22,6 +23,8 @@ import {
   Eye,
   Hash,
   Package,
+  PauseCircle,
+  PlayCircle,
   Plus,
   Type,
 } from "lucide-react";
@@ -197,105 +200,6 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
     [t]
   );
 
-  // columnHelper.accessor("id", {
-  //   header: t("address-header"),
-  //   cell: ({ getValue }) => (
-  //     <EvmAddress address={getValue()} prettyNames={false}>
-  //       <EvmAddressBalances address={getValue()} />
-  //     </EvmAddress>
-  //   ),
-  //   enableColumnFilter: true,
-  //   filterFn: filterFn("text"),
-  //   meta: defineMeta((row) => row.id, {
-  //     displayName: t("address-header"),
-  //     icon: WalletIcon,
-  //     type: "text",
-  //   }),
-  // }),
-  // columnHelper.accessor("name", {
-  //   header: t("name-header"),
-  //   cell: ({ getValue }) => getValue(),
-  //   enableColumnFilter: true,
-  //   filterFn: filterFn("text"),
-  //   meta: defineMeta((row) => row.name, {
-  //     displayName: t("name-header"),
-  //     icon: AsteriskIcon,
-  //     type: "text",
-  //   }),
-  // }),
-  // columnHelper.accessor("symbol", {
-  //   header: t("symbol-header"),
-  //   cell: ({ getValue }) => getValue(),
-  //   enableColumnFilter: true,
-  //   filterFn: filterFn("text"),
-  //   meta: defineMeta((row) => row.symbol, {
-  //     displayName: t("symbol-header"),
-  //     icon: AsteriskIcon,
-  //     type: "text",
-  //   }),
-  // }),
-  // columnHelper.accessor((row) => row.price.amount, {
-  //   header: t("price-header"),
-  //   cell: ({ row }) =>
-  //     formatNumber(row.original.price.amount, {
-  //       currency: row.original.price.currency,
-  //       decimals: 2,
-  //       locale: locale,
-  //     }),
-  //   enableColumnFilter: false,
-  //   meta: defineMeta((row) => row.price.amount, {
-  //     displayName: t("price-header"),
-  //     icon: DollarSignIcon,
-  //     type: "number",
-  //   }),
-  // }),
-  // columnHelper.accessor("totalSupply", {
-  //   header: t("total-supply-header"),
-  //   cell: ({ getValue }) => formatNumber(getValue(), { locale }),
-  //   enableColumnFilter: true,
-  //   filterFn: filterFn("number"),
-  //   meta: defineMeta((row) => Number(row.totalSupply), {
-  //     displayName: t("total-supply-header"),
-  //     icon: CoinsIcon,
-  //     type: "number",
-  //     variant: "numeric",
-  //   }),
-  // }),
-  // columnHelper.accessor((row) => (row.paused ? "paused" : "active"), {
-  //   header: t("status-header"),
-  //   cell: ({ row }) => {
-  //     return <ActivePill paused={row.original.paused} />;
-  //   },
-  //   enableColumnFilter: true,
-  //   filterFn: filterFn("option"),
-  //   meta: defineMeta((row) => (row.paused ? "paused" : "active"), {
-  //     displayName: t("status-header"),
-  //     icon: ActivityIcon,
-  //     type: "option",
-  //     options: ASSET_STATUSES_OPTIONS.map((status) => ({
-  //       label: tAssetStatus(status.value as any),
-  //       value: status.value,
-  //     })),
-  //   }),
-  // }),
-  // columnHelper.display({
-  //   id: "actions",
-  //   header: t("actions-header"),
-  //   cell: ({ row }) => {
-  //     return (
-  //       <DataTableRowActions
-  //         detailUrl={`/assets/deposit/${row.original.id}`}
-  //       />
-  //     );
-  //   },
-  //   meta: {
-  //     displayName: t("actions-header"),
-  //     icon: MoreHorizontal,
-  //     type: "text",
-  //     enableCsvExport: false,
-  //   },
-  // }),
-
   /**
    * Defines the column configuration for the deposits table
    *
@@ -308,6 +212,16 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
     () =>
       withAutoFeatures([
         createSelectionColumn<Token>(),
+        columnHelper.accessor("id", {
+          header: t("components.deposits-table.columns.contract-address"),
+          meta: {
+            displayName: t(
+              "components.deposits-table.columns.contract-address"
+            ),
+            type: "address",
+            icon: Copy,
+          },
+        }),
         columnHelper.accessor("name", {
           header: t("components.deposits-table.columns.name"),
           meta: {
@@ -320,7 +234,7 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
           header: t("components.deposits-table.columns.symbol"),
           meta: {
             displayName: t("components.deposits-table.columns.token-symbol"),
-            type: "badge",
+            type: "text",
             icon: Coins,
           },
         }),
@@ -333,14 +247,37 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
             max: 18,
           },
         }),
-        columnHelper.accessor("id", {
-          header: t("components.deposits-table.columns.contract-address"),
+
+        columnHelper.accessor("totalSupply", {
+          header: t("components.deposits-table.columns.total-supply"),
           meta: {
-            displayName: t(
-              "components.deposits-table.columns.contract-address"
-            ),
-            type: "address",
-            icon: Copy,
+            displayName: t("components.deposits-table.columns.total-supply"),
+            type: "number",
+            icon: Coins,
+          },
+        }),
+
+        columnHelper.accessor("pausable.paused", {
+          header: t("components.deposits-table.columns.paused"),
+          cell: (cellProps) => {
+            const paused = cellProps.getValue();
+            return (
+              <Badge variant={paused ? "destructive" : "default"}>
+                {paused ? (
+                  <PauseCircle className="h-4 w-4" />
+                ) : (
+                  <PlayCircle className="h-4 w-4" />
+                )}
+                {paused
+                  ? t("components.deposits-table.status.paused")
+                  : t("components.deposits-table.status.active")}
+              </Badge>
+            );
+          },
+          meta: {
+            displayName: t("components.deposits-table.columns.paused"),
+            type: "badge",
+            icon: PauseCircle,
           },
         }),
         columnHelper.display({
@@ -395,6 +332,9 @@ export function DepositsTable({ factoryAddress }: DepositsTableProps) {
         enableGlobalFilter: true,
         enableRowSelection: true,
         debounceMs: 300,
+        initialColumnVisibility: {
+          name: false,
+        },
       }}
       advancedToolbar={{
         enableGlobalSearch: false,
