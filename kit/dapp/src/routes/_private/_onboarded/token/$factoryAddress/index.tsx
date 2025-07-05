@@ -1,8 +1,11 @@
 import { DataTableErrorBoundary } from "@/components/data-table/data-table-error-boundary";
 import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { RelatedGrid } from "@/components/related-grid";
+import { RelatedGridItem } from "@/components/related-grid-item";
 import { TokensTable } from "@/components/tables/tokens";
 import { TopInfo } from "@/components/top-info";
+import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -118,6 +121,33 @@ function RouteComponent() {
       <DataTableErrorBoundary tableName="Tokens">
         <TokensTable factoryAddress={factoryAddress} />
       </DataTableErrorBoundary>
+
+      <RelatedGrid title="Learn More">
+        <RelatedGridItem
+          title="Getting Started with Token Creation"
+          description="Learn how to create and deploy your first tokenized asset using our factory contracts. This guide covers the essential steps and best practices."
+        >
+          <Button variant="outline" size="sm">
+            Read Guide
+          </Button>
+        </RelatedGridItem>
+        <RelatedGridItem
+          title="Compliance and Regulatory Framework"
+          description="Understand the compliance features built into our token contracts, including KYC/AML integration and regulatory requirements for different jurisdictions."
+        >
+          <Button variant="outline" size="sm">
+            View Documentation
+          </Button>
+        </RelatedGridItem>
+        <RelatedGridItem
+          title="Smart Contract Architecture"
+          description="Explore the technical architecture of our token factory system, including upgradeable contracts, access control, and integration with identity providers."
+        >
+          <Button variant="outline" size="sm">
+            Technical Docs
+          </Button>
+        </RelatedGridItem>
+      </RelatedGrid>
     </div>
   );
 }
