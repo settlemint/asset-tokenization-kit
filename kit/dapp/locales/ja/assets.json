@@ -1,0 +1,14 @@
+{
+  "bond_one": "債券",
+  "bond_other": "債券",
+  "equity_one": "株式",
+  "equity_other": "株式",
+  "fund_one": "ファンド",
+  "fund_other": "ファンド",
+  "stable-coin_one": "ステーブルコイン",
+  "stable-coin_other": "ステーブルコイン",
+  "deposit_one": "預金",
+  "deposit_other": "預金",
+  "token-sale_one": "トークンセール",
+  "token-sale_other": "トークンセール"
+}

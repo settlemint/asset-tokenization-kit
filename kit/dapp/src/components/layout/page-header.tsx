@@ -19,7 +19,7 @@ export function PageHeader({
   section,
 }: PageHeaderProps) {
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative pb-6", className)}>
       {section && (
         <div className="mb-1 text-muted-foreground text-xs">{section}</div>
       )}

@@ -28,6 +28,18 @@ export const router = baseRouter.router({
   ),
 
   /**
+   * Metrics-related API procedures.
+   *
+   * Lazy-loaded module containing aggregated metrics and analytics operations.
+   * Provides consolidated statistics across the platform including user counts,
+   * transaction volumes, asset totals, and value metrics for dashboards and reporting.
+   * @see {@link ./metrics/metrics.router} - Metrics router implementation
+   */
+  metrics: baseRouter.metrics.lazy(
+    async () => import("./metrics/metrics.router")
+  ),
+
+  /**
    * Settings-related API procedures.
    *
    * Lazy-loaded module containing settings management operations.

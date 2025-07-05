@@ -1,9 +1,36 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import type { CellContext } from "@tanstack/react-table";
+import { toNumber } from "dnum";
 import { useTranslation } from "react-i18next";
 import { AddressCell } from "./address-cell";
+
+/**
+ * Helper function to safely convert a value to a number for formatting
+ * Uses dnum for precision handling when the value is a string
+ */
+function safeToNumber(value: unknown): number {
+  // If it's already a number, return it
+  if (typeof value === "number") {
+    return value;
+  }
+
+  // If it's a string, try to parse it with dnum for precision
+  if (typeof value === "string") {
+    try {
+      const bigDecimalValue = bigDecimal().parse(value);
+      return toNumber(bigDecimalValue);
+    } catch {
+      // If parsing fails, fallback to Number conversion
+      return Number(value);
+    }
+  }
+
+  // For other types, use Number conversion
+  return Number(value);
+}
 
 /**
  * Props for the AutoCell component
@@ -137,7 +164,8 @@ export function AutoCell<TData, TValue>({
     }
 
     case "currency": {
-      const currencyValue = Number(value);
+      // Use safe number conversion to handle large values without precision loss
+      const currencyValue = safeToNumber(value);
       return (
         <span className="font-mono text-right block tabular-nums">
           {new Intl.NumberFormat(locale, {
@@ -211,7 +239,8 @@ export function AutoCell<TData, TValue>({
     }
 
     case "number": {
-      const numberValue = Number(value);
+      // Use safe number conversion to handle large values without precision loss
+      const numberValue = safeToNumber(value);
 
       // Determine formatting based on column metadata
       let minimumFractionDigits = 0;

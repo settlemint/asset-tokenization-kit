@@ -1,0 +1,35 @@
+{
+  "title": "Dashboard",
+  "description": "Asset-Management",
+  "asset-management": "Asset-Management",
+  "stats-heading": "Statistiken",
+  "actions-heading": "Ausstehende Aktionen",
+  "latest-events-heading": "Neueste Ereignisse",
+  "stats": {
+    "title": "Plattform-Statistiken",
+    "assets": "Assets",
+    "assetsDescription": "{{bonds}} Anleihen | {{cryptocurrencies}} Kryptowährungen | {{equities}} Aktien | {{funds}} Fonds | {{stableCoins}} Stablecoins | {{deposits}} Einlagen",
+    "transactions": "Transaktionen",
+    "transactionsDescription": "{{count}} Transaktionen in den letzten {{days}} Tagen verarbeitet",
+    "transactionsDescription_one": "{{count}} Transaktion in den letzten {{days}} Tagen verarbeitet",
+    "transactionsDescription_other": "{{count}} Transaktionen in den letzten {{days}} Tagen verarbeitet",
+    "users": "Benutzer",
+    "usersDescription": "{{count}} Benutzer in den letzten {{days}} Tagen",
+    "usersDescription_one": "{{count}} Benutzer in den letzten {{days}} Tagen",
+    "usersDescription_other": "{{count}} Benutzer in den letzten {{days}} Tagen",
+    "totalValue": "Gesamtwert",
+    "totalValueDescription": "Gesamtwert aller Assets",
+    "loading": "Statistiken werden geladen...",
+    "noAssets": "Keine Assets gefunden"
+  },
+  "charts": {
+    "assetSupply": "Asset-Angebot",
+    "assetActivity": "Asset-Aktivität",
+    "usersHistory": "Benutzerwachstum",
+    "transactionsHistory": "Transaktionsverlauf"
+  },
+  "tables": {
+    "latestEvents": "Neueste Ereignisse",
+    "actions": "Ausstehende Aktionen"
+  }
+}

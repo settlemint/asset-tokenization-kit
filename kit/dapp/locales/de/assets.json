@@ -1,0 +1,14 @@
+{
+  "bond_one": "Anleihe",
+  "bond_other": "Anleihen",
+  "equity_one": "Aktie",
+  "equity_other": "Aktien",
+  "fund_one": "Fonds",
+  "fund_other": "Fonds",
+  "stable-coin_one": "Stablecoin",
+  "stable-coin_other": "Stablecoins",
+  "deposit_one": "Einlage",
+  "deposit_other": "Einlagen",
+  "token-sale_one": "Token-Verkauf",
+  "token-sale_other": "Token-Verkäufe"
+}

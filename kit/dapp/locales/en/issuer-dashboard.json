@@ -1,0 +1,38 @@
+{
+  "title": "Dashboard",
+  "description": "Asset management",
+  "asset-management": "Asset management",
+  "stats-heading": "Stats",
+  "actions-heading": "Actions",
+  "latest-events-heading": "Latest Events",
+  "stats": {
+    "title": "Platform Statistics",
+    "assets": "Assets",
+    "assetsDescription": "{{bonds}} bonds | {{cryptocurrencies}} cryptocurrencies | {{equities}} equities | {{funds}} funds | {{stableCoins}} stablecoins | {{deposits}} deposits",
+    "transactions": "Transactions",
+    "transactionsDescription": "{{count}} transactions processed in the last {{days}} days",
+    "transactionsDescription_one": "{{count}} transaction processed in the last {{days}} days",
+    "transactionsDescription_other": "{{count}} transactions processed in the last {{days}} days",
+    "users": "Users",
+    "usersDescription": "{{count}} users in the last {{days}} days",
+    "usersDescription_one": "{{count}} user in the last {{days}} days",
+    "usersDescription_other": "{{count}} users in the last {{days}} days",
+    "totalValue": "Value",
+    "totalValueDescription": "Total value across all assets",
+    "loading": "Loading statistics...",
+    "noAssets": "No assets found"
+  },
+  "charts": {
+    "assetSupply": {
+      "title": "Asset supply",
+      "description": "The distribution of assets per asset class"
+    },
+    "assetActivity": "Asset Activity",
+    "usersHistory": "User Growth",
+    "transactionsHistory": "Transaction History"
+  },
+  "tables": {
+    "latestEvents": "Latest Events",
+    "actions": "Pending Actions"
+  }
+}

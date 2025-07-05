@@ -20,33 +20,41 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 import arAssetDesignerTranslations from "@/locales/ar/asset-designer.json";
+import arAssetsTranslations from "@/locales/ar/assets.json";
 import arAuthTranslations from "@/locales/ar/auth.json";
 import arFormTranslations from "@/locales/ar/form.json";
 import arGeneralTranslations from "@/locales/ar/general.json";
+import arIssuerDashboardTranslations from "@/locales/ar/issuer-dashboard.json";
 import arLanguageTranslations from "@/locales/ar/language.json";
 import arOnboardingTranslations from "@/locales/ar/onboarding.json";
 import arThemeTranslations from "@/locales/ar/theme.json";
 import arTokensTranslations from "@/locales/ar/tokens.json";
 import deAssetDesignerTranslations from "@/locales/de/asset-designer.json";
+import deAssetsTranslations from "@/locales/de/assets.json";
 import deAuthTranslations from "@/locales/de/auth.json";
 import deFormTranslations from "@/locales/de/form.json";
 import deGeneralTranslations from "@/locales/de/general.json";
+import deIssuerDashboardTranslations from "@/locales/de/issuer-dashboard.json";
 import deLanguageTranslations from "@/locales/de/language.json";
 import deOnboardingTranslations from "@/locales/de/onboarding.json";
 import deThemeTranslations from "@/locales/de/theme.json";
 import deTokensTranslations from "@/locales/de/tokens.json";
 import enAssetDesignerTranslations from "@/locales/en/asset-designer.json";
+import enAssetsTranslations from "@/locales/en/assets.json";
 import enAuthTranslations from "@/locales/en/auth.json";
 import enFormTranslations from "@/locales/en/form.json";
 import enGeneralTranslations from "@/locales/en/general.json";
+import enIssuerDashboardTranslations from "@/locales/en/issuer-dashboard.json";
 import enLanguageTranslations from "@/locales/en/language.json";
 import enOnboardingTranslations from "@/locales/en/onboarding.json";
 import enThemeTranslations from "@/locales/en/theme.json";
 import enTokensTranslations from "@/locales/en/tokens.json";
 import jaAssetDesignerTranslations from "@/locales/ja/asset-designer.json";
+import jaAssetsTranslations from "@/locales/ja/assets.json";
 import jaAuthTranslations from "@/locales/ja/auth.json";
 import jaFormTranslations from "@/locales/ja/form.json";
 import jaGeneralTranslations from "@/locales/ja/general.json";
+import jaIssuerDashboardTranslations from "@/locales/ja/issuer-dashboard.json";
 import jaLanguageTranslations from "@/locales/ja/language.json";
 import jaOnboardingTranslations from "@/locales/ja/onboarding.json";
 import jaThemeTranslations from "@/locales/ja/theme.json";
@@ -74,9 +82,11 @@ export const defaultNS = "general";
 export const resources = {
   en: {
     "asset-designer": enAssetDesignerTranslations,
+    assets: enAssetsTranslations,
     auth: enAuthTranslations,
     form: enFormTranslations,
     general: enGeneralTranslations,
+    "issuer-dashboard": enIssuerDashboardTranslations,
     theme: enThemeTranslations,
     language: enLanguageTranslations,
     onboarding: enOnboardingTranslations,
@@ -84,9 +94,11 @@ export const resources = {
   },
   de: {
     "asset-designer": deAssetDesignerTranslations,
+    assets: deAssetsTranslations,
     auth: deAuthTranslations,
     form: deFormTranslations,
     general: deGeneralTranslations,
+    "issuer-dashboard": deIssuerDashboardTranslations,
     theme: deThemeTranslations,
     language: deLanguageTranslations,
     onboarding: deOnboardingTranslations,
@@ -94,9 +106,11 @@ export const resources = {
   },
   ar: {
     "asset-designer": arAssetDesignerTranslations,
+    assets: arAssetsTranslations,
     auth: arAuthTranslations,
     form: arFormTranslations,
     general: arGeneralTranslations,
+    "issuer-dashboard": arIssuerDashboardTranslations,
     theme: arThemeTranslations,
     language: arLanguageTranslations,
     onboarding: arOnboardingTranslations,
@@ -104,9 +118,11 @@ export const resources = {
   },
   ja: {
     "asset-designer": jaAssetDesignerTranslations,
+    assets: jaAssetsTranslations,
     auth: jaAuthTranslations,
     form: jaFormTranslations,
     general: jaGeneralTranslations,
+    "issuer-dashboard": jaIssuerDashboardTranslations,
     theme: jaThemeTranslations,
     language: jaLanguageTranslations,
     onboarding: jaOnboardingTranslations,
