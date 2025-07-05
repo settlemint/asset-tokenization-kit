@@ -74,16 +74,6 @@ export function CopyToClipboard({
     }
   }, [value, onCopy, resetDelay, t]);
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        void handleCopy();
-      }
-    },
-    [handleCopy]
-  );
-
   const handleClick = useCallback(() => {
     void handleCopy();
   }, [handleCopy]);
@@ -99,9 +89,7 @@ export function CopyToClipboard({
 
   return (
     <div className={cn("inline-flex items-center gap-1", className)}>
-      <div className="flex-1 min-w-0 inline-flex items-center">
-        {children}
-      </div>
+      <div className="flex-1 min-w-0 inline-flex items-center">{children}</div>
       <Button
         variant="ghost"
         size="icon"
