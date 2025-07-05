@@ -126,7 +126,9 @@ export function AutoCell<TData, TValue>({
       } catch {
         // If address is invalid, show the raw value
         return (
-          <span className="text-xs text-muted-foreground font-mono">{String(value)}</span>
+          <span className="text-xs text-muted-foreground font-mono">
+            {String(value)}
+          </span>
         );
       }
     }

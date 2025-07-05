@@ -83,13 +83,20 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
 export const list = authRouter.token.list
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
+    // Build where clause, mapping searchByAddress to id
+    const where: Record<string, unknown> = {};
+    if (input.tokenFactory !== undefined) {
+      where.tokenFactory = input.tokenFactory;
+    }
+    if (input.searchByAddress !== undefined) {
+      where.id = input.searchByAddress.toLowerCase();
+    }
+
+    // The middleware will automatically transform offset→skip and limit→first
     const response = await context.theGraphClient.query(LIST_TOKEN_QUERY, {
       input: {
-        input,
-        filter: {
-          tokenFactory: input.tokenFactory,
-          searchByAddress: input.searchByAddress?.toLowerCase(),
-        },
+        ...input,
+        where: Object.keys(where).length > 0 ? where : undefined,
       },
       output: TokensResponseSchema,
       error: "Failed to list tokens",
