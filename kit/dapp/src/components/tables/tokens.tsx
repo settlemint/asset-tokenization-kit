@@ -86,7 +86,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   const routePath =
     router.state.matches[router.state.matches.length - 1]?.pathname;
 
-  const { data: tokensResponse } = useQuery({
+  const { data: tokensResponse, isLoading } = useQuery({
     ...orpc.token.list.queryOptions({
       input: {
         tokenFactory: factoryAddress,
@@ -358,6 +358,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
         icon: Package,
       }}
       onRowClick={handleRowClick}
+      isLoading={isLoading}
     />
   );
 }
