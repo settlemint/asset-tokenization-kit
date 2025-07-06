@@ -42,7 +42,7 @@ export function CopyToClipboard({
 }: CopyProps) {
   const [hasCopied, setHasCopied] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
 
   // Cleanup timeout on unmount
   useEffect(() => {

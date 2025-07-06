@@ -59,7 +59,7 @@ export function DataTableRowActions({
   detailUrl,
   ...props
 }: DataTableColumnCellProps) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
   const [isOpen, setIsOpen] = useState(false);
   const [openItem, setOpenItem] = useState<string | null>(null);
 
@@ -101,7 +101,7 @@ export function DataTableRowActions({
     >
       {detailUrl && (
         <Button variant="outline" size="sm" className="border-muted" asChild>
-          <Link to={detailUrl}>{t("components.data-table.details")}</Link>
+          <Link to={detailUrl}>{t("details")}</Link>
         </Button>
       )}
 
@@ -113,9 +113,7 @@ export function DataTableRowActions({
               className="flex size-8 p-0 hover:bg-theme-accent-background data-[state=open]:bg-muted dark:hover:text-foreground"
             >
               <MoreHorizontal />
-              <span className="sr-only">
-                {t("components.data-table.open-menu")}
-              </span>
+              <span className="sr-only">{t("open-menu")}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent

@@ -3,41 +3,36 @@
   "description": "إدارة الأصول",
   "asset-management": "إدارة الأصول",
   "stats-heading": "الإحصائيات",
-  "actions-heading": "الإجراءات المعلقة",
-  "latest-events-heading": "أحدث الأحداث",
+  "actions-heading": "الإجراءات",
+  "latest-events-heading": "آخر الأحداث",
   "stats": {
     "title": "إحصائيات المنصة",
     "assets": "الأصول",
     "assetsDescription": "{{bonds}} سندات | {{cryptocurrencies}} عملات رقمية | {{equities}} أسهم | {{funds}} صناديق | {{stableCoins}} عملات مستقرة | {{deposits}} ودائع",
     "transactions": "المعاملات",
-    "transactionsDescription": "{{count}} معاملة تم معالجتها في آخر {{days}} أيام",
-    "transactionsDescription_zero": "لا توجد معاملات في آخر {{days}} أيام",
-    "transactionsDescription_one": "معاملة واحدة تم معالجتها في آخر {{days}} أيام",
-    "transactionsDescription_two": "معاملتان تم معالجتهما في آخر {{days}} أيام",
-    "transactionsDescription_few": "{{count}} معاملات تم معالجتها في آخر {{days}} أيام",
-    "transactionsDescription_many": "{{count}} معاملة تم معالجتها في آخر {{days}} أيام",
-    "transactionsDescription_other": "{{count}} معاملة تم معالجتها في آخر {{days}} أيام",
+    "transactionsDescription": "{{count}} معاملات تمت معالجتها في آخر {{days}} أيام",
+    "transactionsDescription_one": "{{count}} معاملة تمت معالجتها في آخر {{days}} أيام",
+    "transactionsDescription_other": "{{count}} معاملات تمت معالجتها في آخر {{days}} أيام",
     "users": "المستخدمون",
-    "usersDescription": "{{count}} مستخدم في آخر {{days}} أيام",
-    "usersDescription_zero": "لا يوجد مستخدمون في آخر {{days}} أيام",
-    "usersDescription_one": "مستخدم واحد في آخر {{days}} أيام",
-    "usersDescription_two": "مستخدمان في آخر {{days}} أيام",
-    "usersDescription_few": "{{count}} مستخدمين في آخر {{days}} أيام",
-    "usersDescription_many": "{{count}} مستخدم في آخر {{days}} أيام",
-    "usersDescription_other": "{{count}} مستخدم في آخر {{days}} أيام",
-    "totalValue": "القيمة الإجمالية",
-    "totalValueDescription": "القيمة الإجمالية لجميع الأصول",
-    "loading": "جاري تحميل الإحصائيات...",
-    "noAssets": "لا توجد أصول"
+    "usersDescription": "{{count}} مستخدمين في آخر {{days}} أيام",
+    "usersDescription_one": "{{count}} مستخدم في آخر {{days}} أيام",
+    "usersDescription_other": "{{count}} مستخدمين في آخر {{days}} أيام",
+    "totalValue": "القيمة",
+    "totalValueDescription": "إجمالي القيمة عبر جميع الأصول",
+    "loading": "جارٍ تحميل الإحصائيات...",
+    "noAssets": "لم يتم العثور على أصول"
   },
   "charts": {
-    "assetSupply": "عرض الأصول",
+    "assetSupply": {
+      "title": "عرض الأصول",
+      "description": "توزيع الأصول حسب فئة الأصول"
+    },
     "assetActivity": "نشاط الأصول",
     "usersHistory": "نمو المستخدمين",
     "transactionsHistory": "تاريخ المعاملات"
   },
   "tables": {
-    "latestEvents": "أحدث الأحداث",
+    "latestEvents": "آخر الأحداث",
     "actions": "الإجراءات المعلقة"
   }
 }

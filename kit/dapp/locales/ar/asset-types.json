@@ -1,0 +1,153 @@
+{
+  "categories": {
+    "fixedIncome": {
+      "name": "الدخل الثابت",
+      "description": "أصول توفر عوائد على شكل مدفوعات فائدة ثابتة ومنتظمة وإعادة رأس المال عند الاستحقاق.",
+      "icon": "اتجاه صاعد"
+    },
+    "flexibleIncome": {
+      "name": "الدخل المرن",
+      "description": "أصول تولد عوائد متغيرة بناءً على ظروف السوق والأداء الأساسي.",
+      "icon": "نشاط"
+    },
+    "cashEquivalent": {
+      "name": "معادل النقد",
+      "description": "استثمارات ذات سيولة عالية يمكن تحويلها بسهولة إلى مبالغ معروفة من النقد.",
+      "icon": "محفظة"
+    }
+  },
+  "types": {
+    "bond": {
+      "name": "سند",
+      "namePlural": "سندات",
+      "description": "أوراق دين تدفع فائدة ثابتة على مدى فترة محددة.",
+      "category": "الدخل الثابت",
+      "features": {
+        "maturity": "تاريخ الاستحقاق",
+        "coupon": "معدل القسيمة",
+        "faceValue": "القيمة الاسمية",
+        "yield": "العائد حتى الاستحقاق",
+        "rating": "تصنيف الائتمان"
+      },
+      "actions": {
+        "issue": "إصدار سند",
+        "redeem": "استرداد سند",
+        "payInterest": "دفع الفائدة",
+        "trade": "تداول السند"
+      }
+    },
+    "deposit": {
+      "name": "إيداع",
+      "namePlural": "ودائع",
+      "description": "ودائع مقفلة زمنياً تكسب فائدة على مدى فترة ثابتة.",
+      "category": "معادل النقد",
+      "features": {
+        "term": "مدة الإيداع",
+        "rate": "معدل الفائدة",
+        "minAmount": "الحد الأدنى للمبلغ",
+        "earlyWithdrawal": "غرامة السحب المبكر"
+      },
+      "actions": {
+        "create": "إنشاء إيداع",
+        "withdraw": "سحب",
+        "renew": "تجديد الإيداع",
+        "calculateInterest": "حساب الفائدة"
+      }
+    },
+    "equity": {
+      "name": "الأسهم",
+      "namePlural": "الأسهم",
+      "description": "حصص ملكية تمثل حقاً في الأصول والأرباح.",
+      "category": "الدخل المرن",
+      "features": {
+        "votingRights": "حقوق التصويت",
+        "dividends": "مدفوعات الأرباح",
+        "ownership": "نسبة الملكية",
+        "class": "فئة السهم"
+      },
+      "actions": {
+        "issue": "إصدار الأسهم",
+        "transfer": "نقل الملكية",
+        "payDividend": "دفع الأرباح",
+        "vote": "إدلاء بالصوت"
+      }
+    },
+    "fund": {
+      "name": "صندوق",
+      "namePlural": "صناديق",
+      "description": "آليات استثمار مجمعة تجمع رأس المال من مستثمرين متعددين.",
+      "category": "الدخل المرن",
+      "features": {
+        "nav": "صافي قيمة الأصول",
+        "managementFee": "رسوم الإدارة",
+        "performanceFee": "رسوم الأداء",
+        "strategy": "استراتيجية الاستثمار"
+      },
+      "actions": {
+        "subscribe": "الاشتراك",
+        "redeem": "استرداد الأسهم",
+        "calculateNAV": "حساب صافي القيمة",
+        "distribute": "توزيع العوائد"
+      }
+    },
+    "stablecoin": {
+      "name": "العملة المستقرة",
+      "namePlural": "العملات المستقرة",
+      "description": "عملات رقمية مصممة للحفاظ على قيمة مستقرة بالنسبة لأصل مرجعي.",
+      "category": "معادل النقد",
+      "features": {
+        "peg": "الأصل المرتبط",
+        "collateral": "نسبة الضمان",
+        "mechanism": "آلية الاستقرار",
+        "reserves": "احتياطيات الاحتفاظ"
+      },
+      "actions": {
+        "mint": "سك الرموز",
+        "burn": "حرق الرموز",
+        "rebalance": "إعادة توازن الاحتياطيات",
+        "audit": "تدقيق الاحتياطيات"
+      }
+    }
+  },
+  "fields": {
+    "common": {
+      "name": "اسم الأصل",
+      "symbol": "الرمز",
+      "description": "الوصف",
+      "totalSupply": "الإجمالي المعروض",
+      "decimals": "أماكن العشرية",
+      "issuer": "المصدر",
+      "issuanceDate": "تاريخ الإصدار",
+      "status": "الحالة"
+    },
+    "compliance": {
+      "kyc": "مطلوب KYC",
+      "accreditation": "مطلوب اعتماد",
+      "transferRestrictions": "قيود النقل",
+      "holdingPeriod": "الحد الأدنى لفترة الاحتفاظ",
+      "maxInvestors": "الحد الأقصى للمستثمرين"
+    }
+  },
+  "status": {
+    "active": "نشط",
+    "paused": "مؤجل",
+    "matured": "استحق",
+    "redeemed": "مسترد",
+    "defaulted": "تخلف عن السداد",
+    "frozen": "مجمد"
+  },
+  "metadata": {
+    "riskLevel": {
+      "low": "مخاطر منخفضة",
+      "medium": "مخاطر متوسطة",
+      "high": "مخاطر عالية",
+      "veryHigh": "مخاطر عالية جداً"
+    },
+    "liquidity": {
+      "high": "سيولة عالية",
+      "medium": "سيولة متوسطة",
+      "low": "سيولة منخفضة",
+      "illiquid": "غير سائل"
+    }
+  }
+}
