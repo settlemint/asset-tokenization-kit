@@ -129,7 +129,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { factory } = Route.useLoaderData();
   const { factoryAddress } = Route.useParams();
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("navigation");
 
   // Get the asset type from the factory typeId
   const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
@@ -137,14 +137,14 @@ function RouteComponent() {
 
   const intermediateSections = useMemo(
     () => [
-      { title: t("navigation.assetManagement") },
+      { title: t("assetManagement") },
       {
         title:
           assetClass === "fixed-income"
-            ? t("navigation.fixedIncome")
+            ? t("fixedIncome")
             : assetClass === "flexible-income"
-              ? t("navigation.flexibleIncome")
-              : t("navigation.cashEquivalent"),
+              ? t("flexibleIncome")
+              : t("cashEquivalent"),
       },
     ],
     [assetClass, t]

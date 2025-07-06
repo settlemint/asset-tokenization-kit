@@ -1,0 +1,95 @@
+{
+  "badGateway": {
+    "description": "The server received an invalid response. Please try again.",
+    "title": "Bad gateway"
+  },
+  "badRequest": {
+    "description": "The request was invalid or cannot be processed.",
+    "title": "Bad request"
+  },
+  "blockchain": {
+    "description": "There was an error interacting with the blockchain.",
+    "title": "Blockchain error"
+  },
+  "buttons": {
+    "goBack": "Go back",
+    "goHome": "Go home",
+    "tryAgain": "Try Again"
+  },
+  "conflict": {
+    "description": "The request conflicts with the current state.",
+    "title": "Conflict error"
+  },
+  "contract": {
+    "description": "The smart contract operation failed.",
+    "title": "Smart contract error"
+  },
+  "forbidden": {
+    "description": "You don't have permission to access this resource.",
+    "title": "Access denied"
+  },
+  "gatewayTimeout": {
+    "description": "The server did not respond in time. Please try again.",
+    "title": "Gateway timeout"
+  },
+  "generic": {
+    "description": "An unexpected error occurred. Please try again.",
+    "title": "Unexpected error"
+  },
+  "insufficientFunds": {
+    "description": "Your account does not have enough funds to complete this operation.",
+    "title": "Insufficient funds"
+  },
+  "internal": {
+    "description": "The server encountered an error. Please try again later.",
+    "title": "Internal server error"
+  },
+  "network": {
+    "description": "Unable to connect to the network. Please check your connection.",
+    "title": "Network error"
+  },
+  "notFound": {
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "title": "Page not found"
+  },
+  "notOnboarded": {
+    "description": "Please complete the onboarding process to continue.",
+    "title": "Onboarding required"
+  },
+  "portal": {
+    "description": "There was an error connecting to the portal service.",
+    "title": "Portal error"
+  },
+  "rateLimit": {
+    "description": "You've made too many requests. Please wait a moment and try again.",
+    "title": "Too many requests"
+  },
+  "resourceAlreadyExists": {
+    "description": "The resource you're trying to create already exists.",
+    "title": "Resource already exists"
+  },
+  "serviceUnavailable": {
+    "description": "The service is temporarily unavailable. Please try again later.",
+    "title": "Service unavailable"
+  },
+  "systemNotCreated": {
+    "description": "The system has not been initialized. Please contact an administrator.",
+    "title": "System not initialized"
+  },
+  "timeout": {
+    "description": "The request took too long to complete. Please try again.",
+    "title": "Request timeout"
+  },
+  "transaction": {
+    "description": "The transaction could not be completed. Please try again.",
+    "title": "Transaction failed"
+  },
+  "unauthorized": {
+    "description": "Please sign in to continue.",
+    "title": "Authentication required"
+  },
+  "validation": {
+    "description": "Please check your input and try again.",
+    "title": "Validation error"
+  }
+}

@@ -24,7 +24,7 @@ export function SelectionHeader<TData>({
   showSelectAllButton = true,
   showClearButton = true,
 }: SelectionHeaderProps<TData>) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
 
   const isAllSelected = table.getIsAllPageRowsSelected();
   const isSomeSelected = table.getIsSomePageRowsSelected();
@@ -57,10 +57,10 @@ export function SelectionHeader<TData>({
           onCheckedChange={handleToggleAll}
           aria-label={
             isAllSelected
-              ? t("components.data-table.bulk-actions.clear-selection")
+              ? t("bulk-actions.clear-selection")
               : isSomeSelected
                 ? `${selectedCount} of ${totalCount} rows selected`
-                : t("components.data-table.bulk-actions.select-all")
+                : t("bulk-actions.select-all")
           }
           className={cn(
             "transition-all duration-200",
@@ -93,7 +93,7 @@ export function SelectionHeader<TData>({
               onClick={handleSelectAll}
               className="h-6 px-2 text-xs text-primary hover:bg-primary/10"
             >
-              {t("components.data-table.bulk-actions.select-all")}
+              {t("bulk-actions.select-all")}
             </Button>
           )}
           {showClearButton && (
@@ -105,7 +105,7 @@ export function SelectionHeader<TData>({
             >
               <XIcon className="size-3" />
               <span className="sr-only">
-                {t("components.data-table.bulk-actions.clear-selection")}
+                {t("bulk-actions.clear-selection")}
               </span>
             </Button>
           )}
@@ -133,7 +133,7 @@ export function SelectionCell({
   className,
   showRowNumber = false,
 }: SelectionCellProps) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
   const isSelected = row.getIsSelected();
   const rowIndex = row.index + 1;
 
@@ -148,7 +148,7 @@ export function SelectionCell({
             },
             [row]
           )}
-          aria-label={t("components.data-table.bulk-actions.select-row", {
+          aria-label={t("bulk-actions.select-row", {
             row: rowIndex,
           })}
           className={cn(
@@ -184,7 +184,7 @@ export function SelectionSummary({
   className,
   variant = "compact",
 }: SelectionSummaryProps) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
 
   if (selectedCount === 0) return null;
 
@@ -195,7 +195,7 @@ export function SelectionSummary({
         <span className="font-medium text-primary">
           {variant === "compact"
             ? selectedCount
-            : t("components.data-table.bulk-actions.selected-count", {
+            : t("bulk-actions.selected-count", {
                 count: selectedCount,
               })}
         </span>

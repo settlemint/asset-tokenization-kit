@@ -79,7 +79,7 @@ interface TokensTableProps {
  */
 export function TokensTable({ factoryAddress }: TokensTableProps) {
   const router = useRouter();
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("deposits-table");
   // Get the current route's path pattern from the matched route
   const routePath =
     router.state.matches[router.state.matches.length - 1]?.pathname;
@@ -113,7 +113,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   const createRowActions = useCallback(
     (row: { original: Token }): ActionItem[] => [
       {
-        label: t("components.deposits-table.actions.view-details"),
+        label: t("actions.viewDetails"),
         icon: <Eye className="h-4 w-4" />,
         onClick: () => {
           logger.debug("View details onClick triggered");
@@ -141,15 +141,15 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
         },
       },
       {
-        label: t("components.deposits-table.actions.copy-address"),
+        label: t("actions.copyAddress"),
         icon: <Copy className="h-4 w-4" />,
         onClick: () => {
           void navigator.clipboard.writeText(row.original.id);
-          toast.success(t("components.deposits-table.actions.address-copied"));
+          toast.success(t("actions.addressCopied"));
         },
       },
       {
-        label: t("components.deposits-table.actions.view-on-etherscan"),
+        label: t("actions.viewOnEtherscan"),
         icon: <ExternalLink className="h-4 w-4" />,
         href: `https://etherscan.io/token/${row.original.id}`,
         separator: "before",
@@ -167,7 +167,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   const handleArchive = useCallback(
     (selectedTokens: Token[]) => {
       toast.info(
-        t("components.deposits-table.bulk-actions.archive-message", {
+        t("bulkActions.archiveMessage", {
           count: selectedTokens.length,
         })
       );
@@ -184,7 +184,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   const handleDuplicate = useCallback(
     (selectedTokens: Token[]) => {
       toast.info(
-        t("components.deposits-table.bulk-actions.duplicate-message", {
+        t("bulkActions.duplicateMessage", {
           count: selectedTokens.length,
         })
       );
@@ -210,50 +210,48 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
       withAutoFeatures([
         createSelectionColumn<Token>(),
         columnHelper.accessor("id", {
-          header: t("components.deposits-table.columns.contract-address"),
+          header: t("columns.contractAddress"),
           meta: {
-            displayName: t(
-              "components.deposits-table.columns.contract-address"
-            ),
+            displayName: t("columns.contractAddress"),
             type: "address",
             icon: Copy,
           },
         }),
         columnHelper.accessor("name", {
-          header: t("components.deposits-table.columns.name"),
+          header: t("columns.name"),
           meta: {
-            displayName: t("components.deposits-table.columns.token-name"),
+            displayName: t("columns.tokenName"),
             type: "text",
             icon: Type,
           },
         }),
         columnHelper.accessor("symbol", {
-          header: t("components.deposits-table.columns.symbol"),
+          header: t("columns.symbol"),
           meta: {
-            displayName: t("components.deposits-table.columns.token-symbol"),
+            displayName: t("columns.tokenSymbol"),
             type: "text",
             icon: Coins,
           },
         }),
         columnHelper.accessor("decimals", {
-          header: t("components.deposits-table.columns.decimals"),
+          header: t("columns.decimals"),
           meta: {
-            displayName: t("components.deposits-table.columns.decimals"),
+            displayName: t("columns.decimals"),
             type: "number",
             icon: Hash,
             max: 18,
           },
         }),
         columnHelper.accessor("totalSupply", {
-          header: t("components.deposits-table.columns.total-supply"),
+          header: t("columns.totalSupply"),
           meta: {
-            displayName: t("components.deposits-table.columns.total-supply"),
+            displayName: t("columns.totalSupply"),
             type: "number",
             icon: Coins,
           },
         }),
         columnHelper.accessor("pausable.paused", {
-          header: t("components.deposits-table.columns.paused"),
+          header: t("columns.paused"),
           cell: (cellProps) => {
             const paused = cellProps.getValue();
             return (
@@ -263,21 +261,19 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
                 ) : (
                   <PlayCircle className="h-4 w-4" />
                 )}
-                {paused
-                  ? t("components.deposits-table.status.paused")
-                  : t("components.deposits-table.status.active")}
+                {paused ? t("status.paused") : t("status.active")}
               </Badge>
             );
           },
           meta: {
-            displayName: t("components.deposits-table.columns.paused"),
+            displayName: t("columns.paused"),
             type: "badge",
             icon: PauseCircle,
           },
         }),
         columnHelper.display({
           id: "actions",
-          header: t("components.deposits-table.columns.actions"),
+          header: t("columns.actions"),
           meta: {
             enableCsvExport: false, // Disable CSV export for actions column
           },
@@ -334,7 +330,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
         enableFilters: true,
         enableExport: true,
         enableViewOptions: true,
-        placeholder: t("components.deposits-table.search-placeholder"),
+        placeholder: t("searchPlaceholder"),
       }}
       bulkActions={{
         enabled: true,
@@ -349,8 +345,8 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
       }}
       initialSorting={INITIAL_SORTING}
       customEmptyState={{
-        title: t("components.deposits-table.empty-state.title"),
-        description: t("components.deposits-table.empty-state.description"),
+        title: t("emptyState.title"),
+        description: t("emptyState.description"),
         icon: Package,
       }}
       onRowClick={handleRowClick}

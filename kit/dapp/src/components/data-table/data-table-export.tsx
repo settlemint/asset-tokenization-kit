@@ -146,10 +146,10 @@ interface DataTableExportProps<TData> {
  * @returns Export button component
  */
 export function DataTableExport<TData>({ table }: DataTableExportProps<TData>) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
 
   const handleExport = useCallback(() => {
-    exportTableToCSV(table, t("components.data-table.failed-export"));
+    exportTableToCSV(table, t("failed-export"));
   }, [table, t]);
 
   return (
@@ -161,7 +161,7 @@ export function DataTableExport<TData>({ table }: DataTableExportProps<TData>) {
         className="gap-2 border-muted-foreground text-muted-foreground"
       >
         <Download className="size-4" aria-hidden="true" />
-        {t("components.data-table.export")}
+        {t("export")}
       </Button>
     </div>
   );
