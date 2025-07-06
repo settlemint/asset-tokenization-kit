@@ -1,3 +1,4 @@
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -31,6 +32,7 @@ function RouteComponent() {
 
   return (
     <div>
+      <RouterBreadcrumb />
       <h1>Token Statistics</h1>
       <p>Total Factories: {factories.length}</p>
       <p>

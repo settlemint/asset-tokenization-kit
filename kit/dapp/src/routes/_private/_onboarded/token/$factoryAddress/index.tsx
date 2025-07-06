@@ -1,13 +1,18 @@
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DataTableErrorBoundary } from "@/components/data-table/data-table-error-boundary";
 import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { TokenFactoryRelated } from "@/components/related/token-factory-related";
 import { TokensTable } from "@/components/tables/tokens";
-import { TokenFactoryTopInfo } from "@/components/top-info/token-factory-top-info";
 import { seo } from "@/config/metadata";
-import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
+import {
+  getAssetClassFromFactoryTypeId,
+  getAssetTypeFromFactoryTypeId,
+} from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * Route configuration for the token factory details page
@@ -124,17 +129,33 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { factory } = Route.useLoaderData();
   const { factoryAddress } = Route.useParams();
+  const { t } = useTranslation("general");
 
   // Get the asset type from the factory typeId
   const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
+  const assetClass = getAssetClassFromFactoryTypeId(factory.typeId);
+
+  const intermediateSections = useMemo(
+    () => [
+      { title: t("navigation.assetManagement") },
+      {
+        title:
+          assetClass === "fixed-income"
+            ? t("navigation.fixedIncome")
+            : assetClass === "flexible-income"
+              ? t("navigation.flexibleIncome")
+              : t("navigation.cashEquivalent"),
+      },
+    ],
+    [assetClass, t]
+  );
 
   return (
     <div className="space-y-6 p-6">
       <div className="space-y-2">
+        <RouterBreadcrumb intermediateSections={intermediateSections} />
         <h1 className="text-3xl font-bold tracking-tight">{factory.name}</h1>
       </div>
-
-      <TokenFactoryTopInfo assetType={assetType} />
 
       <DataTableErrorBoundary tableName="Tokens">
         <TokensTable factoryAddress={factoryAddress} />

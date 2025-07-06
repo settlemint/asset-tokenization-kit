@@ -66,9 +66,11 @@ export const list = authRouter.user.list
     // Execute paginated query with sorting
     const baseQuery = context.db.select().from(user);
 
-    const result = await (searchByAddress
-      ? baseQuery.where(eq(user.wallet, getEthereumAddress(searchByAddress)))
-      : baseQuery)
+    const result = await (
+      searchByAddress
+        ? baseQuery.where(eq(user.wallet, getEthereumAddress(searchByAddress)))
+        : baseQuery
+    )
       .orderBy(order(orderColumn))
       .limit(limit ?? 1000)
       .offset(offset);
