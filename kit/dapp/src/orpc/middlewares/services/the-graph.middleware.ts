@@ -194,7 +194,15 @@ function createValidatedTheGraphClient(
     async query<TResult, TVariables extends Variables, TValidated>(
       document: TadaDocumentNode<TResult, TVariables>,
       options: {
-        input: Omit<TVariables, "skip" | "first">;
+        input: Omit<
+          TVariables,
+          "skip" | "first" | "orderBy" | "orderDirection"
+        > & {
+          skip?: number;
+          first?: number;
+          orderBy?: string;
+          orderDirection?: string;
+        };
         output: z.ZodType<TValidated>;
         error: string;
       }

@@ -29,3 +29,4 @@ copied over in every repository.
   functionality or fix any issues.
 - CRITICAL: NEVER COMMIT TO THE MAIN BRANCH, ALWAYS PUSH TO A FEATURE BRANCH.
   More info in @.cursor/rules/git.mdc
+- Adding `as any` is NEVER the solution

@@ -12,11 +12,11 @@ import type { PropsWithChildren } from "react";
 const topInfoVariants = cva("w-full", {
   variants: {
     variant: {
-      default: "linear-gradient-related mb-4 rounded-md px-4",
+      default: "mb-8 rounded-md px-4 linear-gradient-related",
       warning:
-        "mb-4 rounded-md border-sm-state-warning bg-state-warning-background px-4 text-sm-state-warning",
+        "mb-8 rounded-md border-sm-state-warning bg-state-warning-background px-4 text-sm-state-warning",
       destructive:
-        "mb-4 rounded-md border-sm-state-error bg-state-error-background px-4 text-sm-state-error",
+        "mb-8 rounded-md border-sm-state-error bg-state-error-background px-4 text-sm-state-error",
     },
   },
   defaultVariants: {

@@ -2,8 +2,8 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { withEventMeta } from "@orpc/server";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import type { TadaDocumentNode } from "gql.tada";
 import type { Variables } from "graphql-request";
 import { z } from "zod/v4";
@@ -422,7 +422,7 @@ function createValidatedPortalClient(
         }
 
         const result = await theGraphClient.query(GET_INDEXING_STATUS_QUERY, {
-          input: { input: {} },
+          input: {},
           output: z.object({
             _meta: z
               .object({
