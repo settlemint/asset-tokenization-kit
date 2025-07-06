@@ -1,21 +1,12 @@
 {
-  "card-description": "Wir haben Ihre Wallet eingerichtet und werden Ihre Identität auf der Blockchain konfigurieren, um diese Plattform zu nutzen.",
-  "card-title": "Lassen Sie uns Ihre Einrichtung vornehmen!",
-  "ui": {
-    "next": "Weiter",
-    "back": "Zurück",
-    "cancel": "Abbrechen",
-    "complete": "Abschließen",
-    "error": "Fehler",
-    "step": "Schritt",
-    "settlemint": "SettleMint"
-  },
+  "card-description": "Wir haben Ihre Brieftasche eingerichtet und werden Ihre Identität auf der Blockchain konfigurieren, um diese Plattform zu nutzen.",
+  "card-title": "Lassen Sie uns alles einrichten!",
   "platform": {
     "title": "Plattformeinrichtung",
     "description": "Lassen Sie uns Ihre digitale Vermögensplattform einrichten"
   },
   "issuer": {
-    "title": "Emittenten-Einrichtung",
+    "title": "Aussteller-Einrichtung",
     "description": "Richten Sie Ihr Konto ein, um digitale Vermögenswerte auszugeben"
   },
   "investor": {
@@ -24,12 +15,8 @@
   },
   "steps": {
     "wallet": {
-      "title": "Ihre Wallet",
-      "description": "Sehen Sie sich Ihre Blockchain-Wallet an"
-    },
-    "security": {
-      "title": "Sichern Sie Ihre Wallet",
-      "description": "Richten Sie einen Schutz für Ihre Wallet ein"
+      "title": "Ihre Brieftasche",
+      "description": "Sehen Sie sich Ihre Blockchain-Brieftasche an"
     },
     "system": {
       "title": "System bereitstellen",
@@ -40,35 +27,39 @@
       "description": "Wählen Sie unterstützte Vermögensarten aus"
     },
     "identity": {
-      "title": "Identität überprüfen",
-      "description": "Vervollständigen Sie die KYC-Überprüfung",
-      "info": "Die Identitätsüberprüfung gewährleistet die Einhaltung von Vorschriften und ermöglicht es Ihnen, in digitale Vermögenswerte zu investieren.",
+      "title": "Identität verifizieren",
+      "description": "Vervollständigen Sie die KYC-Verifizierung",
+      "info": "Die Identitätsverifizierung stellt die Einhaltung der Vorschriften sicher und ermöglicht es Ihnen, in digitale Vermögenswerte zu investieren.",
       "coming-soon": "Demnächst",
-      "coming-soon-description": "Die Identitätsüberprüfung befindet sich derzeit in der Entwicklung. In der Zwischenzeit erstellen wir Ihre Wallet, damit Sie die Plattform erkunden können."
+      "coming-soon-description": "Die Identitätsverifizierung befindet sich derzeit in der Entwicklung. In der Zwischenzeit erstellen wir Ihre Wallet, damit Sie die Plattform erkunden können."
+    },
+    "security": {
+      "title": "Sichern Sie Ihre Brieftasche",
+      "description": "Richten Sie einen Schutz für Ihre Brieftasche ein"
     }
   },
   "wallet": {
-    "title": "Ihre Wallet",
-    "your-wallet": "Ihre Wallet",
-    "generate-your-wallet": "Ihre Wallet",
-    "description": "Ihre Blockchain-Wallet für sichere Transaktionen",
-    "blockchain-identity-ready": "Ihre Blockchain-Identität ist einsatzbereit",
-    "create-secure-wallet": "Wir haben eine sichere Blockchain-Wallet für Sie erstellt, um mit der Plattform zu interagieren",
+    "title": "Ihre Brieftasche",
+    "description": "Ihre Blockchain-Brieftasche für sichere Transaktionen",
     "info": "Ihre Wallet ist Ihr Zugang zur Blockchain. Sie ermöglicht es Ihnen, digitale Vermögenswerte zu halten und Transaktionen sicher auszuführen.",
     "generate": "Wallet generieren",
     "success": "Wallet erfolgreich erstellt!",
     "generated": "Wallet erfolgreich generiert",
-    "wallet-generated-successfully": "Ihre Wallet ist bereit",
     "already-exists": "Wallet existiert bereits für diesen Benutzer",
-    "creation-failed": "Erstellung der Wallet fehlgeschlagen. Bitte versuchen Sie es erneut.",
-    "address-label": "Wallet-Adresse",
-    "what-is-wallet": "Was ist eine Wallet?",
-    "wallet-description": "Eine Blockchain-Wallet ist Ihre digitale Identität, die es Ihnen ermöglicht, mit Smart Contracts zu interagieren und digitale Vermögenswerte sicher zu verwalten.",
+    "creation-failed": "Fehler beim Erstellen der Wallet. Bitte versuchen Sie es erneut.",
+    "your-wallet": "Ihre Brieftasche",
+    "generate-your-wallet": "Ihre Brieftasche",
+    "blockchain-identity-ready": "Ihre Blockchain-Identität ist bereit zur Nutzung",
+    "create-secure-wallet": "Wir haben eine sichere Blockchain-Brieftasche für Sie erstellt, um mit der Plattform zu interagieren",
+    "wallet-generated-successfully": "Ihre Brieftasche ist bereit",
+    "address-label": "Brieftaschenadresse",
+    "what-is-wallet": "Was ist eine Brieftasche?",
+    "wallet-description": "Eine Blockchain-Brieftasche ist Ihre digitale Identität, die es Ihnen ermöglicht, mit Smart Contracts zu interagieren und digitale Vermögenswerte sicher zu verwalten.",
     "features": {
       "secure": "Sicher",
       "secure-description": "Geschützt durch kryptografische Schlüssel",
       "instant": "Sofort",
-      "instant-description": "Sofort erstellen und zugreifen",
+      "instant-description": "Erstellen und sofort zugreifen",
       "protected": "Geschützt",
       "protected-description": "Ihre Schlüssel, Ihre Vermögenswerte",
       "global": "Global",
@@ -77,84 +68,84 @@
   },
   "system": {
     "title": "SMART-System bereitstellen",
-    "system-deployed": "System bereitgestellt",
-    "deploy-smart-system": "SMART-System bereitstellen",
     "description": "Initialisieren Sie die Kerninfrastruktur für Ihre Plattform",
-    "your-blockchain-infrastructure-ready": "Ihre Blockchain-Infrastruktur ist bereit",
-    "deploy-blockchain-infrastructure": "Stellen Sie Ihre Blockchain-Infrastruktur für die Tokenisierung von Vermögenswerten bereit",
-    "info": "Das SMART-System ist die Grundlage Ihrer digitalen Vermögensplattform. Es verwaltet alle Token-Operationen und gewährleistet die Einhaltung.",
+    "info": "Das SMART-System ist die Grundlage Ihrer digitalen Vermögensplattform. Es verwaltet alle Token-Operationen und stellt die Einhaltung sicher.",
     "deploy": "System bereitstellen",
     "deployed": "System erfolgreich bereitgestellt",
-    "system-deployed-successfully": "System erfolgreich bereitgestellt!",
     "success": "System erfolgreich bereitgestellt!",
-    "contract-address": "Vertragsadresse",
-    "what-is-smart-system": "Was ist ein SMART-System?",
-    "smart-system-description": "Das SMART-System ist Settlemints umfassendes Blockchain-System, das eine konforme Tokenisierung von Vermögenswerten mit integriertem Identitätsmanagement und regulatorischer Compliance ermöglicht.",
-    "system-deployment": "Systembereitstellung",
-    "deployment-time-notice": "Dieser Prozess kann 2-3 Minuten in Anspruch nehmen",
     "messages": {
       "initial-loading": "Bereite die Bereitstellung Ihres SMART-Systems vor...",
-      "no-result-error": "Systembereitstellung abgeschlossen, aber keine Adresse wurde zurückgegeben",
-      "default-error": "Bereitstellung Ihres SMART-Systems fehlgeschlagen",
+      "no-result-error": "Bereitstellung des Systems abgeschlossen, aber keine Adresse wurde zurückgegeben",
+      "default-error": "Fehler beim Bereitstellen Ihres SMART-Systems",
       "created": "System erfolgreich erstellt und hochgefahren.",
       "creating": "Neues System wird erstellt...",
-      "creation-failed": "Erstellung des Systems fehlgeschlagen. Bitte versuchen Sie es erneut.",
-      "bootstrapping-system": "System hochfahren...",
-      "bootstrap-failed": "Hochfahren des Systems fehlgeschlagen. Bitte versuchen Sie es erneut.",
-      "system-created-bootstrap-failed": "System erstellt, aber Hochfahren fehlgeschlagen. Möglicherweise müssen Sie das System manuell hochfahren.",
+      "creation-failed": "Fehler beim Erstellen des Systems. Bitte versuchen Sie es erneut.",
       "pending": {
         "mining": "Bereitstellung Ihres SMART-Systems...",
         "indexing": "Indizierung des neuen SMART-Systems..."
       },
-      "error": "Bereitstellung Ihres SMART-Systems fehlgeschlagen",
-      "timeout": "Transaktionsverfolgung zeitüberschreitung"
+      "error": "Fehler beim Bereitstellen Ihres SMART-Systems",
+      "timeout": "Transaktionsverfolgung Zeitüberschreitung",
+      "bootstrapping-system": "System wird hochgefahren...",
+      "bootstrap-failed": "Fehler beim Hochfahren des Systems. Bitte versuchen Sie es erneut.",
+      "system-created-bootstrap-failed": "System erstellt, aber Hochfahren fehlgeschlagen. Möglicherweise müssen Sie das System manuell hochfahren."
     },
     "transaction-tracking": {
-      "stream-timeout": "Die Verfolgung der Systembereitstellung hat nach 90 Sekunden zeitlich überschritten",
+      "stream-timeout": "Die Verfolgung der Systembereitstellung hat nach 90 Sekunden Zeitüberschreitung",
       "waiting-for-mining": "Bereitstellung Ihres SMART-Systems auf der Blockchain...",
       "transaction-failed": "Transaktion zur Bereitstellung des Systems fehlgeschlagen",
       "transaction-dropped": "Transaktion zur Bereitstellung des Systems wurde nicht rechtzeitig on-chain bestätigt",
       "waiting-for-indexing": "Warten auf die Indizierung des Systems...",
-      "transaction-indexed": "System erfolgreich indiziert und einsatzbereit",
+      "transaction-indexed": "System erfolgreich indiziert und bereit zur Nutzung",
       "indexing-timeout": "Indizierung des Systems zeitlich überschritten, bitte aktualisieren Sie die Seite"
-    }
+    },
+    "system-deployed": "System bereitgestellt",
+    "deploy-smart-system": "SMART-System bereitstellen",
+    "your-blockchain-infrastructure-ready": "Ihre Blockchain-Infrastruktur ist bereit",
+    "deploy-blockchain-infrastructure": "Stellen Sie Ihre Blockchain-Infrastruktur für die Tokenisierung von Vermögenswerten bereit",
+    "system-deployed-successfully": "System erfolgreich bereitgestellt",
+    "contract-address": "Vertragsadresse",
+    "what-is-smart-system": "Was ist ein SMART-System?",
+    "smart-system-description": "Das SMART-System ist Settlemints umfassendes Blockchain-System, das eine konforme Tokenisierung von Vermögenswerten mit integriertem Identitätsmanagement und regulatorischer Compliance ermöglicht.",
+    "system-deployment": "Systembereitstellung",
+    "deployment-time-notice": "Dieser Prozess kann 2-3 Minuten in Anspruch nehmen"
   },
   "assets": {
     "title": "Vermögensarten auswählen",
-    "asset-types-deployed": "Vermögensarten bereitgestellt",
-    "select-asset-types": "Vermögensarten auswählen",
-    "description": "Wählen Sie, welche digitalen Vermögensarten auf Ihrer Plattform aktiviert werden sollen",
-    "your-asset-factories-ready": "Ihre Vermögensfabriken sind bereit für die Tokenisierung",
-    "choose-asset-types": "Wählen Sie die Arten von Vermögenswerten, die Sie auf Ihrer Plattform tokenisieren möchten",
-    "info": "Wählen Sie die Arten von digitalen Vermögenswerten aus, die Ihre Plattform unterstützen wird. Sie können später weitere Vermögensarten hinzufügen.",
+    "description": "Wählen Sie aus, welche Arten digitaler Vermögenswerte auf Ihrer Plattform aktiviert werden sollen",
+    "info": "Wählen Sie die Arten digitaler Vermögenswerte aus, die Ihre Plattform unterstützen wird. Sie können später weitere Vermögensarten hinzufügen.",
     "select-label": "Verfügbare Vermögensarten",
-    "available-asset-types": "Verfügbare Vermögensarten",
-    "select-all-asset-types": "Wählen Sie alle Vermögensarten aus, die Sie tokenisieren möchten",
     "select-description": "Wählen Sie eine oder mehrere Vermögensarten aus, um deren Fabrikverträge bereitzustellen",
     "deploy": "Ausgewählte Vermögenswerte bereitstellen",
-    "deployed": "Asset-Fabriken erfolgreich bereitgestellt",
-    "asset-factories-deployed-successfully": "Asset-Fabriken Erfolgreich Bereitgestellt",
-    "deployed-factories": "Bereitgestellte Fabriken",
-    "no-system": "System nicht gefunden. Bitte stellen Sie das System zuerst bereit.",
-    "what-are-asset-factories": "Was sind Asset-Fabriken?",
-    "asset-factories-description": "Asset-Fabriken sind Smart Contracts, die es Ihnen ermöglichen, verschiedene Arten von tokenisierten Vermögenswerten zu erstellen und zu verwalten. Jede Fabrik behandelt eine spezifische Vermögensklasse mit maßgeschneiderten Funktionen und Compliance-Anforderungen.",
+    "deployed": "Vermögensfabriken erfolgreich bereitgestellt",
+    "no-system": "System nicht gefunden. Bitte stellen Sie zuerst das System bereit.",
     "descriptions": {
       "bond": "Tokenisierte Schuldverschreibungen mit festen Einkommensmerkmalen",
-      "equity": "Digitale Anteile, die Eigentum an Unternehmen repräsentieren",
+      "equity": "Digitale Aktien, die Eigentum an Unternehmen repräsentieren",
       "fund": "Investmentfonds-Token für gebündelte Investitionen",
       "stablecoin": "Preis-stabile digitale Währungen",
       "deposit": "Tokenisierte Bankeinlagen und -zertifikate"
     },
+    "asset-types-deployed": "Vermögenswerttypen bereitgestellt",
+    "select-asset-types": "Vermögenswerttypen auswählen",
+    "your-asset-factories-ready": "Ihre Vermögenswertfabriken sind bereit zur Tokenisierung",
+    "choose-asset-types": "Wählen Sie die Arten von Vermögenswerten aus, die Sie auf Ihrer Plattform tokenisieren möchten",
+    "available-asset-types": "Verfügbare Vermögenswerttypen",
+    "select-all-asset-types": "Wählen Sie alle Vermögenswerttypen aus, die Sie tokenisieren möchten",
+    "asset-factories-deployed-successfully": "Vermögenswertfabriken erfolgreich bereitgestellt",
+    "deployed-factories": "Bereitgestellte Fabriken",
+    "what-are-asset-factories": "Was sind Vermögenswertfabriken?",
+    "asset-factories-description": "Vermögenswertfabriken sind Smart Contracts, die es Ihnen ermöglichen, verschiedene Arten von tokenisierten Vermögenswerten zu erstellen und zu verwalten. Jede Fabrik verwaltet eine spezifische Vermögensklasse mit maßgeschneiderten Funktionen und Compliance-Anforderungen.",
     "factory-messages": {
-      "initial-loading": "Bereite die Erstellung von Token-Fabriken vor...",
-      "factory-created": "Token-Fabrik erfolgreich erstellt.",
-      "creating-factory": "Erstelle Token-Fabrik...",
-      "factory-creation-failed": "Fehler beim Erstellen der Token-Fabrik. Bitte versuchen Sie es erneut.",
+      "initial-loading": "Bereite die Erstellung von Tokenfabriken vor...",
+      "factory-created": "Tokenfabrik erfolgreich erstellt.",
+      "creating-factory": "Erstelle Tokenfabrik...",
+      "factory-creation-failed": "Fehler beim Erstellen der Tokenfabrik. Bitte versuchen Sie es erneut.",
       "batch-progress": "Erstelle Fabrik {{current}} von {{total}}...",
-      "batch-completed": "Erfolgreich {{count}} Token-Fabriken erstellt.",
+      "batch-completed": "Erfolgreich {{count}} Tokenfabriken erstellt.",
       "no-result-error": "Keine Fabrikadresse von der Transaktion erhalten.",
-      "default-error": "Fehler beim Erstellen der Token-Fabrik.",
-      "system-not-bootstrapped": "Das System muss zuerst gestartet werden. Bitte warten Sie, bis die Systeminitialisierung abgeschlossen ist.",
+      "default-error": "Fehler beim Erstellen der Tokenfabrik.",
+      "system-not-bootstrapped": "Das System muss zuerst hochgefahren werden. Bitte warten Sie, bis die Systeminitialisierung abgeschlossen ist.",
       "transaction-submitted": "Transaktion eingereicht. Warte auf Bestätigung...",
       "factory-creation-completed": "Fabrik Erstellung abgeschlossen.",
       "all-factories-succeeded": "Alle {{count}} Fabriken erfolgreich erstellt.",
@@ -171,5 +162,14 @@
       "stream-timeout": "Transaktionsverfolgung hat Zeitüberschreitung",
       "indexing-timeout": "Fabrikindizierung hat Zeitüberschreitung"
     }
+  },
+  "ui": {
+    "next": "Weiter",
+    "back": "Zurück",
+    "cancel": "Abbrechen",
+    "complete": "Abschließen",
+    "error": "Fehler",
+    "step": "Schritt",
+    "settlemint": "SettleMint"
   }
 }

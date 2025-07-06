@@ -89,7 +89,7 @@ export function NavAsset() {
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={t("navigation.asset")}>
+                  <SidebarMenuButton tooltip={t("asset")}>
                     <assetClass.icon />
                     <span>{assetClass.name}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />

@@ -8,16 +8,16 @@
   },
   "form": {
     "title": "{{type}} erstellen",
-    "description": "Konfigurieren Sie Ihr {{type}} indem Sie die grundlegenden Informationen unten bereitstellen.",
+    "description": "Konfigurieren Sie Ihr {{type}}, indem Sie die grundlegenden Informationen unten bereitstellen.",
     "fields": {
       "name": {
         "label": "Name",
-        "placeholder": "z.B. Regierung {{type}} Serie A",
+        "placeholder": "z. B. Regierung {{type}} Serie A",
         "description": "Der Name des Tokens. Dies wird verwendet, um den Token in der Benutzeroberfläche zu identifizieren und kann nach der Erstellung nicht mehr geändert werden."
       },
       "symbol": {
         "label": "Symbol",
-        "placeholder": "z.B. GBSA",
+        "placeholder": "z. B. GBSA",
         "description": "Ein kurzes Symbol für den Token (normalerweise 3-5 Zeichen)"
       },
       "decimals": {
@@ -27,7 +27,7 @@
       },
       "isin": {
         "label": "ISIN (Optional)",
-        "placeholder": "z.B. US0378331005",
+        "placeholder": "z. B. US0378331005",
         "description": "Die ISIN des Tokens. Dies ist ein optionaler eindeutiger Identifikator für den Token im Finanzsystem."
       }
     },

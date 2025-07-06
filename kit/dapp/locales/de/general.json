@@ -1,11 +1,112 @@
 {
   "appDescription": "In Minuten bereitstellen, einfach anpassen",
   "appName": "Asset-Tokenisierungs-Kit",
+  "generating": "Generiere...",
+  "deploying": "Bereitstellen...",
+  "continue": "Fortfahren",
+  "navigation": {
+    "assetManagement": "Vermögensverwaltung",
+    "asset": "Vermögenswert",
+    "assetClasses": "Vermögensklassen",
+    "statistics": "Statistiken",
+    "fixedIncome": "Festverzinslich",
+    "flexibleIncome": "Flexibles Einkommen",
+    "cashEquivalent": "Bargeldäquivalent"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Willkommen zurück",
+    "stats": {
+      "title": "Plattform-Statistiken",
+      "assets": "Assets",
+      "transactions": "Transaktionen",
+      "users": "Benutzer",
+      "totalValue": "Gesamtwert",
+      "loading": "Statistiken werden geladen..."
+    },
+    "charts": {
+      "assetSupply": "Asset-Angebot",
+      "assetActivity": "Asset-Aktivität",
+      "usersHistory": "Benutzerwachstum",
+      "transactionsHistory": "Transaktionsverlauf"
+    },
+    "tables": {
+      "latestEvents": "Neueste Ereignisse",
+      "actions": "Ausstehende Aktionen"
+    }
+  },
   "components": {
     "data-table": {
+      "no-results": "Keine Ergebnisse gefunden",
+      "sort-ascending": "Aufsteigend sortieren",
+      "sort-descending": "Absteigend sortieren",
+      "hide": "Spalte ausblenden",
+      "export": "Exportieren",
+      "failed-export": "Fehler beim Exportieren der Daten",
+      "loading": "Lade...",
+      "search": "Suche...",
+      "filter": "Filter",
+      "clear-filters": "Filter zurücksetzen",
+      "show-all": "Alle anzeigen",
+      "show-selected": "Ausgewählte anzeigen",
+      "select-all": "Alle auswählen",
+      "clear-selection": "Auswahl löschen",
+      "rows-per-page": "Zeilen pro Seite",
+      "page": "Seite",
+      "of": "von",
+      "previous": "Vorherige",
+      "next": "Nächste",
+      "first": "Erste",
+      "last": "Letzte",
+      "showing": "Anzeigen",
+      "entries": "Einträge",
+      "selected": "ausgewählt",
       "actions": "Aktionen",
-      "address-copied": "Adresse in die Zwischenablage kopiert",
+      "view-details": "Details anzeigen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "confirm-delete": "Sind Sie sicher, dass Sie dieses Element löschen möchten?",
+      "cancel": "Abbrechen",
+      "confirm": "Bestätigen",
+      "reset": "Zurücksetzen",
       "apply": "Anwenden",
+      "close": "Schließen",
+      "open": "Öffnen",
+      "toggle-columns": "Spalten umschalten",
+      "density": "Dichte",
+      "comfortable": "Bequem",
+      "compact": "Kompakt",
+      "standard": "Standard",
+      "view": "Ansicht",
+      "selected-rows-info": "{{selected}} von {{total}} Zeile(n) ausgewählt",
+      "page-info": "Seite {{current}} von {{total}}",
+      "go-to-first-page": "Gehe zur ersten Seite",
+      "go-to-previous-page": "Gehe zur vorherigen Seite",
+      "go-to-next-page": "Gehe zur nächsten Seite",
+      "go-to-last-page": "Gehe zur letzten Seite",
+      "details": "Details",
+      "open-menu": "Menü öffnen",
+      "address-copied": "Adresse in die Zwischenablage kopiert",
+      "copy": "Kopieren",
+      "copy-to-clipboard": "In die Zwischenablage kopieren",
+      "copied-to-clipboard": "In die Zwischenablage kopiert",
+      "clear-all": "Alle löschen",
+      "is": "ist",
+      "clear": "Löschen",
+      "filters": {
+        "text": {
+          "contains": "Enthält",
+          "does-not-contain": "Enthält nicht",
+          "placeholder": "Wert eingeben..."
+        },
+        "number": {
+          "single": "Einzel",
+          "range": "Bereich",
+          "placeholder": "Wert eingeben",
+          "min": "Min",
+          "max": "Max"
+        }
+      },
       "bulk-actions": {
         "actions": "Aktionen",
         "add-tags": "Tags hinzufügen",
@@ -30,7 +131,7 @@
         "export-csv": "CSV exportieren",
         "export-json": "JSON exportieren",
         "export-xlsx": "Excel exportieren",
-        "processing": "Verarbeitung...",
+        "processing": "Verarbeite...",
         "remove-tags": "Tags entfernen",
         "select-all": "Alle auswählen",
         "select-row": "Zeile {{row}} auswählen",
@@ -39,215 +140,135 @@
         "selected-count_other": "{{count}} Elemente ausgewählt",
         "set-tags": "Tags festlegen",
         "unarchive-selected": "Ausgewählte wiederherstellen"
-      },
-      "cancel": "Abbrechen",
-      "clear": "Löschen",
-      "clear-all": "Alle löschen",
-      "clear-filters": "Filter löschen",
-      "clear-selection": "Auswahl löschen",
-      "close": "Schließen",
-      "comfortable": "Bequem",
-      "compact": "Kompakt",
-      "confirm": "Bestätigen",
-      "confirm-delete": "Sind Sie sicher, dass Sie dieses Element löschen möchten?",
-      "copied-to-clipboard": "In die Zwischenablage kopiert",
-      "copy": "Kopieren",
-      "copy-to-clipboard": "In die Zwischenablage kopieren",
-      "delete": "Löschen",
-      "density": "Dichte",
-      "details": "Details",
-      "edit": "Bearbeiten",
-      "entries": "Einträge",
-      "export": "Exportieren",
-      "failed-export": "Fehler beim Exportieren der Daten",
-      "filter": "Filter",
-      "filters": {
-        "number": {
-          "max": "Max",
-          "min": "Min",
-          "placeholder": "Wert eingeben",
-          "range": "Bereich",
-          "single": "Einzel"
-        },
-        "text": {
-          "contains": "Enthält",
-          "does-not-contain": "Enthält nicht",
-          "placeholder": "Wert eingeben..."
-        }
-      },
-      "first": "Erste",
-      "go-to-first-page": "Zur ersten Seite gehen",
-      "go-to-last-page": "Zur letzten Seite gehen",
-      "go-to-next-page": "Zur nächsten Seite gehen",
-      "go-to-previous-page": "Zur vorherigen Seite gehen",
-      "hide": "Spalte ausblenden",
-      "is": "ist",
-      "last": "Letzte",
-      "loading": "Laden...",
-      "next": "Nächste",
-      "no-results": "Keine Ergebnisse gefunden",
-      "of": "von",
-      "open": "Öffnen",
-      "open-menu": "Menü öffnen",
-      "page": "Seite",
-      "page-info": "Seite {{current}} von {{total}}",
-      "previous": "Vorherige",
-      "reset": "Zurücksetzen",
-      "rows-per-page": "Zeilen pro Seite",
-      "search": "Suchen...",
-      "select-all": "Alle auswählen",
-      "selected": "ausgewählt",
-      "selected-rows-info": "{{selected}} von {{total}} Zeile(n) ausgewählt",
-      "show-all": "Alle anzeigen",
-      "show-selected": "Ausgewählte anzeigen",
-      "showing": "Anzeigen",
-      "sort-ascending": "Aufsteigend sortieren",
-      "sort-descending": "Absteigend sortieren",
-      "standard": "Standard",
-      "toggle-columns": "Spalten umschalten",
-      "view": "Ansicht",
-      "view-details": "Details anzeigen"
+      }
     },
     "deposits-table": {
+      "columns": {
+        "name": "Name",
+        "token-name": "Token-Name",
+        "symbol": "Symbol",
+        "token-symbol": "Token-Symbol",
+        "decimals": "Dezimalstellen",
+        "contract-address": "Vertragsadresse",
+        "total-supply": "Gesamtangebot",
+        "actions": "Aktionen",
+        "paused": "Status"
+      },
       "actions": {
-        "address-copied": "Token-Adresse in die Zwischenablage kopiert",
-        "copy-address": "Adresse kopieren",
-        "create-token": "Token erstellen",
         "view-details": "Details anzeigen",
-        "view-on-etherscan": "Auf Etherscan anzeigen"
+        "copy-address": "Adresse kopieren",
+        "address-copied": "Token-Adresse in die Zwischenablage kopiert",
+        "view-on-etherscan": "Auf Etherscan anzeigen",
+        "create-token": "Token erstellen"
       },
       "bulk-actions": {
         "archive-message": "Würde {{count}} Token archivieren. Dies ist eine Demoaaktion.",
         "duplicate-message": "Würde {{count}} Token duplizieren. Dies ist eine Demoaaktion."
       },
-      "columns": {
-        "actions": "Aktionen",
-        "contract-address": "Vertragsadresse",
-        "decimals": "Dezimalstellen",
-        "name": "Name",
-        "paused": "Status",
-        "symbol": "Symbol",
-        "token-name": "Token-Name",
-        "token-symbol": "Token-Symbol",
-        "total-supply": "Gesamtangebot"
-      },
+      "search-placeholder": "Tokens nach Name, Symbol oder Adresse suchen...",
       "empty-state": {
-        "description": "Diese Fabrik hat noch keine Token erstellt. Erstellen Sie Ihr erstes Token, um zu beginnen.",
-        "title": "Keine Token gefunden"
+        "title": "Keine Tokens gefunden",
+        "description": "Diese Fabrik hat noch keine Tokens erstellt. Erstellen Sie Ihr erstes Token, um zu beginnen."
       },
-      "search-placeholder": "Token nach Name, Symbol oder Adresse suchen...",
       "status": {
         "active": "Aktiv",
         "paused": "Pausiert"
       }
     }
   },
-  "continue": "Fortfahren",
-  "deploying": "Wird bereitgestellt...",
   "errors": {
-    "badGateway": {
-      "description": "Der Server hat eine ungültige Antwort erhalten. Bitte versuchen Sie es erneut.",
-      "title": "Schlechter Gateway"
-    },
-    "badRequest": {
-      "description": "Die Anfrage war ungültig oder kann nicht verarbeitet werden.",
-      "title": "Ungültige Anfrage"
-    },
-    "blockchain": {
-      "description": "Es gab einen Fehler bei der Interaktion mit der Blockchain.",
-      "title": "Blockchain-Fehler"
-    },
-    "buttons": {
-      "goBack": "Zurückgehen",
-      "goHome": "Startseite",
-      "tryAgain": "Erneut versuchen"
-    },
-    "conflict": {
-      "description": "Die Anfrage steht im Widerspruch zum aktuellen Zustand.",
-      "title": "Konfliktfehler"
-    },
-    "contract": {
-      "description": "Der Smart-Contract-Vorgang ist fehlgeschlagen.",
-      "title": "Smart-Contract-Fehler"
+    "unauthorized": {
+      "title": "Authentifizierung erforderlich",
+      "description": "Bitte melden Sie sich an, um fortzufahren."
     },
     "forbidden": {
-      "description": "Sie haben keine Berechtigung, auf diese Ressource zuzugreifen.",
-      "title": "Zugriff verweigert"
-    },
-    "gatewayTimeout": {
-      "description": "Der Server hat nicht rechtzeitig geantwortet. Bitte versuchen Sie es erneut.",
-      "title": "Gateway-Zeitüberschreitung"
-    },
-    "generic": {
-      "description": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
-      "title": "Unerwarteter Fehler"
-    },
-    "insufficientFunds": {
-      "description": "Ihr Konto hat nicht genügend Guthaben, um diesen Vorgang abzuschließen.",
-      "title": "Unzureichende Mittel"
-    },
-    "internal": {
-      "description": "Der Server ist auf einen Fehler gestoßen. Bitte versuchen Sie es später erneut.",
-      "title": "Interner Serverfehler"
-    },
-    "network": {
-      "description": "Verbindung zum Netzwerk konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Verbindung.",
-      "title": "Netzwerkfehler"
+      "title": "Zugriff verweigert",
+      "description": "Sie haben keine Berechtigung, auf diese Ressource zuzugreifen."
     },
     "notFound": {
-      "description": "Die von Ihnen gesuchte Seite existiert nicht oder wurde verschoben.",
-      "title": "Seite nicht gefunden"
-    },
-    "notOnboarded": {
-      "description": "Bitte schließen Sie den Onboarding-Prozess ab, um fortzufahren.",
-      "title": "Onboarding erforderlich"
-    },
-    "portal": {
-      "description": "Es gab einen Fehler beim Verbinden mit dem Portal-Dienst.",
-      "title": "Portal-Fehler"
-    },
-    "rateLimit": {
-      "description": "Sie haben zu viele Anfragen gestellt. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
-      "title": "Zu viele Anfragen"
-    },
-    "resourceAlreadyExists": {
-      "description": "Die Ressource, die Sie zu erstellen versuchen, existiert bereits.",
-      "title": "Ressource existiert bereits"
-    },
-    "serviceUnavailable": {
-      "description": "Der Dienst ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
-      "title": "Dienst nicht verfügbar"
-    },
-    "systemNotCreated": {
-      "description": "Das System wurde nicht initialisiert. Bitte wenden Sie sich an einen Administrator.",
-      "title": "System nicht initialisiert"
-    },
-    "timeout": {
-      "description": "Die Anfrage hat zu lange gedauert, um abgeschlossen zu werden. Bitte versuchen Sie es erneut.",
-      "title": "Anfrage-Zeitüberschreitung"
-    },
-    "transaction": {
-      "description": "Die Transaktion konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
-      "title": "Transaktion fehlgeschlagen"
-    },
-    "unauthorized": {
-      "description": "Bitte melden Sie sich an, um fortzufahren.",
-      "title": "Authentifizierung erforderlich"
+      "title": "Seite nicht gefunden",
+      "description": "Die von Ihnen gesuchte Seite existiert nicht oder wurde verschoben."
     },
     "validation": {
-      "description": "Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut.",
-      "title": "Validierungsfehler"
+      "title": "Validierungsfehler",
+      "description": "Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut."
+    },
+    "rateLimit": {
+      "title": "Zu viele Anfragen",
+      "description": "Sie haben zu viele Anfragen gestellt. Bitte warten Sie einen Moment und versuchen Sie es erneut."
+    },
+    "transaction": {
+      "title": "Transaktion fehlgeschlagen",
+      "description": "Die Transaktion konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut."
+    },
+    "timeout": {
+      "title": "Anfrage-Zeitüberschreitung",
+      "description": "Die Anfrage hat zu lange gedauert, um abgeschlossen zu werden. Bitte versuchen Sie es erneut."
+    },
+    "portal": {
+      "title": "Portal-Fehler",
+      "description": "Es gab einen Fehler beim Verbinden mit dem Portal-Dienst."
+    },
+    "internal": {
+      "title": "Interner Serverfehler",
+      "description": "Der Server hat einen Fehler festgestellt. Bitte versuchen Sie es später erneut."
+    },
+    "blockchain": {
+      "title": "Blockchain-Fehler",
+      "description": "Es gab einen Fehler bei der Interaktion mit der Blockchain."
+    },
+    "contract": {
+      "title": "Smart-Contract-Fehler",
+      "description": "Der Smart-Contract-Vorgang ist fehlgeschlagen."
+    },
+    "insufficientFunds": {
+      "title": "Unzureichende Mittel",
+      "description": "Ihr Konto hat nicht genügend Guthaben, um diesen Vorgang abzuschließen."
+    },
+    "network": {
+      "title": "Netzwerkfehler",
+      "description": "Verbindung zum Netzwerk konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Verbindung."
+    },
+    "badRequest": {
+      "title": "Ungültige Anfrage",
+      "description": "Die Anfrage war ungültig oder kann nicht verarbeitet werden."
+    },
+    "conflict": {
+      "title": "Konfliktfehler",
+      "description": "Die Anfrage steht im Konflikt mit dem aktuellen Zustand."
+    },
+    "badGateway": {
+      "title": "Schlechtes Gateway",
+      "description": "Der Server hat eine ungültige Antwort erhalten. Bitte versuchen Sie es erneut."
+    },
+    "serviceUnavailable": {
+      "title": "Dienst nicht verfügbar",
+      "description": "Der Dienst ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut."
+    },
+    "gatewayTimeout": {
+      "title": "Gateway-Zeitüberschreitung",
+      "description": "Der Server hat nicht rechtzeitig geantwortet. Bitte versuchen Sie es erneut."
+    },
+    "generic": {
+      "title": "Unerwarteter Fehler",
+      "description": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+    },
+    "notOnboarded": {
+      "title": "Onboarding erforderlich",
+      "description": "Bitte schließen Sie den Onboarding-Prozess ab, um fortzufahren."
+    },
+    "systemNotCreated": {
+      "title": "System nicht initialisiert",
+      "description": "Das System wurde nicht initialisiert. Bitte wenden Sie sich an einen Administrator."
+    },
+    "resourceAlreadyExists": {
+      "title": "Ressource existiert bereits",
+      "description": "Die Ressource, die Sie zu erstellen versuchen, existiert bereits."
+    },
+    "buttons": {
+      "tryAgain": "Erneut versuchen",
+      "goBack": "Zurückgehen",
+      "goHome": "Nach Hause gehen"
     }
-  },
-  "generating": "Wird generiert...",
-  "navigation": {
-    "asset": "Vermögenswert",
-    "assetClasses": "Vermögensklassen",
-    "assetManagement": "Vermögensverwaltung",
-    "statistics": "Statistiken",
-    "fixedIncome": "Festverzinslich",
-    "flexibleIncome": "Flexibel verzinslich",
-    "cashEquivalent": "Bargeldäquivalent",
-    "home": "Startseite"
   }
 }
