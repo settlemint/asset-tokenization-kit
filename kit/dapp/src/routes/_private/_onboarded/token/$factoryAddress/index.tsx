@@ -4,6 +4,7 @@ import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary"
 import { TokenFactoryRelated } from "@/components/related/token-factory-related";
 import { TokensTable } from "@/components/tables/tokens";
 import { TokenFactoryTopInfo } from "@/components/top-info/token-factory-top-info";
+import { seo } from "@/config/metadata";
 import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
@@ -67,6 +68,32 @@ export const Route = createFileRoute(
     );
 
     return { factory };
+  },
+  /**
+   * Head configuration for SEO
+   * Uses the factory name and asset type description for metadata
+   */
+  head: ({ loaderData }) => {
+    if (loaderData) {
+      const assetType = getAssetTypeFromFactoryTypeId(
+        loaderData.factory.typeId
+      );
+
+      return {
+        meta: seo({
+          title: loaderData.factory.name,
+          keywords: [
+            assetType,
+            "tokenization",
+            "factory",
+            loaderData.factory.name,
+          ],
+        }),
+      };
+    }
+    return {
+      meta: seo({}),
+    };
   },
   errorComponent: DefaultCatchBoundary,
   component: RouteComponent,
