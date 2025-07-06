@@ -156,3 +156,4 @@ export type TokenCreateOutput = z.infer<typeof TokenCreateOutputSchema>;
 // } else if (x.type === AssetTypeEnum.deposit) {
 //   console.log(x.type);
 // }
+// const y : TokenCreateInput['type'] = {} as any
