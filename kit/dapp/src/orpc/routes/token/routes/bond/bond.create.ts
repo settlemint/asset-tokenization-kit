@@ -17,6 +17,7 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { createTokenMessagesSchema } from "@/orpc/helpers/token-create/token.create.schema";
@@ -29,21 +30,25 @@ import { withEventMeta } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 
 /**
- * GraphQL mutation for creating a deposit token.
- * @param address - The deposit factory contract address to call
+ * GraphQL mutation for creating a bond token.
+ * @param address - The bond factory contract address to call
  * @param from - The wallet address initiating the transaction
- * @param symbol_ - The symbol of the deposit token
- * @param name_ - The name of the deposit token
+ * @param symbol_ - The symbol of the bond token
+ * @param name_ - The name of the bond token
  * @param decimals_ - The number of decimal places for the token
- * @param initialModulePairs_ - Initial module pairs for the deposit
+ * @param initialModulePairs_ - Initial module pairs for the bond
  * @param requiredClaimTopics_ - Required claim topics for compliance
+ * @param cap_ - The cap of the bond
+ * @param faceValue_ - The face value of the bond
+ * @param maturityDate_ - The maturity date of the bond
+ * @param underlyingAsset_ - The underlying asset of the bond
  * @param verificationId - Optional verification ID for the challenge
  * @param challengeResponse - The MFA challenge response for transaction authorization
  * @returns transactionHash - The blockchain transaction hash for tracking
  */
-const CREATE_DEPOSIT_MUTATION = portalGraphql(`
-  mutation CreateDepositMutation($address: String!, $from: String!, $symbol_: String!, $name_: String!, $decimals_: Int!, $initialModulePairs_: [ATKDepositFactoryImplementationATKDepositFactoryImplementationCreateDepositInitialModulePairsInput!]!, $requiredClaimTopics_: [String!]!, $verificationId: String, $challengeResponse: String!) {
-    CreateDeposit: ATKDepositFactoryImplementationCreateDeposit(
+const CREATE_BOND_MUTATION = portalGraphql(`
+  mutation CreateBondMutation($address: String!, $from: String!, $symbol_: String!, $name_: String!, $decimals_: Int!, $initialModulePairs_: [ATKBondFactoryImplementationATKBondFactoryImplementationCreateBondInitialModulePairsInput!]!, $requiredClaimTopics_: [String!]!, $cap_: String!, $faceValue_: String!, $maturityDate_: String!, $underlyingAsset_: String!, $verificationId: String, $challengeResponse: String!) {
+    CreateBond: ATKBondFactoryImplementationCreateBond(
       address: $address
       from: $from
       input: {
@@ -52,6 +57,10 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
         decimals_: $decimals_
         initialModulePairs_: $initialModulePairs_
         requiredClaimTopics_: $requiredClaimTopics_
+        cap_: $cap_
+        faceValue_: $faceValue_
+        maturityDate_: $maturityDate_
+        underlyingAsset_: $underlyingAsset_
       }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
@@ -62,44 +71,48 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
 `);
 
 /**
- * Creates deposit tokens using async iteration for progress tracking.
+ * Creates bond tokens using async iteration for progress tracking.
  *
  * This handler uses a generator pattern to yield real-time progress updates during
- * deposit token creation, providing detailed status for each step of the process.
+ * bond token creation, providing detailed status for each step of the process.
  * @auth Required - User must be authenticated
  * @middleware portalMiddleware - Provides Portal GraphQL client with transaction tracking
  * @middleware systemMiddleware - Provides system context
- * @middleware tokenFactoryMiddleware - Provides deposit factory context
- * @param input.name - The name of the deposit token
- * @param input.symbol - The symbol of the deposit token
+ * @middleware tokenFactoryMiddleware - Provides bond factory context
+ * @param input.name - The name of the bond token
+ * @param input.symbol - The symbol of the bond token
  * @param input.decimals - The number of decimal places for the token
  * @param input.messages - Optional custom messages for localization
- * @yields {DepositCreationEvent} Progress events with status, message, and transaction hash
+ * @yields {BondCreationEvent} Progress events with status, message, and transaction hash
  * @returns {AsyncGenerator} Generator that yields events and completes with transaction hash
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
- * @throws {ORPCError} INTERNAL_SERVER_ERROR - If deposit creation fails
+ * @throws {ORPCError} INTERNAL_SERVER_ERROR - If bond creation fails
  * @example
  * ```typescript
- * // Create a deposit token with progress tracking
- * for await (const event of client.tokens.depositCreate({
- *   name: "Corporate Deposit",
- *   symbol: "CDEP",
+ * // Create a bond token with progress tracking
+ * for await (const event of client.tokens.bondCreate({
+ *   name: "Corporate Bond",
+ *   symbol: "CBOND",
  *   decimals: 18
  * })) {
  *   console.log(`${event.status}: ${event.message}`);
  *   if (event.status === "confirmed" && event.result) {
- *     console.log(`Deposit created with hash: ${event.result}`);
+ *     console.log(`Bond created with hash: ${event.result}`);
  *   }
  * }
  * ```
  */
-export const depositCreate = onboardedRouter.token.depositCreate
+export const bondCreate = onboardedRouter.token.bondCreate
   .use(portalMiddleware)
   .use(systemMiddleware)
-  .use(tokenFactoryMiddleware("ATKDepositFactory"))
+  .use(tokenFactoryMiddleware("ATKBondFactory"))
   .use(tokenFactoryPermissionMiddleware(["deployer"]))
   .handler(async function* ({ input, context }) {
     const sender = context.auth.user;
+
+    if (input.type !== AssetTypeEnum.bond) {
+      throw new Error("Invalid input type");
+    }
 
     // Parse messages with defaults
     const messages = createTokenMessagesSchema(input.type).parse(
@@ -116,7 +129,7 @@ export const depositCreate = onboardedRouter.token.depositCreate
     );
 
     // Execute the token creation transaction
-    const variables: VariablesOf<typeof CREATE_DEPOSIT_MUTATION> = {
+    const variables: VariablesOf<typeof CREATE_BOND_MUTATION> = {
       address: context.tokenFactory.address,
       from: sender.wallet,
       symbol_: input.symbol,
@@ -128,6 +141,10 @@ export const depositCreate = onboardedRouter.token.depositCreate
         code: input.verification.verificationCode,
         type: input.verification.verificationType,
       })),
+      cap_: input.cap,
+      faceValue_: input.faceValue,
+      maturityDate_: input.maturityDate,
+      underlyingAsset_: input.underlyingAsset,
     };
 
     let validatedHash = "";
@@ -136,7 +153,7 @@ export const depositCreate = onboardedRouter.token.depositCreate
     // Use the Portal client's mutate method that returns an async generator
     // This enables real-time transaction tracking for deposit creation
     for await (const event of context.portalClient.mutate(
-      CREATE_DEPOSIT_MUTATION,
+      CREATE_BOND_MUTATION,
       variables,
       messages.tokenCreationFailed,
       messages
