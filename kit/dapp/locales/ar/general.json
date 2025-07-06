@@ -6,9 +6,12 @@
   "continue": "استمر",
   "navigation": {
     "assetManagement": "إدارة الأصول",
-    "asset": "أصل",
+    "asset": "الأصل",
     "assetClasses": "فئات الأصول",
-    "statistics": "إحصائيات"
+    "statistics": "الإحصائيات",
+    "fixedIncome": "دخل ثابت",
+    "flexibleIncome": "دخل مرن",
+    "cashEquivalent": "معادل نقدي"
   },
   "dashboard": {
     "title": "لوحة التحكم",
@@ -35,34 +38,34 @@
   "components": {
     "data-table": {
       "no-results": "لم يتم العثور على نتائج",
-      "sort-ascending": "ترتيب تصاعدي",
-      "sort-descending": "ترتيب تنازلي",
+      "sort-ascending": "فرز تصاعدي",
+      "sort-descending": "فرز تنازلي",
       "hide": "إخفاء العمود",
       "export": "تصدير",
-      "failed-export": "فشل التصدير",
-      "loading": "جاري التحميل...",
+      "failed-export": "فشل في تصدير البيانات",
+      "loading": "جارٍ التحميل...",
       "search": "بحث...",
-      "filter": "مرشح",
-      "clear-filters": "مسح المرشحات",
+      "filter": "تصفية",
+      "clear-filters": "مسح الفلاتر",
       "show-all": "عرض الكل",
       "show-selected": "عرض المحدد",
       "select-all": "تحديد الكل",
       "clear-selection": "مسح التحديد",
-      "rows-per-page": "صفوف لكل صفحة",
-      "page": "صفحة",
+      "rows-per-page": "الصفوف لكل صفحة",
+      "page": "الصفحة",
       "of": "من",
       "previous": "السابق",
       "next": "التالي",
       "first": "الأول",
       "last": "الأخير",
       "showing": "عرض",
-      "entries": "إدخالات",
-      "selected": "محدد",
-      "actions": "إجراءات",
+      "entries": "مدخلات",
+      "selected": "المحدد",
+      "actions": "الإجراءات",
       "view-details": "عرض التفاصيل",
-      "edit": "تحرير",
+      "edit": "تعديل",
       "delete": "حذف",
-      "confirm-delete": "هل أنت متأكد من أنك تريد حذف هذا العنصر؟",
+      "confirm-delete": "هل أنت متأكد أنك تريد حذف هذا العنصر؟",
       "cancel": "إلغاء",
       "confirm": "تأكيد",
       "reset": "إعادة تعيين",
@@ -75,18 +78,18 @@
       "compact": "مضغوط",
       "standard": "قياسي",
       "view": "عرض",
-      "selected-rows-info": "{{selected}} من {{total}} صف محدد",
-      "page-info": "صفحة {{current}} من {{total}}",
-      "go-to-first-page": "انتقل إلى الصفحة الأولى",
-      "go-to-previous-page": "انتقل إلى الصفحة السابقة",
-      "go-to-next-page": "انتقل إلى الصفحة التالية",
-      "go-to-last-page": "انتقل إلى الصفحة الأخيرة",
-      "details": "تفاصيل",
+      "selected-rows-info": "{{selected}} من {{total}} صف(وف) محددة",
+      "page-info": "الصفحة {{current}} من {{total}}",
+      "go-to-first-page": "اذهب إلى الصفحة الأولى",
+      "go-to-previous-page": "اذهب إلى الصفحة السابقة",
+      "go-to-next-page": "اذهب إلى الصفحة التالية",
+      "go-to-last-page": "اذهب إلى الصفحة الأخيرة",
+      "details": "التفاصيل",
       "open-menu": "فتح القائمة",
       "address-copied": "تم نسخ العنوان إلى الحافظة",
       "copy": "نسخ",
       "copy-to-clipboard": "نسخ إلى الحافظة",
-      "copied-to-clipboard": "تم النسخ إلى الحافظة",
+      "copied-to-clipboard": "تم نسخه إلى الحافظة",
       "clear-all": "مسح الكل",
       "is": "هو",
       "clear": "مسح",
@@ -98,22 +101,56 @@
         },
         "number": {
           "single": "مفرد",
-          "range": "نطاق",
+          "range": "النطاق",
           "placeholder": "أدخل القيمة",
           "min": "الحد الأدنى",
           "max": "الحد الأقصى"
         }
+      },
+      "bulk-actions": {
+        "actions": "الإجراءات",
+        "add-tags": "إضافة علامات",
+        "archive-selected": "أرشفة المحدد",
+        "assign-to": "تعيين إلى {{name}}",
+        "clear-selection": "مسح التحديد",
+        "confirmation": {
+          "archive": {
+            "action": "أرشفة",
+            "description": "هل أنت متأكد أنك تريد أرشفة العناصر المحددة؟",
+            "title": "أرشفة العناصر المحددة"
+          },
+          "delete": {
+            "action": "حذف",
+            "description": "لا يمكن التراجع عن هذا الإجراء. هل أنت متأكد أنك تريد حذف العناصر المحددة؟",
+            "title": "حذف العناصر المحددة"
+          }
+        },
+        "delete-selected": "حذف المحدد",
+        "duplicate-selected": "تكرار المحدد",
+        "error": "فشل في تنفيذ {{action}}",
+        "export-csv": "تصدير CSV",
+        "export-json": "تصدير JSON",
+        "export-xlsx": "تصدير Excel",
+        "processing": "جاري المعالجة...",
+        "remove-tags": "إزالة العلامات",
+        "select-all": "تحديد الكل",
+        "select-row": "تحديد الصف {{row}}",
+        "selected-count": "{{count}} محدد",
+        "selected-count_one": "{{count}} عنصر محدد",
+        "selected-count_other": "{{count}} عناصر محددة",
+        "set-tags": "تعيين العلامات",
+        "unarchive-selected": "إلغاء أرشفة المحدد"
       }
     },
     "deposits-table": {
       "columns": {
-        "name": "الاسم",
+        "name": "اسم",
         "token-name": "اسم الرمز",
         "symbol": "الرمز",
-        "token-symbol": "رمز التوكن",
+        "token-symbol": "رمز الرمز",
         "decimals": "الأرقام العشرية",
         "contract-address": "عنوان العقد",
-        "total-supply": "إجمالي العرض",
+        "total-supply": "الإجمالي المعروض",
         "actions": "الإجراءات",
         "paused": "الحالة"
       },
@@ -125,28 +162,28 @@
         "create-token": "إنشاء رمز"
       },
       "bulk-actions": {
-        "archive-message": "سيتم أرشفة {{count}} رمز. هذا إجراء تجريبي.",
-        "duplicate-message": "سيتم تكرار {{count}} رمز. هذا إجراء تجريبي."
+        "archive-message": "سيتم أرشفة {{count}} رمز(رموز). هذا إجراء تجريبي.",
+        "duplicate-message": "سيتم تكرار {{count}} رمز(رموز). هذا إجراء تجريبي."
       },
-      "search-placeholder": "البحث عن الرموز بالاسم أو الرمز أو العنوان...",
+      "search-placeholder": "ابحث عن الرموز بالاسم أو الرمز أو العنوان...",
       "empty-state": {
         "title": "لم يتم العثور على رموز",
-        "description": "لم ينشئ هذا المصنع أي رموز بعد. قم بإنشاء أول رمز لديك للبدء."
+        "description": "لم تقم هذه المصنع بإنشاء أي رموز بعد. أنشئ رمزك الأول للبدء."
       },
       "status": {
         "active": "نشط",
-        "paused": "متوقف"
+        "paused": "مؤجل"
       }
     }
   },
   "errors": {
     "unauthorized": {
-      "title": "مطلوب المصادقة",
+      "title": "يتطلب المصادقة",
       "description": "يرجى تسجيل الدخول للمتابعة."
     },
     "forbidden": {
       "title": "تم رفض الوصول",
-      "description": "ليس لديك الصلاحية للوصول إلى هذا المورد."
+      "description": "ليس لديك إذن للوصول إلى هذه المورد."
     },
     "notFound": {
       "title": "الصفحة غير موجودة",
@@ -157,48 +194,48 @@
       "description": "يرجى التحقق من إدخالك والمحاولة مرة أخرى."
     },
     "rateLimit": {
-      "title": "طلبات كثيرة جداً",
-      "description": "لقد قمت بإرسال طلبات كثيرة جداً. يرجى الانتظار لحظة والمحاولة مرة أخرى."
+      "title": "الكثير من الطلبات",
+      "description": "لقد قمت بعمل الكثير من الطلبات. يرجى الانتظار لحظة والمحاولة مرة أخرى."
     },
     "transaction": {
-      "title": "فشلت المعاملة",
-      "description": "لم يتم إكمال المعاملة. يرجى المحاولة مرة أخرى."
+      "title": "فشل المعاملة",
+      "description": "لم يكن بالإمكان إكمال المعاملة. يرجى المحاولة مرة أخرى."
     },
     "timeout": {
-      "title": "انتهت مهلة الطلب",
-      "description": "استغرق الطلب وقتاً طويلاً جداً. يرجى المحاولة مرة أخرى."
+      "title": "انتهاء مهلة الطلب",
+      "description": "استغرق الطلب وقتًا طويلاً لإكماله. يرجى المحاولة مرة أخرى."
     },
     "portal": {
       "title": "خطأ في البوابة",
-      "description": "حدث خطأ في الاتصال بخدمة البوابة."
+      "description": "حدث خطأ أثناء الاتصال بخدمة البوابة."
     },
     "internal": {
       "title": "خطأ في الخادم الداخلي",
-      "description": "واجه الخادم خطأ. يرجى المحاولة مرة أخرى لاحقاً."
+      "description": "واجه الخادم خطأ. يرجى المحاولة مرة أخرى لاحقًا."
     },
     "blockchain": {
-      "title": "خطأ في البلوكشين",
-      "description": "حدث خطأ في التفاعل مع البلوكشين."
+      "title": "خطأ في سلسلة الكتل",
+      "description": "حدث خطأ أثناء التفاعل مع سلسلة الكتل."
     },
     "contract": {
       "title": "خطأ في العقد الذكي",
       "description": "فشلت عملية العقد الذكي."
     },
     "insufficientFunds": {
-      "title": "رصيد غير كافٍ",
-      "description": "حسابك لا يحتوي على رصيد كافٍ لإكمال هذه العملية."
+      "title": "أموال غير كافية",
+      "description": "لا تحتوي حسابك على أموال كافية لإكمال هذه العملية."
     },
     "network": {
       "title": "خطأ في الشبكة",
       "description": "غير قادر على الاتصال بالشبكة. يرجى التحقق من اتصالك."
     },
     "badRequest": {
-      "title": "طلب غير صحيح",
-      "description": "الطلب غير صالح أو لا يمكن معالجته."
+      "title": "طلب سيء",
+      "description": "كانت الطلب غير صالحة أو لا يمكن معالجتها."
     },
     "conflict": {
       "title": "خطأ في التعارض",
-      "description": "الطلب يتعارض مع الحالة الحالية."
+      "description": "يتعارض الطلب مع الحالة الحالية."
     },
     "badGateway": {
       "title": "بوابة سيئة",
@@ -206,19 +243,19 @@
     },
     "serviceUnavailable": {
       "title": "الخدمة غير متاحة",
-      "description": "الخدمة غير متاحة مؤقتاً. يرجى المحاولة مرة أخرى لاحقاً."
+      "description": "الخدمة غير متاحة مؤقتًا. يرجى المحاولة مرة أخرى لاحقًا."
     },
     "gatewayTimeout": {
-      "title": "انتهت مهلة البوابة",
-      "description": "لم يستجب الخادم في الوقت المناسب. يرجى المحاولة مرة أخرى."
+      "title": "انتهاء مهلة البوابة",
+      "description": "لم يستجب الخادم في الوقت المحدد. يرجى المحاولة مرة أخرى."
     },
     "generic": {
       "title": "خطأ غير متوقع",
       "description": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
     },
     "notOnboarded": {
-      "title": "التسجيل مطلوب",
-      "description": "يرجى إكمال عملية التسجيل للمتابعة."
+      "title": "يتطلب الانضمام",
+      "description": "يرجى إكمال عملية الانضمام للمتابعة."
     },
     "systemNotCreated": {
       "title": "النظام غير مهيأ",
@@ -230,8 +267,8 @@
     },
     "buttons": {
       "tryAgain": "حاول مرة أخرى",
-      "goBack": "العودة",
-      "goHome": "الصفحة الرئيسية"
+      "goBack": "ارجع",
+      "goHome": "اذهب إلى الصفحة الرئيسية"
     }
   }
 }
