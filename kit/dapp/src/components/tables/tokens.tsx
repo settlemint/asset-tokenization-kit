@@ -8,7 +8,6 @@ import { useBulkActions } from "@/components/data-table/data-table-bulk-actions"
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { env } from "@/lib/env";
 import { orpc } from "@/orpc";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
@@ -25,7 +24,6 @@ import {
   Package,
   PauseCircle,
   PlayCircle,
-  Plus,
   Type,
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
@@ -86,7 +84,11 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   const routePath =
     router.state.matches[router.state.matches.length - 1]?.pathname;
 
-  const { data: tokensResponse, isLoading, error } = useQuery({
+  const {
+    data: tokensResponse,
+    isLoading,
+    error,
+  } = useQuery({
     ...orpc.token.list.queryOptions({
       input: {
         tokenFactory: factoryAddress,
@@ -194,16 +196,6 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
     onArchive: handleArchive,
     onDuplicate: handleDuplicate,
   });
-
-  const customActions = useMemo(
-    () => (
-      <Button variant="default" size="sm">
-        <Plus className="h-4 w-4 mr-2" />
-        {t("components.deposits-table.actions.create-token")}
-      </Button>
-    ),
-    [t]
-  );
 
   /**
    * Defines the column configuration for the deposits table
@@ -343,7 +335,6 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
         enableExport: true,
         enableViewOptions: true,
         placeholder: t("components.deposits-table.search-placeholder"),
-        customActions,
       }}
       bulkActions={{
         enabled: true,

@@ -78,7 +78,7 @@ export const ListSchema = z.object({
    * - limit: 5000 automatically uses batched pagination behind the scenes
    * - limit: undefined (or omitted) gets all available records
    */
-  limit: z.number().int().positive().max(100000).optional(),
+  limit: z.number().int().positive().max(1000).optional(),
 
   /**
    * Sort order direction for the results.

@@ -1,38 +1,38 @@
 {
   "streaming-messages": {
-    "initial-loading": "{{type}}の作成を準備しています...",
-    "no-result-error": "{{type}}作成からトランザクションハッシュを受信できませんでした。",
+    "initial-loading": "{{type}}を作成する準備中...",
+    "no-result-error": "{{type}}の作成からトランザクションハッシュが受信されませんでした。",
     "default-error": "{{type}}の作成に失敗しました。",
     "creation-failed": "{{type}}の作成に失敗しました。",
     "creation-success": "{{type}}が正常に作成されました。"
   },
   "form": {
-    "title": "{{type}}トークンを作成",
-    "description": "以下の基本情報を提供して{{type}}トークンを設定してください。",
+    "title": "{{type}}を作成する",
+    "description": "以下の基本情報を提供して、あなたの{{type}}を設定してください。",
     "fields": {
       "name": {
-        "label": "トークン名",
+        "label": "名前",
         "placeholder": "例：政府{{type}}シリーズA",
-        "description": "トークンの名前。UIでトークンを識別するために使用され、作成後は変更できません。"
+        "description": "トークンの名前です。これはUIでトークンを識別するために使用され、作成後は変更できません。"
       },
       "symbol": {
-        "label": "トークンシンボル",
+        "label": "シンボル",
         "placeholder": "例：GBSA",
-        "description": "トークンの短いシンボル（通常3～5文字）"
+        "description": "トークンの短いシンボル（通常は3-5文字）"
       },
       "decimals": {
-        "label": "小数位数",
+        "label": "小数点以下の桁数",
         "placeholder": "18",
         "description": "トークンの小数点以下の桁数（0-18、デフォルトは18）"
       },
       "isin": {
         "label": "ISIN（オプション）",
         "placeholder": "例：US0378331005",
-        "description": "資産のISIN。これは金融システムにおける資産のオプションの一意識別子です。"
+        "description": "トークンのISINです。これは金融システムにおけるトークンのオプションの一意の識別子です。"
       }
     },
     "actions": {
-      "create": "{{type}}トークンを作成",
+      "create": "{{type}}を作成する",
       "creating": "作成中..."
     }
   },
@@ -40,7 +40,7 @@
     "creating": "{{type}}を作成しています...",
     "created": "{{type}}が正常に作成されました。",
     "creation-failed": "{{type}}の作成に失敗しました。",
-    "success-toast": "{{type}}トークンが正常に作成されました！",
-    "error-toast": "{{type}}トークンの作成に失敗しました"
+    "success-toast": "{{type}}が正常に作成されました！",
+    "error-toast": "{{type}}の作成に失敗しました"
   }
 }

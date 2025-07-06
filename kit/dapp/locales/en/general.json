@@ -245,6 +245,10 @@
     "asset": "Asset",
     "assetClasses": "Asset classes",
     "assetManagement": "Asset Management",
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "fixedIncome": "Fixed income",
+    "flexibleIncome": "Flexible income",
+    "cashEquivalent": "Cash equivalent",
+    "home": "Home"
   }
 }

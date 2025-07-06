@@ -26,6 +26,12 @@ export const assetTypes = [
   "deposit",
 ] as const;
 
+export const assetClasses = [
+  "fixed-income",
+  "flexible-income",
+  "cash-equivalent",
+] as const;
+
 /**
  * Enum-like object for dot notation access to asset types.
  * Provides a convenient way to reference asset types in code.
@@ -126,6 +132,9 @@ export const AssetFactoryTypeIdEnum = {
  */
 export const assetType = () =>
   z.enum(assetTypes).describe("Type of financial asset");
+
+export const assetClass = () =>
+  z.enum(assetClasses).describe("Class of financial asset");
 
 /**
  * Creates a Zod schema that validates an asset factory typeId.
@@ -332,6 +341,8 @@ export const assetFactoryTypeIdRecord = <T extends z.ZodType>(valueSchema: T) =>
  * Ensures type safety.
  */
 export type AssetType = z.infer<ReturnType<typeof assetType>>;
+
+export type AssetClass = z.infer<ReturnType<typeof assetClass>>;
 
 /**
  * Type representing a validated asset factory typeId.
@@ -610,6 +621,20 @@ export function getAssetTypeFromFactoryTypeId(
     ATKFundFactory: "fund",
     ATKStableCoinFactory: "stablecoin",
     ATKDepositFactory: "deposit",
+  };
+
+  return mapping[factoryTypeId];
+}
+
+export function getAssetClassFromFactoryTypeId(
+  factoryTypeId: AssetFactoryTypeId
+): AssetClass {
+  const mapping: Record<AssetFactoryTypeId, AssetClass> = {
+    ATKBondFactory: "fixed-income",
+    ATKEquityFactory: "flexible-income",
+    ATKFundFactory: "flexible-income",
+    ATKStableCoinFactory: "cash-equivalent",
+    ATKDepositFactory: "cash-equivalent",
   };
 
   return mapping[factoryTypeId];
