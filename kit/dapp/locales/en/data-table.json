@@ -94,6 +94,12 @@
   "selectAll": "Select all",
   "selected": "selected",
   "selectedRowsInfo": "{{selected}} of {{total}} row(s) selected",
+  "aria": {
+    "selectAll": "Select all rows on this page",
+    "selectAllWithCount": "Select all {{count}} rows{{status}}",
+    "selectRow": "Select row {{index}} of {{total}}",
+    "someSelected": " (some selected)"
+  },
   "showAll": "Show all",
   "showSelected": "Show selected",
   "showing": "Showing",
