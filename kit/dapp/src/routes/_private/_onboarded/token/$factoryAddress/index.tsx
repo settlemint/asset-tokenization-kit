@@ -82,8 +82,8 @@ export const Route = createFileRoute(
     return {
       factory,
       breadcrumb: [
-        { ...assetClassBreadcrumbs["asset-management"], href: "/" },
-        { ...assetClassBreadcrumbs[assetClass], href: "/" },
+        assetClassBreadcrumbs["asset-management"],
+        assetClassBreadcrumbs[assetClass],
         createBreadcrumbMetadata(factory.name),
       ],
     };

@@ -177,13 +177,11 @@ export function RouterBreadcrumb({
 
     // If we have breadcrumb array from loader, use it
     if (breadcrumbsFromLoader) {
-      breadcrumbsFromLoader.forEach((breadcrumbMeta, index) => {
-        const isLast = index === breadcrumbsFromLoader.length - 1;
-        
-        // Skip if marked as hidden
-        if (breadcrumbMeta.hidden) {
-          return;
-        }
+      // Filter out hidden items first
+      const visibleBreadcrumbs = breadcrumbsFromLoader.filter(meta => !meta.hidden);
+      
+      visibleBreadcrumbs.forEach((breadcrumbMeta, index) => {
+        const isLast = index === visibleBreadcrumbs.length - 1;
 
         // Add segment with metadata
         segmentsWithMeta.push({
@@ -197,24 +195,33 @@ export function RouterBreadcrumb({
       });
     } else {
       // Fallback to building from route matches
-      routerState.matches.forEach((match, index) => {
+      // First, collect all visible matches
+      const visibleMatches = routerState.matches.filter((match) => {
         // Skip layout routes (those with underscore prefix)
         if (match.id.startsWith("/_") || match.id === "/") {
-          return;
+          return false;
         }
+        
+        const loaderData = match.loaderData as any;
+        const context = match.context as any;
+        const breadcrumbMeta = loaderData?.breadcrumb || context?.breadcrumb;
+        
+        // Skip if marked as hidden
+        if (breadcrumbMeta?.hidden) {
+          return false;
+        }
+        
+        return true;
+      });
 
-        const isLast = index === routerState.matches.length - 1;
+      visibleMatches.forEach((match, index) => {
+        const isLast = index === visibleMatches.length - 1;
         const loaderData = match.loaderData as any;
         const context = match.context as any;
 
         // Extract breadcrumb metadata from various sources
         const breadcrumbMeta: BreadcrumbMetadata | undefined =
           loaderData?.breadcrumb || context?.breadcrumb;
-
-        // Skip if marked as hidden
-        if (breadcrumbMeta?.hidden) {
-          return;
-        }
 
         // Determine fallback title
         let fallbackTitle = "";

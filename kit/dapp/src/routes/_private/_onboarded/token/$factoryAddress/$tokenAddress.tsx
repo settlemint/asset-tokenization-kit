@@ -80,8 +80,8 @@ export const Route = createFileRoute(
       token,
       factory,
       breadcrumb: [
-        { ...assetClassBreadcrumbs["asset-management"], href: "/" },
-        { ...assetClassBreadcrumbs[assetClass], href: "/" },
+        assetClassBreadcrumbs["asset-management"],
+        assetClassBreadcrumbs[assetClass],
         { ...createBreadcrumbMetadata(factory.name), href: `/token/${factoryAddress}` },
         createBreadcrumbMetadata(token.name),
       ],
