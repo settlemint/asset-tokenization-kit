@@ -39,7 +39,10 @@ export interface RouteContextWithBreadcrumb {
 /**
  * Asset class breadcrumb metadata mapping with i18n support
  */
-export const assetClassBreadcrumbs: Record<AssetClass | "asset-management", BreadcrumbMetadata> = {
+export const assetClassBreadcrumbs: Record<
+  AssetClass | "asset-management",
+  BreadcrumbMetadata
+> = {
   "asset-management": {
     title: "assetManagement",
     isI18nKey: true,
