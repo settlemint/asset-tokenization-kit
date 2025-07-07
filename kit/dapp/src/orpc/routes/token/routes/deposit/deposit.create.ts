@@ -19,7 +19,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { createTokenMessagesSchema } from "@/orpc/helpers/token-create/token.create.schema";
+import { createTokenMessagesSchema } from "@/orpc/helpers/token.create.schema";
 import { tokenFactoryPermissionMiddleware } from "@/orpc/middlewares/auth/token-factory-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
