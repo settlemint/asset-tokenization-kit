@@ -110,7 +110,7 @@ export const sync = authRouter.exchangeRates.sync
     const provider = "er-api"; // Default provider
     const syncedAt = new Date();
     const { db } = context;
-    
+
     // Check if we have recent data (within last hour) unless force is true
     if (!force) {
       const recentRate = await db
@@ -118,18 +118,17 @@ export const sync = authRouter.exchangeRates.sync
         .from(fxRatesLatest)
         .where(sql`${fxRatesLatest.effectiveAt} > NOW() - INTERVAL '1 hour'`)
         .limit(1);
-      
-      if (recentRate.length > 0) {
+
+      if (recentRate.length > 0 && recentRate[0]) {
         return {
           success: true,
           ratesUpdated: 0,
-          provider,
           syncedAt: recentRate[0].effectiveAt,
           message: "Recent rates already exist. Use force=true to update.",
         };
       }
     }
-    
+
     // First, ensure all currencies exist in the database
     const currencyInserts = fiatCurrencies.map((code) =>
       safeParse(insertCurrencySchema, {
@@ -195,7 +194,6 @@ export const sync = authRouter.exchangeRates.sync
     return {
       success: true,
       ratesUpdated,
-      provider,
       syncedAt,
     };
   });

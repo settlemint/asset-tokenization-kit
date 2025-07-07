@@ -190,7 +190,7 @@ describe("Exchange Rates Schemas", () => {
         "AED",
         "SGD",
         "SAR",
-      ];
+      ] as const;
 
       for (const currency of supportedCurrencies) {
         const input = {

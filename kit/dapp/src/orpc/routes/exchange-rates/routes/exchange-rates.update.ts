@@ -102,7 +102,6 @@ export const update = authRouter.exchangeRates.update
         baseCurrency,
         quoteCurrency,
         rate,
-        provider: "manual",
         effectiveAt,
       },
     };

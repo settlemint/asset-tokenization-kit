@@ -113,7 +113,6 @@ const sync = baseContract
     z.object({
       success: z.boolean(),
       ratesUpdated: z.number(),
-      provider: z.string(),
       syncedAt: z.date(),
       message: z.string().optional(),
     })
