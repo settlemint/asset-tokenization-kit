@@ -13,6 +13,7 @@ import { ExchangeRatesHistorySchema } from "./routes/exchange-rates.history.sche
 import { ExchangeRatesListSchema } from "./routes/exchange-rates.list.schema";
 import { ExchangeRatesSyncSchema } from "./routes/exchange-rates.sync.schema";
 import { exchangeRateApiResponseSchema } from "./schemas";
+import { insertCurrencySchema } from "@/lib/db/schemas/exchange-rates";
 
 // Mock the logger to avoid console output during tests
 mock.module("@settlemint/sdk-utils/logging", () => ({
@@ -212,6 +213,43 @@ describe("Exchange Rates Schemas", () => {
         };
         expect(() => safeParse(ExchangeRatesReadSchema, input)).toThrow();
       }
+    });
+  });
+
+  describe("Currency Decimals Validation", () => {
+    it("should accept valid decimal values (0-8)", () => {
+      for (let i = 0; i <= 8; i++) {
+        const result = insertCurrencySchema.safeParse({
+          code: "USD",
+          name: "US Dollar",
+          decimals: i.toString(),
+        });
+        expect(result.success).toBe(true);
+      }
+    });
+
+    it("should reject decimal values outside 0-8 range", () => {
+      const invalidValues = ["9", "10", "99", "-1", "a", ""];
+      
+      for (const value of invalidValues) {
+        const result = insertCurrencySchema.safeParse({
+          code: "USD",
+          name: "US Dollar",
+          decimals: value,
+        });
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.issues[0]?.message).toBe("Decimals must be between 0 and 8");
+        }
+      }
+    });
+
+    it("should make decimals optional with default value", () => {
+      const result = insertCurrencySchema.safeParse({
+        code: "USD",
+        name: "US Dollar",
+      });
+      expect(result.success).toBe(true);
     });
   });
 

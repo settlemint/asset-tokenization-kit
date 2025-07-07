@@ -160,7 +160,7 @@ export const insertCurrencySchema = createInsertSchema(currencies, {
   code: fiatCurrency(),
   decimals: z
     .string()
-    .regex(/^\d{1,2}$/)
+    .regex(/^[0-8]$/, "Decimals must be between 0 and 8")
     .optional(),
 });
 export const selectCurrencySchema = createSelectSchema(currencies);
