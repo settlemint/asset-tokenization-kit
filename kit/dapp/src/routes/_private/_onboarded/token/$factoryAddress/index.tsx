@@ -6,12 +6,14 @@ import { TokenFactoryRelated } from "@/components/related/token-factory-related"
 import { TokensTable } from "@/components/tables/tokens";
 import { seo } from "@/config/metadata";
 import {
+  assetClassBreadcrumbs,
+  createBreadcrumbMetadata,
+} from "@/components/breadcrumb/metadata";
+import {
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
 
 /**
  * Route configuration for the token factory details page
@@ -74,7 +76,17 @@ export const Route = createFileRoute(
       })
     );
 
-    return { factory };
+    // Get asset class for breadcrumb
+    const assetClass = getAssetClassFromFactoryTypeId(factory.typeId);
+
+    return {
+      factory,
+      breadcrumb: [
+        assetClassBreadcrumbs["asset-management"],
+        assetClassBreadcrumbs[assetClass],
+        createBreadcrumbMetadata(factory.name),
+      ],
+    };
   },
   /**
    * Head configuration for SEO
@@ -131,31 +143,14 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { factory } = Route.useLoaderData();
   const { factoryAddress } = Route.useParams();
-  const { t } = useTranslation("navigation");
 
   // Get the asset type from the factory typeId
   const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
-  const assetClass = getAssetClassFromFactoryTypeId(factory.typeId);
-
-  const intermediateSections = useMemo(
-    () => [
-      { title: t("assetManagement") },
-      {
-        title:
-          assetClass === "fixed-income"
-            ? t("fixedIncome")
-            : assetClass === "flexible-income"
-              ? t("flexibleIncome")
-              : t("cashEquivalent"),
-      },
-    ],
-    [assetClass, t]
-  );
 
   return (
     <div className="space-y-6 p-6">
       <div className="space-y-2">
-        <RouterBreadcrumb intermediateSections={intermediateSections} />
+        <RouterBreadcrumb />
         <h1 className="text-3xl font-bold tracking-tight">{factory.name}</h1>
       </div>
 
