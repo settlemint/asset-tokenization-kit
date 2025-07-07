@@ -16,6 +16,8 @@ export interface BreadcrumbMetadata {
   hidden?: boolean;
   /** Optional icon identifier */
   icon?: string;
+  /** Optional href for navigation */
+  href?: string;
 }
 
 /**

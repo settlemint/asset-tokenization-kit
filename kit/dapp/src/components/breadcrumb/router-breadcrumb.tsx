@@ -11,13 +11,102 @@ import {
 import type { BreadcrumbMetadata } from "./metadata";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home } from "lucide-react";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface BreadcrumbSegment {
   title: string;
   href?: string;
   isCurrentPage?: boolean;
+}
+
+/**
+ * Hook to handle async breadcrumb titles
+ */
+function useAsyncBreadcrumbTitle(
+  breadcrumbMeta: BreadcrumbMetadata | undefined,
+  fallbackTitle: string
+): string {
+  const { t } = useTranslation(["navigation"]);
+  const [asyncTitle, setAsyncTitle] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (breadcrumbMeta?.getTitle) {
+      // Reset async title when getTitle changes
+      setAsyncTitle(null);
+      
+      // Resolve the async title
+      const resolveTitle = async () => {
+        try {
+          const title = await breadcrumbMeta.getTitle();
+          setAsyncTitle(title);
+        } catch (error) {
+          // Fall back to static title or default on error
+          setAsyncTitle(breadcrumbMeta.title || fallbackTitle);
+        }
+      };
+      
+      resolveTitle();
+    }
+  }, [breadcrumbMeta?.getTitle, breadcrumbMeta?.title, fallbackTitle]);
+
+  // Determine the title to display
+  if (breadcrumbMeta?.title) {
+    // Handle i18n keys
+    if (breadcrumbMeta.isI18nKey) {
+      return t(breadcrumbMeta.title as any);
+    }
+    return breadcrumbMeta.title;
+  }
+  
+  // If we have an async title function
+  if (breadcrumbMeta?.getTitle) {
+    // Return the resolved title or a placeholder while loading
+    return asyncTitle ?? "...";
+  }
+  
+  return fallbackTitle;
+}
+
+/**
+ * Component for rendering a single breadcrumb item with async title support
+ */
+function BreadcrumbItemWithAsyncTitle({
+  breadcrumbMeta,
+  fallbackTitle,
+  href,
+  isCurrentPage,
+}: {
+  breadcrumbMeta?: BreadcrumbMetadata;
+  fallbackTitle: string;
+  href?: string;
+  isCurrentPage?: boolean;
+}) {
+  const { t } = useTranslation(["navigation"]);
+  const title = useAsyncBreadcrumbTitle(breadcrumbMeta, fallbackTitle);
+  
+  return (
+    <BreadcrumbItem className="text-xs">
+      {isCurrentPage ? (
+        <BreadcrumbPage>
+          {title === "home" ? <Home className="h-3 w-3" /> : title}
+        </BreadcrumbPage>
+      ) : !href ? (
+        <span className="text-muted-foreground text-xs">
+          {title === "home" ? <Home className="h-3 w-3" /> : title}
+        </span>
+      ) : (
+        <BreadcrumbLink asChild className="text-xs">
+          <Link
+            to={href}
+            aria-label={title === "home" ? t("home") : undefined}
+          >
+            {title === "home" ? <Home className="h-3 w-3" /> : title}
+          </Link>
+        </BreadcrumbLink>
+      )}
+    </BreadcrumbItem>
+  );
 }
 
 /**
@@ -45,6 +134,11 @@ interface BreadcrumbSegment {
  * />
  * ```
  */
+interface BreadcrumbSegmentWithMetadata {
+  segment: BreadcrumbSegment;
+  metadata?: BreadcrumbMetadata;
+}
+
 export function RouterBreadcrumb({
   customSegments,
 }: {
@@ -54,17 +148,19 @@ export function RouterBreadcrumb({
   const routerState = useRouterState();
 
   // Generate breadcrumb segments from router state
-  const generateSegments = (): BreadcrumbSegment[] => {
+  const generateSegmentsWithMetadata = (): BreadcrumbSegmentWithMetadata[] => {
     if (customSegments) {
-      return customSegments;
+      return customSegments.map(seg => ({ segment: seg }));
     }
 
-    const segments: BreadcrumbSegment[] = [];
+    const segmentsWithMeta: BreadcrumbSegmentWithMetadata[] = [];
 
     // Always start with home
-    segments.push({
-      title: "home", // Special marker for home icon
-      href: "/",
+    segmentsWithMeta.push({
+      segment: {
+        title: "home", // Special marker for home icon
+        href: "/",
+      },
     });
 
     // Find the deepest match with breadcrumb data
@@ -89,25 +185,15 @@ export function RouterBreadcrumb({
           return;
         }
 
-        // Determine the title
-        let title = "";
-        if (breadcrumbMeta.title) {
-          // Handle i18n keys
-          if (breadcrumbMeta.isI18nKey) {
-            title = t(breadcrumbMeta.title as any);
-          } else {
-            title = breadcrumbMeta.title;
-          }
-        }
-
-        // Only add segment if we have a title
-        if (title) {
-          segments.push({
-            title,
-            href: isLast ? undefined : "#", // We'd need to track URLs for intermediate segments
+        // Add segment with metadata
+        segmentsWithMeta.push({
+          segment: {
+            title: breadcrumbMeta.title || "...",
+            href: isLast ? undefined : breadcrumbMeta.href,
             isCurrentPage: isLast,
-          });
-        }
+          },
+          metadata: breadcrumbMeta,
+        });
       });
     } else {
       // Fallback to building from route matches
@@ -130,102 +216,64 @@ export function RouterBreadcrumb({
           return;
         }
 
-        // Determine the title
-        let title = "";
-        if (breadcrumbMeta?.title) {
-          // Handle i18n keys
-          if (breadcrumbMeta.isI18nKey) {
-            title = t(breadcrumbMeta.title as any);
-          } else {
-            title = breadcrumbMeta.title;
-          }
-        } else if (breadcrumbMeta?.getTitle) {
-          // For dynamic titles, we'll use the sync version or fallback
-          title = "Loading..."; // This would need to be handled async
+        // Determine fallback title
+        let fallbackTitle = "";
+        if (loaderData?.factory?.name) {
+          fallbackTitle = loaderData.factory.name;
+        } else if (loaderData?.token?.name) {
+          fallbackTitle = loaderData.token.name;
         } else {
-          // Fallback to extracting from route or loader data
-          if (loaderData?.factory?.name) {
-            title = loaderData.factory.name;
-          } else if (loaderData?.token?.name) {
-            title = loaderData.token.name;
-          } else {
-            // Extract from route ID or path
-            const routePart = match.pathname.split("/").filter(Boolean).pop() || "";
-            
-            // Handle ethereum addresses
-            if (routePart.startsWith("0x") && routePart.length === 42) {
-              title = `${routePart.slice(0, 6)}...${routePart.slice(-4)}`;
-            } else if (routePart && !routePart.startsWith("$")) {
-              // Capitalize first letter of route segment
-              title = routePart.charAt(0).toUpperCase() + routePart.slice(1);
-            }
+          // Extract from route ID or path
+          const routePart = match.pathname.split("/").filter(Boolean).pop() || "";
+          
+          // Handle ethereum addresses
+          if (routePart.startsWith("0x") && routePart.length === 42) {
+            fallbackTitle = `${routePart.slice(0, 6)}...${routePart.slice(-4)}`;
+          } else if (routePart && !routePart.startsWith("$")) {
+            // Capitalize first letter of route segment
+            fallbackTitle = routePart.charAt(0).toUpperCase() + routePart.slice(1);
           }
         }
 
-        // Only add segment if we have a title
-        if (title) {
-          segments.push({
-            title,
+        // Add segment with metadata
+        segmentsWithMeta.push({
+          segment: {
+            title: breadcrumbMeta?.title || fallbackTitle || "...",
             href: isLast ? undefined : match.pathname,
             isCurrentPage: isLast,
-          });
-        }
+          },
+          metadata: breadcrumbMeta,
+        });
       });
     }
 
-    return segments;
+    return segmentsWithMeta;
   };
 
-  const segments = generateSegments();
+  const segmentsWithMeta = generateSegmentsWithMetadata();
 
   // Don't render breadcrumbs if we only have home
-  if (segments.length <= 1) {
+  if (segmentsWithMeta.length <= 1) {
     return null;
   }
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        {segments.map((segment, index) => {
-          const isLast = index === segments.length - 1;
+        {segmentsWithMeta.map((item, index) => {
+          const isLast = index === segmentsWithMeta.length - 1;
+          const { segment, metadata } = item;
+          // Use metadata href if available, otherwise fall back to segment href
+          const href = metadata?.href ?? segment.href;
 
           return (
-            <Fragment key={segment.href ?? segment.title}>
-              <BreadcrumbItem className="text-xs">
-                {segment.isCurrentPage ? (
-                  <BreadcrumbPage>
-                    {segment.title === "home" ? (
-                      <Home className="h-3 w-3" />
-                    ) : (
-                      segment.title
-                    )}
-                  </BreadcrumbPage>
-                ) : !segment.href ? (
-                  // Non-clickable intermediate sections - use span with muted color
-                  <span className="text-muted-foreground text-xs">
-                    {segment.title === "home" ? (
-                      <Home className="h-3 w-3" />
-                    ) : (
-                      segment.title
-                    )}
-                  </span>
-                ) : (
-                  <BreadcrumbLink asChild className="text-xs">
-                    <Link
-                      to={segment.href}
-                      aria-label={
-                        segment.title === "home" ? t("home") : undefined
-                      }
-                    >
-                      {segment.title === "home" ? (
-                        <Home className="h-3 w-3" />
-                      ) : (
-                        segment.title
-                      )}
-                    </Link>
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
+            <Fragment key={href ?? segment.title ?? index}>
+              <BreadcrumbItemWithAsyncTitle
+                breadcrumbMeta={metadata}
+                fallbackTitle={segment.title}
+                href={href}
+                isCurrentPage={segment.isCurrentPage}
+              />
               {!isLast && <BreadcrumbSeparator />}
             </Fragment>
           );
