@@ -5,9 +5,10 @@ import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
 import {
-  DepositTokenCreateSchema as schema,
-  type DepositCreateInput,
-} from "@/orpc/routes/token/routes/deposit/deposit.create.schema";
+  TokenCreateSchema,
+  type TokenCreateInput,
+} from "@/orpc/helpers/token.create.schema";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -21,7 +22,7 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
   const { t } = useTranslation("asset-designer");
 
   const form = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(TokenCreateSchema),
     defaultValues: {
       type: AssetTypeEnum.deposit,
       verification: {
@@ -38,13 +39,13 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
         defaultError: t("streaming-messages.default-error", {
           type: AssetTypeEnum.deposit,
         }),
-        creatingDeposit: t("messages.creating", {
+        creatingToken: t("messages.creating", {
           type: AssetTypeEnum.deposit,
         }),
-        depositCreated: t("messages.created", {
+        tokenCreated: t("messages.created", {
           type: AssetTypeEnum.deposit,
         }),
-        depositCreationFailed: t("messages.creation-failed", {
+        tokenCreationFailed: t("messages.creation-failed", {
           type: AssetTypeEnum.deposit,
         }),
       },
@@ -63,7 +64,7 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
 
   // Handle form submission
   const onSubmit = useCallback(
-    (data: DepositCreateInput) => {
+    (data: TokenCreateInput) => {
       createDeposit({
         ...data,
       });
