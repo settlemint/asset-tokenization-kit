@@ -203,36 +203,19 @@ extraEnvVarsCM: ""
 # -- Name of existing Secret containing extra env vars for eRPC nodes
 extraEnvVarsSecret: ""
 
-# -- Init containers configuration
-initContainers:
-  # -- Enable init containers
-  enabled: true
-  # -- Array of init container configurations
-  containers:
-    - name: wait-for-besu
-      # -- Image for the init container
-      image: busybox:1.37.0
-      # -- Image pull policy for init container
-      imagePullPolicy: IfNotPresent
-      # -- Command to wait for Besu endpoint
-      command:
-        - sh
-        - -c
-        - |
-          echo "Waiting for Besu endpoint to be ready..."
-          until nc -z besu-node-rpc-1 8545; do
-            echo "Besu endpoint not ready, waiting..."
-            sleep 5
-          done
-          echo "Besu endpoint is ready!"
-      # -- Resources for init container
-      resources:
-        limits:
-          cpu: 50m
-          memory: 64Mi
-        requests:
-          cpu: 10m
-          memory: 32Mi
+initContainer:
+  # Generic TCP check settings
+  tcpCheck:
+    enabled: true
+    image:
+      repository: ghcr.io/settlemint/btp-waitforit
+      tag: v7.7.5
+      pullPolicy: IfNotPresent
+    timeout: 5 # Timeout in seconds for each dependency check
+    dependencies:
+      # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
+      - name: besu-rpc
+        endpoint: "besu-node-rpc-1.atk.svc.cluster.local:8545"
 
 # -- Service parameters
 service:

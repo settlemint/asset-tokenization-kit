@@ -52,28 +52,23 @@ spec:
       {{- if .Values.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
-      {{- if and .Values.initContainers .Values.initContainers.enabled .Values.initContainers.containers }}
+      {{- /* Define initContainers block only if needed */}}
+      {{- if .Values.initContainer.tcpCheck.enabled }}
       initContainers:
-        {{- range .Values.initContainers.containers }}
-        - name: {{ .name }}
-          image: {{ .image }}
-          {{- if .imagePullPolicy }}
-          imagePullPolicy: {{ .imagePullPolicy }}
-          {{- end }}
-          {{- if .command }}
-          command: {{- toYaml .command | nindent 12 }}
-          {{- end }}
-          {{- if .args }}
-          args: {{- toYaml .args | nindent 12 }}
-          {{- end }}
-          {{- if .env }}
-          env: {{- toYaml .env | nindent 12 }}
-          {{- end }}
-          {{- if .resources }}
-          resources: {{- toYaml .resources | nindent 12 }}
-          {{- end }}
-          {{- if .volumeMounts }}
-          volumeMounts: {{- toYaml .volumeMounts | nindent 12 }}
+        {{- /* Add Generic TCP Checks if enabled */}}
+        {{- if .Values.initContainer.tcpCheck.enabled }}
+          {{- range .Values.initContainer.tcpCheck.dependencies }}
+        - name: wait-for-{{ .name }}
+          image: "{{ $.Values.initContainer.tcpCheck.image.repository }}:{{ $.Values.initContainer.tcpCheck.image.tag }}"
+          imagePullPolicy: {{ $.Values.initContainer.tcpCheck.image.pullPolicy }}
+          command: ['/usr/bin/wait-for-it', '{{ tpl .endpoint $ }}', '-t', '{{ $.Values.initContainer.tcpCheck.timeout }}']
+          resources: # Optional: Define minimal resources for init containers
+            limits:
+              cpu: 100m
+              memory: 64Mi
+            requests:
+              cpu: 50m
+              memory: 32Mi
           {{- end }}
         {{- end }}
       {{- end }}
