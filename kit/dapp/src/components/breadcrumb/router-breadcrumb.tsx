@@ -8,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import type { BreadcrumbMetadata } from "./metadata";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home } from "lucide-react";
 import { Fragment } from "react";
@@ -21,26 +22,20 @@ interface BreadcrumbSegment {
 
 /**
  * Router-aware breadcrumb component that automatically generates breadcrumbs
- * based on the current route and provides a navigation trail.
+ * based on the current route metadata and provides a navigation trail.
+ *
+ * The component now supports automatic breadcrumb generation from route metadata,
+ * eliminating the need for manual intermediate sections in most cases.
  *
  * @param customSegments - Optional array of custom breadcrumb segments to override auto-generation
- * @param intermediateSections - Optional array of sections to insert between home and auto-detected segments
  * @returns A breadcrumb navigation component
  *
  * @example
  * ```tsx
- * // Auto-generated breadcrumbs based on route
+ * // Auto-generated breadcrumbs based on route metadata
  * <RouterBreadcrumb />
  *
- * // With intermediate sections
- * <RouterBreadcrumb
- *   intermediateSections={[
- *     { title: "Asset Management", href: "/assets" },
- *     { title: "Fixed Income" } // No href means not clickable
- *   ]}
- * />
- *
- * // Custom breadcrumbs
+ * // Custom breadcrumbs (rarely needed)
  * <RouterBreadcrumb
  *   customSegments={[
  *     { title: "Home", href: "/" },
@@ -52,12 +47,10 @@ interface BreadcrumbSegment {
  */
 export function RouterBreadcrumb({
   customSegments,
-  intermediateSections = [],
 }: {
   customSegments?: BreadcrumbSegment[];
-  intermediateSections?: BreadcrumbSegment[];
 }) {
-  const { t } = useTranslation("navigation");
+  const { t } = useTranslation(["navigation"]);
   const routerState = useRouterState();
 
   // Generate breadcrumb segments from router state
@@ -67,8 +60,6 @@ export function RouterBreadcrumb({
     }
 
     const segments: BreadcrumbSegment[] = [];
-    const currentPath = routerState.location.pathname;
-    const pathParts = currentPath.split("/").filter(Boolean);
 
     // Always start with home
     segments.push({
@@ -76,57 +67,111 @@ export function RouterBreadcrumb({
       href: "/",
     });
 
-    // Add intermediate sections after home
-    intermediateSections.forEach((section) => {
-      segments.push({
-        title: section.title,
-        href: section.href,
-        isCurrentPage: false,
-      });
-    });
-
-    // Build breadcrumb segments from path
-    let accumulatedPath = "";
-    pathParts.forEach((part, index) => {
-      accumulatedPath += `/${part}`;
-      const isLast = index === pathParts.length - 1;
-
-      // Skip private/onboarded segments as they're not user-facing
-      if (
-        part === "_private" ||
-        part === "_onboarded" ||
-        part === "token" ||
-        part === "stats"
-      ) {
-        return;
+    // Find the deepest match with breadcrumb data
+    let breadcrumbsFromLoader: BreadcrumbMetadata[] | undefined;
+    for (let i = routerState.matches.length - 1; i >= 0; i--) {
+      const match = routerState.matches[i];
+      if (!match) continue;
+      const loaderData = match.loaderData as any;
+      if (loaderData?.breadcrumb && Array.isArray(loaderData.breadcrumb)) {
+        breadcrumbsFromLoader = loaderData.breadcrumb;
+        break;
       }
+    }
 
-      // Get title from route data or format the path part
-      let title = part;
+    // If we have breadcrumb array from loader, use it
+    if (breadcrumbsFromLoader) {
+      breadcrumbsFromLoader.forEach((breadcrumbMeta, index) => {
+        const isLast = index === breadcrumbsFromLoader.length - 1;
+        
+        // Skip if marked as hidden
+        if (breadcrumbMeta.hidden) {
+          return;
+        }
 
-      // Check if this is a dynamic segment (e.g., factory address)
-      const currentMatch = routerState.matches[routerState.matches.length - 1];
-      if (currentMatch?.params && Object.keys(currentMatch.params).length > 0) {
-        // For factory routes, try to get the factory name from loader data
-        const loaderData = currentMatch.loaderData as {
-          factory?: { name?: string };
-        };
-        if (loaderData.factory?.name) {
-          title = loaderData.factory.name;
-        } else {
-          // Fallback to shortening addresses
-          if (part.startsWith("0x") && part.length === 42) {
-            title = `${part.slice(0, 6)}...${part.slice(-4)}`;
+        // Determine the title
+        let title = "";
+        if (breadcrumbMeta.title) {
+          // Handle i18n keys
+          if (breadcrumbMeta.isI18nKey) {
+            title = t(breadcrumbMeta.title as any);
+          } else {
+            title = breadcrumbMeta.title;
           }
         }
-      }
 
-      segments.push({
-        title,
-        href: isLast ? undefined : accumulatedPath,
-        isCurrentPage: isLast,
+        // Only add segment if we have a title
+        if (title) {
+          segments.push({
+            title,
+            href: isLast ? undefined : "#", // We'd need to track URLs for intermediate segments
+            isCurrentPage: isLast,
+          });
+        }
       });
-    });
+    } else {
+      // Fallback to building from route matches
+      routerState.matches.forEach((match, index) => {
+        // Skip layout routes (those with underscore prefix)
+        if (match.id.startsWith("/_") || match.id === "/") {
+          return;
+        }
+
+        const isLast = index === routerState.matches.length - 1;
+        const loaderData = match.loaderData as any;
+        const context = match.context as any;
+
+        // Extract breadcrumb metadata from various sources
+        const breadcrumbMeta: BreadcrumbMetadata | undefined =
+          loaderData?.breadcrumb || context?.breadcrumb;
+
+        // Skip if marked as hidden
+        if (breadcrumbMeta?.hidden) {
+          return;
+        }
+
+        // Determine the title
+        let title = "";
+        if (breadcrumbMeta?.title) {
+          // Handle i18n keys
+          if (breadcrumbMeta.isI18nKey) {
+            title = t(breadcrumbMeta.title as any);
+          } else {
+            title = breadcrumbMeta.title;
+          }
+        } else if (breadcrumbMeta?.getTitle) {
+          // For dynamic titles, we'll use the sync version or fallback
+          title = "Loading..."; // This would need to be handled async
+        } else {
+          // Fallback to extracting from route or loader data
+          if (loaderData?.factory?.name) {
+            title = loaderData.factory.name;
+          } else if (loaderData?.token?.name) {
+            title = loaderData.token.name;
+          } else {
+            // Extract from route ID or path
+            const routePart = match.pathname.split("/").filter(Boolean).pop() || "";
+            
+            // Handle ethereum addresses
+            if (routePart.startsWith("0x") && routePart.length === 42) {
+              title = `${routePart.slice(0, 6)}...${routePart.slice(-4)}`;
+            } else if (routePart && !routePart.startsWith("$")) {
+              // Capitalize first letter of route segment
+              title = routePart.charAt(0).toUpperCase() + routePart.slice(1);
+            }
+          }
+        }
+
+        // Only add segment if we have a title
+        if (title) {
+          segments.push({
+            title,
+            href: isLast ? undefined : match.pathname,
+            isCurrentPage: isLast,
+          });
+        }
+      });
+    }
 
     return segments;
   };
