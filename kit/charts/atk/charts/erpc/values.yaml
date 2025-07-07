@@ -24,7 +24,7 @@ image:
   # -- eRPC image repository
   repository: erpc/erpc
   # -- eRPC image tag (immutable tags are recommended)
-  tag: "0.0.51"
+  tag: "0.0.52"
   # -- eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
   # -- eRPC image pull policy
@@ -202,6 +202,37 @@ extraEnvVarsCM: ""
 
 # -- Name of existing Secret containing extra env vars for eRPC nodes
 extraEnvVarsSecret: ""
+
+# -- Init containers configuration
+initContainers:
+  # -- Enable init containers
+  enabled: true
+  # -- Array of init container configurations
+  containers:
+    - name: wait-for-besu
+      # -- Image for the init container
+      image: busybox:1.37.0
+      # -- Image pull policy for init container
+      imagePullPolicy: IfNotPresent
+      # -- Command to wait for Besu endpoint
+      command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for Besu endpoint to be ready..."
+          until nc -z besu-node-rpc-1 8545; do
+            echo "Besu endpoint not ready, waiting..."
+            sleep 5
+          done
+          echo "Besu endpoint is ready!"
+      # -- Resources for init container
+      resources:
+        limits:
+          cpu: 50m
+          memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
 
 # -- Service parameters
 service:
