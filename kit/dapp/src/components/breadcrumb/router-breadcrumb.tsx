@@ -27,42 +27,61 @@ function useAsyncBreadcrumbTitle(
   breadcrumbMeta: BreadcrumbMetadata | undefined,
   fallbackTitle: string
 ): string {
-  const { t } = useTranslation(["navigation"]);
+  const namespace = breadcrumbMeta?.i18nNamespace || "navigation";
+  const { t } = useTranslation([namespace]);
   const [asyncTitle, setAsyncTitle] = useState<string | null>(null);
+  
+  // Create a stable key for the breadcrumb to track changes
+  const breadcrumbKey = breadcrumbMeta ? `${breadcrumbMeta.title}-${breadcrumbMeta.isI18nKey}` : null;
 
   useEffect(() => {
+    let cancelled = false;
+    
     if (breadcrumbMeta?.getTitle) {
-      // Reset async title when getTitle changes
+      // Reset async title when starting new resolution
       setAsyncTitle(null);
       
       // Resolve the async title
       const resolveTitle = async () => {
         try {
           const title = await breadcrumbMeta.getTitle();
-          setAsyncTitle(title);
+          if (!cancelled) {
+            setAsyncTitle(title);
+          }
         } catch (error) {
           // Fall back to static title or default on error
-          setAsyncTitle(breadcrumbMeta.title || fallbackTitle);
+          if (!cancelled) {
+            setAsyncTitle(breadcrumbMeta.title || fallbackTitle);
+          }
         }
       };
       
       resolveTitle();
     }
-  }, [breadcrumbMeta?.getTitle, breadcrumbMeta?.title, fallbackTitle]);
+    
+    return () => {
+      cancelled = true;
+    };
+  }, [breadcrumbKey, breadcrumbMeta?.title, fallbackTitle]);
 
   // Determine the title to display
   if (breadcrumbMeta?.title) {
     // Handle i18n keys
     if (breadcrumbMeta.isI18nKey) {
-      return t(breadcrumbMeta.title as any);
+      // Use the translation with proper namespace
+      return t(breadcrumbMeta.title);
     }
     return breadcrumbMeta.title;
   }
   
   // If we have an async title function
+  if (breadcrumbMeta?.getTitle && asyncTitle !== null) {
+    return asyncTitle;
+  }
+  
+  // Show ellipsis while loading async title
   if (breadcrumbMeta?.getTitle) {
-    // Return the resolved title or a placeholder while loading
-    return asyncTitle ?? "...";
+    return "...";
   }
   
   return fallbackTitle;
@@ -82,7 +101,8 @@ function BreadcrumbItemWithAsyncTitle({
   href?: string;
   isCurrentPage?: boolean;
 }) {
-  const { t } = useTranslation(["navigation"]);
+  const namespace = breadcrumbMeta?.i18nNamespace || "navigation";
+  const { t } = useTranslation([namespace]);
   const title = useAsyncBreadcrumbTitle(breadcrumbMeta, fallbackTitle);
   
   return (
