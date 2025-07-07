@@ -20,3 +20,4 @@
 
 export * from "./schemas/auth";
 export * from "./schemas/settings";
+export * from "./schemas/exchange-rates";

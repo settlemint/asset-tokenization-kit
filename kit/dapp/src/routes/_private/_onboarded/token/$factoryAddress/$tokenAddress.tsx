@@ -1,6 +1,14 @@
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import {
+  assetClassBreadcrumbs,
+  createBreadcrumbMetadata,
+} from "@/components/breadcrumb/metadata";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { seo } from "@/config/metadata";
-import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
+import {
+  getAssetClassFromFactoryTypeId,
+  getAssetTypeFromFactoryTypeId,
+} from "@/lib/zod/validators/asset-types";
 import { createFileRoute } from "@tanstack/react-router";
 
 /**
@@ -65,7 +73,22 @@ export const Route = createFileRoute(
       ),
     ]);
 
-    return { token, factory };
+    // Get asset class for breadcrumb
+    const assetClass = getAssetClassFromFactoryTypeId(factory.typeId);
+
+    return {
+      token,
+      factory,
+      breadcrumb: [
+        assetClassBreadcrumbs["asset-management"],
+        assetClassBreadcrumbs[assetClass],
+        {
+          ...createBreadcrumbMetadata(factory.name),
+          href: `/token/${factoryAddress}`,
+        },
+        createBreadcrumbMetadata(token.name),
+      ],
+    };
   },
   /**
    * Head configuration for SEO
@@ -133,7 +156,14 @@ export const Route = createFileRoute(
  * ```
  */
 function RouteComponent() {
+  const { token } = Route.useLoaderData();
+
   return (
-    <div>Hello "/_private/_onboarded/token/$factoryAddress/$tokenAddress"!</div>
+    <div className="space-y-6 p-6">
+      <div className="space-y-2">
+        <RouterBreadcrumb />
+        <h1 className="text-3xl font-bold tracking-tight">{token.name}</h1>
+      </div>
+    </div>
   );
 }
