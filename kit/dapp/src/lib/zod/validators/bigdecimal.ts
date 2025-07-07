@@ -6,26 +6,30 @@
  * manipulation of large or highly precise numerical values.
  * @module BigDecimalValidation
  */
-import { from } from "dnum";
+import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
+import { from, isDnum, type Dnum } from "dnum";
 import { z } from "zod/v4";
 
 /**
  * Zod schema for validating and transforming arbitrary precision decimal numbers
  *
  * This schema provides comprehensive validation for big decimal numbers with the following features:
- * - String-based input to preserve precision and avoid JavaScript number limitations
+ * - Accepts either string input or existing Dnum values
+ * - String-based input preserves precision and avoids JavaScript number limitations
+ * - Dnum input is passed through without transformation for efficiency
  * - Validation against special values (NaN, Infinity, -Infinity)
  * - Support for scientific notation (e.g., "1.23e10")
  * - Automatic transformation to dnum's Dnum type for precise calculations
  * - Integration with dnum library for arbitrary precision arithmetic
  *
  * The validation process follows these steps:
- * 1. Check input is a string (required for precision preservation)
- * 2. Reject special string values (NaN, Infinity, -Infinity)
+ * 1. Check if input is already a Dnum (array) - if so, return as-is
+ * 2. If string, reject special values (NaN, Infinity, -Infinity)
  * 3. Validate numeric format using dnum's from() function
  * 4. Transform to Dnum type for precise arithmetic operations
  *
  * Supported formats:
+ * - Existing Dnum values (arrays)
  * - Standard decimal: "123.456"
  * - Scientific notation: "1.23e10", "1.23E-5"
  * - Integer strings: "123"
@@ -34,10 +38,15 @@ import { z } from "zod/v4";
  * - Very small numbers: "0.000000000000000001"
  * @example
  * ```typescript
- * // Valid decimal parsing
+ * // Valid decimal parsing from string
  * const decimal = bigDecimal().parse("123.456789012345678901234567890");
  * // Returns: Dnum representing the exact decimal value
  * // Type: Dnum
+ *
+ * // Pass through existing Dnum values
+ * const existingDnum = from("123.456");
+ * const passedThrough = bigDecimal().parse(existingDnum);
+ * // Returns: Same Dnum without transformation
  *
  * // Scientific notation support
  * const scientific = bigDecimal().parse("1.23e10");
@@ -63,9 +72,19 @@ import { z } from "zod/v4";
  */
 export const bigDecimal = () =>
   z
-    .string()
+    .union([
+      z.string(),
+      z.custom<Dnum>((val) => isDnum(val), {
+        message: "Expected a Dnum value",
+      }),
+    ])
     .describe("A decimal number with arbitrary precision")
     .transform((value, ctx) => {
+      // If already a Dnum, return it as-is
+      if (isDnum(value)) {
+        return value;
+      }
+
       // Reject special values
       const upper = value.toUpperCase();
       if (upper === "NAN" || upper === "INFINITY" || upper === "-INFINITY") {
@@ -143,3 +162,10 @@ export function isBigDecimal(value: unknown): value is BigDecimal {
 export function getBigDecimal(value: unknown): BigDecimal {
   return bigDecimal().parse(value);
 }
+
+export const bigDecimalSerializer: StandardRPCCustomJsonSerializer = {
+  type: 31,
+  condition: (data) => isDnum(data),
+  serialize: (data: Dnum) => data.toString(),
+  deserialize: (data) => from(data),
+};

@@ -231,7 +231,6 @@ function ExampleWizardComponent({ onComplete }: ExampleWizardProps) {
         enableUrlPersistence={true}
         showProgressBar={true}
         allowStepSkipping={false}
-        persistFormData={true}
         defaultValues={{
           decimals: 18,
           requiresKYC: false,

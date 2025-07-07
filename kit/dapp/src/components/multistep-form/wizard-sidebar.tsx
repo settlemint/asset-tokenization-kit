@@ -18,9 +18,15 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
     navigateToStep,
   } = useWizardContext();
 
+  // Debug log the completed steps
+  console.log('WizardSidebar render - completedSteps:', completedSteps, 'currentStepIndex:', currentStepIndex);
+
   const getStepStatus = (step: StepDefinition, index: number): StepStatus => {
     if (stepErrors[step.id]) return "error";
-    if (completedSteps.includes(step.id)) return "completed";
+    if (completedSteps.includes(step.id)) {
+      console.log(`Step ${step.id} is marked as completed`);
+      return "completed";
+    }
     if (index === currentStepIndex) return "active";
     return "pending";
   };
@@ -81,17 +87,17 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
               ) : isCompleted ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 16 16"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
                   fill="none"
                   className="text-current"
                 >
-                  <circle cx="8" cy="8" r="7" fill="white" />
+                  <circle cx="12" cy="12" r="10" fill="#10b981" />
                   <path
-                    d="M10.5 6.5L7 9.5L5.5 8"
-                    stroke="rgba(54, 139, 207, 1)"
-                    strokeWidth="1.50"
+                    d="M9 12l2 2 4-4"
+                    stroke="white"
+                    strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -206,10 +212,10 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
       (acc, step, index) => {
         const groupId = step.groupId || "ungrouped";
         if (!acc[groupId]) acc[groupId] = [];
-        acc[groupId]!.push({ step, index });
+        acc[groupId].push({ step, index });
         return acc;
       },
-      {} as Record<string, Array<{ step: StepDefinition; index: number }>>
+      {} as Record<string, { step: StepDefinition; index: number }[]>
     );
 
     return (
@@ -258,14 +264,13 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
         })}
 
         {/* Render ungrouped steps if any */}
-        {groupedStepsByGroupId["ungrouped"] && (
+        {groupedStepsByGroupId.ungrouped && (
           <div className="relative">
             <div className="pl-2">
-              {groupedStepsByGroupId["ungrouped"].map(
+              {groupedStepsByGroupId.ungrouped.map(
                 ({ step, index }, stepIndex) => {
                   const isLastStep =
-                    stepIndex ===
-                    groupedStepsByGroupId["ungrouped"]!.length - 1;
+                    stepIndex === groupedStepsByGroupId.ungrouped!.length - 1;
                   return renderStep(step, index, isLastStep);
                 }
               )}

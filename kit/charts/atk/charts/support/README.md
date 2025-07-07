@@ -18,7 +18,7 @@ A Helm chart for the supporting components
 | https://stakater.github.io/stakater-charts | reloader | 2.1.4 |
 | oci://registry-1.docker.io/bitnamicharts | minio | 17.0.9 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql-ha | 16.0.16 |
-| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.6 |
+| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.7 |
 
 ## Values
 

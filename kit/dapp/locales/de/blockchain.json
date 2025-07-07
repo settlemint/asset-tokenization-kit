@@ -1,0 +1,168 @@
+{
+  "transaction": {
+    "types": {
+      "transfer": "Übertragen",
+      "approve": "Genehmigen",
+      "mint": "Prägen",
+      "burn": "Verbrennen",
+      "deploy": "Vertrag bereitstellen",
+      "swap": "Tauschen",
+      "stake": "Staken",
+      "unstake": "Unstaken",
+      "claim": "Beanspruchen",
+      "delegate": "Delegieren",
+      "vote": "Abstimmen"
+    },
+    "status": {
+      "pending": "Ausstehend",
+      "confirming": "Bestätigen",
+      "confirmed": "Bestätigt",
+      "failed": "Fehlgeschlagen",
+      "dropped": "Abgebrochen",
+      "replaced": "Ersetzt",
+      "cancelled": "Storniert"
+    },
+    "details": {
+      "hash": "Transaktions-Hash",
+      "from": "Von",
+      "to": "An",
+      "value": "Wert",
+      "fee": "Transaktionsgebühr",
+      "gasLimit": "Gaslimit",
+      "gasUsed": "Verwendetes Gas",
+      "gasPrice": "Gaspreis",
+      "nonce": "Nonce",
+      "blockNumber": "Blocknummer",
+      "timestamp": "Zeitstempel",
+      "confirmations": "Bestätigungen"
+    },
+    "messages": {
+      "broadcasting": "Transaktion wird gesendet...",
+      "waiting": "Warten auf Bestätigung...",
+      "confirmed": "Transaktion bestätigt",
+      "failed": "Transaktion fehlgeschlagen: {{reason}}",
+      "speedUp": "Transaktion beschleunigen",
+      "cancel": "Transaktion abbrechen",
+      "viewOnExplorer": "Auf Block-Explorer anzeigen"
+    }
+  },
+  "contract": {
+    "events": {
+      "Transfer": "Übertragen",
+      "Approval": "Genehmigung",
+      "OwnershipTransferred": "Eigentum übertragen",
+      "Paused": "Vertrag pausiert",
+      "Unpaused": "Vertrag fortgesetzt",
+      "RoleGranted": "Rolle gewährt",
+      "RoleRevoked": "Rolle widerrufen"
+    },
+    "methods": {
+      "read": "Vertrag lesen",
+      "write": "Vertrag schreiben",
+      "payable": "Zahlbare Funktion"
+    },
+    "verification": {
+      "verified": "Verifiziert",
+      "unverified": "Unverifiziert",
+      "partial": "Teilweise verifiziert"
+    }
+  },
+  "gas": {
+    "estimating": "Gas wird geschätzt...",
+    "estimated": "Geschätztes Gas: {{amount}}",
+    "limit": "Gaslimit",
+    "price": "Gaspreis",
+    "maxFee": "Maximalgebühr",
+    "maxPriorityFee": "Maximalprioritätsgebühr",
+    "total": "Gesamtkosten",
+    "speeds": {
+      "slow": "Langsam",
+      "standard": "Standard",
+      "fast": "Schnell",
+      "instant": "Sofort"
+    },
+    "errors": {
+      "estimationFailed": "Gas konnte nicht geschätzt werden",
+      "tooLow": "Gas zu niedrig, Transaktion könnte fehlschlagen",
+      "tooHigh": "Gas unnötig hoch"
+    }
+  },
+  "blocks": {
+    "number": "Block #{{number}}",
+    "hash": "Block-Hash",
+    "timestamp": "Blockzeit",
+    "miner": "Miner",
+    "difficulty": "Schwierigkeit",
+    "gasLimit": "Gaslimit",
+    "gasUsed": "Verwendetes Gas",
+    "transactions": "Transaktionen",
+    "uncles": "Onkels"
+  },
+  "tokens": {
+    "standards": {
+      "ERC20": "ERC-20 Token",
+      "ERC721": "ERC-721 NFT",
+      "ERC1155": "ERC-1155 Multi-Token",
+      "ERC777": "ERC-777 Token"
+    },
+    "operations": {
+      "transfer": "Übertragen {{symbol}}",
+      "approve": "Genehmigen Sie {{symbol}} Ausgaben",
+      "transferFrom": "Übertragen {{symbol}} von {{owner}}",
+      "mint": "Präge {{amount}} {{symbol}}",
+      "burn": "Verbrenne {{amount}} {{symbol}}",
+      "pause": "Übertragungen pausieren",
+      "unpause": "Übertragungen fortsetzen"
+    },
+    "allowance": {
+      "unlimited": "Unbegrenzt",
+      "set": "Zulage festlegen",
+      "revoke": "Zulage widerrufen",
+      "increase": "Zulage erhöhen",
+      "decrease": "Zulage verringern"
+    }
+  },
+  "errors": {
+    "revert": {
+      "generic": "Transaktion zurückgesetzt",
+      "reason": "Rücksetzgrund: {{reason}}",
+      "outOfGas": "Kein Gas mehr",
+      "executionReverted": "Ausführung zurückgesetzt"
+    },
+    "common": {
+      "InsufficientBalance": "Unzureichendes Guthaben",
+      "TransferFailed": "Übertragung fehlgeschlagen",
+      "NotOwner": "Anrufer ist nicht der Eigentümer",
+      "Paused": "Vertrag ist pausiert",
+      "InvalidAddress": "Ungültige Adresse",
+      "ZeroAddress": "Kann keine Nulladresse verwenden",
+      "Overflow": "Numerischer Überlauf",
+      "Underflow": "Numerischer Unterlauf",
+      "Unauthorized": "Nicht autorisiert",
+      "AlreadyInitialized": "Bereits initialisiert",
+      "NotInitialized": "Nicht initialisiert"
+    }
+  },
+  "explorer": {
+    "viewAddress": "Adresse anzeigen",
+    "viewTransaction": "Transaktion anzeigen",
+    "viewBlock": "Block anzeigen",
+    "viewToken": "Token anzeigen",
+    "copyAddress": "Adresse kopieren",
+    "copyTxHash": "Transaktionshash kopieren",
+    "qrCode": "QR-Code anzeigen"
+  },
+  "confirmations": {
+    "waiting": "Warte auf Bestätigungen...",
+    "count": "{{current}} von {{required}} Bestätigungen",
+    "final": "Transaktion abgeschlossen"
+  },
+  "signatures": {
+    "request": "Unterschrift angefordert",
+    "personal": "Persönliche Unterschrift",
+    "typed": "Unterschrift für eingegebene Daten",
+    "permit": "Genehmigungsunterschrift",
+    "message": "Nachricht zum Unterzeichnen",
+    "danger": "Sei vorsichtig, was du unterschreibst!"
+  }
+}

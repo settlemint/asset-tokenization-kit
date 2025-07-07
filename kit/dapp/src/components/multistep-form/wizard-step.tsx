@@ -120,7 +120,7 @@ export function WizardStep({ className }: WizardStepProps) {
     );
   }
 
-  if (!form || !form.state) {
+  if (!form?.state) {
     logger.debug("Form not yet initialized", {
       hasForm: !!form,
       hasFormState: !!form?.state,
@@ -169,6 +169,7 @@ export function WizardStep({ className }: WizardStepProps) {
       }
 
       // Mark step as complete and move to next
+      console.log('WizardStep: Marking step complete:', currentStep.id);
       markStepComplete(currentStep.id);
 
       if (!isLastStep) {
@@ -208,6 +209,7 @@ export function WizardStep({ className }: WizardStepProps) {
   // Use custom component if provided
   if (currentStep.component) {
     const Component = currentStep.component;
+
     return (
       <Component
         form={form}

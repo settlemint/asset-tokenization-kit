@@ -22,7 +22,7 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
 
   const handleColumnVisibilityChange = useCallback(
     (columnId: string) => (value: boolean) => {
@@ -40,13 +40,11 @@ export function DataTableViewOptions<TData>({
           className="ml-auto hidden h-8 border-muted-foreground text-muted-foreground lg:flex"
         >
           <Settings2 />
-          {t("components.data-table.view")}
+          {t("view")}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>
-          {t("components.data-table.toggle-columns")}
-        </DropdownMenuLabel>
+        <DropdownMenuLabel>{t("toggleColumns")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()

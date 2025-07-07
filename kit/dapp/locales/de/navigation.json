@@ -1,0 +1,10 @@
+{
+  "asset": "Vermögenswert",
+  "assetClasses": "Vermögensklassen",
+  "assetManagement": "Vermögensverwaltung",
+  "statistics": "Statistiken",
+  "fixedIncome": "Festverzinslich",
+  "flexibleIncome": "Flexibles Einkommen",
+  "cashEquivalent": "Bargleichwertig",
+  "home": "Startseite"
+}

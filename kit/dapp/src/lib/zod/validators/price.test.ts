@@ -63,11 +63,20 @@ describe("price", () => {
       expect(() => validator.parse(NaN)).toThrow();
     });
 
-    it("should reject non-numeric types", () => {
-      expect(() => validator.parse("100")).toThrow();
+    it("should reject non-numeric string types", () => {
+      expect(() => validator.parse("abc")).toThrow();
+      expect(() => validator.parse("")).toThrow();
+      expect(() => validator.parse("not a number")).toThrow();
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
+    });
+
+    it("should accept numeric strings", () => {
+      expect(validator.parse("100")).toBe(100);
+      expect(validator.parse("100.50")).toBe(100.5);
+      expect(validator.parse("0.0001")).toBe(0.0001);
+      expect(validator.parse("1234.5678")).toBe(1234.5678);
     });
   });
 

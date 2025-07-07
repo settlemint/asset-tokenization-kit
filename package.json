@@ -34,7 +34,7 @@
     "turbo.json"
   ],
   "scripts": {
-    "postinstall": "turbo run dependencies && git config merge.ours.driver true && git config merge.ours.name \"Keep ours for generated files\"",
+    "postinstall": "turbo run dependencies",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
     "build": "turbo build",
@@ -51,6 +51,7 @@
     "lint": "turbo lint",
     "format": "turbo format",
     "test": "turbo test",
+    "docker:codestudio": "DOCKER_BUILD_TAG=$(jq -r .version package.json); if [ -z \"$CI\" ]; then DOCKER_BUILD_TAG=\"$DOCKER_BUILD_TAG-dev.$(date +%s)\"; fi; docker buildx build . --platform=linux/amd64,linux/arm64 --provenance true --sbom true -t ghcr.io/settlemint/codestudio-asset-tokenization-kit:$DOCKER_BUILD_TAG --push",
     "test:integration": "turbo test:integration",
     "publish": "turbo publish",
     "test:e2e:ui": "bun run --cwd kit/e2e playwright test --config=playwright.ui.config.ts --project=ui-tests",

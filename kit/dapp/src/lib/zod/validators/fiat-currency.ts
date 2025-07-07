@@ -19,6 +19,9 @@ import { z } from "zod/v4";
  * - `CHF`: Swiss Franc
  * - `CAD`: Canadian Dollar
  * - `AUD`: Australian Dollar
+ * - `AED`: United Arab Emirates Dirham
+ * - `SGD`: Singapore Dollar
+ * - `SAR`: Saudi Arabian Riyal
  */
 export const fiatCurrencies = [
   "USD",
@@ -28,6 +31,9 @@ export const fiatCurrencies = [
   "CHF",
   "CAD",
   "AUD",
+  "AED",
+  "SGD",
+  "SAR",
 ] as const;
 
 /**

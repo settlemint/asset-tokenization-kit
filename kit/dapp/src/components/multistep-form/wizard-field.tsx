@@ -89,11 +89,11 @@ export function WizardField<TFormData>({
               type={fieldDef.type}
               placeholder={fieldDef.placeholder}
               value={(field.state.value as string) || ""}
-              onChange={(e) =>
+              onChange={(e) => {
                 field.handleChange(
                   e.target.value as DeepValue<TFormData, string>
-                )
-              }
+                );
+              }}
               onBlur={field.handleBlur}
               className={cn(
                 field.state.meta.isTouched &&
@@ -115,9 +115,11 @@ export function WizardField<TFormData>({
             id={fieldDef.name as string}
             placeholder={fieldDef.placeholder}
             value={(field.state.value as string) || ""}
-            onChange={(e) =>
-              field.handleChange(e.target.value as DeepValue<TFormData, string>)
-            }
+            onChange={(e) => {
+              field.handleChange(
+                e.target.value as DeepValue<TFormData, string>
+              );
+            }}
             onBlur={field.handleBlur}
             className={cn(
               field.state.meta.isTouched &&
@@ -132,7 +134,9 @@ export function WizardField<TFormData>({
         return (
           <Select
             value={(field.state.value as string) || ""}
-            onValueChange={(value) => field.handleChange(value as any)}
+            onValueChange={(value) => {
+              field.handleChange(value as any);
+            }}
           >
             <SelectTrigger
               id={fieldDef.name as string}
@@ -162,7 +166,9 @@ export function WizardField<TFormData>({
             <Checkbox
               id={fieldDef.name as string}
               checked={(field.state.value as boolean) || false}
-              onCheckedChange={(checked) => field.handleChange(checked as any)}
+              onCheckedChange={(checked) => {
+                field.handleChange(checked as any);
+              }}
             />
             <Label
               htmlFor={fieldDef.name as string}
@@ -177,7 +183,9 @@ export function WizardField<TFormData>({
         return (
           <RadioGroup
             value={(field.state.value as string) || ""}
-            onValueChange={(value) => field.handleChange(value as any)}
+            onValueChange={(value) => {
+              field.handleChange(value as any);
+            }}
           >
             {fieldDef.options?.map((option) => (
               <div key={option.value} className="flex items-center space-x-2">

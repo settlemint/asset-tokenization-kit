@@ -34,4 +34,3 @@ LABEL org.opencontainers.image.source="https://github.com/settlemint/asset-token
 
 COPY --from=build /usecase /usecase
 COPY --from=build /root/.svm /usecase-svm
-COPY --from=build /root/.cache /usecase-cache

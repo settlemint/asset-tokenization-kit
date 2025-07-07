@@ -13,7 +13,6 @@ const wizardStateSchema = z.object({
   currentStepIndex: z.number().min(0).default(0),
   completedSteps: z.array(z.string()).default([]),
   stepErrors: z.record(z.string(), z.string()).default({}),
-  formData: z.record(z.string(), z.unknown()).default({}),
 });
 
 type ParsedWizardState = z.infer<typeof wizardStateSchema>;
@@ -34,7 +33,6 @@ export function useMultiStepWizardState({
         currentStepIndex: defaultState.currentStepIndex ?? 0,
         completedSteps: defaultState.completedSteps ?? [],
         stepErrors: defaultState.stepErrors ?? {},
-        formData: defaultState.formData ?? {},
       };
     }
 
@@ -45,7 +43,6 @@ export function useMultiStepWizardState({
           currentStepIndex: defaultState.currentStepIndex ?? 0,
           completedSteps: defaultState.completedSteps ?? [],
           stepErrors: defaultState.stepErrors ?? {},
-          formData: defaultState.formData ?? {},
         };
       }
 
@@ -60,9 +57,6 @@ export function useMultiStepWizardState({
         stepErrors: wizardSearch.errors
           ? JSON.parse(wizardSearch.errors as string)
           : (defaultState.stepErrors ?? {}),
-        formData: wizardSearch.data
-          ? JSON.parse(wizardSearch.data as string)
-          : (defaultState.formData ?? {}),
       };
 
       return wizardStateSchema.parse(urlState);
@@ -72,7 +66,6 @@ export function useMultiStepWizardState({
         currentStepIndex: defaultState.currentStepIndex ?? 0,
         completedSteps: defaultState.completedSteps ?? [],
         stepErrors: defaultState.stepErrors ?? {},
-        formData: defaultState.formData ?? {},
       };
     }
   }, [search, name, enableUrlPersistence, defaultState]);
@@ -100,10 +93,6 @@ export function useMultiStepWizardState({
 
         if (Object.keys(updatedState.stepErrors).length > 0) {
           wizardParams.errors = JSON.stringify(updatedState.stepErrors);
-        }
-
-        if (Object.keys(updatedState.formData).length > 0) {
-          wizardParams.data = JSON.stringify(updatedState.formData);
         }
 
         // Build the complete search params object
@@ -148,20 +137,6 @@ export function useMultiStepWizardState({
     [updateUrl]
   );
 
-  const setFormData = useCallback(
-    (formData: Record<string, unknown>) => {
-      updateUrl({ formData });
-    },
-    [updateUrl]
-  );
-
-  const updateFormData = useCallback(
-    (updates: Record<string, unknown>) => {
-      updateUrl({ formData: { ...state.formData, ...updates } });
-    },
-    [updateUrl, state.formData]
-  );
-
   const reset = useCallback(() => {
     if (enableUrlPersistence) {
       const { [name]: _, ...rest } = search;
@@ -177,18 +152,14 @@ export function useMultiStepWizardState({
     currentStepIndex: state.currentStepIndex,
     completedSteps: state.completedSteps,
     stepErrors: state.stepErrors,
-    formData: state.formData,
     setCurrentStepIndex,
     setCompletedSteps,
     setStepErrors,
-    setFormData,
-    updateFormData,
     reset,
     wizardOptions: {
       currentStepIndex: state.currentStepIndex,
       completedSteps: state.completedSteps,
       stepErrors: state.stepErrors,
-      formData: state.formData,
     },
   };
 }

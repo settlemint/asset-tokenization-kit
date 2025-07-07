@@ -53,11 +53,20 @@ describe("decimals", () => {
       );
     });
 
-    it("should reject non-numeric types", () => {
-      expect(() => validator.parse("6")).toThrow();
+    it("should reject non-numeric string types", () => {
+      expect(() => validator.parse("abc")).toThrow();
+      expect(() => validator.parse("")).toThrow();
+      expect(() => validator.parse("2.5")).toThrow();
+      expect(() => validator.parse("1e2")).toThrow();
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
+    });
+
+    it("should accept numeric strings", () => {
+      expect(validator.parse("0")).toBe(0);
+      expect(validator.parse("6")).toBe(6);
+      expect(validator.parse("18")).toBe(18);
     });
 
     it("should reject special numeric values", () => {

@@ -35,6 +35,8 @@ export default defineConfig([
       ".nitro/",
       "dist/",
       "node_modules/",
+      "vite.config.ts",
+      "eslint.config.mjs",
 
       // Third-party UI components (shadcn)
       "src/components/ui/**",

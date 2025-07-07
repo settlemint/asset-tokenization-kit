@@ -10,26 +10,26 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useSettings } from "@/hooks/use-settings";
 import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
-import { orpc } from "@/orpc";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_private/onboarding/platform")({
-  loader: async ({ context }) => {
+  loader: async ({ context: { queryClient, orpc } }) => {
     // Load user and system address in parallel
     const [user, systemAddress] = await Promise.all([
-      context.queryClient.ensureQueryData(orpc.user.me.queryOptions()),
-      context.queryClient.ensureQueryData(
-        orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
+      queryClient.ensureQueryData(orpc.user.me.queryOptions()),
+      queryClient.ensureQueryData(
+        orpc.settings.read.queryOptions({
+          input: { key: "SYSTEM_ADDRESS" },
+        })
       ),
     ]);
 
     // If we have a system address, ensure system details are loaded
     let systemDetails = null;
     if (systemAddress) {
-      systemDetails = await context.queryClient.ensureQueryData(
+      systemDetails = await queryClient.ensureQueryData(
         orpc.system.read.queryOptions({
           input: { id: systemAddress },
         })
@@ -369,15 +369,6 @@ function PlatformOnboarding() {
         </div>
         {/* Language and theme toggles positioned in top-right - matching auth pages */}
         <div className="absolute top-8 right-8 flex gap-2">
-          <Link to="/onboarding/platform-new">
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-background/10 border-border/20 text-foreground hover:bg-background/20"
-            >
-              Try New Wizard
-            </Button>
-          </Link>
           <LanguageSwitcher />
           <ThemeToggle />
         </div>

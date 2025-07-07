@@ -59,7 +59,7 @@ class WizardErrorBoundary extends Component<
     this.setState({ hasError: false, error: undefined });
   };
 
-  override render() {
+  override async render() {
     if (this.state.hasError && this.state.error) {
       if (this.props.fallback) {
         return this.props.fallback(this.state.error, this.reset);

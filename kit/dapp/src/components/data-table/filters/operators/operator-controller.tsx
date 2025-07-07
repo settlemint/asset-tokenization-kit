@@ -69,7 +69,7 @@ export function PropertyFilterOperatorController<
   filter: FilterValue<T, TData>;
 }) {
   const [open, setOpen] = useState<boolean>(false);
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
 
   const close = useCallback(() => {
     setOpen(false);
@@ -93,8 +93,8 @@ export function PropertyFilterOperatorController<
         className="w-fit p-0 origin-(--radix-popover-content-transform-origin)"
       >
         <Command loop>
-          <CommandInput placeholder={t("components.data-table.search")} />
-          <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
+          <CommandInput placeholder={t("search")} />
+          <CommandEmpty>{t("noResults")}</CommandEmpty>
           <CommandList className="max-h-fit">
             <PropertyFilterOperatorMenu
               column={column}

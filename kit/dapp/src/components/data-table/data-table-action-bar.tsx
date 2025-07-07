@@ -35,7 +35,7 @@ export function DataTableActionBar<TData>({
   enableSelectAll = true,
   maxHeight = "80px",
 }: BulkActionBarProps<TData>) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -56,7 +56,7 @@ export function DataTableActionBar<TData>({
         setLoadingAction(null);
         console.error("Bulk action failed:", error);
         toast.error(
-          t("components.data-table.bulk-actions.error", {
+          t("bulkActions.error", {
             error: error.message,
           })
         );
@@ -116,7 +116,7 @@ export function DataTableActionBar<TData>({
         // Show error message if provided
         const errorMessage =
           action.errorMessage ??
-          t("components.data-table.bulk-actions.error", {
+          t("bulkActions.error", {
             action: action.label,
           });
         console.error(errorMessage, error);
@@ -194,7 +194,7 @@ export function DataTableActionBar<TData>({
           <div className="flex items-center gap-2">
             <CheckIcon className="size-4 text-primary" />
             <span className="font-medium text-sm">
-              {t("components.data-table.bulk-actions.selected-count", {
+              {t("bulkActions.selectedCount", {
                 count: selectedCount,
               })}
             </span>
@@ -210,7 +210,7 @@ export function DataTableActionBar<TData>({
               onClick={handleSelectAll}
               className="text-xs h-7"
             >
-              {t("components.data-table.bulk-actions.select-all")}
+              {t("bulkActions.selectAll")}
             </Button>
           </>
         )}
@@ -230,11 +230,11 @@ export function DataTableActionBar<TData>({
                 {loadingAction ? (
                   <>
                     <LoaderIcon className="size-3 animate-spin mr-1" />
-                    {t("components.data-table.bulk-actions.processing")}
+                    {t("bulkActions.processing")}
                   </>
                 ) : (
                   <>
-                    {t("components.data-table.bulk-actions.actions")}
+                    {t("bulkActions.actions")}
                     <ChevronDownIcon className="size-3 ml-1" />
                   </>
                 )}
@@ -285,7 +285,7 @@ export function DataTableActionBar<TData>({
           size="sm"
           onClick={onSelectionClear}
           className="h-8 w-8 p-0 hover:bg-destructive/10"
-          aria-label={t("components.data-table.bulk-actions.clear-selection")}
+          aria-label={t("bulkActions.clearSelection")}
         >
           <XIcon className="size-4" />
         </Button>

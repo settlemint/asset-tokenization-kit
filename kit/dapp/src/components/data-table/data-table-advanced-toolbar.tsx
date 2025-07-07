@@ -71,7 +71,7 @@ export function DataTableAdvancedToolbar<TData>({
   customActions,
   placeholder,
 }: DataTableAdvancedToolbarProps<TData>) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
   const isMobile = useIsMobile();
   const [searchValue, setSearchValue] = useState(
     table.getState().globalFilter ?? ""
@@ -123,7 +123,7 @@ export function DataTableAdvancedToolbar<TData>({
             <div className="relative">
               <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder={placeholder ?? t("components.data-table.search")}
+                placeholder={placeholder ?? t("search")}
                 value={searchValue}
                 onChange={handleInputChange}
                 onClick={handleInputClick}
@@ -145,7 +145,7 @@ export function DataTableAdvancedToolbar<TData>({
                 className="h-7 text-xs ml-auto"
               >
                 <FilterXIcon className="h-3 w-3" />
-                {t("components.data-table.clear-all")}
+                {t("clearAll")}
               </Button>
             )}
           </div>
@@ -172,7 +172,7 @@ export function DataTableAdvancedToolbar<TData>({
             <div className="relative w-full max-w-sm">
               <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder={placeholder ?? t("components.data-table.search")}
+                placeholder={placeholder ?? t("search")}
                 value={searchValue}
                 onChange={handleInputChange}
                 onClick={handleInputClick}
@@ -198,7 +198,7 @@ export function DataTableAdvancedToolbar<TData>({
                   className="h-8 gap-2 text-muted-foreground hover:text-foreground"
                 >
                   <FilterXIcon className="h-4 w-4" />
-                  {t("components.data-table.clear-all")}
+                  {t("clearAll")}
                 </Button>
               )}
             </div>

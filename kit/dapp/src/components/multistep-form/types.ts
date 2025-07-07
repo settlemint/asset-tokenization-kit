@@ -2,11 +2,11 @@ import type { z } from "zod";
 
 // Simple type placeholders - these will be properly typed at runtime
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type FormApi<TFormData = any> = any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FormApi<_TFormData = any> = any;
+
 export type FieldApi<
-  TFormData = any,
-  TName extends keyof TFormData = any,
+  _TFormData = any,
+  _TName extends keyof _TFormData = any,
 > = any;
 
 export type StepStatus = "pending" | "active" | "completed" | "error";
@@ -53,7 +53,7 @@ export interface FieldDefinition<TFormData = unknown> {
   placeholder?: string;
   required?: boolean;
   schema?: z.ZodType;
-  options?: Array<{ label: string; value: string }>;
+  options?: { label: string; value: string }[];
   dependsOn?: (formData: Partial<TFormData>) => Promise<boolean> | boolean;
   component?: React.ComponentType<FieldComponentProps<TFormData>>;
   postfix?: string;
@@ -88,7 +88,6 @@ export interface WizardState {
   currentStepIndex: number;
   completedSteps: string[];
   stepErrors: Record<string, string>;
-  formData: Record<string, unknown>;
 }
 
 export interface UseMultiStepWizardStateOptions {
@@ -112,7 +111,6 @@ export interface MultiStepWizardProps<TFormData = unknown> {
   defaultValues?: Partial<TFormData>;
   showProgressBar?: boolean;
   allowStepSkipping?: boolean;
-  persistFormData?: boolean;
 }
 
 export interface StepValidationResult {

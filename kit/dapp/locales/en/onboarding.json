@@ -29,7 +29,23 @@
     },
     "security": {
       "title": "Secure your Wallet",
-      "description": "Set up protection for your wallet"
+      "description": "Set up protection for your wallet",
+      "wallet-secured": "Wallet Secured",
+      "pin-enabled": "PIN code protection is enabled for your wallet",
+      "setup-pin": "Set up a 6-digit PIN code to protect your wallet transactions",
+      "enter-pin": "Enter a 6-digit PIN code",
+      "pin-configured-title": "PIN Code Configured Successfully",
+      "pin-configured-description": "Your wallet is now protected with PIN code verification",
+      "why-pin-title": "Why set up a PIN code?",
+      "why-pin-description": "A PIN code adds an extra layer of security to your wallet, protecting your assets and transactions from unauthorized access.",
+      "features": {
+        "transaction-protection": "Transaction Protection",
+        "account-security": "Account Security",
+        "quick-access": "Quick Access",
+        "easy-remember": "Easy to Remember"
+      },
+      "success": "PIN code set successfully",
+      "error": "Failed to set PIN code"
     },
     "system": {
       "title": "Deploy System",

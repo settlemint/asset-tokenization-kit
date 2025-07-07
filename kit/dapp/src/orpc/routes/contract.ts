@@ -1,4 +1,5 @@
 import { accountContract } from "@/orpc/routes/account/account.contract";
+import { metricsContract } from "@/orpc/routes/metrics/metrics.contract";
 import { settingsContract } from "@/orpc/routes/settings/settings.contract";
 import { systemContract } from "@/orpc/routes/system/system.contract";
 import { tokenContract } from "@/orpc/routes/token/token.contract";
@@ -33,6 +34,17 @@ export const contract = {
    * @see {@link ./account/account.router} - Corresponding router implementation
    */
   account: accountContract,
+
+  /**
+   * Metrics-related API contract.
+   *
+   * Contains type definitions for aggregated metrics and analytics procedures.
+   * Provides consolidated statistics across the platform including user counts,
+   * transaction volumes, asset totals, and value metrics for dashboards and reporting.
+   * @see {@link ./metrics/metrics.contract} - Metrics contract implementation
+   * @see {@link ./metrics/metrics.router} - Corresponding router implementation
+   */
+  metrics: metricsContract,
 
   /**
    * Settings-related API contract.

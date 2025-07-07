@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect } from "react";
+import { useCallback, useMemo } from "react";
 import { useForm } from "@tanstack/react-form";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -27,7 +27,6 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   defaultValues = {},
   showProgressBar = true,
   allowStepSkipping = false,
-  persistFormData = true,
 }: MultiStepWizardProps<TFormData>) {
   logger.debug("MultiStepWizard initialization", {
     name,
@@ -43,11 +42,9 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     currentStepIndex,
     completedSteps,
     stepErrors,
-    formData,
     setCurrentStepIndex,
     setCompletedSteps,
     setStepErrors,
-    updateFormData,
     reset,
   } = useMultiStepWizardState({
     name,
@@ -57,13 +54,12 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
       currentStepIndex: 0,
       completedSteps: [],
       stepErrors: {},
-      formData: defaultValues as Record<string, unknown>,
     },
   });
 
   // Create form with TanStack Form
   const form = useForm({
-    defaultValues: (persistFormData ? formData : defaultValues) as TFormData,
+    defaultValues: defaultValues as TFormData,
     onSubmit: async ({ value }: { value: TFormData }) => {
       await onComplete(value);
       reset();
@@ -73,20 +69,10 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   logger.debug("Form created", {
     hasForm: Boolean(form),
     formState: form.state ? "available" : "unavailable",
-    defaultValues: persistFormData ? formData : defaultValues,
+    defaultValues: defaultValues,
   });
 
-  // Update persisted form data when form values change
-  useEffect(() => {
-    if (!persistFormData) return;
-
-    const unsubscribe = form.store.subscribe(() => {
-      const values = form.state.values;
-      updateFormData(values as Record<string, unknown>);
-    });
-
-    return unsubscribe;
-  }, [form, persistFormData, updateFormData]);
+  // Note: Form data persistence is now handled by ORPC API, not URL state
 
   // Ensure currentStepIndex is valid
   const safeCurrentStepIndex = useMemo(() => {
@@ -100,10 +86,25 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     return currentStepIndex;
   }, [currentStepIndex, steps]);
 
-  // Calculate progress
+  // Calculate progress based on current step (shows progress for the step you're on)
   const progress = useMemo(() => {
-    return (completedSteps.length / steps.length) * 100;
-  }, [completedSteps.length, steps.length]);
+    if (steps.length === 0) return 0;
+    // Progress should include the current step being worked on
+    const currentProgress =
+      ((Number(safeCurrentStepIndex) + 1) / Number(steps.length)) * 100;
+    const finalProgress = Math.round(currentProgress);
+
+    // Temporary debug logging
+    logger.debug("Progress calculation", {
+      safeCurrentStepIndex,
+      stepsLength: steps.length,
+      currentProgress,
+      finalProgress,
+      completedStepsLength: completedSteps.length,
+    });
+
+    return finalProgress;
+  }, [safeCurrentStepIndex, steps.length, completedSteps.length]);
 
   // Navigation functions
   const canNavigateToStep = useCallback(
@@ -122,7 +123,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
       return (
         stepIndex < safeCurrentStepIndex || // Allow going back to any previous step
         completedSteps.includes(targetStep.id) ||
-        stepIndex === safeCurrentStepIndex + 1
+        stepIndex === Number(safeCurrentStepIndex) + 1
       );
     },
     [steps, safeCurrentStepIndex, completedSteps, allowStepSkipping]
@@ -139,7 +140,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   const nextStep = useCallback(() => {
     if (safeCurrentStepIndex < steps.length - 1) {
-      setCurrentStepIndex(safeCurrentStepIndex + 1);
+      setCurrentStepIndex(Number(safeCurrentStepIndex) + 1);
     }
   }, [safeCurrentStepIndex, steps.length, setCurrentStepIndex]);
 
@@ -151,8 +152,13 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   const markStepComplete = useCallback(
     (stepId: string) => {
+      console.log('markStepComplete called for stepId:', stepId, 'current completedSteps:', completedSteps);
       if (!completedSteps.includes(stepId)) {
-        setCompletedSteps([...completedSteps, stepId]);
+        const newCompletedSteps = [...completedSteps, stepId];
+        console.log('Adding step to completed steps. New completedSteps:', newCompletedSteps);
+        setCompletedSteps(newCompletedSteps);
+      } else {
+        console.log('Step already marked as completed:', stepId);
       }
     },
     [completedSteps, setCompletedSteps]
@@ -264,16 +270,16 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
                   : "Setup Wizard"}
               </h2>
               <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
-                {description || "Configure your platform step by step"}
+                {description ?? "Configure your platform step by step"}
               </p>
 
               {showProgressBar && (
                 <div>
                   <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
-                    <span>Step {(safeCurrentStepIndex + 1).toString()}</span>
+                    <span>Step {Number(safeCurrentStepIndex) + 1}</span>
                     <span>
-                      {(safeCurrentStepIndex + 1).toString()} /{" "}
-                      {steps.length.toString()}
+                      {Number(safeCurrentStepIndex) + 1} /{" "}
+                      {Number(steps.length)}
                     </span>
                   </div>
                   <Progress

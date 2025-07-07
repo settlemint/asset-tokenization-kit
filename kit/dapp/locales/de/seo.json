@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "defaultTitle": "Asset-Tokenisierungs-Kit | SettleMint",
+    "titleTemplate": "%s | Asset-Tokenisierungs-Kit",
+    "defaultDescription": "Setzen Sie tokenisierte reale Vermögenswerte in Minuten ein und verwalten Sie diese. Unternehmensgerechte Blockchain-Lösung für Anleihen, Einlagen, Eigenkapital, Fonds und Stablecoins.",
+    "keywords": [
+      "Asset-Tokenisierung",
+      "Blockchain",
+      "reale Vermögenswerte",
+      "RWA",
+      "Tokenisierungsplattform",
+      "digitale Vermögenswerte",
+      "DeFi",
+      "Anleihen",
+      "Eigenkapital",
+      "Stablecoins",
+      "SettleMint"
+    ]
+  },
+  "pages": {
+    "home": {
+      "title": "Startseite",
+      "description": "Willkommen im Asset-Tokenisierungs-Kit. Setzen Sie tokenisierte Vermögenswerte mit unternehmensgerechter Sicherheit ein und verwalten Sie diese."
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "description": "Überwachen Sie Ihre tokenisierten Vermögenswerte, verfolgen Sie die Leistung und verwalten Sie Ihr Portfolio in Echtzeit."
+    },
+    "assets": {
+      "title": "Vermögenswerte",
+      "description": "Durchsuchen und verwalten Sie alle tokenisierten Vermögenswerte, einschließlich Anleihen, Einlagen, Eigenkapital und Fonds."
+    },
+    "tokenFactory": {
+      "title": "Token-Fabrik",
+      "description": "Erstellen Sie neue tokenisierte Vermögenswerte mit unserem sicheren Smart-Contract-Fabriksystem."
+    },
+    "onboarding": {
+      "title": "Loslegen",
+      "description": "Schließen Sie Ihre Einarbeitung ab, um reale Vermögenswerte auf der Blockchain zu tokenisieren."
+    },
+    "auth": {
+      "signIn": {
+        "title": "Anmelden",
+        "description": "Greifen Sie sicher auf Ihr Dashboard zur Asset-Tokenisierung zu."
+      },
+      "signUp": {
+        "title": "Konto erstellen",
+        "description": "Schließen Sie sich der Zukunft der Asset-Tokenisierung an. Erstellen Sie Ihr Konto, um loszulegen."
+      }
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "description": "Verwalten Sie Ihre Kontoeinstellungen, Sicherheitspräferenzen und Systemkonfiguration."
+    }
+  },
+  "socialMedia": {
+    "defaultImage": "/og-image.png",
+    "defaultImageAlt": "Asset-Tokenisierungs-Kit - Tokenisieren Sie reale Vermögenswerte",
+    "twitterCard": "summary_large_image",
+    "twitterSite": "@settlemint"
+  },
+  "structured": {
+    "organization": {
+      "name": "SettleMint",
+      "url": "https://settlemint.com",
+      "logo": "/logo.png"
+    },
+    "software": {
+      "name": "Asset-Tokenisierungs-Kit",
+      "applicationCategory": "Finanzanwendung",
+      "operatingSystem": "Plattformübergreifend"
+    }
+  }
+}

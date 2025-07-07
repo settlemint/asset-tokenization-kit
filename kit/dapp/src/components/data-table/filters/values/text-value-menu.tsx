@@ -57,7 +57,7 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
   onClose,
   onBack,
 }: PropertyFilterTextValueMenuProps<TData, TValue>) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"text", TData>)
     : undefined;
@@ -166,7 +166,7 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
                 onClick={handleContainsClick}
                 className="text-xs"
               >
-                {t("components.data-table.filters.text.contains")}
+                {t("filters.text.contains")}
               </Button>
               <Button
                 variant={
@@ -176,13 +176,13 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
                 onClick={handleDoesNotContainClick}
                 className="text-xs"
               >
-                {t("components.data-table.filters.text.does-not-contain")}
+                {t("filters.text.doesNotContain")}
               </Button>
             </div>
             <Input
               value={value}
               onChange={handleValueChange}
-              placeholder={t("components.data-table.filters.text.placeholder")}
+              placeholder={t("filters.text.placeholder")}
               className="w-full"
               onKeyDown={handleKeyDown}
             />
@@ -193,7 +193,7 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
                 onClick={handleApply}
                 className="flex-1"
               >
-                {t("components.data-table.apply")}
+                {t("apply")}
               </Button>
               <Button
                 size="sm"
@@ -201,7 +201,7 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
                 onClick={handleClear}
                 className="flex-1"
               >
-                {t("components.data-table.clear")}
+                {t("clear")}
               </Button>
             </div>
           </div>
