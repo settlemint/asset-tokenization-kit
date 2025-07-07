@@ -1,13 +1,13 @@
 {
   "title": "Dashboard",
-  "description": "Asset-Management",
-  "asset-management": "Asset-Management",
+  "description": "Vermögensverwaltung",
+  "asset-management": "Vermögensverwaltung",
   "stats-heading": "Statistiken",
-  "actions-heading": "Ausstehende Aktionen",
+  "actions-heading": "Aktionen",
   "latest-events-heading": "Neueste Ereignisse",
   "stats": {
-    "title": "Plattform-Statistiken",
-    "assets": "Assets",
+    "title": "Plattformstatistiken",
+    "assets": "Vermögenswerte",
     "assetsDescription": "{{bonds}} Anleihen | {{cryptocurrencies}} Kryptowährungen | {{equities}} Aktien | {{funds}} Fonds | {{stableCoins}} Stablecoins | {{deposits}} Einlagen",
     "transactions": "Transaktionen",
     "transactionsDescription": "{{count}} Transaktionen in den letzten {{days}} Tagen verarbeitet",
@@ -17,16 +17,19 @@
     "usersDescription": "{{count}} Benutzer in den letzten {{days}} Tagen",
     "usersDescription_one": "{{count}} Benutzer in den letzten {{days}} Tagen",
     "usersDescription_other": "{{count}} Benutzer in den letzten {{days}} Tagen",
-    "totalValue": "Gesamtwert",
-    "totalValueDescription": "Gesamtwert aller Assets",
+    "totalValue": "Wert",
+    "totalValueDescription": "Gesamtwert aller Vermögenswerte",
     "loading": "Statistiken werden geladen...",
-    "noAssets": "Keine Assets gefunden"
+    "noAssets": "Keine Vermögenswerte gefunden"
   },
   "charts": {
-    "assetSupply": "Asset-Angebot",
-    "assetActivity": "Asset-Aktivität",
+    "assetSupply": {
+      "title": "Vermögensangebot",
+      "description": "Die Verteilung der Vermögenswerte nach Vermögensklasse"
+    },
+    "assetActivity": "Vermögensaktivität",
     "usersHistory": "Benutzerwachstum",
-    "transactionsHistory": "Transaktionsverlauf"
+    "transactionsHistory": "Transaktionshistorie"
   },
   "tables": {
     "latestEvents": "Neueste Ereignisse",

@@ -185,7 +185,7 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
   urlState,
   onRowClick,
 }: DataTableProps<TData, CParams>) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
 
   // Use URL state management if enabled, otherwise use local state
   const tableState = useDataTableState({
@@ -382,7 +382,7 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
     return (
       <TableRow>
         <TableCell colSpan={tableColumns.length} className="h-24 text-center">
-          {t("components.data-table.no-results")}
+          {t("no-results")}
         </TableCell>
       </TableRow>
     );

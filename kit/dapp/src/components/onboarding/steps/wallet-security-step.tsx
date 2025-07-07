@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -39,6 +40,7 @@ export function WalletSecurityStep({
   onSuccess,
   onRegisterAction,
 }: WalletSecurityStepProps) {
+  const { t } = useTranslation("onboarding");
   const { data: session } = authClient.useSession();
   const { sessionKey } = useContext(AuthQueryContext);
   const [isPincodeSet, setIsPincodeSet] = useState(false);
@@ -60,7 +62,7 @@ export function WalletSecurityStep({
         // Password is not required during initial onboarding
       }),
     onSuccess: () => {
-      toast.success("PIN code set successfully");
+      toast.success(t("steps.security.success"));
       void queryClient.invalidateQueries({
         queryKey: sessionKey,
       });
@@ -68,7 +70,7 @@ export function WalletSecurityStep({
       onSuccess?.();
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to set PIN code");
+      toast.error(error.message || t("steps.security.error"));
     },
   });
 
@@ -106,7 +108,7 @@ export function WalletSecurityStep({
       return (
         <FormItem className="flex flex-col items-center space-y-4">
           <FormLabel className="text-base font-medium">
-            Enter a 6-digit PIN code
+            {t("steps.security.enter-pin")}
           </FormLabel>
           <FormControl>
             <PincodeInput
@@ -127,12 +129,14 @@ export function WalletSecurityStep({
     <div className="h-full flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
-          {hasPincode || isPincodeSet ? "Wallet Secured" : "Secure Your Wallet"}
+          {hasPincode || isPincodeSet
+            ? t("steps.security.wallet-secured")
+            : t("steps.security.title")}
         </h2>
         <p className="text-sm text-muted-foreground pt-2">
           {hasPincode || isPincodeSet
-            ? "PIN code protection is enabled for your wallet"
-            : "Set up a 6-digit PIN code to protect your wallet transactions"}
+            ? t("steps.security.pin-enabled")
+            : t("steps.security.setup-pin")}
         </p>
       </div>
       <div
@@ -158,11 +162,11 @@ export function WalletSecurityStep({
                     />
                   </svg>
                   <span className="font-medium text-green-800 dark:text-green-300">
-                    PIN Code Configured Successfully
+                    {t("steps.security.pin-configured-title")}
                   </span>
                 </div>
                 <p className="text-sm text-green-700 dark:text-green-300">
-                  Your wallet is now protected with PIN code verification
+                  {t("steps.security.pin-configured-description")}
                 </p>
               </div>
             </div>
@@ -188,12 +192,10 @@ export function WalletSecurityStep({
                   </div>
                   <div className="flex-1">
                     <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-                      Why set up a PIN code?
+                      {t("steps.security.why-pin-title")}
                     </h3>
                     <p className="text-sm text-blue-800 dark:text-blue-200">
-                      A PIN code adds an extra layer of security to your wallet,
-                      protecting your assets and transactions from unauthorized
-                      access.
+                      {t("steps.security.why-pin-description")}
                     </p>
                   </div>
                 </div>
@@ -224,7 +226,9 @@ export function WalletSecurityStep({
                           d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                         />
                       </svg>
-                      <span>Transaction Protection</span>
+                      <span>
+                        {t("steps.security.features.transaction-protection")}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                       <svg
@@ -240,7 +244,9 @@ export function WalletSecurityStep({
                           d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                         />
                       </svg>
-                      <span>Account Security</span>
+                      <span>
+                        {t("steps.security.features.account-security")}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                       <svg
@@ -256,7 +262,7 @@ export function WalletSecurityStep({
                           d="M13 10V3L4 14h7v7l9-11h-7z"
                         />
                       </svg>
-                      <span>Quick Access</span>
+                      <span>{t("steps.security.features.quick-access")}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                       <svg
@@ -272,7 +278,7 @@ export function WalletSecurityStep({
                           d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1 1 21 9z"
                         />
                       </svg>
-                      <span>Easy to Remember</span>
+                      <span>{t("steps.security.features.easy-remember")}</span>
                     </div>
                   </div>
                 </div>

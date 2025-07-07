@@ -1,0 +1,95 @@
+{
+  "badGateway": {
+    "description": "Der Server hat eine ungültige Antwort erhalten. Bitte versuchen Sie es erneut.",
+    "title": "Schlechtes Gateway"
+  },
+  "badRequest": {
+    "description": "Die Anfrage war ungültig oder kann nicht verarbeitet werden.",
+    "title": "Ungültige Anfrage"
+  },
+  "blockchain": {
+    "description": "Es gab einen Fehler bei der Interaktion mit der Blockchain.",
+    "title": "Blockchain-Fehler"
+  },
+  "buttons": {
+    "goBack": "Zurückgehen",
+    "goHome": "Nach Hause gehen",
+    "tryAgain": "Erneut versuchen"
+  },
+  "conflict": {
+    "description": "Die Anfrage steht im Konflikt mit dem aktuellen Zustand.",
+    "title": "Konfliktfehler"
+  },
+  "contract": {
+    "description": "Die Ausführung des Smart Contracts ist fehlgeschlagen.",
+    "title": "Smart Contract-Fehler"
+  },
+  "forbidden": {
+    "description": "Sie haben keine Berechtigung, auf diese Ressource zuzugreifen.",
+    "title": "Zugriff verweigert"
+  },
+  "gatewayTimeout": {
+    "description": "Der Server hat nicht rechtzeitig geantwortet. Bitte versuchen Sie es erneut.",
+    "title": "Gateway-Zeitüberschreitung"
+  },
+  "generic": {
+    "description": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "title": "Unerwarteter Fehler"
+  },
+  "insufficientFunds": {
+    "description": "Ihr Konto hat nicht genügend Guthaben, um diesen Vorgang abzuschließen.",
+    "title": "Unzureichende Mittel"
+  },
+  "internal": {
+    "description": "Der Server ist auf einen Fehler gestoßen. Bitte versuchen Sie es später erneut.",
+    "title": "Interner Serverfehler"
+  },
+  "network": {
+    "description": "Verbindung zum Netzwerk konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Verbindung.",
+    "title": "Netzwerkfehler"
+  },
+  "notFound": {
+    "description": "Die von Ihnen gesuchte Seite existiert nicht oder wurde verschoben.",
+    "title": "Seite nicht gefunden"
+  },
+  "notOnboarded": {
+    "description": "Bitte schließen Sie den Onboarding-Prozess ab, um fortzufahren.",
+    "title": "Onboarding erforderlich"
+  },
+  "portal": {
+    "description": "Es gab einen Fehler beim Verbinden mit dem Portal-Dienst.",
+    "title": "Portal-Fehler"
+  },
+  "rateLimit": {
+    "description": "Sie haben zu viele Anfragen gestellt. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
+    "title": "Zu viele Anfragen"
+  },
+  "resourceAlreadyExists": {
+    "description": "Die Ressource, die Sie zu erstellen versuchen, existiert bereits.",
+    "title": "Ressource existiert bereits"
+  },
+  "serviceUnavailable": {
+    "description": "Der Dienst ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
+    "title": "Dienst nicht verfügbar"
+  },
+  "systemNotCreated": {
+    "description": "Das System wurde nicht initialisiert. Bitte kontaktieren Sie einen Administrator.",
+    "title": "System nicht initialisiert"
+  },
+  "timeout": {
+    "description": "Die Anfrage hat zu lange gedauert, um abgeschlossen zu werden. Bitte versuchen Sie es erneut.",
+    "title": "Anfrage-Zeitüberschreitung"
+  },
+  "transaction": {
+    "description": "Die Transaktion konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
+    "title": "Transaktion fehlgeschlagen"
+  },
+  "unauthorized": {
+    "description": "Bitte melden Sie sich an, um fortzufahren.",
+    "title": "Authentifizierung erforderlich"
+  },
+  "validation": {
+    "description": "Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut.",
+    "title": "Validierungsfehler"
+  }
+}

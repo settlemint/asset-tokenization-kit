@@ -6,13 +6,14 @@ import { TokenFactoryRelated } from "@/components/related/token-factory-related"
 import { TokensTable } from "@/components/tables/tokens";
 import { seo } from "@/config/metadata";
 import {
+  assetClassBreadcrumbs,
+  createBreadcrumbMetadata,
+} from "@/components/breadcrumb/metadata";
+import {
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
-import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
 
 /**
  * Route configuration for the token factory details page
@@ -55,24 +56,37 @@ export const Route = createFileRoute(
    * @returns Object containing the factory details
    * @throws If the factory is not found or the user lacks permissions
    */
-  loader: async ({ context, params }) => {
+  loader: async ({
+    context: { queryClient, orpc },
+    params: { factoryAddress },
+  }) => {
     // Ensure factory data is loaded
-    const factory = await context.queryClient.ensureQueryData(
+    const factory = await queryClient.ensureQueryData(
       orpc.token.factoryRead.queryOptions({
-        input: { id: params.factoryAddress },
+        input: { id: factoryAddress },
       })
     );
 
     // Prefetch tokens list for better UX
-    void context.queryClient.prefetchQuery(
+    void queryClient.prefetchQuery(
       orpc.token.list.queryOptions({
         input: {
-          tokenFactory: params.factoryAddress,
+          tokenFactory: factoryAddress,
         },
       })
     );
 
-    return { factory };
+    // Get asset class for breadcrumb
+    const assetClass = getAssetClassFromFactoryTypeId(factory.typeId);
+
+    return {
+      factory,
+      breadcrumb: [
+        assetClassBreadcrumbs["asset-management"],
+        assetClassBreadcrumbs[assetClass],
+        createBreadcrumbMetadata(factory.name),
+      ],
+    };
   },
   /**
    * Head configuration for SEO
@@ -129,31 +143,14 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { factory } = Route.useLoaderData();
   const { factoryAddress } = Route.useParams();
-  const { t } = useTranslation("general");
 
   // Get the asset type from the factory typeId
   const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
-  const assetClass = getAssetClassFromFactoryTypeId(factory.typeId);
-
-  const intermediateSections = useMemo(
-    () => [
-      { title: t("navigation.assetManagement") },
-      {
-        title:
-          assetClass === "fixed-income"
-            ? t("navigation.fixedIncome")
-            : assetClass === "flexible-income"
-              ? t("navigation.flexibleIncome")
-              : t("navigation.cashEquivalent"),
-      },
-    ],
-    [assetClass, t]
-  );
 
   return (
     <div className="space-y-6 p-6">
       <div className="space-y-2">
-        <RouterBreadcrumb intermediateSections={intermediateSections} />
+        <RouterBreadcrumb />
         <h1 className="text-3xl font-bold tracking-tight">{factory.name}</h1>
       </div>
 
