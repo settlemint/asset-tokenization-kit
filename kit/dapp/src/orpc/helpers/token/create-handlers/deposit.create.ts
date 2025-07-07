@@ -44,6 +44,8 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
   }
 `);
 
+// TODO: Move deposit create schema here
+
 export const depositCreateHandler = async function* (
   input: TokenCreateInput,
   context: TokenCreateContext
