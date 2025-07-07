@@ -1,16 +1,16 @@
-import { orpc } from "@/orpc";
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/token/stats")({
-  loader: async ({ context }) => {
+  loader: async ({ context: { queryClient, orpc } }) => {
     // Ensure all token factories are loaded for statistics overview
-    const factories = await context.queryClient.ensureQueryData(
+    const factories = await queryClient.ensureQueryData(
       orpc.token.factoryList.queryOptions({ input: {} })
     );
 
     // Get tokens from the first factory for demonstration
     if (factories.length > 0 && factories[0]) {
-      void context.queryClient.prefetchQuery(
+      void queryClient.prefetchQuery(
         orpc.token.list.queryOptions({
           input: {
             tokenFactory: factories[0].id,
@@ -31,6 +31,7 @@ function RouteComponent() {
 
   return (
     <div>
+      <RouterBreadcrumb />
       <h1>Token Statistics</h1>
       <p>Total Factories: {factories.length}</p>
       <p>

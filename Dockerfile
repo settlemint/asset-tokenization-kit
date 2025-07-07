@@ -1,6 +1,6 @@
 FROM node:24.3.0 AS build
 
-COPY --from=oven/bun:1.2.17-debian --chmod=0777 /usr/local/bin/bun /bin/bun
+COPY --from=oven/bun:1.2.18-debian --chmod=0777 /usr/local/bin/bun /bin/bun
 ENV BUN_RUNTIME_TRANSPILER_CACHE_PATH=0
 ENV BUN_INSTALL_BIN=/bin
 
@@ -34,4 +34,3 @@ LABEL org.opencontainers.image.source="https://github.com/settlemint/asset-token
 
 COPY --from=build /usecase /usecase
 COPY --from=build /root/.svm /usecase-svm
-COPY --from=build /root/.cache /usecase-cache

@@ -28,6 +28,31 @@ export const router = baseRouter.router({
   ),
 
   /**
+   * Exchange rates API procedures.
+   *
+   * Lazy-loaded module containing foreign exchange rate management operations.
+   * Provides real-time currency conversion rates with automatic synchronization
+   * from external providers, manual rate overrides, and historical data access
+   * for analytics and charting.
+   * @see {@link ./exchange-rates/exchange-rates.router} - Exchange rates router implementation
+   */
+  exchangeRates: baseRouter.exchangeRates.lazy(
+    async () => import("./exchange-rates/exchange-rates.router")
+  ),
+
+  /**
+   * Metrics-related API procedures.
+   *
+   * Lazy-loaded module containing aggregated metrics and analytics operations.
+   * Provides consolidated statistics across the platform including user counts,
+   * transaction volumes, asset totals, and value metrics for dashboards and reporting.
+   * @see {@link ./metrics/metrics.router} - Metrics router implementation
+   */
+  metrics: baseRouter.metrics.lazy(
+    async () => import("./metrics/metrics.router")
+  ),
+
+  /**
    * Settings-related API procedures.
    *
    * Lazy-loaded module containing settings management operations.

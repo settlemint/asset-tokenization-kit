@@ -1,3 +1,4 @@
+import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { decimals } from "@/lib/zod/validators/decimals";
 import type { TokenRoles } from "@/orpc/middlewares/system/token.middleware";
 import { z } from "zod/v4";
@@ -81,11 +82,19 @@ const ROLES: TokenRoles[] = [
  * - Compliance and allowance checks are performed against the token's specific
  *   requirements and the user's identity claims
  */
-export const TokenSchema = z.object({
+/**
+ * Schema for the raw token data from GraphQL
+ * This matches what comes from TheGraph with totalSupply as string
+ */
+export const RawTokenSchema = z.object({
   id: z.string(),
   name: z.string().describe("The name of the token"),
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),
+  totalSupply: z.string().describe("The total supply of the token as string"),
+  pausable: z.object({
+    paused: z.boolean().describe("Whether the token is paused"),
+  }),
   userPermissions: z
     .object({
       roles: z
@@ -113,3 +122,16 @@ export const TokenSchema = z.object({
     .optional()
     .describe("The permissions of the user for the token"),
 });
+
+/**
+ * Schema for the transformed token data with totalSupply as Dnum
+ * This is what the API returns after transformation
+ */
+export const TokenSchema = RawTokenSchema.extend({
+  totalSupply: bigDecimal().describe("The total supply of the token"),
+});
+
+/**
+ * Type representing the parsed token data with totalSupply as Dnum
+ */
+export type ParsedToken = z.infer<typeof TokenSchema>;

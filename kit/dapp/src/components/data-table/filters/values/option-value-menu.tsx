@@ -70,7 +70,7 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
   table,
   onBack,
 }: PropertyFilterOptionValueMenuProps<TData, TValue>) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"option", TData>)
     : undefined;
@@ -164,8 +164,8 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
         {Icon && <Icon className="size-4 shrink-0 opacity-50" />}
         <span className="text-sm text-muted-foreground">{displayName}</span>
       </div>
-      <CommandInput autoFocus placeholder={t("components.data-table.search")} />
-      <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
+      <CommandInput autoFocus placeholder={t("search")} />
+      <CommandEmpty>{t("no-results")}</CommandEmpty>
       <CommandList className="max-h-fit">
         <CommandGroup>
           {options.map((v) => {

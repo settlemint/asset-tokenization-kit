@@ -1,3 +1,14 @@
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import {
+  assetClassBreadcrumbs,
+  createBreadcrumbMetadata,
+} from "@/components/breadcrumb/metadata";
+import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { seo } from "@/config/metadata";
+import {
+  getAssetClassFromFactoryTypeId,
+  getAssetTypeFromFactoryTypeId,
+} from "@/lib/zod/validators/asset-types";
 import { createFileRoute } from "@tanstack/react-router";
 
 /**
@@ -37,6 +48,77 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute(
   "/_private/_onboarded/token/$factoryAddress/$tokenAddress"
 )({
+  /**
+   * Route loader function that prefetches required data
+   *
+   * @param context - Route context containing the query client
+   * @param params - Route parameters containing the factory address
+   * @returns Object containing the factory details
+   * @throws If the factory is not found or the user lacks permissions
+   */
+  loader: async ({
+    context: { queryClient, orpc },
+    params: { factoryAddress, tokenAddress },
+  }) => {
+    const [token, factory] = await Promise.all([
+      queryClient.ensureQueryData(
+        orpc.token.read.queryOptions({
+          input: { id: tokenAddress },
+        })
+      ),
+      queryClient.ensureQueryData(
+        orpc.token.factoryRead.queryOptions({
+          input: { id: factoryAddress },
+        })
+      ),
+    ]);
+
+    // Get asset class for breadcrumb
+    const assetClass = getAssetClassFromFactoryTypeId(factory.typeId);
+
+    return {
+      token,
+      factory,
+      breadcrumb: [
+        assetClassBreadcrumbs["asset-management"],
+        assetClassBreadcrumbs[assetClass],
+        {
+          ...createBreadcrumbMetadata(factory.name),
+          href: `/token/${factoryAddress}`,
+        },
+        createBreadcrumbMetadata(token.name),
+      ],
+    };
+  },
+  /**
+   * Head configuration for SEO
+   * Uses the factory name and asset type description for metadata
+   */
+  head: ({ loaderData }) => {
+    if (loaderData) {
+      const assetType = getAssetTypeFromFactoryTypeId(
+        loaderData.factory.typeId
+      );
+
+      return {
+        meta: seo({
+          title: `${loaderData.token.name} - ${loaderData.factory.name}`,
+          keywords: [
+            loaderData.token.name,
+            loaderData.token.symbol,
+            assetType,
+            "tokenization",
+            "token",
+            loaderData.factory.name,
+          ],
+        }),
+      };
+    }
+    return {
+      meta: seo({}),
+    };
+  },
+  errorComponent: DefaultCatchBoundary,
   component: RouteComponent,
 });
 
@@ -74,7 +156,14 @@ export const Route = createFileRoute(
  * ```
  */
 function RouteComponent() {
+  const { token } = Route.useLoaderData();
+
   return (
-    <div>Hello "/_private/_onboarded/token/$factoryAddress/$tokenAddress"!</div>
+    <div className="space-y-6 p-6">
+      <div className="space-y-2">
+        <RouterBreadcrumb />
+        <h1 className="text-3xl font-bold tracking-tight">{token.name}</h1>
+      </div>
+    </div>
   );
 }

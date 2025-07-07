@@ -25,11 +25,20 @@ describe("amount", () => {
       expect(() => validator.parse(-0.01)).toThrow("Amount must be at least 0");
     });
 
-    it("should reject non-numeric types", () => {
-      expect(() => validator.parse("100")).toThrow();
+    it("should reject non-numeric string types", () => {
+      expect(() => validator.parse("abc")).toThrow();
+      expect(() => validator.parse("")).toThrow();
+      expect(() => validator.parse("not a number")).toThrow();
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
+    });
+
+    it("should accept numeric strings", () => {
+      expect(validator.parse("100")).toBe(100);
+      expect(validator.parse("100.50")).toBe(100.5);
+      expect(validator.parse("0")).toBe(0);
+      expect(validator.parse("999.99")).toBe(999.99);
     });
 
     it("should reject NaN", () => {

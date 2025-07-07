@@ -11,6 +11,10 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       name
       symbol
       decimals
+      totalSupply
+      pausable {
+        paused
+      }
       requiredClaimTopics {
         name
       }

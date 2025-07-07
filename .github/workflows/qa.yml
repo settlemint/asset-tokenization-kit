@@ -199,8 +199,6 @@ jobs:
           pr_title: ${{ github.event.pull_request.title }}
           pr_body: ${{ github.event.pull_request.body || '' }}
 
-      # Skip redundant notification - handled by consolidated step at the end
-
       # Run secret scanning (PR only)
       - name: Run secret scanning
         id: secret-scan
@@ -218,8 +216,6 @@ jobs:
         with:
           pr_number: ${{ github.event.pull_request.number }}
           workflow_status: ${{ steps.secret-scan.outcome == 'success' && 'success' || 'failure' }}
-
-      # Skip redundant notification - handled by consolidated step at the end
 
       # Check PR review status (PR and PR review events only)
       - name: Check PR review status
@@ -280,6 +276,11 @@ jobs:
           qa_status: ${{ steps.pr-review-check.outputs.qa_status }}
           is_draft: ${{ github.event.pull_request.draft }}
           merge_method: 'squash'
+
+      - name: Build and Push Codestudio
+        if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
+        run: |
+          bun run docker:codestudio
 
   # Handle merged PR notifications
   merged:

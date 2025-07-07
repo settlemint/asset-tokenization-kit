@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { add, divide, format, multiply, subtract } from "dnum";
+import { add, divide, format, from, multiply, subtract } from "dnum";
 import { bigDecimal } from "./bigdecimal";
 
 describe("bigDecimal", () => {
@@ -60,6 +60,13 @@ describe("bigDecimal", () => {
       const result = validator.parse("123.4500");
       expect(Array.isArray(result)).toBe(true);
       expect(format(result)).toBe("123.45");
+    });
+
+    it("should accept existing Dnum values", () => {
+      const existingDnum = from("123.456");
+      const result = validator.parse(existingDnum);
+      expect(result).toBe(existingDnum); // Should return the same reference
+      expect(format(result)).toBe("123.456");
     });
   });
 

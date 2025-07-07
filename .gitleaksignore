@@ -1,0 +1,2 @@
+# Languine lock files contain MD5 hashes for translation tracking, not API keys
+kit/dapp/languine.lock:generic-api-key

@@ -15,7 +15,7 @@
  */
 
 import { CreateDepositForm } from "@/components/asset-designer/deposit/form";
-import { orpc } from "@/orpc";
+import { Dashboard as IssuerDashboard } from "@/components/issuer-dashboard/dashboard";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/")({
@@ -33,17 +33,13 @@ export const Route = createFileRoute("/_private/_onboarded/")({
    * @param root0
    * @param root0.context
    */
-  loader: async ({ context }) => {
-    // User data should be loaded in parent _private route, but we need to ensure it exists
+  loader: async ({ context: { queryClient, orpc } }) => {
+    // User and systems data should be loaded in parent _private route, but we need to ensure it exists
     // to handle cache misses, invalidation, or direct navigation
-    const user = await context.queryClient.ensureQueryData(
-      orpc.user.me.queryOptions()
-    );
-
-    // Ensure systems data is loaded
-    const systems = await context.queryClient.ensureQueryData(
-      orpc.system.list.queryOptions({ input: {} })
-    );
+    const [user, systems] = await Promise.all([
+      queryClient.ensureQueryData(orpc.user.me.queryOptions()),
+      queryClient.ensureQueryData(orpc.system.list.queryOptions({ input: {} })),
+    ]);
 
     return { user, systems };
   },
@@ -61,25 +57,34 @@ function Home() {
   const { user, systems } = Route.useLoaderData();
 
   return (
-    <div className="p-2">
-      <h3>{user.name}</h3>
-      <div className="mb-4 p-2 rounded">
-        <h4>Debug Info:</h4>
-        <pre>
-          {JSON.stringify(
-            {
-              wallet: user.wallet,
-              onboardingFinished: user.isOnboarded,
-              userId: user.id,
-            },
-            null,
-            2
-          )}
+    <div className="p-6 space-y-8">
+      <div className="mb-8">
+        <h3 className="text-xl font-semibold mb-2">{user.name}</h3>
+        <div className="mb-4 p-4 rounded-lg bg-muted">
+          <h4 className="font-medium mb-2">Debug Info:</h4>
+          <pre className="text-sm">
+            {JSON.stringify(
+              {
+                wallet: user.wallet,
+                onboardingFinished: user.isOnboarded,
+                userId: user.id,
+              },
+              null,
+              2
+            )}
+          </pre>
+        </div>
+        <pre className="text-sm bg-muted p-4 rounded-lg">
+          {JSON.stringify(systems, null, 2)}
         </pre>
       </div>
-      <pre>{JSON.stringify(systems, null, 2)}</pre>
 
-      <CreateDepositForm />
+      <div className="mb-8">
+        <h4 className="text-lg font-semibold mb-4">Create New Asset</h4>
+        <CreateDepositForm />
+      </div>
+
+      <IssuerDashboard />
     </div>
   );
 }

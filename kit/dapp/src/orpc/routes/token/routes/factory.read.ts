@@ -66,10 +66,7 @@ export const factoryRead = authRouter.token.factoryRead
       READ_TOKEN_FACTORY_QUERY,
       {
         input: {
-          input,
-          transform: (input) => ({
-            id: input.id.toLowerCase(), // The Graph uses lowercase addresses
-          }),
+          id: input.id.toLowerCase(), // The Graph uses lowercase addresses
         },
         output: z.object({
           tokenFactory: TokenFactoryDetailSchema,
