@@ -105,11 +105,31 @@ async function calculateCrossRates(): Promise<
  */
 export const sync = authRouter.exchangeRates.sync
   .use(databaseMiddleware)
-  .handler(async ({ context }) => {
-    // force parameter is reserved for future use
+  .handler(async ({ input, context }) => {
+    const { force } = input;
     const provider = "er-api"; // Default provider
     const syncedAt = new Date();
     const { db } = context;
+    
+    // Check if we have recent data (within last hour) unless force is true
+    if (!force) {
+      const recentRate = await db
+        .select()
+        .from(fxRatesLatest)
+        .where(sql`${fxRatesLatest.effectiveAt} > NOW() - INTERVAL '1 hour'`)
+        .limit(1);
+      
+      if (recentRate.length > 0) {
+        return {
+          success: true,
+          ratesUpdated: 0,
+          provider,
+          syncedAt: recentRate[0].effectiveAt,
+          message: "Recent rates already exist. Use force=true to update.",
+        };
+      }
+    }
+    
     // First, ensure all currencies exist in the database
     const currencyInserts = fiatCurrencies.map((code) =>
       safeParse(insertCurrencySchema, {

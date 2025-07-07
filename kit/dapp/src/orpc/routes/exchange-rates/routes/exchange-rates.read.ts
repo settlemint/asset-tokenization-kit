@@ -8,7 +8,7 @@
 import { fxRatesLatest } from "@/lib/db/schema";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { publicRouter } from "@/orpc/procedures/public.router";
-import { and, eq, or } from "drizzle-orm";
+import { and, eq, or, desc } from "drizzle-orm";
 import { call } from "@orpc/server";
 import { sync } from "./exchange-rates.sync";
 
@@ -59,6 +59,7 @@ export const read = publicRouter.exchangeRates.read
       .select()
       .from(fxRatesLatest)
       .where(or(...conditions))
+      .orderBy(desc(fxRatesLatest.effectiveAt))
       .limit(1);
 
     // If rate exists, return it
@@ -86,6 +87,7 @@ export const read = publicRouter.exchangeRates.read
           .select()
           .from(fxRatesLatest)
           .where(or(...conditions))
+          .orderBy(desc(fxRatesLatest.effectiveAt))
           .limit(1);
 
         if (syncedRate) {
