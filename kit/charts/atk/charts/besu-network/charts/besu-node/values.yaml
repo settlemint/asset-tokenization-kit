@@ -111,8 +111,7 @@ node:
         - "IBFT"
         - "NET"
         - "TRACE"
-        - "EEA"
-        - "PRIV"
+
         - "QBFT"
         - "PERM"
         - "TXPOOL"
