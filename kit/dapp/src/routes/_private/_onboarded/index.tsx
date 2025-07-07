@@ -16,7 +16,6 @@
 
 import { CreateDepositForm } from "@/components/asset-designer/deposit/form";
 import { Dashboard as IssuerDashboard } from "@/components/issuer-dashboard/dashboard";
-import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/")({
@@ -38,12 +37,12 @@ export const Route = createFileRoute("/_private/_onboarded/")({
     // User data should be loaded in parent _private route, but we need to ensure it exists
     // to handle cache misses, invalidation, or direct navigation
     const user = await context.queryClient.ensureQueryData(
-      orpc.user.me.queryOptions()
+      context.orpc.user.me.queryOptions()
     );
 
     // Ensure systems data is loaded
     const systems = await context.queryClient.ensureQueryData(
-      orpc.system.list.queryOptions({ input: {} })
+      context.orpc.system.list.queryOptions({ input: {} })
     );
 
     return { user, systems };

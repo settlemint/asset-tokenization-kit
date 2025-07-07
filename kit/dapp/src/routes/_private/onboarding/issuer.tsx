@@ -4,17 +4,14 @@ import { WalletStep } from "@/components/onboarding/steps/wallet-step";
 import { StepWizard, type Step } from "@/components/step-wizard/step-wizard";
 import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
-import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/issuer")({
-  loader: async ({ context }) => {
+  loader: async ({ context: { queryClient, orpc } }) => {
     // User data is critical for determining step status
-    const user = await context.queryClient.ensureQueryData(
-      orpc.user.me.queryOptions()
-    );
+    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
     return { user };
   },
   component: IssuerOnboarding,
