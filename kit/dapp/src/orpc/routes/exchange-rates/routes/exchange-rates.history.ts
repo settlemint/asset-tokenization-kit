@@ -7,7 +7,7 @@
 import { fxRates } from "@/lib/db/schema";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { publicRouter } from "@/orpc/procedures/public.router";
-import { and, between, desc, eq } from "drizzle-orm";
+import { and, between, desc, eq, gte, lte } from "drizzle-orm";
 
 /**
  * Exchange rate history route handler.
@@ -47,9 +47,9 @@ export const history = publicRouter.exchangeRates.history
     if (startDate && endDate) {
       conditions.push(between(fxRates.effectiveAt, startDate, endDate));
     } else if (startDate) {
-      conditions.push(eq(fxRates.effectiveAt, startDate));
+      conditions.push(gte(fxRates.effectiveAt, startDate));
     } else if (endDate) {
-      conditions.push(eq(fxRates.effectiveAt, endDate));
+      conditions.push(lte(fxRates.effectiveAt, endDate));
     }
 
     // Query historical rates
