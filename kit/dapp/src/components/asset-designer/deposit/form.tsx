@@ -7,7 +7,7 @@ import { orpc } from "@/orpc";
 import {
   TokenCreateSchema,
   type TokenCreateInput,
-} from "@/orpc/helpers/token.create.schema";
+} from "@/orpc/routes/token/routes/token.create.schema";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
@@ -54,7 +54,7 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
   });
 
   const { mutate: createDeposit, isPending } = useStreamingMutation({
-    mutationOptions: orpc.token.depositCreate.mutationOptions(),
+    mutationOptions: orpc.token.create.mutationOptions(),
     onSuccess: (transactionHash) => {
       console.log("Transaction hash:", transactionHash);
       form.reset();

@@ -1,8 +1,4 @@
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
-import {
-  TokenCreateOutputSchema,
-  TokenCreateSchema,
-} from "@/orpc/helpers/token.create.schema";
 import { baseContract } from "@/orpc/procedures/base.contract";
 import {
   FactoryCreateOutputSchema,
@@ -16,6 +12,10 @@ import {
   FactoryReadSchema,
   TokenFactoryDetailSchema,
 } from "@/orpc/routes/token/routes/factory.read.schema";
+import {
+  TokenCreateOutputSchema,
+  TokenCreateSchema,
+} from "@/orpc/routes/token/routes/token.create.schema";
 import {
   TokenListInputSchema,
   TokenListSchema,
@@ -58,35 +58,13 @@ const factoryRead = baseContract
   .input(FactoryReadSchema)
   .output(TokenFactoryDetailSchema);
 
-// const create = baseContract
-//   .route({
-//     method: "POST",
-//     path: "/token/create",
-//     description: "Create a new token (deposit, bond, etc.)",
-//     successDescription: "Token created successfully",
-//     tags: ["token"],
-//   })
-//   .input(TokenCreateSchema)
-//   .output(eventIterator(TokenCreateOutputSchema));
-
-const depositCreate = baseContract
+const create = baseContract
   .route({
     method: "POST",
-    path: "/token/deposit",
-    description: "Create a new deposit token",
-    successDescription: "Deposit token created",
-    tags: ["token", "deposit"],
-  })
-  .input(TokenCreateSchema)
-  .output(eventIterator(TokenCreateOutputSchema));
-
-const bondCreate = baseContract
-  .route({
-    method: "POST",
-    path: "/token/bond",
-    description: "Create a new bond token",
-    successDescription: "Bond token created",
-    tags: ["token", "bond"],
+    path: "/token/create",
+    description: "Create a new token (deposit, bond, etc.)",
+    successDescription: "Token created successfully",
+    tags: ["token"],
   })
   .input(TokenCreateSchema)
   .output(eventIterator(TokenCreateOutputSchema));
@@ -128,9 +106,7 @@ export const tokenContract = {
   factoryCreate,
   factoryList,
   factoryRead,
-  // create,
-  depositCreate,
-  bondCreate,
+  create,
   list,
   read,
   mint,

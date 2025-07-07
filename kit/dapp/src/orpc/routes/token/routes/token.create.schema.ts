@@ -92,6 +92,11 @@ export function createTokenMessagesSchema(assetType: AssetType) {
 //   });
 // }
 
+const ModulePairSchema = z.object({
+  module: z.string(),
+  params: z.string(),
+});
+
 /**
  * Base fields common to all token types
  */
@@ -100,6 +105,8 @@ const TokenBaseSchema = CreateSchema.extend({
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),
   isin: isin().optional(),
+  initialModulePairs: z.array(ModulePairSchema).optional().default([]),
+  requiredClaimTopics: z.array(z.string()).optional().default([]),
 });
 
 /**
@@ -146,14 +153,6 @@ export const TokenCreateOutputSchema = z.object({
 });
 
 // Type exports using Zod's type inference
+export type TokenCreateBaseInput = z.infer<typeof TokenBaseSchema>;
 export type TokenCreateInput = z.infer<typeof TokenCreateSchema>;
 export type TokenCreateOutput = z.infer<typeof TokenCreateOutputSchema>;
-
-// TODO: cleanup
-// const x: TokenCreateInput = {} as unknown as TokenCreateInput;
-// if (x.type === AssetTypeEnum.bond) {
-//   console.log(x.faceValue);
-// } else if (x.type === AssetTypeEnum.deposit) {
-//   console.log(x.type);
-// }
-// const y : TokenCreateInput['type'] = {} as any

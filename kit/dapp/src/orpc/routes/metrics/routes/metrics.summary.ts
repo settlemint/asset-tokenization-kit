@@ -175,14 +175,9 @@ function sumEventCounts(eventStats: { eventsCount: number }[]): number {
  * ```
  */
 export const summary = authRouter.metrics.summary
-  .use(systemMiddleware)
   .use(theGraphMiddleware)
-  .handler(async ({ context, errors }) => {
-    // Ensure system context exists (should be guaranteed by systemMiddleware)
-    if (!context.system) {
-      throw errors.SYSTEM_NOT_CREATED();
-    }
-
+  .use(systemMiddleware)
+  .handler(async ({ context }) => {
     // Run all queries in parallel for optimal performance
     const [
       systemStatsResponse,
