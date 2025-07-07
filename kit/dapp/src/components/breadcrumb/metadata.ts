@@ -21,6 +21,15 @@ export interface BreadcrumbMetadata {
 }
 
 /**
+ * Type guard to check if a breadcrumb has an i18n key
+ */
+export function isI18nBreadcrumb(
+  metadata: BreadcrumbMetadata
+): metadata is BreadcrumbMetadata & { isI18nKey: true } {
+  return metadata.isI18nKey === true;
+}
+
+/**
  * Extended route context with breadcrumb metadata
  */
 export interface RouteContextWithBreadcrumb {

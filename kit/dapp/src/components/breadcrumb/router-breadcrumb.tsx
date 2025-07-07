@@ -32,7 +32,7 @@ function useAsyncBreadcrumbTitle(
   const [asyncTitle, setAsyncTitle] = useState<string | null>(null);
   
   // Create a stable key for the breadcrumb to track changes
-  const breadcrumbKey = breadcrumbMeta ? `${breadcrumbMeta.title}-${breadcrumbMeta.isI18nKey}` : null;
+  const breadcrumbKey = breadcrumbMeta ? `${breadcrumbMeta.title}-${breadcrumbMeta.isI18nKey}-${breadcrumbMeta.i18nNamespace}` : null;
 
   useEffect(() => {
     let cancelled = false;
@@ -62,14 +62,15 @@ function useAsyncBreadcrumbTitle(
     return () => {
       cancelled = true;
     };
-  }, [breadcrumbKey, breadcrumbMeta?.title, fallbackTitle]);
+  }, [breadcrumbKey, fallbackTitle]);
 
   // Determine the title to display
   if (breadcrumbMeta?.title) {
     // Handle i18n keys
     if (breadcrumbMeta.isI18nKey) {
-      // Use the translation with proper namespace
-      return t(breadcrumbMeta.title);
+      // Use the translation with dynamic key and namespace
+      // The key might not exist in TypeScript's types, but i18next handles this gracefully
+      return t(breadcrumbMeta.title as any, { ns: namespace });
     }
     return breadcrumbMeta.title;
   }
