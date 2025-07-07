@@ -115,6 +115,7 @@ const sync = baseContract
       ratesUpdated: z.number(),
       provider: z.string(),
       syncedAt: z.date(),
+      message: z.string().optional(),
     })
   );
 
