@@ -9,8 +9,7 @@ import { fxRatesLatest } from "@/lib/db/schema";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { publicRouter } from "@/orpc/procedures/public.router";
 import { and, eq, or, desc } from "drizzle-orm";
-import { call } from "@orpc/server";
-import { sync } from "./exchange-rates.sync";
+import { syncExchangeRatesInternal } from "./exchange-rates.sync";
 
 /**
  * Exchange rate read route handler.
@@ -79,8 +78,8 @@ export const read = publicRouter.exchangeRates.read
 
     if (rateCount.length === 0) {
       try {
-        // Trigger sync with default provider
-        await call(sync, { force: true }, { context });
+        // Trigger sync using internal function
+        await syncExchangeRatesInternal(context.db, true);
 
         // Try to get the rate again after sync
         const [syncedRate] = await context.db

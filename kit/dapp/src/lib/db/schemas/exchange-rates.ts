@@ -175,15 +175,19 @@ export const insertFxRateSchema = createInsertSchema(fxRates, {
   provider: exchangeRateProvider,
   rate: z.string().refine(
     (val) => {
-      // Simple validation for positive decimal numbers
-      const parts = val.split(".");
-      if (parts.length > 2) return false;
-      if (parts[0] && !/^\d+$/.exec(parts[0])) return false;
-      if (parts[1] && !/^\d+$/.exec(parts[1])) return false;
-      return true;
+      // Validate positive decimal numbers
+      if (!val || val.trim() === "") return false;
+      
+      // Check for valid decimal format
+      const match = /^(\d+)(\.\d+)?$/.exec(val.trim());
+      if (!match) return false;
+      
+      // Ensure the number is positive (not zero)
+      const num = parseFloat(val);
+      return num > 0 && isFinite(num);
     },
     {
-      message: "Invalid rate format",
+      message: "Rate must be a positive decimal number",
     }
   ),
   effectiveAt: z.date(),
@@ -197,15 +201,19 @@ export const insertFxRateLatestSchema = createInsertSchema(fxRatesLatest, {
   provider: exchangeRateProvider,
   rate: z.string().refine(
     (val) => {
-      // Simple validation for positive decimal numbers
-      const parts = val.split(".");
-      if (parts.length > 2) return false;
-      if (parts[0] && !/^\d+$/.exec(parts[0])) return false;
-      if (parts[1] && !/^\d+$/.exec(parts[1])) return false;
-      return true;
+      // Validate positive decimal numbers
+      if (!val || val.trim() === "") return false;
+      
+      // Check for valid decimal format
+      const match = /^(\d+)(\.\d+)?$/.exec(val.trim());
+      if (!match) return false;
+      
+      // Ensure the number is positive (not zero)
+      const num = parseFloat(val);
+      return num > 0 && isFinite(num);
     },
     {
-      message: "Invalid rate format",
+      message: "Rate must be a positive decimal number",
     }
   ),
   effectiveAt: z.date(),

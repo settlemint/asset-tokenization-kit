@@ -12,6 +12,7 @@ import {
   insertFxRateSchema,
   insertFxRateLatestSchema,
 } from "@/lib/db/schema";
+import type * as schema from "@/lib/db/schema";
 import { safeParse } from "@/lib/zod";
 import {
   fiatCurrencies,
@@ -20,6 +21,7 @@ import {
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { sql } from "drizzle-orm";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { exchangeRateApiResponseSchema } from "../schemas";
 
 /**
@@ -94,6 +96,108 @@ async function calculateCrossRates(): Promise<
 }
 
 /**
+ * Internal sync function that can be called without authentication.
+ * Used by the public read route for auto-sync.
+ */
+export async function syncExchangeRatesInternal(
+  db: NodePgDatabase<typeof schema>,
+  force = false
+): Promise<{
+  success: boolean;
+  ratesUpdated: number;
+  syncedAt: Date;
+  message?: string;
+}> {
+  const syncedAt = new Date();
+
+  // Check if we have recent data (within last hour) unless force is true
+  if (!force) {
+    const recentRate = await db
+      .select()
+      .from(fxRatesLatest)
+      .where(sql`${fxRatesLatest.effectiveAt} > NOW() - INTERVAL '1 hour'`)
+      .limit(1);
+
+    if (recentRate.length > 0 && recentRate[0]) {
+      return {
+        success: true,
+        ratesUpdated: 0,
+        syncedAt: recentRate[0].effectiveAt,
+        message: "Recent rates already exist. Use force=true to update.",
+      };
+    }
+  }
+
+  // First, ensure all currencies exist in the database
+  const currencyInserts = fiatCurrencies.map((code) =>
+    safeParse(insertCurrencySchema, {
+      code,
+      name: fiatCurrencyMetadata[code].name,
+      decimals: fiatCurrencyMetadata[code].decimals.toString(),
+    })
+  );
+
+  await db.insert(currencies).values(currencyInserts).onConflictDoNothing();
+
+  // Calculate all cross rates
+  const ratesMap = await calculateCrossRates();
+  let ratesUpdated = 0;
+
+  // Begin transaction for atomic updates
+  await db.transaction(async (tx) => {
+    // Insert rates into both tables
+    for (const [pair, data] of ratesMap) {
+      const [baseCurrency, quoteCurrency] = pair.split("-");
+      const rateString = data.rate.toFixed(18);
+
+      // Insert into time-series table
+      const fxRateData = safeParse(insertFxRateSchema, {
+        baseCode: baseCurrency,
+        quoteCode: quoteCurrency,
+        provider: "er-api",
+        rate: rateString,
+        effectiveAt: data.effectiveAt,
+      });
+
+      await tx.insert(fxRates).values(fxRateData);
+
+      // Upsert into latest rates table
+      const fxRateLatestData = safeParse(insertFxRateLatestSchema, {
+        baseCode: baseCurrency,
+        quoteCode: quoteCurrency,
+        provider: "er-api",
+        rate: rateString,
+        effectiveAt: data.effectiveAt,
+      });
+
+      await tx
+        .insert(fxRatesLatest)
+        .values(fxRateLatestData)
+        .onConflictDoUpdate({
+          target: [
+            fxRatesLatest.baseCode,
+            fxRatesLatest.quoteCode,
+            fxRatesLatest.provider,
+          ],
+          set: {
+            rate: rateString,
+            effectiveAt: data.effectiveAt,
+            updatedAt: sql`NOW()`,
+          },
+        });
+
+      ratesUpdated++;
+    }
+  });
+
+  return {
+    success: true,
+    ratesUpdated,
+    syncedAt,
+  };
+}
+
+/**
  * Exchange rate sync route handler.
  *
  * Synchronizes exchange rates with external providers.
@@ -107,93 +211,8 @@ export const sync = authRouter.exchangeRates.sync
   .use(databaseMiddleware)
   .handler(async ({ input, context }) => {
     const { force } = input;
-    const provider = "er-api"; // Default provider
-    const syncedAt = new Date();
     const { db } = context;
 
-    // Check if we have recent data (within last hour) unless force is true
-    if (!force) {
-      const recentRate = await db
-        .select()
-        .from(fxRatesLatest)
-        .where(sql`${fxRatesLatest.effectiveAt} > NOW() - INTERVAL '1 hour'`)
-        .limit(1);
-
-      if (recentRate.length > 0 && recentRate[0]) {
-        return {
-          success: true,
-          ratesUpdated: 0,
-          syncedAt: recentRate[0].effectiveAt,
-          message: "Recent rates already exist. Use force=true to update.",
-        };
-      }
-    }
-
-    // First, ensure all currencies exist in the database
-    const currencyInserts = fiatCurrencies.map((code) =>
-      safeParse(insertCurrencySchema, {
-        code,
-        name: fiatCurrencyMetadata[code].name,
-        decimals: fiatCurrencyMetadata[code].decimals.toString(),
-      })
-    );
-
-    await db.insert(currencies).values(currencyInserts).onConflictDoNothing();
-
-    // Calculate all cross rates
-    const ratesMap = await calculateCrossRates();
-    let ratesUpdated = 0;
-
-    // Begin transaction for atomic updates
-    await db.transaction(async (tx) => {
-      // Insert rates into both tables
-      for (const [pair, data] of ratesMap) {
-        const [baseCurrency, quoteCurrency] = pair.split("-");
-        const rateString = data.rate.toFixed(18);
-
-        // Insert into time-series table
-        const fxRateData = safeParse(insertFxRateSchema, {
-          baseCode: baseCurrency,
-          quoteCode: quoteCurrency,
-          provider,
-          rate: rateString,
-          effectiveAt: data.effectiveAt,
-        });
-
-        await tx.insert(fxRates).values(fxRateData);
-
-        // Upsert into latest rates table
-        const fxRateLatestData = safeParse(insertFxRateLatestSchema, {
-          baseCode: baseCurrency,
-          quoteCode: quoteCurrency,
-          provider,
-          rate: rateString,
-          effectiveAt: data.effectiveAt,
-        });
-
-        await tx
-          .insert(fxRatesLatest)
-          .values(fxRateLatestData)
-          .onConflictDoUpdate({
-            target: [
-              fxRatesLatest.baseCode,
-              fxRatesLatest.quoteCode,
-              fxRatesLatest.provider,
-            ],
-            set: {
-              rate: rateString,
-              effectiveAt: data.effectiveAt,
-              updatedAt: sql`NOW()`,
-            },
-          });
-
-        ratesUpdated++;
-      }
-    });
-
-    return {
-      success: true,
-      ratesUpdated,
-      syncedAt,
-    };
+    // Delegate to internal sync function
+    return syncExchangeRatesInternal(db, force);
   });
