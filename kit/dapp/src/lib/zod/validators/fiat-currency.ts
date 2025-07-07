@@ -23,7 +23,8 @@ function getValidFiatCurrencies(): string[] {
     if (code.startsWith("X")) return false;
 
     // Exclude currencies without decimal information
-    if (!("digits" in currency) || currency.digits == null) return false;
+    // Exclude currencies without decimal information
+    if (!currency || typeof currency.digits !== 'number') return false;
 
     return true;
   });
@@ -65,7 +66,7 @@ export function getCurrencyMetadata(
 
   return {
     name: currency.currency,
-    decimals: currency.digits ?? 2,
+    decimals: typeof currency.digits === 'number' ? currency.digits : 2,
   };
 }
 

@@ -173,7 +173,14 @@ export const insertFxRateSchema = createInsertSchema(fxRates, {
   baseCode: fiatCurrency(),
   quoteCode: fiatCurrency(),
   provider: exchangeRateProvider,
-  rate: z.string().refine((val) => /^\d+(\.\d+)?$/u.test(val), {
+  rate: z.string().refine((val) => {
+    // Simple validation for positive decimal numbers
+    const parts = val.split('.');
+    if (parts.length > 2) return false;
+    if (parts[0] && !/^\d+$/.exec(parts[0])) return false;
+    if (parts[1] && !/^\d+$/.exec(parts[1])) return false;
+    return true;
+  }, {
     message: "Invalid rate format",
   }),
   effectiveAt: z.date(),
@@ -185,7 +192,14 @@ export const insertFxRateLatestSchema = createInsertSchema(fxRatesLatest, {
   baseCode: fiatCurrency(),
   quoteCode: fiatCurrency(),
   provider: exchangeRateProvider,
-  rate: z.string().refine((val) => /^\d+(\.\d+)?$/u.test(val), {
+  rate: z.string().refine((val) => {
+    // Simple validation for positive decimal numbers
+    const parts = val.split('.');
+    if (parts.length > 2) return false;
+    if (parts[0] && !/^\d+$/.exec(parts[0])) return false;
+    if (parts[1] && !/^\d+$/.exec(parts[1])) return false;
+    return true;
+  }, {
     message: "Invalid rate format",
   }),
   effectiveAt: z.date(),
