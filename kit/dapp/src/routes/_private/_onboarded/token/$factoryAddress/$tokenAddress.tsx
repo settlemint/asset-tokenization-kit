@@ -1,3 +1,6 @@
+import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { seo } from "@/config/metadata";
+import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { createFileRoute } from "@tanstack/react-router";
 
 /**
@@ -37,6 +40,62 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute(
   "/_private/_onboarded/token/$factoryAddress/$tokenAddress"
 )({
+  /**
+   * Route loader function that prefetches required data
+   *
+   * @param context - Route context containing the query client
+   * @param params - Route parameters containing the factory address
+   * @returns Object containing the factory details
+   * @throws If the factory is not found or the user lacks permissions
+   */
+  loader: async ({
+    context: { queryClient, orpc },
+    params: { factoryAddress, tokenAddress },
+  }) => {
+    const [token, factory] = await Promise.all([
+      queryClient.ensureQueryData(
+        orpc.token.read.queryOptions({
+          input: { id: tokenAddress },
+        })
+      ),
+      queryClient.ensureQueryData(
+        orpc.token.factoryRead.queryOptions({
+          input: { id: factoryAddress },
+        })
+      ),
+    ]);
+
+    return { token, factory };
+  },
+  /**
+   * Head configuration for SEO
+   * Uses the factory name and asset type description for metadata
+   */
+  head: ({ loaderData }) => {
+    if (loaderData) {
+      const assetType = getAssetTypeFromFactoryTypeId(
+        loaderData.factory.typeId
+      );
+
+      return {
+        meta: seo({
+          title: `${loaderData.token.name} - ${loaderData.factory.name}`,
+          keywords: [
+            loaderData.token.name,
+            loaderData.token.symbol,
+            assetType,
+            "tokenization",
+            "token",
+            loaderData.factory.name,
+          ],
+        }),
+      };
+    }
+    return {
+      meta: seo({}),
+    };
+  },
+  errorComponent: DefaultCatchBoundary,
   component: RouteComponent,
 });
 

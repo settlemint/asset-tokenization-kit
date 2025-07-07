@@ -9,7 +9,6 @@ import {
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
-import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -55,19 +54,22 @@ export const Route = createFileRoute(
    * @returns Object containing the factory details
    * @throws If the factory is not found or the user lacks permissions
    */
-  loader: async ({ context, params }) => {
+  loader: async ({
+    context: { queryClient, orpc },
+    params: { factoryAddress },
+  }) => {
     // Ensure factory data is loaded
-    const factory = await context.queryClient.ensureQueryData(
+    const factory = await queryClient.ensureQueryData(
       orpc.token.factoryRead.queryOptions({
-        input: { id: params.factoryAddress },
+        input: { id: factoryAddress },
       })
     );
 
     // Prefetch tokens list for better UX
-    void context.queryClient.prefetchQuery(
+    void queryClient.prefetchQuery(
       orpc.token.list.queryOptions({
         input: {
-          tokenFactory: params.factoryAddress,
+          tokenFactory: factoryAddress,
         },
       })
     );

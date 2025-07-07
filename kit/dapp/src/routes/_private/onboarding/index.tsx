@@ -2,18 +2,17 @@ import {
   determineOnboardingType,
   type PlatformOnboardingRequirements,
 } from "@/lib/types/onboarding";
-import { orpc } from "@/orpc";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/onboarding/")({
-  beforeLoad: async ({ context }) => {
-    const queryClient = context.queryClient;
-
+  beforeLoad: async ({ context: { queryClient, orpc } }) => {
     // Fetch user and system address data in parallel
     const [user, systemAddress] = await Promise.all([
       queryClient.ensureQueryData(orpc.user.me.queryOptions()),
       queryClient.ensureQueryData(
-        orpc.settings.read.queryOptions({ input: { key: "SYSTEM_ADDRESS" } })
+        orpc.settings.read.queryOptions({
+          input: { key: "SYSTEM_ADDRESS" },
+        })
       ),
     ]);
 
