@@ -1,0 +1,92 @@
+{
+  "common": {
+    "required": "This field is required",
+    "invalid": "Invalid value",
+    "tooShort": "Must be at least {{min}} characters",
+    "tooLong": "Must be at most {{max}} characters",
+    "invalidFormat": "Invalid format"
+  },
+  "amount": {
+    "invalid": "Invalid amount",
+    "mustBePositive": "Amount must be positive",
+    "tooSmall": "Amount must be at least {{min}}",
+    "tooLarge": "Amount must be at most {{max}}",
+    "tooManyDecimals": "Maximum {{decimals}} decimal places allowed",
+    "insufficientBalance": "Insufficient balance"
+  },
+  "ethereum": {
+    "invalidAddress": "Invalid Ethereum address",
+    "invalidHash": "Invalid transaction hash",
+    "checksumMismatch": "Address checksum mismatch",
+    "ensNotResolved": "ENS name could not be resolved"
+  },
+  "isin": {
+    "invalid": "Invalid ISIN code",
+    "wrongLength": "ISIN must be exactly 12 characters",
+    "invalidCountryCode": "Invalid country code",
+    "invalidChecksum": "Invalid ISIN checksum"
+  },
+  "pin": {
+    "invalid": "Invalid PIN code",
+    "wrongLength": "PIN must be {{length}} digits",
+    "sequential": "PIN cannot contain sequential numbers",
+    "repeated": "PIN cannot contain repeated digits",
+    "tooWeak": "PIN is too weak"
+  },
+  "symbol": {
+    "invalid": "Invalid symbol",
+    "tooShort": "Symbol must be at least {{min}} characters",
+    "tooLong": "Symbol must be at most {{max}} characters",
+    "invalidCharacters": "Symbol contains invalid characters",
+    "reserved": "This symbol is reserved"
+  },
+  "price": {
+    "invalid": "Invalid price",
+    "mustBePositive": "Price must be positive",
+    "tooVolatile": "Price change exceeds allowed threshold"
+  },
+  "timestamp": {
+    "invalid": "Invalid timestamp",
+    "tooEarly": "Date cannot be before {{min}}",
+    "tooLate": "Date cannot be after {{max}}",
+    "inPast": "Date must be in the future",
+    "inFuture": "Date must be in the past"
+  },
+  "twoFactor": {
+    "invalid": "Invalid verification code",
+    "expired": "Verification code has expired",
+    "alreadyUsed": "This code has already been used"
+  },
+  "file": {
+    "tooLarge": "File size must be less than {{max}}",
+    "invalidType": "File type not allowed. Allowed types: {{types}}",
+    "uploadFailed": "File upload failed"
+  },
+  "email": {
+    "invalid": "Invalid email address",
+    "alreadyExists": "Email already registered",
+    "domainNotAllowed": "Email domain not allowed"
+  },
+  "password": {
+    "tooWeak": "Password is too weak",
+    "mustContainUppercase": "Must contain at least one uppercase letter",
+    "mustContainLowercase": "Must contain at least one lowercase letter",
+    "mustContainNumber": "Must contain at least one number",
+    "mustContainSpecial": "Must contain at least one special character",
+    "commonPassword": "This password is too common",
+    "previouslyUsed": "Password was previously used"
+  },
+  "token": {
+    "nameRequired": "Token name is required",
+    "symbolRequired": "Token symbol is required",
+    "decimalsInvalid": "Decimals must be between 0 and 18",
+    "supplyInvalid": "Invalid initial supply",
+    "capExceeded": "Supply exceeds maximum cap"
+  },
+  "transaction": {
+    "gasLimitTooLow": "Gas limit too low",
+    "gasLimitTooHigh": "Gas limit exceeds maximum",
+    "nonceTooLow": "Nonce too low",
+    "insufficientGas": "Insufficient gas for transaction"
+  }
+}

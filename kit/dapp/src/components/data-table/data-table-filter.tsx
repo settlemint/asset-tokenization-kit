@@ -233,7 +233,7 @@ export function DataTableFilterMobileContainer({
  * @returns Filter button with popover menu
  */
 export function TableFilter<TData>({ table }: { table: Table<TData> }) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [property, setProperty] = useState<string | undefined>(undefined);
@@ -288,9 +288,9 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
             value={value}
             onValueChange={setValue}
             ref={inputRef}
-            placeholder={t("components.data-table.search")}
+            placeholder={t("search")}
           />
-          <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
+          <CommandEmpty>{t("no-results")}</CommandEmpty>
           <CommandList className="max-h-fit">
             <CommandGroup>
               {properties.map((column) => (
@@ -318,9 +318,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
           onClick={handleFilterButtonClick}
         >
           <Filter className="size-4" />
-          <span className="hidden md:block">
-            {t("components.data-table.filter")}
-          </span>
+          <span className="hidden md:block">{t("filter")}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent

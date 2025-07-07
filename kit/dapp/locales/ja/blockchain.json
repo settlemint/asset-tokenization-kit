@@ -1,0 +1,168 @@
+{
+  "transaction": {
+    "types": {
+      "transfer": "転送",
+      "approve": "承認",
+      "mint": "ミント",
+      "burn": "バーン",
+      "deploy": "契約をデプロイ",
+      "swap": "スワップ",
+      "stake": "ステーク",
+      "unstake": "アンステーク",
+      "claim": "クレーム",
+      "delegate": "委任",
+      "vote": "投票"
+    },
+    "status": {
+      "pending": "保留中",
+      "confirming": "確認中",
+      "confirmed": "確認済み",
+      "failed": "失敗",
+      "dropped": "ドロップ",
+      "replaced": "置き換え",
+      "cancelled": "キャンセル"
+    },
+    "details": {
+      "hash": "トランザクションハッシュ",
+      "from": "送信元",
+      "to": "送信先",
+      "value": "価値",
+      "fee": "トランザクション手数料",
+      "gasLimit": "ガス制限",
+      "gasUsed": "使用したガス",
+      "gasPrice": "ガス価格",
+      "nonce": "ノンス",
+      "blockNumber": "ブロック番号",
+      "timestamp": "タイムスタンプ",
+      "confirmations": "確認数"
+    },
+    "messages": {
+      "broadcasting": "トランザクションをブロードキャスト中...",
+      "waiting": "確認を待っています...",
+      "confirmed": "トランザクションが確認されました",
+      "failed": "トランザクションが失敗しました: {{reason}}",
+      "speedUp": "トランザクションを加速",
+      "cancel": "トランザクションをキャンセル",
+      "viewOnExplorer": "ブロックエクスプローラーで表示"
+    }
+  },
+  "contract": {
+    "events": {
+      "Transfer": "転送",
+      "Approval": "承認",
+      "OwnershipTransferred": "所有権が移転しました",
+      "Paused": "契約が一時停止されました",
+      "Unpaused": "契約が再開されました",
+      "RoleGranted": "役割が付与されました",
+      "RoleRevoked": "役割が取り消されました"
+    },
+    "methods": {
+      "read": "契約を読む",
+      "write": "契約を書く",
+      "payable": "支払い可能な関数"
+    },
+    "verification": {
+      "verified": "検証済み",
+      "unverified": "未検証",
+      "partial": "部分的に検証済み"
+    }
+  },
+  "gas": {
+    "estimating": "ガスを見積もっています...",
+    "estimated": "見積もりガス: {{amount}}",
+    "limit": "ガス制限",
+    "price": "ガス価格",
+    "maxFee": "最大手数料",
+    "maxPriorityFee": "最大優先手数料",
+    "total": "総コスト",
+    "speeds": {
+      "slow": "遅い",
+      "standard": "標準",
+      "fast": "速い",
+      "instant": "即時"
+    },
+    "errors": {
+      "estimationFailed": "ガスの見積もりに失敗しました",
+      "tooLow": "ガスが低すぎます、トランザクションが失敗する可能性があります",
+      "tooHigh": "ガスが不必要に高い"
+    }
+  },
+  "blocks": {
+    "number": "ブロック #{{number}}",
+    "hash": "ブロックハッシュ",
+    "timestamp": "ブロック時間",
+    "miner": "マイナー",
+    "difficulty": "難易度",
+    "gasLimit": "ガス制限",
+    "gasUsed": "使用したガス",
+    "transactions": "トランザクション",
+    "uncles": "アンクル"
+  },
+  "tokens": {
+    "standards": {
+      "ERC20": "ERC-20トークン",
+      "ERC721": "ERC-721 NFT",
+      "ERC1155": "ERC-1155マルチトークン",
+      "ERC777": "ERC-777トークン"
+    },
+    "operations": {
+      "transfer": "転送 {{symbol}}",
+      "approve": "承認 {{symbol}} の支出",
+      "transferFrom": "転送 {{symbol}} から {{owner}}",
+      "mint": "ミント {{amount}} {{symbol}}",
+      "burn": "バーン {{amount}} {{symbol}}",
+      "pause": "転送を一時停止",
+      "unpause": "転送を再開"
+    },
+    "allowance": {
+      "unlimited": "無制限",
+      "set": "許可を設定",
+      "revoke": "許可を取り消す",
+      "increase": "許可を増加",
+      "decrease": "許可を減少"
+    }
+  },
+  "errors": {
+    "revert": {
+      "generic": "トランザクションが元に戻されました",
+      "reason": "元に戻す理由: {{reason}}",
+      "outOfGas": "ガス切れ",
+      "executionReverted": "実行が元に戻されました"
+    },
+    "common": {
+      "InsufficientBalance": "残高不足",
+      "TransferFailed": "転送に失敗しました",
+      "NotOwner": "呼び出し元は所有者ではありません",
+      "Paused": "契約は一時停止されています",
+      "InvalidAddress": "無効なアドレス",
+      "ZeroAddress": "ゼロアドレスは使用できません",
+      "Overflow": "数値オーバーフロー",
+      "Underflow": "数値アンダーフロー",
+      "Unauthorized": "未承認",
+      "AlreadyInitialized": "すでに初期化済み",
+      "NotInitialized": "初期化されていません"
+    }
+  },
+  "explorer": {
+    "viewAddress": "アドレスを表示",
+    "viewTransaction": "トランザクションを表示",
+    "viewBlock": "ブロックを表示",
+    "viewToken": "トークンを表示",
+    "copyAddress": "アドレスをコピー",
+    "copyTxHash": "トランザクションハッシュをコピー",
+    "qrCode": "QRコードを表示"
+  },
+  "confirmations": {
+    "waiting": "確認を待っています...",
+    "count": "{{current}} / {{required}} の確認",
+    "final": "トランザクションが確定しました"
+  },
+  "signatures": {
+    "request": "署名が要求されました",
+    "personal": "個人署名",
+    "typed": "入力データ署名",
+    "permit": "許可署名",
+    "message": "署名するメッセージ",
+    "danger": "署名する内容に注意してください！"
+  }
+}

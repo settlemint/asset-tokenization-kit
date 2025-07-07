@@ -57,7 +57,7 @@ export function RouterBreadcrumb({
   customSegments?: BreadcrumbSegment[];
   intermediateSections?: BreadcrumbSegment[];
 }) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("navigation");
   const routerState = useRouterState();
 
   // Generate breadcrumb segments from router state
@@ -169,9 +169,7 @@ export function RouterBreadcrumb({
                     <Link
                       to={segment.href}
                       aria-label={
-                        segment.title === "home"
-                          ? t("navigation.home")
-                          : undefined
+                        segment.title === "home" ? t("home") : undefined
                       }
                     >
                       {segment.title === "home" ? (

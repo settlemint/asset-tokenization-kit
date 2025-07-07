@@ -9,7 +9,6 @@ import {
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
-import { orpc } from "@/orpc";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -55,19 +54,22 @@ export const Route = createFileRoute(
    * @returns Object containing the factory details
    * @throws If the factory is not found or the user lacks permissions
    */
-  loader: async ({ context, params }) => {
+  loader: async ({
+    context: { queryClient, orpc },
+    params: { factoryAddress },
+  }) => {
     // Ensure factory data is loaded
-    const factory = await context.queryClient.ensureQueryData(
+    const factory = await queryClient.ensureQueryData(
       orpc.token.factoryRead.queryOptions({
-        input: { id: params.factoryAddress },
+        input: { id: factoryAddress },
       })
     );
 
     // Prefetch tokens list for better UX
-    void context.queryClient.prefetchQuery(
+    void queryClient.prefetchQuery(
       orpc.token.list.queryOptions({
         input: {
-          tokenFactory: params.factoryAddress,
+          tokenFactory: factoryAddress,
         },
       })
     );
@@ -129,7 +131,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { factory } = Route.useLoaderData();
   const { factoryAddress } = Route.useParams();
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("navigation");
 
   // Get the asset type from the factory typeId
   const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
@@ -137,14 +139,14 @@ function RouteComponent() {
 
   const intermediateSections = useMemo(
     () => [
-      { title: t("navigation.assetManagement") },
+      { title: t("assetManagement") },
       {
         title:
           assetClass === "fixed-income"
-            ? t("navigation.fixedIncome")
+            ? t("fixedIncome")
             : assetClass === "flexible-income"
-              ? t("navigation.flexibleIncome")
-              : t("navigation.cashEquivalent"),
+              ? t("flexibleIncome")
+              : t("cashEquivalent"),
       },
     ],
     [assetClass, t]

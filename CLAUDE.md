@@ -348,6 +348,82 @@ Before any PR:
 3. Check TypeScript compilation
 4. Verify contract deployment works locally
 
+## Translation Organization
+
+### Structure
+
+Translations are organized into focused, domain-specific namespaces for better maintainability:
+
+#### Core UI Namespaces
+- **`common`** - App-wide basics (app name, description, continue, generating)
+- **`navigation`** - Menu items and breadcrumbs
+- **`errors`** - All error messages with title/description pairs
+- **`toast`** - User notifications (success, error, warning, info)
+- **`validation`** - Form validation messages
+- **`accessibility`** - Screen reader text and ARIA labels
+
+#### Component-Specific Namespaces
+- **`data-table`** - Generic data table UI (sorting, filtering, pagination)
+- **`deposits-table`** - Specific deposit table functionality
+- **`dashboard`** - Dashboard widgets and statistics
+- **`wallet`** - Web3 wallet connection and management
+
+#### Feature Namespaces
+- **`asset-types`** - Asset definitions (bonds, deposits, equity, funds, stablecoins)
+- **`token-factory`** - Token creation and factory management
+- **`blockchain`** - Transaction and blockchain terminology
+- **`auth`** - Authentication and authorization
+- **`onboarding`** - User onboarding flow
+
+#### Technical Namespaces
+- **`formats`** - Date, time, number, and blockchain formatting patterns
+- **`seo`** - Meta tags and SEO content
+
+### Usage Guidelines
+
+1. **Use multiple namespaces** in components when needed:
+   ```typescript
+   const { t } = useTranslation(["data-table", "errors", "toast"]);
+   ```
+
+2. **Keep translations minimal** - avoid duplicating the same string across namespaces
+
+3. **Component-specific translations** belong in dedicated files, not in general
+
+4. **Create new namespace** when:
+   - Adding a major new feature
+   - Component has 10+ unique translation keys
+   - Translations are only used in one specific area
+
+5. **Naming conventions**:
+   - Use kebab-case for namespace names
+   - Use camelCase for translation keys
+   - Use nested objects for related keys
+
+### Adding Translations
+
+1. **English only** - Only modify files in `/locales/en/`
+2. **Run translation** - Use `bun translate` to generate other languages
+3. **Numeric values** - Must be strings in JSON (e.g., `"precision": "2"`)
+
+### Example Structure
+
+```json
+// /locales/en/token-factory.json
+{
+  "title": "Token Factory",
+  "form": {
+    "fields": {
+      "name": {
+        "label": "Token Name",
+        "placeholder": "e.g., Corporate Bond 2024",
+        "helper": "The full name of your token"
+      }
+    }
+  }
+}
+```
+
 ## Memories
 
 - Completely ignore dapp-v1 folder - it's deprecated
@@ -365,3 +441,4 @@ Before any PR:
 - Use toast notifications with formatValidationError for user feedback
 - Prefer URL state for persistent UI configuration, local state for ephemeral interactions
 - Only optimize performance after measuring with React DevTools Profiler
+- Translations are organized into focused namespaces - use multiple namespaces in components as needed
