@@ -4,6 +4,7 @@ import { bondCreateHandler } from "@/orpc/helpers/token/create-handlers/bond.cre
 import { depositCreateHandler } from "@/orpc/helpers/token/create-handlers/deposit.create";
 import { equityCreateHandler } from "@/orpc/helpers/token/create-handlers/equity.create";
 import { fundCreateHandler } from "@/orpc/helpers/token/create-handlers/fund.create";
+import { stablecoinCreateHandler } from "@/orpc/helpers/token/create-handlers/stablecoin.create";
 import type { TokenCreateContext } from "@/orpc/helpers/token/token.base-create";
 import type {
   TokenCreateInput,
@@ -20,5 +21,5 @@ export const tokenCreateHandlerMap: Record<
   [AssetTypeEnum.bond]: bondCreateHandler,
   [AssetTypeEnum.equity]: equityCreateHandler,
   [AssetTypeEnum.fund]: fundCreateHandler,
-  [AssetTypeEnum.stablecoin]: depositCreateHandler, // TODO: Replace with stablecoinCreate when available
+  [AssetTypeEnum.stablecoin]: stablecoinCreateHandler,
 };
