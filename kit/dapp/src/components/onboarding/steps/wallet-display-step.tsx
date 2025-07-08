@@ -1,10 +1,11 @@
-import { useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
 import type { StepComponentProps } from "@/components/multistep-form/types";
+import { Button } from "@/components/ui/button";
+import type { SessionUser } from "@/lib/auth";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 interface WalletDisplayStepProps extends StepComponentProps {
-  user?: any; // Use any for now to match the user type from session
+  user?: SessionUser;
 }
 
 export function WalletDisplayStep({
@@ -36,13 +37,20 @@ export function WalletDisplayStep({
     setIsCreating(false);
   };
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!isCreating && !walletCreated) {
       void handleStartCreation();
     } else if (walletCreated) {
       onNext();
     }
-  };
+  }, [isCreating, walletCreated, onNext]);
+
+  const handleCopyWallet = useCallback(() => {
+    if (user?.wallet) {
+      void navigator.clipboard.writeText(user.wallet);
+      toast.success("Wallet address copied to clipboard!");
+    }
+  }, [user?.wallet]);
 
   return (
     <div className="h-full flex flex-col">
@@ -251,10 +259,7 @@ export function WalletDisplayStep({
                       {user.wallet}
                     </p>
                     <button
-                      onClick={() => {
-                        void navigator.clipboard.writeText(user.wallet);
-                        toast.success("Wallet address copied to clipboard!");
-                      }}
+                      onClick={handleCopyWallet}
                       className="flex-shrink-0 p-1 hover:bg-green-100 dark:hover:bg-green-800 rounded transition-colors"
                       title="Copy to clipboard"
                     >

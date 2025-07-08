@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef } from "react";
 import { debounce, type DebouncedFunction } from "@/lib/utils/debounce";
+import { useCallback, useEffect, useRef } from "react";
 
 /**
  * React hook that returns a debounced version of the provided callback.
@@ -20,11 +20,9 @@ export function useDebouncedCallback<T extends readonly unknown[]>(
   callbackRef.current = callback;
 
   // Create the debounced function
-  if (!debouncedRef.current) {
-    debouncedRef.current = debounce((...args: T) => {
-      callbackRef.current(...args);
-    }, delay);
-  }
+  debouncedRef.current ??= debounce((...args: T) => {
+    callbackRef.current(...args);
+  }, delay);
 
   // Cleanup on unmount
   useEffect(() => {

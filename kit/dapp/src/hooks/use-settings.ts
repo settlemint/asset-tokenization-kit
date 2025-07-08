@@ -1,7 +1,7 @@
 import { queryClient } from "@/lib/query.client";
 import type { SettingKey } from "@/lib/zod/validators/settings-key";
-import type { SettingsUpsertInput } from "@/orpc/routes/settings/routes/settings.upsert.schema";
 import { orpc } from "@/orpc";
+import type { SettingsUpsertInput } from "@/orpc/routes/settings/routes/settings.upsert.schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 /**
