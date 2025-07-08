@@ -165,7 +165,7 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
         <span className="text-sm text-muted-foreground">{displayName}</span>
       </div>
       <CommandInput autoFocus placeholder={t("search")} />
-      <CommandEmpty>{t("no-results")}</CommandEmpty>
+      <CommandEmpty>{t("noResults")}</CommandEmpty>
       <CommandList className="max-h-fit">
         <CommandGroup>
           {options.map((v) => {

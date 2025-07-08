@@ -158,11 +158,11 @@ export function DataTableColumnHeader<TData, TValue>({
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={handleSortAscending}>
             <SortAsc className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            {t("sort-ascending")}
+            {t("sortAscending")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSortDescending}>
             <SortDesc className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            {t("sort-descending")}
+            {t("sortDescending")}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleHideColumn}>

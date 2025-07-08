@@ -14,11 +14,11 @@ A Helm chart for the supporting components
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.12.3 |
-| https://stakater.github.io/stakater-charts | reloader | 2.1.4 |
+| https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.0 |
+| https://stakater.github.io/stakater-charts | reloader | 2.1.5 |
 | oci://registry-1.docker.io/bitnamicharts | minio | 17.0.9 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql-ha | 16.0.16 |
-| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.6 |
+| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.7 |
 
 ## Values
 
