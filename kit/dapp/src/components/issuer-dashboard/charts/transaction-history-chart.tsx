@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 const chartConfig = {
   transactions: {
     label: "Transactions",
-    color: "var(--chart-3)",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
@@ -17,18 +17,18 @@ const dataKeys = ["transactions"];
  * Transaction History Chart Component
  *
  * Displays transaction history over time in an area chart format.
- * Shows daily transaction counts over the last 7 days using time series data.
+ * Shows daily transaction counts over the last 7 days using real API data.
  */
 export function TransactionHistoryChart() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch metrics summary which includes transaction history time series data
+  // Fetch metrics summary which includes transaction history data from API
   const { data: metrics } = useSuspenseQuery(
     orpc.metrics.summary.queryOptions({ input: {} })
   );
 
   // Transform transaction history data for chart display
-  const chartData = metrics.transactionHistory.map((dataPoint) => ({
+  const chartData = (metrics.transactionHistory ?? []).map((dataPoint) => ({
     timestamp: dataPoint.timestamp,
     transactions: dataPoint.transactions,
   }));

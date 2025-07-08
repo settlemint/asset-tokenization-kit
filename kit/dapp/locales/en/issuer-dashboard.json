@@ -24,21 +24,21 @@
   },
   "charts": {
     "assetSupply": {
-      "title": "Asset supply",
+      "title": "Assets supply",
       "description": "The distribution of assets per asset class"
     },
     "assetActivity": {
       "title": "Asset activity",
-      "description": "Number of assets by type"
+      "description": "The amount of actions taken on the different asset classes"
     },
     "userGrowth": {
-      "title": "User growth",
-      "description": "Total platform users over time",
+      "title": "Registered users",
+      "description": "Number of users registered in the last week",
       "currentPeriod": "Current"
     },
     "transactionHistory": {
       "title": "Transaction history",
-      "description": "Transaction volume over time",
+      "description": "Number of transactions per day in the last week",
       "currentPeriod": "Current"
     }
   },

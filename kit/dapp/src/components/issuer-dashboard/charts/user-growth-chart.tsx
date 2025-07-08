@@ -6,8 +6,8 @@ import { useTranslation } from "react-i18next";
 
 const chartConfig = {
   users: {
-    label: "Total Users",
-    color: "var(--chart-2)",
+    label: "Registered Users",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
@@ -16,19 +16,19 @@ const dataKeys = ["users"] as const;
 /**
  * User Growth Chart Component
  *
- * Displays user growth over time in an area chart format.
- * Shows cumulative user growth over the last 7 days using time series data.
+ * Displays registered users in an area chart format.
+ * Shows user growth over time using real API data.
  */
 export function UserGrowthChart() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch metrics summary which includes user growth time series data
+  // Fetch metrics summary which includes user growth data from API
   const { data: metrics } = useSuspenseQuery(
     orpc.metrics.summary.queryOptions({ input: {} })
   );
 
   // Transform user growth data for chart display
-  const chartData = metrics.userGrowth.map((dataPoint) => ({
+  const chartData = (metrics.userGrowth ?? []).map((dataPoint) => ({
     timestamp: dataPoint.timestamp,
     users: dataPoint.users,
   }));

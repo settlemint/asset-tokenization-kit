@@ -5,35 +5,55 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 const chartConfig = {
-  totalAssets: {
-    label: "Total assets",
+  mint: {
+    label: "Mint",
     color: "var(--chart-1)",
+  },
+  transfer: {
+    label: "Transfer",
+    color: "var(--chart-2)",
+  },
+  burn: {
+    label: "Burn",
+    color: "var(--chart-3)",
+  },
+  clawback: {
+    label: "Clawback",
+    color: "var(--chart-4)",
   },
 } satisfies ChartConfig;
 
-const dataKeys = ["totalAssets"];
+const dataKeys = ["mint", "transfer", "burn", "clawback"];
 
 /**
  * Asset Activity Chart Component
  *
- * Displays the distribution of assets by type in a bar chart format.
- * Shows the number of assets for each asset type (bonds, equity, funds, etc.)
- * based on the asset breakdown from the metrics summary.
+ * Displays the distribution of events by asset type in a bar chart format.
+ * Shows different event types (mint, transfer, burn, clawback) for asset types with activity.
  */
 export function AssetActivityChart() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch metrics summary which includes asset breakdown
+  // Fetch metrics summary which includes asset activity data from API
   const { data: metrics } = useSuspenseQuery(
     orpc.metrics.summary.queryOptions({ input: {} })
   );
 
-  // Convert asset breakdown to chart data format
-  const chartData = Object.entries(metrics.assetBreakdown)
-    .filter(([, count]) => count > 0) // Only show asset types with assets
-    .map(([type, count]) => ({
-      assetType: type,
-      totalAssets: count,
+  // Transform asset activity data to chart format
+  const chartData = (metrics.assetActivity ?? [])
+    .filter(
+      (activity) =>
+        activity.mintEventCount > 0 ||
+        activity.transferEventCount > 0 ||
+        activity.burnEventCount > 0 ||
+        activity.clawbackEventCount > 0
+    ) // Only show asset types with activity
+    .map((activity) => ({
+      assetType: activity.assetType,
+      mint: activity.mintEventCount,
+      transfer: activity.transferEventCount,
+      burn: activity.burnEventCount,
+      clawback: activity.clawbackEventCount,
     }));
 
   return (
@@ -45,7 +65,7 @@ export function AssetActivityChart() {
       dataKeys={dataKeys}
       nameKey="assetType"
       showYAxis={false}
-      showLegend={false}
+      showLegend={true}
     />
   );
 }
