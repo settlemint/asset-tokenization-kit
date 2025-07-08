@@ -9,16 +9,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { env } from "@/lib/env";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { MoreHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-const logger = createLogger({
-  level: env.VITE_SETTLEMINT_LOG_LEVEL,
-});
+const logger = createLogger();
 
 /**
  * Represents a single action item in the dropdown menu

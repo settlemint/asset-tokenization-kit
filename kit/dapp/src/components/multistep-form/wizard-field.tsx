@@ -11,15 +11,13 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useField } from "@tanstack/react-form";
 import { useCallback, useEffect, useState } from "react";
 import type { FieldDefinition } from "./types";
 import { useWizardContext } from "./wizard-context";
 
-const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel | undefined) ?? "info",
-});
+const logger = createLogger();
 
 interface WizardFieldProps<TFormData> {
   fieldDef: FieldDefinition<TFormData>;

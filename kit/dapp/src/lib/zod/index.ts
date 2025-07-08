@@ -6,13 +6,11 @@
  * the main entry point for common validation operations.
  * @module ZodUtilities
  */
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { z } from "zod/v4";
 
 // Create logger instance with configurable log level
-const logger = createLogger({
-  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
-});
+const logger = createLogger();
 
 /**
  * Safe parse function that provides detailed error logging with pretty printing.

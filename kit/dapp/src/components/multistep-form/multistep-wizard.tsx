@@ -1,6 +1,6 @@
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useCallback, useMemo } from "react";
 import type { MultiStepWizardProps, WizardContextValue } from "./types";
@@ -9,9 +9,7 @@ import { WizardProvider } from "./wizard-context";
 import { WizardSidebar } from "./wizard-sidebar";
 import { WizardStep } from "./wizard-step";
 
-const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ?? "info",
-});
+const logger = createLogger();
 
 export function MultiStepWizard<TFormData = Record<string, unknown>>({
   name,

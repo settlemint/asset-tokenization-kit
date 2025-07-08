@@ -2,12 +2,10 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { z } from "zod/v4";
 
-const logger = createLogger({
-  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
-});
+const logger = createLogger();
 
 /**
  * GraphQL query to fetch all asset-related metrics in a single request
