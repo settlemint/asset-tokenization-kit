@@ -14,7 +14,6 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
-import { CreateDepositForm } from "@/components/asset-designer/deposit/form";
 import { Dashboard as IssuerDashboard } from "@/components/issuer-dashboard/dashboard";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -77,11 +76,6 @@ function Home() {
         <pre className="text-sm bg-muted p-4 rounded-lg">
           {JSON.stringify(systems, null, 2)}
         </pre>
-      </div>
-
-      <div className="mb-8">
-        <h4 className="text-lg font-semibold mb-4">Create New Asset</h4>
-        <CreateDepositForm />
       </div>
 
       <IssuerDashboard />
