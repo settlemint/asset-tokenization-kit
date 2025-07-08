@@ -24,7 +24,7 @@ const ASSET_METRICS_QUERY = theGraphGraphql(`
         name
       }
     }
-    
+
     # Event counts for different asset activities
     mintEvents: eventStats_collection(
       where: { eventName: "Mint" }
@@ -32,35 +32,35 @@ const ASSET_METRICS_QUERY = theGraphGraphql(`
     ) {
       eventsCount
     }
-    
+
     burnEvents: eventStats_collection(
       where: { eventName: "Burn" }
       interval: day
     ) {
       eventsCount
     }
-    
+
     transferEvents: eventStats_collection(
       where: { eventName: "Transfer" }
       interval: day
     ) {
       eventsCount
     }
-    
+
     clawbackEvents: eventStats_collection(
       where: { eventName: "Clawback" }
       interval: day
     ) {
       eventsCount
     }
-    
+
     freezeEvents: eventStats_collection(
       where: { eventName: "Freeze" }
       interval: day
     ) {
       eventsCount
     }
-    
+
     unfreezeEvents: eventStats_collection(
       where: { eventName: "Unfreeze" }
       interval: day
@@ -124,20 +124,10 @@ function createAssetSupplyBreakdown(
 
     if (type && supply) {
       try {
-        // Validate and convert supply values safely
+        // Use BigInt for safe arithmetic with large blockchain values
         const currentSupplyStr = breakdown[type] ?? "0";
-        const currentSupply = Number(currentSupplyStr);
-        const newSupply = Number(supply);
-
-        // Check for NaN values which indicate invalid input
-        if (Number.isNaN(currentSupply) || Number.isNaN(newSupply)) {
-          logger.warn("Invalid supply value encountered", {
-            type,
-            currentSupplyStr,
-            supply,
-          });
-          continue;
-        }
+        const currentSupply = BigInt(currentSupplyStr);
+        const newSupply = BigInt(supply);
 
         breakdown[type] = (currentSupply + newSupply).toString();
       } catch (error) {
