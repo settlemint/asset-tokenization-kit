@@ -2,7 +2,12 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { z } from "zod/v4";
+
+const logger = createLogger({
+  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
+});
 
 /**
  * Configuration constant for recent activity calculation
@@ -306,10 +311,32 @@ function createAssetSupplyBreakdown(
     const supply = tokenStat.token.totalSupply;
 
     if (type && supply) {
-      // Convert to number for calculation, then back to string
-      const currentSupply = parseFloat(breakdown[type] ?? "0");
-      const newSupply = parseFloat(supply);
-      breakdown[type] = (currentSupply + newSupply).toString();
+      try {
+        // Validate and convert supply values safely
+        const currentSupplyStr = breakdown[type] ?? "0";
+        const currentSupply = Number(currentSupplyStr);
+        const newSupply = Number(supply);
+        
+        // Check for NaN values which indicate invalid input
+        if (Number.isNaN(currentSupply) || Number.isNaN(newSupply)) {
+          logger.warn("Invalid supply value encountered", {
+            type,
+            currentSupplyStr,
+            supply,
+          });
+          continue;
+        }
+        
+        breakdown[type] = (currentSupply + newSupply).toString();
+      } catch (error) {
+        logger.error("Error processing supply breakdown", {
+          error,
+          type,
+          supply,
+        });
+        // Continue processing other tokens instead of failing completely
+        continue;
+      }
     }
   }
 

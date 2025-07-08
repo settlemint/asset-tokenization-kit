@@ -1,4 +1,5 @@
 import { BarChartComponent } from "@/components/charts/bar-chart";
+import { DataTableErrorBoundary } from "@/components/data-table/data-table-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -34,9 +35,9 @@ const dataKeys = ["mint", "transfer", "burn", "clawback"];
 export function AssetActivityChart() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch metrics summary which includes asset activity data from API
+  // Fetch just the asset metrics which includes activity data - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.summary.queryOptions({ input: {} })
+    orpc.metrics.assets.queryOptions({ input: {} })
   );
 
   // Transform asset activity data to chart format
@@ -57,15 +58,17 @@ export function AssetActivityChart() {
     }));
 
   return (
-    <BarChartComponent
-      title={t("charts.assetActivity.title")}
-      description={t("charts.assetActivity.description")}
-      data={chartData}
-      config={chartConfig}
-      dataKeys={dataKeys}
-      nameKey="assetType"
-      showYAxis={false}
-      showLegend={true}
-    />
+    <DataTableErrorBoundary>
+      <BarChartComponent
+        title={t("charts.assetActivity.title")}
+        description={t("charts.assetActivity.description")}
+        data={chartData}
+        config={chartConfig}
+        dataKeys={dataKeys}
+        nameKey="assetType"
+        showYAxis={false}
+        showLegend={true}
+      />
+    </DataTableErrorBoundary>
   );
 }

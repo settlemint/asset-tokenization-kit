@@ -1,4 +1,5 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
+import { DataTableErrorBoundary } from "@/components/data-table/data-table-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -22,9 +23,9 @@ const dataKeys = ["transactions"];
 export function TransactionHistoryChart() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch metrics summary which includes transaction history data from API
+  // Fetch just the transaction metrics which includes history data - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.summary.queryOptions({ input: {} })
+    orpc.metrics.transactions.queryOptions({ input: { timeRange: 7 } }) // 7 days of data
   );
 
   // Transform transaction history data for chart display
@@ -34,15 +35,17 @@ export function TransactionHistoryChart() {
   }));
 
   return (
-    <AreaChartComponent
-      title={t("charts.transactionHistory.title")}
-      description={t("charts.transactionHistory.description")}
-      data={chartData}
-      config={chartConfig}
-      dataKeys={dataKeys}
-      nameKey="timestamp"
-      showYAxis={true}
-      showLegend={false}
-    />
+    <DataTableErrorBoundary>
+      <AreaChartComponent
+        title={t("charts.transactionHistory.title")}
+        description={t("charts.transactionHistory.description")}
+        data={chartData}
+        config={chartConfig}
+        dataKeys={dataKeys}
+        nameKey="timestamp"
+        showYAxis={true}
+        showLegend={false}
+      />
+    </DataTableErrorBoundary>
   );
 }

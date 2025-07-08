@@ -18,9 +18,9 @@ import { useTranslation } from "react-i18next";
 export function TransactionStatsWidget() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch metrics summary which includes transaction count
+  // Fetch just the transaction metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.summary.queryOptions({ input: {} })
+    orpc.metrics.transactions.queryOptions({ input: { timeRange: 7 } })
   );
 
   return (
@@ -34,7 +34,7 @@ export function TransactionStatsWidget() {
       <CardFooter className="text-muted-foreground text-sm">
         {t("stats.transactionsDescription", {
           count: metrics.recentTransactions,
-          days: metrics.recentActivityDays,
+          days: metrics.timeRangeDays,
         })}
       </CardFooter>
     </Card>

@@ -1,4 +1,5 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
+import { DataTableErrorBoundary } from "@/components/data-table/data-table-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -11,7 +12,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const dataKeys = ["users"] as const;
+const dataKeys = ["users"];
 
 /**
  * User Growth Chart Component
@@ -22,9 +23,9 @@ const dataKeys = ["users"] as const;
 export function UserGrowthChart() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch metrics summary which includes user growth data from API
+  // Fetch just the user metrics which includes growth data - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.summary.queryOptions({ input: {} })
+    orpc.metrics.users.queryOptions({ input: { timeRange: 30 } }) // 30 days of data
   );
 
   // Transform user growth data for chart display
@@ -34,15 +35,17 @@ export function UserGrowthChart() {
   }));
 
   return (
-    <AreaChartComponent
-      title={t("charts.userGrowth.title")}
-      description={t("charts.userGrowth.description")}
-      data={chartData}
-      config={chartConfig}
-      dataKeys={dataKeys}
-      nameKey="timestamp"
-      showYAxis={true}
-      showLegend={false}
-    />
+    <DataTableErrorBoundary>
+      <AreaChartComponent
+        title={t("charts.userGrowth.title")}
+        description={t("charts.userGrowth.description")}
+        data={chartData}
+        config={chartConfig}
+        dataKeys={dataKeys}
+        nameKey="timestamp"
+        showYAxis={true}
+        showLegend={false}
+      />
+    </DataTableErrorBoundary>
   );
 }

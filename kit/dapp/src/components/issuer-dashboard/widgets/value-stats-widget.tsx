@@ -8,10 +8,15 @@ import {
 import { useSettings } from "@/hooks/use-settings";
 import { DEFAULT_SETTINGS } from "@/lib/db/schemas/settings";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { toNumber } from "dnum";
+import { format } from "dnum";
 import { useTranslation } from "react-i18next";
+
+const logger = createLogger({
+  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
+});
 
 /**
  * Value Statistics Widget
@@ -22,9 +27,9 @@ import { useTranslation } from "react-i18next";
 export function ValueStatsWidget() {
   const { t, i18n } = useTranslation("issuer-dashboard");
 
-  // Fetch metrics summary which includes total value
+  // Fetch just the value metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.summary.queryOptions({ input: {} })
+    orpc.metrics.value.queryOptions({ input: {} })
   );
 
   // Get the system's base currency from settings
@@ -34,25 +39,35 @@ export function ValueStatsWidget() {
   const userCurrency = baseCurrency ?? DEFAULT_SETTINGS.BASE_CURRENCY;
   const locale = i18n.language;
 
-  // Safely parse the total value using dnum to handle large numbers without precision loss
+  // Safely parse and format the total value using dnum to preserve precision
   let formattedValue: string;
   try {
     // Use bigDecimal validator to safely parse the string value
     const totalValueBigDecimal = bigDecimal().parse(metrics.totalValue);
 
-    // Convert to number using dnum's toNumber function for currency formatting
-    // This is safe because currency formatting typically doesn't need extreme precision
-    const totalValueNumber = toNumber(totalValueBigDecimal);
+    // Format directly using dnum's format function to preserve precision
+    // dnum handles large numbers safely without precision loss
+    const formattedNumber = format(totalValueBigDecimal, {
+      digits: 2,
+      trailingZeros: true,
+    });
 
-    // Format the total value as currency using the system's base currency
-    formattedValue = new Intl.NumberFormat(locale, {
+    // Add currency symbol manually to avoid number conversion
+    const currencySymbol = new Intl.NumberFormat(locale, {
       style: "currency",
       currency: userCurrency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(totalValueNumber);
-  } catch {
-    // If parsing fails, show a fallback value
+    }).formatToParts(0).find(part => part.type === "currency")?.value || userCurrency;
+
+    formattedValue = `${currencySymbol}${formattedNumber}`;
+  } catch (error) {
+    // Log the error for debugging
+    logger.error("Failed to format total value", {
+      error,
+      totalValue: metrics.totalValue,
+      currency: userCurrency,
+    });
+
+    // Show a fallback value with proper currency formatting
     formattedValue = new Intl.NumberFormat(locale, {
       style: "currency",
       currency: userCurrency,

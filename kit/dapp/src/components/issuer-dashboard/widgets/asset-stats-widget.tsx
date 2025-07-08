@@ -20,9 +20,9 @@ export function AssetStatsWidget() {
   const { t } = useTranslation("issuer-dashboard");
   const pluralizeAsset = useAssetTypePlural();
 
-  // Fetch metrics summary which includes asset count and breakdown
+  // Fetch just the asset metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.summary.queryOptions({ input: {} })
+    orpc.metrics.assets.queryOptions({ input: {} })
   );
 
   // Create dynamic breakdown text using proper i18n pluralization

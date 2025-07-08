@@ -1,4 +1,5 @@
 import { PieChartComponent } from "@/components/charts/pie-chart";
+import { DataTableErrorBoundary } from "@/components/data-table/data-table-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -21,9 +22,9 @@ const chartConfig = {
 export function AssetSupplyChart() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch metrics summary which includes asset supply breakdown from API
+  // Fetch just the asset metrics which includes supply breakdown - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.summary.queryOptions({ input: {} })
+    orpc.metrics.assets.queryOptions({ input: {} })
   );
 
   // Convert asset supply breakdown to chart data format
@@ -42,13 +43,15 @@ export function AssetSupplyChart() {
   ) satisfies ChartConfig;
 
   return (
-    <PieChartComponent
-      title={t("charts.assetSupply.title")}
-      description={t("charts.assetSupply.description")}
-      data={chartData}
-      config={activeChartConfig}
-      dataKey="totalSupply"
-      nameKey="assetType"
-    />
+    <DataTableErrorBoundary>
+      <PieChartComponent
+        title={t("charts.assetSupply.title")}
+        description={t("charts.assetSupply.description")}
+        data={chartData}
+        config={activeChartConfig}
+        dataKey="totalSupply"
+        nameKey="assetType"
+      />
+    </DataTableErrorBoundary>
   );
 }

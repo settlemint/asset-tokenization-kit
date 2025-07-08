@@ -18,9 +18,9 @@ import { useTranslation } from "react-i18next";
 export function UserStatsWidget() {
   const { t } = useTranslation("issuer-dashboard");
 
-  // Fetch metrics summary which includes user count
+  // Fetch just the user metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.summary.queryOptions({ input: {} })
+    orpc.metrics.users.queryOptions({ input: { timeRange: 7 } })
   );
 
   return (
@@ -34,7 +34,7 @@ export function UserStatsWidget() {
       <CardFooter className="text-muted-foreground text-sm">
         {t("stats.usersDescription", {
           count: metrics.recentUsers,
-          days: metrics.recentActivityDays,
+          days: metrics.timeRangeDays,
         })}
       </CardFooter>
     </Card>
