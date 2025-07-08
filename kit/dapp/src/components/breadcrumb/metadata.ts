@@ -1,4 +1,5 @@
 import type { AssetClass } from "@/lib/zod/validators/asset-types";
+import type { CustomTypeOptions } from "i18next";
 
 /**
  * Breadcrumb metadata that can be attached to routes
@@ -9,7 +10,7 @@ export interface BreadcrumbMetadata {
   /** Whether this is an i18n key that needs translation */
   isI18nKey?: boolean;
   /** Optional i18n namespace (defaults to "navigation") */
-  i18nNamespace?: string;
+  i18nNamespace?: keyof CustomTypeOptions["resources"];
   /** Optional function to dynamically resolve the title */
   getTitle?: () => string | Promise<string>;
   /** Whether this segment should be hidden from breadcrumbs */

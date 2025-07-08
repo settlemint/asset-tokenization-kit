@@ -120,7 +120,7 @@ export const statsTransactions = authRouter.token.statsTransactions
     }
 
     // Default timeRange to 7 days if not provided
-    const timeRange = input?.timeRange ?? 7;
+    const timeRange = input.timeRange ?? 7;
 
     // Calculate the date range for queries
     const since = new Date();

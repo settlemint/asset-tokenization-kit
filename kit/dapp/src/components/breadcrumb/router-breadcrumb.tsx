@@ -8,11 +8,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import type { BreadcrumbMetadata } from "./metadata";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { BreadcrumbMetadata } from "./metadata";
 
 interface BreadcrumbSegment {
   title: string;
@@ -38,22 +38,22 @@ function useAsyncBreadcrumbTitle(
 
   useEffect(() => {
     let cancelled = false;
-
-    if (breadcrumbMeta?.getTitle) {
+    const getTitle = breadcrumbMeta?.getTitle;
+    if (getTitle) {
       // Reset async title when starting new resolution
       setAsyncTitle(null);
 
       // Resolve the async title
       const resolveTitle = async () => {
         try {
-          const title = await breadcrumbMeta.getTitle();
+          const title = await getTitle();
           if (!cancelled) {
             setAsyncTitle(title);
           }
         } catch {
           // Fall back to static title or default on error
           if (!cancelled) {
-            setAsyncTitle(breadcrumbMeta.title ?? fallbackTitle);
+            setAsyncTitle(breadcrumbMeta.title);
           }
         }
       };
@@ -105,8 +105,7 @@ function BreadcrumbItemWithAsyncTitle({
   href?: string;
   isCurrentPage?: boolean;
 }) {
-  const namespace = breadcrumbMeta?.i18nNamespace ?? "navigation";
-  const { t } = useTranslation([namespace]);
+  const { t } = useTranslation(["navigation"]);
   const title = useAsyncBreadcrumbTitle(breadcrumbMeta, fallbackTitle);
 
   return (

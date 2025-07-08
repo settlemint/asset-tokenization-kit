@@ -86,8 +86,8 @@ function processUserGrowthData(
 
   for (const stat of accountStats) {
     // Safely extract date part, handle potential null/undefined values
-    const timestampParts = stat.timestamp?.split("T");
-    const dayKey = timestampParts?.[0] ?? stat.timestamp ?? "unknown";
+    const timestampParts = stat.timestamp.split("T");
+    const dayKey = timestampParts[0] ?? "unknown";
 
     if (!dailyUserSets.has(dayKey)) {
       dailyUserSets.set(dayKey, new Set());
@@ -172,7 +172,7 @@ export const stats = authRouter.user.stats
     }
 
     // Default timeRange to 7 days if not provided
-    const timeRange = input?.timeRange ?? 7;
+    const timeRange = input.timeRange ?? 7;
 
     // Calculate the date range for queries
     const since = new Date();

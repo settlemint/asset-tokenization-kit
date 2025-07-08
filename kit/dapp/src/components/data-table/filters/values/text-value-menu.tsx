@@ -176,7 +176,7 @@ export function PropertyFilterTextValueMenu<TData, TValue>({
                 onClick={handleDoesNotContainClick}
                 className="text-xs"
               >
-                {t("filters.text.does-not-contain")}
+                {t("filters.text.doesNotContain")}
               </Button>
             </div>
             <Input

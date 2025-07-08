@@ -15,7 +15,7 @@ const logger = createLogger({
 
 /**
  * Represents an event emitted during transaction processing.
- * @interface TransactionEvent
+ * @interface TransactionEventEmitted
  * @property {("pending" | "confirmed" | "failed")} status - Current status of the transaction
  *   - `pending`: Transaction is submitted but not yet confirmed
  *   - `confirmed`: Transaction has been mined and indexed
@@ -23,7 +23,7 @@ const logger = createLogger({
  * @property {string} message - Human-readable message describing the current state
  * @property {string} transactionHash - The Ethereum transaction hash (0x-prefixed)
  */
-interface TransactionEvent {
+export interface TransactionEventEmitted {
   status: "pending" | "confirmed" | "failed";
   message: string;
   transactionHash: string;
@@ -136,7 +136,7 @@ function createValidatedPortalClient(
         transactionIndexed?: string;
         indexingTimeout?: string;
       }
-    ): AsyncGenerator<TransactionEvent, string, void> {
+    ): AsyncGenerator<TransactionEventEmitted, string, void> {
       // Extract operation name from document metadata
       const operation =
         (
