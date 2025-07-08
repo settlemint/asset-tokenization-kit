@@ -35,28 +35,6 @@
       "actions": "الإجراءات المعلقة"
     }
   },
-  "dashboard": {
-    "title": "لوحة التحكم",
-    "welcome": "مرحباً بعودتك",
-    "stats": {
-      "title": "إحصائيات المنصة",
-      "assets": "الأصول",
-      "transactions": "المعاملات",
-      "users": "المستخدمون",
-      "totalValue": "القيمة الإجمالية",
-      "loading": "جاري تحميل الإحصائيات..."
-    },
-    "charts": {
-      "assetSupply": "عرض الأصول",
-      "assetActivity": "نشاط الأصول",
-      "usersHistory": "نمو المستخدمين",
-      "transactionsHistory": "تاريخ المعاملات"
-    },
-    "tables": {
-      "latestEvents": "أحدث الأحداث",
-      "actions": "الإجراءات المعلقة"
-    }
-  },
   "components": {
     "data-table": {
       "no-results": "لم يتم العثور على نتائج",
