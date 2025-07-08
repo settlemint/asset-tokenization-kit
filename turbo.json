@@ -71,6 +71,8 @@
       "cache": false,
       "persistent": true
     },
-    "typecheck": {}
+    "typecheck": {
+      "dependsOn": ["codegen"]
+    }
   }
 }
