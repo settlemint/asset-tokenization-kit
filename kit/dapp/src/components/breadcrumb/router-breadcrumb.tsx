@@ -105,6 +105,7 @@ function BreadcrumbItemWithAsyncTitle({
   href?: string;
   isCurrentPage?: boolean;
 }) {
+  const { t } = useTranslation(["navigation"]);
   const title = useAsyncBreadcrumbTitle(breadcrumbMeta, fallbackTitle);
 
   return (
@@ -119,7 +120,7 @@ function BreadcrumbItemWithAsyncTitle({
         </span>
       ) : (
         <BreadcrumbLink asChild className="text-xs">
-          <Link to={href} aria-label={title === "home" ? "Home" : undefined}>
+          <Link to={href} aria-label={title === "home" ? t("home") : undefined}>
             {title === "home" ? <Home className="h-3 w-3" /> : title}
           </Link>
         </BreadcrumbLink>
