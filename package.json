@@ -34,7 +34,7 @@
     "turbo.json"
   ],
   "scripts": {
-    "postinstall": "turbo run dependencies && git config merge.ours.driver true && git config merge.ours.name \"Keep ours for generated files\"",
+    "postinstall": "turbo run dependencies",
     "compile": "turbo run compile",
     "codegen": "turbo run codegen",
     "build": "turbo build",
@@ -67,7 +67,10 @@
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
-  "dependencies": {},
+  "dependencies": {
+    "currency-codes": "2.2.0",
+    "drizzle-zod": "0.8.2"
+  },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
     "@settlemint/sdk-cli": "2.4.1",

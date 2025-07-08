@@ -57,7 +57,7 @@ export function DataTablePagination<TData>({
   table,
   enablePagination = true,
 }: DataTablePaginationProps<TData>) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
 
   /**
    * Handles page size selection changes.
@@ -108,7 +108,7 @@ export function DataTablePagination<TData>({
         {table.getAllColumns().some((column) => column.id === "select") &&
           table.getFilteredSelectedRowModel().rows.length > 0 && (
             <span>
-              {t("components.data-table.selected-rows-info", {
+              {t("selectedRowsInfo", {
                 selected: table.getFilteredSelectedRowModel().rows.length,
                 total: table.getFilteredRowModel().rows.length,
               })}
@@ -117,9 +117,7 @@ export function DataTablePagination<TData>({
       </div>
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <p className="text-muted-foreground text-xs">
-            {t("components.data-table.rows-per-page")}
-          </p>
+          <p className="text-muted-foreground text-xs">{t("rowsPerPage")}</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={handlePageSizeChange}
@@ -148,9 +146,7 @@ export function DataTablePagination<TData>({
             onClick={handleFirstPage}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">
-              {t("components.data-table.go-to-first-page")}
-            </span>
+            <span className="sr-only">{t("goToFirstPage")}</span>
             <ChevronsLeft className="h-3.5 w-3.5 transition-transform duration-200 hover:-translate-x-0.5" />
           </Button>
           <Button
@@ -160,9 +156,7 @@ export function DataTablePagination<TData>({
             onClick={handlePreviousPage}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">
-              {t("components.data-table.go-to-previous-page")}
-            </span>
+            <span className="sr-only">{t("goToPreviousPage")}</span>
             <ChevronLeft className="h-3.5 w-3.5 transition-transform duration-200 hover:-translate-x-0.5" />
           </Button>
           <div className="flex items-center gap-1 text-muted-foreground text-xs px-2 tabular-nums">
@@ -181,9 +175,7 @@ export function DataTablePagination<TData>({
             onClick={handleNextPage}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">
-              {t("components.data-table.go-to-next-page")}
-            </span>
+            <span className="sr-only">{t("goToNextPage")}</span>
             <ChevronRight className="h-3.5 w-3.5 transition-transform duration-200 hover:translate-x-0.5" />
           </Button>
           <Button
@@ -193,9 +185,7 @@ export function DataTablePagination<TData>({
             onClick={handleLastPage}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">
-              {t("components.data-table.go-to-last-page")}
-            </span>
+            <span className="sr-only">{t("goToLastPage")}</span>
             <ChevronsRight className="h-3.5 w-3.5 transition-transform duration-200 hover:translate-x-0.5" />
           </Button>
         </div>

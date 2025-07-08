@@ -1,35 +1,40 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Web3Address } from "@/components/web3/web3-address";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { CellContext } from "@tanstack/react-table";
-import { toNumber } from "dnum";
+import { format as formatDnum, isDnum, toNumber } from "dnum";
 import { useTranslation } from "react-i18next";
-import { AddressCell } from "./address-cell";
 
 /**
  * Helper function to safely convert a value to a number for formatting
  * Uses dnum for precision handling when the value is a string
+ * Returns 0 for NaN values
  */
 function safeToNumber(value: unknown): number {
-  // If it's already a number, return it
+  // If it's already a number, check for NaN
   if (typeof value === "number") {
-    return value;
+    return Number.isNaN(value) ? 0 : value;
   }
 
   // If it's a string, try to parse it with dnum for precision
   if (typeof value === "string") {
     try {
       const bigDecimalValue = bigDecimal().parse(value);
-      return toNumber(bigDecimalValue);
+      const num = toNumber(bigDecimalValue);
+      return Number.isNaN(num) ? 0 : num;
     } catch {
       // If parsing fails, fallback to Number conversion
-      return Number(value);
+      const num = Number(value);
+      return Number.isNaN(num) ? 0 : num;
     }
   }
 
   // For other types, use Number conversion
-  return Number(value);
+  const num = Number(value);
+  return Number.isNaN(num) ? 0 : num;
 }
 
 /**
@@ -106,14 +111,27 @@ export function AutoCell<TData, TValue>({
 
   // Auto-render based on type with intelligent defaults
   switch (meta.type) {
-    case "address":
-      return (
-        <AddressCell
-          address={String(value)}
-          showCopyButton={true}
-          truncateLength={6}
-        />
-      );
+    case "address": {
+      try {
+        const validAddress = getEthereumAddress(value);
+        return (
+          <Web3Address
+            address={validAddress}
+            copyToClipboard={true}
+            showFullAddress={false}
+            size="tiny"
+            showSymbol={false}
+          />
+        );
+      } catch {
+        // If address is invalid, show the raw value
+        return (
+          <span className="text-xs text-muted-foreground font-mono">
+            {String(value)}
+          </span>
+        );
+      }
+    }
 
     case "badge": {
       // Determine variant based on column type or name
@@ -153,7 +171,7 @@ export function AutoCell<TData, TValue>({
         }
       }
 
-      // Apply font-mono for symbol-like badges
+      // Apply for symbol-like badges
       const isSymbol = meta.displayName?.toLowerCase().includes("symbol");
 
       return (
@@ -167,7 +185,7 @@ export function AutoCell<TData, TValue>({
       // Use safe number conversion to handle large values without precision loss
       const currencyValue = safeToNumber(value);
       return (
-        <span className="font-mono text-right block tabular-nums">
+        <span className="text-right block tabular-nums">
           {new Intl.NumberFormat(locale, {
             style: "currency",
             currency: meta.currency ?? "EUR",
@@ -239,7 +257,22 @@ export function AutoCell<TData, TValue>({
     }
 
     case "number": {
+      // Check if value is a Dnum (big decimal) first
+      if (isDnum(value)) {
+        // Format Dnum with locale-aware formatting
+        const formatted = formatDnum(value, {
+          locale,
+          digits: 2,
+          trailingZeros: false,
+        });
+
+        return (
+          <span className="text-right block tabular-nums">{formatted}</span>
+        );
+      }
+
       // Use safe number conversion to handle large values without precision loss
+      // This will return 0 for NaN values
       const numberValue = safeToNumber(value);
 
       // Determine formatting based on column metadata
@@ -264,11 +297,7 @@ export function AutoCell<TData, TValue>({
         ...(useCompact && { maximumFractionDigits: 1 }),
       }).format(numberValue);
 
-      return (
-        <span className="font-mono text-right block tabular-nums">
-          {formatted}
-        </span>
-      );
+      return <span className="text-right block tabular-nums">{formatted}</span>;
     }
 
     case "text":

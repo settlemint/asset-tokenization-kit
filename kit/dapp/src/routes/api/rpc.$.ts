@@ -18,6 +18,9 @@
  */
 
 import { env } from "@/lib/env";
+import { bigDecimalSerializer } from "@/lib/zod/validators/bigdecimal";
+import { bigIntSerializer } from "@/lib/zod/validators/bigint";
+import { timestampSerializer } from "@/lib/zod/validators/timestamp";
 import { router } from "@/orpc/routes/router";
 import { onError } from "@orpc/client";
 import { RPCHandler } from "@orpc/server/fetch";
@@ -50,6 +53,11 @@ const handler = new RPCHandler(router, {
     }),
   ],
   plugins: [new BatchHandlerPlugin()],
+  customJsonSerializers: [
+    bigDecimalSerializer,
+    bigIntSerializer,
+    timestampSerializer,
+  ],
 });
 
 /**

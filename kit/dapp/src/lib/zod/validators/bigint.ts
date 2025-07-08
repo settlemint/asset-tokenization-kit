@@ -5,6 +5,7 @@
  * Designed for blockchain applications handling large numeric values like token amounts.
  * @module BigIntValidation
  */
+import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
 import { abs, floor, from, multiply, toString, type Numberish } from "dnum";
 import { z } from "zod/v4";
 
@@ -12,8 +13,20 @@ import { z } from "zod/v4";
  * Flexible BigInt validator that accepts strings, numbers, or bigints.
  * Uses dnum for precise decimal handling and scientific notation support.
  * Automatically truncates decimal values when converting to BigInt.
+ *
+ * This schema provides efficient handling for:
+ * - Already-parsed bigint values (pass-through without transformation)
+ * - String inputs to avoid JavaScript number precision limits
+ * - Numbers for convenience with smaller values
+ * - Scientific notation support (e.g., "1e30")
+ * - Automatic decimal truncation toward zero
+ *
  * @example
  * ```typescript
+ * // Pass-through for existing bigint values (most efficient)
+ * const existingBigInt = 123n;
+ * apiBigInt.parse(existingBigInt); // 123n (no transformation)
+ *
  * apiBigInt.parse("123456789012345678901234567890"); // 123456789012345678901234567890n
  * apiBigInt.parse(123); // 123n
  * apiBigInt.parse(123n); // 123n
@@ -24,7 +37,7 @@ import { z } from "zod/v4";
  * ```
  */
 export const apiBigInt = z.preprocess((value, ctx) => {
-  // If already a bigint, return as is
+  // If already a bigint, return as is (efficient pass-through)
   if (typeof value === "bigint") {
     return value;
   }
@@ -122,3 +135,26 @@ export function isApiBigInt(value: unknown): value is ApiBigInt {
 export function getApiBigInt(value: unknown): ApiBigInt {
   return apiBigInt.parse(value);
 }
+
+/**
+ * Custom JSON serializer for BigInt values in ORPC endpoints.
+ *
+ * This serializer ensures proper handling of BigInt values in JSON:
+ * - Serializes bigint to string to preserve precision in JSON
+ * - Deserializes string back to bigint for type safety
+ * - Prevents JSON.stringify errors with bigint values
+ *
+ * @example
+ * ```typescript
+ * // In ORPC client/server configuration:
+ * const handler = new RPCHandler(router, {
+ *   customJsonSerializers: [bigIntSerializer]
+ * });
+ * ```
+ */
+export const bigIntSerializer: StandardRPCCustomJsonSerializer = {
+  type: 32,
+  condition: (data) => typeof data === "bigint",
+  serialize: (data: bigint) => data.toString(),
+  deserialize: (data: string) => BigInt(data),
+};

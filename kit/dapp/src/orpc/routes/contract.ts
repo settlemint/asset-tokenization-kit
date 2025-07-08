@@ -1,4 +1,5 @@
 import { accountContract } from "@/orpc/routes/account/account.contract";
+import { exchangeRatesContract } from "@/orpc/routes/exchange-rates/exchange-rates.contract";
 import { metricsContract } from "@/orpc/routes/metrics/metrics.contract";
 import { settingsContract } from "@/orpc/routes/settings/settings.contract";
 import { systemContract } from "@/orpc/routes/system/system.contract";
@@ -34,6 +35,18 @@ export const contract = {
    * @see {@link ./account/account.router} - Corresponding router implementation
    */
   account: accountContract,
+
+  /**
+   * Exchange rates API contract.
+   *
+   * Contains type definitions for foreign exchange rate management procedures.
+   * Provides real-time currency conversion rates with automatic synchronization
+   * from external providers, manual rate overrides, and historical data access
+   * for analytics and charting.
+   * @see {@link ./exchange-rates/exchange-rates.contract} - Exchange rates contract implementation
+   * @see {@link ./exchange-rates/exchange-rates.router} - Corresponding router implementation
+   */
+  exchangeRates: exchangeRatesContract,
 
   /**
    * Metrics-related API contract.

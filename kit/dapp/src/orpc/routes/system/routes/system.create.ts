@@ -231,9 +231,7 @@ export const create = onboardedRouter.system.create
     const result = await context.theGraphClient.query(
       FIND_SYSTEM_FOR_TRANSACTION_QUERY,
       {
-        input: {
-          input: queryVariables,
-        },
+        input: queryVariables,
         output: SystemQueryResultSchema,
         error: messages.systemCreationFailed,
       }

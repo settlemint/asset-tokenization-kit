@@ -5,10 +5,35 @@
   "deploying": "Bereitstellen...",
   "continue": "Fortfahren",
   "navigation": {
-    "assetManagement": "Asset-Verwaltung",
-    "asset": "Asset",
-    "assetClasses": "Asset-Klassen",
-    "statistics": "Statistiken"
+    "assetManagement": "Vermögensverwaltung",
+    "asset": "Vermögenswert",
+    "assetClasses": "Vermögensklassen",
+    "statistics": "Statistiken",
+    "fixedIncome": "Festverzinslich",
+    "flexibleIncome": "Flexibles Einkommen",
+    "cashEquivalent": "Bargeldäquivalent"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Willkommen zurück",
+    "stats": {
+      "title": "Plattform-Statistiken",
+      "assets": "Assets",
+      "transactions": "Transaktionen",
+      "users": "Benutzer",
+      "totalValue": "Gesamtwert",
+      "loading": "Statistiken werden geladen..."
+    },
+    "charts": {
+      "assetSupply": "Asset-Angebot",
+      "assetActivity": "Asset-Aktivität",
+      "usersHistory": "Benutzerwachstum",
+      "transactionsHistory": "Transaktionsverlauf"
+    },
+    "tables": {
+      "latestEvents": "Neueste Ereignisse",
+      "actions": "Ausstehende Aktionen"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -39,11 +64,11 @@
       "sort-descending": "Absteigend sortieren",
       "hide": "Spalte ausblenden",
       "export": "Exportieren",
-      "failed-export": "Export fehlgeschlagen",
-      "loading": "Lädt...",
-      "search": "Suchen...",
+      "failed-export": "Fehler beim Exportieren der Daten",
+      "loading": "Lade...",
+      "search": "Suche...",
       "filter": "Filter",
-      "clear-filters": "Filter löschen",
+      "clear-filters": "Filter zurücksetzen",
       "show-all": "Alle anzeigen",
       "show-selected": "Ausgewählte anzeigen",
       "select-all": "Alle auswählen",
@@ -51,11 +76,11 @@
       "rows-per-page": "Zeilen pro Seite",
       "page": "Seite",
       "of": "von",
-      "previous": "Zurück",
-      "next": "Weiter",
+      "previous": "Vorherige",
+      "next": "Nächste",
       "first": "Erste",
       "last": "Letzte",
-      "showing": "Zeige",
+      "showing": "Anzeigen",
       "entries": "Einträge",
       "selected": "ausgewählt",
       "actions": "Aktionen",
@@ -71,19 +96,22 @@
       "open": "Öffnen",
       "toggle-columns": "Spalten umschalten",
       "density": "Dichte",
-      "comfortable": "Komfortabel",
+      "comfortable": "Bequem",
       "compact": "Kompakt",
       "standard": "Standard",
       "view": "Ansicht",
       "selected-rows-info": "{{selected}} von {{total}} Zeile(n) ausgewählt",
       "page-info": "Seite {{current}} von {{total}}",
-      "go-to-first-page": "Zur ersten Seite",
-      "go-to-previous-page": "Zur vorherigen Seite",
-      "go-to-next-page": "Zur nächsten Seite",
-      "go-to-last-page": "Zur letzten Seite",
+      "go-to-first-page": "Gehe zur ersten Seite",
+      "go-to-previous-page": "Gehe zur vorherigen Seite",
+      "go-to-next-page": "Gehe zur nächsten Seite",
+      "go-to-last-page": "Gehe zur letzten Seite",
       "details": "Details",
       "open-menu": "Menü öffnen",
-      "address-copied": "Adresse in Zwischenablage kopiert",
+      "address-copied": "Adresse in die Zwischenablage kopiert",
+      "copy": "Kopieren",
+      "copy-to-clipboard": "In die Zwischenablage kopieren",
+      "copied-to-clipboard": "In die Zwischenablage kopiert",
       "clear-all": "Alle löschen",
       "is": "ist",
       "clear": "Löschen",
@@ -94,12 +122,46 @@
           "placeholder": "Wert eingeben..."
         },
         "number": {
-          "single": "Einzeln",
+          "single": "Einzel",
           "range": "Bereich",
           "placeholder": "Wert eingeben",
           "min": "Min",
           "max": "Max"
         }
+      },
+      "bulk-actions": {
+        "actions": "Aktionen",
+        "add-tags": "Tags hinzufügen",
+        "archive-selected": "Ausgewählte archivieren",
+        "assign-to": "Zuweisen an {{name}}",
+        "clear-selection": "Auswahl löschen",
+        "confirmation": {
+          "archive": {
+            "action": "Archivieren",
+            "description": "Sind Sie sicher, dass Sie die ausgewählten Elemente archivieren möchten?",
+            "title": "Ausgewählte Elemente archivieren"
+          },
+          "delete": {
+            "action": "Löschen",
+            "description": "Diese Aktion kann nicht rückgängig gemacht werden. Sind Sie sicher, dass Sie die ausgewählten Elemente löschen möchten?",
+            "title": "Ausgewählte Elemente löschen"
+          }
+        },
+        "delete-selected": "Ausgewählte löschen",
+        "duplicate-selected": "Ausgewählte duplizieren",
+        "error": "Fehler beim Ausführen von {{action}}",
+        "export-csv": "CSV exportieren",
+        "export-json": "JSON exportieren",
+        "export-xlsx": "Excel exportieren",
+        "processing": "Verarbeite...",
+        "remove-tags": "Tags entfernen",
+        "select-all": "Alle auswählen",
+        "select-row": "Zeile {{row}} auswählen",
+        "selected-count": "{{count}} ausgewählt",
+        "selected-count_one": "{{count}} Element ausgewählt",
+        "selected-count_other": "{{count}} Elemente ausgewählt",
+        "set-tags": "Tags festlegen",
+        "unarchive-selected": "Ausgewählte wiederherstellen"
       }
     },
     "deposits-table": {
@@ -110,7 +172,9 @@
         "token-symbol": "Token-Symbol",
         "decimals": "Dezimalstellen",
         "contract-address": "Vertragsadresse",
-        "actions": "Aktionen"
+        "total-supply": "Gesamtangebot",
+        "actions": "Aktionen",
+        "paused": "Status"
       },
       "actions": {
         "view-details": "Details anzeigen",
@@ -120,13 +184,17 @@
         "create-token": "Token erstellen"
       },
       "bulk-actions": {
-        "archive-message": "Würde {{count}} Token archivieren. Dies ist eine Demo-Aktion.",
-        "duplicate-message": "Würde {{count}} Token duplizieren. Dies ist eine Demo-Aktion."
+        "archive-message": "Würde {{count}} Token archivieren. Dies ist eine Demoaaktion.",
+        "duplicate-message": "Würde {{count}} Token duplizieren. Dies ist eine Demoaaktion."
       },
       "search-placeholder": "Tokens nach Name, Symbol oder Adresse suchen...",
       "empty-state": {
         "title": "Keine Tokens gefunden",
-        "description": "Diese Fabrik hat noch keine Tokens erstellt. Erstellen Sie Ihren ersten Token, um zu beginnen."
+        "description": "Diese Fabrik hat noch keine Tokens erstellt. Erstellen Sie Ihr erstes Token, um zu beginnen."
+      },
+      "status": {
+        "active": "Aktiv",
+        "paused": "Pausiert"
       }
     }
   },
@@ -141,7 +209,7 @@
     },
     "notFound": {
       "title": "Seite nicht gefunden",
-      "description": "Die gesuchte Seite existiert nicht oder wurde verschoben."
+      "description": "Die von Ihnen gesuchte Seite existiert nicht oder wurde verschoben."
     },
     "validation": {
       "title": "Validierungsfehler",
@@ -157,11 +225,11 @@
     },
     "timeout": {
       "title": "Anfrage-Zeitüberschreitung",
-      "description": "Die Anfrage dauerte zu lange. Bitte versuchen Sie es erneut."
+      "description": "Die Anfrage hat zu lange gedauert, um abgeschlossen zu werden. Bitte versuchen Sie es erneut."
     },
     "portal": {
       "title": "Portal-Fehler",
-      "description": "Es gab einen Fehler bei der Verbindung zum Portal-Dienst."
+      "description": "Es gab einen Fehler beim Verbinden mit dem Portal-Dienst."
     },
     "internal": {
       "title": "Interner Serverfehler",
@@ -172,19 +240,19 @@
       "description": "Es gab einen Fehler bei der Interaktion mit der Blockchain."
     },
     "contract": {
-      "title": "Smart Contract-Fehler",
-      "description": "Die Smart Contract-Operation ist fehlgeschlagen."
+      "title": "Smart-Contract-Fehler",
+      "description": "Der Smart-Contract-Vorgang ist fehlgeschlagen."
     },
     "insufficientFunds": {
       "title": "Unzureichende Mittel",
-      "description": "Ihr Konto verfügt nicht über genügend Mittel, um diese Operation abzuschließen."
+      "description": "Ihr Konto hat nicht genügend Guthaben, um diesen Vorgang abzuschließen."
     },
     "network": {
       "title": "Netzwerkfehler",
-      "description": "Verbindung zum Netzwerk nicht möglich. Bitte überprüfen Sie Ihre Verbindung."
+      "description": "Verbindung zum Netzwerk konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Verbindung."
     },
     "badRequest": {
-      "title": "Fehlerhafte Anfrage",
+      "title": "Ungültige Anfrage",
       "description": "Die Anfrage war ungültig oder kann nicht verarbeitet werden."
     },
     "conflict": {
@@ -192,8 +260,8 @@
       "description": "Die Anfrage steht im Konflikt mit dem aktuellen Zustand."
     },
     "badGateway": {
-      "title": "Fehlerhaftes Gateway",
-      "description": "Der Server erhielt eine ungültige Antwort. Bitte versuchen Sie es erneut."
+      "title": "Schlechtes Gateway",
+      "description": "Der Server hat eine ungültige Antwort erhalten. Bitte versuchen Sie es erneut."
     },
     "serviceUnavailable": {
       "title": "Dienst nicht verfügbar",
@@ -201,7 +269,7 @@
     },
     "gatewayTimeout": {
       "title": "Gateway-Zeitüberschreitung",
-      "description": "Der Server antwortete nicht rechtzeitig. Bitte versuchen Sie es erneut."
+      "description": "Der Server hat nicht rechtzeitig geantwortet. Bitte versuchen Sie es erneut."
     },
     "generic": {
       "title": "Unerwarteter Fehler",
@@ -213,16 +281,16 @@
     },
     "systemNotCreated": {
       "title": "System nicht initialisiert",
-      "description": "Das System wurde nicht initialisiert. Bitte kontaktieren Sie einen Administrator."
+      "description": "Das System wurde nicht initialisiert. Bitte wenden Sie sich an einen Administrator."
     },
     "resourceAlreadyExists": {
       "title": "Ressource existiert bereits",
-      "description": "Die Ressource, die Sie erstellen möchten, existiert bereits."
+      "description": "Die Ressource, die Sie zu erstellen versuchen, existiert bereits."
     },
     "buttons": {
       "tryAgain": "Erneut versuchen",
-      "goBack": "Zurück",
-      "goHome": "Zur Startseite"
+      "goBack": "Zurückgehen",
+      "goHome": "Nach Hause gehen"
     }
   }
 }

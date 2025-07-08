@@ -71,7 +71,7 @@ export function PropertyFilterMultiOptionValueMenu<
   table,
   onBack,
 }: PropertyFilterMultiOptionValueMenuProps<TData, TValue>) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
   const filter = column.getFilterValue() as
     | FilterValue<"multiOption", TData>
     | undefined;
@@ -199,8 +199,8 @@ export function PropertyFilterMultiOptionValueMenu<
         {Icon && <Icon className="size-4 shrink-0 opacity-50" />}
         <span className="text-sm text-muted-foreground">{displayName}</span>
       </div>
-      <CommandInput autoFocus placeholder={t("components.data-table.search")} />
-      <CommandEmpty>{t("components.data-table.no-results")}</CommandEmpty>
+      <CommandInput autoFocus placeholder={t("search")} />
+      <CommandEmpty>{t("no-results")}</CommandEmpty>
       <CommandList>
         <CommandGroup>
           {options.map((v) => {

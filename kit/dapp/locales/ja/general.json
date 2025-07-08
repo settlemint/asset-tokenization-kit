@@ -5,10 +5,35 @@
   "deploying": "デプロイ中...",
   "continue": "続ける",
   "navigation": {
-    "assetManagement": "アセット管理",
-    "asset": "アセット",
-    "assetClasses": "アセットクラス",
-    "statistics": "統計"
+    "assetManagement": "資産管理",
+    "asset": "資産",
+    "assetClasses": "資産クラス",
+    "statistics": "統計",
+    "fixedIncome": "固定収入",
+    "flexibleIncome": "柔軟な収入",
+    "cashEquivalent": "現金同等物"
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "welcome": "おかえりなさい",
+    "stats": {
+      "title": "プラットフォーム統計",
+      "assets": "アセット",
+      "transactions": "トランザクション",
+      "users": "ユーザー",
+      "totalValue": "総価値",
+      "loading": "統計を読み込み中..."
+    },
+    "charts": {
+      "assetSupply": "アセット供給",
+      "assetActivity": "アセット活動",
+      "usersHistory": "ユーザー成長",
+      "transactionsHistory": "トランザクション履歴"
+    },
+    "tables": {
+      "latestEvents": "最新イベント",
+      "actions": "保留中のアクション"
+    }
   },
   "dashboard": {
     "title": "ダッシュボード",
@@ -34,49 +59,49 @@
   },
   "components": {
     "data-table": {
-      "no-results": "結果が見つかりません",
-      "sort-ascending": "昇順で並び替え",
-      "sort-descending": "降順で並び替え",
+      "no-results": "結果が見つかりませんでした",
+      "sort-ascending": "昇順に並べ替え",
+      "sort-descending": "降順に並べ替え",
       "hide": "列を非表示",
       "export": "エクスポート",
-      "failed-export": "エクスポートに失敗しました",
+      "failed-export": "データのエクスポートに失敗しました",
       "loading": "読み込み中...",
       "search": "検索...",
       "filter": "フィルター",
       "clear-filters": "フィルターをクリア",
       "show-all": "すべて表示",
-      "show-selected": "選択されたものを表示",
+      "show-selected": "選択したものを表示",
       "select-all": "すべて選択",
       "clear-selection": "選択をクリア",
       "rows-per-page": "ページあたりの行数",
       "page": "ページ",
       "of": "の",
-      "previous": "前へ",
-      "next": "次へ",
+      "previous": "前",
+      "next": "次",
       "first": "最初",
       "last": "最後",
       "showing": "表示中",
-      "entries": "エントリ",
-      "selected": "選択済み",
+      "entries": "エントリー",
+      "selected": "選択された",
       "actions": "アクション",
       "view-details": "詳細を表示",
       "edit": "編集",
       "delete": "削除",
-      "confirm-delete": "この項目を削除してもよろしいですか？",
+      "confirm-delete": "このアイテムを削除してもよろしいですか？",
       "cancel": "キャンセル",
       "confirm": "確認",
       "reset": "リセット",
       "apply": "適用",
       "close": "閉じる",
       "open": "開く",
-      "toggle-columns": "列の切り替え",
+      "toggle-columns": "列を切り替え",
       "density": "密度",
       "comfortable": "快適",
       "compact": "コンパクト",
       "standard": "標準",
       "view": "表示",
-      "selected-rows-info": "{{total}}行中{{selected}}行が選択されています",
-      "page-info": "{{total}}ページ中{{current}}ページ",
+      "selected-rows-info": "{{selected}} / {{total}}行が選択されています",
+      "page-info": "ページ{{current}} / {{total}}",
       "go-to-first-page": "最初のページに移動",
       "go-to-previous-page": "前のページに移動",
       "go-to-next-page": "次のページに移動",
@@ -84,6 +109,9 @@
       "details": "詳細",
       "open-menu": "メニューを開く",
       "address-copied": "アドレスがクリップボードにコピーされました",
+      "copy": "コピー",
+      "copy-to-clipboard": "クリップボードにコピー",
+      "copied-to-clipboard": "クリップボードにコピーされました",
       "clear-all": "すべてクリア",
       "is": "は",
       "clear": "クリア",
@@ -100,6 +128,40 @@
           "min": "最小",
           "max": "最大"
         }
+      },
+      "bulk-actions": {
+        "actions": "アクション",
+        "add-tags": "タグを追加",
+        "archive-selected": "選択した項目をアーカイブ",
+        "assign-to": "{{name}}に割り当て",
+        "clear-selection": "選択をクリア",
+        "confirmation": {
+          "archive": {
+            "action": "アーカイブ",
+            "description": "選択したアイテムをアーカイブしてもよろしいですか？",
+            "title": "選択したアイテムをアーカイブ"
+          },
+          "delete": {
+            "action": "削除",
+            "description": "このアクションは元に戻せません。選択したアイテムを削除してもよろしいですか？",
+            "title": "選択したアイテムを削除"
+          }
+        },
+        "delete-selected": "選択したアイテムを削除",
+        "duplicate-selected": "選択したアイテムを複製",
+        "error": "{{action}}の実行に失敗しました",
+        "export-csv": "CSVをエクスポート",
+        "export-json": "JSONをエクスポート",
+        "export-xlsx": "Excelをエクスポート",
+        "processing": "処理中...",
+        "remove-tags": "タグを削除",
+        "select-all": "すべて選択",
+        "select-row": "行{{row}}を選択",
+        "selected-count": "{{count}}が選択されました",
+        "selected-count_one": "{{count}}アイテムが選択されました",
+        "selected-count_other": "{{count}}アイテムが選択されています",
+        "set-tags": "タグを設定",
+        "unarchive-selected": "選択したアイテムのアーカイブ解除"
       }
     },
     "deposits-table": {
@@ -108,9 +170,11 @@
         "token-name": "トークン名",
         "symbol": "シンボル",
         "token-symbol": "トークンシンボル",
-        "decimals": "小数点以下桁数",
-        "contract-address": "コントラクトアドレス",
-        "actions": "アクション"
+        "decimals": "小数点以下の桁数",
+        "contract-address": "契約アドレス",
+        "total-supply": "総供給量",
+        "actions": "アクション",
+        "paused": "ステータス"
       },
       "actions": {
         "view-details": "詳細を表示",
@@ -120,23 +184,27 @@
         "create-token": "トークンを作成"
       },
       "bulk-actions": {
-        "archive-message": "{{count}}個のトークンをアーカイブします。これはデモアクションです。",
-        "duplicate-message": "{{count}}個のトークンを複製します。これはデモアクションです。"
+        "archive-message": "{{count}}トークンをアーカイブします。これはデモアクションです。",
+        "duplicate-message": "{{count}}トークンを複製します。これはデモアクションです。"
       },
       "search-placeholder": "名前、シンボル、またはアドレスでトークンを検索...",
       "empty-state": {
         "title": "トークンが見つかりません",
-        "description": "このファクトリーはまだトークンを作成していません。最初のトークンを作成して始めましょう。"
+        "description": "このファクトリーではまだトークンが作成されていません。最初のトークンを作成して始めましょう。"
+      },
+      "status": {
+        "active": "アクティブ",
+        "paused": "一時停止"
       }
     }
   },
   "errors": {
     "unauthorized": {
-      "title": "認証が必要です",
+      "title": "認証が必要",
       "description": "続行するにはサインインしてください。"
     },
     "forbidden": {
-      "title": "アクセスが拒否されました",
+      "title": "アクセス拒否",
       "description": "このリソースにアクセスする権限がありません。"
     },
     "notFound": {
@@ -145,14 +213,14 @@
     },
     "validation": {
       "title": "検証エラー",
-      "description": "入力内容を確認してもう一度お試しください。"
+      "description": "入力内容を確認して再試行してください。"
     },
     "rateLimit": {
       "title": "リクエストが多すぎます",
-      "description": "リクエストが多すぎます。しばらくお待ちいただいてから再度お試しください。"
+      "description": "リクエストが多すぎます。少々お待ちいただいてから再試行してください。"
     },
     "transaction": {
-      "title": "トランザクションが失敗しました",
+      "title": "トランザクション失敗",
       "description": "トランザクションを完了できませんでした。もう一度お試しください。"
     },
     "timeout": {
@@ -169,19 +237,19 @@
     },
     "blockchain": {
       "title": "ブロックチェーンエラー",
-      "description": "ブロックチェーンとの対話中にエラーが発生しました。"
+      "description": "ブロックチェーンとのインタラクション中にエラーが発生しました。"
     },
     "contract": {
       "title": "スマートコントラクトエラー",
-      "description": "スマートコントラクトの操作に失敗しました。"
+      "description": "スマートコントラクトの操作が失敗しました。"
     },
     "insufficientFunds": {
-      "title": "残高不足",
-      "description": "アカウントに十分な資金がありません。"
+      "title": "資金不足",
+      "description": "あなたのアカウントにはこの操作を完了するための十分な資金がありません。"
     },
     "network": {
       "title": "ネットワークエラー",
-      "description": "ネットワークに接続できません。接続を確認してください。"
+      "description": "ネットワークに接続できませんでした。接続を確認してください。"
     },
     "badRequest": {
       "title": "不正なリクエスト",
@@ -189,15 +257,15 @@
     },
     "conflict": {
       "title": "競合エラー",
-      "description": "リクエストが現在の状態と競合しています。"
+      "description": "リクエストが現在の状態と矛盾しています。"
     },
     "badGateway": {
       "title": "不正なゲートウェイ",
-      "description": "サーバーが無効な応答を受信しました。もう一度お試しください。"
+      "description": "サーバーが無効な応答を受け取りました。もう一度お試しください。"
     },
     "serviceUnavailable": {
       "title": "サービス利用不可",
-      "description": "サービスが一時的に利用できません。後でもう一度お試しください。"
+      "description": "サービスは一時的に利用できません。後でもう一度お試しください。"
     },
     "gatewayTimeout": {
       "title": "ゲートウェイタイムアウト",
@@ -208,21 +276,21 @@
       "description": "予期しないエラーが発生しました。もう一度お試しください。"
     },
     "notOnboarded": {
-      "title": "オンボーディングが必要です",
+      "title": "オンボーディングが必要",
       "description": "続行するにはオンボーディングプロセスを完了してください。"
     },
     "systemNotCreated": {
       "title": "システムが初期化されていません",
-      "description": "システムが初期化されていません。管理者にお問い合わせください。"
+      "description": "システムが初期化されていません。管理者に連絡してください。"
     },
     "resourceAlreadyExists": {
-      "title": "リソースは既に存在します",
-      "description": "作成しようとしているリソースは既に存在します。"
+      "title": "リソースはすでに存在します",
+      "description": "作成しようとしているリソースはすでに存在します。"
     },
     "buttons": {
-      "tryAgain": "もう一度試す",
+      "tryAgain": "再試行",
       "goBack": "戻る",
-      "goHome": "ホームへ"
+      "goHome": "ホームに戻る"
     }
   }
 }

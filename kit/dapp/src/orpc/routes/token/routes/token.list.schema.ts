@@ -95,9 +95,12 @@ export const TokenListInputSchema = ListSchema.extend({
    *
    * Must be a valid Ethereum contract address.
    */
-  tokenFactory: ethereumAddress.describe(
-    "The token factory contract address to filter tokens by"
-  ),
+  tokenFactory: ethereumAddress
+    .optional()
+    .describe("The token factory contract address to filter tokens by"),
+  searchByAddress: ethereumAddress
+    .optional()
+    .describe("The address to filter tokens by"),
 });
 
 // Type export for use in handlers and client code

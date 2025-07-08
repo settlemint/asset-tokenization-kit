@@ -41,7 +41,7 @@ export const Route = createFileRoute("/auth")({
  * for security-sensitive operations.
  */
 function LayoutComponent() {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("common");
 
   return (
     // Full-screen container with theme-aware background images

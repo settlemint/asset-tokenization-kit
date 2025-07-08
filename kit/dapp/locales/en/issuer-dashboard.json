@@ -26,7 +26,10 @@
     "assetSupply": {
       "title": "Asset supply",
       "description": "The distribution of assets per asset class"
-    }
+    },
+    "assetActivity": "Asset Activity",
+    "usersHistory": "User Growth",
+    "transactionsHistory": "Transaction History"
   },
   "tables": {
     "latestEvents": "Latest Events",
