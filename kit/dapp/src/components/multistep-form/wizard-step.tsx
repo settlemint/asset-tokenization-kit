@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
@@ -11,51 +11,52 @@ import { formatValidationError } from "@/lib/utils/format-validation-error";
 import { cn } from "@/lib/utils";
 
 const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info",
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel | undefined) ?? "info",
 });
 
 interface WizardStepProps {
   className?: string;
 }
 
+// Default no-op functions to avoid creating new functions in render
+const noop = () => { /* no-op */ };
+
 export function WizardStep({ className }: WizardStepProps) {
   // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
   const [isValidating, setIsValidating] = useState(false);
   const [isStepVisible, setIsStepVisible] = useState(true);
 
-  // Get context with error handling
-  let context;
-  let contextError: string | null = null;
-  try {
-    context = useWizardContext();
-  } catch (error) {
-    logger.error("Failed to get wizard context", { error });
-    contextError = "Wizard context error. Please refresh the page.";
-  }
+  // Get context - this hook must always be called
+  const context = useWizardContext();
+  
+  // Check if context is valid - context should always be available due to useWizardContext hook
+  const contextError: string | null = null;
 
   // Extract context values safely
   const {
     currentStepIndex = 0,
     steps = [],
     form = null,
-    nextStep = () => {},
-    previousStep = () => {},
+    nextStep = noop,
+    previousStep = noop,
     isFirstStep = true,
     isLastStep = false,
-    markStepComplete = () => {},
-    markStepError = () => {},
-    clearStepError = () => {},
+    markStepComplete = noop,
+    markStepError = noop,
+    clearStepError = noop,
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   } = context || {};
 
   // Get current step safely
-  const currentStep = steps?.[currentStepIndex];
+  const currentStep = steps[currentStepIndex];
 
   // Set up mutation hook (must always be called to satisfy Rules of Hooks)
   const mutation = useStreamingMutation({
     mutationOptions: {
-      mutationKey: [currentStep?.mutation?.mutationKey || "no-mutation"],
+      mutationKey: [currentStep?.mutation?.mutationKey ?? "no-mutation"],
       mutationFn:
-        (currentStep?.mutation?.mutationFn as any) || (async () => null), // Type assertion for now
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (currentStep?.mutation?.mutationFn as any) ?? (() => null), // Type assertion for now
     },
   });
 
@@ -64,79 +65,13 @@ export function WizardStep({ className }: WizardStepProps) {
 
   logger.debug("WizardStep render", {
     currentStepIndex,
-    stepsLength: steps?.length,
+    stepsLength: steps.length,
     hasForm: !!form,
     hasCurrentStep: !!currentStep,
   });
 
-  // Check if step should be visible based on dependencies
-  useEffect(() => {
-    const checkStepVisibility = async () => {
-      if (currentStep?.dependsOn && form?.state?.values) {
-        try {
-          const formData = form.state.values;
-          const shouldShow = await currentStep.dependsOn(formData);
-          setIsStepVisible(shouldShow);
-          if (!shouldShow) {
-            // Skip to next step if current is not visible
-            nextStep();
-          }
-        } catch (error) {
-          logger.error("Error checking step dependency", {
-            error,
-            stepId: currentStep.id,
-          });
-          setIsStepVisible(true);
-        }
-      }
-    };
-    checkStepVisibility();
-  }, [currentStep, form?.state?.values, nextStep]);
-
-  // NOW handle conditional rendering after all hooks have been called
-  if (contextError) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-center text-destructive">{contextError}</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!currentStep) {
-    logger.error("No step found for current index", {
-      currentStepIndex,
-      totalSteps: steps?.length,
-    });
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-center text-muted-foreground">
-            Step not found. Please refresh the page.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!form?.state) {
-    logger.debug("Form not yet initialized", {
-      hasForm: !!form,
-      hasFormState: !!form?.state,
-    });
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-center text-muted-foreground">
-            Initializing form...
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const handleNext = async () => {
+  // Define handleNext with useCallback before any conditional returns
+  const handleNext = useCallback(async () => {
     if (!currentStep) return;
 
     setIsValidating(true);
@@ -182,7 +117,7 @@ export function WizardStep({ className }: WizardStepProps) {
                 await form.options.onSubmit?.({ value, formApi: form });
                 resolve();
               } catch (error) {
-                reject(error);
+                reject(new Error(error instanceof Error ? error.message : String(error)));
               }
             },
           })();
@@ -199,8 +134,89 @@ export function WizardStep({ className }: WizardStepProps) {
     } finally {
       setIsValidating(false);
     }
-  };
+  }, [
+    currentStep,
+    clearStepError,
+    form,
+    markStepError,
+    shouldUseMutation,
+    mutation,
+    markStepComplete,
+    isLastStep,
+    nextStep,
+    setIsValidating,
+  ]);
 
+  // Check if step should be visible based on dependencies
+  useEffect(() => {
+    const checkStepVisibility = async () => {
+      if (currentStep?.dependsOn && form?.state?.values) {
+        try {
+          const formData = form.state.values;
+          const shouldShow = await currentStep.dependsOn(formData);
+          setIsStepVisible(shouldShow);
+          if (!shouldShow) {
+            // Skip to next step if current is not visible
+            nextStep();
+          }
+        } catch (error) {
+          logger.error("Error checking step dependency", {
+            error,
+            stepId: currentStep.id,
+          });
+          setIsStepVisible(true);
+        }
+      }
+    };
+    void checkStepVisibility();
+  }, [currentStep, form?.state?.values, nextStep]);
+
+  // NOW handle conditional rendering after all hooks have been called
+  // contextError is always null, but keeping this for potential future use
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (contextError) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-center text-destructive">{contextError}</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!currentStep) {
+    logger.error("No step found for current index", {
+      currentStepIndex,
+      totalSteps: steps.length,
+    });
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-center text-muted-foreground">
+            Step not found. Please refresh the page.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!form?.state) {
+    logger.debug("Form not yet initialized", {
+      hasForm: !!form,
+      hasFormState: !!form?.state,
+    });
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-center text-muted-foreground">
+            Initializing form...
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!currentStep || !isStepVisible) {
     return null;
   }
@@ -242,7 +258,7 @@ export function WizardStep({ className }: WizardStepProps) {
                 <WizardField
                   key={fieldDef.name as string}
                   fieldDef={fieldDef}
-                  formData={form?.state?.values || {}}
+                  formData={form?.state?.values ?? {}}
                 />
               );
             } catch (error) {
@@ -250,7 +266,7 @@ export function WizardStep({ className }: WizardStepProps) {
                 fieldName: fieldDef.name,
                 error,
                 hasForm: !!form,
-                hasFormState: !!form?.state,
+                hasFormState: !!form.state,
               });
               return (
                 <div key={fieldDef.name as string} className="text-destructive">
@@ -270,7 +286,7 @@ export function WizardStep({ className }: WizardStepProps) {
               variant="outline"
               onClick={previousStep}
               disabled={
-                isValidating || (shouldUseMutation && mutation?.isPending)
+                isValidating || (shouldUseMutation && mutation.isPending)
               }
               className="transition-all duration-200"
             >
@@ -280,11 +296,11 @@ export function WizardStep({ className }: WizardStepProps) {
           <Button
             onClick={handleNext}
             disabled={
-              isValidating || (shouldUseMutation && mutation?.isPending)
+              isValidating || (shouldUseMutation && mutation.isPending)
             }
             className="transition-all duration-200"
           >
-            {isValidating || (shouldUseMutation && mutation?.isPending) ? (
+            {isValidating || (shouldUseMutation && mutation.isPending) ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Processing...
