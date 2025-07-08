@@ -1,31 +1,30 @@
+import { useCallback } from "react";
 import { z } from "zod";
 import { MultiStepWizard } from "./multistep-wizard";
-import { withWizardErrorBoundary } from "./wizard-error-boundary";
 import type { StepDefinition, StepGroup } from "./types";
+import { withWizardErrorBoundary } from "./wizard-error-boundary";
 
-// Example form schema
-const tokenFormSchema = z.object({
+// Example form schema type
+interface TokenFormData {
   // Basic Info
-  name: z.string().min(1, "Name is required"),
-  symbol: z.string().min(1, "Symbol is required"),
-  description: z.string().optional(),
+  name: string;
+  symbol: string;
+  description?: string;
 
   // Token Details
-  tokenType: z.enum(["equity", "bond", "deposit", "fund", "stablecoin"]),
-  totalSupply: z.number().min(1, "Total supply must be positive"),
-  decimals: z.number().min(0).max(18, "Decimals must be between 0 and 18"),
+  tokenType: "equity" | "bond" | "deposit" | "fund" | "stablecoin";
+  totalSupply: number;
+  decimals: number;
 
   // Compliance
-  requiresKYC: z.boolean().default(false),
-  complianceRegion: z.string().optional(),
+  requiresKYC: boolean;
+  complianceRegion?: string;
 
   // Advanced
-  mintable: z.boolean().default(false),
-  burnable: z.boolean().default(false),
-  pausable: z.boolean().default(false),
-});
-
-type TokenFormData = z.infer<typeof tokenFormSchema>;
+  mintable: boolean;
+  burnable: boolean;
+  pausable: boolean;
+}
 
 // Example groups
 const groups: StepGroup[] = [
@@ -79,7 +78,7 @@ const steps: StepDefinition<TokenFormData>[] = [
         description: "Optional description of your token",
       },
     ],
-    validate: async (data) => {
+    validate: (data) => {
       // Example validation - check if symbol is unique
       if (data.symbol && data.symbol.toLowerCase() === "reserved") {
         return "This symbol is reserved";
@@ -207,12 +206,15 @@ interface ExampleWizardProps {
 }
 
 function ExampleWizardComponent({ onComplete }: ExampleWizardProps) {
-  const handleComplete = async (data: TokenFormData) => {
-    console.log("Token creation completed:", data);
-    if (onComplete) {
-      onComplete(data);
-    }
-  };
+  const handleComplete = useCallback(
+    (data: TokenFormData) => {
+      console.log("Token creation completed:", data);
+      if (onComplete) {
+        onComplete(data);
+      }
+    },
+    [onComplete]
+  );
 
   return (
     <div className="max-w-7xl mx-auto p-6">

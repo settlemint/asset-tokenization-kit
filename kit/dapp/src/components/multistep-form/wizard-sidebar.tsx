@@ -207,8 +207,8 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
     // Group steps by their groupId
     const groupedStepsByGroupId = steps.reduce(
       (acc, step, index) => {
-        const groupId = step.groupId || "ungrouped";
-        if (!acc[groupId]) acc[groupId] = [];
+        const groupId = step.groupId ?? "ungrouped";
+        acc[groupId] ??= [];
         acc[groupId].push({ step, index });
         return acc;
       },
@@ -218,7 +218,7 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
     return (
       <div className="space-y-6 flex-1 relative">
         {groups.map((group, groupIndex) => {
-          const groupSteps = groupedStepsByGroupId[group.id] || [];
+          const groupSteps = groupedStepsByGroupId[group.id] ?? [];
           if (groupSteps.length === 0) return null;
 
           // Check if any step in this group is active
@@ -267,7 +267,8 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
               {groupedStepsByGroupId.ungrouped.map(
                 ({ step, index }, stepIndex) => {
                   const isLastStep =
-                    stepIndex === groupedStepsByGroupId.ungrouped!.length - 1;
+                    stepIndex ===
+                    (groupedStepsByGroupId.ungrouped?.length ?? 0) - 1;
                   return renderStep(step, index, isLastStep);
                 }
               )}

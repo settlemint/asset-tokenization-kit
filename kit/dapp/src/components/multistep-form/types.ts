@@ -1,12 +1,14 @@
 import type { z } from "zod";
 
-// Simple type placeholders - these will be properly typed at runtime
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type FormApi<_TFormData = any> = any;
+// Form API types - using any to work with TanStack Form's complex generics
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+export type FormApi<_TFormData = Record<string, unknown>> = any;
 
 export type FieldApi<
-  _TFormData = any,
-  _TName extends keyof _TFormData = any,
+  _TFormData = Record<string, unknown>,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _TName extends keyof _TFormData = keyof _TFormData,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 > = any;
 
 export type StepStatus = "pending" | "active" | "completed" | "error";

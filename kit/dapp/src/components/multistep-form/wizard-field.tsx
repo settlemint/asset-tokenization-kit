@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
-import { useField } from "@tanstack/react-form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -13,9 +11,15 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { useField } from "@tanstack/react-form";
+import { useCallback, useEffect, useState } from "react";
 import type { FieldDefinition } from "./types";
 import { useWizardContext } from "./wizard-context";
-import type { DeepValue } from "@tanstack/react-form";
+
+const logger = createLogger({
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel | undefined) ?? "info",
+});
 
 interface WizardFieldProps<TFormData> {
   fieldDef: FieldDefinition<TFormData>;
@@ -30,16 +34,76 @@ export function WizardField<TFormData>({
   const [isChecking, setIsChecking] = useState(false);
   const { form } = useWizardContext<TFormData>();
 
+  // Always call useField hook - never conditionally
+  const field = useField({
+    form,
+    name: fieldDef.name as string,
+    validators: fieldDef.schema
+      ? {
+          onChange: ({ value }) => {
+            const result = fieldDef.schema?.safeParse(value);
+            return result?.success
+              ? undefined
+              : (result?.error.issues[0]?.message ?? "Invalid value");
+          },
+        }
+      : undefined,
+  });
+
+  // Event handlers with useCallback to prevent function recreation
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      field.handleChange(e.target.value as any);
+    },
+    [field]
+  );
+
+  const handleTextareaChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      field.handleChange(e.target.value as any);
+    },
+    [field]
+  );
+
+  const handleSelectChange = useCallback(
+    (value: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      field.handleChange(value as any);
+    },
+    [field]
+  );
+
+  const handleCheckboxChange = useCallback(
+    (checked: boolean | "indeterminate") => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      field.handleChange(checked as any);
+    },
+    [field]
+  );
+
+  const handleRadioChange = useCallback(
+    (value: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      field.handleChange(value as any);
+    },
+    [field]
+  );
+
   // Check field visibility
   useEffect(() => {
     if (fieldDef.dependsOn) {
       const checkVisibility = async () => {
         setIsChecking(true);
         try {
-          const shouldShow = await fieldDef.dependsOn!(formData);
-          setIsVisible(shouldShow);
+          const shouldShow = await fieldDef.dependsOn?.(formData);
+          setIsVisible(shouldShow ?? true);
         } catch (error) {
-          console.error("Error checking field dependency:", error);
+          logger.error("Error checking field dependency", {
+            error,
+            fieldName: fieldDef.name,
+          });
           setIsVisible(true);
         } finally {
           setIsChecking(false);
@@ -49,32 +113,18 @@ export function WizardField<TFormData>({
     }
   }, [fieldDef, formData]);
 
-  // Safety check for form before creating field
+  // Safety check for form
   if (!form) {
     return null;
   }
-
-  const field = useField({
-    form,
-    name: fieldDef.name as string,
-    validators: fieldDef.schema
-      ? {
-          onChange: ({ value }) => {
-            const result = fieldDef.schema!.safeParse(value);
-            return result.success
-              ? undefined
-              : result.error.issues[0]?.message || "Invalid value";
-          },
-        }
-      : undefined,
-  });
 
   if (!isVisible || isChecking) return null;
 
   // Custom component
   if (fieldDef.component) {
     const Component = fieldDef.component;
-    return <Component field={field} fieldDefinition={fieldDef} />;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return <Component field={field as any} fieldDefinition={fieldDef} />;
   }
 
   const renderField = () => {
@@ -88,12 +138,8 @@ export function WizardField<TFormData>({
               id={fieldDef.name as string}
               type={fieldDef.type}
               placeholder={fieldDef.placeholder}
-              value={(field.state.value as string) || ""}
-              onChange={(e) => {
-                field.handleChange(
-                  e.target.value as DeepValue<TFormData, string>
-                );
-              }}
+              value={(field.state.value as string) ?? ""}
+              onChange={handleInputChange}
               onBlur={field.handleBlur}
               className={cn(
                 field.state.meta.isTouched &&
@@ -114,12 +160,8 @@ export function WizardField<TFormData>({
           <Textarea
             id={fieldDef.name as string}
             placeholder={fieldDef.placeholder}
-            value={(field.state.value as string) || ""}
-            onChange={(e) => {
-              field.handleChange(
-                e.target.value as DeepValue<TFormData, string>
-              );
-            }}
+            value={(field.state.value as string) ?? ""}
+            onChange={handleTextareaChange}
             onBlur={field.handleBlur}
             className={cn(
               field.state.meta.isTouched &&
@@ -133,10 +175,8 @@ export function WizardField<TFormData>({
       case "select":
         return (
           <Select
-            value={(field.state.value as string) || ""}
-            onValueChange={(value) => {
-              field.handleChange(value as any);
-            }}
+            value={(field.state.value as string) ?? ""}
+            onValueChange={handleSelectChange}
           >
             <SelectTrigger
               id={fieldDef.name as string}
@@ -147,7 +187,7 @@ export function WizardField<TFormData>({
               )}
             >
               <SelectValue
-                placeholder={fieldDef.placeholder || "Select an option"}
+                placeholder={fieldDef.placeholder ?? "Select an option"}
               />
             </SelectTrigger>
             <SelectContent>
@@ -165,10 +205,8 @@ export function WizardField<TFormData>({
           <div className="flex items-center space-x-2">
             <Checkbox
               id={fieldDef.name as string}
-              checked={(field.state.value as boolean) || false}
-              onCheckedChange={(checked) => {
-                field.handleChange(checked as any);
-              }}
+              checked={(field.state.value as boolean) ?? false}
+              onCheckedChange={handleCheckboxChange}
             />
             <Label
               htmlFor={fieldDef.name as string}
@@ -182,10 +220,8 @@ export function WizardField<TFormData>({
       case "radio":
         return (
           <RadioGroup
-            value={(field.state.value as string) || ""}
-            onValueChange={(value) => {
-              field.handleChange(value as any);
-            }}
+            value={(field.state.value as string) ?? ""}
+            onValueChange={handleRadioChange}
           >
             {fieldDef.options?.map((option) => (
               <div key={option.value} className="flex items-center space-x-2">

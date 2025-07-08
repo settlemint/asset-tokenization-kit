@@ -29,7 +29,7 @@ export function useWizardContext<TFormData = unknown>() {
   }
 
   // Additional validation
-  if (!context.steps || !Array.isArray(context.steps)) {
+  if (!Array.isArray(context.steps)) {
     console.error("useWizardContext: Invalid steps in context", {
       hasSteps: !!context.steps,
       stepsType: typeof context.steps,

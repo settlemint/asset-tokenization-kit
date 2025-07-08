@@ -1,11 +1,54 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import type { StepComponentProps } from "@/components/multistep-form/types";
 import { authClient } from "@/lib/auth/auth.client";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+interface RecoveryCodeItemProps {
+  code: string;
+  index: number;
+  onCopy: (code: string, index: number) => void;
+}
+
+function RecoveryCodeItem({ code, index, onCopy }: RecoveryCodeItemProps) {
+  const handleCopy = useCallback(() => {
+    onCopy(code, index);
+  }, [code, index, onCopy]);
+
+  return (
+    <div className="flex items-center justify-between p-3 bg-muted rounded-lg border group hover:bg-muted/80 transition-colors">
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-muted-foreground w-6">{index + 1}.</span>
+        <code className="font-mono text-sm select-all">{code}</code>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
+        onClick={handleCopy}
+        title={`Copy code ${index + 1}`}
+      >
+        <svg
+          className="h-3 w-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+          />
+        </svg>
+      </Button>
+    </div>
+  );
+}
+
 interface RecoveryCodesStepProps extends StepComponentProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user?: any; // Use any for now to match the user type from session
 }
 
@@ -18,6 +61,32 @@ export function RecoveryCodesStep({
   const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
   const [recoveryCodesFetched, setRecoveryCodesFetched] = useState(false);
 
+  // Memoized functions to avoid creating new functions in render
+  const handleCopyAll = useCallback(() => {
+    void navigator.clipboard.writeText(recoveryCodes.join("\n"));
+    toast.success("Recovery codes copied to clipboard!");
+  }, [recoveryCodes]);
+
+  const handleDownload = useCallback(() => {
+    const blob = new Blob([recoveryCodes.join("\n")], {
+      type: "text/plain",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "recovery-codes.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Recovery codes downloaded!");
+  }, [recoveryCodes]);
+
+  const handleCopyCode = useCallback((code: string, index: number) => {
+    void navigator.clipboard.writeText(code);
+    toast.success(`Code ${index + 1} copied!`);
+  }, []);
+
   const { mutate: generateRecoveryCodes, isPending: isGeneratingCodes } =
     useMutation({
       mutationFn: async () => {
@@ -27,6 +96,7 @@ export function RecoveryCodesStep({
       },
       onSuccess: (data) => {
         // Check if there's an error in the response (like 404)
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (data && "error" in data && data.error) {
           // Handle 404 error with mock codes for development
           if (data.error.status === 404) {
@@ -40,17 +110,20 @@ export function RecoveryCodesStep({
           }
 
           toast.error(
-            `Failed to generate recovery codes: ${data.error.statusText ?? "Unknown error"}`
+            `Failed to generate recovery codes: ${data.error.statusText || "Unknown error"}`
           );
           return;
         }
 
         // Success case - real codes
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (data && "data" in data && data.data && "secretCodes" in data.data) {
-          setRecoveryCodes(data.data.secretCodes ?? []);
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          setRecoveryCodes(data.data.secretCodes || []);
           setRecoveryCodesFetched(true);
           toast.success("Recovery codes generated successfully");
         } else if (
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           data &&
           "secretCodes" in data &&
           Array.isArray(data.secretCodes)
@@ -74,9 +147,13 @@ export function RecoveryCodesStep({
           return;
         }
 
-        toast.error(error.message ?? "Failed to generate recovery codes");
+        toast.error(error.message || "Failed to generate recovery codes");
       },
     });
+
+  const handleTryAgain = useCallback(() => {
+    generateRecoveryCodes();
+  }, [generateRecoveryCodes]);
 
   // Generate recovery codes on component mount
   useEffect(() => {
@@ -176,10 +253,7 @@ export function RecoveryCodesStep({
               <div className="flex flex-wrap gap-3 justify-center">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    void navigator.clipboard.writeText(recoveryCodes.join("\n"));
-                    toast.success("Recovery codes copied to clipboard!");
-                  }}
+                  onClick={handleCopyAll}
                   className="gap-2"
                 >
                   <svg
@@ -199,20 +273,7 @@ export function RecoveryCodesStep({
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    const blob = new Blob([recoveryCodes.join("\n")], {
-                      type: "text/plain",
-                    });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = "recovery-codes.txt";
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    toast.success("Recovery codes downloaded!");
-                  }}
+                  onClick={handleDownload}
                   className="gap-2"
                 >
                   <svg
@@ -240,43 +301,12 @@ export function RecoveryCodesStep({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {recoveryCodes.map((code, index) => (
-                    <div
+                    <RecoveryCodeItem
                       key={`${code}-${index}`}
-                      className="flex items-center justify-between p-3 bg-muted rounded-lg border group hover:bg-muted/80 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs text-muted-foreground w-6">
-                          {index + 1}.
-                        </span>
-                        <code className="font-mono text-sm select-all">
-                          {code}
-                        </code>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
-                        onClick={() => {
-                          void navigator.clipboard.writeText(code);
-                          toast.success(`Code ${index + 1} copied!`);
-                        }}
-                        title={`Copy code ${index + 1}`}
-                      >
-                        <svg
-                          className="h-3 w-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                          />
-                        </svg>
-                      </Button>
-                    </div>
+                      code={code}
+                      index={index}
+                      onCopy={handleCopyCode}
+                    />
                   ))}
                 </div>
               </div>
@@ -311,7 +341,7 @@ export function RecoveryCodesStep({
               </p>
               <Button
                 variant="outline"
-                onClick={() => generateRecoveryCodes()}
+                onClick={handleTryAgain}
                 disabled={isGeneratingCodes}
               >
                 Try Again

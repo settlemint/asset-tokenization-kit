@@ -1,11 +1,11 @@
-import { Component, type ReactNode, type ComponentType, type FC } from "react";
-import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { AlertCircle } from "lucide-react";
+import { Component, type ComponentType, type FC, type ReactNode } from "react";
 
 const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info",
+  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel | undefined) ?? "info",
 });
 
 interface ErrorBoundaryState {
@@ -35,13 +35,13 @@ class WizardErrorBoundary extends Component<
     // Enhanced error logging with more details
     logger.error("MultiStepWizard error boundary caught error", {
       error: {
-        name: error?.name,
-        message: error?.message,
-        stack: error?.stack,
-        toString: error?.toString(),
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        toString: error.toString(),
       },
       errorInfo: {
-        componentStack: errorInfo?.componentStack,
+        componentStack: errorInfo.componentStack,
       },
     });
 
@@ -49,9 +49,9 @@ class WizardErrorBoundary extends Component<
     console.error("MultiStepWizard Error Boundary:", {
       error,
       errorInfo,
-      errorName: error?.name,
-      errorMessage: error?.message,
-      errorStack: error?.stack,
+      errorName: error.name,
+      errorMessage: error.message,
+      errorStack: error.stack,
     });
   }
 
@@ -99,7 +99,7 @@ export function withWizardErrorBoundary<P extends object>(
   );
 
   WrappedComponent.displayName = `withWizardErrorBoundary(${
-    Component.displayName || Component.name || "Component"
+    Component.displayName ?? Component.name ?? "Component"
   })`;
 
   return WrappedComponent;

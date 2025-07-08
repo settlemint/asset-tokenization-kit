@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 interface WalletSecurityStepProps extends StepComponentProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user?: any; // Use any for now to match the user type from session
 }
 
@@ -69,7 +70,7 @@ export function WalletSecurityStep({
       setIsPincodeSet(true);
     },
     onError: (error: Error) => {
-      toast.error(error.message ?? "Failed to set PIN code");
+      toast.error(error.message || "Failed to set PIN code");
     },
   });
 
@@ -123,13 +124,13 @@ export function WalletSecurityStep({
     }
   }, [isPending, hasPincode, form, enablePincode]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (hasPincode || isPincodeSet) {
       onNext();
     } else {
       handleSetPincode();
     }
-  };
+  }, [hasPincode, isPincodeSet, onNext, handleSetPincode]);
 
   const renderPincodeField = useCallback(
     ({

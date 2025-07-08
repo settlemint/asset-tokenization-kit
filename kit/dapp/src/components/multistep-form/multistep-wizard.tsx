@@ -1,13 +1,13 @@
-import { useCallback, useMemo } from "react";
-import { useForm } from "@tanstack/react-form";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { useForm } from "@tanstack/react-form";
+import { useCallback, useMemo } from "react";
+import type { MultiStepWizardProps, WizardContextValue } from "./types";
+import { useMultiStepWizardState } from "./use-multistep-wizard-state";
 import { WizardProvider } from "./wizard-context";
 import { WizardSidebar } from "./wizard-sidebar";
 import { WizardStep } from "./wizard-step";
-import { useMultiStepWizardState } from "./use-multistep-wizard-state";
-import type { MultiStepWizardProps, WizardContextValue } from "./types";
 
 const logger = createLogger({
   level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ?? "info",
@@ -31,9 +31,9 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   logger.debug("MultiStepWizard initialization", {
     name,
     stepsCount: steps.length,
-    hasGroups: Boolean(groups),
+    hasGroups: !!groups,
     enableUrlPersistence,
-    hasDefaultValues: Boolean(defaultValues),
+    hasDefaultValues: !!defaultValues,
   });
 
   // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
@@ -67,7 +67,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   });
 
   logger.debug("Form created", {
-    hasForm: Boolean(form),
+    hasForm: !!form,
     formState: form.state ? "available" : "unavailable",
     defaultValues: defaultValues,
   });
@@ -210,8 +210,8 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   logger.debug("Context value created", {
     currentStepIndex: safeCurrentStepIndex,
     stepsLength: steps.length,
-    hasForm: Boolean(form),
-    hasSteps: Boolean(steps),
+    hasForm: !!form,
+    hasSteps: !!steps,
   });
 
   // Calculate wizard-specific styles matching StepWizard
