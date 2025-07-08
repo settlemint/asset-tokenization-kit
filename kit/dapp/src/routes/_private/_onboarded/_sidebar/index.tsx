@@ -15,7 +15,8 @@
  */
 
 import { Dashboard as IssuerDashboard } from "@/components/issuer-dashboard/dashboard";
-import { createFileRoute } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
   /**
@@ -77,7 +78,9 @@ function Home() {
           {JSON.stringify(systems, null, 2)}
         </pre>
       </div>
-
+      <Link to="/asset-designer" className="mb-6 block">
+        <Button>Create New Asset</Button>
+      </Link>
       <IssuerDashboard />
     </div>
   );
