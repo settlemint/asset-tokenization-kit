@@ -82,14 +82,131 @@ async function _waitForTransactionReceipt(
     return receipt;
   } catch (error: any) {
     if (error.name === "TransactionReceiptNotFoundError") {
-      throw new Error(
-        `Transaction ${transactionHash} was not mined within ${config.timeoutDescription}. ` +
-          `This might indicate network congestion, insufficient gas, or the transaction was dropped. ` +
-          `Please check the transaction status on a block explorer.`
+      // Enhanced error analysis to distinguish between different failure causes
+      const analysis = await _analyzeTransactionTimeout(
+        transactionHash,
+        config
       );
+      throw new Error(analysis.message);
     }
     throw error;
   }
+}
+
+async function _analyzeTransactionTimeout(
+  transactionHash: Hex,
+  config: NetworkTimeoutConfig
+): Promise<{ message: string }> {
+  const publicClient = getPublicClient();
+
+  try {
+    // Check if the transaction still exists in the mempool
+    const transaction = await publicClient.getTransaction({
+      hash: transactionHash,
+    });
+
+    if (!transaction) {
+      return {
+        message: `Transaction ${transactionHash} was not found. It may have been dropped from the mempool or the transaction hash is invalid.`,
+      };
+    }
+
+    // Get current gas price for comparison
+    const currentGasPrice = await publicClient.getGasPrice();
+    const txGasPrice = transaction.gasPrice || 0n;
+
+    // Analyze gas price (the main cause of "never mined" scenarios)
+    const gasPriceAnalysis = _analyzeGasPriceForMining(
+      transaction,
+      currentGasPrice
+    );
+
+    if (!gasPriceAnalysis.isAdequate) {
+      return {
+        message:
+          `Transaction ${transactionHash} was not mined within ${config.timeoutDescription}. ` +
+          `Likely cause: ${gasPriceAnalysis.issue}. ` +
+          `${gasPriceAnalysis.recommendation}`,
+      };
+    }
+
+    // Gas price is adequate, so this is likely network congestion
+    return {
+      message:
+        `Transaction ${transactionHash} is still pending after ${config.timeoutDescription}. ` +
+        `Gas price appears adequate (${gasPriceAnalysis.summary}). ` +
+        `This indicates network congestion. Consider waiting longer or checking a block explorer.`,
+    };
+  } catch (error: any) {
+    // If we can't get transaction details, fall back to generic message
+    return {
+      message:
+        `Transaction ${transactionHash} was not mined within ${config.timeoutDescription}. ` +
+        `Unable to analyze transaction details (${error.message}). ` +
+        `This might indicate the transaction was dropped or there are network issues. ` +
+        `Please check the transaction status on a block explorer.`,
+    };
+  }
+}
+
+function _analyzeGasPriceForMining(
+  transaction: any,
+  currentGasPrice: bigint
+): {
+  isAdequate: boolean;
+  issue: string;
+  recommendation: string;
+  summary: string;
+} {
+  const txGasPrice = transaction.gasPrice || 0n;
+
+  if (txGasPrice === 0n) {
+    return {
+      isAdequate: false,
+      issue: "Zero gas price",
+      recommendation: "Set a proper gas price for the transaction to be mined.",
+      summary: "Transaction gas price: 0 wei",
+    };
+  }
+
+  if (currentGasPrice === 0n) {
+    // Can't compare against current gas price
+    return {
+      isAdequate: true,
+      issue: "",
+      recommendation: "",
+      summary: `Transaction gas price: ${txGasPrice.toString()} wei (current network price unavailable)`,
+    };
+  }
+
+  // Check if gas price is significantly lower than current network price
+  const gasPriceRatio = (txGasPrice * 100n) / currentGasPrice;
+
+  if (gasPriceRatio < 50n) {
+    return {
+      isAdequate: false,
+      issue: "Gas price too low",
+      recommendation: `Cancel and resubmit with higher gas price. Current network price: ${currentGasPrice.toString()} wei.`,
+      summary: `Transaction gas price: ${txGasPrice.toString()} wei (${gasPriceRatio}% of current network price)`,
+    };
+  }
+
+  if (gasPriceRatio < 80n) {
+    return {
+      isAdequate: false,
+      issue: "Gas price below recommended threshold",
+      recommendation: `Consider increasing gas price for faster mining. Current network price: ${currentGasPrice.toString()} wei.`,
+      summary: `Transaction gas price: ${txGasPrice.toString()} wei (${gasPriceRatio}% of current network price)`,
+    };
+  }
+
+  // Gas price appears adequate
+  return {
+    isAdequate: true,
+    issue: "",
+    recommendation: "",
+    summary: `Transaction gas price: ${txGasPrice.toString()} wei (${gasPriceRatio}% of current network price - adequate)`,
+  };
 }
 
 async function _analyzeRevertedTransaction(
