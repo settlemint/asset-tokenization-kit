@@ -316,7 +316,7 @@ function createAssetSupplyBreakdown(
         const currentSupplyStr = breakdown[type] ?? "0";
         const currentSupply = Number(currentSupplyStr);
         const newSupply = Number(supply);
-        
+
         // Check for NaN values which indicate invalid input
         if (Number.isNaN(currentSupply) || Number.isNaN(newSupply)) {
           logger.warn("Invalid supply value encountered", {
@@ -326,7 +326,7 @@ function createAssetSupplyBreakdown(
           });
           continue;
         }
-        
+
         breakdown[type] = (currentSupply + newSupply).toString();
       } catch (error) {
         logger.error("Error processing supply breakdown", {

@@ -29,7 +29,7 @@ export function ValueStatsWidget() {
 
   // Fetch just the value metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.value.queryOptions({ input: {} })
+    orpc.token.statsValue.queryOptions({ input: {} })
   );
 
   // Get the system's base currency from settings
@@ -53,10 +53,13 @@ export function ValueStatsWidget() {
     });
 
     // Add currency symbol manually to avoid number conversion
-    const currencySymbol = new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency: userCurrency,
-    }).formatToParts(0).find(part => part.type === "currency")?.value || userCurrency;
+    const currencySymbol =
+      new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: userCurrency,
+      })
+        .formatToParts(0)
+        .find((part) => part.type === "currency")?.value ?? userCurrency;
 
     formattedValue = `${currencySymbol}${formattedNumber}`;
   } catch (error) {

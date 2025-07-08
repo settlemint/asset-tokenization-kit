@@ -1,8 +1,14 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { MetricsSummarySchema } from "@/orpc/routes/metrics/routes/metrics.summary.schema";
 import { AssetMetricsOutputSchema } from "@/orpc/routes/metrics/schemas/asset-metrics.schema";
-import { TransactionMetricsInputSchema, TransactionMetricsOutputSchema } from "@/orpc/routes/metrics/schemas/transaction-metrics.schema";
-import { UserMetricsInputSchema, UserMetricsOutputSchema } from "@/orpc/routes/metrics/schemas/user-metrics.schema";
+import {
+  TransactionMetricsInputSchema,
+  TransactionMetricsOutputSchema,
+} from "@/orpc/routes/metrics/schemas/transaction-metrics.schema";
+import {
+  UserMetricsInputSchema,
+  UserMetricsOutputSchema,
+} from "@/orpc/routes/metrics/schemas/user-metrics.schema";
 import { ValueMetricsOutputSchema } from "@/orpc/routes/metrics/schemas/value-metrics.schema";
 import { z } from "zod/v4";
 
@@ -14,7 +20,8 @@ const assets = baseContract
   .route({
     method: "GET",
     path: "/metrics/assets",
-    description: "Get comprehensive asset metrics including counts, breakdowns, and activity data",
+    description:
+      "Get comprehensive asset metrics including counts, breakdowns, and activity data",
     successDescription: "Asset metrics retrieved successfully",
     tags: ["metrics", "assets"],
   })
@@ -29,7 +36,8 @@ const users = baseContract
   .route({
     method: "GET",
     path: "/metrics/users",
-    description: "Get user metrics including total counts and growth data over time",
+    description:
+      "Get user metrics including total counts and growth data over time",
     successDescription: "User metrics retrieved successfully",
     tags: ["metrics", "users"],
   })
@@ -44,7 +52,8 @@ const transactions = baseContract
   .route({
     method: "GET",
     path: "/metrics/transactions",
-    description: "Get transaction metrics including total counts and history data over time",
+    description:
+      "Get transaction metrics including total counts and history data over time",
     successDescription: "Transaction metrics retrieved successfully",
     tags: ["metrics", "transactions"],
   })
@@ -59,7 +68,8 @@ const value = baseContract
   .route({
     method: "GET",
     path: "/metrics/value",
-    description: "Get the total value of all assets in the system's base currency",
+    description:
+      "Get the total value of all assets in the system's base currency",
     successDescription: "Value metrics retrieved successfully",
     tags: ["metrics", "value"],
   })
@@ -74,7 +84,8 @@ const summary = baseContract
   .route({
     method: "GET",
     path: "/metrics/summary",
-    description: "[DEPRECATED] Get aggregated metrics summary for dashboards. Use focused endpoints instead.",
+    description:
+      "[DEPRECATED] Get aggregated metrics summary for dashboards. Use focused endpoints instead.",
     successDescription: "Metrics summary retrieved successfully",
     tags: ["metrics", "deprecated"],
   })

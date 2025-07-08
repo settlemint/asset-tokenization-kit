@@ -86,7 +86,7 @@ function processTransactionHistoryData(
 }
 
 /**
- * Transaction metrics route handler.
+ * Transaction statistics route handler.
  *
  * Fetches comprehensive transaction-related metrics including:
  * - Total number of transactions (all Transfer events)
@@ -96,7 +96,7 @@ function processTransactionHistoryData(
  * This endpoint is optimized for dashboard transaction widgets and history charts.
  *
  * Authentication: Required
- * Method: GET /metrics/transactions
+ * Method: GET /token/stats/transactions
  *
  * @param input.timeRange - Number of days to look back for recent activity (default: 7)
  * @returns Promise<TransactionMetrics> - Comprehensive transaction metrics
@@ -106,11 +106,11 @@ function processTransactionHistoryData(
  * @example
  * ```typescript
  * // Get transaction metrics for the last 14 days
- * const metrics = await orpc.metrics.transactions.query({ input: { timeRange: 14 } });
+ * const metrics = await orpc.token.statsTransactions.query({ input: { timeRange: 14 } });
  * console.log(metrics.totalTransactions, metrics.transactionHistory);
  * ```
  */
-export const transactions = authRouter.metrics.transactions
+export const statsTransactions = authRouter.token.statsTransactions
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context, input, errors }) => {

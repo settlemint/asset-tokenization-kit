@@ -1,18 +1,18 @@
 import { z } from "zod/v4";
 
 /**
- * Schema for user metrics input parameters
+ * Schema for user statistics input parameters
  */
-export const UserMetricsInputSchema = z.object({
+export const UserStatsInputSchema = z.object({
   /** Time range in days for historical data (default: 7 days) */
   timeRange: z.number().min(1).max(365).optional().default(7),
 });
 
 /**
- * Schema for user metrics output
+ * Schema for user statistics output
  * Contains user-related metrics including totals and growth over time
  */
-export const UserMetricsOutputSchema = z.object({
+export const UserStatsOutputSchema = z.object({
   /** Total number of active users (users who hold or have held tokens) */
   totalUsers: z.number(),
 
@@ -35,11 +35,11 @@ export const UserMetricsOutputSchema = z.object({
 });
 
 /**
- * Type definition for user metrics input
+ * Type definition for user statistics input
  */
-export type UserMetricsInput = z.infer<typeof UserMetricsInputSchema>;
+export type UserStatsInput = z.infer<typeof UserStatsInputSchema>;
 
 /**
- * Type definition for user metrics output
+ * Type definition for user statistics output
  */
-export type UserMetrics = z.infer<typeof UserMetricsOutputSchema>;
+export type UserStats = z.infer<typeof UserStatsOutputSchema>;

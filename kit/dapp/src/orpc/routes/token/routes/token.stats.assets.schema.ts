@@ -1,10 +1,10 @@
 import { z } from "zod/v4";
 
 /**
- * Schema for asset metrics output
+ * Schema for asset statistics output
  * Contains all asset-related metrics including counts, breakdowns, and activity data
  */
-export const AssetMetricsOutputSchema = z.object({
+export const TokenStatsAssetsOutputSchema = z.object({
   /** Total number of tokenized assets across all types */
   totalAssets: z.number(),
 
@@ -54,6 +54,6 @@ export const AssetMetricsOutputSchema = z.object({
 });
 
 /**
- * Type definition for asset metrics
+ * Type definition for asset statistics
  */
-export type AssetMetrics = z.infer<typeof AssetMetricsOutputSchema>;
+export type TokenStatsAssets = z.infer<typeof TokenStatsAssetsOutputSchema>;

@@ -26,7 +26,7 @@ const ValueMetricsResponseSchema = z.object({
 });
 
 /**
- * Value metrics route handler.
+ * Value statistics route handler.
  *
  * Fetches the total value of all assets in the system.
  * This is a lightweight endpoint optimized for frequent updates.
@@ -35,7 +35,7 @@ const ValueMetricsResponseSchema = z.object({
  * calculated by the subgraph based on token supplies and prices.
  *
  * Authentication: Required
- * Method: GET /metrics/value
+ * Method: GET /token/stats/value
  *
  * @returns Promise<ValueMetrics> - Total value in base currency
  * @throws UNAUTHORIZED - If user is not authenticated
@@ -44,11 +44,11 @@ const ValueMetricsResponseSchema = z.object({
  * @example
  * ```typescript
  * // Get the total system value
- * const { totalValue } = await orpc.metrics.value.query();
+ * const { totalValue } = await orpc.token.statsValue.query();
  * console.log(`Total system value: ${totalValue}`);
  * ```
  */
-export const value = authRouter.metrics.value
+export const statsValue = authRouter.token.statsValue
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context, errors }) => {

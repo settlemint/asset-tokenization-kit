@@ -22,6 +22,12 @@ import {
 } from "@/orpc/routes/token/routes/token.list.schema";
 import { TokenMintSchema } from "@/orpc/routes/token/routes/token.mint.schema";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
+import { TokenStatsAssetsOutputSchema } from "@/orpc/routes/token/routes/token.stats.assets.schema";
+import {
+  TokenStatsTransactionsInputSchema,
+  TokenStatsTransactionsOutputSchema,
+} from "@/orpc/routes/token/routes/token.stats.transactions.schema";
+import { TokenStatsValueOutputSchema } from "@/orpc/routes/token/routes/token.stats.value.schema";
 import { eventIterator } from "@orpc/server";
 import { z } from "zod/v4";
 
@@ -102,6 +108,37 @@ const mint = baseContract
   .input(TokenMintSchema)
   .output(ethereumHash);
 
+const statsAssets = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/assets",
+    description: "Get token asset statistics",
+    successDescription: "Asset statistics",
+    tags: ["token", "stats"],
+  })
+  .output(TokenStatsAssetsOutputSchema);
+
+const statsTransactions = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/transactions",
+    description: "Get token transaction statistics",
+    successDescription: "Transaction statistics",
+    tags: ["token", "stats"],
+  })
+  .input(TokenStatsTransactionsInputSchema)
+  .output(TokenStatsTransactionsOutputSchema);
+
+const statsValue = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/value",
+    description: "Get token value statistics",
+    successDescription: "Value statistics",
+    tags: ["token", "stats"],
+  })
+  .output(TokenStatsValueOutputSchema);
+
 export const tokenContract = {
   factoryCreate,
   factoryList,
@@ -110,4 +147,7 @@ export const tokenContract = {
   list,
   read,
   mint,
+  statsAssets,
+  statsTransactions,
+  statsValue,
 };

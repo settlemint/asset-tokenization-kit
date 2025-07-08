@@ -20,7 +20,7 @@ export function TransactionStatsWidget() {
 
   // Fetch just the transaction metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.transactions.queryOptions({ input: { timeRange: 7 } })
+    orpc.token.statsTransactions.queryOptions({ input: { timeRange: 7 } })
   );
 
   return (

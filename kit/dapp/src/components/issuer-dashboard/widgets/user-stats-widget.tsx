@@ -20,7 +20,7 @@ export function UserStatsWidget() {
 
   // Fetch just the user metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.users.queryOptions({ input: { timeRange: 7 } })
+    orpc.user.stats.queryOptions({ input: { timeRange: 7 } })
   );
 
   return (

@@ -138,7 +138,7 @@ function countUniqueRecentUsers(
 }
 
 /**
- * User metrics route handler.
+ * User statistics route handler.
  *
  * Fetches comprehensive user-related metrics including:
  * - Total number of active users (users who hold or have held tokens)
@@ -148,7 +148,7 @@ function countUniqueRecentUsers(
  * This endpoint is optimized for dashboard user widgets and growth charts.
  *
  * Authentication: Required
- * Method: GET /metrics/users
+ * Method: GET /user/stats
  *
  * @param input.timeRange - Number of days to look back for recent activity (default: 7)
  * @returns Promise<UserMetrics> - Comprehensive user metrics
@@ -158,11 +158,11 @@ function countUniqueRecentUsers(
  * @example
  * ```typescript
  * // Get user metrics for the last 30 days
- * const metrics = await orpc.metrics.users.query({ input: { timeRange: 30 } });
+ * const metrics = await orpc.user.stats.query({ input: { timeRange: 30 } });
  * console.log(metrics.totalUsers, metrics.userGrowth);
  * ```
  */
-export const users = authRouter.metrics.users
+export const stats = authRouter.user.stats
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context, input, errors }) => {

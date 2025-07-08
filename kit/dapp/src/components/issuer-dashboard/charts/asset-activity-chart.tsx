@@ -37,7 +37,7 @@ export function AssetActivityChart() {
 
   // Fetch just the asset metrics which includes activity data - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.assets.queryOptions({ input: {} })
+    orpc.token.statsAssets.queryOptions({ input: {} })
   );
 
   // Transform asset activity data to chart format

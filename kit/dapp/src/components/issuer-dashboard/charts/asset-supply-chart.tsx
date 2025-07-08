@@ -24,7 +24,7 @@ export function AssetSupplyChart() {
 
   // Fetch just the asset metrics which includes supply breakdown - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.assets.queryOptions({ input: {} })
+    orpc.token.statsAssets.queryOptions({ input: {} })
   );
 
   // Convert asset supply breakdown to chart data format

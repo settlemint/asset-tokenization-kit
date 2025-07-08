@@ -25,7 +25,7 @@ export function UserGrowthChart() {
 
   // Fetch just the user metrics which includes growth data - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.metrics.users.queryOptions({ input: { timeRange: 30 } }) // 30 days of data
+    orpc.user.stats.queryOptions({ input: { timeRange: 30 } }) // 30 days of data
   );
 
   // Transform user growth data for chart display

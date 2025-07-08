@@ -271,7 +271,7 @@ function createAssetActivity(
 }
 
 /**
- * Asset metrics route handler.
+ * Asset statistics route handler.
  *
  * Fetches comprehensive asset-related metrics including:
  * - Total number of tokenized assets
@@ -282,13 +282,13 @@ function createAssetActivity(
  * This endpoint is optimized for dashboard asset widgets and charts.
  *
  * Authentication: Required
- * Method: GET /metrics/assets
+ * Method: GET /token/stats/assets
  *
  * @returns Promise<AssetMetrics> - Comprehensive asset metrics
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws INTERNAL_SERVER_ERROR - If TheGraph query fails
  */
-export const assets = authRouter.metrics.assets
+export const statsAssets = authRouter.token.statsAssets
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context, errors }) => {
