@@ -2,6 +2,9 @@ import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import { bondCreateHandler } from "@/orpc/helpers/token/create-handlers/bond.create";
 import { depositCreateHandler } from "@/orpc/helpers/token/create-handlers/deposit.create";
+import { equityCreateHandler } from "@/orpc/helpers/token/create-handlers/equity.create";
+import { fundCreateHandler } from "@/orpc/helpers/token/create-handlers/fund.create";
+import { stablecoinCreateHandler } from "@/orpc/helpers/token/create-handlers/stablecoin.create";
 import type { TokenCreateContext } from "@/orpc/helpers/token/token.base-create";
 import type {
   TokenCreateInput,
@@ -16,7 +19,7 @@ export const tokenCreateHandlerMap: Record<
 > = {
   [AssetTypeEnum.deposit]: depositCreateHandler,
   [AssetTypeEnum.bond]: bondCreateHandler,
-  [AssetTypeEnum.equity]: depositCreateHandler, // TODO: Replace with equityCreate when available
-  [AssetTypeEnum.fund]: depositCreateHandler, // TODO: Replace with fundCreate when available
-  [AssetTypeEnum.stablecoin]: depositCreateHandler, // TODO: Replace with stablecoinCreate when available
+  [AssetTypeEnum.equity]: equityCreateHandler,
+  [AssetTypeEnum.fund]: fundCreateHandler,
+  [AssetTypeEnum.stablecoin]: stablecoinCreateHandler,
 };

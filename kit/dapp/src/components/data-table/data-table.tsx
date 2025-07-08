@@ -382,7 +382,7 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
     return (
       <TableRow>
         <TableCell colSpan={tableColumns.length} className="h-24 text-center">
-          {t("no-results")}
+          {t("noResults")}
         </TableCell>
       </TableRow>
     );
