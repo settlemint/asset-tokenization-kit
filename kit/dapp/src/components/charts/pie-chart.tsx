@@ -16,6 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { PieChart as PieChartIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Cell, Pie, PieChart } from "recharts";
 
@@ -28,7 +29,6 @@ interface PieChartProps {
   nameKey: string;
   className?: string;
   footer?: ReactNode;
-  showLegend?: boolean;
 }
 
 export function PieChartComponent({
@@ -39,10 +39,9 @@ export function PieChartComponent({
   dataKey,
   nameKey,
   footer,
-  showLegend = true,
 }: PieChartProps) {
-  // Filter out zero values for cleaner display
-  const filteredData = data.filter((item) => Number(item[dataKey]) > 0);
+  // Filter data to only show non-zero values
+  const filteredData = data.filter((d) => Number(d[dataKey]) !== 0);
 
   if (filteredData.length === 0) {
     return (
@@ -52,8 +51,11 @@ export function PieChartComponent({
           {description && <CardDescription>{description}</CardDescription>}
         </CardHeader>
         <CardContent>
-          <div className="flex h-[200px] items-center justify-center text-muted-foreground">
-            No data available
+          <div className="flex h-[200px] flex-col items-center justify-center gap-2 text-center">
+            <PieChartIcon className="h-8 w-8 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
+              No data available
+            </span>
           </div>
         </CardContent>
         {footer && <CardFooter>{footer}</CardFooter>}
@@ -95,12 +97,10 @@ export function PieChartComponent({
                 );
               })}
             </Pie>
-            {showLegend && (
-              <ChartLegend
-                content={<ChartLegendContent />}
-                className="-translate-y-2 flex flex-wrap gap-3 *:whitespace-nowrap *:justify-center"
-              />
-            )}
+            <ChartLegend
+              content={<ChartLegendContent />}
+              className="-translate-y-2 flex flex-wrap gap-3 *:whitespace-nowrap *:justify-center"
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>
