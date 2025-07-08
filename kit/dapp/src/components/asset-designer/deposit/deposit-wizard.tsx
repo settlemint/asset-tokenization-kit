@@ -13,7 +13,7 @@ import type { TokenCreateInput } from "@/orpc/routes/token/routes/token.create.s
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 // Extract individual field schemas to avoid duplication
 const nameSchema = z.string().min(1, "Name is required").max(50);
@@ -141,26 +141,7 @@ function DepositWizardComponent({ onSuccess }: { onSuccess?: () => void }) {
       verificationCode: "111111",
       verificationType: "pincode",
     },
-    messages: {
-      initialLoading: t("streaming-messages.initial-loading", {
-        type: AssetTypeEnum.deposit,
-      }),
-      noResultError: t("streaming-messages.no-result-error", {
-        type: AssetTypeEnum.deposit,
-      }),
-      defaultError: t("streaming-messages.default-error", {
-        type: AssetTypeEnum.deposit,
-      }),
-      creatingToken: t("messages.creating", {
-        type: AssetTypeEnum.deposit,
-      }),
-      tokenCreated: t("messages.created", {
-        type: AssetTypeEnum.deposit,
-      }),
-      tokenCreationFailed: t("messages.creation-failed", {
-        type: AssetTypeEnum.deposit,
-      }),
-    },
+    // TODO: Add messages
   };
 
   return (
