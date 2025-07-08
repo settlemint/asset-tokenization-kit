@@ -6,6 +6,7 @@ import { UserGrowthChart } from "@/components/issuer-dashboard/charts/user-growt
 import { PageHeader } from "@/components/layout/page-header";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
+import { ActionsTable } from "./actions-table";
 import { AssetStatsWidget } from "./widgets/asset-stats-widget";
 import { TransactionStatsWidget } from "./widgets/transaction-stats-widget";
 import { UserStatsWidget } from "./widgets/user-stats-widget";
@@ -60,7 +61,6 @@ export function Dashboard() {
       </div>
 
       {/* Actions Section */}
-      {/*
       <p className="mt-8 mb-4 font-semibold text-2xl">{t("actions-heading")}</p>
       <ActionsTable status="PENDING" type="Admin" />
 
