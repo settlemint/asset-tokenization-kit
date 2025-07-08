@@ -12,7 +12,7 @@ shared information before attempting any task to understand the project.**
 - Do not use vitest to make tests, use bun:test
 - Asset types are centralized in the zod validator (no more cryptocurrency)
 - Never use barrel files
-- Do not use console.log, use createLogger with SETTLEMINT_LOG_LEVEL
+- Do not use console.log, use `const logger = createLogger()`
 - Do not modify code in kit/dapp/src/components/ui (shadcn components)
 - NEVER, EVER commit to main, if you are not on a branch, make a new one
 - Run `bun artifacts` and `bun codegen` before running any

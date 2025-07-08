@@ -45,8 +45,8 @@ class WizardErrorBoundary extends Component<
       },
     });
 
-    // Also log to console for immediate debugging
-    console.error("MultiStepWizard Error Boundary:", {
+    // Also log for immediate debugging
+    logger.error("MultiStepWizard Error Boundary", {
       error,
       errorInfo,
       errorName: error.name,
