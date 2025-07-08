@@ -1,4 +1,12 @@
-import { PincodeInput } from "@/components/onboarding/pincode-input";
+import { useState, useEffect, useContext, useCallback, useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import type { StepComponentProps } from "@/components/multistep-form/types";
+import { authClient } from "@/lib/auth/auth.client";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/query.client";
+import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -7,51 +15,43 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { authClient } from "@/lib/auth/auth.client";
-import { queryClient } from "@/lib/query.client";
-import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import { PincodeInput } from "@/components/onboarding/pincode-input";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const pincodeSchema = z.object({
-  pincode: z.string().length(6, "PIN code must be exactly 6 digits"),
-});
+interface WalletSecurityStepProps extends StepComponentProps {
+  user?: any; // Use any for now to match the user type from session
+}
+
+const pincodeSchema = z
+  .object({
+    pincode: z.string().length(6, "PIN code must be exactly 6 digits"),
+    confirmPincode: z.string().length(6, "PIN code must be exactly 6 digits"),
+  })
+  .refine((data) => data.pincode === data.confirmPincode, {
+    message: "PIN codes don't match",
+    path: ["confirmPincode"],
+  });
 
 type PincodeFormValues = z.infer<typeof pincodeSchema>;
 
-interface WalletSecurityStepProps {
-  onSuccess?: () => void;
-  onRegisterAction?: (action: () => void) => void;
-}
-
-/**
- * Step component for setting up wallet PIN code security during onboarding
- * @param {object} props - Component props
- * @param {() => void} [props.onSuccess] - Callback when PIN code is successfully set
- * @param {(action: () => void) => void} [props.onRegisterAction] - Callback to register the PIN setup action with parent
- * @returns {JSX.Element} The wallet security setup step component
- */
 export function WalletSecurityStep({
-  onSuccess,
-  onRegisterAction,
+  onNext,
+  onPrevious,
+  isFirstStep,
+  isLastStep,
+  user,
 }: WalletSecurityStepProps) {
-  const { t } = useTranslation("onboarding");
-  const { data: session } = authClient.useSession();
   const { sessionKey } = useContext(AuthQueryContext);
   const [isPincodeSet, setIsPincodeSet] = useState(false);
 
-  const user = session?.user;
-  const hasPincode = !!user?.pincodeEnabled;
+  const hasPincode = Boolean(user?.pincodeEnabled);
 
   const form = useForm<PincodeFormValues>({
     resolver: zodResolver(pincodeSchema),
     defaultValues: {
       pincode: "",
+      confirmPincode: "",
     },
   });
 
@@ -62,42 +62,74 @@ export function WalletSecurityStep({
         // Password is not required during initial onboarding
       }),
     onSuccess: () => {
-      toast.success(t("steps.security.success"));
+      toast.success("PIN code set successfully");
       void queryClient.invalidateQueries({
         queryKey: sessionKey,
       });
       setIsPincodeSet(true);
-      onSuccess?.();
     },
     onError: (error: Error) => {
-      toast.error(error.message || t("steps.security.error"));
+      toast.error(error.message ?? "Failed to set PIN code");
     },
   });
+
+  // Watch for changes in confirm PIN to handle real-time validation
+  const watchConfirmPincode = form.watch("confirmPincode");
+  const watchPincode = form.watch("pincode");
+
+  useEffect(() => {
+    // Only check if both fields have 6 digits
+    if (watchPincode.length === 6 && watchConfirmPincode.length === 6) {
+      if (watchPincode !== watchConfirmPincode) {
+        // Clear confirm field and refocus after a short delay
+        setTimeout(() => {
+          form.setValue("confirmPincode", "");
+          const confirmInput = document.querySelector(
+            '[name="confirmPincode"] input'
+          );
+          if (confirmInput) {
+            (confirmInput as HTMLInputElement).focus();
+          }
+        }, 500); // Give user time to see the mismatch
+      }
+    }
+  }, [watchPincode, watchConfirmPincode, form]);
 
   const handleSetPincode = useCallback(() => {
     if (!isPending && !hasPincode) {
       const values = form.getValues();
-      if (values.pincode.length === 6) {
-        enablePincode(values);
+      if (values.pincode.length === 6 && values.confirmPincode.length === 6) {
+        // Trigger validation to check if PINs match
+        void form.trigger().then((isValid) => {
+          if (isValid) {
+            enablePincode(values);
+          } else {
+            // PINs don't match - clear confirm field and refocus
+            form.setValue("confirmPincode", "");
+            // Focus will be handled by the PincodeInput component
+            setTimeout(() => {
+              const confirmInput = document.querySelector(
+                '[name="confirmPincode"] input'
+              );
+              if (confirmInput) {
+                (confirmInput as HTMLInputElement).focus();
+              }
+            }, 100);
+          }
+        });
       } else {
-        void form.trigger("pincode");
+        void form.trigger();
       }
     }
   }, [isPending, hasPincode, form, enablePincode]);
 
-  // Register the action with parent
-  useEffect(() => {
-    if (onRegisterAction) {
-      if (!hasPincode && !isPincodeSet) {
-        onRegisterAction(handleSetPincode);
-      } else {
-        // Unregister by passing a no-op function when pincode is set
-        onRegisterAction(() => {
-          // No action needed when pincode is already set
-        });
-      }
+  const handleNext = () => {
+    if (hasPincode || isPincodeSet) {
+      onNext();
+    } else {
+      handleSetPincode();
     }
-  }, [onRegisterAction, hasPincode, isPincodeSet, handleSetPincode]);
+  };
 
   const renderPincodeField = useCallback(
     ({
@@ -106,19 +138,48 @@ export function WalletSecurityStep({
       field: { value: string; onChange: (value: string) => void };
     }) => {
       return (
-        <FormItem className="flex flex-col items-center space-y-4">
-          <FormLabel className="text-base font-medium">
-            {t("steps.security.enter-pin")}
-          </FormLabel>
-          <FormControl>
-            <PincodeInput
-              value={field.value}
-              onChange={field.onChange}
-              autoFocus
-              disabled={isPending}
-            />
-          </FormControl>
-          <FormMessage />
+        <FormItem className="space-y-2 pt-8">
+          <div className="grid grid-cols-[auto,auto] gap-4 justify-center items-center">
+            <FormLabel className="text-base font-medium whitespace-nowrap text-right">
+              Enter a 6-digit PIN code
+            </FormLabel>
+            <FormControl>
+              <PincodeInput
+                value={field.value}
+                onChange={field.onChange}
+                autoFocus
+                disabled={isPending}
+              />
+            </FormControl>
+          </div>
+          <FormMessage className="text-center" />
+        </FormItem>
+      );
+    },
+    [isPending]
+  );
+
+  const renderConfirmPincodeField = useCallback(
+    ({
+      field,
+    }: {
+      field: { value: string; onChange: (value: string) => void };
+    }) => {
+      return (
+        <FormItem className="space-y-2 pt-4">
+          <div className="grid grid-cols-[auto,auto] gap-4 justify-center items-center">
+            <FormLabel className="text-base font-medium whitespace-nowrap text-right">
+              Confirm your PIN code
+            </FormLabel>
+            <FormControl>
+              <PincodeInput
+                value={field.value}
+                onChange={field.onChange}
+                disabled={isPending}
+              />
+            </FormControl>
+          </div>
+          <FormMessage className="text-center" />
         </FormItem>
       );
     },
@@ -129,14 +190,12 @@ export function WalletSecurityStep({
     <div className="h-full flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
-          {hasPincode || isPincodeSet
-            ? t("steps.security.wallet-secured")
-            : t("steps.security.title")}
+          {hasPincode || isPincodeSet ? "Wallet Secured" : "Secure Your Wallet"}
         </h2>
         <p className="text-sm text-muted-foreground pt-2">
           {hasPincode || isPincodeSet
-            ? t("steps.security.pin-enabled")
-            : t("steps.security.setup-pin")}
+            ? "PIN code protection is enabled for your wallet"
+            : "Set up a 6-digit PIN code to protect your wallet transactions"}
         </p>
       </div>
       <div
@@ -145,7 +204,7 @@ export function WalletSecurityStep({
       >
         <div className="max-w-3xl space-y-6 pr-2">
           {hasPincode || isPincodeSet ? (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4">
                 <div className="flex items-center gap-3 mb-3">
                   <svg
@@ -162,11 +221,11 @@ export function WalletSecurityStep({
                     />
                   </svg>
                   <span className="font-medium text-green-800 dark:text-green-300">
-                    {t("steps.security.pin-configured-title")}
+                    PIN Code Configured Successfully
                   </span>
                 </div>
                 <p className="text-sm text-green-700 dark:text-green-300">
-                  {t("steps.security.pin-configured-description")}
+                  Your wallet is now protected with PIN code verification
                 </p>
               </div>
             </div>
@@ -192,12 +251,82 @@ export function WalletSecurityStep({
                   </div>
                   <div className="flex-1">
                     <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-                      {t("steps.security.why-pin-title")}
+                      Why set up a PIN code?
                     </h3>
                     <p className="text-sm text-blue-800 dark:text-blue-200">
-                      {t("steps.security.why-pin-description")}
+                      A PIN code adds an extra layer of security to your wallet,
+                      protecting your assets and transactions from unauthorized
+                      access.
                     </p>
                   </div>
+                </div>
+              </div>
+
+              {/* Security features */}
+              <div className="flex justify-between">
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <svg
+                    className="h-4 w-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
+                  <span>Transaction Protection</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <svg
+                    className="h-4 w-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    />
+                  </svg>
+                  <span>Account Security</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <svg
+                    className="h-4 w-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  <span>Quick Access</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <svg
+                    className="h-4 w-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"
+                    />
+                  </svg>
+                  <span>Easy to Remember</span>
                 </div>
               </div>
 
@@ -209,82 +338,52 @@ export function WalletSecurityStep({
                     name="pincode"
                     render={renderPincodeField}
                   />
-
-                  {/* Security features */}
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                      <svg
-                        className="h-4 w-4 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                        />
-                      </svg>
-                      <span>
-                        {t("steps.security.features.transaction-protection")}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                      <svg
-                        className="h-4 w-4 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                        />
-                      </svg>
-                      <span>
-                        {t("steps.security.features.account-security")}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                      <svg
-                        className="h-4 w-4 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 10V3L4 14h7v7l9-11h-7z"
-                        />
-                      </svg>
-                      <span>{t("steps.security.features.quick-access")}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                      <svg
-                        className="h-4 w-4 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1 1 21 9z"
-                        />
-                      </svg>
-                      <span>{t("steps.security.features.easy-remember")}</span>
-                    </div>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="confirmPincode"
+                    render={renderConfirmPincodeField}
+                  />
                 </div>
               </Form>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Navigation buttons */}
+      <div className="mt-8 pt-6 border-t border-border">
+        <div className="flex justify-end gap-3">
+          {!isFirstStep && (
+            <Button variant="outline" onClick={onPrevious} disabled={isPending}>
+              Previous
+            </Button>
+          )}
+          <Button onClick={handleNext} disabled={isPending}>
+            {isPending ? (
+              <>
+                <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Setting PIN...
+              </>
+            ) : isLastStep ? (
+              "Complete"
+            ) : (
+              "Next"
+            )}
+          </Button>
         </div>
       </div>
     </div>
