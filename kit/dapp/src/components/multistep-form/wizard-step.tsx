@@ -169,7 +169,6 @@ export function WizardStep({ className }: WizardStepProps) {
       }
 
       // Mark step as complete and move to next
-      console.log('WizardStep: Marking step complete:', currentStep.id);
       markStepComplete(currentStep.id);
 
       if (!isLastStep) {

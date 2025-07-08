@@ -152,13 +152,9 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   const markStepComplete = useCallback(
     (stepId: string) => {
-      console.log('markStepComplete called for stepId:', stepId, 'current completedSteps:', completedSteps);
       if (!completedSteps.includes(stepId)) {
         const newCompletedSteps = [...completedSteps, stepId];
-        console.log('Adding step to completed steps. New completedSteps:', newCompletedSteps);
         setCompletedSteps(newCompletedSteps);
-      } else {
-        console.log('Step already marked as completed:', stepId);
       }
     },
     [completedSteps, setCompletedSteps]

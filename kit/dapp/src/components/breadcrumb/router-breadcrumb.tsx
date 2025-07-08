@@ -46,7 +46,7 @@ function useAsyncBreadcrumbTitle(
       // Resolve the async title
       const resolveTitle = async () => {
         try {
-          const title = await breadcrumbMeta.getTitle();
+          const title = await breadcrumbMeta.getTitle!();
           if (!cancelled) {
             setAsyncTitle(title);
           }
@@ -105,8 +105,6 @@ function BreadcrumbItemWithAsyncTitle({
   href?: string;
   isCurrentPage?: boolean;
 }) {
-  const namespace = breadcrumbMeta?.i18nNamespace ?? "navigation";
-  const { t } = useTranslation([namespace]);
   const title = useAsyncBreadcrumbTitle(breadcrumbMeta, fallbackTitle);
 
   return (
@@ -121,7 +119,7 @@ function BreadcrumbItemWithAsyncTitle({
         </span>
       ) : (
         <BreadcrumbLink asChild className="text-xs">
-          <Link to={href} aria-label={title === "home" ? t("home") : undefined}>
+          <Link to={href} aria-label={title === "home" ? "Home" : undefined}>
             {title === "home" ? <Home className="h-3 w-3" /> : title}
           </Link>
         </BreadcrumbLink>

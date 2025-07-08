@@ -1,5 +1,6 @@
 import { queryClient } from "@/lib/query.client";
 import type { SettingKey } from "@/lib/zod/validators/settings-key";
+import type { SettingsUpsertInput } from "@/orpc/routes/settings/routes/settings.upsert.schema";
 import { orpc } from "@/orpc";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -48,7 +49,7 @@ export function useSettings(
 
   // Setter function that wraps the mutation
   const setSetting = (value: string) => {
-    updateSetting({ key, value });
+    updateSetting({ key, value } as SettingsUpsertInput);
   };
 
   const invalidateSetting = () => {

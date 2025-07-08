@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { CheckIcon } from "lucide-react";
 import { useCallback } from "react";
 import type { StepDefinition, StepStatus } from "./types";
 import { useWizardContext } from "./wizard-context";
@@ -18,13 +19,9 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
     navigateToStep,
   } = useWizardContext();
 
-  // Debug log the completed steps
-  console.log('WizardSidebar render - completedSteps:', completedSteps, 'currentStepIndex:', currentStepIndex);
-
   const getStepStatus = (step: StepDefinition, index: number): StepStatus => {
     if (stepErrors[step.id]) return "error";
     if (completedSteps.includes(step.id)) {
-      console.log(`Step ${step.id} is marked as completed`);
       return "completed";
     }
     if (index === currentStepIndex) return "active";
@@ -85,23 +82,9 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
                   />
                 </svg>
               ) : isCompleted ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="text-current"
-                >
-                  <circle cx="12" cy="12" r="10" fill="#10b981" />
-                  <path
-                    d="M9 12l2 2 4-4"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <div className="flex items-center justify-center w-5 h-5 bg-green-500 rounded-full">
+                  <CheckIcon className="size-3 text-white" />
+                </div>
               ) : isCurrent ? (
                 <svg
                   width="27"
