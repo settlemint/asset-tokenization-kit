@@ -251,9 +251,7 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
               <div className="pl-6">
                 {groupSteps.map(({ step, index }, stepIndex) => {
                   const isLastInGroup = stepIndex === groupSteps.length - 1;
-                  const isLastOverall =
-                    groupIndex === groups.length - 1 && isLastInGroup;
-                  return renderStep(step, index, isLastOverall);
+                  return renderStep(step, index, isLastInGroup);
                 })}
               </div>
             </div>
