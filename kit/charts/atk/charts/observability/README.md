@@ -15,7 +15,7 @@ A Helm chart for the observability components
 | Repository | Name | Version |
 |------------|------|---------|
 | https://grafana.github.io/helm-charts | alloy | 1.1.2 |
-| https://grafana.github.io/helm-charts | grafana | 9.2.9 |
+| https://grafana.github.io/helm-charts | grafana | 9.2.10 |
 | https://grafana.github.io/helm-charts | loki | 6.30.1 |
 | https://grafana.github.io/helm-charts | tempo | 1.23.2 |
 | https://kubernetes-sigs.github.io/metrics-server/ | metrics-server | 3.12.2 |
@@ -106,7 +106,7 @@ A Helm chart for the observability components
 | grafana.global.imageRegistry | string | `"docker.io"` |  |
 | grafana.ingress.enabled | bool | `true` |  |
 | grafana.ingress.hosts[0] | string | `"grafana.k8s.orb.local"` |  |
-| grafana.ingress.ingressClassName | string | `"settlemint-nginx"` |  |
+| grafana.ingress.ingressClassName | string | `"atk-nginx"` |  |
 | grafana.initChownData.enabled | bool | `false` |  |
 | grafana.persistence.enabled | bool | `false` |  |
 | grafana.persistence.size | string | `"1Gi"` |  |
@@ -159,7 +159,7 @@ A Helm chart for the observability components
 | loki.gateway.ingress.hosts[0].host | string | `"logs.settlemint.local"` |  |
 | loki.gateway.ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | loki.gateway.ingress.hosts[0].paths[0].pathType | string | `"Prefix"` |  |
-| loki.gateway.ingress.ingressClassName | string | `"settlemint-nginx"` |  |
+| loki.gateway.ingress.ingressClassName | string | `"atk-nginx"` |  |
 | loki.global.image.registry | string | `"docker.io"` |  |
 | loki.imagePullSecrets | list | `[]` |  |
 | loki.indexGateway.replicas | int | `0` |  |
@@ -269,7 +269,7 @@ A Helm chart for the observability components
 | tempo.tempoQuery.ingress.annotations."nginx.ingress.kubernetes.io/proxy-send-timeout" | string | `"3600"` |  |
 | tempo.tempoQuery.ingress.enabled | bool | `false` |  |
 | tempo.tempoQuery.ingress.hosts[0] | string | `"traces.k8s.orb.local"` |  |
-| tempo.tempoQuery.ingress.ingressClassName | string | `"settlemint-nginx"` |  |
+| tempo.tempoQuery.ingress.ingressClassName | string | `"atk-nginx"` |  |
 | tempo.tempoQuery.ingress.pathType | string | `"Prefix"` |  |
 | tempo.tempoQuery.pullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | tempo.tempoQuery.pullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
@@ -291,7 +291,7 @@ A Helm chart for the observability components
 | victoria-metrics-single.server.ingress.hosts[0].name | string | `"metrics.settlemint.local"` |  |
 | victoria-metrics-single.server.ingress.hosts[0].path | string | `"/"` |  |
 | victoria-metrics-single.server.ingress.hosts[0].port | string | `"http"` |  |
-| victoria-metrics-single.server.ingress.ingressClassName | string | `"settlemint-nginx"` |  |
+| victoria-metrics-single.server.ingress.ingressClassName | string | `"atk-nginx"` |  |
 | victoria-metrics-single.server.ingress.pathType | string | `"Prefix"` |  |
 | victoria-metrics-single.server.persistentVolume.size | string | `"10Gi"` |  |
 | victoria-metrics-single.server.persistentVolume.storageClass | string | `""` |  |
