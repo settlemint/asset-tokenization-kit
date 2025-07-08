@@ -1,6 +1,7 @@
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import type { ChallengeResponse } from "@/orpc/helpers/challenge-response";
+import { createTokenMessagesSchema } from "@/orpc/helpers/token/token.base-create.schema";
 import type {
   TransactionEventEmitted,
   ValidatedPortalClient,
@@ -9,7 +10,6 @@ import type {
   TokenCreateInput,
   TokenCreateOutput,
 } from "@/orpc/routes/token/routes/token.create.schema";
-import { createTokenMessagesSchema } from "@/orpc/routes/token/routes/token.create.schema";
 import { withEventMeta } from "@orpc/server";
 
 export interface TokenCreateContext {

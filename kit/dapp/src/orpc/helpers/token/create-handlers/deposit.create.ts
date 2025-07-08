@@ -21,7 +21,7 @@ import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import {
   createToken,
   type TokenCreateContext,
-} from "@/orpc/helpers/token/token.create";
+} from "@/orpc/helpers/token/token.base-create";
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/token.create.schema";
 
 const CREATE_DEPOSIT_MUTATION = portalGraphql(`
@@ -43,8 +43,6 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
     }
   }
 `);
-
-// TODO: Move deposit create schema here
 
 export const depositCreateHandler = async function* (
   input: TokenCreateInput,

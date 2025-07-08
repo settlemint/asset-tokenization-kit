@@ -18,8 +18,8 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
-import type { TokenCreateContext } from "@/orpc/helpers/token/token.create";
-import { createToken } from "@/orpc/helpers/token/token.create";
+import type { TokenCreateContext } from "@/orpc/helpers/token/token.base-create";
+import { createToken } from "@/orpc/helpers/token/token.base-create";
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/token.create.schema";
 
 const CREATE_BOND_MUTATION = portalGraphql(`
