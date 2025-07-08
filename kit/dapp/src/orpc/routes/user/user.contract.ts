@@ -16,6 +16,10 @@ import {
   UserListSchema,
 } from "@/orpc/routes/user/routes/user.list.schema";
 import { UserMeSchema } from "@/orpc/routes/user/routes/user.me.schema";
+import {
+  UserStatsInputSchema,
+  UserStatsOutputSchema,
+} from "@/orpc/routes/user/routes/user.stats.schema";
 import { baseContract } from "../../procedures/base.contract";
 
 /**
@@ -51,9 +55,33 @@ const list = baseContract
   .output(UserListOutputSchema);
 
 /**
+ * Get user statistics and metrics.
+ *
+ * This endpoint returns comprehensive user statistics including total counts,
+ * recent activity, and user growth data over time for dashboard and analytics
+ * purposes.
+ * @auth Required - User must be authenticated
+ * @function GET
+ * @endpoint /user/stats
+ * @param timeRange - Number of days to look back for recent activity
+ * @returns UserStatsOutputSchema - User statistics and metrics
+ */
+const stats = baseContract
+  .route({
+    method: "GET",
+    path: "/user/stats",
+    description: "Get user statistics and metrics",
+    successDescription: "User statistics",
+    tags: ["user"],
+  })
+  .input(UserStatsInputSchema)
+  .output(UserStatsOutputSchema);
+
+/**
  * User API contract collection.
  */
 export const userContract = {
   me,
   list,
+  stats,
 };
