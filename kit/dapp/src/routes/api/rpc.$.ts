@@ -17,7 +17,6 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
-import { env } from "@/lib/env";
 import { bigDecimalSerializer } from "@/lib/zod/validators/bigdecimal";
 import { bigIntSerializer } from "@/lib/zod/validators/bigint";
 import { timestampSerializer } from "@/lib/zod/validators/timestamp";
@@ -31,10 +30,7 @@ import {
   getHeaders,
 } from "@tanstack/react-start/server";
 
-// Uncomment for debugging API errors
-const logger = createLogger({
-  level: env.SETTLEMINT_LOG_LEVEL,
-});
+const logger = createLogger();
 
 /**
  * OpenAPI handler configuration.

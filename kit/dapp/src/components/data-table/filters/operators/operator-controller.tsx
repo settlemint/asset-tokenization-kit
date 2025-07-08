@@ -14,22 +14,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { Column, ColumnMeta } from "@tanstack/react-table";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { dateFilterDetails } from "./date-operators";
-import { filterTypeOperatorDetails } from "./operator-mapping";
-import { multiOptionFilterDetails } from "./multi-option-operators";
-import { numberFilterDetails } from "./number-operators";
-import { optionFilterDetails } from "./option-operators";
-import { textFilterDetails } from "./text-operators";
 import type { ColumnDataType } from "../types/column-types";
 import type { FilterValue } from "../types/filter-types";
+import { dateFilterDetails } from "./date-operators";
+import { multiOptionFilterDetails } from "./multi-option-operators";
+import { numberFilterDetails } from "./number-operators";
+import { filterTypeOperatorDetails } from "./operator-mapping";
+import { optionFilterDetails } from "./option-operators";
+import { textFilterDetails } from "./text-operators";
 
-const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel | undefined) ?? "info",
-});
+const logger = createLogger();
 
 /**
  * Renders the filter operator display and menu for a given column filter.
