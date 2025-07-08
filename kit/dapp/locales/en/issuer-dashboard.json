@@ -4,9 +4,9 @@
   "asset-management": "Asset management",
   "stats-heading": "Stats",
   "actions-heading": "Actions",
-  "latest-events-heading": "Latest Events",
+  "latest-events-heading": "Latest events",
   "stats": {
-    "title": "Platform Statistics",
+    "title": "Platform statistics",
     "assets": "Assets",
     "assetsDescription": "{{bonds}} bonds | {{cryptocurrencies}} cryptocurrencies | {{equities}} equities | {{funds}} funds | {{stableCoins}} stablecoins | {{deposits}} deposits",
     "transactions": "Transactions",
@@ -24,15 +24,26 @@
   },
   "charts": {
     "assetSupply": {
-      "title": "Asset supply",
+      "title": "Assets supply",
       "description": "The distribution of assets per asset class"
     },
-    "assetActivity": "Asset Activity",
-    "usersHistory": "User Growth",
-    "transactionsHistory": "Transaction History"
+    "assetActivity": {
+      "title": "Asset activity",
+      "description": "The amount of actions taken on the different asset classes"
+    },
+    "userGrowth": {
+      "title": "Registered users",
+      "description": "Number of users registered in the last week",
+      "currentPeriod": "Current"
+    },
+    "transactionHistory": {
+      "title": "Transaction history",
+      "description": "Number of transactions per day in the last week",
+      "currentPeriod": "Current"
+    }
   },
   "tables": {
-    "latestEvents": "Latest Events",
-    "actions": "Pending Actions"
+    "latestEvents": "Latest events",
+    "actions": "Pending actions"
   }
 }
