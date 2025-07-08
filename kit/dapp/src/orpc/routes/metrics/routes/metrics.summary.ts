@@ -225,34 +225,26 @@ export const summary = authRouter.metrics.summary
       // Fetch system stats for the specific system from TheGraph
       context.theGraphClient.query(SYSTEM_STATS_QUERY, {
         input: {
-          input: {
-            systemId: context.system.address.toLowerCase(),
-          },
+          systemId: context.system.address.toLowerCase(),
         },
         output: SystemStatsResponseSchema,
         error: "Failed to fetch system stats",
       }),
       // Fetch token stats states (one per token)
       context.theGraphClient.query(TOKEN_STATS_QUERY, {
-        input: {
-          input: {},
-        },
+        input: {},
         output: TokenStatsResponseSchema,
         error: "Failed to fetch token statistics",
       }),
       // Fetch event statistics (pre-aggregated event counts)
       context.theGraphClient.query(EVENT_STATS_QUERY, {
-        input: {
-          input: {},
-        },
+        input: {},
         output: EventStatsResponseSchema,
         error: "Failed to fetch event statistics",
       }),
       // Fetch account stats states (one per active user)
       context.theGraphClient.query(ACCOUNT_STATS_QUERY, {
-        input: {
-          input: {},
-        },
+        input: {},
         output: AccountStatsResponseSchema,
         error: "Failed to fetch account statistics",
       }),
