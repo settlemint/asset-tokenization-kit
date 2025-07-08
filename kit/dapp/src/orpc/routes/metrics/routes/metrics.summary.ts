@@ -70,6 +70,106 @@ const ACCOUNT_STATS_QUERY = theGraphGraphql(`
   }
 `);
 
+/**
+ * Query to fetch event statistics for asset activity
+ */
+const EVENT_STATS_FOR_ACTIVITY_QUERY = theGraphGraphql(`
+  query EventStatsForActivity {
+    # Get all event stats by event type
+    mintEvents: eventStats_collection(
+      where: { eventName: "Mint" }
+      interval: day
+    ) {
+      eventsCount
+    }
+
+    burnEvents: eventStats_collection(
+      where: { eventName: "Burn" }
+      interval: day
+    ) {
+      eventsCount
+    }
+
+    transferEventsForActivity: eventStats_collection(
+      where: { eventName: "Transfer" }
+      interval: day
+    ) {
+      eventsCount
+    }
+
+    clawbackEvents: eventStats_collection(
+      where: { eventName: "Clawback" }
+      interval: day
+    ) {
+      eventsCount
+    }
+
+    freezeEvents: eventStats_collection(
+      where: { eventName: "Freeze" }
+      interval: day
+    ) {
+      eventsCount
+    }
+
+    unfreezeEvents: eventStats_collection(
+      where: { eventName: "Unfreeze" }
+      interval: day
+    ) {
+      eventsCount
+    }
+  }
+`);
+
+/**
+ * Query to fetch account statistics over time for user growth tracking
+ * Uses AccountStats with daily intervals to get time-series data of user counts
+ * Filters to non-contract accounts and groups by day
+ */
+const USER_GROWTH_QUERY = theGraphGraphql(`
+  query UserGrowthQuery($since: Timestamp!) {
+    # Get daily account statistics since the specified date
+    # This gives us time-series data showing user activity over time
+    accountStats: accountStats_collection(
+      where: {
+        timestamp_gte: $since,
+        account_: { isContract: false }
+      }
+      interval: day
+      orderBy: timestamp
+      orderDirection: asc
+    ) {
+      timestamp
+      account {
+        id
+      }
+    }
+  }
+`);
+
+/**
+ * Query to fetch transaction history over time for transaction timeline tracking
+ * Uses EventStats with daily intervals to get time-series data of transaction counts
+ * Filters to Transfer events (the main transaction type) and groups by day
+ */
+const TRANSACTION_HISTORY_QUERY = theGraphGraphql(`
+  query TransactionHistoryQuery($since: Timestamp!) {
+    # Get daily event statistics for Transfer events since the specified date
+    # This gives us time-series data showing transaction activity over time
+    eventStats: eventStats_collection(
+      where: {
+        timestamp_gte: $since,
+        eventName: "Transfer"
+      }
+      interval: day
+      orderBy: timestamp
+      orderDirection: asc
+    ) {
+      timestamp
+      eventsCount
+    }
+  }
+`);
+
 // Schema for the system stats response
 const SystemStatsResponseSchema = z.object({
   systemStatsState: z
@@ -109,6 +209,62 @@ const AccountStatsResponseSchema = z.object({
       account: z.object({
         id: z.string(),
       }),
+    })
+  ),
+});
+
+// Schema for the event stats response for asset activity
+const EventStatsForActivityResponseSchema = z.object({
+  mintEvents: z.array(
+    z.object({
+      eventsCount: z.number(),
+    })
+  ),
+  burnEvents: z.array(
+    z.object({
+      eventsCount: z.number(),
+    })
+  ),
+  transferEventsForActivity: z.array(
+    z.object({
+      eventsCount: z.number(),
+    })
+  ),
+  clawbackEvents: z.array(
+    z.object({
+      eventsCount: z.number(),
+    })
+  ),
+  freezeEvents: z.array(
+    z.object({
+      eventsCount: z.number(),
+    })
+  ),
+  unfreezeEvents: z.array(
+    z.object({
+      eventsCount: z.number(),
+    })
+  ),
+});
+
+// Schema for the user growth query response
+const UserGrowthQueryResponseSchema = z.object({
+  accountStats: z.array(
+    z.object({
+      timestamp: z.string(),
+      account: z.object({
+        id: z.string(),
+      }),
+    })
+  ),
+});
+
+// Schema for the transaction history query response
+const TransactionHistoryQueryResponseSchema = z.object({
+  eventStats: z.array(
+    z.object({
+      timestamp: z.string(),
+      eventsCount: z.number(),
     })
   ),
 });
@@ -170,6 +326,182 @@ function sumEventCounts(eventStats: { eventsCount: number }[]): number {
 }
 
 /**
+ * Helper function to process account stats into cumulative user growth data
+ * Tracks unique users over time to show growth trends
+ * @param accountStats Array of account statistics from TheGraph
+ * @returns Array of user growth data points with cumulative user counts
+ */
+function processUserGrowthData(
+  accountStats: { timestamp: string; account: { id: string } }[]
+): { timestamp: string; users: number }[] {
+  // Group accounts by day and track unique users
+  const dailyUserSets = new Map<string, Set<string>>();
+
+  for (const stat of accountStats) {
+    const dayKey = stat.timestamp.split("T")[0] ?? stat.timestamp; // Extract date part (YYYY-MM-DD)
+
+    if (!dailyUserSets.has(dayKey)) {
+      dailyUserSets.set(dayKey, new Set());
+    }
+
+    const dayUserSet = dailyUserSets.get(dayKey);
+    if (dayUserSet) {
+      dayUserSet.add(stat.account.id);
+    }
+  }
+
+  // Convert to cumulative user growth
+  const sortedDays = Array.from(dailyUserSets.keys()).sort();
+  const allUsers = new Set<string>();
+  const result: { timestamp: string; users: number }[] = [];
+
+  for (const day of sortedDays) {
+    const dayUsers = dailyUserSets.get(day);
+    if (!dayUsers) continue;
+
+    // Add new users to the cumulative set
+    dayUsers.forEach((userId) => {
+      allUsers.add(userId);
+    });
+
+    result.push({
+      timestamp: `${day}T00:00:00.000Z`, // Convert back to ISO format
+      users: allUsers.size, // Cumulative count
+    });
+  }
+
+  return result;
+}
+
+/**
+ * Helper function to process event stats into transaction history data
+ * Converts raw event statistics into daily transaction counts
+ * @param eventStats Array of event statistics from TheGraph
+ * @returns Array of transaction history data points with daily transaction counts
+ */
+function processTransactionHistoryData(
+  eventStats: { timestamp: string; eventsCount: number }[]
+): { timestamp: string; transactions: number }[] {
+  return eventStats.map((stat) => ({
+    timestamp: stat.timestamp,
+    transactions: stat.eventsCount,
+  }));
+}
+
+/**
+ * Helper function to create asset activity data from token stats and event stats
+ * @param tokenStats Array of token stats states
+ * @param eventStats Event statistics for different event types
+ * @returns Array of asset activity data grouped by asset type
+ */
+function createAssetActivity(
+  tokenStats: { token: { type: string; totalSupply: string } }[],
+  eventStats: {
+    mintEvents: { eventsCount: number }[];
+    burnEvents: { eventsCount: number }[];
+    transferEventsForActivity: { eventsCount: number }[];
+    clawbackEvents: { eventsCount: number }[];
+    freezeEvents: { eventsCount: number }[];
+    unfreezeEvents: { eventsCount: number }[];
+  }
+): {
+  id: string;
+  assetType: string;
+  mintEventCount: number;
+  burnEventCount: number;
+  transferEventCount: number;
+  clawbackEventCount: number;
+  frozenEventCount: number;
+  unfrozenEventCount: number;
+  totalMinted: string;
+  totalBurned: string;
+  totalTransferred: string;
+}[] {
+  // Calculate total event counts
+  const totalMintEvents = sumEventCounts(eventStats.mintEvents);
+  const totalBurnEvents = sumEventCounts(eventStats.burnEvents);
+  const totalTransferEvents = sumEventCounts(
+    eventStats.transferEventsForActivity
+  );
+  const totalClawbackEvents = sumEventCounts(eventStats.clawbackEvents);
+  const totalFreezeEvents = sumEventCounts(eventStats.freezeEvents);
+  const totalUnfreezeEvents = sumEventCounts(eventStats.unfreezeEvents);
+
+  // Group tokens by asset type and aggregate statistics
+  const assetTypeMap = new Map<
+    string,
+    {
+      mintEventCount: number;
+      burnEventCount: number;
+      transferEventCount: number;
+      clawbackEventCount: number;
+      frozenEventCount: number;
+      unfrozenEventCount: number;
+      totalMinted: bigint;
+      totalBurned: bigint;
+      totalTransferred: bigint;
+      tokenCount: number;
+    }
+  >();
+
+  // Process token statistics
+  for (const tokenStat of tokenStats) {
+    const assetType = tokenStat.token.type;
+
+    const existing = assetTypeMap.get(assetType) ?? {
+      mintEventCount: 0,
+      burnEventCount: 0,
+      transferEventCount: 0,
+      clawbackEventCount: 0,
+      frozenEventCount: 0,
+      unfrozenEventCount: 0,
+      totalMinted: BigInt(0),
+      totalBurned: BigInt(0),
+      totalTransferred: BigInt(0),
+      tokenCount: 0,
+    };
+
+    // Count tokens for this asset type
+    const newTokenCount = existing.tokenCount + 1;
+    const totalTokensForType = tokenStats.filter(
+      (ts) => ts.token.type === assetType
+    ).length;
+
+    // Distribute events proportionally based on this asset type's share of total tokens
+    const eventShare =
+      totalTokensForType > 0 ? totalTokensForType / tokenStats.length : 0;
+
+    assetTypeMap.set(assetType, {
+      mintEventCount: Math.floor(totalMintEvents * eventShare),
+      burnEventCount: Math.floor(totalBurnEvents * eventShare),
+      transferEventCount: Math.floor(totalTransferEvents * eventShare),
+      clawbackEventCount: Math.floor(totalClawbackEvents * eventShare),
+      frozenEventCount: Math.floor(totalFreezeEvents * eventShare),
+      unfrozenEventCount: Math.floor(totalUnfreezeEvents * eventShare),
+      totalMinted: existing.totalMinted,
+      totalBurned: existing.totalBurned,
+      totalTransferred: existing.totalTransferred,
+      tokenCount: newTokenCount,
+    });
+  }
+
+  // Convert to final array format
+  return Array.from(assetTypeMap.entries()).map(([assetType, stats]) => ({
+    id: assetType,
+    assetType,
+    mintEventCount: stats.mintEventCount,
+    burnEventCount: stats.burnEventCount,
+    transferEventCount: stats.transferEventCount,
+    clawbackEventCount: stats.clawbackEventCount,
+    frozenEventCount: stats.frozenEventCount,
+    unfrozenEventCount: stats.unfrozenEventCount,
+    totalMinted: stats.totalMinted.toString(),
+    totalBurned: stats.totalBurned.toString(),
+    totalTransferred: stats.totalTransferred.toString(),
+  }));
+}
+
+/**
  * Metrics summary route handler.
  *
  * Retrieves aggregated metrics for the issuer dashboard using pre-built stats entities:
@@ -215,12 +547,20 @@ export const summary = authRouter.metrics.summary
       throw errors.SYSTEM_NOT_CREATED();
     }
 
+    // Calculate the date range for user growth query
+    const since = new Date();
+    since.setDate(since.getDate() - RECENT_ACTIVITY_DAYS);
+    const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
+
     // Run all queries in parallel for optimal performance
     const [
       systemStatsResponse,
       tokenStatsResponse,
       eventStatsResponse,
       accountStatsResponse,
+      eventStatsForActivityResponse,
+      userGrowthResponse,
+      transactionHistoryResponse,
     ] = await Promise.all([
       // Fetch system stats for the specific system from TheGraph
       context.theGraphClient.query(SYSTEM_STATS_QUERY, {
@@ -248,6 +588,28 @@ export const summary = authRouter.metrics.summary
         output: AccountStatsResponseSchema,
         error: "Failed to fetch account statistics",
       }),
+      // Fetch event statistics for asset activity
+      context.theGraphClient.query(EVENT_STATS_FOR_ACTIVITY_QUERY, {
+        input: {},
+        output: EventStatsForActivityResponseSchema,
+        error: "Failed to fetch event statistics for asset activity",
+      }),
+      // Fetch user growth statistics
+      context.theGraphClient.query(USER_GROWTH_QUERY, {
+        input: {
+          since: sinceTimestamp.toString(),
+        },
+        output: UserGrowthQueryResponseSchema,
+        error: "Failed to fetch user growth statistics",
+      }),
+      // Fetch transaction history statistics
+      context.theGraphClient.query(TRANSACTION_HISTORY_QUERY, {
+        input: {
+          since: sinceTimestamp.toString(),
+        },
+        output: TransactionHistoryQueryResponseSchema,
+        error: "Failed to fetch transaction history statistics",
+      }),
     ]);
 
     // Calculate active user counts from account stats (users who hold/held tokens)
@@ -271,6 +633,20 @@ export const summary = authRouter.metrics.summary
     const totalTransactions = sumEventCounts(eventStatsResponse.allEventStats);
     const recentTransactions = 0; // For now, we'll set this to 0 since timestamp filtering is complex
 
+    // Calculate asset activity data
+    const assetActivity = createAssetActivity(
+      tokenStatsResponse.tokenStatsStates,
+      eventStatsForActivityResponse
+    );
+
+    // Process user growth data
+    const userGrowth = processUserGrowthData(userGrowthResponse.accountStats);
+
+    // Process transaction history data
+    const transactionHistory = processTransactionHistoryData(
+      transactionHistoryResponse.eventStats
+    );
+
     return {
       totalAssets,
       assetBreakdown,
@@ -281,5 +657,8 @@ export const summary = authRouter.metrics.summary
       recentUsers: recentUsersCount,
       recentActivityDays: RECENT_ACTIVITY_DAYS,
       totalValue,
+      assetActivity,
+      userGrowth,
+      transactionHistory,
     };
   });

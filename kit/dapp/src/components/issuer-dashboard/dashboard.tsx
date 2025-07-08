@@ -1,5 +1,8 @@
+import { AssetActivityChart } from "@/components/issuer-dashboard/charts/asset-activity-chart";
 import { AssetSupplyChart } from "@/components/issuer-dashboard/charts/asset-supply-chart";
 import { ChartSkeleton } from "@/components/issuer-dashboard/charts/chart-skeleton";
+import { TransactionHistoryChart } from "@/components/issuer-dashboard/charts/transaction-history-chart";
+import { UserGrowthChart } from "@/components/issuer-dashboard/charts/user-growth-chart";
 import { PageHeader } from "@/components/layout/page-header";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
@@ -45,15 +48,15 @@ export function Dashboard() {
         <Suspense fallback={<ChartSkeleton />}>
           <AssetSupplyChart />
         </Suspense>
-        {/* <Suspense fallback={<ChartSkeleton />}>
+        <Suspense fallback={<ChartSkeleton />}>
           <AssetActivityChart />
-        </Suspense> */}
-        {/* <Suspense fallback={<ChartSkeleton />}>
+        </Suspense>
+        <Suspense fallback={<ChartSkeleton />}>
           <UserGrowthChart />
-        </Suspense> */}
-        {/* <Suspense fallback={<ChartSkeleton />}>
+        </Suspense>
+        <Suspense fallback={<ChartSkeleton />}>
           <TransactionHistoryChart />
-        </Suspense> */}
+        </Suspense>
       </div>
 
       {/* Actions Section */}

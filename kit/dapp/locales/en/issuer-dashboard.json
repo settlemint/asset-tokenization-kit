@@ -4,9 +4,9 @@
   "asset-management": "Asset management",
   "stats-heading": "Stats",
   "actions-heading": "Actions",
-  "latest-events-heading": "Latest Events",
+  "latest-events-heading": "Latest events",
   "stats": {
-    "title": "Platform Statistics",
+    "title": "Platform statistics",
     "assets": "Assets",
     "assetsDescription": "{{bonds}} bonds | {{cryptocurrencies}} cryptocurrencies | {{equities}} equities | {{funds}} funds | {{stableCoins}} stablecoins | {{deposits}} deposits",
     "transactions": "Transactions",
@@ -27,12 +27,23 @@
       "title": "Asset supply",
       "description": "The distribution of assets per asset class"
     },
-    "assetActivity": "Asset Activity",
-    "usersHistory": "User Growth",
-    "transactionsHistory": "Transaction History"
+    "assetActivity": {
+      "title": "Asset activity",
+      "description": "Number of assets by type"
+    },
+    "userGrowth": {
+      "title": "User growth",
+      "description": "Total platform users over time",
+      "currentPeriod": "Current"
+    },
+    "transactionHistory": {
+      "title": "Transaction history",
+      "description": "Transaction volume over time",
+      "currentPeriod": "Current"
+    }
   },
   "tables": {
-    "latestEvents": "Latest Events",
-    "actions": "Pending Actions"
+    "latestEvents": "Latest events",
+    "actions": "Pending actions"
   }
 }
