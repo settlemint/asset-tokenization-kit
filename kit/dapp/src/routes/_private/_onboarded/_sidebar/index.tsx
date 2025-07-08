@@ -18,7 +18,7 @@ import { CreateDepositForm } from "@/components/asset-designer/deposit/form";
 import { Dashboard as IssuerDashboard } from "@/components/issuer-dashboard/dashboard";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_private/_onboarded/")({
+export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
   /**
    * Data loader that runs when navigating to this route.
    *
