@@ -30,6 +30,7 @@ import enCommonTranslations from "@/locales/en/common.json";
 import enDashboardTranslations from "@/locales/en/dashboard.json";
 import enDataTableTranslations from "@/locales/en/data-table.json";
 import enDepositsTableTranslations from "@/locales/en/deposits-table.json";
+import enDetailGridTranslations from "@/locales/en/detail-grid.json";
 import enErrorsTranslations from "@/locales/en/errors.json";
 import enFormTranslations from "@/locales/en/form.json";
 import enFormatsTranslations from "@/locales/en/formats.json";
@@ -57,6 +58,7 @@ import deCommonTranslations from "@/locales/de/common.json";
 import deDashboardTranslations from "@/locales/de/dashboard.json";
 import deDataTableTranslations from "@/locales/de/data-table.json";
 import deDepositsTableTranslations from "@/locales/de/deposits-table.json";
+import deDetailGridTranslations from "@/locales/de/detail-grid.json";
 import deErrorsTranslations from "@/locales/de/errors.json";
 import deFormTranslations from "@/locales/de/form.json";
 import deFormatsTranslations from "@/locales/de/formats.json";
@@ -84,6 +86,7 @@ import arCommonTranslations from "@/locales/ar/common.json";
 import arDashboardTranslations from "@/locales/ar/dashboard.json";
 import arDataTableTranslations from "@/locales/ar/data-table.json";
 import arDepositsTableTranslations from "@/locales/ar/deposits-table.json";
+import arDetailGridTranslations from "@/locales/ar/detail-grid.json";
 import arErrorsTranslations from "@/locales/ar/errors.json";
 import arFormTranslations from "@/locales/ar/form.json";
 import arFormatsTranslations from "@/locales/ar/formats.json";
@@ -111,6 +114,7 @@ import jaCommonTranslations from "@/locales/ja/common.json";
 import jaDashboardTranslations from "@/locales/ja/dashboard.json";
 import jaDataTableTranslations from "@/locales/ja/data-table.json";
 import jaDepositsTableTranslations from "@/locales/ja/deposits-table.json";
+import jaDetailGridTranslations from "@/locales/ja/detail-grid.json";
 import jaErrorsTranslations from "@/locales/ja/errors.json";
 import jaFormTranslations from "@/locales/ja/form.json";
 import jaFormatsTranslations from "@/locales/ja/formats.json";
@@ -158,6 +162,7 @@ export const resources = {
     dashboard: enDashboardTranslations,
     "data-table": enDataTableTranslations,
     "deposits-table": enDepositsTableTranslations,
+    "detail-grid": enDetailGridTranslations,
     errors: enErrorsTranslations,
     form: enFormTranslations,
     formats: enFormatsTranslations,
@@ -185,6 +190,7 @@ export const resources = {
     dashboard: deDashboardTranslations,
     "data-table": deDataTableTranslations,
     "deposits-table": deDepositsTableTranslations,
+    "detail-grid": deDetailGridTranslations,
     errors: deErrorsTranslations,
     form: deFormTranslations,
     formats: deFormatsTranslations,
@@ -212,6 +218,7 @@ export const resources = {
     dashboard: arDashboardTranslations,
     "data-table": arDataTableTranslations,
     "deposits-table": arDepositsTableTranslations,
+    "detail-grid": arDetailGridTranslations,
     errors: arErrorsTranslations,
     form: arFormTranslations,
     formats: arFormatsTranslations,
@@ -239,6 +246,7 @@ export const resources = {
     dashboard: jaDashboardTranslations,
     "data-table": jaDataTableTranslations,
     "deposits-table": jaDepositsTableTranslations,
+    "detail-grid": jaDetailGridTranslations,
     errors: jaErrorsTranslations,
     form: jaFormTranslations,
     formats: jaFormatsTranslations,

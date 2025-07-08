@@ -3,6 +3,13 @@
 _Performs focused multi-agent code review that surfaces only critical,
 high-impact findings for solo developers using AI tools._
 
+## Auto-Loaded Project Context:
+
+- @/CLAUDE.md
+- @/.claude/CLAUDE.md
+- @/docs/ai-context/project-structure.md
+- @/docs/ai-context/docs-overview.md
+
 ## Core Philosophy
 
 This command prioritizes **needle-moving discoveries** over exhaustive lists.

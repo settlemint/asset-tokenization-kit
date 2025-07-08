@@ -6,8 +6,11 @@ document with both auto-detected progress and user-provided context.
 
 ## Auto-Loaded Project Context:
 
-@docs/ai-context/HANDOFF.md @/CLAUDE.md @/.claude/CLAUDE.md
-@/docs/ai-context/project-structure.md @/docs/ai-context/docs-overview.md
+- @/docs/ai-context/HANDOFF.md
+- @/CLAUDE.md
+- @/.claude/CLAUDE.md
+- @/docs/ai-context/project-structure.md
+- @/docs/ai-context/docs-overview.md
 
 ## Step 1: Process User Arguments
 

@@ -1,12 +1,15 @@
 # /debug
 
-*Executes systematic debugging protocol using multi-agent orchestration to identify root causes and implement solutions when facing complex technical challenges*
+_Executes systematic debugging protocol using multi-agent orchestration to
+identify root causes and implement solutions when facing complex technical
+challenges_
 
 ## Auto-Loaded Project Context:
-@/CLAUDE.md
-@/.claude/CLAUDE.md
-@/docs/ai-context/project-structure.md
-@/docs/ai-context/docs-overview.md
+
+- @/CLAUDE.md
+- @/.claude/CLAUDE.md
+- @/docs/ai-context/project-structure.md
+- @/docs/ai-context/docs-overview.md
 
 ## Role: Senior Debugging Engineer
 
@@ -36,6 +39,7 @@ User provided context: "$ARGUMENTS"
 ## Step 1: Analyze Problem Scope and Select Strategy
 
 **ultrathink** about the debugging challenge:
+
 - Type of issue (error, performance, behavior)
 - Reproducibility (consistent, intermittent, environment-specific)
 - Impact radius (single component, cross-system)
@@ -46,18 +50,21 @@ User provided context: "$ARGUMENTS"
 ### Strategy Selection:
 
 **🎯 Quick Fix** (0-1 sub-agents)
+
 - Clear error messages
 - Obvious syntax issues
 - Known patterns
 - Simple configuration problems
 
 **⚡ Focused Investigation** (2-3 sub-agents)
+
 - Reproducible bugs
 - Performance issues
 - Integration failures
 - Test failures
 
 **🚨 Deep Dive Analysis** (4+ sub-agents)
+
 - Intermittent issues
 - Complex race conditions
 - Memory leaks
@@ -66,7 +73,8 @@ User provided context: "$ARGUMENTS"
 
 ## Step 2: Execute Multi-Agent Debugging Protocol
 
-**CRITICAL:** Generate specialized debugging agents based on the problem type. All agents must work in parallel for efficiency.
+**CRITICAL:** Generate specialized debugging agents based on the problem type.
+All agents must work in parallel for efficiency.
 
 ### Dynamic Agent Allocation Pattern:
 
@@ -80,6 +88,7 @@ Production incidents: All agents + incident responders
 ### Core Agent Templates:
 
 #### Agent 1: Data Collection Specialist
+
 ```
 Task: "As a Data Collection Specialist, gather comprehensive diagnostic information about the issue.
 
@@ -101,6 +110,7 @@ Workflow:
 ```
 
 #### Agent 2: Hypothesis Generator
+
 ```
 Task: "As a Hypothesis Generator, analyze symptoms and create ranked theories about root causes.
 
@@ -122,6 +132,7 @@ Workflow:
 ```
 
 #### Agent 3: Test Designer & Executor
+
 ```
 Task: "As a Test Designer, create and execute targeted tests to validate/invalidate each hypothesis.
 
@@ -143,6 +154,7 @@ Workflow:
 ```
 
 #### Agent 4: Solution Architect
+
 ```
 Task: "As a Solution Architect, design and implement the optimal fix for the identified issue.
 
@@ -164,6 +176,7 @@ Workflow:
 ```
 
 #### Agent 5: Performance Profiler
+
 ```
 Task: "As a Performance Profiler, analyze system performance and identify bottlenecks.
 
@@ -185,6 +198,7 @@ Workflow:
 ```
 
 #### Agent 6: Knowledge Documenter
+
 ```
 Task: "As a Knowledge Documenter, capture learnings and update documentation for future reference.
 
@@ -211,6 +225,7 @@ Workflow:
 
 ```markdown
 ## Problem Statement
+
 - **Symptom:** [What is visibly wrong]
 - **Expected:** [What should happen]
 - **Actual:** [What is happening]
@@ -275,6 +290,7 @@ bun outdated
 ### Phase 4: Advanced Debugging Techniques
 
 #### Memory Debugging
+
 ```bash
 # Node.js memory profiling
 NODE_OPTIONS="--inspect --max-old-space-size=4096" bun run dev
@@ -287,6 +303,7 @@ NODE_OPTIONS="--expose-gc" bun run test
 ```
 
 #### Performance Debugging
+
 ```bash
 # CPU profiling
 NODE_OPTIONS="--inspect" bun run build
@@ -301,6 +318,7 @@ NODE_OPTIONS="--trace-warnings" bun run dev
 ```
 
 #### Network Debugging
+
 ```bash
 # Monitor network calls
 # In Chrome DevTools: Network tab
@@ -316,16 +334,16 @@ bun run codegen
 
 ### Pattern Recognition Matrix
 
-| Symptom | Likely Cause | Investigation |
-|---------|--------------|---------------|
-| "Cannot find module" | Missing dependency/build issue | `bun install`, check imports |
-| "Type error: X is not assignable" | TypeScript mismatch | `bun run check-types`, check types |
-| Timeout errors | Async/network issues | Increase timeouts, check network |
-| "Port already in use" | Orphaned process | `lsof -i :PORT`, kill process |
-| Circular dependency | Import cycles | `bun run check-circular` |
-| Memory leak | Uncleared references | Heap snapshots, profiling |
-| Slow performance | Unoptimized code | Performance profiling |
-| Build failures | Config/dependency issues | Check turbo.json, package.json |
+| Symptom                           | Likely Cause                   | Investigation                      |
+| --------------------------------- | ------------------------------ | ---------------------------------- |
+| "Cannot find module"              | Missing dependency/build issue | `bun install`, check imports       |
+| "Type error: X is not assignable" | TypeScript mismatch            | `bun run check-types`, check types |
+| Timeout errors                    | Async/network issues           | Increase timeouts, check network   |
+| "Port already in use"             | Orphaned process               | `lsof -i :PORT`, kill process      |
+| Circular dependency               | Import cycles                  | `bun run check-circular`           |
+| Memory leak                       | Uncleared references           | Heap snapshots, profiling          |
+| Slow performance                  | Unoptimized code               | Performance profiling              |
+| Build failures                    | Config/dependency issues       | Check turbo.json, package.json     |
 
 ### Environment-Specific Issues
 
@@ -376,8 +394,8 @@ time bun run build
 
 ```typescript
 // Add test for the bug
-describe('Bug #123 - [Description]', () => {
-  it('should handle [edge case]', () => {
+describe("Bug #123 - [Description]", () => {
+  it("should handle [edge case]", () => {
     // Minimal reproduction
     // Assert fix works
   });
@@ -386,16 +404,18 @@ describe('Bug #123 - [Description]', () => {
 
 ## Structured Debug Report Format
 
-```markdown
+````markdown
 ## 🐛 Debug Session Report
 
 ### Problem Summary
+
 - **Issue:** Connection timeout on API requests
 - **Severity:** High
 - **Environment:** Production only
 - **First Seen:** 2024-01-15 14:30 UTC
 
 ### Investigation Timeline
+
 - **14:30** - Issue reported by monitoring
 - **14:35** - Confirmed in production logs
 - **14:45** - Hypothesis: Database connection pool exhausted
@@ -403,6 +423,7 @@ describe('Bug #123 - [Description]', () => {
 - **15:15** - Fix deployed
 
 ### Root Cause Analysis
+
 - **Direct Cause:** Database connection pool limit (20) exceeded
 - **Root Cause:** Missing connection.release() in error handlers
 - **Evidence:**
@@ -411,6 +432,7 @@ describe('Bug #123 - [Description]', () => {
   - Local reproduction with limited pool size
 
 ### Solution Implemented
+
 ```typescript
 // Before
 try {
@@ -429,24 +451,29 @@ try {
   connection.release(); // Always releases
 }
 ```
+````
 
 ### Verification
+
 - ✅ Unit test added for error case
 - ✅ Integration test with pool limits
 - ✅ Deployed to staging - confirmed fixed
 - ✅ Production metrics normalized
 
 ### Prevention Measures
+
 1. Added linting rule for connection handling
 2. Updated code review checklist
 3. Added connection pool monitoring alerts
 4. Documentation updated
 
 ### Lessons Learned
+
 - Always use try/finally for resource cleanup
 - Monitor resource pools in production
 - Error paths need equal testing attention
-```
+
+````
 
 ## Escape Hatches
 
@@ -512,7 +539,7 @@ ulimit -c unlimited
 # Network traffic analysis
 tcpdump -i any -w trace.pcap port 3000
 # Analyze with Wireshark
-```
+````
 
 ### The Carmack Method
 
@@ -540,9 +567,12 @@ tcpdump -i any -w trace.pcap port 3000
 
 ## Remember
 
-> "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it." - Brian Kernighan
+> "Debugging is twice as hard as writing the code in the first place. Therefore,
+> if you write the code as cleverly as possible, you are, by definition, not
+> smart enough to debug it." - Brian Kernighan
 
 **Final Wisdom:**
+
 - Stay calm and systematic
 - Take breaks when frustrated
 - Document everything

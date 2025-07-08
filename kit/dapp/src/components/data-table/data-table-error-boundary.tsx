@@ -160,22 +160,3 @@ export class DataTableErrorBoundary extends Component<
   }
 }
 
-/**
- * Higher-order component to wrap any component with DataTable error boundary
- */
-export function withDataTableErrorBoundary<P extends object>(
-  Component: ComponentType<P>,
-  errorBoundaryProps?: Omit<DataTableErrorBoundaryProps, "children">
-): ComponentType<P> {
-  const WrappedComponent = (props: P) => (
-    <DataTableErrorBoundary {...errorBoundaryProps}>
-      <Component {...props} />
-    </DataTableErrorBoundary>
-  );
-
-  const componentName =
-    Component.displayName ?? (Component.name || "Component");
-  WrappedComponent.displayName = `withDataTableErrorBoundary(${componentName})`;
-
-  return WrappedComponent;
-}

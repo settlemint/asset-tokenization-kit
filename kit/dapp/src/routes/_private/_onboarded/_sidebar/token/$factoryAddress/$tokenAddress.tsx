@@ -1,15 +1,21 @@
-import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import {
   assetClassBreadcrumbs,
   createBreadcrumbMetadata,
 } from "@/components/breadcrumb/metadata";
+import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import { DetailGrid } from "@/components/detail-grid/detail-grid";
+import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { Badge } from "@/components/ui/badge";
+import { Web3Address } from "@/components/web3/web3-address";
 import { seo } from "@/config/metadata";
 import {
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
 import { createFileRoute } from "@tanstack/react-router";
+import { format as formatDnum } from "dnum";
+import { useTranslation } from "react-i18next";
 
 /**
  * Route configuration for individual token details page
@@ -156,14 +162,100 @@ export const Route = createFileRoute(
  * ```
  */
 function RouteComponent() {
-  const { token } = Route.useLoaderData();
+  const { token, factory } = Route.useLoaderData();
+  const { t, i18n } = useTranslation(["tokens", "assets", "common"]);
+  const locale = i18n.language;
+
+  // Format total supply using dnum for precision
+  const formattedTotalSupply = formatDnum(token.totalSupply, {
+    locale,
+    digits: 2,
+    trailingZeros: false,
+  });
+
+  // Get asset type for display
+  const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
 
   return (
     <div className="space-y-6 p-6">
       <div className="space-y-2">
         <RouterBreadcrumb />
-        <h1 className="text-3xl font-bold tracking-tight">{token.name}</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold tracking-tight">{token.name}</h1>
+          <Badge variant="secondary" className="font-mono">
+            {token.symbol}
+          </Badge>
+          {token.pausable?.paused && (
+            <Badge variant="destructive">{t("tokens:status.paused")}</Badge>
+          )}
+        </div>
       </div>
+
+      {/* Token Information */}
+      <DetailGrid title={t("tokens:details.tokenInformation")}>
+        <DetailGridItem
+          label={t("tokens:fields.contractAddress")}
+          info={t("tokens:fields.contractAddressInfo")}
+        >
+          <Web3Address
+            address={token.id as `0x${string}`}
+            copyToClipboard={true}
+            showFullAddress={true}
+            size="tiny"
+            showSymbol={false}
+            showBadge={false}
+          />
+        </DetailGridItem>
+
+        <DetailGridItem
+          label={t("tokens:fields.name")}
+          info={t("tokens:fields.nameInfo")}
+        >
+          {token.name}
+        </DetailGridItem>
+
+        <DetailGridItem
+          label={t("tokens:fields.symbol")}
+          info={t("tokens:fields.symbolInfo")}
+        >
+          <Badge variant="secondary" className="font-mono">
+            {token.symbol}
+          </Badge>
+        </DetailGridItem>
+
+        <DetailGridItem
+          label={t("tokens:fields.decimals")}
+          info={t("tokens:fields.decimalsInfo")}
+        >
+          {token.decimals}
+        </DetailGridItem>
+
+        <DetailGridItem
+          label={t("tokens:fields.totalSupply")}
+          info={t("tokens:fields.totalSupplyInfo")}
+        >
+          <span className="font-mono">{formattedTotalSupply}</span>
+        </DetailGridItem>
+
+        <DetailGridItem
+          label={t("tokens:fields.assetType")}
+          info={t("tokens:fields.assetTypeInfo")}
+        >
+          <Badge>{t(`tokens:asset-types.${assetType}` as const)}</Badge>
+        </DetailGridItem>
+      </DetailGrid>
+
+      {/* Compliance Information */}
+      <DetailGrid title={t("tokens:details.complianceInformation")}>
+        <DetailGridItem
+          label={t("tokens:fields.requiredClaims")}
+          info={t("tokens:fields.requiredClaimsInfo")}
+        >
+          <span className="text-muted-foreground">
+            {t("tokens:fields.noRequiredClaims")}
+          </span>
+        </DetailGridItem>
+      </DetailGrid>
     </div>
   );
 }

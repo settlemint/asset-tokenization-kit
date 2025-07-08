@@ -2,7 +2,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { AlertCircle } from "lucide-react";
-import { Component, type ComponentType, type FC, type ReactNode } from "react";
+import { Component, type ReactNode } from "react";
 
 const logger = createLogger();
 
@@ -84,23 +84,6 @@ class WizardErrorBoundary extends Component<
 
     return this.props.children;
   }
-}
-
-export function withWizardErrorBoundary<P extends object>(
-  Component: ComponentType<P>,
-  fallback?: (error: Error, reset: () => void) => ReactNode
-): FC<P> {
-  const WrappedComponent: FC<P> = (props) => (
-    <WizardErrorBoundary fallback={fallback}>
-      <Component {...props} />
-    </WizardErrorBoundary>
-  );
-
-  WrappedComponent.displayName = `withWizardErrorBoundary(${
-    Component.displayName ?? Component.name ?? "Component"
-  })`;
-
-  return WrappedComponent;
 }
 
 export { WizardErrorBoundary };

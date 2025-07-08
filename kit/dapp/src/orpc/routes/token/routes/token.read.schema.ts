@@ -1,5 +1,6 @@
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { decimals } from "@/lib/zod/validators/decimals";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { TokenRoles } from "@/orpc/middlewares/system/token.middleware";
 import { z } from "zod/v4";
 
@@ -87,7 +88,7 @@ const ROLES: TokenRoles[] = [
  * This matches what comes from TheGraph with totalSupply as string
  */
 export const RawTokenSchema = z.object({
-  id: z.string(),
+  id: ethereumAddress.describe("The token contract address"),
   name: z.string().describe("The name of the token"),
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),

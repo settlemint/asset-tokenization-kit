@@ -5,8 +5,10 @@ The user has requested to create or regenerate documentation with the arguments:
 
 ## Auto-Loaded Project Context:
 
-@/CLAUDE.md @/.claude/CLAUDE.md @/docs/ai-context/project-structure.md
-@/docs/ai-context/docs-overview.md
+- @/CLAUDE.md
+- @/.claude/CLAUDE.md
+- @/docs/ai-context/project-structure.md
+- @/docs/ai-context/docs-overview.md
 
 ## CRITICAL: AI-Optimized Documentation Principles
 

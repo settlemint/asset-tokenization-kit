@@ -1,12 +1,6 @@
-import { useState, useEffect, useContext, useCallback, useMemo } from "react";
-import { Button } from "@/components/ui/button";
 import type { StepComponentProps } from "@/components/multistep-form/types";
-import { authClient } from "@/lib/auth/auth.client";
-import { useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/lib/query.client";
-import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { PincodeInput } from "@/components/onboarding/pincode-input";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,9 +9,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { PincodeInput } from "@/components/onboarding/pincode-input";
+import { authClient } from "@/lib/auth/auth.client";
+import { queryClient } from "@/lib/query.client";
+import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 interface WalletSecurityStepProps extends StepComponentProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

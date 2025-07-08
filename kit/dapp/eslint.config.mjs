@@ -254,6 +254,14 @@ export default defineConfig([
       // IMPORT RULES
       // ========================================================================
       "import/no-unresolved": "off", // TypeScript handles this
+      "no-restricted-imports": [
+        "error",
+        {
+          name: "zod",
+          importNames: ["z"],
+          message: "Please import `z` from `zod/v4` instead.",
+        },
+      ],
 
       // ========================================================================
       // SECURITY RULES

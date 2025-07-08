@@ -5,8 +5,10 @@ documentation.
 
 ## Auto-Loaded Project Context:
 
-@/CLAUDE.md @/.claude/CLAUDE.md @/docs/ai-context/project-structure.md
-@/docs/ai-context/docs-overview.md
+- @/CLAUDE.md
+- @/.claude/CLAUDE.md
+- @/docs/ai-context/project-structure.md
+- @/docs/ai-context/docs-overview.md
 
 ## Step 1: Analyze Changes Based on Input
 

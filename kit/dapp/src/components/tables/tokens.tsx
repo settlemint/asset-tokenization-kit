@@ -309,7 +309,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
     <DataTable
       name="tokens"
       data={tokens}
-      columns={useCallback(() => columns, [columns])}
+      columns={columns}
       urlState={{
         enabled: true,
         enableUrlPersistence: true,

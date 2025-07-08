@@ -1,4 +1,3 @@
-"use client";
 "use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
 import {
@@ -26,7 +25,7 @@ import {
 } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
 import * as React from "react";
-import { type ComponentType, useCallback, useMemo, useState } from "react";
+import { type ComponentType, useCallback, useState } from "react";
 import { DataTableColumnCell } from "./data-table-column-cell";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import {
@@ -51,25 +50,14 @@ import {
   useDataTableState,
   type UseDataTableStateOptions,
 } from "@/hooks/use-data-table-state";
-import { withDataTableErrorBoundary } from "./data-table-error-boundary";
 
 /**
  * Props for the DataTable component.
  * @template TData The type of data in the table rows
- * @template CParams The type of column parameters passed to column definitions
  */
-export interface DataTableProps<
-  TData,
-  CParams extends Record<string, unknown>,
-> {
-  /** Optional parameters to pass to the column definitions function */
-  columnParams?: CParams;
-  /** The column definitions for the table. Can be a function that receives params or a no-arg function */
-  columns:
-    | ((
-        params: CParams
-      ) => Parameters<typeof useReactTable<TData>>[0]["columns"])
-    | (() => Parameters<typeof useReactTable<TData>>[0]["columns"]);
+export interface DataTableProps<TData> {
+  /** The column definitions for the table */
+  columns: Parameters<typeof useReactTable<TData>>[0]["columns"];
   /** The data to be displayed in the table */
   data: TData[];
   /** Whether the table is in a loading state */
@@ -139,7 +127,6 @@ declare module "@tanstack/table-core" {
  * Supports both local and URL-based state management for table configuration.
  *
  * @template TData The type of data in the table rows
- * @template CParams The type of column parameters passed to column definitions
  * @param props The component props
  * @returns The rendered DataTable component with full functionality
  *
@@ -155,8 +142,7 @@ declare module "@tanstack/table-core" {
  * // With bulk actions and URL state
  * <DataTable
  *   name="products-table"
- *   columns={(params) => productColumns(params)}
- *   columnParams={{ showPrices: true }}
+ *   columns={productColumns}
  *   data={products}
  *   bulkActions={{
  *     enabled: true,
@@ -167,8 +153,7 @@ declare module "@tanstack/table-core" {
  * />
  * ```
  */
-function DataTableComponent<TData, CParams extends Record<string, unknown>>({
-  columnParams,
+function DataTableComponent<TData>({
   columns,
   data,
   icons,
@@ -184,7 +169,7 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
   bulkActions,
   urlState,
   onRowClick,
-}: DataTableProps<TData, CParams>) {
+}: DataTableProps<TData>) {
   const { t } = useTranslation("data-table");
 
   // Use URL state management if enabled, otherwise use local state
@@ -245,14 +230,9 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
         },
       };
 
-  const memoizedData = useMemo(() => data, [data]);
-
-  const tableColumns = columnParams
-    ? columns(columnParams)
-    : columns({} as CParams);
   const table = useReactTable({
-    data: memoizedData,
-    columns: tableColumns,
+    data,
+    columns,
     enableRowSelection: true,
     enableGlobalFilter: true,
     enableColumnFilters: true,
@@ -289,10 +269,9 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
         key as keyof typeof currentState.rowSelection
       ] === true
   );
-  const selectedRows = useMemo(() => {
-    if (!isBulkActionsEnabled || selectedRowIds.length === 0) return [];
-    return table.getSelectedRowModel().rows.map((row) => row.original);
-  }, [isBulkActionsEnabled, selectedRowIds, table]);
+  const selectedRows = isBulkActionsEnabled && selectedRowIds.length > 0
+    ? table.getSelectedRowModel().rows.map((row) => row.original)
+    : [];
 
   /**
    * Clears all row selections in the table.
@@ -312,7 +291,7 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
    * @returns Event handler function
    */
   const createRowClickHandler = useCallback(
-    (row: TData) => (e: React.MouseEvent<HTMLTableRowElement>) => {
+    <T extends TData>(row: T) => (e: React.MouseEvent<HTMLTableRowElement>) => {
       // Don't trigger row click if clicking on interactive elements
       const target = e.target as HTMLElement;
       const isInteractiveElement = !!(
@@ -381,7 +360,7 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
 
     return (
       <TableRow>
-        <TableCell colSpan={tableColumns.length} className="h-24 text-center">
+        <TableCell colSpan={columns.length} className="h-24 text-center">
           {t("noResults")}
         </TableCell>
       </TableRow>
@@ -467,23 +446,22 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
 }
 
 /**
- * DataTable component wrapped with error boundary for production safety.
- * This is the default export that should be used in most cases.
- *
+ * DataTable component for displaying tabular data.
+ * 
  * @template TData The type of data in the table rows
- * @template CParams The type of column parameters passed to column definitions
+ * 
+ * @example
+ * ```tsx
+ * // For route-level error handling, use TanStack Start's errorComponent
+ * export const Route = createFileRoute('/my-route')({
+ *   errorComponent: DefaultCatchBoundary,
+ *   component: MyComponent
+ * })
+ * 
+ * // For component-level error isolation, wrap with DataTableErrorBoundary
+ * <DataTableErrorBoundary tableName="Users">
+ *   <DataTable columns={columns} data={data} name="users" />
+ * </DataTableErrorBoundary>
+ * ```
  */
-export const DataTable = withDataTableErrorBoundary(DataTableComponent, {
-  tableName: "DataTable",
-}) as <TData, CParams extends Record<string, unknown>>(
-  props: DataTableProps<TData, CParams>
-) => React.JSX.Element;
-
-/**
- * Raw DataTable component without error boundary.
- * Use this only if you need to implement custom error handling.
- *
- * @template TData The type of data in the table rows
- * @template CParams The type of column parameters passed to column definitions
- */
-export const DataTableRaw = DataTableComponent;
+export const DataTable = DataTableComponent;

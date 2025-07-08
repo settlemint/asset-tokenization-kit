@@ -28,6 +28,8 @@ shared information before attempting any task to understand the project.**
 - Only optimize performance after measuring with React DevTools Profiler
 - Translations are organized into focused namespaces - use multiple namespaces
   in components as needed
+- Use very specific translation namespaces for each component (e.g.,
+  "detail-grid" for the DetailGrid component, not "common")
 - Tests are stored next to the route/component/file, not in a `__tests__` folder
 - During refactors, if you encounter barrel files, remove them
 - Do not store temporary analysis md files, and if you absolutely need to, make
@@ -38,3 +40,5 @@ shared information before attempting any task to understand the project.**
   need the role
 - Never use eslint-disable comments, fix the issues for real
 - `as any` is NEVER allowed!
+- Since we use Tanstack Start, we do not need `use client;`
+- When i ask you to fix something, i do not care if it is related to our current change or not
