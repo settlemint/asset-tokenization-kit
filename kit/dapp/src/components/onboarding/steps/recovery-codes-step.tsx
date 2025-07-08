@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import type { StepComponentProps } from "@/components/multistep-form/types";
 import { authClient } from "@/lib/auth/auth.client";
@@ -60,6 +60,7 @@ export function RecoveryCodesStep({
 }: RecoveryCodesStepProps) {
   const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
   const [recoveryCodesFetched, setRecoveryCodesFetched] = useState(false);
+  const hasShownToast = useRef(false);
 
   // Memoized functions to avoid creating new functions in render
   const handleCopyAll = useCallback(() => {
@@ -90,11 +91,13 @@ export function RecoveryCodesStep({
   const { mutate: generateRecoveryCodes, isPending: isGeneratingCodes } =
     useMutation({
       mutationFn: async () => {
+        console.log('Starting mutation...');
         return authClient.secretCodes.generate({
           // No password required during onboarding
         });
       },
       onSuccess: (data) => {
+        console.log('Recovery codes onSuccess', data);
         // Check if there's an error in the response (like 404)
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (data && "error" in data && data.error) {
@@ -103,9 +106,13 @@ export function RecoveryCodesStep({
             const mockCodes = Array.from({ length: 16 }, () =>
               Math.random().toString(36).substring(2, 8).toUpperCase()
             );
+            console.log('Setting mock codes from 404', mockCodes);
             setRecoveryCodes(mockCodes);
             setRecoveryCodesFetched(true);
-            toast.success("Recovery codes generated");
+            if (!hasShownToast.current) {
+              hasShownToast.current = true;
+              toast.success("Recovery codes generated successfully");
+            }
             return;
           }
 
@@ -119,31 +126,46 @@ export function RecoveryCodesStep({
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (data && "data" in data && data.data && "secretCodes" in data.data) {
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          setRecoveryCodes(data.data.secretCodes || []);
+          const codes = data.data.secretCodes || [];
+          console.log('Setting real codes', codes);
+          setRecoveryCodes(codes);
           setRecoveryCodesFetched(true);
-          toast.success("Recovery codes generated successfully");
+          if (!hasShownToast.current) {
+            hasShownToast.current = true;
+            toast.success("Recovery codes generated successfully");
+          }
         } else if (
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           data &&
           "secretCodes" in data &&
           Array.isArray(data.secretCodes)
         ) {
-          setRecoveryCodes(data.secretCodes);
+          const codes = data.secretCodes;
+          console.log('Setting alternative format codes', codes);
+          setRecoveryCodes(codes);
           setRecoveryCodesFetched(true);
-          toast.success("Recovery codes generated successfully");
+          if (!hasShownToast.current) {
+            hasShownToast.current = true;
+            toast.success("Recovery codes generated successfully");
+          }
         } else {
           toast.error("Unexpected response format");
         }
       },
       onError: (error: Error) => {
+        console.log('Recovery codes onError', error);
         // Fallback for thrown errors
         if (error.message.includes("404")) {
           const mockCodes = Array.from({ length: 16 }, () =>
             Math.random().toString(36).substring(2, 8).toUpperCase()
           );
+          console.log('Setting mock codes from error', mockCodes);
           setRecoveryCodes(mockCodes);
           setRecoveryCodesFetched(true);
-          toast.success("Recovery codes generated");
+          if (!hasShownToast.current) {
+            hasShownToast.current = true;
+            toast.success("Recovery codes generated successfully");
+          }
           return;
         }
 
@@ -152,16 +174,24 @@ export function RecoveryCodesStep({
     });
 
   const handleTryAgain = useCallback(() => {
+    hasShownToast.current = false; // Reset toast flag for retry
     generateRecoveryCodes();
   }, [generateRecoveryCodes]);
 
   // Generate recovery codes on component mount
   useEffect(() => {
+    console.log('Recovery codes useEffect', {
+      recoveryCodesFetched,
+      isGeneratingCodes,
+      recoveryCodes: recoveryCodes.length
+    });
+    
     if (
       !recoveryCodesFetched &&
       !isGeneratingCodes &&
       recoveryCodes.length === 0
     ) {
+      console.log('Generating recovery codes...');
       generateRecoveryCodes();
     }
   }, [
@@ -200,10 +230,10 @@ export function RecoveryCodesStep({
                 />
               </svg>
               <div className="flex-1">
-                <h3 className="text-sm font-medium text-amber-900 dark:text-amber-100 mb-2">
+                <h3 className="text-sm font-medium text-amber-600 dark:text-amber-400 mb-2 mt-0.5">
                   Important Security Information
                 </h3>
-                <ul className="text-sm text-amber-800 dark:text-amber-200 space-y-1">
+                <ul className="text-sm text-amber-600 dark:text-amber-400 space-y-1">
                   <li>
                     • Keep them private - anyone with these codes can access
                     your wallet
