@@ -3,10 +3,6 @@
   "workspaces": {
     "": {
       "name": "@settlemint/asset-tokenization-kit",
-      "dependencies": {
-        "currency-codes": "2.2.0",
-        "drizzle-zod": "0.8.2",
-      },
       "devDependencies": {
         "@prettier/plugin-oxc": "0.0.4",
         "@settlemint/sdk-cli": "2.4.1",
@@ -106,9 +102,11 @@
         "clsx": "2.1.1",
         "cmdk": "1.1.1",
         "crypto-js": "4.2.0",
+        "currency-codes": "2.2.0",
         "date-fns": "4.1.0",
         "dnum": "2.15.0",
         "drizzle-orm": "0.44.2",
+        "drizzle-zod": "0.8.2",
         "embla-carousel-react": "8.6.0",
         "i18n-iso-countries": "7.14.0",
         "i18next": "25.3.1",
