@@ -194,6 +194,13 @@ export function WalletSecurityStep({
 
   return (
     <div className="h-full flex flex-col">
+      <style>{`
+        @keyframes draw {
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+      `}</style>
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
           {hasPincode || isPincodeSet ? "Wallet Secured" : "Secure Your Wallet"}
@@ -311,28 +318,40 @@ export function WalletSecurityStep({
 
             {/* Success message when PIN is set */}
             {(hasPincode || isPincodeSet) && (
-              <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <svg
-                    className="h-5 w-5 text-green-600 dark:text-green-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <span className="font-medium text-green-800 dark:text-green-300">
-                    PIN Code Configured Successfully
-                  </span>
+              <div className="space-y-4">
+                <div className="text-center space-y-4">
+                  <div className="flex justify-center">
+                    <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                      <svg
+                        className="w-8 h-8 text-green-600 dark:text-green-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                          className="animate-[draw_0.8s_ease-out_forwards]"
+                          style={{
+                            strokeDasharray: "20",
+                            strokeDashoffset: "20",
+                          }}
+                        />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-sm text-green-700 dark:text-green-300">
-                  Your wallet is now protected with PIN code verification
-                </p>
+                
+                <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 text-center">
+                  <p className="text-sm font-medium text-green-900 dark:text-green-100 mb-2">
+                    PIN Code Configured Successfully
+                  </p>
+                  <p className="text-sm text-green-700 dark:text-green-300">
+                    Your wallet is now protected with PIN code verification
+                  </p>
+                </div>
               </div>
             )}
 
