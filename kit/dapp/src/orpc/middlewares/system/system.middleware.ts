@@ -59,7 +59,11 @@ export interface TokenFactory {
 export const systemMiddleware = baseRouter.middleware(
   async ({ context, next, errors }) => {
     if (context.system) {
-      return next();
+      return next({
+        context: {
+          system: context.system,
+        },
+      });
     }
     const systemAddress = await call(
       read,
@@ -77,15 +81,14 @@ export const systemMiddleware = baseRouter.middleware(
     const tokenFactories = await getTokenFactories(
       getEthereumAddress(systemAddress)
     );
-    const systemContext: typeof context = {
-      ...context,
-      system: {
-        address: getEthereumAddress(systemAddress),
-        tokenFactories,
-      },
-    };
+
     return next({
-      context: systemContext,
+      context: {
+        system: {
+          address: getEthereumAddress(systemAddress),
+          tokenFactories,
+        },
+      },
     });
   }
 );
