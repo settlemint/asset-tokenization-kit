@@ -59,7 +59,7 @@ A Helm chart for the blockscout components
 | graph-node.image.tag | string | `"v0.39.1"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/rewrite-target" | string | `"/$1"` |  |
 | graph-node.ingress.annotations."nginx.ingress.kubernetes.io/use-regex" | string | `"true"` |  |
-| graph-node.ingress.className | string | `"atk-nginx"` |  |
+| graph-node.ingress.className | string | `"settlemint-nginx"` |  |
 | graph-node.ingress.enabled | bool | `true` |  |
 | graph-node.ingress.hosts[0].host | string | `"graph.k8s.orb.local"` |  |
 | graph-node.ingress.hosts[0].paths[0].path | string | `"/(.*)"` |  |

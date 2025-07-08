@@ -148,10 +148,10 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.config.projects[0].upstreams[1].endpoint | string | `"http://besu-node-validator-1:8545"` |  |
 | erpc.config.projects[0].upstreams[1].id | string | `"besu-node-validator-1"` |  |
 | erpc.enabled | bool | `true` |  |
-| erpc.image.pullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| erpc.image.pullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| erpc.image.pullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
-| erpc.ingress.className | string | `"atk-nginx"` |  |
+| erpc.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
+| erpc.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
+| erpc.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| erpc.ingress.className | string | `"settlemint-nginx"` |  |
 | erpc.ingress.enabled | bool | `true` |  |
 | erpc.ingress.hosts[0].host | string | `"rpc.k8s.orb.local"` |  |
 | erpc.ingress.hosts[0].paths[0].path | string | `"/"` |  |
@@ -211,7 +211,6 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | observability.loki.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
 | observability.loki.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
 | observability.loki.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
-| observability.metrics-server.enabled | bool | `false` |  |
 | observability.metrics-server.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
 | observability.metrics-server.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
 | observability.metrics-server.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
@@ -251,7 +250,7 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.minio.image.pullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | support.minio.ingress.enabled | bool | `true` |  |
 | support.minio.ingress.hostname | string | `"minio.k8s.orb.local"` |  |
-| support.minio.ingress.ingressClassName | string | `"atk-nginx"` |  |
+| support.minio.ingress.ingressClassName | string | `"settlemint-nginx"` |  |
 | support.postgresql-ha.pgpool.pullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | support.postgresql-ha.pgpool.pullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | support.postgresql-ha.pgpool.pullSecrets[2] | string | `"image-pull-secret-harbor"` |  |

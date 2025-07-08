@@ -38,30 +38,19 @@ should focus on the modern stack in `kit/dapp`.
 
 ## Documentation & Development Guidelines
 
-This repository includes comprehensive documentation to ensure consistent,
-high-quality development:
+This repository includes comprehensive documentation to ensure consistent, high-quality development:
 
-- **[CLAUDE.md](./CLAUDE.md)** - Complete project guide for Claude Code with
-  architecture, commands, and development standards
-- **[CLAUDE.local.md](./CLAUDE.local.md)** - Organizational rules and modular
-  development framework
-- **[.cursor/rules/](./cursor/rules/)** - Specialized rule modules for different
-  aspects of development (git, QA, review, tools)
-- **[.claude/commands/](./claude/commands/)** - Automated workflow commands for
-  common development tasks
+- **[CLAUDE.md](./CLAUDE.md)** - Complete project guide for Claude Code with architecture, commands, and development standards
+- **[CLAUDE.local.md](./CLAUDE.local.md)** - Organizational rules and modular development framework
+- **[.cursor/rules/](./cursor/rules/)** - Specialized rule modules for different aspects of development (git, QA, review, tools)
+- **[.claude/commands/](./claude/commands/)** - Automated workflow commands for common development tasks
 
 ### Key Features:
-
-- 🏗️ **Complete Architecture Documentation** - Understand the monorepo structure
-  and design patterns
-- 🔧 **Essential Command Reference** - All critical development workflows in one
-  place
-- 📋 **Quality Control Checklists** - Comprehensive pre-PR requirements and
-  testing standards
-- 🔄 **Self-Improving System** - Documentation that evolves based on lessons
-  learned
-- 🛡️ **Security Standards** - Enhanced review process with security
-  considerations
+- 🏗️ **Complete Architecture Documentation** - Understand the monorepo structure and design patterns
+- 🔧 **Essential Command Reference** - All critical development workflows in one place  
+- 📋 **Quality Control Checklists** - Comprehensive pre-PR requirements and testing standards
+- 🔄 **Self-Improving System** - Documentation that evolves based on lessons learned
+- 🛡️ **Security Standards** - Enhanced review process with security considerations
 - 🎯 **Modular Rule System** - Organized, maintainable development guidelines
 
 ## Local development
@@ -73,36 +62,8 @@ high-quality development:
 bun install
 # Enable remote caching
 bun turbo link
-# Generate the artifacts
-bun run artifacts
 # Start the docker compose setup
 bun run dev:up # dev:reset will clean up and do up if you need to start fresh
-```
-
-### Typical development workflow
-
-If you make changes to any artifacts, you need to generate the artifacts again.
-
-- Smart contracts (in the `kit/contracts` folder)
-- Database schema (in the `kit/dapp/src/lib/db/schemas` folder)
-- Subgraph (in the `kit/subgraph` folder)
-
-This can be done with the following command:
-
-```bash
-bun run artifacts
-```
-
-This will generate a new genesis file, initial database script, portal ABIs,
-predeployed subgraph hash, etc.
-
-After generating the artifacts, you need to start the docker compose setup
-again. This will clean up the existing docker compose setup and start a new one
-with the new predeployed contracts and subgraph, a new initial database and a
-portal with the new ABIs.
-
-```bash
-bun run dev:reset
 ```
 
 ### Quality Assurance

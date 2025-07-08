@@ -159,14 +159,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | global.imagePullSecrets | list | `[]` | Global Docker registry secret names as an array |
 | global.imageRegistry | string | `""` | Global Docker image registry |
 | global.storageClass | string | `""` | Global StorageClass for Persistent Volume(s) |
-| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-signer","tag":"7.13.3"}` | TxSigner image |
+| image | object | `{"digest":"","pullPolicy":"IfNotPresent","pullSecrets":[],"registry":"ghcr.io","repository":"settlemint/btp-signer","tag":"7.13.2"}` | TxSigner image |
 | image.digest | string | `""` | TxSigner image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag |
 | image.pullPolicy | string | `"IfNotPresent"` | TxSigner image pull policy |
 | image.pullSecrets | list | `[]` | TxSigner image pull secrets |
 | image.registry | string | `"ghcr.io"` | TxSigner image registry |
 | image.repository | string | `"settlemint/btp-signer"` | TxSigner image repository |
-| image.tag | string | `"7.13.3"` | TxSigner image tag (immutable tags are recommended) |
-| ingress | object | `{"annotations":{},"apiVersion":"","enabled":false,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"txsigner.k8s.orb.local","ingressClassName":"atk-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
+| image.tag | string | `"7.13.2"` | TxSigner image tag (immutable tags are recommended) |
+| ingress | object | `{"annotations":{},"apiVersion":"","enabled":false,"extraHosts":[],"extraPaths":[],"extraRules":[],"extraTls":[],"hostname":"txsigner.k8s.orb.local","ingressClassName":"settlemint-nginx","path":"/","pathType":"ImplementationSpecific","secrets":[],"selfSigned":false,"tls":false}` | Ingress parameters |
 | ingress.annotations | object | `{}` | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. |
 | ingress.apiVersion | string | `""` | Force Ingress API version (automatically detected if not set) |
 | ingress.enabled | bool | `false` | Enable ingress record generation for TxSigner |
@@ -175,7 +175,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ingress.extraRules | list | `[]` | Additional rules to be covered with this ingress record |
 | ingress.extraTls | list | `[]` | TLS configuration for additional hostname(s) to be covered with this ingress record |
 | ingress.hostname | string | `"txsigner.k8s.orb.local"` | Default host for the ingress record |
-| ingress.ingressClassName | string | `"atk-nginx"` | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+) |
+| ingress.ingressClassName | string | `"settlemint-nginx"` | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+) |
 | ingress.path | string | `"/"` | Default path for the ingress record |
 | ingress.pathType | string | `"ImplementationSpecific"` | Ingress path type |
 | ingress.secrets | list | `[]` | Custom TLS certificates as secrets |
