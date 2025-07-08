@@ -19,7 +19,9 @@ interface WizardStepProps {
 }
 
 // Default no-op functions to avoid creating new functions in render
-const noop = () => { /* no-op */ };
+const noop = () => {
+  /* no-op */
+};
 
 export function WizardStep({ className }: WizardStepProps) {
   // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
@@ -28,7 +30,7 @@ export function WizardStep({ className }: WizardStepProps) {
 
   // Get context - this hook must always be called
   const context = useWizardContext();
-  
+
   // Check if context is valid - context should always be available due to useWizardContext hook
   const contextError: string | null = null;
 
@@ -117,7 +119,11 @@ export function WizardStep({ className }: WizardStepProps) {
                 await form.options.onSubmit?.({ value, formApi: form });
                 resolve();
               } catch (error) {
-                reject(new Error(error instanceof Error ? error.message : String(error)));
+                reject(
+                  new Error(
+                    error instanceof Error ? error.message : String(error)
+                  )
+                );
               }
             },
           })();
@@ -295,9 +301,7 @@ export function WizardStep({ className }: WizardStepProps) {
           )}
           <Button
             onClick={handleNext}
-            disabled={
-              isValidating || (shouldUseMutation && mutation.isPending)
-            }
+            disabled={isValidating || (shouldUseMutation && mutation.isPending)}
             className="transition-all duration-200"
           >
             {isValidating || (shouldUseMutation && mutation.isPending) ? (

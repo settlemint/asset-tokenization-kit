@@ -17,8 +17,11 @@ import {
   useErrorDescription,
   useErrorTitle,
 } from "@/hooks/use-error-info";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 import { useCallback } from "react";
+
+const logger = createLogger();
 
 /**
  * Default catch boundary component for handling runtime errors.
@@ -52,8 +55,8 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   const errorTitle = useErrorTitle(error);
   const errorDescription = useErrorDescription(error);
 
-  // Log error to console for debugging
-  console.error(error);
+  // Log error for debugging
+  logger.error("DefaultCatchBoundary error", error);
 
   const handleRetry = useCallback(() => {
     void router.invalidate();

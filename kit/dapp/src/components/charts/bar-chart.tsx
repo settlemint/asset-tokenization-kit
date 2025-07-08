@@ -68,7 +68,7 @@ export function BarChartComponent({
     [data, dataKeys]
   );
 
-  const barRadius = useMemo(() => [2, 2, 0, 0] as const, []);
+  const barRadius = useMemo(() => [2, 2, 0, 0] as [number, number, number, number], []);
 
   // Show empty state if no data
   if (filteredData.length === 0) {
