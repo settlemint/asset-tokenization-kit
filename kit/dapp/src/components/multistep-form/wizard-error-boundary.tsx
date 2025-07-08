@@ -1,12 +1,10 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { AlertCircle } from "lucide-react";
 import { Component, type ComponentType, type FC, type ReactNode } from "react";
 
-const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel | undefined) ?? "info",
-});
+const logger = createLogger();
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -45,8 +43,8 @@ class WizardErrorBoundary extends Component<
       },
     });
 
-    // Also log to console for immediate debugging
-    console.error("MultiStepWizard Error Boundary:", {
+    // Also log for immediate debugging
+    logger.error("MultiStepWizard Error Boundary", {
       error,
       errorInfo,
       errorName: error.name,

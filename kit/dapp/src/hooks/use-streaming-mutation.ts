@@ -10,9 +10,12 @@ import type {
   UseMutationResult,
 } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatValidationError } from "@/lib/utils/format-validation-error";
+
+const logger = createLogger();
 
 /**
  * Extract the result type from an async iterator of events
@@ -181,8 +184,8 @@ export function useStreamingMutation<
           description: "Check browser console for full error details",
         });
 
-        // Log full error details to console for debugging
-        console.error("Streaming mutation error:", {
+        // Log full error details for debugging
+        logger.error("Streaming mutation error", {
           message: errorMessage,
           error,
           cause: error instanceof Error ? error.cause : undefined,

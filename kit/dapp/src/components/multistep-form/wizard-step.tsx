@@ -1,25 +1,25 @@
-import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { cn } from "@/lib/utils";
+import { formatValidationError } from "@/lib/utils/format-validation-error";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { Loader2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useWizardContext } from "./wizard-context";
 import { WizardField } from "./wizard-field";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { toast } from "sonner";
-import { formatValidationError } from "@/lib/utils/format-validation-error";
-import { cn } from "@/lib/utils";
 
-const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel | undefined) ?? "info",
-});
+const logger = createLogger();
 
 interface WizardStepProps {
   className?: string;
 }
 
 // Default no-op functions to avoid creating new functions in render
-const noop = () => { /* no-op */ };
+const noop = () => {
+  /* no-op */
+};
 
 export function WizardStep({ className }: WizardStepProps) {
   // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
@@ -28,7 +28,7 @@ export function WizardStep({ className }: WizardStepProps) {
 
   // Get context - this hook must always be called
   const context = useWizardContext();
-  
+
   // Check if context is valid - context should always be available due to useWizardContext hook
   const contextError: string | null = null;
 
@@ -117,7 +117,11 @@ export function WizardStep({ className }: WizardStepProps) {
                 await form.options.onSubmit?.({ value, formApi: form });
                 resolve();
               } catch (error) {
-                reject(new Error(error instanceof Error ? error.message : String(error)));
+                reject(
+                  new Error(
+                    error instanceof Error ? error.message : String(error)
+                  )
+                );
               }
             },
           })();
@@ -295,9 +299,7 @@ export function WizardStep({ className }: WizardStepProps) {
           )}
           <Button
             onClick={handleNext}
-            disabled={
-              isValidating || (shouldUseMutation && mutation.isPending)
-            }
+            disabled={isValidating || (shouldUseMutation && mutation.isPending)}
             className="transition-all duration-200"
           >
             {isValidating || (shouldUseMutation && mutation.isPending) ? (

@@ -1,14 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import type { ComponentType, ErrorInfo, ReactNode } from "react";
 import { Component } from "react";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 
-const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel | undefined) ?? "info",
-});
+const logger = createLogger();
 
 /**
  * Props for the DataTableErrorBoundary component

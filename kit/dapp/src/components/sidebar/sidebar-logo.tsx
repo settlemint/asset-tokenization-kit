@@ -18,6 +18,7 @@ export function SidebarLogo() {
         <SidebarMenuButton
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+          asChild
         >
           <Link to="/" className="flex items-center gap-2">
             <div className="flex aspect-square size-8 items-center justify-center">

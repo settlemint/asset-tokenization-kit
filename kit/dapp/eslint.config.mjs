@@ -185,6 +185,7 @@ export default defineConfig([
           ignoreStateless: true,
         },
       ],
+      "no-console": "warn",
 
       // ========================================================================
       // REACT RULES
