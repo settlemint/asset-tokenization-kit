@@ -35,6 +35,9 @@
 import { assetTypeArray } from "@/lib/zod/validators/asset-types";
 import { BondTokenSchema } from "@/orpc/helpers/token/create-handlers/bond.create.schema";
 import { DepositTokenSchema } from "@/orpc/helpers/token/create-handlers/deposit.create.schema";
+import { EquityTokenSchema } from "@/orpc/helpers/token/create-handlers/equity.create.schema";
+import { FundTokenSchema } from "@/orpc/helpers/token/create-handlers/fund.create.schema";
+import { StablecoinTokenSchema } from "@/orpc/helpers/token/create-handlers/stablecoin.create.schema";
 import { z } from "zod/v4";
 
 /**
@@ -46,6 +49,9 @@ import { z } from "zod/v4";
 export const TokenCreateSchema = z.discriminatedUnion("type", [
   DepositTokenSchema,
   BondTokenSchema,
+  EquityTokenSchema,
+  FundTokenSchema,
+  StablecoinTokenSchema,
 ]);
 
 /**
