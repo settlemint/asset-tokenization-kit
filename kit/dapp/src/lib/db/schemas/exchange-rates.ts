@@ -177,11 +177,11 @@ export const insertFxRateSchema = createInsertSchema(fxRates, {
     (val) => {
       // Validate positive decimal numbers
       if (!val || val.trim() === "") return false;
-      
+
       // Check for valid decimal format
       const match = /^(\d+)(\.\d+)?$/.exec(val.trim());
       if (!match) return false;
-      
+
       // Ensure the number is positive (not zero)
       const num = parseFloat(val);
       return num > 0 && isFinite(num);
@@ -203,11 +203,11 @@ export const insertFxRateLatestSchema = createInsertSchema(fxRatesLatest, {
     (val) => {
       // Validate positive decimal numbers
       if (!val || val.trim() === "") return false;
-      
+
       // Check for valid decimal format
       const match = /^(\d+)(\.\d+)?$/.exec(val.trim());
       if (!match) return false;
-      
+
       // Ensure the number is positive (not zero)
       const num = parseFloat(val);
       return num > 0 && isFinite(num);

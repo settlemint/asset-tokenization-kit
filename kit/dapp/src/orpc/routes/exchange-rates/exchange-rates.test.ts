@@ -230,7 +230,7 @@ describe("Exchange Rates Schemas", () => {
 
     it("should reject decimal values outside 0-8 range", () => {
       const invalidValues = ["9", "10", "99", "-1", "a", ""];
-      
+
       for (const value of invalidValues) {
         const result = insertCurrencySchema.safeParse({
           code: "USD",
@@ -239,7 +239,9 @@ describe("Exchange Rates Schemas", () => {
         });
         expect(result.success).toBe(false);
         if (!result.success) {
-          expect(result.error.issues[0]?.message).toBe("Decimals must be between 0 and 8");
+          expect(result.error.issues[0]?.message).toBe(
+            "Decimals must be between 0 and 8"
+          );
         }
       }
     });

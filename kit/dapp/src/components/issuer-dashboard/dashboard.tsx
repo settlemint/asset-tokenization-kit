@@ -1,3 +1,8 @@
+import { AssetActivityChart } from "@/components/issuer-dashboard/charts/asset-activity-chart";
+import { AssetSupplyChart } from "@/components/issuer-dashboard/charts/asset-supply-chart";
+import { ChartSkeleton } from "@/components/issuer-dashboard/charts/chart-skeleton";
+import { TransactionHistoryChart } from "@/components/issuer-dashboard/charts/transaction-history-chart";
+import { UserGrowthChart } from "@/components/issuer-dashboard/charts/user-growth-chart";
 import { PageHeader } from "@/components/layout/page-header";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
@@ -38,21 +43,21 @@ export function Dashboard() {
       </div>
 
       {/* Charts Section */}
-      {/* <p className="mt-8 mb-4 font-semibold text-2xl">{t("stats-heading")}</p> */}
-      {/* <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0 2xl:grid-cols-4"> */}
-      {/* <Suspense fallback={<ChartSkeleton />}>
+      <p className="mt-8 mb-4 font-semibold text-2xl">{t("stats-heading")}</p>
+      <div className="grid grid-cols-1 gap-4 divide-x-0 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0 2xl:grid-cols-4">
+        <Suspense fallback={<ChartSkeleton />}>
           <AssetSupplyChart />
-        </Suspense> */}
-      {/* <Suspense fallback={<ChartSkeleton />}>
+        </Suspense>
+        <Suspense fallback={<ChartSkeleton />}>
           <AssetActivityChart />
-        </Suspense> */}
-      {/* <Suspense fallback={<ChartSkeleton />}>
+        </Suspense>
+        <Suspense fallback={<ChartSkeleton />}>
           <UserGrowthChart />
-        </Suspense> */}
-      {/* <Suspense fallback={<ChartSkeleton />}>
+        </Suspense>
+        <Suspense fallback={<ChartSkeleton />}>
           <TransactionHistoryChart />
-        </Suspense> */}
-      {/* </div> */}
+        </Suspense>
+      </div>
 
       {/* Actions Section */}
       {/*
