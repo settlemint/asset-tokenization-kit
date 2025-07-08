@@ -99,7 +99,7 @@ export function withWizardErrorBoundary<P extends object>(
   );
 
   WrappedComponent.displayName = `withWizardErrorBoundary(${
-    Component.displayName ?? Component.name ?? "Component"
+    Component.displayName ?? Component.name
   })`;
 
   return WrappedComponent;

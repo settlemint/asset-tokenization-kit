@@ -26,8 +26,7 @@ import {
   type WithTextOnlyProps,
   getAriaAttributes,
 } from "./types";
-const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-const TEXT_ONLY_PATTERN = /^[A-Za-z]+$/;
+import { handleNumberInput, deriveValidationRules } from "./input-handlers";
 
 type InputProps = ComponentPropsWithoutRef<typeof Input>;
 
@@ -72,45 +71,12 @@ export function FormInput<T extends FieldValues>({
     (field: ControllerRenderProps<T, Path<T>>, inputProps: InputProps) => {
       return async (evt: ChangeEvent<HTMLInputElement>) => {
         if (inputProps.type === "number") {
-          const value = evt.target.value;
-
-          if (value === "") {
-            field.onChange(evt);
-            await form.trigger(field.name);
-            return;
-          }
-
-          if (value.startsWith("-")) {
-            return;
-          }
-
-          if (
-            value.startsWith("0") &&
-            value !== "0" &&
-            !value.startsWith("0.")
-          ) {
-            return;
-          }
-
-          const numValue = parseFloat(value);
-          if (!isNaN(numValue)) {
-            if (
-              typeof inputProps.max === "number" &&
-              numValue > inputProps.max
-            ) {
-              return;
-            }
-            if (
-              typeof inputProps.min === "number" &&
-              numValue < inputProps.min
-            ) {
-              return;
-            }
-            field.onChange(numValue);
-          } else {
-            field.onChange(value);
-          }
-          await form.trigger(field.name);
+          handleNumberInput(
+            evt.target.value,
+            field,
+            { min: inputProps.min as number, max: inputProps.max as number },
+            async () => form.trigger(field.name)
+          );
         } else {
           field.onChange(evt);
           if (!inputProps.required && evt.target.value === "") {
@@ -215,37 +181,21 @@ export function FormInput<T extends FieldValues>({
     ]
   );
 
+  const translate = useCallback((key: string) => t(key), [t]);
+
+  const validationRules = deriveValidationRules(
+    props.type,
+    textOnly,
+    props.required,
+    translate
+  );
+
   return (
     <FormField
       {...props}
       rules={{
         ...rules,
-        ...(props.type === "email" && {
-          pattern: {
-            value: EMAIL_PATTERN,
-            message: t("valid-email"),
-          },
-        }),
-        ...(textOnly && {
-          pattern: {
-            value: TEXT_ONLY_PATTERN,
-            message: t("letters-only"),
-          },
-        }),
-        ...(props.type === "number" && {
-          valueAsNumber: true,
-        }),
-        validate: (value) => {
-          if (!props.required) {
-            if (value === "" || value === null || value === undefined) {
-              return true;
-            }
-            if (typeof value === "string" && value.trim() === "") {
-              return true;
-            }
-          }
-          return true;
-        },
+        ...validationRules,
       }}
       render={renderField}
     />

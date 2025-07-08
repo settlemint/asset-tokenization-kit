@@ -138,7 +138,7 @@ export function WizardField<TFormData>({
               id={fieldDef.name as string}
               type={fieldDef.type}
               placeholder={fieldDef.placeholder}
-              value={(field.state.value as string) ?? ""}
+              value={(field.state.value as string) || ""}
               onChange={handleInputChange}
               onBlur={field.handleBlur}
               className={cn(
@@ -160,7 +160,7 @@ export function WizardField<TFormData>({
           <Textarea
             id={fieldDef.name as string}
             placeholder={fieldDef.placeholder}
-            value={(field.state.value as string) ?? ""}
+            value={(field.state.value as string) || ""}
             onChange={handleTextareaChange}
             onBlur={field.handleBlur}
             className={cn(
@@ -175,7 +175,7 @@ export function WizardField<TFormData>({
       case "select":
         return (
           <Select
-            value={(field.state.value as string) ?? ""}
+            value={(field.state.value as string) || ""}
             onValueChange={handleSelectChange}
           >
             <SelectTrigger
@@ -205,7 +205,7 @@ export function WizardField<TFormData>({
           <div className="flex items-center space-x-2">
             <Checkbox
               id={fieldDef.name as string}
-              checked={(field.state.value as boolean) ?? false}
+              checked={(field.state.value as boolean) || false}
               onCheckedChange={handleCheckboxChange}
             />
             <Label
@@ -220,7 +220,7 @@ export function WizardField<TFormData>({
       case "radio":
         return (
           <RadioGroup
-            value={(field.state.value as string) ?? ""}
+            value={(field.state.value as string) || ""}
             onValueChange={handleRadioChange}
           >
             {fieldDef.options?.map((option) => (

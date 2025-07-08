@@ -1,16 +1,17 @@
-import { Progress } from "@/components/ui/progress";
+import { env } from "@/lib/env";
 import { cn } from "@/lib/utils";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import type { MultiStepWizardProps, WizardContextValue } from "./types";
 import { useMultiStepWizardState } from "./use-multistep-wizard-state";
 import { WizardProvider } from "./wizard-context";
+import { WizardHeader } from "./wizard-header";
 import { WizardSidebar } from "./wizard-sidebar";
 import { WizardStep } from "./wizard-step";
 
 const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) ?? "info",
+  level: env.SETTLEMINT_LOG_LEVEL,
 });
 
 export function MultiStepWizard<TFormData = Record<string, unknown>>({
@@ -68,43 +69,17 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   logger.debug("Form created", {
     hasForm: !!form,
-    formState: form.state ? "available" : "unavailable",
+    formState: "available",
     defaultValues: defaultValues,
   });
 
   // Note: Form data persistence is now handled by ORPC API, not URL state
 
-  // Ensure currentStepIndex is valid
-  const safeCurrentStepIndex = useMemo(() => {
-    if (currentStepIndex < 0 || currentStepIndex >= steps.length) {
-      logger.warn("Invalid step index detected, resetting to 0", {
-        currentStepIndex,
-        stepsLength: steps.length,
-      });
-      return 0; // Default to first step if index is invalid
-    }
-    return currentStepIndex;
-  }, [currentStepIndex, steps]);
-
-  // Calculate progress based on current step (shows progress for the step you're on)
-  const progress = useMemo(() => {
-    if (steps.length === 0) return 0;
-    // Progress should include the current step being worked on
-    const currentProgress =
-      ((Number(safeCurrentStepIndex) + 1) / Number(steps.length)) * 100;
-    const finalProgress = Math.round(currentProgress);
-
-    // Temporary debug logging
-    logger.debug("Progress calculation", {
-      safeCurrentStepIndex,
-      stepsLength: steps.length,
-      currentProgress,
-      finalProgress,
-      completedStepsLength: completedSteps.length,
-    });
-
-    return finalProgress;
-  }, [safeCurrentStepIndex, steps.length, completedSteps.length]);
+  // Derive valid currentStepIndex
+  const safeCurrentStepIndex =
+    currentStepIndex < 0 || currentStepIndex >= steps.length
+      ? 0
+      : currentStepIndex;
 
   // Navigation functions
   const canNavigateToStep = useCallback(
@@ -214,20 +189,18 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     hasSteps: !!steps,
   });
 
-  // Calculate wizard-specific styles matching StepWizard
-  const sidebarStyle = useMemo(() => {
-    return {
-      background: "var(--sm-wizard-sidebar-gradient)",
-      backgroundSize: "cover",
-      backgroundPosition: "top",
-      backgroundRepeat: "no-repeat",
-      minWidth: "320px",
-    };
-  }, []);
+  // Derive wizard-specific styles
+  const sidebarStyle = {
+    background: "var(--sm-wizard-sidebar-gradient)",
+    backgroundSize: "cover",
+    backgroundPosition: "top",
+    backgroundRepeat: "no-repeat",
+    minWidth: "320px",
+  };
 
-  const contentStyle = useMemo(() => {
-    return { backgroundColor: "var(--sm-background-lightest)" };
-  }, []);
+  const contentStyle = {
+    backgroundColor: "var(--sm-background-lightest)",
+  };
 
   // NOW handle conditional rendering after all hooks have been called
   if (steps.length === 0) {
@@ -253,38 +226,13 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
             )}
             style={sidebarStyle}
           >
-            {/* Title and Progress */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-primary-foreground mb-2">
-                {name
-                  ? name
-                      .split("-")
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")
-                  : "Setup Wizard"}
-              </h2>
-              <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
-                {description ?? "Configure your platform step by step"}
-              </p>
-
-              {showProgressBar && (
-                <div>
-                  <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
-                    <span>Step {Number(safeCurrentStepIndex) + 1}</span>
-                    <span>
-                      {Number(safeCurrentStepIndex) + 1} /{" "}
-                      {Number(steps.length)}
-                    </span>
-                  </div>
-                  <Progress
-                    value={progress}
-                    className="h-2 bg-primary-foreground/20"
-                  />
-                </div>
-              )}
-            </div>
+            <WizardHeader
+              name={name}
+              description={description}
+              currentStepIndex={safeCurrentStepIndex}
+              totalSteps={steps.length}
+              showProgressBar={showProgressBar}
+            />
 
             <WizardSidebar />
           </div>

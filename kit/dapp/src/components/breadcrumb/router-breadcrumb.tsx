@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home } from "lucide-react";
-import { Fragment, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Fragment } from "react";
+import { useTranslation, type TFunction } from "react-i18next";
 import type { BreadcrumbMetadata } from "./metadata";
 
 interface BreadcrumbSegment {
@@ -21,50 +21,14 @@ interface BreadcrumbSegment {
 }
 
 /**
- * Hook to handle async breadcrumb titles
+ * Derives the display title for a breadcrumb item
  */
-function useAsyncBreadcrumbTitle(
+function deriveBreadcrumbTitle(
   breadcrumbMeta: BreadcrumbMetadata | undefined,
-  fallbackTitle: string
+  fallbackTitle: string,
+  t: TFunction
 ): string {
   const namespace = breadcrumbMeta?.i18nNamespace ?? "navigation";
-  const { t } = useTranslation([namespace]);
-  const [asyncTitle, setAsyncTitle] = useState<string | null>(null);
-
-  // Create a stable key for the breadcrumb to track changes
-  const breadcrumbKey = breadcrumbMeta
-    ? `${breadcrumbMeta.title}-${breadcrumbMeta.isI18nKey}-${breadcrumbMeta.i18nNamespace}`
-    : null;
-
-  useEffect(() => {
-    let cancelled = false;
-    const getTitle = breadcrumbMeta?.getTitle;
-    if (getTitle) {
-      // Reset async title when starting new resolution
-      setAsyncTitle(null);
-
-      // Resolve the async title
-      const resolveTitle = async () => {
-        try {
-          const title = await getTitle();
-          if (!cancelled) {
-            setAsyncTitle(title);
-          }
-        } catch {
-          // Fall back to static title or default on error
-          if (!cancelled) {
-            setAsyncTitle(breadcrumbMeta.title);
-          }
-        }
-      };
-
-      void resolveTitle();
-    }
-
-    return () => {
-      cancelled = true;
-    };
-  }, [breadcrumbKey, fallbackTitle, breadcrumbMeta]);
 
   // Determine the title to display
   if (breadcrumbMeta?.title) {
@@ -78,23 +42,23 @@ function useAsyncBreadcrumbTitle(
     return breadcrumbMeta.title;
   }
 
-  // If we have an async title function
-  if (breadcrumbMeta?.getTitle && asyncTitle !== null) {
-    return asyncTitle;
-  }
-
-  // Show ellipsis while loading async title
-  if (breadcrumbMeta?.getTitle) {
-    return "...";
-  }
-
   return fallbackTitle;
 }
 
 /**
- * Component for rendering a single breadcrumb item with async title support
+ * Component for rendering breadcrumb item content
  */
-function BreadcrumbItemWithAsyncTitle({
+function BreadcrumbContent({ title }: { title: string }) {
+  if (title === "home") {
+    return <Home className="h-3 w-3" />;
+  }
+  return <>{title}</>;
+}
+
+/**
+ * Component for rendering a single breadcrumb item
+ */
+function BreadcrumbItemRender({
   breadcrumbMeta,
   fallbackTitle,
   href,
@@ -106,22 +70,22 @@ function BreadcrumbItemWithAsyncTitle({
   isCurrentPage?: boolean;
 }) {
   const { t } = useTranslation(["navigation"]);
-  const title = useAsyncBreadcrumbTitle(breadcrumbMeta, fallbackTitle);
+  const title = deriveBreadcrumbTitle(breadcrumbMeta, fallbackTitle, t);
 
   return (
     <BreadcrumbItem className="text-xs">
       {isCurrentPage ? (
         <BreadcrumbPage>
-          {title === "home" ? <Home className="h-3 w-3" /> : title}
+          <BreadcrumbContent title={title} />
         </BreadcrumbPage>
       ) : !href ? (
         <span className="text-muted-foreground text-xs">
-          {title === "home" ? <Home className="h-3 w-3" /> : title}
+          <BreadcrumbContent title={title} />
         </span>
       ) : (
         <BreadcrumbLink asChild className="text-xs">
           <Link to={href} aria-label={title === "home" ? t("home") : undefined}>
-            {title === "home" ? <Home className="h-3 w-3" /> : title}
+            <BreadcrumbContent title={title} />
           </Link>
         </BreadcrumbLink>
       )}
@@ -208,7 +172,7 @@ export function RouterBreadcrumb({
         // Add segment with metadata
         segmentsWithMeta.push({
           segment: {
-            title: breadcrumbMeta.title ?? "...",
+            title: breadcrumbMeta.title,
             href: isLast ? undefined : breadcrumbMeta.href,
             isCurrentPage: isLast,
           },
@@ -273,7 +237,7 @@ export function RouterBreadcrumb({
         // Add segment with metadata
         segmentsWithMeta.push({
           segment: {
-            title: breadcrumbMeta?.title ?? fallbackTitle ?? "...",
+            title: breadcrumbMeta?.title ?? (fallbackTitle || "..."),
             href: isLast ? undefined : match.pathname,
             isCurrentPage: isLast,
           },
@@ -302,8 +266,8 @@ export function RouterBreadcrumb({
           const href = metadata?.href ?? segment.href;
 
           return (
-            <Fragment key={href ?? segment.title ?? index}>
-              <BreadcrumbItemWithAsyncTitle
+            <Fragment key={href ?? segment.title}>
+              <BreadcrumbItemRender
                 breadcrumbMeta={metadata}
                 fallbackTitle={segment.title}
                 href={href}

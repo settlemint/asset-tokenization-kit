@@ -1,6 +1,8 @@
 # /quality-assurance
 
-*Executes comprehensive quality assurance test suite using multi-agent orchestration to ensure code meets the highest standards before deployment*
+*Executes comprehensive quality assurance test suite and automatically fixes all errors and warnings to ensure code meets the highest standards before deployment*
+
+**IMPORTANT:** When this command is run, it means the user wants ALL errors and warnings fixed automatically. The goal is to achieve 100% passing tests, 0 type errors, 0 lint errors, and 0 warnings.
 
 ## Auto-Loaded Project Context:
 @/CLAUDE.md
@@ -44,165 +46,45 @@ User provided context: "$ARGUMENTS"
 
 ### Strategy Selection:
 
-**🎯 Quick Validation** (0-1 sub-agents)
+**🎯 Quick Validation**
 - Minor bug fixes
 - Documentation changes
 - Configuration updates
 - Single component changes
 
-**⚡ Standard QA** (2-4 sub-agents)
+**⚡ Standard QA**
 - Feature additions
 - Multi-file changes
 - API modifications
 - Database changes
 
-**🚨 Comprehensive Audit** (5+ sub-agents)
+**🚨 Comprehensive Audit**
 - Major releases
 - Security-critical changes
 - Performance optimizations
 - Architecture changes
 - Breaking changes
 
-## Step 2: Execute Multi-Agent Quality Assurance
+## Step 2: Execute Quality Assurance
 
-**CRITICAL:** All agents must run in parallel using the orchestrated `bun run ci` command. Generate specialized agents based on the QA scope.
+Since `bun run ci` handles all aspects of quality assurance comprehensively, we only need a single execution:
 
-### Dynamic Agent Allocation Pattern:
+### CI Execution Strategy
 
-```
-Small changes (1-5 files): 2 agents (Test Runner, Code Analyzer)
-Medium changes (6-20 files): 4 agents (+ Coverage Analyst, Performance Validator)
-Large changes (20+ files): 6+ agents (+ Security Auditor, Integration Specialist)
-Critical changes: All agents + domain experts
-```
-
-### Core Agent Templates:
-
-#### Agent 1: Test Execution Specialist
-```
-Task: "As a Test Execution Specialist, run all test suites and analyze results comprehensively.
-
-MANDATORY COVERAGE CHECKLIST:
-☐ Unit test execution and results
-☐ Integration test validation
-☐ E2E test scenarios
-☐ Test performance metrics
-☐ Flaky test detection
-☐ Test failure patterns
-
-Workflow:
-1. Execute bun run ci for comprehensive testing
-2. Analyze test output and timing
-3. Identify failing tests and root causes
-4. Detect flaky or intermittent failures
-5. Measure test execution performance
-6. Return structured test report with actionable insights"
+```bash
+# Single command handles everything
+echo "🚀 Executing comprehensive quality assurance..."
+bun run ci
 ```
 
-#### Agent 2: Static Code Analyzer
-```
-Task: "As a Static Analysis Expert, ensure code quality meets all standards.
-
-MANDATORY COVERAGE CHECKLIST:
-☐ TypeScript type safety
-☐ ESLint rule compliance
-☐ Code formatting standards
-☐ Complexity metrics
-☐ Dead code detection
-☐ Security vulnerabilities
-
-Workflow:
-1. Run type checking with bun run typecheck
-2. Execute linting with bun run lint
-3. Verify formatting with bun run format
-4. Analyze cyclomatic complexity
-5. Scan for security issues
-6. Return code quality scorecard"
-```
-
-#### Agent 3: Coverage Analyst
-```
-Task: "As a Test Coverage Specialist, analyze and report on code coverage comprehensively.
-
-MANDATORY COVERAGE CHECKLIST:
-☐ Statement coverage metrics
-☐ Branch coverage analysis
-☐ Function coverage assessment
-☐ Line coverage statistics
-☐ Uncovered code paths
-☐ Coverage trend analysis
-
-Workflow:
-1. Generate coverage reports
-2. Identify coverage gaps
-3. Map uncovered code to risk
-4. Analyze coverage by module
-5. Compare to thresholds
-6. Return coverage insights with recommendations"
-```
-
-#### Agent 4: Performance Validator
-```
-Task: "As a Performance Testing Expert, validate system performance characteristics.
-
-MANDATORY COVERAGE CHECKLIST:
-☐ Bundle size analysis
-☐ Load time metrics
-☐ Memory usage patterns
-☐ CPU utilization
-☐ Database query performance
-☐ API response times
-
-Workflow:
-1. Measure build output sizes
-2. Profile runtime performance
-3. Analyze memory leaks
-4. Check query optimization
-5. Validate caching effectiveness
-6. Return performance report with bottlenecks"
-```
-
-#### Agent 5: Security Auditor
-```
-Task: "As a Security Specialist, audit code for vulnerabilities and compliance.
-
-MANDATORY COVERAGE CHECKLIST:
-☐ Dependency vulnerabilities
-☐ OWASP compliance
-☐ Authentication/authorization
-☐ Data encryption standards
-☐ Input validation
-☐ Secrets management
-
-Workflow:
-1. Scan dependencies for CVEs
-2. Audit authentication flows
-3. Verify data sanitization
-4. Check encryption usage
-5. Validate environment configs
-6. Return security assessment with remediation steps"
-```
-
-#### Agent 6: Integration Validator
-```
-Task: "As an Integration Testing Expert, verify all system integrations work correctly.
-
-MANDATORY COVERAGE CHECKLIST:
-☐ API contract testing
-☐ Database migrations
-☐ External service mocks
-☐ Event handling
-☐ Error boundaries
-☐ Retry mechanisms
-
-Workflow:
-1. Test API endpoints
-2. Verify database operations
-3. Validate external integrations
-4. Check error handling
-5. Test fallback mechanisms
-6. Return integration health report"
-```
+The CI command will automatically:
+- Run all test suites (unit, integration, E2E)
+- Perform static analysis (TypeScript, linting, formatting)
+- Generate code coverage reports
+- Execute security scans
+- Measure performance metrics
+- Validate integrations
+- Provide comprehensive output for analysis
 
 ## Step 3: Pre-Flight Environment Checks
 
@@ -260,16 +142,7 @@ This orchestrated command automatically runs:
 6. **Coverage Analysis** (code coverage metrics)
 7. **Security Scans** (dependency audits)
 
-### Parallel Quality Checks
-
-For additional validation:
-
-```bash
-# Run these in parallel with main CI
-bun run audit           # Security audit
-bun run build           # Build validation
-bun run analyze         # Bundle analysis
-```
+**IMPORTANT:** The `bun run ci` command is the ONLY command needed for quality assurance. It handles all aspects of testing, linting, type checking, and validation. Do not run individual commands or manual fixes.
 
 ## Step 5: Results Analysis and Scoring
 
@@ -304,42 +177,55 @@ function calculateQualityScore(results: QAResults): QualityGrade {
 - **D** (65-74%): Risky, significant issues present
 - **F** (<65%): Blocked, must fix critical issues
 
-## Step 6: Failure Investigation Protocol
+### Automatic Issue Resolution
 
-When tests fail, execute targeted investigation:
+When `bun run ci` reports any failures, the QA process MUST:
 
-### Failure Categories
+1. **Fix all test failures** - Update tests or fix code to achieve 100% pass rate
+2. **Resolve all type errors** - Fix TypeScript issues in the affected files
+3. **Fix all lint errors** - Apply auto-fixes and manually resolve remaining issues
+4. **Address all warnings** - Convert warnings to passing by fixing the underlying issues
+5. **Update failing snapshots** - If snapshot tests fail, update them if changes are intentional
+6. **Fix import errors** - Resolve any module resolution or import path issues
+
+The goal is to achieve a clean CI run with:
+- ✅ 100% test pass rate
+- ✅ 0 TypeScript errors
+- ✅ 0 ESLint/Biome errors
+- ✅ 0 warnings
+- ✅ All quality gates passed
+
+## Step 6: Automatic Failure Resolution
+
+When `bun run ci` reports failures, immediately fix all issues:
+
+### Failure Resolution Process
 
 1. **Test Failures**
-   ```bash
-   # Re-run specific failed test
-   bun run test path/to/failed.test.ts --verbose
-
-   # Run with debugging
-   NODE_OPTIONS='--inspect' bun run test path/to/failed.test.ts
-   ```
+   - Analyze the failed test output to understand the issue
+   - Fix the code or update the test to match new behavior
+   - Ensure all tests pass before proceeding
 
 2. **Type Errors**
-   ```bash
-   # Get detailed type error information
-   bun run typecheck --pretty
-   ```
+   - Navigate to each file with TypeScript errors
+   - Fix type issues by adding proper types or correcting logic
+   - Ensure `bun run typecheck` passes with 0 errors
 
 3. **Lint Violations**
-   ```bash
-   # Auto-fix where possible
-   bun run lint --fix
+   - Apply auto-fixes where possible
+   - Manually fix remaining lint errors
+   - Ensure both errors AND warnings are resolved
 
-   # Show remaining issues
-   bun run lint --format stylish
-   ```
+4. **Import/Module Errors**
+   - Fix any broken imports or missing modules
+   - Update import paths for moved/renamed files
+   - Ensure all dependencies are properly installed
 
-4. **Coverage Gaps**
-   ```bash
-   # Generate detailed coverage report
-   bun run test --coverage --coverage-reporter=html
-   open coverage/index.html
-   ```
+5. **Coverage Gaps**
+   - While not blocking, add tests for uncovered critical paths
+   - Focus on error handling and edge cases
+
+**IMPORTANT:** Keep running `bun run ci` and fixing issues until it passes with 100% success rate and 0 errors/warnings.
 
 ## Structured QA Report Format
 
@@ -451,103 +337,62 @@ All files          | 92.3% | 88.5%  | 94.1% | 91.8% |
 
 ## Escape Hatches
 
-### When QA Encounters Issues:
+### Automatic Issue Resolution:
 
 1. **Flaky Tests**
-   - "Test [name] failed intermittently (2/5 runs)"
-   - "Likely timing/race condition in:"
-   - Option A: Add retry mechanism
-   - Option B: Increase timeout
-   - Option C: Refactor for determinism
-   - Ask: "How should I handle flaky tests?"
+   - Fix timing issues by adding proper waits or mocks
+   - Refactor tests to be deterministic
+   - Update test setup/teardown if needed
 
 2. **Environment Differences**
-   - "Tests pass locally but fail in CI"
-   - "Detected differences:"
-   - - Node version mismatch
-   - - Missing environment variables
-   - - Service availability
-   - Option A: Align environments
-   - Option B: Mock external dependencies
-   - Ask: "Which environment is canonical?"
+   - Mock external dependencies that cause CI failures
+   - Fix any hardcoded paths or environment assumptions
+   - Ensure tests work in both local and CI environments
 
-3. **Performance Regression**
-   - "Performance degraded by [X%]"
-   - "Main contributors:"
-   - - Bundle size increase
-   - - Unoptimized queries
-   - - Memory leaks
-   - Option A: Optimize before proceeding
-   - Option B: Accept new baseline
-   - Option C: Investigate further
-   - Ask: "Is this regression acceptable?"
+3. **Type/Lint Errors**
+   - Fix all TypeScript errors immediately
+   - Resolve all ESLint/Biome violations
+   - Do not ignore or suppress errors
 
-4. **Coverage Below Threshold**
-   - "Coverage at [X%], threshold is [Y%]"
-   - "Uncovered areas pose risk in:"
-   - - Critical business logic
-   - - Error handling paths
-   - - New features
-   - Option A: Add tests now
-   - Option B: Create tech debt ticket
-   - Option C: Adjust thresholds
-   - Ask: "Block deployment for coverage?"
+4. **Import/Module Errors**
+   - Update all import paths for moved files
+   - Install any missing dependencies
+   - Fix circular dependencies
 
-5. **Security Vulnerabilities**
-   - "Found [N] vulnerabilities:"
-   - - Critical: [list]
-   - - High: [list]
-   - - Medium: [list]
-   - Option A: Patch dependencies
-   - Option B: Implement workarounds
-   - Option C: Accept and document risk
-   - Ask: "How to address security issues?"
+5. **Test Assertion Failures**
+   - Update test expectations to match new behavior
+   - Fix bugs if the test is catching real issues
+   - Ensure all assertions are correct
+
+**Remember:** The /quality-assurance command means "fix everything". Do not ask for guidance on individual issues - fix them all and ensure CI passes completely.
 
 ## Advanced QA Patterns
 
-### Incremental Testing
-For large changes, test incrementally:
-```bash
-# Test affected modules first
-bun run test src/affected-module --watch
+### CI-First Testing Approach
 
-# Then run full suite
-bun run ci
-```
+The `bun run ci` command is designed to handle all testing scenarios efficiently:
 
-### Parallel Test Execution
-Maximize efficiency:
-```bash
-# Split tests across workers
-bun run test --shard=1/4 &
-bun run test --shard=2/4 &
-bun run test --shard=3/4 &
-bun run test --shard=4/4 &
-wait
-```
+1. **Incremental Testing**
+   - CI automatically detects changed files
+   - Runs related tests first for faster feedback
+   - Proceeds to full suite validation
 
-### Test Impact Analysis
-Run only affected tests:
-```bash
-# Detect changed files
-changed_files=$(git diff --name-only main...)
+2. **Parallel Execution**
+   - CI leverages available CPU cores
+   - Runs test suites in parallel automatically
+   - Optimizes execution order based on historical data
 
-# Run related tests
-bun run test --findRelatedTests $changed_files
-```
+3. **Smart Test Selection**
+   - CI uses dependency graphs to run affected tests
+   - Prioritizes frequently failing tests
+   - Skips unchanged test paths when appropriate
 
-### Performance Profiling
-Deep performance analysis:
-```bash
-# CPU profiling
-bun run test --cpu-prof
+4. **Performance Analysis**
+   - CI includes performance metrics in output
+   - Tracks test execution times
+   - Reports on slow tests and bottlenecks
 
-# Memory profiling
-bun run test --heap-prof
-
-# Generate flame graphs
-bun run profile:analyze
-```
+**Remember:** Always use `bun run ci` for consistent, comprehensive testing.
 
 ## Quality Gate Enforcement
 
@@ -555,8 +400,8 @@ Before marking QA as complete:
 
 - [ ] All tests pass (100%)
 - [ ] Code coverage meets thresholds
-- [ ] No type errors
-- [ ] No lint errors (warnings acceptable)
+- [ ] No type errors (0 errors)
+- [ ] No lint errors AND no warnings (0 total)
 - [ ] Performance within baselines
 - [ ] Security scan clean
 - [ ] Documentation updated
@@ -564,4 +409,9 @@ Before marking QA as complete:
 - [ ] E2E tests pass
 - [ ] Quality score ≥ B grade
 
-**CRITICAL:** Never bypass quality gates. If issues exist, they must be explicitly acknowledged and documented with remediation plans.
+**CRITICAL:** The /quality-assurance command requires fixing ALL issues. Do not report problems without fixing them. Keep iterating until `bun run ci` passes completely with:
+- Zero test failures
+- Zero type errors
+- Zero lint errors
+- Zero warnings
+- 100% clean output

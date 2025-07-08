@@ -1,41 +1,16 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Web3Address } from "@/components/web3/web3-address";
-import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { CellContext } from "@tanstack/react-table";
-import { format as formatDnum, isDnum, toNumber } from "dnum";
 import { useTranslation } from "react-i18next";
-
-/**
- * Helper function to safely convert a value to a number for formatting
- * Uses dnum for precision handling when the value is a string
- * Returns 0 for NaN values
- */
-function safeToNumber(value: unknown): number {
-  // If it's already a number, check for NaN
-  if (typeof value === "number") {
-    return Number.isNaN(value) ? 0 : value;
-  }
-
-  // If it's a string, try to parse it with dnum for precision
-  if (typeof value === "string") {
-    try {
-      const bigDecimalValue = bigDecimal().parse(value);
-      const num = toNumber(bigDecimalValue);
-      return Number.isNaN(num) ? 0 : num;
-    } catch {
-      // If parsing fails, fallback to Number conversion
-      const num = Number(value);
-      return Number.isNaN(num) ? 0 : num;
-    }
-  }
-
-  // For other types, use Number conversion
-  const num = Number(value);
-  return Number.isNaN(num) ? 0 : num;
-}
+import {
+  AddressCell,
+  BadgeCell,
+  CurrencyCell,
+  DateCell,
+  StatusCell,
+  NumberCell,
+  TextCell,
+} from "./cell-renderers";
 
 /**
  * Props for the AutoCell component
@@ -111,197 +86,40 @@ export function AutoCell<TData, TValue>({
 
   // Auto-render based on type with intelligent defaults
   switch (meta.type) {
-    case "address": {
-      try {
-        const validAddress = getEthereumAddress(value);
-        return (
-          <Web3Address
-            address={validAddress}
-            copyToClipboard={true}
-            showFullAddress={false}
-            size="tiny"
-            showSymbol={false}
-          />
-        );
-      } catch {
-        // If address is invalid, show the raw value
-        return (
-          <span className="text-xs text-muted-foreground font-mono">
-            {String(value)}
-          </span>
-        );
-      }
-    }
+    case "address":
+      return <AddressCell value={value} />;
 
-    case "badge": {
-      // Determine variant based on column type or name
-      let variant: "default" | "secondary" | "destructive" | "outline" =
-        "default";
+    case "badge":
+      return <BadgeCell value={value} displayName={meta.displayName} />;
 
-      // For symbol columns, use secondary variant
-      if (meta.displayName?.toLowerCase().includes("symbol")) {
-        variant = "secondary";
-      }
-
-      // For status columns, determine based on value
-      if (meta.displayName?.toLowerCase().includes("status")) {
-        const statusValue = String(value).toLowerCase();
-        if (
-          ["active", "success", "completed", "approved", "enabled"].includes(
-            statusValue
-          )
-        ) {
-          variant = "default";
-        } else if (
-          ["inactive", "disabled", "archived", "paused"].includes(statusValue)
-        ) {
-          variant = "secondary";
-        } else if (
-          ["error", "failed", "rejected", "cancelled", "expired"].includes(
-            statusValue
-          )
-        ) {
-          variant = "destructive";
-        } else if (
-          ["pending", "draft", "processing", "review", "waiting"].includes(
-            statusValue
-          )
-        ) {
-          variant = "outline";
-        }
-      }
-
-      // Apply for symbol-like badges
-      const isSymbol = meta.displayName?.toLowerCase().includes("symbol");
-
+    case "currency":
       return (
-        <Badge variant={variant} className={isSymbol ? "font-mono" : undefined}>
-          {String(value)}
-        </Badge>
+        <CurrencyCell value={value} locale={locale} currency={meta.currency} />
       );
-    }
 
-    case "currency": {
-      // Use safe number conversion to handle large values without precision loss
-      const currencyValue = safeToNumber(value);
+    case "date":
       return (
-        <span className="text-right block tabular-nums">
-          {new Intl.NumberFormat(locale, {
-            style: "currency",
-            currency: meta.currency ?? "EUR",
-            minimumFractionDigits: 2,
-          }).format(currencyValue)}
-        </span>
+        <DateCell
+          value={value}
+          locale={locale}
+          includeTime={meta.displayName?.toLowerCase().includes("time")}
+        />
       );
-    }
 
-    case "date": {
-      const dateValue = value instanceof Date ? value : new Date(String(value));
-      const includeTime = meta.displayName?.toLowerCase().includes("time");
+    case "status":
+      return <StatusCell value={value} />;
 
+    case "number":
       return (
-        <span className="text-muted-foreground">
-          {new Intl.DateTimeFormat(locale, {
-            dateStyle: "medium",
-            timeStyle: includeTime ? "short" : undefined,
-          }).format(dateValue)}
-        </span>
+        <NumberCell
+          value={value}
+          locale={locale}
+          displayName={meta.displayName}
+        />
       );
-    }
-
-    case "status": {
-      const statusValue = String(value).toLowerCase();
-      const statusVariants: Record<
-        string,
-        "default" | "secondary" | "destructive" | "outline"
-      > = {
-        // Success states
-        active: "default",
-        success: "default",
-        completed: "default",
-        approved: "default",
-        enabled: "default",
-        online: "default",
-        available: "default",
-
-        // Neutral/Inactive states
-        inactive: "secondary",
-        disabled: "secondary",
-        archived: "secondary",
-        offline: "secondary",
-        unavailable: "secondary",
-        paused: "secondary",
-
-        // Error states
-        error: "destructive",
-        failed: "destructive",
-        rejected: "destructive",
-        cancelled: "destructive",
-        expired: "destructive",
-        blocked: "destructive",
-
-        // Pending states
-        pending: "outline",
-        draft: "outline",
-        processing: "outline",
-        review: "outline",
-        waiting: "outline",
-        scheduled: "outline",
-      };
-
-      return (
-        <Badge variant={statusVariants[statusValue] ?? "default"}>
-          {String(value)}
-        </Badge>
-      );
-    }
-
-    case "number": {
-      // Check if value is a Dnum (big decimal) first
-      if (isDnum(value)) {
-        // Format Dnum with locale-aware formatting
-        const formatted = formatDnum(value, {
-          locale,
-          digits: 2,
-          trailingZeros: false,
-        });
-
-        return (
-          <span className="text-right block tabular-nums">{formatted}</span>
-        );
-      }
-
-      // Use safe number conversion to handle large values without precision loss
-      // This will return 0 for NaN values
-      const numberValue = safeToNumber(value);
-
-      // Determine formatting based on column metadata
-      let minimumFractionDigits = 0;
-      let maximumFractionDigits = 2;
-
-      // No decimals for "decimals" columns
-      if (meta.displayName?.toLowerCase().includes("decimal")) {
-        minimumFractionDigits = 0;
-        maximumFractionDigits = 0;
-      }
-
-      // Use compact notation for large numbers
-      const useCompact =
-        meta.displayName?.toLowerCase().includes("count") && numberValue > 9999;
-
-      // Format with proper locale
-      const formatted = new Intl.NumberFormat(locale, {
-        notation: useCompact ? "compact" : "standard",
-        minimumFractionDigits,
-        maximumFractionDigits,
-        ...(useCompact && { maximumFractionDigits: 1 }),
-      }).format(numberValue);
-
-      return <span className="text-right block tabular-nums">{formatted}</span>;
-    }
 
     case "text":
     default:
-      return <span>{String(value)}</span>;
+      return <TextCell value={value} />;
   }
 }

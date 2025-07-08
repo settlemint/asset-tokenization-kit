@@ -25,8 +25,11 @@ import {
 } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { useEffect, type PropsWithChildren } from "react";
+import {
+  useOnboardingNavigation,
+  deriveNavigationRequirement,
+} from "./use-onboarding-navigation";
 
 /**
  * Props for the OnboardingGuard component.
@@ -82,7 +85,7 @@ export function OnboardingGuard({
   allowedTypes,
 }: OnboardingGuardProps) {
   const isMounted = useMounted();
-  const navigate = useNavigate();
+  const { navigateToOnboarding, navigateHome } = useOnboardingNavigation();
 
   // Fetch user data
   const { data: session, isPending } = authClient.useSession();
@@ -121,28 +124,14 @@ export function OnboardingGuard({
     ? determineOnboardingType(userRole, platformRequirements)
     : null;
 
-  // Check if onboarding is complete based on type
-  const isOnboardingComplete = (() => {
-    if (!onboardingType || !user) return false;
-
-    switch (onboardingType) {
-      case "platform":
-        return isPlatformOnboardingComplete(platformRequirements);
-      case "issuer":
-        return isIssuerOnboardingComplete({
-          userOnboarded,
-          platformOnboardingComplete:
-            isPlatformOnboardingComplete(platformRequirements),
-        });
-      case "investor":
-        return isInvestorOnboardingComplete({
-          userOnboarded,
-          hasIdentity: userHasIdentity,
-          platformOnboardingComplete:
-            isPlatformOnboardingComplete(platformRequirements),
-        });
-    }
-  })();
+  // Derive onboarding completion status
+  const isOnboardingComplete = deriveIsOnboardingComplete({
+    onboardingType,
+    user,
+    platformRequirements,
+    userOnboarded,
+    userHasIdentity,
+  });
 
   const isPlatformOnboarded =
     isPlatformOnboardingComplete(platformRequirements);
@@ -152,81 +141,31 @@ export function OnboardingGuard({
     !systemAddressLoading &&
     !systemDetailsLoading;
 
+  // Derive navigation requirement
+  const navigationRequirement = deriveNavigationRequirement({
+    require,
+    isOnboardingComplete,
+    isPlatformOnboarded,
+    userRole,
+    onboardingType,
+    allowedTypes,
+  });
+
   useEffect(() => {
-    if (!isCheckComplete) {
+    if (!isCheckComplete || !navigationRequirement.shouldNavigate) {
       return;
     }
 
-    // Handle platform-onboarded requirement
-    if (require === "platform-onboarded" && !isPlatformOnboarded) {
-      // Only admin users can do platform onboarding
-      if (userRole === "admin") {
-        void navigate({ to: "/onboarding/platform" });
-      } else {
-        void navigate({ to: "/" });
-      }
-      return;
-    }
-
-    // Handle onboarded requirement
-    if (require === "onboarded" && !isOnboardingComplete) {
-      // Navigate to specific onboarding route based on type
-      switch (onboardingType) {
-        case "platform":
-          void navigate({ to: "/onboarding/platform" });
-          break;
-        case "issuer":
-          void navigate({ to: "/onboarding/issuer" });
-          break;
-        case "investor":
-          void navigate({ to: "/onboarding/investor" });
-          break;
-        default:
-          // Fallback to generic onboarding route if type is unknown
-          void navigate({ to: "/onboarding" });
-      }
-      return;
-    }
-
-    // Handle not-onboarded requirement
-    if (require === "not-onboarded" && isOnboardingComplete) {
-      void navigate({ to: "/" });
-      return;
-    }
-
-    // Check if user is on the correct onboarding type
-    if (
-      require === "not-onboarded" &&
-      allowedTypes &&
-      onboardingType &&
-      !allowedTypes.includes(onboardingType)
-    ) {
-      // Navigate to specific onboarding route based on type
-      switch (onboardingType) {
-        case "platform":
-          void navigate({ to: "/onboarding/platform" });
-          break;
-        case "issuer":
-          void navigate({ to: "/onboarding/issuer" });
-          break;
-        case "investor":
-          void navigate({ to: "/onboarding/investor" });
-          break;
-        default:
-          // Fallback to generic onboarding route if type is unknown
-          void navigate({ to: "/onboarding" });
-      }
+    if (navigationRequirement.navigateTo === "home") {
+      navigateHome();
+    } else {
+      navigateToOnboarding(navigationRequirement.navigateTo);
     }
   }, [
     isCheckComplete,
-    isOnboardingComplete,
-    isPlatformOnboarded,
-    require,
-    navigate,
-    user,
-    onboardingType,
-    allowedTypes,
-    userRole,
+    navigationRequirement,
+    navigateToOnboarding,
+    navigateHome,
   ]);
 
   if (!isMounted || !isCheckComplete) {
@@ -254,4 +193,41 @@ export function OnboardingGuard({
   }
 
   return null;
+}
+
+/**
+ * Helper function to derive onboarding completion status
+ */
+function deriveIsOnboardingComplete({
+  onboardingType,
+  user,
+  platformRequirements,
+  userOnboarded,
+  userHasIdentity,
+}: {
+  onboardingType: OnboardingType | null;
+  user: { role?: string } | null;
+  platformRequirements: PlatformOnboardingRequirements;
+  userOnboarded: boolean;
+  userHasIdentity: boolean;
+}): boolean {
+  if (!onboardingType || !user) return false;
+
+  switch (onboardingType) {
+    case "platform":
+      return isPlatformOnboardingComplete(platformRequirements);
+    case "issuer":
+      return isIssuerOnboardingComplete({
+        userOnboarded,
+        platformOnboardingComplete:
+          isPlatformOnboardingComplete(platformRequirements),
+      });
+    case "investor":
+      return isInvestorOnboardingComplete({
+        userOnboarded,
+        hasIdentity: userHasIdentity,
+        platformOnboardingComplete:
+          isPlatformOnboardingComplete(platformRequirements),
+      });
+  }
 }

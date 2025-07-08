@@ -23,8 +23,7 @@ function getValidFiatCurrencies(): string[] {
     if (code.startsWith("X")) return false;
 
     // Exclude currencies without decimal information
-    // Exclude currencies without decimal information
-    if (!currency || typeof currency.digits !== "number") return false;
+    if (typeof currency.digits !== "number") return false;
 
     return true;
   });
