@@ -1,7 +1,7 @@
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_private/_onboarded/token/stats")({
+export const Route = createFileRoute("/_private/_onboarded/_sidebar/token/stats")({
   loader: async ({ context: { queryClient, orpc } }) => {
     // Ensure all token factories are loaded for statistics overview
     const factories = await queryClient.ensureQueryData(

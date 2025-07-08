@@ -151,5 +151,6 @@
   "workbench.editor.revealIfOpen": true,
   "workbench.fontAliasing": "auto",
   "workbench.tips.enabled": false,
-  "workbench.tree.enableStickyScroll": true
+  "workbench.tree.enableStickyScroll": true,
+  "explorer.sortOrder": "mixed"
 }
