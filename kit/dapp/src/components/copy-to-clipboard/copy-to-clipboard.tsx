@@ -57,7 +57,7 @@ export function CopyToClipboard({
     try {
       await navigator.clipboard.writeText(value);
       setHasCopied(true);
-      toast.success(t("components.data-table.copied-to-clipboard"));
+      toast.success(t("copiedToClipboard"));
       onCopy?.();
 
       // Clear any existing timeout
@@ -95,7 +95,7 @@ export function CopyToClipboard({
         size="icon"
         className="size-6 shrink-0 hover:bg-theme-accent-background"
         onClick={handleClick}
-        aria-label={t("components.data-table.copy-to-clipboard")}
+        aria-label={t("copyToClipboard")}
         disabled={hasCopied}
       >
         {hasCopied ? (

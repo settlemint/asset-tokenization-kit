@@ -290,7 +290,7 @@ export function TableFilter<TData>({ table }: { table: Table<TData> }) {
             ref={inputRef}
             placeholder={t("search")}
           />
-          <CommandEmpty>{t("no-results")}</CommandEmpty>
+          <CommandEmpty>{t("noResults")}</CommandEmpty>
           <CommandList className="max-h-fit">
             <CommandGroup>
               {properties.map((column) => (

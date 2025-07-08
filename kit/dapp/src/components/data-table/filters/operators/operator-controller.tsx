@@ -94,7 +94,7 @@ export function PropertyFilterOperatorController<
       >
         <Command loop>
           <CommandInput placeholder={t("search")} />
-          <CommandEmpty>{t("no-results")}</CommandEmpty>
+          <CommandEmpty>{t("noResults")}</CommandEmpty>
           <CommandList className="max-h-fit">
             <PropertyFilterOperatorMenu
               column={column}

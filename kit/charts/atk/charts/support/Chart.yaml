@@ -11,7 +11,7 @@ maintainers:
     url: https://settlemint.com
 dependencies:
   - name: ingress-nginx
-    version: 4.12.3
+    version: 4.13.0
     repository: https://kubernetes.github.io/ingress-nginx
   - name: postgresql-ha
     version: "16.0.16"
@@ -20,7 +20,7 @@ dependencies:
     version: "21.2.7"
     repository: oci://registry-1.docker.io/bitnamicharts
   - name: reloader
-    version: 2.1.4
+    version: 2.1.5
     repository: https://stakater.github.io/stakater-charts
   - name: minio
     version: 17.0.9
