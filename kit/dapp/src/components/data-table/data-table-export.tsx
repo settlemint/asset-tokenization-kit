@@ -149,7 +149,7 @@ export function DataTableExport<TData>({ table }: DataTableExportProps<TData>) {
   const { t } = useTranslation("data-table");
 
   const handleExport = useCallback(() => {
-    exportTableToCSV(table, t("failed-export"));
+    exportTableToCSV(table, t("failedExport"));
   }, [table, t]);
 
   return (

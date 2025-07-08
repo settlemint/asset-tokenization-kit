@@ -101,7 +101,7 @@ export function ActionsCell({
           className="h-8 w-8 p-0"
           onClick={handleButtonClick}
         >
-          <span className="sr-only">{t("open-menu")}</span>
+          <span className="sr-only">{t("openMenu")}</span>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>

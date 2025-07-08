@@ -200,7 +200,7 @@ export function PropertyFilterMultiOptionValueMenu<
         <span className="text-sm text-muted-foreground">{displayName}</span>
       </div>
       <CommandInput autoFocus placeholder={t("search")} />
-      <CommandEmpty>{t("no-results")}</CommandEmpty>
+      <CommandEmpty>{t("noResults")}</CommandEmpty>
       <CommandList>
         <CommandGroup>
           {options.map((v) => {
