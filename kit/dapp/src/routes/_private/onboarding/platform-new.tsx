@@ -118,8 +118,7 @@ function PlatformNewOnboarding() {
 
   // Check if steps should be shown based on current state
   const shouldShowWalletSteps = true; // Always show for demo - in real app: !user?.wallet
-  const shouldShowSystemSteps = !systemAddress;
-  const shouldShowAssetSteps =
+  const shouldShowSystemSetupSteps =
     !systemAddress || (systemDetails?.tokenFactories.length ?? 0) === 0;
   const shouldShowIdentitySteps = true; // Always show for now - in real app check if user has identity
 
@@ -138,24 +137,13 @@ function PlatformNewOnboarding() {
       });
     }
 
-    if (shouldShowSystemSteps) {
+    if (shouldShowSystemSetupSteps) {
       dynamicGroups.push({
         id: "system",
-        title: "System Bootstrap",
-        description: "Initialize the blockchain system",
+        title: "System Setup",
+        description: "Initialize blockchain and configure assets",
         collapsible: true,
         defaultExpanded: !shouldShowWalletSteps,
-      });
-    }
-
-    if (shouldShowAssetSteps) {
-      dynamicGroups.push({
-        id: "assets",
-        title: "System Setup",
-        description: "Configure supported assets and add-ons",
-        collapsible: true,
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        defaultExpanded: !shouldShowWalletSteps && !shouldShowSystemSteps,
       });
     }
 
@@ -173,8 +161,7 @@ function PlatformNewOnboarding() {
     return dynamicGroups;
   }, [
     shouldShowWalletSteps,
-    shouldShowSystemSteps,
-    shouldShowAssetSteps,
+    shouldShowSystemSetupSteps,
     shouldShowIdentitySteps,
   ]);
 
@@ -279,63 +266,64 @@ function PlatformNewOnboarding() {
       });
     }
 
-    // 2. System Steps (if system not bootstrapped)
-    if (shouldShowSystemSteps) {
-      dynamicSteps.push({
-        id: "system-bootstrap",
-        title: "Bootstrap System",
-        description: "Initialize the blockchain system for first use",
-        groupId: "system",
-        fields: [
-          {
-            name: "systemBootstrapped",
-            label: "Bootstrap System",
-            type: "checkbox",
-            description:
-              "Initialize the core blockchain system (required for first user)",
-          },
-        ],
-        validate: (data) => {
-          if (!data.systemBootstrapped) {
-            return "System bootstrap is required";
-          }
-          return undefined;
-        },
-        mutation: {
-          mutationKey: "bootstrap-system",
-          mutationFn: async function* (data: Partial<OnboardingFormData>) {
-            if (data.systemBootstrapped) {
-              yield { status: "pending", message: "Initializing system..." };
-              await new Promise((resolve) => setTimeout(resolve, 1200));
-
-              yield {
-                status: "pending",
-                message: "Deploying core contracts...",
-              };
-              await new Promise((resolve) => setTimeout(resolve, 1000));
-
-              const systemAddress =
-                "0x" + Math.random().toString(16).slice(2, 42);
-              yield {
-                status: "confirmed",
-                message: "System bootstrapped successfully!",
-                result: { systemAddress },
-              };
-              return { systemAddress };
+    // 2. System Setup Steps (bootstrap + assets)
+    if (shouldShowSystemSetupSteps) {
+      // First add bootstrap system step if system not bootstrapped
+      if (!systemAddress) {
+        dynamicSteps.push({
+          id: "system-bootstrap",
+          title: "Bootstrap System",
+          description: "Initialize the blockchain system for first use",
+          groupId: "system",
+          fields: [
+            {
+              name: "systemBootstrapped",
+              label: "Bootstrap System",
+              type: "checkbox",
+              description:
+                "Initialize the core blockchain system (required for first user)",
+            },
+          ],
+          validate: (data) => {
+            if (!data.systemBootstrapped) {
+              return "System bootstrap is required";
             }
-            return null;
+            return undefined;
           },
-        },
-      });
-    }
+          mutation: {
+            mutationKey: "bootstrap-system",
+            mutationFn: async function* (data: Partial<OnboardingFormData>) {
+              if (data.systemBootstrapped) {
+                yield { status: "pending", message: "Initializing system..." };
+                await new Promise((resolve) => setTimeout(resolve, 1200));
 
-    // 3. Asset Steps (if no assets configured)
-    if (shouldShowAssetSteps) {
+                yield {
+                  status: "pending",
+                  message: "Deploying core contracts...",
+                };
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                const systemAddress =
+                  "0x" + Math.random().toString(16).slice(2, 42);
+                yield {
+                  status: "confirmed",
+                  message: "System bootstrapped successfully!",
+                  result: { systemAddress },
+                };
+                return { systemAddress };
+              }
+              return null;
+            },
+          },
+        });
+      }
+
+      // Then add asset configuration steps
       dynamicSteps.push({
         id: "asset-selection",
         title: "Select Assets",
         description: "Choose which asset types your platform will support",
-        groupId: "assets",
+        groupId: "system",
         fields: [
           {
             name: "selectedAssetTypes",
@@ -367,7 +355,7 @@ function PlatformNewOnboarding() {
         id: "addon-selection",
         title: "Select Add-ons",
         description: "Configure additional platform features",
-        groupId: "assets",
+        groupId: "system",
         fields: [
           {
             name: "selectedAddons",
@@ -416,7 +404,7 @@ function PlatformNewOnboarding() {
       });
     }
 
-    // 4. Identity Steps (if no identity registered)
+    // 3. Identity Steps (if no identity registered)
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (shouldShowIdentitySteps) {
       dynamicSteps.push({
@@ -549,9 +537,9 @@ function PlatformNewOnboarding() {
     return dynamicSteps;
   }, [
     shouldShowWalletSteps,
-    shouldShowSystemSteps,
-    shouldShowAssetSteps,
+    shouldShowSystemSetupSteps,
     shouldShowIdentitySteps,
+    systemAddress,
     user,
   ]);
 
