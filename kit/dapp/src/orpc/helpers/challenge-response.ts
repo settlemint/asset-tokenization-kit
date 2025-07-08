@@ -5,6 +5,11 @@ import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { ORPCError } from "@orpc/server";
 import { handleWalletVerificationChallenge } from "@settlemint/sdk-portal";
 
+export interface ChallengeResponse {
+  verificationId?: string;
+  challengeResponse: string;
+}
+
 /**
  * Maps frontend verification types to portal verification types
  */
@@ -53,7 +58,7 @@ export async function handleChallenge(
     code: VerificationCode;
     type: VerificationType;
   }
-) {
+): Promise<ChallengeResponse> {
   const verificationId = getVerificationId(user, verification.type);
 
   if (!verificationId) {
