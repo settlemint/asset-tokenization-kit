@@ -39,7 +39,7 @@ import { createFileRoute } from "@tanstack/react-router";
  * ```
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/token/$factoryAddress/"
+  "/_private/_onboarded/_sidebar/token/$factoryAddress/"
 )({
   /**
    * Validates search parameters for data table state
