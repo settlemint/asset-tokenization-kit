@@ -1,34 +1,41 @@
 # Subgraph Actions System Documentation
 
-_This file documents the actions system implementation within The Graph subgraph._
+_This file documents the actions system implementation within The Graph
+subgraph._
 
 ## Actions System Architecture
 
 ### Core Components
 
 **Entities:**
+
 - **`Action`**: Represents actionable items with lifecycle management
 - **`ActionExecutor`**: Manages authorized users who can execute actions
 - **Account relationships**: Links actions to target accounts and executors
 
 **Utility Functions:** `action-utils.ts`
+
 - **`createAction`**: Creates new actions with proper validation
 - **`executeAction`**: Handles action execution with authorization checks
-- **`createActionExecutor`**: Sets up executor entities with account relationships
+- **`createActionExecutor`**: Sets up executor entities with account
+  relationships
 
 ### Action Lifecycle
 
 **Creation Phase:**
+
 1. Action created with specific executors and timing constraints
 2. Linked to target account and executor entities
 3. Indexed by type, activeAt, and executed status
 
 **Execution Phase:**
+
 1. Validation: Check executor authorization and timing constraints
 2. Execution: Mark action as executed with timestamp and executor
 3. Logging: Record execution details for audit trail
 
 **Status Determination:**
+
 - **PENDING**: Current time >= activeAt and not executed and not expired
 - **UPCOMING**: Current time < activeAt
 - **COMPLETED**: Action executed = true
@@ -37,28 +44,30 @@ _This file documents the actions system implementation within The Graph subgraph
 ## Entity Schema
 
 ### Action Entity
+
 ```graphql
 type Action @entity {
-  id: ID!                        # Unique identifier
-  name: String!                  # Action name (e.g., "ApproveXvPSettlement")
-  type: String!                  # Action type ("Admin" or "User")
-  target: Account!               # Target account for the action
-  executor: ActionExecutor!      # Authorized executor entity
-  activeAt: BigInt!              # When action becomes active
-  expiresAt: BigInt             # Optional expiration timestamp
-  executed: Boolean!             # Execution status
-  executedAt: BigInt            # When action was executed
-  executedBy: Account           # Who executed the action
-  createdAt: BigInt!            # Creation timestamp
+  id: ID! # Unique identifier
+  name: String! # Action name (e.g., "ApproveXvPSettlement")
+  type: String! # Action type ("Admin" or "User")
+  target: Account! # Target account for the action
+  executor: ActionExecutor! # Authorized executor entity
+  activeAt: BigInt! # When action becomes active
+  expiresAt: BigInt # Optional expiration timestamp
+  executed: Boolean! # Execution status
+  executedAt: BigInt # When action was executed
+  executedBy: Account # Who executed the action
+  createdAt: BigInt! # Creation timestamp
 }
 ```
 
 ### ActionExecutor Entity
+
 ```graphql
 type ActionExecutor @entity {
-  id: ID!                        # Unique identifier
-  accounts: [Account!]!          # Authorized accounts array
-  actions: [Action!]!            # Related actions
+  id: ID! # Unique identifier
+  accounts: [Account!]! # Authorized accounts array
+  actions: [Action!]! # Related actions
 }
 ```
 
@@ -87,7 +96,7 @@ createAction(
 createAction(
   event,
   `ExecuteXvPSettlement-${event.transaction.hash.toHex()}`,
-  "ExecuteXvPSettlement", 
+  "ExecuteXvPSettlement",
   "Admin",
   event.block.timestamp,
   event.block.timestamp.plus(BigInt.fromI32(86400)),
@@ -108,7 +117,7 @@ createAction(
   event,
   `MatureBond-${tokenId}`,
   "MatureBond",
-  "Admin", 
+  "Admin",
   bond.maturityDate,
   null, // No expiration
   [bond.issuer.id],
@@ -119,6 +128,7 @@ createAction(
 ## Utility Functions
 
 ### `createAction`
+
 ```typescript
 export function createAction(
   event: ethereum.Event,
@@ -129,26 +139,29 @@ export function createAction(
   expiresAt: BigInt | null,
   executorAddresses: string[],
   targetAccountId: string
-): Action
+): Action;
 ```
 
 **Features:**
+
 - Creates Action and ActionExecutor entities
 - Establishes proper entity relationships
 - Handles multiple executor addresses
 - Validates input parameters
 - Implements proper error handling
 
-### `executeAction` 
+### `executeAction`
+
 ```typescript
 export function executeAction(
   event: ethereum.Event,
   actionId: string,
   executorAddress: string
-): Action | null
+): Action | null;
 ```
 
 **Features:**
+
 - Validates executor authorization
 - Checks timing constraints (not expired)
 - Prevents double execution
@@ -156,14 +169,16 @@ export function executeAction(
 - Proper error handling and logging
 
 ### `createActionExecutor`
+
 ```typescript
 export function createActionExecutor(
   executorId: string,
   accountIds: string[]
-): ActionExecutor
+): ActionExecutor;
 ```
 
 **Features:**
+
 - Creates or updates ActionExecutor entities
 - Manages account relationships
 - Handles multiple authorized accounts
@@ -172,12 +187,13 @@ export function createActionExecutor(
 ## Query Patterns
 
 ### Status-Based Queries
+
 ```graphql
 query PendingActions {
   actions(
-    where: { 
-      executed: false,
-      activeAt_lte: "current_timestamp",
+    where: {
+      executed: false
+      activeAt_lte: "current_timestamp"
       expiresAt_gt: "current_timestamp"
     }
   ) {
@@ -186,13 +202,20 @@ query PendingActions {
     type
     activeAt
     expiresAt
-    target { id }
-    executor { accounts { id } }
+    target {
+      id
+    }
+    executor {
+      accounts {
+        id
+      }
+    }
   }
 }
 ```
 
 ### Type-Based Queries
+
 ```graphql
 query AdminActions {
   actions(where: { type: "Admin" }) {
@@ -200,7 +223,9 @@ query AdminActions {
     name
     executed
     executedAt
-    executedBy { id }
+    executedBy {
+      id
+    }
   }
 }
 ```
@@ -208,6 +233,7 @@ query AdminActions {
 ## Testing Strategy
 
 ### Test Coverage
+
 - **Action Creation**: Validates proper entity creation and relationships
 - **Authorization**: Tests executor permission checking
 - **Timing Constraints**: Validates activeAt/expiresAt logic
@@ -215,6 +241,7 @@ query AdminActions {
 - **Query Patterns**: Validates GraphQL query efficiency
 
 ### Example Test Pattern
+
 ```typescript
 test("should create action with proper executor relationships", () => {
   const action = createAction(
@@ -227,21 +254,28 @@ test("should create action with proper executor relationships", () => {
     ["0x123", "0x456"],
     "target-account"
   );
-  
+
   assert.fieldEquals("Action", action.id, "name", "TestAction");
-  assert.fieldEquals("ActionExecutor", action.executor.id, "accounts", "[0x123, 0x456]");
+  assert.fieldEquals(
+    "ActionExecutor",
+    action.executor.id,
+    "accounts",
+    "[0x123, 0x456]"
+  );
 });
 ```
 
 ## Performance Considerations
 
 ### Indexing
+
 - **Action.type**: Indexed for efficient type-based queries
 - **Action.activeAt**: Indexed for time-based filtering
 - **Action.executed**: Indexed for status-based queries
 - **ActionExecutor.accounts**: Indexed for authorization checks
 
 ### Query Optimization
+
 - Use specific field selection in GraphQL queries
 - Implement proper pagination for large datasets
 - Leverage indexed fields for filtering
@@ -250,12 +284,14 @@ test("should create action with proper executor relationships", () => {
 ## Security Considerations
 
 ### Authorization
+
 - Validate executor addresses against ActionExecutor entities
 - Check timing constraints before execution
 - Prevent double execution with execution status checks
 - Maintain immutable audit trail
 
 ### Data Integrity
+
 - Validate all input parameters
 - Handle edge cases (null values, invalid timestamps)
 - Implement proper error logging
@@ -263,4 +299,5 @@ test("should create action with proper executor relationships", () => {
 
 ---
 
-_This documentation covers the actions system implementation in The Graph subgraph. For API integration details, see the ORPC documentation._
+_This documentation covers the actions system implementation in The Graph
+subgraph. For API integration details, see the ORPC documentation._
