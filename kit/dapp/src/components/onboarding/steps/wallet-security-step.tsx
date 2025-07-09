@@ -439,16 +439,6 @@ export function WalletSecurityStep({
           {/* PIN/OTP entry section title and description */}
           {!shouldShowEducationalContent && !shouldShowSuccess && (
             <div className="text-center mb-6">
-              <div className="flex items-center justify-center mb-4">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={handleBackToSecurityOptions}
-                  className="text-sm text-muted-foreground hover:text-foreground"
-                >
-                  ← Back to security options
-                </Button>
-              </div>
               <h3 className="text-lg font-semibold mb-2">
                 {selectedSecurityMethod === 'otp' 
                   ? "Set up an Authenticator app"
@@ -771,7 +761,16 @@ export function WalletSecurityStep({
       <div className="mt-8 pt-6 border-t border-border">
         <div className="flex justify-end gap-3">
           {!isFirstStep && (
-            <Button variant="outline" onClick={onPrevious} disabled={isPending}>
+            <Button 
+              variant="outline" 
+              onClick={
+                // If in setup mode, go back to security options instead of previous wizard step
+                !shouldShowEducationalContent && !shouldShowSuccess 
+                  ? handleBackToSecurityOptions 
+                  : onPrevious
+              } 
+              disabled={isPending}
+            >
               Previous
             </Button>
           )}
