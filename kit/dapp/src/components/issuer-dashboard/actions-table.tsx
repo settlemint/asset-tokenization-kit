@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { orpc } from "@/orpc";
-import type { TokenAction, ActionStatus } from "@/orpc/routes/token/routes/token.actions.schema";
+import type { ActionStatus, TokenAction } from "@/orpc/routes/token/routes/token.actions.schema";
 import { ActionStatusEnum } from "@/orpc/routes/token/routes/token.actions.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -123,14 +123,15 @@ function ActionStatusIndicator({ action }: { action: Action }) {
  */
 export function ActionsTable({ status, type }: ActionsTableProps) {
   const { t } = useTranslation("issuer-dashboard");
-  
-  // Fetch actions from the API
+
+  // Fetch actions from the API with a hard limit of 50
   const { data: tokenActions } = useSuspenseQuery(
     orpc.token.actions.queryOptions({
       input: {
         status,
         type,
-        limit: 1000, // Get all actions for now
+        offset: 0,
+        limit: 50,
       },
     })
   );
@@ -228,8 +229,9 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
     <DataTable
       columns={columnsCallback}
       data={filteredActions}
-      name="Actions"
+      name={`Actions-${status}-${type}`}
       customEmptyState={statusConfig[status]}
+      initialPageSize={10}
     />
   );
 }
