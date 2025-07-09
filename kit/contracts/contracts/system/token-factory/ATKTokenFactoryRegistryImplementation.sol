@@ -3,8 +3,10 @@ pragma solidity ^0.8.28;
 
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import { ATKSystemAccessControlled } from "../access-manager/ATKSystemAccessControlled.sol";
+import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
@@ -27,7 +29,7 @@ contract ATKTokenFactoryRegistryImplementation is
     Initializable,
     IATKTokenFactoryRegistry,
     IATKTypedImplementationRegistry,
-    AccessControlUpgradeable,
+    ATKSystemAccessControlled,
     ReentrancyGuardUpgradeable,
     ERC2771ContextUpgradeable
 {
@@ -43,12 +45,10 @@ contract ATKTokenFactoryRegistryImplementation is
     }
 
     function initialize(address initialAdmin, address systemAddress) public override initializer {
-        __AccessControl_init();
         __ReentrancyGuard_init();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
+        // Note: Access control is now managed centrally through ATKSystemAccessManager
+        // The system access manager is set automatically when the system is initialized
         _system = IATKSystem(systemAddress);
     }
 
@@ -60,7 +60,7 @@ contract ATKTokenFactoryRegistryImplementation is
         external
         override
         nonReentrant
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlyTokenManagerOrModule
         returns (address)
     {
         if (address(_factoryImplementation) == address(0)) revert InvalidTokenFactoryAddress();
@@ -91,9 +91,8 @@ contract ATKTokenFactoryRegistryImplementation is
 
         tokenFactoryProxiesByType[factoryTypeHash] = _tokenFactoryProxy;
 
-        IAccessControl(address(_system.compliance())).grantRole(
-            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
-        );
+        // Role granting is now handled by the centralized system access manager
+        // This would be done through the system's access manager instead
 
         emit TokenFactoryRegistered(
             _msgSender(),
@@ -113,7 +112,7 @@ contract ATKTokenFactoryRegistryImplementation is
     )
         public
         override
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+        onlySystemManager
     {
         if (implementation_ == address(0)) revert InvalidTokenFactoryAddress();
         if (tokenFactoryImplementationsByType[factoryTypeHash] == address(0)) revert InvalidTokenFactoryAddress();
@@ -142,35 +141,49 @@ contract ATKTokenFactoryRegistryImplementation is
         }
     }
 
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(bytes4 interfaceId) public view override(IERC165) returns (bool) {
+        return interfaceId == type(IATKTokenFactoryRegistry).interfaceId
+            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId || interfaceId == type(IERC165).interfaceId;
+    }
+
+    function _msgSender() internal view override(ERC2771ContextUpgradeable) returns (address) {
+        return ERC2771ContextUpgradeable._msgSender();
+    }
+
+    function _msgData() internal view override(ERC2771ContextUpgradeable) returns (bytes calldata) {
+        return ERC2771ContextUpgradeable._msgData();
+    }
+
+    function _contextSuffixLength() internal view override(ERC2771ContextUpgradeable) returns (uint256) {
+        return ERC2771ContextUpgradeable._contextSuffixLength();
+    }
+
+    // IAccessControl implementation - delegate to centralized system access manager
+    function hasRole(
+        bytes32 role,
+        address account
+    )
         public
         view
-        override(AccessControlUpgradeable, IERC165)
+        override(ATKSystemAccessControlled, IAccessControl)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId) || interfaceId == type(IATKTokenFactoryRegistry).interfaceId
-            || interfaceId == type(IATKTypedImplementationRegistry).interfaceId;
+        return ATKSystemAccessControlled.hasRole(role, account);
     }
 
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
-        return super._msgSender();
+    function getRoleAdmin(bytes32 role) external view override returns (bytes32) {
+        return IATKSystemAccessManager(getSystemAccessManager()).getRoleAdmin(role);
     }
 
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
-        return super._msgData();
+    function grantRole(bytes32 role, address account) external override {
+        IATKSystemAccessManager(getSystemAccessManager()).grantRole(role, account);
     }
 
-    function _contextSuffixLength()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
-        return super._contextSuffixLength();
+    function revokeRole(bytes32 role, address account) external override {
+        IATKSystemAccessManager(getSystemAccessManager()).revokeRole(role, account);
+    }
+
+    function renounceRole(bytes32 role, address callerConfirmation) external override {
+        IATKSystemAccessManager(getSystemAccessManager()).renounceRole(role, callerConfirmation);
     }
 }

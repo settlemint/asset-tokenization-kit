@@ -20,6 +20,7 @@ import { ISMART } from "../../smart/interface/ISMART.sol";
 // System imports
 import { InvalidSystemAddress } from "../ATKSystemErrors.sol"; // Assuming this is correctly placed
 import { IATKSystem } from "../IATKSystem.sol";
+import { ATKSystemAccessControlled } from "../access-manager/ATKSystemAccessControlled.sol";
 
 // Implementation imports
 import { ATKIdentityProxy } from "./identities/ATKIdentityProxy.sol";
@@ -35,11 +36,14 @@ import { ATKTokenIdentityProxy } from "./identities/ATKTokenIdentityProxy.sol";
 ///      whose addresses are provided by the central `IATKSystem` contract, enabling upgradeability of the identity
 /// logic.
 ///      The factory is `ERC2771ContextUpgradeable` for meta-transaction support.
+///      Access control is managed centrally through `ATKSystemAccessControlled`, requiring `IDENTITY_MANAGER_ROLE`
+///      for identity creation operations.
 ///      The identities created are based on the ERC725 (OnchainID) standard, managed via ERC734 for key management.
 contract ATKIdentityFactoryImplementation is
     Initializable,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
+    ATKSystemAccessControlled,
     IATKIdentityFactory
 {
     // --- Constants ---
@@ -76,9 +80,7 @@ contract ATKIdentityFactoryImplementation is
     mapping(address token => address identityProxy) private _tokenIdentities;
 
     // --- Errors ---
-    /// @notice Indicates that an operation was attempted with the zero address (address(0))
-    ///         where a valid, non-zero address was expected (e.g., for a wallet or token owner).
-    error ZeroAddressNotAllowed();
+
     /// @notice Indicates that a deterministic deployment (CREATE2) was attempted with a salt that has already been
     /// used.
     /// @param salt The string representation of the salt that was already taken.
@@ -129,14 +131,19 @@ contract ATKIdentityFactoryImplementation is
     /// @dev Sets up essential state for the factory:
     /// 1. Validates that `systemAddress` is not the zero address.
     /// 2. Initializes ERC165 for interface detection.
-    /// 3. Stores the `systemAddress` which provides identity logic implementations.
+    /// 3. Sets up the system access manager for centralized access control.
+    /// 4. Stores the `systemAddress` which provides identity logic implementations.
     /// @param systemAddress The address of the central `IATKSystem` contract. This contract is crucial as it dictates
     ///                      which identity logic implementation contracts the new identity proxies will point to.
+    /// @param systemAccessManager The address of the centralized access control manager.
     /// @dev The `initializer` modifier ensures this function can only be called once.
-    function initialize(address systemAddress) public virtual initializer {
+    function initialize(address systemAddress, address systemAccessManager) public virtual initializer {
         if (systemAddress == address(0)) revert InvalidSystemAddress();
 
         __ERC165_init_unchained();
+
+        // Set up centralized access control
+        _setSystemAccessManager(systemAccessManager);
 
         if (
             !IERC165(IATKSystem(systemAddress).identityImplementation()).supportsInterface(
@@ -170,6 +177,7 @@ contract ATKIdentityFactoryImplementation is
     ///    It ensures a management key is not the wallet itself (which is already a manager).
     /// 4. Stores the mapping from the `_wallet` address to the new `identity` contract address.
     /// 5. Emits an `IdentityCreated` event.
+    /// @dev Requires `IDENTITY_MANAGER_ROLE` for access control through centralized system access manager.
     /// @param _wallet The investor wallet address for which the identity is being created. This address will also be
     /// set as an initial manager of the identity.
     /// @param _managementKeys An array of `bytes32` values representing additional management keys (keccak256 hashes of
@@ -183,6 +191,7 @@ contract ATKIdentityFactoryImplementation is
         external
         virtual
         override
+        onlyIdentityManagerOrModule
         returns (
             address // Solidity style guide prefers no name for return in implementation if clear from Natspec
         )
@@ -223,11 +232,21 @@ contract ATKIdentityFactoryImplementation is
     ///    The `_tokenOwner` is passed as the `_initialManager` to the proxy constructor.
     /// 3. Stores the mapping from the `_token` address to the new `identity` contract address.
     /// 4. Emits a `TokenIdentityCreated` event.
+    /// @dev Requires `IDENTITY_MANAGER_ROLE` for access control through centralized system access manager.
     /// @param _token The address of the token contract for which the identity is being created.
     /// @param _accessManager The address of the access manager contract that will be set as the initial owner/manager
     /// of the token's identity.
     /// @return address The address of the newly created and registered `ATKTokenIdentityProxy` contract.
-    function createTokenIdentity(address _token, address _accessManager) external virtual override returns (address) {
+    function createTokenIdentity(
+        address _token,
+        address _accessManager
+    )
+        external
+        virtual
+        override
+        onlyIdentityManagerOrModule
+        returns (address)
+    {
         if (_token == address(0)) revert ZeroAddressNotAllowed();
         if (_accessManager == address(0)) revert ZeroAddressNotAllowed();
         if (_tokenIdentities[_token] != address(0)) revert TokenAlreadyLinked(_token);

@@ -134,6 +134,19 @@ const ATKOnboardingSystemModule = buildModule(
       { id: "systemAddonRegistry" }
     );
 
+    const systemAccessManagerAddress = m.readEventArgument(
+      bootstrap,
+      "Bootstrapped",
+      "systemAccessManagerProxy",
+      { id: "systemAccessManagerAddress" }
+    );
+
+    const systemAccessManager = m.contractAt(
+      "IATKSystemAccessManager",
+      systemAccessManagerAddress,
+      { id: "systemAccessManager" }
+    );
+
     return {
       system,
       compliance,
@@ -145,6 +158,7 @@ const ATKOnboardingSystemModule = buildModule(
       tokenFactoryRegistry,
       complianceModuleRegistry,
       systemAddonRegistry,
+      systemAccessManager,
     };
   }
 );

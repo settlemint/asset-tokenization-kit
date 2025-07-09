@@ -18,10 +18,33 @@ import {
     ComplianceModuleRegistryImplementationNotSet,
     AddonRegistryImplementationNotSet,
     TokenFactoryRegistryImplementationNotSet,
-    InvalidSystemImplementation
+    InvalidSystemImplementation,
+    SystemAccessManagerImplementationNotSet
 } from "./ATKSystemErrors.sol";
 import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+
+// --- Structs ---
+
+/// @notice Struct containing all implementation addresses for ATKSystem deployment
+/// @dev Used to avoid stack too deep errors in constructor
+struct ATKSystemImplementations {
+    address atkSystemImplementation;
+    address complianceImplementation;
+    address identityRegistryImplementation;
+    address identityRegistryStorageImplementation;
+    address trustedIssuersRegistryImplementation;
+    address topicSchemeRegistryImplementation;
+    address identityFactoryImplementation;
+    address identityImplementation;
+    address tokenIdentityImplementation;
+    address tokenAccessManagerImplementation;
+    address identityVerificationModule;
+    address tokenFactoryRegistryImplementation;
+    address complianceModuleRegistryImplementation;
+    address addonRegistryImplementation;
+    address systemAccessManagerImplementation;
+}
 
 // --- Contract Definition ---
 
@@ -96,6 +119,10 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial token factory
     /// registry implementation.
     address public immutable defaultTokenFactoryRegistryImplementation;
+    /// @notice The default contract address for the system access manager module's logic.
+    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial system access
+    /// manager implementation.
+    address public immutable defaultSystemAccessManagerImplementation;
 
     /// @notice An array storing the addresses of all `ATKSystem` instances that have been created by this factory.
     /// @dev This allows for easy tracking and retrieval of deployed systems.
@@ -110,81 +137,72 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// It performs crucial checks to ensure that none of the provided implementation addresses are the zero address, as
     /// these are
     /// essential for the proper functioning of the `ATKSystem` instances that will be created.
-    /// @param atkSystemImplementation_ The address of the ATKSystem implementation contract.
-    /// @param complianceImplementation_ The default address for the compliance module's logic contract.
-    /// @param identityRegistryImplementation_ The default address for the identity registry module's logic contract.
-    /// @param identityRegistryStorageImplementation_ The default address for the identity registry storage module's
-    /// logic contract.
-    /// @param trustedIssuersRegistryImplementation_ The default address for the trusted issuers registry module's logic
-    /// contract.
-    /// @param topicSchemeRegistryImplementation_ The default address for the topic scheme registry module's logic
-    /// contract.
-    /// @param identityFactoryImplementation_ The default address for the identity factory module's logic contract.
-    /// @param identityImplementation_ The default address for the standard identity contract's logic (template).
-    /// @param tokenIdentityImplementation_ The default address for the token identity contract's logic (template).
-    /// @param tokenAccessManagerImplementation_ The default address for the token access manager contract's logic
-    /// (template).
-    /// @param identityVerificationModule_ The default address for the identity verification module's
-    /// logic contract.
-    /// @param tokenFactoryRegistryImplementation_ The default address for the token factory registry module's logic
-    /// contract.
-    /// @param complianceModuleRegistryImplementation_ The default address for the compliance module registry module's
-    /// logic contract.
-    /// @param addonRegistryImplementation_ The default address for the addon registry module's logic contract.
+    /// @param atkSystemImplementations_ Struct containing all implementation addresses for ATKSystem deployment
     /// @param forwarder_ The address of the trusted forwarder contract to be used for meta-transactions (ERC2771).
     constructor(
-        address atkSystemImplementation_,
-        address complianceImplementation_,
-        address identityRegistryImplementation_,
-        address identityRegistryStorageImplementation_,
-        address trustedIssuersRegistryImplementation_,
-        address topicSchemeRegistryImplementation_,
-        address identityFactoryImplementation_,
-        address identityImplementation_,
-        address tokenIdentityImplementation_,
-        address tokenAccessManagerImplementation_,
-        address identityVerificationModule_,
-        address tokenFactoryRegistryImplementation_,
-        address complianceModuleRegistryImplementation_,
-        address addonRegistryImplementation_,
+        ATKSystemImplementations memory atkSystemImplementations_,
         address forwarder_
     )
         ERC2771Context(forwarder_) // Initializes ERC2771 support with the provided forwarder address.
     {
         // Perform critical checks: ensure no implementation address is the zero address.
         // Reverting here prevents deploying a factory that would create non-functional ATKSystem instances.
-        if (atkSystemImplementation_ == address(0)) revert InvalidSystemImplementation();
-        if (complianceImplementation_ == address(0)) revert ComplianceImplementationNotSet();
-        if (identityRegistryImplementation_ == address(0)) revert IdentityRegistryImplementationNotSet();
-        if (identityRegistryStorageImplementation_ == address(0)) revert IdentityRegistryStorageImplementationNotSet();
-        if (trustedIssuersRegistryImplementation_ == address(0)) revert TrustedIssuersRegistryImplementationNotSet();
-        if (topicSchemeRegistryImplementation_ == address(0)) revert TopicSchemeRegistryImplementationNotSet();
-        if (identityFactoryImplementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
-        if (identityImplementation_ == address(0)) revert IdentityImplementationNotSet();
-        if (tokenIdentityImplementation_ == address(0)) revert TokenIdentityImplementationNotSet();
-        if (tokenAccessManagerImplementation_ == address(0)) revert TokenAccessManagerImplementationNotSet();
-        if (identityVerificationModule_ == address(0)) revert IdentityVerificationModuleNotSet();
-        if (tokenFactoryRegistryImplementation_ == address(0)) revert TokenFactoryRegistryImplementationNotSet();
-        if (complianceModuleRegistryImplementation_ == address(0)) {
+        if (atkSystemImplementations_.atkSystemImplementation == address(0)) revert InvalidSystemImplementation();
+        if (atkSystemImplementations_.complianceImplementation == address(0)) revert ComplianceImplementationNotSet();
+        if (atkSystemImplementations_.identityRegistryImplementation == address(0)) {
+            revert IdentityRegistryImplementationNotSet();
+        }
+        if (atkSystemImplementations_.identityRegistryStorageImplementation == address(0)) {
+            revert IdentityRegistryStorageImplementationNotSet();
+        }
+        if (atkSystemImplementations_.trustedIssuersRegistryImplementation == address(0)) {
+            revert TrustedIssuersRegistryImplementationNotSet();
+        }
+        if (atkSystemImplementations_.topicSchemeRegistryImplementation == address(0)) {
+            revert TopicSchemeRegistryImplementationNotSet();
+        }
+        if (atkSystemImplementations_.identityFactoryImplementation == address(0)) {
+            revert IdentityFactoryImplementationNotSet();
+        }
+        if (atkSystemImplementations_.identityImplementation == address(0)) revert IdentityImplementationNotSet();
+        if (atkSystemImplementations_.tokenIdentityImplementation == address(0)) {
+            revert TokenIdentityImplementationNotSet();
+        }
+        if (atkSystemImplementations_.tokenAccessManagerImplementation == address(0)) {
+            revert TokenAccessManagerImplementationNotSet();
+        }
+        if (atkSystemImplementations_.identityVerificationModule == address(0)) {
+            revert IdentityVerificationModuleNotSet();
+        }
+        if (atkSystemImplementations_.tokenFactoryRegistryImplementation == address(0)) {
+            revert TokenFactoryRegistryImplementationNotSet();
+        }
+        if (atkSystemImplementations_.complianceModuleRegistryImplementation == address(0)) {
             revert ComplianceModuleRegistryImplementationNotSet();
         }
-        if (addonRegistryImplementation_ == address(0)) revert AddonRegistryImplementationNotSet();
+        if (atkSystemImplementations_.addonRegistryImplementation == address(0)) {
+            revert AddonRegistryImplementationNotSet();
+        }
+        if (atkSystemImplementations_.systemAccessManagerImplementation == address(0)) {
+            revert SystemAccessManagerImplementationNotSet();
+        }
 
         // Set the immutable state variables with the provided addresses.
-        atkSystemImplementation = atkSystemImplementation_;
-        defaultComplianceImplementation = complianceImplementation_;
-        defaultIdentityRegistryImplementation = identityRegistryImplementation_;
-        defaultIdentityRegistryStorageImplementation = identityRegistryStorageImplementation_;
-        defaultTrustedIssuersRegistryImplementation = trustedIssuersRegistryImplementation_;
-        defaultTopicSchemeRegistryImplementation = topicSchemeRegistryImplementation_;
-        defaultIdentityFactoryImplementation = identityFactoryImplementation_;
-        defaultIdentityImplementation = identityImplementation_;
-        defaultTokenIdentityImplementation = tokenIdentityImplementation_;
-        defaultTokenAccessManagerImplementation = tokenAccessManagerImplementation_;
-        defaultIdentityVerificationModule = identityVerificationModule_;
-        defaultTokenFactoryRegistryImplementation = tokenFactoryRegistryImplementation_;
-        defaultComplianceModuleRegistryImplementation = complianceModuleRegistryImplementation_;
-        defaultAddonRegistryImplementation = addonRegistryImplementation_;
+        atkSystemImplementation = atkSystemImplementations_.atkSystemImplementation;
+        defaultComplianceImplementation = atkSystemImplementations_.complianceImplementation;
+        defaultIdentityRegistryImplementation = atkSystemImplementations_.identityRegistryImplementation;
+        defaultIdentityRegistryStorageImplementation = atkSystemImplementations_.identityRegistryStorageImplementation;
+        defaultTrustedIssuersRegistryImplementation = atkSystemImplementations_.trustedIssuersRegistryImplementation;
+        defaultTopicSchemeRegistryImplementation = atkSystemImplementations_.topicSchemeRegistryImplementation;
+        defaultIdentityFactoryImplementation = atkSystemImplementations_.identityFactoryImplementation;
+        defaultIdentityImplementation = atkSystemImplementations_.identityImplementation;
+        defaultTokenIdentityImplementation = atkSystemImplementations_.tokenIdentityImplementation;
+        defaultTokenAccessManagerImplementation = atkSystemImplementations_.tokenAccessManagerImplementation;
+        defaultIdentityVerificationModule = atkSystemImplementations_.identityVerificationModule;
+        defaultTokenFactoryRegistryImplementation = atkSystemImplementations_.tokenFactoryRegistryImplementation;
+        defaultComplianceModuleRegistryImplementation = atkSystemImplementations_.complianceModuleRegistryImplementation;
+        defaultAddonRegistryImplementation = atkSystemImplementations_.addonRegistryImplementation;
+        defaultSystemAccessManagerImplementation = atkSystemImplementations_.systemAccessManagerImplementation;
 
         factoryForwarder = forwarder_; // Store the forwarder address for use by this factory and new systems.
     }
@@ -223,7 +241,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
             defaultIdentityVerificationModule,
             defaultTokenFactoryRegistryImplementation,
             defaultComplianceModuleRegistryImplementation,
-            defaultAddonRegistryImplementation
+            defaultAddonRegistryImplementation,
+            defaultSystemAccessManagerImplementation
         );
 
         ERC1967Proxy proxy = new ERC1967Proxy(atkSystemImplementation, callData);

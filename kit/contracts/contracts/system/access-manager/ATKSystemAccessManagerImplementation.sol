@@ -10,6 +10,7 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 
 // Local imports
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+import { IATKSystemAccessManager } from "./IATKSystemAccessManager.sol";
 
 /// @title Centralized Access Control Manager for ATK System (Upgradeable)
 /// @notice This contract provides centralized access control for the entire ATK system,
@@ -191,8 +192,8 @@ contract ATKSystemAccessManagerImplementation is Initializable, AccessControlUpg
     /// @notice Checks if an account has any of the specified roles
     /// @param account The address to check
     /// @param roles The roles to check for
-    /// @return hasAnyRole True if the account has any of the specified roles
-    function hasAnyRole(address account, bytes32[] calldata roles) external view returns (bool hasAnyRole) {
+    /// @return result True if the account has any of the specified roles
+    function hasAnyRole(address account, bytes32[] calldata roles) external view returns (bool result) {
         for (uint256 i = 0; i < roles.length; i++) {
             if (hasRole(roles[i], account)) {
                 return true;
@@ -204,8 +205,8 @@ contract ATKSystemAccessManagerImplementation is Initializable, AccessControlUpg
     /// @notice Checks if an account has all of the specified roles
     /// @param account The address to check
     /// @param roles The roles to check for
-    /// @return hasAllRoles True if the account has all of the specified roles
-    function hasAllRoles(address account, bytes32[] calldata roles) external view returns (bool hasAllRoles) {
+    /// @return result True if the account has all of the specified roles
+    function hasAllRoles(address account, bytes32[] calldata roles) external view returns (bool result) {
         for (uint256 i = 0; i < roles.length; i++) {
             if (!hasRole(roles[i], account)) {
                 return false;
@@ -319,6 +320,6 @@ contract ATKSystemAccessManagerImplementation is Initializable, AccessControlUpg
         override(AccessControlUpgradeable)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKSystemAccessManager).interfaceId || super.supportsInterface(interfaceId);
     }
 }

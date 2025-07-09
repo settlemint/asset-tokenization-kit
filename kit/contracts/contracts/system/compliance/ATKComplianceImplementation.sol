@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import { ATKSystemAccessControlled } from "../access-manager/ATKSystemAccessControlled.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
@@ -35,7 +35,8 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 contract ATKComplianceImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
+    ERC165Upgradeable,
+    ATKSystemAccessControlled,
     IATKCompliance
 {
     // --- Storage ---
@@ -63,11 +64,13 @@ contract ATKComplianceImplementation is
     // --- Initializer ---
     /// @notice Initializes the compliance contract after it has been deployed (typically via a proxy).
     /// @dev This function is called once to set up the initial state of the contract. It initializes
-    /// the ERC165 interface detection capability and sets up AccessControl with the deployer as the default admin.
+    /// the ERC165 interface detection capability. Access control is now managed centrally through
+    /// the ATKSystemAccessManager - roles are granted there instead of locally.
     /// For upgradeable contracts, initializers replace constructors for setup logic.
     /// The `initializer` modifier ensures this function can only be called once.
-    /// @param initialAdmin The address of the initial admin.
-    /// @param initialBypassListManagerAdmins The addresses of the initial bypass list manager admins.
+    /// @param initialAdmin The address of the initial admin (unused, kept for interface compatibility).
+    /// @param initialBypassListManagerAdmins The addresses of the initial bypass list manager admins (unused, kept for
+    /// interface compatibility).
     function initialize(
         address initialAdmin,
         address[] memory initialBypassListManagerAdmins
@@ -77,16 +80,9 @@ contract ATKComplianceImplementation is
         initializer
     {
         __ERC165_init_unchained(); // Initializes ERC165 announcing which interfaces this contract supports
-        __AccessControl_init_unchained(); // Initializes AccessControl with msg.sender as default admin
-
-        _setRoleAdmin(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, ATKSystemRoles.BYPASS_LIST_MANAGER_ADMIN_ROLE);
-
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-
-        for (uint256 i = 0; i < initialBypassListManagerAdmins.length; i++) {
-            _grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, initialBypassListManagerAdmins[i]);
-            _grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ADMIN_ROLE, initialBypassListManagerAdmins[i]);
-        }
+            // Note: Access control is now managed centrally through ATKSystemAccessManager
+            // Roles are granted there instead of locally in this contract
+            // Parameters are kept for interface compatibility but not used
     }
 
     // --- Bypass List Management Functions ---
@@ -95,7 +91,7 @@ contract ATKComplianceImplementation is
     /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
     /// Bypassed addresses can bypass compliance checks in canTransfer function.
     /// @param account The address to add to the bypass list
-    function addToBypassList(address account) external onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE) {
+    function addToBypassList(address account) external onlyBypassListManager {
         if (account == address(0)) revert ZeroAddressNotAllowed();
         if (_bypassedAddresses[account]) revert AddressAlreadyOnBypassList(account);
 
@@ -106,7 +102,7 @@ contract ATKComplianceImplementation is
     /// @notice Removes an address from the compliance bypass list
     /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
     /// @param account The address to remove from the bypass list
-    function removeFromBypassList(address account) external onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE) {
+    function removeFromBypassList(address account) external onlyBypassListManager {
         if (!_bypassedAddresses[account]) revert AddressNotOnBypassList(account);
 
         _bypassedAddresses[account] = false;
@@ -117,10 +113,7 @@ contract ATKComplianceImplementation is
     /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
     /// This is a gas-efficient way to add multiple addresses to the bypass list at once.
     /// @param accounts Array of addresses to add to the bypass list
-    function addMultipleToBypassList(address[] calldata accounts)
-        external
-        onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE)
-    {
+    function addMultipleToBypassList(address[] calldata accounts) external onlyBypassListManager {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
             address account = accounts[i];
@@ -139,10 +132,7 @@ contract ATKComplianceImplementation is
     /// @notice Removes multiple addresses from the compliance bypass list in a single transaction
     /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
     /// @param accounts Array of addresses to remove from the bypass list
-    function removeMultipleFromBypassList(address[] calldata accounts)
-        external
-        onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE)
-    {
+    function removeMultipleFromBypassList(address[] calldata accounts) external onlyBypassListManager {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
             address account = accounts[i];
@@ -375,7 +365,7 @@ contract ATKComplianceImplementation is
         public
         view
         virtual
-        override(AccessControlUpgradeable, IERC165)
+        override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
         return interfaceId == type(ISMARTCompliance).interfaceId || interfaceId == type(IATKCompliance).interfaceId
@@ -386,13 +376,7 @@ contract ATKComplianceImplementation is
     /// @dev This ensures that when using a trusted forwarder, the original sender is returned
     /// rather than the forwarder's address. This is crucial for access control functions.
     /// @return sender The address of the original sender of the transaction
-    function _msgSender()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (address sender)
-    {
+    function _msgSender() internal view virtual override(ERC2771ContextUpgradeable) returns (address sender) {
         return ERC2771ContextUpgradeable._msgSender();
     }
 
@@ -400,23 +384,11 @@ contract ATKComplianceImplementation is
     /// @dev This ensures that when using a trusted forwarder, the original calldata is returned
     /// rather than the forwarder's modified calldata.
     /// @return The original calldata of the transaction
-    function _msgData()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
+    function _msgData() internal view virtual override(ERC2771ContextUpgradeable) returns (bytes calldata) {
         return ERC2771ContextUpgradeable._msgData();
     }
 
-    function _contextSuffixLength()
-        internal
-        view
-        virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
+    function _contextSuffixLength() internal view virtual override(ERC2771ContextUpgradeable) returns (uint256) {
         return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 }

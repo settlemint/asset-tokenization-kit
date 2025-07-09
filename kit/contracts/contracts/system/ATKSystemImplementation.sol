@@ -7,7 +7,6 @@ import {
     ERC2771ContextUpgradeable,
     ContextUpgradeable
 } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
@@ -15,6 +14,7 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
 import { IATKSystem } from "./IATKSystem.sol";
+import { ATKSystemAccessControlled } from "./access-manager/ATKSystemAccessControlled.sol";
 import {
     SystemAddonImplementationNotSet,
     SystemAddonTypeAlreadyRegistered,
@@ -38,7 +38,8 @@ import {
     TrustedIssuersRegistryImplementationNotSet,
     ComplianceModuleRegistryImplementationNotSet,
     AddonRegistryImplementationNotSet,
-    TokenFactoryRegistryImplementationNotSet
+    TokenFactoryRegistryImplementationNotSet,
+    SystemAccessManagerImplementationNotSet
 } from "./ATKSystemErrors.sol";
 import { ATKTypedImplementationProxy } from "./ATKTypedImplementationProxy.sol";
 
@@ -64,6 +65,10 @@ import { IATKTopicSchemeRegistry } from "./topic-scheme-registry/IATKTopicScheme
 import { IATKCompliance } from "./compliance/IATKCompliance.sol";
 import { IATKIdentityRegistryStorage } from "./identity-registry-storage/IATKIdentityRegistryStorage.sol";
 import { IATKSystemAddonRegistry } from "./addons/IATKSystemAddonRegistry.sol";
+import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
+import { ATKSystemAccessManagerProxy } from "./access-manager/ATKSystemAccessManagerProxy.sol";
+import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystemAccessManagerImplementation.sol";
+import { ATKSystemAccessControlled } from "./access-manager/ATKSystemAccessControlled.sol";
 
 /// @title ATKSystem Contract
 /// @author SettleMint Tokenization Services
@@ -87,7 +92,7 @@ contract ATKSystemImplementation is
     IATKTypedImplementationRegistry,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
+    ATKSystemAccessControlled,
     ReentrancyGuardUpgradeable,
     UUPSUpgradeable
 {
@@ -104,6 +109,7 @@ contract ATKSystemImplementation is
     bytes32 internal constant COMPLIANCE_MODULE_REGISTRY = keccak256("COMPLIANCE_MODULE_REGISTRY");
     bytes32 internal constant ADDON_REGISTRY = keccak256("ADDON_REGISTRY");
     bytes32 internal constant TOKEN_FACTORY_REGISTRY = keccak256("TOKEN_FACTORY_REGISTRY");
+    bytes32 internal constant SYSTEM_ACCESS_MANAGER = keccak256("SYSTEM_ACCESS_MANAGER");
 
     // Expected interface IDs used for validating implementation contracts.
     // These are unique identifiers for Solidity interfaces, ensuring that a contract claiming to be, for example,
@@ -122,6 +128,7 @@ contract ATKSystemImplementation is
     bytes4 private constant _ADDON_REGISTRY_ID = type(IATKSystemAddonRegistry).interfaceId;
     bytes4 private constant _TOKEN_FACTORY_REGISTRY_ID = type(IATKTokenFactoryRegistry).interfaceId;
     bytes4 private constant _IIDENTITY_ID = type(IIdentity).interfaceId;
+    bytes4 private constant _SYSTEM_ACCESS_MANAGER_ID = type(IATKSystemAccessManager).interfaceId;
 
     // --- State Variables ---
     // State variables store data persistently on the blockchain.
@@ -166,6 +173,20 @@ contract ATKSystemImplementation is
 
     /// @dev Stores the address of the token factory registry proxy contract.
     address private _tokenFactoryRegistryProxy;
+
+    /// @dev Stores the address of the system access manager proxy contract.
+    address private _systemAccessManagerProxy;
+
+    /// @dev Stores the initial admin address for bootstrap access control.
+    address private _initialAdmin;
+
+    /// @notice Modifier to check if the caller is the initial admin (for bootstrap)
+    modifier onlyInitialAdmin() {
+        if (_msgSender() != _initialAdmin) {
+            revert("Not initial admin");
+        }
+        _;
+    }
 
     // --- Internal Helper for Interface Check ---
     /// @dev Internal helper function to check if a given contract address (`implAddress`)
@@ -225,6 +246,8 @@ contract ATKSystemImplementation is
     /// @param complianceModuleRegistryImplementation_ The initial address of the compliance module registry module's
     /// logic contract.
     /// @param addonRegistryImplementation_ The initial address of the addon registry module's logic contract.
+    /// @param systemAccessManagerImplementation_ The initial address of the system access manager module's logic
+    /// contract.
     function initialize(
         address initialAdmin_,
         address complianceImplementation_,
@@ -239,20 +262,20 @@ contract ATKSystemImplementation is
         address identityVerificationModule_,
         address tokenFactoryRegistryImplementation_,
         address complianceModuleRegistryImplementation_,
-        address addonRegistryImplementation_
+        address addonRegistryImplementation_,
+        address systemAccessManagerImplementation_
     )
         public
         initializer
     {
-        __AccessControl_init();
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
 
-        // Grant the DEFAULT_ADMIN_ROLE to the initial administrator address.
-        // This role typically has permissions to call sensitive functions like setting implementation addresses.
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin_);
-        _grantRole(ATKSystemRoles.DEPLOYER_ROLE, initialAdmin_);
-        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin_);
+        // Store the initial admin for bootstrap access control
+        _initialAdmin = initialAdmin_;
+
+        // Note: System access manager will be set after bootstrap when the proxy is deployed
+        // Initial roles will be granted through the centralized access manager
 
         // Validate and set the compliance implementation address.
         if (complianceImplementation_ == address(0)) revert ComplianceImplementationNotSet();
@@ -345,12 +368,18 @@ contract ATKSystemImplementation is
             // ISMARTTokenFactoryRegistry
         _implementations[TOKEN_FACTORY_REGISTRY] = tokenFactoryRegistryImplementation_;
         emit TokenFactoryRegistryImplementationUpdated(initialAdmin_, tokenFactoryRegistryImplementation_);
+
+        // Validate and set the system access manager implementation address.
+        if (systemAccessManagerImplementation_ == address(0)) revert SystemAccessManagerImplementationNotSet();
+        _checkInterface(systemAccessManagerImplementation_, _SYSTEM_ACCESS_MANAGER_ID);
+        _implementations[SYSTEM_ACCESS_MANAGER] = systemAccessManagerImplementation_;
+        emit SystemAccessManagerImplementationUpdated(initialAdmin_, systemAccessManagerImplementation_);
     }
 
     /// @dev Authorizes an upgrade to a new implementation contract.
     /// The UUPS upgrade mechanism is used.
     /// Only the `DEFAULT_ADMIN_ROLE` can authorize an upgrade.
-    function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) { }
+    function _authorizeUpgrade(address newImplementation) internal override onlyDefaultAdmin { }
 
     // --- Bootstrap Function ---
     /// @notice Deploys and initializes the proxy contracts for all core ATK modules.
@@ -367,7 +396,7 @@ contract ATKSystemImplementation is
     /// Reverts if any required implementation address (for compliance, identity registry, storage, trusted issuers,
     /// factory)
     /// is not set (i.e., is the zero address) before calling this function.
-    function bootstrap() external nonReentrant onlyRole(ATKSystemRoles.DEPLOYER_ROLE) {
+    function bootstrap() external nonReentrant onlyInitialAdmin {
         // Check if system is already bootstrapped.
         if (_bootstrapped) {
             revert SystemAlreadyBootstrapped();
@@ -390,6 +419,7 @@ contract ATKSystemImplementation is
         }
         if (_implementations[ADDON_REGISTRY] == address(0)) revert AddonRegistryImplementationNotSet();
         if (_implementations[TOKEN_FACTORY_REGISTRY] == address(0)) revert TokenFactoryRegistryImplementationNotSet();
+        if (_implementations[SYSTEM_ACCESS_MANAGER] == address(0)) revert SystemAccessManagerImplementationNotSet();
 
         // The caller of this bootstrap function (who must be an admin) will also be set as the initial admin
         // for some of the newly deployed proxy contracts where applicable.
@@ -468,9 +498,16 @@ contract ATKSystemImplementation is
         address localIdentityRegistryProxy =
             address(new ATKTypedImplementationProxy(address(this), IDENTITY_REGISTRY, identityRegistryData));
 
+        // Deploy the ATKSystemAccessManagerProxy first, as other components need it
+        bytes memory systemAccessManagerData =
+            abi.encodeWithSelector(ATKSystemAccessManagerImplementation.initialize.selector, initialAdmin);
+        address localSystemAccessManagerProxy =
+            address(new ATKSystemAccessManagerProxy(_implementations[SYSTEM_ACCESS_MANAGER], systemAccessManagerData));
+
         // Deploy the ATKIdentityFactoryProxy, linking it to this ATKSystem and setting an initial admin.
-        bytes memory identityFactoryData =
-            abi.encodeWithSelector(IATKIdentityFactory.initialize.selector, address(this));
+        bytes memory identityFactoryData = abi.encodeWithSelector(
+            IATKIdentityFactory.initialize.selector, address(this), localSystemAccessManagerProxy
+        );
         address localIdentityFactoryProxy =
             address(new ATKTypedImplementationProxy(address(this), IDENTITY_FACTORY, identityFactoryData));
 
@@ -485,6 +522,27 @@ contract ATKSystemImplementation is
         _complianceModuleRegistryProxy = localComplianceModuleRegistryProxy;
         _tokenFactoryRegistryProxy = localTokenFactoryRegistryProxy;
         _addonRegistryProxy = localAddonRegistryProxy;
+        _systemAccessManagerProxy = localSystemAccessManagerProxy;
+
+        // Set the system access manager for centralized access control
+        _setSystemAccessManager(localSystemAccessManagerProxy);
+
+        // Set the system access manager for all components that need centralized access control
+        ATKSystemAccessControlled(localComplianceProxy).setSystemAccessManager(localSystemAccessManagerProxy);
+        ATKSystemAccessControlled(localIdentityRegistryProxy).setSystemAccessManager(localSystemAccessManagerProxy);
+        ATKSystemAccessControlled(localIdentityRegistryStorageProxy).setSystemAccessManager(
+            localSystemAccessManagerProxy
+        );
+        ATKSystemAccessControlled(localTrustedIssuersRegistryProxy).setSystemAccessManager(
+            localSystemAccessManagerProxy
+        );
+        ATKSystemAccessControlled(localTopicSchemeRegistryProxy).setSystemAccessManager(localSystemAccessManagerProxy);
+        ATKSystemAccessControlled(localIdentityFactoryProxy).setSystemAccessManager(localSystemAccessManagerProxy);
+        ATKSystemAccessControlled(localComplianceModuleRegistryProxy).setSystemAccessManager(
+            localSystemAccessManagerProxy
+        );
+        ATKSystemAccessControlled(localTokenFactoryRegistryProxy).setSystemAccessManager(localSystemAccessManagerProxy);
+        ATKSystemAccessControlled(localAddonRegistryProxy).setSystemAccessManager(localSystemAccessManagerProxy);
 
         // --- Interactions (Part 2: Call methods on newly created proxies to link them) ---
         // After all proxy state variables are set, perform any necessary interactions between the new proxies.
@@ -524,7 +582,8 @@ contract ATKSystemImplementation is
             _tokenFactoryRegistryProxy,
             _addonRegistryProxy,
             _complianceModuleRegistryProxy,
-            _identityVerificationModule
+            _identityVerificationModule,
+            _systemAccessManagerProxy
         );
     }
 
@@ -540,10 +599,7 @@ contract ATKSystemImplementation is
     /// interface.
     /// Emits a `ComplianceImplementationUpdated` event upon successful update.
     /// @param implementation_ The new address for the compliance module logic contract.
-    function setComplianceImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setComplianceImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert ComplianceImplementationNotSet();
         _checkInterface(implementation_, _COMPLIANCE_ID); // Ensure it supports the correct interface.
         _implementations[COMPLIANCE] = implementation_;
@@ -555,10 +611,7 @@ contract ATKSystemImplementation is
     /// Reverts if the `implementation` address is zero or does not support `ISMARTIdentityRegistry`.
     /// Emits an `IdentityRegistryImplementationUpdated` event.
     /// @param implementation_ The new address for the identity registry logic contract.
-    function setIdentityRegistryImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setIdentityRegistryImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert IdentityRegistryImplementationNotSet();
         _checkInterface(implementation_, _IDENTITY_REGISTRY_ID);
         _implementations[IDENTITY_REGISTRY] = implementation_;
@@ -570,10 +623,7 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `ISMARTIdentityRegistryStorage`.
     /// Emits an `IdentityRegistryStorageImplementationUpdated` event.
     /// @param implementation_ The new address for the identity registry storage logic contract.
-    function setIdentityRegistryStorageImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setIdentityRegistryStorageImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert IdentityRegistryStorageImplementationNotSet();
         _checkInterface(implementation_, _IDENTITY_REGISTRY_STORAGE_ID);
         _implementations[IDENTITY_REGISTRY_STORAGE] = implementation_;
@@ -585,10 +635,7 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `IERC3643TrustedIssuersRegistry`.
     /// Emits a `TrustedIssuersRegistryImplementationUpdated` event.
     /// @param implementation_ The new address for the trusted issuers registry logic contract.
-    function setTrustedIssuersRegistryImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setTrustedIssuersRegistryImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert TrustedIssuersRegistryImplementationNotSet();
         _checkInterface(implementation_, _TRUSTED_ISSUERS_REGISTRY_ID);
         _implementations[TRUSTED_ISSUERS_REGISTRY] = implementation_;
@@ -600,10 +647,7 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `ISMARTTopicSchemeRegistry`.
     /// Emits a `TopicSchemeRegistryImplementationUpdated` event.
     /// @param implementation_ The new address for the topic scheme registry logic contract.
-    function setTopicSchemeRegistryImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setTopicSchemeRegistryImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert TopicSchemeRegistryImplementationNotSet();
         _checkInterface(implementation_, _TOPIC_SCHEME_REGISTRY_ID);
         _implementations[TOPIC_SCHEME_REGISTRY] = implementation_;
@@ -615,10 +659,7 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `IATKIdentityFactory`.
     /// Emits an `IdentityFactoryImplementationUpdated` event.
     /// @param implementation_ The new address for the identity factory logic contract.
-    function setIdentityFactoryImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setIdentityFactoryImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
         _checkInterface(implementation_, _IDENTITY_FACTORY_ID);
         _implementations[IDENTITY_FACTORY] = implementation_;
@@ -630,10 +671,7 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `IIdentity` (from OnchainID standard).
     /// Emits an `IdentityImplementationUpdated` event.
     /// @param implementation_ The new address for the standard identity logic template.
-    function setIdentityImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setIdentityImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert IdentityImplementationNotSet();
         _checkInterface(implementation_, _IIDENTITY_ID);
         _implementations[IDENTITY] = implementation_;
@@ -645,10 +683,7 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `IIdentity` (from OnchainID standard).
     /// Emits a `TokenIdentityImplementationUpdated` event.
     /// @param implementation_ The new address for the token identity logic template.
-    function setTokenIdentityImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setTokenIdentityImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert TokenIdentityImplementationNotSet();
         _checkInterface(implementation_, _IIDENTITY_ID);
         _implementations[TOKEN_IDENTITY] = implementation_;
@@ -660,10 +695,7 @@ contract ATKSystemImplementation is
     /// Reverts if `implementation` is zero or doesn't support `ISMARTTokenAccessManager`.
     /// Emits a `TokenAccessManagerImplementationUpdated` event.
     /// @param implementation_ The new address for the token access manager logic contract.
-    function setTokenAccessManagerImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setTokenAccessManagerImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert TokenAccessManagerImplementationNotSet();
         _checkInterface(implementation_, _TOKEN_ACCESS_MANAGER_ID);
         _implementations[TOKEN_ACCESS_MANAGER] = implementation_;
@@ -676,10 +708,7 @@ contract ATKSystemImplementation is
     /// `IComplianceModuleRegistry` interface.
     /// Emits a `ComplianceModuleRegistryImplementationUpdated` event upon successful update.
     /// @param implementation_ The new address for the compliance module registry logic contract.
-    function setComplianceModuleRegistryImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setComplianceModuleRegistryImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert ComplianceModuleRegistryImplementationNotSet();
         _checkInterface(implementation_, _COMPLIANCE_MODULE_REGISTRY_ID);
         _implementations[COMPLIANCE_MODULE_REGISTRY] = implementation_;
@@ -692,10 +721,7 @@ contract ATKSystemImplementation is
     /// `ISystemAddonRegistry` interface.
     /// Emits a `SystemAddonRegistryImplementationUpdated` event upon successful update.
     /// @param implementation_ The new address for the addon registry logic contract.
-    function setAddonRegistryImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setAddonRegistryImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert AddonRegistryImplementationNotSet();
         _checkInterface(implementation_, _ADDON_REGISTRY_ID);
         _implementations[ADDON_REGISTRY] = implementation_;
@@ -708,14 +734,24 @@ contract ATKSystemImplementation is
     /// `ITokenFactoryRegistry` interface.
     /// Emits a `TokenFactoryRegistryImplementationUpdated` event upon successful update.
     /// @param implementation_ The new address for the token factory registry logic contract.
-    function setTokenFactoryRegistryImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function setTokenFactoryRegistryImplementation(address implementation_) public onlySystemManager {
         if (implementation_ == address(0)) revert TokenFactoryRegistryImplementationNotSet();
         _checkInterface(implementation_, _TOKEN_FACTORY_REGISTRY_ID);
         _implementations[TOKEN_FACTORY_REGISTRY] = implementation_;
         emit TokenFactoryRegistryImplementationUpdated(_msgSender(), implementation_);
+    }
+
+    /// @notice Sets (updates) the address of the system access manager's implementation (logic) contract.
+    /// @dev Only callable by an address with the `IMPLEMENTATION_MANAGER_ROLE`.
+    /// Reverts if the provided `implementation` address is the zero address or does not support the
+    /// `IATKSystemAccessManager` interface.
+    /// Emits a `SystemAccessManagerImplementationUpdated` event upon successful update.
+    /// @param implementation_ The new address for the system access manager logic contract.
+    function setSystemAccessManagerImplementation(address implementation_) public onlySystemManager {
+        if (implementation_ == address(0)) revert SystemAccessManagerImplementationNotSet();
+        _checkInterface(implementation_, _SYSTEM_ACCESS_MANAGER_ID);
+        _implementations[SYSTEM_ACCESS_MANAGER] = implementation_;
+        emit SystemAccessManagerImplementationUpdated(_msgSender(), implementation_);
     }
 
     // --- Implementation Getter Functions ---
@@ -746,6 +782,12 @@ contract ATKSystemImplementation is
     /// @return The address of the access manager implementation contract.
     function tokenAccessManagerImplementation() external view returns (address) {
         return _implementations[TOKEN_ACCESS_MANAGER];
+    }
+
+    /// @notice Returns the address of the system access manager implementation.
+    /// @return The address of the system access manager implementation contract.
+    function systemAccessManagerImplementation() external view returns (address) {
+        return _implementations[SYSTEM_ACCESS_MANAGER];
     }
 
     // --- Proxy Getter Functions ---
@@ -806,6 +848,19 @@ contract ATKSystemImplementation is
         return _tokenFactoryRegistryProxy;
     }
 
+    /// @notice Gets the address of the system access manager's proxy contract.
+    /// @return The address of the system access manager proxy contract.
+    function systemAccessManager() public view override returns (address) {
+        return _systemAccessManagerProxy;
+    }
+
+    /// @notice Sets the system access manager for centralized access control
+    /// @dev Only callable by the default admin role before bootstrap or by the system manager after bootstrap
+    /// @param _systemAccessManager The address of the system access manager
+    function setSystemAccessManager(address _systemAccessManager) external override onlyDefaultAdmin {
+        _setSystemAccessManager(_systemAccessManager);
+    }
+
     // --- Identity Verification Module ---
 
     /// @notice Gets the address of the identity verification module's proxy contract.
@@ -822,7 +877,7 @@ contract ATKSystemImplementation is
     /// rather than the forwarder contract that relayed it.
     /// If not a meta-transaction, it behaves like the standard `msg.sender`.
     /// @return The address of the original transaction sender (user) or the direct caller.
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
+    function _msgSender() internal view override(ERC2771ContextUpgradeable) returns (address) {
         return super._msgSender(); // Calls the ERC2771Context implementation.
     }
 
@@ -831,12 +886,7 @@ contract ATKSystemImplementation is
     /// refers to the original call data from the user in a meta-transaction context.
     /// If not a meta-transaction, it behaves like the standard `msg.data`.
     /// @return The original call data of the transaction.
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
+    function _msgData() internal view override(ERC2771ContextUpgradeable) returns (bytes calldata) {
         return super._msgData(); // Calls the ERC2771Context implementation.
     }
 
@@ -845,12 +895,7 @@ contract ATKSystemImplementation is
     /// appended to the call data by a forwarder, which typically contains the original sender's address.
     /// The base `ERC2771Context` implementation handles this correctly.
     /// @return The length of the context suffix in the call data for meta-transactions.
-    function _contextSuffixLength()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
+    function _contextSuffixLength() internal view override(ERC2771ContextUpgradeable) returns (uint256) {
         return super._contextSuffixLength();
     }
 
@@ -861,12 +906,7 @@ contract ATKSystemImplementation is
     /// like `IERC165` (from `ERC165`) and `IAccessControl` (from `AccessControl`).
     /// @param interfaceId The 4-byte interface identifier to check.
     /// @return `true` if the contract supports the interface, `false` otherwise.
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC165Upgradeable, AccessControlUpgradeable, IERC165)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable, IERC165) returns (bool) {
         return super.supportsInterface(interfaceId) || interfaceId == type(IATKSystem).interfaceId
             || interfaceId == type(IATKTypedImplementationRegistry).interfaceId;
     }

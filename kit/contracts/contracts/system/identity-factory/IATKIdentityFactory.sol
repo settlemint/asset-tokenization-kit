@@ -24,7 +24,7 @@ interface IATKIdentityFactory is IERC165 {
     /// @param token The address of the token contract for which the identity was created.
     event TokenIdentityCreated(address indexed sender, address indexed identity, address indexed token);
 
-    function initialize(address systemAddress) external;
+    function initialize(address systemAddress, address systemAccessManager) external;
 
     // --- State-Changing Functions ---
 

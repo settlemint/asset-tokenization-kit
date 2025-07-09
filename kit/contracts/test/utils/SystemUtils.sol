@@ -7,6 +7,7 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // System
 import { ATKSystemFactory } from "../../contracts/system/ATKSystemFactory.sol";
+import { ATKSystemImplementations } from "../../contracts/system/ATKSystemFactory.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
 import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
 
@@ -27,6 +28,8 @@ import { ATKTokenIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKTokenFactoryRegistryImplementation } from
@@ -51,12 +54,14 @@ import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMAR
 import { IATKComplianceModuleRegistry } from "../../contracts/system/compliance/IATKComplianceModuleRegistry.sol";
 import { IATKSystemAddonRegistry } from "../../contracts/system/addons/IATKSystemAddonRegistry.sol";
 import { IATKTokenFactoryRegistry } from "../../contracts/system/token-factory/IATKTokenFactoryRegistry.sol";
+import { IATKSystemAccessManager } from "../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 
 // Compliance Modules
 import { CountryAllowListComplianceModule } from "../../contracts/smart/modules/CountryAllowListComplianceModule.sol";
 import { CountryBlockListComplianceModule } from "../../contracts/smart/modules/CountryBlockListComplianceModule.sol";
 import { SMARTIdentityVerificationComplianceModule } from
     "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 
 contract SystemUtils is Test {
     // System
@@ -73,6 +78,7 @@ contract SystemUtils is Test {
     IATKComplianceModuleRegistry public complianceModuleRegistry; // Proxy
     IATKSystemAddonRegistry public systemAddonRegistry; // Proxy
     IATKTokenFactoryRegistry public tokenFactoryRegistry; // Proxy
+    IATKSystemAccessManager public systemAccessManager; // Proxy
 
     // Compliance Modules
     MockedComplianceModule public mockedComplianceModule;
@@ -96,6 +102,8 @@ contract SystemUtils is Test {
         ATKIdentityRegistryImplementation registryImpl = new ATKIdentityRegistryImplementation(forwarder);
         ATKIdentityFactoryImplementation factoryImpl = new ATKIdentityFactoryImplementation(forwarder);
         ATKTokenAccessManagerImplementation accessManagerImpl = new ATKTokenAccessManagerImplementation(forwarder);
+        ATKSystemAccessManagerImplementation systemAccessManagerImpl =
+            new ATKSystemAccessManagerImplementation(forwarder);
         ATKTopicSchemeRegistryImplementation topicSchemeRegistryImpl =
             new ATKTopicSchemeRegistryImplementation(forwarder);
 
@@ -110,23 +118,25 @@ contract SystemUtils is Test {
         identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
         vm.label(address(identityVerificationModule), "Identity Verification Module");
 
-        systemFactory = new ATKSystemFactory(
-            address(systemImplementation),
-            address(complianceImpl),
-            address(registryImpl),
-            address(storageImpl),
-            address(issuersImpl),
-            address(topicSchemeRegistryImpl),
-            address(factoryImpl),
-            address(identityImpl),
-            address(tokenIdentityImpl),
-            address(accessManagerImpl),
-            address(identityVerificationModule),
-            address(tokenFactoryRegistryImpl),
-            address(complianceModuleRegistryImpl),
-            address(systemAddonRegistryImpl),
-            forwarder
-        );
+        ATKSystemImplementations memory implementations = ATKSystemImplementations({
+            atkSystemImplementation: address(systemImplementation),
+            complianceImplementation: address(complianceImpl),
+            identityRegistryImplementation: address(registryImpl),
+            identityRegistryStorageImplementation: address(storageImpl),
+            trustedIssuersRegistryImplementation: address(issuersImpl),
+            topicSchemeRegistryImplementation: address(topicSchemeRegistryImpl),
+            identityFactoryImplementation: address(factoryImpl),
+            identityImplementation: address(identityImpl),
+            tokenIdentityImplementation: address(tokenIdentityImpl),
+            tokenAccessManagerImplementation: address(accessManagerImpl),
+            identityVerificationModule: address(identityVerificationModule),
+            tokenFactoryRegistryImplementation: address(tokenFactoryRegistryImpl),
+            complianceModuleRegistryImplementation: address(complianceModuleRegistryImpl),
+            addonRegistryImplementation: address(systemAddonRegistryImpl),
+            systemAccessManagerImplementation: address(systemAccessManagerImpl)
+        });
+
+        systemFactory = new ATKSystemFactory(implementations, forwarder);
         vm.label(address(systemFactory), "System Factory");
 
         vm.startPrank(platformAdmin); // Use admin for initialization and binding
@@ -154,6 +164,20 @@ contract SystemUtils is Test {
         vm.label(address(systemAddonRegistry), "System Addon Registry");
         tokenFactoryRegistry = IATKTokenFactoryRegistry(system.tokenFactoryRegistry());
         vm.label(address(tokenFactoryRegistry), "Token Factory Registry");
+
+        systemAccessManager = IATKSystemAccessManager(system.systemAccessManager());
+        vm.label(address(systemAccessManager), "System Access Manager");
+
+        // Grant necessary roles to the platform admin for testing
+        systemAccessManager.grantRole(ATKSystemRoles.TOKEN_MANAGER_ROLE, platformAdmin);
+        systemAccessManager.grantRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, platformAdmin);
+        systemAccessManager.grantRole(ATKSystemRoles.IDENTITY_MANAGER_ROLE, platformAdmin);
+        systemAccessManager.grantRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, platformAdmin);
+        systemAccessManager.grantRole(ATKSystemRoles.ADDON_MANAGER_ROLE, platformAdmin);
+        systemAccessManager.grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, platformAdmin);
+        systemAccessManager.grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, platformAdmin);
+        systemAccessManager.grantRole(ATKSystemRoles.REGISTRAR_ROLE, platformAdmin);
+        systemAccessManager.grantRole(ATKSystemRoles.DEPLOYER_ROLE, platformAdmin);
 
         // --- Deploy Other Contracts ---
         mockedComplianceModule = new MockedComplianceModule();

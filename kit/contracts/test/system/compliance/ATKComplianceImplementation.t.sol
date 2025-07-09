@@ -12,6 +12,8 @@ import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
+import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
+import { ATKSystemAccessControlled } from "../../../contracts/system/access-manager/ATKSystemAccessControlled.sol";
 
 import { MockedComplianceModule } from "../../utils/mocks/MockedComplianceModule.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -97,13 +99,95 @@ contract MockNonCompliantModule {
     }
 }
 
+contract MockSystemAccessManager is IATKSystemAccessManager {
+    mapping(bytes32 => mapping(address => bool)) private _roles;
+    mapping(bytes32 => bytes32) private _roleAdmins;
+
+    function grantRole(bytes32 role, address account) external override {
+        _roles[role][account] = true;
+    }
+
+    function revokeRole(bytes32 role, address account) external override {
+        _roles[role][account] = false;
+    }
+
+    function hasRole(bytes32 role, address account) external view override returns (bool) {
+        return _roles[role][account];
+    }
+
+    function getRoleAdmin(bytes32 role) external view override returns (bytes32) {
+        return _roleAdmins[role];
+    }
+
+    function renounceRole(bytes32 role, address account) external override {
+        _roles[role][account] = false;
+    }
+
+    function initialize(address) external override { }
+
+    function grantMultipleRoles(address account, bytes32[] calldata roles) external override {
+        for (uint256 i = 0; i < roles.length; i++) {
+            _roles[roles[i]][account] = true;
+        }
+    }
+
+    function revokeMultipleRoles(address account, bytes32[] calldata roles) external override {
+        for (uint256 i = 0; i < roles.length; i++) {
+            _roles[roles[i]][account] = false;
+        }
+    }
+
+    function batchGrantRole(bytes32 role, address[] calldata accounts) external override {
+        for (uint256 i = 0; i < accounts.length; i++) {
+            _roles[role][accounts[i]] = true;
+        }
+    }
+
+    function batchRevokeRole(bytes32 role, address[] calldata accounts) external override {
+        for (uint256 i = 0; i < accounts.length; i++) {
+            _roles[role][accounts[i]] = false;
+        }
+    }
+
+    function hasAnyRole(address account, bytes32[] calldata roles) external view override returns (bool) {
+        for (uint256 i = 0; i < roles.length; i++) {
+            if (_roles[roles[i]][account]) return true;
+        }
+        return false;
+    }
+
+    function hasAllRoles(address account, bytes32[] calldata roles) external view override returns (bool) {
+        for (uint256 i = 0; i < roles.length; i++) {
+            if (!_roles[roles[i]][account]) return false;
+        }
+        return true;
+    }
+
+    function getAllManagerRoles() external pure override returns (bytes32[] memory) {
+        return ATKSystemRoles.getAllManagerRoles();
+    }
+
+    function getAllModuleRoles() external pure override returns (bytes32[] memory) {
+        return ATKSystemRoles.getAllModuleRoles();
+    }
+}
+
+contract TestableATKComplianceImplementation is ATKComplianceImplementation {
+    constructor(address trustedForwarder) ATKComplianceImplementation(trustedForwarder) { }
+
+    function setSystemAccessManagerForTesting(address systemAccessManager) external {
+        _setSystemAccessManager(systemAccessManager);
+    }
+}
+
 contract ATKComplianceImplementationTest is Test {
-    ATKComplianceImplementation public implementation;
-    ATKComplianceImplementation public compliance;
+    TestableATKComplianceImplementation public implementation;
+    TestableATKComplianceImplementation public compliance;
     MockATKToken public token;
     MockedComplianceModule public validModule;
     MockFailingModule public failingModule;
     MockNonCompliantModule public nonCompliantModule;
+    MockSystemAccessManager public systemAccessManager;
 
     address public admin = makeAddr("admin");
     address public bypassListManager = makeAddr("bypassListManager");
@@ -114,8 +198,11 @@ contract ATKComplianceImplementationTest is Test {
     address public charlie = address(0xc4a12e);
 
     function setUp() public {
+        // Deploy mock system access manager
+        systemAccessManager = new MockSystemAccessManager();
+
         // Deploy implementation and use it directly for unit testing
-        implementation = new ATKComplianceImplementation(trustedForwarder);
+        implementation = new TestableATKComplianceImplementation(trustedForwarder);
 
         // Deploy as proxy
         address[] memory initialBypassListManagers = new address[](1);
@@ -124,12 +211,15 @@ contract ATKComplianceImplementationTest is Test {
             abi.encodeWithSelector(ATKComplianceImplementation.initialize.selector, admin, initialBypassListManagers);
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
 
-        // Access proxy as SMARTComplianceImplementation
-        compliance = ATKComplianceImplementation(address(proxy));
+        // Access proxy as TestableATKComplianceImplementation
+        compliance = TestableATKComplianceImplementation(address(proxy));
 
-        // Grant bypass list manager role
-        vm.prank(admin);
-        compliance.grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, bypassListManager);
+        // Set up the system access manager in the compliance contract
+        // This simulates the system access manager being set during system bootstrap
+        compliance.setSystemAccessManagerForTesting(address(systemAccessManager));
+
+        // Grant bypass list manager role to bypassListManager through the mock system access manager
+        systemAccessManager.grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, bypassListManager);
 
         // Deploy mock token
         token = new MockATKToken(address(compliance));
@@ -162,7 +252,7 @@ contract ATKComplianceImplementationTest is Test {
 
     function testIsValidComplianceModuleWithZeroAddress() public {
         bytes memory params = abi.encode(uint256(100));
-        vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
+        vm.expectRevert(ATKSystemAccessControlled.ZeroAddressNotAllowed.selector);
         ISMARTCompliance(address(compliance)).isValidComplianceModule(address(0), params);
     }
 
@@ -195,7 +285,7 @@ contract ATKComplianceImplementationTest is Test {
         pairs[0] = SMARTComplianceModuleParamPair(address(validModule), abi.encode(uint256(100)));
         pairs[1] = SMARTComplianceModuleParamPair(address(0), abi.encode(uint256(200)));
 
-        vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
+        vm.expectRevert(ATKSystemAccessControlled.ZeroAddressNotAllowed.selector);
         ISMARTCompliance(address(compliance)).areValidComplianceModules(pairs);
     }
 
@@ -379,7 +469,7 @@ contract ATKComplianceImplementationTest is Test {
 
     function testAddZeroAddressToBypassList() public {
         vm.prank(bypassListManager);
-        vm.expectRevert(abi.encodeWithSelector(ISMARTCompliance.ZeroAddressNotAllowed.selector));
+        vm.expectRevert(abi.encodeWithSelector(ATKSystemAccessControlled.ZeroAddressNotAllowed.selector));
         IATKCompliance(address(compliance)).addToBypassList(address(0));
     }
 
