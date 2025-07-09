@@ -312,7 +312,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
             )}
             style={sidebarStyle}
           >
-            {/* Title and Progress */}
+            {/* Title and Progress  */}
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-primary-foreground mb-2">
                 {name
