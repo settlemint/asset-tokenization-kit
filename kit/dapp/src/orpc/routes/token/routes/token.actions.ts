@@ -2,7 +2,11 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
-import { TokenActionsResponseSchema, TokenActionsInputSchema, TokenActionsListSchema } from "@/orpc/routes/token/routes/token.actions.schema";
+import {
+  TokenActionsResponseSchema,
+  TokenActionsInputSchema,
+  TokenActionsListSchema,
+} from "@/orpc/routes/token/routes/token.actions.schema";
 import { calculateActionStatus } from "@/lib/constants/action-types";
 import { TRPCError } from "@trpc/server";
 
@@ -96,55 +100,71 @@ export const actions = authRouter.token.actions
   .input(TokenActionsInputSchema)
   .output(TokenActionsListSchema)
   .use(theGraphMiddleware)
-  .use(permissionsMiddleware({ token: "read" }))
   .handler(async ({ input, context }) => {
-    
     // SECURITY: Authorization checks
     const currentUser = context.auth?.user;
     if (!currentUser) {
-      throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Authentication required' });
-    }
-    
-    // SECURITY: Restrict userAddress filtering to prevent enumeration
-    if (input.userAddress && input.userAddress !== currentUser.address && !currentUser.role.permissions?.admin) {
-      throw new TRPCError({ 
-        code: 'FORBIDDEN', 
-        message: 'Cannot query actions for other users without admin permission' 
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Authentication required",
       });
     }
-    
+
+    // SECURITY: Handle missing wallet address gracefully
+    if (!currentUser.address) {
+      // Return empty array if user doesn't have a wallet address yet
+      return [];
+    }
+
+    // SECURITY: Auto-filter to user's wallet address, with admin override
+    const targetUserAddress = 
+      currentUser.role.permissions?.admin && input.userAddress
+        ? input.userAddress
+        : currentUser.address;
+
+    // SECURITY: Prevent enumeration - only admins can query other users
+    if (
+      input.userAddress &&
+      input.userAddress !== currentUser.address &&
+      !currentUser.role.permissions?.admin
+    ) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Cannot query actions for other users without admin permission",
+      });
+    }
+
     // AUDIT: Log action query for security monitoring
     console.log(`Action query by user ${currentUser.address}:`, {
       tokenId: input.tokenId,
       status: input.status,
       type: input.type,
-      userAddress: input.userAddress,
+      targetUserAddress,
+      isAdminQuery: currentUser.role.permissions?.admin && input.userAddress !== undefined,
       timestamp: new Date().toISOString(),
     });
     // Build where clause for filtering
     const where: Record<string, unknown> = {};
-    
+
     // Filter by token ID (target address)
     if (input.tokenId !== undefined) {
       where.target = input.tokenId.toLowerCase();
     }
-    
-    // Filter by user address (executor) - SECURITY: Use exact match to prevent injection
-    if (input.userAddress !== undefined) {
-      where.executor_ = {
-        accounts_contains: [input.userAddress.toLowerCase()],
-      };
-    }
-    
+
+    // SECURITY: Always filter by user address to prevent unauthorized access
+    where.executor_ = {
+      accounts_contains: [targetUserAddress.toLowerCase()],
+    };
+
     // Filter by action type
     if (input.type !== undefined) {
       where.type = input.type;
     }
-    
+
     // Filter by status based on timestamps and execution state
     if (input.status !== undefined) {
       const nowSeconds = Math.floor(Date.now() / 1000);
-      
+
       switch (input.status) {
         case "PENDING":
           where.executed = false;
@@ -166,25 +186,32 @@ export const actions = authRouter.token.actions
     }
 
     // Query TheGraph for actions with security limits
-    const response = await context.theGraphClient.query(LIST_TOKEN_ACTIONS_QUERY, {
-      input: {
-        skip: input.offset || 0,
-        first: input.limit ? Math.min(input.limit, 1000) : 50, // Default to 50 for better performance
-        where: Object.keys(where).length > 0 ? where : undefined,
-      },
-      output: TokenActionsResponseSchema,
-      error: "Failed to list token actions",
-    });
+    const response = await context.theGraphClient.query(
+      LIST_TOKEN_ACTIONS_QUERY,
+      {
+        input: {
+          skip: input.offset ?? 0,
+          first: input.limit ? Math.min(input.limit, 1000) : 50, // Default to 50 for better performance
+          where: Object.keys(where).length > 0 ? where : undefined,
+        },
+        output: TokenActionsResponseSchema,
+        error: "Failed to list token actions",
+      }
+    );
 
     // SECURITY: Transform response with computed status and filtered data
-    const actionsWithStatus = response.actions.map(action => {
-      const activeAt = parseInt(action.activeAt);
-      const expiresAt = action.expiresAt ? parseInt(action.expiresAt) : null;
-      const createdAt = parseInt(action.createdAt);
-      const executedAt = action.executedAt ? parseInt(action.executedAt) : null;
-      
-      const status = calculateActionStatus(activeAt, expiresAt, action.executed);
-      
+    const actionsWithStatus = response.actions.map((action: Record<string, unknown>) => {
+      const activeAt = parseInt(action.activeAt as string);
+      const expiresAt = action.expiresAt ? parseInt(action.expiresAt as string) : null;
+      const createdAt = parseInt(action.createdAt as string);
+      const executedAt = action.executedAt ? parseInt(action.executedAt as string) : null;
+
+      const status = calculateActionStatus(
+        activeAt,
+        expiresAt,
+        action.executed as boolean
+      );
+
       // SECURITY: Only return minimal necessary information
       return {
         id: action.id,
