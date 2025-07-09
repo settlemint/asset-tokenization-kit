@@ -1,10 +1,7 @@
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
-import {
-  MultiStepWizard,
-  withWizardErrorBoundary,
-} from "@/components/multistep-form";
+import { MultiStepWizard } from "@/components/multistep-form";
 import type {
   StepDefinition,
   StepGroup,
@@ -19,7 +16,6 @@ import {
 } from "@/components/onboarding/steps";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
 import type { SessionUser } from "@/lib/auth";
 import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
@@ -29,7 +25,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const logger = createLogger();
 

@@ -252,25 +252,49 @@ export function serializeDataTableState(
 export function deserializeDataTableState(
   searchParams: Record<string, unknown>
 ): DataTableSearchParams {
-  // Validate and sanitize parameters using Zod schema
-  const validatedParams = flatSearchParamsSchema.parse(searchParams);
+  // Parse each field individually to handle partial failures gracefully
+  // For numeric values, coerce and then clamp to valid range
+  const pageRaw = z.coerce.number().safeParse(searchParams.page);
+  const pageSizeRaw = z.coerce.number().safeParse(searchParams.pageSize);
   
-  const page = validatedParams.page ?? 1;
-  const pageSize = validatedParams.pageSize ?? 10;
+  const page = pageRaw.success 
+    ? { success: true as const, data: Math.max(1, Math.min(1000, Math.floor(pageRaw.data))) }
+    : { success: false as const };
+  const pageSize = pageSizeRaw.success
+    ? { success: true as const, data: Math.max(1, Math.min(100, Math.floor(pageSizeRaw.data))) }
+    : { success: false as const };
+  const sortBy = z.string().regex(/^[a-zA-Z0-9_.-]+$/).max(100).safeParse(searchParams.sortBy);
+  const sortOrder = z.enum(["asc", "desc"]).safeParse(searchParams.sortOrder);
+  const search = z.string().max(1000).safeParse(searchParams.search);
+  const columns = z.string().max(1000).optional().transform((val) => {
+    if (!val) return undefined;
+    const cols = val.split(',').map(c => c.trim());
+    const validCols = cols.filter(col => /^[a-zA-Z0-9_.-]+$/.test(col));
+    return validCols.length > 0 ? validCols.join(',') : undefined;
+  }).safeParse(searchParams.columns);
+  const selected = z.string().max(1000).optional().transform((val) => {
+    if (!val) return undefined;
+    const ids = val.split(',').map(id => id.trim());
+    const validIds = ids.filter(id => /^[a-zA-Z0-9_.-]+$/.test(id));
+    return validIds.length > 0 ? validIds.join(',') : undefined;
+  }).safeParse(searchParams.selected);
+  
+  const pageValue = page.success ? page.data : 1;
+  const pageSizeValue = pageSize.success ? pageSize.data : 10;
 
   // Sorting from flat params
-  const sorting: SortState[] = validatedParams.sortBy
+  const sorting: SortState[] = sortBy.success && sortBy.data
     ? [
         {
-          id: validatedParams.sortBy,
-          desc: validatedParams.sortOrder === "desc",
+          id: sortBy.data,
+          desc: sortOrder.success && sortOrder.data === "desc",
         },
       ]
     : [];
 
   // Filters from filter_ prefixed params
   const columnFilters: ColumnFilter[] = [];
-  Object.entries(validatedParams).forEach(([key, value]) => {
+  Object.entries(searchParams).forEach(([key, value]) => {
     if (
       key.startsWith("filter_") &&
       value !== undefined &&
@@ -278,38 +302,40 @@ export function deserializeDataTableState(
       value !== ""
     ) {
       const filterKey = key.substring(7); // Remove 'filter_' prefix
-      // Store as string value - already validated by Zod
-      columnFilters.push({
-        id: filterKey,
-        value: value as string,
-      });
+      const stringValue = z.string().max(1000).safeParse(value);
+      if (stringValue.success) {
+        columnFilters.push({
+          id: filterKey,
+          value: stringValue.data,
+        });
+      }
     }
   });
 
   // Column visibility from comma-separated list
   const columnVisibility: Record<string, boolean> = {};
-  if (validatedParams.columns) {
-    validatedParams.columns.split(",").forEach((col) => {
+  if (columns.success && columns.data) {
+    columns.data.split(",").forEach((col) => {
       columnVisibility[col] = true;
     });
   }
 
   // Row selection from comma-separated list
   const rowSelection: Record<string, boolean> = {};
-  if (validatedParams.selected) {
-    validatedParams.selected.split(",").forEach((id) => {
+  if (selected.success && selected.data) {
+    selected.data.split(",").forEach((id) => {
       rowSelection[id] = true;
     });
   }
 
   return {
     pagination: {
-      pageIndex: Math.max(0, page - 1), // Convert from 1-based to 0-based
-      pageSize,
+      pageIndex: Math.max(0, pageValue - 1), // Convert from 1-based to 0-based
+      pageSize: pageSizeValue,
     },
     sorting,
     columnFilters,
-    globalFilter: validatedParams.search ?? "",
+    globalFilter: search.success ? search.data : "",
     columnVisibility,
     rowSelection,
   };
