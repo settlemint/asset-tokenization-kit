@@ -1,6 +1,78 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "./utils/thegraph-client";
 
+// Type definitions for GraphQL responses
+interface ActionExecutor {
+  id: string;
+  executors: Array<{ id: string }>;
+}
+
+interface ActionTarget {
+  id: string;
+}
+
+interface ActionExecutedBy {
+  id: string;
+}
+
+interface Action {
+  id: string;
+  name: string;
+  type: string;
+  createdAt: string;
+  activeAt: string;
+  expiresAt: string | null;
+  executedAt: string | null;
+  executed: boolean;
+  executor: ActionExecutor;
+  target: ActionTarget;
+  executedBy: ActionExecutedBy | null;
+}
+
+interface ActionExecutorWithActions {
+  id: string;
+  executors: Array<{ id: string }>;
+  actions: Array<{
+    id: string;
+    name: string;
+    type: string;
+    executed: boolean;
+  }>;
+}
+
+interface ActionsResponse {
+  actions: Action[];
+}
+
+interface ActionExecutorsResponse {
+  actionExecutors: ActionExecutorWithActions[];
+}
+
+interface ActionsFilteredResponse {
+  actions: Array<{
+    id: string;
+    executed: boolean;
+    executedAt: string | null;
+    executedBy: ActionExecutedBy | null;
+  }>;
+}
+
+interface ActionsTimeFilteredResponse {
+  actions: Array<{
+    id: string;
+    activeAt: string;
+    expiresAt: string | null;
+    executed: boolean;
+  }>;
+}
+
+interface ActionsTypeResponse {
+  actions: Array<{
+    id: string;
+    type: string;
+  }>;
+}
+
 describe("Actions", () => {
   it("should fetch a list of all actions", async () => {
     const query = theGraphGraphql(
@@ -29,7 +101,7 @@ describe("Actions", () => {
         }
       }`
     );
-    const response = await theGraphClient.request(query);
+    const response = await theGraphClient.request<ActionsResponse>(query);
 
     // Verify we have actions from XvP settlement approvals
     expect(response.actions.length).toBeGreaterThanOrEqual(1);
@@ -37,7 +109,7 @@ describe("Actions", () => {
     const actions = response.actions;
 
     // Verify action structure
-    actions.forEach((action: any) => {
+    actions.forEach((action: Action) => {
       expect(action.id).toBeDefined();
       expect(action.name).toBeDefined();
       expect(action.type).toBeDefined();
@@ -46,25 +118,25 @@ describe("Actions", () => {
       expect(typeof action.executed).toBe("boolean");
       expect(action.executor.id).toBeDefined();
       expect(action.target.id).toBeDefined();
-      
+
       // Verify executor has executors array
       expect(Array.isArray(action.executor.executors)).toBe(true);
       expect(action.executor.executors.length).toBeGreaterThan(0);
-      
+
       // Verify timestamps are valid
       expect(BigInt(action.createdAt)).toBeGreaterThan(0n);
       expect(BigInt(action.activeAt)).toBeGreaterThan(0n);
-      
+
       // If action has expiry, verify it's after activeAt
       if (action.expiresAt) {
         expect(BigInt(action.expiresAt)).toBeGreaterThan(BigInt(action.activeAt));
       }
-      
+
       // If action is executed, verify executedAt and executedBy are set
       if (action.executed) {
         expect(action.executedAt).toBeDefined();
         expect(action.executedBy).toBeDefined();
-        expect(BigInt(action.executedAt)).toBeGreaterThan(BigInt(action.activeAt));
+        expect(BigInt(action.executedAt!)).toBeGreaterThan(BigInt(action.activeAt));
       }
     });
   });
@@ -73,8 +145,8 @@ describe("Actions", () => {
     const query = theGraphGraphql(
       `query {
         actions(
-          where: { 
-            type: "ApproveXvPSettlement" 
+          where: {
+            type: "ApproveXvPSettlement"
           },
           orderBy: createdAt,
           orderDirection: desc
@@ -98,7 +170,7 @@ describe("Actions", () => {
         }
       }`
     );
-    const response = await theGraphClient.request(query);
+    const response = await theGraphClient.request<ActionsResponse>(query);
 
     // Should have approval actions from XvP settlement
     expect(response.actions.length).toBeGreaterThanOrEqual(1);
@@ -106,12 +178,12 @@ describe("Actions", () => {
     const approvalActions = response.actions;
 
     // Verify approval action structure
-    approvalActions.forEach((action: any) => {
+    approvalActions.forEach((action: Action) => {
       expect(action.type).toBe("ApproveXvPSettlement");
       expect(action.name).toContain("Approve");
       expect(action.executor.id).toBeDefined();
       expect(action.target.id).toBeDefined();
-      
+
       // Approval actions should be active immediately
       expect(action.activeAt).toBeDefined();
       expect(BigInt(action.activeAt)).toBeLessThanOrEqual(BigInt(action.createdAt));
@@ -135,7 +207,7 @@ describe("Actions", () => {
         }
       }`
     );
-    const response = await theGraphClient.request(query);
+    const response = await theGraphClient.request<ActionExecutorsResponse>(query);
 
     // Should have at least one action executor
     expect(response.actionExecutors.length).toBeGreaterThanOrEqual(1);
@@ -143,15 +215,15 @@ describe("Actions", () => {
     const executors = response.actionExecutors;
 
     // Verify executor structure
-    executors.forEach((executor: any) => {
+    executors.forEach((executor: ActionExecutorWithActions) => {
       expect(executor.id).toBeDefined();
       expect(Array.isArray(executor.executors)).toBe(true);
       expect(executor.executors.length).toBeGreaterThan(0);
       expect(Array.isArray(executor.actions)).toBe(true);
-      
+
       // Verify each executor has actions
       if (executor.actions.length > 0) {
-        executor.actions.forEach((action: any) => {
+        executor.actions.forEach((action) => {
           expect(action.id).toBeDefined();
           expect(action.name).toBeDefined();
           expect(action.type).toBeDefined();
@@ -174,7 +246,7 @@ describe("Actions", () => {
         }
       }`
     );
-    
+
     const pendingQuery = theGraphGraphql(
       `query {
         actions(where: { executed: false }) {
@@ -189,19 +261,19 @@ describe("Actions", () => {
     );
 
     const [executedResponse, pendingResponse] = await Promise.all([
-      theGraphClient.request(executedQuery),
-      theGraphClient.request(pendingQuery)
+      theGraphClient.request<ActionsFilteredResponse>(executedQuery),
+      theGraphClient.request<ActionsFilteredResponse>(pendingQuery)
     ]);
 
     // Verify executed actions have proper fields
-    executedResponse.actions.forEach((action: any) => {
+    executedResponse.actions.forEach((action) => {
       expect(action.executed).toBe(true);
       expect(action.executedAt).toBeDefined();
       expect(action.executedBy?.id).toBeDefined();
     });
 
     // Verify pending actions don't have execution fields
-    pendingResponse.actions.forEach((action: any) => {
+    pendingResponse.actions.forEach((action) => {
       expect(action.executed).toBe(false);
       expect(action.executedAt).toBeNull();
       expect(action.executedBy).toBeNull();
@@ -210,11 +282,11 @@ describe("Actions", () => {
 
   it("should fetch actions with time-based filtering", async () => {
     const currentTime = Math.floor(Date.now() / 1000);
-    
+
     const activeQuery = theGraphGraphql(
       `query($currentTime: BigInt!) {
         actions(
-          where: { 
+          where: {
             activeAt_lte: $currentTime,
             executed: false
           }
@@ -226,16 +298,16 @@ describe("Actions", () => {
         }
       }`
     );
-    
-    const response = await theGraphClient.request(activeQuery, {
+
+    const response = await theGraphClient.request<ActionsTimeFilteredResponse>(activeQuery, {
       currentTime: currentTime.toString()
     });
 
     // Verify all returned actions are currently active
-    response.actions.forEach((action: any) => {
+    response.actions.forEach((action) => {
       expect(BigInt(action.activeAt)).toBeLessThanOrEqual(BigInt(currentTime));
       expect(action.executed).toBe(false);
-      
+
       // If action has expiry, verify it hasn't expired
       if (action.expiresAt) {
         expect(BigInt(action.expiresAt)).toBeGreaterThan(BigInt(currentTime));
@@ -252,15 +324,15 @@ describe("Actions", () => {
         }
       }`
     );
-    
-    const response = await theGraphClient.request(query);
-    
+
+    const response = await theGraphClient.request<ActionsTypeResponse>(query);
+
     // Get unique action types
-    const actionTypes = [...new Set(response.actions.map((action: any) => action.type))];
-    
+    const actionTypes = [...new Set(response.actions.map((action) => action.type))];
+
     // Should have at least the ApproveXvPSettlement type
     expect(actionTypes).toContain("ApproveXvPSettlement");
-    
+
     // Verify each type has proper format
     actionTypes.forEach((type: string) => {
       expect(type).toBeDefined();
