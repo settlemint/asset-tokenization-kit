@@ -605,11 +605,12 @@ function PlatformNewOnboarding() {
           </div>
 
           {/* Welcome Screen Content */}
-          <div className="flex min-h-screen items-center justify-center">
-            <div className="w-full max-w-2xl px-4">
-              <WelcomeScreen onStartSetup={handleStartWalletSetup} />
-            </div>
-          </div>
+          <WelcomeScreen 
+            onStartSetup={handleStartWalletSetup} 
+            systemDeployed={!!systemAddress}
+            userName={user?.name}
+            isReturningUser={!!user && (!!user?.wallet || !!systemAddress)}
+          />
         </div>
       </OnboardingGuard>
     );
