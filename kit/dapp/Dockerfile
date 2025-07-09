@@ -1,4 +1,4 @@
-FROM oven/bun:1.2.18 AS base
+FROM oven/bun:1.2.18-slim
 WORKDIR /usr/src/app
 
 COPY .output/ /usr/src/app

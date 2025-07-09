@@ -29,6 +29,11 @@ const config = [
           ],
           message: "Please import from `@/i18n/routing` instead.",
         },
+        {
+          name: "zod",
+          importNames: ["z"],
+          message: "Please import `z` from `zod/v4` instead.",
+        },
       ],
       "@typescript-eslint/no-import-type-side-effects": "error",
 

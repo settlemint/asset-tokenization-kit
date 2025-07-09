@@ -102,5 +102,13 @@
   "standard": "Standard",
   "toggleColumns": "Spalten umschalten",
   "view": "Ansicht",
-  "viewDetails": "Details anzeigen"
+  "viewDetails": "Details anzeigen",
+  "aria": {
+    "selectAll": "Alle Zeilen auf dieser Seite auswählen",
+    "selectAllWithCount": "Alle {{count}} Zeilen{{status}} auswählen",
+    "selectRow": "Zeile {{index}} von {{total}} auswählen",
+    "someSelected": " (einige ausgewählt)"
+  },
+  "tryAdjustingFilters": "Versuchen Sie, Ihre Filter anzupassen, um das zu finden, wonach Sie suchen",
+  "noDataAvailable": "Noch keine Daten verfügbar"
 }

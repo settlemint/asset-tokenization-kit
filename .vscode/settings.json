@@ -70,7 +70,21 @@
     "*.ts": "${capture}.js, ${capture}.typegen.ts, ${capture}.spec.ts, ${capture}.test.ts, ${capture}.schema.ts",
     "*.tsx": "${capture}.ts, ${capture}.typegen.ts, ${capture}.spec.ts, ${capture}.test.ts, ${capture}.spec.tsx, ${capture}.test.tsx, ${capture}.schema.tsx",
     "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock",
-    "tsconfig.json": "tsconfig.*.json"
+    "tsconfig.json": "tsconfig.*.json",
+    "index.tsx": "index.tsx, _layout.tsx, ${capture}.lazy.tsx, ${capture}.component.tsx, ${capture}.loader.ts, ${capture}.action.ts",
+    "index.ts": "index.ts, _layout.ts, ${capture}.lazy.ts, ${capture}.component.ts, ${capture}.loader.ts, ${capture}.action.ts",
+    "route.tsx": "route.tsx, _layout.tsx, ${capture}.lazy.tsx, ${capture}.component.tsx, ${capture}.loader.ts, ${capture}.action.ts",
+    "route.ts": "route.ts, _layout.ts, ${capture}.lazy.ts, ${capture}.component.ts, ${capture}.loader.ts, ${capture}.action.ts",
+    "$.tsx": "$.tsx, _layout.tsx, ${capture}.lazy.tsx, ${capture}.component.tsx, ${capture}.loader.ts, ${capture}.action.ts",
+    "$.ts": "$.ts, _layout.ts, ${capture}.lazy.ts, ${capture}.component.ts, ${capture}.loader.ts, ${capture}.action.ts",
+    "$*.tsx": "_layout.tsx, ${capture}.lazy.tsx, ${capture}.component.tsx, ${capture}.loader.ts, ${capture}.action.ts",
+    "$*.ts": "_layout.ts, ${capture}.lazy.ts, ${capture}.component.ts, ${capture}.loader.ts, ${capture}.action.ts",
+    "(*.tsx": "_layout.tsx, ${capture}.lazy.tsx, ${capture}.component.tsx, ${capture}.loader.ts, ${capture}.action.ts",
+    "(*.ts": "_layout.ts, ${capture}.lazy.ts, ${capture}.component.ts, ${capture}.loader.ts, ${capture}.action.ts",
+    "app.tsx": "app.tsx, client.tsx, server.tsx, ssr.tsx",
+    "router.tsx": "router.tsx, router.config.ts, router.types.ts",
+    "api.tsx": "api.tsx, ${capture}.handler.ts, ${capture}.middleware.ts, ${capture}.schema.ts",
+    "__root.tsx": "__root.tsx, _layout.tsx, ${capture}.component.tsx, ${capture}.loader.ts"
   },
   "extensions.ignoreRecommendations": true,
   "files.associations": {
@@ -143,7 +157,19 @@
     "**/app/**/layout.tsx": "${dirname(1)}/${dirname} <layout>",
     "**/app/**/page.tsx": "${dirname(1)}/${dirname} <page>",
     "**/app/**/route.ts": "${dirname(1)}/${dirname} <route>",
-    "**/components/**/index.tsx": "${dirname(1)}/${dirname} <component>"
+    "**/components/**/index.tsx": "${dirname(1)}/${dirname} <component>",
+    "**/routes/__root.{tsx,ts,jsx,js}": "${dirname} → root",
+    "**/routes/**/index.{tsx,ts,jsx,js}": "${dirname} → index",
+    "**/routes/**/$*.{tsx,ts,jsx,js}": "${dirname} → ${basename}",
+    "**/routes/**/_*.{tsx,ts,jsx,js}": "${dirname} → ${basename}",
+    "**/routes/**/(*).{tsx,ts,jsx,js}": "${dirname} → ${basename}",
+    "**/routes/api/**/*.{tsx,ts,jsx,js}": "api → ${dirname}/${basename}",
+    "**/routes/**/*.{tsx,ts,jsx,js}": "route → ${dirname}/${basename}",
+    "**/app.{tsx,ts,jsx,js}": "📱 app",
+    "**/router.{tsx,ts,jsx,js}": "🚦 router",
+    "**/app/client.{tsx,ts,jsx,js}": "🖥️ client",
+    "**/app/server.{tsx,ts,jsx,js}": "🔧 server",
+    "**/app/ssr.{tsx,ts,jsx,js}": "⚡ ssr"
   },
   "workbench.editor.highlightModifiedTabs": true,
   "workbench.editor.limit.enabled": true,
@@ -151,6 +177,5 @@
   "workbench.editor.revealIfOpen": true,
   "workbench.fontAliasing": "auto",
   "workbench.tips.enabled": false,
-  "workbench.tree.enableStickyScroll": true,
-  "explorer.sortOrder": "mixed"
+  "workbench.tree.enableStickyScroll": true
 }

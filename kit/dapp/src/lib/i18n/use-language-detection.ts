@@ -52,7 +52,12 @@ export function useLanguageDetection() {
   useEffect(() => {
     // Check if language is already set (e.g., from localStorage)
     const storedLang = localStorage.getItem("i18nextLng");
-    if (storedLang && supportedLanguages.includes(storedLang)) {
+    if (
+      storedLang &&
+      supportedLanguages.includes(
+        storedLang as (typeof supportedLanguages)[number]
+      )
+    ) {
       void i18n.changeLanguage(storedLang);
       return;
     }
@@ -61,7 +66,10 @@ export function useLanguageDetection() {
     // Split to get base language code (e.g., 'en' from 'en-US')
     const browserLang = navigator.language.split("-")[0];
     const detectedLang =
-      browserLang && supportedLanguages.includes(browserLang)
+      browserLang &&
+      supportedLanguages.includes(
+        browserLang as (typeof supportedLanguages)[number]
+      )
         ? browserLang
         : fallbackLng;
 

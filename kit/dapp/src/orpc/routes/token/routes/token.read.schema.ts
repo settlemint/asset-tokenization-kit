@@ -1,6 +1,9 @@
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { decimals } from "@/lib/zod/validators/decimals";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { timestamp } from "@/lib/zod/validators/timestamp";
 import type { TokenRoles } from "@/orpc/middlewares/system/token.middleware";
+import { from } from "dnum";
 import { z } from "zod/v4";
 
 /**
@@ -87,7 +90,7 @@ const ROLES: TokenRoles[] = [
  * This matches what comes from TheGraph with totalSupply as string
  */
 export const RawTokenSchema = z.object({
-  id: z.string(),
+  id: ethereumAddress.describe("The token contract address"),
   name: z.string().describe("The name of the token"),
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),
@@ -95,6 +98,18 @@ export const RawTokenSchema = z.object({
   pausable: z.object({
     paused: z.boolean().describe("Whether the token is paused"),
   }),
+  collateral: z
+    .object({
+      collateral: bigDecimal()
+        .describe("The collateral of the token")
+        .nullish()
+        .transform((val) => val ?? from(0)),
+      expiryTimestamp: timestamp()
+        .nullable()
+        .describe("The expiry timestamp of the collateral"),
+    })
+    .nullable()
+    .describe("The collateral of the token"),
   userPermissions: z
     .object({
       roles: z
@@ -134,4 +149,39 @@ export const TokenSchema = RawTokenSchema.extend({
 /**
  * Type representing the parsed token data with totalSupply as Dnum
  */
-export type ParsedToken = z.infer<typeof TokenSchema>;
+export type Token = z.infer<typeof TokenSchema>;
+
+export const TokenReadInputSchema = z.object({
+  tokenAddress: ethereumAddress,
+});
+
+/**
+ * Type-safe transformer function that converts RawToken to Token
+ * Ensures totalSupply is properly transformed from string to Dnum
+ *
+ * @param raw - The raw token data from The Graph
+ * @returns The transformed token with totalSupply as Dnum
+ * @example
+ * ```typescript
+ * const rawToken = {
+ *   id: "0x123...",
+ *   name: "Token",
+ *   totalSupply: "1000000000000000000"
+ * };
+ * const token = transformRawToken(rawToken);
+ * // token.totalSupply is now a Dnum for precise arithmetic
+ * ```
+ */
+export function transformRawToken(raw: z.infer<typeof RawTokenSchema>): Token {
+  return TokenSchema.parse(raw);
+}
+
+/**
+ * Type guard function to check if a value is a valid Token
+ *
+ * @param value - The value to check
+ * @returns true if the value is a valid Token
+ */
+export function isToken(value: unknown): value is Token {
+  return TokenSchema.safeParse(value).success;
+}
