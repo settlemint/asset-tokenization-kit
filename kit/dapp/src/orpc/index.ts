@@ -23,7 +23,7 @@ import { createIsomorphicFn } from "@tanstack/react-start";
 import { getHeaders } from "@tanstack/react-start/server";
 import { router } from "./routes/router";
 
-const logger = createLogger({ level: "info" });
+const logger = createLogger();
 
 /**
  * Creates an isomorphic ORPC client that adapts based on the runtime environment.

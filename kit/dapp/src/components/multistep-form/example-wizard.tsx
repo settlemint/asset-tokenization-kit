@@ -1,8 +1,11 @@
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useCallback } from "react";
 import { z } from "zod";
 import { MultiStepWizard } from "./multistep-wizard";
 import type { StepDefinition, StepGroup } from "./types";
 import { withWizardErrorBoundary } from "./wizard-error-boundary";
+
+const logger = createLogger();
 
 // Example form schema type
 interface TokenFormData {
@@ -192,7 +195,7 @@ const steps: StepDefinition<TokenFormData>[] = [
       mutationKey: "create-token",
       mutationFn: async (data: Partial<TokenFormData>) => {
         // Example mutation - replace with actual ORPC call
-        console.log("Creating token:", data);
+        logger.info("Creating token", data);
         // Simulate API call
         await new Promise((resolve) => setTimeout(resolve, 2000));
         return { success: true, address: "0x123...abc" };
@@ -208,7 +211,7 @@ interface ExampleWizardProps {
 function ExampleWizardComponent({ onComplete }: ExampleWizardProps) {
   const handleComplete = useCallback(
     (data: TokenFormData) => {
-      console.log("Token creation completed:", data);
+      logger.info("Token creation completed", data);
       if (onComplete) {
         onComplete(data);
       }

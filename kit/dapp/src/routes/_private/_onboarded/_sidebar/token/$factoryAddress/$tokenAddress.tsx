@@ -46,7 +46,7 @@ import { createFileRoute } from "@tanstack/react-router";
  * - Display compliance and regulatory information
  */
 export const Route = createFileRoute(
-  "/_private/_onboarded/token/$factoryAddress/$tokenAddress"
+  "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress"
 )({
   /**
    * Route loader function that prefetches required data

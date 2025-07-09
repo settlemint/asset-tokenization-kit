@@ -8,11 +8,13 @@ import {
   TokenCreateSchema,
   type TokenCreateInput,
 } from "@/orpc/routes/token/routes/token.create.schema";
-
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+
+const logger = createLogger();
 
 interface CreateDepositFormProps {
   onSuccess?: () => void;
@@ -56,7 +58,7 @@ export function CreateDepositForm({ onSuccess }: CreateDepositFormProps) {
   const { mutate: createDeposit, isPending } = useStreamingMutation({
     mutationOptions: orpc.token.create.mutationOptions(),
     onSuccess: (transactionHash) => {
-      console.log("Transaction hash:", transactionHash);
+      logger.info("Transaction hash", { transactionHash });
       form.reset();
       onSuccess?.();
     },
