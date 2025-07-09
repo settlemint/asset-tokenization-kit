@@ -178,20 +178,12 @@ function PlatformOnboarding() {
   const assetsActionRef = useRef<(() => void) | null>(null);
 
   const handleNext = useCallback(() => {
-    console.log("🎮 handleNext called, currentStepId:", currentStepId);
-    console.log("🎮 currentStepIndex:", currentStepIndex);
-    console.log("🎮 steps:", steps);
-
     // If we're on wallet step and wallet, move to next step
     if (currentStepId === "wallet") {
       const nextStep = steps[currentStepIndex + 1];
-      console.log("🎮 nextStep:", nextStep);
       if (nextStep) {
         // If going to security step, mark as explicit navigation (user clicked "Secure my wallet")
         if (nextStep.id === "security") {
-          console.log(
-            "🚀 Setting isExplicitSecurityNavigation to true - user clicked Secure my wallet"
-          );
           setIsExplicitSecurityNavigation(true);
         }
         setCurrentStepId(nextStep.id);
@@ -412,10 +404,6 @@ function PlatformOnboarding() {
                     />
                   );
                 } else if (currentStepId === "security") {
-                  console.log(
-                    "🔍 Rendering WalletSecurityStep with forceShowSelection:",
-                    isExplicitSecurityNavigation
-                  );
                   return (
                     <WalletSecurityStep
                       onNext={handleSecuritySuccess}

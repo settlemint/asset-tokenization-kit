@@ -20,6 +20,10 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       requiredClaimTopics {
         name
       }
+      collateral {
+        collateral
+        expiryTimestamp
+      }
       accessControl {
         ...AccessControlFragment
       }

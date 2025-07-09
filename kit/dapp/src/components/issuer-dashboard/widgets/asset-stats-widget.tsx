@@ -26,7 +26,7 @@ export function AssetStatsWidget() {
   );
 
   // Create dynamic breakdown text using proper i18n pluralization
-  const assetBreakdownText = Object.entries(metrics.assetBreakdown ?? {})
+  const assetBreakdownText = Object.entries(metrics.assetBreakdown)
     .filter(([, count]) => count > 0) // Only show asset types that exist
     .map(([assetType, count]) => {
       const translatedType = pluralizeAsset(assetType, count);

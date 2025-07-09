@@ -171,14 +171,6 @@ export default defineConfig([
       // ========================================================================
       // CODE QUALITY
       // ========================================================================
-      "max-lines": [
-        "warn",
-        {
-          max: 500,
-          skipBlankLines: true,
-          skipComments: true,
-        },
-      ],
       "react/no-multi-comp": [
         "error",
         {

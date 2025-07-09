@@ -66,7 +66,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   logger.debug("Form created", {
     hasForm: !!form,
-    formState: form.state ? "available" : "unavailable",
+    formState: "available",
     defaultValues: defaultValues,
   });
 

@@ -2,7 +2,7 @@ import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
 import { MultiStepWizard } from "@/components/multistep-form";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
-import { WelcomeScreen } from "@/components/onboarding/steps";
+import { WelcomeScreen } from "@/components/onboarding/steps/welcome-screen";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {

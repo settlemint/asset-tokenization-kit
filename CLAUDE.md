@@ -248,3 +248,6 @@ The project integrates with:
 - Since we use Tanstack Start, we do not need `use client;`
 - When i ask you to fix something, i do not care if it is related to our current
   change or not
+- ts files in kit/subgraph are AssemblyScript, not TypeScript!!!!
+- Never change files in the kit/dapp/src/components/ui folder, they are shadcn
+  components and should not be modified

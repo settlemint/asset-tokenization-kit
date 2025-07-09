@@ -2,12 +2,10 @@ import type {
   StepDefinition,
   StepGroup,
 } from "@/components/multistep-form/types";
-import {
-  RecoveryCodesStep,
-  SystemBootstrapStep,
-  WalletDisplayStep,
-  WalletSecurityStep,
-} from "@/components/onboarding/steps";
+import { RecoveryCodesStep } from "@/components/onboarding/steps/recovery-codes-step";
+import { SystemBootstrapStep } from "@/components/onboarding/steps/system-bootstrap-step";
+import { WalletDisplayStep } from "@/components/onboarding/steps/wallet-display-step";
+import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
 
 import { useMemo } from "react";
 import { z } from "zod/v4";
@@ -142,12 +140,6 @@ export function useOnboardingSteps({
             // They can click Continue if they're happy with existing security
             const forceShowSelection = true;
 
-            console.log("🎯 WalletSecurityStep in useOnboardingSteps:", {
-              hasWallet: Boolean(user?.wallet),
-              hasPincode: Boolean(user?.pincodeEnabled),
-              forceShowSelection,
-            });
-
             return (
               <WalletSecurityStep
                 onNext={onNext}
@@ -231,13 +223,7 @@ export function useOnboardingSteps({
     }
 
     return dynamicSteps;
-  }, [
-    shouldShowWalletSteps,
-    shouldShowSystemSetupSteps,
-    shouldShowIdentitySteps,
-    systemAddress,
-    user,
-  ]);
+  }, [shouldShowWalletSteps, shouldShowSystemSetupSteps, systemAddress, user]);
 
   const defaultValues: Partial<OnboardingFormData> = useMemo(
     () => ({

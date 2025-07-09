@@ -28,7 +28,7 @@ export function AssetSupplyChart() {
   );
 
   // Convert asset supply breakdown to chart data format
-  const chartData = Object.entries(metrics.assetSupplyBreakdown ?? {})
+  const chartData = Object.entries(metrics.assetSupplyBreakdown)
     .filter(([, supply]) => Number(supply) > 0) // Only show asset types with supply
     .map(([type, supply]) => ({
       assetType: type,

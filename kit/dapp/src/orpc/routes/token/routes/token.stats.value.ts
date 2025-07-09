@@ -51,11 +51,8 @@ const ValueMetricsResponseSchema = z.object({
 export const statsValue = authRouter.token.statsValue
   .use(systemMiddleware)
   .use(theGraphMiddleware)
-  .handler(async ({ context, errors }) => {
-    // Ensure system context exists
-    if (!context.system) {
-      throw errors.SYSTEM_NOT_CREATED();
-    }
+  .handler(async ({ context }) => {
+    // System context is guaranteed by systemMiddleware
 
     // Fetch system value from TheGraph
     const response = await context.theGraphClient.query(VALUE_METRICS_QUERY, {

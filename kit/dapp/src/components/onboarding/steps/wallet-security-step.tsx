@@ -137,11 +137,6 @@ export function WalletSecurityStep({
   // Reset temporary state when component mounts or when navigating back
   // This ensures clean state for new selections and initializes toggle states
   useEffect(() => {
-    console.log("🔄 Initialization useEffect running", {
-      forceShowSelection,
-      hasPincode,
-      hasTwoFactor,
-    });
     setSelectedSecurityMethod(null);
     setIsPincodeSet(false);
     setIsOtpEnabled(false);
@@ -150,7 +145,6 @@ export function WalletSecurityStep({
     setOtpCode("");
     setShowSuccessButton(false);
     // Only force selection screen when explicitly requested (e.g., "Secure my wallet" button)
-    console.log("🎯 Setting wantsToModifySecurity to:", forceShowSelection);
     setWantsToModifySecurity(forceShowSelection);
     // Initialize toggle states based on current backend state
     setIsPinSelected(hasPincode);
@@ -511,28 +505,6 @@ export function WalletSecurityStep({
   );
 
   const handleNext = useCallback(() => {
-    console.log("🚀 CONTINUE BUTTON CLICKED - handleNext called");
-    console.log("shouldShowEducationalContent:", shouldShowEducationalContent);
-    console.log("shouldShowSuccess:", shouldShowSuccess);
-
-    // Debug why shouldShowSuccess is false
-    console.log("Success condition breakdown:");
-    console.log("  !wantsToModifySecurity:", !wantsToModifySecurity);
-    console.log("  isPincodeSet:", isPincodeSet);
-    console.log("  isOtpEnabled:", isOtpEnabled);
-    console.log("  hasAnySecurityMethod:", hasAnySecurityMethod);
-    console.log("  !needsToSetupAny:", !needsToSetupAny);
-    console.log(
-      "  isPinSelected === hasPincode:",
-      isPinSelected === hasPincode,
-      `(${isPinSelected} === ${hasPincode})`
-    );
-    console.log(
-      "  isOtpSelected === hasTwoFactor:",
-      isOtpSelected === hasTwoFactor,
-      `(${isOtpSelected} === ${hasTwoFactor})`
-    );
-
     if (shouldShowEducationalContent) {
       // Check if user has made valid selections and wants to proceed
       const hasValidSelection =
@@ -542,20 +514,13 @@ export function WalletSecurityStep({
         isOtpSelected === hasTwoFactor;
 
       if (hasValidSelection) {
-        console.log("✅ Valid selection made, showing success screen");
         setWantsToModifySecurity(false); // Allow success screen to show
         return;
       }
 
-      console.log(
-        "❌ Returning early - shouldShowEducationalContent is true, no valid selection"
-      );
       return;
     } else if (shouldShowSuccess) {
-      console.log("✅ Calling onNext - shouldShowSuccess is true");
       onNext?.();
-    } else {
-      console.log("⚠️ Neither condition met - doing nothing");
     }
   }, [
     shouldShowEducationalContent,
@@ -567,9 +532,6 @@ export function WalletSecurityStep({
     hasPincode,
     isOtpSelected,
     hasTwoFactor,
-    wantsToModifySecurity,
-    isPincodeSet,
-    isOtpEnabled,
     setWantsToModifySecurity,
   ]);
 
