@@ -7,34 +7,23 @@ import type {
   StepGroup,
 } from "@/components/multistep-form/types";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
-import {
-  RecoveryCodesStep,
-  SystemBootstrapStep,
-  WalletDisplayStep,
-  WalletSecurityStep,
-} from "@/components/onboarding/steps";
+import { RecoveryCodesStep } from "@/components/onboarding/steps/recovery-codes-step";
+import { SystemBootstrapStep } from "@/components/onboarding/steps/system-bootstrap-step";
+import { WalletDisplayStep } from "@/components/onboarding/steps/wallet-display-step";
+import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
+import { WelcomeScreen } from "@/components/onboarding/steps/welcome-screen";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
+import type { SessionUser } from "@/lib/auth";
 import { authClient } from "@/lib/auth/auth.client";
+import type { OnboardingType } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import {
-  onboardingSchema,
-  type OnboardingFormData,
-  getAllowedOnboardingTypes,
-  shouldShowWalletSteps as checkShouldShowWalletSteps,
-  shouldShowSystemSetupSteps as checkShouldShowSystemSetupSteps,
-  shouldShowIdentitySteps as checkShouldShowIdentitySteps,
-} from "@/components/onboarding/onboarding-utils";
-import { WelcomeScreenHandler } from "@/components/onboarding/welcome-screen-handler";
-import {
-  NoStepsAvailable,
-  ErrorLoadingSteps,
-} from "@/components/onboarding/error-states";
+import { z } from "zod/v4";
 
 const logger = createLogger();
 
@@ -62,6 +51,45 @@ export const Route = createFileRoute("/_private/onboarding/platform-new")({
   },
   component: PlatformNewOnboarding,
 });
+
+// Define the onboarding form schema
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const onboardingSchema = z.object({
+  // Wallet Configuration
+  walletGenerated: z.boolean().default(false),
+  walletAddress: z.string().optional(),
+  walletSecured: z.boolean().default(false),
+
+  // System Bootstrap
+  systemBootstrapped: z.boolean().default(false),
+  systemAddress: z.string().optional(),
+  baseCurrency: z.string().default("USD"),
+
+  // Asset Configuration
+  selectedAssetTypes: z
+    .array(z.enum(["equity", "bond", "deposit", "fund", "stablecoin"]))
+    .default([]),
+  assetFactoriesDeployed: z.boolean().default(false),
+
+  // Add-ons Configuration
+  selectedAddons: z
+    .array(z.enum(["airdrops", "xvp", "yield", "governance", "analytics"]))
+    .default([]),
+  addonsConfigured: z.boolean().default(false),
+
+  // Identity & KYC
+  kycCompleted: z.boolean().default(false),
+  identityRegistered: z.boolean().default(false),
+  // KYC Data
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  dateOfBirth: z.string().optional(),
+  nationality: z.string().optional(),
+  residenceCountry: z.string().optional(),
+  investorType: z.enum(["retail", "professional", "institutional"]).optional(),
+});
+
+type OnboardingFormData = z.infer<typeof onboardingSchema>;
 
 function PlatformNewOnboarding() {
   const { t } = useTranslation(["general", "onboarding"]);
@@ -594,11 +622,13 @@ function PlatformNewOnboarding() {
               Debug Info: Steps: {steps.length}, Groups: {groups.length}
             </p>
             <p className="text-sm text-muted-foreground">
-              shouldShowWalletSteps: {String(shouldShowWalletSteps)}
+              shouldShowWalletSteps: {shouldShowWalletSteps ? "true" : "false"}
               <br />
-              shouldShowSystemSetupSteps: {String(shouldShowSystemSetupSteps)}
+              shouldShowSystemSetupSteps:{" "}
+              {shouldShowSystemSetupSteps ? "true" : "false"}
               <br />
-              shouldShowIdentitySteps: {String(shouldShowIdentitySteps)}
+              shouldShowIdentitySteps:{" "}
+              {shouldShowIdentitySteps ? "true" : "false"}
               <br />
               systemAddress: {systemAddress ?? "null"}
             </p>

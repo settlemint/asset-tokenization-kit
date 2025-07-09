@@ -327,7 +327,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
                     : "Setup Wizard"}
                 </h2>
                 <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
-                  {description || "Configure your platform step by step"}
+                  {description ?? "Configure your platform step by step"}
                 </p>
 
                 {showProgressBar && (

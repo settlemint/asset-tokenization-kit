@@ -185,7 +185,7 @@ export function WizardField<TFormData>({
               )}
             >
               <SelectValue
-                placeholder={fieldDef.placeholder || "Select an option"}
+                placeholder={fieldDef.placeholder ?? "Select an option"}
               />
             </SelectTrigger>
             <SelectContent>
