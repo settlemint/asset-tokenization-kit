@@ -22,12 +22,16 @@ export function DataTableEmptyState({
   description,
 }: DataTableEmptyStateProps) {
   return (
-    <div className="py-8 px-6 text-center">
-      <div className="flex items-center justify-center gap-2 text-muted-foreground mb-2">
-        <Icon className="size-4" />
-        <p className="font-medium text-sm">{title}</p>
-      </div>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
+    <Card className="bg-muted/30">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-foreground text-base font-medium">
+          <Icon className="size-4" />
+          {title}
+        </CardTitle>
+        <CardDescription className="text-sm text-muted-foreground">
+          {description}
+        </CardDescription>
+      </CardHeader>
+    </Card>
   );
 }
