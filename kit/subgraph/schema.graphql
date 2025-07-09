@@ -37,6 +37,30 @@ type EventValue @entity(immutable: true) {
 }
 
 # ==================================================
+# ACTIONS
+# ==================================================
+
+type ActionExecutor @entity(immutable: false) {
+  id: Bytes!
+  executors: [Account!]!
+  actions: [Action!]! @derivedFrom(field: "executor")
+}
+
+type Action @entity(immutable: false) {
+  id: Bytes!
+  executor: ActionExecutor!
+  name: String!
+  type: String!
+  createdAt: BigInt!
+  activeAt: BigInt!
+  expiresAt: BigInt
+  executedAt: BigInt
+  executed: Boolean!
+  target: Account!
+  executedBy: Account
+}
+
+# ==================================================
 # ACCESS CONTROL & SYSTEM
 # ==================================================
 
