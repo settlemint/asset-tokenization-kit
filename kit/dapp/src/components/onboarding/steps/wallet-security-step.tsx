@@ -146,10 +146,26 @@ export function WalletSecurityStep({
   const { mutate: enableTwoFactor, isPending: isEnablingTwoFactor } =
     useMutation({
       mutationFn: async () => {
-        logger.debug("enableTwoFactor called");
-        return authClient.twoFactor.enable({
-          // Password is not required during initial onboarding
+        logger.debug("enableTwoFactor called - using direct fetch");
+        // Use direct fetch to bypass Better Auth client method inference issue
+        const response = await fetch("/api/auth/two-factor/enable", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            // Pass empty/undefined password for onboarding flow
+            // The server should handle this gracefully during onboarding
+            password: undefined,
+          }),
+          credentials: "include", // Include cookies for session
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        return response.json();
       },
       onSuccess: (data) => {
         logger.debug("enableTwoFactor success:", data);
@@ -164,6 +180,7 @@ export function WalletSecurityStep({
       },
       onError: (error: Error) => {
         logger.error("enableTwoFactor error:", error);
+        setOtpSetupError(true); // Prevent infinite loop
         toast.error(error.message || "Failed to setup OTP");
       },
     });
@@ -201,12 +218,26 @@ export function WalletSecurityStep({
   });
 
   // Auto-start OTP setup when the OTP screen is first shown
+  // Add error tracking to prevent infinite loops
+  const [otpSetupError, setOtpSetupError] = useState(false);
+
   useEffect(() => {
-    if (selectedSecurityMethod === "otp" && !otpUri && !isEnablingTwoFactor) {
+    if (
+      selectedSecurityMethod === "otp" &&
+      !otpUri &&
+      !isEnablingTwoFactor &&
+      !otpSetupError
+    ) {
       logger.debug("Auto-starting OTP setup");
       enableTwoFactor();
     }
-  }, [selectedSecurityMethod, otpUri, isEnablingTwoFactor, enableTwoFactor]); // Add all dependencies
+  }, [
+    selectedSecurityMethod,
+    otpUri,
+    isEnablingTwoFactor,
+    enableTwoFactor,
+    otpSetupError,
+  ]); // Add all dependencies
 
   // Debug logging
   logger.debug("WalletSecurityStep render:", {
@@ -319,6 +350,7 @@ export function WalletSecurityStep({
     setShowConfirmPincode(false);
     setOtpUri(null);
     setOtpCode("");
+    setOtpSetupError(false); // Reset error state
     form.reset();
   }, [form]);
 
@@ -336,6 +368,7 @@ export function WalletSecurityStep({
       setSelectedSecurityMethod("pin");
     } else if (isOtpSelected && !hasTwoFactor) {
       logger.debug("Setting up OTP");
+      setOtpSetupError(false); // Reset error state when manually setting up
       setSelectedSecurityMethod("otp");
       // enableTwoFactor will be called automatically by useEffect
     }
@@ -654,7 +687,28 @@ export function WalletSecurityStep({
                 {/* QR Code */}
                 <div className="flex justify-center">
                   <div className="p-4 bg-white rounded-lg border shadow-sm">
-                    {otpUri ? (
+                    {otpSetupError ? (
+                      <div className="w-36 h-36 flex items-center justify-center">
+                        <div className="text-center">
+                          <svg
+                            className="mx-auto h-8 w-8 text-red-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          <p className="mt-2 text-sm text-red-600">
+                            Setup failed
+                          </p>
+                        </div>
+                      </div>
+                    ) : otpUri ? (
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(otpUri)}`}
                         alt="QR Code for OTP Setup"
@@ -694,72 +748,97 @@ export function WalletSecurityStep({
 
                 {/* Verification section */}
                 <div className="space-y-4">
-                  <h4 className="text-base font-semibold">
-                    Verify the code from the app
-                  </h4>
+                  {otpSetupError ? (
+                    <>
+                      <h4 className="text-base font-semibold text-red-600">
+                        Setup Failed
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        Unable to set up two-factor authentication. This may be
+                        because you need to provide your password.
+                      </p>
+                      <div className="flex justify-center">
+                        <Button
+                          onClick={() => {
+                            setOtpSetupError(false);
+                            enableTwoFactor();
+                          }}
+                          variant="outline"
+                        >
+                          Try Again
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <h4 className="text-base font-semibold">
+                        Verify the code from the app
+                      </h4>
 
-                  <div className="flex justify-center">
-                    <InputOTP
-                      value={otpCode}
-                      onChange={setOtpCode}
-                      maxLength={6}
-                      disabled={
-                        isVerifyingOtp || isEnablingTwoFactor || !otpUri
-                      }
-                    >
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                      </InputOTPGroup>
-                      <InputOTPSeparator />
-                      <InputOTPGroup>
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
+                      <div className="flex justify-center">
+                        <InputOTP
+                          value={otpCode}
+                          onChange={setOtpCode}
+                          maxLength={6}
+                          disabled={
+                            isVerifyingOtp || isEnablingTwoFactor || !otpUri
+                          }
+                        >
+                          <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                          </InputOTPGroup>
+                          <InputOTPSeparator />
+                          <InputOTPGroup>
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
+                          </InputOTPGroup>
+                        </InputOTP>
+                      </div>
 
-                  {/* Confirm button */}
-                  <div className="flex justify-center">
-                    <Button
-                      onClick={handleOtpVerification}
-                      disabled={
-                        isVerifyingOtp ||
-                        isEnablingTwoFactor ||
-                        otpCode.length !== 6 ||
-                        !otpUri
-                      }
-                      className="min-w-[120px]"
-                    >
-                      {isVerifyingOtp ? (
-                        <>
-                          <svg
-                            className="mr-2 h-4 w-4 animate-spin"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            />
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            />
-                          </svg>
-                          Verifying...
-                        </>
-                      ) : (
-                        "Confirm"
-                      )}
-                    </Button>
-                  </div>
+                      {/* Confirm button */}
+                      <div className="flex justify-center">
+                        <Button
+                          onClick={handleOtpVerification}
+                          disabled={
+                            isVerifyingOtp ||
+                            isEnablingTwoFactor ||
+                            otpCode.length !== 6 ||
+                            !otpUri
+                          }
+                          className="min-w-[120px]"
+                        >
+                          {isVerifyingOtp ? (
+                            <>
+                              <svg
+                                className="mr-2 h-4 w-4 animate-spin"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                />
+                              </svg>
+                              Verifying...
+                            </>
+                          ) : (
+                            "Confirm"
+                          )}
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
