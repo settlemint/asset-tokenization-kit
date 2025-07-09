@@ -68,6 +68,8 @@ function PlatformOnboarding() {
   // Start with first step, will update when data loads
   const [currentStepId, setCurrentStepId] = useState("wallet");
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [isExplicitSecurityNavigation, setIsExplicitSecurityNavigation] =
+    useState(false);
 
   // Determine initial step based on what's completed
   const getInitialStep = useCallback(() => {
@@ -144,11 +146,14 @@ function PlatformOnboarding() {
   }, []);
 
   const handleWalletSuccess = useCallback(() => {
-    // Auto-advance to security step after wallet generation
+    // Auto-advance to security step after wallet generation (normal flow)
+    setIsExplicitSecurityNavigation(false); // This is automatic navigation, not explicit
     setCurrentStepId("security");
   }, []);
 
   const handleSecuritySuccess = useCallback(() => {
+    // Reset the explicit navigation flag
+    setIsExplicitSecurityNavigation(false);
     // Auto-advance to system step after PIN setup
     setCurrentStepId("system");
   }, []);
@@ -173,10 +178,22 @@ function PlatformOnboarding() {
   const assetsActionRef = useRef<(() => void) | null>(null);
 
   const handleNext = useCallback(() => {
+    console.log("🎮 handleNext called, currentStepId:", currentStepId);
+    console.log("🎮 currentStepIndex:", currentStepIndex);
+    console.log("🎮 steps:", steps);
+
     // If we're on wallet step and wallet, move to next step
     if (currentStepId === "wallet") {
       const nextStep = steps[currentStepIndex + 1];
+      console.log("🎮 nextStep:", nextStep);
       if (nextStep) {
+        // If going to security step, mark as explicit navigation (user clicked "Secure my wallet")
+        if (nextStep.id === "security") {
+          console.log(
+            "🚀 Setting isExplicitSecurityNavigation to true - user clicked Secure my wallet"
+          );
+          setIsExplicitSecurityNavigation(true);
+        }
         setCurrentStepId(nextStep.id);
       }
       return;
@@ -395,12 +412,17 @@ function PlatformOnboarding() {
                     />
                   );
                 } else if (currentStepId === "security") {
+                  console.log(
+                    "🔍 Rendering WalletSecurityStep with forceShowSelection:",
+                    isExplicitSecurityNavigation
+                  );
                   return (
                     <WalletSecurityStep
                       onNext={handleSecuritySuccess}
                       onPrevious={handleWalletSuccess}
                       isFirstStep={false}
                       isLastStep={false}
+                      forceShowSelection={isExplicitSecurityNavigation}
                     />
                   );
                 } else if (currentStepId === "system") {

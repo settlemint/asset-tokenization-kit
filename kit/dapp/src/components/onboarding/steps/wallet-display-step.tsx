@@ -174,6 +174,21 @@ export function WalletDisplayStep({
                 </div>
               </div>
 
+              {/* Educational text */}
+              <div className="space-y-4 mb-6">
+                <p className="text-base text-foreground leading-relaxed">
+                  Your wallet is being created...
+                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  We're generating secure cryptographic keys that will serve as
+                  your unique digital identity on the blockchain. This process
+                  creates a mathematical pair of keys - one private (kept
+                  secret) and one public (shareable) - that enables you to
+                  securely interact with digital assets and verify your
+                  identity.
+                </p>
+              </div>
+
               {/* Progress Bar */}
               <div className="space-y-2">
                 <div className="w-full bg-secondary rounded-full h-2">

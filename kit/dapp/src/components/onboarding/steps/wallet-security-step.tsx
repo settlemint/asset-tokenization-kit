@@ -35,6 +35,7 @@ interface WalletSecurityStepProps {
   user?: any; // Use any for now to match the user type from session
   onSuccess?: () => void; // Callback when security step is completed successfully
   onRegisterAction?: (action: () => void) => void; // Register an action for external triggers
+  forceShowSelection?: boolean; // Force showing selection screen instead of success
 }
 
 const pincodeSchema = z
@@ -57,6 +58,7 @@ export function WalletSecurityStep({
   user,
   onSuccess,
   onRegisterAction,
+  forceShowSelection = false,
 }: WalletSecurityStepProps) {
   const { sessionKey } = useContext(AuthQueryContext);
 
@@ -79,12 +81,50 @@ export function WalletSecurityStep({
   const [isPinSelected, setIsPinSelected] = useState(false);
   const [isOtpSelected, setIsOtpSelected] = useState(false);
 
-  // Show educational content when not actively setting up a specific method
-  // This allows users to toggle and choose what to set up
-  const shouldShowEducationalContent = selectedSecurityMethod === null;
+  // Track when user wants to modify security (override success screen)
+  const [wantsToModifySecurity, setWantsToModifySecurity] = useState(false);
 
-  // Only show success when user has completed setup in this current session
-  const shouldShowSuccess = isPincodeSet || isOtpEnabled;
+  // Check if user needs to set up any new security methods
+  const needsToSetupPin = isPinSelected && !hasPincode;
+  const needsToSetupOtp = isOtpSelected && !hasTwoFactor;
+  const needsToSetupAny = needsToSetupPin || needsToSetupOtp;
+
+  // Show success when user has completed setup in this session
+  // OR when they have existing security and explicitly don't want to add more (both toggles match existing state)
+  // BUT NOT when they explicitly want to modify their security
+  const shouldShowSuccess =
+    !wantsToModifySecurity &&
+    (isPincodeSet ||
+      isOtpEnabled ||
+      (hasAnySecurityMethod &&
+        !needsToSetupAny &&
+        isPinSelected === hasPincode &&
+        isOtpSelected === hasTwoFactor));
+
+  // Auto-enable success button when user is using existing security
+  useEffect(() => {
+    if (
+      shouldShowSuccess &&
+      hasAnySecurityMethod &&
+      !needsToSetupAny &&
+      !isPincodeSet &&
+      !isOtpEnabled
+    ) {
+      logger.debug("Setting showSuccessButton to true for existing security");
+      setShowSuccessButton(true);
+    }
+  }, [
+    shouldShowSuccess,
+    hasAnySecurityMethod,
+    needsToSetupAny,
+    isPincodeSet,
+    isOtpEnabled,
+  ]);
+
+  // Show educational content when not actively setting up a specific method AND not showing success
+  // This allows users to toggle and choose what to set up
+  const shouldShowEducationalContent =
+    selectedSecurityMethod === null && !shouldShowSuccess;
 
   const form = useForm<PincodeFormValues>({
     resolver: zodResolver(pincodeSchema),
@@ -97,6 +137,11 @@ export function WalletSecurityStep({
   // Reset temporary state when component mounts or when navigating back
   // This ensures clean state for new selections and initializes toggle states
   useEffect(() => {
+    console.log("🔄 Initialization useEffect running", {
+      forceShowSelection,
+      hasPincode,
+      hasTwoFactor,
+    });
     setSelectedSecurityMethod(null);
     setIsPincodeSet(false);
     setIsOtpEnabled(false);
@@ -104,11 +149,14 @@ export function WalletSecurityStep({
     setOtpUri(null);
     setOtpCode("");
     setShowSuccessButton(false);
+    // Only force selection screen when explicitly requested (e.g., "Secure my wallet" button)
+    console.log("🎯 Setting wantsToModifySecurity to:", forceShowSelection);
+    setWantsToModifySecurity(forceShowSelection);
     // Initialize toggle states based on current backend state
     setIsPinSelected(hasPincode);
     setIsOtpSelected(hasTwoFactor);
     form.reset();
-  }, [form, hasPincode, hasTwoFactor]); // Include backend state dependencies
+  }, [form, hasPincode, hasTwoFactor, forceShowSelection]); // Include backend state dependencies
 
   const { mutate: enablePincode, isPending } = useMutation({
     mutationFn: async (data: PincodeFormValues) =>
@@ -169,7 +217,7 @@ export function WalletSecurityStep({
       },
       onSuccess: (data) => {
         logger.debug("enableTwoFactor success:", data);
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
         if (data && typeof data === "object" && "totpURI" in data) {
           setOtpUri(data.totpURI as string);
           toast.success("OTP setup initiated");
@@ -240,16 +288,35 @@ export function WalletSecurityStep({
   ]); // Add all dependencies
 
   // Debug logging
-  logger.debug("WalletSecurityStep render:", {
+  logger.debug("WalletSecurityStep DEBUG:", {
     selectedSecurityMethod,
     shouldShowEducationalContent,
     shouldShowSuccess,
-    otpUri,
-    isEnablingTwoFactor,
     isPinSelected,
     isOtpSelected,
     hasPincode,
     hasTwoFactor,
+    isPincodeSet,
+    isOtpEnabled,
+    needsToSetupPin,
+    needsToSetupOtp,
+    needsToSetupAny,
+    hasAnySecurityMethod,
+    showSuccessButton,
+    wantsToModifySecurity,
+    forceShowSelection,
+  });
+
+  // Detailed success condition breakdown for debugging
+  logger.debug("Success condition breakdown:", {
+    "!wantsToModifySecurity": !wantsToModifySecurity,
+    isPincodeSet: isPincodeSet,
+    isOtpEnabled: isOtpEnabled,
+    hasAnySecurityMethod: hasAnySecurityMethod,
+    "!needsToSetupAny": !needsToSetupAny,
+    "isPinSelected === hasPincode": isPinSelected === hasPincode,
+    "isOtpSelected === hasTwoFactor": isOtpSelected === hasTwoFactor,
+    "final result": shouldShowSuccess,
   });
 
   // Watch for changes in confirm PIN to handle real-time validation
@@ -328,6 +395,11 @@ export function WalletSecurityStep({
     }
   }, [isOtpSelected, selectedSecurityMethod]);
 
+  const handleOtpRetry = useCallback(() => {
+    setOtpSetupError(false);
+    enableTwoFactor();
+  }, [enableTwoFactor]);
+
   const handleInitialPinSubmit = useCallback(() => {
     const pincode = form.getValues("pincode");
     if (pincode.length === 6) {
@@ -346,11 +418,15 @@ export function WalletSecurityStep({
   }, [otpCode, verifyOtp]);
 
   const handleBackToSecurityOptions = useCallback(() => {
+    logger.debug(
+      "handleBackToSecurityOptions called - going back to selection screen"
+    );
     setSelectedSecurityMethod(null);
     setShowConfirmPincode(false);
     setOtpUri(null);
     setOtpCode("");
     setOtpSetupError(false); // Reset error state
+    setWantsToModifySecurity(true); // Override success screen
     form.reset();
   }, [form]);
 
@@ -435,14 +511,67 @@ export function WalletSecurityStep({
   );
 
   const handleNext = useCallback(() => {
+    console.log("🚀 CONTINUE BUTTON CLICKED - handleNext called");
+    console.log("shouldShowEducationalContent:", shouldShowEducationalContent);
+    console.log("shouldShowSuccess:", shouldShowSuccess);
+
+    // Debug why shouldShowSuccess is false
+    console.log("Success condition breakdown:");
+    console.log("  !wantsToModifySecurity:", !wantsToModifySecurity);
+    console.log("  isPincodeSet:", isPincodeSet);
+    console.log("  isOtpEnabled:", isOtpEnabled);
+    console.log("  hasAnySecurityMethod:", hasAnySecurityMethod);
+    console.log("  !needsToSetupAny:", !needsToSetupAny);
+    console.log(
+      "  isPinSelected === hasPincode:",
+      isPinSelected === hasPincode,
+      `(${isPinSelected} === ${hasPincode})`
+    );
+    console.log(
+      "  isOtpSelected === hasTwoFactor:",
+      isOtpSelected === hasTwoFactor,
+      `(${isOtpSelected} === ${hasTwoFactor})`
+    );
+
     if (shouldShowEducationalContent) {
-      // This should be handled by the security option buttons
+      // Check if user has made valid selections and wants to proceed
+      const hasValidSelection =
+        hasAnySecurityMethod &&
+        !needsToSetupAny &&
+        isPinSelected === hasPincode &&
+        isOtpSelected === hasTwoFactor;
+
+      if (hasValidSelection) {
+        console.log("✅ Valid selection made, showing success screen");
+        setWantsToModifySecurity(false); // Allow success screen to show
+        return;
+      }
+
+      console.log(
+        "❌ Returning early - shouldShowEducationalContent is true, no valid selection"
+      );
       return;
     } else if (shouldShowSuccess) {
+      console.log("✅ Calling onNext - shouldShowSuccess is true");
       onNext?.();
+    } else {
+      console.log("⚠️ Neither condition met - doing nothing");
     }
-    // Remove PIN entry logic from here as it's now handled by individual Confirm buttons
-  }, [shouldShowEducationalContent, shouldShowSuccess, onNext]);
+  }, [
+    shouldShowEducationalContent,
+    shouldShowSuccess,
+    onNext,
+    hasAnySecurityMethod,
+    needsToSetupAny,
+    isPinSelected,
+    hasPincode,
+    isOtpSelected,
+    hasTwoFactor,
+    wantsToModifySecurity,
+    isPincodeSet,
+    isOtpEnabled,
+    setWantsToModifySecurity,
+  ]);
 
   // Register the action for external triggers (like step wizard buttons)
   useEffect(() => {
@@ -487,51 +616,124 @@ export function WalletSecurityStep({
           {!shouldShowEducationalContent && !shouldShowSuccess && (
             <div className="flex justify-center mb-8">
               <div className="flex items-center">
-                {/* Step 1: Create PIN */}
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-500 text-white z-10">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-
-                {/* Line between steps */}
-                <div className="w-16 h-0.5 bg-gray-300 -mx-px"></div>
-
-                {/* Step 2: Confirm PIN / Setup OTP */}
+                {/* Step 1: Enter PIN */}
                 <div
                   className={`flex items-center justify-center w-8 h-8 rounded-full border-2 z-10 transition-all duration-300 ${
-                    showConfirmPincode ||
-                    (selectedSecurityMethod === "otp" && otpUri)
-                      ? "bg-primary border-primary text-white"
+                    (selectedSecurityMethod === "pin" &&
+                      form.watch("pincode").length === 6) ||
+                    isPincodeSet ||
+                    hasPincode
+                      ? "bg-green-500 border-green-500 text-white"
                       : "bg-white border-gray-300 text-gray-400"
                   }`}
                 >
-                  <div
-                    className={`w-3 h-3 rounded-full ${
-                      showConfirmPincode ||
-                      (selectedSecurityMethod === "otp" && otpUri)
-                        ? "bg-white"
-                        : "bg-gray-300"
-                    }`}
-                  ></div>
+                  {(selectedSecurityMethod === "pin" &&
+                    form.watch("pincode").length === 6) ||
+                  isPincodeSet ||
+                  hasPincode ? (
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  ) : (
+                    <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+                  )}
                 </div>
 
                 {/* Line between steps */}
-                <div className="w-16 h-0.5 bg-gray-300 -mx-px"></div>
+                <div
+                  className={`w-16 h-0.5 -mx-px transition-all duration-300 ${
+                    (selectedSecurityMethod === "pin" &&
+                      form.watch("pincode").length === 6) ||
+                    isPincodeSet ||
+                    hasPincode
+                      ? "bg-green-500"
+                      : "bg-gray-300"
+                  }`}
+                ></div>
 
-                {/* Step 3: Recovery Codes */}
-                <div className="flex items-center justify-center w-8 h-8 rounded-full border-2 border-gray-300 bg-white text-gray-400 z-10">
-                  <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+                {/* Step 2: Confirm PIN */}
+                <div
+                  className={`flex items-center justify-center w-8 h-8 rounded-full border-2 z-10 transition-all duration-300 ${
+                    isPincodeSet ||
+                    hasPincode ||
+                    (showConfirmPincode &&
+                      form.watch("confirmPincode").length === 6 &&
+                      form.watch("pincode") === form.watch("confirmPincode"))
+                      ? "bg-green-500 border-green-500 text-white"
+                      : "bg-white border-gray-300 text-gray-400"
+                  }`}
+                >
+                  {isPincodeSet ||
+                  hasPincode ||
+                  (showConfirmPincode &&
+                    form.watch("confirmPincode").length === 6 &&
+                    form.watch("pincode") === form.watch("confirmPincode")) ? (
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  ) : (
+                    <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+                  )}
+                </div>
+
+                {/* Line between steps */}
+                <div
+                  className={`w-16 h-0.5 -mx-px transition-all duration-300 ${
+                    isPincodeSet ||
+                    hasPincode ||
+                    (showConfirmPincode &&
+                      form.watch("confirmPincode").length === 6 &&
+                      form.watch("pincode") === form.watch("confirmPincode"))
+                      ? "bg-green-500"
+                      : "bg-gray-300"
+                  }`}
+                ></div>
+
+                {/* Step 3: OTP Setup */}
+                <div
+                  className={`flex items-center justify-center w-8 h-8 rounded-full border-2 z-10 transition-all duration-300 ${
+                    isOtpEnabled || hasTwoFactor
+                      ? "bg-green-500 border-green-500 text-white"
+                      : "bg-white border-gray-300 text-gray-400"
+                  }`}
+                >
+                  {isOtpEnabled || hasTwoFactor ? (
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  ) : (
+                    <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+                  )}
                 </div>
               </div>
             </div>
@@ -653,12 +855,14 @@ export function WalletSecurityStep({
 
                   {/* OTP Toggle */}
                   <div
-                    className={`flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
-                      isOtpSelected
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
+                    className={`flex-1 p-4 rounded-lg border-2 transition-all duration-200 ${
+                      otpSetupError
+                        ? "border-red-200 bg-red-50 opacity-50 cursor-not-allowed"
+                        : isOtpSelected
+                          ? "border-primary bg-primary/5 cursor-pointer"
+                          : "border-border hover:border-primary/50 cursor-pointer"
                     }`}
-                    onClick={handleOtpToggle}
+                    onClick={otpSetupError ? undefined : handleOtpToggle}
                   >
                     <div>
                       <h4 className="font-medium text-foreground">
@@ -668,9 +872,16 @@ export function WalletSecurityStep({
                             (Already set)
                           </span>
                         )}
+                        {otpSetupError && (
+                          <span className="ml-2 text-xs text-red-600">
+                            (Setup failed)
+                          </span>
+                        )}
                       </h4>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Time-based authenticator codes
+                        {otpSetupError
+                          ? "Setup temporarily unavailable"
+                          : "Time-based authenticator codes"}
                       </p>
                     </div>
                   </div>
@@ -758,13 +969,7 @@ export function WalletSecurityStep({
                         because you need to provide your password.
                       </p>
                       <div className="flex justify-center">
-                        <Button
-                          onClick={() => {
-                            setOtpSetupError(false);
-                            enableTwoFactor();
-                          }}
-                          variant="outline"
-                        >
+                        <Button onClick={handleOtpRetry} variant="outline">
                           Try Again
                         </Button>
                       </div>
@@ -958,25 +1163,54 @@ export function WalletSecurityStep({
                 </div>
 
                 <div className="space-y-4 text-sm text-foreground">
-                  <p>
-                    You've successfully set up your{" "}
-                    {isOtpEnabled ? "one-time password" : "PIN code"}. This adds
-                    an important layer of protection to your wallet and keeps
-                    your assets safer from unauthorized access.
-                  </p>
+                  {/* Show different message based on whether user set up new security or is using existing */}
+                  {isPincodeSet || isOtpEnabled ? (
+                    <>
+                      <p>
+                        You've successfully set up your{" "}
+                        {isOtpEnabled ? "one-time password" : "PIN code"}. This
+                        adds an important layer of protection to your wallet and
+                        keeps your assets safer from unauthorized access.
+                      </p>
 
-                  <p>
-                    To complete your wallet security, the final step is to
-                    generate backup codes. These are secret recovery keys that
-                    allow you to regain access if you ever lose your{" "}
-                    {isOtpEnabled ? "authentication method" : "PIN"} or
-                    authentication method.
-                  </p>
+                      <p>
+                        To complete your wallet security, the final step is to
+                        generate backup codes. These are secret recovery keys
+                        that allow you to regain access if you ever lose your{" "}
+                        {isOtpEnabled ? "authentication method" : "PIN"} or
+                        authentication method.
+                      </p>
 
-                  <p className="font-medium">
-                    Make sure to save these backup codes somewhere safe and
-                    private — they are your last line of defense.
-                  </p>
+                      <p className="font-medium">
+                        Make sure to save these backup codes somewhere safe and
+                        private — they are your last line of defense.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        Your wallet is already secured with{" "}
+                        {hasPincode && hasTwoFactor
+                          ? "both PIN code and two-factor authentication"
+                          : hasPincode
+                            ? "PIN code protection"
+                            : "two-factor authentication"}
+                        . Your security setup is ready to use.
+                      </p>
+
+                      <p>
+                        To complete your wallet security, the final step is to
+                        generate backup codes. These are secret recovery keys
+                        that allow you to regain access if you ever lose your
+                        authentication methods.
+                      </p>
+
+                      <p className="font-medium">
+                        Make sure to save these backup codes somewhere safe and
+                        private — they are your last line of defense.
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -991,8 +1225,8 @@ export function WalletSecurityStep({
             <Button
               variant="outline"
               onClick={
-                // If in setup mode, go back to security options instead of previous wizard step
-                !shouldShowEducationalContent && !shouldShowSuccess
+                // If in setup mode OR on success screen, go back to security options instead of previous wizard step
+                !shouldShowEducationalContent
                   ? handleBackToSecurityOptions
                   : onPrevious
               }
@@ -1019,12 +1253,16 @@ export function WalletSecurityStep({
               disabled={
                 isPending ||
                 isVerifyingOtp ||
-                (shouldShowSuccess && !showSuccessButton)
+                (shouldShowSuccess &&
+                  !showSuccessButton &&
+                  (isPincodeSet || isOtpEnabled))
               }
             >
               {isPending ||
               isVerifyingOtp ||
-              (shouldShowSuccess && !showSuccessButton) ? (
+              (shouldShowSuccess &&
+                !showSuccessButton &&
+                (isPincodeSet || isOtpEnabled)) ? (
                 <>
                   <svg
                     className="mr-2 h-4 w-4 animate-spin"

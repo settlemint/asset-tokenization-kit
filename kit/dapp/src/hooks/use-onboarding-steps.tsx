@@ -136,15 +136,29 @@ export function useOnboardingSteps({
           groupId: "wallet",
           fields: [],
           onStepComplete: async () => Promise.resolve(),
-          component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => (
-            <WalletSecurityStep
-              onNext={onNext}
-              onPrevious={onPrevious}
-              isFirstStep={isFirstStep}
-              isLastStep={isLastStep}
-              user={user}
-            />
-          ),
+          component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => {
+            // In the onboarding flow, always show the selection screen first
+            // This allows users to review and modify their security settings
+            // They can click Continue if they're happy with existing security
+            const forceShowSelection = true;
+
+            console.log("🎯 WalletSecurityStep in useOnboardingSteps:", {
+              hasWallet: Boolean(user?.wallet),
+              hasPincode: Boolean(user?.pincodeEnabled),
+              forceShowSelection,
+            });
+
+            return (
+              <WalletSecurityStep
+                onNext={onNext}
+                onPrevious={onPrevious}
+                isFirstStep={isFirstStep}
+                isLastStep={isLastStep}
+                user={user}
+                forceShowSelection={forceShowSelection}
+              />
+            );
+          },
         },
         {
           id: "recovery-codes",
