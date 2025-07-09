@@ -16,8 +16,8 @@ export function WalletDisplayStep({
   user,
 }: WalletDisplayStepProps) {
   const [walletCreationProgress, setWalletCreationProgress] = useState(0);
-  // Check if wallet already exists to determine if it was created
-  const [walletCreated, setWalletCreated] = useState(Boolean(user?.wallet));
+  // Always start with wallet creation flow to show educational content
+  const [walletCreated, setWalletCreated] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
   const handleStartCreation = async () => {
@@ -67,14 +67,14 @@ export function WalletDisplayStep({
             ? "Your Wallet is Ready!"
             : isCreating
               ? "Creating Your Wallet"
-              : "Create Your Wallet"}
+              : "Your Wallet"}
         </h2>
         <p className="text-sm text-muted-foreground pt-2">
           {walletCreated
             ? "Your secure wallet has been created successfully"
             : isCreating
               ? "Generating secure cryptographic keys..."
-              : "Generate a secure wallet for all blockchain operations"}
+              : "Your Digital Key to the Blockchain"}
         </p>
       </div>
 
@@ -83,105 +83,59 @@ export function WalletDisplayStep({
         style={useMemo(() => ({ minHeight: "450px", maxHeight: "550px" }), [])}
       >
         <div className="max-w-3xl space-y-6 pr-2">
-          {/* Always show wallet info */}
-          <div className="space-y-4">
-            <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
-              <div className="flex gap-3">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-                    What is a wallet?
+          {/* Main wallet explanation - only show when not creating/created */}
+          {!isCreating && !walletCreated && (
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Your Digital Key to the Blockchain
                   </h3>
-                  <p className="text-sm text-blue-800 dark:text-blue-200">
-                    A secure digital identity that allows you to interact with
-                    the blockchain and manage your tokenized assets.
+                  <p className="text-base text-foreground leading-relaxed">
+                    Think of your wallet as your master key that unlocks all your digital assets and identity on the blockchain. It's a secure set of cryptographic codes that proves you own your tokens and allows you to authorize transactions.
                   </p>
                 </div>
+                
+                <div className="space-y-5">
+                  <h4 className="text-base font-semibold text-foreground">
+                    What your wallet enables:
+                  </h4>
+                  
+                  <div className="space-y-4">
+                    <div className="flex gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                      <div>
+                        <h5 className="font-medium text-foreground mb-1">Asset Control</h5>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          View, manage, and interact with tokenized assets on the Asset Tokenization Kit platform. Your wallet gives you complete control over your digital assets.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                      <div>
+                        <h5 className="font-medium text-foreground mb-1">Transaction Authorization</h5>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          Securely authorize every transaction – from trading tokens to registering your ONCHAINID – with your digital signature.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                      <div>
+                        <h5 className="font-medium text-foreground mb-1">Identity Management</h5>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          Your wallet forms the foundation for your unique ONCHAINID, linking your verified identity to all blockchain activities.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-
-            {/* Key features */}
-            <div className="flex justify-between">
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <svg
-                  className="h-4 w-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
-                </svg>
-                <span>Secure</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <svg
-                  className="h-4 w-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-                <span>Instant</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <svg
-                  className="h-4 w-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-                <span>Protected</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <svg
-                  className="h-4 w-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span>Global</span>
-              </div>
-            </div>
-          </div>
+          )}
 
           {/* Show progress animation when creating */}
           {isCreating && (
@@ -222,7 +176,7 @@ export function WalletDisplayStep({
 
           {/* Show wallet created success when completed */}
           {walletCreated && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="text-center space-y-4">
                 <div className="flex justify-center">
                   <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
@@ -246,40 +200,63 @@ export function WalletDisplayStep({
                     </svg>
                   </div>
                 </div>
+                
+                <div className="space-y-2">
+                  <p className="text-base text-muted-foreground">
+                    Congratulations! Your Web3 wallet has been successfully created
+                  </p>
+                </div>
               </div>
 
               {/* Wallet Address Display */}
               {user?.wallet && (
-                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 space-y-3 text-center">
-                  <p className="text-sm font-medium text-green-900 dark:text-green-100">
-                    Wallet Address
-                  </p>
-                  <div className="flex items-center justify-center gap-2">
-                    <p className="text-base font-mono text-green-800 dark:text-green-200 break-all">
-                      {user.wallet}
-                    </p>
-                    <button
-                      onClick={handleCopyWallet}
-                      className="flex-shrink-0 p-1 hover:bg-green-100 dark:hover:bg-green-800 rounded transition-colors"
-                      title="Copy to clipboard"
-                    >
-                      <svg
-                        className="w-4 h-4 text-green-600 dark:text-green-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                <div className="space-y-4">
+                  <h3 className="text-base font-medium text-foreground">
+                    This is your wallet address
+                  </h3>
+                  
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <p className="text-base font-mono text-green-800 dark:text-green-200 break-all">
+                        {user.wallet}
+                      </p>
+                      <button
+                        onClick={handleCopyWallet}
+                        className="flex-shrink-0 p-1 hover:bg-green-100 dark:hover:bg-green-800 rounded transition-colors"
+                        title="Copy to clipboard"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </button>
+                        <svg
+                          className="w-4 h-4 text-green-600 dark:text-green-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
+              
+              <div className="space-y-4">
+                <p className="text-sm text-foreground leading-relaxed">
+                  This address is something you can safely share with others for them to send assets (like tokens or cryptocurrencies) directly to your wallet. While all transactions to and from this address are publicly recorded on the blockchain, your personal identity remains private. Think of it like an email address or a bank account number.
+                </p>
+                
+                <p className="text-sm text-foreground leading-relaxed">
+                  Because your wallet controls access to your valuable digital assets and identity, it's important to keep it safe from unauthorized access and ensure you can recover it if needed.
+                </p>
+                
+                <p className="text-sm text-foreground leading-relaxed">
+                  To protect you, next you'll set up a PIN, enable one-time passwords (OTP), and create backup codes — simple security steps that keep your wallet secure and recoverable.
+                </p>
+              </div>
             </div>
           )}
         </div>
@@ -321,10 +298,10 @@ export function WalletDisplayStep({
               isLastStep ? (
                 "Complete"
               ) : (
-                "Secure your wallet..."
+                "Secure my wallet"
               )
             ) : (
-              "Create Wallet"
+              "Create my wallet"
             )}
           </Button>
         </div>
