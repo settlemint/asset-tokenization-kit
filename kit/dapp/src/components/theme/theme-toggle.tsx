@@ -190,9 +190,11 @@ export function ThemeToggle({
   if (mode === "menuItem") {
     return (
       <DropdownMenuSub>
-        <DropdownMenuSubTrigger>
-          <SunIcon className="dark:-rotate-90 size-4 rotate-0 scale-100 transition-all dark:scale-0" />
-          <MoonIcon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <DropdownMenuSubTrigger className="gap-2 [&_svg]:text-muted-foreground">
+          <div className="relative size-4">
+            <SunIcon className="dark:-rotate-90 absolute size-4 rotate-0 scale-100 transition-all dark:scale-0" />
+            <MoonIcon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          </div>
           {t("toggle-label")}
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>{themeMenuItems}</DropdownMenuSubContent>

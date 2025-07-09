@@ -14,11 +14,13 @@
  * @see {@link https://tanstack.com/router/latest/docs/framework/react/guide/search-params} - TanStack Router search params
  */
 
+import { z } from "zod/v4";
 import type {
   ColumnFilter,
   DataTableSearchParams,
   SortState,
 } from "./search-params";
+
 
 /**
  * Safely encode an object to JSON string for URL parameter.
@@ -207,18 +209,42 @@ export function serializeDataTableState(
 export function deserializeDataTableState(
   searchParams: Record<string, unknown>
 ): DataTableSearchParams {
-  const page = Number(searchParams.page) || 1;
-  const rawPageSize = Number(searchParams.pageSize);
-  const pageSize = Number.isNaN(rawPageSize)
-    ? 10
-    : Math.min(100, Math.max(1, rawPageSize));
+  // Parse each field individually to handle partial failures gracefully
+  // For numeric values, coerce and then clamp to valid range
+  const pageRaw = z.coerce.number().safeParse(searchParams.page);
+  const pageSizeRaw = z.coerce.number().safeParse(searchParams.pageSize);
+  
+  const page = pageRaw.success 
+    ? { success: true as const, data: Math.max(1, Math.min(1000, Math.floor(pageRaw.data))) }
+    : { success: false as const };
+  const pageSize = pageSizeRaw.success
+    ? { success: true as const, data: Math.max(1, Math.min(100, Math.floor(pageSizeRaw.data))) }
+    : { success: false as const };
+  const sortBy = z.string().regex(/^[a-zA-Z0-9_.-]+$/).max(100).safeParse(searchParams.sortBy);
+  const sortOrder = z.enum(["asc", "desc"]).safeParse(searchParams.sortOrder);
+  const search = z.string().max(1000).safeParse(searchParams.search);
+  const columns = z.string().max(1000).optional().transform((val) => {
+    if (!val) return undefined;
+    const cols = val.split(',').map(c => c.trim());
+    const validCols = cols.filter(col => /^[a-zA-Z0-9_.-]+$/.test(col));
+    return validCols.length > 0 ? validCols.join(',') : undefined;
+  }).safeParse(searchParams.columns);
+  const selected = z.string().max(1000).optional().transform((val) => {
+    if (!val) return undefined;
+    const ids = val.split(',').map(id => id.trim());
+    const validIds = ids.filter(id => /^[a-zA-Z0-9_.-]+$/.test(id));
+    return validIds.length > 0 ? validIds.join(',') : undefined;
+  }).safeParse(searchParams.selected);
+  
+  const pageValue = page.success ? page.data : 1;
+  const pageSizeValue = pageSize.success ? pageSize.data : 10;
 
   // Sorting from flat params
-  const sorting: SortState[] = searchParams.sortBy
+  const sorting: SortState[] = sortBy.success && sortBy.data
     ? [
         {
-          id: searchParams.sortBy as string,
-          desc: searchParams.sortOrder === "desc",
+          id: sortBy.data,
+          desc: sortOrder.success && sortOrder.data === "desc",
         },
       ]
     : [];
@@ -233,46 +259,40 @@ export function deserializeDataTableState(
       value !== ""
     ) {
       const filterKey = key.substring(7); // Remove 'filter_' prefix
-      // For now, store as simple string values
-      // The actual filter function will handle the comparison
-      const filterValue =
-        typeof value === "string"
-          ? value
-          : typeof value === "number" || typeof value === "boolean"
-            ? String(value)
-            : JSON.stringify(value);
-
-      columnFilters.push({
-        id: filterKey,
-        value: filterValue,
-      });
+      const stringValue = z.string().max(1000).safeParse(value);
+      if (stringValue.success) {
+        columnFilters.push({
+          id: filterKey,
+          value: stringValue.data,
+        });
+      }
     }
   });
 
   // Column visibility from comma-separated list
   const columnVisibility: Record<string, boolean> = {};
-  if (searchParams.columns && typeof searchParams.columns === "string") {
-    searchParams.columns.split(",").forEach((col) => {
+  if (columns.success && columns.data) {
+    columns.data.split(",").forEach((col) => {
       columnVisibility[col] = true;
     });
   }
 
   // Row selection from comma-separated list
   const rowSelection: Record<string, boolean> = {};
-  if (searchParams.selected && typeof searchParams.selected === "string") {
-    searchParams.selected.split(",").forEach((id) => {
+  if (selected.success && selected.data) {
+    selected.data.split(",").forEach((id) => {
       rowSelection[id] = true;
     });
   }
 
   return {
     pagination: {
-      pageIndex: Math.max(0, page - 1), // Convert from 1-based to 0-based
-      pageSize,
+      pageIndex: Math.max(0, pageValue - 1), // Convert from 1-based to 0-based
+      pageSize: pageSizeValue,
     },
     sorting,
     columnFilters,
-    globalFilter: (searchParams.search as string) || "",
+    globalFilter: search.success ? search.data : "",
     columnVisibility,
     rowSelection,
   };

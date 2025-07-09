@@ -35,6 +35,7 @@ import type enCommonTranslations from "@/locales/en/common.json";
 import type enDashboardTranslations from "@/locales/en/dashboard.json";
 import type enDataTableTranslations from "@/locales/en/data-table.json";
 import type enDepositsTableTranslations from "@/locales/en/deposits-table.json";
+import type enDetailGridTranslations from "@/locales/en/detail-grid.json";
 import type enErrorsTranslations from "@/locales/en/errors.json";
 import type enFormTranslations from "@/locales/en/form.json";
 import type enFormatsTranslations from "@/locales/en/formats.json";
@@ -84,6 +85,7 @@ declare module "i18next" {
       dashboard: typeof enDashboardTranslations;
       "data-table": typeof enDataTableTranslations;
       "deposits-table": typeof enDepositsTableTranslations;
+      "detail-grid": typeof enDetailGridTranslations;
       errors: typeof enErrorsTranslations;
       form: typeof enFormTranslations;
       formats: typeof enFormatsTranslations;

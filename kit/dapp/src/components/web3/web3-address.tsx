@@ -16,6 +16,7 @@ interface Web3AddressProps {
   avatarOnly?: boolean;
   showBadge?: boolean;
   showSymbol?: boolean;
+  showPrettyName?: boolean;
 }
 
 function Web3AddressComponent({
@@ -27,6 +28,7 @@ function Web3AddressComponent({
   avatarOnly = false,
   showBadge = true,
   showSymbol = true,
+  showPrettyName = true,
 }: Web3AddressProps) {
   const { data: users } = useQuery(
     orpc.user.list.queryOptions({
@@ -71,7 +73,7 @@ function Web3AddressComponent({
   const displayContent = useMemo(() => {
     if (avatarOnly) return null;
 
-    if (token?.name) {
+    if (showPrettyName && token?.name) {
       return (
         <div className="flex items-center gap-2">
           <span className="font-medium">{token.name}</span>
@@ -93,7 +95,7 @@ function Web3AddressComponent({
       );
     }
 
-    if (user?.name) {
+    if (showPrettyName && user?.name) {
       return (
         <div className="flex items-center gap-2">
           <span className="font-medium">{user.name}</span>
@@ -111,7 +113,7 @@ function Web3AddressComponent({
     }
 
     return renderAddress();
-  }, [avatarOnly, token, user, showBadge, renderAddress, address, showSymbol]);
+  }, [avatarOnly, token, user, showBadge, renderAddress, address, showSymbol, showPrettyName]);
 
   if (copyToClipboard && !avatarOnly) {
     return (

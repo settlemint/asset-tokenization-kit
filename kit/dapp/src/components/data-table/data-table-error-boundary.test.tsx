@@ -1,8 +1,5 @@
 import { describe, it, expect, mock } from "bun:test";
-import {
-  DataTableErrorBoundary,
-  withDataTableErrorBoundary,
-} from "./data-table-error-boundary";
+import { DataTableErrorBoundary } from "./data-table-error-boundary";
 
 // Mock the logger
 void mock.module("@settlemint/sdk-utils/logging", () => ({
@@ -59,40 +56,4 @@ describe("DataTableErrorBoundary", () => {
   });
 });
 
-describe("withDataTableErrorBoundary", () => {
-  it("should preserve component display name", () => {
-    const TestComponent = () => null;
-    TestComponent.displayName = "TestComponent";
-
-    const WrappedComponent = withDataTableErrorBoundary(TestComponent);
-
-    expect(WrappedComponent.displayName).toBe(
-      "withDataTableErrorBoundary(TestComponent)"
-    );
-  });
-
-  it("should handle components without display name", () => {
-    const TestComponent = () => null;
-    const WrappedComponent = withDataTableErrorBoundary(TestComponent);
-
-    // Arrow functions have empty name, so it falls back to "Component"
-    expect(WrappedComponent.displayName).toBe(
-      "withDataTableErrorBoundary(Component)"
-    );
-  });
-
-  it("should pass error boundary props", () => {
-    const TestComponent = () => null;
-    const onError = mock(() => {
-      // Mock onError function
-    });
-
-    const WrappedComponent = withDataTableErrorBoundary(TestComponent, {
-      tableName: "Test Table",
-      onError,
-    });
-
-    // The wrapped component should be a function component
-    expect(typeof WrappedComponent).toBe("function");
-  });
-});
+// Note: HOC tests removed as we now use ComponentErrorBoundary for unified error handling

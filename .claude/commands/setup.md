@@ -2,6 +2,13 @@
 
 This command configures all recommended MCP servers for the project.
 
+## Auto-Loaded Project Context:
+
+- @/CLAUDE.md
+- @/.claude/CLAUDE.md
+- @/docs/ai-context/project-structure.md
+- @/docs/ai-context/docs-overview.md
+
 ## Steps
 
 1. **Check existing MCP configuration**

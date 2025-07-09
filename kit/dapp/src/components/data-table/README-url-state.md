@@ -295,7 +295,7 @@ interface UseDataTableStateOptions {
 ### Custom Search Parameter Schema
 
 ```tsx
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const customTableSchema = z.object({
   // Include base table state

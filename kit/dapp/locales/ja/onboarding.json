@@ -35,7 +35,23 @@
     },
     "security": {
       "title": "ウォレットを保護する",
-      "description": "ウォレットの保護を設定する"
+      "description": "ウォレットの保護を設定する",
+      "wallet-secured": "ウォレットが保護されました",
+      "pin-enabled": "ウォレットのためにPINコード保護が有効になっています",
+      "setup-pin": "ウォレットの取引を保護するために6桁のPINコードを設定してください",
+      "enter-pin": "6桁のPINコードを入力してください",
+      "pin-configured-title": "PINコードが正常に設定されました",
+      "pin-configured-description": "あなたのウォレットは現在、PINコード認証で保護されています",
+      "why-pin-title": "なぜPINコードを設定するのですか？",
+      "why-pin-description": "PINコードはウォレットに追加のセキュリティ層を加え、あなたの資産と取引を不正アクセスから保護します。",
+      "features": {
+        "transaction-protection": "取引保護",
+        "account-security": "アカウントセキュリティ",
+        "quick-access": "クイックアクセス",
+        "easy-remember": "覚えやすい"
+      },
+      "success": "PINコードが正常に設定されました",
+      "error": "PINコードの設定に失敗しました"
     }
   },
   "wallet": {

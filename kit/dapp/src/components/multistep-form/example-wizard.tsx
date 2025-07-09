@@ -1,9 +1,9 @@
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useCallback } from "react";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { MultiStepWizard } from "./multistep-wizard";
 import type { StepDefinition, StepGroup } from "./types";
-import { withWizardErrorBoundary } from "./wizard-error-boundary";
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 
 const logger = createLogger();
 
@@ -248,5 +248,12 @@ function ExampleWizardComponent({ onComplete }: ExampleWizardProps) {
   );
 }
 
-export const ExampleWizard = withWizardErrorBoundary(ExampleWizardComponent);
+export function ExampleWizard() {
+  return (
+    <ComponentErrorBoundary componentName="Example Wizard">
+      <ExampleWizardComponent />
+    </ComponentErrorBoundary>
+  );
+}
+
 export default ExampleWizard;

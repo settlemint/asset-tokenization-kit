@@ -20,7 +20,7 @@ groups, async field dependencies, and ORPC integration.
 
 ```tsx
 import { MultiStepWizard } from "@/components/multistep-form";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const formSchema = z.object({
   name: z.string().min(1),

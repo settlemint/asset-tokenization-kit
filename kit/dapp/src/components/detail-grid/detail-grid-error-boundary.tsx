@@ -9,17 +9,17 @@ import { Component } from "react";
 const logger = createLogger();
 
 /**
- * Props for the DataTableErrorBoundary component
+ * Props for the DetailGridErrorBoundary component
  */
-interface DataTableErrorBoundaryProps {
+interface DetailGridErrorBoundaryProps {
   /** Child components to render */
   children: ReactNode;
   /** Optional custom error component */
   fallback?: ComponentType<ErrorBoundaryState>;
   /** Optional callback when error occurs */
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
-  /** Optional table name for better error context */
-  tableName?: string;
+  /** Optional grid title for better error context */
+  gridTitle?: string;
 }
 
 /**
@@ -38,26 +38,26 @@ function DefaultErrorFallback({
   error,
   errorInfo,
   onReset,
-  tableName,
+  gridTitle,
 }: ErrorBoundaryState & {
   onReset: () => void;
-  tableName?: string;
+  gridTitle?: string;
 }) {
   return (
-    <div className="flex min-h-[400px] w-full items-center justify-center rounded-xl bg-card p-8 text-card-foreground shadow-sm">
+    <div className="flex min-h-[200px] w-full items-center justify-center rounded-xl bg-card p-6 text-card-foreground shadow-sm">
       <div className="flex max-w-md flex-col items-center space-y-4 text-center">
         <div className="rounded-full bg-destructive/10 p-3">
           <AlertCircle className="h-6 w-6 text-destructive" />
         </div>
         <div className="space-y-2">
           <h3 className="text-lg font-semibold">
-            {tableName
-              ? `Error loading ${tableName} table`
-              : "Error loading table"}
+            {gridTitle
+              ? `Error loading ${gridTitle}`
+              : "Error loading details"}
           </h3>
           <p className="text-sm text-muted-foreground">
-            An unexpected error occurred while rendering the data table. The
-            table data might be corrupted or there could be a temporary issue.
+            An unexpected error occurred while rendering the detail grid. The
+            data might be temporarily unavailable or corrupted.
           </p>
           {process.env.NODE_ENV === "development" && error && (
             <details className="mt-4 rounded-md bg-muted p-4 text-left">
@@ -86,14 +86,23 @@ function DefaultErrorFallback({
 }
 
 /**
- * Error boundary component for DataTable
+ * Error boundary component for DetailGrid
  * Catches rendering errors and provides a user-friendly fallback UI
+ *
+ * @example
+ * ```tsx
+ * <DetailGridErrorBoundary gridTitle="Token Information">
+ *   <DetailGrid title="Token Information">
+ *     <DetailGridItem label="Name">Token Name</DetailGridItem>
+ *   </DetailGrid>
+ * </DetailGridErrorBoundary>
+ * ```
  */
-export class DataTableErrorBoundary extends Component<
-  DataTableErrorBoundaryProps,
+export class DetailGridErrorBoundary extends Component<
+  DetailGridErrorBoundaryProps,
   ErrorBoundaryState
 > {
-  constructor(props: DataTableErrorBoundaryProps) {
+  constructor(props: DetailGridErrorBoundaryProps) {
     super(props);
     this.state = {
       hasError: false,
@@ -108,12 +117,12 @@ export class DataTableErrorBoundary extends Component<
   }
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    const { onError, tableName } = this.props;
+    const { onError, gridTitle } = this.props;
 
     // Log the error with context
-    logger.error("DataTable rendering error", {
+    logger.error("DetailGrid rendering error", {
       error: error.message,
-      tableName,
+      gridTitle,
       componentStack: errorInfo.componentStack,
       errorStack: error.stack,
     });
@@ -141,7 +150,7 @@ export class DataTableErrorBoundary extends Component<
 
   override render(): ReactNode {
     if (this.state.hasError) {
-      const { fallback: FallbackComponent, tableName } = this.props;
+      const { fallback: FallbackComponent, gridTitle } = this.props;
 
       if (FallbackComponent) {
         return <FallbackComponent {...this.state} />;
@@ -151,7 +160,7 @@ export class DataTableErrorBoundary extends Component<
         <DefaultErrorFallback
           {...this.state}
           onReset={this.handleReset}
-          tableName={tableName}
+          gridTitle={gridTitle}
         />
       );
     }
@@ -159,4 +168,3 @@ export class DataTableErrorBoundary extends Component<
     return this.props.children;
   }
 }
-

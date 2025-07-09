@@ -1,9 +1,7 @@
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
-import {
-  MultiStepWizard,
-  withWizardErrorBoundary,
-} from "@/components/multistep-form";
+import { MultiStepWizard } from "@/components/multistep-form";
 import type {
   StepDefinition,
   StepGroup,
@@ -27,7 +25,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const logger = createLogger();
 
@@ -53,7 +51,7 @@ export const Route = createFileRoute("/_private/onboarding/platform-new")({
 
     return { user, systemAddress, systemDetails };
   },
-  component: withWizardErrorBoundary(PlatformNewOnboarding),
+  component: PlatformNewOnboarding,
 });
 
 // Define the onboarding form schema
@@ -683,17 +681,19 @@ function PlatformNewOnboarding() {
         {/* Centered content area with step wizard */}
         <div className="flex min-h-screen items-center justify-center">
           <div className="w-full max-w-6xl px-4">
-            <MultiStepWizard<OnboardingFormData>
-              name="Let's get you set up!"
-              description="We'll set up your wallet and will configure your identity on the blockchain to use this platform."
-              steps={steps}
-              groups={groups}
-              onComplete={handleComplete}
-              enableUrlPersistence={true}
-              showProgressBar={true}
-              allowStepSkipping={true}
-              defaultValues={defaultValues}
-            />
+            <ComponentErrorBoundary componentName="Onboarding Wizard">
+              <MultiStepWizard<OnboardingFormData>
+                name="Let's get you set up!"
+                description="We'll set up your wallet and will configure your identity on the blockchain to use this platform."
+                steps={steps}
+                groups={groups}
+                onComplete={handleComplete}
+                enableUrlPersistence={true}
+                showProgressBar={true}
+                allowStepSkipping={true}
+                defaultValues={defaultValues}
+              />
+            </ComponentErrorBoundary>
           </div>
         </div>
       </div>
