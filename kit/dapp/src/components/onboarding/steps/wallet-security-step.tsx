@@ -134,15 +134,18 @@ export function WalletSecurityStep({
     },
   });
 
-  const { mutate: enableTwoFactor } = useMutation({
+  const { mutate: enableTwoFactor, isPending: isEnablingTwoFactor } = useMutation({
     mutationFn: async () =>
       authClient.twoFactor.enable({
         // Password is not required during initial onboarding
       }),
     onSuccess: (data) => {
-      if (typeof data === 'object' && 'totpURI' in data) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (data && typeof data === 'object' && 'totpURI' in data) {
         setOtpUri(data.totpURI as string);
         toast.success("OTP setup initiated");
+      } else {
+        toast.error("Failed to generate QR code");
       }
     },
     onError: (error: Error) => {
@@ -560,16 +563,41 @@ export function WalletSecurityStep({
           )}
 
           {/* Show OTP setup screen */}
-          {!shouldShowEducationalContent && !shouldShowSuccess && selectedSecurityMethod === 'otp' && otpUri && (
+          {!shouldShowEducationalContent && !shouldShowSuccess && selectedSecurityMethod === 'otp' && (
             <div className="space-y-6 text-center">
               {/* QR Code */}
               <div className="flex justify-center">
                 <div className="p-4 bg-white rounded-lg border shadow-sm">
-                  <img 
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(otpUri)}`}
-                    alt="QR Code for OTP Setup"
-                    className="w-48 h-48"
-                  />
+                  {otpUri ? (
+                    <img 
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(otpUri)}`}
+                      alt="QR Code for OTP Setup"
+                      className="w-36 h-36"
+                    />
+                  ) : (
+                    <div className="w-36 h-36 flex items-center justify-center">
+                      <div className="text-center">
+                        <svg className="mx-auto h-8 w-8 animate-spin text-primary" viewBox="0 0 24 24">
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          {isEnablingTwoFactor ? "Setting up authenticator..." : "Generating QR code..."}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -582,7 +610,7 @@ export function WalletSecurityStep({
                     value={otpCode}
                     onChange={setOtpCode}
                     maxLength={6}
-                    disabled={isVerifyingOtp}
+                    disabled={isVerifyingOtp || isEnablingTwoFactor || !otpUri}
                   >
                     <InputOTPGroup>
                       <InputOTPSlot index={0} />
@@ -602,7 +630,7 @@ export function WalletSecurityStep({
                 <div className="flex justify-center">
                   <Button
                     onClick={handleOtpVerification}
-                    disabled={isVerifyingOtp || otpCode.length !== 6}
+                    disabled={isVerifyingOtp || isEnablingTwoFactor || otpCode.length !== 6 || !otpUri}
                     className="min-w-[120px]"
                   >
                     {isVerifyingOtp ? (
