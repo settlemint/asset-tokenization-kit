@@ -135,4 +135,8 @@ export const TokenSchema = RawTokenSchema.extend({
 /**
  * Type representing the parsed token data with totalSupply as Dnum
  */
-export type ParsedToken = z.infer<typeof TokenSchema>;
+export type Token = z.infer<typeof TokenSchema>;
+
+export const TokenReadInputSchema = z.object({
+  tokenAddress: ethereumAddress,
+});

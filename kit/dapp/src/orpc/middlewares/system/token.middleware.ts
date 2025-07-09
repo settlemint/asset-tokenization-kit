@@ -1,6 +1,8 @@
 import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { isEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { baseRouter } from "@/orpc/procedures/base.router";
+import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 
 const READ_TOKEN_QUERY = theGraphGraphql(
@@ -31,32 +33,32 @@ export type TokenRoles = keyof NonNullable<
   NonNullable<ResultOf<typeof READ_TOKEN_QUERY>["token"]>["accessControl"]
 >;
 
-export type Token = Omit<
-  ResultOf<typeof READ_TOKEN_QUERY>["token"],
-  "accessControl"
-> & {
-  userPermissions: {
-    // List of roles, when true the user has the role
-    roles: Record<TokenRoles, boolean>;
-    // User has the required claim topics to interact with the token
-    isCompliant: boolean;
-    // User is allowed to interact with the token
-    isAllowed: boolean;
-  };
-};
-
 /**
  * Middleware to inject the token context into the request context.
  * @returns The middleware function.
  */
 export const tokenMiddleware = baseRouter.middleware(
   async ({ next, context, errors }, input) => {
-    const id =
-      typeof input === "object" && input !== null && "id" in input
-        ? input.id
+    if (context.token) {
+      return next({
+        context: {
+          token: context.token,
+        },
+      });
+    }
+
+    const tokenAddress =
+      typeof input === "object" && input !== null && "tokenAddress" in input
+        ? input.tokenAddress
         : null;
-    if (typeof id !== "string") {
-      return next();
+
+    if (!isEthereumAddress(tokenAddress)) {
+      throw errors.INPUT_VALIDATION_FAILED({
+        message: "Token address is not a valid Ethereum address",
+        data: {
+          errors: ["Token address is not a valid Ethereum address"],
+        },
+      });
     }
 
     const { auth, userClaimTopics } = context;
@@ -67,9 +69,16 @@ export const tokenMiddleware = baseRouter.middleware(
     }
 
     const { token } = await theGraphClient.request(READ_TOKEN_QUERY, {
-      id: id,
+      id: tokenAddress,
     });
-    const userRoles = Object.entries(token?.accessControl ?? {}).reduce<
+
+    if (!token) {
+      throw errors.NOT_FOUND({
+        message: "Token not found",
+      });
+    }
+
+    const userRoles = Object.entries(token.accessControl ?? {}).reduce<
       Record<TokenRoles, boolean>
     >(
       (acc, [role, accounts]) => {
@@ -82,17 +91,16 @@ export const tokenMiddleware = baseRouter.middleware(
       {} as Record<TokenRoles, boolean>
     );
 
-    const tokenContext: Token = {
+    const tokenContext = TokenSchema.parse({
       ...token,
       userPermissions: {
         roles: userRoles,
-        isCompliant:
-          token?.requiredClaimTopics.every(({ name }) =>
-            userClaimTopics.includes(name)
-          ) ?? true,
+        isCompliant: token.requiredClaimTopics.every(({ name }) =>
+          userClaimTopics.includes(name)
+        ),
         isAllowed: true,
       },
-    };
+    });
 
     return next({
       context: {
