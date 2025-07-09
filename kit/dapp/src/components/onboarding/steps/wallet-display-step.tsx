@@ -259,6 +259,7 @@ export function WalletDisplayStep({
               </div>
             </div>
           )}
+
         </div>
       </div>
 
