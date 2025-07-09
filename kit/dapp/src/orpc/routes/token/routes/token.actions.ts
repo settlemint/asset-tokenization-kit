@@ -1,7 +1,7 @@
 import { calculateActionStatus } from "@/lib/constants/action-types";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
+import { tokenRouter } from "@/orpc/procedures/token.router";
 import {
   ActionStatusEnum,
   TokenActionsResponseSchema,
@@ -61,14 +61,14 @@ const LIST_TOKEN_ACTIONS_QUERY = theGraphGraphql(`
  * This endpoint provides visibility into pending operations, completed tasks,
  * and expired actions for token management and compliance workflows.
  *
- * Authentication: Required (uses authenticated router)
- * Permissions: Requires "read" permission on tokens
+ * Authentication: Required (uses token router with wallet verification)
+ * Permissions: Requires onboarded user with wallet
  * Method: GET /token/actions
  *
  * @param input - List parameters including pagination and filtering
  * @param context - Request context with TheGraph client and authenticated user
  * @returns Promise<TokenAction[]> - Array of action objects with metadata
- * @throws UNAUTHORIZED - If user is not authenticated
+ * @throws NOT_ONBOARDED - If user is not onboarded or lacks a wallet
  * @throws FORBIDDEN - If user lacks required read permissions
  * @throws INTERNAL_SERVER_ERROR - If TheGraph query fails
  *
@@ -95,35 +95,20 @@ const LIST_TOKEN_ACTIONS_QUERY = theGraphGraphql(`
  * @see {@link TokenActionsListSchema} for the response structure
  * @see {@link TokenActionsInputSchema} for input parameters
  */
-export const actions = authRouter.token.actions
+export const actions = tokenRouter.token.actions
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    // SECURITY: Authorization checks
-    const currentUser = context.auth?.user;
-    if (!currentUser) {
-      throw new TRPCError({
-        code: "UNAUTHORIZED",
-        message: "Authentication required",
-      });
-    }
-
-    // SECURITY: Handle missing wallet address gracefully
-    if (!currentUser.wallet) {
-      // Return empty array if user doesn't have a wallet address yet
-      return [];
-    }
-
     // SECURITY: Auto-filter to user's wallet address, with admin override
     const targetUserAddress =
-      currentUser.role === "admin" && input.userAddress
+      context.auth.user.role === "admin" && input.userAddress
         ? input.userAddress
-        : currentUser.wallet;
+        : context.auth.user.wallet;
 
     // SECURITY: Prevent enumeration - only admins can query other users
     if (
       input.userAddress &&
-      input.userAddress !== currentUser.wallet &&
-      currentUser.role !== "admin"
+      input.userAddress !== context.auth.user.wallet &&
+      context.auth.user.role !== "admin"
     ) {
       throw new TRPCError({
         code: "FORBIDDEN",
