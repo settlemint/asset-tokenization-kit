@@ -96,23 +96,14 @@ export function updateTokenDistributionStats(
       ? -1 // If balance is zero, not in any segment
       : getSegmentIndex(newPercentage);
 
-    // If segment changed, update the stats
-    if (oldSegment != newSegment) {
-      // Remove from old segment
-      if (oldSegment >= 0) {
-        updateSegmentStats(
-          state,
-          oldSegment,
-          oldBalance,
-          token.decimals,
-          false
-        );
-      }
+    // Remove from old segment
+    if (oldSegment >= 0) {
+      updateSegmentStats(state, oldSegment, oldBalance, token.decimals, false);
+    }
 
-      // Add to new segment
-      if (newSegment >= 0) {
-        updateSegmentStats(state, newSegment, newBalance, token.decimals, true);
-      }
+    // Add to new segment
+    if (newSegment >= 0) {
+      updateSegmentStats(state, newSegment, newBalance, token.decimals, true);
     }
   }
 
