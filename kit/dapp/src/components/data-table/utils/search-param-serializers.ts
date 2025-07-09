@@ -21,7 +21,6 @@ import type {
   SortState,
 } from "./search-params";
 
-
 /**
  * Safely encode an object to JSON string for URL parameter.
  * Returns undefined if the object is empty or serialization fails.
@@ -213,41 +212,62 @@ export function deserializeDataTableState(
   // For numeric values, coerce and then clamp to valid range
   const pageRaw = z.coerce.number().safeParse(searchParams.page);
   const pageSizeRaw = z.coerce.number().safeParse(searchParams.pageSize);
-  
-  const page = pageRaw.success 
-    ? { success: true as const, data: Math.max(1, Math.min(1000, Math.floor(pageRaw.data))) }
+
+  const page = pageRaw.success
+    ? {
+        success: true as const,
+        data: Math.max(1, Math.min(1000, Math.floor(pageRaw.data))),
+      }
     : { success: false as const };
   const pageSize = pageSizeRaw.success
-    ? { success: true as const, data: Math.max(1, Math.min(100, Math.floor(pageSizeRaw.data))) }
+    ? {
+        success: true as const,
+        data: Math.max(1, Math.min(100, Math.floor(pageSizeRaw.data))),
+      }
     : { success: false as const };
-  const sortBy = z.string().regex(/^[a-zA-Z0-9_.-]+$/).max(100).safeParse(searchParams.sortBy);
+  const sortBy = z
+    .string()
+    .regex(/^[a-zA-Z0-9_.-]+$/)
+    .max(100)
+    .safeParse(searchParams.sortBy);
   const sortOrder = z.enum(["asc", "desc"]).safeParse(searchParams.sortOrder);
   const search = z.string().max(1000).safeParse(searchParams.search);
-  const columns = z.string().max(1000).optional().transform((val) => {
-    if (!val) return undefined;
-    const cols = val.split(',').map(c => c.trim());
-    const validCols = cols.filter(col => /^[a-zA-Z0-9_.-]+$/.test(col));
-    return validCols.length > 0 ? validCols.join(',') : undefined;
-  }).safeParse(searchParams.columns);
-  const selected = z.string().max(1000).optional().transform((val) => {
-    if (!val) return undefined;
-    const ids = val.split(',').map(id => id.trim());
-    const validIds = ids.filter(id => /^[a-zA-Z0-9_.-]+$/.test(id));
-    return validIds.length > 0 ? validIds.join(',') : undefined;
-  }).safeParse(searchParams.selected);
-  
+  const columns = z
+    .string()
+    .max(1000)
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      const cols = val.split(",").map((c) => c.trim());
+      const validCols = cols.filter((col) => /^[a-zA-Z0-9_.-]+$/.test(col));
+      return validCols.length > 0 ? validCols.join(",") : undefined;
+    })
+    .safeParse(searchParams.columns);
+  const selected = z
+    .string()
+    .max(1000)
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      const ids = val.split(",").map((id) => id.trim());
+      const validIds = ids.filter((id) => /^[a-zA-Z0-9_.-]+$/.test(id));
+      return validIds.length > 0 ? validIds.join(",") : undefined;
+    })
+    .safeParse(searchParams.selected);
+
   const pageValue = page.success ? page.data : 1;
   const pageSizeValue = pageSize.success ? pageSize.data : 10;
 
   // Sorting from flat params
-  const sorting: SortState[] = sortBy.success && sortBy.data
-    ? [
-        {
-          id: sortBy.data,
-          desc: sortOrder.success && sortOrder.data === "desc",
-        },
-      ]
-    : [];
+  const sorting: SortState[] =
+    sortBy.success && sortBy.data
+      ? [
+          {
+            id: sortBy.data,
+            desc: sortOrder.success && sortOrder.data === "desc",
+          },
+        ]
+      : [];
 
   // Filters from filter_ prefixed params
   const columnFilters: ColumnFilter[] = [];

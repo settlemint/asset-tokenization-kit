@@ -45,9 +45,7 @@ export function DetailGridItem({
   const content = isStringContent ? (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <div className="cursor-default truncate text-base">
-          {children}
-        </div>
+        <div className="cursor-default truncate text-base">{children}</div>
       </HoverCardTrigger>
       <HoverCardContent className="w-auto max-w-[24rem]">
         <div className="break-all font-mono text-sm">{children}</div>

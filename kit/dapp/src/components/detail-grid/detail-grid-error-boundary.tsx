@@ -51,9 +51,7 @@ function DefaultErrorFallback({
         </div>
         <div className="space-y-2">
           <h3 className="text-lg font-semibold">
-            {gridTitle
-              ? `Error loading ${gridTitle}`
-              : "Error loading details"}
+            {gridTitle ? `Error loading ${gridTitle}` : "Error loading details"}
           </h3>
           <p className="text-sm text-muted-foreground">
             An unexpected error occurred while rendering the detail grid. The

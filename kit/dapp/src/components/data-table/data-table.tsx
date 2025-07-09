@@ -200,47 +200,49 @@ function DataTableComponent<TData>({
 
   // Validate URL state configuration
   const logger = useMemo(() => createLogger(), []);
-  
+
   // Choose between URL state or local state
   const isUsingUrlState = urlState?.enabled ?? false;
-  
+
   // Log warning if URL state is enabled but routePath is missing
   if (isUsingUrlState && !urlState?.routePath) {
-    logger.warn('DataTable: URL state enabled but no routePath provided', { 
+    logger.warn("DataTable: URL state enabled but no routePath provided", {
       name,
-      urlStateConfig: urlState 
+      urlStateConfig: urlState,
     });
   }
-  const currentState = isUsingUrlState && urlState?.routePath
-    ? tableState.tableOptions.state
-    : {
-        rowSelection: localRowSelection,
-        sorting: localSorting,
-        columnFilters: localColumnFilters,
-        columnVisibility: localColumnVisibility,
-        globalFilter: localGlobalFilter,
-        pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
-      };
+  const currentState =
+    isUsingUrlState && urlState?.routePath
+      ? tableState.tableOptions.state
+      : {
+          rowSelection: localRowSelection,
+          sorting: localSorting,
+          columnFilters: localColumnFilters,
+          columnVisibility: localColumnVisibility,
+          globalFilter: localGlobalFilter,
+          pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
+        };
 
-  const stateHandlers = isUsingUrlState && urlState?.routePath
-    ? {
-        onRowSelectionChange: tableState.setRowSelection,
-        onSortingChange: tableState.setSorting,
-        onColumnFiltersChange: tableState.setColumnFilters,
-        onColumnVisibilityChange: tableState.setColumnVisibility,
-        onGlobalFilterChange: tableState.setGlobalFilter,
-        onPaginationChange: tableState.setPagination,
-      }
-    : {
-        onRowSelectionChange: setLocalRowSelection,
-        onSortingChange: setLocalSorting,
-        onColumnFiltersChange: setLocalColumnFilters,
-        onColumnVisibilityChange: setLocalColumnVisibility,
-        onGlobalFilterChange: setLocalGlobalFilter,
-        onPaginationChange: () => {
-          // Local pagination is handled differently
-        },
-      };
+  const stateHandlers =
+    isUsingUrlState && urlState?.routePath
+      ? {
+          onRowSelectionChange: tableState.setRowSelection,
+          onSortingChange: tableState.setSorting,
+          onColumnFiltersChange: tableState.setColumnFilters,
+          onColumnVisibilityChange: tableState.setColumnVisibility,
+          onGlobalFilterChange: tableState.setGlobalFilter,
+          onPaginationChange: tableState.setPagination,
+        }
+      : {
+          onRowSelectionChange: setLocalRowSelection,
+          onSortingChange: setLocalSorting,
+          onColumnFiltersChange: setLocalColumnFilters,
+          onColumnVisibilityChange: setLocalColumnVisibility,
+          onGlobalFilterChange: setLocalGlobalFilter,
+          onPaginationChange: () => {
+            // Local pagination is handled differently
+          },
+        };
 
   const table = useReactTable({
     data,
@@ -281,9 +283,10 @@ function DataTableComponent<TData>({
         key as keyof typeof currentState.rowSelection
       ] === true
   );
-  const selectedRows = isBulkActionsEnabled && selectedRowIds.length > 0
-    ? table.getSelectedRowModel().rows.map((row) => row.original)
-    : [];
+  const selectedRows =
+    isBulkActionsEnabled && selectedRowIds.length > 0
+      ? table.getSelectedRowModel().rows.map((row) => row.original)
+      : [];
 
   /**
    * Clears all row selections in the table.
@@ -459,9 +462,9 @@ function DataTableComponent<TData>({
 
 /**
  * DataTable component for displaying tabular data.
- * 
+ *
  * @template TData The type of data in the table rows
- * 
+ *
  * @example
  * ```tsx
  * // For route-level error handling, use TanStack Start's errorComponent
@@ -469,7 +472,7 @@ function DataTableComponent<TData>({
  *   errorComponent: DefaultCatchBoundary,
  *   component: MyComponent
  * })
- * 
+ *
  * // For component-level error isolation, wrap with DataTableErrorBoundary
  * <DataTableErrorBoundary tableName="Users">
  *   <DataTable columns={columns} data={data} name="users" />

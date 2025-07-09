@@ -1,11 +1,11 @@
 /**
  * Component Error Boundary
- * 
+ *
  * A unified error boundary for component-level error handling. This should be used
  * to isolate errors within specific UI components without affecting the entire route.
- * 
+ *
  * For route-level errors, use TanStack Start's errorComponent with DefaultCatchBoundary.
- * 
+ *
  * @example
  * ```tsx
  * <ComponentErrorBoundary componentName="UserTable">

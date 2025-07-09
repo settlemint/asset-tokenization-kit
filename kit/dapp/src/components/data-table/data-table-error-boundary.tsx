@@ -159,4 +159,3 @@ export class DataTableErrorBoundary extends Component<
     return this.props.children;
   }
 }
-

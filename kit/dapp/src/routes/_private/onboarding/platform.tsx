@@ -336,7 +336,6 @@ function PlatformOnboarding() {
     walletActionRef.current = action;
   }, []);
 
-
   const onRegisterSystemAction = useCallback((action: () => void) => {
     systemActionRef.current = action;
   }, []);

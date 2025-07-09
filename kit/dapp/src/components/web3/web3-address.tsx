@@ -113,7 +113,16 @@ function Web3AddressComponent({
     }
 
     return renderAddress();
-  }, [avatarOnly, token, user, showBadge, renderAddress, address, showSymbol, showPrettyName]);
+  }, [
+    avatarOnly,
+    token,
+    user,
+    showBadge,
+    renderAddress,
+    address,
+    showSymbol,
+    showPrettyName,
+  ]);
 
   if (copyToClipboard && !avatarOnly) {
     return (

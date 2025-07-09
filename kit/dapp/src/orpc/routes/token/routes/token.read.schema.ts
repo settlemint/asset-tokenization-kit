@@ -144,15 +144,15 @@ export const TokenReadInputSchema = z.object({
 /**
  * Type-safe transformer function that converts RawToken to Token
  * Ensures totalSupply is properly transformed from string to Dnum
- * 
+ *
  * @param raw - The raw token data from The Graph
  * @returns The transformed token with totalSupply as Dnum
  * @example
  * ```typescript
- * const rawToken = { 
- *   id: "0x123...", 
- *   name: "Token", 
- *   totalSupply: "1000000000000000000" 
+ * const rawToken = {
+ *   id: "0x123...",
+ *   name: "Token",
+ *   totalSupply: "1000000000000000000"
  * };
  * const token = transformRawToken(rawToken);
  * // token.totalSupply is now a Dnum for precise arithmetic
@@ -164,7 +164,7 @@ export function transformRawToken(raw: z.infer<typeof RawTokenSchema>): Token {
 
 /**
  * Type guard function to check if a value is a valid Token
- * 
+ *
  * @param value - The value to check
  * @returns true if the value is a valid Token
  */
