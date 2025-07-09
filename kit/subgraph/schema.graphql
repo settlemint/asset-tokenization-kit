@@ -41,22 +41,22 @@ type EventValue @entity(immutable: true) {
 # ==================================================
 
 type ActionExecutor @entity(immutable: false) {
-  id: Bytes!
-  executors: [Account!]!
+  id: Bytes! @index
+  executors: [Account!]! @index
   actions: [Action!]! @derivedFrom(field: "executor")
 }
 
 type Action @entity(immutable: false) {
   id: Bytes!
   executor: ActionExecutor!
-  name: String!
+  name: String! @index
   type: String! @index
-  createdAt: BigInt!
+  createdAt: BigInt! @index
   activeAt: BigInt! @index
-  expiresAt: BigInt
-  executedAt: BigInt
+  expiresAt: BigInt @index
+  executedAt: BigInt @index
   executed: Boolean! @index
-  target: Account!
+  target: Account! @index
   executedBy: Account
 }
 

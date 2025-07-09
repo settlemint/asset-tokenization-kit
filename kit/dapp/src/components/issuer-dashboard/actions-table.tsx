@@ -10,6 +10,7 @@ import {
 import { orpc } from "@/orpc";
 import type { ActionStatus, TokenAction } from "@/orpc/routes/token/routes/token.actions.schema";
 import { ActionStatusEnum } from "@/orpc/routes/token/routes/token.actions.schema";
+import type { ActionUserType } from "@/lib/constants/action-types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
@@ -23,18 +24,19 @@ import {
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-// Define the action types based on the schema
-export type ActionType = "Admin" | "User";
+// Use centralized action types
+export type ActionType = ActionUserType;
 
-// Use the TokenAction type from the schema but convert string dates to Date objects for UI
+// Use the TokenAction type directly since server now returns proper types
 export interface Action {
   id: string;
   name: string;
   type: ActionType;
-  createdAt: Date;
-  activeAt: Date;
-  expiresAt: Date | null;
-  executedAt: Date | null;
+  status: ActionStatus; // Server-computed status
+  createdAt: number; // UTC seconds
+  activeAt: number; // UTC seconds  
+  expiresAt: number | null; // UTC seconds
+  executedAt: number | null; // UTC seconds
   executed: boolean;
   target: {
     id: string;
@@ -44,15 +46,9 @@ export interface Action {
   } | null;
 }
 
-// Helper function to convert TokenAction to Action (string dates to Date objects)
+// No conversion needed - server returns proper types
 function convertTokenActionToAction(tokenAction: TokenAction): Action {
-  return {
-    ...tokenAction,
-    createdAt: new Date(tokenAction.createdAt),
-    activeAt: new Date(tokenAction.activeAt),
-    expiresAt: tokenAction.expiresAt ? new Date(tokenAction.expiresAt) : null,
-    executedAt: tokenAction.executedAt ? new Date(tokenAction.executedAt) : null,
-  };
+  return tokenAction as Action;
 }
 
 export interface ActionsTableProps {
@@ -62,27 +58,14 @@ export interface ActionsTableProps {
 
 const columnHelper = createColumnHelper<Action>();
 
-function calculateActionStatus(action: Action): ActionStatus {
-  const now = new Date();
-
-  if (action.executed) {
-    return ActionStatusEnum.enum.COMPLETED;
-  }
-
-  if (action.expiresAt && action.expiresAt < now) {
-    return ActionStatusEnum.enum.EXPIRED;
-  }
-
-  if (action.activeAt > now) {
-    return ActionStatusEnum.enum.UPCOMING;
-  }
-
-  return ActionStatusEnum.enum.PENDING;
+// Status is now computed server-side - no client calculation needed
+function getActionStatus(action: Action): ActionStatus {
+  return action.status;
 }
 
 function ActionStatusIndicator({ action }: { action: Action }) {
   const { t } = useTranslation("issuer-dashboard");
-  const status = calculateActionStatus(action);
+  const status = getActionStatus(action);
 
   const statusConfig = {
     [ActionStatusEnum.enum.PENDING]: {
@@ -172,7 +155,7 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
       header: t("actionsTable.columns.activeAt"),
       cell: ({ getValue }) => (
         <div className="text-sm">
-          {getValue().toLocaleDateString()}
+          {new Date(getValue() * 1000).toLocaleDateString()}
         </div>
       ),
     }),

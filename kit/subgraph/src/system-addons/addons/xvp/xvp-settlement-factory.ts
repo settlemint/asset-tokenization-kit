@@ -2,6 +2,7 @@ import { ATKXvPSettlementCreated } from "../../../../generated/templates/XvPSett
 import { fetchEvent } from "../../../event/fetch/event";
 import { fetchXvPSettlement } from "./fetch/xvp-settlement";
 import { createAction, getOrCreateActionExecutor } from "../../../actions/action-utils";
+import { ACTION_TYPES, ACTION_USER_TYPES } from "../../../constants/action-types";
 import { BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
 export function handleATKXvPSettlementCreated(
@@ -48,8 +49,8 @@ export function handleATKXvPSettlementCreated(
     const action = createAction(
       actionId,
       actionExecutor,
-      "ApproveXvPSettlement",
-      "User",
+      ACTION_TYPES.APPROVE_XVP_SETTLEMENT,
+      ACTION_USER_TYPES.USER,
       event.block.timestamp,
       event.block.timestamp, // Active immediately
       xvpSettlement.cutoffDate, // Expires at cutoff date

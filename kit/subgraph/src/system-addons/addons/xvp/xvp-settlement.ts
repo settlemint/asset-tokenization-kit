@@ -8,6 +8,7 @@ import { XvPSettlement as XvPSettlementTemplate } from "../../../../generated/te
 import { XvPSettlementApprovalRevoked, XvPSettlementApproved, XvPSettlementCancelled, XvPSettlement as XvPSettlementContract, XvPSettlementExecuted } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../../../account/fetch/account";
 import { createAction, executeAction, getOrCreateActionExecutor } from "../../../actions/action-utils";
+import { ACTION_TYPES, ACTION_USER_TYPES } from "../../../constants/action-types";
 import { fetchEvent } from "../../../event/fetch/event";
 import { fetchToken } from "../../../token/fetch/token";
 import { setBigNumber } from "../../../utils/bignumber";
@@ -187,8 +188,8 @@ export function handleXvPSettlementApproved(event: XvPSettlementApproved): void 
     const executeAction = createAction(
       executeActionId,
       actionExecutor,
-      "ExecuteXvPSettlement",
-      "Admin",
+      ACTION_TYPES.EXECUTE_XVP_SETTLEMENT,
+      ACTION_USER_TYPES.ADMIN,
       event.block.timestamp,
       event.block.timestamp,
       settlement.cutoffDate,

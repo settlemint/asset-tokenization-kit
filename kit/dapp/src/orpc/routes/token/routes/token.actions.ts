@@ -1,7 +1,10 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { TokenActionsResponseSchema } from "@/orpc/routes/token/routes/token.actions.schema";
+import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
+import { TokenActionsResponseSchema, TokenActionsInputSchema, TokenActionsListSchema } from "@/orpc/routes/token/routes/token.actions.schema";
+import { calculateActionStatus } from "@/lib/constants/action-types";
+import { TRPCError } from "@trpc/server";
 
 /**
  * GraphQL query for retrieving token actions from TheGraph.
@@ -90,8 +93,34 @@ const LIST_TOKEN_ACTIONS_QUERY = theGraphGraphql(`
  * @see {@link TokenActionsInputSchema} for input parameters
  */
 export const actions = authRouter.token.actions
+  .input(TokenActionsInputSchema)
+  .output(TokenActionsListSchema)
   .use(theGraphMiddleware)
+  .use(permissionsMiddleware({ token: "read" }))
   .handler(async ({ input, context }) => {
+    
+    // SECURITY: Authorization checks
+    const currentUser = context.auth?.user;
+    if (!currentUser) {
+      throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Authentication required' });
+    }
+    
+    // SECURITY: Restrict userAddress filtering to prevent enumeration
+    if (input.userAddress && input.userAddress !== currentUser.address && !currentUser.role.permissions?.admin) {
+      throw new TRPCError({ 
+        code: 'FORBIDDEN', 
+        message: 'Cannot query actions for other users without admin permission' 
+      });
+    }
+    
+    // AUDIT: Log action query for security monitoring
+    console.log(`Action query by user ${currentUser.address}:`, {
+      tokenId: input.tokenId,
+      status: input.status,
+      type: input.type,
+      userAddress: input.userAddress,
+      timestamp: new Date().toISOString(),
+    });
     // Build where clause for filtering
     const where: Record<string, unknown> = {};
     
@@ -100,10 +129,10 @@ export const actions = authRouter.token.actions
       where.target = input.tokenId.toLowerCase();
     }
     
-    // Filter by user address (executor)
+    // Filter by user address (executor) - SECURITY: Use exact match to prevent injection
     if (input.userAddress !== undefined) {
-      where.executors_ = {
-        id_contains: input.userAddress.toLowerCase(),
+      where.executor_ = {
+        accounts_contains: [input.userAddress.toLowerCase()],
       };
     }
     
@@ -136,16 +165,41 @@ export const actions = authRouter.token.actions
       }
     }
 
-    // Query TheGraph for actions
+    // Query TheGraph for actions with security limits
     const response = await context.theGraphClient.query(LIST_TOKEN_ACTIONS_QUERY, {
       input: {
-        skip: input.offset,
-        first: input.limit ? Math.min(input.limit, 1000) : 1000,
+        skip: input.offset || 0,
+        first: input.limit ? Math.min(input.limit, 1000) : 50, // Default to 50 for better performance
         where: Object.keys(where).length > 0 ? where : undefined,
       },
       output: TokenActionsResponseSchema,
       error: "Failed to list token actions",
     });
 
-    return response.actions;
+    // SECURITY: Transform response with computed status and filtered data
+    const actionsWithStatus = response.actions.map(action => {
+      const activeAt = parseInt(action.activeAt);
+      const expiresAt = action.expiresAt ? parseInt(action.expiresAt) : null;
+      const createdAt = parseInt(action.createdAt);
+      const executedAt = action.executedAt ? parseInt(action.executedAt) : null;
+      
+      const status = calculateActionStatus(activeAt, expiresAt, action.executed);
+      
+      // SECURITY: Only return minimal necessary information
+      return {
+        id: action.id,
+        name: action.name,
+        type: action.type,
+        status,
+        createdAt,
+        activeAt,
+        expiresAt,
+        executedAt,
+        executed: action.executed,
+        target: action.target,
+        executedBy: action.executedBy,
+      };
+    });
+
+    return actionsWithStatus;
   });

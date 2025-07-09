@@ -145,7 +145,13 @@ export function executeAction(
     return false;
   }
 
-  // Check if executedBy is in the authorized executors array
+  // SECURITY: Enhanced authorization checking with address validation
+  // Validate executedBy address format first
+  if (executedBy.length != 20) {
+    log.error("Invalid executedBy address length: {}", [executedBy.toHexString()]);
+    return false;
+  }
+  
   // Convert executedBy to Account entity reference for comparison
   const executedByAccountId = fetchAccount(Address.fromBytes(executedBy)).id;
   let isAuthorized = false;
@@ -157,8 +163,15 @@ export function executeAction(
   }
 
   if (!isAuthorized) {
-    log.warning("Unauthorized execution attempt by {} for action: {}", [executedBy.toHexString(), actionId.toHexString()]);
+    log.warning("SECURITY ALERT: Unauthorized execution attempt by {} for action: {}", [executedBy.toHexString(), actionId.toHexString()]);
     return false;
+  }
+  
+  // Additional security: Cross-reference with action target if needed
+  // For high-value actions, ensure executedBy has proper relationship to target
+  if (action.target.equals(executedByAccountId)) {
+    log.warning("SECURITY ALERT: Self-execution attempt by target account: {}", [actionId.toHexString()]);
+    // Allow for now, but log for monitoring
   }
 
   // Check if action is still active (not expired)
@@ -180,6 +193,13 @@ export function executeAction(
   action.executedBy = fetchAccount(Address.fromBytes(executedBy)).id;
   action.save();
 
-  log.info("Action executed successfully: {}", [actionId.toHexString()]);
+  // AUDIT: Log successful execution with all relevant details
+  log.info("AUDIT: Action executed successfully - ID: {}, Type: {}, ExecutedBy: {}, Target: {}, ExecutedAt: {}", [
+    actionId.toHexString(),
+    action.type,
+    executedBy.toHexString(),
+    action.target.toHexString(),
+    executedAt.toString()
+  ]);
   return true;
 }
