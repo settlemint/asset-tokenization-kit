@@ -8,7 +8,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { orpc } from "@/orpc";
-import type { TokenAction } from "@/orpc/routes/token/routes/token.actions.schema";
+import type { TokenAction, ActionStatus } from "@/orpc/routes/token/routes/token.actions.schema";
+import { ActionStatusEnum } from "@/orpc/routes/token/routes/token.actions.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
@@ -23,7 +24,6 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 // Define the action types based on the schema
-export type ActionStatus = "PENDING" | "UPCOMING" | "COMPLETED" | "EXPIRED";
 export type ActionType = "Admin" | "User";
 
 // Use the TokenAction type from the schema but convert string dates to Date objects for UI
@@ -66,18 +66,18 @@ function calculateActionStatus(action: Action): ActionStatus {
   const now = new Date();
 
   if (action.executed) {
-    return "COMPLETED";
+    return ActionStatusEnum.enum.COMPLETED;
   }
 
   if (action.expiresAt && action.expiresAt < now) {
-    return "EXPIRED";
+    return ActionStatusEnum.enum.EXPIRED;
   }
 
   if (action.activeAt > now) {
-    return "UPCOMING";
+    return ActionStatusEnum.enum.UPCOMING;
   }
 
-  return "PENDING";
+  return ActionStatusEnum.enum.PENDING;
 }
 
 function ActionStatusIndicator({ action }: { action: Action }) {
@@ -85,22 +85,22 @@ function ActionStatusIndicator({ action }: { action: Action }) {
   const status = calculateActionStatus(action);
 
   const statusConfig = {
-    PENDING: {
+    [ActionStatusEnum.enum.PENDING]: {
       icon: ListCheck,
       label: t("actionsTable.status.pending"),
       variant: "default" as const,
     },
-    UPCOMING: {
+    [ActionStatusEnum.enum.UPCOMING]: {
       icon: ArrowBigRightDash,
       label: t("actionsTable.status.upcoming"),
       variant: "secondary" as const,
     },
-    COMPLETED: {
+    [ActionStatusEnum.enum.COMPLETED]: {
       icon: CircleDashed,
       label: t("actionsTable.status.completed"),
       variant: "outline" as const,
     },
-    EXPIRED: {
+    [ActionStatusEnum.enum.EXPIRED]: {
       icon: AlarmClockCheck,
       label: t("actionsTable.status.expired"),
       variant: "destructive" as const,
@@ -180,7 +180,7 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
       header: t("actionsTable.columns.status"),
       cell: ({ row }) => <ActionStatusIndicator action={row.original} />,
     }),
-    ...(status === "PENDING"
+    ...(status === ActionStatusEnum.enum.PENDING
       ? [
           columnHelper.display({
             id: "actions",
@@ -200,22 +200,22 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
   const filteredActions = actions;
 
   const statusConfig = {
-    PENDING: {
+    [ActionStatusEnum.enum.PENDING]: {
       icon: ListCheck,
       title: t("actionsTable.emptyStates.pending.title"),
       description: t("actionsTable.emptyStates.pending.description"),
     },
-    UPCOMING: {
+    [ActionStatusEnum.enum.UPCOMING]: {
       icon: ArrowBigRightDash,
       title: t("actionsTable.emptyStates.upcoming.title"),
       description: t("actionsTable.emptyStates.upcoming.description"),
     },
-    COMPLETED: {
+    [ActionStatusEnum.enum.COMPLETED]: {
       icon: CircleDashed,
       title: t("actionsTable.emptyStates.completed.title"),
       description: t("actionsTable.emptyStates.completed.description"),
     },
-    EXPIRED: {
+    [ActionStatusEnum.enum.EXPIRED]: {
       icon: AlarmClockCheck,
       title: t("actionsTable.emptyStates.expired.title"),
       description: t("actionsTable.emptyStates.expired.description"),

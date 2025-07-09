@@ -2,11 +2,17 @@ import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { z } from "zod/v4";
 
 /**
+ * Action status enum
+ */
+export const ActionStatusEnum = z.enum(["PENDING", "UPCOMING", "COMPLETED", "EXPIRED"]);
+export type ActionStatus = z.infer<typeof ActionStatusEnum>;
+
+/**
  * Input schema for token actions query
  */
 export const TokenActionsInputSchema = ListSchema.extend({
   tokenId: z.string().optional(),
-  status: z.enum(["PENDING", "UPCOMING", "COMPLETED", "EXPIRED"]).optional(),
+  status: ActionStatusEnum.optional(),
   type: z.enum(["Admin", "User"]).optional(),
   userAddress: z.string().optional(),
 });
