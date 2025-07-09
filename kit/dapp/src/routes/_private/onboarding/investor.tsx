@@ -146,8 +146,6 @@ function InvestorOnboarding() {
             )}
             {currentStepId === "security" && (
               <WalletSecurityStep
-                form={{} as any}
-                stepId="security"
                 onNext={handleSecuritySuccess}
                 onPrevious={handleWalletSuccess}
                 isFirstStep={false}

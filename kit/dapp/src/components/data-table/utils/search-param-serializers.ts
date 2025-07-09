@@ -21,49 +21,6 @@ import type {
   SortState,
 } from "./search-params";
 
-/**
- * Zod schema for flat URL search parameters.
- * Validates and sanitizes all incoming URL parameters to prevent injection attacks.
- */
-const flatSearchParamsSchema = z.object({
-  // Pagination
-  page: z.coerce.number().int().min(1).max(1000).optional(),
-  pageSize: z.coerce.number().int().min(1).max(100).optional(),
-  
-  // Sorting
-  sortBy: z.string().regex(/^[a-zA-Z0-9_.-]+$/).max(100).optional(),
-  sortOrder: z.enum(["asc", "desc"]).optional(),
-  
-  // Global search
-  search: z.string().max(1000).optional(),
-  
-  // Column visibility - comma-separated list of column IDs
-  columns: z.string()
-    .max(1000)
-    .optional()
-    .transform((val) => {
-      if (!val) return undefined;
-      // Validate each column ID
-      const columns = val.split(',').map(c => c.trim());
-      const validColumns = columns.filter(col => /^[a-zA-Z0-9_.-]+$/.test(col));
-      return validColumns.length > 0 ? validColumns.join(',') : undefined;
-    }),
-    
-  // Row selection - comma-separated list of row IDs
-  selected: z.string()
-    .max(1000)
-    .optional()
-    .transform((val) => {
-      if (!val) return undefined;
-      // Validate each row ID
-      const ids = val.split(',').map(id => id.trim());
-      const validIds = ids.filter(id => /^[a-zA-Z0-9_.-]+$/.test(id));
-      return validIds.length > 0 ? validIds.join(',') : undefined;
-    }),
-}).catchall(
-  // Handle filter_ prefixed parameters
-  z.string().max(1000).optional()
-);
 
 /**
  * Safely encode an object to JSON string for URL parameter.

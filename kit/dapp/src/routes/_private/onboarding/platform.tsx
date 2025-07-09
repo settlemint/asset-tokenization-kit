@@ -398,8 +398,6 @@ function PlatformOnboarding() {
                 } else if (currentStepId === "security") {
                   return (
                     <WalletSecurityStep
-                      form={{} as any}
-                      stepId="security"
                       onNext={handleSecuritySuccess}
                       onPrevious={handleWalletSuccess}
                       isFirstStep={false}
