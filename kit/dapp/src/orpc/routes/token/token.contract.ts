@@ -28,6 +28,10 @@ import {
   TokenStatsTransactionsOutputSchema,
 } from "@/orpc/routes/token/routes/token.stats.transactions.schema";
 import { TokenStatsValueOutputSchema } from "@/orpc/routes/token/routes/token.stats.value.schema";
+import {
+  TokenActionsInputSchema,
+  TokenActionsListSchema,
+} from "@/orpc/routes/token/routes/token.actions.schema";
 import { eventIterator } from "@orpc/server";
 import { z } from "zod/v4";
 
@@ -139,6 +143,17 @@ const statsValue = baseContract
   })
   .output(TokenStatsValueOutputSchema);
 
+const actions = baseContract
+  .route({
+    method: "GET",
+    path: "/token/actions",
+    description: "Get token actions",
+    successDescription: "List of token actions",
+    tags: ["token", "actions"],
+  })
+  .input(TokenActionsInputSchema)
+  .output(TokenActionsListSchema);
+
 export const tokenContract = {
   factoryCreate,
   factoryList,
@@ -150,4 +165,5 @@ export const tokenContract = {
   statsAssets,
   statsTransactions,
   statsValue,
+  actions,
 };

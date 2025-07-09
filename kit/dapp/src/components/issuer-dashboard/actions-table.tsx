@@ -19,11 +19,15 @@ import {
 } from "@/components/ui/tooltip";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { orpc } from "@/orpc";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import type { TokenAction } from "@/orpc/routes/token/routes/token.actions.schema";
 
-// Define the action types based on the v1 schema
+// Define the action types based on the schema
 export type ActionStatus = "PENDING" | "UPCOMING" | "COMPLETED" | "EXPIRED";
 export type ActionType = "Admin" | "User";
 
+// Use the TokenAction type from the schema but convert string dates to Date objects for UI
 export interface Action {
   id: string;
   name: string;
@@ -39,6 +43,17 @@ export interface Action {
   executedBy: {
     id: string;
   } | null;
+}
+
+// Helper function to convert TokenAction to Action (string dates to Date objects)
+function convertTokenActionToAction(tokenAction: TokenAction): Action {
+  return {
+    ...tokenAction,
+    createdAt: new Date(tokenAction.createdAt),
+    activeAt: new Date(tokenAction.activeAt),
+    expiresAt: tokenAction.expiresAt ? new Date(tokenAction.expiresAt) : null,
+    executedAt: tokenAction.executedAt ? new Date(tokenAction.executedAt) : null,
+  };
 }
 
 export interface ActionsTableProps {
@@ -107,37 +122,21 @@ function ActionStatusIndicator({ action }: { action: Action }) {
  * Actions table component for the dashboard
  */
 export function ActionsTable({ status, type }: ActionsTableProps) {
-  // Mock data - in real implementation, this would come from the subgraph or API
-  const mockActions: Action[] = useMemo(() => [
-    {
-      id: "1",
-      name: "ApproveXvPSettlement",
-      type: "Admin",
-      createdAt: new Date(Date.now() - 86400000), // 1 day ago
-      activeAt: new Date(Date.now() - 3600000), // 1 hour ago
-      expiresAt: new Date(Date.now() + 86400000), // 1 day from now
-      executedAt: null,
-      executed: false,
-      target: {
-        id: "0x1234567890abcdef1234567890abcdef12345678",
+  // Fetch actions from the API
+  const { data: tokenActions } = useSuspenseQuery(
+    orpc.token.actions.queryOptions({
+      input: {
+        status,
+        type,
+        limit: 1000, // Get all actions for now
       },
-      executedBy: null,
-    },
-    {
-      id: "2",
-      name: "MatureBond",
-      type: "Admin",
-      createdAt: new Date(Date.now() - 172800000), // 2 days ago
-      activeAt: new Date(Date.now() + 86400000), // 1 day from now
-      expiresAt: new Date(Date.now() + 172800000), // 2 days from now
-      executedAt: null,
-      executed: false,
-      target: {
-        id: "0xabcdef1234567890abcdef1234567890abcdef12",
-      },
-      executedBy: null,
-    },
-  ], []);
+    })
+  );
+
+  // Convert API response to component format
+  const actions: Action[] = useMemo(() => {
+    return tokenActions.map(convertTokenActionToAction);
+  }, [tokenActions]);
   
   const columns = useMemo(() => [
     columnHelper.accessor("name", {
@@ -195,13 +194,8 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
       : []),
   ], [status]);
   
-  const filteredActions = useMemo(() => {
-    return mockActions.filter(
-      (action) => 
-        calculateActionStatus(action) === status && 
-        action.type === type
-    );
-  }, [mockActions, status, type]);
+  // Actions are already filtered by the API call, so we can use them directly
+  const filteredActions = actions;
   
   const statusConfig = {
     PENDING: {
@@ -226,9 +220,11 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
     },
   } as const;
   
+  const columnsCallback = useMemo(() => () => columns, [columns]);
+  
   return (
     <DataTable
-      columns={() => columns}
+      columns={columnsCallback}
       data={filteredActions}
       name="Actions"
       customEmptyState={statusConfig[status]}
