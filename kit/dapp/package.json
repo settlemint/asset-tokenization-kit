@@ -53,7 +53,7 @@
     "languine": "3.1.4",
     "typescript": "5.8.3",
     "typescript-eslint": "8.36.0",
-    "vite": "7.0.2",
+    "vite": "7.0.3",
     "vite-bundle-analyzer": "1.0.0",
     "vite-console-forward-plugin": "1.0.0",
     "vite-tsconfig-paths": "5.1.4"
