@@ -1,32 +1,32 @@
-import { z } from "zod";
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
-import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import {
   MultiStepWizard,
   withWizardErrorBoundary,
 } from "@/components/multistep-form";
-import { authClient } from "@/lib/auth/auth.client";
-import type { OnboardingType } from "@/lib/types/onboarding";
-import { orpc } from "@/orpc";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useMemo, useState, useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import type {
   StepDefinition,
   StepGroup,
 } from "@/components/multistep-form/types";
-import type { SessionUser } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
+import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import {
-  WelcomeScreen,
-  WalletDisplayStep,
-  WalletSecurityStep,
   RecoveryCodesStep,
   SystemBootstrapStep,
+  WalletDisplayStep,
+  WalletSecurityStep,
+  WelcomeScreen,
 } from "@/components/onboarding/steps";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Button } from "@/components/ui/button";
+import type { SessionUser } from "@/lib/auth";
+import { authClient } from "@/lib/auth/auth.client";
+import type { OnboardingType } from "@/lib/types/onboarding";
+import { orpc } from "@/orpc";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { z } from "zod";
 
 export const Route = createFileRoute("/_private/onboarding/platform-new")({
   loader: async ({ context }) => {
@@ -213,17 +213,8 @@ function PlatformNewOnboarding() {
           // This will be called by WizardStep before markStepComplete
           return Promise.resolve();
         },
-        component: ({
-          form,
-          stepId,
-          onNext,
-          onPrevious,
-          isFirstStep,
-          isLastStep,
-        }) => (
+        component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => (
           <WalletSecurityStep
-            form={form}
-            stepId={stepId}
             onNext={onNext}
             onPrevious={onPrevious}
             isFirstStep={isFirstStep}
@@ -244,17 +235,8 @@ function PlatformNewOnboarding() {
           // This will be called by WizardStep before markStepComplete
           return Promise.resolve();
         },
-        component: ({
-          form,
-          stepId,
-          onNext,
-          onPrevious,
-          isFirstStep,
-          isLastStep,
-        }) => (
+        component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => (
           <RecoveryCodesStep
-            form={form}
-            stepId={stepId}
             onNext={onNext}
             onPrevious={onPrevious}
             isFirstStep={isFirstStep}
@@ -278,17 +260,8 @@ function PlatformNewOnboarding() {
           onStepComplete: async () => {
             return Promise.resolve();
           },
-          component: ({
-            form,
-            stepId,
-            onNext,
-            onPrevious,
-            isFirstStep,
-            isLastStep,
-          }) => (
+          component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => (
             <SystemBootstrapStep
-              form={form}
-              stepId={stepId}
               onNext={onNext}
               onPrevious={onPrevious}
               isFirstStep={isFirstStep}

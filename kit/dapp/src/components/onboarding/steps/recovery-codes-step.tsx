@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import type { StepComponentProps } from "@/components/multistep-form/types";
 import { authClient } from "@/lib/auth/auth.client";
 import { useMutation } from "@tanstack/react-query";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface RecoveryCodeItemProps {
@@ -51,7 +50,11 @@ function RecoveryCodeItem({ code, index, onCopy }: RecoveryCodeItemProps) {
   );
 }
 
-interface RecoveryCodesStepProps extends StepComponentProps {
+interface RecoveryCodesStepProps {
+  onNext?: () => void;
+  onPrevious?: () => void;
+  isFirstStep?: boolean;
+  isLastStep?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user?: any; // Use any for now to match the user type from session
 }

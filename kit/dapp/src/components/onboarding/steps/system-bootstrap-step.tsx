@@ -1,9 +1,12 @@
-import type { StepComponentProps } from "@/components/multistep-form/types";
 import { Button } from "@/components/ui/button";
 import type { SessionUser } from "@/lib/auth";
 import { useCallback, useState } from "react";
 
-interface SystemBootstrapStepProps extends StepComponentProps {
+interface SystemBootstrapStepProps {
+  onNext?: () => void;
+  onPrevious?: () => void;
+  isFirstStep?: boolean;
+  isLastStep?: boolean;
   user?: SessionUser;
 }
 
@@ -16,14 +19,18 @@ export function SystemBootstrapStep({
 
   const handleNext = useCallback(() => {
     if (isBootstrapped) {
-      onNext();
+      onNext?.();
     } else {
       setIsBootstrapped(true);
       setTimeout(() => {
-        onNext();
+        onNext?.();
       }, 1000);
     }
   }, [isBootstrapped, onNext]);
+
+  const handlePrevious = useCallback(() => {
+    onPrevious?.();
+  }, [onPrevious]);
 
   return (
     <div className="h-full flex flex-col">
@@ -59,7 +66,7 @@ export function SystemBootstrapStep({
       <div className="mt-8 pt-6 border-t border-border">
         <div className="flex justify-end gap-3">
           {!isFirstStep && (
-            <Button variant="outline" onClick={onPrevious}>
+            <Button variant="outline" onClick={handlePrevious}>
               Previous
             </Button>
           )}

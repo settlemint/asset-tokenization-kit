@@ -1,12 +1,5 @@
-import { useState, useEffect, useContext, useCallback, useMemo } from "react";
+import { PincodeInput } from "@/components/onboarding/pincode-input";
 import { Button } from "@/components/ui/button";
-import type { StepComponentProps } from "@/components/multistep-form/types";
-import { authClient } from "@/lib/auth/auth.client";
-import { useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/lib/query.client";
-import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -15,13 +8,25 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { PincodeInput } from "@/components/onboarding/pincode-input";
+import { authClient } from "@/lib/auth/auth.client";
+import { queryClient } from "@/lib/query.client";
+import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-interface WalletSecurityStepProps extends StepComponentProps {
+interface WalletSecurityStepProps {
+  onNext?: () => void;
+  onPrevious?: () => void;
+  isFirstStep?: boolean;
+  isLastStep?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user?: any; // Use any for now to match the user type from session
+  onSuccess?: () => void; // Callback when security step is completed successfully
+  onRegisterAction?: (action: () => void) => void; // Register an action for external triggers
 }
 
 const pincodeSchema = z
@@ -42,6 +47,8 @@ export function WalletSecurityStep({
   isFirstStep,
   isLastStep,
   user,
+  onSuccess,
+  onRegisterAction,
 }: WalletSecurityStepProps) {
   const { sessionKey } = useContext(AuthQueryContext);
   const [isPincodeSet, setIsPincodeSet] = useState(false);
@@ -72,6 +79,8 @@ export function WalletSecurityStep({
       // After 1 second, show the success button text
       setTimeout(() => {
         setShowSuccessButton(true);
+        // Call the onSuccess callback if provided
+        onSuccess?.();
       }, 1000);
     },
     onError: (error: Error) => {
@@ -131,11 +140,18 @@ export function WalletSecurityStep({
 
   const handleNext = useCallback(() => {
     if (hasPincode || isPincodeSet) {
-      onNext();
+      onNext?.();
     } else {
       handleSetPincode();
     }
   }, [hasPincode, isPincodeSet, onNext, handleSetPincode]);
+
+  // Register the action for external triggers (like step wizard buttons)
+  useEffect(() => {
+    if (onRegisterAction) {
+      onRegisterAction(handleNext);
+    }
+  }, [onRegisterAction, handleNext]);
 
   const renderPincodeField = useCallback(
     ({
