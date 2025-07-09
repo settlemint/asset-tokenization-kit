@@ -1,7 +1,9 @@
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { timestamp } from "@/lib/zod/validators/timestamp";
 import type { TokenRoles } from "@/orpc/middlewares/system/token.middleware";
+import { from } from "dnum";
 import { z } from "zod/v4";
 
 /**
@@ -96,6 +98,18 @@ export const RawTokenSchema = z.object({
   pausable: z.object({
     paused: z.boolean().describe("Whether the token is paused"),
   }),
+  collateral: z
+    .object({
+      collateral: bigDecimal()
+        .describe("The collateral of the token")
+        .nullish()
+        .transform((val) => val ?? from(0)),
+      expiryTimestamp: timestamp()
+        .nullable()
+        .describe("The expiry timestamp of the collateral"),
+    })
+    .nullable()
+    .describe("The collateral of the token"),
   userPermissions: z
     .object({
       roles: z

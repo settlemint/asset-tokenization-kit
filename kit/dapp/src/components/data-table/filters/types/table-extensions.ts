@@ -115,5 +115,19 @@ declare module "@tanstack/react-table" {
      * @example "USD", "EUR", "GBP", "JPY"
      */
     currency?: string;
+
+    /**
+     * Value to display when the cell value is empty/null/undefined
+     * @remarks Can be a string, number, or React component
+     * @example "-", "N/A", <span className="text-muted-foreground">No data</span>
+     */
+    emptyValue?: React.ReactNode;
+
+    /**
+     * Whether to show pretty name for addresses (only applies when type="address")
+     * @remarks When true, will display the ENS name or other readable identifier if available
+     * @defaultValue true
+     */
+    showPrettyName?: boolean;
   }
 }

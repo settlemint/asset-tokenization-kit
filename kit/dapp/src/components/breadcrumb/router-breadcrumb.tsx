@@ -208,7 +208,7 @@ export function RouterBreadcrumb({
         // Add segment with metadata
         segmentsWithMeta.push({
           segment: {
-            title: breadcrumbMeta.title ?? "...",
+            title: breadcrumbMeta.title,
             href: isLast ? undefined : breadcrumbMeta.href,
             isCurrentPage: isLast,
           },
@@ -273,7 +273,7 @@ export function RouterBreadcrumb({
         // Add segment with metadata
         segmentsWithMeta.push({
           segment: {
-            title: breadcrumbMeta?.title ?? fallbackTitle ?? "...",
+            title: breadcrumbMeta?.title ?? fallbackTitle,
             href: isLast ? undefined : match.pathname,
             isCurrentPage: isLast,
           },
@@ -302,7 +302,7 @@ export function RouterBreadcrumb({
           const href = metadata?.href ?? segment.href;
 
           return (
-            <Fragment key={href ?? segment.title ?? index}>
+            <Fragment key={href ?? segment.title}>
               <BreadcrumbItemWithAsyncTitle
                 breadcrumbMeta={metadata}
                 fallbackTitle={segment.title}

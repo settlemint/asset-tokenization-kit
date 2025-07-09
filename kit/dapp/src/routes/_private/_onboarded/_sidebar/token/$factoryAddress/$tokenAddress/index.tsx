@@ -1,8 +1,6 @@
 import { DetailGrid, DetailGridItem } from "@/components/detail-grid";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { Web3Address } from "@/components/web3/web3-address";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { format } from "dnum";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -92,59 +90,59 @@ function RouteComponent() {
         <DetailGridItem
           label={t("tokens:fields.contractAddress")}
           info={t("tokens:fields.contractAddressInfo")}
-        >
-          <Web3Address
-            address={token.id}
-            copyToClipboard={true}
-            showFullAddress={false}
-            size="tiny"
-            showSymbol={false}
-            showBadge={false}
-            showPrettyName={false}
-          />
-        </DetailGridItem>
+          value={token.id}
+          type="address"
+          showPrettyName={false}
+        />
 
         <DetailGridItem
           label={t("tokens:fields.name")}
           info={t("tokens:fields.nameInfo")}
-        >
-          {token.name}
-        </DetailGridItem>
+          value={token.name}
+          type="text"
+        />
 
         <DetailGridItem
           label={t("tokens:fields.symbol")}
           info={t("tokens:fields.symbolInfo")}
-        >
-          {token.symbol}
-        </DetailGridItem>
+          value={token.symbol}
+          type="text"
+        />
 
         <DetailGridItem
           label={t("tokens:fields.decimals")}
           info={t("tokens:fields.decimalsInfo")}
-        >
-          {token.decimals}
-        </DetailGridItem>
+          value={token.decimals}
+          type="number"
+        />
 
         <DetailGridItem
           label={t("tokens:fields.totalSupply")}
           info={t("tokens:fields.totalSupplyInfo")}
-        >
-          {format(token.totalSupply, { compact: true, digits: 2 })}{" "}
-          {token.symbol}
-        </DetailGridItem>
+          value={token.totalSupply}
+          type="currency"
+          currency={token.symbol}
+        />
       </DetailGrid>
 
-      {/* Compliance Information */}
-      <DetailGrid title={t("tokens:details.complianceInformation")}>
-        <DetailGridItem
-          label={t("tokens:fields.requiredClaims")}
-          info={t("tokens:fields.requiredClaimsInfo")}
-        >
-          <span className="text-muted-foreground">
-            {t("tokens:fields.noRequiredClaims")}
-          </span>
-        </DetailGridItem>
-      </DetailGrid>
+      {token.collateral && (
+        <DetailGrid title={t("tokens:details.collateralInformation")}>
+          <DetailGridItem
+            label={t("tokens:fields.collateral")}
+            info={t("tokens:fields.collateralInfo")}
+            value={token.collateral.collateral}
+            type="currency"
+            currency={token.symbol}
+          />
+          <DetailGridItem
+            label={t("tokens:fields.collateralExpiry")}
+            info={t("tokens:fields.collateralExpiryInfo")}
+            value={token.collateral.expiryTimestamp}
+            type="date"
+            emptyValue={t("tokens:fields.noExpiry")}
+          />
+        </DetailGrid>
+      )}
     </>
   );
 }

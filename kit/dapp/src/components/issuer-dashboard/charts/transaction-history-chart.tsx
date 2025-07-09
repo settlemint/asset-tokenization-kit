@@ -29,7 +29,7 @@ export function TransactionHistoryChart() {
   );
 
   // Transform transaction history data for chart display
-  const chartData = (metrics.transactionHistory ?? []).map((dataPoint) => ({
+  const chartData = metrics.transactionHistory.map((dataPoint) => ({
     timestamp: dataPoint.timestamp,
     transactions: dataPoint.transactions,
   }));
