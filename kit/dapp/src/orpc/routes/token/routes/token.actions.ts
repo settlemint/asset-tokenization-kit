@@ -1,7 +1,7 @@
 import { calculateActionStatus } from "@/lib/constants/action-types";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { tokenRouter } from "@/orpc/procedures/token.router";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import {
   ActionStatusEnum,
   TokenActionsResponseSchema,
@@ -95,7 +95,7 @@ const LIST_TOKEN_ACTIONS_QUERY = theGraphGraphql(`
  * @see {@link TokenActionsListSchema} for the response structure
  * @see {@link TokenActionsInputSchema} for input parameters
  */
-export const actions = tokenRouter.token.actions
+export const actions = authRouter.token.actions
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // SECURITY: Auto-filter to user's wallet address, with admin override
@@ -164,7 +164,7 @@ export const actions = tokenRouter.token.actions
       LIST_TOKEN_ACTIONS_QUERY,
       {
         input: {
-          skip: input.offset ?? 0,
+          skip: input.offset,
           first: input.limit ? Math.min(input.limit, 1000) : 50, // Default to 50 for better performance
           where: Object.keys(where).length > 0 ? where : undefined,
         },
@@ -178,22 +178,22 @@ export const actions = tokenRouter.token.actions
       const status = calculateActionStatus(
         action.activeAt.getTime() / 1000, // Convert Date to seconds
         action.expiresAt ? action.expiresAt.getTime() / 1000 : null,
-        action.executed as boolean
+        action.executed
       );
 
       // SECURITY: Only return minimal necessary information
       return {
-        id: action.id as string,
-        name: action.name as unknown as TokenAction["name"],
-        type: action.type as unknown as TokenAction["type"],
+        id: action.id,
+        name: action.name,
+        type: action.type,
         status,
         createdAt: action.createdAt,
         activeAt: action.activeAt,
         expiresAt: action.expiresAt,
         executedAt: action.executedAt,
-        executed: action.executed as boolean,
-        target: action.target as { id: string },
-        executedBy: action.executedBy as { id: string } | null,
+        executed: action.executed,
+        target: action.target,
+        executedBy: action.executedBy,
       };
     });
 
