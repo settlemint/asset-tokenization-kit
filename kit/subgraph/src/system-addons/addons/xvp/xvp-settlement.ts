@@ -5,18 +5,12 @@ import {
   XvPSettlementFlow,
 } from "../../../../generated/schema";
 import { XvPSettlement as XvPSettlementTemplate } from "../../../../generated/templates";
-import { XvPSettlement as XvPSettlementContract } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
-import { 
-  XvPSettlementApproved,
-  XvPSettlementApprovalRevoked,
-  XvPSettlementExecuted,
-  XvPSettlementCancelled
-} from "../../../../generated/templates/XvPSettlement/XvPSettlement";
+import { XvPSettlementApprovalRevoked, XvPSettlementApproved, XvPSettlementCancelled, XvPSettlement as XvPSettlementContract, XvPSettlementExecuted } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../../../account/fetch/account";
+import { createAction, executeAction, getOrCreateActionExecutor } from "../../../actions/action-utils";
+import { fetchEvent } from "../../../event/fetch/event";
 import { fetchToken } from "../../../token/fetch/token";
 import { setBigNumber } from "../../../utils/bignumber";
-import { fetchEvent } from "../../../event/fetch/event";
-import { executeAction, createAction, getOrCreateActionExecutor } from "../../../actions/action-utils";
 
 /**
  * Fetches or creates a Flow entity
@@ -130,7 +124,7 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
         }
       }
     }
-    
+
     // Convert string array back to Address array
     const approvers: Address[] = [];
     for (let i = 0; i < approverStrings.length; i++) {
@@ -156,39 +150,39 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
  */
 export function handleXvPSettlementApproved(event: XvPSettlementApproved): void {
   fetchEvent(event, "XvPSettlementApproved");
-  
+
   // Update approval entity
-  const approval = fetchXvPSettlementApproval(event.address, event.params.approver);
+  const approval = fetchXvPSettlementApproval(event.address, event.params.sender);
   approval.approved = true;
   approval.timestamp = event.block.timestamp;
   approval.save();
-  
+
   // Mark approval action as executed
-  const actionId = event.address.concat(event.params.approver).concat(Bytes.fromUTF8("approve"));
-  const actionExecuted = executeAction(actionId, event.block.timestamp, event.params.approver);
+  const actionId = event.address.concat(event.params.sender).concat(Bytes.fromUTF8("approve"));
+  const actionExecuted = executeAction(actionId, event.block.timestamp, event.params.sender);
   if (!actionExecuted) {
     log.warning("Failed to execute approval action for XvP settlement: {}", [event.address.toHexString()]);
   }
-  
+
   // Check if all approvals are done and create execution action
   const settlement = fetchXvPSettlement(event.address);
   const approvals = settlement.approvals.load();
   let allApproved = true;
-  
+
   for (let i = 0; i < approvals.length; i++) {
     if (!approvals[i].approved) {
       allApproved = false;
       break;
     }
   }
-  
+
   if (allApproved && !settlement.executed && !settlement.cancelled) {
     // Create execution action for admin
     const actionExecutor = getOrCreateActionExecutor(
       event.address,
-      [event.params.approver] // Admin who can execute
+      [event.params.sender] // Admin who can execute
     );
-    
+
     const executeActionId = event.address.concat(Bytes.fromUTF8("execute"));
     const executeAction = createAction(
       executeActionId,
@@ -200,7 +194,7 @@ export function handleXvPSettlementApproved(event: XvPSettlementApproved): void 
       settlement.cutoffDate,
       event.address
     );
-    
+
     if (!executeAction) {
       log.warning("Failed to create execute action for XvP settlement: {}", [event.address.toHexString()]);
     }
@@ -212,22 +206,22 @@ export function handleXvPSettlementApproved(event: XvPSettlementApproved): void 
  */
 export function handleXvPSettlementApprovalRevoked(event: XvPSettlementApprovalRevoked): void {
   fetchEvent(event, "XvPSettlementApprovalRevoked");
-  
-  // Update approval entity
-  const approval = fetchXvPSettlementApproval(event.address, event.params.approver);
+
+    // Update approval entity
+  const approval = fetchXvPSettlementApproval(event.address, event.params.sender);
   approval.approved = false;
   approval.timestamp = event.block.timestamp;
   approval.save();
-  
+
   // Recreate approval action
   const actionExecutor = getOrCreateActionExecutor(
     event.address,
-    [event.params.approver]
+    [event.params.sender]
   );
-  
-  const actionId = event.address.concat(event.params.approver).concat(Bytes.fromUTF8("approve"));
+
+  const actionId = event.address.concat(event.params.sender).concat(Bytes.fromUTF8("approve"));
   const settlement = fetchXvPSettlement(event.address);
-  
+
   const approvalAction = createAction(
     actionId,
     actionExecutor,
@@ -238,7 +232,7 @@ export function handleXvPSettlementApprovalRevoked(event: XvPSettlementApprovalR
     settlement.cutoffDate,
     event.address
   );
-  
+
   if (!approvalAction) {
     log.warning("Failed to create approval action for XvP settlement: {}", [event.address.toHexString()]);
   }
@@ -249,12 +243,12 @@ export function handleXvPSettlementApprovalRevoked(event: XvPSettlementApprovalR
  */
 export function handleXvPSettlementExecuted(event: XvPSettlementExecuted): void {
   fetchEvent(event, "XvPSettlementExecuted");
-  
+
   // Update settlement entity
   const settlement = fetchXvPSettlement(event.address);
   settlement.executed = true;
   settlement.save();
-  
+
   // Mark execution action as completed
   const executeActionId = event.address.concat(Bytes.fromUTF8("execute"));
   const actionExecuted = executeAction(executeActionId, event.block.timestamp, event.transaction.from);
@@ -268,12 +262,12 @@ export function handleXvPSettlementExecuted(event: XvPSettlementExecuted): void 
  */
 export function handleXvPSettlementCancelled(event: XvPSettlementCancelled): void {
   fetchEvent(event, "XvPSettlementCancelled");
-  
+
   // Update settlement entity
   const settlement = fetchXvPSettlement(event.address);
   settlement.cancelled = true;
   settlement.save();
-  
+
   // No need to create actions for cancelled settlements
   // Existing actions will expire naturally
 }
