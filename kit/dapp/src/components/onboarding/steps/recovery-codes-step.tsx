@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth.client";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+
+const logger = createLogger();
 
 interface RecoveryCodeItemProps {
   code: string;
@@ -98,13 +101,13 @@ export function RecoveryCodesStep({
   const { mutate: generateRecoveryCodes, isPending: isGeneratingCodes } =
     useMutation({
       mutationFn: async () => {
-        console.log("Starting mutation...");
+        logger.debug("Starting mutation...");
         return authClient.secretCodes.generate({
           // No password required during onboarding
         });
       },
       onSuccess: (data) => {
-        console.log("Recovery codes onSuccess", data);
+        logger.debug("Recovery codes onSuccess", data);
         // Check if there's an error in the response (like 404)
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (data && "error" in data && data.error) {
@@ -113,7 +116,7 @@ export function RecoveryCodesStep({
             const mockCodes = Array.from({ length: 16 }, () =>
               Math.random().toString(36).substring(2, 8).toUpperCase()
             );
-            console.log("Setting mock codes from 404", mockCodes);
+            logger.debug("Setting mock codes from 404", mockCodes);
             setRecoveryCodes(mockCodes);
             setRecoveryCodesFetched(true);
             if (!hasShownToast.current) {
@@ -134,7 +137,7 @@ export function RecoveryCodesStep({
         if (data && "data" in data && data.data && "secretCodes" in data.data) {
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           const codes = data.data.secretCodes || [];
-          console.log("Setting real codes", codes);
+          logger.debug("Setting real codes", codes);
           setRecoveryCodes(codes);
           setRecoveryCodesFetched(true);
           if (!hasShownToast.current) {
@@ -148,7 +151,7 @@ export function RecoveryCodesStep({
           Array.isArray(data.secretCodes)
         ) {
           const codes = data.secretCodes;
-          console.log("Setting alternative format codes", codes);
+          logger.debug("Setting alternative format codes", codes);
           setRecoveryCodes(codes);
           setRecoveryCodesFetched(true);
           if (!hasShownToast.current) {
@@ -160,13 +163,13 @@ export function RecoveryCodesStep({
         }
       },
       onError: (error: Error) => {
-        console.log("Recovery codes onError", error);
+        logger.debug("Recovery codes onError", error);
         // Fallback for thrown errors
         if (error.message.includes("404")) {
           const mockCodes = Array.from({ length: 16 }, () =>
             Math.random().toString(36).substring(2, 8).toUpperCase()
           );
-          console.log("Setting mock codes from error", mockCodes);
+          logger.debug("Setting mock codes from error", mockCodes);
           setRecoveryCodes(mockCodes);
           setRecoveryCodesFetched(true);
           if (!hasShownToast.current) {
@@ -187,7 +190,7 @@ export function RecoveryCodesStep({
 
   // Generate recovery codes on component mount
   useEffect(() => {
-    console.log("Recovery codes useEffect", {
+    logger.debug("Recovery codes useEffect", {
       recoveryCodesFetched,
       isGeneratingCodes,
       recoveryCodes: recoveryCodes.length,
@@ -198,7 +201,7 @@ export function RecoveryCodesStep({
       !isGeneratingCodes &&
       recoveryCodes.length === 0
     ) {
-      console.log("Generating recovery codes...");
+      logger.debug("Generating recovery codes...");
       generateRecoveryCodes();
     }
   }, [

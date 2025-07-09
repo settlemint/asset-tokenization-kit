@@ -22,11 +22,14 @@ import type { SessionUser } from "@/lib/auth";
 import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+
+const logger = createLogger();
 
 export const Route = createFileRoute("/_private/onboarding/platform-new")({
   loader: async ({ context }) => {
@@ -500,7 +503,7 @@ function PlatformNewOnboarding() {
   const handleComplete = useCallback(
     async (data: OnboardingFormData) => {
       try {
-        console.log("Onboarding completed with data:", data);
+        logger.debug("Onboarding completed with data:", data);
         toast.success(
           "Platform onboarding completed successfully! Welcome to your tokenization platform."
         );
@@ -509,7 +512,7 @@ function PlatformNewOnboarding() {
         await navigate({ to: "/" });
       } catch (error) {
         toast.error("Failed to complete onboarding");
-        console.error("Onboarding completion error:", error);
+        logger.error("Onboarding completion error:", error);
       }
     },
     [navigate]
@@ -533,18 +536,18 @@ function PlatformNewOnboarding() {
 
   // Handle starting the wizard
   const handleStartWalletSetup = useCallback(() => {
-    console.log(
+    logger.debug(
       "Starting wallet setup, steps:",
       steps.length,
       steps.map((s) => s.id)
     );
-    console.log(
+    logger.debug(
       "Groups:",
       groups.length,
       groups.map((g) => g.id)
     );
-    console.log("System address:", systemAddress);
-    console.log("Should show conditions:", {
+    logger.debug("System address:", systemAddress);
+    logger.debug("Should show conditions:", {
       shouldShowWalletSteps,
       shouldShowSystemSetupSteps,
       shouldShowIdentitySteps,
