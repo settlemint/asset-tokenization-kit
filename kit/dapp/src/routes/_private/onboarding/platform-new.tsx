@@ -1,33 +1,31 @@
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { z } from "zod";
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
-import { MultiStepWizard } from "@/components/multistep-form";
+import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import {
+  MultiStepWizard,
+  withWizardErrorBoundary,
+} from "@/components/multistep-form";
+import { useSettings } from "@/hooks/use-settings";
+import { authClient } from "@/lib/auth/auth.client";
+import type { OnboardingType } from "@/lib/types/onboarding";
+import { orpc } from "@/orpc";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useMemo, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import type {
   StepDefinition,
   StepGroup,
 } from "@/components/multistep-form/types";
-import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
+import { Button } from "@/components/ui/button";
 import {
-  RecoveryCodesStep,
-  SystemBootstrapStep,
+  WelcomeScreen,
   WalletDisplayStep,
   WalletSecurityStep,
-  WelcomeScreen,
+  RecoveryCodesStep,
 } from "@/components/onboarding/steps";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Button } from "@/components/ui/button";
-import type { SessionUser } from "@/lib/auth";
-import { authClient } from "@/lib/auth/auth.client";
-import type { OnboardingType } from "@/lib/types/onboarding";
-import { orpc } from "@/orpc";
-import { createLogger } from "@settlemint/sdk-utils/logging";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import { z } from "zod/v4";
-
-const logger = createLogger();
 
 export const Route = createFileRoute("/_private/onboarding/platform-new")({
   loader: async ({ context }) => {
@@ -51,7 +49,7 @@ export const Route = createFileRoute("/_private/onboarding/platform-new")({
 
     return { user, systemAddress, systemDetails };
   },
-  component: PlatformNewOnboarding,
+  component: withWizardErrorBoundary(PlatformNewOnboarding),
 });
 
 // Define the onboarding form schema
@@ -65,7 +63,6 @@ const onboardingSchema = z.object({
   // System Bootstrap
   systemBootstrapped: z.boolean().default(false),
   systemAddress: z.string().optional(),
-  baseCurrency: z.string().default("USD"),
 
   // Asset Configuration
   selectedAssetTypes: z
@@ -111,14 +108,18 @@ function PlatformNewOnboarding() {
   // Get user from session or loader data
   const user = session?.user ?? preloadedUser;
 
-  // Use system address from loader data (no need for real-time updates during onboarding)
-  const systemAddress = loaderSystemAddress;
+  // Get real-time system address from settings hook
+  const [liveSystemAddress] = useSettings("SYSTEM_ADDRESS");
+
+  // Use live system address if available, otherwise fall back to loader data
+  const systemAddress = liveSystemAddress ?? loaderSystemAddress;
 
   const allowedTypes: OnboardingType[] = useMemo(() => ["platform"], []);
 
   // Check if steps should be shown based on current state
   const shouldShowWalletSteps = true; // Always show for demo - in real app: !user?.wallet
-  const shouldShowSystemSetupSteps =
+  const shouldShowSystemSteps = !systemAddress;
+  const shouldShowAssetSteps =
     !systemAddress || (systemDetails?.tokenFactories.length ?? 0) === 0;
   const shouldShowIdentitySteps = true; // Always show for now - in real app check if user has identity
 
@@ -137,13 +138,24 @@ function PlatformNewOnboarding() {
       });
     }
 
-    if (shouldShowSystemSetupSteps) {
+    if (shouldShowSystemSteps) {
       dynamicGroups.push({
         id: "system",
-        title: "System Setup",
-        description: "Initialize blockchain and configure assets",
+        title: "System Bootstrap",
+        description: "Initialize the blockchain system",
         collapsible: true,
         defaultExpanded: !shouldShowWalletSteps,
+      });
+    }
+
+    if (shouldShowAssetSteps) {
+      dynamicGroups.push({
+        id: "assets",
+        title: "System Setup",
+        description: "Configure supported assets and add-ons",
+        collapsible: true,
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        defaultExpanded: !shouldShowWalletSteps && !shouldShowSystemSteps,
       });
     }
 
@@ -161,7 +173,8 @@ function PlatformNewOnboarding() {
     return dynamicGroups;
   }, [
     shouldShowWalletSteps,
-    shouldShowSystemSetupSteps,
+    shouldShowSystemSteps,
+    shouldShowAssetSteps,
     shouldShowIdentitySteps,
   ]);
 
@@ -198,7 +211,7 @@ function PlatformNewOnboarding() {
             onPrevious={onPrevious}
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
-            user={user as SessionUser}
+            user={user}
           />
         ),
       });
@@ -214,13 +227,22 @@ function PlatformNewOnboarding() {
           // This will be called by WizardStep before markStepComplete
           return Promise.resolve();
         },
-        component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => (
+        component: ({
+          form,
+          stepId,
+          onNext,
+          onPrevious,
+          isFirstStep,
+          isLastStep,
+        }) => (
           <WalletSecurityStep
+            form={form}
+            stepId={stepId}
             onNext={onNext}
             onPrevious={onPrevious}
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
-            user={user as SessionUser}
+            user={user}
           />
         ),
       });
@@ -236,49 +258,84 @@ function PlatformNewOnboarding() {
           // This will be called by WizardStep before markStepComplete
           return Promise.resolve();
         },
-        component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => (
+        component: ({
+          form,
+          stepId,
+          onNext,
+          onPrevious,
+          isFirstStep,
+          isLastStep,
+        }) => (
           <RecoveryCodesStep
+            form={form}
+            stepId={stepId}
             onNext={onNext}
             onPrevious={onPrevious}
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
-            user={user as SessionUser}
+            user={user}
           />
         ),
       });
     }
 
-    // 2. System Setup Steps (bootstrap + assets)
-    if (shouldShowSystemSetupSteps) {
-      // First add bootstrap system step if system not bootstrapped
-      if (!systemAddress) {
-        dynamicSteps.push({
-          id: "system-bootstrap",
-          title: "Bootstrap System",
-          description: "Initialize the blockchain system and set base currency",
-          groupId: "system",
-          fields: [],
-          onStepComplete: async () => {
-            return Promise.resolve();
+    // 2. System Steps (if system not bootstrapped)
+    if (shouldShowSystemSteps) {
+      dynamicSteps.push({
+        id: "system-bootstrap",
+        title: "Bootstrap System",
+        description: "Initialize the blockchain system for first use",
+        groupId: "system",
+        fields: [
+          {
+            name: "systemBootstrapped",
+            label: "Bootstrap System",
+            type: "checkbox",
+            description:
+              "Initialize the core blockchain system (required for first user)",
           },
-          component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => (
-            <SystemBootstrapStep
-              onNext={onNext}
-              onPrevious={onPrevious}
-              isFirstStep={isFirstStep}
-              isLastStep={isLastStep}
-              user={user as SessionUser}
-            />
-          ),
-        });
-      }
+        ],
+        validate: (data) => {
+          if (!data.systemBootstrapped) {
+            return "System bootstrap is required";
+          }
+          return undefined;
+        },
+        mutation: {
+          mutationKey: "bootstrap-system",
+          mutationFn: async function* (data: Partial<OnboardingFormData>) {
+            if (data.systemBootstrapped) {
+              yield { status: "pending", message: "Initializing system..." };
+              await new Promise((resolve) => setTimeout(resolve, 1200));
 
-      // Then add asset configuration steps
+              yield {
+                status: "pending",
+                message: "Deploying core contracts...",
+              };
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+
+              const systemAddress =
+                "0x" + Math.random().toString(16).slice(2, 42);
+              yield {
+                status: "confirmed",
+                message: "System bootstrapped successfully!",
+                result: { systemAddress },
+              };
+              return { systemAddress };
+            }
+            return null;
+          },
+        },
+      });
+    }
+
+    // 3. Asset Steps (if no assets configured)
+    if (shouldShowAssetSteps) {
       dynamicSteps.push({
         id: "asset-selection",
         title: "Select Assets",
         description: "Choose which asset types your platform will support",
-        groupId: "system",
+        groupId: "assets",
         fields: [
           {
             name: "selectedAssetTypes",
@@ -310,7 +367,7 @@ function PlatformNewOnboarding() {
         id: "addon-selection",
         title: "Select Add-ons",
         description: "Configure additional platform features",
-        groupId: "system",
+        groupId: "assets",
         fields: [
           {
             name: "selectedAddons",
@@ -359,7 +416,7 @@ function PlatformNewOnboarding() {
       });
     }
 
-    // 3. Identity Steps (if no identity registered)
+    // 4. Identity Steps (if no identity registered)
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (shouldShowIdentitySteps) {
       dynamicSteps.push({
@@ -492,35 +549,32 @@ function PlatformNewOnboarding() {
     return dynamicSteps;
   }, [
     shouldShowWalletSteps,
-    shouldShowSystemSetupSteps,
+    shouldShowSystemSteps,
+    shouldShowAssetSteps,
     shouldShowIdentitySteps,
-    systemAddress,
     user,
   ]);
 
-  const handleComplete = useCallback(
-    async (data: OnboardingFormData) => {
-      try {
-        logger.debug("Onboarding completed with data:", data);
-        toast.success(
-          "Platform onboarding completed successfully! Welcome to your tokenization platform."
-        );
+  const handleComplete = useCallback(async (data: OnboardingFormData) => {
+    try {
+      console.log("Onboarding completed with data:", data);
+      toast.success(
+        "Platform onboarding completed successfully! Welcome to your tokenization platform."
+      );
 
-        // Navigate to main dashboard
-        await navigate({ to: "/" });
-      } catch (error) {
-        toast.error("Failed to complete onboarding");
-        logger.error("Onboarding completion error:", error);
-      }
-    },
-    [navigate]
-  );
+      // Navigate to main dashboard
+      await navigate({ to: "/" });
+    } catch (error) {
+      toast.error("Failed to complete onboarding");
+      console.error("Onboarding completion error:", error);
+    }
+  }, [navigate]);
 
   // Calculate default values based on current state
   const defaultValues: Partial<OnboardingFormData> = {
-
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     walletGenerated: Boolean(user?.wallet),
-
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     walletAddress: user?.wallet,
     walletSecured: false, // Default to false for demo
     systemBootstrapped: Boolean(systemAddress),
@@ -533,37 +587,9 @@ function PlatformNewOnboarding() {
   };
 
   // Handle starting the wizard
-  const handleStartWalletSetup = useCallback(() => {
-    logger.debug(
-      "Starting wallet setup, steps:",
-      steps.length,
-      steps.map((s) => s.id)
-    );
-    logger.debug(
-      "Groups:",
-      groups.length,
-      groups.map((g) => g.id)
-    );
-    logger.debug("System address:", systemAddress);
-    logger.debug("Should show conditions:", {
-      shouldShowWalletSteps,
-      shouldShowSystemSetupSteps,
-      shouldShowIdentitySteps,
-    });
+  const handleStartWalletSetup = () => {
     setShowWelcomeScreen(false);
-  }, [
-    steps,
-    groups,
-    systemAddress,
-    shouldShowWalletSteps,
-    shouldShowSystemSetupSteps,
-    shouldShowIdentitySteps,
-  ]);
-
-  // Memoize callback for back to welcome button
-  const handleBackToWelcome = useCallback(() => {
-    setShowWelcomeScreen(true);
-  }, []);
+  };
 
   // If showing welcome screen, render it without the wizard
   if (showWelcomeScreen) {
@@ -613,36 +639,6 @@ function PlatformNewOnboarding() {
     );
   }
 
-  // Debug: Check if steps array is empty
-  if (steps.length === 0) {
-    return (
-      <OnboardingGuard require="not-onboarded" allowedTypes={allowedTypes}>
-        <div className="min-h-screen w-full flex items-center justify-center bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
-          <div className="text-center p-8 bg-background/80 rounded-lg">
-            <h2 className="text-xl font-semibold mb-4">No Steps Available</h2>
-            <p className="text-muted-foreground mb-4">
-              Debug Info: Steps: {steps.length}, Groups: {groups.length}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              shouldShowWalletSteps: {shouldShowWalletSteps ? "true" : "false"}
-              <br />
-              shouldShowSystemSetupSteps:{" "}
-              {shouldShowSystemSetupSteps ? "true" : "false"}
-              <br />
-              shouldShowIdentitySteps:{" "}
-              {shouldShowIdentitySteps ? "true" : "false"}
-              <br />
-              systemAddress: {systemAddress ?? "null"}
-            </p>
-            <Button onClick={handleBackToWelcome} className="mt-4">
-              Back to Welcome
-            </Button>
-          </div>
-        </div>
-      </OnboardingGuard>
-    );
-  }
-
   return (
     <OnboardingGuard require="not-onboarded" allowedTypes={allowedTypes}>
       <div className="min-h-screen w-full bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
@@ -660,7 +656,7 @@ function PlatformNewOnboarding() {
                 {t("general:appDescription")}
               </span>
             </div>
-          </div>
+            </div>
         </div>
 
         {/* Language and theme toggles positioned in top-right */}
@@ -681,19 +677,17 @@ function PlatformNewOnboarding() {
         {/* Centered content area with step wizard */}
         <div className="flex min-h-screen items-center justify-center">
           <div className="w-full max-w-6xl px-4">
-            <ComponentErrorBoundary componentName="Onboarding Wizard">
-              <MultiStepWizard<OnboardingFormData>
-                name="Let's get you set up!"
-                description="We'll set up your wallet and will configure your identity on the blockchain to use this platform."
-                steps={steps}
-                groups={groups}
-                onComplete={handleComplete}
-                enableUrlPersistence={true}
-                showProgressBar={true}
-                allowStepSkipping={true}
-                defaultValues={defaultValues}
-              />
-            </ComponentErrorBoundary>
+            <MultiStepWizard<OnboardingFormData>
+              name="Let's get you set up!"
+              description="We'll set up your wallet and will configure your identity on the blockchain to use this platform."
+              steps={steps}
+              groups={groups}
+              onComplete={handleComplete}
+              enableUrlPersistence={true}
+              showProgressBar={true}
+              allowStepSkipping={true}
+              defaultValues={defaultValues}
+            />
           </div>
         </div>
       </div>
