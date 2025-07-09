@@ -1,10 +1,13 @@
 import { env } from "@/lib/env";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { APIError } from "better-auth/api";
 import { createPublicClient, http } from "viem";
 import { anvil } from "viem/chains";
 import { toHex } from "viem/utils";
+
+const logger = createLogger();
 
 export async function createWallet(email: string) {
   const CREATE_ACCOUNT_MUTATION = portalGraphql(`
@@ -42,7 +45,7 @@ export async function createWallet(email: string) {
         params: [walletAddress, balanceInHex],
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
     } catch (error) {
-      console.error("Failed to fund wallet", error);
+      logger.error("Failed to fund wallet", error);
     }
   }
 

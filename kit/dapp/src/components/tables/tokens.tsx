@@ -8,7 +8,6 @@ import { useBulkActions } from "@/components/data-table/data-table-bulk-actions"
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { Badge } from "@/components/ui/badge";
-import { env } from "@/lib/env";
 import { orpc } from "@/orpc";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -30,9 +29,7 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const logger = createLogger({
-  level: env.VITE_SETTLEMINT_LOG_LEVEL,
-});
+const logger = createLogger();
 
 /**
  * Represents a single token from the TokenList

@@ -67,10 +67,7 @@
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
-  "dependencies": {
-    "currency-codes": "2.2.0",
-    "drizzle-zod": "0.8.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
     "@settlemint/sdk-cli": "2.4.1",

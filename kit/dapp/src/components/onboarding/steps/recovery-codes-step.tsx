@@ -339,7 +339,8 @@ export function RecoveryCodesStep({
               {/* Security Reminder */}
               <div className="text-center space-y-2">
                 <p className="text-xs text-muted-foreground">
-                  Make sure to store these codes in a secure location before continuing.
+                  Make sure to store these codes in a secure location before
+                  continuing.
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Each code can only be used once for account recovery.

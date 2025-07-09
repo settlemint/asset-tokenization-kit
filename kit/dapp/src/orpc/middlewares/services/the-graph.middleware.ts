@@ -1,14 +1,12 @@
 import { theGraphClient } from "@/lib/settlemint/the-graph";
 import type { ListInput } from "@/orpc/routes/common/schemas/list.schema";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { TadaDocumentNode } from "gql.tada";
 import type { Variables } from "graphql-request";
 import type { z } from "zod/v4";
 import { baseRouter } from "../../procedures/base.router";
 
-const logger = createLogger({
-  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
-});
+const logger = createLogger();
 
 /**
  * Type guard to check if input matches ListInput structure

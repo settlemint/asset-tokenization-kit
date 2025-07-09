@@ -11,11 +11,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { CheckIcon, ChevronDownIcon, LoaderIcon, XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+
+const logger = createLogger();
 import type {
   BulkAction,
   BulkActionBarProps,
@@ -54,7 +57,7 @@ export function DataTableActionBar<TData>({
       },
       onError: (error: Error) => {
         setLoadingAction(null);
-        console.error("Bulk action failed:", error);
+        logger.error("Bulk action failed", error);
         toast.error(
           t("bulkActions.error", {
             error: error.message,
@@ -119,7 +122,7 @@ export function DataTableActionBar<TData>({
           t("bulkActions.error", {
             action: action.label,
           });
-        console.error(errorMessage, error);
+        logger.error(errorMessage, error);
         toast.error(errorMessage);
         actionContext.onError(
           error instanceof Error ? error : new Error(String(error))
