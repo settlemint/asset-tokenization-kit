@@ -1,5 +1,5 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
-import { DataTableErrorBoundary } from "@/components/data-table/data-table-error-boundary";
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -35,7 +35,7 @@ export function UserGrowthChart() {
   }));
 
   return (
-    <DataTableErrorBoundary>
+    <ComponentErrorBoundary componentName="User Growth Chart">
       <AreaChartComponent
         title={t("charts.userGrowth.title")}
         description={t("charts.userGrowth.description")}
@@ -46,6 +46,6 @@ export function UserGrowthChart() {
         showYAxis={true}
         showLegend={false}
       />
-    </DataTableErrorBoundary>
+    </ComponentErrorBoundary>
   );
 }

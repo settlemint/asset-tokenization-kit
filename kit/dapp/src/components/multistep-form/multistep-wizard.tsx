@@ -1,3 +1,4 @@
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -298,74 +299,76 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   }
 
   return (
-    <WizardProvider value={contextValue}>
-      <div
-        className={cn("flex", className)}
-        style={{ height: `${dynamicHeight}px` }}
-      >
-        <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
-          {/* Sidebar */}
-          <div
-            className={cn(
-              "w-[320px] flex-shrink-0 p-8 flex flex-col transition-all duration-300",
-              sidebarClassName
-            )}
-            style={sidebarStyle}
-          >
-            {/* Title and Progress */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-primary-foreground mb-2">
-                {name
-                  ? name
-                      .split("-")
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")
-                  : "Setup Wizard"}
-              </h2>
-              <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
-                {description ?? "Configure your platform step by step"}
-              </p>
-
-              {showProgressBar && (
-                <div>
-                  <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
-                    <span>Step {Number(safeCurrentStepIndex) + 1}</span>
-                    <span>
-                      {Number(safeCurrentStepIndex) + 1} /{" "}
-                      {Number(steps.length)}
-                    </span>
-                  </div>
-                  <Progress
-                    value={progress}
-                    className="h-2 bg-primary-foreground/20"
-                  />
-                </div>
+    <ComponentErrorBoundary componentName={name ?? "Multi-Step Wizard"}>
+      <WizardProvider value={contextValue}>
+        <div
+          className={cn("flex", className)}
+          style={{ height: `${dynamicHeight}px` }}
+        >
+          <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
+            {/* Sidebar */}
+            <div
+              className={cn(
+                "w-[320px] flex-shrink-0 p-8 flex flex-col transition-all duration-300",
+                sidebarClassName
               )}
+              style={sidebarStyle}
+            >
+              {/* Title and Progress */}
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-primary-foreground mb-2">
+                  {name
+                    ? name
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")
+                    : "Setup Wizard"}
+                </h2>
+                <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
+                  {description ?? "Configure your platform step by step"}
+                </p>
+
+                {showProgressBar && (
+                  <div>
+                    <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
+                      <span>Step {Number(safeCurrentStepIndex) + 1}</span>
+                      <span>
+                        {Number(safeCurrentStepIndex) + 1} /{" "}
+                        {Number(steps.length)}
+                      </span>
+                    </div>
+                    <Progress
+                      value={progress}
+                      className="h-2 bg-primary-foreground/20"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <WizardSidebar />
             </div>
 
-            <WizardSidebar />
-          </div>
-
-          {/* Main content */}
-          <div
-            className={cn(
-              "flex-1 flex flex-col transition-all duration-300 relative overflow-hidden",
-              contentClassName
-            )}
-            style={contentStyle}
-          >
-            <div className="flex-1 overflow-y-auto p-8">
-              <div className="w-full h-full">
-                <form onSubmit={handleFormSubmit}>
-                  <WizardStep />
-                </form>
+            {/* Main content */}
+            <div
+              className={cn(
+                "flex-1 flex flex-col transition-all duration-300 relative overflow-hidden",
+                contentClassName
+              )}
+              style={contentStyle}
+            >
+              <div className="flex-1 overflow-y-auto p-8">
+                <div className="w-full h-full">
+                  <form onSubmit={handleFormSubmit}>
+                    <WizardStep />
+                  </form>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </WizardProvider>
+      </WizardProvider>
+    </ComponentErrorBoundary>
   );
 }
