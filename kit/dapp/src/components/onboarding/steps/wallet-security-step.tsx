@@ -135,20 +135,25 @@ export function WalletSecurityStep({
   });
 
   const { mutate: enableTwoFactor, isPending: isEnablingTwoFactor } = useMutation({
-    mutationFn: async () =>
-      authClient.twoFactor.enable({
+    mutationFn: async () => {
+      console.log('enableTwoFactor called');
+      return authClient.twoFactor.enable({
         // Password is not required during initial onboarding
-      }),
+      });
+    },
     onSuccess: (data) => {
+      console.log('enableTwoFactor success:', data);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (data && typeof data === 'object' && 'totpURI' in data) {
         setOtpUri(data.totpURI as string);
         toast.success("OTP setup initiated");
       } else {
+        console.log('Invalid data format:', data);
         toast.error("Failed to generate QR code");
       }
     },
     onError: (error: Error) => {
+      console.log('enableTwoFactor error:', error);
       toast.error(error.message || "Failed to setup OTP");
     },
   });
@@ -183,6 +188,27 @@ export function WalletSecurityStep({
     onError: (error: Error) => {
       toast.error(error.message || "Failed to verify OTP");
     },
+  });
+
+  // Auto-start OTP setup when the OTP screen is first shown
+  useEffect(() => {
+    if (selectedSecurityMethod === 'otp' && !otpUri && !isEnablingTwoFactor) {
+      console.log('Auto-starting OTP setup');
+      enableTwoFactor();
+    }
+  }, [selectedSecurityMethod]); // Only depend on selectedSecurityMethod to avoid infinite loop
+
+  // Debug logging
+  console.log('WalletSecurityStep render:', {
+    selectedSecurityMethod,
+    shouldShowEducationalContent,
+    shouldShowSuccess,
+    otpUri,
+    isEnablingTwoFactor,
+    isPinSelected,
+    isOtpSelected,
+    hasPincode,
+    hasTwoFactor
   });
 
   // Watch for changes in confirm PIN to handle real-time validation
@@ -287,14 +313,23 @@ export function WalletSecurityStep({
   }, [form]);
 
   const handleSetupSecurity = useCallback(() => {
+    console.log('handleSetupSecurity called', {
+      isPinSelected,
+      hasPincode,
+      isOtpSelected,
+      hasTwoFactor
+    });
+    
     // Start setup for the first selected method that isn't already set up
     if (isPinSelected && !hasPincode) {
+      console.log('Setting up PIN');
       setSelectedSecurityMethod("pin");
     } else if (isOtpSelected && !hasTwoFactor) {
+      console.log('Setting up OTP');
       setSelectedSecurityMethod("otp");
-      enableTwoFactor();
+      // enableTwoFactor will be called automatically by useEffect
     }
-  }, [isPinSelected, hasPincode, isOtpSelected, hasTwoFactor, enableTwoFactor]);
+  }, [isPinSelected, hasPincode, isOtpSelected, hasTwoFactor]);
 
   const handleInitialPinChange = useCallback((value: string) => {
     form.setValue("pincode", value);
