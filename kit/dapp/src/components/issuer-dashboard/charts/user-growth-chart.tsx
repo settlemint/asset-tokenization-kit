@@ -29,7 +29,7 @@ export function UserGrowthChart() {
   );
 
   // Transform user growth data for chart display
-  const chartData = (metrics.userGrowth ?? []).map((dataPoint) => ({
+  const chartData = metrics.userGrowth.map((dataPoint) => ({
     timestamp: dataPoint.timestamp,
     users: dataPoint.users,
   }));

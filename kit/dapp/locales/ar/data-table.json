@@ -108,5 +108,7 @@
     "selectAllWithCount": "حدد جميع {{count}} الصفوف{{status}}",
     "selectRow": "حدد الصف {{index}} من {{total}}",
     "someSelected": " (بعضها محدد)"
-  }
+  },
+  "tryAdjustingFilters": "حاول ضبط الفلاتر الخاصة بك للعثور على ما تبحث عنه",
+  "noDataAvailable": "لا توجد بيانات متاحة بعد"
 }

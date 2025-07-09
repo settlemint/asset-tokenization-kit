@@ -41,7 +41,7 @@ export function AssetActivityChart() {
   );
 
   // Transform asset activity data to chart format
-  const chartData = (metrics.assetActivity ?? [])
+  const chartData = metrics.assetActivity
     .filter(
       (activity) =>
         activity.mintEventCount > 0 ||
