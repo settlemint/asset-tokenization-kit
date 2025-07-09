@@ -10,27 +10,27 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
 import { Web3Address } from "@/components/web3/web3-address";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc";
 import type { TokenBalance } from "@/orpc/routes/token/routes/token.holders.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { format } from "dnum";
 import {
   AlertCircle,
+  CircleCheck,
+  CircleX,
   Coins,
-  Lock,
-  Wallet,
-  User,
   Copy,
   ExternalLink,
+  Lock,
+  User,
   UserCircle,
-  CircleX,
-  CircleCheck,
+  Wallet,
 } from "lucide-react";
-import { useMemo, useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -52,8 +52,6 @@ const INITIAL_SORTING = [
  * @interface TokenHoldersTableProps
  */
 interface TokenHoldersTableProps {
-  /** The token contract address */
-  tokenAddress: string;
   /** The token metadata for formatting */
   token: Token;
 }
@@ -65,7 +63,6 @@ interface TokenHoldersTableProps {
  * including their balances, available amounts, frozen amounts, and status.
  *
  * @param {TokenHoldersTableProps} props - The component props
- * @param {string} props.tokenAddress - The address of the token to fetch holders for
  * @param {Token} props.token - The token metadata for display formatting
  * @returns {JSX.Element} A fully-featured data table displaying token holders
  *
@@ -74,10 +71,7 @@ interface TokenHoldersTableProps {
  * <TokenHoldersTable tokenAddress="0x1234...abcd" token={tokenData} />
  * ```
  */
-export function TokenHoldersTable({
-  tokenAddress,
-  token,
-}: TokenHoldersTableProps) {
+export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
   const router = useRouter();
   const { t } = useTranslation(["tokens", "common"]);
   // Get the current route's path pattern from the matched route
@@ -87,7 +81,7 @@ export function TokenHoldersTable({
   const { data: holdersResponse } = useSuspenseQuery({
     ...orpc.token.holders.queryOptions({
       input: {
-        tokenAddress,
+        tokenAddress: token.id,
       },
     }),
   });

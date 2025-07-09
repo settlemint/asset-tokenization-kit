@@ -52,10 +52,9 @@ export const Route = createFileRoute(
  * @returns Data table component for token holders
  */
 function RouteComponent() {
-  const { tokenAddress } = Route.useParams();
   const { token } = useLoaderData({
     from: "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress",
   });
 
-  return <TokenHoldersTable tokenAddress={tokenAddress} token={token} />;
+  return <TokenHoldersTable token={token} />;
 }
