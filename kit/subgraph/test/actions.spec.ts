@@ -129,14 +129,18 @@ describe("Actions", () => {
 
       // If action has expiry, verify it's after activeAt
       if (action.expiresAt) {
-        expect(BigInt(action.expiresAt)).toBeGreaterThan(BigInt(action.activeAt));
+        expect(BigInt(action.expiresAt)).toBeGreaterThan(
+          BigInt(action.activeAt)
+        );
       }
 
       // If action is executed, verify executedAt and executedBy are set
       if (action.executed) {
         expect(action.executedAt).toBeDefined();
         expect(action.executedBy).toBeDefined();
-        expect(BigInt(action.executedAt!)).toBeGreaterThan(BigInt(action.activeAt));
+        expect(BigInt(action.executedAt!)).toBeGreaterThan(
+          BigInt(action.activeAt)
+        );
       }
     });
   });
@@ -186,7 +190,9 @@ describe("Actions", () => {
 
       // Approval actions should be active immediately
       expect(action.activeAt).toBeDefined();
-      expect(BigInt(action.activeAt)).toBeLessThanOrEqual(BigInt(action.createdAt));
+      expect(BigInt(action.activeAt)).toBeLessThanOrEqual(
+        BigInt(action.createdAt)
+      );
     });
   });
 
@@ -207,7 +213,8 @@ describe("Actions", () => {
         }
       }`
     );
-    const response = await theGraphClient.request<ActionExecutorsResponse>(query);
+    const response =
+      await theGraphClient.request<ActionExecutorsResponse>(query);
 
     // Should have at least one action executor
     expect(response.actionExecutors.length).toBeGreaterThanOrEqual(1);
@@ -262,7 +269,7 @@ describe("Actions", () => {
 
     const [executedResponse, pendingResponse] = await Promise.all([
       theGraphClient.request<ActionsFilteredResponse>(executedQuery),
-      theGraphClient.request<ActionsFilteredResponse>(pendingQuery)
+      theGraphClient.request<ActionsFilteredResponse>(pendingQuery),
     ]);
 
     // Verify executed actions have proper fields
@@ -299,9 +306,12 @@ describe("Actions", () => {
       }`
     );
 
-    const response = await theGraphClient.request<ActionsTimeFilteredResponse>(activeQuery, {
-      currentTime: currentTime.toString()
-    });
+    const response = await theGraphClient.request<ActionsTimeFilteredResponse>(
+      activeQuery,
+      {
+        currentTime: currentTime.toString(),
+      }
+    );
 
     // Verify all returned actions are currently active
     response.actions.forEach((action) => {
@@ -328,7 +338,9 @@ describe("Actions", () => {
     const response = await theGraphClient.request<ActionsTypeResponse>(query);
 
     // Get unique action types
-    const actionTypes = [...new Set(response.actions.map((action) => action.type))];
+    const actionTypes = [
+      ...new Set(response.actions.map((action) => action.type)),
+    ];
 
     // Should have at least the ApproveXvPSettlement type
     expect(actionTypes).toContain("ApproveXvPSettlement");

@@ -1,9 +1,10 @@
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import {
+  ACTION_STATUS,
   ACTION_TYPES,
   ACTION_USER_TYPES,
-  ACTION_STATUS,
 } from "@/lib/constants/action-types";
+import { timestamp } from "@/lib/zod/validators/timestamp";
+import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { z } from "zod/v4";
 
 /**
@@ -44,10 +45,10 @@ export const TokenActionSchema = z.object({
   ]),
   type: z.enum([ACTION_USER_TYPES.ADMIN, ACTION_USER_TYPES.USER]),
   status: ActionStatusEnum, // Computed server-side
-  createdAt: z.number(), // UTC seconds
-  activeAt: z.number(), // UTC seconds
-  expiresAt: z.number().nullable(), // UTC seconds
-  executedAt: z.number().nullable(), // UTC seconds
+  createdAt: timestamp(), // UTC timestamp from BigInt string
+  activeAt: timestamp(), // UTC timestamp from BigInt string
+  expiresAt: timestamp().nullable(), // UTC timestamp from BigInt string
+  executedAt: timestamp().nullable(), // UTC timestamp from BigInt string
   executed: z.boolean(),
   target: z.object({
     id: z.string(),

@@ -2,14 +2,14 @@
 // This ensures consistency with the frontend constants
 
 export const ACTION_TYPES = {
-  APPROVE_XVP_SETTLEMENT: 'ApproveXvPSettlement',
-  EXECUTE_XVP_SETTLEMENT: 'ExecuteXvPSettlement',
-  MATURE_BOND: 'MatureBond',
+  APPROVE_XVP_SETTLEMENT: "ApproveXvPSettlement",
+  EXECUTE_XVP_SETTLEMENT: "ExecuteXvPSettlement",
+  MATURE_BOND: "MatureBond",
 };
 
 export const ACTION_USER_TYPES = {
-  ADMIN: 'Admin',
-  USER: 'User',
+  ADMIN: "Admin",
+  USER: "User",
 };
 
 // Helper function to validate action types

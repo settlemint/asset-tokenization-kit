@@ -1,8 +1,14 @@
 import { ATKXvPSettlementCreated } from "../../../../generated/templates/XvPSettlementFactory/XvPSettlementFactory";
 import { fetchEvent } from "../../../event/fetch/event";
 import { fetchXvPSettlement } from "./fetch/xvp-settlement";
-import { createAction, getOrCreateActionExecutor } from "../../../actions/action-utils";
-import { ACTION_TYPES, ACTION_USER_TYPES } from "../../../constants/action-types";
+import {
+  createAction,
+  getOrCreateActionExecutor,
+} from "../../../actions/action-utils";
+import {
+  ACTION_TYPES,
+  ACTION_USER_TYPES,
+} from "../../../constants/action-types";
 import { BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 
 export function handleATKXvPSettlementCreated(
@@ -16,20 +22,20 @@ export function handleATKXvPSettlementCreated(
   // Create ApproveXvPSettlement actions for all approvers
   // Use array with indexOf for O(n) uniqueness checking instead of O(n²) nested loops
   const approverStrings: string[] = [];
-  
+
   // Get flows to determine approvers
   const flows = xvpSettlement.flows.load();
-  
+
   for (let i = 0; i < flows.length; i++) {
     const flow = flows[i];
     const approverString = flow.from.toHexString();
-    
+
     // Use indexOf for faster lookup than nested loop
     if (approverStrings.indexOf(approverString) === -1) {
       approverStrings.push(approverString);
     }
   }
-  
+
   // Convert string array back to Bytes array
   const approvers: Bytes[] = [];
   for (let i = 0; i < approverStrings.length; i++) {
@@ -44,8 +50,10 @@ export function handleATKXvPSettlementCreated(
 
   // Create approval action for each approver
   for (let i = 0; i < approvers.length; i++) {
-    const actionId = event.params.settlement.concat(approvers[i]).concat(Bytes.fromUTF8("approve"));
-    
+    const actionId = event.params.settlement
+      .concat(approvers[i])
+      .concat(Bytes.fromUTF8("approve"));
+
     const action = createAction(
       actionId,
       actionExecutor,
@@ -56,9 +64,11 @@ export function handleATKXvPSettlementCreated(
       xvpSettlement.cutoffDate, // Expires at cutoff date
       event.params.settlement
     );
-    
+
     if (!action) {
-      log.warning("Failed to create approval action for approver: {}", [approvers[i].toHexString()]);
+      log.warning("Failed to create approval action for approver: {}", [
+        approvers[i].toHexString(),
+      ]);
     }
   }
 }

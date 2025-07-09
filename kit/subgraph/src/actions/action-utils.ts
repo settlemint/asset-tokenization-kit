@@ -73,28 +73,38 @@ export function createAction(
 
   // Validate input parameters
   if (!executor) {
-    log.error("Cannot create action without executor: {}", [actionId.toHexString()]);
+    log.error("Cannot create action without executor: {}", [
+      actionId.toHexString(),
+    ]);
     return null;
   }
 
   if (name.length == 0) {
-    log.error("Cannot create action with empty name: {}", [actionId.toHexString()]);
+    log.error("Cannot create action with empty name: {}", [
+      actionId.toHexString(),
+    ]);
     return null;
   }
 
   if (type.length == 0) {
-    log.error("Cannot create action with empty type: {}", [actionId.toHexString()]);
+    log.error("Cannot create action with empty type: {}", [
+      actionId.toHexString(),
+    ]);
     return null;
   }
 
   // Validate time parameters
   if (activeAt.lt(createdAt)) {
-    log.error("Action activeAt cannot be before createdAt: {}", [actionId.toHexString()]);
+    log.error("Action activeAt cannot be before createdAt: {}", [
+      actionId.toHexString(),
+    ]);
     return null;
   }
 
   if (expiresAt && expiresAt.le(activeAt)) {
-    log.error("Action expiresAt cannot be before or equal to activeAt: {}", [actionId.toHexString()]);
+    log.error("Action expiresAt cannot be before or equal to activeAt: {}", [
+      actionId.toHexString(),
+    ]);
     return null;
   }
 
@@ -129,29 +139,37 @@ export function executeAction(
 ): boolean {
   let action = Action.load(actionId);
   if (!action) {
-    log.warning("Attempted to execute non-existent action: {}", [actionId.toHexString()]);
+    log.warning("Attempted to execute non-existent action: {}", [
+      actionId.toHexString(),
+    ]);
     return false;
   }
 
   if (action.executed) {
-    log.warning("Attempted to execute already executed action: {}", [actionId.toHexString()]);
+    log.warning("Attempted to execute already executed action: {}", [
+      actionId.toHexString(),
+    ]);
     return false;
   }
 
   // Validate that executedBy is authorized in the ActionExecutor
   let executor = ActionExecutor.load(action.executor);
   if (!executor) {
-    log.warning("ActionExecutor not found for action: {}", [actionId.toHexString()]);
+    log.warning("ActionExecutor not found for action: {}", [
+      actionId.toHexString(),
+    ]);
     return false;
   }
 
   // SECURITY: Enhanced authorization checking with address validation
   // Validate executedBy address format first
   if (executedBy.length != 20) {
-    log.error("Invalid executedBy address length: {}", [executedBy.toHexString()]);
+    log.error("Invalid executedBy address length: {}", [
+      executedBy.toHexString(),
+    ]);
     return false;
   }
-  
+
   // Convert executedBy to Account entity reference for comparison
   const executedByAccountId = fetchAccount(Address.fromBytes(executedBy)).id;
   let isAuthorized = false;
@@ -163,26 +181,36 @@ export function executeAction(
   }
 
   if (!isAuthorized) {
-    log.warning("SECURITY ALERT: Unauthorized execution attempt by {} for action: {}", [executedBy.toHexString(), actionId.toHexString()]);
+    log.warning(
+      "SECURITY ALERT: Unauthorized execution attempt by {} for action: {}",
+      [executedBy.toHexString(), actionId.toHexString()]
+    );
     return false;
   }
-  
+
   // Additional security: Cross-reference with action target if needed
   // For high-value actions, ensure executedBy has proper relationship to target
   if (action.target.equals(executedByAccountId)) {
-    log.warning("SECURITY ALERT: Self-execution attempt by target account: {}", [actionId.toHexString()]);
+    log.warning(
+      "SECURITY ALERT: Self-execution attempt by target account: {}",
+      [actionId.toHexString()]
+    );
     // Allow for now, but log for monitoring
   }
 
   // Check if action is still active (not expired)
   if (action.expiresAt && executedAt.gt(action.expiresAt!)) {
-    log.warning("Attempted to execute expired action: {}", [actionId.toHexString()]);
+    log.warning("Attempted to execute expired action: {}", [
+      actionId.toHexString(),
+    ]);
     return false;
   }
 
   // Check if action is active (activeAt has passed)
   if (executedAt.lt(action.activeAt)) {
-    log.warning("Attempted to execute action before active time: {}", [actionId.toHexString()]);
+    log.warning("Attempted to execute action before active time: {}", [
+      actionId.toHexString(),
+    ]);
     return false;
   }
 
@@ -194,12 +222,15 @@ export function executeAction(
   action.save();
 
   // AUDIT: Log successful execution with all relevant details
-  log.info("AUDIT: Action executed successfully - ID: {}, Type: {}, ExecutedBy: {}, Target: {}, ExecutedAt: {}", [
-    actionId.toHexString(),
-    action.type,
-    executedBy.toHexString(),
-    action.target.toHexString(),
-    executedAt.toString()
-  ]);
+  log.info(
+    "AUDIT: Action executed successfully - ID: {}, Type: {}, ExecutedBy: {}, Target: {}, ExecutedAt: {}",
+    [
+      actionId.toHexString(),
+      action.type,
+      executedBy.toHexString(),
+      action.target.toHexString(),
+      executedAt.toString(),
+    ]
+  );
   return true;
 }

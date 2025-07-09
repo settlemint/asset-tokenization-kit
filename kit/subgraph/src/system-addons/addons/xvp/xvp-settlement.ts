@@ -5,10 +5,23 @@ import {
   XvPSettlementFlow,
 } from "../../../../generated/schema";
 import { XvPSettlement as XvPSettlementTemplate } from "../../../../generated/templates";
-import { XvPSettlementApprovalRevoked, XvPSettlementApproved, XvPSettlementCancelled, XvPSettlement as XvPSettlementContract, XvPSettlementExecuted } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
+import {
+  XvPSettlementApprovalRevoked,
+  XvPSettlementApproved,
+  XvPSettlementCancelled,
+  XvPSettlement as XvPSettlementContract,
+  XvPSettlementExecuted,
+} from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../../../account/fetch/account";
-import { createAction, executeAction, getOrCreateActionExecutor } from "../../../actions/action-utils";
-import { ACTION_TYPES, ACTION_USER_TYPES } from "../../../constants/action-types";
+import {
+  createAction,
+  executeAction,
+  getOrCreateActionExecutor,
+} from "../../../actions/action-utils";
+import {
+  ACTION_TYPES,
+  ACTION_USER_TYPES,
+} from "../../../constants/action-types";
 import { fetchEvent } from "../../../event/fetch/event";
 import { fetchToken } from "../../../token/fetch/token";
 import { setBigNumber } from "../../../utils/bignumber";
@@ -149,20 +162,33 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
 /**
  * Handles XvPSettlement approval events
  */
-export function handleXvPSettlementApproved(event: XvPSettlementApproved): void {
+export function handleXvPSettlementApproved(
+  event: XvPSettlementApproved
+): void {
   fetchEvent(event, "XvPSettlementApproved");
 
   // Update approval entity
-  const approval = fetchXvPSettlementApproval(event.address, event.params.sender);
+  const approval = fetchXvPSettlementApproval(
+    event.address,
+    event.params.sender
+  );
   approval.approved = true;
   approval.timestamp = event.block.timestamp;
   approval.save();
 
   // Mark approval action as executed
-  const actionId = event.address.concat(event.params.sender).concat(Bytes.fromUTF8("approve"));
-  const actionExecuted = executeAction(actionId, event.block.timestamp, event.params.sender);
+  const actionId = event.address
+    .concat(event.params.sender)
+    .concat(Bytes.fromUTF8("approve"));
+  const actionExecuted = executeAction(
+    actionId,
+    event.block.timestamp,
+    event.params.sender
+  );
   if (!actionExecuted) {
-    log.warning("Failed to execute approval action for XvP settlement: {}", [event.address.toHexString()]);
+    log.warning("Failed to execute approval action for XvP settlement: {}", [
+      event.address.toHexString(),
+    ]);
   }
 
   // Check if all approvals are done and create execution action
@@ -197,7 +223,9 @@ export function handleXvPSettlementApproved(event: XvPSettlementApproved): void 
     );
 
     if (!executeAction) {
-      log.warning("Failed to create execute action for XvP settlement: {}", [event.address.toHexString()]);
+      log.warning("Failed to create execute action for XvP settlement: {}", [
+        event.address.toHexString(),
+      ]);
     }
   }
 }
@@ -205,22 +233,28 @@ export function handleXvPSettlementApproved(event: XvPSettlementApproved): void 
 /**
  * Handles XvPSettlement approval revocation events
  */
-export function handleXvPSettlementApprovalRevoked(event: XvPSettlementApprovalRevoked): void {
+export function handleXvPSettlementApprovalRevoked(
+  event: XvPSettlementApprovalRevoked
+): void {
   fetchEvent(event, "XvPSettlementApprovalRevoked");
 
-    // Update approval entity
-  const approval = fetchXvPSettlementApproval(event.address, event.params.sender);
+  // Update approval entity
+  const approval = fetchXvPSettlementApproval(
+    event.address,
+    event.params.sender
+  );
   approval.approved = false;
   approval.timestamp = event.block.timestamp;
   approval.save();
 
   // Recreate approval action
-  const actionExecutor = getOrCreateActionExecutor(
-    event.address,
-    [event.params.sender]
-  );
+  const actionExecutor = getOrCreateActionExecutor(event.address, [
+    event.params.sender,
+  ]);
 
-  const actionId = event.address.concat(event.params.sender).concat(Bytes.fromUTF8("approve"));
+  const actionId = event.address
+    .concat(event.params.sender)
+    .concat(Bytes.fromUTF8("approve"));
   const settlement = fetchXvPSettlement(event.address);
 
   const approvalAction = createAction(
@@ -235,14 +269,18 @@ export function handleXvPSettlementApprovalRevoked(event: XvPSettlementApprovalR
   );
 
   if (!approvalAction) {
-    log.warning("Failed to create approval action for XvP settlement: {}", [event.address.toHexString()]);
+    log.warning("Failed to create approval action for XvP settlement: {}", [
+      event.address.toHexString(),
+    ]);
   }
 }
 
 /**
  * Handles XvPSettlement execution events
  */
-export function handleXvPSettlementExecuted(event: XvPSettlementExecuted): void {
+export function handleXvPSettlementExecuted(
+  event: XvPSettlementExecuted
+): void {
   fetchEvent(event, "XvPSettlementExecuted");
 
   // Update settlement entity
@@ -252,16 +290,24 @@ export function handleXvPSettlementExecuted(event: XvPSettlementExecuted): void 
 
   // Mark execution action as completed
   const executeActionId = event.address.concat(Bytes.fromUTF8("execute"));
-  const actionExecuted = executeAction(executeActionId, event.block.timestamp, event.transaction.from);
+  const actionExecuted = executeAction(
+    executeActionId,
+    event.block.timestamp,
+    event.transaction.from
+  );
   if (!actionExecuted) {
-    log.warning("Failed to execute settlement action for XvP settlement: {}", [event.address.toHexString()]);
+    log.warning("Failed to execute settlement action for XvP settlement: {}", [
+      event.address.toHexString(),
+    ]);
   }
 }
 
 /**
  * Handles XvPSettlement cancellation events
  */
-export function handleXvPSettlementCancelled(event: XvPSettlementCancelled): void {
+export function handleXvPSettlementCancelled(
+  event: XvPSettlementCancelled
+): void {
   fetchEvent(event, "XvPSettlementCancelled");
 
   // Update settlement entity

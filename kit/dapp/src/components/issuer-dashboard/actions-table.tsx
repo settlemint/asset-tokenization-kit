@@ -1,3 +1,4 @@
+import { AutoCell } from "@/components/data-table/cells/auto-cell";
 import { DataTable } from "@/components/data-table/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,13 +8,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { ActionUserType } from "@/lib/constants/action-types";
 import { orpc } from "@/orpc";
 import type {
   ActionStatus,
   TokenAction,
 } from "@/orpc/routes/token/routes/token.actions.schema";
 import { ActionStatusEnum } from "@/orpc/routes/token/routes/token.actions.schema";
-import type { ActionUserType } from "@/lib/constants/action-types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
@@ -36,10 +37,10 @@ export interface Action {
   name: string;
   type: ActionType;
   status: ActionStatus; // Server-computed status
-  createdAt: number; // UTC seconds
-  activeAt: number; // UTC seconds
-  expiresAt: number | null; // UTC seconds
-  executedAt: number | null; // UTC seconds
+  createdAt: Date; // UTC timestamp
+  activeAt: Date; // UTC timestamp
+  expiresAt: Date | null; // UTC timestamp
+  executedAt: Date | null; // UTC timestamp
   executed: boolean;
   target: {
     id: string;
@@ -161,11 +162,11 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
       }),
       columnHelper.accessor("activeAt", {
         header: t("actionsTable.columns.activeAt"),
-        cell: ({ getValue }) => (
-          <div className="text-sm">
-            {new Date(getValue() * 1000).toLocaleDateString()}
-          </div>
-        ),
+        meta: {
+          type: "date",
+          displayName: t("actionsTable.columns.activeAt"),
+        },
+        cell: (context) => <AutoCell context={context} />,
       }),
       columnHelper.display({
         id: "status",
@@ -216,11 +217,9 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
     },
   } as const;
 
-  const columnsCallback = useMemo(() => () => columns, [columns]);
-
   return (
     <DataTable
-      columns={columnsCallback}
+      columns={columns}
       data={filteredActions}
       name={`Actions-${status}-${type}`}
       customEmptyState={statusConfig[status]}

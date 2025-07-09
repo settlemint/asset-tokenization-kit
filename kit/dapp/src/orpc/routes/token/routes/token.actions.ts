@@ -4,9 +4,8 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { authRouter } from "@/orpc/procedures/auth.router";
 import {
   ActionStatusEnum,
-  TokenActionsInputSchema,
-  TokenActionsListSchema,
   TokenActionsResponseSchema,
+  type TokenAction,
 } from "@/orpc/routes/token/routes/token.actions.schema";
 import { TRPCError } from "@trpc/server";
 
@@ -97,8 +96,6 @@ const LIST_TOKEN_ACTIONS_QUERY = theGraphGraphql(`
  * @see {@link TokenActionsInputSchema} for input parameters
  */
 export const actions = authRouter.token.actions
-  .input(TokenActionsInputSchema)
-  .output(TokenActionsListSchema)
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
     // SECURITY: Authorization checks
@@ -111,22 +108,22 @@ export const actions = authRouter.token.actions
     }
 
     // SECURITY: Handle missing wallet address gracefully
-    if (!currentUser.address) {
+    if (!currentUser.wallet) {
       // Return empty array if user doesn't have a wallet address yet
       return [];
     }
 
     // SECURITY: Auto-filter to user's wallet address, with admin override
     const targetUserAddress =
-      currentUser.role.permissions?.admin && input.userAddress
+      currentUser.role === "admin" && input.userAddress
         ? input.userAddress
-        : currentUser.address;
+        : currentUser.wallet;
 
     // SECURITY: Prevent enumeration - only admins can query other users
     if (
       input.userAddress &&
-      input.userAddress !== currentUser.address &&
-      !currentUser.role.permissions?.admin
+      input.userAddress !== currentUser.wallet &&
+      currentUser.role !== "admin"
     ) {
       throw new TRPCError({
         code: "FORBIDDEN",
@@ -192,39 +189,28 @@ export const actions = authRouter.token.actions
     );
 
     // SECURITY: Transform response with computed status and filtered data
-    const actionsWithStatus = response.actions.map(
-      (action: Record<string, unknown>) => {
-        const activeAt = parseInt(action.activeAt as string);
-        const expiresAt = action.expiresAt
-          ? parseInt(action.expiresAt as string)
-          : null;
-        const createdAt = parseInt(action.createdAt as string);
-        const executedAt = action.executedAt
-          ? parseInt(action.executedAt as string)
-          : null;
+    const actionsWithStatus: TokenAction[] = response.actions.map((action) => {
+      const status = calculateActionStatus(
+        action.activeAt.getTime() / 1000, // Convert Date to seconds
+        action.expiresAt ? action.expiresAt.getTime() / 1000 : null,
+        action.executed as boolean
+      );
 
-        const status = calculateActionStatus(
-          activeAt,
-          expiresAt,
-          action.executed as boolean
-        );
-
-        // SECURITY: Only return minimal necessary information
-        return {
-          id: action.id,
-          name: action.name,
-          type: action.type,
-          status,
-          createdAt,
-          activeAt,
-          expiresAt,
-          executedAt,
-          executed: action.executed,
-          target: action.target,
-          executedBy: action.executedBy,
-        };
-      }
-    );
+      // SECURITY: Only return minimal necessary information
+      return {
+        id: action.id as string,
+        name: action.name as unknown as TokenAction["name"],
+        type: action.type as unknown as TokenAction["type"],
+        status,
+        createdAt: action.createdAt,
+        activeAt: action.activeAt,
+        expiresAt: action.expiresAt,
+        executedAt: action.executedAt,
+        executed: action.executed as boolean,
+        target: action.target as { id: string },
+        executedBy: action.executedBy as { id: string } | null,
+      };
+    });
 
     return actionsWithStatus;
   });
