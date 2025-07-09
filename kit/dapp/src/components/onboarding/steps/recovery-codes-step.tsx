@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth/auth.client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -102,9 +101,24 @@ export function RecoveryCodesStep({
     useMutation({
       mutationFn: async () => {
         logger.debug("Starting mutation...");
-        return authClient.secretCodes.generate({
-          // No password required during onboarding
+        // Use direct fetch to bypass Better Auth client method inference issue
+        const response = await fetch("/api/auth/secret-codes/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include session cookies
+          body: JSON.stringify({
+            // No password required during onboarding
+            onboarding: true, // Flag to indicate this is during onboarding
+          }),
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        return response.json();
       },
       onSuccess: (data) => {
         logger.debug("Recovery codes onSuccess", data);

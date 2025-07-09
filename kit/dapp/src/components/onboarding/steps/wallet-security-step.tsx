@@ -199,6 +199,7 @@ export function WalletSecurityStep({
             // Pass empty/undefined password for onboarding flow
             // The server should handle this gracefully during onboarding
             password: undefined,
+            onboarding: true, // Flag to indicate this is during onboarding
           }),
           credentials: "include", // Include cookies for session
         });
