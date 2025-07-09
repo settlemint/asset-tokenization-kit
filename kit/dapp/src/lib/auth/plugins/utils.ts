@@ -85,7 +85,7 @@ export function isOnboarded(
     (user.pincodeEnabled && !!user.pincodeVerificationId) ?? false;
   const twoFactorSet =
     (user.twoFactorEnabled && !!user.twoFactorVerificationId) ?? false;
-  const secretCodeSet = !!user.secretCodeVerificationId;
-  const isVerificationSet = (pincodeSet || twoFactorSet) && secretCodeSet;
+  // const secretCodeSet = !!user.secretCodeVerificationId;
+  const isVerificationSet = pincodeSet || twoFactorSet; //&& secretCodeSet;
   return isVerificationSet;
 }
