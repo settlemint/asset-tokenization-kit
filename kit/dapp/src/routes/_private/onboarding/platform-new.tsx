@@ -17,6 +17,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/use-settings";
 import { authClient } from "@/lib/auth/auth.client";
+import type { SessionUser } from "@/lib/auth";
 import type { OnboardingType } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -212,7 +213,16 @@ function PlatformNewOnboarding() {
             onPrevious={onPrevious}
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
-            user={user}
+            user={user ? {
+              ...user,
+              emailVerified: false,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              pincodeEnabled: false,
+              twoFactorEnabled: false,
+              secretCodeEnabled: false,
+              banned: false,
+            } as SessionUser : undefined}
           />
         ),
       });

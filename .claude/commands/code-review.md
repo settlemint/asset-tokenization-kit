@@ -7,8 +7,6 @@ high-impact findings for solo developers using AI tools._
 
 - @/CLAUDE.md
 - @/.claude/CLAUDE.md
-- @/docs/ai-context/project-structure.md
-- @/docs/ai-context/docs-overview.md
 
 ## Core Philosophy
 
@@ -39,8 +37,10 @@ cases affecting <1% of users.
 
 ## Auto-Loaded Project Context:
 
-@/CLAUDE.md @/.claude/CLAUDE.md @/docs/ai-context/project-structure.md
-@/docs/ai-context/docs-overview.md
+- @/CLAUDE.md
+- @/.claude/CLAUDE.md
+- @/docs/ai-context/project-structure.md
+- @/docs/ai-context/docs-overview.md
 
 ## Command Execution
 

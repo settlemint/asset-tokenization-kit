@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   type ColumnFiltersState,
   type RowData,
@@ -25,7 +26,7 @@ import {
 } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
 import * as React from "react";
-import { type ComponentType, useCallback, useState } from "react";
+import { type ComponentType, useCallback, useState, useMemo } from "react";
 import { DataTableColumnCell } from "./data-table-column-cell";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import {
@@ -197,9 +198,20 @@ function DataTableComponent<TData>({
     useState<VisibilityState>({});
   const [localGlobalFilter, setLocalGlobalFilter] = useState("");
 
+  // Validate URL state configuration
+  const logger = useMemo(() => createLogger(), []);
+  
   // Choose between URL state or local state
   const isUsingUrlState = urlState?.enabled ?? false;
-  const currentState = isUsingUrlState
+  
+  // Log warning if URL state is enabled but routePath is missing
+  if (isUsingUrlState && !urlState?.routePath) {
+    logger.warn('DataTable: URL state enabled but no routePath provided', { 
+      name,
+      urlStateConfig: urlState 
+    });
+  }
+  const currentState = isUsingUrlState && urlState?.routePath
     ? tableState.tableOptions.state
     : {
         rowSelection: localRowSelection,
@@ -210,7 +222,7 @@ function DataTableComponent<TData>({
         pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
       };
 
-  const stateHandlers = isUsingUrlState
+  const stateHandlers = isUsingUrlState && urlState?.routePath
     ? {
         onRowSelectionChange: tableState.setRowSelection,
         onSortingChange: tableState.setSorting,
@@ -291,7 +303,7 @@ function DataTableComponent<TData>({
    * @returns Event handler function
    */
   const createRowClickHandler = useCallback(
-    <T extends TData>(row: T) => (e: React.MouseEvent<HTMLTableRowElement>) => {
+    (row: TData) => (e: React.MouseEvent<HTMLTableRowElement>) => {
       // Don't trigger row click if clicking on interactive elements
       const target = e.target as HTMLElement;
       const isInteractiveElement = !!(

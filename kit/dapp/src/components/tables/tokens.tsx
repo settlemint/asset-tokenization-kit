@@ -7,7 +7,7 @@ import { DataTable } from "@/components/data-table/data-table";
 import { useBulkActions } from "@/components/data-table/data-table-bulk-actions";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
-import { Badge } from "@/components/ui/badge";
+import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { orpc } from "@/orpc";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -22,7 +22,6 @@ import {
   Hash,
   Package,
   PauseCircle,
-  PlayCircle,
   Type,
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
@@ -76,7 +75,7 @@ interface TokensTableProps {
  */
 export function TokensTable({ factoryAddress }: TokensTableProps) {
   const router = useRouter();
-  const { t } = useTranslation("deposits-table");
+  const { t } = useTranslation("tokens");
   // Get the current route's path pattern from the matched route
   const routePath =
     router.state.matches[router.state.matches.length - 1]?.pathname;
@@ -251,16 +250,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
           header: t("columns.paused"),
           cell: (cellProps) => {
             const paused = cellProps.getValue();
-            return (
-              <Badge variant={paused ? "destructive" : "default"}>
-                {paused ? (
-                  <PauseCircle className="h-4 w-4" />
-                ) : (
-                  <PlayCircle className="h-4 w-4" />
-                )}
-                {paused ? t("status.paused") : t("status.active")}
-              </Badge>
-            );
+            return <TokenStatusBadge paused={paused} />;
           },
           meta: {
             displayName: t("columns.paused"),

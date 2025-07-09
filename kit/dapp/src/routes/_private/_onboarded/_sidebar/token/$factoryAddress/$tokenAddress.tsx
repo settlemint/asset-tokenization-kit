@@ -3,9 +3,13 @@ import {
   createBreadcrumbMetadata,
 } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { DetailGrid } from "@/components/detail-grid/detail-grid";
-import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
+import {
+  DetailGrid,
+  DetailGridErrorBoundary,
+  DetailGridItem,
+} from "@/components/detail-grid";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Web3Address } from "@/components/web3/web3-address";
 import { seo } from "@/config/metadata";
@@ -14,7 +18,6 @@ import {
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
 import { createFileRoute } from "@tanstack/react-router";
-import { format as formatDnum } from "dnum";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -60,40 +63,56 @@ export const Route = createFileRoute(
    * @param context - Route context containing the query client
    * @param params - Route parameters containing the factory address
    * @returns Object containing the factory details
-   * @throws If the factory is not found or the user lacks permissions
+   * @throws If the token is not found or the user lacks permissions
    */
   loader: async ({
     context: { queryClient, orpc },
     params: { factoryAddress, tokenAddress },
   }) => {
-    const [token, factory] = await Promise.all([
-      queryClient.ensureQueryData(
+    // Use Promise.allSettled to handle partial failures gracefully
+    const [tokenResult, factoryResult] = await Promise.allSettled([
+      queryClient.fetchQuery(
         orpc.token.read.queryOptions({
-          input: { id: tokenAddress },
+          input: { tokenAddress },
         })
       ),
-      queryClient.ensureQueryData(
+      queryClient.fetchQuery(
         orpc.token.factoryRead.queryOptions({
           input: { id: factoryAddress },
         })
       ),
     ]);
 
-    // Get asset class for breadcrumb
-    const assetClass = getAssetClassFromFactoryTypeId(factory.typeId);
+    // Token is required - throw if it fails
+    if (tokenResult.status === "rejected") {
+      throw new Error(
+        `Failed to load token details: ${tokenResult.reason?.message ?? "Unknown error"}`
+      );
+    }
+
+    const token = tokenResult.value;
+
+    // Factory is optional - we can still show token details without it
+    const factory =
+      factoryResult.status === "fulfilled" ? factoryResult.value : null;
+
+    // Build breadcrumb with available data
+    const breadcrumb = [assetClassBreadcrumbs["asset-management"]];
+
+    if (factory) {
+      const assetClass = getAssetClassFromFactoryTypeId(factory.typeId);
+      breadcrumb.push(assetClassBreadcrumbs[assetClass], {
+        ...createBreadcrumbMetadata(factory.name),
+        href: `/token/${factoryAddress}`,
+      });
+    }
+
+    breadcrumb.push(createBreadcrumbMetadata(token.name));
 
     return {
       token,
       factory,
-      breadcrumb: [
-        assetClassBreadcrumbs["asset-management"],
-        assetClassBreadcrumbs[assetClass],
-        {
-          ...createBreadcrumbMetadata(factory.name),
-          href: `/token/${factoryAddress}`,
-        },
-        createBreadcrumbMetadata(token.name),
-      ],
+      breadcrumb,
     };
   },
   /**
@@ -101,22 +120,28 @@ export const Route = createFileRoute(
    * Uses the factory name and asset type description for metadata
    */
   head: ({ loaderData }) => {
-    if (loaderData) {
-      const assetType = getAssetTypeFromFactoryTypeId(
-        loaderData.factory.typeId
-      );
+    if (loaderData?.token) {
+      const keywords = [
+        loaderData.token.name,
+        loaderData.token.symbol,
+        "tokenization",
+        "token",
+      ];
+
+      let title = loaderData.token.name;
+
+      if (loaderData.factory) {
+        const assetType = getAssetTypeFromFactoryTypeId(
+          loaderData.factory.typeId
+        );
+        title = `${loaderData.token.name} - ${loaderData.factory.name}`;
+        keywords.push(assetType, loaderData.factory.name);
+      }
 
       return {
         meta: seo({
-          title: `${loaderData.token.name} - ${loaderData.factory.name}`,
-          keywords: [
-            loaderData.token.name,
-            loaderData.token.symbol,
-            assetType,
-            "tokenization",
-            "token",
-            loaderData.factory.name,
-          ],
+          title,
+          keywords,
         }),
       };
     }
@@ -163,18 +188,12 @@ export const Route = createFileRoute(
  */
 function RouteComponent() {
   const { token, factory } = Route.useLoaderData();
-  const { t, i18n } = useTranslation(["tokens", "assets", "common"]);
-  const locale = i18n.language;
+  const { t } = useTranslation(["tokens", "assets", "common"]);
 
-  // Format total supply using dnum for precision
-  const formattedTotalSupply = formatDnum(token.totalSupply, {
-    locale,
-    digits: 2,
-    trailingZeros: false,
-  });
-
-  // Get asset type for display
-  const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
+  // Get asset type for display (if factory is available)
+  const assetType = factory
+    ? getAssetTypeFromFactoryTypeId(factory.typeId)
+    : null;
 
   return (
     <div className="space-y-6 p-6">
@@ -185,77 +204,86 @@ function RouteComponent() {
           <Badge variant="secondary" className="font-mono">
             {token.symbol}
           </Badge>
-          {token.pausable?.paused && (
-            <Badge variant="destructive">{t("tokens:status.paused")}</Badge>
-          )}
+          <TokenStatusBadge paused={token.pausable.paused} />
         </div>
       </div>
 
       {/* Token Information */}
-      <DetailGrid title={t("tokens:details.tokenInformation")}>
-        <DetailGridItem
-          label={t("tokens:fields.contractAddress")}
-          info={t("tokens:fields.contractAddressInfo")}
-        >
-          <Web3Address
-            address={token.id as `0x${string}`}
-            copyToClipboard={true}
-            showFullAddress={true}
-            size="tiny"
-            showSymbol={false}
-            showBadge={false}
-          />
-        </DetailGridItem>
+      <DetailGridErrorBoundary gridTitle={t("tokens:details.tokenInformation")}>
+        <DetailGrid title={t("tokens:details.tokenInformation")}>
+          <DetailGridItem
+            label={t("tokens:fields.contractAddress")}
+            info={t("tokens:fields.contractAddressInfo")}
+          >
+            <Web3Address
+              address={token.id}
+              copyToClipboard={true}
+              showFullAddress={false}
+              size="tiny"
+              showSymbol={false}
+              showBadge={false}
+              showPrettyName={false}
+            />
+          </DetailGridItem>
 
-        <DetailGridItem
-          label={t("tokens:fields.name")}
-          info={t("tokens:fields.nameInfo")}
-        >
-          {token.name}
-        </DetailGridItem>
+          <DetailGridItem
+            label={t("tokens:fields.name")}
+            info={t("tokens:fields.nameInfo")}
+          >
+            {token.name}
+          </DetailGridItem>
 
-        <DetailGridItem
-          label={t("tokens:fields.symbol")}
-          info={t("tokens:fields.symbolInfo")}
-        >
-          <Badge variant="secondary" className="font-mono">
-            {token.symbol}
-          </Badge>
-        </DetailGridItem>
+          <DetailGridItem
+            label={t("tokens:fields.symbol")}
+            info={t("tokens:fields.symbolInfo")}
+          >
+            <Badge variant="secondary" className="font-mono">
+              {token.symbol}
+            </Badge>
+          </DetailGridItem>
 
-        <DetailGridItem
-          label={t("tokens:fields.decimals")}
-          info={t("tokens:fields.decimalsInfo")}
-        >
-          {token.decimals}
-        </DetailGridItem>
+          <DetailGridItem
+            label={t("tokens:fields.decimals")}
+            info={t("tokens:fields.decimalsInfo")}
+          >
+            {token.decimals}
+          </DetailGridItem>
 
-        <DetailGridItem
-          label={t("tokens:fields.totalSupply")}
-          info={t("tokens:fields.totalSupplyInfo")}
-        >
-          <span className="font-mono">{formattedTotalSupply}</span>
-        </DetailGridItem>
+          <DetailGridItem
+            label={t("tokens:fields.totalSupply")}
+            info={t("tokens:fields.totalSupplyInfo")}
+          >
+            <span className="font-mono">
+              {token.totalSupply.toLocaleString()}
+            </span>
+          </DetailGridItem>
 
-        <DetailGridItem
-          label={t("tokens:fields.assetType")}
-          info={t("tokens:fields.assetTypeInfo")}
-        >
-          <Badge>{t(`tokens:asset-types.${assetType}` as const)}</Badge>
-        </DetailGridItem>
-      </DetailGrid>
+          {assetType && (
+            <DetailGridItem
+              label={t("tokens:fields.assetType")}
+              info={t("tokens:fields.assetTypeInfo")}
+            >
+              <Badge>{t(`tokens:asset-types.${assetType}` as const)}</Badge>
+            </DetailGridItem>
+          )}
+        </DetailGrid>
+      </DetailGridErrorBoundary>
 
       {/* Compliance Information */}
-      <DetailGrid title={t("tokens:details.complianceInformation")}>
-        <DetailGridItem
-          label={t("tokens:fields.requiredClaims")}
-          info={t("tokens:fields.requiredClaimsInfo")}
-        >
-          <span className="text-muted-foreground">
-            {t("tokens:fields.noRequiredClaims")}
-          </span>
-        </DetailGridItem>
-      </DetailGrid>
+      <DetailGridErrorBoundary
+        gridTitle={t("tokens:details.complianceInformation")}
+      >
+        <DetailGrid title={t("tokens:details.complianceInformation")}>
+          <DetailGridItem
+            label={t("tokens:fields.requiredClaims")}
+            info={t("tokens:fields.requiredClaimsInfo")}
+          >
+            <span className="text-muted-foreground">
+              {t("tokens:fields.noRequiredClaims")}
+            </span>
+          </DetailGridItem>
+        </DetailGrid>
+      </DetailGridErrorBoundary>
     </div>
   );
 }

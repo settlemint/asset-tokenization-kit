@@ -145,7 +145,14 @@ function InvestorOnboarding() {
               <WalletStep onSuccess={handleWalletSuccess} />
             )}
             {currentStepId === "security" && (
-              <WalletSecurityStep onSuccess={handleSecuritySuccess} />
+              <WalletSecurityStep
+                form={{} as any}
+                stepId="security"
+                onNext={handleSecuritySuccess}
+                onPrevious={handleWalletSuccess}
+                isFirstStep={false}
+                isLastStep={false}
+              />
             )}
             {currentStepId === "identity" && (
               <IdentityStep onSuccess={handleIdentitySuccess} />

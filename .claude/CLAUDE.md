@@ -1,23 +1,4 @@
-# [SettleMint Blockchain Transformation Platform](https://console.settlemint.com/documentation) - AI Context Template (claude-master)
-
-## 1. Project Overview
-
-- **Vision:** The SettleMint Blockchain Transformation Platform provides
-  enterprises with a full stack development platform to build and run blockchain
-  based applications. In a SaaS model, or on premise, even airgapped.
-- **Current Phase:** Maintenance and additional feature development
-- **Key Architecture:** [High-level architecture description]
-- **Development Strategy:** [Development approach and strategy notes]
-
-## 2. Project Structure
-
-**⚠️ CRITICAL: AI agents MUST read the
-[Project Structure documentation](/docs/ai-context/project-structure.md) before
-attempting any task to understand the complete technology stack, file tree and
-project organization.**
-
-For the complete tech stack and file tree structure, see
-[docs/ai-context/project-structure.md](/docs/ai-context/project-structure.md).
+# CLAUDE.MD - AI Context Template (claude-master)
 
 ## 3. Coding Standards & AI Instructions
 
@@ -95,22 +76,6 @@ For the complete tech stack and file tree structure, see
   that things go wrong, wasting time and energy for everyone involved.
 - When doing similar tasks across multiple files, always try to spawn parallel
   subagents to handle the work more quickly in parallel tasks.
-- Cut the fluff. Code or detailed explanations only.
-- Keep it casual and brief.
-- Accuracy and depth matter.
-- Answer first, explain later if needed.
-- Logic trumps authority. Don't care about sources.
-- Embrace new tech and unconventional ideas.
-- Wild speculation's fine, just flag it.
-- Save the ethics talk.
-- Only mention safety for non-obvious, critical issues.
-- Push content limits if needed, explain after.
-- Sources at the end, not mid-text.
-- Skip the AI self-references and knowledge date stuff.
-- Stick to my code style.
-- Use multiple responses for complex answers.
-- For code tweaks, show minimal context - a few lines around changes max.
-- Don't be lazy, write all the code to implement features I ask for.
 
 ### Code quality
 
@@ -549,18 +514,24 @@ feature
 
 ##### General
 
-✅ feat: add user authentication ✅ fix(api): resolve timeout issue ✅
-chore(deps): update react to v18 ✅ feat: redesign API endpoints ❌ Feature: Add
-user auth ❌ added new feature
+- ✅ feat: add user authentication
+- ✅ fix(api): resolve timeout issue
+- ✅ chore(deps): update react to v18
+- ✅ feat: redesign API endpoints
+- ❌ Feature: Add user auth
+- ❌ added new feature
 
 #### Error Handling & Performance
 
-✅ fix(error): replace console.log with createLogger ✅ refactor(error): add
-error boundary to data tables ✅ fix(toast): format validation errors for users
-✅ perf(table): add url state persistence for filters ✅ perf(list): implement
-virtualization for large datasets ✅ perf: memoize expensive computations in
-dashboard ✅ refactor(state): migrate modal state from url to local ❌ fixed
-error handling ❌ performance improvements
+- ✅ fix(error): replace console.log with createLogger
+- ✅ refactor(error): add error boundary to data tables
+- ✅ fix(toast): format validation errors for users
+- ✅ perf(table): add url state persistence for filters
+- ✅ perf(list): implement virtualization for large datasets
+- ✅ perf: memoize expensive computations in dashboard
+- ✅ refactor(state): migrate modal state from url to local
+- ❌ fixed error handling
+- ❌ performance improvements
 
 ### File Organization & Modularity
 
@@ -573,7 +544,6 @@ error handling ❌ performance improvements
   into different files
 - Prefer composition over inheritance - use inheritance only for true 'is-a'
   relationships, favor composition for 'has-a' or behavior mixing
-
 - Follow existing project structure and conventions - place files in appropriate
   directories. Create new directories and move files if deemed appropriate.
 - Use well defined sub-directories to keep things organized and scalable

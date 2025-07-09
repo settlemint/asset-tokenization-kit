@@ -62,6 +62,14 @@ export const tokenMiddleware = baseRouter.middleware(
     }
 
     const { auth, userClaimTopics } = context;
+
+    // Early authorization check before making expensive queries
+    if (!auth?.user.wallet) {
+      throw errors.UNAUTHORIZED({
+        message: "Authentication required to access token information",
+      });
+    }
+
     if (!userClaimTopics) {
       throw errors.INTERNAL_SERVER_ERROR({
         message: "User claim topics context not set",
@@ -83,7 +91,7 @@ export const tokenMiddleware = baseRouter.middleware(
     >(
       (acc, [role, accounts]) => {
         const userHasRole = accounts.some(
-          (account) => account.id === auth?.user.wallet
+          (account) => account.id === auth.user.wallet
         );
         acc[role as TokenRoles] = userHasRole;
         return acc;

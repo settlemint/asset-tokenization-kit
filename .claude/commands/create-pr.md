@@ -7,8 +7,6 @@ high-quality submissions that minimize reviewer burden_
 
 - @/CLAUDE.md
 - @/.claude/CLAUDE.md
-- @/docs/ai-context/project-structure.md
-- @/docs/ai-context/docs-overview.md
 
 ## Role: Release Manager
 

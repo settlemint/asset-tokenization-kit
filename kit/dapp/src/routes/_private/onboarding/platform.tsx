@@ -336,9 +336,6 @@ function PlatformOnboarding() {
     walletActionRef.current = action;
   }, []);
 
-  const onRegisterSecurityAction = useCallback((action: () => void) => {
-    securityActionRef.current = action;
-  }, []);
 
   const onRegisterSystemAction = useCallback((action: () => void) => {
     systemActionRef.current = action;
@@ -401,8 +398,12 @@ function PlatformOnboarding() {
                 } else if (currentStepId === "security") {
                   return (
                     <WalletSecurityStep
-                      onSuccess={handleSecuritySuccess}
-                      onRegisterAction={onRegisterSecurityAction}
+                      form={{} as any}
+                      stepId="security"
+                      onNext={handleSecuritySuccess}
+                      onPrevious={handleWalletSuccess}
+                      isFirstStep={false}
+                      isLastStep={false}
                     />
                   );
                 } else if (currentStepId === "system") {

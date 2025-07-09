@@ -14,11 +14,56 @@
  * @see {@link https://tanstack.com/router/latest/docs/framework/react/guide/search-params} - TanStack Router search params
  */
 
+import { z } from "zod/v4";
 import type {
   ColumnFilter,
   DataTableSearchParams,
   SortState,
 } from "./search-params";
+
+/**
+ * Zod schema for flat URL search parameters.
+ * Validates and sanitizes all incoming URL parameters to prevent injection attacks.
+ */
+const flatSearchParamsSchema = z.object({
+  // Pagination
+  page: z.coerce.number().int().min(1).max(1000).optional(),
+  pageSize: z.coerce.number().int().min(1).max(100).optional(),
+  
+  // Sorting
+  sortBy: z.string().regex(/^[a-zA-Z0-9_.-]+$/).max(100).optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
+  
+  // Global search
+  search: z.string().max(1000).optional(),
+  
+  // Column visibility - comma-separated list of column IDs
+  columns: z.string()
+    .max(1000)
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      // Validate each column ID
+      const columns = val.split(',').map(c => c.trim());
+      const validColumns = columns.filter(col => /^[a-zA-Z0-9_.-]+$/.test(col));
+      return validColumns.length > 0 ? validColumns.join(',') : undefined;
+    }),
+    
+  // Row selection - comma-separated list of row IDs
+  selected: z.string()
+    .max(1000)
+    .optional()
+    .transform((val) => {
+      if (!val) return undefined;
+      // Validate each row ID
+      const ids = val.split(',').map(id => id.trim());
+      const validIds = ids.filter(id => /^[a-zA-Z0-9_.-]+$/.test(id));
+      return validIds.length > 0 ? validIds.join(',') : undefined;
+    }),
+}).catchall(
+  // Handle filter_ prefixed parameters
+  z.string().max(1000).optional()
+);
 
 /**
  * Safely encode an object to JSON string for URL parameter.
@@ -207,25 +252,25 @@ export function serializeDataTableState(
 export function deserializeDataTableState(
   searchParams: Record<string, unknown>
 ): DataTableSearchParams {
-  const page = Number(searchParams.page) || 1;
-  const rawPageSize = Number(searchParams.pageSize);
-  const pageSize = Number.isNaN(rawPageSize)
-    ? 10
-    : Math.min(100, Math.max(1, rawPageSize));
+  // Validate and sanitize parameters using Zod schema
+  const validatedParams = flatSearchParamsSchema.parse(searchParams);
+  
+  const page = validatedParams.page ?? 1;
+  const pageSize = validatedParams.pageSize ?? 10;
 
   // Sorting from flat params
-  const sorting: SortState[] = searchParams.sortBy
+  const sorting: SortState[] = validatedParams.sortBy
     ? [
         {
-          id: searchParams.sortBy as string,
-          desc: searchParams.sortOrder === "desc",
+          id: validatedParams.sortBy,
+          desc: validatedParams.sortOrder === "desc",
         },
       ]
     : [];
 
   // Filters from filter_ prefixed params
   const columnFilters: ColumnFilter[] = [];
-  Object.entries(searchParams).forEach(([key, value]) => {
+  Object.entries(validatedParams).forEach(([key, value]) => {
     if (
       key.startsWith("filter_") &&
       value !== undefined &&
@@ -233,34 +278,26 @@ export function deserializeDataTableState(
       value !== ""
     ) {
       const filterKey = key.substring(7); // Remove 'filter_' prefix
-      // For now, store as simple string values
-      // The actual filter function will handle the comparison
-      const filterValue =
-        typeof value === "string"
-          ? value
-          : typeof value === "number" || typeof value === "boolean"
-            ? String(value)
-            : JSON.stringify(value);
-
+      // Store as string value - already validated by Zod
       columnFilters.push({
         id: filterKey,
-        value: filterValue,
+        value: value as string,
       });
     }
   });
 
   // Column visibility from comma-separated list
   const columnVisibility: Record<string, boolean> = {};
-  if (searchParams.columns && typeof searchParams.columns === "string") {
-    searchParams.columns.split(",").forEach((col) => {
+  if (validatedParams.columns) {
+    validatedParams.columns.split(",").forEach((col) => {
       columnVisibility[col] = true;
     });
   }
 
   // Row selection from comma-separated list
   const rowSelection: Record<string, boolean> = {};
-  if (searchParams.selected && typeof searchParams.selected === "string") {
-    searchParams.selected.split(",").forEach((id) => {
+  if (validatedParams.selected) {
+    validatedParams.selected.split(",").forEach((id) => {
       rowSelection[id] = true;
     });
   }
@@ -272,7 +309,7 @@ export function deserializeDataTableState(
     },
     sorting,
     columnFilters,
-    globalFilter: (searchParams.search as string) || "",
+    globalFilter: validatedParams.search ?? "",
     columnVisibility,
     rowSelection,
   };

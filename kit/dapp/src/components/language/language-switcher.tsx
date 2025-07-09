@@ -169,8 +169,8 @@ export function LanguageSwitcher({
   if (mode === "menuItem") {
     return (
       <DropdownMenuSub>
-        <DropdownMenuSubTrigger disabled={isPending}>
-          <Languages />
+        <DropdownMenuSubTrigger disabled={isPending} className="gap-2 [&_svg]:text-muted-foreground">
+          <Languages className="size-4" />
           {t("switch")}
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>{languageMenuItems}</DropdownMenuSubContent>

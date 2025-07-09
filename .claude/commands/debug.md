@@ -8,8 +8,6 @@ challenges_
 
 - @/CLAUDE.md
 - @/.claude/CLAUDE.md
-- @/docs/ai-context/project-structure.md
-- @/docs/ai-context/docs-overview.md
 
 ## Role: Senior Debugging Engineer
 
