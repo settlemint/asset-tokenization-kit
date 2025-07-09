@@ -45,5 +45,44 @@
   "tables": {
     "latestEvents": "Latest events",
     "actions": "Pending actions"
+  },
+  "actionsTable": {
+    "status": {
+      "pending": "Pending",
+      "upcoming": "Upcoming",
+      "completed": "Completed",
+      "expired": "Expired"
+    },
+    "columns": {
+      "actionName": "Action Name",
+      "target": "Target",
+      "activeAt": "Active At",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "buttons": {
+      "execute": "Execute"
+    },
+    "emptyStates": {
+      "pending": {
+        "title": "No pending actions",
+        "description": "You don't have any actions that require your attention at this time."
+      },
+      "upcoming": {
+        "title": "No upcoming actions",
+        "description": "There are no actions scheduled for the future."
+      },
+      "completed": {
+        "title": "No completed actions",
+        "description": "No actions have been completed yet."
+      },
+      "expired": {
+        "title": "No expired actions",
+        "description": "There are no expired actions."
+      }
+    },
+    "tooltip": {
+      "action": "Action: {{actionName}}"
+    }
   }
 }

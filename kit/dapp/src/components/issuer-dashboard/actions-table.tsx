@@ -1,27 +1,26 @@
-"use client";
-
 import { DataTable } from "@/components/data-table/data-table";
-import { Button } from "@/components/ui/button";
-import {
-  AlarmClockCheck,
-  ArrowBigRightDash,
-  CircleDashed,
-  ListCheck,
-  Info,
-  ExternalLink,
-} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { createColumnHelper } from "@tanstack/react-table";
-import { useMemo } from "react";
 import { orpc } from "@/orpc";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import type { TokenAction } from "@/orpc/routes/token/routes/token.actions.schema";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createColumnHelper } from "@tanstack/react-table";
+import {
+  AlarmClockCheck,
+  ArrowBigRightDash,
+  CircleDashed,
+  ExternalLink,
+  Info,
+  ListCheck,
+} from "lucide-react";
+import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 // Define the action types based on the schema
 export type ActionStatus = "PENDING" | "UPCOMING" | "COMPLETED" | "EXPIRED";
@@ -65,51 +64,52 @@ const columnHelper = createColumnHelper<Action>();
 
 function calculateActionStatus(action: Action): ActionStatus {
   const now = new Date();
-  
+
   if (action.executed) {
     return "COMPLETED";
   }
-  
+
   if (action.expiresAt && action.expiresAt < now) {
     return "EXPIRED";
   }
-  
+
   if (action.activeAt > now) {
     return "UPCOMING";
   }
-  
+
   return "PENDING";
 }
 
 function ActionStatusIndicator({ action }: { action: Action }) {
+  const { t } = useTranslation("issuer-dashboard");
   const status = calculateActionStatus(action);
-  
+
   const statusConfig = {
     PENDING: {
       icon: ListCheck,
-      label: "Pending",
+      label: t("actionsTable.status.pending"),
       variant: "default" as const,
     },
     UPCOMING: {
       icon: ArrowBigRightDash,
-      label: "Upcoming",
+      label: t("actionsTable.status.upcoming"),
       variant: "secondary" as const,
     },
     COMPLETED: {
       icon: CircleDashed,
-      label: "Completed",
+      label: t("actionsTable.status.completed"),
       variant: "outline" as const,
     },
     EXPIRED: {
       icon: AlarmClockCheck,
-      label: "Expired",
+      label: t("actionsTable.status.expired"),
       variant: "destructive" as const,
     },
   };
-  
+
   const config = statusConfig[status];
   const Icon = config.icon;
-  
+
   return (
     <Badge variant={config.variant}>
       <Icon className="w-3 h-3 mr-1" />
@@ -122,6 +122,8 @@ function ActionStatusIndicator({ action }: { action: Action }) {
  * Actions table component for the dashboard
  */
 export function ActionsTable({ status, type }: ActionsTableProps) {
+  const { t } = useTranslation("issuer-dashboard");
+  
   // Fetch actions from the API
   const { data: tokenActions } = useSuspenseQuery(
     orpc.token.actions.queryOptions({
@@ -137,10 +139,10 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
   const actions: Action[] = useMemo(() => {
     return tokenActions.map(convertTokenActionToAction);
   }, [tokenActions]);
-  
+
   const columns = useMemo(() => [
     columnHelper.accessor("name", {
-      header: "Action Name",
+      header: t("actionsTable.columns.actionName"),
       cell: ({ getValue }) => (
         <div className="flex items-center gap-2">
           <span className="font-medium">{getValue()}</span>
@@ -150,7 +152,7 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
                 <Info className="w-4 h-4 text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Action: {getValue()}</p>
+                <p>{t("actionsTable.tooltip.action", { actionName: getValue() })}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -158,7 +160,7 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
       ),
     }),
     columnHelper.accessor("target.id", {
-      header: "Target",
+      header: t("actionsTable.columns.target"),
       cell: ({ getValue }) => (
         <div className="font-mono text-sm">
           {getValue().slice(0, 6)}...{getValue().slice(-4)}
@@ -166,7 +168,7 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
       ),
     }),
     columnHelper.accessor("activeAt", {
-      header: "Active At",
+      header: t("actionsTable.columns.activeAt"),
       cell: ({ getValue }) => (
         <div className="text-sm">
           {getValue().toLocaleDateString()}
@@ -175,53 +177,53 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
     }),
     columnHelper.display({
       id: "status",
-      header: "Status",
+      header: t("actionsTable.columns.status"),
       cell: ({ row }) => <ActionStatusIndicator action={row.original} />,
     }),
     ...(status === "PENDING"
       ? [
           columnHelper.display({
             id: "actions",
-            header: "Actions",
+            header: t("actionsTable.columns.actions"),
             cell: () => (
               <Button variant="outline" size="sm">
                 <ExternalLink className="w-4 h-4 mr-1" />
-                Execute
+                {t("actionsTable.buttons.execute")}
               </Button>
             ),
           }),
         ]
       : []),
-  ], [status]);
-  
+  ], [status, t]);
+
   // Actions are already filtered by the API call, so we can use them directly
   const filteredActions = actions;
-  
+
   const statusConfig = {
     PENDING: {
       icon: ListCheck,
-      title: "No pending actions",
-      description: "You don't have any actions that require your attention at this time.",
+      title: t("actionsTable.emptyStates.pending.title"),
+      description: t("actionsTable.emptyStates.pending.description"),
     },
     UPCOMING: {
       icon: ArrowBigRightDash,
-      title: "No upcoming actions",
-      description: "There are no actions scheduled for the future.",
+      title: t("actionsTable.emptyStates.upcoming.title"),
+      description: t("actionsTable.emptyStates.upcoming.description"),
     },
     COMPLETED: {
       icon: CircleDashed,
-      title: "No completed actions",
-      description: "No actions have been completed yet.",
+      title: t("actionsTable.emptyStates.completed.title"),
+      description: t("actionsTable.emptyStates.completed.description"),
     },
     EXPIRED: {
       icon: AlarmClockCheck,
-      title: "No expired actions",
-      description: "There are no expired actions.",
+      title: t("actionsTable.emptyStates.expired.title"),
+      description: t("actionsTable.emptyStates.expired.description"),
     },
   } as const;
-  
+
   const columnsCallback = useMemo(() => () => columns, [columns]);
-  
+
   return (
     <DataTable
       columns={columnsCallback}

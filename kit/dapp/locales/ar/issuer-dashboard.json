@@ -34,5 +34,44 @@
   "tables": {
     "latestEvents": "آخر الأحداث",
     "actions": "الإجراءات المعلقة"
+  },
+  "actionsTable": {
+    "status": {
+      "pending": "معلق",
+      "upcoming": "قادم",
+      "completed": "مكتمل",
+      "expired": "منتهي الصلاحية"
+    },
+    "columns": {
+      "actionName": "اسم الإجراء",
+      "target": "الهدف",
+      "activeAt": "نشط في",
+      "status": "الحالة",
+      "actions": "الإجراءات"
+    },
+    "buttons": {
+      "execute": "تنفيذ"
+    },
+    "emptyStates": {
+      "pending": {
+        "title": "لا توجد إجراءات معلقة",
+        "description": "ليس لديك أي إجراءات تتطلب اهتمامك في هذا الوقت."
+      },
+      "upcoming": {
+        "title": "لا توجد إجراءات قادمة",
+        "description": "لا توجد إجراءات مجدولة للمستقبل."
+      },
+      "completed": {
+        "title": "لا توجد إجراءات مكتملة",
+        "description": "لم يتم إكمال أي إجراءات بعد."
+      },
+      "expired": {
+        "title": "لا توجد إجراءات منتهية الصلاحية",
+        "description": "لا توجد إجراءات منتهية الصلاحية."
+      }
+    },
+    "tooltip": {
+      "action": "الإجراء: {{actionName}}"
+    }
   }
 }

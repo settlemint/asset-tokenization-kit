@@ -34,5 +34,44 @@
   "tables": {
     "latestEvents": "Neueste Ereignisse",
     "actions": "Ausstehende Aktionen"
+  },
+  "actionsTable": {
+    "status": {
+      "pending": "Ausstehend",
+      "upcoming": "Anstehend",
+      "completed": "Abgeschlossen",
+      "expired": "Abgelaufen"
+    },
+    "columns": {
+      "actionName": "Aktionsname",
+      "target": "Ziel",
+      "activeAt": "Aktiv am",
+      "status": "Status",
+      "actions": "Aktionen"
+    },
+    "buttons": {
+      "execute": "Ausführen"
+    },
+    "emptyStates": {
+      "pending": {
+        "title": "Keine ausstehenden Aktionen",
+        "description": "Sie haben derzeit keine Aktionen, die Ihre Aufmerksamkeit erfordern."
+      },
+      "upcoming": {
+        "title": "Keine anstehenden Aktionen",
+        "description": "Es sind keine Aktionen für die Zukunft geplant."
+      },
+      "completed": {
+        "title": "Keine abgeschlossenen Aktionen",
+        "description": "Es wurden noch keine Aktionen abgeschlossen."
+      },
+      "expired": {
+        "title": "Keine abgelaufenen Aktionen",
+        "description": "Es gibt keine abgelaufenen Aktionen."
+      }
+    },
+    "tooltip": {
+      "action": "Aktion: {{actionName}}"
+    }
   }
 }
