@@ -69,17 +69,6 @@ export async function setupUser(user: User) {
     if (pincodeError && pincodeError.code !== "PINCODE_ALREADY_SET") {
       throw pincodeError;
     }
-    const { error: secretCodeError } = await authClient.secretCodes.generate(
-      {
-        password: undefined,
-      },
-      {
-        headers: await signInWithUser(user),
-      }
-    );
-    if (secretCodeError) {
-      throw secretCodeError;
-    }
     const session = await authClient.getSession({
       fetchOptions: {
         headers: await signInWithUser(user),
