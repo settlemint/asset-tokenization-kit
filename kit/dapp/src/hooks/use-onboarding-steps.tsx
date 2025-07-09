@@ -10,7 +10,7 @@ import {
 } from "@/components/onboarding/steps";
 
 import { useMemo } from "react";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 // Define the onboarding form schema
 const onboardingSchema = z.object({

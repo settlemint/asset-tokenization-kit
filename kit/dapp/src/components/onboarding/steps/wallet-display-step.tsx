@@ -92,42 +92,57 @@ export function WalletDisplayStep({
                     Your Digital Key to the Blockchain
                   </h3>
                   <p className="text-base text-foreground leading-relaxed">
-                    Think of your wallet as your master key that unlocks all your digital assets and identity on the blockchain. It's a secure set of cryptographic codes that proves you own your tokens and allows you to authorize transactions.
+                    Think of your wallet as your master key that unlocks all
+                    your digital assets and identity on the blockchain. It's a
+                    secure set of cryptographic codes that proves you own your
+                    tokens and allows you to authorize transactions.
                   </p>
                 </div>
-                
+
                 <div className="space-y-5">
                   <h4 className="text-base font-semibold text-foreground">
                     What your wallet enables:
                   </h4>
-                  
+
                   <div className="space-y-4">
                     <div className="flex gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
                       <div>
-                        <h5 className="font-medium text-foreground mb-1">Asset Control</h5>
+                        <h5 className="font-medium text-foreground mb-1">
+                          Asset Control
+                        </h5>
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                          View, manage, and interact with tokenized assets on the Asset Tokenization Kit platform. Your wallet gives you complete control over your digital assets.
+                          View, manage, and interact with tokenized assets on
+                          the Asset Tokenization Kit platform. Your wallet gives
+                          you complete control over your digital assets.
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
                       <div>
-                        <h5 className="font-medium text-foreground mb-1">Transaction Authorization</h5>
+                        <h5 className="font-medium text-foreground mb-1">
+                          Transaction Authorization
+                        </h5>
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                          Securely authorize every transaction – from trading tokens to registering your ONCHAINID – with your digital signature.
+                          Securely authorize every transaction – from trading
+                          tokens to registering your ONCHAINID – with your
+                          digital signature.
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
                       <div>
-                        <h5 className="font-medium text-foreground mb-1">Identity Management</h5>
+                        <h5 className="font-medium text-foreground mb-1">
+                          Identity Management
+                        </h5>
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                          Your wallet forms the foundation for your unique ONCHAINID, linking your verified identity to all blockchain activities.
+                          Your wallet forms the foundation for your unique
+                          ONCHAINID, linking your verified identity to all
+                          blockchain activities.
                         </p>
                       </div>
                     </div>
@@ -200,10 +215,11 @@ export function WalletDisplayStep({
                     </svg>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <p className="text-base text-muted-foreground">
-                    Congratulations! Your Web3 wallet has been successfully created
+                    Congratulations! Your Web3 wallet has been successfully
+                    created
                   </p>
                 </div>
               </div>
@@ -214,7 +230,7 @@ export function WalletDisplayStep({
                   <h3 className="text-base font-medium text-foreground">
                     This is your wallet address
                   </h3>
-                  
+
                   <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 space-y-3">
                     <div className="flex items-center justify-center gap-2">
                       <p className="text-base font-mono text-green-800 dark:text-green-200 break-all">
@@ -243,23 +259,31 @@ export function WalletDisplayStep({
                   </div>
                 </div>
               )}
-              
+
               <div className="space-y-4">
                 <p className="text-sm text-foreground leading-relaxed">
-                  This address is something you can safely share with others for them to send assets (like tokens or cryptocurrencies) directly to your wallet. While all transactions to and from this address are publicly recorded on the blockchain, your personal identity remains private. Think of it like an email address or a bank account number.
+                  This address is something you can safely share with others for
+                  them to send assets (like tokens or cryptocurrencies) directly
+                  to your wallet. While all transactions to and from this
+                  address are publicly recorded on the blockchain, your personal
+                  identity remains private. Think of it like an email address or
+                  a bank account number.
                 </p>
-                
+
                 <p className="text-sm text-foreground leading-relaxed">
-                  Because your wallet controls access to your valuable digital assets and identity, it's important to keep it safe from unauthorized access and ensure you can recover it if needed.
+                  Because your wallet controls access to your valuable digital
+                  assets and identity, it's important to keep it safe from
+                  unauthorized access and ensure you can recover it if needed.
                 </p>
-                
+
                 <p className="text-sm text-foreground leading-relaxed">
-                  To protect you, next you'll set up a PIN, enable one-time passwords (OTP), and create backup codes — simple security steps that keep your wallet secure and recoverable.
+                  To protect you, next you'll set up a PIN, enable one-time
+                  passwords (OTP), and create backup codes — simple security
+                  steps that keep your wallet secure and recoverable.
                 </p>
               </div>
             </div>
           )}
-
         </div>
       </div>
 
