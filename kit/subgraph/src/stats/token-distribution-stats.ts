@@ -2,7 +2,7 @@ import {
   Address,
   BigDecimal,
   BigInt,
-  Bytes,
+  log,
   store,
 } from "@graphprotocol/graph-ts";
 import {
@@ -46,64 +46,74 @@ export function updateTokenDistributionStats(
   if (oldBalance.equals(newBalance)) {
     return;
   }
-
-  // TODO:
-  /*ma da was ni op basis van percenten ofzo he
-3:44
-gewoon ge kijkt wa de minste aantal tokens is en ge kijkt naar het maximum aantal tokens
-3:44
-en dan verdeeld ge da in 5 segmenten
-3:44
-en dan toont ge hoeveel personen in elk segment zitten
-zou alleen goed zijn dat ge minimum naar beneden afrond op iets en maximum naar boven afrond ...
-*/
-
   // Load the state
   const tokenAddress = Address.fromBytes(token.id);
   const state = fetchTokenDistributionStatsState(tokenAddress);
 
+  // Get the old top balance before any updates
   const topHolders = state.topHolders.load();
-  const topHolder = getTopHolderAtRank(topHolders, 1);
-  const topBalance = topHolder ? topHolder.balanceExact : newBalance; // If no top holder, then this one is the first one and therefore the top one
+  const oldTopHolder = getTopHolderAtRank(topHolders, 1);
+  const oldTopBalance = oldTopHolder
+    ? oldTopHolder.balanceExact
+    : BigInt.zero();
 
-  if (topBalance.equals(BigInt.zero())) {
+  // Update top holders first to get the new ranking
+  updateTopHolders(state, token, account, newBalance);
+
+  // Get the new top balance after update
+  const updatedTopHolders = state.topHolders.load();
+  const newTopHolder = getTopHolderAtRank(updatedTopHolders, 1);
+  const newTopBalance = newTopHolder
+    ? newTopHolder.balanceExact
+    : BigInt.zero();
+
+  if (newTopBalance.equals(BigInt.zero())) {
     // Can't calculate percentages if there is no holder with a balance bigger than 0
     return;
   }
 
-  // Calculate old and new percentages
-  const oldPercentage = oldBalance.gt(BigInt.zero())
-    ? oldBalance.toBigDecimal().div(topBalance.toBigDecimal())
-    : BigDecimal.zero();
-  const newPercentage = newBalance.gt(BigInt.zero())
-    ? newBalance.toBigDecimal().div(topBalance.toBigDecimal())
-    : BigDecimal.zero();
+  // Check if top balance changed (which means we need to recalculate all segments)
+  const topBalanceChanged = !oldTopBalance.equals(newTopBalance);
 
-  // Determine segment changes
-  const oldSegment = oldBalance.le(BigInt.zero())
-    ? -1 // If it is zero it was never in a segment
-    : getSegmentIndex(oldPercentage);
-  const newSegment = getSegmentIndex(newPercentage);
+  if (topBalanceChanged) {
+    // Top balance changed - need to recalculate all segments
+    recalculateAllSegments(state, token, newTopBalance);
+  } else {
+    // Top balance didn't change - just update the current account's segment
+    // Calculate old and new percentages based on top balance
+    const oldPercentage = oldBalance.gt(BigInt.zero())
+      ? oldBalance.toBigDecimal().div(newTopBalance.toBigDecimal())
+      : BigDecimal.zero();
+    const newPercentage = newBalance.gt(BigInt.zero())
+      ? newBalance.toBigDecimal().div(newTopBalance.toBigDecimal())
+      : BigDecimal.zero();
 
-  // If segment hasn't changed and balances are the same, skip
-  if (oldSegment != newSegment) {
-    // Remove from old segment
-    if (oldSegment >= 0) {
-      updateSegmentStats(state, oldSegment, oldBalance, token.decimals, false);
+    // Determine segment changes
+    const oldSegment = oldBalance.le(BigInt.zero())
+      ? -1 // If it is zero it was never in a segment
+      : getSegmentIndex(oldPercentage);
+    const newSegment = newBalance.le(BigInt.zero())
+      ? -1 // If balance is zero, not in any segment
+      : getSegmentIndex(newPercentage);
+
+    // If segment changed, update the stats
+    if (oldSegment != newSegment) {
+      // Remove from old segment
+      if (oldSegment >= 0) {
+        updateSegmentStats(
+          state,
+          oldSegment,
+          oldBalance,
+          token.decimals,
+          false
+        );
+      }
+
+      // Add to new segment
+      if (newSegment >= 0) {
+        updateSegmentStats(state, newSegment, newBalance, token.decimals, true);
+      }
     }
-
-    // Add to new segment
-    if (newSegment >= 0) {
-      updateSegmentStats(state, newSegment, newBalance, token.decimals, true);
-    }
-  }
-
-  // Update top holders
-  const isTopHolder = updateTop5Holders(state, token, account, newBalance);
-
-  // Don't track if nothing changed
-  if (oldSegment == newSegment && !isTopHolder) {
-    return;
   }
 
   // Update percentage owned by top 5 holders
@@ -164,31 +174,20 @@ function updateSegmentStats(
 }
 
 /**
- * Update top 5 holders,
+ * Update top holders,
  *
  * We will store the top 6, this way we can add a user if it exceeds the 5th place
  * and remove the 6th place user if it goes below the 6th place
  *
  * Simplified incremental approach using balance comparison
  */
-function updateTop5Holders(
+function updateTopHolders(
   state: TokenDistributionStatsState,
   token: Token,
   account: Account,
   newBalance: BigInt
 ): boolean {
-  const tokenAddress = Address.fromBytes(token.id);
-  const accountAddress = Address.fromBytes(account.id);
-
-  // Create composite ID for TokenTopHolder (using Bytes)
-  const topHolderId = tokenAddress.concat(accountAddress);
-
-  const tokenHolder = fetchTokenTopHolder(topHolderId);
-  if (!tokenHolder.state || !tokenHolder.account) {
-    tokenHolder.state = state.id;
-    tokenHolder.account = account.id;
-    tokenHolder.save();
-  }
+  const tokenHolder = fetchTokenTopHolder(account, state);
 
   const topHolders = state.topHolders.load();
   const sixthPlaceHolder = getTopHolderAtRank(topHolders, 6);
@@ -196,8 +195,9 @@ function updateTop5Holders(
   // Check if the new balance is greater than the 6th place holder, if not, we can skip
   const isTop6Holder =
     !sixthPlaceHolder || newBalance.gt(sixthPlaceHolder.balanceExact);
-  if (!isTop6Holder) {
-    store.remove("TokenTopHolder", topHolderId.toHexString());
+
+  if (!isTop6Holder || newBalance.equals(BigInt.zero())) {
+    store.remove("TokenTopHolder", tokenHolder.id.toHexString());
     return false;
   }
 
@@ -270,6 +270,7 @@ function calculateTop5HoldersPercentage(
 
   let totalBalanceTopHolders = BigInt.zero();
   const topHolders = state.topHolders.load();
+
   for (let i = 0; i < topHolders.length; i++) {
     const topHolder = topHolders[i];
     if (topHolder.rank <= 5) {
@@ -278,10 +279,11 @@ function calculateTop5HoldersPercentage(
       );
     }
   }
-  return totalBalanceTopHolders
+
+  const percentage = totalBalanceTopHolders
     .toBigDecimal()
-    .div(token.totalSupplyExact.toBigDecimal())
-    .times(BigDecimal.fromString("100"));
+    .div(token.totalSupplyExact.toBigDecimal());
+  return percentage.times(BigDecimal.fromString("100"));
 }
 
 /**
@@ -325,13 +327,20 @@ function fetchTokenDistributionStatsState(
   return state;
 }
 
-function fetchTokenTopHolder(id: Bytes): TokenTopHolder {
+function fetchTokenTopHolder(
+  account: Account,
+  state: TokenDistributionStatsState
+): TokenTopHolder {
+  const tokenAddress = Address.fromBytes(state.token);
+  const accountAddress = Address.fromBytes(account.id);
+
+  const id = tokenAddress.concat(accountAddress);
   let topHolder = TokenTopHolder.load(id);
 
   if (!topHolder) {
     topHolder = new TokenTopHolder(id);
-    topHolder.state = Bytes.empty();
-    topHolder.account = Bytes.empty();
+    topHolder.state = state.id;
+    topHolder.account = account.id;
     setBigNumber(topHolder, "balance", BigInt.zero(), 0);
     topHolder.rank = 0;
     topHolder.save();
@@ -372,4 +381,113 @@ function getTopHolderAtRank(
     return null;
   }
   return topHolders[index];
+}
+
+/**
+ * Recalculate all segments when the top balance changes
+ * This is necessary because all percentages are relative to the top balance
+ */
+function recalculateAllSegments(
+  state: TokenDistributionStatsState,
+  token: Token,
+  newTopBalance: BigInt
+): void {
+  log.info(
+    "[TokenDistributionStats] Token {} - Recalculating all segments due to top balance change: {}",
+    [token.symbol, newTopBalance.toString()]
+  );
+
+  // Reset all segment counts and values
+  state.balancesCountSegment1 = 0;
+  state.totalValueSegment1 = BigDecimal.zero();
+  state.totalValueSegment1Exact = BigInt.zero();
+
+  state.balancesCountSegment2 = 0;
+  state.totalValueSegment2 = BigDecimal.zero();
+  state.totalValueSegment2Exact = BigInt.zero();
+
+  state.balancesCountSegment3 = 0;
+  state.totalValueSegment3 = BigDecimal.zero();
+  state.totalValueSegment3Exact = BigInt.zero();
+
+  state.balancesCountSegment4 = 0;
+  state.totalValueSegment4 = BigDecimal.zero();
+  state.totalValueSegment4Exact = BigInt.zero();
+
+  state.balancesCountSegment5 = 0;
+  state.totalValueSegment5 = BigDecimal.zero();
+  state.totalValueSegment5Exact = BigInt.zero();
+
+  // Recalculate segments for all token balances
+  const balances = token.balances.load();
+
+  for (let i = 0; i < balances.length; i++) {
+    const balance = balances[i];
+    if (balance.valueExact.gt(BigInt.zero())) {
+      const percentage = balance.valueExact
+        .toBigDecimal()
+        .div(newTopBalance.toBigDecimal());
+      const segment = getSegmentIndex(percentage);
+
+      // Add to appropriate segment
+      if (segment == 0) {
+        state.balancesCountSegment1 += 1;
+        state.totalValueSegment1Exact = state.totalValueSegment1Exact.plus(
+          balance.valueExact
+        );
+      } else if (segment == 1) {
+        state.balancesCountSegment2 += 1;
+        state.totalValueSegment2Exact = state.totalValueSegment2Exact.plus(
+          balance.valueExact
+        );
+      } else if (segment == 2) {
+        state.balancesCountSegment3 += 1;
+        state.totalValueSegment3Exact = state.totalValueSegment3Exact.plus(
+          balance.valueExact
+        );
+      } else if (segment == 3) {
+        state.balancesCountSegment4 += 1;
+        state.totalValueSegment4Exact = state.totalValueSegment4Exact.plus(
+          balance.valueExact
+        );
+      } else if (segment == 4) {
+        state.balancesCountSegment5 += 1;
+        state.totalValueSegment5Exact = state.totalValueSegment5Exact.plus(
+          balance.valueExact
+        );
+      }
+    }
+  }
+
+  // Update the BigDecimal values from exact values
+  setBigNumber(
+    state,
+    "totalValueSegment1",
+    state.totalValueSegment1Exact,
+    token.decimals
+  );
+  setBigNumber(
+    state,
+    "totalValueSegment2",
+    state.totalValueSegment2Exact,
+    token.decimals
+  );
+  setBigNumber(
+    state,
+    "totalValueSegment3",
+    state.totalValueSegment3Exact,
+    token.decimals
+  );
+  setBigNumber(
+    state,
+    "totalValueSegment4",
+    state.totalValueSegment4Exact,
+    token.decimals
+  );
+  setBigNumber(
+    state,
+    "totalValueSegment5",
+    state.totalValueSegment5Exact,
+    token.decimals
+  );
 }

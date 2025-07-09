@@ -137,62 +137,64 @@ describe("TokenDistributionStats", () => {
       })[0];
       const topBalance = topHolder ? BigInt(topHolder.value) : BigInt(0);
 
-      const expectedPerSegment = token.balances.reduce(
-        (acc, balance) => {
-          const percentage = Number(balance.value) / Number(topBalance);
-          if (percentage <= 0.02) {
-            acc.segment1 += 1;
-            acc.segment1Value = acc.segment1Value + BigInt(balance.value);
-          } else if (percentage <= 0.1) {
-            acc.segment2 += 1;
-            acc.segment2Value = acc.segment2Value + BigInt(balance.value);
-          } else if (percentage <= 0.2) {
-            acc.segment3 += 1;
-            acc.segment3Value = acc.segment3Value + BigInt(balance.value);
-          } else if (percentage <= 0.4) {
-            acc.segment4 += 1;
-            acc.segment4Value = acc.segment4Value + BigInt(balance.value);
-          } else {
-            acc.segment5 += 1;
-            acc.segment5Value = acc.segment5Value + BigInt(balance.value);
+      const expectedPerSegment = token.balances
+        .filter((balance) => Number(balance.value) > 0)
+        .reduce(
+          (acc, balance) => {
+            const percentage = Number(balance.value) / Number(topBalance);
+            if (percentage <= 0.02) {
+              acc.segment1 += 1;
+              acc.segment1Value = acc.segment1Value + BigInt(balance.value);
+            } else if (percentage <= 0.1) {
+              acc.segment2 += 1;
+              acc.segment2Value = acc.segment2Value + BigInt(balance.value);
+            } else if (percentage <= 0.2) {
+              acc.segment3 += 1;
+              acc.segment3Value = acc.segment3Value + BigInt(balance.value);
+            } else if (percentage <= 0.4) {
+              acc.segment4 += 1;
+              acc.segment4Value = acc.segment4Value + BigInt(balance.value);
+            } else {
+              acc.segment5 += 1;
+              acc.segment5Value = acc.segment5Value + BigInt(balance.value);
+            }
+            return acc;
+          },
+          {
+            segment1: 0,
+            segment1Value: BigInt(0),
+            segment2: 0,
+            segment2Value: BigInt(0),
+            segment3: 0,
+            segment3Value: BigInt(0),
+            segment4: 0,
+            segment4Value: BigInt(0),
+            segment5: 0,
+            segment5Value: BigInt(0),
           }
-          return acc;
-        },
-        {
-          segment1: 0,
-          segment1Value: BigInt(0),
-          segment2: 0,
-          segment2Value: BigInt(0),
-          segment3: 0,
-          segment3Value: BigInt(0),
-          segment4: 0,
-          segment4Value: BigInt(0),
-          segment5: 0,
-          segment5Value: BigInt(0),
-        }
-      );
+        );
       expect(stats?.balancesCountSegment1).toBe(expectedPerSegment.segment1);
-      expect(stats?.totalValueSegment1).toBeCloseTo(
+      expect(Number(stats?.totalValueSegment1)).toBeCloseTo(
         Number(expectedPerSegment.segment1Value),
         2
       );
       expect(stats?.balancesCountSegment2).toBe(expectedPerSegment.segment2);
-      expect(stats?.totalValueSegment2).toBeCloseTo(
+      expect(Number(stats?.totalValueSegment2)).toBeCloseTo(
         Number(expectedPerSegment.segment2Value),
         2
       );
       expect(stats?.balancesCountSegment3).toBe(expectedPerSegment.segment3);
-      expect(stats?.totalValueSegment3).toBeCloseTo(
+      expect(Number(stats?.totalValueSegment3)).toBeCloseTo(
         Number(expectedPerSegment.segment3Value),
         2
       );
       expect(stats?.balancesCountSegment4).toBe(expectedPerSegment.segment4);
-      expect(stats?.totalValueSegment4).toBeCloseTo(
+      expect(Number(stats?.totalValueSegment4)).toBeCloseTo(
         Number(expectedPerSegment.segment4Value),
         2
       );
       expect(stats?.balancesCountSegment5).toBe(expectedPerSegment.segment5);
-      expect(stats?.totalValueSegment5).toBeCloseTo(
+      expect(Number(stats?.totalValueSegment5)).toBeCloseTo(
         Number(expectedPerSegment.segment5Value),
         2
       );

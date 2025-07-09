@@ -166,7 +166,7 @@ export function moveTokenBalanceToNewAccount(
     token,
     newAccount,
     BigInt.zero(),
-    oldBalance.valueExact
+    newBalance.valueExact
   );
 }
 
