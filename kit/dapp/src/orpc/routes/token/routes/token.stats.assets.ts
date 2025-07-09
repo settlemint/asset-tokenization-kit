@@ -279,11 +279,8 @@ function createAssetActivity(
 export const statsAssets = authRouter.token.statsAssets
   .use(systemMiddleware)
   .use(theGraphMiddleware)
-  .handler(async ({ context, errors }) => {
-    // Ensure system context exists
-    if (!context.system) {
-      throw errors.SYSTEM_NOT_CREATED();
-    }
+  .handler(async ({ context }) => {
+    // System context is guaranteed by systemMiddleware
 
     // Fetch all asset-related data in a single query
     const response = await context.theGraphClient.query(ASSET_METRICS_QUERY, {

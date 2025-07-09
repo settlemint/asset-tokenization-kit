@@ -17,6 +17,10 @@ import {
   TokenCreateSchema,
 } from "@/orpc/routes/token/routes/token.create.schema";
 import {
+  TokenHoldersInputSchema,
+  TokenHoldersResponseSchema,
+} from "@/orpc/routes/token/routes/token.holders.schema";
+import {
   TokenListInputSchema,
   TokenListSchema,
 } from "@/orpc/routes/token/routes/token.list.schema";
@@ -141,11 +145,23 @@ const statsValue = baseContract
   })
   .output(TokenStatsValueOutputSchema);
 
+const holders = baseContract
+  .route({
+    method: "GET",
+    path: "/token/{tokenAddress}/holders",
+    description: "Get token holders and their balances",
+    successDescription: "List of token holders with balance information",
+    tags: ["token"],
+  })
+  .input(TokenHoldersInputSchema)
+  .output(TokenHoldersResponseSchema);
+
 export const tokenContract = {
   factoryCreate,
   factoryList,
   factoryRead,
   create,
+  holders,
   list,
   read,
   mint,

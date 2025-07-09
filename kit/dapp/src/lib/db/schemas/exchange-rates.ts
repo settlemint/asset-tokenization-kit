@@ -178,12 +178,22 @@ export const insertFxRateSchema = createInsertSchema(fxRates, {
       // Validate positive decimal numbers
       if (!val || val.trim() === "") return false;
 
-      // Check for valid decimal format
-      const match = /^(\d+)(\.\d+)?$/.exec(val.trim());
-      if (!match) return false;
+      // Trim the value for validation
+      const trimmed = val.trim();
+
+      // Check length bounds first
+      if (trimmed.length > 40) return false;
+
+      // Use a simpler regex pattern to avoid ReDoS
+      const parts = trimmed.split(".");
+      if (parts.length > 2) return false;
+
+      // Check if all parts are valid digits
+      if (!parts.every((part) => part.length > 0 && /^\d+$/.test(part)))
+        return false;
 
       // Ensure the number is positive (not zero)
-      const num = parseFloat(val);
+      const num = parseFloat(trimmed);
       return num > 0 && isFinite(num);
     },
     {
@@ -204,12 +214,22 @@ export const insertFxRateLatestSchema = createInsertSchema(fxRatesLatest, {
       // Validate positive decimal numbers
       if (!val || val.trim() === "") return false;
 
-      // Check for valid decimal format
-      const match = /^(\d+)(\.\d+)?$/.exec(val.trim());
-      if (!match) return false;
+      // Trim the value for validation
+      const trimmed = val.trim();
+
+      // Check length bounds first
+      if (trimmed.length > 40) return false;
+
+      // Use a simpler regex pattern to avoid ReDoS
+      const parts = trimmed.split(".");
+      if (parts.length > 2) return false;
+
+      // Check if all parts are valid digits
+      if (!parts.every((part) => part.length > 0 && /^\d+$/.test(part)))
+        return false;
 
       // Ensure the number is positive (not zero)
-      const num = parseFloat(val);
+      const num = parseFloat(trimmed);
       return num > 0 && isFinite(num);
     },
     {

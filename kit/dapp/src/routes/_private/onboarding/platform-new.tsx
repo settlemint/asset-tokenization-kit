@@ -7,13 +7,11 @@ import type {
   StepGroup,
 } from "@/components/multistep-form/types";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
-import {
-  RecoveryCodesStep,
-  SystemBootstrapStep,
-  WalletDisplayStep,
-  WalletSecurityStep,
-  WelcomeScreen,
-} from "@/components/onboarding/steps";
+import { RecoveryCodesStep } from "@/components/onboarding/steps/recovery-codes-step";
+import { SystemBootstrapStep } from "@/components/onboarding/steps/system-bootstrap-step";
+import { WalletDisplayStep } from "@/components/onboarding/steps/wallet-display-step";
+import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
+import { WelcomeScreen } from "@/components/onboarding/steps/welcome-screen";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 import type { SessionUser } from "@/lib/auth";
