@@ -1,5 +1,5 @@
 {
-  "card-description": "このプラットフォームを使用するには、ウォレットとブロックチェーン上のアイデンティティが必要です。",
+  "card-description": "あなたのウォレットを設定しました。このプラットフォームを使用するために、ブロックチェーン上であなたのアイデンティティを構成します。",
   "card-title": "設定を始めましょう！",
   "platform": {
     "title": "プラットフォームのセットアップ",
@@ -15,8 +15,8 @@
   },
   "steps": {
     "wallet": {
-      "title": "ウォレットを作成",
-      "description": "ブロックチェーンウォレットを生成します"
+      "title": "あなたのウォレット",
+      "description": "ブロックチェーンウォレットを表示"
     },
     "system": {
       "title": "システムを展開",
@@ -32,11 +32,15 @@
       "info": "アイデンティティの確認は、規制の遵守を確保し、デジタル資産に投資できるようにします。",
       "coming-soon": "近日公開",
       "coming-soon-description": "アイデンティティの確認は現在開発中です。その間に、プラットフォームを探索できるようにウォレットを作成します。"
+    },
+    "security": {
+      "title": "ウォレットを保護する",
+      "description": "ウォレットの保護を設定する"
     }
   },
   "wallet": {
-    "title": "ウォレットを生成",
-    "description": "取引のためにブロックチェーンウォレットを作成します",
+    "title": "あなたのウォレット",
+    "description": "安全な取引のためのあなたのブロックチェーンウォレット",
     "info": "あなたのウォレットはブロックチェーンへのゲートウェイです。デジタル資産を保有し、安全に取引を実行することができます。",
     "generate": "ウォレットを生成",
     "success": "ウォレットが正常に作成されました！",
@@ -44,11 +48,11 @@
     "already-exists": "このユーザーのウォレットはすでに存在します",
     "creation-failed": "ウォレットの作成に失敗しました。もう一度お試しください。",
     "your-wallet": "あなたのウォレット",
-    "generate-your-wallet": "ウォレットを生成する",
-    "blockchain-identity-ready": "あなたのブロックチェーンIDが準備できました",
-    "create-secure-wallet": "プラットフォームとやり取りするための安全なブロックチェーンウォレットを作成します",
-    "wallet-generated-successfully": "ウォレットが正常に生成されました",
-    "address-label": "アドレス",
+    "generate-your-wallet": "あなたのウォレット",
+    "blockchain-identity-ready": "あなたのブロックチェーンアイデンティティは使用する準備が整いました",
+    "create-secure-wallet": "プラットフォームとやり取りするための安全なブロックチェーンウォレットを作成しました",
+    "wallet-generated-successfully": "あなたのウォレットは準備完了です",
+    "address-label": "ウォレットアドレス",
     "what-is-wallet": "ウォレットとは何ですか？",
     "wallet-description": "ブロックチェーンウォレットは、スマートコントラクトと安全にデジタル資産を管理するためのあなたのデジタルIDです。",
     "features": {

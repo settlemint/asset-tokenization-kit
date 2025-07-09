@@ -1,3 +1,4 @@
+import { assetFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { z } from "zod/v4";
@@ -19,7 +20,7 @@ export const TokenFactorySchema = z.object({
   /**
    * The type ID of the token factory
    */
-  typeId: z.string().describe("The type ID of the token factory"),
+  typeId: assetFactoryTypeId().describe("The type ID of the token factory"),
 
   /**
    * Whether the factory has created any tokens

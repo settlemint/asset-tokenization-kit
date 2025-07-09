@@ -95,7 +95,7 @@ export function DataTableColumnHeader<TData, TValue>({
   variant = "default",
   children,
 }: PropsWithChildren<DataTableColumnHeaderProps<TData, TValue>>) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
 
   /**
    * Toggles the column to ascending sort order.
@@ -158,16 +158,16 @@ export function DataTableColumnHeader<TData, TValue>({
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={handleSortAscending}>
             <SortAsc className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            {t("components.data-table.sort-ascending")}
+            {t("sortAscending")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSortDescending}>
             <SortDesc className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            {t("components.data-table.sort-descending")}
+            {t("sortDescending")}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleHideColumn}>
             <EyeOff className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            {t("components.data-table.hide")}
+            {t("hide")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -48,7 +48,7 @@ export function getErrorCode(error: unknown): string | number {
  * @param error
  */
 export function useErrorTitle(error: unknown): string {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("errors");
 
   // For ORPC errors, try to get title from translations based on code
   if (isORPCError(error)) {
@@ -58,40 +58,40 @@ export function useErrorTitle(error: unknown): string {
     // Map ORPC error codes to friendly titles
     switch (error.code) {
       case "UNAUTHORIZED":
-        return t("errors.unauthorized.title");
+        return t("unauthorized.title");
       case "FORBIDDEN":
-        return t("errors.forbidden.title");
+        return t("forbidden.title");
       case "NOT_FOUND":
-        return t("errors.notFound.title");
+        return t("notFound.title");
       case "INPUT_VALIDATION_FAILED":
       case "OUTPUT_VALIDATION_FAILED":
-        return t("errors.validation.title");
+        return t("validation.title");
       case "RATE_LIMIT_EXCEEDED":
-        return t("errors.rateLimit.title");
+        return t("rateLimit.title");
       case "TRANSACTION_FAILED":
-        return t("errors.transaction.title");
+        return t("transaction.title");
       case "TIMEOUT":
-        return t("errors.timeout.title");
+        return t("timeout.title");
       case "PORTAL_ERROR":
-        return t("errors.portal.title");
+        return t("portal.title");
       case "INTERNAL_SERVER_ERROR":
-        return t("errors.internal.title");
+        return t("internal.title");
       case "BLOCKCHAIN_ERROR":
-        return t("errors.blockchain.title");
+        return t("blockchain.title");
       case "CONTRACT_ERROR":
-        return t("errors.contract.title");
+        return t("contract.title");
       case "INSUFFICIENT_FUNDS":
-        return t("errors.insufficientFunds.title");
+        return t("insufficientFunds.title");
       case "NETWORK_ERROR":
-        return t("errors.network.title");
+        return t("network.title");
       case "NOT_ONBOARDED":
-        return t("errors.notOnboarded.title");
+        return t("notOnboarded.title");
       case "SYSTEM_NOT_CREATED":
-        return t("errors.systemNotCreated.title");
+        return t("systemNotCreated.title");
       case "RESOURCE_ALREADY_EXISTS":
-        return t("errors.resourceAlreadyExists.title");
+        return t("resourceAlreadyExists.title");
       default:
-        return t("errors.generic.title");
+        return t("generic.title");
     }
   }
 
@@ -115,42 +115,42 @@ export function useErrorTitle(error: unknown): string {
   switch (errorCode) {
     case 400:
     case "400":
-      return t("errors.badRequest.title");
+      return t("badRequest.title");
     case 401:
     case "401":
-      return t("errors.unauthorized.title");
+      return t("unauthorized.title");
     case 403:
     case "403":
-      return t("errors.forbidden.title");
+      return t("forbidden.title");
     case 404:
     case "404":
-      return t("errors.notFound.title");
+      return t("notFound.title");
     case 408:
     case "408":
-      return t("errors.timeout.title");
+      return t("timeout.title");
     case 409:
     case "409":
-      return t("errors.conflict.title");
+      return t("conflict.title");
     case 422:
     case "422":
-      return t("errors.validation.title");
+      return t("validation.title");
     case 429:
     case "429":
-      return t("errors.rateLimit.title");
+      return t("rateLimit.title");
     case 500:
     case "500":
-      return t("errors.internal.title");
+      return t("internal.title");
     case 502:
     case "502":
-      return t("errors.badGateway.title");
+      return t("badGateway.title");
     case 503:
     case "503":
-      return t("errors.serviceUnavailable.title");
+      return t("serviceUnavailable.title");
     case 504:
     case "504":
-      return t("errors.gatewayTimeout.title");
+      return t("gatewayTimeout.title");
     default:
-      return t("errors.generic.title");
+      return t("generic.title");
   }
 }
 
@@ -159,7 +159,7 @@ export function useErrorTitle(error: unknown): string {
  * @param error
  */
 export function useErrorDescription(error: unknown): string {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("errors");
 
   // For ORPC errors, use the message or try translations
   if (isORPCError(error)) {
@@ -168,40 +168,40 @@ export function useErrorDescription(error: unknown): string {
     // Map ORPC error codes to friendly descriptions
     switch (error.code) {
       case "UNAUTHORIZED":
-        return t("errors.unauthorized.description");
+        return t("unauthorized.description");
       case "FORBIDDEN":
-        return t("errors.forbidden.description");
+        return t("forbidden.description");
       case "NOT_FOUND":
-        return t("errors.notFound.description");
+        return t("notFound.description");
       case "INPUT_VALIDATION_FAILED":
       case "OUTPUT_VALIDATION_FAILED":
-        return t("errors.validation.description");
+        return t("validation.description");
       case "RATE_LIMIT_EXCEEDED":
-        return t("errors.rateLimit.description");
+        return t("rateLimit.description");
       case "TRANSACTION_FAILED":
-        return t("errors.transaction.description");
+        return t("transaction.description");
       case "TIMEOUT":
-        return t("errors.timeout.description");
+        return t("timeout.description");
       case "PORTAL_ERROR":
-        return t("errors.portal.description");
+        return t("portal.description");
       case "INTERNAL_SERVER_ERROR":
-        return t("errors.internal.description");
+        return t("internal.description");
       case "BLOCKCHAIN_ERROR":
-        return t("errors.blockchain.description");
+        return t("blockchain.description");
       case "CONTRACT_ERROR":
-        return t("errors.contract.description");
+        return t("contract.description");
       case "INSUFFICIENT_FUNDS":
-        return t("errors.insufficientFunds.description");
+        return t("insufficientFunds.description");
       case "NETWORK_ERROR":
-        return t("errors.network.description");
+        return t("network.description");
       case "NOT_ONBOARDED":
-        return t("errors.notOnboarded.description");
+        return t("notOnboarded.description");
       case "SYSTEM_NOT_CREATED":
-        return t("errors.systemNotCreated.description");
+        return t("systemNotCreated.description");
       case "RESOURCE_ALREADY_EXISTS":
-        return t("errors.resourceAlreadyExists.description");
+        return t("resourceAlreadyExists.description");
       default:
-        return t("errors.generic.description");
+        return t("generic.description");
     }
   }
 
@@ -229,41 +229,41 @@ export function useErrorDescription(error: unknown): string {
   switch (errorCode) {
     case 400:
     case "400":
-      return t("errors.badRequest.description");
+      return t("badRequest.description");
     case 401:
     case "401":
-      return t("errors.unauthorized.description");
+      return t("unauthorized.description");
     case 403:
     case "403":
-      return t("errors.forbidden.description");
+      return t("forbidden.description");
     case 404:
     case "404":
-      return t("errors.notFound.description");
+      return t("notFound.description");
     case 408:
     case "408":
-      return t("errors.timeout.description");
+      return t("timeout.description");
     case 409:
     case "409":
-      return t("errors.conflict.description");
+      return t("conflict.description");
     case 422:
     case "422":
-      return t("errors.validation.description");
+      return t("validation.description");
     case 429:
     case "429":
-      return t("errors.rateLimit.description");
+      return t("rateLimit.description");
     case 500:
     case "500":
-      return t("errors.internal.description");
+      return t("internal.description");
     case 502:
     case "502":
-      return t("errors.badGateway.description");
+      return t("badGateway.description");
     case 503:
     case "503":
-      return t("errors.serviceUnavailable.description");
+      return t("serviceUnavailable.description");
     case 504:
     case "504":
-      return t("errors.gatewayTimeout.description");
+      return t("gatewayTimeout.description");
     default:
-      return t("errors.generic.description");
+      return t("generic.description");
   }
 }

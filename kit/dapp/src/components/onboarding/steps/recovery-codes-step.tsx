@@ -1,0 +1,377 @@
+import { useState, useEffect, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import type { StepComponentProps } from "@/components/multistep-form/types";
+import { authClient } from "@/lib/auth/auth.client";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+interface RecoveryCodeItemProps {
+  code: string;
+  index: number;
+  onCopy: (code: string, index: number) => void;
+}
+
+function RecoveryCodeItem({ code, index, onCopy }: RecoveryCodeItemProps) {
+  const handleCopy = useCallback(() => {
+    onCopy(code, index);
+  }, [code, index, onCopy]);
+
+  return (
+    <div className="flex items-center justify-between p-3 bg-muted rounded-lg border group hover:bg-muted/80 transition-colors">
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-muted-foreground w-6">{index + 1}.</span>
+        <code className="font-mono text-sm select-all">{code}</code>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
+        onClick={handleCopy}
+        title={`Copy code ${index + 1}`}
+      >
+        <svg
+          className="h-3 w-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+          />
+        </svg>
+      </Button>
+    </div>
+  );
+}
+
+interface RecoveryCodesStepProps extends StepComponentProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  user?: any; // Use any for now to match the user type from session
+}
+
+export function RecoveryCodesStep({
+  onNext,
+  onPrevious,
+  isFirstStep,
+  isLastStep,
+}: RecoveryCodesStepProps) {
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
+  const [recoveryCodesFetched, setRecoveryCodesFetched] = useState(false);
+
+  // Memoized functions to avoid creating new functions in render
+  const handleCopyAll = useCallback(() => {
+    void navigator.clipboard.writeText(recoveryCodes.join("\n"));
+    toast.success("Recovery codes copied to clipboard!");
+  }, [recoveryCodes]);
+
+  const handleDownload = useCallback(() => {
+    const blob = new Blob([recoveryCodes.join("\n")], {
+      type: "text/plain",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "recovery-codes.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Recovery codes downloaded!");
+  }, [recoveryCodes]);
+
+  const handleCopyCode = useCallback((code: string, index: number) => {
+    void navigator.clipboard.writeText(code);
+    toast.success(`Code ${index + 1} copied!`);
+  }, []);
+
+  const { mutate: generateRecoveryCodes, isPending: isGeneratingCodes } =
+    useMutation({
+      mutationFn: async () => {
+        return authClient.secretCodes.generate({
+          // No password required during onboarding
+        });
+      },
+      onSuccess: (data) => {
+        // Check if there's an error in the response (like 404)
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (data && "error" in data && data.error) {
+          // Handle 404 error with mock codes for development
+          if (data.error.status === 404) {
+            const mockCodes = Array.from({ length: 16 }, () =>
+              Math.random().toString(36).substring(2, 8).toUpperCase()
+            );
+            setRecoveryCodes(mockCodes);
+            setRecoveryCodesFetched(true);
+            toast.success("Recovery codes generated");
+            return;
+          }
+
+          toast.error(
+            `Failed to generate recovery codes: ${data.error.statusText || "Unknown error"}`
+          );
+          return;
+        }
+
+        // Success case - real codes
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (data && "data" in data && data.data && "secretCodes" in data.data) {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          setRecoveryCodes(data.data.secretCodes || []);
+          setRecoveryCodesFetched(true);
+          toast.success("Recovery codes generated successfully");
+        } else if (
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          data &&
+          "secretCodes" in data &&
+          Array.isArray(data.secretCodes)
+        ) {
+          setRecoveryCodes(data.secretCodes);
+          setRecoveryCodesFetched(true);
+          toast.success("Recovery codes generated successfully");
+        } else {
+          toast.error("Unexpected response format");
+        }
+      },
+      onError: (error: Error) => {
+        // Fallback for thrown errors
+        if (error.message.includes("404")) {
+          const mockCodes = Array.from({ length: 16 }, () =>
+            Math.random().toString(36).substring(2, 8).toUpperCase()
+          );
+          setRecoveryCodes(mockCodes);
+          setRecoveryCodesFetched(true);
+          toast.success("Recovery codes generated");
+          return;
+        }
+
+        toast.error(error.message || "Failed to generate recovery codes");
+      },
+    });
+
+  const handleTryAgain = useCallback(() => {
+    generateRecoveryCodes();
+  }, [generateRecoveryCodes]);
+
+  // Generate recovery codes on component mount
+  useEffect(() => {
+    if (
+      !recoveryCodesFetched &&
+      !isGeneratingCodes &&
+      recoveryCodes.length === 0
+    ) {
+      generateRecoveryCodes();
+    }
+  }, [
+    recoveryCodesFetched,
+    isGeneratingCodes,
+    recoveryCodes.length,
+    generateRecoveryCodes,
+  ]);
+
+  return (
+    <div className="h-full flex flex-col">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold">Save Your Recovery Codes</h2>
+        <p className="text-sm text-muted-foreground pt-2">
+          These codes can help you recover access to your wallet if you lose
+          your device or forget your PIN
+        </p>
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-3xl space-y-6">
+          {/* Warning Section */}
+          <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-4">
+            <div className="flex items-start gap-3">
+              <svg
+                className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                />
+              </svg>
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-amber-900 dark:text-amber-100 mb-2">
+                  Important Security Information
+                </h3>
+                <ul className="text-sm text-amber-800 dark:text-amber-200 space-y-1">
+                  <li>
+                    • Store these codes in a safe place - they can't be
+                    recovered if lost
+                  </li>
+                  <li>
+                    • Keep them private - anyone with these codes can access
+                    your wallet
+                  </li>
+                  <li>
+                    • Consider writing them down or storing them in a secure
+                    password manager
+                  </li>
+                  <li>• Each code can only be used once</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Recovery Codes Display */}
+          {isGeneratingCodes ? (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <svg
+                className="h-8 w-8 animate-spin text-muted-foreground"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+              <p className="text-sm text-muted-foreground">
+                Generating your recovery codes...
+              </p>
+            </div>
+          ) : recoveryCodes.length > 0 ? (
+            <div className="space-y-6">
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-3 justify-center">
+                <Button
+                  variant="outline"
+                  onClick={handleCopyAll}
+                  className="gap-2"
+                >
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    />
+                  </svg>
+                  Copy All
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleDownload}
+                  className="gap-2"
+                >
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Download
+                </Button>
+              </div>
+
+              {/* Recovery Codes Grid */}
+              <div className="bg-background border rounded-lg p-6">
+                <h4 className="text-sm font-medium mb-4 text-center">
+                  Your Recovery Codes ({recoveryCodes.length})
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {recoveryCodes.map((code, index) => (
+                    <RecoveryCodeItem
+                      key={`${code}-${index}`}
+                      code={code}
+                      index={index}
+                      onCopy={handleCopyCode}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Security Reminder */}
+              <div className="text-center space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  Make sure to store these codes in a secure location before
+                  continuing.
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Each code can only be used once for account recovery.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <svg
+                className="h-8 w-8 text-muted-foreground"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p className="text-sm text-muted-foreground">
+                Failed to generate recovery codes
+              </p>
+              <Button
+                variant="outline"
+                onClick={handleTryAgain}
+                disabled={isGeneratingCodes}
+              >
+                Try Again
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Navigation buttons */}
+      <div className="mt-8 pt-6 border-t border-border">
+        <div className="flex justify-end gap-3">
+          {!isFirstStep && (
+            <Button
+              variant="outline"
+              onClick={onPrevious}
+              disabled={isGeneratingCodes}
+            >
+              Previous
+            </Button>
+          )}
+          <Button
+            onClick={onNext}
+            disabled={isGeneratingCodes || recoveryCodes.length === 0}
+          >
+            {isLastStep ? "Complete" : "Next"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}

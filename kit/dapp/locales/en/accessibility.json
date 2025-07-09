@@ -1,0 +1,103 @@
+{
+  "skipLinks": {
+    "main": "Skip to main content",
+    "navigation": "Skip to navigation",
+    "search": "Skip to search"
+  },
+  "landmarks": {
+    "navigation": "Main navigation",
+    "search": "Search",
+    "main": "Main content",
+    "complementary": "Complementary content",
+    "footer": "Footer"
+  },
+  "buttons": {
+    "close": "Close",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "menu": "Menu",
+    "more": "More options",
+    "settings": "Settings",
+    "help": "Help",
+    "copy": "Copy to clipboard",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "refresh": "Refresh",
+    "filter": "Filter",
+    "sort": "Sort",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "forms": {
+    "required": "Required field",
+    "optional": "Optional field",
+    "error": "Error: {{message}}",
+    "success": "Success: {{message}}",
+    "hint": "Hint: {{message}}",
+    "characterCount": "{{current}} of {{max}} characters",
+    "submit": "Submit form",
+    "reset": "Reset form"
+  },
+  "loading": {
+    "loading": "Loading",
+    "loadingContent": "Loading content",
+    "loadingPage": "Loading page",
+    "processingRequest": "Processing request",
+    "pleaseWait": "Please wait"
+  },
+  "navigation": {
+    "breadcrumb": "Breadcrumb navigation",
+    "pagination": "Pagination navigation",
+    "currentPage": "Current page, page {{page}}",
+    "goToPage": "Go to page {{page}}",
+    "firstPage": "Go to first page",
+    "lastPage": "Go to last page",
+    "previousPage": "Go to previous page",
+    "nextPage": "Go to next page"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Active",
+    "inactive": "Inactive",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "table": {
+    "sortable": "Sortable column",
+    "sorted": "Sorted {{direction}}",
+    "sortAscending": "Sort ascending",
+    "sortDescending": "Sort descending",
+    "rowSelected": "Row selected",
+    "rowNotSelected": "Row not selected",
+    "selectRow": "Select row",
+    "deselectRow": "Deselect row",
+    "selectAll": "Select all rows",
+    "deselectAll": "Deselect all rows"
+  },
+  "dialog": {
+    "opened": "Dialog opened",
+    "closed": "Dialog closed"
+  },
+  "notifications": {
+    "newNotification": "New notification",
+    "clearAll": "Clear all notifications",
+    "markAsRead": "Mark as read"
+  },
+  "wallet": {
+    "connectWallet": "Connect wallet",
+    "disconnectWallet": "Disconnect wallet",
+    "switchAccount": "Switch account",
+    "copyAddress": "Copy wallet address"
+  },
+  "images": {
+    "logo": "Asset Tokenization Kit logo",
+    "tokenIcon": "{{name}} token icon",
+    "userAvatar": "User avatar",
+    "assetImage": "{{name}} asset image"
+  }
+}

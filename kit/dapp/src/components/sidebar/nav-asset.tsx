@@ -1,6 +1,12 @@
 "use client";
 
-import { ChartLine, ChevronRight, Coins } from "lucide-react";
+import {
+  BanknoteArrowUpIcon,
+  ChartLine,
+  ChevronRight,
+  CreditCardIcon,
+  PiggyBankIcon,
+} from "lucide-react";
 
 import {
   Collapsible,
@@ -17,6 +23,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { getAssetClassFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -31,7 +38,7 @@ import { useTranslation } from "react-i18next";
  * <NavAsset />
  */
 export function NavAsset() {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("navigation");
   const { data: factories } = useSuspenseQuery(
     orpc.token.factoryList.queryOptions({ input: { hasTokens: true } })
   );
@@ -40,42 +47,87 @@ export function NavAsset() {
     return null;
   }
 
+  const assetClasses = [
+    {
+      name: t("fixedIncome"),
+      icon: PiggyBankIcon,
+      factories: factories.filter(
+        (factory) =>
+          getAssetClassFromFactoryTypeId(factory.typeId) === "fixed-income"
+      ),
+    },
+    {
+      name: t("flexibleIncome"),
+      icon: BanknoteArrowUpIcon,
+      factories: factories.filter(
+        (factory) =>
+          getAssetClassFromFactoryTypeId(factory.typeId) === "flexible-income"
+      ),
+    },
+    {
+      name: t("cashEquivalent"),
+      icon: CreditCardIcon,
+      factories: factories.filter(
+        (factory) =>
+          getAssetClassFromFactoryTypeId(factory.typeId) === "cash-equivalent"
+      ),
+    },
+  ];
+
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{t("navigation.assetManagement")}</SidebarGroupLabel>
+      <SidebarGroupLabel>{t("assetManagement")}</SidebarGroupLabel>
       <SidebarMenu>
-        <Collapsible asChild defaultOpen={true} className="group/collapsible">
-          <SidebarMenuItem>
-            <CollapsibleTrigger asChild>
-              <SidebarMenuButton tooltip={t("navigation.asset")}>
-                <Coins />
-                <span>{t("navigation.assetClasses")}</span>
-                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-              </SidebarMenuButton>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <SidebarMenuSub>
-                {factories.map((factory) => (
-                  <SidebarMenuSubItem key={factory.id}>
-                    <SidebarMenuSubButton asChild>
-                      <Link
-                        to="/token/$factoryAddress"
-                        params={{ factoryAddress: factory.id }}
-                      >
-                        <span>{factory.name}</span>
-                      </Link>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                ))}
-              </SidebarMenuSub>
-            </CollapsibleContent>
-          </SidebarMenuItem>
-        </Collapsible>
+        {assetClasses
+          .filter((assetClass) => assetClass.factories.length > 0)
+          .map((assetClass) => (
+            <Collapsible
+              key={assetClass.name}
+              asChild
+              defaultOpen={true}
+              className="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton tooltip={t("asset")}>
+                    <assetClass.icon />
+                    <span>{assetClass.name}</span>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {assetClass.factories.map((factory) => (
+                      <SidebarMenuSubItem key={factory.id}>
+                        <SidebarMenuSubButton asChild>
+                          <Link
+                            to="/token/$factoryAddress"
+                            params={{ factoryAddress: factory.id }}
+                            activeProps={{
+                              "data-active": true,
+                            }}
+                          >
+                            <span>{factory.name}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          ))}
+
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
-            <Link to="/token/stats">
+            <Link
+              to="/token/stats"
+              activeProps={{
+                "data-active": true,
+              }}
+            >
               <ChartLine />
-              <span>{t("navigation.statistics")}</span>
+              <span>{t("statistics")}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

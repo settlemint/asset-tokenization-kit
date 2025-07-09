@@ -1,0 +1,38 @@
+{
+  "title": "Dashboard",
+  "description": "Vermögensverwaltung",
+  "asset-management": "Vermögensverwaltung",
+  "stats-heading": "Statistiken",
+  "actions-heading": "Aktionen",
+  "latest-events-heading": "Neueste Ereignisse",
+  "stats": {
+    "title": "Plattformstatistiken",
+    "assets": "Vermögenswerte",
+    "assetsDescription": "{{bonds}} Anleihen | {{cryptocurrencies}} Kryptowährungen | {{equities}} Aktien | {{funds}} Fonds | {{stableCoins}} Stablecoins | {{deposits}} Einlagen",
+    "transactions": "Transaktionen",
+    "transactionsDescription": "{{count}} Transaktionen in den letzten {{days}} Tagen verarbeitet",
+    "transactionsDescription_one": "{{count}} Transaktion in den letzten {{days}} Tagen verarbeitet",
+    "transactionsDescription_other": "{{count}} Transaktionen in den letzten {{days}} Tagen verarbeitet",
+    "users": "Benutzer",
+    "usersDescription": "{{count}} Benutzer in den letzten {{days}} Tagen",
+    "usersDescription_one": "{{count}} Benutzer in den letzten {{days}} Tagen",
+    "usersDescription_other": "{{count}} Benutzer in den letzten {{days}} Tagen",
+    "totalValue": "Wert",
+    "totalValueDescription": "Gesamtwert aller Vermögenswerte",
+    "loading": "Statistiken werden geladen...",
+    "noAssets": "Keine Vermögenswerte gefunden"
+  },
+  "charts": {
+    "assetSupply": {
+      "title": "Vermögensangebot",
+      "description": "Die Verteilung der Vermögenswerte nach Vermögensklasse"
+    },
+    "assetActivity": "Vermögensaktivität",
+    "usersHistory": "Benutzerwachstum",
+    "transactionsHistory": "Transaktionshistorie"
+  },
+  "tables": {
+    "latestEvents": "Neueste Ereignisse",
+    "actions": "Ausstehende Aktionen"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "card-description": "Sie benötigen eine Wallet und eine Identität auf der Blockchain, um diese Plattform zu nutzen.",
+  "card-description": "Wir haben Ihre Brieftasche eingerichtet und werden Ihre Identität auf der Blockchain konfigurieren, um diese Plattform zu nutzen.",
   "card-title": "Lassen Sie uns alles einrichten!",
   "platform": {
     "title": "Plattformeinrichtung",
@@ -15,8 +15,8 @@
   },
   "steps": {
     "wallet": {
-      "title": "Wallet erstellen",
-      "description": "Generieren Sie Ihre Blockchain-Wallet"
+      "title": "Ihre Brieftasche",
+      "description": "Sehen Sie sich Ihre Blockchain-Brieftasche an"
     },
     "system": {
       "title": "System bereitstellen",
@@ -32,11 +32,15 @@
       "info": "Die Identitätsverifizierung stellt die Einhaltung der Vorschriften sicher und ermöglicht es Ihnen, in digitale Vermögenswerte zu investieren.",
       "coming-soon": "Demnächst",
       "coming-soon-description": "Die Identitätsverifizierung befindet sich derzeit in der Entwicklung. In der Zwischenzeit erstellen wir Ihre Wallet, damit Sie die Plattform erkunden können."
+    },
+    "security": {
+      "title": "Sichern Sie Ihre Brieftasche",
+      "description": "Richten Sie einen Schutz für Ihre Brieftasche ein"
     }
   },
   "wallet": {
-    "title": "Wallet generieren",
-    "description": "Erstellen Sie Ihre Blockchain-Wallet für Transaktionen",
+    "title": "Ihre Brieftasche",
+    "description": "Ihre Blockchain-Brieftasche für sichere Transaktionen",
     "info": "Ihre Wallet ist Ihr Zugang zur Blockchain. Sie ermöglicht es Ihnen, digitale Vermögenswerte zu halten und Transaktionen sicher auszuführen.",
     "generate": "Wallet generieren",
     "success": "Wallet erfolgreich erstellt!",
@@ -44,11 +48,11 @@
     "already-exists": "Wallet existiert bereits für diesen Benutzer",
     "creation-failed": "Fehler beim Erstellen der Wallet. Bitte versuchen Sie es erneut.",
     "your-wallet": "Ihre Brieftasche",
-    "generate-your-wallet": "Erstellen Sie Ihre Brieftasche",
-    "blockchain-identity-ready": "Ihre Blockchain-Identität ist bereit",
-    "create-secure-wallet": "Erstellen Sie eine sichere Blockchain-Brieftasche, um mit der Plattform zu interagieren",
-    "wallet-generated-successfully": "Brieftasche erfolgreich erstellt",
-    "address-label": "Adresse",
+    "generate-your-wallet": "Ihre Brieftasche",
+    "blockchain-identity-ready": "Ihre Blockchain-Identität ist bereit zur Nutzung",
+    "create-secure-wallet": "Wir haben eine sichere Blockchain-Brieftasche für Sie erstellt, um mit der Plattform zu interagieren",
+    "wallet-generated-successfully": "Ihre Brieftasche ist bereit",
+    "address-label": "Brieftaschenadresse",
     "what-is-wallet": "Was ist eine Brieftasche?",
     "wallet-description": "Eine Blockchain-Brieftasche ist Ihre digitale Identität, die es Ihnen ermöglicht, mit Smart Contracts zu interagieren und digitale Vermögenswerte sicher zu verwalten.",
     "features": {

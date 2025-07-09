@@ -17,7 +17,6 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
 
-import { env } from "@/lib/env";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
@@ -34,9 +33,7 @@ import {
   getDefaultImplementations,
 } from "./factory.create.schema";
 
-const logger = createLogger({
-  level: env.SETTLEMINT_LOG_LEVEL,
-});
+const logger = createLogger();
 
 /**
  * GraphQL mutation for creating a token factory.

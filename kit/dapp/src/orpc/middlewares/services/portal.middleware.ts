@@ -2,20 +2,18 @@ import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { withEventMeta } from "@orpc/server";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { TadaDocumentNode } from "gql.tada";
 import type { Variables } from "graphql-request";
 import { z } from "zod/v4";
 import { baseRouter } from "../../procedures/base.router";
 
-const logger = createLogger({
-  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
-});
+const logger = createLogger();
 
 /**
  * Represents an event emitted during transaction processing.
- * @interface TransactionEvent
+ * @interface TransactionEventEmitted
  * @property {("pending" | "confirmed" | "failed")} status - Current status of the transaction
  *   - `pending`: Transaction is submitted but not yet confirmed
  *   - `confirmed`: Transaction has been mined and indexed
@@ -23,7 +21,7 @@ const logger = createLogger({
  * @property {string} message - Human-readable message describing the current state
  * @property {string} transactionHash - The Ethereum transaction hash (0x-prefixed)
  */
-interface TransactionEvent {
+export interface TransactionEventEmitted {
   status: "pending" | "confirmed" | "failed";
   message: string;
   transactionHash: string;
@@ -136,7 +134,7 @@ function createValidatedPortalClient(
         transactionIndexed?: string;
         indexingTimeout?: string;
       }
-    ): AsyncGenerator<TransactionEvent, string, void> {
+    ): AsyncGenerator<TransactionEventEmitted, string, void> {
       // Extract operation name from document metadata
       const operation =
         (
@@ -422,7 +420,7 @@ function createValidatedPortalClient(
         }
 
         const result = await theGraphClient.query(GET_INDEXING_STATUS_QUERY, {
-          input: { input: {} },
+          input: {},
           output: z.object({
             _meta: z
               .object({

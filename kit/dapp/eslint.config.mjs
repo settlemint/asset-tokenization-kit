@@ -35,6 +35,8 @@ export default defineConfig([
       ".nitro/",
       "dist/",
       "node_modules/",
+      "vite.config.ts",
+      "eslint.config.mjs",
 
       // Third-party UI components (shadcn)
       "src/components/ui/**",
@@ -183,6 +185,7 @@ export default defineConfig([
           ignoreStateless: true,
         },
       ],
+      "no-console": "warn",
 
       // ========================================================================
       // REACT RULES

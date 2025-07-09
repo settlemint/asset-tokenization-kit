@@ -7,6 +7,7 @@
  * and blockchain applications.
  * @module TimestampValidation
  */
+import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
 import { z } from "zod/v4";
 
 /**
@@ -174,3 +175,27 @@ export function isTimestamp(value: unknown): value is Timestamp {
 export function getTimestamp(value: unknown): Timestamp {
   return timestamp().parse(value);
 }
+
+/**
+ * Custom JSON serializer for Date objects in ORPC endpoints.
+ *
+ * This serializer ensures proper handling of Date objects in JSON:
+ * - Serializes Date to ISO string format for JSON compatibility
+ * - Deserializes ISO strings back to Date objects
+ * - Maintains timezone information in UTC format
+ * - Provides consistent timestamp format across client-server communication
+ *
+ * @example
+ * ```typescript
+ * // In ORPC client/server configuration:
+ * const handler = new RPCHandler(router, {
+ *   customJsonSerializers: [timestampSerializer]
+ * });
+ * ```
+ */
+export const timestampSerializer: StandardRPCCustomJsonSerializer = {
+  type: 35,
+  condition: (data) => data instanceof Date,
+  serialize: (data: Date) => data.toISOString(),
+  deserialize: (data: string) => new Date(data),
+};

@@ -1,0 +1,124 @@
+{
+  "connection": {
+    "connect": "Wallet verbinden",
+    "connecting": "Verbindung wird hergestellt...",
+    "connected": "Verbunden",
+    "disconnect": "Trennen",
+    "disconnecting": "Verbindung wird getrennt...",
+    "reconnect": "Erneut verbinden",
+    "switchWallet": "Wallet wechseln",
+    "switchAccount": "Konto wechseln"
+  },
+  "providers": {
+    "metamask": "MetaMask",
+    "walletConnect": "WalletConnect",
+    "coinbase": "Coinbase Wallet",
+    "rainbow": "Rainbow",
+    "argent": "Argent",
+    "trust": "Trust Wallet",
+    "ledger": "Ledger",
+    "trezor": "Trezor",
+    "injected": "Browser Wallet"
+  },
+  "account": {
+    "address": "Wallet-Adresse",
+    "balance": "Guthaben",
+    "network": "Netzwerk",
+    "copyAddress": "Adresse kopieren",
+    "viewOnExplorer": "Auf Explorer anzeigen",
+    "addressCopied": "Adresse in die Zwischenablage kopiert",
+    "ens": "ENS-Name",
+    "avatar": "Avatar"
+  },
+  "networks": {
+    "mainnet": "Ethereum Mainnet",
+    "polygon": "Polygon",
+    "optimism": "Optimismus",
+    "arbitrum": "Arbitrum",
+    "sepolia": "Sepolia Testnet",
+    "localhost": "Lokales Netzwerk",
+    "unsupported": "Nicht unterstütztes Netzwerk",
+    "switchNetwork": "Wechsel zu {{network}}",
+    "addNetwork": "Füge {{network}} hinzu",
+    "switching": "Wechsel des Netzwerks..."
+  },
+  "balances": {
+    "native": "Native Balance",
+    "tokens": "Token-Bestände",
+    "loading": "Lade Bestände...",
+    "refresh": "Aktualisieren",
+    "noTokens": "Keine Token gefunden",
+    "error": "Fehler beim Laden der Bestände"
+  },
+  "transactions": {
+    "recent": "Letzte Transaktionen",
+    "pending": "Ausstehend",
+    "confirmed": "Bestätigt",
+    "failed": "Fehlgeschlagen",
+    "cancelled": "Abgebrochen",
+    "viewAll": "Alle Transaktionen anzeigen",
+    "details": "Transaktionsdetails",
+    "hash": "Transaktions-Hash",
+    "block": "Blocknummer",
+    "from": "Von",
+    "to": "An",
+    "value": "Wert",
+    "gas": "Verwendetes Gas",
+    "status": "Status"
+  },
+  "signing": {
+    "request": "Signaturanfrage",
+    "message": "Nachricht zum Signieren",
+    "typedData": "Getippte Daten",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "warning": "Signiere nur Nachrichten von vertrauenswürdigen Quellen"
+  },
+  "errors": {
+    "notInstalled": "{{wallet}} ist nicht installiert",
+    "notConnected": "Wallet nicht verbunden",
+    "rejected": "Verbindung vom Benutzer abgelehnt",
+    "networkMismatch": "Bitte wechsle zum {{network}} Netzwerk",
+    "insufficientFunds": "Unzureichende Mittel für die Transaktion",
+    "userRejected": "Transaktion vom Benutzer abgelehnt",
+    "timeout": "Verbindungszeitüberschreitung",
+    "unknown": "Unbekannter Wallet-Fehler",
+    "chainNotAdded": "Bitte füge {{network}} zu deiner Wallet hinzu"
+  },
+  "permissions": {
+    "request": "{{dapp}} möchte sich mit deiner Wallet verbinden",
+    "access": "Dies ermöglicht {{dapp}}:",
+    "viewAddress": "Deine Wallet-Adresse anzuzeigen",
+    "viewBalance": "Dein Guthaben anzuzeigen",
+    "requestTransactions": "Transaktionsgenehmigungen anzufordern",
+    "switchNetworks": "Netzwerkwechsel anzufordern"
+  },
+  "settings": {
+    "autoConnect": "Automatisch beim Laden der Seite verbinden",
+    "hideSmallBalances": "Kleine Bestände ausblenden",
+    "defaultNetwork": "Standardnetzwerk",
+    "slippage": "Slippage-Toleranz",
+    "gasPrice": "Gaspreis",
+    "priority": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch"
+    }
+  },
+  "onboarding": {
+    "title": "Eine Wallet erhalten",
+    "description": "Um diese dApp zu nutzen, benötigst du eine Web3-Wallet",
+    "getWallet": "Erhalte {{wallet}}",
+    "learnMore": "Mehr erfahren",
+    "steps": {
+      "install": "Installiere {{wallet}}",
+      "create": "Erstelle oder importiere eine Wallet",
+      "connect": "Verbinde dich mit dieser dApp"
+    }
+  },
+  "mobile": {
+    "scanQR": "QR-Code scannen",
+    "openInWallet": "In {{wallet}} öffnen",
+    "deepLink": "Wallet-App öffnen"
+  }
+}

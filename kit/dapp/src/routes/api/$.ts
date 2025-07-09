@@ -18,7 +18,7 @@
  */
 
 import { metadata } from "@/config/metadata";
-import { env } from "@/lib/env";
+import { bigDecimalSerializer } from "@/lib/zod/validators/bigdecimal";
 import { router } from "@/orpc/routes/router";
 import { onError } from "@orpc/client";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
@@ -35,10 +35,7 @@ import {
 } from "@tanstack/react-start/server";
 import pkgjson from "../../../package.json";
 
-// Uncomment for debugging API errors
-const logger = createLogger({
-  level: env.SETTLEMINT_LOG_LEVEL,
-});
+const logger = createLogger();
 
 /**
  * OpenAPI handler configuration.
@@ -56,6 +53,7 @@ const handler = new OpenAPIHandler(router, {
       logger.error((error as Error).message, error);
     }),
   ],
+  customJsonSerializers: [bigDecimalSerializer],
   plugins: [
     /**
      * CORS plugin configuration.

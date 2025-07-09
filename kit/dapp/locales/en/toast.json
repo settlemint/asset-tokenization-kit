@@ -1,0 +1,88 @@
+{
+  "success": {
+    "default": "Operation completed successfully",
+    "saved": "Changes saved successfully",
+    "created": "Created successfully",
+    "updated": "Updated successfully",
+    "deleted": "Deleted successfully",
+    "copied": "Copied to clipboard",
+    "addressCopied": "Address copied to clipboard",
+    "transactionSent": "Transaction sent successfully",
+    "connected": "Connected successfully",
+    "disconnected": "Disconnected successfully",
+    "exported": "Data exported successfully",
+    "imported": "Data imported successfully"
+  },
+  "error": {
+    "default": "An error occurred",
+    "network": "Network error. Please check your connection.",
+    "blockchain": "Blockchain error. Please try again.",
+    "validation": "Please check your input and try again.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "notFound": "Resource not found.",
+    "timeout": "Operation timed out. Please try again.",
+    "copyFailed": "Failed to copy to clipboard",
+    "exportFailed": "Failed to export data",
+    "importFailed": "Failed to import data",
+    "transactionFailed": "Transaction failed",
+    "connectionFailed": "Connection failed"
+  },
+  "info": {
+    "loading": "Loading...",
+    "processing": "Processing...",
+    "pleaseWait": "Please wait...",
+    "confirming": "Confirming transaction...",
+    "syncing": "Syncing with blockchain...",
+    "connecting": "Connecting...",
+    "disconnecting": "Disconnecting..."
+  },
+  "warning": {
+    "unsavedChanges": "You have unsaved changes",
+    "confirmDelete": "Are you sure you want to delete this?",
+    "irreversible": "This action cannot be undone",
+    "highGas": "Gas fees are currently high",
+    "slowNetwork": "Network is congested. Transaction may take longer.",
+    "limitReached": "You've reached the limit"
+  },
+  "streaming": {
+    "starting": "Starting operation...",
+    "inProgress": "Operation in progress: {{message}}",
+    "completed": "Operation completed",
+    "failed": "Operation failed: {{error}}"
+  },
+  "transaction": {
+    "pending": "Transaction pending...",
+    "submitted": "Transaction submitted. Hash: {{hash}}",
+    "confirmed": "Transaction confirmed",
+    "failed": "Transaction failed: {{reason}}",
+    "rejected": "Transaction rejected by user",
+    "insufficientFunds": "Insufficient funds for transaction"
+  },
+  "wallet": {
+    "connected": "Wallet connected: {{address}}",
+    "disconnected": "Wallet disconnected",
+    "switchNetwork": "Please switch to {{network}} network",
+    "accountChanged": "Account changed to {{address}}",
+    "notInstalled": "Please install a Web3 wallet"
+  },
+  "validation": {
+    "error": "Validation error: {{message}}",
+    "fixErrors": "Please fix the errors before continuing"
+  },
+  "auth": {
+    "signedIn": "Successfully signed in",
+    "signedOut": "Successfully signed out",
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "emailVerified": "Email verified successfully",
+    "passwordChanged": "Password changed successfully"
+  },
+  "settings": {
+    "saved": "Settings saved successfully",
+    "reset": "Settings reset to defaults"
+  },
+  "data": {
+    "refreshed": "Data refreshed",
+    "cached": "Using cached data",
+    "synced": "Data synchronized"
+  }
+}

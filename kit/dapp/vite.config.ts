@@ -1,8 +1,17 @@
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
-import { consoleForwardPlugin } from "vite-console-forward-plugin";
 import tsConfigPaths from "vite-tsconfig-paths";
+
+// Console forward plugin has compatibility issues with current Vite version
+// Conditionally import to avoid build errors
+let consoleForwardPlugin: any = null;
+try {
+  consoleForwardPlugin =
+    require("vite-console-forward-plugin").consoleForwardPlugin;
+} catch (error) {
+  console.warn("vite-console-forward-plugin not available:", error);
+}
 
 // Generate a build ID
 // In development: use stable "dev" to avoid unnecessary cache busting
@@ -22,49 +31,6 @@ export default defineConfig({
   server: {
     port: 3000,
   },
-  build: {
-    chunkSizeWarningLimit: 600,
-    rollupOptions: {
-      treeshake: "smallest",
-      output: {
-        manualChunks: (id) => {
-          // Separate vendor chunks for better caching
-          // Core React and routing libraries - use exact package matching
-          if (
-            id.includes("node_modules/react/") ||
-            id.includes("node_modules/react-dom/") ||
-            id.includes("node_modules/scheduler/")
-          ) {
-            return "vendor-react";
-          }
-          if (
-            id.includes("kit/dapp/locales") ||
-            id.includes("node_modules/i18n")
-          ) {
-            return "vendor-i18n";
-          }
-          // UI libraries
-          if (
-            id.includes("node_modules/@radix-ui") ||
-            id.includes("node_modules/class-variance-authority") ||
-            id.includes("node_modules/clsx") ||
-            id.includes("node_modules/tailwind-merge") ||
-            id.includes("node_modules/sonner") ||
-            id.includes("node_modules/lucide")
-          ) {
-            return "vendor-ui";
-          }
-          // Blockchain/Web3 libraries
-          if (
-            id.includes("node_modules/viem") ||
-            id.includes("node_modules/abitype")
-          ) {
-            return "vendor-blockchain";
-          }
-        },
-      },
-    },
-  },
   plugins: [
     tsConfigPaths(),
     tanstackStart({
@@ -78,6 +44,7 @@ export default defineConfig({
     analyzer({
       enabled: process.env.ANALYZE === "true",
     }),
-    consoleForwardPlugin(),
+    // Conditionally include console forward plugin if available
+    ...(consoleForwardPlugin ? [consoleForwardPlugin()] : []),
   ],
 });
