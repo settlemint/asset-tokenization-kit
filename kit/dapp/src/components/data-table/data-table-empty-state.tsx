@@ -22,13 +22,15 @@ export function DataTableEmptyState({
   description,
 }: DataTableEmptyStateProps) {
   return (
-    <Card className="bg-muted/30">
+    <Card className="animate-in fade-in-0 zoom-in-95 duration-300">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-foreground text-base font-medium">
-          <Icon className="size-4" />
-          {title}
+        <CardTitle className="flex items-center gap-2 mb-2">
+          <Icon className="size-5 animate-in spin-in-90 duration-500" />
+          <div className="animate-in slide-in-from-left-2 duration-500">
+            {title}
+          </div>
         </CardTitle>
-        <CardDescription className="text-sm text-muted-foreground">
+        <CardDescription className="animate-in fade-in-50 slide-in-from-bottom-1 duration-500 delay-200">
           {description}
         </CardDescription>
       </CardHeader>
