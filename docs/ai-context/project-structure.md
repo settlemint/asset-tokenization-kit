@@ -86,11 +86,13 @@ dapp/
 ├── src/
 │   ├── routes/              # Page components (file-based routing)
 │   ├── components/          # Reusable UI components
-│   ├── tasks/              # ORPC server functions
+│   │   └── issuer-dashboard/ # Dashboard components including actions table
+│   ├── orpc/               # ORPC server functions and API routes
+│   │   └── routes/token/   # Token-related API endpoints including actions
 │   ├── lib/                # Utilities and database
 │   ├── hooks/              # React hooks
 │   └── providers/          # Context providers
-├── locales/                # Translation files
+├── locales/                # Translation files (expanded for actions)
 ├── public/                 # Static assets
 └── drizzle/               # Database migrations
 ```
@@ -109,12 +111,14 @@ The Graph protocol integration for querying blockchain data:
 ```
 subgraph/
 ├── src/
+│   ├── actions/            # Action workflow system utilities
 │   ├── token/              # Token event handlers
 │   ├── system/             # System event handlers
 │   ├── identity/           # Identity event handlers
 │   └── stats/             # Statistical aggregations
-├── schema.graphql          # GraphQL schema definition
-└── subgraph.yaml          # Indexing configuration
+├── schema.graphql          # GraphQL schema definition (includes Action entities)
+├── subgraph.yaml          # Indexing configuration
+└── test/                  # Test suite including actions.spec.ts
 ```
 
 ### 4. Infrastructure (`kit/charts/`)
@@ -216,6 +220,22 @@ The local development environment includes:
 9. **TX Signer**: Transaction signing (port 8547)
 
 ## Architecture Patterns
+
+### Actions System
+
+**New Feature**: Comprehensive workflow management for time-sensitive blockchain operations.
+
+**Components:**
+- **Frontend**: Actions table in issuer dashboard with status filtering and pagination
+- **Backend**: ORPC API with GraphQL integration for action queries
+- **Subgraph**: Action entities with lifecycle management and authorization
+- **Integration**: XvP settlements and planned bond maturation workflows
+
+**Key Features:**
+- Time-based activation with expiration handling
+- Multi-user authorization with proper permission validation
+- Real-time status updates through GraphQL subscriptions
+- Comprehensive audit trail for all action executions
 
 ### Smart Contract Architecture
 
