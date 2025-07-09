@@ -1,5 +1,4 @@
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { createDataTableSearchParams } from "@/components/data-table/utils/data-table-url-state";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { TokenFactoryRelated } from "@/components/related/token-factory-related";
@@ -154,9 +153,7 @@ function RouteComponent() {
         <h1 className="text-3xl font-bold tracking-tight">{factory.name}</h1>
       </div>
 
-      <ComponentErrorBoundary componentName="Tokens Table">
-        <TokensTable factoryAddress={factoryAddress} />
-      </ComponentErrorBoundary>
+      <TokensTable factoryAddress={factoryAddress} />
 
       <TokenFactoryRelated assetType={assetType} />
     </div>

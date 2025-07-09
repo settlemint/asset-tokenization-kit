@@ -115,7 +115,11 @@ export function ActionsCell({
                   rel="noopener noreferrer"
                   className="flex items-center"
                 >
-                  {action.icon && <span className="mr-2">{action.icon}</span>}
+                  {action.icon && (
+                    <span className="mr-2 [&>svg]:text-muted-foreground [&>svg]:transition-colors">
+                      {action.icon}
+                    </span>
+                  )}
                   {action.label}
                 </a>
               </DropdownMenuItem>
@@ -124,7 +128,11 @@ export function ActionsCell({
                 onClick={createItemClickHandler(action)}
                 disabled={action.disabled}
               >
-                {action.icon && <span className="mr-2">{action.icon}</span>}
+                {action.icon && (
+                  <span className="mr-2 [&>svg]:text-muted-foreground [&>svg]:transition-colors">
+                    {action.icon}
+                  </span>
+                )}
                 {action.label}
               </DropdownMenuItem>
             )}

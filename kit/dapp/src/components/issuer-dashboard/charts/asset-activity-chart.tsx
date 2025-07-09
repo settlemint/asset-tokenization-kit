@@ -1,5 +1,5 @@
 import { BarChartComponent } from "@/components/charts/bar-chart";
-import { DataTableErrorBoundary } from "@/components/data-table/data-table-error-boundary";
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -58,7 +58,7 @@ export function AssetActivityChart() {
     }));
 
   return (
-    <DataTableErrorBoundary>
+    <ComponentErrorBoundary componentName="Asset Activity Chart">
       <BarChartComponent
         title={t("charts.assetActivity.title")}
         description={t("charts.assetActivity.description")}
@@ -69,6 +69,6 @@ export function AssetActivityChart() {
         showYAxis={false}
         showLegend={true}
       />
-    </DataTableErrorBoundary>
+    </ComponentErrorBoundary>
   );
 }

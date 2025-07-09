@@ -8,13 +8,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  useDataTableState,
+  type UseDataTableStateOptions,
+} from "@/hooks/use-data-table-state";
 import { cn } from "@/lib/utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   type ColumnFiltersState,
-  type RowData,
-  type SortingState,
-  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -22,11 +23,20 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  type RowData,
+  type SortingState,
   useReactTable,
+  type VisibilityState,
 } from "@tanstack/react-table";
-import { useTranslation } from "react-i18next";
+import { PackageOpen } from "lucide-react";
 import * as React from "react";
-import { type ComponentType, useCallback, useState, useMemo } from "react";
+import { type ComponentType, useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { DataTableActionBar } from "./data-table-action-bar";
+import {
+  DataTableAdvancedToolbar,
+  type DataTableAdvancedToolbarOptions,
+} from "./data-table-advanced-toolbar";
 import { DataTableColumnCell } from "./data-table-column-cell";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import {
@@ -38,19 +48,10 @@ import {
   type DataTablePaginationOptions,
 } from "./data-table-pagination";
 import {
-  DataTableAdvancedToolbar,
-  type DataTableAdvancedToolbarOptions,
-} from "./data-table-advanced-toolbar";
-import {
   DataTableToolbar,
   type DataTableToolbarOptions,
 } from "./data-table-toolbar";
-import { DataTableActionBar } from "./data-table-action-bar";
 import type { BulkAction, BulkActionGroup } from "./types/bulk-actions";
-import {
-  useDataTableState,
-  type UseDataTableStateOptions,
-} from "@/hooks/use-data-table-state";
 
 /**
  * Props for the DataTable component.
@@ -328,6 +329,15 @@ function DataTableComponent<TData>({
   );
 
   /**
+   * Handles clearing all filters in the table.
+   * Resets both global filter and column filters.
+   */
+  const handleClearFilters = useCallback(() => {
+    table.resetGlobalFilter();
+    table.resetColumnFilters();
+  }, [table]);
+
+  /**
    * Renders the table body with rows or empty state message.
    * Handles row click events and filters out clicks on interactive elements.
    * @returns The rendered table body content
@@ -374,9 +384,32 @@ function DataTableComponent<TData>({
     }
 
     return (
-      <TableRow>
-        <TableCell colSpan={columns.length} className="h-24 text-center">
-          {t("noResults")}
+      <TableRow className="hover:bg-transparent">
+        <TableCell
+          colSpan={columns.length}
+          className="h-64 text-center align-middle"
+        >
+          <div className="flex flex-col items-center justify-center gap-3 py-8">
+            <PackageOpen className="h-12 w-12" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium">{t("noResults")}</p>
+              <p className="text-xs text-muted-foreground/70">
+                {currentState.globalFilter ||
+                currentState.columnFilters.length > 0
+                  ? t("tryAdjustingFilters")
+                  : t("noDataAvailable")}
+              </p>
+            </div>
+            {(currentState.globalFilter ||
+              currentState.columnFilters.length > 0) && (
+              <button
+                onClick={handleClearFilters}
+                className="mt-2 text-xs font-medium text-primary hover:underline"
+              >
+                {t("clearFilters")}
+              </button>
+            )}
+          </div>
         </TableCell>
       </TableRow>
     );
@@ -403,7 +436,6 @@ function DataTableComponent<TData>({
         data-slot="data-table"
         className={cn(
           "w-full overflow-x-auto rounded-xl bg-card text-sidebar-foreground shadow-sm",
-          "animate-in fade-in-0 slide-in-from-bottom-1 duration-300 fill-mode-both",
           className
         )}
       >
