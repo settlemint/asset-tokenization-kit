@@ -1,19 +1,16 @@
-import { useState, useCallback } from "react";
-import { Button } from "@/components/ui/button";
 import type { StepComponentProps } from "@/components/multistep-form/types";
+import { Button } from "@/components/ui/button";
 import type { SessionUser } from "@/lib/auth";
-import { toast } from "sonner";
+import { useCallback, useState } from "react";
 
 interface SystemBootstrapStepProps extends StepComponentProps {
   user?: SessionUser;
 }
 
 export function SystemBootstrapStep({
-  form,
   onNext,
   onPrevious,
   isFirstStep,
-  isLastStep,
 }: SystemBootstrapStepProps) {
   const [isBootstrapped, setIsBootstrapped] = useState(false);
 
@@ -22,7 +19,9 @@ export function SystemBootstrapStep({
       onNext();
     } else {
       setIsBootstrapped(true);
-      setTimeout(() => onNext(), 1000);
+      setTimeout(() => {
+        onNext();
+      }, 1000);
     }
   }, [isBootstrapped, onNext]);
 
@@ -42,7 +41,8 @@ export function SystemBootstrapStep({
               System Bootstrap
             </h3>
             <p className="text-sm text-blue-800 dark:text-blue-200">
-              This will initialize your blockchain platform with core smart contracts.
+              This will initialize your blockchain platform with core smart
+              contracts.
             </p>
           </div>
 
