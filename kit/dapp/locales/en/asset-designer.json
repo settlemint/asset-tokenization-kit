@@ -1,4 +1,17 @@
 {
+  "wizard": {
+    "description": "Create a new token by selecting the token type and configuring its basic properties.",
+    "steps": {
+      "asset-type": {
+        "title": "Select Token Type",
+        "description": "Choose the type of token you want to create"
+      },
+      "token-details": {
+        "title": "Token Details",
+        "description": "Configure the basic properties of your token"
+      }
+    }
+  },
   "streaming-messages": {
     "initial-loading": "Preparing to create {{type}}...",
     "no-result-error": "No transaction hash received from {{type}} creation.",
