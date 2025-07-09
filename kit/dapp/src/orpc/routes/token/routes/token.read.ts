@@ -1,9 +1,5 @@
-import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
-import { authRouter } from "@/orpc/procedures/auth.router";
-import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
+import { tokenRouter } from "@/orpc/procedures/token.router";
 
-export const read = authRouter.token.read
-  .use(tokenMiddleware)
-  .handler(({ context }) => {
-    return TokenSchema.parse(context.token);
-  });
+export const read = tokenRouter.token.read.handler(({ context: { token } }) => {
+  return token;
+});

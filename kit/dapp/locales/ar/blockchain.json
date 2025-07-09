@@ -1,0 +1,168 @@
+{
+  "transaction": {
+    "types": {
+      "transfer": "نقل",
+      "approve": "موافقة",
+      "mint": "سك",
+      "burn": "حرق",
+      "deploy": "نشر العقد",
+      "swap": "تبادل",
+      "stake": "تخزين",
+      "unstake": "إلغاء التخزين",
+      "claim": "مطالبة",
+      "delegate": "تفويض",
+      "vote": "تصويت"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "confirming": "يتم التأكيد...",
+      "confirmed": "تم التأكيد",
+      "failed": "فشل",
+      "dropped": "تم إسقاطه",
+      "replaced": "تم استبداله",
+      "cancelled": "تم إلغاءه"
+    },
+    "details": {
+      "hash": "هاش المعاملة",
+      "from": "من",
+      "to": "إلى",
+      "value": "القيمة",
+      "fee": "رسوم المعاملة",
+      "gasLimit": "حد الغاز",
+      "gasUsed": "الغاز المستخدم",
+      "gasPrice": "سعر الغاز",
+      "nonce": "رقم nonce",
+      "blockNumber": "رقم الكتلة",
+      "timestamp": "الطابع الزمني",
+      "confirmations": "التأكيدات"
+    },
+    "messages": {
+      "broadcasting": "يتم بث المعاملة...",
+      "waiting": "في انتظار التأكيد...",
+      "confirmed": "تم تأكيد المعاملة",
+      "failed": "فشلت المعاملة: {{reason}}",
+      "speedUp": "تسريع المعاملة",
+      "cancel": "إلغاء المعاملة",
+      "viewOnExplorer": "عرض على مستكشف الكتل"
+    }
+  },
+  "contract": {
+    "events": {
+      "Transfer": "نقل",
+      "Approval": "موافقة",
+      "OwnershipTransferred": "تم نقل الملكية",
+      "Paused": "تم إيقاف العقد",
+      "Unpaused": "تم إعادة تشغيل العقد",
+      "RoleGranted": "تم منح الدور",
+      "RoleRevoked": "تم إلغاء الدور"
+    },
+    "methods": {
+      "read": "قراءة العقد",
+      "write": "كتابة العقد",
+      "payable": "وظيفة قابلة للدفع"
+    },
+    "verification": {
+      "verified": "تم التحقق",
+      "unverified": "غير موثق",
+      "partial": "موثق جزئياً"
+    }
+  },
+  "gas": {
+    "estimating": "يتم تقدير الغاز...",
+    "estimated": "الغاز المقدر: {{amount}}",
+    "limit": "حد الغاز",
+    "price": "سعر الغاز",
+    "maxFee": "الحد الأقصى للرسوم",
+    "maxPriorityFee": "الحد الأقصى لرسوم الأولوية",
+    "total": "التكلفة الإجمالية",
+    "speeds": {
+      "slow": "بطيء",
+      "standard": "قياسي",
+      "fast": "سريع",
+      "instant": "فوري"
+    },
+    "errors": {
+      "estimationFailed": "فشل في تقدير الغاز",
+      "tooLow": "الغاز منخفض جداً، قد تفشل المعاملة",
+      "tooHigh": "الغاز مرتفع بشكل غير ضروري"
+    }
+  },
+  "blocks": {
+    "number": "الكتلة #{{number}}",
+    "hash": "هاش الكتلة",
+    "timestamp": "وقت الكتلة",
+    "miner": "المعدن",
+    "difficulty": "الصعوبة",
+    "gasLimit": "حد الغاز",
+    "gasUsed": "الغاز المستخدم",
+    "transactions": "المعاملات",
+    "uncles": "الأعمام"
+  },
+  "tokens": {
+    "standards": {
+      "ERC20": "رمز ERC-20",
+      "ERC721": "NFT ERC-721",
+      "ERC1155": "رمز متعدد ERC-1155",
+      "ERC777": "رمز ERC-777"
+    },
+    "operations": {
+      "transfer": "نقل {{symbol}}",
+      "approve": "موافقة على إنفاق {{symbol}}",
+      "transferFrom": "نقل {{symbol}} من {{owner}}",
+      "mint": "سك {{amount}} {{symbol}}",
+      "burn": "حرق {{amount}} {{symbol}}",
+      "pause": "إيقاف النقل",
+      "unpause": "إعادة تشغيل النقل"
+    },
+    "allowance": {
+      "unlimited": "غير محدود",
+      "set": "تعيين المخصص",
+      "revoke": "إلغاء المخصص",
+      "increase": "زيادة المخصص",
+      "decrease": "تقليل المخصص"
+    }
+  },
+  "errors": {
+    "revert": {
+      "generic": "تم التراجع عن المعاملة",
+      "reason": "سبب التراجع: {{reason}}",
+      "outOfGas": "نفاد الغاز",
+      "executionReverted": "تم التراجع عن التنفيذ"
+    },
+    "common": {
+      "InsufficientBalance": "رصيد غير كافٍ",
+      "TransferFailed": "فشل النقل",
+      "NotOwner": "المتصل ليس المالك",
+      "Paused": "العقد متوقف",
+      "InvalidAddress": "عنوان غير صالح",
+      "ZeroAddress": "لا يمكن استخدام عنوان صفر",
+      "Overflow": "تجاوز عددي",
+      "Underflow": "تحت تدفق رقمي",
+      "Unauthorized": "غير مصرح",
+      "AlreadyInitialized": "تم التهيئة بالفعل",
+      "NotInitialized": "لم يتم التهيئة"
+    }
+  },
+  "explorer": {
+    "viewAddress": "عرض العنوان",
+    "viewTransaction": "عرض المعاملة",
+    "viewBlock": "عرض الكتلة",
+    "viewToken": "عرض الرمز المميز",
+    "copyAddress": "نسخ العنوان",
+    "copyTxHash": "نسخ تجزئة المعاملة",
+    "qrCode": "عرض رمز الاستجابة السريعة"
+  },
+  "confirmations": {
+    "waiting": "في انتظار التأكيدات...",
+    "count": "{{current}} من {{required}} تأكيدات",
+    "final": "تم إنهاء المعاملة"
+  },
+  "signatures": {
+    "request": "تم طلب التوقيع",
+    "personal": "توقيع شخصي",
+    "typed": "توقيع بيانات مكتوبة",
+    "permit": "توقيع إذن",
+    "message": "رسالة للتوقيع",
+    "danger": "كن حذرًا فيما توقعه!"
+  }
+}

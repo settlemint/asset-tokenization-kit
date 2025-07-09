@@ -80,12 +80,18 @@ const LIST_TOKEN_FACTORIES_QUERY = theGraphGraphql(`
 export const factoryList = authRouter.token.factoryList
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
+    // Build where clause if hasTokens filter is provided
+    const where =
+      input.hasTokens !== undefined
+        ? { hasTokens: input.hasTokens }
+        : undefined;
+
     const response = await context.theGraphClient.query(
       LIST_TOKEN_FACTORIES_QUERY,
       {
         input: {
-          input,
-          filter: ["hasTokens"],
+          ...input,
+          where,
         },
         output: FactoriesResponseSchema,
         error: "Failed to list token factories",

@@ -24,7 +24,7 @@ image:
   # -- eRPC image repository
   repository: erpc/erpc
   # -- eRPC image tag (immutable tags are recommended)
-  tag: "0.0.51"
+  tag: "0.0.52"
   # -- eRPC image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
   # -- eRPC image pull policy
@@ -203,6 +203,20 @@ extraEnvVarsCM: ""
 # -- Name of existing Secret containing extra env vars for eRPC nodes
 extraEnvVarsSecret: ""
 
+initContainer:
+  # Generic TCP check settings
+  tcpCheck:
+    enabled: true
+    image:
+      repository: ghcr.io/settlemint/btp-waitforit
+      tag: v7.7.5
+      pullPolicy: IfNotPresent
+    timeout: 5 # Timeout in seconds for each dependency check
+    dependencies:
+      # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
+      - name: besu-rpc
+        endpoint: "besu-node-rpc-1.atk.svc.cluster.local:8545"
+
 # -- Service parameters
 service:
   # -- eRPC service type
@@ -243,7 +257,7 @@ ingress:
   # -- Default host for the ingress record
   hostname: besu.k8s.orb.local
   # -- IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
-  ingressClassName: "settlemint-nginx"
+  ingressClassName: "atk-nginx"
   # -- Default path for the ingress record
   path: /
   # -- Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.

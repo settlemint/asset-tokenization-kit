@@ -12,9 +12,10 @@ describe("fiatCurrency", () => {
       expect(validator.parse("JPY")).toBe("JPY");
     });
 
-    it("should transform to uppercase", () => {
-      expect(validator.parse("usd")).toBe("USD");
-      expect(validator.parse("eur")).toBe("EUR");
+    it("should only accept uppercase codes", () => {
+      expect(validator.parse("CHF")).toBe("CHF");
+      expect(validator.parse("AUD")).toBe("AUD");
+      expect(validator.parse("SGD")).toBe("SGD");
     });
   });
 
@@ -26,10 +27,11 @@ describe("fiatCurrency", () => {
       expect(() => validator.parse("")).toThrow();
     });
 
-    it("should accept and transform mixed case codes", () => {
-      expect(validator.parse("usd")).toBe("USD");
-      expect(validator.parse("eur")).toBe("EUR");
-      expect(validator.parse("Usd")).toBe("USD");
+    it("should reject lowercase and mixed case codes", () => {
+      expect(() => validator.parse("usd")).toThrow();
+      expect(() => validator.parse("eur")).toThrow();
+      expect(() => validator.parse("Usd")).toThrow();
+      expect(() => validator.parse("UsD")).toThrow();
     });
 
     it("should reject non-3-letter codes", () => {
@@ -48,7 +50,7 @@ describe("fiatCurrency", () => {
 
   describe("safeParse", () => {
     it("should return success for valid currency", () => {
-      const result = validator.safeParse("chf");
+      const result = validator.safeParse("CHF");
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toBe("CHF");
@@ -69,7 +71,7 @@ describe("fiatCurrency", () => {
     });
 
     it("should handle safeParse", () => {
-      const result = validator.safeParse("aud");
+      const result = validator.safeParse("AUD");
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toBe("AUD");

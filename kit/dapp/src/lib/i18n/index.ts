@@ -6,53 +6,23 @@
  * and React integration for seamless internationalization.
  *
  * Features:
- * - Multi-language support (English and German)
+ * - Multi-language support (English, German, Arabic, and Japanese)
  * - Type-safe translations via TypeScript augmentation
  * - SSR-compatible configuration
  * - Automatic language detection (via use-language-detection hook)
  * - Fallback language support
+ * - Lazy loading of translation namespaces
  * @see {@link ./types} - TypeScript type augmentation for translations
  * @see {@link ./use-language-detection} - Browser language detection hook
  * @see {@link ../../../locales/} - Translation JSON files
  */
 
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-
-import arAssetDesignerTranslations from "@/locales/ar/asset-designer.json";
-import arAuthTranslations from "@/locales/ar/auth.json";
-import arFormTranslations from "@/locales/ar/form.json";
-import arGeneralTranslations from "@/locales/ar/general.json";
-import arLanguageTranslations from "@/locales/ar/language.json";
-import arOnboardingTranslations from "@/locales/ar/onboarding.json";
-import arThemeTranslations from "@/locales/ar/theme.json";
-import arTokensTranslations from "@/locales/ar/tokens.json";
-import deAssetDesignerTranslations from "@/locales/de/asset-designer.json";
-import deAuthTranslations from "@/locales/de/auth.json";
-import deFormTranslations from "@/locales/de/form.json";
-import deGeneralTranslations from "@/locales/de/general.json";
-import deLanguageTranslations from "@/locales/de/language.json";
-import deOnboardingTranslations from "@/locales/de/onboarding.json";
-import deThemeTranslations from "@/locales/de/theme.json";
-import deTokensTranslations from "@/locales/de/tokens.json";
-import enAssetDesignerTranslations from "@/locales/en/asset-designer.json";
-import enAuthTranslations from "@/locales/en/auth.json";
-import enFormTranslations from "@/locales/en/form.json";
-import enGeneralTranslations from "@/locales/en/general.json";
-import enLanguageTranslations from "@/locales/en/language.json";
-import enOnboardingTranslations from "@/locales/en/onboarding.json";
-import enThemeTranslations from "@/locales/en/theme.json";
-import enTokensTranslations from "@/locales/en/tokens.json";
-import jaAssetDesignerTranslations from "@/locales/ja/asset-designer.json";
-import jaAuthTranslations from "@/locales/ja/auth.json";
-import jaFormTranslations from "@/locales/ja/form.json";
-import jaGeneralTranslations from "@/locales/ja/general.json";
-import jaLanguageTranslations from "@/locales/ja/language.json";
-import jaOnboardingTranslations from "@/locales/ja/onboarding.json";
-import jaThemeTranslations from "@/locales/ja/theme.json";
-import jaTokensTranslations from "@/locales/ja/tokens.json";
-
 import "./types";
+
+const logger = createLogger();
 
 /**
  * Default namespace for translations.
@@ -61,64 +31,9 @@ import "./types";
 export const defaultNS = "general";
 
 /**
- * Translation resources object containing all available translations.
- *
- * Structure:
- * - Each language code (e.g., 'en', 'de') maps to an object
- * - Each language object contains namespaces (currently only 'translation')
- * - Each namespace contains the actual translation key-value pairs
- *
- * The 'as const' assertion ensures TypeScript treats this as a literal type,
- * enabling type-safe translation keys throughout the application.
- */
-export const resources = {
-  en: {
-    "asset-designer": enAssetDesignerTranslations,
-    auth: enAuthTranslations,
-    form: enFormTranslations,
-    general: enGeneralTranslations,
-    theme: enThemeTranslations,
-    language: enLanguageTranslations,
-    onboarding: enOnboardingTranslations,
-    tokens: enTokensTranslations,
-  },
-  de: {
-    "asset-designer": deAssetDesignerTranslations,
-    auth: deAuthTranslations,
-    form: deFormTranslations,
-    general: deGeneralTranslations,
-    theme: deThemeTranslations,
-    language: deLanguageTranslations,
-    onboarding: deOnboardingTranslations,
-    tokens: deTokensTranslations,
-  },
-  ar: {
-    "asset-designer": arAssetDesignerTranslations,
-    auth: arAuthTranslations,
-    form: arFormTranslations,
-    general: arGeneralTranslations,
-    theme: arThemeTranslations,
-    language: arLanguageTranslations,
-    onboarding: arOnboardingTranslations,
-    tokens: arTokensTranslations,
-  },
-  ja: {
-    "asset-designer": jaAssetDesignerTranslations,
-    auth: jaAuthTranslations,
-    form: jaFormTranslations,
-    general: jaGeneralTranslations,
-    theme: jaThemeTranslations,
-    language: jaLanguageTranslations,
-    onboarding: jaOnboardingTranslations,
-    tokens: jaTokensTranslations,
-  },
-} as const;
-
-/**
  * Array of supported language codes.
- * Dynamically derived from the resources object to ensure consistency.
  */
-export const supportedLanguages = Object.keys(resources);
+export const supportedLanguages = ["en", "de", "ar", "ja"] as const;
 
 /**
  * Fallback language used when the requested language is not available
@@ -127,33 +42,148 @@ export const supportedLanguages = Object.keys(resources);
 export const fallbackLng = "en";
 
 /**
+ * Available translation namespaces
+ */
+export const namespaces = [
+  "accessibility",
+  "asset-designer",
+  "asset-types",
+  "assets",
+  "auth",
+  "blockchain",
+  "common",
+  "dashboard",
+  "data-table",
+  "deposits-table",
+  "detail-grid",
+  "errors",
+  "form",
+  "formats",
+  "general",
+  "issuer-dashboard",
+  "language",
+  "navigation",
+  "onboarding",
+  "seo",
+  "theme",
+  "toast",
+  "token-factory",
+  "tokens",
+  "validation",
+  "wallet",
+] as const;
+
+type SupportedLanguage = (typeof supportedLanguages)[number];
+type Namespace = (typeof namespaces)[number];
+
+/**
+ * Lazy load translation resources
+ * This function dynamically imports translation files based on language and namespace
+ */
+async function loadResource(lng: SupportedLanguage, ns: Namespace) {
+  try {
+    const module = await import(`../../../locales/${lng}/${ns}.json`);
+    return module.default ?? module;
+  } catch (error) {
+    logger.warn(`Failed to load translation: ${lng}/${ns}`, error);
+    return {};
+  }
+}
+
+/**
+ * Custom backend for i18next that loads translations dynamically
+ */
+const lazyLoadBackend = {
+  type: "backend" as const,
+  init: () => {
+    // No initialization needed
+  },
+  read: async (
+    lng: string,
+    ns: string,
+    callback: (err: Error | null, data?: unknown) => void
+  ) => {
+    try {
+      const data = await loadResource(
+        lng as SupportedLanguage,
+        ns as Namespace
+      );
+      callback(null, data);
+    } catch (err) {
+      callback(err as Error);
+    }
+  },
+};
+
+/**
+ * Initialize resources with only essential namespaces
+ * Other namespaces will be loaded on demand
+ */
+// Load essential namespaces synchronously for SSR
+// These imports are kept to ensure critical translations are available immediately
+import arCommonTranslations from "@/locales/ar/common.json";
+import arGeneralTranslations from "@/locales/ar/general.json";
+import deCommonTranslations from "@/locales/de/common.json";
+import deGeneralTranslations from "@/locales/de/general.json";
+import enCommonTranslations from "@/locales/en/common.json";
+import enGeneralTranslations from "@/locales/en/general.json";
+import jaCommonTranslations from "@/locales/ja/common.json";
+import jaGeneralTranslations from "@/locales/ja/general.json";
+
+const initialResources = {
+  en: {
+    general: enGeneralTranslations,
+    common: enCommonTranslations,
+  },
+  de: {
+    general: deGeneralTranslations,
+    common: deCommonTranslations,
+  },
+  ar: {
+    general: arGeneralTranslations,
+    common: arCommonTranslations,
+  },
+  ja: {
+    general: jaGeneralTranslations,
+    common: jaCommonTranslations,
+  },
+};
+
+/**
  * Initialize i18next with React integration and configuration.
  *
  * Configuration options:
- * - resources: Translation data for all supported languages
+ * - resources: Initial translation data for essential namespaces
+ * - backend: Custom backend for lazy loading additional namespaces
  * - lng: Initial language (set to fallback until detection runs)
  * - fallbackLng: Language to use when translation is missing
  * - defaultNS: Default namespace for translations
+ * - ns: Initial namespaces (only essentials)
  * - interpolation.escapeValue: Disabled as React handles XSS protection
- * - react.useSuspense: Disabled for SSR compatibility
+ * - react.useSuspense: Enabled for SSR compatibility
+ * - partialBundledLanguages: True to allow partial loading
  *
  * The void operator is used to explicitly discard the promise,
  * as initialization happens synchronously for our use case.
  */
 // eslint-disable-next-line import/no-named-as-default-member
-i18n.use(initReactI18next);
+i18n.use(lazyLoadBackend).use(initReactI18next);
+
 // eslint-disable-next-line import/no-named-as-default-member
 void i18n.init({
-  resources,
+  resources: initialResources,
   lng: fallbackLng,
   fallbackLng,
   defaultNS,
+  ns: [defaultNS, "common"], // Only load essential namespaces initially
+  supportedLngs: [...supportedLanguages],
   interpolation: {
     escapeValue: false, // React already escapes values
   },
   react: {
     useSuspense: true, // Important for SSR
   },
+  partialBundledLanguages: true,
 });
 
 /**
@@ -168,8 +198,8 @@ void i18n.init({
  * import { useTranslation } from 'react-i18next';
  *
  * function MyComponent() {
- *   const { t } = useTranslation();
- *   return <h1>{t('welcome.title')}</h1>;
+ *   const { t } = useTranslation(['tokens', 'common']);
+ *   return <h1>{t('tokens:welcome.title')}</h1>;
  * }
  * ```
  */

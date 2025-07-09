@@ -3,350 +3,213 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
-These rules are project specific rules for the SettleMint Asset Tokenization
-Kit.
+**⚠️ CRITICAL: AI agents MUST read the [./claude/CLAUDE.md](./claude/CLAUDE.md)
+shared information before attempting any task to understand the project.**
 
 ## Project Overview
 
-The SettleMint Asset Tokenization Kit is a comprehensive blockchain solution for
-tokenizing real-world assets. It's built as a Turborepo monorepo with the
-following core components:
+**SettleMint Asset Tokenization Kit** - A full-stack solution for building
+digital asset platforms with blockchain tokenization.
 
-- **Smart Contracts** (`kit/contracts/`): Solidity contracts for various asset
-  types (bonds, deposits, equity, funds, stablecoins) with compliance and
-  identity management
-- **dApp Frontend** (`kit/dapp/`): Next.js application with TypeScript, TanStack
-  Router, and Vite
-- **Subgraph** (`kit/subgraph/`): TheGraph indexing layer for blockchain data
-- **E2E Tests** (`kit/e2e/`): Playwright tests for UI and API testing
-- **Helm Charts** (`kit/charts/`): Kubernetes deployment configurations
+- **Version**: 2.0.0
+- **License**: FSL-1.1-MIT
+- **Type**: Monorepo using Turborepo and Bun
+- **Purpose**: Accelerate development of compliant digital asset platforms with
+  smart contracts and modern web UI
+
+## Repository Structure
+
+```
+asset-tokenization-kit/
+├── kit/                     # Main application packages
+│   ├── contracts/          # Smart contracts (Solidity)
+│   ├── dapp/              # Modern React/TypeScript frontend
+│   ├── dapp-v1/           # ⚠️ DEPRECATED - DO NOT USE
+│   ├── subgraph/          # TheGraph indexing
+│   ├── e2e/               # End-to-end tests
+│   └── charts/            # Helm charts for deployment
+├── tools/                  # Root-level utilities
+├── .claude/               # AI agent documentation
+│   ├── CLAUDE.md         # Master AI context template
+│   └── commands/         # Workflow command docs
+└── docker-compose.yml     # Local development environment
+```
 
 ## Essential Commands
 
-### Development Workflow
+### Development Setup
 
 ```bash
 # Initial setup
-bun install
-bun turbo link  # Enable remote caching
+bun install                      # Install dependencies
+bunx settlemint connect --instance local  # Connect to SettleMint
+bun run artifacts               # Generate artifacts (contracts, DB, ABIs)
+bun run dev:up                  # Start Docker environment
 
-# Start local development environment
-bun run dev:up    # Starts Docker Compose stack
-bun run dev       # Starts dApp in development mode
-
-# Clean restart (if needed)
-bun run dev:reset # Removes Docker volumes and restarts
-```
-
-### Pre-Development Tasks
-
-```bash
-# CRITICAL: Run these before any linting/testing/formatting
-bun artifacts     # Generate contract artifacts and genesis file
-bun codegen      # Generate TypeScript types from GraphQL schemas
+# Daily development
+bun run dev                     # Start dApp development server
+bun run dev:reset              # Reset and restart Docker environment
 ```
 
 ### Quality Assurance
 
 ```bash
-# Complete QA pipeline (run before creating PRs)
-bun run ci       # Runs: format, compile, codegen, lint, test
+# Run full CI suite before creating PR
+bun run ci                      # Runs: format, compile, codegen, lint, test
 
 # Individual tasks
-bun run format   # Prettier formatting
-bun run lint     # ESLint
-bun run test     # Unit tests (uses bun:test, not vitest)
-bun run compile  # Compile smart contracts
-```
-
-### Testing
-
-```bash
-# Unit tests
-bun run test
-
-# E2E tests
-bun run test:e2e:ui        # UI tests with Playwright
-bun run test:e2e:ui:debug  # UI tests with debug mode
-bun run test:e2e:api       # API tests with Playwright
-
-# Integration tests
-bun run test:integration
-
-# Single test file
-bun test path/to/test.spec.ts
+bun run format                  # Check code formatting
+bun run lint                    # Run ESLint
+bun run test                    # Run unit tests
+bun run typecheck              # TypeScript type checking
+bun run test:integration       # Integration tests
 ```
 
 ### Contract Development
 
 ```bash
-# Deploy contracts to local Anvil
-bunx turbo contracts#publish
-
-# Test subgraph integration
-bunx turbo subgraph#test:integration
+# From root directory
+bun run compile                 # Compile smart contracts
+bun run codegen                # Generate TypeScript types
+bun run artifacts              # Update genesis, DB, ABIs after contract changes
+bun run contracts:test         # Run Foundry tests
 ```
 
-## Architecture
+## Technology Stack
 
-### Directory Structure
+### Smart Contracts (`kit/contracts`)
 
-```
-kit/
-├── contracts/           # Smart contracts (Foundry + Hardhat)
-│   ├── contracts/      # Solidity source files
-│   ├── scripts/        # Deployment and management scripts
-│   └── test/          # Contract tests
-├── dapp/              # Next.js frontend application
-│   ├── src/
-│   │   ├── components/ # React components
-│   │   ├── routes/    # TanStack Router routes
-│   │   └── lib/       # Utilities and configuration
-│   └── locales/       # Internationalization files
-├── subgraph/          # TheGraph indexing
-├── e2e/              # End-to-end tests
-└── charts/           # Helm charts for deployment
-```
+- **Language**: Solidity 0.8.28
+- **Framework**: Foundry (primary), Hardhat (deployment)
+- **Standards**: ERC-3643 compliant security tokens
+- **Architecture**: UUPS upgradeable proxy pattern
+- **Testing**: Foundry with fuzz testing
+- **Libraries**: OpenZeppelin, OnChain ID, SMART Protocol
 
-### Tech Stack
+### Frontend (`kit/dapp`)
 
-- **Package Manager**: Bun (default)
-- **Monorepo**: Turborepo
-- **Smart Contracts**: Solidity with Foundry and Hardhat
-- **Frontend**: Next.js, TypeScript, Tanstack Start, Tanstack Query, TanStack
-  Router, Vite
-- **Styling**: Tailwind CSS with shadcn/ui components
-- **Testing**: bun:test for unit tests, Playwright for E2E
-- **Blockchain**: Local Anvil node for development
-- **Database**: PostgreSQL with Hasura GraphQL API
+- **Framework**: React 19 with Tanstack Start
+- **Language**: TypeScript (strict mode)
+- **Styling**: Tailwind CSS v4, Radix UI, shadcn/ui
+- **State**: Tanstack Query, React Hook Form
+- **API**: ORPC framework
+- **Auth**: Better Auth
+- **I18n**: i18next (Arabic, German, English, Japanese)
+- **Build**: Vite with Bun
 
-### Key Architectural Patterns
+### Backend Services
 
-- **Asset Types**: Centralized in Zod validators (bonds, deposits, equity,
-  funds, stablecoins)
-- **Identity & Compliance**: OnChainID-based identity management with SMART
-  token compliance
-- **Proxy Pattern**: Upgradeable contracts using proxy implementations
-- **Factory Pattern**: Dedicated factory contracts for asset creation
-- **Access Control**: Role-based access with AccessManager integration
+- **Database**: PostgreSQL with Drizzle ORM
+- **GraphQL**: Hasura, TheGraph, Portal, Blockscout
+- **File Storage**: IPFS, MinIO
+- **Blockchain**: Besu network (local development)
 
 ## Development Guidelines
 
-### TypeScript (Ultracite Rules)
-
-- **Strict mode always** - all strict compiler options enabled
-- **Forbidden**: `any`, `@ts-ignore`, enums, namespaces, `var`
-- **Preferred**: `type` over `interface`, `readonly` by default, no default exports
-- **Naming**: kebab-case files, camelCase variables, PascalCase types, UPPER_SNAKE_CASE constants
-- **Return types required** on top-level functions (except JSX components)
-- **Modern patterns**: Discriminated unions, const assertions over enums, Result types, branded types
-- **Code quality**: No unused imports/variables/parameters, === over ==, exhaustive switches
-- **Schema-first**: Define Zod schemas, derive TypeScript types, use type guards
-- **Error handling**: Use Result types, proper error handling with `new Error`
-
-### React/Next.js Rules
-
-- **Keys**: Never use array indices
-- **Hooks**: Complete dependencies, top-level only
-- **Components**: No nested components, prefer `<></>` over Fragment
-- **Forbidden**: `<img>` in Next.js, prop assignment
-
 ### Git Workflow
 
-- **Branch Rule**: NEVER commit to main - always create feature branches
-- **Commit Format**: `type(scope): description` (lowercase description)
-- **Types**: feat, fix, chore, docs, style, refactor, perf, test, build, ci,
-  revert
-- **Pattern**: One feature = one branch = one PR
-
-### Code Quality
-
-- **Logging**: Use
-  `createLogger({ level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info" })`
-  instead of console.log
-- **No unused**: imports, variables, parameters, members
-- **Modern practices**: for...of, template literals, async/await, object spread, numeric separators
-- **Accessibility**: Valid ARIA usage, keyboard support (onClick→onKey*), meaningful labels/alt text, required attributes (lang, title, type), no accessKey or aria-hidden on focusable elements
-- **Forbidden**: console.log, debugger, delete, eval, hardcoded secrets
-
-### Logging Best Practices
-
-```typescript
-// ✅ Correct usage
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-
-const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel) || "info"
-});
-
-// Use appropriate log levels
-logger.debug("Detailed debugging information");
-logger.info("General informational messages");
-logger.warn("Warning messages for potential issues");
-logger.error("Error messages with structured output", { error, context });
-
-// ❌ Never use
-console.log("This is forbidden");
-console.error("Use logger.error instead");
+```bash
+# CRITICAL: Never commit to main branch
+git checkout -b feature/your-feature-name  # Always create feature branch
+git commit -m "type(scope): description"   # Use semantic commits
 ```
 
-### Error Handling Patterns
+**Commit Types**: feat, fix, chore, docs, style, refactor, perf, test, build,
+ci, revert
 
-#### Error Boundaries
+### Code Quality Rules
 
-```typescript
-// Use DefaultCatchBoundary for route-level error handling
-export const Route = createFileRoute('/path')({ 
-  errorComponent: DefaultCatchBoundary,
-  component: MyComponent,
-});
+1. **Logging**: Use `createLogger()`, never `console.log`
+2. **Error Handling**: Use error boundaries and toast notifications
+3. **State Management**: Prefer URL state for persistence
+4. **Imports**: No barrel files (index.ts exports)
+5. **Testing**: Use `bun:test`, not vitest
+6. **Components**: Keep files under 350 lines, split when needed
+7. **Security**: Never commit secrets, validate all inputs
 
-// For data table components, use DataTableErrorBoundary
-<DataTableErrorBoundary>
-  <DataTable {...props} />
-</DataTableErrorBoundary>
+### Smart Contract Standards
+
+- Explicit function visibility modifiers
+- Comprehensive NatSpec comments
+- Use OpenZeppelin contracts where possible
+- Follow Checks-Effects-Interactions pattern
+- Implement events for all state changes
+- Use custom errors for gas efficiency
+
+## Asset Types Supported
+
+1. **Bond** - Fixed-term debt instruments
+2. **Equity** - Tokenized shares with dividends
+3. **Fund** - Multi-asset portfolio tokens
+4. **Deposit** - Time-locked deposits
+5. **StableCoin** - Fiat-pegged tokens
+
+## Key Features
+
+- **Compliance**: Modular compliance with identity management
+- **Multi-language**: Full i18n support for 4 languages
+- **Role-Based Access**: Platform and token-level permissions
+- **Upgradeable**: All contracts use proxy pattern
+- **Security First**: Built-in regulatory compliance
+
+## Testing Strategy
+
+```bash
+# Unit tests
+bun run test
+
+# Integration tests
+bun run test:integration
+
+# E2E tests
+bun run test:e2e:ui
+bun run test:e2e:api
+
+# Smart contract tests
+cd kit/contracts && bun run test
 ```
 
-#### Toast Notifications
+## Deployment
 
-```typescript
-// ✅ Correct toast usage with proper error formatting
-import { toast } from "sonner";
-import { formatValidationError } from "@/lib/utils/format-validation-error";
+### Local Development
 
-try {
-  await someOperation();
-  toast.success("Operation completed successfully");
-} catch (error) {
-  const errorMessage = formatValidationError(error);
-  toast.error(errorMessage, {
-    duration: 10000, // Longer duration for errors
-    description: "Check browser console for details"
-  });
-  
-  // Also log to console for debugging
-  logger.error("Operation failed", { error, context: additionalContext });
-}
+```bash
+bun run dev:up      # Start local environment
+bun run dev         # Start dApp
 ```
 
-#### Streaming Mutations
+### Production Build
 
-```typescript
-// Use useStreamingMutation for ORPC mutations with progress tracking
-const { mutate, isTracking } = useStreamingMutation({
-  mutationOptions: orpc.token.create.mutationOptions(),
-  onSuccess: (result) => {
-    // Handle success with properly typed result
-    router.navigate({ to: "/tokens/$address", params: { address: result } });
-  }
-});
+```bash
+bun run build       # Build all packages
+bun run docker:codestudio  # Build Docker images
 ```
 
-## Important Constraints
+## Important Notes
 
-### Files to Never Modify
+1. **Deprecated**: `kit/dapp-v1` folder is completely deprecated - use
+   `kit/dapp`
+2. **Artifacts**: Regenerate after contract changes with `bun run artifacts`
+3. **Docker Reset**: Use `bun run dev:reset` after artifact changes
+4. **Type Safety**: Always run `bun run typecheck` before committing
+5. **CI Required**: `bun run ci` must pass before creating PRs
 
-- `kit/dapp/src/components/ui/` - shadcn components (kept immutable for
-  upgrades)
-- `routeTree.gen.ts` - Auto-generated by TanStack Router
-- `dapp-v1/` - Deprecated folder (completely ignore)
+## MCP Server Integration
 
-### Required Patterns
+The project integrates with:
 
-- **No barrel files** - Avoid index.ts re-exports
-- **No default exports** - Unless framework requires it
-- **Schema-first** - Define Zod schemas, derive TypeScript types
-- **Error handling** - Use Result types, proper error boundaries
+- **Context7**: Library documentation (React, Next.js, etc.)
+- **DeepWiki**: GitHub repository documentation
+- **Linear**: Issue tracking and project management
+- **Sentry**: Error tracking and monitoring
 
-### State Management Patterns
+## Architecture Highlights
 
-#### URL State vs Local State
-
-```typescript
-// ✅ Use URL state for shareable, persistent UI state
-const tableState = useDataTableState({
-  enableUrlPersistence: true,  // Enables URL-based state
-  defaultPageSize: 20,
-  debounceMs: 300,  // Prevent excessive URL updates
-});
-
-// URL state is ideal for:
-// - Table filters, sorting, pagination
-// - Search queries
-// - UI configuration that should persist across navigation
-// - States you want users to share via URLs
-
-// ❌ Use local state for ephemeral UI state
-const [isModalOpen, setIsModalOpen] = useState(false);
-const [formData, setFormData] = useState({});
-
-// Local state is ideal for:
-// - Modal/dialog visibility
-// - Form inputs before submission
-// - Temporary UI interactions
-// - Animation states
-```
-
-#### Performance Optimization Guidelines
-
-```typescript
-// ✅ Memoize expensive computations
-const expensiveResult = useMemo(() => {
-  return computeExpensiveValue(data);
-}, [data]); // Only recompute when data changes
-
-// ✅ Memoize callbacks passed to child components
-const handleClick = useCallback((id: string) => {
-  doSomething(id);
-}, [doSomething]); // Stable reference prevents unnecessary re-renders
-
-// ✅ Memoize components that receive complex props
-const MemoizedComponent = React.memo(ExpensiveComponent, (prevProps, nextProps) => {
-  // Custom comparison for performance
-  return prevProps.id === nextProps.id && 
-         prevProps.version === nextProps.version;
-});
-
-// ✅ Use virtualization for large lists
-import { useVirtualizer } from '@tanstack/react-virtual';
-
-// ✅ Debounce expensive operations
-const debouncedSearch = useMemo(
-  () => debounce((query: string) => {
-    performSearch(query);
-  }, 300),
-  [performSearch]
-);
-
-// ❌ Avoid premature optimization
-// Only optimize after identifying actual performance bottlenecks
-// Use React DevTools Profiler to measure before optimizing
-```
-
-### MCP Integration
-
-- **Linear**: Project management, ticket updates, PR linking
-- **Sentry**: Error tracking and issue management
-- **Context7/DeepWiki**: Up-to-date library documentation
-
-## Local Development Stack
-
-The Docker Compose setup includes:
-
-- **Anvil**: Local Ethereum node (port 8545)
-- **PostgreSQL**: Database with Hasura GraphQL API
-- **Redis**: Caching layer
-- **Blockscout**: Block explorer
-- **Portal**: SettleMint platform services
-
-## Quality Control
-
-Before any PR:
-
-1. Run `bun run ci` successfully
-2. Ensure all tests pass
-3. Check TypeScript compilation
-4. Verify contract deployment works locally
+- **Monorepo**: Turborepo for efficient builds
+- **Type-Safe**: End-to-end TypeScript with generated types
+- **Modular**: Clear separation of concerns
+- **Scalable**: Designed for enterprise deployments
+- **Compliant**: Built-in regulatory compliance features
 
 ## Memories
 
@@ -354,14 +217,34 @@ Before any PR:
 - Do not use vitest to make tests, use bun:test
 - Asset types are centralized in the zod validator (no more cryptocurrency)
 - Never use barrel files
-- Do not use console.log, use createLogger with SETTLEMINT_LOG_LEVEL
+- Do not use console.log, use `const logger = createLogger()`
 - Do not modify code in kit/dapp/src/components/ui (shadcn components)
 - NEVER, EVER commit to main, if you are not on a branch, make a new one
 - Run `bun artifacts` and `bun codegen` before running any
   testing/linting/formatting tasks
 - `routeTree.gen.ts` is auto generated, ignore it
-- Before starting any work, run `bunx settlemint connect --instance local` and `bun run codegen`
-- Always use error boundaries (DefaultCatchBoundary for routes, DataTableErrorBoundary for tables)
+- Before starting any work, run `bunx settlemint connect --instance local` and
+  `bun run codegen`
+- Always use error boundaries (DefaultCatchBoundary for routes,
+  DataTableErrorBoundary for tables)
 - Use toast notifications with formatValidationError for user feedback
-- Prefer URL state for persistent UI configuration, local state for ephemeral interactions
+- Prefer URL state for persistent UI configuration, local state for ephemeral
+  interactions
 - Only optimize performance after measuring with React DevTools Profiler
+- Translations are organized into focused namespaces - use multiple namespaces
+  in components as needed
+- Use very specific translation namespaces for each component (e.g.,
+  "detail-grid" for the DetailGrid component, not "common")
+- Tests are stored next to the route/component/file, not in a `__tests__` folder
+- During refactors, if you encounter barrel files, remove them
+- Do not store temporary analysis md files, and if you absolutely need to, make
+  sure to clean them up before committing
+- Never pass around `t` from the translations hook, if you cannot get `t` into a
+  function, you shouldn't use such a function
+- Use full types when possible, e.g. User and not { role?: string } if you just
+  need the role
+- Never use eslint-disable comments, fix the issues for real
+- `as any` is NEVER allowed!
+- Since we use Tanstack Start, we do not need `use client;`
+- When i ask you to fix something, i do not care if it is related to our current
+  change or not

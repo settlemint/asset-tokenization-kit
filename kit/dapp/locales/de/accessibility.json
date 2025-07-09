@@ -1,0 +1,103 @@
+{
+  "skipLinks": {
+    "main": "Zum Hauptinhalt springen",
+    "navigation": "Zur Navigation springen",
+    "search": "Zur Suche springen"
+  },
+  "landmarks": {
+    "navigation": "Hauptnavigation",
+    "search": "Suche",
+    "main": "Hauptinhalt",
+    "complementary": "Ergänzender Inhalt",
+    "footer": "Fußzeile"
+  },
+  "buttons": {
+    "close": "Schließen",
+    "expand": "Erweitern",
+    "collapse": "Einklappen",
+    "menu": "Menü",
+    "more": "Weitere Optionen",
+    "settings": "Einstellungen",
+    "help": "Hilfe",
+    "copy": "In die Zwischenablage kopieren",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "refresh": "Aktualisieren",
+    "filter": "Filtern",
+    "sort": "Sortieren",
+    "previous": "Vorherige",
+    "next": "Nächste"
+  },
+  "forms": {
+    "required": "Pflichtfeld",
+    "optional": "Optionales Feld",
+    "error": "Fehler: {{message}}",
+    "success": "Erfolg: {{message}}",
+    "hint": "Hinweis: {{message}}",
+    "characterCount": "{{current}} von {{max}} Zeichen",
+    "submit": "Formular absenden",
+    "reset": "Formular zurücksetzen"
+  },
+  "loading": {
+    "loading": "Laden",
+    "loadingContent": "Inhalt laden",
+    "loadingPage": "Seite laden",
+    "processingRequest": "Anfrage verarbeiten",
+    "pleaseWait": "Bitte warten"
+  },
+  "navigation": {
+    "breadcrumb": "Brotkrumen-Navigation",
+    "pagination": "Seiten-Navigation",
+    "currentPage": "Aktuelle Seite, Seite {{page}}",
+    "goToPage": "Gehe zu Seite {{page}}",
+    "firstPage": "Gehe zur ersten Seite",
+    "lastPage": "Gehe zur letzten Seite",
+    "previousPage": "Gehe zur vorherigen Seite",
+    "nextPage": "Gehe zur nächsten Seite"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "success": "Erfolg",
+    "error": "Fehler",
+    "warning": "Warnung",
+    "info": "Information"
+  },
+  "table": {
+    "sortable": "Sortierbare Spalte",
+    "sorted": "Sortiert {{direction}}",
+    "sortAscending": "Aufsteigend sortieren",
+    "sortDescending": "Absteigend sortieren",
+    "rowSelected": "Zeile ausgewählt",
+    "rowNotSelected": "Zeile nicht ausgewählt",
+    "selectRow": "Zeile auswählen",
+    "deselectRow": "Zeile abwählen",
+    "selectAll": "Alle Zeilen auswählen",
+    "deselectAll": "Alle Zeilen abwählen"
+  },
+  "dialog": {
+    "opened": "Dialog geöffnet",
+    "closed": "Dialog geschlossen"
+  },
+  "notifications": {
+    "newNotification": "Neue Benachrichtigung",
+    "clearAll": "Alle Benachrichtigungen löschen",
+    "markAsRead": "Als gelesen markieren"
+  },
+  "wallet": {
+    "connectWallet": "Wallet verbinden",
+    "disconnectWallet": "Wallet trennen",
+    "switchAccount": "Konto wechseln",
+    "copyAddress": "Wallet-Adresse kopieren"
+  },
+  "images": {
+    "logo": "Logo des Asset-Tokenisierungskits",
+    "tokenIcon": "{{name}} Token-Icon",
+    "userAvatar": "Benutzer-Avatar",
+    "assetImage": "{{name}} Asset-Bild"
+  }
+}

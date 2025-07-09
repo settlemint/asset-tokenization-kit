@@ -37,7 +37,7 @@ export function ErrorDisplay({
   showGoBack = true,
   showHome = true,
 }: ErrorDisplayProps) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("errors");
 
   return (
     <div className="relative text-center z-[1] pt-32 sm:pt-52">
@@ -56,7 +56,7 @@ export function ErrorDisplay({
               strokeWidth={2}
               aria-hidden="true"
             />
-            {t("errors.buttons.tryAgain")}
+            {t("buttons.tryAgain")}
           </Button>
         )}
         {showGoBack && (
@@ -73,7 +73,7 @@ export function ErrorDisplay({
               strokeWidth={2}
               aria-hidden="true"
             />
-            {t("errors.buttons.goBack")}
+            {t("buttons.goBack")}
           </Button>
         )}
         {showHome && (
@@ -85,7 +85,7 @@ export function ErrorDisplay({
                 strokeWidth={2}
                 aria-hidden="true"
               />
-              {t("errors.buttons.goHome")}
+              {t("buttons.goHome")}
             </Link>
           </Button>
         )}

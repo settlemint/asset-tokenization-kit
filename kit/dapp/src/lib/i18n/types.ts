@@ -25,14 +25,32 @@
  * @see https://www.i18next.com/overview/typescript - i18next TypeScript documentation
  */
 
+import type enAccessibilityTranslations from "@/locales/en/accessibility.json";
 import type enAssetDesignerTranslations from "@/locales/en/asset-designer.json";
+import type enAssetTypesTranslations from "@/locales/en/asset-types.json";
+import type enAssetsTranslations from "@/locales/en/assets.json";
 import type enAuthTranslations from "@/locales/en/auth.json";
+import type enBlockchainTranslations from "@/locales/en/blockchain.json";
+import type enCommonTranslations from "@/locales/en/common.json";
+import type enDashboardTranslations from "@/locales/en/dashboard.json";
+import type enDataTableTranslations from "@/locales/en/data-table.json";
+import type enDepositsTableTranslations from "@/locales/en/deposits-table.json";
+import type enDetailGridTranslations from "@/locales/en/detail-grid.json";
+import type enErrorsTranslations from "@/locales/en/errors.json";
 import type enFormTranslations from "@/locales/en/form.json";
+import type enFormatsTranslations from "@/locales/en/formats.json";
 import type enGeneralTranslations from "@/locales/en/general.json";
+import type enIssuerDashboardTranslations from "@/locales/en/issuer-dashboard.json";
 import type enLanguageTranslations from "@/locales/en/language.json";
+import type enNavigationTranslations from "@/locales/en/navigation.json";
 import type enOnboardingTranslations from "@/locales/en/onboarding.json";
+import type enSeoTranslations from "@/locales/en/seo.json";
 import type enThemeTranslations from "@/locales/en/theme.json";
+import type enToastTranslations from "@/locales/en/toast.json";
+import type enTokenFactoryTranslations from "@/locales/en/token-factory.json";
 import type enTokensTranslations from "@/locales/en/tokens.json";
+import type enValidationTranslations from "@/locales/en/validation.json";
+import type enWalletTranslations from "@/locales/en/wallet.json";
 
 declare module "i18next" {
   /**
@@ -57,14 +75,32 @@ declare module "i18next" {
      * This provides the structure that all translations must follow.
      */
     resources: {
+      accessibility: typeof enAccessibilityTranslations;
       "asset-designer": typeof enAssetDesignerTranslations;
+      "asset-types": typeof enAssetTypesTranslations;
+      assets: typeof enAssetsTranslations;
       auth: typeof enAuthTranslations;
+      blockchain: typeof enBlockchainTranslations;
+      common: typeof enCommonTranslations;
+      dashboard: typeof enDashboardTranslations;
+      "data-table": typeof enDataTableTranslations;
+      "deposits-table": typeof enDepositsTableTranslations;
+      "detail-grid": typeof enDetailGridTranslations;
+      errors: typeof enErrorsTranslations;
       form: typeof enFormTranslations;
+      formats: typeof enFormatsTranslations;
       general: typeof enGeneralTranslations;
-      theme: typeof enThemeTranslations;
+      "issuer-dashboard": typeof enIssuerDashboardTranslations;
       language: typeof enLanguageTranslations;
+      navigation: typeof enNavigationTranslations;
       onboarding: typeof enOnboardingTranslations;
+      seo: typeof enSeoTranslations;
+      theme: typeof enThemeTranslations;
+      toast: typeof enToastTranslations;
+      "token-factory": typeof enTokenFactoryTranslations;
       tokens: typeof enTokensTranslations;
+      validation: typeof enValidationTranslations;
+      wallet: typeof enWalletTranslations;
     };
   }
 }

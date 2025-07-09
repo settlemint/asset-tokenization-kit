@@ -1,10 +1,5 @@
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { baseContract } from "@/orpc/procedures/base.contract";
-import { BondTokenCreateSchema } from "@/orpc/routes/token/routes/bond/bond.create.schema";
-import {
-  DepositCreateOutputSchema,
-  DepositTokenCreateSchema,
-} from "@/orpc/routes/token/routes/deposit/deposit.create.schema";
 import {
   FactoryCreateOutputSchema,
   FactoryCreateSchema,
@@ -18,13 +13,25 @@ import {
   TokenFactoryDetailSchema,
 } from "@/orpc/routes/token/routes/factory.read.schema";
 import {
+  TokenCreateOutputSchema,
+  TokenCreateSchema,
+} from "@/orpc/routes/token/routes/token.create.schema";
+import {
   TokenListInputSchema,
   TokenListSchema,
 } from "@/orpc/routes/token/routes/token.list.schema";
 import { TokenMintSchema } from "@/orpc/routes/token/routes/token.mint.schema";
-import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
+import {
+  TokenReadInputSchema,
+  TokenSchema,
+} from "@/orpc/routes/token/routes/token.read.schema";
+import { TokenStatsAssetsOutputSchema } from "@/orpc/routes/token/routes/token.stats.assets.schema";
+import {
+  TokenStatsTransactionsInputSchema,
+  TokenStatsTransactionsOutputSchema,
+} from "@/orpc/routes/token/routes/token.stats.transactions.schema";
+import { TokenStatsValueOutputSchema } from "@/orpc/routes/token/routes/token.stats.value.schema";
 import { eventIterator } from "@orpc/server";
-import { z } from "zod/v4";
 
 const factoryCreate = baseContract
   .route({
@@ -59,27 +66,16 @@ const factoryRead = baseContract
   .input(FactoryReadSchema)
   .output(TokenFactoryDetailSchema);
 
-const bondCreate = baseContract
+const create = baseContract
   .route({
     method: "POST",
-    path: "/token/bond",
-    description: "Create a new bond token",
-    successDescription: "Bond token created",
-    tags: ["token", "bond"],
+    path: "/token/create",
+    description: "Create a new token (deposit, bond, etc.)",
+    successDescription: "Token created successfully",
+    tags: ["token"],
   })
-  .input(BondTokenCreateSchema)
-  .output(ethereumHash);
-
-const depositCreate = baseContract
-  .route({
-    method: "POST",
-    path: "/token/deposit",
-    description: "Create a new deposit token",
-    successDescription: "Deposit token created",
-    tags: ["token", "deposit"],
-  })
-  .input(DepositTokenCreateSchema)
-  .output(eventIterator(DepositCreateOutputSchema));
+  .input(TokenCreateSchema)
+  .output(eventIterator(TokenCreateOutputSchema));
 
 const list = baseContract
   .route({
@@ -95,12 +91,12 @@ const list = baseContract
 const read = baseContract
   .route({
     method: "GET",
-    path: "/token/{id}",
-    description: "Get a token by id",
+    path: "/token/{tokenAddress}",
+    description: "Get a token by address",
     successDescription: "Token",
     tags: ["token"],
   })
-  .input(z.object({ id: z.string() }))
+  .input(TokenReadInputSchema)
   .output(TokenSchema);
 
 const mint = baseContract
@@ -114,13 +110,46 @@ const mint = baseContract
   .input(TokenMintSchema)
   .output(ethereumHash);
 
+const statsAssets = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/assets",
+    description: "Get token asset statistics",
+    successDescription: "Asset statistics",
+    tags: ["token", "stats"],
+  })
+  .output(TokenStatsAssetsOutputSchema);
+
+const statsTransactions = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/transactions",
+    description: "Get token transaction statistics",
+    successDescription: "Transaction statistics",
+    tags: ["token", "stats"],
+  })
+  .input(TokenStatsTransactionsInputSchema)
+  .output(TokenStatsTransactionsOutputSchema);
+
+const statsValue = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/value",
+    description: "Get token value statistics",
+    successDescription: "Value statistics",
+    tags: ["token", "stats"],
+  })
+  .output(TokenStatsValueOutputSchema);
+
 export const tokenContract = {
   factoryCreate,
   factoryList,
   factoryRead,
-  bondCreate,
-  depositCreate,
+  create,
   list,
   read,
   mint,
+  statsAssets,
+  statsTransactions,
+  statsValue,
 };

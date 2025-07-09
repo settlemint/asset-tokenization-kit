@@ -5,8 +5,9 @@ import {
   getEthereumAddress,
   type EthereumAddress,
 } from "@/lib/zod/validators/ethereum-address";
-import { orpc } from "@/orpc";
 import { baseRouter } from "@/orpc/procedures/base.router";
+import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { call } from "@orpc/server";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 
 const TOKEN_FACTORIES_QUERY = theGraphGraphql(
@@ -58,26 +59,36 @@ export interface TokenFactory {
 export const systemMiddleware = baseRouter.middleware(
   async ({ context, next, errors }) => {
     if (context.system) {
-      return next();
+      return next({
+        context: {
+          system: context.system,
+        },
+      });
     }
-    const systemAddress = await orpc.settings.read.call({
-      key: "SYSTEM_ADDRESS" as const,
-    });
+    const systemAddress = await call(
+      read,
+      {
+        key: "SYSTEM_ADDRESS" as const,
+      },
+      {
+        context,
+      }
+    );
+
     if (!systemAddress) {
       throw errors.SYSTEM_NOT_CREATED();
     }
     const tokenFactories = await getTokenFactories(
       getEthereumAddress(systemAddress)
     );
-    const systemContext: typeof context = {
-      ...context,
-      system: {
-        address: getEthereumAddress(systemAddress),
-        tokenFactories,
-      },
-    };
+
     return next({
-      context: systemContext,
+      context: {
+        system: {
+          address: getEthereumAddress(systemAddress),
+          tokenFactories,
+        },
+      },
     });
   }
 );

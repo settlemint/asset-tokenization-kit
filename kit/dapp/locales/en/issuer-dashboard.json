@@ -1,0 +1,49 @@
+{
+  "title": "Dashboard",
+  "description": "Asset management",
+  "asset-management": "Asset management",
+  "stats-heading": "Stats",
+  "actions-heading": "Actions",
+  "latest-events-heading": "Latest events",
+  "stats": {
+    "title": "Platform statistics",
+    "assets": "Assets",
+    "assetsDescription": "{{bonds}} bonds | {{cryptocurrencies}} cryptocurrencies | {{equities}} equities | {{funds}} funds | {{stableCoins}} stablecoins | {{deposits}} deposits",
+    "transactions": "Transactions",
+    "transactionsDescription": "{{count}} transactions processed in the last {{days}} days",
+    "transactionsDescription_one": "{{count}} transaction processed in the last {{days}} days",
+    "transactionsDescription_other": "{{count}} transactions processed in the last {{days}} days",
+    "users": "Users",
+    "usersDescription": "{{count}} users in the last {{days}} days",
+    "usersDescription_one": "{{count}} user in the last {{days}} days",
+    "usersDescription_other": "{{count}} users in the last {{days}} days",
+    "totalValue": "Value",
+    "totalValueDescription": "Total value across all assets",
+    "loading": "Loading statistics...",
+    "noAssets": "No assets found"
+  },
+  "charts": {
+    "assetSupply": {
+      "title": "Assets supply",
+      "description": "The distribution of assets per asset class"
+    },
+    "assetActivity": {
+      "title": "Asset activity",
+      "description": "The amount of actions taken on the different asset classes"
+    },
+    "userGrowth": {
+      "title": "Registered users",
+      "description": "Number of users registered in the last week",
+      "currentPeriod": "Current"
+    },
+    "transactionHistory": {
+      "title": "Transaction history",
+      "description": "Number of transactions per day in the last week",
+      "currentPeriod": "Current"
+    }
+  },
+  "tables": {
+    "latestEvents": "Latest events",
+    "actions": "Pending actions"
+  }
+}

@@ -12,18 +12,15 @@ import {
 } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
-import { orpc } from "@/orpc";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AlertCircle, UserCheck } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/investor")({
-  loader: async ({ context }) => {
+  loader: async ({ context: { queryClient, orpc } }) => {
     // User data is critical for determining step status
-    const user = await context.queryClient.ensureQueryData(
-      orpc.user.me.queryOptions()
-    );
+    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
     return { user };
   },
   component: InvestorOnboarding,
@@ -148,7 +145,12 @@ function InvestorOnboarding() {
               <WalletStep onSuccess={handleWalletSuccess} />
             )}
             {currentStepId === "security" && (
-              <WalletSecurityStep onSuccess={handleSecuritySuccess} />
+              <WalletSecurityStep
+                onNext={handleSecuritySuccess}
+                onPrevious={handleWalletSuccess}
+                isFirstStep={false}
+                isLastStep={false}
+              />
             )}
             {currentStepId === "identity" && (
               <IdentityStep onSuccess={handleIdentitySuccess} />

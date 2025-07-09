@@ -28,7 +28,7 @@ image:
   # -- Portal image repository
   repository: settlemint/btp-scs-portal
   # -- Portal image tag (immutable tags are recommended)
-  tag: "8.5.11"
+  tag: "8.5.12"
   # -- Portal image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
   digest: ""
   # -- Portal image pull policy
@@ -237,7 +237,7 @@ ingress:
   # -- Default host for the ingress record
   hostname: portal.k8s.orb.local
   # -- IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
-  ingressClassName: "settlemint-nginx"
+  ingressClassName: "atk-nginx"
   # -- Default path for the ingress record
   path: /
   # -- Additional path for GraphQL endpoint

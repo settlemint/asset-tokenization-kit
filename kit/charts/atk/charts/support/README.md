@@ -14,11 +14,11 @@ A Helm chart for the supporting components
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.12.3 |
-| https://stakater.github.io/stakater-charts | reloader | 2.1.4 |
+| https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.0 |
+| https://stakater.github.io/stakater-charts | reloader | 2.1.5 |
 | oci://registry-1.docker.io/bitnamicharts | minio | 17.0.9 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql-ha | 16.0.16 |
-| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.6 |
+| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.7 |
 
 ## Values
 
@@ -89,11 +89,11 @@ A Helm chart for the supporting components
 | ingress-nginx.controller.config.use-http2 | string | `"true"` |  |
 | ingress-nginx.controller.config.worker-processes | string | `"auto"` |  |
 | ingress-nginx.controller.extraArgs.enable-ssl-passthrough | string | `"true"` |  |
-| ingress-nginx.controller.ingressClass | string | `"settlemint-nginx"` |  |
-| ingress-nginx.controller.ingressClassResource.controllerValue | string | `"k8s.io/settlemint-nginx"` |  |
+| ingress-nginx.controller.ingressClass | string | `"atk-nginx"` |  |
+| ingress-nginx.controller.ingressClassResource.controllerValue | string | `"k8s.io/atk-nginx"` |  |
 | ingress-nginx.controller.ingressClassResource.default | bool | `false` |  |
 | ingress-nginx.controller.ingressClassResource.enabled | bool | `true` |  |
-| ingress-nginx.controller.ingressClassResource.name | string | `"settlemint-nginx"` | If you run more than one platform versions on a single cluster, you need to make sure these are unique |
+| ingress-nginx.controller.ingressClassResource.name | string | `"atk-nginx"` | If you run more than one platform versions on a single cluster, you need to make sure these are unique |
 | ingress-nginx.controller.metrics.enabled | bool | `true` |  |
 | ingress-nginx.controller.metrics.service.annotations."prometheus.io/port" | string | `"10254"` |  |
 | ingress-nginx.controller.metrics.service.annotations."prometheus.io/scrape" | string | `"true"` |  |

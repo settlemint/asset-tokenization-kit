@@ -9,16 +9,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { env } from "@/lib/env";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { MoreHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
-const logger = createLogger({
-  level: env.VITE_SETTLEMINT_LOG_LEVEL,
-});
+const logger = createLogger();
 
 /**
  * Represents a single action item in the dropdown menu
@@ -76,7 +73,7 @@ export function ActionsCell({
   label,
   align = "end",
 }: ActionsCellProps) {
-  const { t } = useTranslation("general");
+  const { t } = useTranslation("data-table");
 
   // Memoize the button click handler
   const handleButtonClick = useCallback((e: React.MouseEvent) => {
@@ -101,16 +98,12 @@ export function ActionsCell({
           className="h-8 w-8 p-0"
           onClick={handleButtonClick}
         >
-          <span className="sr-only">
-            {t("components.data-table.open-menu")}
-          </span>
+          <span className="sr-only">{t("openMenu")}</span>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={align}>
-        <DropdownMenuLabel>
-          {label ?? t("components.data-table.actions")}
-        </DropdownMenuLabel>
+        <DropdownMenuLabel>{label ?? t("actions")}</DropdownMenuLabel>
         {actions.map((action, index) => (
           <div key={index}>
             {action.separator === "before" && <DropdownMenuSeparator />}

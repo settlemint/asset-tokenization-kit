@@ -24,6 +24,12 @@ export function tokenPermissionMiddleware({
       });
     }
 
+    if (!token.userPermissions) {
+      throw errors.FORBIDDEN({
+        message: "User permissions not available",
+      });
+    }
+
     if (!token.userPermissions.isCompliant) {
       throw errors.FORBIDDEN();
     }

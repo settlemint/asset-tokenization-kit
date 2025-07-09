@@ -18,9 +18,12 @@ import type { ContractRouterClient } from "@orpc/contract";
 import type { RouterClient } from "@orpc/server";
 import { createRouterClient } from "@orpc/server";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getHeaders } from "@tanstack/react-start/server";
 import { router } from "./routes/router";
+
+const logger = createLogger();
 
 /**
  * Creates an isomorphic ORPC client that adapts based on the runtime environment.
@@ -38,9 +41,23 @@ import { router } from "./routes/router";
 const getORPCClient = createIsomorphicFn()
   .server(() => {
     return createRouterClient(router, {
-      context: () => ({
-        headers: getHeaders(),
-      }),
+      context: () => {
+        try {
+          return {
+            headers: getHeaders(),
+          };
+        } catch (error) {
+          // Handle cases where there's no HTTP event in AsyncLocalStorage
+          // This can happen during hydration or when there's no active request
+          logger.warn(
+            "No HTTPEvent found in AsyncLocalStorage, using empty headers",
+            { error }
+          );
+          return {
+            headers: {} as ReturnType<typeof getHeaders>,
+          };
+        }
+      },
     });
   })
   .client((): RouterClient<typeof router> => {

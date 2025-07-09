@@ -1,3 +1,5 @@
+import { LanguageSwitcher } from "@/components/language/language-switcher";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,9 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Web3Avatar } from "@/components/web3-avatar/web3-avatar";
-import { LanguageSwitcher } from "@/components/language/language-switcher";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Web3Avatar } from "@/components/web3/web3-avatar";
 import { authClient } from "@/lib/auth/auth.client";
 import { useNavigate } from "@tanstack/react-router";
 import { BadgeCheck, ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
@@ -48,8 +48,7 @@ export function UserDropdown({
             email={user?.email}
             name={user?.name}
             address={user?.address}
-            size={32}
-            className="h-8 w-8"
+            size="small"
           />
           <div className="hidden sm:grid flex-1 text-left text-sm leading-tight">
             {user?.name ? (
@@ -79,8 +78,7 @@ export function UserDropdown({
               email={user?.email}
               name={user?.name}
               address={user?.address}
-              size={32}
-              className="h-8 w-8"
+              size="small"
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
               {user?.name ? (
@@ -99,14 +97,14 @@ export function UserDropdown({
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Sparkles />
+            <Sparkles className="size-4" />
             Upgrade to Pro
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <BadgeCheck />
+            <BadgeCheck className="size-4" />
             Account
           </DropdownMenuItem>
           <LanguageSwitcher mode="menuItem" />
@@ -114,7 +112,7 @@ export function UserDropdown({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
-          <LogOut />
+          <LogOut className="size-4" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

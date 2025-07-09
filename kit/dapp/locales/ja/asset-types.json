@@ -1,0 +1,153 @@
+{
+  "categories": {
+    "fixedIncome": {
+      "name": "固定収入",
+      "description": "定期的な固定利息の支払いと満期時の元本返還の形でリターンを提供する資産。",
+      "icon": "上昇トレンド"
+    },
+    "flexibleIncome": {
+      "name": "柔軟な収入",
+      "description": "市場の状況と基礎的なパフォーマンスに基づいて変動するリターンを生み出す資産。",
+      "icon": "アクティビティ"
+    },
+    "cashEquivalent": {
+      "name": "現金同等物",
+      "description": "すぐに既知の金額の現金に変換できる高い流動性を持つ投資。",
+      "icon": "ウォレット"
+    }
+  },
+  "types": {
+    "bond": {
+      "name": "債券",
+      "namePlural": "債券",
+      "description": "特定の期間にわたって固定利息を支払う債務証券。",
+      "category": "固定収入",
+      "features": {
+        "maturity": "満期日",
+        "coupon": "クーポン利率",
+        "faceValue": "額面価値",
+        "yield": "満期利回り",
+        "rating": "信用格付け"
+      },
+      "actions": {
+        "issue": "発行債券",
+        "redeem": "償還債券",
+        "payInterest": "利息を支払う",
+        "trade": "債券を取引する"
+      }
+    },
+    "deposit": {
+      "name": "預金",
+      "namePlural": "預金",
+      "description": "固定期間中に利息を得る時間制限付きの預金。",
+      "category": "現金同等物",
+      "features": {
+        "term": "預金期間",
+        "rate": "金利",
+        "minAmount": "最低金額",
+        "earlyWithdrawal": "早期引き出しペナルティ"
+      },
+      "actions": {
+        "create": "預金を作成する",
+        "withdraw": "引き出す",
+        "renew": "預金を更新する",
+        "calculateInterest": "利息を計算する"
+      }
+    },
+    "equity": {
+      "name": "株式",
+      "namePlural": "株式",
+      "description": "資産と収益に対する権利を表す所有権の株。",
+      "category": "柔軟な収入",
+      "features": {
+        "votingRights": "投票権",
+        "dividends": "配当金の支払い",
+        "ownership": "所有権の割合",
+        "class": "株式クラス"
+      },
+      "actions": {
+        "issue": "株式を発行する",
+        "transfer": "所有権を移転する",
+        "payDividend": "配当を支払う",
+        "vote": "投票を行う"
+      }
+    },
+    "fund": {
+      "name": "ファンド",
+      "namePlural": "ファンド",
+      "description": "複数の投資家から資本を集約するプール型投資ビークル。",
+      "category": "柔軟な収入",
+      "features": {
+        "nav": "純資産価値",
+        "managementFee": "管理手数料",
+        "performanceFee": "パフォーマンス手数料",
+        "strategy": "投資戦略"
+      },
+      "actions": {
+        "subscribe": "サブスクライブ",
+        "redeem": "株式を償還する",
+        "calculateNAV": "NAVを計算する",
+        "distribute": "リターンを分配する"
+      }
+    },
+    "stablecoin": {
+      "name": "ステーブルコイン",
+      "namePlural": "ステーブルコイン",
+      "description": "基準資産に対して安定した価値を維持するように設計されたデジタル通貨。",
+      "category": "現金同等物",
+      "features": {
+        "peg": "ペッグ資産",
+        "collateral": "担保比率",
+        "mechanism": "安定性メカニズム",
+        "reserves": "準備金保有"
+      },
+      "actions": {
+        "mint": "トークンを発行する",
+        "burn": "トークンを焼却する",
+        "rebalance": "準備金をリバランスする",
+        "audit": "準備金を監査する"
+      }
+    }
+  },
+  "fields": {
+    "common": {
+      "name": "資産名",
+      "symbol": "シンボル",
+      "description": "説明",
+      "totalSupply": "総供給量",
+      "decimals": "小数点以下の桁数",
+      "issuer": "発行者",
+      "issuanceDate": "発行日",
+      "status": "ステータス"
+    },
+    "compliance": {
+      "kyc": "KYCが必要",
+      "accreditation": "認定が必要",
+      "transferRestrictions": "移転制限",
+      "holdingPeriod": "最低保有期間",
+      "maxInvestors": "最大投資家数"
+    }
+  },
+  "status": {
+    "active": "アクティブ",
+    "paused": "一時停止",
+    "matured": "満期",
+    "redeemed": "償還済み",
+    "defaulted": "デフォルト",
+    "frozen": "凍結"
+  },
+  "metadata": {
+    "riskLevel": {
+      "low": "低リスク",
+      "medium": "中リスク",
+      "high": "高リスク",
+      "veryHigh": "非常に高リスク"
+    },
+    "liquidity": {
+      "high": "高流動性",
+      "medium": "中流動性",
+      "low": "低流動性",
+      "illiquid": "流動性がない"
+    }
+  }
+}
