@@ -1,12 +1,68 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
 import { Web3Address } from "@/components/web3/web3-address";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import type { CellContext } from "@tanstack/react-table";
 import { format as formatDnum, isDnum, toNumber } from "dnum";
-import { useTranslation } from "react-i18next";
+import { formatDate } from "./date";
+
+/**
+ * Safely convert any value to a string
+ * Handles objects by checking for toString method or using JSON.stringify
+ */
+export function safeToString(value: unknown): string {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  if (typeof value === "bigint") {
+    return value.toString();
+  }
+
+  if (typeof value === "symbol") {
+    return value.toString();
+  }
+
+  if (typeof value === "function") {
+    return "[Function]";
+  }
+
+  if (typeof value === "object") {
+    // Check if it has a meaningful toString method
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
+
+    // For other objects, use JSON representation
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return "[Object]";
+    }
+  }
+
+  // This should never be reached, but satisfies TypeScript
+  return "[Unknown]";
+}
+
+/**
+ * Type definition for value formatting options
+ */
+export interface FormatValueOptions {
+  type?: string;
+  displayName?: string;
+  currency?: string;
+  locale?: string;
+  emptyValue?: React.ReactNode;
+  showPrettyName?: boolean;
+}
 
 /**
  * Helper function to safely convert a value to a number for formatting
@@ -38,79 +94,36 @@ function safeToNumber(value: unknown): number {
 }
 
 /**
- * Props for the AutoCell component
- * @interface AutoCellProps
- * @template TData - The type of the data object for the row
- * @template TValue - The type of the value being rendered
+ * Format a value based on its type
+ * @param value - The value to format
+ * @param options - Formatting options including type and metadata
+ * @returns Formatted JSX element or string
  */
-interface AutoCellProps<TData, TValue> {
-  /** The cell context from TanStack Table containing column and value information */
-  context: CellContext<TData, TValue>;
-  /** Optional children to override automatic rendering */
-  children?: React.ReactNode;
-}
+export function formatValue(
+  value: unknown,
+  options: FormatValueOptions = {}
+): React.ReactNode {
+  const {
+    type,
+    displayName,
+    currency = "EUR",
+    locale = "en",
+    emptyValue,
+    showPrettyName = true,
+  } = options;
 
-/**
- * Automatically renders the appropriate cell component based on column meta type.
- * Falls back to children or default text rendering if no type is specified.
- *
- * Supported column meta types:
- * - `address`: Renders AddressCell with truncation and copy functionality
- * - `badge`: Renders Badge with automatic variant selection based on column name/value
- * - `currency`: Formats as currency with locale support
- * - `date`: Formats dates with optional time display
- * - `status`: Renders status badges with semantic color variants
- * - `number`: Formats numbers with locale support and optional compact notation
- * - `text`: Default text rendering
- *
- * @example
- * ```tsx
- * // In your column definition
- * {
- *   accessorKey: "walletAddress",
- *   header: "Wallet",
- *   meta: { type: "address" },
- *   cell: ({ cell }) => <AutoCell context={cell} />
- * }
- *
- * // With override
- * {
- *   accessorKey: "amount",
- *   meta: { type: "currency", currency: "USD" },
- *   cell: ({ cell }) => (
- *     <AutoCell context={cell}>
- *       {cell.getValue() > 1000 && <span>🔥</span>}
- *     </AutoCell>
- *   )
- * }
- * ```
- *
- * @template TData - The type of the data object for the row
- * @template TValue - The type of the value being rendered
- * @param props - The component props
- * @returns The appropriate cell component based on the column meta type
- */
-export function AutoCell<TData, TValue>({
-  context,
-  children,
-}: AutoCellProps<TData, TValue>) {
-  const { i18n } = useTranslation();
-  const meta = context.column.columnDef.meta;
-  const value = context.getValue();
-  const locale = i18n.language;
-
-  // If children are provided, use them (allows override)
-  if (children) {
-    return <>{children}</>;
+  // Check if value is empty/null/undefined
+  if (value === null || value === undefined || value === "") {
+    return emptyValue !== undefined ? emptyValue : "";
   }
 
-  // If no meta or type, render value as is
-  if (!meta?.type) {
-    return <>{String(value ?? "")}</>;
+  // If no type, return value as is
+  if (!type) {
+    return safeToString(value);
   }
 
   // Auto-render based on type with intelligent defaults
-  switch (meta.type) {
+  switch (type) {
     case "address": {
       try {
         const validAddress = getEthereumAddress(value);
@@ -121,13 +134,14 @@ export function AutoCell<TData, TValue>({
             showFullAddress={false}
             size="tiny"
             showSymbol={false}
+            showPrettyName={showPrettyName}
           />
         );
       } catch {
         // If address is invalid, show the raw value
         return (
           <span className="text-xs text-muted-foreground font-mono">
-            {String(value)}
+            {safeToString(value)}
           </span>
         );
       }
@@ -139,13 +153,13 @@ export function AutoCell<TData, TValue>({
         "default";
 
       // For symbol columns, use secondary variant
-      if (meta.displayName?.toLowerCase().includes("symbol")) {
+      if (displayName?.toLowerCase().includes("symbol")) {
         variant = "secondary";
       }
 
       // For status columns, determine based on value
-      if (meta.displayName?.toLowerCase().includes("status")) {
-        const statusValue = String(value).toLowerCase();
+      if (displayName?.toLowerCase().includes("status")) {
+        const statusValue = safeToString(value).toLowerCase();
         if (
           ["active", "success", "completed", "approved", "enabled"].includes(
             statusValue
@@ -172,11 +186,11 @@ export function AutoCell<TData, TValue>({
       }
 
       // Apply for symbol-like badges
-      const isSymbol = meta.displayName?.toLowerCase().includes("symbol");
+      const isSymbol = displayName?.toLowerCase().includes("symbol");
 
       return (
         <Badge variant={variant} className={isSymbol ? "font-mono" : undefined}>
-          {String(value)}
+          {safeToString(value)}
         </Badge>
       );
     }
@@ -184,33 +198,54 @@ export function AutoCell<TData, TValue>({
     case "currency": {
       // Use safe number conversion to handle large values without precision loss
       const currencyValue = safeToNumber(value);
-      return (
-        <span className="text-right block tabular-nums">
-          {new Intl.NumberFormat(locale, {
-            style: "currency",
-            currency: meta.currency ?? "EUR",
-            minimumFractionDigits: 2,
-          }).format(currencyValue)}
-        </span>
-      );
+
+      // Try to format with Intl.NumberFormat
+      try {
+        return (
+          <span className="text-right block tabular-nums">
+            {new Intl.NumberFormat(locale, {
+              style: "currency",
+              currency: currency,
+              minimumFractionDigits: 2,
+            }).format(currencyValue)}
+          </span>
+        );
+      } catch {
+        // If currency is not recognized (e.g., token symbols), format as "value symbol"
+        const formatted = new Intl.NumberFormat(locale, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(currencyValue);
+
+        return (
+          <span className="block tabular-nums">
+            {formatted} {currency}
+          </span>
+        );
+      }
     }
 
     case "date": {
-      const dateValue = value instanceof Date ? value : new Date(String(value));
-      const includeTime = meta.displayName?.toLowerCase().includes("time");
+      const dateValue =
+        value instanceof Date ? value : new Date(safeToString(value));
+      const includeTime = displayName?.toLowerCase().includes("time");
 
       return (
         <span className="text-muted-foreground">
-          {new Intl.DateTimeFormat(locale, {
-            dateStyle: "medium",
-            timeStyle: includeTime ? "short" : undefined,
-          }).format(dateValue)}
+          {formatDate(
+            dateValue,
+            {
+              dateStyle: "medium",
+              timeStyle: includeTime ? "short" : undefined,
+            },
+            locale
+          )}
         </span>
       );
     }
 
     case "status": {
-      const statusValue = String(value).toLowerCase();
+      const statusValue = safeToString(value).toLowerCase();
       const statusVariants: Record<
         string,
         "default" | "secondary" | "destructive" | "outline"
@@ -251,7 +286,7 @@ export function AutoCell<TData, TValue>({
 
       return (
         <Badge variant={statusVariants[statusValue] ?? "default"}>
-          {String(value)}
+          {safeToString(value)}
         </Badge>
       );
     }
@@ -266,9 +301,7 @@ export function AutoCell<TData, TValue>({
           trailingZeros: false,
         });
 
-        return (
-          <span className="text-right block tabular-nums">{formatted}</span>
-        );
+        return <span className="block tabular-nums">{formatted}</span>;
       }
 
       // Use safe number conversion to handle large values without precision loss
@@ -280,14 +313,14 @@ export function AutoCell<TData, TValue>({
       let maximumFractionDigits = 2;
 
       // No decimals for "decimals" columns
-      if (meta.displayName?.toLowerCase().includes("decimal")) {
+      if (displayName?.toLowerCase().includes("decimal")) {
         minimumFractionDigits = 0;
         maximumFractionDigits = 0;
       }
 
       // Use compact notation for large numbers
       const useCompact =
-        meta.displayName?.toLowerCase().includes("count") && numberValue > 9999;
+        displayName?.toLowerCase().includes("count") && numberValue > 9999;
 
       // Format with proper locale
       const formatted = new Intl.NumberFormat(locale, {
@@ -297,11 +330,11 @@ export function AutoCell<TData, TValue>({
         ...(useCompact && { maximumFractionDigits: 1 }),
       }).format(numberValue);
 
-      return <span className="text-right block tabular-nums">{formatted}</span>;
+      return <span className="block tabular-nums">{formatted}</span>;
     }
 
     case "text":
     default:
-      return <span>{String(value)}</span>;
+      return <span>{safeToString(value)}</span>;
   }
 }

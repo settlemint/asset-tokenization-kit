@@ -8,10 +8,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { formatDate, formatDateRange } from "@/lib/utils/date";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
-import { formatDate } from "date-fns";
-import { getDateLocale } from "@/lib/utils/date-locale";
-import { formatDateRange } from "../date-utils";
 import { useTranslation } from "react-i18next";
 import { Ellipsis } from "lucide-react";
 import { cloneElement, isValidElement, useState, useCallback } from "react";
@@ -430,10 +428,7 @@ export function PropertyFilterDateValueDisplay<TData, TValue>({
   if (filter.values.length === 1) {
     const value = filter.values[0];
     if (!value) return <Ellipsis className="size-3.5" />;
-    const dateLocale = getDateLocale(locale);
-    const formattedDateStr = formatDate(value, "MMM d, yyyy", {
-      locale: dateLocale,
-    });
+    const formattedDateStr = formatDate(value, "MMM d, yyyy", locale);
 
     return <span className="text-xs">{formattedDateStr}</span>;
   }

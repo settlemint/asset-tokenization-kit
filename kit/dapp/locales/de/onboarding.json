@@ -35,7 +35,23 @@
     },
     "security": {
       "title": "Sichern Sie Ihre Brieftasche",
-      "description": "Richten Sie einen Schutz für Ihre Brieftasche ein"
+      "description": "Richten Sie einen Schutz für Ihre Brieftasche ein",
+      "wallet-secured": "Brieftasche gesichert",
+      "pin-enabled": "Der PIN-Code-Schutz ist für Ihre Brieftasche aktiviert",
+      "setup-pin": "Richten Sie einen 6-stelligen PIN-Code ein, um Ihre Brieftaschen-Transaktionen zu schützen",
+      "enter-pin": "Geben Sie einen 6-stelligen PIN-Code ein",
+      "pin-configured-title": "PIN-Code erfolgreich konfiguriert",
+      "pin-configured-description": "Ihre Brieftasche ist jetzt mit einer PIN-Code-Überprüfung geschützt",
+      "why-pin-title": "Warum einen PIN-Code einrichten?",
+      "why-pin-description": "Ein PIN-Code fügt Ihrer Brieftasche eine zusätzliche Sicherheitsebene hinzu und schützt Ihre Vermögenswerte und Transaktionen vor unbefugtem Zugriff.",
+      "features": {
+        "transaction-protection": "Transaktionsschutz",
+        "account-security": "Kontosicherheit",
+        "quick-access": "Schneller Zugriff",
+        "easy-remember": "Einfach zu merken"
+      },
+      "success": "PIN-Code erfolgreich festgelegt",
+      "error": "Fehler beim Festlegen des PIN-Codes"
     }
   },
   "wallet": {

@@ -1,5 +1,5 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
-import { DataTableErrorBoundary } from "@/components/data-table/data-table-error-boundary";
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -29,13 +29,13 @@ export function TransactionHistoryChart() {
   );
 
   // Transform transaction history data for chart display
-  const chartData = (metrics.transactionHistory ?? []).map((dataPoint) => ({
+  const chartData = metrics.transactionHistory.map((dataPoint) => ({
     timestamp: dataPoint.timestamp,
     transactions: dataPoint.transactions,
   }));
 
   return (
-    <DataTableErrorBoundary>
+    <ComponentErrorBoundary componentName="Transaction History Chart">
       <AreaChartComponent
         title={t("charts.transactionHistory.title")}
         description={t("charts.transactionHistory.description")}
@@ -46,6 +46,6 @@ export function TransactionHistoryChart() {
         showYAxis={true}
         showLegend={false}
       />
-    </DataTableErrorBoundary>
+    </ComponentErrorBoundary>
   );
 }

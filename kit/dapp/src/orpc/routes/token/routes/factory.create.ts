@@ -151,11 +151,9 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
     try {
       const systemData = context.system;
 
-      if (systemData?.tokenFactories && systemData.tokenFactories.length > 0) {
-        existingFactoryNames = new Set(
-          systemData.tokenFactories.map((factory) => factory.name.toLowerCase())
-        );
-      }
+      existingFactoryNames = new Set(
+        systemData.tokenFactories.map((factory) => factory.name.toLowerCase())
+      );
     } catch (error) {
       // If we can't fetch existing factories, proceed anyway
       // The contract will reject duplicates

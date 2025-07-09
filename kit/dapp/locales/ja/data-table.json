@@ -102,5 +102,13 @@
   "standard": "標準",
   "toggleColumns": "列を切り替え",
   "view": "表示",
-  "viewDetails": "詳細を表示"
+  "viewDetails": "詳細を表示",
+  "aria": {
+    "selectAll": "このページのすべての行を選択",
+    "selectAllWithCount": "{{count}} 行{{status}}を選択",
+    "selectRow": "{{total}} のうち {{index}} 行を選択",
+    "someSelected": "（一部選択済み）"
+  },
+  "tryAdjustingFilters": "探しているものを見つけるためにフィルターを調整してみてください",
+  "noDataAvailable": "まだデータは利用できません"
 }

@@ -1,3 +1,4 @@
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -66,7 +67,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   logger.debug("Form created", {
     hasForm: !!form,
-    formState: form.state ? "available" : "unavailable",
+    formState: "available",
     defaultValues: defaultValues,
   });
 
@@ -227,6 +228,64 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     return { backgroundColor: "var(--sm-background-lightest)" };
   }, []);
 
+  // Calculate dynamic height based on content
+  const dynamicHeight = useMemo(() => {
+    const baseHeight = 300; // Base height for title, progress, etc. (increased)
+    const stepHeight = 100; // Approximate height per step (increased)
+    const groupHeaderHeight = 80; // Height for group headers (increased)
+    const spacingPadding = 100; // Additional padding for margins, spacing, etc.
+    const minHeight = 600; // Minimum height
+    const maxHeight = 1000; // Maximum height to prevent excessive size (increased)
+
+    if (!groups || groups.length === 0) {
+      // No groups, calculate based on total steps
+      return Math.min(
+        Math.max(
+          baseHeight + steps.length * stepHeight + spacingPadding,
+          minHeight
+        ),
+        maxHeight
+      );
+    }
+
+    // Calculate height needed for the largest group when expanded
+    const maxGroupSize =
+      groups.length > 0
+        ? Math.max(
+            ...groups.map((group) => {
+              const groupSteps = steps.filter(
+                (step) => step.groupId === group.id
+              );
+              return groupSteps.length;
+            })
+          )
+        : 0;
+
+    // Calculate total height needed
+    const totalGroupHeaders = groups.length * groupHeaderHeight;
+    const maxGroupContent = maxGroupSize * stepHeight;
+    const calculatedHeight =
+      baseHeight + totalGroupHeaders + maxGroupContent + spacingPadding;
+    const finalHeight = Math.min(
+      Math.max(calculatedHeight, minHeight),
+      maxHeight
+    );
+
+    logger.debug("Dynamic height calculation", {
+      baseHeight,
+      totalGroupHeaders,
+      maxGroupContent,
+      spacingPadding,
+      calculatedHeight,
+      finalHeight,
+      groupsCount: groups.length,
+      maxGroupSize,
+      totalSteps: steps.length,
+    });
+
+    return finalHeight;
+  }, [steps, groups]);
+
   // NOW handle conditional rendering after all hooks have been called
   if (steps.length === 0) {
     logger.error("MultiStepWizard requires at least one step");
@@ -240,71 +299,76 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   }
 
   return (
-    <WizardProvider value={contextValue}>
-      <div className={cn("flex h-full min-h-[600px]", className)}>
-        <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
-          {/* Sidebar */}
-          <div
-            className={cn(
-              "w-[320px] flex-shrink-0 p-8 flex flex-col transition-all duration-300",
-              sidebarClassName
-            )}
-            style={sidebarStyle}
-          >
-            {/* Title and Progress */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-primary-foreground mb-2">
-                {name
-                  ? name
-                      .split("-")
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")
-                  : "Setup Wizard"}
-              </h2>
-              <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
-                {description ?? "Configure your platform step by step"}
-              </p>
-
-              {showProgressBar && (
-                <div>
-                  <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
-                    <span>Step {Number(safeCurrentStepIndex) + 1}</span>
-                    <span>
-                      {Number(safeCurrentStepIndex) + 1} /{" "}
-                      {Number(steps.length)}
-                    </span>
-                  </div>
-                  <Progress
-                    value={progress}
-                    className="h-2 bg-primary-foreground/20"
-                  />
-                </div>
+    <ComponentErrorBoundary componentName={name || "Multi-Step Wizard"}>
+      <WizardProvider value={contextValue}>
+        <div
+          className={cn("flex", className)}
+          style={{ height: `${dynamicHeight}px` }}
+        >
+          <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
+            {/* Sidebar */}
+            <div
+              className={cn(
+                "w-[320px] flex-shrink-0 p-8 flex flex-col transition-all duration-300",
+                sidebarClassName
               )}
+              style={sidebarStyle}
+            >
+              {/* Title and Progress */}
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-primary-foreground mb-2">
+                  {name
+                    ? name
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")
+                    : "Setup Wizard"}
+                </h2>
+                <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
+                  {description ?? "Configure your platform step by step"}
+                </p>
+
+                {showProgressBar && (
+                  <div>
+                    <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
+                      <span>Step {Number(safeCurrentStepIndex) + 1}</span>
+                      <span>
+                        {Number(safeCurrentStepIndex) + 1} /{" "}
+                        {Number(steps.length)}
+                      </span>
+                    </div>
+                    <Progress
+                      value={progress}
+                      className="h-2 bg-primary-foreground/20"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <WizardSidebar />
             </div>
 
-            <WizardSidebar />
-          </div>
-
-          {/* Main content */}
-          <div
-            className={cn(
-              "flex-1 flex flex-col transition-all duration-300 relative overflow-hidden",
-              contentClassName
-            )}
-            style={contentStyle}
-          >
-            <div className="flex-1 overflow-y-auto p-8">
-              <div className="w-full h-full">
-                <form onSubmit={handleFormSubmit}>
-                  <WizardStep />
-                </form>
+            {/* Main content */}
+            <div
+              className={cn(
+                "flex-1 flex flex-col transition-all duration-300 relative overflow-hidden",
+                contentClassName
+              )}
+              style={contentStyle}
+            >
+              <div className="flex-1 overflow-y-auto p-8">
+                <div className="w-full h-full">
+                  <form onSubmit={handleFormSubmit}>
+                    <WizardStep />
+                  </form>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </WizardProvider>
+      </WizardProvider>
+    </ComponentErrorBoundary>
   );
 }
