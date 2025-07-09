@@ -237,24 +237,41 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     const spacingPadding = 100; // Additional padding for margins, spacing, etc.
     const minHeight = 600; // Minimum height
     const maxHeight = 1000; // Maximum height to prevent excessive size (increased)
-    
+
     if (!groups || groups.length === 0) {
       // No groups, calculate based on total steps
-      return Math.min(Math.max(baseHeight + (steps.length * stepHeight) + spacingPadding, minHeight), maxHeight);
+      return Math.min(
+        Math.max(
+          baseHeight + steps.length * stepHeight + spacingPadding,
+          minHeight
+        ),
+        maxHeight
+      );
     }
-    
+
     // Calculate height needed for the largest group when expanded
-    const maxGroupSize = groups.length > 0 ? Math.max(...groups.map(group => {
-      const groupSteps = steps.filter(step => step.groupId === group.id);
-      return groupSteps.length;
-    })) : 0;
-    
+    const maxGroupSize =
+      groups.length > 0
+        ? Math.max(
+            ...groups.map((group) => {
+              const groupSteps = steps.filter(
+                (step) => step.groupId === group.id
+              );
+              return groupSteps.length;
+            })
+          )
+        : 0;
+
     // Calculate total height needed
     const totalGroupHeaders = groups.length * groupHeaderHeight;
     const maxGroupContent = maxGroupSize * stepHeight;
-    const calculatedHeight = baseHeight + totalGroupHeaders + maxGroupContent + spacingPadding;
-    const finalHeight = Math.min(Math.max(calculatedHeight, minHeight), maxHeight);
-    
+    const calculatedHeight =
+      baseHeight + totalGroupHeaders + maxGroupContent + spacingPadding;
+    const finalHeight = Math.min(
+      Math.max(calculatedHeight, minHeight),
+      maxHeight
+    );
+
     logger.debug("Dynamic height calculation", {
       baseHeight,
       totalGroupHeaders,
@@ -264,9 +281,9 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
       finalHeight,
       groupsCount: groups.length,
       maxGroupSize,
-      totalSteps: steps.length
+      totalSteps: steps.length,
     });
-    
+
     return finalHeight;
   }, [steps, groups]);
 
@@ -284,7 +301,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   return (
     <WizardProvider value={contextValue}>
-      <div 
+      <div
         className={cn("flex", className)}
         style={{ height: `${dynamicHeight}px` }}
       >

@@ -343,7 +343,7 @@ export function WalletSecurityStep({
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 text-center">
                   <p className="text-sm font-medium text-green-900 dark:text-green-100 mb-2">
                     PIN Code Configured Successfully
@@ -384,7 +384,10 @@ export function WalletSecurityStep({
               Previous
             </Button>
           )}
-          <Button onClick={handleNext} disabled={isPending || (isPincodeSet && !showSuccessButton)}>
+          <Button
+            onClick={handleNext}
+            disabled={isPending || (isPincodeSet && !showSuccessButton)}
+          >
             {isPending || (isPincodeSet && !showSuccessButton) ? (
               <>
                 <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24">

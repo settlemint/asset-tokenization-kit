@@ -31,8 +31,8 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
 
     // Set initial expanded groups
     const initialExpanded = new Set<string>();
-    
-    groups.forEach(group => {
+
+    groups.forEach((group) => {
       // Expand group if it contains the current step, or if it's marked as defaultExpanded
       if (group.id === currentGroupId || group.defaultExpanded) {
         initialExpanded.add(group.id);
@@ -56,19 +56,23 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
   }, [currentStepIndex, steps, groups]);
 
   // Helper function to check if all steps in a group are completed
-  const isGroupCompleted = useCallback((groupId: string) => {
-    const groupSteps = steps.filter(step => step.groupId === groupId);
-    return groupSteps.every(step => 
-      completedSteps.includes(step.id) || 
-      steps.findIndex(s => s.id === step.id) < currentStepIndex
-    );
-  }, [steps, completedSteps, currentStepIndex]);
+  const isGroupCompleted = useCallback(
+    (groupId: string) => {
+      const groupSteps = steps.filter((step) => step.groupId === groupId);
+      return groupSteps.every(
+        (step) =>
+          completedSteps.includes(step.id) ||
+          steps.findIndex((s) => s.id === step.id) < currentStepIndex
+      );
+    },
+    [steps, completedSteps, currentStepIndex]
+  );
 
   // Toggle group expansion
   const toggleGroupExpansion = useCallback((groupId: string) => {
-    setExpandedGroups(prev => {
+    setExpandedGroups((prev) => {
       const newSet = new Set<string>();
-      
+
       // Accordion behavior: if clicking on a different group, expand only that one
       if (!prev.has(groupId)) {
         newSet.add(groupId);
@@ -77,17 +81,20 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
       else {
         newSet.add(groupId);
       }
-      
+
       return newSet;
     });
   }, []);
 
   // Create group toggle handler to avoid creating functions in render
-  const createGroupToggleHandler = useCallback((groupId: string) => {
-    return () => {
-      toggleGroupExpansion(groupId);
-    };
-  }, [toggleGroupExpansion]);
+  const createGroupToggleHandler = useCallback(
+    (groupId: string) => {
+      return () => {
+        toggleGroupExpansion(groupId);
+      };
+    },
+    [toggleGroupExpansion]
+  );
 
   const getStepStatus = (step: StepDefinition, index: number): StepStatus => {
     if (stepErrors[step.id]) return "error";
@@ -289,116 +296,118 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
     return (
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 pr-2">
-            {groups.map((group) => {
-              const groupSteps = groupedStepsByGroupId[group.id] ?? [];
-              if (groupSteps.length === 0) return null;
+          {groups.map((group) => {
+            const groupSteps = groupedStepsByGroupId[group.id] ?? [];
+            if (groupSteps.length === 0) return null;
 
-              // Check if any step in this group is active
-              const hasActiveStep = groupSteps.some(
-                ({ index }) => index === currentStepIndex
-              );
+            // Check if any step in this group is active
+            const hasActiveStep = groupSteps.some(
+              ({ index }) => index === currentStepIndex
+            );
 
-              const groupCompleted = isGroupCompleted(group.id);
-              const isExpanded = expandedGroups.has(group.id);
+            const groupCompleted = isGroupCompleted(group.id);
+            const isExpanded = expandedGroups.has(group.id);
 
-              return (
-                <div key={group.id} className="relative">
-                  {/* Clickable Group Header */}
-                  <button
-                    type="button"
-                    onClick={createGroupToggleHandler(group.id)}
-                    className={cn(
-                      "w-full text-left mb-3 p-2 rounded-lg transition-all duration-200 hover:bg-white/10",
-                      hasActiveStep && "bg-white/5"
-                    )}
-                  >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <h3
-                      className={cn(
-                        "text-base font-bold transition-all duration-300",
-                        hasActiveStep
-                          ? "text-primary-foreground"
-                          : "text-primary-foreground/70"
-                      )}
-                    >
-                      {group.title}
-                    </h3>
-                    {groupCompleted && (
-                      <svg
-                        className="w-4 h-4 text-green-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                  <svg
-                    className={cn(
-                      "w-4 h-4 text-primary-foreground/60 transition-transform duration-200",
-                      isExpanded ? "rotate-180" : "rotate-0"
-                    )}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-                {group.description && (
-                  <p className="text-xs text-primary-foreground/50 mt-1">
-                    {group.description}
-                  </p>
-                )}
-              </button>
-
-              {/* Collapsible Group Steps */}
-              <div
-                className={cn(
-                  "overflow-hidden transition-all duration-300 ease-in-out",
-                  isExpanded ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
-                )}
-              >
-                <div className="pl-6">
-                  {groupSteps.map(({ step, index }, stepIndex) => {
-                    const isLastInGroup = stepIndex === groupSteps.length - 1;
-                    return renderStep(step, index, isLastInGroup);
-                  })}
-                </div>
-              </div>
-                </div>
-              );
-            })}
-
-            {/* Render ungrouped steps if any */}
-            {groupedStepsByGroupId.ungrouped && (
-              <div className="relative">
-                <div className="pl-2">
-                  {groupedStepsByGroupId.ungrouped.map(
-                    ({ step, index }, stepIndex) => {
-                      const isLastStep =
-                        stepIndex ===
-                        (groupedStepsByGroupId.ungrouped?.length ?? 0) - 1;
-                      return renderStep(step, index, isLastStep);
-                    }
+            return (
+              <div key={group.id} className="relative">
+                {/* Clickable Group Header */}
+                <button
+                  type="button"
+                  onClick={createGroupToggleHandler(group.id)}
+                  className={cn(
+                    "w-full text-left mb-3 p-2 rounded-lg transition-all duration-200 hover:bg-white/10",
+                    hasActiveStep && "bg-white/5"
                   )}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <h3
+                        className={cn(
+                          "text-base font-bold transition-all duration-300",
+                          hasActiveStep
+                            ? "text-primary-foreground"
+                            : "text-primary-foreground/70"
+                        )}
+                      >
+                        {group.title}
+                      </h3>
+                      {groupCompleted && (
+                        <svg
+                          className="w-4 h-4 text-green-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                    <svg
+                      className={cn(
+                        "w-4 h-4 text-primary-foreground/60 transition-transform duration-200",
+                        isExpanded ? "rotate-180" : "rotate-0"
+                      )}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                  {group.description && (
+                    <p className="text-xs text-primary-foreground/50 mt-1">
+                      {group.description}
+                    </p>
+                  )}
+                </button>
+
+                {/* Collapsible Group Steps */}
+                <div
+                  className={cn(
+                    "overflow-hidden transition-all duration-300 ease-in-out",
+                    isExpanded
+                      ? "max-h-[800px] opacity-100"
+                      : "max-h-0 opacity-0"
+                  )}
+                >
+                  <div className="pl-6">
+                    {groupSteps.map(({ step, index }, stepIndex) => {
+                      const isLastInGroup = stepIndex === groupSteps.length - 1;
+                      return renderStep(step, index, isLastInGroup);
+                    })}
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
+            );
+          })}
+
+          {/* Render ungrouped steps if any */}
+          {groupedStepsByGroupId.ungrouped && (
+            <div className="relative">
+              <div className="pl-2">
+                {groupedStepsByGroupId.ungrouped.map(
+                  ({ step, index }, stepIndex) => {
+                    const isLastStep =
+                      stepIndex ===
+                      (groupedStepsByGroupId.ungrouped?.length ?? 0) - 1;
+                    return renderStep(step, index, isLastStep);
+                  }
+                )}
+              </div>
+            </div>
+          )}
         </div>
+      </div>
     );
   };
 

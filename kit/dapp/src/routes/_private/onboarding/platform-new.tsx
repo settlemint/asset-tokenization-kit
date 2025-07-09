@@ -7,7 +7,6 @@ import {
   MultiStepWizard,
   withWizardErrorBoundary,
 } from "@/components/multistep-form";
-import { useSettings } from "@/hooks/use-settings";
 import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
@@ -19,12 +18,14 @@ import type {
   StepDefinition,
   StepGroup,
 } from "@/components/multistep-form/types";
+import type { SessionUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import {
   WelcomeScreen,
   WalletDisplayStep,
   WalletSecurityStep,
   RecoveryCodesStep,
+  SystemBootstrapStep,
 } from "@/components/onboarding/steps";
 
 export const Route = createFileRoute("/_private/onboarding/platform-new")({
@@ -63,6 +64,7 @@ const onboardingSchema = z.object({
   // System Bootstrap
   systemBootstrapped: z.boolean().default(false),
   systemAddress: z.string().optional(),
+  baseCurrency: z.string().default("USD"),
 
   // Asset Configuration
   selectedAssetTypes: z
@@ -108,11 +110,8 @@ function PlatformNewOnboarding() {
   // Get user from session or loader data
   const user = session?.user ?? preloadedUser;
 
-  // Get real-time system address from settings hook
-  const [liveSystemAddress] = useSettings("SYSTEM_ADDRESS");
-
-  // Use live system address if available, otherwise fall back to loader data
-  const systemAddress = liveSystemAddress ?? loaderSystemAddress;
+  // Use system address from loader data (no need for real-time updates during onboarding)
+  const systemAddress = loaderSystemAddress;
 
   const allowedTypes: OnboardingType[] = useMemo(() => ["platform"], []);
 
@@ -198,7 +197,7 @@ function PlatformNewOnboarding() {
             onPrevious={onPrevious}
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
-            user={user}
+            user={user as SessionUser}
           />
         ),
       });
@@ -229,7 +228,7 @@ function PlatformNewOnboarding() {
             onPrevious={onPrevious}
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
-            user={user}
+            user={user as SessionUser}
           />
         ),
       });
@@ -260,7 +259,7 @@ function PlatformNewOnboarding() {
             onPrevious={onPrevious}
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
-            user={user}
+            user={user as SessionUser}
           />
         ),
       });
@@ -273,48 +272,30 @@ function PlatformNewOnboarding() {
         dynamicSteps.push({
           id: "system-bootstrap",
           title: "Bootstrap System",
-          description: "Initialize the blockchain system for first use",
+          description: "Initialize the blockchain system and set base currency",
           groupId: "system",
-          fields: [
-            {
-              name: "systemBootstrapped",
-              label: "Bootstrap System",
-              type: "checkbox",
-              description:
-                "Initialize the core blockchain system (required for first user)",
-            },
-          ],
-          validate: (data) => {
-            if (!data.systemBootstrapped) {
-              return "System bootstrap is required";
-            }
-            return undefined;
+          fields: [],
+          onStepComplete: async () => {
+            return Promise.resolve();
           },
-          mutation: {
-            mutationKey: "bootstrap-system",
-            mutationFn: async function* (data: Partial<OnboardingFormData>) {
-              if (data.systemBootstrapped) {
-                yield { status: "pending", message: "Initializing system..." };
-                await new Promise((resolve) => setTimeout(resolve, 1200));
-
-                yield {
-                  status: "pending",
-                  message: "Deploying core contracts...",
-                };
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-
-                const systemAddress =
-                  "0x" + Math.random().toString(16).slice(2, 42);
-                yield {
-                  status: "confirmed",
-                  message: "System bootstrapped successfully!",
-                  result: { systemAddress },
-                };
-                return { systemAddress };
-              }
-              return null;
-            },
-          },
+          component: ({
+            form,
+            stepId,
+            onNext,
+            onPrevious,
+            isFirstStep,
+            isLastStep,
+          }) => (
+            <SystemBootstrapStep
+              form={form}
+              stepId={stepId}
+              onNext={onNext}
+              onPrevious={onPrevious}
+              isFirstStep={isFirstStep}
+              isLastStep={isLastStep}
+              user={user as SessionUser}
+            />
+          ),
         });
       }
 
@@ -543,20 +524,23 @@ function PlatformNewOnboarding() {
     user,
   ]);
 
-  const handleComplete = useCallback(async (data: OnboardingFormData) => {
-    try {
-      console.log("Onboarding completed with data:", data);
-      toast.success(
-        "Platform onboarding completed successfully! Welcome to your tokenization platform."
-      );
+  const handleComplete = useCallback(
+    async (data: OnboardingFormData) => {
+      try {
+        console.log("Onboarding completed with data:", data);
+        toast.success(
+          "Platform onboarding completed successfully! Welcome to your tokenization platform."
+        );
 
-      // Navigate to main dashboard
-      await navigate({ to: "/" });
-    } catch (error) {
-      toast.error("Failed to complete onboarding");
-      console.error("Onboarding completion error:", error);
-    }
-  }, [navigate]);
+        // Navigate to main dashboard
+        await navigate({ to: "/" });
+      } catch (error) {
+        toast.error("Failed to complete onboarding");
+        console.error("Onboarding completion error:", error);
+      }
+    },
+    [navigate]
+  );
 
   // Calculate default values based on current state
   const defaultValues: Partial<OnboardingFormData> = {
@@ -575,9 +559,37 @@ function PlatformNewOnboarding() {
   };
 
   // Handle starting the wizard
-  const handleStartWalletSetup = () => {
+  const handleStartWalletSetup = useCallback(() => {
+    console.log(
+      "Starting wallet setup, steps:",
+      steps.length,
+      steps.map((s) => s.id)
+    );
+    console.log(
+      "Groups:",
+      groups.length,
+      groups.map((g) => g.id)
+    );
+    console.log("System address:", systemAddress);
+    console.log("Should show conditions:", {
+      shouldShowWalletSteps,
+      shouldShowSystemSetupSteps,
+      shouldShowIdentitySteps,
+    });
     setShowWelcomeScreen(false);
-  };
+  }, [
+    steps,
+    groups,
+    systemAddress,
+    shouldShowWalletSteps,
+    shouldShowSystemSetupSteps,
+    shouldShowIdentitySteps,
+  ]);
+
+  // Memoize callback for back to welcome button
+  const handleBackToWelcome = useCallback(() => {
+    setShowWelcomeScreen(true);
+  }, []);
 
   // If showing welcome screen, render it without the wizard
   if (showWelcomeScreen) {
@@ -627,6 +639,36 @@ function PlatformNewOnboarding() {
     );
   }
 
+  // Debug: Check if steps array is empty
+  if (steps.length === 0) {
+    return (
+      <OnboardingGuard require="not-onboarded" allowedTypes={allowedTypes}>
+        <div className="min-h-screen w-full flex items-center justify-center bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
+          <div className="text-center p-8 bg-background/80 rounded-lg">
+            <h2 className="text-xl font-semibold mb-4">No Steps Available</h2>
+            <p className="text-muted-foreground mb-4">
+              Debug Info: Steps: {steps.length}, Groups: {groups.length}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              shouldShowWalletSteps: {shouldShowWalletSteps ? "true" : "false"}
+              <br />
+              shouldShowSystemSetupSteps:{" "}
+              {shouldShowSystemSetupSteps ? "true" : "false"}
+              <br />
+              shouldShowIdentitySteps:{" "}
+              {shouldShowIdentitySteps ? "true" : "false"}
+              <br />
+              systemAddress: {systemAddress ?? "null"}
+            </p>
+            <Button onClick={handleBackToWelcome} className="mt-4">
+              Back to Welcome
+            </Button>
+          </div>
+        </div>
+      </OnboardingGuard>
+    );
+  }
+
   return (
     <OnboardingGuard require="not-onboarded" allowedTypes={allowedTypes}>
       <div className="min-h-screen w-full bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
@@ -644,7 +686,7 @@ function PlatformNewOnboarding() {
                 {t("general:appDescription")}
               </span>
             </div>
-            </div>
+          </div>
         </div>
 
         {/* Language and theme toggles positioned in top-right */}
