@@ -1,11 +1,10 @@
-import { Bytes, log } from "@graphprotocol/graph-ts";
+import { Bytes } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchBond } from "../bond/fetch/bond";
-import { createAction, getOrCreateActionExecutor } from "../../actions/action-utils";
 
 export function handleBondCreated(event: BondCreated): void {
   fetchEvent(event, "BondCreated");
@@ -33,26 +32,4 @@ export function handleBondCreated(event: BondCreated): void {
   bond.isMatured = false;
   bond.underlyingAsset = event.params.underlyingAsset;
   bond.save();
-  
-  // Create MatureBond action for admin, active at maturity date
-  // const actionExecutor = getOrCreateActionExecutor(
-  //   event.params.tokenAddress,
-  //   [event.transaction.from] // Admin who created the bond
-  // );
-  
-  // const actionId = event.params.tokenAddress.concat(Bytes.fromUTF8("mature"));
-  // const action = createAction(
-  //   actionId,
-  //   actionExecutor,
-  //   "MatureBond",
-  //   "Admin",
-  //   event.block.timestamp,
-  //   event.params.maturityDate, // Active at maturity date
-  //   null, // No expiration
-  //   event.params.tokenAddress
-  // );
-  
-  // if (!action) {
-  //   log.warning("Failed to create mature bond action: {}", [event.params.tokenAddress.toHexString()]);
-  // }
 }
