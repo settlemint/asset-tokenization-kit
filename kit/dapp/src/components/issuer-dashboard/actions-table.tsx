@@ -207,7 +207,7 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
     PENDING: {
       icon: ListCheck,
       title: "No pending actions",
-      description: "There are currently no pending actions requiring your attention.",
+      description: "You don't have any actions that require your attention at this time.",
     },
     UPCOMING: {
       icon: ArrowBigRightDash,
@@ -228,7 +228,7 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
   
   return (
     <DataTable
-      columns={columns}
+      columns={() => columns}
       data={filteredActions}
       name="Actions"
       customEmptyState={statusConfig[status]}

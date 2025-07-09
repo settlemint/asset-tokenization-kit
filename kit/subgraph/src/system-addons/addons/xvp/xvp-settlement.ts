@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import {
   XvPSettlement,
   XvPSettlementApproval,
@@ -106,7 +106,8 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
     xvpSettlement.name = name.reverted ? "" : name.value;
     xvpSettlement.deployedInTransaction = Bytes.empty();
 
-    const approvers: Address[] = [];
+    // Use array with indexOf for O(n) uniqueness checking instead of O(n²) nested loops
+    const approverStrings: string[] = [];
 
     if (!flows.reverted) {
       for (let i = 0; i < flows.value.length; i++) {
@@ -123,17 +124,17 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
         );
 
         // Collect unique approvers (from addresses)
-        let fromExists = false;
-        for (let j = 0; j < approvers.length; j++) {
-          if (approvers[j].equals(flow.from)) {
-            fromExists = true;
-            break;
-          }
-        }
-        if (!fromExists) {
-          approvers.push(flow.from);
+        const approverString = flow.from.toHexString();
+        if (approverStrings.indexOf(approverString) === -1) {
+          approverStrings.push(approverString);
         }
       }
+    }
+    
+    // Convert string array back to Address array
+    const approvers: Address[] = [];
+    for (let i = 0; i < approverStrings.length; i++) {
+      approvers.push(Address.fromString(approverStrings[i]));
     }
 
     xvpSettlement.save();
@@ -164,7 +165,10 @@ export function handleXvPSettlementApproved(event: XvPSettlementApproved): void 
   
   // Mark approval action as executed
   const actionId = event.address.concat(event.params.approver).concat(Bytes.fromUTF8("approve"));
-  executeAction(actionId, event.block.timestamp, event.params.approver);
+  const actionExecuted = executeAction(actionId, event.block.timestamp, event.params.approver);
+  if (!actionExecuted) {
+    log.warning("Failed to execute approval action for XvP settlement: {}", [event.address.toHexString()]);
+  }
   
   // Check if all approvals are done and create execution action
   const settlement = fetchXvPSettlement(event.address);
@@ -186,7 +190,7 @@ export function handleXvPSettlementApproved(event: XvPSettlementApproved): void 
     );
     
     const executeActionId = event.address.concat(Bytes.fromUTF8("execute"));
-    createAction(
+    const executeAction = createAction(
       executeActionId,
       actionExecutor,
       "ExecuteXvPSettlement",
@@ -196,6 +200,10 @@ export function handleXvPSettlementApproved(event: XvPSettlementApproved): void 
       settlement.cutoffDate,
       event.address
     );
+    
+    if (!executeAction) {
+      log.warning("Failed to create execute action for XvP settlement: {}", [event.address.toHexString()]);
+    }
   }
 }
 
@@ -220,7 +228,7 @@ export function handleXvPSettlementApprovalRevoked(event: XvPSettlementApprovalR
   const actionId = event.address.concat(event.params.approver).concat(Bytes.fromUTF8("approve"));
   const settlement = fetchXvPSettlement(event.address);
   
-  createAction(
+  const approvalAction = createAction(
     actionId,
     actionExecutor,
     "ApproveXvPSettlement",
@@ -230,6 +238,10 @@ export function handleXvPSettlementApprovalRevoked(event: XvPSettlementApprovalR
     settlement.cutoffDate,
     event.address
   );
+  
+  if (!approvalAction) {
+    log.warning("Failed to create approval action for XvP settlement: {}", [event.address.toHexString()]);
+  }
 }
 
 /**
@@ -245,7 +257,10 @@ export function handleXvPSettlementExecuted(event: XvPSettlementExecuted): void 
   
   // Mark execution action as completed
   const executeActionId = event.address.concat(Bytes.fromUTF8("execute"));
-  executeAction(executeActionId, event.block.timestamp, event.transaction.from);
+  const actionExecuted = executeAction(executeActionId, event.block.timestamp, event.transaction.from);
+  if (!actionExecuted) {
+    log.warning("Failed to execute settlement action for XvP settlement: {}", [event.address.toHexString()]);
+  }
 }
 
 /**

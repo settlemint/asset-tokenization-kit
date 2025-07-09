@@ -50,12 +50,12 @@ type Action @entity(immutable: false) {
   id: Bytes!
   executor: ActionExecutor!
   name: String!
-  type: String!
+  type: String! @index
   createdAt: BigInt!
-  activeAt: BigInt!
+  activeAt: BigInt! @index
   expiresAt: BigInt
   executedAt: BigInt
-  executed: Boolean!
+  executed: Boolean! @index
   target: Account!
   executedBy: Account
 }
