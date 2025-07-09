@@ -27,6 +27,8 @@ import { Route as PrivateOnboardedSidebarIndexRouteImport } from './routes/_priv
 import { Route as PrivateOnboardedSidebarTokenStatsRouteImport } from './routes/_private/_onboarded/_sidebar/token/stats'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/index'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress'
+import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/index'
+import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
 import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
 import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
@@ -118,6 +120,24 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute =
     path: '/token/$factoryAddress/$tokenAddress',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
+const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute =
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport.update(
+    {
+      id: '/',
+      path: '/',
+      getParentRoute: () =>
+        PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
+    } as any,
+  )
+const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute =
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRouteImport.update(
+    {
+      id: '/holders',
+      path: '/holders',
+      getParentRoute: () =>
+        PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
+    } as any,
+  )
 const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -146,8 +166,10 @@ export interface FileRoutesByFullPath {
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
-  '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
+  '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
+  '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
+  '/token/$factoryAddress/$tokenAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
@@ -160,8 +182,9 @@ export interface FileRoutesByTo {
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
-  '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
+  '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
+  '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -179,8 +202,10 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/': typeof PrivateOnboardedSidebarIndexRoute
   '/_private/_onboarded/asset-designer/': typeof PrivateOnboardedAssetDesignerIndexRoute
   '/_private/_onboarded/_sidebar/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
-  '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
+  '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/_private/_onboarded/_sidebar/token/$factoryAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
+  '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
+  '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -198,6 +223,8 @@ export interface FileRouteTypes {
     | '/token/stats'
     | '/token/$factoryAddress/$tokenAddress'
     | '/token/$factoryAddress'
+    | '/token/$factoryAddress/$tokenAddress/holders'
+    | '/token/$factoryAddress/$tokenAddress/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -210,8 +237,9 @@ export interface FileRouteTypes {
     | '/'
     | '/asset-designer'
     | '/token/stats'
-    | '/token/$factoryAddress/$tokenAddress'
     | '/token/$factoryAddress'
+    | '/token/$factoryAddress/$tokenAddress/holders'
+    | '/token/$factoryAddress/$tokenAddress'
   id:
     | '__root__'
     | '/_private'
@@ -230,6 +258,8 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/token/stats'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/'
+    | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
+    | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -380,6 +410,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
+    '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/': {
+      id: '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/'
+      path: '/'
+      fullPath: '/token/$factoryAddress/$tokenAddress/'
+      preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
+    }
+    '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders': {
+      id: '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
+      path: '/holders'
+      fullPath: '/token/$factoryAddress/$tokenAddress/holders'
+      preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
+    }
   }
 }
 declare module '@tanstack/react-start/server' {
@@ -408,10 +452,28 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren {
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
+}
+
+const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren: PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren =
+  {
+    PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute:
+      PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute,
+    PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute:
+      PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute,
+  }
+
+const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren =
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute._addFileChildren(
+    PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren,
+  )
+
 interface PrivateOnboardedSidebarRouteChildren {
   PrivateOnboardedSidebarIndexRoute: typeof PrivateOnboardedSidebarIndexRoute
   PrivateOnboardedSidebarTokenStatsRoute: typeof PrivateOnboardedSidebarTokenStatsRoute
-  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
+  PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   PrivateOnboardedSidebarTokenFactoryAddressIndexRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
 }
 
@@ -421,7 +483,7 @@ const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren
     PrivateOnboardedSidebarTokenStatsRoute:
       PrivateOnboardedSidebarTokenStatsRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute:
-      PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
+      PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren,
     PrivateOnboardedSidebarTokenFactoryAddressIndexRoute:
       PrivateOnboardedSidebarTokenFactoryAddressIndexRoute,
   }

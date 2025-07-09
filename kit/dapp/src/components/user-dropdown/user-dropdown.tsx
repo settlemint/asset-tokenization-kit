@@ -97,14 +97,14 @@ export function UserDropdown({
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Sparkles />
+            <Sparkles className="size-4" />
             Upgrade to Pro
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <BadgeCheck />
+            <BadgeCheck className="size-4" />
             Account
           </DropdownMenuItem>
           <LanguageSwitcher mode="menuItem" />
@@ -112,7 +112,7 @@ export function UserDropdown({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
-          <LogOut />
+          <LogOut className="size-4" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

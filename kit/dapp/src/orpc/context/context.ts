@@ -5,7 +5,7 @@ import type { client as minioClient } from "@/lib/settlemint/minio";
 import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.middleware";
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import type { TokenFactory } from "@/orpc/middlewares/system/system.middleware";
-import type { Token } from "@/orpc/middlewares/system/token.middleware";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import type { getHeaders } from "@tanstack/react-start/server";
 import type { Address } from "viem";
 

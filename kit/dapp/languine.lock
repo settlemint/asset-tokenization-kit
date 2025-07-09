@@ -874,6 +874,10 @@ files:
     selectAll: 4c41e0bd957698b58100a5c687d757d9
     selected: ef7de3f485174ff47f061ad27d83d0ee
     selectedRowsInfo: 35d9a5331c5ea913c727e64c6602e4b2
+    aria.selectAll: 6487830700494f5a1845717fb9ff9ac9
+    aria.selectAllWithCount: c22767b20dfe27a042a1702edd0e5280
+    aria.selectRow: 626bd5976eff730d009586de07290164
+    aria.someSelected: 001d440aca679df7fb0f206b2e205f39
     showAll: eb92025cb8c66f1850c13a9b602a1856
     showSelected: 124f8e47e1738414cb51a1aeef3351c6
     showing: b4e6101378d2a08d80df7e5da0625128
@@ -1294,6 +1298,20 @@ files:
     steps.wallet.description: 6c1502ff261ec16b4812c4138ceaaea3
     steps.security.title: 1e2f6048b4c77f06f13020e8f2be9dfe
     steps.security.description: 46c220652364bead7496b5bb281e6d1b
+    steps.security.wallet-secured: 7870a695de89900bf44d384dfef2e5fb
+    steps.security.pin-enabled: aa99677f492e3dec7ab4d07a48a376bc
+    steps.security.setup-pin: afaf8c30ea8c5f1326d6efb90dd0aba0
+    steps.security.enter-pin: e437e46c14151ac74ab457110ceb4394
+    steps.security.pin-configured-title: 2a6debb53916ba26f88c324f566e305d
+    steps.security.pin-configured-description: 3ecce288fd7a157a31435c1e6bf455f7
+    steps.security.why-pin-title: aca296fca6f49d81b50f6b6d1053b029
+    steps.security.why-pin-description: a5d4271a2dfc8af7b4594cecdc81b41c
+    steps.security.features.transaction-protection: a9bed116a2883a31cf81f805c7e48b89
+    steps.security.features.account-security: a062042ce3e291bd4ce687b2fa196dff
+    steps.security.features.quick-access: 4f32a32dea642737580dd71cdfd8d3c0
+    steps.security.features.easy-remember: bb4e00650cc8c84ea84e91b0b3e6ffa4
+    steps.security.success: 3250ebdc2eafcb2978ef2f2647c22ee7
+    steps.security.error: e8ee01ca725c4cbdac6f93aa21a2fad0
     steps.system.title: f4ab320ccbad23a197a7dc05840a1458
     steps.system.description: aba1a747226f16730da32cd94e3e7852
     steps.assets.title: a24e4f92fcc9b04edfa7a02767783f8f
@@ -1608,11 +1626,51 @@ files:
     help.compliance: 3743b3e1055691e8e51043f0d141ec70
     help.security: 81dd76e995768f8f189beba32927f350
   locales/en/tokens.json:
+    actions.addressCopied: 8ab553026ffb313bbb5586df43b7116a
+    actions.copyAddress: 6b35e4c0b1b3d4d2aef429a90f84e1ab
+    actions.createToken: a8b758dea74b70495d59fc03d4f741aa
+    actions.viewDetails: 5d5cd268b8acccf04f63d81c5d0d2cab
+    actions.viewOnEtherscan: b4a95a0b3c4b23578d23edf3d20265ad
+    bulkActions.archiveMessage: f390236a2818428013e1e81fe71e21e9
+    bulkActions.duplicateMessage: bd81d582b5b135e5d8bdf22156942911
+    columns.actions: 06df33001c1d7187fdd81ea1f5b277aa
+    columns.contractAddress: 23a36672509f4b9cb7bd6bf756cd568a
+    columns.decimals: 2b417805040de3a3df31c8fd3626b57c
+    columns.name: 49ee3087348e8d44e1feda1917443987
+    columns.paused: ec53a8c4f07baed5d8825072c89799be
+    columns.symbol: 02c86eb2792f3262c21d030a87e19793
+    columns.tokenName: cf8f8251f944305fc6a92b06faadbf30
+    columns.tokenSymbol: a9dd149493d64b2b0e59e2e475baf5f2
+    columns.totalSupply: 7ca9416c0e8045c2d9561012e42c4d15
+    emptyState.description: 43198125adbbc9360df3baa3c27b64a1
+    emptyState.title: 9e3d4f57df7b2dd1a9ce1845a928c2ae
+    searchPlaceholder: dc1acdd37e8863627fda626a8a8fc0ce
     asset-types.bond: b98e3a37b62f7207c8a0a27e0c0d8777
     asset-types.equity: f38992a52cef8611666b2db431b493a6
     asset-types.fund: d42b2bb7ac17fc34a099909c0a2f1de9
     asset-types.stablecoin: 2f7d136a5b9efb222650243b1d38b6ff
     asset-types.deposit: b14b4095cfda93c81686ac81dea4dbed
+    details.tokenInformation: 39210954d7180905c998c12e60fff3d0
+    details.complianceInformation: 18b2779c5c7f6b00e41043360afc7871
+    fields.contractAddress: 23a36672509f4b9cb7bd6bf756cd568a
+    fields.contractAddressInfo: 1742652254923592186c30dc23a6a232
+    fields.name: cf8f8251f944305fc6a92b06faadbf30
+    fields.nameInfo: 50db9b66c4dd79ef09ba6b933de9e7a3
+    fields.symbol: 02c86eb2792f3262c21d030a87e19793
+    fields.symbolInfo: 7b0d102060da94f561175ac427888fc2
+    fields.decimals: 2b417805040de3a3df31c8fd3626b57c
+    fields.decimalsInfo: 04b7651900d907a13dd13fab9de24676
+    fields.totalSupply: 7ca9416c0e8045c2d9561012e42c4d15
+    fields.totalSupplyInfo: 3ecae88650f3a06fcbcdc398a4de1219
+    fields.assetType: f55434db35c06a280833ea220013eea2
+    fields.assetTypeInfo: 1f1f4abc0013c1a795ed4e37261102b0
+    fields.status: ec53a8c4f07baed5d8825072c89799be
+    fields.statusInfo: 8378a331cc7619756606b961edb71346
+    fields.requiredClaims: b4b5f75c9313dd3ed3fd57af17b6407b
+    fields.requiredClaimsInfo: 19906e1a0a103b8c29adfd5727bcd29a
+    fields.noRequiredClaims: faf39c42860d9527ef3644339b719400
+    status.active: 4d3d769b812b6faa6b76e1a8abaece2d
+    status.paused: e99180abf47a8b3a856e0bcb2656990a
     factory.create.title: 48ff6c45d10b30d2147fea6f189fcecd
     factory.create.description: 486fc4bc0058947c926ec7f99066810e
     factory.create.deploying: 17312e6003a0873f2b32eda82f7e44bf
@@ -1836,3 +1894,5 @@ files:
     mobile.scanQR: 15739b1bf7afe6c591f73f67643c1204
     mobile.openInWallet: 26c8e21a6b4f71168c417027170d0e85
     mobile.deepLink: b9e4727360fde248f7fc278e0f4be14e
+  locales/en/detail-grid.json:
+    info-icon-label: 0f68b904e33d9ac04605aecc958bcf52

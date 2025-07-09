@@ -1,9 +1,6 @@
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
-import {
-  MultiStepWizard,
-  withWizardErrorBoundary,
-} from "@/components/multistep-form";
+import { MultiStepWizard } from "@/components/multistep-form";
 import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import { WelcomeScreen } from "@/components/onboarding/steps";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -45,7 +42,7 @@ export const Route = createFileRoute("/_private/onboarding/platform-new")({
 
     return { user, systemAddress, systemDetails };
   },
-  component: withWizardErrorBoundary(PlatformNewOnboarding),
+  component: PlatformNewOnboarding,
 });
 
 function PlatformNewOnboarding() {

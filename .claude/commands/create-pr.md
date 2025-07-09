@@ -1,12 +1,12 @@
 # /create-pr
 
-*Creates a comprehensive pull request using multi-agent analysis to ensure high-quality submissions that minimize reviewer burden*
+_Creates a comprehensive pull request using multi-agent analysis to ensure
+high-quality submissions that minimize reviewer burden_
 
 ## Auto-Loaded Project Context:
-@/CLAUDE.md
-@/.claude/CLAUDE.md
-@/docs/ai-context/project-structure.md
-@/docs/ai-context/docs-overview.md
+
+- @/CLAUDE.md
+- @/.claude/CLAUDE.md
 
 ## Role: Release Manager
 
@@ -33,6 +33,7 @@ User provided context: "$ARGUMENTS"
 ## Step 1: Analyze PR Scope and Select Strategy
 
 Think deeply about the changes made:
+
 - Number of files modified
 - Types of changes (features, fixes, refactoring)
 - Potential impact on existing functionality
@@ -42,18 +43,21 @@ Think deeply about the changes made:
 ### Strategy Selection:
 
 **🎯 Direct Approach** (0-1 sub-agents)
+
 - Simple bug fixes or minor changes
 - Single file modifications
 - No architectural impact
 - Clear, isolated changes
 
 **⚡ Focused Analysis** (2-3 sub-agents)
+
 - Multi-file feature additions
 - Moderate refactoring
 - Clear component boundaries
 - Standard testing requirements
 
 **🚨 Comprehensive Analysis** (4+ sub-agents)
+
 - Major features or breaking changes
 - Cross-system impact
 - Complex refactoring
@@ -61,7 +65,8 @@ Think deeply about the changes made:
 
 ## Step 2: Execute Multi-Agent PR Analysis
 
-**CRITICAL:** Generate specialized agents based on the PR scope. All agents must work in parallel for efficiency.
+**CRITICAL:** Generate specialized agents based on the PR scope. All agents must
+work in parallel for efficiency.
 
 ### Dynamic Agent Allocation Pattern:
 
@@ -74,6 +79,7 @@ Large PR (16+ files): 5+ agents (+ specialized domain experts)
 ### Core Agent Templates:
 
 #### Agent 1: Change Analyzer
+
 ```
 Task: "As a Change Analysis Specialist, comprehensively catalog and categorize all modifications in this PR.
 
@@ -94,6 +100,7 @@ Workflow:
 ```
 
 #### Agent 2: Test Coverage Validator
+
 ```
 Task: "As a Test Coverage Specialist, verify comprehensive test coverage for all changes.
 
@@ -114,6 +121,7 @@ Workflow:
 ```
 
 #### Agent 3: Documentation Auditor
+
 ```
 Task: "As a Documentation Specialist, ensure all changes are properly documented.
 
@@ -134,6 +142,7 @@ Workflow:
 ```
 
 #### Agent 4: Impact Assessor
+
 ```
 Task: "As an Impact Analysis Expert, evaluate the blast radius and risks of these changes.
 
@@ -154,6 +163,7 @@ Workflow:
 ```
 
 #### Agent 5: PR Description Writer
+
 ```
 Task: "As a Technical Writer, create a compelling PR description that tells the story of these changes.
 
@@ -221,7 +231,8 @@ bun run ci
 <footer>
 ```
 
-**Types:** feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
+**Types:** feat, fix, docs, style, refactor, perf, test, build, ci, chore,
+revert
 
 ### Multi-Commit Strategy
 
@@ -329,44 +340,51 @@ mcp_linear_create_comment({
 ## PR Creation Summary
 
 ### 📋 PR Details
+
 - **Title:** `feat(component): add real-time updates`
 - **Branch:** `feature/real-time-updates`
 - **URL:** https://github.com/org/repo/pull/123
 - **Linear Ticket:** ENG-4567
 
 ### 📊 Change Metrics
+
 - **Files Changed:** 12
 - **Lines Added:** +340
 - **Lines Removed:** -85
 - **Test Coverage:** 94.2%
 
 ### 🎯 Key Changes
+
 1. ✅ WebSocket integration for real-time data
 2. ✅ State management refactoring
 3. ✅ Performance optimizations
 4. ✅ Comprehensive test suite
 
 ### 🔍 Quality Status
-| Check | Status | Details |
-|-------|--------|---------|
-| Tests | ✅ PASS | All 234 tests passing |
-| Lint | ✅ PASS | No issues found |
-| Types | ✅ PASS | No type errors |
-| Build | ✅ PASS | Build successful |
+
+| Check    | Status  | Details                |
+| -------- | ------- | ---------------------- |
+| Tests    | ✅ PASS | All 234 tests passing  |
+| Lint     | ✅ PASS | No issues found        |
+| Types    | ✅ PASS | No type errors         |
+| Build    | ✅ PASS | Build successful       |
 | Coverage | ✅ PASS | 94.2% (threshold: 80%) |
 
 ### 📝 Documentation
+
 - API docs: ✅ Updated
 - README: ✅ Updated
 - Migration guide: ✅ Created
 - Changelog: ✅ Entry added
 
 ### ⚠️ Reviewer Notes
+
 - **Focus Areas:** WebSocket error handling, state synchronization
 - **Performance:** Tested with 10k concurrent connections
 - **Breaking Changes:** None
 
 ### 🚀 Next Steps
+
 1. Await code review feedback
 2. Address any requested changes
 3. Ensure CI/CD pipeline passes
@@ -415,7 +433,9 @@ mcp_linear_create_comment({
 ## Advanced PR Patterns
 
 ### PR Stacks
+
 For very large changes, create dependent PRs:
+
 ```bash
 # Base PR
 git checkout -b feature/base
@@ -429,13 +449,17 @@ gh pr create --base feature/base
 ```
 
 ### Draft PRs
+
 For early feedback:
+
 ```bash
 gh pr create --draft --title "WIP: $TITLE"
 ```
 
 ### PR Templates
+
 Leverage repository PR templates:
+
 ```bash
 # Use specific template
 gh pr create --template .github/pull_request_template.md
