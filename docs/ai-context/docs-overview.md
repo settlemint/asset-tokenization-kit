@@ -28,9 +28,9 @@ This hierarchy allows AI agents to load targeted context efficiently while maint
 ## Tier 2: Component-Level Documentation
 
 ### Application Components
-- **[DApp Frontend](/kit/dapp/CLAUDE.md)** - *React application.* TanStack Router, ORPC, Drizzle ORM, multi-language support, actions system
+- **[DApp Frontend](/kit/dapp/CLAUDE.md)** - *React application.* TanStack Router, ORPC, Drizzle ORM, multi-language suppor
 - **[Smart Contracts](/kit/contracts/CLAUDE.md)** - *Blockchain contracts.* Asset tokenization (Bond, Equity, Fund, Deposit, StableCoin), SMART compliance, OnChainID
-- **[Subgraph](/kit/subgraph/CLAUDE.md)** - *The Graph indexing.* Event processing, entity relationships, GraphQL schema, actions workflow system
+- **[Subgraph](/kit/subgraph/CLAUDE.md)** - *The Graph indexing.* Event processing, entity relationships, GraphQL schema
 
 ### Infrastructure Components
 - **[Helm Charts](/kit/charts/CLAUDE.md)** - *Kubernetes deployment.* Main ATK chart, service configurations, subchart dependencies
@@ -56,8 +56,8 @@ Granular CLAUDE.md files co-located with code for minimal cascade effects:
 
 ### Frontend Feature Documentation
 - **[Routes](/kit/dapp/src/routes/CLAUDE.md)** - *Page components.* Authentication, portfolio, admin, asset management
-- **[Components](/kit/dapp/src/components/CLAUDE.md)** - *UI components.* Forms, tables, charts, modals, actions table system
-- **[ORPC API](/kit/dapp/src/orpc/CLAUDE.md)** - *Server functions.* Asset operations, authentication, data fetching, actions API
+- **[Components](/kit/dapp/src/components/CLAUDE.md)** - *UI components.* Forms, tables, charts, modals
+- **[ORPC API](/kit/dapp/src/orpc/CLAUDE.md)** - *Server functions.* Asset operations, authentication, data fetching
 - **[Database](/kit/dapp/src/lib/db/CLAUDE.md)** - *Drizzle ORM.* Schemas, queries, migrations
 - **[Localization](/kit/dapp/locales/CLAUDE.md)** - *i18n.* Translation files, language support
 

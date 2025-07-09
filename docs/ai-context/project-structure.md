@@ -86,13 +86,12 @@ dapp/
 ├── src/
 │   ├── routes/              # Page components (file-based routing)
 │   ├── components/          # Reusable UI components
-│   │   └── issuer-dashboard/ # Dashboard components including actions table
 │   ├── orpc/               # ORPC server functions and API routes
-│   │   └── routes/token/   # Token-related API endpoints including actions
+│   │   └── routes/token/   # Token-related API endpoints
 │   ├── lib/                # Utilities and database
 │   ├── hooks/              # React hooks
 │   └── providers/          # Context providers
-├── locales/                # Translation files (expanded for actions)
+├── locales/                # Translation files
 ├── public/                 # Static assets
 └── drizzle/               # Database migrations
 ```
