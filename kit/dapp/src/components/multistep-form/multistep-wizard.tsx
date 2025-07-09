@@ -227,6 +227,64 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     return { backgroundColor: "var(--sm-background-lightest)" };
   }, []);
 
+  // Calculate dynamic height based on content
+  const dynamicHeight = useMemo(() => {
+    const baseHeight = 300; // Base height for title, progress, etc. (increased)
+    const stepHeight = 100; // Approximate height per step (increased)
+    const groupHeaderHeight = 80; // Height for group headers (increased)
+    const spacingPadding = 100; // Additional padding for margins, spacing, etc.
+    const minHeight = 600; // Minimum height
+    const maxHeight = 1000; // Maximum height to prevent excessive size (increased)
+
+    if (!groups || groups.length === 0) {
+      // No groups, calculate based on total steps
+      return Math.min(
+        Math.max(
+          baseHeight + steps.length * stepHeight + spacingPadding,
+          minHeight
+        ),
+        maxHeight
+      );
+    }
+
+    // Calculate height needed for the largest group when expanded
+    const maxGroupSize =
+      groups.length > 0
+        ? Math.max(
+            ...groups.map((group) => {
+              const groupSteps = steps.filter(
+                (step) => step.groupId === group.id
+              );
+              return groupSteps.length;
+            })
+          )
+        : 0;
+
+    // Calculate total height needed
+    const totalGroupHeaders = groups.length * groupHeaderHeight;
+    const maxGroupContent = maxGroupSize * stepHeight;
+    const calculatedHeight =
+      baseHeight + totalGroupHeaders + maxGroupContent + spacingPadding;
+    const finalHeight = Math.min(
+      Math.max(calculatedHeight, minHeight),
+      maxHeight
+    );
+
+    logger.debug("Dynamic height calculation", {
+      baseHeight,
+      totalGroupHeaders,
+      maxGroupContent,
+      spacingPadding,
+      calculatedHeight,
+      finalHeight,
+      groupsCount: groups.length,
+      maxGroupSize,
+      totalSteps: steps.length,
+    });
+
+    return finalHeight;
+  }, [steps, groups]);
+
   // NOW handle conditional rendering after all hooks have been called
   if (steps.length === 0) {
     logger.error("MultiStepWizard requires at least one step");
@@ -241,7 +299,10 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   return (
     <WizardProvider value={contextValue}>
-      <div className={cn("flex h-full min-h-[600px]", className)}>
+      <div
+        className={cn("flex", className)}
+        style={{ height: `${dynamicHeight}px` }}
+      >
         <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
           {/* Sidebar */}
           <div

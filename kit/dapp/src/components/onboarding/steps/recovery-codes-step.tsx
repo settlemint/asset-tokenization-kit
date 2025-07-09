@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import type { StepComponentProps } from "@/components/multistep-form/types";
 import { authClient } from "@/lib/auth/auth.client";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation } from "@tanstack/react-query";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+
+const logger = createLogger();
 
 interface RecoveryCodeItemProps {
   code: string;
@@ -17,15 +19,19 @@ function RecoveryCodeItem({ code, index, onCopy }: RecoveryCodeItemProps) {
   }, [code, index, onCopy]);
 
   return (
-    <div className="flex items-center justify-between p-3 bg-muted rounded-lg border group hover:bg-muted/80 transition-colors">
-      <div className="flex items-center gap-3">
-        <span className="text-xs text-muted-foreground w-6">{index + 1}.</span>
-        <code className="font-mono text-sm select-all">{code}</code>
+    <div className="relative group">
+      <div className="flex items-center p-2 bg-muted rounded-lg border hover:bg-muted/80 transition-colors">
+        <span className="text-xs text-muted-foreground w-8">
+          {(index + 1).toString().padStart(2, "0")}.
+        </span>
+        <code className="font-mono text-sm select-all flex-1 text-center">
+          {code}
+        </code>
       </div>
       <Button
         variant="ghost"
         size="sm"
-        className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
+        className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
         onClick={handleCopy}
         title={`Copy code ${index + 1}`}
       >
@@ -47,7 +53,11 @@ function RecoveryCodeItem({ code, index, onCopy }: RecoveryCodeItemProps) {
   );
 }
 
-interface RecoveryCodesStepProps extends StepComponentProps {
+interface RecoveryCodesStepProps {
+  onNext?: () => void;
+  onPrevious?: () => void;
+  isFirstStep?: boolean;
+  isLastStep?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user?: any; // Use any for now to match the user type from session
 }
@@ -60,6 +70,7 @@ export function RecoveryCodesStep({
 }: RecoveryCodesStepProps) {
   const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
   const [recoveryCodesFetched, setRecoveryCodesFetched] = useState(false);
+  const hasShownToast = useRef(false);
 
   // Memoized functions to avoid creating new functions in render
   const handleCopyAll = useCallback(() => {
@@ -90,11 +101,13 @@ export function RecoveryCodesStep({
   const { mutate: generateRecoveryCodes, isPending: isGeneratingCodes } =
     useMutation({
       mutationFn: async () => {
+        logger.debug("Starting mutation...");
         return authClient.secretCodes.generate({
           // No password required during onboarding
         });
       },
       onSuccess: (data) => {
+        logger.debug("Recovery codes onSuccess", data);
         // Check if there's an error in the response (like 404)
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (data && "error" in data && data.error) {
@@ -103,9 +116,13 @@ export function RecoveryCodesStep({
             const mockCodes = Array.from({ length: 16 }, () =>
               Math.random().toString(36).substring(2, 8).toUpperCase()
             );
+            logger.debug("Setting mock codes from 404", mockCodes);
             setRecoveryCodes(mockCodes);
             setRecoveryCodesFetched(true);
-            toast.success("Recovery codes generated");
+            if (!hasShownToast.current) {
+              hasShownToast.current = true;
+              toast.success("Recovery codes generated successfully");
+            }
             return;
           }
 
@@ -119,31 +136,46 @@ export function RecoveryCodesStep({
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (data && "data" in data && data.data && "secretCodes" in data.data) {
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          setRecoveryCodes(data.data.secretCodes || []);
+          const codes = data.data.secretCodes || [];
+          logger.debug("Setting real codes", codes);
+          setRecoveryCodes(codes);
           setRecoveryCodesFetched(true);
-          toast.success("Recovery codes generated successfully");
+          if (!hasShownToast.current) {
+            hasShownToast.current = true;
+            toast.success("Recovery codes generated successfully");
+          }
         } else if (
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           data &&
           "secretCodes" in data &&
           Array.isArray(data.secretCodes)
         ) {
-          setRecoveryCodes(data.secretCodes);
+          const codes = data.secretCodes;
+          logger.debug("Setting alternative format codes", codes);
+          setRecoveryCodes(codes);
           setRecoveryCodesFetched(true);
-          toast.success("Recovery codes generated successfully");
+          if (!hasShownToast.current) {
+            hasShownToast.current = true;
+            toast.success("Recovery codes generated successfully");
+          }
         } else {
           toast.error("Unexpected response format");
         }
       },
       onError: (error: Error) => {
+        logger.debug("Recovery codes onError", error);
         // Fallback for thrown errors
         if (error.message.includes("404")) {
           const mockCodes = Array.from({ length: 16 }, () =>
             Math.random().toString(36).substring(2, 8).toUpperCase()
           );
+          logger.debug("Setting mock codes from error", mockCodes);
           setRecoveryCodes(mockCodes);
           setRecoveryCodesFetched(true);
-          toast.success("Recovery codes generated");
+          if (!hasShownToast.current) {
+            hasShownToast.current = true;
+            toast.success("Recovery codes generated successfully");
+          }
           return;
         }
 
@@ -152,16 +184,24 @@ export function RecoveryCodesStep({
     });
 
   const handleTryAgain = useCallback(() => {
+    hasShownToast.current = false; // Reset toast flag for retry
     generateRecoveryCodes();
   }, [generateRecoveryCodes]);
 
   // Generate recovery codes on component mount
   useEffect(() => {
+    logger.debug("Recovery codes useEffect", {
+      recoveryCodesFetched,
+      isGeneratingCodes,
+      recoveryCodes: recoveryCodes.length,
+    });
+
     if (
       !recoveryCodesFetched &&
       !isGeneratingCodes &&
       recoveryCodes.length === 0
     ) {
+      logger.debug("Generating recovery codes...");
       generateRecoveryCodes();
     }
   }, [
@@ -200,14 +240,10 @@ export function RecoveryCodesStep({
                 />
               </svg>
               <div className="flex-1">
-                <h3 className="text-sm font-medium text-amber-900 dark:text-amber-100 mb-2">
+                <h3 className="text-sm font-medium text-amber-600 dark:text-amber-400 mb-2 mt-0.5">
                   Important Security Information
                 </h3>
-                <ul className="text-sm text-amber-800 dark:text-amber-200 space-y-1">
-                  <li>
-                    • Store these codes in a safe place - they can't be
-                    recovered if lost
-                  </li>
+                <ul className="text-sm text-amber-600 dark:text-amber-400 space-y-1">
                   <li>
                     • Keep them private - anyone with these codes can access
                     your wallet
@@ -216,7 +252,6 @@ export function RecoveryCodesStep({
                     • Consider writing them down or storing them in a secure
                     password manager
                   </li>
-                  <li>• Each code can only be used once</li>
                 </ul>
               </div>
             </div>
@@ -299,7 +334,7 @@ export function RecoveryCodesStep({
                   Your Recovery Codes ({recoveryCodes.length})
                 </h4>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {recoveryCodes.map((code, index) => (
                     <RecoveryCodeItem
                       key={`${code}-${index}`}
