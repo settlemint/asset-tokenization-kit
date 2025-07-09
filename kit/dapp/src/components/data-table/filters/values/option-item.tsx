@@ -38,7 +38,7 @@ export function OptionItem({
           (isValidElement(option.icon) ? (
             option.icon
           ) : (
-            <option.icon className="size-4 text-primary" />
+            <option.icon className="size-4 text-muted-foreground transition-colors group-hover:text-foreground" />
           ))}
         <span>
           {option.label}

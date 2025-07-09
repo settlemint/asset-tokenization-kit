@@ -1,13 +1,11 @@
-import { useCallback, useMemo } from "react";
-import { useNavigate, useSearch } from "@tanstack/react-router";
-import { z } from "zod";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useCallback, useMemo } from "react";
+import { z } from "zod/v4";
 import type { UseMultiStepWizardStateOptions, WizardState } from "./types";
 
-const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel | undefined) ?? "info",
-});
+const logger = createLogger();
 
 const wizardStateSchema = z.object({
   currentStepIndex: z.number().min(0).default(0),

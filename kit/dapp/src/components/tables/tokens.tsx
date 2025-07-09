@@ -7,12 +7,12 @@ import { DataTable } from "@/components/data-table/data-table";
 import { useBulkActions } from "@/components/data-table/data-table-bulk-actions";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
-import { Badge } from "@/components/ui/badge";
-import { env } from "@/lib/env";
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
+import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { orpc } from "@/orpc";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import {
@@ -23,16 +23,13 @@ import {
   Hash,
   Package,
   PauseCircle,
-  PlayCircle,
   Type,
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const logger = createLogger({
-  level: env.VITE_SETTLEMINT_LOG_LEVEL,
-});
+const logger = createLogger();
 
 /**
  * Represents a single token from the TokenList
@@ -79,29 +76,18 @@ interface TokensTableProps {
  */
 export function TokensTable({ factoryAddress }: TokensTableProps) {
   const router = useRouter();
-  const { t } = useTranslation("deposits-table");
+  const { t } = useTranslation("tokens");
   // Get the current route's path pattern from the matched route
   const routePath =
     router.state.matches[router.state.matches.length - 1]?.pathname;
 
-  const {
-    data: tokensResponse,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data: tokens } = useSuspenseQuery({
     ...orpc.token.list.queryOptions({
       input: {
         tokenFactory: factoryAddress,
       },
     }),
   });
-
-  // Throw error to be caught by DataTableErrorBoundary
-  if (error) {
-    throw error;
-  }
-
-  const tokens = tokensResponse ?? [];
 
   /**
    * Creates action items for each row in the table
@@ -254,16 +240,7 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
           header: t("columns.paused"),
           cell: (cellProps) => {
             const paused = cellProps.getValue();
-            return (
-              <Badge variant={paused ? "destructive" : "default"}>
-                {paused ? (
-                  <PauseCircle className="h-4 w-4" />
-                ) : (
-                  <PlayCircle className="h-4 w-4" />
-                )}
-                {paused ? t("status.paused") : t("status.active")}
-              </Badge>
-            );
+            return <TokenStatusBadge paused={paused} />;
           },
           meta: {
             displayName: t("columns.paused"),
@@ -309,48 +286,49 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   );
 
   return (
-    <DataTable
-      name="tokens"
-      data={tokens}
-      columns={useCallback(() => columns, [columns])}
-      urlState={{
-        enabled: true,
-        enableUrlPersistence: true,
-        routePath,
-        defaultPageSize: 20,
-        enableGlobalFilter: true,
-        enableRowSelection: true,
-        debounceMs: 300,
-        initialColumnVisibility: {
-          name: false,
-        },
-      }}
-      advancedToolbar={{
-        enableGlobalSearch: false,
-        enableFilters: true,
-        enableExport: true,
-        enableViewOptions: true,
-        placeholder: t("searchPlaceholder"),
-      }}
-      bulkActions={{
-        enabled: true,
-        actions,
-        actionGroups,
-        position: "bottom",
-        showSelectionCount: true,
-        enableSelectAll: true,
-      }}
-      pagination={{
-        enablePagination: true,
-      }}
-      initialSorting={INITIAL_SORTING}
-      customEmptyState={{
-        title: t("emptyState.title"),
-        description: t("emptyState.description"),
-        icon: Package,
-      }}
-      onRowClick={handleRowClick}
-      isLoading={isLoading}
-    />
+    <ComponentErrorBoundary componentName="Tokens Table">
+      <DataTable
+        name="tokens"
+        data={tokens}
+        columns={columns}
+        urlState={{
+          enabled: true,
+          enableUrlPersistence: true,
+          routePath,
+          defaultPageSize: 20,
+          enableGlobalFilter: true,
+          enableRowSelection: true,
+          debounceMs: 300,
+          initialColumnVisibility: {
+            name: false,
+          },
+        }}
+        advancedToolbar={{
+          enableGlobalSearch: false,
+          enableFilters: true,
+          enableExport: true,
+          enableViewOptions: true,
+          placeholder: t("searchPlaceholder"),
+        }}
+        bulkActions={{
+          enabled: true,
+          actions,
+          actionGroups,
+          position: "bottom",
+          showSelectionCount: true,
+          enableSelectAll: true,
+        }}
+        pagination={{
+          enablePagination: true,
+        }}
+        initialSorting={INITIAL_SORTING}
+        customEmptyState={{
+          title: t("emptyState.title"),
+          description: t("emptyState.description"),
+          icon: Package,
+        }}
+        onRowClick={handleRowClick}
+      />
+    </ComponentErrorBoundary>
   );
 }

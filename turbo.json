@@ -15,7 +15,7 @@
       "dependsOn": ["ci:base", "format"]
     },
     "ci:base": {
-      "dependsOn": ["compile", "codegen", "lint", "test"]
+      "dependsOn": ["compile", "codegen", "lint", "test", "typecheck"]
     },
     "ci:gha": {
       "dependsOn": ["ci:base", "test:integration", "build"]
@@ -71,6 +71,8 @@
       "cache": false,
       "persistent": true
     },
-    "typecheck": {}
+    "typecheck": {
+      "dependsOn": ["codegen"]
+    }
   }
 }

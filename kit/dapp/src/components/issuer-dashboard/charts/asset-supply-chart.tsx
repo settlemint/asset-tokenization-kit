@@ -1,5 +1,5 @@
 import { PieChartComponent } from "@/components/charts/pie-chart";
-import { DataTableErrorBoundary } from "@/components/data-table/data-table-error-boundary";
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -43,7 +43,7 @@ export function AssetSupplyChart() {
   ) satisfies ChartConfig;
 
   return (
-    <DataTableErrorBoundary>
+    <ComponentErrorBoundary componentName="Asset Supply Chart">
       <PieChartComponent
         title={t("charts.assetSupply.title")}
         description={t("charts.assetSupply.description")}
@@ -52,6 +52,6 @@ export function AssetSupplyChart() {
         dataKey="totalSupply"
         nameKey="assetType"
       />
-    </DataTableErrorBoundary>
+    </ComponentErrorBoundary>
   );
 }

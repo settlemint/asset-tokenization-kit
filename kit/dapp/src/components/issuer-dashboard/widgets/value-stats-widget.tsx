@@ -8,15 +8,13 @@ import {
 import { useSettings } from "@/hooks/use-settings";
 import { DEFAULT_SETTINGS } from "@/lib/db/schemas/settings";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
 import { orpc } from "@/orpc";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { format } from "dnum";
 import { useTranslation } from "react-i18next";
 
-const logger = createLogger({
-  level: process.env.SETTLEMINT_LOG_LEVEL as LogLevel,
-});
+const logger = createLogger();
 
 /**
  * Value Statistics Widget

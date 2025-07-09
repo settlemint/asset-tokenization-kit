@@ -2,6 +2,13 @@
 
 This command configures all recommended MCP servers for the project.
 
+## Auto-Loaded Project Context:
+
+- @/CLAUDE.md
+- @/.claude/CLAUDE.md
+- @/docs/ai-context/project-structure.md
+- @/docs/ai-context/docs-overview.md
+
 ## Steps
 
 1. **Check existing MCP configuration**
@@ -19,9 +26,11 @@ This command configures all recommended MCP servers for the project.
    - Report any servers that failed to add
 
 4. **Verify setup**
+
    ```bash
    claude mcp list
    ```
+
    - Confirm all recommended servers are now active
 
 ## Server Configurations
@@ -40,6 +49,7 @@ claude mcp add --transport sse deepwiki https://mcp.deepwiki.com/sse -s user
 
 # Sentry - Error tracking and monitoring
 claude mcp add --transport http sentry https://mcp.sentry.dev/mcp -s user
+
 ```
 
 ## Usage

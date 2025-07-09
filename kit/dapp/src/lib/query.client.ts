@@ -44,7 +44,10 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimental";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { parse, stringify } from "superjson";
+
+const logger = createLogger();
 
 /**
  * Query cache configuration constants.
@@ -119,7 +122,12 @@ const handleUnauthorizedError = (error: unknown) => {
  * Catches all query errors and handles UNAUTHORIZED globally.
  */
 const queryCache = new QueryCache({
-  onError: (error) => {
+  onError: (error, query) => {
+    logger.error("Query error", {
+      error,
+      queryKey: query.queryKey,
+      queryHash: query.queryHash,
+    });
     handleUnauthorizedError(error);
   },
 });
@@ -129,7 +137,12 @@ const queryCache = new QueryCache({
  * Catches all mutation errors and handles UNAUTHORIZED globally.
  */
 const mutationCache = new MutationCache({
-  onError: (error) => {
+  onError: (error, variables, _context, mutation) => {
+    logger.error("Mutation error", {
+      error,
+      mutationKey: mutation.options.mutationKey,
+      variables,
+    });
     handleUnauthorizedError(error);
   },
 });

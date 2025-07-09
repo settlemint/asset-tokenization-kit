@@ -1,5 +1,8 @@
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createContext, useContext, type ReactNode } from "react";
 import type { WizardContextValue } from "./types";
+
+const logger = createLogger();
 
 const WizardContext = createContext<WizardContextValue | null>(null);
 
@@ -22,7 +25,7 @@ export function useWizardContext<TFormData = unknown>() {
     WizardContext
   ) as WizardContextValue<TFormData> | null;
   if (!context) {
-    console.error(
+    logger.error(
       "useWizardContext: No context found - must be used within a WizardProvider"
     );
     throw new Error("useWizardContext must be used within a WizardProvider");
@@ -30,7 +33,7 @@ export function useWizardContext<TFormData = unknown>() {
 
   // Additional validation
   if (!Array.isArray(context.steps)) {
-    console.error("useWizardContext: Invalid steps in context", {
+    logger.error("useWizardContext: Invalid steps in context", {
       hasSteps: !!context.steps,
       stepsType: typeof context.steps,
       isArray: Array.isArray(context.steps),

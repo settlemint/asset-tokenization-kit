@@ -1,18 +1,16 @@
-import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { cn } from "@/lib/utils";
+import { formatValidationError } from "@/lib/utils/format-validation-error";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { Loader2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useWizardContext } from "./wizard-context";
 import { WizardField } from "./wizard-field";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
-import { createLogger, type LogLevel } from "@settlemint/sdk-utils/logging";
-import { toast } from "sonner";
-import { formatValidationError } from "@/lib/utils/format-validation-error";
-import { cn } from "@/lib/utils";
 
-const logger = createLogger({
-  level: (process.env.SETTLEMINT_LOG_LEVEL as LogLevel | undefined) ?? "info",
-});
+const logger = createLogger();
 
 interface WizardStepProps {
   className?: string;

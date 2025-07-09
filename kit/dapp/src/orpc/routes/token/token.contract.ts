@@ -13,27 +13,33 @@ import {
   TokenFactoryDetailSchema,
 } from "@/orpc/routes/token/routes/factory.read.schema";
 import {
+  TokenActionsInputSchema,
+  TokenActionsListSchema,
+} from "@/orpc/routes/token/routes/token.actions.schema";
+import {
   TokenCreateOutputSchema,
   TokenCreateSchema,
 } from "@/orpc/routes/token/routes/token.create.schema";
+import {
+  TokenHoldersInputSchema,
+  TokenHoldersResponseSchema,
+} from "@/orpc/routes/token/routes/token.holders.schema";
 import {
   TokenListInputSchema,
   TokenListSchema,
 } from "@/orpc/routes/token/routes/token.list.schema";
 import { TokenMintSchema } from "@/orpc/routes/token/routes/token.mint.schema";
-import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
+import {
+  TokenReadInputSchema,
+  TokenSchema,
+} from "@/orpc/routes/token/routes/token.read.schema";
 import { TokenStatsAssetsOutputSchema } from "@/orpc/routes/token/routes/token.stats.assets.schema";
 import {
   TokenStatsTransactionsInputSchema,
   TokenStatsTransactionsOutputSchema,
 } from "@/orpc/routes/token/routes/token.stats.transactions.schema";
 import { TokenStatsValueOutputSchema } from "@/orpc/routes/token/routes/token.stats.value.schema";
-import {
-  TokenActionsInputSchema,
-  TokenActionsListSchema,
-} from "@/orpc/routes/token/routes/token.actions.schema";
 import { eventIterator } from "@orpc/server";
-import { z } from "zod/v4";
 
 const factoryCreate = baseContract
   .route({
@@ -93,12 +99,12 @@ const list = baseContract
 const read = baseContract
   .route({
     method: "GET",
-    path: "/token/{id}",
-    description: "Get a token by id",
+    path: "/token/{tokenAddress}",
+    description: "Get a token by address",
     successDescription: "Token",
     tags: ["token"],
   })
-  .input(z.object({ id: z.string() }))
+  .input(TokenReadInputSchema)
   .output(TokenSchema);
 
 const mint = baseContract
@@ -154,11 +160,23 @@ const actions = baseContract
   .input(TokenActionsInputSchema)
   .output(TokenActionsListSchema);
 
+const holders = baseContract
+  .route({
+    method: "GET",
+    path: "/token/{tokenAddress}/holders",
+    description: "Get token holders and their balances",
+    successDescription: "List of token holders with balance information",
+    tags: ["token"],
+  })
+  .input(TokenHoldersInputSchema)
+  .output(TokenHoldersResponseSchema);
+
 export const tokenContract = {
   factoryCreate,
   factoryList,
   factoryRead,
   create,
+  holders,
   list,
   read,
   mint,
