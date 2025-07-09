@@ -2,27 +2,28 @@
 // This file ensures type consistency across all system boundaries
 
 export const ACTION_TYPES = {
-  APPROVE_XVP_SETTLEMENT: 'ApproveXvPSettlement',
-  EXECUTE_XVP_SETTLEMENT: 'ExecuteXvPSettlement',
-  MATURE_BOND: 'MatureBond',
+  APPROVE_XVP_SETTLEMENT: "ApproveXvPSettlement",
+  EXECUTE_XVP_SETTLEMENT: "ExecuteXvPSettlement",
+  MATURE_BOND: "MatureBond",
 } as const;
 
 export const ACTION_USER_TYPES = {
-  ADMIN: 'Admin',
-  USER: 'User',
+  ADMIN: "Admin",
+  USER: "User",
 } as const;
 
 export const ACTION_STATUS = {
-  PENDING: 'PENDING',
-  UPCOMING: 'UPCOMING',
-  COMPLETED: 'COMPLETED',
-  EXPIRED: 'EXPIRED',
+  PENDING: "PENDING",
+  UPCOMING: "UPCOMING",
+  COMPLETED: "COMPLETED",
+  EXPIRED: "EXPIRED",
 } as const;
 
 // Type definitions
-export type ActionType = typeof ACTION_TYPES[keyof typeof ACTION_TYPES];
-export type ActionUserType = typeof ACTION_USER_TYPES[keyof typeof ACTION_USER_TYPES];
-export type ActionStatus = typeof ACTION_STATUS[keyof typeof ACTION_STATUS];
+export type ActionType = (typeof ACTION_TYPES)[keyof typeof ACTION_TYPES];
+export type ActionUserType =
+  (typeof ACTION_USER_TYPES)[keyof typeof ACTION_USER_TYPES];
+export type ActionStatus = (typeof ACTION_STATUS)[keyof typeof ACTION_STATUS];
 
 // Helper functions for type safety
 export const isValidActionType = (type: string): type is ActionType => {
@@ -44,7 +45,7 @@ export const calculateActionStatus = (
   executed: boolean
 ): ActionStatus => {
   const now = Math.floor(Date.now() / 1000); // UTC seconds
-  
+
   if (executed) return ACTION_STATUS.COMPLETED;
   if (expiresAt && now > expiresAt) return ACTION_STATUS.EXPIRED;
   if (now < activeAt) return ACTION_STATUS.UPCOMING;
@@ -64,21 +65,21 @@ export const ACTION_REGISTRY: Record<ActionType, ActionDefinition> = {
   [ACTION_TYPES.APPROVE_XVP_SETTLEMENT]: {
     type: ACTION_TYPES.APPROVE_XVP_SETTLEMENT,
     userType: ACTION_USER_TYPES.ADMIN,
-    description: 'Approve XvP settlement for execution',
+    description: "Approve XvP settlement for execution",
     requiresApproval: false,
     defaultExpiration: 86400, // 24 hours
   },
   [ACTION_TYPES.EXECUTE_XVP_SETTLEMENT]: {
     type: ACTION_TYPES.EXECUTE_XVP_SETTLEMENT,
     userType: ACTION_USER_TYPES.ADMIN,
-    description: 'Execute approved XvP settlement',
+    description: "Execute approved XvP settlement",
     requiresApproval: true,
     defaultExpiration: 86400, // 24 hours
   },
   [ACTION_TYPES.MATURE_BOND]: {
     type: ACTION_TYPES.MATURE_BOND,
     userType: ACTION_USER_TYPES.ADMIN,
-    description: 'Process bond maturation',
+    description: "Process bond maturation",
     requiresApproval: false,
   },
 };

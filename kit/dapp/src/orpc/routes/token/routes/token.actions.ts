@@ -1,13 +1,13 @@
+import { calculateActionStatus } from "@/lib/constants/action-types";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import {
-  TokenActionsResponseSchema,
+  ActionStatusEnum,
   TokenActionsInputSchema,
   TokenActionsListSchema,
+  TokenActionsResponseSchema,
 } from "@/orpc/routes/token/routes/token.actions.schema";
-import { calculateActionStatus } from "@/lib/constants/action-types";
 import { TRPCError } from "@trpc/server";
 
 /**
@@ -117,7 +117,7 @@ export const actions = authRouter.token.actions
     }
 
     // SECURITY: Auto-filter to user's wallet address, with admin override
-    const targetUserAddress = 
+    const targetUserAddress =
       currentUser.role.permissions?.admin && input.userAddress
         ? input.userAddress
         : currentUser.address;
@@ -130,19 +130,11 @@ export const actions = authRouter.token.actions
     ) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "Cannot query actions for other users without admin permission",
+        message:
+          "Cannot query actions for other users without admin permission",
       });
     }
 
-    // AUDIT: Log action query for security monitoring
-    console.log(`Action query by user ${currentUser.address}:`, {
-      tokenId: input.tokenId,
-      status: input.status,
-      type: input.type,
-      targetUserAddress,
-      isAdminQuery: currentUser.role.permissions?.admin && input.userAddress !== undefined,
-      timestamp: new Date().toISOString(),
-    });
     // Build where clause for filtering
     const where: Record<string, unknown> = {};
 
@@ -166,19 +158,19 @@ export const actions = authRouter.token.actions
       const nowSeconds = Math.floor(Date.now() / 1000);
 
       switch (input.status) {
-        case "PENDING":
+        case ActionStatusEnum.enum.PENDING:
           where.executed = false;
           where.activeAt_lte = nowSeconds;
           where.expiresAt_gt = nowSeconds;
           break;
-        case "UPCOMING":
+        case ActionStatusEnum.enum.UPCOMING:
           where.executed = false;
           where.activeAt_gt = nowSeconds;
           break;
-        case "COMPLETED":
+        case ActionStatusEnum.enum.COMPLETED:
           where.executed = true;
           break;
-        case "EXPIRED":
+        case ActionStatusEnum.enum.EXPIRED:
           where.executed = false;
           where.expiresAt_lte = nowSeconds;
           break;
@@ -200,33 +192,39 @@ export const actions = authRouter.token.actions
     );
 
     // SECURITY: Transform response with computed status and filtered data
-    const actionsWithStatus = response.actions.map((action: Record<string, unknown>) => {
-      const activeAt = parseInt(action.activeAt as string);
-      const expiresAt = action.expiresAt ? parseInt(action.expiresAt as string) : null;
-      const createdAt = parseInt(action.createdAt as string);
-      const executedAt = action.executedAt ? parseInt(action.executedAt as string) : null;
+    const actionsWithStatus = response.actions.map(
+      (action: Record<string, unknown>) => {
+        const activeAt = parseInt(action.activeAt as string);
+        const expiresAt = action.expiresAt
+          ? parseInt(action.expiresAt as string)
+          : null;
+        const createdAt = parseInt(action.createdAt as string);
+        const executedAt = action.executedAt
+          ? parseInt(action.executedAt as string)
+          : null;
 
-      const status = calculateActionStatus(
-        activeAt,
-        expiresAt,
-        action.executed as boolean
-      );
+        const status = calculateActionStatus(
+          activeAt,
+          expiresAt,
+          action.executed as boolean
+        );
 
-      // SECURITY: Only return minimal necessary information
-      return {
-        id: action.id,
-        name: action.name,
-        type: action.type,
-        status,
-        createdAt,
-        activeAt,
-        expiresAt,
-        executedAt,
-        executed: action.executed,
-        target: action.target,
-        executedBy: action.executedBy,
-      };
-    });
+        // SECURITY: Only return minimal necessary information
+        return {
+          id: action.id,
+          name: action.name,
+          type: action.type,
+          status,
+          createdAt,
+          activeAt,
+          expiresAt,
+          executedAt,
+          executed: action.executed,
+          target: action.target,
+          executedBy: action.executedBy,
+        };
+      }
+    );
 
     return actionsWithStatus;
   });

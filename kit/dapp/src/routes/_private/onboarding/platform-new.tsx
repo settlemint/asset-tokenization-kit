@@ -555,20 +555,23 @@ function PlatformNewOnboarding() {
     user,
   ]);
 
-  const handleComplete = useCallback(async (data: OnboardingFormData) => {
-    try {
-      console.log("Onboarding completed with data:", data);
-      toast.success(
-        "Platform onboarding completed successfully! Welcome to your tokenization platform."
-      );
+  const handleComplete = useCallback(
+    async (data: OnboardingFormData) => {
+      try {
+        console.log("Onboarding completed with data:", data);
+        toast.success(
+          "Platform onboarding completed successfully! Welcome to your tokenization platform."
+        );
 
-      // Navigate to main dashboard
-      await navigate({ to: "/" });
-    } catch (error) {
-      toast.error("Failed to complete onboarding");
-      console.error("Onboarding completion error:", error);
-    }
-  }, [navigate]);
+        // Navigate to main dashboard
+        await navigate({ to: "/" });
+      } catch (error) {
+        toast.error("Failed to complete onboarding");
+        console.error("Onboarding completion error:", error);
+      }
+    },
+    [navigate]
+  );
 
   // Calculate default values based on current state
   const defaultValues: Partial<OnboardingFormData> = {
@@ -656,7 +659,7 @@ function PlatformNewOnboarding() {
                 {t("general:appDescription")}
               </span>
             </div>
-            </div>
+          </div>
         </div>
 
         {/* Language and theme toggles positioned in top-right */}
