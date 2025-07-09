@@ -165,14 +165,11 @@ function countUniqueRecentUsers(
 export const stats = authRouter.user.stats
   .use(systemMiddleware)
   .use(theGraphMiddleware)
-  .handler(async ({ context, input, errors }) => {
-    // Ensure system context exists
-    if (!context.system) {
-      throw errors.SYSTEM_NOT_CREATED();
-    }
+  .handler(async ({ context, input }) => {
+    // System context is guaranteed by systemMiddleware
 
-    // Default timeRange to 7 days if not provided
-    const timeRange = input.timeRange ?? 7;
+    // timeRange is guaranteed to have a value from the schema default
+    const timeRange = input.timeRange;
 
     // Calculate the date range for queries
     const since = new Date();

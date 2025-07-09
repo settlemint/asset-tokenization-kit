@@ -1,10 +1,48 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import { AutoCell } from "../cells/auto-cell";
+"use client";
+
+import type { ColumnDef, CellContext } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
+import { formatValue } from "@/lib/utils/format-value";
 import { withAutoFilterFn } from "../filters/functions/auto-filter";
+import { useTranslation } from "react-i18next";
 
 /**
- * Wraps a column definition to use AutoCell rendering based on meta.cellType
+ * Component wrapper for formatValue to use in cell rendering
+ */
+function FormattedCell<TData, TValue>({
+  context,
+  children,
+}: {
+  context: CellContext<TData, TValue>;
+  children?: React.ReactNode;
+}) {
+  const { i18n } = useTranslation();
+  const meta = context.column.columnDef.meta;
+  const value = context.getValue();
+  const locale = i18n.language;
+
+  // If children are provided, use them (allows override)
+  if (children) {
+    return <>{children}</>;
+  }
+
+  // Use the shared formatValue utility
+  return (
+    <>
+      {formatValue(value, {
+        type: meta?.type,
+        displayName: meta?.displayName,
+        currency: meta?.currency,
+        locale,
+        emptyValue: meta?.emptyValue,
+        showPrettyName: meta?.showPrettyName,
+      })}
+    </>
+  );
+}
+
+/**
+ * Wraps a column definition to use automatic value formatting based on meta.type
  * while preserving the ability to override with a custom cell renderer.
  *
  * @example
@@ -12,34 +50,34 @@ import { withAutoFilterFn } from "../filters/functions/auto-filter";
  * const column = withAutoCell({
  *   id: "amount",
  *   header: "Amount",
- *   meta: { cellType: "currency" }
+ *   meta: { type: "currency" }
  * });
  * ```
  *
  * @param column - The column definition to enhance
- * @returns Enhanced column definition with AutoCell rendering
+ * @returns Enhanced column definition with automatic formatting
  */
 export function withAutoCell<TData, TValue = unknown>(
   column: ColumnDef<TData, TValue>
 ): ColumnDef<TData, TValue> {
-  // If column already has a cell renderer, wrap it with AutoCell
+  // If column already has a cell renderer, wrap it with FormattedCell
   // This allows the custom renderer to be used as override
   if (column.cell) {
     const originalCell = column.cell;
     return {
       ...column,
       cell: (context) => (
-        <AutoCell context={context}>
+        <FormattedCell context={context}>
           {flexRender(originalCell, context)}
-        </AutoCell>
+        </FormattedCell>
       ),
     };
   }
 
-  // If no cell renderer, use AutoCell directly
+  // If no cell renderer, use FormattedCell directly
   return {
     ...column,
-    cell: (context) => <AutoCell context={context} />,
+    cell: (context) => <FormattedCell context={context} />,
   };
 }
 

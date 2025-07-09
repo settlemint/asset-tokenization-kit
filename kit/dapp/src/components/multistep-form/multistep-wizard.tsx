@@ -67,7 +67,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   logger.debug("Form created", {
     hasForm: !!form,
-    formState: form.state ? "available" : "unavailable",
+    formState: "available",
     defaultValues: defaultValues,
   });
 
@@ -299,7 +299,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   }
 
   return (
-    <ComponentErrorBoundary componentName={name ?? "Multi-Step Wizard"}>
+    <ComponentErrorBoundary componentName={name || "Multi-Step Wizard"}>
       <WizardProvider value={contextValue}>
         <div
           className={cn("flex", className)}
@@ -327,7 +327,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
                     : "Setup Wizard"}
                 </h2>
                 <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
-                  {description ?? "Configure your platform step by step"}
+                  {description || "Configure your platform step by step"}
                 </p>
 
                 {showProgressBar && (
