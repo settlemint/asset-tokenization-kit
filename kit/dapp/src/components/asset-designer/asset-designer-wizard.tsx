@@ -20,7 +20,6 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import type { z } from "zod/v4";
 
 const logger = createLogger();
@@ -232,9 +231,6 @@ function AssetDesignerWizardComponent({
             },
             initialModulePairs: [],
             requiredClaimTopics: [],
-            // messages: {
-            // TODO: Add messages
-            // },
           };
 
           if (tokenType === "bond") {
@@ -270,14 +266,9 @@ function AssetDesignerWizardComponent({
     return dynamicSteps;
   }, [t, availableAssetTypes]);
 
-  const handleComplete = useCallback(
-    (data: AssetDesignerFormData) => {
-      // The mutation is handled by the step, so this is called after successful completion
-      toast.success(t("messages.created", { type: data.type }));
-      onSuccess?.();
-    },
-    [onSuccess, t]
-  );
+  const handleComplete = useCallback(() => {
+    onSuccess?.();
+  }, [onSuccess]);
 
   // Default values for the form
   const defaultValues: Partial<AssetDesignerFormData> = {
