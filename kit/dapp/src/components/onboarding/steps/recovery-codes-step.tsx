@@ -123,7 +123,6 @@ export function RecoveryCodesStep({
       onSuccess: (data) => {
         logger.debug("Recovery codes onSuccess", data);
         // Check if there's an error in the response (like 404)
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (data && "error" in data && data.error) {
           // Handle 404 error with mock codes for development
           if (data.error.status === 404) {
@@ -141,16 +140,14 @@ export function RecoveryCodesStep({
           }
 
           toast.error(
-            `Failed to generate recovery codes: ${data.error.statusText || "Unknown error"}`
+            `Failed to generate recovery codes: ${data.error.statusText ?? "Unknown error"}`
           );
           return;
         }
 
         // Success case - real codes
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (data && "data" in data && data.data && "secretCodes" in data.data) {
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          const codes = data.data.secretCodes || [];
+          const codes = data.data.secretCodes ?? [];
           logger.debug("Setting real codes", codes);
           setRecoveryCodes(codes);
           setRecoveryCodesFetched(true);
@@ -159,7 +156,6 @@ export function RecoveryCodesStep({
             toast.success("Recovery codes generated successfully");
           }
         } else if (
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           data &&
           "secretCodes" in data &&
           Array.isArray(data.secretCodes)

@@ -15,7 +15,6 @@ interface WelcomeScreenProps {
 export function WelcomeScreen({
   onStartSetup,
   completedSteps = {},
-  systemDeployed = false,
   userName,
   isReturningUser = false,
 }: WelcomeScreenProps) {

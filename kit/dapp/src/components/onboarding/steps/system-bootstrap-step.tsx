@@ -9,6 +9,7 @@ import { orpc } from "@/orpc";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import { Copy } from "lucide-react";
 
 interface SystemBootstrapStepProps {
   onNext?: () => void;
@@ -72,12 +73,12 @@ export function SystemBootstrapStep({
 
   // Check if user has 2FA enabled to determine available verification methods
   const currentUser = user ?? session?.user;
-  const hasTwoFactor = currentUser?.twoFactorEnabled || false;
-  const hasPincode = currentUser?.pincodeEnabled || false;
+  const hasTwoFactor = currentUser?.twoFactorEnabled ?? false;
+  const hasPincode = currentUser?.pincodeEnabled ?? false;
 
   // Fetch real system details when system address is available
   const { data: realSystemDetails } = useQuery({
-    ...orpc.system.read.queryOptions({ input: { id: systemAddress! } }),
+    ...orpc.system.read.queryOptions({ input: { id: systemAddress ?? "" } }),
     enabled: !!systemAddress,
   });
 
@@ -183,7 +184,7 @@ export function SystemBootstrapStep({
         setShowDeploymentProgress(true);
         simulateDeploymentProgress();
 
-        await createSystemMutation(params);
+        createSystemMutation(params);
       } catch (error) {
         // Hide deployment progress on error
         setShowDeploymentProgress(false);
@@ -235,7 +236,7 @@ export function SystemBootstrapStep({
   const handlePincodeSubmit = useCallback(
     (pincode: string) => {
       setVerificationError(null); // Clear any previous errors
-      createSystem({
+      void createSystem({
         verification: {
           verificationCode: pincode,
           verificationType: "pincode",
@@ -266,7 +267,7 @@ export function SystemBootstrapStep({
   const handleOtpSubmit = useCallback(
     (otp: string) => {
       setVerificationError(null); // Clear any previous errors
-      createSystem({
+      void createSystem({
         verification: {
           verificationCode: otp,
           verificationType: "two-factor",
@@ -299,6 +300,62 @@ export function SystemBootstrapStep({
     void navigator.clipboard.writeText(address);
     toast.success(`${label} address copied to clipboard!`);
   }, []);
+
+  const handleCopySystemContract = useCallback(() => {
+    handleCopyAddress(
+      realSystemDetails?.id ?? systemAddress ?? "",
+      "System Contract"
+    );
+  }, [handleCopyAddress, realSystemDetails?.id, systemAddress]);
+
+  const handleCopyIdentityRegistry = useCallback(() => {
+    if (realSystemDetails?.identityRegistry) {
+      handleCopyAddress(
+        realSystemDetails.identityRegistry,
+        "Identity Registry"
+      );
+    }
+  }, [handleCopyAddress, realSystemDetails?.identityRegistry]);
+
+  const handleCopyCompliance = useCallback(() => {
+    if (realSystemDetails?.compliance) {
+      handleCopyAddress(realSystemDetails.compliance, "Compliance Engine");
+    }
+  }, [handleCopyAddress, realSystemDetails?.compliance]);
+
+  const handleCopyTrustedIssuers = useCallback(() => {
+    if (realSystemDetails?.trustedIssuersRegistry) {
+      handleCopyAddress(
+        realSystemDetails.trustedIssuersRegistry,
+        "Trusted Issuers Registry"
+      );
+    }
+  }, [handleCopyAddress, realSystemDetails?.trustedIssuersRegistry]);
+
+  const handleCopyTokenFactoryRegistry = useCallback(() => {
+    if (realSystemDetails?.tokenFactoryRegistry) {
+      handleCopyAddress(
+        realSystemDetails.tokenFactoryRegistry,
+        "Token Factory Registry"
+      );
+    }
+  }, [handleCopyAddress, realSystemDetails?.tokenFactoryRegistry]);
+
+  const handleCopyDeploymentTransaction = useCallback(() => {
+    if (realSystemDetails?.deployedInTransaction) {
+      handleCopyAddress(
+        realSystemDetails.deployedInTransaction,
+        "Deployment transaction"
+      );
+    }
+  }, [handleCopyAddress, realSystemDetails?.deployedInTransaction]);
+
+  const handleCopyFactory = useCallback(
+    (factoryId: string, factoryName: string) => {
+      return () => handleCopyAddress(factoryId, factoryName);
+    },
+    [handleCopyAddress]
+  );
 
   return (
     <>
@@ -405,9 +462,9 @@ export function SystemBootstrapStep({
                 {/* Single Column Layout */}
                 <div className="text-left">
                   <button
-                    onClick={() =>
-                      setShowDeploymentDetails(!showDeploymentDetails)
-                    }
+                    onClick={() => {
+                      setShowDeploymentDetails(!showDeploymentDetails);
+                    }}
                     className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline mb-3"
                   >
                     <svg
@@ -438,29 +495,12 @@ export function SystemBootstrapStep({
                             "Not deployed"}
                         </code>
                         <button
-                          onClick={() =>
-                            handleCopyAddress(
-                              realSystemDetails?.id || systemAddress || "",
-                              "System Contract"
-                            )
-                          }
+                          onClick={handleCopySystemContract}
                           className="flex-shrink-0 p-1 hover:bg-muted/50 rounded transition-colors"
                           title="Copy to clipboard"
                           disabled={!realSystemDetails?.id && !systemAddress}
                         >
-                          <svg
-                            className="w-3 h-3 text-muted-foreground hover:text-foreground"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                            />
-                          </svg>
+                          <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground" />
                         </button>
                       </div>
                       {realSystemDetails?.identityRegistry && (
@@ -472,28 +512,11 @@ export function SystemBootstrapStep({
                             {realSystemDetails.identityRegistry}
                           </code>
                           <button
-                            onClick={() =>
-                              handleCopyAddress(
-                                realSystemDetails.identityRegistry!,
-                                "Identity Registry"
-                              )
-                            }
+                            onClick={handleCopyIdentityRegistry}
                             className="flex-shrink-0 p-1 hover:bg-muted/50 rounded transition-colors"
                             title="Copy to clipboard"
                           >
-                            <svg
-                              className="w-3 h-3 text-muted-foreground hover:text-foreground"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                              />
-                            </svg>
+                            <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground" />
                           </button>
                         </div>
                       )}
@@ -506,28 +529,11 @@ export function SystemBootstrapStep({
                             {realSystemDetails.compliance}
                           </code>
                           <button
-                            onClick={() =>
-                              handleCopyAddress(
-                                realSystemDetails.compliance!,
-                                "Compliance Engine"
-                              )
-                            }
+                            onClick={handleCopyCompliance}
                             className="flex-shrink-0 p-1 hover:bg-muted/50 rounded transition-colors"
                             title="Copy to clipboard"
                           >
-                            <svg
-                              className="w-3 h-3 text-muted-foreground hover:text-foreground"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                              />
-                            </svg>
+                            <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground" />
                           </button>
                         </div>
                       )}
@@ -540,28 +546,11 @@ export function SystemBootstrapStep({
                             {realSystemDetails.trustedIssuersRegistry}
                           </code>
                           <button
-                            onClick={() =>
-                              handleCopyAddress(
-                                realSystemDetails.trustedIssuersRegistry!,
-                                "Trusted Issuers Registry"
-                              )
-                            }
+                            onClick={handleCopyTrustedIssuers}
                             className="flex-shrink-0 p-1 hover:bg-muted/50 rounded transition-colors"
                             title="Copy to clipboard"
                           >
-                            <svg
-                              className="w-3 h-3 text-muted-foreground hover:text-foreground"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                              />
-                            </svg>
+                            <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground" />
                           </button>
                         </div>
                       )}
@@ -574,28 +563,11 @@ export function SystemBootstrapStep({
                             {realSystemDetails.tokenFactoryRegistry}
                           </code>
                           <button
-                            onClick={() =>
-                              handleCopyAddress(
-                                realSystemDetails.tokenFactoryRegistry!,
-                                "Token Factory Registry"
-                              )
-                            }
+                            onClick={handleCopyTokenFactoryRegistry}
                             className="flex-shrink-0 p-1 hover:bg-muted/50 rounded transition-colors"
                             title="Copy to clipboard"
                           >
-                            <svg
-                              className="w-3 h-3 text-muted-foreground hover:text-foreground"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                              />
-                            </svg>
+                            <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground" />
                           </button>
                         </div>
                       )}
@@ -608,28 +580,11 @@ export function SystemBootstrapStep({
                             {realSystemDetails.deployedInTransaction}
                           </code>
                           <button
-                            onClick={() =>
-                              handleCopyAddress(
-                                realSystemDetails.deployedInTransaction!,
-                                "Deployment transaction"
-                              )
-                            }
+                            onClick={handleCopyDeploymentTransaction}
                             className="flex-shrink-0 p-1 hover:bg-muted/50 rounded transition-colors"
                             title="Copy to clipboard"
                           >
-                            <svg
-                              className="w-3 h-3 text-muted-foreground hover:text-foreground"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                              />
-                            </svg>
+                            <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground" />
                           </button>
                         </div>
                       )}
@@ -651,25 +606,14 @@ export function SystemBootstrapStep({
                                   {factory.id}
                                 </code>
                                 <button
-                                  onClick={() =>
-                                    handleCopyAddress(factory.id, factory.name)
-                                  }
+                                  onClick={handleCopyFactory(
+                                    factory.id,
+                                    factory.name
+                                  )}
                                   className="flex-shrink-0 p-1 hover:bg-muted/50 rounded transition-colors"
                                   title="Copy to clipboard"
                                 >
-                                  <svg
-                                    className="w-3 h-3 text-muted-foreground hover:text-foreground"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                                    />
-                                  </svg>
+                                  <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground" />
                                 </button>
                               </div>
                             ))}

@@ -10,7 +10,7 @@ import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-securit
 import { useMemo, useState, useCallback } from "react";
 import { z } from "zod/v4";
 import { useSettings } from "@/hooks/use-settings";
-import { orpc, client } from "@/orpc";
+import { client } from "@/orpc";
 import { toast } from "sonner";
 import {
   fiatCurrency,
@@ -18,9 +18,119 @@ import {
 } from "@/lib/zod/validators/fiat-currency";
 import { useWizardContext } from "@/components/multistep-form/wizard-context";
 import { VerificationDialog } from "@/components/ui/verification-dialog";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { formatValidationError } from "@/lib/utils/format-validation-error";
 import { authClient } from "@/lib/auth/auth.client";
+import { Settings, Link, AlertTriangle, Info, Copy } from "lucide-react";
+
+// Platform Settings Component
+function PlatformSettingsComponent({
+  form,
+  onNext,
+  onPrevious,
+  isFirstStep,
+}: {
+  form: any;
+  onNext?: () => void;
+  onPrevious?: () => void;
+  isFirstStep?: boolean;
+}) {
+  const [, setBaseCurrency] = useSettings("BASE_CURRENCY");
+  const { clearStepError, markStepComplete } = useWizardContext();
+
+  const handleConfirm = useCallback(async () => {
+    try {
+      clearStepError("configure-platform-settings");
+      const formValues = form.state.values;
+      if (formValues.baseCurrency) {
+        setBaseCurrency(formValues.baseCurrency);
+        markStepComplete("configure-platform-settings");
+        toast.success("Platform settings saved successfully");
+      }
+      onNext?.();
+    } catch (error) {
+      toast.error("Failed to save platform settings");
+    }
+  }, [
+    form.state.values,
+    setBaseCurrency,
+    clearStepError,
+    markStepComplete,
+    onNext,
+  ]);
+
+  return (
+    <div className="max-w-2xl space-y-6">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">
+          Configure Platform Settings
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Define how your platform behaves by default
+        </p>
+      </div>
+
+      <div className="space-y-4 mb-6">
+        <p className="text-sm">
+          Before you begin issuing assets, let's configure some basic settings
+          that determine how the platform behaves. These default values help
+          personalize the experience for you and your users.
+        </p>
+        <p className="text-sm">
+          You can update these preferences later in the platform settings.
+        </p>
+      </div>
+
+      <form.Field name="baseCurrency">
+        {(field: any) => (
+          <div className="space-y-2">
+            <label htmlFor="baseCurrency" className="text-sm font-medium">
+              Base Currency
+            </label>
+            <p className="text-sm text-muted-foreground">
+              Choose the default currency for your platform
+            </p>
+            <select
+              id="baseCurrency"
+              value={field.state.value ?? "USD"}
+              onChange={(e) => field.handleChange(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {Object.entries(fiatCurrencyMetadata).map(([code, metadata]) => (
+                <option key={code} value={code}>
+                  {metadata.name} ({code})
+                </option>
+              ))}
+            </select>
+            {field.state.meta.errors && field.state.meta.errors.length > 0 && (
+              <p className="text-sm text-destructive mt-2">
+                {field.state.meta.errors[0]}
+              </p>
+            )}
+          </div>
+        )}
+      </form.Field>
+
+      <div className="flex justify-end gap-3 pt-6">
+        {!isFirstStep && (
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
+          >
+            Previous
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={handleConfirm}
+          className="px-6 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+        >
+          Save & Continue
+        </button>
+      </div>
+    </div>
+  );
+}
 
 // Define the onboarding form schema
 const onboardingSchema = z.object({
@@ -226,139 +336,7 @@ export function useOnboardingSteps({
             ),
           },
         ],
-        component: ({
-          form,
-          stepId,
-          onNext,
-          onPrevious,
-          isFirstStep,
-          isLastStep,
-        }) => {
-          // Get the settings hook inside the component
-          const [, setBaseCurrency] = useSettings("BASE_CURRENCY");
-          // Get wizard context to manage step state
-          const { clearStepError, markStepComplete } = useWizardContext();
-
-          const handleConfirm = async () => {
-            try {
-              // Clear any existing errors for this step
-              clearStepError("configure-platform-settings");
-
-              const formValues = form.state.values;
-              if (formValues.baseCurrency) {
-                setBaseCurrency(formValues.baseCurrency);
-
-                // Mark step as complete
-                markStepComplete("configure-platform-settings");
-
-                toast.success("Platform settings saved successfully");
-              }
-              onNext?.();
-            } catch (error) {
-              toast.error("Failed to save platform settings");
-              console.error("Error saving base currency:", error);
-            }
-          };
-
-          return (
-            <div className="max-w-2xl space-y-6">
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">
-                  Configure Platform Settings
-                </h2>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Define how your platform behaves by default
-                </p>
-              </div>
-
-              <div className="space-y-4 mb-6">
-                <p className="text-sm">
-                  Before you begin issuing assets, let's configure some basic
-                  settings that determine how the platform behaves. These
-                  default values help personalize the experience for you and
-                  your users.
-                </p>
-                <p className="text-sm">
-                  You can update these preferences later in the platform
-                  settings.
-                </p>
-              </div>
-
-              {/* Base Currency Field */}
-              <form.Field name="baseCurrency">
-                {(field) => (
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="baseCurrency"
-                      className="text-sm font-medium"
-                    >
-                      Base Currency
-                    </label>
-                    <p className="text-sm text-muted-foreground">
-                      Choose the default currency for your platform
-                    </p>
-                    <div className="relative">
-                      <select
-                        id="baseCurrency"
-                        value={field.state.value || ""}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        className="w-full pl-3 pr-10 py-2 border border-input rounded-md bg-background text-sm appearance-none"
-                      >
-                        <option value="">Select a currency</option>
-                        {Object.entries(fiatCurrencyMetadata).map(
-                          ([code, metadata]) => (
-                            <option key={code} value={code}>
-                              {metadata.name} ({code})
-                            </option>
-                          )
-                        )}
-                      </select>
-                      <svg
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </div>
-                    {field.state.meta.errors &&
-                      field.state.meta.errors.length > 0 && (
-                        <p className="text-sm text-destructive">
-                          {field.state.meta.errors[0]}
-                        </p>
-                      )}
-                  </div>
-                )}
-              </form.Field>
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-end gap-3 pt-4">
-                {!isFirstStep && (
-                  <button
-                    type="button"
-                    onClick={onPrevious}
-                    className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
-                  >
-                    Previous
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={handleConfirm}
-                  className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          );
-        },
+        component: (props) => <PlatformSettingsComponent {...props} />,
       });
 
       // 3. Select supported assets
@@ -387,14 +365,7 @@ export function useOnboardingSteps({
           !data.selectedAssetTypes?.length
             ? "At least one asset type must be selected"
             : undefined,
-        component: ({
-          form,
-          stepId,
-          onNext,
-          onPrevious,
-          isFirstStep,
-          isLastStep,
-        }) => {
+        component: ({ form, onNext, onPrevious, isFirstStep }) => {
           const { clearStepError, markStepComplete } = useWizardContext();
           const [currentScreen, setCurrentScreen] = useState<
             "form" | "progress" | "success"
@@ -409,14 +380,14 @@ export function useOnboardingSteps({
 
           // Track deployment progress for selected factories
           const [deploymentProgress, setDeploymentProgress] = useState<
-            Array<{
+            {
               type: string;
               name: string;
               completed: boolean;
               inProgress: boolean;
               address?: string;
               transactionHash?: string;
-            }>
+            }[]
           >([]);
           const [showDeploymentDetails, setShowDeploymentDetails] =
             useState(false);
@@ -426,8 +397,8 @@ export function useOnboardingSteps({
           // Get user session for security capability detection
           const { data: session } = authClient.useSession();
           const currentUser = user ?? session?.user;
-          const hasTwoFactor = currentUser?.twoFactorEnabled || false;
-          const hasPincode = currentUser?.pincodeEnabled || false;
+          const hasTwoFactor = currentUser?.twoFactorEnabled ?? false;
+          const hasPincode = currentUser?.pincodeEnabled ?? false;
 
           // Factory creation state
           const [isCreatingFactories, setIsCreatingFactories] = useState(false);
@@ -443,30 +414,24 @@ export function useOnboardingSteps({
               setIsTrackingFactories(true);
 
               try {
-                console.log("Starting factory creation with params:", params);
-
                 // Call the ORPC client directly
                 const factoryIterator =
                   await client.token.factoryCreate(params);
-
-                console.log("Factory iterator created:", factoryIterator);
 
                 let finalResults: any[] = [];
 
                 // Process the async iterator
                 for await (const event of factoryIterator) {
-                  console.log("Factory creation event:", event);
-
                   // Log detailed error information
                   if (event.status === "failed") {
                     console.error("Factory creation failed:", {
                       message: event.message,
                       currentFactory: event.currentFactory,
-                      error: event.error || "No error details provided",
+                      error: event.error ?? "No error details provided",
                     });
                   }
 
-                  setLatestMessage(event.message || "Processing...");
+                  setLatestMessage(event.message ?? "Processing...");
 
                   if (event.status === "completed" && event.result) {
                     finalResults = event.result;
@@ -504,7 +469,6 @@ export function useOnboardingSteps({
 
                   // Extract factory addresses from results
                   if (event.results && Array.isArray(event.results)) {
-                    console.log("Factory results found:", event.results);
                     setDeploymentProgress((prev) => {
                       const updated = [...prev];
                       event.results.forEach((result: any) => {
@@ -531,15 +495,10 @@ export function useOnboardingSteps({
 
                 // Update final progress based on results
                 if (Array.isArray(finalResults)) {
-                  console.log("Final results received:", finalResults);
                   setDeploymentProgress((prev) => {
                     return finalResults.map((result) => {
                       // Find existing progress entry to preserve transaction hash
                       const existing = prev.find((p) => p.type === result.type);
-                      console.log(
-                        `Processing result for ${result.type}:`,
-                        result
-                      );
 
                       // Log error details if factory creation failed
                       if (result.error) {
@@ -564,7 +523,6 @@ export function useOnboardingSteps({
                   });
                 }
               } catch (error) {
-                console.error("Factory creation failed:", error);
                 const errorMessage = formatValidationError(error);
                 setVerificationError(errorMessage);
                 toast.error(errorMessage);
@@ -607,7 +565,7 @@ export function useOnboardingSteps({
             }
 
             const currentSelectedAssets =
-              form.state.values.selectedAssetTypes || [];
+              form.state.values.selectedAssetTypes ?? [];
 
             // Create factory objects from selected asset types
             const factories = currentSelectedAssets.map(
@@ -661,7 +619,7 @@ export function useOnboardingSteps({
             }
 
             const currentSelectedAssets =
-              form.state.values.selectedAssetTypes || [];
+              form.state.values.selectedAssetTypes ?? [];
 
             // Create factory objects from selected asset types
             const factories = currentSelectedAssets.map(
@@ -710,7 +668,7 @@ export function useOnboardingSteps({
               title: "Bonds",
               description:
                 "Tokenized debt securities with fixed income features",
-              icons: "🔧 🔗",
+              icons: [Settings, Link],
               requiresConfig: false,
               requiresUnderlying: false,
             },
@@ -718,7 +676,7 @@ export function useOnboardingSteps({
               id: "equity",
               title: "Equities",
               description: "Digital shares representing ownership in companies",
-              icons: "",
+              icons: [],
               requiresConfig: false,
               requiresUnderlying: false,
             },
@@ -726,7 +684,7 @@ export function useOnboardingSteps({
               id: "fund",
               title: "Funds",
               description: "Investment fund tokens for pooled investments",
-              icons: "",
+              icons: [],
               requiresConfig: false,
               requiresUnderlying: false,
             },
@@ -734,7 +692,7 @@ export function useOnboardingSteps({
               id: "stablecoin",
               title: "Stablecoin",
               description: "Price-stable digital currencies",
-              icons: "🔗",
+              icons: [Link],
               requiresConfig: false,
               requiresUnderlying: true,
             },
@@ -742,21 +700,20 @@ export function useOnboardingSteps({
               id: "deposit",
               title: "Deposits",
               description: "Tokenized bank deposits and certificates",
-              icons: "🔗",
+              icons: [Link],
               requiresConfig: false,
               requiresUnderlying: true,
             },
           ];
 
           const formValues = form.state.values;
-          const selectedAssets = formValues.selectedAssetTypes || [];
 
           // Track selected assets count for button reactivity
           const [selectedAssetsCount, setSelectedAssetsCount] = useState(0);
 
           const handleDeploy = () => {
             const currentSelectedAssets =
-              form.state.values.selectedAssetTypes || [];
+              form.state.values.selectedAssetTypes ?? [];
             if (currentSelectedAssets.length === 0) {
               toast.error("Please select at least one asset type");
               return;
@@ -766,11 +723,6 @@ export function useOnboardingSteps({
               setVerificationError(null);
               setShowVerificationModal(true);
             }
-          };
-
-          const handleContinue = () => {
-            setCurrentScreen("success");
-            onNext?.();
           };
 
           // Show form screen
@@ -815,7 +767,7 @@ export function useOnboardingSteps({
                       <h3 className="font-medium mb-4">Select asset types:</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         {assetTypes.map((asset) => {
-                          const currentValue = field.state.value || [];
+                          const currentValue = field.state.value ?? [];
                           const isSelected =
                             Array.isArray(currentValue) &&
                             currentValue.includes(asset.id);
@@ -848,15 +800,20 @@ export function useOnboardingSteps({
                                 <div className="flex-1">
                                   <h4 className="font-medium text-foreground flex items-center gap-2">
                                     {asset.title}
-                                    {asset.icons && (
-                                      <span className="text-lg">
-                                        {asset.icons}
-                                      </span>
+                                    {asset.icons && asset.icons.length > 0 && (
+                                      <div className="flex items-center gap-1">
+                                        {asset.icons.map(
+                                          (IconComponent, index) => (
+                                            <IconComponent
+                                              key={index}
+                                              className="w-4 h-4 text-muted-foreground"
+                                            />
+                                          )
+                                        )}
+                                      </div>
                                     )}
                                     {asset.requiresConfig && (
-                                      <span className="text-xs text-muted-foreground">
-                                        🔧
-                                      </span>
+                                      <Settings className="w-4 h-4 text-muted-foreground" />
                                     )}
                                   </h4>
                                   <p className="text-sm text-muted-foreground mt-1">
@@ -882,11 +839,11 @@ export function useOnboardingSteps({
                 <div className="mb-6">
                   <div className="space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      <span>🔧</span>
+                      <Settings className="w-4 h-4" />
                       <span>Requires additional configuration</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span>🔗</span>
+                      <Link className="w-4 h-4" />
                       <span>
                         Requires at least one underlying asset type (e.g.
                         Stablecoins or Deposits)
@@ -898,9 +855,7 @@ export function useOnboardingSteps({
                 {/* Warnings */}
                 <div className="space-y-3">
                   <div className="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                    <span className="text-yellow-600 dark:text-yellow-400 mt-0.5">
-                      ⚠️
-                    </span>
+                    <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-yellow-700 dark:text-yellow-300">
                       This process may take up to 2–3 minutes depending on your
                       selections.
@@ -908,7 +863,7 @@ export function useOnboardingSteps({
                   </div>
 
                   <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <span className="text-blue-600 dark:text-blue-400">ℹ️</span>
+                    <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                     <p className="text-sm text-blue-700 dark:text-blue-300 m-0">
                       You'll be asked to confirm each transaction using your PIN
                       or OTP.
@@ -1087,11 +1042,11 @@ export function useOnboardingSteps({
 
                   {showDeploymentDetails && (
                     <div className="space-y-2 text-sm">
-                      {deploymentProgress.map((factory, index) => {
+                      {deploymentProgress.map((factory) => {
                         // Generate a mock address if no real address is available yet
                         const displayAddress =
                           factory.address ||
-                          `0x${Math.random().toString(16).substr(2, 40)}`;
+                          `0x${Math.random().toString(16).substring(2, 42)}`;
 
                         return (
                           <div
@@ -1111,19 +1066,7 @@ export function useOnboardingSteps({
                               className="flex-shrink-0 p-1 hover:bg-muted/50 rounded transition-colors"
                               title="Copy to clipboard"
                             >
-                              <svg
-                                className="w-3 h-3 text-muted-foreground hover:text-foreground"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                                />
-                              </svg>
+                              <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground" />
                             </button>
                           </div>
                         );
@@ -1138,7 +1081,7 @@ export function useOnboardingSteps({
                             {deploymentTransaction ||
                               deploymentProgress.find((f) => f.transactionHash)
                                 ?.transactionHash ||
-                              `0x${Math.random().toString(16).substr(2, 64)}`}
+                              `0x${Math.random().toString(16).substring(2, 66)}`}
                           </code>
                           <button
                             onClick={() =>
@@ -1147,26 +1090,14 @@ export function useOnboardingSteps({
                                   deploymentProgress.find(
                                     (f) => f.transactionHash
                                   )?.transactionHash ||
-                                  `0x${Math.random().toString(16).substr(2, 64)}`,
+                                  `0x${Math.random().toString(16).substring(2, 66)}`,
                                 "Deployment transaction"
                               )
                             }
                             className="flex-shrink-0 p-1 hover:bg-muted/50 rounded transition-colors"
                             title="Copy to clipboard"
                           >
-                            <svg
-                              className="w-3 h-3 text-muted-foreground hover:text-foreground"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                              />
-                            </svg>
+                            <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground" />
                           </button>
                         </div>
                       )}
