@@ -104,6 +104,10 @@ function RouteComponent() {
       href: `/token/${factoryAddress}/${tokenAddress}/holders`,
       name: t("tokens:details.holders"),
     },
+    {
+      href: `/token/${factoryAddress}/${tokenAddress}/events`,
+      name: t("tokens:details.events"),
+    },
   ] as TabItemProps[];
 
   return (

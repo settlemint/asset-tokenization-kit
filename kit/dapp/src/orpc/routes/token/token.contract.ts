@@ -21,6 +21,10 @@ import {
   TokenCreateSchema,
 } from "@/orpc/routes/token/routes/token.create.schema";
 import {
+  EventsResponseSchema,
+  TokenEventsInputSchema,
+} from "@/orpc/routes/token/routes/token.events.schema";
+import {
   TokenHoldersInputSchema,
   TokenHoldersResponseSchema,
 } from "@/orpc/routes/token/routes/token.holders.schema";
@@ -171,11 +175,23 @@ const holders = baseContract
   .input(TokenHoldersInputSchema)
   .output(TokenHoldersResponseSchema);
 
+const events = baseContract
+  .route({
+    method: "GET",
+    path: "/token/{tokenAddress}/events",
+    description: "Get token events history",
+    successDescription: "List of token events with details",
+    tags: ["token"],
+  })
+  .input(TokenEventsInputSchema)
+  .output(EventsResponseSchema);
+
 export const tokenContract = {
   factoryCreate,
   factoryList,
   factoryRead,
   create,
+  events,
   holders,
   list,
   read,
