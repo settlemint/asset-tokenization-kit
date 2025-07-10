@@ -48,15 +48,15 @@ export const assetClassBreadcrumbs: Record<
     title: "assetManagement",
     isI18nKey: true,
   },
-  "fixed-income": {
+  fixedIncome: {
     title: "fixedIncome",
     isI18nKey: true,
   },
-  "flexible-income": {
+  flexibleIncome: {
     title: "flexibleIncome",
     isI18nKey: true,
   },
-  "cash-equivalent": {
+  cashEquivalent: {
     title: "cashEquivalent",
     isI18nKey: true,
   },
