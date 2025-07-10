@@ -253,10 +253,10 @@ export function WizardField<TFormData>({
             <RadioGroup
               value={(field.state.value as string) || ""}
               onValueChange={handleRadioChange}
-              className="grid grid-cols-3 gap-4 items-stretch"
+              className="grid grid-cols-3 gap-4"
             >
               {fieldDef.options?.map((option) => (
-                <div key={option.value} className="relative">
+                <div key={option.value} className="relative h-full">
                   <RadioGroupItem
                     value={option.value}
                     id={option.value}
@@ -266,18 +266,18 @@ export function WizardField<TFormData>({
                     htmlFor={option.value}
                     className="flex cursor-pointer select-none rounded-lg border border-input bg-background p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-data-[state=checked]:text-primary transition-all h-full"
                   >
-                    <div className="flex items-start space-x-3">
+                    <div className="flex items-start space-x-3 h-full">
                       {option.icon && (
                         <div className="flex-shrink-0 mt-0.5 text-muted-foreground peer-data-[state=checked]:text-primary">
                           {option.icon}
                         </div>
                       )}
-                      <div className="min-w-0 flex-1">
-                        <div className="text-sm font-medium leading-6">
+                      <div className="min-w-0 flex-1 flex flex-col">
+                        <div className="text-sm font-medium leading-6 mb-1">
                           {option.label}
                         </div>
                         {option.description && (
-                          <div className="text-sm text-muted-foreground">
+                          <div className="text-sm text-muted-foreground flex-1">
                             {option.description}
                           </div>
                         )}
