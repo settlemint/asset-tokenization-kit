@@ -11,6 +11,7 @@ import type { FieldDefinition, FieldGroup } from "./types";
 import { useWizardContext } from "./wizard-context";
 import { WizardField } from "./wizard-field";
 import { WizardGroup } from "./wizard-group";
+import { WizardGroupFilter } from "./wizard-group-filter";
 import { WizardSearch } from "./wizard-search";
 
 const logger = createLogger();
@@ -29,6 +30,7 @@ export function WizardStep({ className }: WizardStepProps) {
   const [isValidating, setIsValidating] = useState(false);
   const [isStepVisible, setIsStepVisible] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
 
   // Get context - this hook must always be called
   const context = useWizardContext();
@@ -103,63 +105,95 @@ export function WizardStep({ className }: WizardStepProps) {
     []
   );
 
-  // Filter fields and groups based on search query
-  const { filteredFields, filteredGroups, totalResultCount } = useMemo(() => {
-    if (!currentStep) {
-      return { filteredFields: [], filteredGroups: [], totalResultCount: 0 };
-    }
+  // Filter fields and groups based on search query and selected groups
+  const { filteredFields, filteredGroups, totalResultCount, groupCounts } =
+    useMemo(() => {
+      if (!currentStep) {
+        return {
+          filteredFields: [],
+          filteredGroups: [],
+          totalResultCount: 0,
+          groupCounts: {},
+        };
+      }
 
-    let fieldResults: FieldDefinition[] = [];
-    let groupResults: FieldGroup[] = [];
+      let fieldResults: FieldDefinition[] = [];
+      let groupResults: FieldGroup[] = [];
+      const counts: Record<string, number> = {};
 
-    // Filter regular fields
-    if (currentStep.fields) {
-      const fields =
-        typeof currentStep.fields === "function"
-          ? currentStep.fields(form?.state?.values ?? {})
-          : currentStep.fields;
-
-      fieldResults = fields
-        .map((field) => filterFieldBySearch(field, searchQuery))
-        .filter((field): field is FieldDefinition => field !== null);
-    }
-
-    // Filter groups (only show groups that have matching fields)
-    if (currentStep.groups) {
-      const groups =
-        typeof currentStep.groups === "function"
+      // Get all groups first
+      const allGroups =
+        currentStep.groups && typeof currentStep.groups === "function"
           ? currentStep.groups(form?.state?.values ?? {})
-          : currentStep.groups;
+          : (currentStep.groups ?? []);
 
-      groupResults = groups
-        .map((group) => ({
-          ...group,
-          fields: group.fields
-            .map((field) => filterFieldBySearch(field, searchQuery))
-            .filter((field): field is FieldDefinition => field !== null),
-        }))
-        .filter((group) => group.fields.length > 0);
-    }
+      // Calculate counts for all groups before filtering
+      allGroups.forEach((group) => {
+        const fieldsWithSearch = group.fields
+          .map((field) => filterFieldBySearch(field, searchQuery))
+          .filter((field): field is FieldDefinition => field !== null);
+        counts[group.id] = fieldsWithSearch.length;
+      });
 
-    const totalResultCount =
-      fieldResults.length +
-      groupResults.reduce((acc, group) => acc + group.fields.length, 0);
+      // Filter regular fields
+      if (currentStep.fields) {
+        const fields =
+          typeof currentStep.fields === "function"
+            ? currentStep.fields(form?.state?.values ?? {})
+            : currentStep.fields;
 
-    return {
-      filteredFields: fieldResults,
-      filteredGroups: groupResults,
-      totalResultCount,
-    };
-  }, [currentStep, form?.state?.values, searchQuery, filterFieldBySearch]);
+        fieldResults = fields
+          .map((field) => filterFieldBySearch(field, searchQuery))
+          .filter((field): field is FieldDefinition => field !== null);
+      }
+
+      // Filter groups based on selected group IDs and search
+      if (currentStep.groups) {
+        const groups = allGroups;
+
+        // Apply group filter first
+        const groupsToProcess =
+          selectedGroupIds.length > 0
+            ? groups.filter((group) => selectedGroupIds.includes(group.id))
+            : groups;
+
+        groupResults = groupsToProcess
+          .map((group) => ({
+            ...group,
+            fields: group.fields
+              .map((field) => filterFieldBySearch(field, searchQuery))
+              .filter((field): field is FieldDefinition => field !== null),
+          }))
+          .filter((group) => group.fields.length > 0);
+      }
+
+      const totalResultCount =
+        fieldResults.length +
+        groupResults.reduce((acc, group) => acc + group.fields.length, 0);
+
+      return {
+        filteredFields: fieldResults,
+        filteredGroups: groupResults,
+        totalResultCount,
+        groupCounts: counts,
+      };
+    }, [
+      currentStep,
+      form?.state?.values,
+      searchQuery,
+      selectedGroupIds,
+      filterFieldBySearch,
+    ]);
 
   // Clear search callback
   const handleClearSearch = useCallback(() => {
     setSearchQuery("");
   }, []);
 
-  // Clear search when step changes
+  // Clear search and group filters when step changes
   useEffect(() => {
     setSearchQuery("");
+    setSelectedGroupIds([]);
   }, [currentStepIndex]);
 
   logger.debug("WizardStep render", {
@@ -341,17 +375,27 @@ export function WizardStep({ className }: WizardStepProps) {
           )}
         </div>
 
-        {/* Search bar - only show if searchable is enabled and there are fields/groups to search */}
-        {currentStep.searchable &&
-          ((currentStep.fields?.length ?? 0) > 0 ||
-            (currentStep.groups?.length ?? 0) > 0) && (
+        {/* Search and filter bar - only show if enableFilters is true and there are groups */}
+        {currentStep.enableFilters && currentStep.groups && (
+          <div className="flex items-center justify-between gap-4 mb-4">
             <WizardSearch
               onSearch={setSearchQuery}
               value={searchQuery}
               resultCount={totalResultCount}
               hasQuery={!!searchQuery.trim()}
             />
-          )}
+            <WizardGroupFilter
+              groups={
+                typeof currentStep.groups === "function"
+                  ? currentStep.groups(form?.state?.values ?? {})
+                  : currentStep.groups
+              }
+              selectedGroupIds={selectedGroupIds}
+              onGroupChange={setSelectedGroupIds}
+              groupCounts={groupCounts}
+            />
+          </div>
+        )}
 
         <div className="space-y-6">
           {/* Show no results state when search yields no results */}
