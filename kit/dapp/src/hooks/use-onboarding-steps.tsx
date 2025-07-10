@@ -288,17 +288,17 @@ function AssetSelectionComponent({
 
       setVerificationError(null);
 
-      // Use system address or fall back to default
-      const contractAddress =
-        systemAddress ?? "0x5e771e1417100000000000000000000000020088";
+      // Use token factory registry address from system details
+      const contractAddress = systemDetails?.tokenFactoryRegistry;
 
-      if (!systemAddress) {
-        logger.warn("No system address found, using default contract address", {
-          defaultAddress: contractAddress,
+      if (!contractAddress) {
+        logger.error("Token factory registry not found in system details", {
+          systemAddress,
+          systemDetails,
         });
-        // If no system address, this likely means system isn't bootstrapped
+        // If no token factory registry, this likely means system isn't fully bootstrapped
         setVerificationError(
-          "System not bootstrapped. Please complete system deployment first."
+          "Token factory registry not found. Please ensure the system is properly bootstrapped."
         );
         return;
       }
@@ -320,7 +320,11 @@ function AssetSelectionComponent({
       }
 
       // Verify system is ready for factory creation
-      if (!systemDetails.identityRegistry || !systemDetails.compliance) {
+      if (
+        !systemDetails.identityRegistry ||
+        !systemDetails.compliance ||
+        !systemDetails.tokenFactoryRegistry
+      ) {
         logger.error(
           "System bootstrap incomplete. Missing required components:",
           {
@@ -338,14 +342,14 @@ function AssetSelectionComponent({
       }
 
       logger.info("Deploying factories with parameters:", {
-        contract: contractAddress,
+        tokenFactoryRegistryAddress: contractAddress,
         factories,
         verification: {
           verificationCode: "***",
           verificationType,
         },
-        systemAddressSource: systemAddress ? "from settings" : "using default",
         systemAddress,
+        tokenFactoryRegistry: systemDetails.tokenFactoryRegistry,
         userWallet: session?.user.wallet ?? "no wallet",
         userSession: !!session?.user,
         factoryCount: factories.length,
