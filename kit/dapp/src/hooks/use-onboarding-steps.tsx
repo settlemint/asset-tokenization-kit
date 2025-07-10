@@ -15,6 +15,7 @@ import {
   fiatCurrencyMetadata,
 } from "@/lib/zod/validators/fiat-currency";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
 
 // Define the onboarding form schema
@@ -63,6 +64,8 @@ export function useOnboardingSteps({
   shouldShowSystemSetupSteps,
   shouldShowIdentitySteps,
 }: UseOnboardingStepsParams) {
+  const { t } = useTranslation(["onboarding", "general"]);
+
   // Get current base currency from settings
   const [currentBaseCurrency] = useSettings("BASE_CURRENCY");
   const groups: StepGroup[] = useMemo(() => {
@@ -71,8 +74,8 @@ export function useOnboardingSteps({
     if (shouldShowWalletSteps) {
       dynamicGroups.push({
         id: "wallet",
-        title: "Wallet Setup",
-        description: "Create and secure your wallet",
+        title: t("wallet.title"),
+        description: t("wallet.description"),
         collapsible: true,
         defaultExpanded: true,
       });
@@ -81,8 +84,8 @@ export function useOnboardingSteps({
     if (shouldShowSystemSetupSteps) {
       dynamicGroups.push({
         id: "system",
-        title: "System Setup",
-        description: "Initialize blockchain and configure assets",
+        title: t("system.title"),
+        description: t("system.description"),
         collapsible: true,
         defaultExpanded: !shouldShowWalletSteps,
       });
@@ -91,8 +94,8 @@ export function useOnboardingSteps({
     if (shouldShowIdentitySteps) {
       dynamicGroups.push({
         id: "identity",
-        title: "Identity Setup",
-        description: "Complete KYC and register identity",
+        title: t("steps.identity.title"),
+        description: t("steps.identity.description"),
         collapsible: true,
         defaultExpanded: dynamicGroups.length === 0,
       });
@@ -103,6 +106,7 @@ export function useOnboardingSteps({
     shouldShowWalletSteps,
     shouldShowSystemSetupSteps,
     shouldShowIdentitySteps,
+    t,
   ]);
 
   const steps: StepDefinition<OnboardingFormData>[] = useMemo(() => {
@@ -112,8 +116,8 @@ export function useOnboardingSteps({
       dynamicSteps.push(
         {
           id: "wallet-creation",
-          title: "Create Your Wallet",
-          description: "Generate a secure wallet for all blockchain operations",
+          title: t("steps.wallet.title"),
+          description: t("steps.wallet.description"),
           groupId: "wallet",
           fields: [],
           onStepComplete: async () => Promise.resolve(),
@@ -138,8 +142,8 @@ export function useOnboardingSteps({
         },
         {
           id: "wallet-security",
-          title: "Secure Your Wallet",
-          description: "Set up security verification for all operations",
+          title: t("steps.security.title"),
+          description: t("steps.security.description"),
           groupId: "wallet",
           fields: [],
           onStepComplete: async () => Promise.resolve(),
@@ -185,8 +189,8 @@ export function useOnboardingSteps({
       // 1. Deploy core system
       dynamicSteps.push({
         id: "system-bootstrap",
-        title: "Deploy core system",
-        description: "Initialize the blockchain system and set base currency",
+        title: t("steps.system.title"),
+        description: t("steps.system.description"),
         groupId: "system",
         fields: [],
         onStepComplete: async () => Promise.resolve(),
@@ -204,8 +208,8 @@ export function useOnboardingSteps({
       // 2. Configure platform settings
       dynamicSteps.push({
         id: "configure-platform-settings",
-        title: "Configure platform settings",
-        description: "Define how your platform behaves by default",
+        title: t("platform.title"),
+        description: t("platform.description"),
         groupId: "system",
         fields: [
           {
@@ -227,16 +231,15 @@ export function useOnboardingSteps({
       // 3. Select supported assets
       dynamicSteps.push({
         id: "asset-selection",
-        title: "Select supported assets",
-        description: "Choose which asset types your platform will support",
+        title: t("steps.assets.title"),
+        description: t("steps.assets.description"),
         groupId: "system",
         fields: [
           {
             name: "selectedAssetTypes",
-            label: "Asset Types",
+            label: t("assets.select-label"),
             type: "checkbox",
-            description:
-              "Which assets do you want to support? At least one is required.",
+            description: t("assets.select-description"),
             options: [
               { label: "Equity Tokens", value: "equity" },
               { label: "Bond Tokens", value: "bond" },
@@ -432,6 +435,7 @@ export function useOnboardingSteps({
     shouldShowSystemSetupSteps,
     shouldShowIdentitySteps,
     user,
+    t,
   ]);
 
   const defaultValues: Partial<OnboardingFormData> = useMemo(
