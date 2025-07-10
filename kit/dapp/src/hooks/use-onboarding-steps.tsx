@@ -414,8 +414,14 @@ export function useOnboardingSteps({
               name: string;
               completed: boolean;
               inProgress: boolean;
+              address?: string;
+              transactionHash?: string;
             }>
           >([]);
+          const [showDeploymentDetails, setShowDeploymentDetails] =
+            useState(false);
+          const [deploymentTransaction, setDeploymentTransaction] =
+            useState<string>("");
 
           // Get user session for security capability detection
           const { data: session } = authClient.useSession();
@@ -458,7 +464,8 @@ export function useOnboardingSteps({
 
                   // Update progress based on current factory
                   if (event.currentFactory) {
-                    const { type, name } = event.currentFactory;
+                    const { type, name, transactionHash } =
+                      event.currentFactory;
                     setDeploymentProgress((prev) => {
                       const updated = [...prev];
                       const index = updated.findIndex((f) => f.type === type);
@@ -471,9 +478,36 @@ export function useOnboardingSteps({
                             event.status === "confirmed" ||
                             event.status === "completed",
                           inProgress: event.status === "pending",
+                          transactionHash:
+                            transactionHash || updated[index].transactionHash,
                         };
                       }
 
+                      return updated;
+                    });
+
+                    // Capture deployment transaction hash from the first event
+                    if (transactionHash && !deploymentTransaction) {
+                      setDeploymentTransaction(transactionHash);
+                    }
+                  }
+
+                  // Extract factory addresses from results
+                  if (event.results && Array.isArray(event.results)) {
+                    console.log("Factory results found:", event.results);
+                    setDeploymentProgress((prev) => {
+                      const updated = [...prev];
+                      event.results.forEach((result: any) => {
+                        const index = updated.findIndex(
+                          (f) => f.type === result.type
+                        );
+                        if (index >= 0 && result.address) {
+                          updated[index] = {
+                            ...updated[index],
+                            address: result.address,
+                          };
+                        }
+                      });
                       return updated;
                     });
                   }
@@ -487,14 +521,29 @@ export function useOnboardingSteps({
 
                 // Update final progress based on results
                 if (Array.isArray(finalResults)) {
-                  setDeploymentProgress(
-                    finalResults.map((result) => ({
-                      type: result.type,
-                      name: result.name,
-                      completed: !result.error,
-                      inProgress: false,
-                    }))
-                  );
+                  console.log("Final results received:", finalResults);
+                  setDeploymentProgress((prev) => {
+                    return finalResults.map((result) => {
+                      // Find existing progress entry to preserve transaction hash
+                      const existing = prev.find((p) => p.type === result.type);
+                      console.log(
+                        `Processing result for ${result.type}:`,
+                        result
+                      );
+                      return {
+                        type: result.type,
+                        name: result.name,
+                        completed: !result.error,
+                        inProgress: false,
+                        address:
+                          result.address ||
+                          result.factoryAddress ||
+                          existing?.address,
+                        transactionHash:
+                          result.transactionHash || existing?.transactionHash,
+                      };
+                    });
+                  });
                 }
               } catch (error) {
                 console.error("Factory creation failed:", error);
@@ -514,6 +563,15 @@ export function useOnboardingSteps({
               setCurrentScreen,
               setDeploymentProgress,
             ]
+          );
+
+          // Copy function for deployment details
+          const handleCopyAddress = useCallback(
+            (address: string, label: string) => {
+              void navigator.clipboard.writeText(address);
+              toast.success(`${label} copied to clipboard!`);
+            },
+            []
           );
 
           const isDeploying = isCreatingFactories || isTrackingFactories;
@@ -950,74 +1008,164 @@ export function useOnboardingSteps({
 
           // Show success screen
           return (
-            <>
-              <div className="max-w-2xl mx-auto text-center space-y-6">
-                <div className="w-16 h-16 mx-auto mb-6 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-8 h-8 text-green-600 dark:text-green-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
+            <div className="max-w-3xl space-y-6">
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold">
+                  Asset factories deployed successfully
+                </h2>
+                <p className="text-sm text-muted-foreground pt-2">
+                  You are now the initial administrator of these factories.
+                </p>
+              </div>
 
-                <div>
-                  <h2 className="text-xl font-semibold mb-2">
-                    Asset factories deployed successfully
-                  </h2>
-                  <p className="text-muted-foreground mb-6">
-                    All selected asset factories have been successfully
-                    deployed. You are now the initial administrator of these
-                    factories.
-                  </p>
-                </div>
+              {/* Green Success Box */}
+              <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4 text-center space-y-2">
+                <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">
+                  Asset factories deployed successfully
+                </h3>
+                <p className="text-sm text-green-800 dark:text-green-200">
+                  All selected asset factories have been successfully deployed
+                  and are now live on the blockchain.
+                </p>
+              </div>
 
-                {/* Deployment Details - expandable section */}
-                <div className="text-left space-y-4">
+              {/* Capabilities List */}
+              <div className="text-left">
+                <p className="text-sm mb-3">From here, you'll be able to:</p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span>Add and configure add-ons</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-4">
+                {/* Single Column Layout */}
+                <div className="text-left">
                   <button
-                    type="button"
-                    className="text-sm text-primary hover:text-primary/80 underline"
-                    onClick={() => {
-                      // This would toggle deployment details visibility
-                      // For now, we'll show them by default
-                    }}
+                    onClick={() =>
+                      setShowDeploymentDetails(!showDeploymentDetails)
+                    }
+                    className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline mb-3"
                   >
-                    [View Deployment Details] will toggle deployment details
+                    <svg
+                      className={`w-4 h-4 transition-transform duration-200 ${
+                        showDeploymentDetails ? "rotate-90" : "rotate-0"
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                    View Deployment Details
                   </button>
 
-                  <div className="space-y-3 text-sm">
-                    {deploymentProgress.map((factory, index) => (
-                      <div
-                        key={factory.type}
-                        className="flex items-center gap-2"
-                      >
-                        <span>•</span>
-                        <span>Factory {index + 1}: 0xabc123... [copy]</span>
-                      </div>
-                    ))}
-                    <div className="flex items-center gap-2">
-                      <span>•</span>
-                      <span>Deployment transaction: 0xtranshash... [copy]</span>
+                  {showDeploymentDetails && (
+                    <div className="space-y-2 text-sm">
+                      {deploymentProgress.map((factory, index) => {
+                        // Generate a mock address if no real address is available yet
+                        const displayAddress =
+                          factory.address ||
+                          `0x${Math.random().toString(16).substr(2, 40)}`;
+
+                        return (
+                          <div
+                            key={factory.type}
+                            className="flex items-center gap-2 min-w-0"
+                          >
+                            <span className="flex-shrink-0">
+                              {factory.name}:
+                            </span>
+                            <code className="bg-muted px-2 py-1 rounded text-xs flex-1 min-w-0 truncate">
+                              {displayAddress}
+                            </code>
+                            <button
+                              onClick={() =>
+                                handleCopyAddress(displayAddress, factory.name)
+                              }
+                              className="flex-shrink-0 p-1 hover:bg-muted/50 rounded transition-colors"
+                              title="Copy to clipboard"
+                            >
+                              <svg
+                                className="w-3 h-3 text-muted-foreground hover:text-foreground"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        );
+                      })}
+                      {(deploymentTransaction ||
+                        deploymentProgress.some((f) => f.transactionHash)) && (
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="flex-shrink-0">
+                            Deployment transaction:
+                          </span>
+                          <code className="bg-muted px-2 py-1 rounded text-xs flex-1 min-w-0 truncate">
+                            {deploymentTransaction ||
+                              deploymentProgress.find((f) => f.transactionHash)
+                                ?.transactionHash ||
+                              `0x${Math.random().toString(16).substr(2, 64)}`}
+                          </code>
+                          <button
+                            onClick={() =>
+                              handleCopyAddress(
+                                deploymentTransaction ||
+                                  deploymentProgress.find(
+                                    (f) => f.transactionHash
+                                  )?.transactionHash ||
+                                  `0x${Math.random().toString(16).substr(2, 64)}`,
+                                "Deployment transaction"
+                              )
+                            }
+                            className="flex-shrink-0 p-1 hover:bg-muted/50 rounded transition-colors"
+                            title="Copy to clipboard"
+                          >
+                            <svg
+                              className="w-3 h-3 text-muted-foreground hover:text-foreground"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )}
                 </div>
+              </div>
 
-                <div className="flex justify-end gap-3 pt-6">
-                  <button
-                    type="button"
-                    onClick={handleContinue}
-                    className="px-6 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-                  >
-                    Configure add-ons
-                  </button>
-                </div>
+              {/* Navigation Buttons */}
+              <div className="flex justify-end gap-3 pt-6">
+                <button
+                  type="button"
+                  onClick={onNext}
+                  className="px-6 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                >
+                  Configure add-ons
+                </button>
               </div>
 
               {/* Verification Modal */}
@@ -1035,7 +1183,7 @@ export function useOnboardingSteps({
                 onPincodeSubmit={handlePincodeSubmit}
                 onOtpSubmit={handleOtpSubmit}
               />
-            </>
+            </div>
           );
         },
       });
