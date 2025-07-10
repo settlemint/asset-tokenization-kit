@@ -4,6 +4,9 @@
   "continue": "Continue",
   "deploying": "Deploying...",
   "generating": "Generating...",
+  "next": "Next",
+  "previous": "Previous",
+  "complete": "Complete",
   "transactionHash": {
     "copyToClipboard": "Copy transaction hash",
     "copied": "Copied!"
