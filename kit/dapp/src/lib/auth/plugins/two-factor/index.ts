@@ -36,6 +36,10 @@ export const twoFactor = () => {
               .string()
               .describe("Custom issuer for the TOTP URI")
               .optional(),
+            onboarding: z
+              .boolean()
+              .describe("Flag to indicate this is during onboarding flow")
+              .optional(),
           }),
           use: [sessionMiddleware],
           metadata: {
@@ -66,8 +70,9 @@ export const twoFactor = () => {
         },
         async (ctx) => {
           const user = ctx.context.session.user as SessionUser;
-          const { password } = ctx.body;
-          if (isOnboarded(user)) {
+          const { password, onboarding } = ctx.body;
+          // Skip password validation during onboarding flow
+          if (isOnboarded(user) && !onboarding) {
             if (!password) {
               throw new APIError("BAD_REQUEST", {
                 message: "Password is required",
