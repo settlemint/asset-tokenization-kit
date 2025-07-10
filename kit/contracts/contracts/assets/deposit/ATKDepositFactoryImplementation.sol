@@ -130,13 +130,15 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     /// @param decimals_ The decimals of the token.
     /// @param requiredClaimTopics_ The required claim topics for the token.
     /// @param initialModulePairs_ The initial compliance module pairs for the token.
+    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction.
     /// @return predictedAddress The predicted address of the token contract.
     function predictDepositAddress(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        uint16 countryCode_
     )
         external
         view

@@ -91,7 +91,7 @@ contract ATKEquityImplementation is
     // multiple inheritance
 
     /// @inheritdoc IContractWithIdentity
-    function onchainID() public view override(ISMART, IContractWithIdentity, _SMARTLogic) returns (address) {
+    function onchainID() public view override(_SMARTLogic, ISMART, IContractWithIdentity) returns (address) {
         return super.onchainID();
     }
 
