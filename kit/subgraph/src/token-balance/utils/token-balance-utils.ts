@@ -2,6 +2,7 @@ import { Address, BigInt, store } from "@graphprotocol/graph-ts";
 import { Token, TokenBalance } from "../../../generated/schema";
 import { fetchAccount } from "../../account/fetch/account";
 import { decreaseAccountStatsBalanceCount } from "../../stats/account-stats";
+import { updateTokenDistributionStats } from "../../stats/token-distribution-stats";
 import { decreaseTokenStatsBalanceCount } from "../../stats/token-stats";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchTokenBalance } from "../fetch/token-balance";
@@ -13,7 +14,7 @@ export function increaseTokenBalanceValue(
   timestamp: BigInt
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
-
+  const oldValue = balance.valueExact;
   const newValue = balance.valueExact.plus(value);
 
   if (newValue.le(BigInt.zero())) {
@@ -27,6 +28,14 @@ export function increaseTokenBalanceValue(
   balance.lastUpdatedAt = timestamp;
 
   balance.save();
+
+  // Update distribution stats with old and new balance
+  updateTokenDistributionStats(
+    token,
+    fetchAccount(account),
+    oldValue,
+    newValue
+  );
 }
 
 export function decreaseTokenBalanceValue(
@@ -36,7 +45,7 @@ export function decreaseTokenBalanceValue(
   timestamp: BigInt
 ): void {
   const balance = fetchTokenBalance(token, fetchAccount(account));
-
+  const oldValue = balance.valueExact;
   const newValue = balance.valueExact.minus(value);
 
   if (newValue.le(BigInt.zero())) {
@@ -50,6 +59,14 @@ export function decreaseTokenBalanceValue(
   balance.lastUpdatedAt = timestamp;
 
   balance.save();
+
+  // Update distribution stats with old and new balance
+  updateTokenDistributionStats(
+    token,
+    fetchAccount(account),
+    oldValue,
+    newValue
+  );
 }
 
 export function increaseTokenBalanceFrozen(
@@ -117,18 +134,21 @@ export function freezeOrUnfreezeTokenBalance(
 
 export function moveTokenBalanceToNewAccount(
   token: Token,
-  oldAccount: Address,
-  newAccount: Address,
+  oldAccountAddress: Address,
+  newAccountAddress: Address,
   timestamp: BigInt
 ): void {
-  const oldBalance = fetchTokenBalance(token, fetchAccount(oldAccount));
+  const oldAccount = fetchAccount(oldAccountAddress);
+  const newAccount = fetchAccount(newAccountAddress);
+
+  const oldBalance = fetchTokenBalance(token, oldAccount);
 
   if (oldBalance.valueExact.le(BigInt.zero()) && !oldBalance.isFrozen) {
     removeTokenBalance(oldBalance);
     return;
   }
 
-  const newBalance = fetchTokenBalance(token, fetchAccount(newAccount));
+  const newBalance = fetchTokenBalance(token, newAccount);
 
   setBigNumber(newBalance, "value", oldBalance.valueExact, token.decimals);
   setBigNumber(newBalance, "frozen", oldBalance.frozenExact, token.decimals);
@@ -140,6 +160,14 @@ export function moveTokenBalanceToNewAccount(
   newBalance.save();
 
   removeTokenBalance(oldBalance);
+
+  // Update distribution stats with old and new balance
+  updateTokenDistributionStats(
+    token,
+    newAccount,
+    BigInt.zero(),
+    newBalance.valueExact
+  );
 }
 
 function updateAvailableAmount(
@@ -159,6 +187,16 @@ function updateAvailableAmount(
 }
 
 function removeTokenBalance(tokenBalance: TokenBalance): void {
+  // Update distribution stats before removing (balance goes to zero)
+  const token = Token.load(tokenBalance.token)!;
+  const account = fetchAccount(Address.fromBytes(tokenBalance.account));
+  updateTokenDistributionStats(
+    token,
+    account,
+    tokenBalance.valueExact,
+    BigInt.zero()
+  );
+
   store.remove("TokenBalance", tokenBalance.id.toHexString());
   decreaseAccountStatsBalanceCount(Address.fromBytes(tokenBalance.account));
   decreaseTokenStatsBalanceCount(Address.fromBytes(tokenBalance.token));
