@@ -1,15 +1,15 @@
+import { Bytes, log } from "@graphprotocol/graph-ts";
 import { ATKXvPSettlementCreated } from "../../../../generated/templates/XvPSettlementFactory/XvPSettlementFactory";
-import { fetchEvent } from "../../../event/fetch/event";
-import { fetchXvPSettlement } from "./fetch/xvp-settlement";
 import {
   createAction,
   getOrCreateActionExecutor,
 } from "../../../actions/action-utils";
 import {
-  ACTION_TYPES,
-  ACTION_USER_TYPES,
+  ACTION_TYPE_APPROVE_XVP_SETTLEMENT,
+  ACTION_USER_TYPE_USER,
 } from "../../../constants/action-types";
-import { BigInt, Bytes, log } from "@graphprotocol/graph-ts";
+import { fetchEvent } from "../../../event/fetch/event";
+import { fetchXvPSettlement } from "./fetch/xvp-settlement";
 
 export function handleATKXvPSettlementCreated(
   event: ATKXvPSettlementCreated
@@ -57,8 +57,8 @@ export function handleATKXvPSettlementCreated(
     const action = createAction(
       actionId,
       actionExecutor,
-      ACTION_TYPES.APPROVE_XVP_SETTLEMENT,
-      ACTION_USER_TYPES.USER,
+      ACTION_TYPE_APPROVE_XVP_SETTLEMENT,
+      ACTION_USER_TYPE_USER,
       event.block.timestamp,
       event.block.timestamp, // Active immediately
       xvpSettlement.cutoffDate, // Expires at cutoff date

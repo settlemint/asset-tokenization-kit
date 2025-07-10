@@ -19,8 +19,10 @@ import {
   getOrCreateActionExecutor,
 } from "../../../actions/action-utils";
 import {
-  ACTION_TYPES,
-  ACTION_USER_TYPES,
+  ACTION_TYPE_APPROVE_XVP_SETTLEMENT,
+  ACTION_TYPE_EXECUTE_XVP_SETTLEMENT,
+  ACTION_USER_TYPE_ADMIN,
+  ACTION_USER_TYPE_USER,
 } from "../../../constants/action-types";
 import { fetchEvent } from "../../../event/fetch/event";
 import { fetchToken } from "../../../token/fetch/token";
@@ -214,8 +216,8 @@ export function handleXvPSettlementApproved(
     const executeAction = createAction(
       executeActionId,
       actionExecutor,
-      ACTION_TYPES.EXECUTE_XVP_SETTLEMENT,
-      ACTION_USER_TYPES.ADMIN,
+      ACTION_TYPE_EXECUTE_XVP_SETTLEMENT,
+      ACTION_USER_TYPE_ADMIN,
       event.block.timestamp,
       event.block.timestamp,
       settlement.cutoffDate,
@@ -260,8 +262,8 @@ export function handleXvPSettlementApprovalRevoked(
   const approvalAction = createAction(
     actionId,
     actionExecutor,
-    ACTION_TYPES.APPROVE_XVP_SETTLEMENT,
-    ACTION_USER_TYPES.USER,
+    ACTION_TYPE_APPROVE_XVP_SETTLEMENT,
+    ACTION_USER_TYPE_USER,
     event.block.timestamp,
     event.block.timestamp,
     settlement.cutoffDate,
