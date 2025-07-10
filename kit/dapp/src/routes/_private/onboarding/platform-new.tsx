@@ -115,11 +115,11 @@ function PlatformNewOnboarding() {
   // Determine completed steps for welcome screen
   const completedSteps = useMemo(
     () => ({
-      wallet: !!session?.user?.pincodeEnabled, // Wallet is complete if user has secured it with PIN
+      wallet: !!session?.user.pincodeEnabled, // Wallet is complete if user has secured it with PIN
       system: !!systemAddress, // System is complete if system address exists
       identity: false, // For now, identity is never complete during onboarding
     }),
-    [session?.user?.pincodeEnabled, systemAddress]
+    [session?.user.pincodeEnabled, systemAddress]
   );
 
   // If showing welcome screen, render it without the wizard
@@ -164,8 +164,8 @@ function PlatformNewOnboarding() {
             onStartSetup={handleStartWalletSetup}
             completedSteps={completedSteps}
             systemDeployed={!!systemAddress}
-            userName={user?.name}
-            isReturningUser={!!user?.isOnboarded}
+            userName={user.name}
+            isReturningUser={!!user.isOnboarded}
           />
         </div>
       </OnboardingGuard>

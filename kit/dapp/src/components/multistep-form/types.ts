@@ -21,6 +21,9 @@ export interface StepDefinition<TFormData = unknown> {
   fields?:
     | FieldDefinition<TFormData>[]
     | ((formData: Partial<TFormData>) => FieldDefinition<TFormData>[]);
+  groups?:
+    | FieldGroup<TFormData>[]
+    | ((formData: Partial<TFormData>) => FieldGroup<TFormData>[]);
   validate?: (
     formData: Partial<TFormData>
   ) => Promise<string | undefined> | string | undefined;
@@ -43,7 +46,7 @@ export interface StepDefinition<TFormData = unknown> {
 
 export interface FieldDefinition<TFormData = unknown> {
   name: keyof TFormData;
-  label: string;
+  label?: string;
   description?: string;
   type:
     | "text"
@@ -58,10 +61,24 @@ export interface FieldDefinition<TFormData = unknown> {
   placeholder?: string;
   required?: boolean;
   schema?: z.ZodType;
-  options?: { label: string; value: string }[];
+  options?: {
+    label: string;
+    value: string;
+    description?: string;
+    icon?: React.ReactNode;
+  }[];
   dependsOn?: (formData: Partial<TFormData>) => Promise<boolean> | boolean;
   component?: React.ComponentType<FieldComponentProps<TFormData>>;
   postfix?: string;
+  variant?: "default" | "card";
+}
+
+export interface FieldGroup<TFormData = unknown> {
+  id: string;
+  label: string;
+  description?: string;
+  icon?: React.ReactNode;
+  fields: FieldDefinition<TFormData>[];
 }
 
 export interface StepGroup {

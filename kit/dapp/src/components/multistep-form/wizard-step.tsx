@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useWizardContext } from "./wizard-context";
 import { WizardField } from "./wizard-field";
+import { WizardGroup } from "./wizard-group";
 
 const logger = createLogger();
 
@@ -241,6 +242,7 @@ export function WizardStep({ className }: WizardStepProps) {
         </div>
 
         <div className="space-y-6">
+          {/* Render regular fields */}
           {(() => {
             if (!currentStep.fields) return null;
 
@@ -272,6 +274,41 @@ export function WizardStep({ className }: WizardStepProps) {
                     className="text-destructive"
                   >
                     Error rendering field: {fieldDef.name as string}
+                  </div>
+                );
+              }
+            });
+          })()}
+
+          {/* Render groups */}
+          {(() => {
+            if (!currentStep.groups) return null;
+
+            // Handle both static array and function-based groups
+            const groups =
+              typeof currentStep.groups === "function"
+                ? currentStep.groups(form?.state?.values ?? {})
+                : currentStep.groups;
+
+            return groups.map((group) => {
+              try {
+                return (
+                  <WizardGroup
+                    key={group.id}
+                    group={group}
+                    formData={form?.state?.values ?? {}}
+                  />
+                );
+              } catch (error) {
+                logger.error("Error rendering group", {
+                  groupId: group.id,
+                  error,
+                  hasForm: !!form,
+                  hasFormState: !!form.state,
+                });
+                return (
+                  <div key={group.id} className="text-destructive">
+                    Error rendering group: {group.id}
                   </div>
                 );
               }

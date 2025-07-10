@@ -248,6 +248,47 @@ export function WizardField<TFormData>({
         );
 
       case "radio":
+        if (fieldDef.variant === "card") {
+          return (
+            <RadioGroup
+              value={(field.state.value as string) || ""}
+              onValueChange={handleRadioChange}
+              className="grid grid-cols-3 gap-4"
+            >
+              {fieldDef.options?.map((option) => (
+                <div key={option.value} className="relative h-full">
+                  <RadioGroupItem
+                    value={option.value}
+                    id={option.value}
+                    className="peer sr-only"
+                  />
+                  <Label
+                    htmlFor={option.value}
+                    className="flex cursor-pointer select-none rounded-lg border border-input bg-background p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-data-[state=checked]:text-primary transition-all h-full"
+                  >
+                    <div className="flex items-start space-x-3 h-full">
+                      {option.icon && (
+                        <div className="flex-shrink-0 mt-0.5">
+                          {option.icon}
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1 flex flex-col">
+                        <div className="text-sm font-medium leading-6 mb-1">
+                          {option.label}
+                        </div>
+                        {option.description && (
+                          <div className="text-sm text-muted-foreground flex-1">
+                            {option.description}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          );
+        }
         return (
           <RadioGroup
             value={(field.state.value as string) || ""}
@@ -271,7 +312,7 @@ export function WizardField<TFormData>({
 
   return (
     <div className="space-y-2">
-      {fieldDef.type !== "checkbox" && (
+      {fieldDef.type !== "checkbox" && fieldDef.label && (
         <Label htmlFor={fieldDef.name as string}>
           {fieldDef.label}
           {fieldDef.required && (
