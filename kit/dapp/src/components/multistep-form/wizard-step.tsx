@@ -104,23 +104,13 @@ export function WizardStep({ className }: WizardStepProps) {
       if (!isLastStep) {
         nextStep();
       } else {
-        // Final submission
-        await new Promise<void>((resolve, reject) => {
-          form.handleSubmit({
-            onSubmit: async ({ value }: { value: unknown }) => {
-              try {
-                await form.options.onSubmit?.({ value, formApi: form });
-                resolve();
-              } catch (error) {
-                reject(
-                  new Error(
-                    error instanceof Error ? error.message : String(error)
-                  )
-                );
-              }
-            },
-          })();
-        });
+        // Final submission - call the form's onSubmit handler directly
+        if (form?.options?.onSubmit && form?.state?.values) {
+          await form.options.onSubmit({
+            value: form.state.values,
+            formApi: form,
+          });
+        }
       }
     } catch (error) {
       const errorMessage = formatValidationError(error);
