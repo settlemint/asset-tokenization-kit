@@ -129,7 +129,7 @@ export function WizardGroupFilter({
             isOpen && "bg-accent text-accent-foreground"
           )}
         >
-          <Filter className="h-4 w-4" />
+          <Filter className="h-4 w-4 text-muted-foreground" />
           {selectedGroupIds.length > 0 && (
             <span className="text-sm">{selectedGroupIds.length}</span>
           )}
