@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 
 import { authClient } from "@/lib/auth/auth.client";
+import type { SessionUser } from "@/lib/auth";
 import { queryClient } from "@/lib/query.client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
@@ -23,8 +24,7 @@ interface WalletSecurityMainProps {
   onPrevious?: () => void;
   isFirstStep?: boolean;
   isLastStep?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user?: any;
+  user?: SessionUser | null | undefined;
   onSuccess?: () => void;
   onRegisterAction?: (action: () => void) => void;
   forceShowSelection?: boolean;

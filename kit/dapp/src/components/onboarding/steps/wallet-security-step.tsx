@@ -1,3 +1,4 @@
+import type { SessionUser } from "@/lib/auth";
 import { WalletSecurityMain } from "./security/wallet-security-main";
 
 interface WalletSecurityStepProps {
@@ -5,8 +6,7 @@ interface WalletSecurityStepProps {
   onPrevious?: () => void;
   isFirstStep?: boolean;
   isLastStep?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user?: any;
+  user?: SessionUser | null;
   onSuccess?: () => void;
   onRegisterAction?: (action: () => void) => void;
   forceShowSelection?: boolean;

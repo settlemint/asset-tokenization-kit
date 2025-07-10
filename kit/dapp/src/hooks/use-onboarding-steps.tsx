@@ -10,6 +10,7 @@ import { AssetSelectionComponent } from "@/components/onboarding/steps/asset-typ
 import { PlatformSettingsComponent } from "@/components/onboarding/steps/platform-settings-step";
 
 import { useSettings } from "@/hooks/use-settings";
+import type { SessionUser } from "@/lib/auth";
 import {
   fiatCurrency,
   fiatCurrencyMetadata,
@@ -48,8 +49,7 @@ const onboardingSchema = z.object({
 export type OnboardingFormData = z.infer<typeof onboardingSchema>;
 
 interface UseOnboardingStepsParams {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user: any;
+  user: SessionUser | null | undefined;
   systemAddress: string | null;
   systemDetails: { tokenFactories: unknown[] } | null;
   shouldShowWalletSteps: boolean;

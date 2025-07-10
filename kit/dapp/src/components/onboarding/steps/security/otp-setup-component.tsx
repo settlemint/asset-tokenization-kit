@@ -6,6 +6,7 @@ import {
   InputOTPSeparator,
 } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/auth.client";
+import type { SessionUser } from "@/lib/auth";
 import { queryClient } from "@/lib/query.client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
@@ -18,7 +19,7 @@ const logger = createLogger({ level: "debug" });
 interface OtpSetupComponentProps {
   onSuccess: () => void;
   onBack: () => void;
-  user?: any;
+  user?: SessionUser | null | undefined;
 }
 
 export function OtpSetupComponent({
