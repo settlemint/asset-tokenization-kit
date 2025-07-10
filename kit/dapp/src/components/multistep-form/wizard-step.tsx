@@ -132,7 +132,14 @@ export function WizardStep({ className }: WizardStepProps) {
         const fieldsWithSearch = group.fields
           .map((field) => filterFieldBySearch(field, searchQuery))
           .filter((field): field is FieldDefinition => field !== null);
-        counts[group.id] = fieldsWithSearch.length;
+
+        // Count the total number of options/items in this group
+        const totalCount = fieldsWithSearch.reduce((acc, field) => {
+          // If field has options, count the options; otherwise count the field itself
+          return acc + (field.options?.length ?? 1);
+        }, 0);
+
+        counts[group.id] = totalCount;
       });
 
       // Filter regular fields
