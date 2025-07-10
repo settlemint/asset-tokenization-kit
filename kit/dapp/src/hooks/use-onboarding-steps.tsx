@@ -7,20 +7,60 @@ import { SystemBootstrapStep } from "@/components/onboarding/steps/system-bootst
 import { WalletDisplayStep } from "@/components/onboarding/steps/wallet-display-step";
 import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
 
-import { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useCallback } from "react";
 import { z } from "zod/v4";
 import { useSettings } from "@/hooks/use-settings";
-import { client } from "@/orpc";
 import { toast } from "sonner";
 import {
   fiatCurrency,
   fiatCurrencyMetadata,
 } from "@/lib/zod/validators/fiat-currency";
 import { useWizardContext } from "@/components/multistep-form/wizard-context";
-import { VerificationDialog } from "@/components/ui/verification-dialog";
-import { formatValidationError } from "@/lib/utils/format-validation-error";
-import { authClient } from "@/lib/auth/auth.client";
-import { Settings, Link, AlertTriangle, Info, Copy } from "lucide-react";
+
+// Currency Field Component
+function CurrencyField({
+  field,
+}: {
+  field: {
+    state: { value?: string; meta: { errors?: string[] } };
+    handleChange: (value: string) => void;
+  };
+}) {
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      field.handleChange(e.target.value);
+    },
+    [field]
+  );
+
+  return (
+    <div className="space-y-2">
+      <label htmlFor="baseCurrency" className="text-sm font-medium">
+        Base Currency
+      </label>
+      <p className="text-sm text-muted-foreground">
+        Choose the default currency for your platform
+      </p>
+      <select
+        id="baseCurrency"
+        value={field.state.value ?? "USD"}
+        onChange={handleChange}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        {Object.entries(fiatCurrencyMetadata).map(([code, metadata]) => (
+          <option key={code} value={code}>
+            {metadata.name} ({code})
+          </option>
+        ))}
+      </select>
+      {field.state.meta.errors && field.state.meta.errors.length > 0 && (
+        <p className="text-sm text-destructive mt-2">
+          {field.state.meta.errors[0]}
+        </p>
+      )}
+    </div>
+  );
+}
 
 // Platform Settings Component
 function PlatformSettingsComponent({
@@ -29,7 +69,20 @@ function PlatformSettingsComponent({
   onPrevious,
   isFirstStep,
 }: {
-  form: any;
+  form: {
+    state: {
+      values: {
+        baseCurrency?: string;
+      };
+    };
+    Field: (props: {
+      name: string;
+      children: (field: {
+        state: { value?: string; meta: { errors?: string[] } };
+        handleChange: (value: string) => void;
+      }) => React.ReactNode;
+    }) => React.ReactNode;
+  };
   onNext?: () => void;
   onPrevious?: () => void;
   isFirstStep?: boolean;
@@ -37,7 +90,7 @@ function PlatformSettingsComponent({
   const [, setBaseCurrency] = useSettings("BASE_CURRENCY");
   const { clearStepError, markStepComplete } = useWizardContext();
 
-  const handleConfirm = useCallback(async () => {
+  const handleConfirm = useCallback(() => {
     try {
       clearStepError("configure-platform-settings");
       const formValues = form.state.values;
@@ -47,7 +100,7 @@ function PlatformSettingsComponent({
         toast.success("Platform settings saved successfully");
       }
       onNext?.();
-    } catch (error) {
+    } catch {
       toast.error("Failed to save platform settings");
     }
   }, [
@@ -81,33 +134,10 @@ function PlatformSettingsComponent({
       </div>
 
       <form.Field name="baseCurrency">
-        {(field: any) => (
-          <div className="space-y-2">
-            <label htmlFor="baseCurrency" className="text-sm font-medium">
-              Base Currency
-            </label>
-            <p className="text-sm text-muted-foreground">
-              Choose the default currency for your platform
-            </p>
-            <select
-              id="baseCurrency"
-              value={field.state.value ?? "USD"}
-              onChange={(e) => field.handleChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {Object.entries(fiatCurrencyMetadata).map(([code, metadata]) => (
-                <option key={code} value={code}>
-                  {metadata.name} ({code})
-                </option>
-              ))}
-            </select>
-            {field.state.meta.errors && field.state.meta.errors.length > 0 && (
-              <p className="text-sm text-destructive mt-2">
-                {field.state.meta.errors[0]}
-              </p>
-            )}
-          </div>
-        )}
+        {(field: {
+          state: { value?: string; meta: { errors?: string[] } };
+          handleChange: (value: string) => void;
+        }) => <CurrencyField field={field} />}
       </form.Field>
 
       <div className="flex justify-end gap-3 pt-6">
@@ -376,13 +406,15 @@ export function useOnboardingSteps({
                 Configure Supported Asset Types
               </h2>
               <p className="text-sm text-muted-foreground mb-4">
-                Define which types of tokenized assets your platform will support.
+                Define which types of tokenized assets your platform will
+                support.
               </p>
             </div>
             <div className="space-y-4">
               <p className="text-sm">
-                This step is temporarily simplified to fix React hooks violations.
-                The full asset selection functionality will be restored.
+                This step is temporarily simplified to fix React hooks
+                violations. The full asset selection functionality will be
+                restored.
               </p>
             </div>
             <div className="flex justify-end gap-3 pt-6">
@@ -405,7 +437,6 @@ export function useOnboardingSteps({
             </div>
           </div>
         ),
-      });
       });
 
       // 4. Enable platform addons
@@ -441,7 +472,7 @@ export function useOnboardingSteps({
         groupId: "identity",
         fields: [],
         onStepComplete: async () => Promise.resolve(),
-        component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => (
+        component: ({ onNext, onPrevious, isFirstStep }) => (
           <div className="max-w-2xl space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-4">
@@ -586,7 +617,6 @@ export function useOnboardingSteps({
     shouldShowWalletSteps,
     shouldShowSystemSetupSteps,
     shouldShowIdentitySteps,
-    systemAddress,
     user,
   ]);
 
@@ -597,7 +627,7 @@ export function useOnboardingSteps({
       walletSecured: false,
       systemBootstrapped: Boolean(systemAddress),
       systemAddress: systemAddress ?? undefined,
-      baseCurrency: (currentBaseCurrency ||
+      baseCurrency: (currentBaseCurrency ??
         "USD") as OnboardingFormData["baseCurrency"],
       assetFactoriesDeployed: (systemDetails?.tokenFactories.length ?? 0) > 0,
       selectedAssetTypes: [],

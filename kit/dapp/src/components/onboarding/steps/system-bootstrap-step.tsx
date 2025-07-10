@@ -178,7 +178,7 @@ export function SystemBootstrapStep({
 
   // Wrapper function to handle errors
   const createSystem = useCallback(
-    async (params: Parameters<typeof createSystemMutation>[0]) => {
+    (params: Parameters<typeof createSystemMutation>[0]) => {
       try {
         // Show deployment progress screen
         setShowDeploymentProgress(true);
@@ -208,6 +208,10 @@ export function SystemBootstrapStep({
     [createSystemMutation, simulateDeploymentProgress]
   );
 
+  const handleToggleDetails = useCallback(() => {
+    setShowDeploymentDetails(!showDeploymentDetails);
+  }, [showDeploymentDetails]);
+
   const isDeploying = isCreatingSystem || isTracking;
   const hasSystem = !!systemAddress && systemAddress.trim() !== "";
 
@@ -236,7 +240,7 @@ export function SystemBootstrapStep({
   const handlePincodeSubmit = useCallback(
     (pincode: string) => {
       setVerificationError(null); // Clear any previous errors
-      void createSystem({
+      createSystem({
         verification: {
           verificationCode: pincode,
           verificationType: "pincode",
@@ -267,7 +271,7 @@ export function SystemBootstrapStep({
   const handleOtpSubmit = useCallback(
     (otp: string) => {
       setVerificationError(null); // Clear any previous errors
-      void createSystem({
+      createSystem({
         verification: {
           verificationCode: otp,
           verificationType: "two-factor",
@@ -464,9 +468,7 @@ export function SystemBootstrapStep({
                 {/* Single Column Layout */}
                 <div className="text-left">
                   <button
-                    onClick={() => {
-                      setShowDeploymentDetails(!showDeploymentDetails);
-                    }}
+                    onClick={handleToggleDetails}
                     className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline mb-3"
                   >
                     <svg
@@ -492,8 +494,8 @@ export function SystemBootstrapStep({
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="flex-shrink-0">System Contract:</span>
                         <code className="bg-muted px-2 py-1 rounded text-xs flex-1 min-w-0 truncate">
-                          {realSystemDetails?.id ||
-                            systemAddress ||
+                          {realSystemDetails?.id ??
+                            systemAddress ??
                             "Not deployed"}
                         </code>
                         <button
