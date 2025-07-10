@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { useAssetTypePlural } from "@/lib/utils/asset-pluralization";
 import { orpc } from "@/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -17,7 +18,7 @@ import { useTranslation } from "react-i18next";
  * Shows counts for all asset types found in the system with proper pluralization for all languages.
  */
 export function AssetStatsWidget() {
-  const { t } = useTranslation("issuer-dashboard");
+  const { t } = useTranslation("stats");
   const pluralizeAsset = useAssetTypePlural();
 
   // Fetch just the asset metrics - more efficient than fetching all metrics
@@ -35,17 +36,18 @@ export function AssetStatsWidget() {
     .join(", ");
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("stats.assets")}</CardTitle>
-      </CardHeader>
-      <CardContent className="font-bold text-3xl">
-        {metrics.totalAssets.toLocaleString()}
-      </CardContent>
-      <CardFooter className="text-muted-foreground text-sm">
-        {assetBreakdownText ||
-          t("stats.noAssets", { defaultValue: "No assets found" })}
-      </CardFooter>
-    </Card>
+    <ComponentErrorBoundary componentName="Asset Stats Widget">
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("widgets.assets.title")}</CardTitle>
+        </CardHeader>
+        <CardContent className="font-bold text-3xl">
+          {metrics.totalAssets.toLocaleString()}
+        </CardContent>
+        <CardFooter className="text-muted-foreground text-sm">
+          {assetBreakdownText || t("widgets.assets.empty")}
+        </CardFooter>
+      </Card>
+    </ComponentErrorBoundary>
   );
 }

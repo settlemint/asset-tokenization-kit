@@ -1,0 +1,44 @@
+{
+  "title": "Statistics",
+  "widgets": {
+    "assets": {
+      "title": "Total assets",
+      "empty": "No assets yet"
+    },
+    "transactions": {
+      "title": "Total transactions",
+      "description": "{{count}} transactions in the last {{days}} days"
+    },
+    "users": {
+      "title": "Active users",
+      "description": "{{count}} active users in the last {{days}} days"
+    },
+    "value": {
+      "title": "Total value",
+      "description": "Combined value of all assets"
+    },
+    "common": {
+      "loading": "Loading...",
+      "error": "Error loading data",
+      "retry": "Retry"
+    }
+  },
+  "charts": {
+    "assetSupply": {
+      "title": "Asset supply",
+      "description": "Total supply of assets over time"
+    },
+    "assetActivity": {
+      "title": "Asset activity",
+      "description": "Asset transaction activity"
+    },
+    "userGrowth": {
+      "title": "User growth",
+      "description": "Number of users over time"
+    },
+    "transactionHistory": {
+      "title": "Transaction history",
+      "description": "Transaction volume over time"
+    }
+  }
+}

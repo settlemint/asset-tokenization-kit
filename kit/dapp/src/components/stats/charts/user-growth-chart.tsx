@@ -21,7 +21,7 @@ const dataKeys = ["users"];
  * Shows user growth over time using real API data.
  */
 export function UserGrowthChart() {
-  const { t } = useTranslation("issuer-dashboard");
+  const { t } = useTranslation("stats");
 
   // Fetch just the user metrics which includes growth data - more efficient
   const { data: metrics } = useSuspenseQuery(

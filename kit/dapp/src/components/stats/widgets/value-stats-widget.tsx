@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { useSettings } from "@/hooks/use-settings";
 import { DEFAULT_SETTINGS } from "@/lib/db/schemas/settings";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
@@ -23,7 +24,7 @@ const logger = createLogger();
  * Uses the consolidated metrics endpoint for optimal performance.
  */
 export function ValueStatsWidget() {
-  const { t, i18n } = useTranslation("issuer-dashboard");
+  const { t, i18n } = useTranslation("stats");
 
   // Fetch just the value metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
@@ -78,14 +79,18 @@ export function ValueStatsWidget() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("stats.totalValue")}</CardTitle>
-      </CardHeader>
-      <CardContent className="font-bold text-3xl">{formattedValue}</CardContent>
-      <CardFooter className="text-muted-foreground text-sm">
-        {t("stats.totalValueDescription")}
-      </CardFooter>
-    </Card>
+    <ComponentErrorBoundary componentName="Value Stats Widget">
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("widgets.value.title")}</CardTitle>
+        </CardHeader>
+        <CardContent className="font-bold text-3xl">
+          {formattedValue}
+        </CardContent>
+        <CardFooter className="text-muted-foreground text-sm">
+          {t("widgets.value.description")}
+        </CardFooter>
+      </Card>
+    </ComponentErrorBoundary>
   );
 }

@@ -21,7 +21,7 @@ const dataKeys = ["transactions"];
  * Shows daily transaction counts over the last 7 days using real API data.
  */
 export function TransactionHistoryChart() {
-  const { t } = useTranslation("issuer-dashboard");
+  const { t } = useTranslation("stats");
 
   // Fetch just the transaction metrics which includes history data - more efficient
   const { data: metrics } = useSuspenseQuery(

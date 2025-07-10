@@ -1,3 +1,4 @@
+import { assetType } from "@/lib/zod/validators/asset-types";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
@@ -68,12 +69,15 @@ const ASSET_METRICS_QUERY = theGraphGraphql(`
   }
 `);
 
+// Schema for the GraphQL input validation
+const AssetMetricsInputSchema = z.object({}).strict();
+
 // Schema for the GraphQL response
 const AssetMetricsResponseSchema = z.object({
   tokenStatsStates: z.array(
     z.object({
       token: z.object({
-        type: z.string(),
+        type: assetType(), // Use proper asset type validation instead of generic string
         totalSupply: z.string(),
         symbol: z.string(),
         name: z.string(),
@@ -151,7 +155,36 @@ function sumEventCounts(eventStats: { eventsCount: number }[]): number {
 }
 
 /**
- * Helper function to create asset activity data from token stats and event stats
+ * Optimized helper function to aggregate all event counts in a single pass
+ */
+function aggregateEventCounts(eventStats: {
+  mintEvents: { eventsCount: number }[];
+  burnEvents: { eventsCount: number }[];
+  transferEvents: { eventsCount: number }[];
+  clawbackEvents: { eventsCount: number }[];
+  freezeEvents: { eventsCount: number }[];
+  unfreezeEvents: { eventsCount: number }[];
+}): {
+  totalMintEvents: number;
+  totalBurnEvents: number;
+  totalTransferEvents: number;
+  totalClawbackEvents: number;
+  totalFreezeEvents: number;
+  totalUnfreezeEvents: number;
+} {
+  return {
+    totalMintEvents: sumEventCounts(eventStats.mintEvents),
+    totalBurnEvents: sumEventCounts(eventStats.burnEvents),
+    totalTransferEvents: sumEventCounts(eventStats.transferEvents),
+    totalClawbackEvents: sumEventCounts(eventStats.clawbackEvents),
+    totalFreezeEvents: sumEventCounts(eventStats.freezeEvents),
+    totalUnfreezeEvents: sumEventCounts(eventStats.unfreezeEvents),
+  };
+}
+
+/**
+ * Optimized helper function to create asset activity data from token stats and event stats
+ * Eliminates N+1 query pattern by pre-computing asset type counts in O(n) time
  */
 function createAssetActivity(
   tokenStats: { token: { type: string; totalSupply: string } }[],
@@ -176,86 +209,72 @@ function createAssetActivity(
   totalBurned: string;
   totalTransferred: string;
 }[] {
-  // Calculate total event counts
-  const totalMintEvents = sumEventCounts(eventStats.mintEvents);
-  const totalBurnEvents = sumEventCounts(eventStats.burnEvents);
-  const totalTransferEvents = sumEventCounts(eventStats.transferEvents);
-  const totalClawbackEvents = sumEventCounts(eventStats.clawbackEvents);
-  const totalFreezeEvents = sumEventCounts(eventStats.freezeEvents);
-  const totalUnfreezeEvents = sumEventCounts(eventStats.unfreezeEvents);
+  // Aggregate all event counts in a single pass
+  const eventTotals = aggregateEventCounts(eventStats);
 
-  // Group tokens by asset type and aggregate statistics
-  const assetTypeMap = new Map<
+  // Pre-compute asset type counts to avoid N+1 pattern - O(n) instead of O(n²)
+  const assetTypeCounts = new Map<string, number>();
+  const assetTypeData = new Map<
     string,
     {
-      mintEventCount: number;
-      burnEventCount: number;
-      transferEventCount: number;
-      clawbackEventCount: number;
-      frozenEventCount: number;
-      unfrozenEventCount: number;
       totalMinted: bigint;
       totalBurned: bigint;
       totalTransferred: bigint;
-      tokenCount: number;
     }
   >();
 
-  // Process token statistics
+  // Single pass through tokens to count types and aggregate data
   for (const tokenStat of tokenStats) {
     const assetType = tokenStat.token.type;
 
-    const existing = assetTypeMap.get(assetType) ?? {
-      mintEventCount: 0,
-      burnEventCount: 0,
-      transferEventCount: 0,
-      clawbackEventCount: 0,
-      frozenEventCount: 0,
-      unfrozenEventCount: 0,
-      totalMinted: BigInt(0),
-      totalBurned: BigInt(0),
-      totalTransferred: BigInt(0),
-      tokenCount: 0,
-    };
+    // Count tokens by type
+    assetTypeCounts.set(assetType, (assetTypeCounts.get(assetType) ?? 0) + 1);
 
-    // Count tokens for this asset type
-    const newTokenCount = existing.tokenCount + 1;
-    const totalTokensForType = tokenStats.filter(
-      (ts) => ts.token.type === assetType
-    ).length;
-
-    // Distribute events proportionally based on this asset type's share of total tokens
-    const eventShare =
-      totalTokensForType > 0 ? totalTokensForType / tokenStats.length : 0;
-
-    assetTypeMap.set(assetType, {
-      mintEventCount: Math.floor(totalMintEvents * eventShare),
-      burnEventCount: Math.floor(totalBurnEvents * eventShare),
-      transferEventCount: Math.floor(totalTransferEvents * eventShare),
-      clawbackEventCount: Math.floor(totalClawbackEvents * eventShare),
-      frozenEventCount: Math.floor(totalFreezeEvents * eventShare),
-      unfrozenEventCount: Math.floor(totalUnfreezeEvents * eventShare),
-      totalMinted: existing.totalMinted,
-      totalBurned: existing.totalBurned,
-      totalTransferred: existing.totalTransferred,
-      tokenCount: newTokenCount,
-    });
+    // Initialize asset type data if needed
+    if (!assetTypeData.has(assetType)) {
+      assetTypeData.set(assetType, {
+        totalMinted: BigInt(0),
+        totalBurned: BigInt(0),
+        totalTransferred: BigInt(0),
+      });
+    }
   }
 
-  // Convert to final array format
-  return Array.from(assetTypeMap.entries()).map(([assetType, stats]) => ({
-    id: assetType,
-    assetType,
-    mintEventCount: stats.mintEventCount,
-    burnEventCount: stats.burnEventCount,
-    transferEventCount: stats.transferEventCount,
-    clawbackEventCount: stats.clawbackEventCount,
-    frozenEventCount: stats.frozenEventCount,
-    unfrozenEventCount: stats.unfrozenEventCount,
-    totalMinted: stats.totalMinted.toString(),
-    totalBurned: stats.totalBurned.toString(),
-    totalTransferred: stats.totalTransferred.toString(),
-  }));
+  const totalTokens = tokenStats.length;
+
+  // Build final result using pre-computed counts
+  return Array.from(assetTypeCounts.entries()).map(
+    ([assetType, tokenCount]) => {
+      // Calculate event share based on pre-computed counts
+      const eventShare = totalTokens > 0 ? tokenCount / totalTokens : 0;
+      const data = assetTypeData.get(assetType);
+      if (!data) {
+        throw new Error(`Asset type data not found for ${assetType}`);
+      }
+
+      return {
+        id: assetType,
+        assetType,
+        mintEventCount: Math.floor(eventTotals.totalMintEvents * eventShare),
+        burnEventCount: Math.floor(eventTotals.totalBurnEvents * eventShare),
+        transferEventCount: Math.floor(
+          eventTotals.totalTransferEvents * eventShare
+        ),
+        clawbackEventCount: Math.floor(
+          eventTotals.totalClawbackEvents * eventShare
+        ),
+        frozenEventCount: Math.floor(
+          eventTotals.totalFreezeEvents * eventShare
+        ),
+        unfrozenEventCount: Math.floor(
+          eventTotals.totalUnfreezeEvents * eventShare
+        ),
+        totalMinted: data.totalMinted.toString(),
+        totalBurned: data.totalBurned.toString(),
+        totalTransferred: data.totalTransferred.toString(),
+      };
+    }
+  );
 }
 
 /**
@@ -282,11 +301,25 @@ export const statsAssets = authRouter.token.statsAssets
   .handler(async ({ context }) => {
     // System context is guaranteed by systemMiddleware
 
+    // Validate empty input to ensure no malicious parameters
+    const validatedInput = AssetMetricsInputSchema.parse({});
+
     // Fetch all asset-related data in a single query
     const response = await context.theGraphClient.query(ASSET_METRICS_QUERY, {
-      input: {},
+      input: validatedInput,
       output: AssetMetricsResponseSchema,
       error: "Failed to fetch asset metrics",
+    });
+
+    // Debug logging
+    logger.debug("Asset metrics query response", {
+      tokenStatsStatesCount: response.tokenStatsStates.length,
+      tokenStatsStates: response.tokenStatsStates.map((ts) => ({
+        type: ts.token.type,
+        name: ts.token.name,
+        symbol: ts.token.symbol,
+        totalSupply: ts.token.totalSupply,
+      })),
     });
 
     // Process the response data

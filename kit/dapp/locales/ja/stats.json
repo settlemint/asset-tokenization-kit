@@ -1,0 +1,44 @@
+{
+  "title": "統計",
+  "widgets": {
+    "assets": {
+      "title": "総アセット数",
+      "empty": "まだアセットがありません"
+    },
+    "transactions": {
+      "title": "総取引数",
+      "description": "過去{{days}}日間に{{count}}件の取引"
+    },
+    "users": {
+      "title": "アクティブユーザー",
+      "description": "過去{{days}}日間に{{count}}人のアクティブユーザー"
+    },
+    "value": {
+      "title": "総価値",
+      "description": "すべてのアセットの合計価値"
+    },
+    "common": {
+      "loading": "読み込み中...",
+      "error": "データ読み込みエラー",
+      "retry": "再試行"
+    }
+  },
+  "charts": {
+    "assetSupply": {
+      "title": "アセット供給量",
+      "description": "時間経過に伴うアセット総供給量"
+    },
+    "assetActivity": {
+      "title": "アセット活動",
+      "description": "アセット取引活動"
+    },
+    "userGrowth": {
+      "title": "ユーザー成長",
+      "description": "時間経過に伴うユーザー数"
+    },
+    "transactionHistory": {
+      "title": "取引履歴",
+      "description": "時間経過に伴う取引量"
+    }
+  }
+}
