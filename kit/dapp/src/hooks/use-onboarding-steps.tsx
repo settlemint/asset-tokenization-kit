@@ -20,6 +20,7 @@ import { orpc } from "@/orpc";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod/v4";
 
@@ -95,6 +96,7 @@ function AssetSelectionComponent({
   onPrevious?: () => void;
   isFirstStep?: boolean;
 }) {
+  const { t } = useTranslation(["onboarding", "general", "tokens"]);
   const { clearStepError, markStepComplete } = useWizardContext();
   const queryClient = useQueryClient();
   const { data: session } = authClient.useSession();
@@ -119,33 +121,52 @@ function AssetSelectionComponent({
     enabled: !!systemAddress,
   });
 
-  const assetTypes = [
-    {
-      value: "bond",
-      label: "Bonds",
-      description: "Tokenized debt securities with fixed income features",
-    },
-    {
-      value: "equity",
-      label: "Equities",
-      description: "Digital shares representing ownership in companies",
-    },
-    {
-      value: "fund",
-      label: "Funds",
-      description: "Investment fund tokens for pooled investments",
-    },
-    {
-      value: "stablecoin",
-      label: "Stablecoin",
-      description: "Price-stable digital currencies",
-    },
-    {
-      value: "deposit",
-      label: "Deposits",
-      description: "Tokenized bank deposits and certificates",
-    },
-  ];
+  const assetTypes = useMemo(
+    () => [
+      {
+        value: "bond",
+        label: (
+          t as (key: string, options?: Record<string, unknown>) => string
+        )(`asset-types.bond`, { ns: "tokens" }),
+        description: (t as (key: string) => string)(`assets.descriptions.bond`),
+      },
+      {
+        value: "equity",
+        label: (
+          t as (key: string, options?: Record<string, unknown>) => string
+        )(`asset-types.equity`, { ns: "tokens" }),
+        description: (t as (key: string) => string)(
+          `assets.descriptions.equity`
+        ),
+      },
+      {
+        value: "fund",
+        label: (
+          t as (key: string, options?: Record<string, unknown>) => string
+        )(`asset-types.fund`, { ns: "tokens" }),
+        description: (t as (key: string) => string)(`assets.descriptions.fund`),
+      },
+      {
+        value: "stablecoin",
+        label: (
+          t as (key: string, options?: Record<string, unknown>) => string
+        )(`asset-types.stablecoin`, { ns: "tokens" }),
+        description: (t as (key: string) => string)(
+          `assets.descriptions.stablecoin`
+        ),
+      },
+      {
+        value: "deposit",
+        label: (
+          t as (key: string, options?: Record<string, unknown>) => string
+        )(`asset-types.deposit`, { ns: "tokens" }),
+        description: (t as (key: string) => string)(
+          `assets.descriptions.deposit`
+        ),
+      },
+    ],
+    [t]
+  );
 
   const handleConfirm = useCallback(() => {
     try {
@@ -250,55 +271,18 @@ function AssetSelectionComponent({
 
       // Convert selected asset types to factory creation format
       const factories = formValues.selectedAssetTypes.map((type) => {
-        // Use unique names with timestamp to avoid conflicts
-        const timestamp = Date.now();
-        const factoryNames = {
-          bond: `Bond Factory ${timestamp}`,
-          equity: `Equity Factory ${timestamp}`,
-          fund: `Fund Factory ${timestamp}`,
-          stablecoin: `Stablecoin Factory ${timestamp}`,
-          deposit: `Deposit Factory ${timestamp}`,
-        };
-
-        // Default implementation addresses from SettleMint deployment
-        const defaultImplementations = {
-          bond: {
-            factoryImplementation: "0x5e771e1417100000000000000000000000020021",
-            tokenImplementation: "0x5e771e1417100000000000000000000000020020",
-          },
-          equity: {
-            factoryImplementation: "0x5e771e1417100000000000000000000000020025",
-            tokenImplementation: "0x5e771e1417100000000000000000000000020024",
-          },
-          fund: {
-            factoryImplementation: "0x5e771e1417100000000000000000000000020027",
-            tokenImplementation: "0x5e771e1417100000000000000000000000020026",
-          },
-          stablecoin: {
-            factoryImplementation: "0x5e771e1417100000000000000000000000020029",
-            tokenImplementation: "0x5e771e1417100000000000000000000000020028",
-          },
-          deposit: {
-            factoryImplementation: "0x5e771e1417100000000000000000000000020023",
-            tokenImplementation: "0x5e771e1417100000000000000000000000020022",
-          },
-        };
-
         const typedType = type as
           | "bond"
           | "equity"
           | "fund"
           | "stablecoin"
           | "deposit";
-        const implementations = defaultImplementations[typedType];
 
         return {
           type: typedType,
-          name:
-            factoryNames[typedType] ||
-            `${type.charAt(0).toUpperCase() + type.slice(1)} Factory`,
-          factoryImplementation: implementations.factoryImplementation,
-          tokenImplementation: implementations.tokenImplementation,
+          name: (
+            t as (key: string, options?: Record<string, unknown>) => string
+          )(`asset-types.${typedType}`, { ns: "tokens" }),
         };
       });
 
@@ -385,6 +369,7 @@ function AssetSelectionComponent({
       session?.user,
       isLoadingSystem,
       systemDetails,
+      t,
     ]
   );
 
