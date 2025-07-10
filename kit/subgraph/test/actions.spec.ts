@@ -1,78 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { theGraphClient, theGraphGraphql } from "./utils/thegraph-client";
 
-// Type definitions for GraphQL responses
-interface ActionExecutor {
-  id: string;
-  executors: Array<{ id: string }>;
-}
-
-interface ActionTarget {
-  id: string;
-}
-
-interface ActionExecutedBy {
-  id: string;
-}
-
-interface Action {
-  id: string;
-  name: string;
-  type: string;
-  createdAt: string;
-  activeAt: string;
-  expiresAt: string | null;
-  executedAt: string | null;
-  executed: boolean;
-  executor: ActionExecutor;
-  target: ActionTarget;
-  executedBy: ActionExecutedBy | null;
-}
-
-interface ActionExecutorWithActions {
-  id: string;
-  executors: Array<{ id: string }>;
-  actions: Array<{
-    id: string;
-    name: string;
-    type: string;
-    executed: boolean;
-  }>;
-}
-
-interface ActionsResponse {
-  actions: Action[];
-}
-
-interface ActionExecutorsResponse {
-  actionExecutors: ActionExecutorWithActions[];
-}
-
-interface ActionsFilteredResponse {
-  actions: Array<{
-    id: string;
-    executed: boolean;
-    executedAt: string | null;
-    executedBy: ActionExecutedBy | null;
-  }>;
-}
-
-interface ActionsTimeFilteredResponse {
-  actions: Array<{
-    id: string;
-    activeAt: string;
-    expiresAt: string | null;
-    executed: boolean;
-  }>;
-}
-
-interface ActionsTypeResponse {
-  actions: Array<{
-    id: string;
-    type: string;
-  }>;
-}
-
 describe("Actions", () => {
   it("should fetch a list of all actions", async () => {
     const query = theGraphGraphql(
@@ -101,7 +29,7 @@ describe("Actions", () => {
         }
       }`
     );
-    const response = await theGraphClient.request<ActionsResponse>(query);
+    const response = await theGraphClient.request(query);
 
     // Verify we have actions from XvP settlement approvals
     expect(response.actions.length).toBeGreaterThanOrEqual(1);
@@ -109,7 +37,7 @@ describe("Actions", () => {
     const actions = response.actions;
 
     // Verify action structure
-    actions.forEach((action: Action) => {
+    actions.forEach((action) => {
       expect(action.id).toBeDefined();
       expect(action.name).toBeDefined();
       expect(action.type).toBeDefined();
@@ -146,11 +74,13 @@ describe("Actions", () => {
   });
 
   it("should fetch XvP settlement approval actions", async () => {
+    // Note: Filter by 'name' field for specific action types
+    // 'type' field contains user type ('User', 'Admin'), not action type
     const query = theGraphGraphql(
       `query {
         actions(
           where: {
-            type: "ApproveXvPSettlement"
+            name: "ApproveXvPSettlement"
           },
           orderBy: createdAt,
           orderDirection: desc
@@ -174,7 +104,7 @@ describe("Actions", () => {
         }
       }`
     );
-    const response = await theGraphClient.request<ActionsResponse>(query);
+    const response = await theGraphClient.request(query);
 
     // Should have approval actions from XvP settlement
     expect(response.actions.length).toBeGreaterThanOrEqual(1);
@@ -182,9 +112,11 @@ describe("Actions", () => {
     const approvalActions = response.actions;
 
     // Verify approval action structure
-    approvalActions.forEach((action: Action) => {
-      expect(action.type).toBe("ApproveXvPSettlement");
-      expect(action.name).toContain("Approve");
+    approvalActions.forEach((action) => {
+      // 'name' field contains the specific action name
+      expect(action.name).toBe("ApproveXvPSettlement");
+      // 'type' field contains the user type who can execute this action
+      expect(action.type).toBe("User");
       expect(action.executor.id).toBeDefined();
       expect(action.target.id).toBeDefined();
 
@@ -213,8 +145,7 @@ describe("Actions", () => {
         }
       }`
     );
-    const response =
-      await theGraphClient.request<ActionExecutorsResponse>(query);
+    const response = await theGraphClient.request(query);
 
     // Should have at least one action executor
     expect(response.actionExecutors.length).toBeGreaterThanOrEqual(1);
@@ -222,7 +153,7 @@ describe("Actions", () => {
     const executors = response.actionExecutors;
 
     // Verify executor structure
-    executors.forEach((executor: ActionExecutorWithActions) => {
+    executors.forEach((executor) => {
       expect(executor.id).toBeDefined();
       expect(Array.isArray(executor.executors)).toBe(true);
       expect(executor.executors.length).toBeGreaterThan(0);
@@ -268,8 +199,8 @@ describe("Actions", () => {
     );
 
     const [executedResponse, pendingResponse] = await Promise.all([
-      theGraphClient.request<ActionsFilteredResponse>(executedQuery),
-      theGraphClient.request<ActionsFilteredResponse>(pendingQuery),
+      theGraphClient.request(executedQuery),
+      theGraphClient.request(pendingQuery),
     ]);
 
     // Verify executed actions have proper fields
@@ -306,12 +237,9 @@ describe("Actions", () => {
       }`
     );
 
-    const response = await theGraphClient.request<ActionsTimeFilteredResponse>(
-      activeQuery,
-      {
-        currentTime: currentTime.toString(),
-      }
-    );
+    const response = await theGraphClient.request(activeQuery, {
+      currentTime: currentTime.toString(),
+    });
 
     // Verify all returned actions are currently active
     response.actions.forEach((action) => {
@@ -335,18 +263,18 @@ describe("Actions", () => {
       }`
     );
 
-    const response = await theGraphClient.request<ActionsTypeResponse>(query);
+    const response = await theGraphClient.request(query);
 
     // Get unique action types
     const actionTypes = [
       ...new Set(response.actions.map((action) => action.type)),
     ];
 
-    // Should have at least the ApproveXvPSettlement type
-    expect(actionTypes).toContain("ApproveXvPSettlement");
+    // Should have at least the User type (user types, not action types)
+    expect(actionTypes).toContain("User");
 
     // Verify each type has proper format
-    actionTypes.forEach((type: string) => {
+    actionTypes.forEach((type) => {
       expect(type).toBeDefined();
       expect(type.length).toBeGreaterThan(0);
     });
