@@ -79,6 +79,10 @@ export function updateTokenDistributionStats(
     // Top balance changed - need to recalculate all segments
     recalculateAllSegments(state, token, newTopBalance);
   } else {
+    log.info(
+      "[TokenDistributionStats] Token {} - Top balance didn't change, updating segment for balance",
+      [token.symbol]
+    );
     // Top balance didn't change - just update the current account's segment
     // Calculate old and new percentages based on top balance
     const oldPercentage = oldBalance.gt(BigInt.zero())
@@ -177,26 +181,12 @@ function updateTopHolders(
   token: Token,
   account: Account,
   newBalance: BigInt
-): boolean {
+): void {
   const tokenHolder = fetchTokenTopHolder(account, state);
-
-  const topHolders = state.topHolders.load();
-  const sixthPlaceHolder = getTopHolderAtRank(topHolders, 6);
-
-  // Check if the new balance is greater than the 6th place holder, if not, we can skip
-  const isTop6Holder =
-    !sixthPlaceHolder || newBalance.gt(sixthPlaceHolder.balanceExact);
-
-  if (!isTop6Holder || newBalance.equals(BigInt.zero())) {
-    store.remove("TokenTopHolder", tokenHolder.id.toHexString());
-    return false;
-  }
-
   setBigNumber(tokenHolder, "balance", newBalance, token.decimals);
   tokenHolder.save();
 
   updateTopHoldersRanks(state);
-  return true;
 }
 
 /**
@@ -354,6 +344,25 @@ function updateTopHoldersRanks(state: TokenDistributionStatsState): void {
   for (let i = 0; i < sorted.length; i++) {
     sorted[i].rank = i + 1;
     sorted[i].save();
+  }
+}
+
+/**
+ * Cleanup top holders
+ * Needs to be on the next block, otherwise the subgraph will get into an invalid state
+ *
+ * @param token
+ */
+export function cleanupTokenDistributionStats(token: Token): void {
+  const state = fetchTokenDistributionStatsState(Address.fromBytes(token.id));
+  const topHolders = state.topHolders.load();
+  for (let i = 0; i < topHolders.length; i++) {
+    const topHolder = topHolders[i];
+    const shouldBeDeleted =
+      topHolder.balanceExact.equals(BigInt.zero()) || topHolder.rank > 6;
+    if (shouldBeDeleted) {
+      store.remove("TokenTopHolder", topHolder.id.toHexString());
+    }
   }
 }
 

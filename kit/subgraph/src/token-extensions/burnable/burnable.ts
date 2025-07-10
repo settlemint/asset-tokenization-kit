@@ -3,6 +3,7 @@ import { fetchEvent } from "../../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../../stats/account-stats";
 import { updateSystemStatsForSupplyChange } from "../../stats/system-stats";
 import { trackTokenCollateralStats } from "../../stats/token-collateral-stats";
+import { cleanupTokenDistributionStats } from "../../stats/token-distribution-stats";
 import { trackTokenStats } from "../../stats/token-stats";
 import { decreaseTokenBalanceValue } from "../../token-balance/utils/token-balance-utils";
 import { fetchToken } from "../../token/fetch/token";
@@ -13,6 +14,9 @@ import { fetchCollateral } from "../collateral/fetch/collateral";
 export function handleBurnCompleted(event: BurnCompleted): void {
   const eventEntry = fetchEvent(event, "BurnCompleted");
   const token = fetchToken(event.address);
+
+  // Cleanup token distribution stats (from previous block)
+  cleanupTokenDistributionStats(token);
 
   // Execute the burn
   decreaseTokenSupply(token, event.params.amount);

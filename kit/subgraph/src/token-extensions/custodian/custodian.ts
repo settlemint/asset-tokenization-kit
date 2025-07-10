@@ -7,6 +7,7 @@ import {
 } from "../../../generated/templates/Custodian/Custodian";
 import { fetchEvent } from "../../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../../stats/account-stats";
+import { cleanupTokenDistributionStats } from "../../stats/token-distribution-stats";
 import { trackTokenStats } from "../../stats/token-stats";
 import {
   decreaseTokenBalanceFrozen,
@@ -33,6 +34,9 @@ export function handleAddressFrozen(event: AddressFrozen): void {
 export function handleForcedTransfer(event: ForcedTransfer): void {
   const eventEntry = fetchEvent(event, "ForcedTransfer");
   const token = fetchToken(event.address);
+
+  // Cleanup token distribution stats (from previous block)
+  cleanupTokenDistributionStats(token);
 
   // Execute the forced transfer (same as regular transfer)
   decreaseTokenBalanceValue(
@@ -68,6 +72,11 @@ export function handleForcedTransfer(event: ForcedTransfer): void {
 export function handleRecoverySuccess(event: RecoverySuccess): void {
   fetchEvent(event, "RecoverySuccess");
   const token = fetchToken(event.address);
+
+  // Cleanup token distribution stats (from previous block)
+  cleanupTokenDistributionStats(token);
+
+  // Move token balance to new account
   moveTokenBalanceToNewAccount(
     token,
     event.params.lostWallet,
