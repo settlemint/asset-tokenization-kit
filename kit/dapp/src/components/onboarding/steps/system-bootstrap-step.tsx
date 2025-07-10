@@ -31,9 +31,44 @@ export function SystemBootstrapStep({
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [isBootstrapped, setIsBootstrapped] = useState(false);
   const [showDeploymentDetails, setShowDeploymentDetails] = useState(false);
+  const [showDeploymentProgress, setShowDeploymentProgress] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(
     null
   );
+
+  // Deployment progress state
+  const [deploymentSteps, setDeploymentSteps] = useState([
+    {
+      id: "core",
+      label: "Core System Deployed",
+      completed: false,
+      inProgress: false,
+    },
+    {
+      id: "identity",
+      label: "Deploying Identity Registry...",
+      completed: false,
+      inProgress: false,
+    },
+    {
+      id: "compliance",
+      label: "Deploying Compliance Engine...",
+      completed: false,
+      inProgress: false,
+    },
+    {
+      id: "trusted",
+      label: "Deploying Trusted Issuers Registry...",
+      completed: false,
+      inProgress: false,
+    },
+    {
+      id: "modules",
+      label: "Register compliance modules...",
+      completed: false,
+      inProgress: false,
+    },
+  ]);
 
   // Check if user has 2FA enabled to determine available verification methods
   const currentUser = user ?? session?.user;
@@ -61,17 +96,98 @@ export function SystemBootstrapStep({
       });
       setShowVerificationModal(false);
       setVerificationError(null);
+      setShowDeploymentProgress(false);
       setIsBootstrapped(true);
       onNext?.();
     },
   });
 
+  // Function to simulate deployment progress steps
+  const simulateDeploymentProgress = useCallback(() => {
+    // Reset all steps to initial state
+    setDeploymentSteps([
+      {
+        id: "core",
+        label: "Core System Deployed",
+        completed: true,
+        inProgress: false,
+      },
+      {
+        id: "identity",
+        label: "Deploying Identity Registry...",
+        completed: false,
+        inProgress: true,
+      },
+      {
+        id: "compliance",
+        label: "Deploying Compliance Engine...",
+        completed: false,
+        inProgress: false,
+      },
+      {
+        id: "trusted",
+        label: "Deploying Trusted Issuers Registry...",
+        completed: false,
+        inProgress: false,
+      },
+      {
+        id: "modules",
+        label: "Register compliance modules...",
+        completed: false,
+        inProgress: false,
+      },
+    ]);
+
+    // Simulate step progression
+    const stepTimings = [
+      { step: "identity", delay: 2000 },
+      { step: "compliance", delay: 4000 },
+      { step: "trusted", delay: 6000 },
+      { step: "modules", delay: 8000 },
+    ];
+
+    stepTimings.forEach(({ step, delay }) => {
+      setTimeout(() => {
+        setDeploymentSteps((prev) =>
+          prev.map((s) => {
+            if (s.id === step) {
+              return { ...s, completed: true, inProgress: false };
+            }
+            // Set next step as in progress
+            const currentIndex = prev.findIndex((item) => item.id === step);
+            const nextStep = prev[currentIndex + 1];
+            if (nextStep && !nextStep.completed) {
+              if (s.id === nextStep.id) {
+                return { ...s, inProgress: true };
+              }
+            }
+            return s;
+          })
+        );
+      }, delay);
+    });
+
+    // Complete final step after 10 seconds total
+    setTimeout(() => {
+      setDeploymentSteps((prev) =>
+        prev.map((s) => ({ ...s, completed: true, inProgress: false }))
+      );
+    }, 10000);
+  }, []);
+
   // Wrapper function to handle errors
   const createSystem = useCallback(
     async (params: Parameters<typeof createSystemMutation>[0]) => {
       try {
+        // Show deployment progress screen
+        setShowDeploymentProgress(true);
+        simulateDeploymentProgress();
+
         await createSystemMutation(params);
       } catch (error) {
+        // Hide deployment progress on error
+        setShowDeploymentProgress(false);
+
         // Check if it's a system creation error
         const errorMessage =
           error instanceof Error ? error.message : String(error);
@@ -88,7 +204,7 @@ export function SystemBootstrapStep({
         // Don't close the modal on error - keep it open for retry
       }
     },
-    [createSystemMutation]
+    [createSystemMutation, simulateDeploymentProgress]
   );
 
   const isDeploying = isCreatingSystem || isTracking;
@@ -96,6 +212,13 @@ export function SystemBootstrapStep({
 
   // Show success screen if system was just bootstrapped or already exists
   const showSuccessScreen = isBootstrapped || hasSystem;
+
+  // Determine which screen to show
+  const currentScreen = showDeploymentProgress
+    ? "progress"
+    : showSuccessScreen
+      ? "success"
+      : "initial";
 
   const handleDeploySystem = useCallback(() => {
     if (!hasSystem && !isDeploying) {
@@ -189,19 +312,63 @@ export function SystemBootstrapStep({
         `}</style>
         <div className="mb-6">
           <h2 className="text-xl font-semibold">
-            {showSuccessScreen
-              ? "System deployed successfully"
-              : "Initialize the system"}
+            {currentScreen === "progress"
+              ? "Deploying the system"
+              : currentScreen === "success"
+                ? "System deployed successfully"
+                : "Initialize the system"}
           </h2>
           <p className="text-sm text-muted-foreground pt-2">
-            {showSuccessScreen
-              ? "You are now the initial administrator of the platform."
-              : "You're about to set up the foundation of the platform"}
+            {currentScreen === "progress"
+              ? "We're setting up your platform by deploying the necessary smart contracts. This includes the Identity Registry, Compliance Engine, and Trusted Issuers Registry."
+              : currentScreen === "success"
+                ? "You are now the initial administrator of the platform."
+                : "You're about to set up the foundation of the platform"}
           </p>
+          {currentScreen === "progress" && (
+            <p className="text-sm text-muted-foreground pt-2">
+              This process may take 2–3 minutes. Please keep this tab open and
+              stay connected to the internet.
+            </p>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {showSuccessScreen ? (
+          {currentScreen === "progress" ? (
+            /* Deployment Progress Screen */
+            <div className="max-w-3xl space-y-6">
+              <div className="space-y-4">
+                {deploymentSteps.map((step) => (
+                  <div key={step.id} className="flex items-center gap-3">
+                    <div className="flex-shrink-0">
+                      {step.completed ? (
+                        <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={3}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        </div>
+                      ) : step.inProgress ? (
+                        <div className="w-5 h-5 rounded-full border-2 border-amber-500 border-t-transparent animate-spin" />
+                      ) : (
+                        <div className="w-5 h-5 rounded-full bg-muted" />
+                      )}
+                    </div>
+                    <span className="text-sm">{step.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : currentScreen === "success" ? (
             /* Success Screen */
             <div className="max-w-3xl space-y-6 text-center">
               {/* Green Success Box */}
@@ -631,19 +798,21 @@ export function SystemBootstrapStep({
 
         <div className="mt-8 pt-6 border-t border-border">
           <div className="flex justify-end gap-3">
-            {!isFirstStep && (
+            {!isFirstStep && currentScreen !== "progress" && (
               <Button variant="outline" onClick={handlePrevious}>
                 Previous
               </Button>
             )}
-            <Button
-              onClick={hasSystem ? onNext : handleDeploySystem}
-              disabled={isDeploying}
-            >
-              {showSuccessScreen
-                ? "Configure platform settings"
-                : "Deploy the system"}
-            </Button>
+            {currentScreen !== "progress" && (
+              <Button
+                onClick={hasSystem ? onNext : handleDeploySystem}
+                disabled={isDeploying}
+              >
+                {currentScreen === "success"
+                  ? "Configure platform settings"
+                  : "Deploy the system"}
+              </Button>
+            )}
           </div>
         </div>
       </div>

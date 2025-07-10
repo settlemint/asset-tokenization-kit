@@ -173,9 +173,10 @@ export function useOnboardingSteps({
     }
 
     if (shouldShowSystemSetupSteps) {
+      // 1. Deploy core system
       dynamicSteps.push({
         id: "system-bootstrap",
-        title: "Bootstrap System",
+        title: "Deploy core system",
         description: "Initialize the blockchain system and set base currency",
         groupId: "system",
         fields: [],
@@ -191,10 +192,32 @@ export function useOnboardingSteps({
         ),
       });
 
-      // Add asset and addon selection steps with simplified inline definitions
+      // 2. Configure platform settings
+      dynamicSteps.push({
+        id: "configure-platform-settings",
+        title: "Configure platform settings",
+        description: "Set up platform configuration and preferences",
+        groupId: "system",
+        fields: [
+          {
+            name: "baseCurrency",
+            label: "Base Currency",
+            type: "select",
+            description: "Choose the default currency for your platform",
+            options: [
+              { label: "US Dollar (USD)", value: "USD" },
+              { label: "Euro (EUR)", value: "EUR" },
+              { label: "British Pound (GBP)", value: "GBP" },
+              { label: "Japanese Yen (JPY)", value: "JPY" },
+            ],
+          },
+        ],
+      });
+
+      // 3. Select supported assets
       dynamicSteps.push({
         id: "asset-selection",
-        title: "Select Assets",
+        title: "Select supported assets",
         description: "Choose which asset types your platform will support",
         groupId: "system",
         fields: [
@@ -218,10 +241,188 @@ export function useOnboardingSteps({
             ? "At least one asset type must be selected"
             : undefined,
       });
+
+      // 4. Enable platform addons
+      dynamicSteps.push({
+        id: "enable-platform-addons",
+        title: "Enable platform addons",
+        description: "Choose additional features and capabilities",
+        groupId: "system",
+        fields: [
+          {
+            name: "selectedAddons",
+            label: "Platform Addons",
+            type: "checkbox",
+            description: "Select optional features to enhance your platform",
+            options: [
+              { label: "Airdrops", value: "airdrops" },
+              { label: "Cross-chain Value Transfer (XVP)", value: "xvp" },
+              { label: "Yield Farming", value: "yield" },
+              { label: "Governance", value: "governance" },
+              { label: "Analytics Dashboard", value: "analytics" },
+            ],
+          },
+        ],
+      });
+    }
+
+    if (shouldShowIdentitySteps) {
+      // 1. Create your ONCHAINID
+      dynamicSteps.push({
+        id: "create-onchainid",
+        title: "Create your ONCHAINID",
+        description: "Generate your blockchain identity for compliance",
+        groupId: "identity",
+        fields: [],
+        onStepComplete: async () => Promise.resolve(),
+        component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => (
+          <div className="max-w-2xl space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">
+                Create your ONCHAINID
+              </h3>
+              <p className="text-sm text-muted-foreground mb-6">
+                Your ONCHAINID is a unique blockchain identity that enables
+                secure, compliant asset transactions. This identity will be
+                linked to your wallet and verified through our compliance
+                system.
+              </p>
+              <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
+                <div className="flex items-start gap-3">
+                  <svg
+                    className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <div className="flex-1">
+                    <p className="text-sm text-blue-600 dark:text-blue-400">
+                      Creating your ONCHAINID will deploy a smart contract
+                      representing your identity on the blockchain. This is
+                      required for all compliant asset transactions.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end gap-3">
+              {!isFirstStep && (
+                <button
+                  onClick={onPrevious}
+                  className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
+                >
+                  Previous
+                </button>
+              )}
+              <button
+                onClick={onNext}
+                className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+              >
+                Create ONCHAINID
+              </button>
+            </div>
+          </div>
+        ),
+      });
+
+      // 2. Add personal information
+      dynamicSteps.push({
+        id: "add-personal-information",
+        title: "Add personal information",
+        description: "Provide KYC information for compliance verification",
+        groupId: "identity",
+        fields: [
+          {
+            name: "firstName",
+            label: "First Name",
+            type: "text",
+            description: "Enter your legal first name",
+          },
+          {
+            name: "lastName",
+            label: "Last Name",
+            type: "text",
+            description: "Enter your legal last name",
+          },
+          {
+            name: "dateOfBirth",
+            label: "Date of Birth",
+            type: "date",
+            description: "Enter your date of birth",
+          },
+          {
+            name: "nationality",
+            label: "Nationality",
+            type: "select",
+            description: "Select your nationality",
+            options: [
+              { label: "United States", value: "US" },
+              { label: "United Kingdom", value: "GB" },
+              { label: "Germany", value: "DE" },
+              { label: "France", value: "FR" },
+              { label: "Japan", value: "JP" },
+              { label: "Canada", value: "CA" },
+              { label: "Australia", value: "AU" },
+              { label: "Other", value: "OTHER" },
+            ],
+          },
+          {
+            name: "residenceCountry",
+            label: "Country of Residence",
+            type: "select",
+            description: "Select your country of residence",
+            options: [
+              { label: "United States", value: "US" },
+              { label: "United Kingdom", value: "GB" },
+              { label: "Germany", value: "DE" },
+              { label: "France", value: "FR" },
+              { label: "Japan", value: "JP" },
+              { label: "Canada", value: "CA" },
+              { label: "Australia", value: "AU" },
+              { label: "Other", value: "OTHER" },
+            ],
+          },
+          {
+            name: "investorType",
+            label: "Investor Type",
+            type: "select",
+            description: "Select your investor classification",
+            options: [
+              { label: "Retail Investor", value: "retail" },
+              { label: "Professional Investor", value: "professional" },
+              { label: "Institutional Investor", value: "institutional" },
+            ],
+          },
+        ],
+        validate: (data) => {
+          const errors: string[] = [];
+          if (!data.firstName?.trim()) errors.push("First name is required");
+          if (!data.lastName?.trim()) errors.push("Last name is required");
+          if (!data.dateOfBirth) errors.push("Date of birth is required");
+          if (!data.nationality) errors.push("Nationality is required");
+          if (!data.residenceCountry)
+            errors.push("Country of residence is required");
+          if (!data.investorType) errors.push("Investor type is required");
+          return errors.length > 0 ? errors.join(", ") : undefined;
+        },
+      });
     }
 
     return dynamicSteps;
-  }, [shouldShowWalletSteps, shouldShowSystemSetupSteps, systemAddress, user]);
+  }, [
+    shouldShowWalletSteps,
+    shouldShowSystemSetupSteps,
+    shouldShowIdentitySteps,
+    systemAddress,
+    user,
+  ]);
 
   const defaultValues: Partial<OnboardingFormData> = useMemo(
     () => ({
