@@ -3,5 +3,22 @@
   "appName": "資産トークン化キット",
   "continue": "続行",
   "deploying": "展開中...",
-  "generating": "生成中..."
+  "generating": "生成中...",
+  "transactionHash": {
+    "copyToClipboard": "トランザクションハッシュをコピー",
+    "copied": "コピーしました！"
+  },
+  "actions": {
+    "cancel": "キャンセル"
+  },
+  "verification": {
+    "pincode": {
+      "label": "確認コード",
+      "description": "6桁の確認コードを入力してください"
+    }
+  },
+  "transaction": {
+    "waitingForMining": "トランザクションのマイニングを待っています...",
+    "indexed": "トランザクションが確認され、インデックス化されました"
+  }
 }

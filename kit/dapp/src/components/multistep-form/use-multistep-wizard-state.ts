@@ -1,7 +1,7 @@
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { z } from "zod/v4";
 import type { UseMultiStepWizardStateOptions, WizardState } from "./types";
 
@@ -23,6 +23,13 @@ export function useMultiStepWizardState({
 }: UseMultiStepWizardStateOptions) {
   const navigate = useNavigate();
   const search = useSearch({ strict: false });
+
+  // Local state for when URL persistence is disabled
+  const [localState, setLocalState] = useState<ParsedWizardState>(() => ({
+    currentStepIndex: defaultState.currentStepIndex ?? 0,
+    completedSteps: defaultState.completedSteps ?? [],
+    stepErrors: defaultState.stepErrors ?? {},
+  }));
 
   // Parse URL parameters with the wizard name as prefix
   const parseUrlState = useCallback((): ParsedWizardState => {
@@ -68,15 +75,22 @@ export function useMultiStepWizardState({
     }
   }, [search, name, enableUrlPersistence, defaultState]);
 
-  const state = useMemo(() => parseUrlState(), [parseUrlState]);
+  const state = useMemo(
+    () => (enableUrlPersistence ? parseUrlState() : localState),
+    [parseUrlState, enableUrlPersistence, localState]
+  );
 
   // Update URL with debouncing
   const updateUrl = useDebouncedCallback(
     useCallback(
       (newState: Partial<WizardState>) => {
-        if (!enableUrlPersistence) return;
-
         const updatedState = { ...state, ...newState };
+
+        if (!enableUrlPersistence) {
+          // Update local state when URL persistence is disabled
+          setLocalState(updatedState);
+          return;
+        }
 
         // Build the wizard-specific search params
         const wizardParams: Record<string, unknown> = {};
@@ -108,7 +122,7 @@ export function useMultiStepWizardState({
           replace: true,
         });
       },
-      [navigate, name, enableUrlPersistence, state, search]
+      [navigate, name, enableUrlPersistence, state, search, setLocalState]
     ),
     debounceMs
   );

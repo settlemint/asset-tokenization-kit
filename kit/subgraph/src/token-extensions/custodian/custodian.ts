@@ -68,6 +68,8 @@ export function handleForcedTransfer(event: ForcedTransfer): void {
 export function handleRecoverySuccess(event: RecoverySuccess): void {
   fetchEvent(event, "RecoverySuccess");
   const token = fetchToken(event.address);
+
+  // Move token balance to new account
   moveTokenBalanceToNewAccount(
     token,
     event.params.lostWallet,

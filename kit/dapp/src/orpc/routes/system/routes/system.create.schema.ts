@@ -27,7 +27,7 @@
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { z } from "zod/v4";
-import { CreateSchema } from "../../common/schemas/create.schema";
+import { MutationInputSchema } from "../../common/schemas/mutation.schema";
 import { TransactionTrackingMessagesSchema } from "../../common/schemas/transaction-messages.schema";
 
 /**
@@ -68,7 +68,7 @@ export const SystemCreateMessagesSchema =
     defaultError: z.string().optional().default("Failed to create system."),
   });
 
-export const SystemCreateSchema = CreateSchema.extend({
+export const SystemCreateSchema = MutationInputSchema.extend({
   /**
    * The system registry contract address.
    *

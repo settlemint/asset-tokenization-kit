@@ -29,8 +29,8 @@
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { z } from "zod/v4";
-import { CreateSchema } from "../../common/schemas/create.schema";
-import { TransactionTrackingMessagesSchema } from "../../common/schemas/transaction-messages.schema";
+import { MutationInputSchemaWithContract } from "../../../common/schemas/mutation.schema";
+import { TransactionTrackingMessagesSchema } from "../../../common/schemas/transaction-messages.schema";
 
 /**
  * Token types supported for factory creation
@@ -191,7 +191,7 @@ export const FactoryCreateMessagesSchema =
  * Main schema for factory creation
  * Supports both single factory and batch creation
  */
-export const FactoryCreateSchema = CreateSchema.extend({
+export const FactoryCreateSchema = MutationInputSchemaWithContract.extend({
   /**
    * The system contract address to use for creating factories
    * Defaults to the standard SettleMint system contract

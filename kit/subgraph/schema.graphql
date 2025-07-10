@@ -328,6 +328,7 @@ type Token @entity(immutable: false) {
   tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
   # Stats
   stats: TokenStatsState @derivedFrom(field: "token")
+  distributionStats: TokenDistributionStatsState @derivedFrom(field: "token")
 }
 
 type TokenBalance @entity(immutable: false) {
@@ -826,6 +827,54 @@ type TokenBondStats
     )
 }
 
+# Persistent entity to store current token distribution state for efficient calculations
+type TokenDistributionStatsState @entity(immutable: false) {
+  id: Bytes! # Token address
+  token: Token!
+
+  # Top holders tracking (we store the top 6 to be able to add and remove holders incrementally)
+  topHolders: [TokenTopHolder!]! @derivedFrom(field: "state")
+
+  # Percentage owned by top 5 holders compared to the total supply
+  percentageOwnedByTop5Holders: BigDecimal!
+
+  # Distribution segments (relative to the balance with the highest value)
+  # Segment 1: 0-2%
+  balancesCountSegment1: Int!
+  totalValueSegment1: BigDecimal!
+  totalValueSegment1Exact: BigInt!
+
+  # Segment 2: 2-10%
+  balancesCountSegment2: Int!
+  totalValueSegment2: BigDecimal!
+  totalValueSegment2Exact: BigInt!
+
+  # Segment 3: 10-20%
+  balancesCountSegment3: Int!
+  totalValueSegment3: BigDecimal!
+  totalValueSegment3Exact: BigInt!
+
+  # Segment 4: 20-40%
+  balancesCountSegment4: Int!
+  totalValueSegment4: BigDecimal!
+  totalValueSegment4Exact: BigInt!
+
+  # Segment 5: 40-100%
+  balancesCountSegment5: Int!
+  totalValueSegment5: BigDecimal!
+  totalValueSegment5Exact: BigInt!
+}
+
+# Entity to efficiently track top token holders
+type TokenTopHolder @entity(immutable: false) {
+  id: Bytes! # token-account composite key
+  state: TokenDistributionStatsState!
+  account: Account!
+  balance: BigDecimal!
+  balanceExact: BigInt!
+  rank: Int! # 1-5 for top 5 holders
+}
+
 # Token distribution statistics by concentration segments
 type TokenDistributionStatsData @entity(timeseries: true) {
   id: Int8!
@@ -833,10 +882,10 @@ type TokenDistributionStatsData @entity(timeseries: true) {
 
   token: Token!
 
-  # Percentage owned by top 5 holders
+  # Percentage owned by top 5 holders compared to the total supply
   percentageOwnedByTop5Holders: BigDecimal!
 
-  # Concentration segments
+  # Distribution segments (relative to the balance with the highest value)
   # 0-2%
   balancesCountSegment1: Int!
   totalValueSegment1: BigDecimal!
@@ -873,11 +922,11 @@ type TokenDistributionStats
 
   token: Token!
 
-  # Percentage owned by top 5 holders
+  # Percentage owned by top 5 holders compared to the total supply
   percentageOwnedByTop5Holders: BigDecimal!
     @aggregate(fn: "last", arg: "percentageOwnedByTop5Holders")
 
-  # Concentration segments
+  # Distribution segments (relative to the balance with the highest value)
   # 0-2%
   balancesCountSegment1: Int!
     @aggregate(fn: "last", arg: "balancesCountSegment1")

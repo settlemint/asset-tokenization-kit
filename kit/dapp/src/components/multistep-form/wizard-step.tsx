@@ -78,11 +78,6 @@ export function WizardStep({ className }: WizardStepProps) {
     clearStepError(currentStep.id);
 
     try {
-      // Run field validations
-      if (form?.validateAllFields) {
-        await form.validateAllFields("change");
-      }
-
       // Run step validation if provided
       if (currentStep.validate && form?.state?.values) {
         const error = await currentStep.validate(form.state.values);
@@ -109,23 +104,13 @@ export function WizardStep({ className }: WizardStepProps) {
       if (!isLastStep) {
         nextStep();
       } else {
-        // Final submission
-        await new Promise<void>((resolve, reject) => {
-          form.handleSubmit({
-            onSubmit: async ({ value }: { value: unknown }) => {
-              try {
-                await form.options.onSubmit?.({ value, formApi: form });
-                resolve();
-              } catch (error) {
-                reject(
-                  new Error(
-                    error instanceof Error ? error.message : String(error)
-                  )
-                );
-              }
-            },
-          })();
-        });
+        // Final submission - call the form's onSubmit handler directly
+        if (form?.options?.onSubmit && form?.state?.values) {
+          await form.options.onSubmit({
+            value: form.state.values,
+            formApi: form,
+          });
+        }
       }
     } catch (error) {
       const errorMessage = formatValidationError(error);
@@ -256,29 +241,42 @@ export function WizardStep({ className }: WizardStepProps) {
         </div>
 
         <div className="space-y-6">
-          {currentStep.fields?.map((fieldDef) => {
-            try {
-              return (
-                <WizardField
-                  key={fieldDef.name as string}
-                  fieldDef={fieldDef}
-                  formData={form?.state?.values ?? {}}
-                />
-              );
-            } catch (error) {
-              logger.error("Error rendering field", {
-                fieldName: fieldDef.name,
-                error,
-                hasForm: !!form,
-                hasFormState: !!form.state,
-              });
-              return (
-                <div key={fieldDef.name as string} className="text-destructive">
-                  Error rendering field: {fieldDef.name as string}
-                </div>
-              );
-            }
-          })}
+          {(() => {
+            if (!currentStep.fields) return null;
+
+            // Handle both static array and function-based fields
+            const fields =
+              typeof currentStep.fields === "function"
+                ? currentStep.fields(form?.state?.values ?? {})
+                : currentStep.fields;
+
+            return fields.map((fieldDef) => {
+              try {
+                return (
+                  <WizardField
+                    key={fieldDef.name as string}
+                    fieldDef={fieldDef}
+                    formData={form?.state?.values ?? {}}
+                  />
+                );
+              } catch (error) {
+                logger.error("Error rendering field", {
+                  fieldName: fieldDef.name,
+                  error,
+                  hasForm: !!form,
+                  hasFormState: !!form.state,
+                });
+                return (
+                  <div
+                    key={fieldDef.name as string}
+                    className="text-destructive"
+                  >
+                    Error rendering field: {fieldDef.name as string}
+                  </div>
+                );
+              }
+            });
+          })()}
         </div>
       </div>
 

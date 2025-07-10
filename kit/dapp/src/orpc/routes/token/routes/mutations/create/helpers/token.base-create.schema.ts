@@ -1,8 +1,8 @@
 import { getAssetTypeCapitalized } from "@/lib/utils/asset-capitalization";
-import type { AssetType } from "@/lib/zod/validators/asset-types";
+import { assetType, type AssetType } from "@/lib/zod/validators/asset-types";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { isin } from "@/lib/zod/validators/isin";
-import { CreateSchema } from "@/orpc/routes/common/schemas/create.schema";
+import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { TransactionTrackingMessagesSchema } from "@/orpc/routes/common/schemas/transaction-messages.schema";
 import { z } from "zod/v4";
 
@@ -14,13 +14,14 @@ const ModulePairSchema = z.object({
 /**
  * Base fields common to all token types
  */
-export const TokenBaseSchema = CreateSchema.extend({
+export const TokenBaseSchema = MutationInputSchema.extend({
   name: z.string().describe("The name of the token"),
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),
   isin: isin().optional(),
   initialModulePairs: z.array(ModulePairSchema).optional().default([]),
   requiredClaimTopics: z.array(z.string()).optional().default([]),
+  type: assetType(),
 });
 
 /**

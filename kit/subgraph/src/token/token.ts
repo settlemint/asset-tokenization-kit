@@ -99,6 +99,7 @@ export function handleMintCompleted(event: MintCompleted): void {
   const token = fetchToken(event.address);
   increaseTokenSupply(token, event.params.amount);
 
+  // Update token balance
   increaseTokenBalanceValue(
     token,
     event.params.to,

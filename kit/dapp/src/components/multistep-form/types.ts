@@ -18,7 +18,9 @@ export interface StepDefinition<TFormData = unknown> {
   title: string;
   description?: string;
   groupId?: string;
-  fields?: FieldDefinition<TFormData>[];
+  fields?:
+    | FieldDefinition<TFormData>[]
+    | ((formData: Partial<TFormData>) => FieldDefinition<TFormData>[]);
   validate?: (
     formData: Partial<TFormData>
   ) => Promise<string | undefined> | string | undefined;
@@ -47,6 +49,7 @@ export interface FieldDefinition<TFormData = unknown> {
     | "text"
     | "number"
     | "email"
+    | "date"
     | "select"
     | "checkbox"
     | "radio"

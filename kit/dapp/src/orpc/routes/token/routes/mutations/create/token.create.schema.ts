@@ -33,11 +33,11 @@
  */
 
 import { assetTypeArray } from "@/lib/zod/validators/asset-types";
-import { BondTokenSchema } from "@/orpc/helpers/token/create-handlers/bond.create.schema";
-import { DepositTokenSchema } from "@/orpc/helpers/token/create-handlers/deposit.create.schema";
-import { EquityTokenSchema } from "@/orpc/helpers/token/create-handlers/equity.create.schema";
-import { FundTokenSchema } from "@/orpc/helpers/token/create-handlers/fund.create.schema";
-import { StablecoinTokenSchema } from "@/orpc/helpers/token/create-handlers/stablecoin.create.schema";
+import { BondTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/bond.create.schema";
+import { DepositTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/deposit.create.schema";
+import { EquityTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/equity.create.schema";
+import { FundTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
+import { StablecoinTokenSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/stablecoin.create.schema";
 import { z } from "zod/v4";
 
 /**

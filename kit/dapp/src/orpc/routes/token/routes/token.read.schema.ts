@@ -110,6 +110,39 @@ export const RawTokenSchema = z.object({
     })
     .nullable()
     .describe("The collateral of the token"),
+  capped: z
+    .object({
+      cap: bigDecimal().describe("The cap of the token"),
+    })
+    .nullable()
+    .describe("The max supply of the token"),
+  createdBy: z
+    .object({
+      id: ethereumAddress.describe(
+        "The address of the user who created the token"
+      ),
+    })
+    .describe("The user who created the token"),
+  redeemable: z
+    .object({
+      redeemedAmount: bigDecimal().describe("The amount of tokens redeemed"),
+    })
+    .nullable()
+    .describe("The amount of tokens redeemed"),
+  bond: z
+    .object({
+      faceValue: bigDecimal().describe("The face value of the bond"),
+      isMatured: z.boolean().describe("Whether the bond is matured"),
+      maturityDate: timestamp().describe("The maturity date of the bond"),
+    })
+    .nullable()
+    .describe("The bond of the token"),
+  fund: z
+    .object({
+      managementFeeBps: bigDecimal().describe("The management fee of the fund"),
+    })
+    .nullable()
+    .describe("The fund of the token"),
   userPermissions: z
     .object({
       roles: z

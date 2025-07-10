@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { FactoriesResponseSchema } from "@/orpc/routes/token/routes/factory.list.schema";
+import { FactoriesResponseSchema } from "@/orpc/routes/token/routes/factory/factory.list.schema";
 
 /**
  * GraphQL query for retrieving token factories from TheGraph.

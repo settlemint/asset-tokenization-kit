@@ -3,7 +3,7 @@ import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import {
   TokenBaseSchema,
   createTokenMessagesSchema,
-} from "@/orpc/helpers/token/token.base-create.schema";
+} from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { z } from "zod/v4";
 
 /**

@@ -17,6 +17,23 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       pausable {
         paused
       }
+      capped {
+        cap
+      }
+      createdBy {
+        id
+      }
+      redeemable {
+        redeemedAmount
+      }
+      bond {
+        faceValue
+        isMatured
+        maturityDate
+      }
+      fund {
+        managementFeeBps
+      }
       requiredClaimTopics {
         name
       }
