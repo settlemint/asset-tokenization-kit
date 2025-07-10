@@ -19,13 +19,13 @@ import {
 import { Web3Address } from "@/components/web3/web3-address";
 import { Web3TransactionHash } from "@/components/web3/web3-transaction-hash";
 import { formatDate } from "@/lib/utils/date";
+import { formatEventName } from "@/lib/utils/format-event-name";
 import { formatValue } from "@/lib/utils/format-value";
 import {
   getEthereumAddress,
   isEthereumAddress,
 } from "@/lib/zod/validators/ethereum-address";
 import { isEthereumHash } from "@/lib/zod/validators/ethereum-hash";
-import { isTimestamp } from "@/lib/zod/validators/timestamp";
 import { orpc } from "@/orpc";
 import type { Event as TokenEvent } from "@/orpc/routes/token/routes/token.events.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -98,7 +98,7 @@ function EventDetailsSheet({
         onOpenAutoFocus={handleOpenAutoFocus}
       >
         <SheetHeader>
-          <SheetTitle>{event.eventName}</SheetTitle>
+          <SheetTitle>{formatEventName(event.eventName)}</SheetTitle>
         </SheetHeader>
 
         <div className="mx-4 mt-4 overflow-auto space-y-6">
@@ -187,11 +187,6 @@ function EventDetailsSheet({
                           formattedValue = formatValue(value.value, {
                             type: "address",
                           });
-                        } else if (isTimestamp(value.value)) {
-                          // The timestamp validator already returns a Date object
-                          formattedValue = formatValue(value.value, {
-                            type: "date",
-                          });
                         } else if (
                           !isNaN(Number(value.value)) &&
                           value.value !== ""
@@ -206,8 +201,8 @@ function EventDetailsSheet({
 
                         return (
                           <React.Fragment key={value.id}>
-                            <dt className="text-muted-foreground text-sm capitalize">
-                              {value.name}:
+                            <dt className="text-muted-foreground text-sm">
+                              {formatEventName(value.name)}:
                             </dt>
                             <dd className="text-sm break-all">
                               {formattedValue}
@@ -353,7 +348,9 @@ export function TokenEventsTable({ token }: TokenEventsTableProps) {
           header: t("tokens:events.columns.event"),
           cell: ({ getValue }) => {
             const eventName = getValue();
-            return <span className="font-medium">{eventName}</span>;
+            return (
+              <span className="font-medium">{formatEventName(eventName)}</span>
+            );
           },
           meta: {
             displayName: t("tokens:events.columns.event"),

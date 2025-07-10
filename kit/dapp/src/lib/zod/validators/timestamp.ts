@@ -66,12 +66,6 @@ export const timestamp = () =>
         const num = Number(value);
         // No need to check isNaN - a string of only digits always parses to a valid number
 
-        // For very small numbers (< 1000), treat as seconds from epoch
-        // This handles blockchain timestamps that start from genesis
-        if (num < 1000) {
-          return new Date(num * 1000);
-        }
-
         // Detect timestamp precision based on length
         const len = value.length;
         if (len === 10) return new Date(num * 1000); // Unix seconds to milliseconds
@@ -96,11 +90,6 @@ export const timestamp = () =>
         // Check for negative
         if (value < 0) {
           throw new Error("Timestamp cannot be negative");
-        }
-        // For very small numbers (< 1000), treat as seconds from epoch
-        // This handles blockchain timestamps that start from genesis
-        if (value < 1000) {
-          return new Date(value * 1000);
         }
         // Convert seconds to milliseconds if needed
         if (value < 10000000000) return new Date(value * 1000);
