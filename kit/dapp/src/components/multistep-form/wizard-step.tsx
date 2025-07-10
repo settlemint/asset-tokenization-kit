@@ -157,6 +157,11 @@ export function WizardStep({ className }: WizardStepProps) {
     setSearchQuery("");
   }, []);
 
+  // Clear search when step changes
+  useEffect(() => {
+    setSearchQuery("");
+  }, [currentStepIndex]);
+
   logger.debug("WizardStep render", {
     currentStepIndex,
     stepsLength: steps.length,
