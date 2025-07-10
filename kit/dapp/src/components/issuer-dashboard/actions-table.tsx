@@ -1,4 +1,3 @@
-import { AutoCell } from "@/components/data-table/cells/auto-cell";
 import { DataTable } from "@/components/data-table/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -166,7 +165,11 @@ export function ActionsTable({ status, type }: ActionsTableProps) {
           type: "date",
           displayName: t("actionsTable.columns.activeAt"),
         },
-        cell: (context) => <AutoCell context={context} />,
+        cell: ({ getValue }) => (
+          <div className="text-sm">
+            {getValue().toLocaleDateString()}
+          </div>
+        ),
       }),
       columnHelper.display({
         id: "status",
