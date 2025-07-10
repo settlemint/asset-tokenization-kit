@@ -21,6 +21,9 @@ export interface StepDefinition<TFormData = unknown> {
   fields?:
     | FieldDefinition<TFormData>[]
     | ((formData: Partial<TFormData>) => FieldDefinition<TFormData>[]);
+  groups?:
+    | FieldGroup<TFormData>[]
+    | ((formData: Partial<TFormData>) => FieldGroup<TFormData>[]);
   validate?: (
     formData: Partial<TFormData>
   ) => Promise<string | undefined> | string | undefined;
@@ -68,6 +71,14 @@ export interface FieldDefinition<TFormData = unknown> {
   component?: React.ComponentType<FieldComponentProps<TFormData>>;
   postfix?: string;
   variant?: "default" | "card";
+}
+
+export interface FieldGroup<TFormData = unknown> {
+  id: string;
+  label: string;
+  description?: string;
+  icon?: React.ReactNode;
+  fields: FieldDefinition<TFormData>[];
 }
 
 export interface StepGroup {
