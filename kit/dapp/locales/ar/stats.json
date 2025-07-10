@@ -1,0 +1,44 @@
+{
+  "title": "الإحصائيات",
+  "widgets": {
+    "assets": {
+      "title": "إجمالي الأصول",
+      "empty": "لا توجد أصول بعد"
+    },
+    "transactions": {
+      "title": "إجمالي المعاملات",
+      "description": "{{count}} معاملة في آخر {{days}} أيام"
+    },
+    "users": {
+      "title": "المستخدمون النشطون",
+      "description": "{{count}} مستخدم نشط في آخر {{days}} أيام"
+    },
+    "value": {
+      "title": "إجمالي القيمة",
+      "description": "القيمة المجمعة لجميع الأصول"
+    },
+    "common": {
+      "loading": "جاري التحميل...",
+      "error": "خطأ في تحميل البيانات",
+      "retry": "إعادة المحاولة"
+    }
+  },
+  "charts": {
+    "assetSupply": {
+      "title": "معروض الأصول",
+      "description": "إجمالي معروض الأصول عبر الوقت"
+    },
+    "assetActivity": {
+      "title": "نشاط الأصول",
+      "description": "نشاط معاملات الأصول"
+    },
+    "userGrowth": {
+      "title": "نمو المستخدمين",
+      "description": "عدد المستخدمين عبر الوقت"
+    },
+    "transactionHistory": {
+      "title": "تاريخ المعاملات",
+      "description": "حجم المعاملات عبر الوقت"
+    }
+  }
+}

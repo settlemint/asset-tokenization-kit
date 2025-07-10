@@ -14,7 +14,6 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
-import { Dashboard as IssuerDashboard } from "@/components/issuer-dashboard/dashboard";
 import { Button } from "@/components/ui/button";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
@@ -81,7 +80,6 @@ function Home() {
       <Link to="/asset-designer" className="mb-6 block">
         <Button>Create New Asset</Button>
       </Link>
-      <IssuerDashboard />
     </div>
   );
 }

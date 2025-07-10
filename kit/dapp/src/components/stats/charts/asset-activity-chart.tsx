@@ -33,7 +33,7 @@ const dataKeys = ["mint", "transfer", "burn", "clawback"];
  * Shows different event types (mint, transfer, burn, clawback) for asset types with activity.
  */
 export function AssetActivityChart() {
-  const { t } = useTranslation("issuer-dashboard");
+  const { t } = useTranslation("stats");
 
   // Fetch just the asset metrics which includes activity data - more efficient
   const { data: metrics } = useSuspenseQuery(

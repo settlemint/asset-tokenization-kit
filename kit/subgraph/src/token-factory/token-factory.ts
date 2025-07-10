@@ -4,6 +4,7 @@ import {
   TokenAssetCreated,
   TokenImplementationUpdated,
 } from "../../generated/templates/TokenFactory/TokenFactory";
+import { TokenStatsState } from "../../generated/schema";
 import { fetchAccessControl } from "../access-control/fetch/accesscontrol";
 import { fetchAccount } from "../account/fetch/account";
 import { InterfaceIds } from "../erc165/utils/interfaceids";
@@ -48,6 +49,12 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   token.createdBy = fetchAccount(event.transaction.from).id;
   token.identity = fetchIdentity(event.params.tokenIdentity).id;
   token.accessControl = fetchAccessControl(event.params.accessManager).id;
+
+  // Initialize TokenStatsState for the new token
+  const tokenStatsState = new TokenStatsState(event.params.tokenAddress);
+  tokenStatsState.token = token.id;
+  tokenStatsState.balancesCount = 0;
+  tokenStatsState.save();
 
   if (event.params.interfaces.includes(InterfaceIds.ISMARTPausable)) {
     token.pausable = fetchPausable(event.params.tokenAddress).id;
