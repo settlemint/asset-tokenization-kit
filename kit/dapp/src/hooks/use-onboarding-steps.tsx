@@ -196,7 +196,7 @@ export function useOnboardingSteps({
       dynamicSteps.push({
         id: "configure-platform-settings",
         title: "Configure platform settings",
-        description: "Set up platform configuration and preferences",
+        description: "Define how your platform behaves by default",
         groupId: "system",
         fields: [
           {
@@ -212,6 +212,103 @@ export function useOnboardingSteps({
             ],
           },
         ],
+        component: ({
+          form,
+          stepId,
+          onNext,
+          onPrevious,
+          isFirstStep,
+          isLastStep,
+        }) => (
+          <div className="max-w-2xl space-y-6">
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2">
+                Configure Platform Settings
+              </h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Define how your platform behaves by default
+              </p>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <p className="text-sm">
+                Before you begin issuing assets, let's configure some basic
+                settings that determine how the platform behaves. These default
+                values help personalize the experience for you and your users.
+              </p>
+              <p className="text-sm">
+                You can update these preferences later in the platform settings.
+              </p>
+            </div>
+
+            {/* Base Currency Field */}
+            <form.Field name="baseCurrency">
+              {(field) => (
+                <div className="space-y-2">
+                  <label htmlFor="baseCurrency" className="text-sm font-medium">
+                    Base Currency
+                  </label>
+                  <p className="text-sm text-muted-foreground">
+                    Choose the default currency for your platform
+                  </p>
+                  <div className="relative">
+                    <select
+                      id="baseCurrency"
+                      value={field.state.value || ""}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="w-full pl-3 pr-10 py-2 border border-input rounded-md bg-background text-sm appearance-none"
+                    >
+                      <option value="">Select a currency</option>
+                      <option value="USD">US Dollar (USD)</option>
+                      <option value="EUR">Euro (EUR)</option>
+                      <option value="GBP">British Pound (GBP)</option>
+                      <option value="JPY">Japanese Yen (JPY)</option>
+                    </select>
+                    <svg
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                  {field.state.meta.errors &&
+                    field.state.meta.errors.length > 0 && (
+                      <p className="text-sm text-destructive">
+                        {field.state.meta.errors[0]}
+                      </p>
+                    )}
+                </div>
+              )}
+            </form.Field>
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-end gap-3 pt-4">
+              {!isFirstStep && (
+                <button
+                  type="button"
+                  onClick={onPrevious}
+                  className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
+                >
+                  Previous
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={onNext}
+                className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        ),
       });
 
       // 3. Select supported assets
