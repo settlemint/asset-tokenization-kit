@@ -268,7 +268,7 @@ export function WizardField<TFormData>({
                   >
                     <div className="flex items-start space-x-3 h-full">
                       {option.icon && (
-                        <div className="flex-shrink-0 mt-0.5 text-muted-foreground peer-data-[state=checked]:text-primary">
+                        <div className="flex-shrink-0 mt-0.5">
                           {option.icon}
                         </div>
                       )}
