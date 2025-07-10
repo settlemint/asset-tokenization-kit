@@ -156,7 +156,7 @@ function AssetDesignerWizardComponent({
             {
               name: "cap",
               label: t("form.fields.cap.label"),
-              type: "text",
+              type: "number", // TODO: create amount input type
               required: true,
               placeholder: t("form.fields.cap.placeholder"),
               description: t("form.fields.cap.description"),
@@ -165,7 +165,7 @@ function AssetDesignerWizardComponent({
             {
               name: "faceValue",
               label: t("form.fields.faceValue.label"),
-              type: "text",
+              type: "number", // TODO: create amount input type
               required: true,
               placeholder: t("form.fields.faceValue.placeholder"),
               description: t("form.fields.faceValue.description"),
@@ -174,7 +174,7 @@ function AssetDesignerWizardComponent({
             {
               name: "maturityDate",
               label: t("form.fields.maturityDate.label"),
-              type: "text",
+              type: "date",
               required: true,
               placeholder: t("form.fields.maturityDate.placeholder"),
               description: t("form.fields.maturityDate.description"),
@@ -183,7 +183,7 @@ function AssetDesignerWizardComponent({
             {
               name: "underlyingAsset",
               label: t("form.fields.underlyingAsset.label"),
-              type: "text",
+              type: "text", // TODO: create address input type
               required: true,
               placeholder: t("form.fields.underlyingAsset.placeholder"),
               description: t("form.fields.underlyingAsset.description"),
@@ -194,7 +194,7 @@ function AssetDesignerWizardComponent({
           baseFields.push({
             name: "managementFeeBps",
             label: t("form.fields.managementFeeBps.label"),
-            type: "number",
+            type: "number", // TODO: create percentage input type
             required: true,
             placeholder: t("form.fields.managementFeeBps.placeholder"),
             description: t("form.fields.managementFeeBps.description"),
@@ -205,7 +205,6 @@ function AssetDesignerWizardComponent({
         return baseFields;
       },
       validate: (data) => {
-        // Additional validation can be added here
         const result = TokenBaseSchema.safeParse(data);
         if (!result.success) {
           return result.error.issues[0]?.message ?? "Validation failed";
@@ -238,8 +237,9 @@ function AssetDesignerWizardComponent({
               ...commonData,
               type: "bond",
               cap: data.cap ?? "1000000",
-              maturityDate:
-                data.maturityDate ?? new Date().getTime().toString(),
+              maturityDate: data.maturityDate
+                ? new Date(data.maturityDate).getTime().toString()
+                : new Date().getTime().toString(),
               underlyingAsset:
                 data.underlyingAsset ??
                 "0x0000000000000000000000000000000000000000",

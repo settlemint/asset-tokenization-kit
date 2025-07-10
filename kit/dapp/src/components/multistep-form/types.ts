@@ -49,6 +49,7 @@ export interface FieldDefinition<TFormData = unknown> {
     | "text"
     | "number"
     | "email"
+    | "date"
     | "select"
     | "checkbox"
     | "radio"
