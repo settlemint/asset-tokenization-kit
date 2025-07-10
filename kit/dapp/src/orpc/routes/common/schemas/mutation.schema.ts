@@ -29,7 +29,7 @@ import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { z } from "zod/v4";
 
-export const CreateSchema = z.object({
+export const MutationInputSchema = z.object({
   /**
    * The Ethereum address of the smart contract to interact with.
    *
@@ -55,4 +55,17 @@ export const CreateSchema = z.object({
    * - two-factor: Uses time-based one-time passwords (TOTP)
    */
   verification: UserVerificationSchema,
+});
+
+export const MutationInputSchemaWithContract = MutationInputSchema.extend({
+  contract: ethereumAddress.describe(
+    "The address of the contract to call this function on"
+  ),
+});
+
+export const MutationOutputSchema = z.object({
+  status: z.enum(["pending", "confirmed", "failed"]),
+  message: z.string(),
+  transactionHash: z.string().optional(),
+  result: z.string().optional(), // For compatibility with useStreamingMutation hook
 });
