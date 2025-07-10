@@ -86,7 +86,7 @@ export function updateTokenDistributionStats(
     // Top balance didn't change - just update the current account's segment
     // Calculate old and new percentages based on top balance
     const oldPercentage = oldBalance.gt(BigInt.zero())
-      ? oldBalance.toBigDecimal().div(newTopBalance.toBigDecimal())
+      ? oldBalance.toBigDecimal().div(oldTopBalance.toBigDecimal())
       : BigDecimal.zero();
     const newPercentage = newBalance.gt(BigInt.zero())
       ? newBalance.toBigDecimal().div(newTopBalance.toBigDecimal())

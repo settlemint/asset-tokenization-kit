@@ -835,10 +835,10 @@ type TokenDistributionStatsState @entity(immutable: false) {
   # Top holders tracking (we store the top 6 to be able to add and remove holders incrementally)
   topHolders: [TokenTopHolder!]! @derivedFrom(field: "state")
 
-  # Percentage owned by top 5 holders
+  # Percentage owned by top 5 holders compared to the total supply
   percentageOwnedByTop5Holders: BigDecimal!
 
-  # Distribution segments (by percentage of total supply)
+  # Distribution segments (relative to the balance with the highest value)
   # Segment 1: 0-2%
   balancesCountSegment1: Int!
   totalValueSegment1: BigDecimal!
@@ -882,10 +882,10 @@ type TokenDistributionStatsData @entity(timeseries: true) {
 
   token: Token!
 
-  # Percentage owned by top 5 holders
+  # Percentage owned by top 5 holders compared to the total supply
   percentageOwnedByTop5Holders: BigDecimal!
 
-  # Concentration segments
+  # Distribution segments (relative to the balance with the highest value)
   # 0-2%
   balancesCountSegment1: Int!
   totalValueSegment1: BigDecimal!
@@ -922,11 +922,11 @@ type TokenDistributionStats
 
   token: Token!
 
-  # Percentage owned by top 5 holders
+  # Percentage owned by top 5 holders compared to the total supply
   percentageOwnedByTop5Holders: BigDecimal!
     @aggregate(fn: "last", arg: "percentageOwnedByTop5Holders")
 
-  # Concentration segments
+  # Distribution segments (relative to the balance with the highest value)
   # 0-2%
   balancesCountSegment1: Int!
     @aggregate(fn: "last", arg: "balancesCountSegment1")
