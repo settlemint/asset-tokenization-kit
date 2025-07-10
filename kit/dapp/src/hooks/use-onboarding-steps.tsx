@@ -7,21 +7,22 @@ import { SystemBootstrapStep } from "@/components/onboarding/steps/system-bootst
 import { WalletDisplayStep } from "@/components/onboarding/steps/wallet-display-step";
 import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
 
-import React, { useMemo, useCallback, useState, useEffect } from "react";
-import { z } from "zod/v4";
+import { useWizardContext } from "@/components/multistep-form/wizard-context";
+import { VerificationDialog } from "@/components/ui/verification-dialog";
 import { useSettings } from "@/hooks/use-settings";
-import { toast } from "sonner";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { authClient } from "@/lib/auth/auth.client";
 import {
   fiatCurrency,
   fiatCurrencyMetadata,
 } from "@/lib/zod/validators/fiat-currency";
-import { useWizardContext } from "@/components/multistep-form/wizard-context";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { orpc } from "@/orpc";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { VerificationDialog } from "@/components/ui/verification-dialog";
-import { authClient } from "@/lib/auth/auth.client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { z } from "zod/v4";
 
 const logger = createLogger();
 
@@ -98,6 +99,7 @@ function AssetSelectionComponent({
   const { clearStepError, markStepComplete } = useWizardContext();
   const queryClient = useQueryClient();
   const { data: session } = authClient.useSession();
+  const { t } = useTranslation(["tokens", "onboarding"]);
 
   // State for verification modal and deployment progress
   const [showVerificationModal, setShowVerificationModal] = useState(false);
@@ -122,27 +124,27 @@ function AssetSelectionComponent({
   const assetTypes = [
     {
       value: "bond",
-      label: "Bonds",
+      label: t("asset-types.bond", { ns: "tokens" }),
       description: "Tokenized debt securities with fixed income features",
     },
     {
       value: "equity",
-      label: "Equities",
+      label: t("asset-types.equity", { ns: "tokens" }),
       description: "Digital shares representing ownership in companies",
     },
     {
       value: "fund",
-      label: "Funds",
+      label: t("asset-types.fund", { ns: "tokens" }),
       description: "Investment fund tokens for pooled investments",
     },
     {
       value: "stablecoin",
-      label: "Stablecoin",
+      label: t("asset-types.stablecoin", { ns: "tokens" }),
       description: "Price-stable digital currencies",
     },
     {
       value: "deposit",
-      label: "Deposits",
+      label: t("asset-types.deposit", { ns: "tokens" }),
       description: "Tokenized bank deposits and certificates",
     },
   ];
@@ -198,107 +200,49 @@ function AssetSelectionComponent({
         errorName: deploymentError.name,
         errorMessage: deploymentError.message,
         errorStack: deploymentError.stack,
-        errorCause: deploymentError.cause,
       });
 
-      const errorMessage =
-        deploymentError instanceof Error
-          ? deploymentError.message
-          : String(deploymentError);
+      let userFriendlyMessage = "Failed to deploy factories. Please try again.";
 
-      // Check for specific error types
-      if (errorMessage.includes("SystemNotBootstrapped")) {
-        setVerificationError(
-          "System not bootstrapped. Please complete system deployment first."
-        );
-      } else if (errorMessage.includes("Factory already exists")) {
-        setVerificationError(
-          "Factory with this name already exists. Please try again."
-        );
-      } else if (errorMessage.includes("verification")) {
-        setVerificationError(
-          "Authentication failed. Please check your PIN/OTP and try again."
-        );
-      } else if (errorMessage.includes("Failed to create token factory")) {
-        // Check if this is a system bootstrap issue
-        if (!systemDetails?.identityRegistry || !systemDetails?.compliance) {
-          setVerificationError(
-            "System bootstrap incomplete. Please complete the system setup first before creating factories."
-          );
-        } else {
-          setVerificationError(
-            "Factory creation failed. This may be due to a blockchain transaction error or network issue. Please try again."
-          );
-        }
-      } else {
-        setVerificationError(`Factory deployment failed: ${errorMessage}`);
+      // Check for specific error patterns
+      if (deploymentError.message?.includes("already exists")) {
+        userFriendlyMessage =
+          "Factory with this name already exists. Please try again.";
+      } else if (deploymentError.message?.includes("REGISTRAR_ROLE")) {
+        userFriendlyMessage =
+          "Insufficient permissions to deploy factories. Please contact your administrator.";
+      } else if (deploymentError.message?.includes("system")) {
+        userFriendlyMessage =
+          "System not ready for factory deployment. Please wait for initialization to complete.";
       }
-    }
-  }, [deploymentError, systemDetails]);
 
-  // Handle PIN/OTP verification and factory deployment
+      setVerificationError(userFriendlyMessage);
+      toast.error(userFriendlyMessage);
+    }
+  }, [deploymentError]);
+
+  // Handle verification submission
   const handleVerificationSubmit = useCallback(
     (verificationCode: string, verificationType: "pincode" | "two-factor") => {
       const formValues = form.state.values;
-      if (
-        !formValues.selectedAssetTypes ||
-        formValues.selectedAssetTypes.length === 0
-      ) {
-        setVerificationError("No asset types selected");
-        return;
-      }
+      if (!formValues.selectedAssetTypes) return;
 
-      // Convert selected asset types to factory creation format
+      // Convert selected asset types to factory creation format with translated names
       const factories = formValues.selectedAssetTypes.map((type) => {
-        // Use unique names with timestamp to avoid conflicts
-        const timestamp = Date.now();
-        const factoryNames = {
-          bond: `Bond Factory ${timestamp}`,
-          equity: `Equity Factory ${timestamp}`,
-          fund: `Fund Factory ${timestamp}`,
-          stablecoin: `Stablecoin Factory ${timestamp}`,
-          deposit: `Deposit Factory ${timestamp}`,
-        };
-
-        // Default implementation addresses from SettleMint deployment
-        const defaultImplementations = {
-          bond: {
-            factoryImplementation: "0x5e771e1417100000000000000000000000020021",
-            tokenImplementation: "0x5e771e1417100000000000000000000000020020",
-          },
-          equity: {
-            factoryImplementation: "0x5e771e1417100000000000000000000000020025",
-            tokenImplementation: "0x5e771e1417100000000000000000000000020024",
-          },
-          fund: {
-            factoryImplementation: "0x5e771e1417100000000000000000000000020027",
-            tokenImplementation: "0x5e771e1417100000000000000000000000020026",
-          },
-          stablecoin: {
-            factoryImplementation: "0x5e771e1417100000000000000000000000020029",
-            tokenImplementation: "0x5e771e1417100000000000000000000000020028",
-          },
-          deposit: {
-            factoryImplementation: "0x5e771e1417100000000000000000000000020023",
-            tokenImplementation: "0x5e771e1417100000000000000000000000020022",
-          },
-        };
-
         const typedType = type as
           | "bond"
           | "equity"
           | "fund"
           | "stablecoin"
           | "deposit";
-        const implementations = defaultImplementations[typedType];
+
+        // Use translated factory names instead of hardcoded ones
+        const factoryName = t(`asset-types.${typedType}`, { ns: "tokens" });
 
         return {
           type: typedType,
-          name:
-            factoryNames[typedType] ||
-            `${type.charAt(0).toUpperCase() + type.slice(1)} Factory`,
-          factoryImplementation: implementations.factoryImplementation,
-          tokenImplementation: implementations.tokenImplementation,
+          name: factoryName,
+          // Don't include implementation addresses - let the orpc route handle them via zod validation
         };
       });
 
@@ -385,6 +329,7 @@ function AssetSelectionComponent({
       session?.user,
       isLoadingSystem,
       systemDetails,
+      t,
     ]
   );
 
