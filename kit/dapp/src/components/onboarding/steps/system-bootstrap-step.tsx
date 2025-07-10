@@ -198,25 +198,6 @@ export function SystemBootstrapStep({
               ? "You are now the initial administrator of the platform."
               : "You're about to set up the foundation of the platform"}
           </p>
-          {showSuccessScreen && (
-            <div className="pt-4">
-              <p className="text-sm mb-3">From here, you'll be able to:</p>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2">
-                  <span className="text-muted-foreground">•</span>
-                  <span>Configure supported assets</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-muted-foreground">•</span>
-                  <span>Invite additional admins</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-muted-foreground">•</span>
-                  <span>Manage compliance and identity modules</span>
-                </li>
-              </ul>
-            </div>
-          )}
         </div>
 
         <div className="flex-1 overflow-y-auto">
@@ -232,6 +213,25 @@ export function SystemBootstrapStep({
                   The smart contracts powering your platform are now live on the
                   blockchain.
                 </p>
+              </div>
+
+              {/* Capabilities List */}
+              <div className="text-left">
+                <p className="text-sm mb-3">From here, you'll be able to:</p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span>Configure supported assets</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span>Invite additional admins</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span>Manage compliance and identity modules</span>
+                  </li>
+                </ul>
               </div>
 
               <div className="space-y-4">
