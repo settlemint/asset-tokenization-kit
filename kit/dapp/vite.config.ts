@@ -1,4 +1,5 @@
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import Terminal from "vite-plugin-terminal";
@@ -30,12 +31,9 @@ export default defineConfig({
     tsConfigPaths(),
     tanstackStart({
       target: "bun",
-      react: {
-        babel: {
-          plugins: [["babel-plugin-react-compiler"]],
-        },
-      },
+      customViteReactPlugin: true,
     }),
+    react(),
     analyzer({
       enabled: process.env.ANALYZE === "true",
     }),

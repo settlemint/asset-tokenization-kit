@@ -7,21 +7,21 @@ import { SystemBootstrapStep } from "@/components/onboarding/steps/system-bootst
 import { WalletDisplayStep } from "@/components/onboarding/steps/wallet-display-step";
 import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
 
-import React, { useMemo, useCallback, useState, useEffect } from "react";
-import { z } from "zod/v4";
+import { useWizardContext } from "@/components/multistep-form/wizard-context";
+import { VerificationDialog } from "@/components/ui/verification-dialog";
 import { useSettings } from "@/hooks/use-settings";
-import { toast } from "sonner";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { authClient } from "@/lib/auth/auth.client";
 import {
   fiatCurrency,
   fiatCurrencyMetadata,
 } from "@/lib/zod/validators/fiat-currency";
-import { useWizardContext } from "@/components/multistep-form/wizard-context";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { orpc } from "@/orpc";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { VerificationDialog } from "@/components/ui/verification-dialog";
-import { authClient } from "@/lib/auth/auth.client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { z } from "zod/v4";
 
 const logger = createLogger();
 
@@ -221,7 +221,7 @@ function AssetSelectionComponent({
         );
       } else if (errorMessage.includes("Failed to create token factory")) {
         // Check if this is a system bootstrap issue
-        if (!systemDetails?.identityRegistry || !systemDetails?.compliance) {
+        if (!systemDetails?.identityRegistry || !systemDetails.compliance) {
           setVerificationError(
             "System bootstrap incomplete. Please complete the system setup first before creating factories."
           );
@@ -362,7 +362,7 @@ function AssetSelectionComponent({
         },
         systemAddressSource: systemAddress ? "from settings" : "using default",
         systemAddress,
-        userWallet: session?.user?.wallet ?? "no wallet",
+        userWallet: session?.user.wallet ?? "no wallet",
         userSession: !!session?.user,
         factoryCount: factories.length,
         factoryTypes: factories.map((f) => f.type),
