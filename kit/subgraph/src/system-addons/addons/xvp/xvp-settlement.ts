@@ -260,8 +260,8 @@ export function handleXvPSettlementApprovalRevoked(
   const approvalAction = createAction(
     actionId,
     actionExecutor,
-    "ApproveXvPSettlement",
-    "User",
+    ACTION_TYPES.APPROVE_XVP_SETTLEMENT,
+    ACTION_USER_TYPES.USER,
     event.block.timestamp,
     event.block.timestamp,
     settlement.cutoffDate,
