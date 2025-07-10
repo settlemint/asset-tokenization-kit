@@ -62,6 +62,385 @@ function CurrencyField({
   );
 }
 
+// Asset Selection Component
+function AssetSelectionComponent({
+  form,
+  onNext,
+  onPrevious,
+  isFirstStep,
+}: {
+  form: {
+    state: {
+      values: {
+        selectedAssetTypes?: string[];
+      };
+    };
+    Field: (props: {
+      name: string;
+      children: (field: {
+        state: { value?: string[]; meta: { errors?: string[] } };
+        handleChange: (value: string[]) => void;
+      }) => React.ReactNode;
+    }) => React.ReactNode;
+  };
+  onNext?: () => void;
+  onPrevious?: () => void;
+  isFirstStep?: boolean;
+}) {
+  const { clearStepError, markStepComplete } = useWizardContext();
+
+  const assetTypes = [
+    {
+      value: "bond",
+      label: "Bonds",
+      description: "Tokenized debt securities with fixed income features",
+    },
+    {
+      value: "equity",
+      label: "Equities",
+      description: "Digital shares representing ownership in companies",
+    },
+    {
+      value: "fund",
+      label: "Funds",
+      description: "Investment fund tokens for pooled investments",
+    },
+    {
+      value: "stablecoin",
+      label: "Stablecoin",
+      description: "Price-stable digital currencies",
+    },
+    {
+      value: "deposit",
+      label: "Deposits",
+      description: "Tokenized bank deposits and certificates",
+    },
+  ];
+
+  const handleConfirm = useCallback(() => {
+    try {
+      clearStepError("asset-selection");
+      const formValues = form.state.values;
+      if (
+        formValues.selectedAssetTypes &&
+        formValues.selectedAssetTypes.length > 0
+      ) {
+        markStepComplete("asset-selection");
+        toast.success(
+          `Selected ${formValues.selectedAssetTypes.length} asset type(s)`
+        );
+      } else {
+        toast.error("Please select at least one asset type");
+        return;
+      }
+      onNext?.();
+    } catch {
+      toast.error("Failed to save asset selection");
+    }
+  }, [form.state.values, clearStepError, markStepComplete, onNext]);
+
+  return (
+    <div className="max-w-4xl space-y-6">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">
+          Configure Supported Asset Types
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Define which types of tokenized assets your platform will support.
+        </p>
+      </div>
+
+      <div className="space-y-4 mb-6">
+        <p className="text-sm">
+          Each asset type you support on your platform; like Bonds, Equities, or
+          Stablecoins; is managed by a dedicated Asset Factory.
+        </p>
+        <p className="text-sm">
+          Asset factories are smart contracts that define how a specific asset
+          class behaves on-chain, including its features, rules, and compliance
+          logic.
+        </p>
+        <p className="text-sm">
+          By selecting the asset types you want to support, you'll deploy the
+          necessary smart contracts that power them. You can always add more
+          factories later in your platform settings.
+        </p>
+      </div>
+
+      <div className="mb-4">
+        <h3 className="text-base font-medium text-foreground">
+          Select asset types:
+        </h3>
+      </div>
+
+      <form.Field name="selectedAssetTypes">
+        {(field: {
+          state: { value?: string[]; meta: { errors?: string[] } };
+          handleChange: (value: string[]) => void;
+        }) => <AssetTypeCheckboxes field={field} assetTypes={assetTypes} />}
+      </form.Field>
+
+      {/* Additional information section */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+          </svg>
+          <span>Requires additional configuration</span>
+        </div>
+
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+            />
+          </svg>
+          <span>
+            Requires at least one underlying asset type (e.g. Stablecoins or
+            Deposits)
+          </span>
+        </div>
+
+        {/* Warning box */}
+        <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-4">
+          <div className="flex items-start gap-3">
+            <svg
+              className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm text-amber-600 dark:text-amber-400">
+                This process may take up to 2–3 minutes depending on your
+                selections.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Info box */}
+        <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
+          <div className="flex items-start gap-3">
+            <svg
+              className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm text-blue-600 dark:text-blue-400">
+                You'll be asked to confirm each transaction using your PIN or
+                OTP.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-3 pt-6">
+        {!isFirstStep && (
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
+          >
+            Previous
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={handleConfirm}
+          className="px-6 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+        >
+          Deploy Selected Factories
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Individual Asset Type Checkbox Component
+function AssetTypeCheckbox({
+  assetType,
+  isSelected,
+  onToggle,
+}: {
+  assetType: {
+    value: string;
+    label: string;
+    description: string;
+  };
+  isSelected: boolean;
+  onToggle: (value: string) => void;
+}) {
+  const handleToggle = useCallback(() => {
+    onToggle(assetType.value);
+  }, [onToggle, assetType.value]);
+
+  return (
+    <div
+      className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+        isSelected
+          ? "border-primary bg-primary/5"
+          : "border-border hover:border-primary/50"
+      }`}
+      onClick={handleToggle}
+    >
+      <div>
+        <h4 className="font-medium text-foreground flex items-center gap-2">
+          {assetType.label}
+          {assetType.value === "bond" && (
+            <>
+              <svg
+                className="h-4 w-4 text-muted-foreground"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              <svg
+                className="h-4 w-4 text-muted-foreground"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                />
+              </svg>
+            </>
+          )}
+          {(assetType.value === "stablecoin" ||
+            assetType.value === "deposit") && (
+            <svg
+              className="h-4 w-4 text-muted-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+              />
+            </svg>
+          )}
+        </h4>
+        <p className="text-xs text-muted-foreground mt-1">
+          {assetType.description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Asset Type Checkboxes Component
+function AssetTypeCheckboxes({
+  field,
+  assetTypes,
+}: {
+  field: {
+    state: { value?: string[]; meta: { errors?: string[] } };
+    handleChange: (value: string[]) => void;
+  };
+  assetTypes: {
+    value: string;
+    label: string;
+    description: string;
+  }[];
+}) {
+  const selectedValues = useMemo(
+    () => field.state.value ?? [],
+    [field.state.value]
+  );
+
+  const handleToggle = useCallback(
+    (assetType: string) => {
+      const newValues = selectedValues.includes(assetType)
+        ? selectedValues.filter((type) => type !== assetType)
+        : [...selectedValues, assetType];
+      field.handleChange(newValues);
+    },
+    [selectedValues, field]
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {assetTypes.map((assetType) => (
+          <AssetTypeCheckbox
+            key={assetType.value}
+            assetType={assetType}
+            isSelected={selectedValues.includes(assetType.value)}
+            onToggle={handleToggle}
+          />
+        ))}
+      </div>
+
+      {field.state.meta.errors && field.state.meta.errors.length > 0 && (
+        <p className="text-sm text-destructive mt-2">
+          {field.state.meta.errors[0]}
+        </p>
+      )}
+    </div>
+  );
+}
+
 // Platform Settings Component
 function PlatformSettingsComponent({
   form,
@@ -399,44 +778,7 @@ export function useOnboardingSteps({
           !data.selectedAssetTypes?.length
             ? "At least one asset type must be selected"
             : undefined,
-        component: ({ onNext, onPrevious, isFirstStep }) => (
-          <div className="max-w-4xl space-y-6">
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-2">
-                Configure Supported Asset Types
-              </h2>
-              <p className="text-sm text-muted-foreground mb-4">
-                Define which types of tokenized assets your platform will
-                support.
-              </p>
-            </div>
-            <div className="space-y-4">
-              <p className="text-sm">
-                This step is temporarily simplified to fix React hooks
-                violations. The full asset selection functionality will be
-                restored.
-              </p>
-            </div>
-            <div className="flex justify-end gap-3 pt-6">
-              {!isFirstStep && (
-                <button
-                  type="button"
-                  onClick={onPrevious}
-                  className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
-                >
-                  Previous
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={onNext}
-                className="px-6 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        ),
+        component: (props) => <AssetSelectionComponent {...props} />,
       });
 
       // 4. Enable platform addons
