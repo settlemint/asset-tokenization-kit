@@ -140,8 +140,10 @@ contract ATKIdentityRegistryImplementation is
     /// contracts.
     ///     These addresses must not be zero addresses.
     /// It is protected by the `initializer` modifier from OpenZeppelin, ensuring it can only be called once.
-    /// @param initialAdmin The address that will receive initial administrative and registrar privileges.
+    /// @param initialAdmins The address that will receive initial administrative and registrar privileges.
     /// This address will be responsible for the initial setup and management of the registry.
+    /// @param initialRegistrar The address that will receive initial registrar privileges.
+    /// This address will be responsible for managing identities.
     /// @param identityStorage_ The address of the deployed `ISMARTIdentityRegistryStorage` contract.
     /// This contract will be used to store all identity data.
     /// @param trustedIssuersRegistry_ The address of the deployed `IERC3643TrustedIssuersRegistry` contract.
@@ -149,7 +151,8 @@ contract ATKIdentityRegistryImplementation is
     /// @param topicSchemeRegistry_ The address of the deployed `ISMARTTopicSchemeRegistry` contract.
     /// This contract will be used to validate claim topics against registered schemes.
     function initialize(
-        address initialAdmin,
+        address[] memory initialAdmins,
+        address initialRegistrar,
         address identityStorage_,
         address trustedIssuersRegistry_,
         address topicSchemeRegistry_
@@ -164,8 +167,14 @@ contract ATKIdentityRegistryImplementation is
         // ERC2771Context is initialized by its constructor during contract creation.
 
         // Grant the caller (initialAdmin) the default admin role, allowing them to manage other roles.
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, initialAdmin);
+        for (uint256 i = 0; i < initialAdmins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
+        }
+
+        _grantRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, initialRegistrar);
+
+        // Set up role hierarchy: REGISTRAR_ADMIN_ROLE can manage REGISTRAR_ROLE
+        _setRoleAdmin(ATKSystemRoles.REGISTRAR_ROLE, ATKSystemRoles.REGISTRAR_ADMIN_ROLE);
 
         // Validate and set the identity storage contract address.
         if (identityStorage_ == address(0)) revert InvalidStorageAddress();
@@ -182,10 +191,9 @@ contract ATKIdentityRegistryImplementation is
         _topicSchemeRegistry = ISMARTTopicSchemeRegistry(topicSchemeRegistry_);
         emit TopicSchemeRegistrySet(_msgSender(), address(_topicSchemeRegistry));
 
-        // Grant the initialAdmin the registrar role, allowing them to manage identities.
-        // TODO: Consider if the initial admin should always be the first registrar,
-        // or if this should be a separate step.
-        _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
+        // Note: REGISTRAR_ROLE is now managed by REGISTRAR_ADMIN_ROLE holders
+        // The system should grant REGISTRAR_ADMIN_ROLE to the token factory registry
+        // which will then manage REGISTRAR_ROLE assignments to individual token factories
     }
 
     // --- State-Changing Functions ---
@@ -743,9 +751,9 @@ contract ATKIdentityRegistryImplementation is
     /// @inheritdoc IERC165
     /// @notice Indicates whether this contract supports a given interface ID.
     /// @dev This function is part of the ERC165 standard for interface detection.
-    /// It checks if the contract implements the `ISMARTIdentityRegistry` interface
-    /// or any interfaces supported by its parent contracts (via `super.supportsInterface`).
-    /// This allows other contracts to query if this registry conforms to the expected interface.
+    ///      It checks if the contract implements the `ISMARTIdentityRegistry` interface
+    ///      or any interfaces supported by its parent contracts (via `super.supportsInterface`).
+    ///      This allows other contracts to query if this registry conforms to the expected interface.
     /// @param interfaceId The EIP-165 interface identifier (bytes4) to check.
     /// @return `true` if the contract supports the `interfaceId`, `false` otherwise.
     function supportsInterface(bytes4 interfaceId)

@@ -14,13 +14,15 @@ interface IATKStableCoinFactory is IATKTokenFactory {
     /// @param symbol The symbol of the stable coin.
     /// @param decimals The number of decimals for the stable coin tokens.
     /// @param requiredClaimTopics The claim topics required for interacting with the stable coin.
+    /// @param countryCode The ISO 3166-1 numeric country code for jurisdiction
     event StableCoinCreated(
         address indexed sender,
         address indexed tokenAddress,
         string name,
         string symbol,
         uint8 decimals,
-        uint256[] requiredClaimTopics
+        uint256[] requiredClaimTopics,
+        uint16 countryCode
     );
 
     /// @notice Creates a new ATK Stable Coin.
@@ -29,13 +31,15 @@ interface IATKStableCoinFactory is IATKTokenFactory {
     /// @param decimals_ The number of decimals for the stable coin.
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the stable coin.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
+    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedStableCoinAddress The address of the newly deployed stable coin contract.
     function createStableCoin(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        uint16 countryCode_
     )
         external
         returns (address deployedStableCoinAddress);
@@ -46,13 +50,15 @@ interface IATKStableCoinFactory is IATKTokenFactory {
     /// @param decimals_ The number of decimals for the stable coin.
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the stable coin.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
+    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return predictedAddress The predicted address of the stable coin contract.
     function predictStableCoinAddress(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        uint16 countryCode_
     )
         external
         view

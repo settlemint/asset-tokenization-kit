@@ -458,8 +458,13 @@ contract ATKSystemImplementation is
         // Deploy the SMARTIdentityRegistryProxy. Its constructor requires the addresses of other newly created proxies
         // (storage and trusted issuers) and an initial admin.
         // Passing these as local variables is safe as they don't rely on this contract's state being prematurely read.
+        address[] memory initialAdmins = new address[](2);
+        initialAdmins[0] = initialAdmin;
+        initialAdmins[1] = address(this);
+
         bytes memory identityRegistryData = abi.encodeWithSelector(
             IATKIdentityRegistry.initialize.selector,
+            initialAdmins,
             initialAdmin,
             localIdentityRegistryStorageProxy,
             localTrustedIssuersRegistryProxy,
@@ -509,6 +514,14 @@ contract ATKSystemImplementation is
             );
         }
 
+        // Grant REGISTRAR_ADMIN_ROLE to the token factory registry so it can manage REGISTRAR_ROLE assignments
+        IAccessControl(localIdentityRegistryProxy).grantRole(
+            ATKSystemRoles.REGISTRAR_ADMIN_ROLE, localTokenFactoryRegistryProxy
+        );
+
+        // Grant DEFAULT_ADMIN_ROLE to the identity registry
+        IAccessControl(localIdentityRegistryProxy).grantRole(DEFAULT_ADMIN_ROLE, address(this));
+
         // Mark the system as bootstrapped
         _bootstrapped = true;
 
@@ -526,6 +539,10 @@ contract ATKSystemImplementation is
             _complianceModuleRegistryProxy,
             _identityVerificationModule
         );
+
+        // Revoke the system's admin role for security - keep admin role on identity registry for ongoing operations
+        address systemAddress = address(this);
+        _revokeRole(DEFAULT_ADMIN_ROLE, systemAddress);
     }
 
     // --- Implementation Setter Functions ---
@@ -813,6 +830,8 @@ contract ATKSystemImplementation is
     function identityVerificationModule() public view returns (address) {
         return _identityVerificationModule;
     }
+
+    // --- Governance Functions ---
 
     // --- Internal Functions (Overrides for ERC2771Context and ERC165/AccessControl) ---
 

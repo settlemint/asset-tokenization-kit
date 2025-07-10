@@ -20,6 +20,9 @@ import { ATKRoles } from "../ATKRoles.sol";
 // Interface imports
 import { IATKFund } from "./IATKFund.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
+import { _SMARTLogic } from "../../smart/extensions/core/internal/_SMARTLogic.sol";
 
 // Core extensions
 import { SMARTUpgradeable } from "../../smart/extensions/core/SMARTUpgradeable.sol"; // Base SMART logic + ERC20
@@ -42,6 +45,7 @@ import { SMARTTokenAccessManagedUpgradeable } from
 contract ATKFundImplementation is
     Initializable,
     IATKFund,
+    IContractWithIdentity,
     SMARTUpgradeable,
     SMARTTokenAccessManagedUpgradeable,
     SMARTBurnableUpgradeable,
@@ -103,6 +107,7 @@ contract ATKFundImplementation is
         __SMARTTokenAccessManaged_init(accessManager_);
 
         _registerInterface(type(IATKFund).interfaceId);
+        _registerInterface(type(IContractWithIdentity).interfaceId);
 
         _managementFeeBps = managementFeeBps_;
         _lastFeeCollection = uint40(block.timestamp);
@@ -122,6 +127,27 @@ contract ATKFundImplementation is
     /// @return Current block timestamp cast to uint48
     function clock() public view override returns (uint48) {
         return uint48(block.timestamp);
+    }
+
+    // --- IContractWithIdentity Implementation ---
+    // Note: onchainID() is inherited from ISMART via SMARTUpgradeable, but we need to explicitly override due to
+    // multiple inheritance
+
+    /// @inheritdoc IContractWithIdentity
+    function onchainID() public view override(ISMART, IContractWithIdentity, _SMARTLogic) returns (address) {
+        return super.onchainID();
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    function canAddClaim(address actor) external view override returns (bool) {
+        // Delegate to AccessManager - only GOVERNANCE_ROLE can manage claims
+        return _hasRole(ATKRoles.GOVERNANCE_ROLE, actor);
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    function canRemoveClaim(address actor) external view override returns (bool) {
+        // Delegate to AccessManager - only GOVERNANCE_ROLE can manage claims
+        return _hasRole(ATKRoles.GOVERNANCE_ROLE, actor);
     }
 
     // --- State-Changing Functions ---

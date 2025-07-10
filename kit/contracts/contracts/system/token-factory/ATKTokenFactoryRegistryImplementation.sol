@@ -49,6 +49,7 @@ contract ATKTokenFactoryRegistryImplementation is
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
         _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin);
         _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
+        _grantRole(ATKSystemRoles.REGISTRAR_ADMIN_ROLE, initialAdmin);
         _system = IATKSystem(systemAddress);
     }
 
@@ -94,6 +95,9 @@ contract ATKTokenFactoryRegistryImplementation is
         IAccessControl(address(_system.compliance())).grantRole(
             ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
         );
+
+        // Grant permission to register contract identities in the identity registry
+        IAccessControl(address(_system.identityRegistry())).grantRole(ATKSystemRoles.REGISTRAR_ROLE, _tokenFactoryProxy);
 
         emit TokenFactoryRegistered(
             _msgSender(),

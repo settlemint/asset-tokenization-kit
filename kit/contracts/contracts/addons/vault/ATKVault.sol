@@ -9,12 +9,14 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
 
 /// @title ATKVault - A multi-signature wallet with role-based access control
 /// @notice This contract allows multiple signers to propose, confirm, and execute transactions
 /// @dev Implements OpenZeppelin's AccessControl, ERC2771Context, Pausable, and ReentrancyGuard
 /// @custom:security-contact support@settlemint.com
-contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyGuard {
+contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyGuard, IContractWithIdentity {
     using SafeERC20 for IERC20;
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -124,6 +126,9 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @notice Number of confirmations required to execute a transaction
     uint256 public required;
 
+    /// @notice OnchainID address associated with this vault (IIdentity contract)
+    address private _onchainId;
+
     /// @notice Error thrown when an invalid requirement is set
     /// @param requested The requested number of confirmations
     /// @param signerCount The total number of signers
@@ -165,11 +170,13 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @param _required Number of confirmations required to execute a transaction
     /// @param initialOwner Address that will have admin role
     /// @param forwarder Address of the ERC2771 forwarder for meta-transactions
+    /// @param onchainId Address of the OnchainID (IIdentity contract) to associate with this vault
     constructor(
         address[] memory _signers,
         uint256 _required,
         address initialOwner,
-        address forwarder
+        address forwarder,
+        address onchainId
     )
         ERC2771Context(forwarder)
         AccessControlEnumerable()
@@ -189,6 +196,9 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         }
         required = _required;
         emit RequirementChanged(_msgSender(), _required);
+
+        // Set the OnchainID
+        _onchainId = onchainId;
     }
 
     /// @notice Allows the contract to receive ETH
@@ -224,6 +234,45 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         if (_required == 0 || _required > ownerCount) revert InvalidRequirement(_required, ownerCount);
         required = _required;
         emit RequirementChanged(_msgSender(), _required);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════════
+    // IContractWithIdentity Implementation
+    // ═══════════════════════════════════════════════════════════════════════════════════
+
+    /// @notice Returns the ONCHAINID associated with this vault
+    /// @return The address of the ONCHAINID (IIdentity contract)
+    function onchainID() external view override returns (address) {
+        return _onchainId;
+    }
+
+    /// @notice Permission check: can `actor` add a claim to the vault's identity?
+    /// @dev Vaults implement permission logic directly - only governance role can manage claims
+    /// @param actor The address requesting to add a claim
+    /// @return True if the actor can add claims, false otherwise
+    function canAddClaim(address actor) external view override returns (bool) {
+        return hasRole(GOVERNANCE_ROLE, actor);
+    }
+
+    /// @notice Permission check: can `actor` remove a claim from the vault's identity?
+    /// @dev Vaults implement permission logic directly - only governance role can manage claims
+    /// @param actor The address requesting to remove a claim
+    /// @return True if the actor can remove claims, false otherwise
+    function canRemoveClaim(address actor) external view override returns (bool) {
+        return hasRole(GOVERNANCE_ROLE, actor);
+    }
+
+    /// @notice Checks if this contract implements an interface (ERC-165)
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the contract implements the interface
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AccessControlEnumerable, IERC165)
+        returns (bool)
+    {
+        return interfaceId == type(IContractWithIdentity).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /// @notice Submits a new transaction to the vault

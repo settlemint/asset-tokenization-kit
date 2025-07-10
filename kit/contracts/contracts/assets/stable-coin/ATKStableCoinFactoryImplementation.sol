@@ -12,6 +12,7 @@ import { IATKStableCoinFactory } from "./IATKStableCoinFactory.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
 import { IATKSystem } from "../../system/IATKSystem.sol";
+import { IATKIdentityFactory } from "../../system/identity-factory/IATKIdentityFactory.sol";
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
@@ -62,13 +63,15 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
     /// @param decimals_ The number of decimals for the stable coin.
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the stable coin.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
+    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedStableCoinAddress The address of the newly deployed stable coin contract.
     function createStableCoin(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        uint16 countryCode_
     )
         external
         returns (address deployedStableCoinAddress)
@@ -77,7 +80,8 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
         // Create the access manager for the token
         ISMARTTokenAccessManager accessManager = _createAccessManager(salt);
 
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, address(accessManager));
+        address tokenIdentityAddress =
+            _predictContractIdentityAddress(name_, symbol_, decimals_, address(accessManager));
 
         // ABI encode constructor arguments for ATKStableCoinProxy
         bytes memory constructorArgs = abi.encode(
@@ -97,15 +101,20 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
         bytes memory proxyBytecode = type(ATKStableCoinProxy).creationCode;
 
         // Deploy using the helper from the abstract contract
+        string memory description = string.concat("StableCoin: ", name_, " (", symbol_, ")");
         address deployedTokenIdentityAddress;
         (deployedStableCoinAddress, deployedTokenIdentityAddress) =
-            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager));
+            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager), description, countryCode_);
 
         if (deployedTokenIdentityAddress != tokenIdentityAddress) {
             revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
         }
 
-        emit StableCoinCreated(_msgSender(), deployedStableCoinAddress, name_, symbol_, decimals_, requiredClaimTopics_);
+        // Identity registration is now handled automatically in _deployContractIdentity
+
+        emit StableCoinCreated(
+            _msgSender(), deployedStableCoinAddress, name_, symbol_, decimals_, requiredClaimTopics_, countryCode_
+        );
 
         return deployedStableCoinAddress;
     }
@@ -123,13 +132,15 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
     /// @param decimals_ The decimals of the stable coin.
     /// @param requiredClaimTopics_ The required claim topics for the stable coin.
     /// @param initialModulePairs_ The initial compliance module pairs for the stable coin.
+    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return predictedAddress The predicted address of the stable coin contract.
     function predictStableCoinAddress(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        uint16 countryCode_
     )
         external
         view
@@ -138,7 +149,7 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
     {
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
+        address tokenIdentityAddress = _predictContractIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,

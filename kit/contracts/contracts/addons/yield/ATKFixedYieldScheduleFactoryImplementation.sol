@@ -88,23 +88,29 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     /// The proxy will point to the current `atkFixedYieldScheduleImplementation`.
     /// @dev This function performs the following steps:
     /// 1. **Authorization Check**: (Retained) Verifies `token.canManageYield(_msgSender())`.
-    /// 2. **Salt Generation**: Computes a unique `salt` for CREATE2.
-    /// 3. **Initialization Data**: Prepares the `initData` for the proxy to call `initialize` on the implementation.
-    /// 4. **Proxy Deployment**: Deploys a `ATKFixedYieldProxy` using CREATE2.
-    /// 5. **Event Emission**: Emits `ATKFixedYieldScheduleCreated`.
-    /// 6. **Registry Update**: Adds the new proxy to `allSchedules`.
+    /// 2. **Identity Creation**: Creates a contract identity for the yield schedule and registers it with the identity
+    /// registry.
+    /// 3. **Salt Generation**: Computes a unique `salt` for CREATE2.
+    /// 4. **Initialization Data**: Prepares the `initData` for the proxy to call `initialize` on the implementation.
+    /// 5. **Proxy Deployment**: Deploys a `ATKFixedYieldProxy` using CREATE2.
+    /// 6. **Event Emission**: Emits `ATKFixedYieldScheduleCreated`.
+    /// 7. **Registry Update**: Adds the new proxy to `allSchedules`.
     /// @param token The `ISMARTYield`-compliant token for which the yield schedule is being created.
     /// @param startTime The Unix timestamp for the schedule start.
     /// @param endTime The Unix timestamp for the schedule end.
     /// @param rate The yield rate in basis points.
     /// @param interval The interval for yield distributions in seconds.
+    /// @param description Human-readable description of the yield schedule.
+    /// @param country Country code for compliance purposes.
     /// @return scheduleProxyAddress The address of the newly created `ATKFixedYieldProxy` contract.
     function create(
         ISMARTYield token,
         uint256 startTime,
         uint256 endTime,
         uint256 rate,
-        uint256 interval
+        uint256 interval,
+        string memory description,
+        uint16 country
     )
         external
         override(IATKFixedYieldScheduleFactory)
@@ -118,6 +124,9 @@ contract ATKFixedYieldScheduleFactoryImplementation is
 
         // Predict the address first for validation
         address expectedAddress = _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
+
+        // Create contract identity for the yield schedule
+        _deployContractIdentity(expectedAddress, _msgSender(), description, country);
 
         // Deploy using the abstract factory method
         scheduleProxyAddress = _deploySystemAddon(proxyBytecode, constructorArgs, saltInputData, expectedAddress);
