@@ -32,48 +32,47 @@ export function OtpSetupComponent({
   const [otpCode, setOtpCode] = useState("");
   const [otpSetupError, setOtpSetupError] = useState(false);
 
-  const { mutate: enableTwoFactor, isPending: isEnablingTwoFactor } =
-    useMutation({
-      mutationFn: async () => {
-        logger.debug("enableTwoFactor called");
+  const { mutate: enableTwoFactor } = useMutation({
+    mutationFn: async () => {
+      logger.debug("enableTwoFactor called");
 
-        const response = await fetch("/api/auth/two-factor/enable", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            // During onboarding, we don't have a password yet
-            // The server should handle this gracefully during onboarding
-            password: undefined,
-            onboarding: true, // Flag to indicate this is during onboarding
-          }),
-          credentials: "include", // Include cookies for session
-        });
+      const response = await fetch("/api/auth/two-factor/enable", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          // During onboarding, we don't have a password yet
+          // The server should handle this gracefully during onboarding
+          password: undefined,
+          onboarding: true, // Flag to indicate this is during onboarding
+        }),
+        credentials: "include", // Include cookies for session
+      });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
-        return response.json();
-      },
-      onSuccess: (data) => {
-        logger.debug("enableTwoFactor success:", data);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      logger.debug("enableTwoFactor success:", data);
 
-        if (data && typeof data === "object" && "totpURI" in data) {
-          setOtpUri(data.totpURI as string);
-          toast.success("OTP setup initiated");
-        } else {
-          logger.warn("Invalid data format:", data);
-          toast.error("Failed to generate QR code");
-        }
-      },
-      onError: (error: Error) => {
-        logger.error("enableTwoFactor error:", error);
-        setOtpSetupError(true); // Prevent infinite loop
-        toast.error(error.message || "Failed to setup OTP");
-      },
-    });
+      if (data && typeof data === "object" && "totpURI" in data) {
+        setOtpUri(data.totpURI as string);
+        toast.success("OTP setup initiated");
+      } else {
+        logger.warn("Invalid data format:", data);
+        toast.error("Failed to generate QR code");
+      }
+    },
+    onError: (error: Error) => {
+      logger.error("enableTwoFactor error:", error);
+      setOtpSetupError(true); // Prevent infinite loop
+      toast.error(error.message || "Failed to setup OTP");
+    },
+  });
 
   const { mutate: verifyOtp, isPending: isVerifyingOtp } = useMutation({
     mutationFn: async (code: string) =>
@@ -99,6 +98,10 @@ export function OtpSetupComponent({
     setOtpCode("");
     enableTwoFactor();
   }, [enableTwoFactor]);
+
+  const handleVerifyOtp = useCallback(() => {
+    verifyOtp(otpCode);
+  }, [verifyOtp, otpCode]);
 
   // Auto-initiate OTP setup on mount
   useEffect(() => {
@@ -229,7 +232,7 @@ export function OtpSetupComponent({
           Back
         </Button>
         <Button
-          onClick={() => verifyOtp(otpCode)}
+          onClick={handleVerifyOtp}
           disabled={isVerifyingOtp || otpCode.length !== 6}
           className="flex-1"
         >

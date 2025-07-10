@@ -193,6 +193,10 @@ export function SystemBootstrapMain({
     [createSystem]
   );
 
+  const handleDeploymentComplete = useCallback(() => {
+    setIsBootstrapped(true);
+  }, []);
+
   return (
     <>
       <div className="h-full flex flex-col">
@@ -221,7 +225,7 @@ export function SystemBootstrapMain({
 
         <div className="flex-1 overflow-y-auto">
           {currentScreen === "progress" ? (
-            <DeploymentProgress onComplete={() => setIsBootstrapped(true)} />
+            <DeploymentProgress onComplete={handleDeploymentComplete} />
           ) : currentScreen === "success" ? (
             /* Success Screen */
             <div className="max-w-3xl space-y-6 text-center">

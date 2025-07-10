@@ -62,7 +62,9 @@ export function DeploymentDetails({
     }
   }, [handleCopyAddress, systemDetails?.tokenFactoryRegistry]);
 
-  const toggleDetails = () => setShowDetails(!showDetails);
+  const toggleDetails = useCallback(() => {
+    setShowDetails(!showDetails);
+  }, [showDetails]);
 
   return (
     <div className="space-y-4">

@@ -1,23 +1,16 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v4";
 import { toast } from "sonner";
-import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 
-import { authClient } from "@/lib/auth/auth.client";
 import type { SessionUser } from "@/lib/auth";
-import { queryClient } from "@/lib/query.client";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 
 import { SecurityMethodSelector } from "./security-method-selector";
 import { SecuritySuccess } from "./security-success";
 import { PinSetupComponent } from "./pin-setup-component";
 import { OtpSetupComponent } from "./otp-setup-component";
 import { HorizontalStepper } from "./horizontal-stepper";
-
-const logger = createLogger({ level: "debug" });
 
 interface WalletSecurityMainProps {
   onNext?: () => void;
@@ -52,15 +45,12 @@ export function WalletSecurityMain({
   onRegisterAction,
   forceShowSelection = false,
 }: WalletSecurityMainProps) {
-  const { sessionKey } = useContext(AuthQueryContext);
-
   const hasPincode = Boolean(user?.pincodeEnabled);
   const hasTwoFactor = Boolean(user?.twoFactorEnabled);
   const hasAnySecurityMethod = hasPincode || hasTwoFactor;
 
   // State management
   const [isPincodeSet, setIsPincodeSet] = useState(false);
-  const [showSuccessButton, setShowSuccessButton] = useState(false);
   const [selectedSecurityMethod, setSelectedSecurityMethod] = useState<
     "pin" | "otp" | null
   >(null);
@@ -101,31 +91,11 @@ export function WalletSecurityMain({
     setSelectedSecurityMethod(null);
     setIsPincodeSet(false);
     setIsOtpEnabled(false);
-    setShowSuccessButton(false);
     setWantsToModifySecurity(forceShowSelection);
     setIsPinSelected(hasPincode);
     setIsOtpSelected(hasTwoFactor);
     form.reset();
   }, [form, hasPincode, hasTwoFactor, forceShowSelection]);
-
-  // Auto-enable success button when user is using existing security
-  useEffect(() => {
-    if (
-      shouldShowSuccess &&
-      hasAnySecurityMethod &&
-      !needsToSetupAny &&
-      !isPincodeSet &&
-      !isOtpEnabled
-    ) {
-      setShowSuccessButton(true);
-    }
-  }, [
-    shouldShowSuccess,
-    hasAnySecurityMethod,
-    needsToSetupAny,
-    isPincodeSet,
-    isOtpEnabled,
-  ]);
 
   // Callbacks
   const handlePinToggle = useCallback(() => {
@@ -198,7 +168,6 @@ export function WalletSecurityMain({
       toast.info("Now set up your One-Time Password");
     } else {
       setTimeout(() => {
-        setShowSuccessButton(true);
         onSuccess?.();
       }, 1000);
     }
@@ -212,7 +181,6 @@ export function WalletSecurityMain({
       toast.info("Now set up your PIN code");
     } else {
       setTimeout(() => {
-        setShowSuccessButton(true);
         onSuccess?.();
       }, 1000);
     }

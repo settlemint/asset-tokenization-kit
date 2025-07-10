@@ -53,7 +53,7 @@ export function PinSetupComponent({
   });
 
   const { mutate: enablePincode, isPending } = useMutation({
-    mutationFn: async (pincode: string) =>
+    mutationFn: (pincode: string) =>
       authClient.pincode.enablePincode({
         pincode,
       }),
@@ -86,6 +86,75 @@ export function PinSetupComponent({
     [enablePincode]
   );
 
+  const handlePincodeChange = useCallback(
+    (value: string) => {
+      form.setValue("pincode", value);
+      if (value.length === 6) {
+        handleSetPincode();
+      }
+    },
+    [form, handleSetPincode]
+  );
+
+  const handleConfirmComplete = useCallback(() => {
+    if (watchConfirmPincode.length === 6) {
+      void form.handleSubmit(onSubmit)();
+    }
+  }, [watchConfirmPincode, form, onSubmit]);
+
+  const renderPincodeField = useCallback(
+    ({
+      field,
+    }: {
+      field: { value: string; onChange: (value: string) => void };
+    }) => (
+      <FormItem>
+        <FormControl>
+          <div className="space-y-4">
+            <div className="text-center">
+              <label className="text-sm font-medium">
+                {!showConfirmPincode ? "Enter PIN Code" : "PIN Code"}
+              </label>
+            </div>
+            <PincodeInput
+              value={field.value}
+              onChange={handlePincodeChange}
+              onComplete={handleSetPincode}
+              disabled={showConfirmPincode}
+            />
+          </div>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    ),
+    [showConfirmPincode, handlePincodeChange, handleSetPincode]
+  );
+
+  const renderConfirmPincodeField = useCallback(
+    ({
+      field,
+    }: {
+      field: { value: string; onChange: (value: string) => void };
+    }) => (
+      <FormItem>
+        <FormControl>
+          <div className="space-y-4">
+            <div className="text-center">
+              <label className="text-sm font-medium">Confirm PIN Code</label>
+            </div>
+            <PincodeInput
+              value={field.value}
+              onChange={field.onChange}
+              onComplete={handleConfirmComplete}
+            />
+          </div>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    ),
+    [handleConfirmComplete]
+  );
+
   return (
     <div className="max-w-md mx-auto space-y-6">
       <div className="text-center space-y-2">
@@ -100,60 +169,14 @@ export function PinSetupComponent({
           <FormField
             control={form.control}
             name="pincode"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="space-y-4">
-                    <div className="text-center">
-                      <label className="text-sm font-medium">
-                        {!showConfirmPincode ? "Enter PIN Code" : "PIN Code"}
-                      </label>
-                    </div>
-                    <PincodeInput
-                      value={field.value}
-                      onChange={(value: string) => {
-                        field.onChange(value);
-                        if (value.length === 6) {
-                          handleSetPincode();
-                        }
-                      }}
-                      onComplete={handleSetPincode}
-                      disabled={showConfirmPincode}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={renderPincodeField}
           />
 
           {showConfirmPincode && (
             <FormField
               control={form.control}
               name="confirmPincode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="space-y-4">
-                      <div className="text-center">
-                        <label className="text-sm font-medium">
-                          Confirm PIN Code
-                        </label>
-                      </div>
-                      <PincodeInput
-                        value={field.value}
-                        onChange={field.onChange}
-                        onComplete={() => {
-                          if (watchConfirmPincode.length === 6) {
-                            form.handleSubmit(onSubmit)();
-                          }
-                        }}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={renderConfirmPincodeField}
             />
           )}
 
