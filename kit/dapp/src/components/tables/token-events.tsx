@@ -183,13 +183,18 @@ function EventDetailsSheet({
                             type: "address",
                           });
                         } else if (isEthereumHash(value.value)) {
-                          // Transaction hashes should also be formatted as addresses in the UI
-                          formattedValue = formatValue(value.value, {
-                            type: "address",
-                          });
+                          // Display transaction hashes in monospace font with truncation
+                          formattedValue = (
+                            <Web3TransactionHash
+                              hash={value.value}
+                              copyToClipboard
+                              showFullHash={false}
+                            />
+                          );
                         } else if (
-                          !isNaN(Number(value.value)) &&
-                          value.value !== ""
+                          typeof value.value === "string" &&
+                          value.value.trim() !== "" &&
+                          !isNaN(Number(value.value.trim()))
                         ) {
                           formattedValue = formatValue(value.value, {
                             type: "number",
