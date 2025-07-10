@@ -135,7 +135,7 @@ describe("TokenDistributionStats", () => {
       const topHolder = token.balances.sort((a, b) => {
         return Number(b.value) - Number(a.value);
       })[0];
-      const topBalance = topHolder ? BigInt(topHolder.value) : BigInt(0);
+      const topBalance = topHolder ? Number(topHolder.value) : 0;
 
       const expectedPerSegment = token.balances
         .filter((balance) => Number(balance.value) > 0)
@@ -144,33 +144,33 @@ describe("TokenDistributionStats", () => {
             const percentage = Number(balance.value) / Number(topBalance);
             if (percentage <= 0.02) {
               acc.segment1 += 1;
-              acc.segment1Value = acc.segment1Value + BigInt(balance.value);
+              acc.segment1Value = acc.segment1Value + Number(balance.value);
             } else if (percentage <= 0.1) {
               acc.segment2 += 1;
-              acc.segment2Value = acc.segment2Value + BigInt(balance.value);
+              acc.segment2Value = acc.segment2Value + Number(balance.value);
             } else if (percentage <= 0.2) {
               acc.segment3 += 1;
-              acc.segment3Value = acc.segment3Value + BigInt(balance.value);
+              acc.segment3Value = acc.segment3Value + Number(balance.value);
             } else if (percentage <= 0.4) {
               acc.segment4 += 1;
-              acc.segment4Value = acc.segment4Value + BigInt(balance.value);
+              acc.segment4Value = acc.segment4Value + Number(balance.value);
             } else {
               acc.segment5 += 1;
-              acc.segment5Value = acc.segment5Value + BigInt(balance.value);
+              acc.segment5Value = acc.segment5Value + Number(balance.value);
             }
             return acc;
           },
           {
             segment1: 0,
-            segment1Value: BigInt(0),
+            segment1Value: 0,
             segment2: 0,
-            segment2Value: BigInt(0),
+            segment2Value: 0,
             segment3: 0,
-            segment3Value: BigInt(0),
+            segment3Value: 0,
             segment4: 0,
-            segment4Value: BigInt(0),
+            segment4Value: 0,
             segment5: 0,
-            segment5Value: BigInt(0),
+            segment5Value: 0,
           }
         );
       expect(stats?.balancesCountSegment1).toBe(expectedPerSegment.segment1);
@@ -209,7 +209,7 @@ describe("TokenDistributionStats", () => {
           id
           symbol
           totalSupply
-          balances(orderBy: value, orderDirection: desc, first: 10) {
+          balances(orderBy: value, orderDirection: desc, first: 10, where: {value_gt: 0}) {
             account {
               id
             }
@@ -217,7 +217,7 @@ describe("TokenDistributionStats", () => {
           }
           distributionStats {
             percentageOwnedByTop5Holders
-            topHolders {
+            topHolders(orderBy: rank, where: {balance_gt: 0}) {
               account {
                 id
               }
@@ -238,12 +238,12 @@ describe("TokenDistributionStats", () => {
         })
         .slice(0, 5);
       const top5HoldersBalance = top5Holders.reduce((acc, balance) => {
-        return acc + BigInt(balance.value);
-      }, BigInt(0));
+        return acc + Number(balance.value);
+      }, 0);
       const percentageOwnedByTop5Holders =
-        Number(top5HoldersBalance) / Number(token.totalSupply);
+        (Number(top5HoldersBalance) / Number(token.totalSupply)) * 100;
       const stats = token.distributionStats;
-      expect(stats?.percentageOwnedByTop5Holders).toBeCloseTo(
+      expect(Number(stats?.percentageOwnedByTop5Holders)).toBeCloseTo(
         percentageOwnedByTop5Holders,
         2
       );

@@ -23,7 +23,6 @@ import { fetchEvent } from "../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../stats/account-stats";
 import { updateSystemStatsForSupplyChange } from "../stats/system-stats";
 import { trackTokenCollateralStats } from "../stats/token-collateral-stats";
-import { cleanupTokenDistributionStats } from "../stats/token-distribution-stats";
 import { trackTokenStats } from "../stats/token-stats";
 import {
   decreaseTokenBalanceValue,
@@ -100,9 +99,6 @@ export function handleMintCompleted(event: MintCompleted): void {
   const token = fetchToken(event.address);
   increaseTokenSupply(token, event.params.amount);
 
-  // Cleanup token distribution stats (from previous block)
-  cleanupTokenDistributionStats(token);
-
   // Update token balance
   increaseTokenBalanceValue(
     token,
@@ -163,9 +159,6 @@ export function handleModuleParametersUpdated(
 export function handleTransferCompleted(event: TransferCompleted): void {
   const eventEntry = fetchEvent(event, "TransferCompleted");
   const token = fetchToken(event.address);
-
-  // Cleanup token distribution stats (from previous block)
-  cleanupTokenDistributionStats(token);
 
   // Execute the transfer
   decreaseTokenBalanceValue(

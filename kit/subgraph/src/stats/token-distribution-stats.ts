@@ -187,6 +187,8 @@ function updateTopHolders(
   tokenHolder.save();
 
   updateTopHoldersRanks(state);
+
+  cleanupTokenDistributionStats(state);
 }
 
 /**
@@ -347,20 +349,18 @@ function updateTopHoldersRanks(state: TokenDistributionStatsState): void {
   }
 }
 
-/**
- * Cleanup top holders
- * Needs to be on the next block, otherwise the subgraph will get into an invalid state
- *
- * @param token
- */
-export function cleanupTokenDistributionStats(token: Token): void {
-  const state = fetchTokenDistributionStatsState(Address.fromBytes(token.id));
+function cleanupTokenDistributionStats(
+  state: TokenDistributionStatsState
+): void {
   const topHolders = state.topHolders.load();
   for (let i = 0; i < topHolders.length; i++) {
     const topHolder = topHolders[i];
-    const shouldBeDeleted =
-      topHolder.balanceExact.equals(BigInt.zero()) || topHolder.rank > 6;
+    const shouldBeDeleted = topHolder.rank > 6;
     if (shouldBeDeleted) {
+      log.info(
+        "[TokenDistributionStats] Token {} - Removing top holder {} due to rank > 6",
+        [state.token.toHexString(), topHolder.id.toHexString()]
+      );
       store.remove("TokenTopHolder", topHolder.id.toHexString());
     }
   }
