@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { VerificationDialog } from "@/components/ui/verification-dialog";
-import { authClient } from "@/lib/auth/auth.client";
-import type { SessionUser } from "@/lib/auth";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { useSettings } from "@/hooks/use-settings";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import type { SessionUser } from "@/lib/auth";
+import { authClient } from "@/lib/auth/auth.client";
 import { queryClient } from "@/lib/query.client";
 import { orpc } from "@/orpc";
+import { useQuery } from "@tanstack/react-query";
+import { Copy, Info, TriangleAlert } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
-import { Copy } from "lucide-react";
 
 interface SystemBootstrapStepProps {
   onNext?: () => void;
@@ -95,8 +95,6 @@ export function SystemBootstrapStep({
           input: { key: "SYSTEM_ADDRESS" },
         }),
       });
-      setShowVerificationModal(false);
-      setVerificationError(null);
       setShowDeploymentProgress(false);
       setIsBootstrapped(true);
       onNext?.();
@@ -180,6 +178,10 @@ export function SystemBootstrapStep({
   const createSystem = useCallback(
     (params: Parameters<typeof createSystemMutation>[0]) => {
       try {
+        // Close the verification modal immediately
+        setShowVerificationModal(false);
+        setVerificationError(null);
+
         // Show deployment progress screen
         setShowDeploymentProgress(true);
         simulateDeploymentProgress();
@@ -188,6 +190,9 @@ export function SystemBootstrapStep({
       } catch (error) {
         // Hide deployment progress on error
         setShowDeploymentProgress(false);
+
+        // Reopen the verification modal on error for retry
+        setShowVerificationModal(true);
 
         // Check if it's a system creation error
         const errorMessage =
@@ -202,7 +207,6 @@ export function SystemBootstrapStep({
         } else {
           setVerificationError("An error occurred. Please try again.");
         }
-        // Don't close the modal on error - keep it open for retry
       }
     },
     [createSystemMutation, simulateDeploymentProgress]
@@ -690,19 +694,7 @@ export function SystemBootstrapStep({
               {/* Warning Message */}
               <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-4">
                 <div className="flex items-start gap-3">
-                  <svg
-                    className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
-                    />
-                  </svg>
+                  <TriangleAlert className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
                     <p className="text-sm text-amber-600 dark:text-amber-400">
                       <strong>Note:</strong> This step may take 2–3 minutes as
@@ -716,19 +708,7 @@ export function SystemBootstrapStep({
               {/* Info Message */}
               <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
                 <div className="flex items-start gap-3">
-                  <svg
-                    className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                   <div className="flex-1 space-y-2">
                     <p className="text-sm text-blue-600 dark:text-blue-400">
                       You'll be asked to enter your PIN or OTP to unlock your

@@ -7,7 +7,7 @@ import { SystemBootstrapStep } from "@/components/onboarding/steps/system-bootst
 import { WalletDisplayStep } from "@/components/onboarding/steps/wallet-display-step";
 import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
 
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState, useEffect } from "react";
 import { z } from "zod/v4";
 import { useSettings } from "@/hooks/use-settings";
 import { toast } from "sonner";
@@ -16,6 +16,14 @@ import {
   fiatCurrencyMetadata,
 } from "@/lib/zod/validators/fiat-currency";
 import { useWizardContext } from "@/components/multistep-form/wizard-context";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { orpc } from "@/orpc";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { VerificationDialog } from "@/components/ui/verification-dialog";
+import { authClient } from "@/lib/auth/auth.client";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+
+const logger = createLogger();
 
 // Currency Field Component
 function CurrencyField({
@@ -88,6 +96,28 @@ function AssetSelectionComponent({
   isFirstStep?: boolean;
 }) {
   const { clearStepError, markStepComplete } = useWizardContext();
+  const queryClient = useQueryClient();
+  const { data: session } = authClient.useSession();
+
+  // State for verification modal and deployment progress
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null
+  );
+
+  // Get user security settings
+  const currentUser = session?.user;
+  const hasPincode = currentUser?.pincodeEnabled ?? false;
+  const hasTwoFactor = currentUser?.twoFactorEnabled ?? false;
+
+  // Get system address from settings
+  const [systemAddress] = useSettings("SYSTEM_ADDRESS");
+
+  // Check system bootstrap status
+  const { data: systemDetails, isLoading: isLoadingSystem } = useQuery({
+    ...orpc.system.read.queryOptions({ input: { id: systemAddress ?? "" } }),
+    enabled: !!systemAddress,
+  });
 
   const assetTypes = [
     {
@@ -125,19 +155,253 @@ function AssetSelectionComponent({
         formValues.selectedAssetTypes &&
         formValues.selectedAssetTypes.length > 0
       ) {
-        markStepComplete("asset-selection");
-        toast.success(
-          `Selected ${formValues.selectedAssetTypes.length} asset type(s)`
-        );
+        // Check if system is bootstrapped before allowing factory deployment
+        if (!systemAddress) {
+          toast.error("System must be bootstrapped before deploying factories");
+          return;
+        }
+
+        // Show verification modal for PIN/OTP input
+        setVerificationError(null);
+        setShowVerificationModal(true);
       } else {
         toast.error("Please select at least one asset type");
         return;
       }
-      onNext?.();
     } catch {
       toast.error("Failed to save asset selection");
     }
-  }, [form.state.values, clearStepError, markStepComplete, onNext]);
+  }, [form.state.values, clearStepError, systemAddress]);
+
+  // Factory deployment mutation
+  const {
+    mutate: deployFactories,
+    isPending: isDeploying,
+    error: deploymentError,
+  } = useStreamingMutation({
+    mutationOptions: orpc.token.factoryCreate.mutationOptions(),
+    onSuccess: async () => {
+      setShowVerificationModal(false);
+      setVerificationError(null);
+      markStepComplete("asset-selection");
+      toast.success("Factories deployed successfully!");
+      await queryClient.invalidateQueries();
+      onNext?.();
+    },
+  });
+
+  // Handle deployment errors
+  useEffect(() => {
+    if (deploymentError) {
+      logger.error("Factory deployment error:", {
+        error: deploymentError,
+        errorName: deploymentError.name,
+        errorMessage: deploymentError.message,
+        errorStack: deploymentError.stack,
+        errorCause: deploymentError.cause,
+      });
+
+      const errorMessage =
+        deploymentError instanceof Error
+          ? deploymentError.message
+          : String(deploymentError);
+
+      // Check for specific error types
+      if (errorMessage.includes("SystemNotBootstrapped")) {
+        setVerificationError(
+          "System not bootstrapped. Please complete system deployment first."
+        );
+      } else if (errorMessage.includes("Factory already exists")) {
+        setVerificationError(
+          "Factory with this name already exists. Please try again."
+        );
+      } else if (errorMessage.includes("verification")) {
+        setVerificationError(
+          "Authentication failed. Please check your PIN/OTP and try again."
+        );
+      } else if (errorMessage.includes("Failed to create token factory")) {
+        // Check if this is a system bootstrap issue
+        if (!systemDetails?.identityRegistry || !systemDetails?.compliance) {
+          setVerificationError(
+            "System bootstrap incomplete. Please complete the system setup first before creating factories."
+          );
+        } else {
+          setVerificationError(
+            "Factory creation failed. This may be due to a blockchain transaction error or network issue. Please try again."
+          );
+        }
+      } else {
+        setVerificationError(`Factory deployment failed: ${errorMessage}`);
+      }
+    }
+  }, [deploymentError, systemDetails]);
+
+  // Handle PIN/OTP verification and factory deployment
+  const handleVerificationSubmit = useCallback(
+    (verificationCode: string, verificationType: "pincode" | "two-factor") => {
+      const formValues = form.state.values;
+      if (
+        !formValues.selectedAssetTypes ||
+        formValues.selectedAssetTypes.length === 0
+      ) {
+        setVerificationError("No asset types selected");
+        return;
+      }
+
+      // Convert selected asset types to factory creation format
+      const factories = formValues.selectedAssetTypes.map((type) => {
+        // Use unique names with timestamp to avoid conflicts
+        const timestamp = Date.now();
+        const factoryNames = {
+          bond: `Bond Factory ${timestamp}`,
+          equity: `Equity Factory ${timestamp}`,
+          fund: `Fund Factory ${timestamp}`,
+          stablecoin: `Stablecoin Factory ${timestamp}`,
+          deposit: `Deposit Factory ${timestamp}`,
+        };
+
+        // Default implementation addresses from SettleMint deployment
+        const defaultImplementations = {
+          bond: {
+            factoryImplementation: "0x5e771e1417100000000000000000000000020021",
+            tokenImplementation: "0x5e771e1417100000000000000000000000020020",
+          },
+          equity: {
+            factoryImplementation: "0x5e771e1417100000000000000000000000020025",
+            tokenImplementation: "0x5e771e1417100000000000000000000000020024",
+          },
+          fund: {
+            factoryImplementation: "0x5e771e1417100000000000000000000000020027",
+            tokenImplementation: "0x5e771e1417100000000000000000000000020026",
+          },
+          stablecoin: {
+            factoryImplementation: "0x5e771e1417100000000000000000000000020029",
+            tokenImplementation: "0x5e771e1417100000000000000000000000020028",
+          },
+          deposit: {
+            factoryImplementation: "0x5e771e1417100000000000000000000000020023",
+            tokenImplementation: "0x5e771e1417100000000000000000000000020022",
+          },
+        };
+
+        const typedType = type as
+          | "bond"
+          | "equity"
+          | "fund"
+          | "stablecoin"
+          | "deposit";
+        const implementations = defaultImplementations[typedType];
+
+        return {
+          type: typedType,
+          name:
+            factoryNames[typedType] ||
+            `${type.charAt(0).toUpperCase() + type.slice(1)} Factory`,
+          factoryImplementation: implementations.factoryImplementation,
+          tokenImplementation: implementations.tokenImplementation,
+        };
+      });
+
+      setVerificationError(null);
+
+      // Use system address or fall back to default
+      const contractAddress =
+        systemAddress ?? "0x5e771e1417100000000000000000000000020088";
+
+      if (!systemAddress) {
+        logger.warn("No system address found, using default contract address", {
+          defaultAddress: contractAddress,
+        });
+        // If no system address, this likely means system isn't bootstrapped
+        setVerificationError(
+          "System not bootstrapped. Please complete system deployment first."
+        );
+        return;
+      }
+
+      // Check if system is properly bootstrapped and ready for factory creation
+      if (isLoadingSystem) {
+        setVerificationError("Loading system information. Please wait...");
+        return;
+      }
+
+      if (!systemDetails) {
+        logger.error("System details not found for address:", {
+          systemAddress,
+        });
+        setVerificationError(
+          "System not found. Please ensure the system is properly bootstrapped."
+        );
+        return;
+      }
+
+      // Verify system is ready for factory creation
+      if (!systemDetails.identityRegistry || !systemDetails.compliance) {
+        logger.error(
+          "System bootstrap incomplete. Missing required components:",
+          {
+            systemAddress,
+            hasIdentityRegistry: !!systemDetails.identityRegistry,
+            hasCompliance: !!systemDetails.compliance,
+            hasTokenFactoryRegistry: !!systemDetails.tokenFactoryRegistry,
+            hasTrustedIssuersRegistry: !!systemDetails.trustedIssuersRegistry,
+          }
+        );
+        setVerificationError(
+          "System bootstrap incomplete. Please wait for system initialization to complete."
+        );
+        return;
+      }
+
+      logger.info("Deploying factories with parameters:", {
+        contract: contractAddress,
+        factories,
+        verification: {
+          verificationCode: "***",
+          verificationType,
+        },
+        systemAddressSource: systemAddress ? "from settings" : "using default",
+        systemAddress,
+        userWallet: session?.user?.wallet ?? "no wallet",
+        userSession: !!session?.user,
+        factoryCount: factories.length,
+        factoryTypes: factories.map((f) => f.type),
+      });
+
+      // Deploy factories using the mutation
+      deployFactories({
+        contract: contractAddress,
+        factories,
+        verification: {
+          verificationCode,
+          verificationType,
+        },
+      });
+    },
+    [
+      form.state.values,
+      systemAddress,
+      deployFactories,
+      session?.user,
+      isLoadingSystem,
+      systemDetails,
+    ]
+  );
+
+  // Create stable callback references for verification dialog
+  const handlePincodeSubmit = useCallback(
+    (pincode: string) => {
+      handleVerificationSubmit(pincode, "pincode");
+    },
+    [handleVerificationSubmit]
+  );
+
+  const handleOtpSubmit = useCallback(
+    (otp: string) => {
+      handleVerificationSubmit(otp, "two-factor");
+    },
+    [handleVerificationSubmit]
+  );
 
   return (
     <div className="max-w-4xl space-y-6">
@@ -282,6 +546,7 @@ function AssetSelectionComponent({
             type="button"
             onClick={onPrevious}
             className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
+            disabled={isDeploying}
           >
             Previous
           </button>
@@ -290,10 +555,27 @@ function AssetSelectionComponent({
           type="button"
           onClick={handleConfirm}
           className="px-6 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          disabled={isDeploying}
         >
-          Deploy Selected Factories
+          {isDeploying ? "Deploying..." : "Deploy Selected Factories"}
         </button>
       </div>
+
+      {/* Verification Modal */}
+      <VerificationDialog
+        open={showVerificationModal}
+        onOpenChange={setShowVerificationModal}
+        title="Enter your PIN code to deploy factories"
+        description="You're about to deploy asset factories to the blockchain. To authorize this action, we need you to confirm your identity."
+        hasPincode={hasPincode}
+        hasTwoFactor={hasTwoFactor}
+        isLoading={isDeploying}
+        loadingText="Deploying factories..."
+        confirmText="Deploy Factories"
+        errorMessage={verificationError}
+        onPincodeSubmit={handlePincodeSubmit}
+        onOtpSubmit={handleOtpSubmit}
+      />
     </div>
   );
 }
@@ -893,7 +1175,7 @@ export function useOnboardingSteps({
           {
             name: "dateOfBirth",
             label: "Date of Birth",
-            type: "date",
+            type: "text",
             description: "Enter your date of birth",
           },
           {
