@@ -82,7 +82,18 @@ export function WizardStep({ className }: WizardStepProps) {
         .join(" ")
         .toLowerCase();
 
-      return searchableText.includes(query.toLowerCase());
+      // Also search through options if they exist
+      const optionsText = field.options
+        ? field.options
+            .flatMap((option) => [option.label, option.description])
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase()
+        : "";
+
+      const combinedText = `${searchableText} ${optionsText}`.toLowerCase();
+
+      return combinedText.includes(query.toLowerCase());
     },
     []
   );
