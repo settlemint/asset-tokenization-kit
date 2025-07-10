@@ -17,7 +17,7 @@ dependencies:
     version: "16.0.18"
     repository: oci://registry-1.docker.io/bitnamicharts
   - name: redis
-    version: "21.2.7"
+    version: "21.2.9"
     repository: oci://registry-1.docker.io/bitnamicharts
   - name: reloader
     version: 2.1.5
