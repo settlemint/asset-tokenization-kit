@@ -10,8 +10,11 @@ import {
   type AssetType,
 } from "@/lib/zod/validators/asset-types";
 import { decimals } from "@/lib/zod/validators/decimals";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { isin } from "@/lib/zod/validators/isin";
 import { orpc } from "@/orpc";
+import { BondTokenSchema } from "@/orpc/helpers/token/create-handlers/bond.create.schema";
+import { FundTokenSchema } from "@/orpc/helpers/token/create-handlers/fund.create.schema";
 import { TokenBaseSchema } from "@/orpc/helpers/token/token.base-create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery } from "@tanstack/react-query";
@@ -22,7 +25,16 @@ import type { z } from "zod/v4";
 
 const logger = createLogger();
 
-type AssetDesignerFormData = z.infer<typeof TokenBaseSchema>;
+// TODO: Better schema type
+type AssetDesignerFormData = z.infer<typeof TokenBaseSchema> & {
+  // Bond-specific fields
+  cap?: string;
+  faceValue?: string;
+  maturityDate?: string;
+  underlyingAsset?: string;
+  // Fund-specific fields
+  managementFeeBps?: number;
+};
 function AssetDesignerWizardComponent({
   onSuccess,
 }: {
@@ -99,44 +111,100 @@ function AssetDesignerWizardComponent({
       id: "token-details",
       title: t("wizard.steps.token-details.title"),
       description: t("wizard.steps.token-details.description"),
-      fields: [
-        {
-          name: "name",
-          label: t("form.fields.name.label"),
-          type: "text",
-          required: true,
-          placeholder: t("form.fields.name.placeholder", { type: "token" }),
-          description: t("form.fields.name.description"),
-          schema: TokenBaseSchema.shape.name,
-        },
-        {
-          name: "symbol",
-          label: t("form.fields.symbol.label"),
-          type: "text",
-          required: true,
-          placeholder: t("form.fields.symbol.placeholder"),
-          description: t("form.fields.symbol.description"),
-          schema: TokenBaseSchema.shape.symbol,
-        },
-        {
-          name: "decimals",
-          label: t("form.fields.decimals.label"),
-          type: "number",
-          required: true,
-          placeholder: t("form.fields.decimals.placeholder"),
-          description: t("form.fields.decimals.description"),
-          schema: decimals(),
-        },
-        {
-          name: "isin",
-          label: t("form.fields.isin.label"),
-          type: "text",
-          required: false,
-          placeholder: t("form.fields.isin.placeholder"),
-          description: t("form.fields.isin.description"),
-          schema: isin().optional(),
-        },
-      ] as FieldDefinition<AssetDesignerFormData>[],
+      fields: (formData) => {
+        const baseFields: FieldDefinition<AssetDesignerFormData>[] = [
+          {
+            name: "name",
+            label: t("form.fields.name.label"),
+            type: "text",
+            required: true,
+            placeholder: t("form.fields.name.placeholder", { type: "token" }),
+            description: t("form.fields.name.description"),
+            schema: TokenBaseSchema.shape.name,
+          },
+          {
+            name: "symbol",
+            label: t("form.fields.symbol.label"),
+            type: "text",
+            required: true,
+            placeholder: t("form.fields.symbol.placeholder"),
+            description: t("form.fields.symbol.description"),
+            schema: TokenBaseSchema.shape.symbol,
+          },
+          {
+            name: "decimals",
+            label: t("form.fields.decimals.label"),
+            type: "number",
+            required: true,
+            placeholder: t("form.fields.decimals.placeholder"),
+            description: t("form.fields.decimals.description"),
+            schema: decimals(),
+          },
+          {
+            name: "isin",
+            label: t("form.fields.isin.label"),
+            type: "text",
+            required: false,
+            placeholder: t("form.fields.isin.placeholder"),
+            description: t("form.fields.isin.description"),
+            schema: isin().optional(),
+          },
+        ];
+
+        // Add asset-specific fields based on the selected type
+        if (formData.type === "bond") {
+          baseFields.push(
+            {
+              name: "cap",
+              label: t("form.fields.cap.label"),
+              type: "text",
+              required: true,
+              placeholder: t("form.fields.cap.placeholder"),
+              description: t("form.fields.cap.description"),
+              schema: BondTokenSchema.shape.cap,
+            },
+            {
+              name: "faceValue",
+              label: t("form.fields.faceValue.label"),
+              type: "text",
+              required: true,
+              placeholder: t("form.fields.faceValue.placeholder"),
+              description: t("form.fields.faceValue.description"),
+              schema: BondTokenSchema.shape.faceValue,
+            },
+            {
+              name: "maturityDate",
+              label: t("form.fields.maturityDate.label"),
+              type: "text",
+              required: true,
+              placeholder: t("form.fields.maturityDate.placeholder"),
+              description: t("form.fields.maturityDate.description"),
+              schema: BondTokenSchema.shape.maturityDate,
+            },
+            {
+              name: "underlyingAsset",
+              label: t("form.fields.underlyingAsset.label"),
+              type: "text",
+              required: true,
+              placeholder: t("form.fields.underlyingAsset.placeholder"),
+              description: t("form.fields.underlyingAsset.description"),
+              schema: ethereumAddress,
+            }
+          );
+        } else if (formData.type === "fund") {
+          baseFields.push({
+            name: "managementFeeBps",
+            label: t("form.fields.managementFeeBps.label"),
+            type: "number",
+            required: true,
+            placeholder: t("form.fields.managementFeeBps.placeholder"),
+            description: t("form.fields.managementFeeBps.description"),
+            schema: FundTokenSchema.shape.managementFeeBps,
+          });
+        }
+
+        return baseFields;
+      },
       validate: (data) => {
         // Additional validation can be added here
         const result = TokenBaseSchema.safeParse(data);
@@ -173,10 +241,13 @@ function AssetDesignerWizardComponent({
             return orpc.token.create.call({
               ...commonData,
               type: "bond",
-              cap: "1000000",
-              maturityDate: new Date().getTime().toString(),
-              underlyingAsset: "ETH",
-              faceValue: "1000000",
+              cap: data.cap ?? "1000000",
+              maturityDate:
+                data.maturityDate ?? new Date().getTime().toString(),
+              underlyingAsset:
+                data.underlyingAsset ??
+                "0x0000000000000000000000000000000000000000",
+              faceValue: data.faceValue ?? "1000000",
             });
           }
 
@@ -184,7 +255,7 @@ function AssetDesignerWizardComponent({
             return orpc.token.create.call({
               ...commonData,
               type: "fund",
-              managementFeeBps: 100,
+              managementFeeBps: data.managementFeeBps ?? 100,
             });
           }
 

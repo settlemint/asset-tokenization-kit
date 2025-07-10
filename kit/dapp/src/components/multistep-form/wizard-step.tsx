@@ -241,29 +241,42 @@ export function WizardStep({ className }: WizardStepProps) {
         </div>
 
         <div className="space-y-6">
-          {currentStep.fields?.map((fieldDef) => {
-            try {
-              return (
-                <WizardField
-                  key={fieldDef.name as string}
-                  fieldDef={fieldDef}
-                  formData={form?.state?.values ?? {}}
-                />
-              );
-            } catch (error) {
-              logger.error("Error rendering field", {
-                fieldName: fieldDef.name,
-                error,
-                hasForm: !!form,
-                hasFormState: !!form.state,
-              });
-              return (
-                <div key={fieldDef.name as string} className="text-destructive">
-                  Error rendering field: {fieldDef.name as string}
-                </div>
-              );
-            }
-          })}
+          {(() => {
+            if (!currentStep.fields) return null;
+
+            // Handle both static array and function-based fields
+            const fields =
+              typeof currentStep.fields === "function"
+                ? currentStep.fields(form?.state?.values ?? {})
+                : currentStep.fields;
+
+            return fields.map((fieldDef) => {
+              try {
+                return (
+                  <WizardField
+                    key={fieldDef.name as string}
+                    fieldDef={fieldDef}
+                    formData={form?.state?.values ?? {}}
+                  />
+                );
+              } catch (error) {
+                logger.error("Error rendering field", {
+                  fieldName: fieldDef.name,
+                  error,
+                  hasForm: !!form,
+                  hasFormState: !!form.state,
+                });
+                return (
+                  <div
+                    key={fieldDef.name as string}
+                    className="text-destructive"
+                  >
+                    Error rendering field: {fieldDef.name as string}
+                  </div>
+                );
+              }
+            });
+          })()}
         </div>
       </div>
 

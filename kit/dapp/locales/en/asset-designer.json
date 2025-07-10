@@ -46,6 +46,31 @@
         "label": "ISIN (Optional)",
         "placeholder": "e.g., US0378331005",
         "description": "The ISIN of the token. This is an optional unique identifier for the token in the financial system."
+      },
+      "cap": {
+        "label": "Token Cap",
+        "placeholder": "e.g., 1000000",
+        "description": "The maximum number of tokens that can be issued"
+      },
+      "faceValue": {
+        "label": "Face Value",
+        "placeholder": "e.g., 1000",
+        "description": "The face value of each bond token"
+      },
+      "maturityDate": {
+        "label": "Maturity Date",
+        "placeholder": "e.g., 1735689600000",
+        "description": "The maturity date of the bond in timestamp format"
+      },
+      "underlyingAsset": {
+        "label": "Underlying Asset",
+        "placeholder": "e.g., 0x...",
+        "description": "The Ethereum address of the underlying asset"
+      },
+      "managementFeeBps": {
+        "label": "Management Fee (BPS)",
+        "placeholder": "e.g., 100",
+        "description": "Management fee in basis points (100 BPS = 1%)"
       }
     },
     "actions": {
