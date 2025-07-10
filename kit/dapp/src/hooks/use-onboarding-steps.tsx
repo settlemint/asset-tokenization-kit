@@ -14,6 +14,7 @@ import {
   fiatCurrency,
   fiatCurrencyMetadata,
 } from "@/lib/zod/validators/fiat-currency";
+import { Info } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
@@ -301,23 +302,11 @@ export function useOnboardingSteps({
                 linked to your wallet and verified through our compliance
                 system.
               </p>
-              <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
+              <div className="rounded-lg bg-primary/10 border border-primary/20 p-4">
                 <div className="flex items-start gap-3">
-                  <svg
-                    className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <p className="text-sm text-blue-600 dark:text-blue-400">
+                    <p className="text-sm text-primary">
                       Creating your ONCHAINID will deploy a smart contract
                       representing your identity on the blockchain. This is
                       required for all compliant asset transactions.

@@ -452,11 +452,11 @@ export function AssetSelectionComponent({
         </div>
 
         {/* Warning box */}
-        <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-4">
+        <div className="rounded-lg bg-sm-state-warning-background/50 border border-sm-state-warning-background p-4">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+            <AlertTriangle className="h-5 w-5 text-sm-state-warning mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <p className="text-sm text-amber-600 dark:text-amber-400">
+              <p className="text-sm text-sm-state-warning">
                 This process may take up to 2–3 minutes depending on your
                 selections.
               </p>
@@ -465,11 +465,11 @@ export function AssetSelectionComponent({
         </div>
 
         {/* Info box */}
-        <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
+        <div className="rounded-lg bg-primary/10 border border-primary/20 p-4">
           <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+            <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <p className="text-sm text-blue-600 dark:text-blue-400">
+              <p className="text-sm text-primary">
                 You'll be asked to confirm each transaction using your PIN or
                 OTP.
               </p>

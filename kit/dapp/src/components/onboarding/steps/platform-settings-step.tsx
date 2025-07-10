@@ -32,7 +32,7 @@ function CurrencyField({
         id="baseCurrency"
         value={field.state.value ?? "USD"}
         onChange={handleChange}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
       >
         {Object.entries(fiatCurrencyMetadata).map(([code, metadata]) => (
           <option key={code} value={code}>

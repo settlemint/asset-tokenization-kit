@@ -144,12 +144,12 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
             {/* Conditional Icon Rendering with Transitions */}
             <div className="transition-all duration-300 ease-in-out flex items-center justify-center">
               {isError ? (
-                <div className="flex items-center justify-center w-6 h-6 bg-red-500 rounded-full">
-                  <X className="w-4 h-4 text-white" />
+                <div className="flex items-center justify-center w-6 h-6 bg-destructive rounded-full">
+                  <X className="w-4 h-4 text-destructive-foreground" />
                 </div>
               ) : isCompleted ? (
                 <div className="flex items-center justify-center w-5 h-5 bg-white rounded-full">
-                  <Check className="w-3 h-3 text-blue-600" />
+                  <Check className="w-3 h-3 text-primary" />
                 </div>
               ) : isCurrent ? (
                 <div className="flex items-center justify-center w-7 h-7">
@@ -195,13 +195,15 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
                   isCurrent
                     ? "font-bold text-primary-foreground"
                     : "font-medium text-primary-foreground/90",
-                  isError && "text-red-200"
+                  isError && "text-destructive"
                 )}
               >
                 {step.title}
               </span>
               {isError && (
-                <span className="text-xs text-red-200 font-medium">Error</span>
+                <span className="text-xs text-destructive font-medium">
+                  Error
+                </span>
               )}
             </div>
             <p
@@ -210,13 +212,13 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
                 isCurrent
                   ? "text-primary-foreground/90"
                   : "text-primary-foreground/70",
-                isError && "text-red-200/80"
+                isError && "text-destructive"
               )}
             >
               {step.description}
             </p>
             {stepErrors[step.id] && (
-              <p className="text-xs text-red-200/80 mt-1">
+              <p className="text-xs text-destructive mt-1">
                 {stepErrors[step.id]}
               </p>
             )}
@@ -279,7 +281,7 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
                         {group.title}
                       </h3>
                       {groupCompleted && (
-                        <Check className="w-4 h-4 text-green-400" />
+                        <Check className="w-4 h-4 text-sm-state-success" />
                       )}
                     </div>
                     <ChevronDown
