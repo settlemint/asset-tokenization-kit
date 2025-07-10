@@ -231,7 +231,7 @@ export function formatValue(
       const includeTime = displayName?.toLowerCase().includes("time");
 
       return (
-        <span className="text-muted-foreground">
+        <span>
           {formatDate(
             dateValue,
             {

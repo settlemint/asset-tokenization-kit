@@ -60,6 +60,7 @@
   },
   "peerDependencies": {},
   "dependencies": {
+    "change-case": "5.4.4",
     "currency-codes": "2.2.0",
     "drizzle-zod": "0.8.2",
     "@daveyplate/better-auth-tanstack": "1.3.6",

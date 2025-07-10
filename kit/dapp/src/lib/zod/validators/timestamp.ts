@@ -23,6 +23,7 @@ import { z } from "zod/v4";
  * - Normalizes all inputs to Date objects for consistency
  *
  * Common timestamp formats:
+ * - Blockchain timestamps: < 1000 (treated as seconds from genesis)
  * - Unix seconds: 10 digits (e.g., 1680354000)
  * - Unix milliseconds: 13 digits (e.g., 1680354000000)
  * - Microseconds: 16 digits (converted to milliseconds)
@@ -64,6 +65,7 @@ export const timestamp = () =>
       if (typeof value === "string" && /^\d+$/.test(value)) {
         const num = Number(value);
         // No need to check isNaN - a string of only digits always parses to a valid number
+
         // Detect timestamp precision based on length
         const len = value.length;
         if (len === 10) return new Date(num * 1000); // Unix seconds to milliseconds
