@@ -5,7 +5,10 @@ import type {
 } from "@/components/multistep-form/types";
 import { useSettings } from "@/hooks/use-settings";
 import {
+  getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
+  getFactoryTypeIdFromAssetType,
+  type AssetClass,
   type AssetFactoryTypeId,
   type AssetType,
 } from "@/lib/zod/validators/asset-types";
@@ -18,10 +21,10 @@ import { FundTokenSchema } from "@/orpc/routes/token/routes/mutations/create/hel
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery } from "@tanstack/react-query";
+import { Building2, Coins, PiggyBank, TrendingUp, Wallet } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { z } from "zod/v4";
-import { Building2, TrendingUp, PiggyBank, Wallet, Coins } from "lucide-react";
 
 const logger = createLogger();
 
@@ -43,6 +46,20 @@ const getAssetTypeIcon = (assetType: AssetType) => {
   }
 };
 
+// Helper function to get icon for asset class
+const getAssetClassIcon = (assetClass: AssetClass) => {
+  switch (assetClass) {
+    case "fixedIncome":
+      return <PiggyBank className="h-5 w-5" />;
+    case "flexibleIncome":
+      return <TrendingUp className="h-5 w-5" />;
+    case "cashEquivalent":
+      return <Coins className="h-5 w-5" />;
+    default:
+      return <Building2 className="h-5 w-5" />;
+  }
+};
+
 // TODO: Better schema type
 type AssetDesignerFormData = z.infer<typeof TokenBaseSchema> & {
   // Bond-specific fields
@@ -58,7 +75,7 @@ function AssetDesignerWizardComponent({
 }: {
   onSuccess?: () => void;
 }) {
-  const { t } = useTranslation(["asset-designer", "asset-types"]);
+  const { t } = useTranslation(["asset-designer", "asset-types", "navigation"]);
   const [systemAddress] = useSettings("SYSTEM_ADDRESS");
 
   // Get system details including deployed token factories
@@ -90,33 +107,68 @@ function AssetDesignerWizardComponent({
     return [...new Set(assetTypes)].sort();
   }, [systemDetails]);
 
+  // Organize asset types into asset class groups
+  const assetClassGroups = useMemo(() => {
+    if (availableAssetTypes.length === 0) return [];
+
+    // Group asset types by their asset class
+    const groupedByClass = availableAssetTypes.reduce(
+      (acc, assetType) => {
+        try {
+          const factoryTypeId = getFactoryTypeIdFromAssetType(assetType);
+          const assetClass = getAssetClassFromFactoryTypeId(factoryTypeId);
+
+          if (!acc[assetClass]) {
+            acc[assetClass] = [];
+          }
+          acc[assetClass].push(assetType);
+        } catch (error) {
+          logger.warn("Could not classify asset type", { assetType, error });
+        }
+        return acc;
+      },
+      {} as Record<AssetClass, AssetType[]>
+    );
+
+    // Convert to array of groups with proper translation keys
+    return Object.entries(groupedByClass).map(([assetClass, assetTypes]) => ({
+      assetClass: assetClass as AssetClass,
+      assetTypes,
+    }));
+  }, [availableAssetTypes]);
+
   // Define the steps for the wizard
   const steps = useMemo<StepDefinition<AssetDesignerFormData>[]>(() => {
     const dynamicSteps: StepDefinition<AssetDesignerFormData>[] = [];
 
     // Step 1: Asset Type Selection
-    if (availableAssetTypes.length > 0) {
+    if (assetClassGroups.length > 0) {
       dynamicSteps.push({
         id: "asset-type-selection",
         title: t("wizard.steps.asset-type.title"),
         description: t("wizard.steps.asset-type.description"),
-        fields: [
-          {
-            name: "type",
-            label: t("form.fields.type.label"),
-            type: "radio",
-            variant: "card",
-            required: true,
-            description: t("form.fields.type.description"),
-            options: availableAssetTypes.map((assetType) => ({
-              label: t(`asset-types:${assetType}.name`),
-              value: assetType,
-              description: t(`asset-types:${assetType}.description`),
-              icon: getAssetTypeIcon(assetType),
-            })),
-            schema: TokenBaseSchema.shape.type,
-          },
-        ] as FieldDefinition<AssetDesignerFormData>[],
+        groups: assetClassGroups.map((group) => ({
+          id: group.assetClass,
+          label: t(`navigation:${group.assetClass}`),
+          icon: getAssetClassIcon(group.assetClass),
+          fields: [
+            {
+              name: "type",
+              label: t("form.fields.type.label"),
+              type: "radio",
+              variant: "card",
+              required: true,
+              description: t("form.fields.type.description"),
+              options: group.assetTypes.map((assetType) => ({
+                label: t(`asset-types:${assetType}.name`),
+                value: assetType,
+                description: t(`asset-types:${assetType}.description`),
+                icon: getAssetTypeIcon(assetType),
+              })),
+              schema: TokenBaseSchema.shape.type,
+            },
+          ] as FieldDefinition<AssetDesignerFormData>[],
+        })),
         validate: (data) => {
           if (!data.type) {
             return "Please select an asset type";
@@ -285,7 +337,7 @@ function AssetDesignerWizardComponent({
     });
 
     return dynamicSteps;
-  }, [t, availableAssetTypes]);
+  }, [t, assetClassGroups]);
 
   const handleComplete = useCallback(() => {
     onSuccess?.();
@@ -315,7 +367,7 @@ function AssetDesignerWizardComponent({
   }
 
   // Show error state if no asset types are available
-  if (availableAssetTypes.length === 0) {
+  if (assetClassGroups.length === 0) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center space-y-4">
