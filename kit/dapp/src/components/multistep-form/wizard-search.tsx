@@ -37,7 +37,7 @@ export function WizardSearch({
           value={value}
           onChange={handleChange}
           placeholder={placeholder}
-          className="pl-7 pr-10 h-9 text-sm border-none shadow-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="pl-7 pr-10 h-9 text-sm border-none shadow-none bg-transparent dark:bg-transparent focus-visible:ring-1 focus-visible:ring-ring"
           debounce={500}
         />
         {hasQuery && (
