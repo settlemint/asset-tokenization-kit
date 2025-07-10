@@ -118,7 +118,7 @@ function AssetDesignerWizardComponent({
           const factoryTypeId = getFactoryTypeIdFromAssetType(assetType);
           const assetClass = getAssetClassFromFactoryTypeId(factoryTypeId);
 
-          if (!acc[assetClass]) {
+          if (!(assetClass in acc)) {
             acc[assetClass] = [];
           }
           acc[assetClass].push(assetType);
@@ -127,8 +127,8 @@ function AssetDesignerWizardComponent({
         }
         return acc;
       },
-      {} as Record<AssetClass, AssetType[]>
-    );
+      {} as Partial<Record<AssetClass, AssetType[]>>
+    ) as Record<AssetClass, AssetType[]>;
 
     // Convert to array of groups with proper translation keys
     return Object.entries(groupedByClass).map(([assetClass, assetTypes]) => ({
