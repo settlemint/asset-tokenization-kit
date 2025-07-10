@@ -456,6 +456,16 @@ export function useOnboardingSteps({
                 // Process the async iterator
                 for await (const event of factoryIterator) {
                   console.log("Factory creation event:", event);
+
+                  // Log detailed error information
+                  if (event.status === "failed") {
+                    console.error("Factory creation failed:", {
+                      message: event.message,
+                      currentFactory: event.currentFactory,
+                      error: event.error || "No error details provided",
+                    });
+                  }
+
                   setLatestMessage(event.message || "Processing...");
 
                   if (event.status === "completed" && event.result) {
@@ -530,6 +540,14 @@ export function useOnboardingSteps({
                         `Processing result for ${result.type}:`,
                         result
                       );
+
+                      // Log error details if factory creation failed
+                      if (result.error) {
+                        console.error(
+                          `${result.type} factory creation error:`,
+                          result.error
+                        );
+                      }
                       return {
                         type: result.type,
                         name: result.name,
