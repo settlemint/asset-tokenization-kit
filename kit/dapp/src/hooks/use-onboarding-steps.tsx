@@ -221,7 +221,7 @@ function AssetSelectionComponent({
         );
       } else if (errorMessage.includes("Failed to create token factory")) {
         // Check if this is a system bootstrap issue
-        if (!systemDetails?.identityRegistry || !systemDetails?.compliance) {
+        if (!systemDetails.identityRegistry || !systemDetails.compliance) {
           setVerificationError(
             "System bootstrap incomplete. Please complete the system setup first before creating factories."
           );
@@ -362,7 +362,7 @@ function AssetSelectionComponent({
         },
         systemAddressSource: systemAddress ? "from settings" : "using default",
         systemAddress,
-        userWallet: session?.user?.wallet ?? "no wallet",
+        userWallet: session?.user.wallet ?? "no wallet",
         userSession: !!session?.user,
         factoryCount: factories.length,
         factoryTypes: factories.map((f) => f.type),
