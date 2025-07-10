@@ -23,6 +23,10 @@
     "title": "Create {{type}}",
     "description": "Configure your {{type}} by providing the basic information below.",
     "fields": {
+      "type": {
+        "label": "Asset Type",
+        "description": "Select the type of asset you want to create. Only asset types with deployed factories are available."
+      },
       "name": {
         "label": "Name",
         "placeholder": "e.g., Government {{type}} Series A",
@@ -54,6 +58,13 @@
     "created": "{{type}} successfully created.",
     "creation-failed": "Failed to create the {{type}}.",
     "success-toast": "{{type}} created successfully!",
-    "error-toast": "Failed to create {{type}}"
+    "error-toast": "Failed to create {{type}}",
+    "loading": "Loading available asset types...",
+    "loading-description": "Please wait while we fetch the available token factories.",
+    "no-asset-types": "No Asset Types Available",
+    "no-asset-types-description": "No token factories have been deployed yet. Please deploy token factories first before creating tokens."
+  },
+  "validation": {
+    "type-required": "Please select an asset type"
   }
 }

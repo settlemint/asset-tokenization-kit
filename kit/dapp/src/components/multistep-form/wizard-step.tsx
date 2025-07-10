@@ -78,11 +78,6 @@ export function WizardStep({ className }: WizardStepProps) {
     clearStepError(currentStep.id);
 
     try {
-      // Run field validations
-      if (form?.validateAllFields) {
-        await form.validateAllFields("change");
-      }
-
       // Run step validation if provided
       if (currentStep.validate && form?.state?.values) {
         const error = await currentStep.validate(form.state.values);
