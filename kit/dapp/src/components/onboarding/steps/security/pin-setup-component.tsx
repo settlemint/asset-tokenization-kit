@@ -54,7 +54,7 @@ export function PinSetupComponent({
 
   const { mutate: enablePincode, isPending } = useMutation({
     mutationFn: (pincode: string) =>
-      authClient.pincode.enablePincode({
+      authClient.enablePincode({
         pincode,
       }),
     onSuccess: () => {
@@ -116,12 +116,14 @@ export function PinSetupComponent({
                 {!showConfirmPincode ? "Enter PIN Code" : "PIN Code"}
               </label>
             </div>
-            <PincodeInput
-              value={field.value}
-              onChange={handlePincodeChange}
-              onComplete={handleSetPincode}
-              disabled={showConfirmPincode}
-            />
+            <div className="flex justify-center">
+              <PincodeInput
+                value={field.value}
+                onChange={handlePincodeChange}
+                onComplete={handleSetPincode}
+                disabled={showConfirmPincode}
+              />
+            </div>
           </div>
         </FormControl>
         <FormMessage />
@@ -142,11 +144,13 @@ export function PinSetupComponent({
             <div className="text-center">
               <label className="text-sm font-medium">Confirm PIN Code</label>
             </div>
-            <PincodeInput
-              value={field.value}
-              onChange={field.onChange}
-              onComplete={handleConfirmComplete}
-            />
+            <div className="flex justify-center">
+              <PincodeInput
+                value={field.value}
+                onChange={field.onChange}
+                onComplete={handleConfirmComplete}
+              />
+            </div>
           </div>
         </FormControl>
         <FormMessage />
@@ -189,15 +193,17 @@ export function PinSetupComponent({
             >
               Back
             </Button>
-            {showConfirmPincode && (
-              <Button
-                type="submit"
-                disabled={isPending || watchConfirmPincode.length !== 6}
-                className="flex-1"
-              >
-                {isPending ? "Setting up..." : "Set PIN Code"}
-              </Button>
-            )}
+            <Button
+              type="submit"
+              disabled={
+                !showConfirmPincode ||
+                isPending ||
+                watchConfirmPincode.length !== 6
+              }
+              className="flex-1"
+            >
+              {isPending ? "Setting up..." : "Set PIN Code"}
+            </Button>
           </div>
         </form>
       </Form>

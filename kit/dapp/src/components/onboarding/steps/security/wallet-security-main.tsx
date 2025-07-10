@@ -18,7 +18,6 @@ interface WalletSecurityMainProps {
   isFirstStep?: boolean;
   isLastStep?: boolean;
   user?: SessionUser | null | undefined;
-  onSuccess?: () => void;
   onRegisterAction?: (action: () => void) => void;
   forceShowSelection?: boolean;
 }
@@ -41,7 +40,6 @@ export function WalletSecurityMain({
   isFirstStep,
   isLastStep,
   user,
-  onSuccess,
   onRegisterAction,
   forceShowSelection = false,
 }: WalletSecurityMainProps) {
@@ -168,10 +166,10 @@ export function WalletSecurityMain({
       toast.info("Now set up your One-Time Password");
     } else {
       setTimeout(() => {
-        onSuccess?.();
+        onNext?.();
       }, 1000);
     }
-  }, [isOtpSelected, hasTwoFactor, onSuccess]);
+  }, [isOtpSelected, hasTwoFactor, onNext]);
 
   const handleOtpSuccess = useCallback(() => {
     setIsOtpEnabled(true);
@@ -181,10 +179,10 @@ export function WalletSecurityMain({
       toast.info("Now set up your PIN code");
     } else {
       setTimeout(() => {
-        onSuccess?.();
+        onNext?.();
       }, 1000);
     }
-  }, [isPinSelected, hasPincode, onSuccess]);
+  }, [isPinSelected, hasPincode, onNext]);
 
   // Register the action for external triggers
   useEffect(() => {
