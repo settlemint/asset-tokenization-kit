@@ -352,7 +352,9 @@ export function SystemBootstrapStep({
 
   const handleCopyFactory = useCallback(
     (factoryId: string, factoryName: string) => {
-      return () => handleCopyAddress(factoryId, factoryName);
+      return () => {
+        handleCopyAddress(factoryId, factoryName);
+      };
     },
     [handleCopyAddress]
   );
