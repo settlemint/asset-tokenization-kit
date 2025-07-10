@@ -10,14 +10,27 @@ type PluralizationFunction = (
 ) => string;
 
 /**
+ * Mapping from API asset types to translation key prefixes
+ * The API returns lowercase singular forms, but translation keys use capitalized plural forms
+ */
+const ASSET_TYPE_TO_TRANSLATION_KEY: Record<string, string> = {
+  bond: "Bonds",
+  equity: "Equities", 
+  fund: "Funds",
+  stablecoin: "Stablecoins",
+  deposit: "Deposits",
+};
+
+/**
  * Get the translated plural form for asset types
  *
  * This utility function handles proper pluralization for asset types across all languages.
- * It uses react-i18next's built-in pluralization features to automatically select
+ * It maps API asset types (lowercase, singular) to translation keys (capitalized, plural)
+ * and uses react-i18next's built-in pluralization features to automatically select
  * the correct plural form based on the current language's pluralization rules.
  *
  * @param t - The translation function from useTranslation hook
- * @param assetType - The asset type key (e.g., 'bond', 'equity', 'stable-coin')
+ * @param assetType - The asset type key from API (e.g., 'bond', 'equity', 'stablecoin')
  * @param count - The count to determine plural form
  * @returns The translated and properly pluralized asset type string
  *
@@ -42,15 +55,21 @@ export function getAssetTypePlural(
   assetType: string,
   count: number
 ): string {
-  // Use the translation key pattern "assetType_one" and "assetType_other"
-  // This allows react-i18next to automatically select the correct plural form
-  // based on the language's pluralization rules
+  // Map the API asset type to the translation key prefix
+  const translationKeyPrefix = ASSET_TYPE_TO_TRANSLATION_KEY[assetType];
+  
+  // If we don't have a mapping, fall back to basic English pluralization
+  if (!translationKeyPrefix) {
+    return count === 1 ? assetType : `${assetType}s`;
+  }
 
-  // Try to get the translation without defaultValue first
-  const translation = t(assetType, { count });
+  // Use the translation key pattern "TranslationKeyPrefix" which works with i18next pluralization
+  // This allows react-i18next to automatically select between "Bonds_one" and "Bonds_other"
+  // based on the count and language's pluralization rules
+  const translation = t(translationKeyPrefix, { count });
 
   // If translation is missing (returns the key), fall back to basic English pluralization
-  if (translation === assetType) {
+  if (translation === translationKeyPrefix) {
     return count === 1 ? assetType : `${assetType}s`;
   }
 
