@@ -31,13 +31,13 @@ export function WizardSearch({
 
   return (
     <div className="flex items-center gap-2 mb-4">
-      <div className="relative w-1/3">
+      <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <DebouncedInput
           value={value}
           onChange={handleChange}
           placeholder={placeholder}
-          className="pl-10 pr-8 h-9 text-sm"
+          className="pl-9 pr-10 h-9 text-sm border-none shadow-none focus-visible:ring-1 focus-visible:ring-ring"
           debounce={500}
         />
         {hasQuery && (
