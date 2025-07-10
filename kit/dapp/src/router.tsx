@@ -17,6 +17,7 @@
 
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";
+import { migrateDatabase } from "@/lib/db/index";
 import { queryClient } from "@/lib/query.client";
 import { orpc } from "@/orpc";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
@@ -50,6 +51,8 @@ import { routeTree } from "./routeTree.gen";
  * ```
  */
 export function createRouter() {
+  // Migrate the database, can be done in a separate process
+  void migrateDatabase();
   return routerWithQueryClient(
     createTanStackRouter({
       /**
