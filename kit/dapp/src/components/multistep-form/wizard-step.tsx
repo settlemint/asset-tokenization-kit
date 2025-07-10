@@ -341,16 +341,17 @@ export function WizardStep({ className }: WizardStepProps) {
           )}
         </div>
 
-        {/* Search bar - only show if there are fields/groups to search */}
-        {((currentStep.fields?.length ?? 0) > 0 ||
-          (currentStep.groups?.length ?? 0) > 0) && (
-          <WizardSearch
-            onSearch={setSearchQuery}
-            value={searchQuery}
-            resultCount={totalResultCount}
-            hasQuery={!!searchQuery.trim()}
-          />
-        )}
+        {/* Search bar - only show if searchable is enabled and there are fields/groups to search */}
+        {currentStep.searchable &&
+          ((currentStep.fields?.length ?? 0) > 0 ||
+            (currentStep.groups?.length ?? 0) > 0) && (
+            <WizardSearch
+              onSearch={setSearchQuery}
+              value={searchQuery}
+              resultCount={totalResultCount}
+              hasQuery={!!searchQuery.trim()}
+            />
+          )}
 
         <div className="space-y-6">
           {/* Show no results state when search yields no results */}
