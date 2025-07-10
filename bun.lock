@@ -3,6 +3,9 @@
   "workspaces": {
     "": {
       "name": "@settlemint/asset-tokenization-kit",
+      "dependencies": {
+        "change-case": "5.4.4",
+      },
       "devDependencies": {
         "@prettier/plugin-oxc": "0.0.4",
         "@settlemint/sdk-cli": "2.4.1",
@@ -2230,7 +2233,7 @@
 
     "fp-ts": ["fp-ts@1.19.3", "", {}, "sha512-H5KQDspykdHuztLTg+ajGN0Z2qUjcEf3Ybxc6hLt0k7/zPkn29XnKnxlBPyW2XIddWrGaJBzBl4VLYOtk39yZg=="],
 
-    "framer-motion": ["framer-motion@12.23.1", "", { "dependencies": { "motion-dom": "^12.23.1", "motion-utils": "^12.23.1", "tslib": "^2.4.0" }, "peerDependencies": { "@emotion/is-prop-valid": "*", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" }, "optionalPeers": ["@emotion/is-prop-valid", "react", "react-dom"] }, "sha512-7P1t2DnKEUXvPxVZJu9Hd4gfdoUF6z9U3w3/MUXCVFNHiFV+iSoboqeK4/ZCCpa49/ZiVEWfaaYCPscqPPsOVQ=="],
+    "framer-motion": ["framer-motion@12.23.3", "", { "dependencies": { "motion-dom": "^12.23.2", "motion-utils": "^12.23.2", "tslib": "^2.4.0" }, "peerDependencies": { "@emotion/is-prop-valid": "*", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" }, "optionalPeers": ["@emotion/is-prop-valid", "react", "react-dom"] }, "sha512-llmLkf44zuIZOPSrE4bl4J0UTg6bav+rlKEfMRKgvDMXqBrUtMg6cspoQeRVK3nqRLxTmAJhfGXk39UDdZD7Kw=="],
 
     "fresh": ["fresh@2.0.0", "", {}, "sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A=="],
 
@@ -2866,9 +2869,9 @@
 
     "motion": ["motion@12.23.1", "", { "dependencies": { "framer-motion": "^12.23.1", "tslib": "^2.4.0" }, "peerDependencies": { "@emotion/is-prop-valid": "*", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" }, "optionalPeers": ["@emotion/is-prop-valid", "react", "react-dom"] }, "sha512-VuvoiZp6inGTYXzle/EXxCxFDgd0hlplRH2pcF7OIFXvbojpSDrYQVQShOScGYru9jKlavjDq1E9owm/p3ARtQ=="],
 
-    "motion-dom": ["motion-dom@12.23.1", "", { "dependencies": { "motion-utils": "^12.23.1" } }, "sha512-kcMDS8yhUZgO7iu3FB0UYZpHUymZlj4aoEqH0Vf0k3JtZA0xfYIrmbDlKn6X7+INXV3hDAIBUf4aT5jEUHvvWQ=="],
+    "motion-dom": ["motion-dom@12.23.2", "", { "dependencies": { "motion-utils": "^12.23.2" } }, "sha512-73j6xDHX/NvVh5L5oS1ouAVnshsvmApOq4F3VZo5MkYSD/YVsVLal4Qp9wvVgJM9uU2bLZyc0Sn8B9c/MMKk4g=="],
 
-    "motion-utils": ["motion-utils@12.23.1", "", {}, "sha512-coqLmHUTBA1KyBNEO64sTCWlduDV5Q6Yv0szjxnHVzZmcFYpVowyP6S38iOUlhocannaCCHlZ06lyLWQe/jheQ=="],
+    "motion-utils": ["motion-utils@12.23.2", "", {}, "sha512-cIEXlBlXAOUyiAtR0S+QPQUM9L3Diz23Bo+zM420NvSd/oPQJwg6U+rT+WRTpp0rizMsBGQOsAwhWIfglUcZfA=="],
 
     "mrmime": ["mrmime@2.0.1", "", {}, "sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ=="],
 
@@ -3308,7 +3311,7 @@
 
     "rimraf": ["rimraf@2.7.1", "", { "dependencies": { "glob": "^7.1.3" }, "bin": { "rimraf": "./bin.js" } }, "sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w=="],
 
-    "ripemd160": ["ripemd160@2.0.1", "", { "dependencies": { "hash-base": "^2.0.0", "inherits": "^2.0.1" } }, "sha512-J7f4wutN8mdbV08MJnXibYpCOPHR+yzy+iQ/AsjMv2j8cLavQ8VGagDFUwwTAdF8FmRKVeNpbTTEwNHCW1g94w=="],
+    "ripemd160": ["ripemd160@2.0.2", "", { "dependencies": { "hash-base": "^3.0.0", "inherits": "^2.0.1" } }, "sha512-ii4iagi25WusVoiC4B4lq7pbXfAp3D9v5CwfkY33vffw2+pkDjY1D8GaN7spsxvCSx8dkPqOZCEZyfxcmJG2IA=="],
 
     "rlp": ["rlp@2.2.7", "", { "dependencies": { "bn.js": "^5.2.0" }, "bin": { "rlp": "bin/rlp" } }, "sha512-d5gdPmgQ0Z+AklL2NVXr/IoSjNZFfTVvQWzL/AM2AOcSzYP2xjlb0AC8YyCLc41MSNf6P6QVtjgPdmVtzb+4lQ=="],
 
@@ -4358,6 +4361,8 @@
 
     "pbkdf2/create-hash": ["create-hash@1.1.3", "", { "dependencies": { "cipher-base": "^1.0.1", "inherits": "^2.0.1", "ripemd160": "^2.0.0", "sha.js": "^2.4.0" } }, "sha512-snRpch/kwQhcdlnZKYanNF1m0RDlrCdSKQaH87w1FCFPVPNCQ/Il9QJKAX2jVBZddRdaHBMC+zXa9Gw9tmkNUA=="],
 
+    "pbkdf2/ripemd160": ["ripemd160@2.0.1", "", { "dependencies": { "hash-base": "^2.0.0", "inherits": "^2.0.1" } }, "sha512-J7f4wutN8mdbV08MJnXibYpCOPHR+yzy+iQ/AsjMv2j8cLavQ8VGagDFUwwTAdF8FmRKVeNpbTTEwNHCW1g94w=="],
+
     "pkg-dir/find-up": ["find-up@4.1.0", "", { "dependencies": { "locate-path": "^5.0.0", "path-exists": "^4.0.0" } }, "sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw=="],
 
     "playwright/fsevents": ["fsevents@2.3.2", "", { "os": "darwin" }, "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA=="],
@@ -4391,8 +4396,6 @@
     "restore-cursor/signal-exit": ["signal-exit@3.0.7", "", {}, "sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ=="],
 
     "rimraf/glob": ["glob@7.2.3", "", { "dependencies": { "fs.realpath": "^1.0.0", "inflight": "^1.0.4", "inherits": "2", "minimatch": "^3.1.1", "once": "^1.3.0", "path-is-absolute": "^1.0.0" } }, "sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q=="],
-
-    "ripemd160/hash-base": ["hash-base@2.0.2", "", { "dependencies": { "inherits": "^2.0.1" } }, "sha512-0TROgQ1/SxE6KmxWSvXHvRj90/Xo1JvZShofnYF+f6ZsGtR4eES7WfrQzPalmyagfKZCXpVnitiRebZulWsbiw=="],
 
     "rollup-plugin-visualizer/open": ["open@8.4.2", "", { "dependencies": { "define-lazy-prop": "^2.0.0", "is-docker": "^2.1.1", "is-wsl": "^2.2.0" } }, "sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ=="],
 
@@ -4831,6 +4834,10 @@
     "ora/chalk/supports-color": ["supports-color@5.5.0", "", { "dependencies": { "has-flag": "^3.0.0" } }, "sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow=="],
 
     "ora/strip-ansi/ansi-regex": ["ansi-regex@4.1.1", "", {}, "sha512-ILlv4k/3f6vfQ4OoP2AGvirOktlQ98ZEL1k9FaQjxa3L1abBgbuTDAdPOpvbGncC0BTVQrl+OM8xZGK6tWXt7g=="],
+
+    "pbkdf2/create-hash/ripemd160": ["ripemd160@2.0.2", "", { "dependencies": { "hash-base": "^3.0.0", "inherits": "^2.0.1" } }, "sha512-ii4iagi25WusVoiC4B4lq7pbXfAp3D9v5CwfkY33vffw2+pkDjY1D8GaN7spsxvCSx8dkPqOZCEZyfxcmJG2IA=="],
+
+    "pbkdf2/ripemd160/hash-base": ["hash-base@2.0.2", "", { "dependencies": { "inherits": "^2.0.1" } }, "sha512-0TROgQ1/SxE6KmxWSvXHvRj90/Xo1JvZShofnYF+f6ZsGtR4eES7WfrQzPalmyagfKZCXpVnitiRebZulWsbiw=="],
 
     "pkg-dir/find-up/locate-path": ["locate-path@5.0.0", "", { "dependencies": { "p-locate": "^4.1.0" } }, "sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g=="],
 
