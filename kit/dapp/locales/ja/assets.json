@@ -1,14 +1,12 @@
 {
-  "bond_one": "ボンド",
-  "bond_other": "ボンド",
-  "equity_one": "株式",
-  "equity_other": "株式",
-  "fund_one": "ファンド",
-  "fund_other": "ファンド",
-  "stable-coin_one": "ステーブルコイン",
-  "stable-coin_other": "ステーブルコイン",
-  "deposit_one": "預金",
-  "deposit_other": "預金",
-  "token-sale_one": "トークンセール",
-  "token-sale_other": "トークンセール"
+  "Deposits_one": "預金",
+  "Deposits_other": "預金",
+  "Bonds_one": "ボンド",
+  "Bonds_other": "ボンド",
+  "Equities_one": "株式",
+  "Equities_other": "株式",
+  "Funds_one": "ファンド",
+  "Funds_other": "ファンド",
+  "Stablecoins_one": "ステーブルコイン",
+  "Stablecoins_other": "ステーブルコイン"
 }
