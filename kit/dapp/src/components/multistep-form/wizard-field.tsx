@@ -89,6 +89,14 @@ export function WizardField<TFormData>({
     [field]
   );
 
+  const handleDateChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      field.handleChange(e.target.value as any);
+    },
+    [field]
+  );
+
   // Check field visibility
   useEffect(() => {
     if (fieldDef.dependsOn) {
@@ -138,6 +146,30 @@ export function WizardField<TFormData>({
               placeholder={fieldDef.placeholder}
               value={(field.state.value as string) || ""}
               onChange={handleInputChange}
+              onBlur={field.handleBlur}
+              className={cn(
+                field.state.meta.isTouched &&
+                  field.state.meta.errors.length > 0 &&
+                  "border-destructive"
+              )}
+            />
+            {fieldDef.postfix && (
+              <span className="text-sm text-muted-foreground">
+                {fieldDef.postfix}
+              </span>
+            )}
+          </div>
+        );
+
+      case "date":
+        return (
+          <div className="flex items-center gap-2">
+            <Input
+              id={fieldDef.name as string}
+              type="date"
+              placeholder={fieldDef.placeholder}
+              value={(field.state.value as string) || ""}
+              onChange={handleDateChange}
               onBlur={field.handleBlur}
               className={cn(
                 field.state.meta.isTouched &&

@@ -1,5 +1,5 @@
 import { getAssetTypeCapitalized } from "@/lib/utils/asset-capitalization";
-import type { AssetType } from "@/lib/zod/validators/asset-types";
+import { assetType, type AssetType } from "@/lib/zod/validators/asset-types";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { isin } from "@/lib/zod/validators/isin";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
@@ -21,6 +21,7 @@ export const TokenBaseSchema = MutationInputSchema.extend({
   isin: isin().optional(),
   initialModulePairs: z.array(ModulePairSchema).optional().default([]),
   requiredClaimTopics: z.array(z.string()).optional().default([]),
+  type: assetType(),
 });
 
 /**
