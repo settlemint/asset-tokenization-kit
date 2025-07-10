@@ -206,10 +206,15 @@ export function handleXvPSettlementApproved(
   }
 
   if (allApproved && !settlement.executed && !settlement.cancelled) {
-    // Create execution action for admin
+    // Create execution action executable by all approvers
+    const approvers: Bytes[] = [];
+    for (let i = 0; i < approvals.length; i++) {
+      approvers.push(approvals[i].account);
+    }
+
     const actionExecutor = getOrCreateActionExecutor(
       event.address,
-      [event.params.sender] // Admin who can execute
+      approvers // All approvers can execute
     );
 
     const executeActionId = event.address.concat(Bytes.fromUTF8("execute"));
