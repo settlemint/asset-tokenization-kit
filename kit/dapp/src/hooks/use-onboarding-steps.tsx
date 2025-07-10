@@ -2,12 +2,12 @@ import type {
   StepDefinition,
   StepGroup,
 } from "@/components/multistep-form/types";
+import { AssetSelectionComponent } from "@/components/onboarding/steps/asset-type-selection/asset-selection-component";
+import { PlatformSettingsComponent } from "@/components/onboarding/steps/platform-settings-step";
 import { RecoveryCodesStep } from "@/components/onboarding/steps/recovery-codes-step";
 import { SystemBootstrapStep } from "@/components/onboarding/steps/system-bootstrap-step";
 import { WalletDisplayStep } from "@/components/onboarding/steps/wallet-display-step";
 import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
-import { AssetSelectionComponent } from "@/components/onboarding/steps/asset-type-selection/asset-selection-component";
-import { PlatformSettingsComponent } from "@/components/onboarding/steps/platform-settings-step";
 
 import { useSettings } from "@/hooks/use-settings";
 import type { SessionUser } from "@/lib/auth";
@@ -137,7 +137,7 @@ export function useOnboardingSteps({
               onPrevious={onPrevious}
               isFirstStep={isFirstStep}
               isLastStep={isLastStep}
-              user={user}
+              user={user ?? undefined}
             />
           ),
         },
@@ -201,7 +201,7 @@ export function useOnboardingSteps({
             onPrevious={onPrevious}
             isFirstStep={isFirstStep}
             isLastStep={isLastStep}
-            user={user}
+            user={user ?? undefined}
           />
         ),
       });
