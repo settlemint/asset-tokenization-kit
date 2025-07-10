@@ -4,12 +4,14 @@ import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { cn } from "@/lib/utils";
 import { formatValidationError } from "@/lib/utils/format-validation-error";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { Loader2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { Loader2, Search } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import type { FieldDefinition, FieldGroup } from "./types";
 import { useWizardContext } from "./wizard-context";
 import { WizardField } from "./wizard-field";
 import { WizardGroup } from "./wizard-group";
+import { WizardSearch } from "./wizard-search";
 
 const logger = createLogger();
 
@@ -26,6 +28,7 @@ export function WizardStep({ className }: WizardStepProps) {
   // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
   const [isValidating, setIsValidating] = useState(false);
   const [isStepVisible, setIsStepVisible] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Get context - this hook must always be called
   const context = useWizardContext();
@@ -64,11 +67,87 @@ export function WizardStep({ className }: WizardStepProps) {
   // Only use mutation if the step actually has one
   const shouldUseMutation = !!currentStep?.mutation;
 
+  // Search filtering functions
+  const matchesSearchQuery = useCallback(
+    (field: FieldDefinition, query: string): boolean => {
+      if (!query.trim()) return true;
+
+      const searchableText = [
+        field.name as string,
+        field.label,
+        field.description,
+        field.placeholder,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchableText.includes(query.toLowerCase());
+    },
+    []
+  );
+
+  // Filter fields and groups based on search query
+  const { filteredFields, filteredGroups, totalResultCount } = useMemo(() => {
+    if (!currentStep) {
+      return { filteredFields: [], filteredGroups: [], totalResultCount: 0 };
+    }
+
+    let fieldResults: FieldDefinition[] = [];
+    let groupResults: FieldGroup[] = [];
+
+    // Filter regular fields
+    if (currentStep.fields) {
+      const fields =
+        typeof currentStep.fields === "function"
+          ? currentStep.fields(form?.state?.values ?? {})
+          : currentStep.fields;
+
+      fieldResults = fields.filter((field) =>
+        matchesSearchQuery(field, searchQuery)
+      );
+    }
+
+    // Filter groups (only show groups that have matching fields)
+    if (currentStep.groups) {
+      const groups =
+        typeof currentStep.groups === "function"
+          ? currentStep.groups(form?.state?.values ?? {})
+          : currentStep.groups;
+
+      groupResults = groups
+        .map((group) => ({
+          ...group,
+          fields: group.fields.filter((field) =>
+            matchesSearchQuery(field, searchQuery)
+          ),
+        }))
+        .filter((group) => group.fields.length > 0);
+    }
+
+    const totalResultCount =
+      fieldResults.length +
+      groupResults.reduce((acc, group) => acc + group.fields.length, 0);
+
+    return {
+      filteredFields: fieldResults,
+      filteredGroups: groupResults,
+      totalResultCount,
+    };
+  }, [currentStep, form?.state?.values, searchQuery, matchesSearchQuery]);
+
+  // Clear search callback
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery("");
+  }, []);
+
   logger.debug("WizardStep render", {
     currentStepIndex,
     stepsLength: steps.length,
     hasForm: !!form,
     hasCurrentStep: !!currentStep,
+    searchQuery,
+    totalResultCount,
   });
 
   // Define handleNext with useCallback before any conditional returns
@@ -241,79 +320,89 @@ export function WizardStep({ className }: WizardStepProps) {
           )}
         </div>
 
+        {/* Search bar - only show if there are fields/groups to search */}
+        {((currentStep.fields?.length ?? 0) > 0 ||
+          (currentStep.groups?.length ?? 0) > 0) && (
+          <WizardSearch
+            onSearch={setSearchQuery}
+            value={searchQuery}
+            resultCount={totalResultCount}
+            hasQuery={!!searchQuery.trim()}
+          />
+        )}
+
         <div className="space-y-6">
-          {/* Render regular fields */}
-          {(() => {
-            if (!currentStep.fields) return null;
+          {/* Show no results state when search yields no results */}
+          {searchQuery.trim() && totalResultCount === 0 ? (
+            <div className="py-8 text-center">
+              <Search className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
+                No fields match your search
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Try adjusting your search terms or clear the search to see all
+                fields.
+              </p>
+              <Button variant="outline" size="sm" onClick={handleClearSearch}>
+                Clear search
+              </Button>
+            </div>
+          ) : (
+            <>
+              {/* Render filtered regular fields */}
+              {filteredFields.map((fieldDef) => {
+                try {
+                  return (
+                    <WizardField
+                      key={fieldDef.name as string}
+                      fieldDef={fieldDef}
+                      formData={form?.state?.values ?? {}}
+                    />
+                  );
+                } catch (error) {
+                  logger.error("Error rendering field", {
+                    fieldName: fieldDef.name,
+                    error,
+                    hasForm: !!form,
+                    hasFormState: !!form.state,
+                  });
+                  return (
+                    <div
+                      key={fieldDef.name as string}
+                      className="text-destructive"
+                    >
+                      Error rendering field: {fieldDef.name as string}
+                    </div>
+                  );
+                }
+              })}
 
-            // Handle both static array and function-based fields
-            const fields =
-              typeof currentStep.fields === "function"
-                ? currentStep.fields(form?.state?.values ?? {})
-                : currentStep.fields;
-
-            return fields.map((fieldDef) => {
-              try {
-                return (
-                  <WizardField
-                    key={fieldDef.name as string}
-                    fieldDef={fieldDef}
-                    formData={form?.state?.values ?? {}}
-                  />
-                );
-              } catch (error) {
-                logger.error("Error rendering field", {
-                  fieldName: fieldDef.name,
-                  error,
-                  hasForm: !!form,
-                  hasFormState: !!form.state,
-                });
-                return (
-                  <div
-                    key={fieldDef.name as string}
-                    className="text-destructive"
-                  >
-                    Error rendering field: {fieldDef.name as string}
-                  </div>
-                );
-              }
-            });
-          })()}
-
-          {/* Render groups */}
-          {(() => {
-            if (!currentStep.groups) return null;
-
-            // Handle both static array and function-based groups
-            const groups =
-              typeof currentStep.groups === "function"
-                ? currentStep.groups(form?.state?.values ?? {})
-                : currentStep.groups;
-
-            return groups.map((group) => {
-              try {
-                return (
-                  <WizardGroup
-                    key={group.id}
-                    group={group}
-                    formData={form?.state?.values ?? {}}
-                  />
-                );
-              } catch (error) {
-                logger.error("Error rendering group", {
-                  groupId: group.id,
-                  error,
-                  hasForm: !!form,
-                  hasFormState: !!form.state,
-                });
-                return (
-                  <div key={group.id} className="text-destructive">
-                    Error rendering group: {group.id}
-                  </div>
-                );
-              }
-            });
-          })()}
+              {/* Render filtered groups */}
+              {filteredGroups.map((group) => {
+                try {
+                  return (
+                    <WizardGroup
+                      key={group.id}
+                      group={group}
+                      formData={form?.state?.values ?? {}}
+                    />
+                  );
+                } catch (error) {
+                  logger.error("Error rendering group", {
+                    groupId: group.id,
+                    error,
+                    hasForm: !!form,
+                    hasFormState: !!form.state,
+                  });
+                  return (
+                    <div key={group.id} className="text-destructive">
+                      Error rendering group: {group.id}
+                    </div>
+                  );
+                }
+              })}
+            </>
+          )}
         </div>
       </div>
 
