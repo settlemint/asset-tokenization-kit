@@ -312,7 +312,7 @@ export function WizardField<TFormData>({
 
   return (
     <div className="space-y-2">
-      {fieldDef.type !== "checkbox" && (
+      {fieldDef.type !== "checkbox" && fieldDef.label && (
         <Label htmlFor={fieldDef.name as string}>
           {fieldDef.label}
           {fieldDef.required && (

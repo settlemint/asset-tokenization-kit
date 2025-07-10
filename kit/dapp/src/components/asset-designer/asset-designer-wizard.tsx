@@ -154,11 +154,9 @@ function AssetDesignerWizardComponent({
           fields: [
             {
               name: "type",
-              label: t("form.fields.type.label"),
               type: "radio",
               variant: "card",
               required: true,
-              description: t("form.fields.type.description"),
               options: group.assetTypes.map((assetType) => ({
                 label: t(`asset-types:${assetType}.name`),
                 value: assetType,

@@ -46,7 +46,7 @@ export interface StepDefinition<TFormData = unknown> {
 
 export interface FieldDefinition<TFormData = unknown> {
   name: keyof TFormData;
-  label: string;
+  label?: string;
   description?: string;
   type:
     | "text"
