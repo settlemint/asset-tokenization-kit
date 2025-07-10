@@ -3,5 +3,22 @@
   "appName": "Asset Tokenization Kit",
   "continue": "Continue",
   "deploying": "Deploying...",
-  "generating": "Generating..."
+  "generating": "Generating...",
+  "transactionHash": {
+    "copyToClipboard": "Copy transaction hash",
+    "copied": "Copied!"
+  },
+  "actions": {
+    "cancel": "Cancel"
+  },
+  "verification": {
+    "pincode": {
+      "label": "Verification Code",
+      "description": "Enter your 6-digit verification code"
+    }
+  },
+  "transaction": {
+    "waitingForMining": "Waiting for transaction to be mined...",
+    "indexed": "Transaction confirmed and indexed"
+  }
 }

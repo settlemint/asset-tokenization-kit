@@ -4,6 +4,7 @@ import {
 } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { ManageDropdown } from "@/components/manage-dropdown/token";
 import {
   TabNavigation,
   type TabItemProps,
@@ -104,15 +105,22 @@ function RouteComponent() {
       href: `/token/${factoryAddress}/${tokenAddress}/holders`,
       name: t("tokens:details.holders"),
     },
+    {
+      href: `/token/${factoryAddress}/${tokenAddress}/events`,
+      name: t("tokens:details.events"),
+    },
   ] as TabItemProps[];
 
   return (
     <div className="space-y-6 p-6">
       <div className="space-y-2">
         <RouterBreadcrumb />
-        <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold tracking-tight">{token.name}</h1>
-          <TokenStatusBadge paused={token.pausable.paused} />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-3xl font-bold tracking-tight">{token.name}</h1>
+            <TokenStatusBadge paused={token.pausable.paused} />
+          </div>
+          <ManageDropdown token={token} />
         </div>
       </div>
 
