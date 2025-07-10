@@ -80,6 +80,8 @@ export interface DataTableProps<TData> {
   initialColumnFilters?: ColumnFiltersState;
   /** Initial page size. Defaults to 10 */
   initialPageSize?: number;
+  /** Initial column visibility state */
+  initialColumnVisibility?: VisibilityState;
   /** Additional CSS classes for the table container */
   className?: string;
   /** Custom empty state component props when data array is empty */
@@ -166,6 +168,7 @@ function DataTableComponent<TData>({
   initialSorting,
   initialColumnFilters,
   initialPageSize,
+  initialColumnVisibility,
   className,
   customEmptyState,
   bulkActions,
@@ -181,7 +184,8 @@ function DataTableComponent<TData>({
     initialSorting: initialSorting ?? urlState?.initialSorting ?? [],
     initialColumnFilters:
       initialColumnFilters ?? urlState?.initialColumnFilters ?? [],
-    initialColumnVisibility: urlState?.initialColumnVisibility ?? {},
+    initialColumnVisibility:
+      urlState?.initialColumnVisibility ?? initialColumnVisibility ?? {},
     debounceMs: urlState?.debounceMs ?? 300,
     enableGlobalFilter: urlState?.enableGlobalFilter ?? true,
     enableRowSelection: urlState?.enableRowSelection ?? true,
@@ -196,7 +200,7 @@ function DataTableComponent<TData>({
   const [localColumnFilters, setLocalColumnFilters] =
     useState<ColumnFiltersState>(initialColumnFilters ?? []);
   const [localColumnVisibility, setLocalColumnVisibility] =
-    useState<VisibilityState>({});
+    useState<VisibilityState>(initialColumnVisibility ?? {});
   const [localGlobalFilter, setLocalGlobalFilter] = useState("");
 
   // Validate URL state configuration

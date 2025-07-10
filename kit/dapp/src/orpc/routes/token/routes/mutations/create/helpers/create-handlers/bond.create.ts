@@ -18,9 +18,9 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
-import type { TokenCreateContext } from "@/orpc/helpers/token/token.base-create";
-import { createToken } from "@/orpc/helpers/token/token.base-create";
-import type { TokenCreateInput } from "@/orpc/routes/token/routes/token.create.schema";
+import type { TokenCreateContext } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
+import { createToken } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
+import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_BOND_MUTATION = portalGraphql(`
   mutation CreateBondMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKBondFactoryImplementationATKBondFactoryImplementationCreateBondInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $cap: String!, $faceValue: String!, $maturityDate: String!, $underlyingAsset: String!, $verificationId: String, $challengeResponse: String!) {

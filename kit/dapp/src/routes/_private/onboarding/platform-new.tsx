@@ -622,13 +622,11 @@ function PlatformNewOnboarding() {
               Debug Info: Steps: {steps.length}, Groups: {groups.length}
             </p>
             <p className="text-sm text-muted-foreground">
-              shouldShowWalletSteps: {shouldShowWalletSteps ? "true" : "false"}
+              shouldShowWalletSteps: {String(shouldShowWalletSteps)}
               <br />
-              shouldShowSystemSetupSteps:{" "}
-              {shouldShowSystemSetupSteps ? "true" : "false"}
+              shouldShowSystemSetupSteps: {String(shouldShowSystemSetupSteps)}
               <br />
-              shouldShowIdentitySteps:{" "}
-              {shouldShowIdentitySteps ? "true" : "false"}
+              shouldShowIdentitySteps: {String(shouldShowIdentitySteps)}
               <br />
               systemAddress: {systemAddress ?? "null"}
             </p>

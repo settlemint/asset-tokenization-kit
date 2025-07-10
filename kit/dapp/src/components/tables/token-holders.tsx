@@ -1,3 +1,5 @@
+"use no memo";
+
 import {
   ActionsCell,
   type ActionItem,
@@ -72,9 +74,8 @@ interface TokenHoldersTableProps {
  * ```
  */
 export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
-  const router = useRouter();
   const { t } = useTranslation(["tokens", "common"]);
-  // Get the current route's path pattern from the matched route
+  const router = useRouter();
   const routePath =
     router.state.matches[router.state.matches.length - 1]?.pathname;
 
@@ -307,8 +308,8 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
         columns={columns}
         urlState={{
           enabled: true,
-          enableUrlPersistence: true,
           routePath,
+          enableUrlPersistence: true,
           defaultPageSize: 20,
           enableGlobalFilter: true,
           enableRowSelection: true,
