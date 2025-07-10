@@ -1,9 +1,9 @@
 import { getFactoryTypeIdFromAssetType } from "@/lib/zod/validators/asset-types";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { tokenCreateHandlerMap } from "@/orpc/helpers/token/handler-map";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
 
 export const create = onboardedRouter.token.create
   .use(portalMiddleware)

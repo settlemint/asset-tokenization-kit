@@ -7,9 +7,9 @@ import { orpc } from "@/orpc";
 import {
   TokenCreateSchema,
   type TokenCreateInput,
-} from "@/orpc/routes/token/routes/token.create.schema";
-import { createLogger } from "@settlemint/sdk-utils/logging";
+} from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";

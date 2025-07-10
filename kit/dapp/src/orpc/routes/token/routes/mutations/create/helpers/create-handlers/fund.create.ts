@@ -21,8 +21,8 @@ import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import {
   createToken,
   type TokenCreateContext,
-} from "@/orpc/helpers/token/token.base-create";
-import type { TokenCreateInput } from "@/orpc/routes/token/routes/token.create.schema";
+} from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create";
+import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_FUND_MUTATION = portalGraphql(`
   mutation CreateFundMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKFundFactoryImplementationATKFundFactoryImplementationCreateFundInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $verificationId: String, $challengeResponse: String!, $managementFeeBps: Int!) {
