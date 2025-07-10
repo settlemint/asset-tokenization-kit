@@ -28,6 +28,16 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
   query SystemDetails($id: ID!) {
     system(id: $id) {
       id
+      deployedInTransaction
+      identityRegistry {
+        id
+      }
+      trustedIssuersRegistry {
+        id
+      }
+      compliance {
+        id
+      }
       tokenFactoryRegistry {
         id
         tokenFactories {
@@ -72,6 +82,22 @@ export const read = onboardedRouter.system.read
       system: z
         .object({
           id: z.string(),
+          deployedInTransaction: z.string().nullable(),
+          identityRegistry: z
+            .object({
+              id: z.string(),
+            })
+            .nullable(),
+          trustedIssuersRegistry: z
+            .object({
+              id: z.string(),
+            })
+            .nullable(),
+          compliance: z
+            .object({
+              id: z.string(),
+            })
+            .nullable(),
           tokenFactoryRegistry: z
             .object({
               id: z.string(),
@@ -109,6 +135,11 @@ export const read = onboardedRouter.system.read
     // The factory mapping no longer needs explicit type annotations thanks to Zod inference
     const output: SystemReadOutput = {
       id: result.system.id as EthereumAddress,
+      deployedInTransaction: result.system.deployedInTransaction,
+      identityRegistry: result.system.identityRegistry?.id as EthereumAddress,
+      trustedIssuersRegistry: result.system.trustedIssuersRegistry
+        ?.id as EthereumAddress,
+      compliance: result.system.compliance?.id as EthereumAddress,
       tokenFactoryRegistry: result.system.tokenFactoryRegistry
         ?.id as EthereumAddress,
       tokenFactories:

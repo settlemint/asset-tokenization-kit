@@ -161,7 +161,7 @@ export function OnboardingGuard({
     if (require === "platform-onboarded" && !isPlatformOnboarded) {
       // Only admin users can do platform onboarding
       if (userRole === "admin") {
-        void navigate({ to: "/onboarding/platform" });
+        void navigate({ to: "/onboarding/platform-new" });
       } else {
         void navigate({ to: "/" });
       }
@@ -173,7 +173,7 @@ export function OnboardingGuard({
       // Navigate to specific onboarding route based on type
       switch (onboardingType) {
         case "platform":
-          void navigate({ to: "/onboarding/platform" });
+          void navigate({ to: "/onboarding/platform-new" });
           break;
         case "issuer":
           void navigate({ to: "/onboarding/issuer" });
@@ -204,7 +204,7 @@ export function OnboardingGuard({
       // Navigate to specific onboarding route based on type
       switch (onboardingType) {
         case "platform":
-          void navigate({ to: "/onboarding/platform" });
+          void navigate({ to: "/onboarding/platform-new" });
           break;
         case "issuer":
           void navigate({ to: "/onboarding/issuer" });
