@@ -127,7 +127,7 @@ export const actions = authRouter.token.actions
 
     // SECURITY: Always filter by user address to prevent unauthorized access
     where.executor_ = {
-      accounts_contains: [targetUserAddress.toLowerCase()],
+      executors_contains: [targetUserAddress.toLowerCase()],
     };
 
     // Filter by action type
