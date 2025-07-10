@@ -594,9 +594,8 @@ feature
   unless it’s absolutely needed and clearly separate from business logic. Choose
   variables and useRef if it doesn’t need to be reactive.
 - Minimize usage of useEffect, derive all state where possible instead of using
-  effects. Skip useMemo and useCallback, since the React Compiler will
-  automatically handle memoization and optimization. Focus on deriving state
-  from props and other state rather than using side effects.
+  effects. Focus on deriving state from props and other state rather than using
+  side effects.
 - When you find yourself with nested if/else or complex conditional rendering,
   create a new component. Reserve inline ternaries for tiny, readable sections.
 - Choose to derive data rather than use useEffect. Only use useEffect when you
