@@ -21,7 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Loader2, Pause, Play } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type ControllerRenderProps } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
 import {
@@ -147,7 +147,9 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
           ? t("tokens:actions.unpause.label")
           : t("tokens:actions.pause.label"),
         icon: isPaused ? Play : Pause,
-        onClick: () => setOpenAction(isPaused ? "unpause" : "pause"),
+        onClick: () => {
+          setOpenAction(isPaused ? "unpause" : "pause");
+        },
         disabled: false,
       },
     ],
@@ -160,6 +162,49 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
   const handleOpenAutoFocus = useCallback((e: Event) => {
     e.preventDefault();
   }, []);
+
+  const handleSheetOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        setOpenAction(null);
+        form.reset();
+      }
+    },
+    [form]
+  );
+
+  const handleCancel = useCallback(() => {
+    setOpenAction(null);
+    form.reset();
+  }, [form]);
+
+  const renderVerificationField = useCallback(
+    ({
+      field,
+    }: {
+      field: ControllerRenderProps<VerificationFormValues, "verificationCode">;
+    }) => (
+      <FormItem>
+        <FormLabel>{t("common:verification.pincode.label")}</FormLabel>
+        <FormControl>
+          <Input
+            {...field}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={6}
+            placeholder="123456"
+            disabled={isLoading || isTracking}
+          />
+        </FormControl>
+        <FormDescription>
+          {t("common:verification.pincode.description")}
+        </FormDescription>
+        <FormMessage />
+      </FormItem>
+    ),
+    [t, isLoading, isTracking]
+  );
 
   return (
     <>
@@ -187,25 +232,13 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onSelect={() => {
-              // TODO: Navigate to events page
-            }}
-          >
+          <DropdownMenuItem disabled>
             {t("tokens:actions.viewEvents")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Sheet
-        open={openAction !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setOpenAction(null);
-            form.reset();
-          }
-        }}
-      >
+      <Sheet open={openAction !== null} onOpenChange={handleSheetOpenChange}>
         <SheetContent
           className="min-w-[25rem]"
           onOpenAutoFocus={handleOpenAutoFocus}
@@ -231,38 +264,14 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
               <FormField
                 control={form.control}
                 name="verificationCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("common:verification.pincode.label")}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        maxLength={6}
-                        placeholder="123456"
-                        disabled={isLoading || isTracking}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t("common:verification.pincode.description")}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={renderVerificationField}
               />
 
               <SheetFooter>
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => {
-                    setOpenAction(null);
-                    form.reset();
-                  }}
+                  onClick={handleCancel}
                   disabled={isLoading || isTracking}
                 >
                   {t("common:actions.cancel")}
