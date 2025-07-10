@@ -173,25 +173,23 @@ export function useOnboardingSteps({
     }
 
     if (shouldShowSystemSetupSteps) {
-      if (!systemAddress) {
-        dynamicSteps.push({
-          id: "system-bootstrap",
-          title: "Bootstrap System",
-          description: "Initialize the blockchain system and set base currency",
-          groupId: "system",
-          fields: [],
-          onStepComplete: async () => Promise.resolve(),
-          component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => (
-            <SystemBootstrapStep
-              onNext={onNext}
-              onPrevious={onPrevious}
-              isFirstStep={isFirstStep}
-              isLastStep={isLastStep}
-              user={user}
-            />
-          ),
-        });
-      }
+      dynamicSteps.push({
+        id: "system-bootstrap",
+        title: "Bootstrap System",
+        description: "Initialize the blockchain system and set base currency",
+        groupId: "system",
+        fields: [],
+        onStepComplete: async () => Promise.resolve(),
+        component: ({ onNext, onPrevious, isFirstStep, isLastStep }) => (
+          <SystemBootstrapStep
+            onNext={onNext}
+            onPrevious={onPrevious}
+            isFirstStep={isFirstStep}
+            isLastStep={isLastStep}
+            user={user}
+          />
+        ),
+      });
 
       // Add asset and addon selection steps with simplified inline definitions
       dynamicSteps.push({

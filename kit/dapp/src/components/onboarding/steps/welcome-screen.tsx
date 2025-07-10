@@ -43,10 +43,8 @@ export function WelcomeScreen({
     },
   ];
 
-  // Filter steps based on whether system is deployed
-  const steps = systemDeployed
-    ? allSteps.filter((step) => step.id === "wallet" || step.id === "identity")
-    : allSteps;
+  // Show all steps - don't filter any out
+  const steps = allSteps;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8">
