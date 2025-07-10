@@ -68,32 +68,37 @@ export function WizardStep({ className }: WizardStepProps) {
   const shouldUseMutation = !!currentStep?.mutation;
 
   // Search filtering functions
-  const matchesSearchQuery = useCallback(
-    (field: FieldDefinition, query: string): boolean => {
-      if (!query.trim()) return true;
+  const filterFieldBySearch = useCallback(
+    (field: FieldDefinition, query: string): FieldDefinition | null => {
+      if (!query.trim()) return field;
 
-      const searchableText = [
-        field.name as string,
-        field.label,
-        field.description,
-        field.placeholder,
-      ]
+      const queryLower = query.toLowerCase();
+      const searchableText = [field.name as string, field.label]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
 
-      // Also search through options if they exist
-      const optionsText = field.options
-        ? field.options
-            .flatMap((option) => [option.label, option.description])
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase()
-        : "";
+      // Early return for fields without options
+      if (!field.options?.length) {
+        return searchableText.includes(queryLower) ? field : null;
+      }
 
-      const combinedText = `${searchableText} ${optionsText}`.toLowerCase();
+      // Filter options for fields that have them
+      const filteredOptions = field.options.filter((option) => {
+        const optionText = [option.label, option.value]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return optionText.includes(queryLower);
+      });
 
-      return combinedText.includes(query.toLowerCase());
+      // Return field with filtered options if any match
+      if (filteredOptions.length > 0) {
+        return { ...field, options: filteredOptions };
+      }
+
+      // Fallback to field-level search if no options match
+      return searchableText.includes(queryLower) ? field : null;
     },
     []
   );
@@ -114,9 +119,9 @@ export function WizardStep({ className }: WizardStepProps) {
           ? currentStep.fields(form?.state?.values ?? {})
           : currentStep.fields;
 
-      fieldResults = fields.filter((field) =>
-        matchesSearchQuery(field, searchQuery)
-      );
+      fieldResults = fields
+        .map((field) => filterFieldBySearch(field, searchQuery))
+        .filter((field): field is FieldDefinition => field !== null);
     }
 
     // Filter groups (only show groups that have matching fields)
@@ -129,9 +134,9 @@ export function WizardStep({ className }: WizardStepProps) {
       groupResults = groups
         .map((group) => ({
           ...group,
-          fields: group.fields.filter((field) =>
-            matchesSearchQuery(field, searchQuery)
-          ),
+          fields: group.fields
+            .map((field) => filterFieldBySearch(field, searchQuery))
+            .filter((field): field is FieldDefinition => field !== null),
         }))
         .filter((group) => group.fields.length > 0);
     }
@@ -145,7 +150,7 @@ export function WizardStep({ className }: WizardStepProps) {
       filteredGroups: groupResults,
       totalResultCount,
     };
-  }, [currentStep, form?.state?.values, searchQuery, matchesSearchQuery]);
+  }, [currentStep, form?.state?.values, searchQuery, filterFieldBySearch]);
 
   // Clear search callback
   const handleClearSearch = useCallback(() => {
