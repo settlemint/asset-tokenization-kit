@@ -36,7 +36,7 @@ export function WizardGroup<TFormData>({
       </div>
 
       {/* Group fields */}
-      <div className="grid grid-cols-3 gap-4 pl-7">
+      <div className="space-y-4 pl-7">
         {group.fields.map((fieldDef) => {
           try {
             return (

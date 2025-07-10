@@ -253,7 +253,7 @@ export function WizardField<TFormData>({
             <RadioGroup
               value={(field.state.value as string) || ""}
               onValueChange={handleRadioChange}
-              className="grid gap-4"
+              className="grid grid-cols-3 gap-4 items-stretch"
             >
               {fieldDef.options?.map((option) => (
                 <div key={option.value} className="relative">
@@ -264,7 +264,7 @@ export function WizardField<TFormData>({
                   />
                   <Label
                     htmlFor={option.value}
-                    className="flex cursor-pointer select-none rounded-lg border border-input bg-background p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-data-[state=checked]:text-primary transition-all"
+                    className="flex cursor-pointer select-none rounded-lg border border-input bg-background p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-data-[state=checked]:text-primary transition-all h-full"
                   >
                     <div className="flex items-start space-x-3">
                       {option.icon && (
