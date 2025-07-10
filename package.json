@@ -70,7 +70,7 @@
   "dependencies": {},
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
-    "@settlemint/sdk-cli": "2.4.1",
+    "@settlemint/sdk-cli": "2.5.0",
     "prettier": "3.6.2",
     "turbo": "2.5.4",
     "typescript": "5.8.3"
