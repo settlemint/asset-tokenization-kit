@@ -1239,7 +1239,7 @@ files:
     navigation.flexibleIncome: 496bf96707ef73e18c04fe7ecd452a8b
     navigation.cashEquivalent: 5ccbdb5f84a65180a53769ed94e1f03f
     navigation.home: 8cf04a9734132302f96da8e113e80ce5
-  locales/en/issuer-dashboard.json:
+  locales/en/stats.json:
     title: 2938c7f7e560ed972f8a4f68e80ff834
     description: 177512b9add0b40c38dad61838bf7d79
     asset-management: 177512b9add0b40c38dad61838bf7d79

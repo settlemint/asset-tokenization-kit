@@ -2,11 +2,11 @@ import { useTranslation } from "react-i18next";
 
 /**
  * Type for the specific translation function signature we need.
- * This matches the exact call pattern: t(key, { count, defaultValue })
+ * This matches the exact call pattern: t(key, { count, defaultValue? })
  */
 type PluralizationFunction = (
   key: string,
-  options: { count: number; defaultValue: string }
+  options: { count: number; defaultValue?: string }
 ) => string;
 
 /**
@@ -45,7 +45,16 @@ export function getAssetTypePlural(
   // Use the translation key pattern "assetType_one" and "assetType_other"
   // This allows react-i18next to automatically select the correct plural form
   // based on the language's pluralization rules
-  return t(assetType, { count, defaultValue: assetType });
+
+  // Try to get the translation without defaultValue first
+  const translation = t(assetType, { count });
+
+  // If translation is missing (returns the key), fall back to basic English pluralization
+  if (translation === assetType) {
+    return count === 1 ? assetType : `${assetType}s`;
+  }
+
+  return translation;
 }
 
 /**

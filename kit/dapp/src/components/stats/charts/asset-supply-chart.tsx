@@ -20,7 +20,7 @@ const chartConfig = {
  * using a pie chart visualization based on real API data.
  */
 export function AssetSupplyChart() {
-  const { t } = useTranslation("issuer-dashboard");
+  const { t } = useTranslation("stats");
 
   // Fetch just the asset metrics which includes supply breakdown - more efficient
   const { data: metrics } = useSuspenseQuery(
