@@ -248,6 +248,47 @@ export function WizardField<TFormData>({
         );
 
       case "radio":
+        if (fieldDef.variant === "card") {
+          return (
+            <RadioGroup
+              value={(field.state.value as string) || ""}
+              onValueChange={handleRadioChange}
+              className="grid gap-4"
+            >
+              {fieldDef.options?.map((option) => (
+                <div key={option.value} className="relative">
+                  <RadioGroupItem
+                    value={option.value}
+                    id={option.value}
+                    className="peer sr-only"
+                  />
+                  <Label
+                    htmlFor={option.value}
+                    className="flex cursor-pointer select-none rounded-lg border border-input bg-background p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-data-[state=checked]:text-primary transition-all"
+                  >
+                    <div className="flex items-start space-x-3">
+                      {option.icon && (
+                        <div className="flex-shrink-0 mt-0.5 text-muted-foreground peer-data-[state=checked]:text-primary">
+                          {option.icon}
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-medium leading-6">
+                          {option.label}
+                        </div>
+                        {option.description && (
+                          <div className="text-sm text-muted-foreground">
+                            {option.description}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          );
+        }
         return (
           <RadioGroup
             value={(field.state.value as string) || ""}

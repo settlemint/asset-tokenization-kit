@@ -21,8 +21,27 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { z } from "zod/v4";
+import { Building2, TrendingUp, PiggyBank, Wallet, Coins } from "lucide-react";
 
 const logger = createLogger();
+
+// Helper function to get icon for asset type
+const getAssetTypeIcon = (assetType: AssetType) => {
+  switch (assetType) {
+    case "bond":
+      return <Building2 className="h-5 w-5" />;
+    case "equity":
+      return <TrendingUp className="h-5 w-5" />;
+    case "fund":
+      return <PiggyBank className="h-5 w-5" />;
+    case "stablecoin":
+      return <Coins className="h-5 w-5" />;
+    case "deposit":
+      return <Wallet className="h-5 w-5" />;
+    default:
+      return <Building2 className="h-5 w-5" />;
+  }
+};
 
 // TODO: Better schema type
 type AssetDesignerFormData = z.infer<typeof TokenBaseSchema> & {
@@ -86,12 +105,14 @@ function AssetDesignerWizardComponent({
             name: "type",
             label: t("form.fields.type.label"),
             type: "radio",
+            variant: "card",
             required: true,
             description: t("form.fields.type.description"),
             options: availableAssetTypes.map((assetType) => ({
               label: t(`asset-types:${assetType}.name`),
               value: assetType,
               description: t(`asset-types:${assetType}.description`),
+              icon: getAssetTypeIcon(assetType),
             })),
             schema: TokenBaseSchema.shape.type,
           },

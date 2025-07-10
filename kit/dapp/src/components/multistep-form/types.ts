@@ -58,10 +58,16 @@ export interface FieldDefinition<TFormData = unknown> {
   placeholder?: string;
   required?: boolean;
   schema?: z.ZodType;
-  options?: { label: string; value: string }[];
+  options?: {
+    label: string;
+    value: string;
+    description?: string;
+    icon?: React.ReactNode;
+  }[];
   dependsOn?: (formData: Partial<TFormData>) => Promise<boolean> | boolean;
   component?: React.ComponentType<FieldComponentProps<TFormData>>;
   postfix?: string;
+  variant?: "default" | "card";
 }
 
 export interface StepGroup {
