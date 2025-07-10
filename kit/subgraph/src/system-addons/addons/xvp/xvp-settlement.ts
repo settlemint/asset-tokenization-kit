@@ -20,9 +20,7 @@ import {
 } from "../../../actions/action-utils";
 import {
   ACTION_TYPE_APPROVE_XVP_SETTLEMENT,
-  ACTION_TYPE_EXECUTE_XVP_SETTLEMENT,
-  ACTION_USER_TYPE_ADMIN,
-  ACTION_USER_TYPE_USER,
+  ACTION_TYPE_EXECUTE_XVP_SETTLEMENT
 } from "../../../constants/action-types";
 import { fetchEvent } from "../../../event/fetch/event";
 import { fetchToken } from "../../../token/fetch/token";
@@ -221,8 +219,8 @@ export function handleXvPSettlementApproved(
     const executeAction = createAction(
       executeActionId,
       actionExecutor,
-      ACTION_TYPE_EXECUTE_XVP_SETTLEMENT,
-      ACTION_USER_TYPE_ADMIN,
+      "Execute XvP Settlement", // Human-readable name
+      ACTION_TYPE_EXECUTE_XVP_SETTLEMENT, // Action type constant
       event.block.timestamp,
       event.block.timestamp,
       settlement.cutoffDate,
@@ -254,21 +252,23 @@ export function handleXvPSettlementApprovalRevoked(
   approval.timestamp = event.block.timestamp;
   approval.save();
 
-  // Recreate approval action
+  // Recreate approval action with unique ID to avoid reusing executed action
   const actionExecutor = getOrCreateActionExecutor(event.address, [
     event.params.sender,
   ]);
 
+  // Create unique action ID by including timestamp to avoid reusing executed actions
   const actionId = event.address
     .concat(event.params.sender)
-    .concat(Bytes.fromUTF8("approve"));
+    .concat(Bytes.fromUTF8("approve"))
+    .concat(Bytes.fromI32(event.block.timestamp.toI32()));
   const settlement = fetchXvPSettlement(event.address);
 
   const approvalAction = createAction(
     actionId,
     actionExecutor,
-    ACTION_TYPE_APPROVE_XVP_SETTLEMENT,
-    ACTION_USER_TYPE_USER,
+    "Approve XvP Settlement", // Human-readable name
+    ACTION_TYPE_APPROVE_XVP_SETTLEMENT, // Action type constant
     event.block.timestamp,
     event.block.timestamp,
     settlement.cutoffDate,
