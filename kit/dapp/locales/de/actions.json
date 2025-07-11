@@ -1,0 +1,24 @@
+{
+  "actions": "Aktionen",
+  "page": {
+    "actions": "Aktionen"
+  },
+  "tabs": {
+    "name": {
+      "pending": "Ausstehend",
+      "upcoming": "Bevorstehend",
+      "completed": "Abgeschlossen"
+    }
+  },
+  "status": {
+    "pending": "Ausstehende Aktionen",
+    "upcoming": "Bevorstehende Aktionen",
+    "completed": "Abgeschlossene Aktionen"
+  },
+  "empty": {
+    "pending": "Keine ausstehenden Aktionen anzuzeigen.",
+    "upcoming": "Keine bevorstehenden Aktionen anzuzeigen.",
+    "completed": "Keine abgeschlossenen Aktionen anzuzeigen.",
+    "default": "Wählen Sie einen Aktionstyp aus den obigen Tabs aus."
+  }
+}

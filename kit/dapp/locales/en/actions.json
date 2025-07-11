@@ -1,0 +1,24 @@
+{
+  "actions": "Actions",
+  "page": {
+    "actions": "Actions"
+  },
+  "tabs": {
+    "name": {
+      "pending": "Pending",
+      "upcoming": "Upcoming",
+      "completed": "Completed"
+    }
+  },
+  "status": {
+    "pending": "Pending Actions",
+    "upcoming": "Upcoming Actions",
+    "completed": "Completed Actions"
+  },
+  "empty": {
+    "pending": "No pending actions to display.",
+    "upcoming": "No upcoming actions to display.",
+    "completed": "No completed actions to display.",
+    "default": "Select an action type from the tabs above."
+  }
+}

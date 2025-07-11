@@ -1,0 +1,24 @@
+{
+  "actions": "アクション",
+  "page": {
+    "actions": "アクション"
+  },
+  "tabs": {
+    "name": {
+      "pending": "保留中",
+      "upcoming": "予定",
+      "completed": "完了"
+    }
+  },
+  "status": {
+    "pending": "保留中のアクション",
+    "upcoming": "予定されたアクション",
+    "completed": "完了したアクション"
+  },
+  "empty": {
+    "pending": "表示する保留中のアクションはありません。",
+    "upcoming": "表示する予定されたアクションはありません。",
+    "completed": "表示する完了したアクションはありません。",
+    "default": "上のタブからアクションタイプを選択してください。"
+  }
+}
