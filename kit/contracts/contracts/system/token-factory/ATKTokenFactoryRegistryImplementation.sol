@@ -49,7 +49,6 @@ contract ATKTokenFactoryRegistryImplementation is
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
         _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin);
         _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.REGISTRAR_ADMIN_ROLE, initialAdmin);
         _system = IATKSystem(systemAddress);
     }
 
