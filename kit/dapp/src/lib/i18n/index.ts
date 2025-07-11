@@ -60,7 +60,7 @@ export const namespaces = [
   "form",
   "formats",
   "general",
-  "issuer-dashboard",
+  "stats",
   "language",
   "navigation",
   "onboarding",
