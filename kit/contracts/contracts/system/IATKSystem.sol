@@ -196,7 +196,6 @@ interface IATKSystem is IERC165 {
     /// @return The address of the identity implementation contract.
     function identityImplementation() external view returns (address);
 
-
     /// @notice Returns the address of the contract identity implementation.
     /// @return The address of the contract identity implementation contract.
     function contractIdentityImplementation() external view returns (address);

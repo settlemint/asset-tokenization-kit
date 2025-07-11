@@ -307,7 +307,6 @@ contract ATKSystemImplementation is
         _implementations[IDENTITY] = identityImplementation_;
         emit IdentityImplementationUpdated(initialAdmin_, identityImplementation_);
 
-
         // Validate and set the contract identity implementation address.
         if (contractIdentityImplementation_ == address(0)) revert ContractIdentityImplementationNotSet();
         _checkInterface(contractIdentityImplementation_, _IIDENTITY_ID); // Ensure it supports OnchainID's
@@ -645,7 +644,6 @@ contract ATKSystemImplementation is
         emit IdentityImplementationUpdated(_msgSender(), implementation_);
     }
 
-
     /// @notice Sets (updates) the address of the contract identity implementation (logic template).
     /// @dev Only callable by an address with the `IMPLEMENTATION_MANAGER_ROLE`.
     /// Reverts if `implementation` is zero or doesn't support `IIdentity` (from OnchainID standard).
@@ -741,7 +739,6 @@ contract ATKSystemImplementation is
     function identityImplementation() external view returns (address) {
         return _implementations[IDENTITY];
     }
-
 
     /// @notice Returns the address of the contract identity implementation.
     /// @return The address of the contract identity implementation contract.

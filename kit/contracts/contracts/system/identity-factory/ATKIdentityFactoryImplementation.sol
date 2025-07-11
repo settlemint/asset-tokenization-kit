@@ -14,6 +14,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IATKIdentityFactory } from "./IATKIdentityFactory.sol";
 import { IATKIdentity } from "./identities/IATKIdentity.sol";
+import { IATKContractIdentity } from "./identities/IATKContractIdentity.sol";
 import { IContractWithIdentity } from "./IContractWithIdentity.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 
@@ -104,8 +105,8 @@ contract ATKIdentityFactoryImplementation is
     error DeploymentAddressMismatch();
     /// @notice Indicates that the identity implementation is invalid.
     error InvalidIdentityImplementation();
-    /// @notice Indicates that the token identity implementation is invalid.
-    error InvalidTokenIdentityImplementation();
+    /// @notice Indicates that the contract identity implementation is invalid.
+    error InvalidContractIdentityImplementation();
 
     // --- Events ---
 
@@ -147,11 +148,11 @@ contract ATKIdentityFactoryImplementation is
         }
 
         if (
-            !IERC165(IATKSystem(systemAddress).tokenIdentityImplementation()).supportsInterface(
-                type(IATKTokenIdentity).interfaceId
+            !IERC165(IATKSystem(systemAddress).contractIdentityImplementation()).supportsInterface(
+                type(IATKContractIdentity).interfaceId
             )
         ) {
-            revert InvalidTokenIdentityImplementation();
+            revert InvalidContractIdentityImplementation();
         }
 
         _system = systemAddress;
@@ -559,7 +560,7 @@ contract ATKIdentityFactoryImplementation is
         view
         returns (bytes memory proxyBytecode, bytes memory constructorArgs)
     {
-        proxyBytecode = type(ATKTokenIdentityProxy).creationCode;
+        proxyBytecode = type(ATKContractIdentityProxy).creationCode;
         constructorArgs = abi.encode(_system, _accessManager);
         // No explicit return needed due to named return variables
     }
