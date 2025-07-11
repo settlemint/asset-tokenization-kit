@@ -20,7 +20,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
     address public accessManager;
 
     event IdentityCreated(address indexed sender, address indexed identity, address indexed wallet);
-    event TokenIdentityCreated(address indexed sender, address indexed identity, address indexed token);
+    event ContractIdentityCreated(address indexed sender, address indexed identity, address indexed contractAddress);
 
     function setUp() public {
         admin = makeAddr("admin");
@@ -66,7 +66,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
         );
 
         vm.expectEmit(true, false, true, true);
-        emit TokenIdentityCreated(admin, address(0), address(token)); // address(0) will be replaced with actual
+        emit ContractIdentityCreated(admin, address(0), address(token)); // address(0) will be replaced with actual
 
         vm.prank(admin);
         address identity = factory.createContractIdentity(address(token), accessManager);

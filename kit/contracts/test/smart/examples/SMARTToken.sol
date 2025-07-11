@@ -11,6 +11,11 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 // Interface imports
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IContractWithIdentity } from "../../../contracts/system/identity-factory/IContractWithIdentity.sol";
+import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
+import { _SMARTLogic } from "../../../contracts/smart/extensions/core/internal/_SMARTLogic.sol";
+import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Core extensions
 import { SMART } from "../../../contracts/smart/extensions/core/SMART.sol";
@@ -41,6 +46,7 @@ import { SMARTCapped } from "../../../contracts/smart/extensions/capped/SMARTCap
 
 contract SMARTToken is
     SMART,
+    IContractWithIdentity,
     SMARTTokenAccessManaged,
     SMARTCustodian,
     SMARTCollateral,
@@ -607,5 +613,27 @@ contract SMARTToken is
     /// @return The address of the authenticated sender.
     function _msgSender() internal view virtual override(Context) returns (address) {
         return Context._msgSender();
+    }
+
+    // --- IContractWithIdentity Implementation ---
+
+    /// @inheritdoc IContractWithIdentity
+    function onchainID() public view override(IContractWithIdentity, ISMART, _SMARTLogic) returns (address) {
+        return super.onchainID();
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    function canAddClaim(address actor) external view override returns (bool) {
+        return _hasRole(TOKEN_ADMIN_ROLE, actor);
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    function canRemoveClaim(address actor) external view override returns (bool) {
+        return _hasRole(TOKEN_ADMIN_ROLE, actor);
+    }
+
+    /// @notice Checks if this contract supports a given interface
+    function supportsInterface(bytes4 interfaceId) public view virtual override(SMART, IERC165) returns (bool) {
+        return interfaceId == type(IContractWithIdentity).interfaceId || super.supportsInterface(interfaceId);
     }
 }
