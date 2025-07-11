@@ -37,7 +37,7 @@ const logger = createLogger();
 
 /**
  * GraphQL mutation for creating a token factory.
- * @param address - The system contract address to call
+ * @param address - The token factory registry contract address to call
  * @param from - The wallet address initiating the transaction
  * @param _factoryImplementation - The factory implementation address
  * @param _tokenImplementation - The token implementation address
@@ -79,7 +79,7 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  * @auth Required - User must be authenticated
  * @middleware portalMiddleware - Provides Portal GraphQL client with transaction tracking
  * @middleware theGraphMiddleware - Provides TheGraph client
- * @param input.contract - The system contract address (defaults to standard address)
+ * @param input.contract - The token factory registry contract address
  * @param input.factories - Single factory or array of factories to create
  * @param input.messages - Optional custom messages for localization
  * @yields {FactoryCreationEvent} Progress events with status, message, and current factory info
