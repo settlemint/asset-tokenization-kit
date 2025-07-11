@@ -3,6 +3,7 @@ import type {
   StepGroup,
 } from "@/components/multistep-form/types";
 import { AssetSelectionComponent } from "@/components/onboarding/steps/asset-type-selection/asset-selection-component";
+import { PlatformAddonsComponent } from "@/components/onboarding/steps/platform-addons-step";
 import { PlatformSettingsComponent } from "@/components/onboarding/steps/platform-settings-step";
 import { RecoveryCodesStep } from "@/components/onboarding/steps/recovery-codes-step";
 import { SystemBootstrapStep } from "@/components/onboarding/steps/system-bootstrap-step";
@@ -260,24 +261,23 @@ export function useOnboardingSteps({
       // 4. Enable platform addons
       dynamicSteps.push({
         id: "enable-platform-addons",
-        title: "Enable platform addons",
-        description: "Choose additional features and capabilities",
+        title: "Configure Platform Add-ons",
+        description: "Enhance your platform with optional features",
         groupId: "system",
         fields: [
           {
             name: "selectedAddons",
-            label: "Platform Addons",
+            label: "Platform Add-ons",
             type: "checkbox",
             description: "Select optional features to enhance your platform",
             options: [
               { label: "Airdrops", value: "airdrops" },
-              { label: "Cross-chain Value Transfer (XVP)", value: "xvp" },
-              { label: "Yield Farming", value: "yield" },
-              { label: "Governance", value: "governance" },
-              { label: "Analytics Dashboard", value: "analytics" },
+              { label: "Fixed Yield", value: "yield" },
+              { label: "XVP", value: "xvp" },
             ],
           },
         ],
+        component: (props) => <PlatformAddonsComponent {...props} />,
       });
     }
 
