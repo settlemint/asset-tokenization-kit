@@ -102,6 +102,10 @@ export function PinSetupComponent({
     }
   }, [watchConfirmPincode, form, onSubmit]);
 
+  const handleSetPinClick = useCallback(() => {
+    void form.handleSubmit(onSubmit)();
+  }, [form, onSubmit]);
+
   const renderPincodeField = useCallback(
     ({
       field,
@@ -169,7 +173,7 @@ export function PinSetupComponent({
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-6">
           <FormField
             control={form.control}
             name="pincode"
@@ -194,7 +198,8 @@ export function PinSetupComponent({
               Back
             </Button>
             <Button
-              type="submit"
+              type="button"
+              onClick={handleSetPinClick}
               disabled={
                 !showConfirmPincode ||
                 isPending ||
@@ -205,7 +210,7 @@ export function PinSetupComponent({
               {isPending ? "Setting up..." : "Set PIN Code"}
             </Button>
           </div>
-        </form>
+        </div>
       </Form>
     </div>
   );

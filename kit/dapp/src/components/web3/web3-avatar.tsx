@@ -81,7 +81,9 @@ async function checkGravatar(email: string): Promise<string | null> {
   }
 
   const hash = MD5(normalizedEmail).toString();
-  const url = `${GRAVATAR_BASE_URL}${hash}?d=${GRAVATAR_DEFAULT}&s=200`;
+  // Use 'blank' as default to avoid 404 errors in console
+  const checkUrl = `${GRAVATAR_BASE_URL}${hash}?d=blank&s=200`;
+  const finalUrl = `${GRAVATAR_BASE_URL}${hash}?d=${GRAVATAR_DEFAULT}&s=200`;
 
   try {
     const controller = new AbortController();
@@ -89,14 +91,18 @@ async function checkGravatar(email: string): Promise<string | null> {
       controller.abort();
     }, 3000); // 3s timeout
 
-    const response = await fetch(url, {
+    const response = await fetch(checkUrl, {
       method: "HEAD",
       signal: controller.signal,
     });
 
     clearTimeout(timeoutId);
 
-    const result = response.ok ? url : null;
+    // Check if the response is successful and not a blank/empty image
+    const result =
+      response.ok && response.headers.get("content-length") !== "0"
+        ? finalUrl
+        : null;
 
     // Cache the result
     gravatarCache.set(normalizedEmail, {
