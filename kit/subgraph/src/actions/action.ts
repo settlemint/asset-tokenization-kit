@@ -83,6 +83,9 @@ export function createActionExecutor(
 
   let actionExecutor = ActionExecutor.load(id);
   if (actionExecutor) {
+    const currentActions = actionExecutor.actions || [];
+    actionExecutor.actions = [...currentActions, action.id];
+    actionExecutor.save();
     return actionExecutor;
   }
 
