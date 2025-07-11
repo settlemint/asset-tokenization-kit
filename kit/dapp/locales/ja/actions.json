@@ -1,7 +1,8 @@
 {
   "actions": "アクション",
   "page": {
-    "actions": "アクション"
+    "actions": "アクション",
+    "description": "このトークンのアクションを管理・追跡する"
   },
   "tabs": {
     "name": {
@@ -20,5 +21,9 @@
     "upcoming": "表示する予定されたアクションはありません。",
     "completed": "表示する完了したアクションはありません。",
     "default": "上のタブからアクションタイプを選択してください。"
-  }
+  },
+  "results": "{{count}}個のアクションが見つかりました",
+  "assignedTo": "割り当て先",
+  "createdBy": "作成者",
+  "dueDate": "期限"
 }

@@ -1,7 +1,8 @@
 {
   "actions": "Aktionen",
   "page": {
-    "actions": "Aktionen"
+    "actions": "Aktionen",
+    "description": "Aktionen für diesen Token verwalten und verfolgen"
   },
   "tabs": {
     "name": {
@@ -20,5 +21,9 @@
     "upcoming": "Keine bevorstehenden Aktionen anzuzeigen.",
     "completed": "Keine abgeschlossenen Aktionen anzuzeigen.",
     "default": "Wählen Sie einen Aktionstyp aus den obigen Tabs aus."
-  }
+  },
+  "results": "{{count}} Aktion(en) gefunden",
+  "assignedTo": "Zugewiesen an",
+  "createdBy": "Erstellt von",
+  "dueDate": "Fällig"
 }
