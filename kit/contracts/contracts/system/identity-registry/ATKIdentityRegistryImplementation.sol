@@ -140,9 +140,9 @@ contract ATKIdentityRegistryImplementation is
     /// contracts.
     ///     These addresses must not be zero addresses.
     /// It is protected by the `initializer` modifier from OpenZeppelin, ensuring it can only be called once.
-    /// @param initialAdmins The address that will receive initial administrative and registrar privileges.
+    /// @param initialAdmin The address that will receive initial administrative and registrar privileges.
     /// This address will be responsible for the initial setup and management of the registry.
-    /// @param initialRegistrar The address that will receive initial registrar privileges.
+    /// @param registrarAdmins The addresses that will receive initial registrar privileges.
     /// This address will be responsible for managing identities.
     /// @param identityStorage_ The address of the deployed `ISMARTIdentityRegistryStorage` contract.
     /// This contract will be used to store all identity data.
@@ -151,8 +151,8 @@ contract ATKIdentityRegistryImplementation is
     /// @param topicSchemeRegistry_ The address of the deployed `ISMARTTopicSchemeRegistry` contract.
     /// This contract will be used to validate claim topics against registered schemes.
     function initialize(
-        address[] memory initialAdmins,
-        address initialRegistrar,
+        address initialAdmin,
+        address[] memory registrarAdmins,
         address identityStorage_,
         address trustedIssuersRegistry_,
         address topicSchemeRegistry_
@@ -167,11 +167,12 @@ contract ATKIdentityRegistryImplementation is
         // ERC2771Context is initialized by its constructor during contract creation.
 
         // Grant the caller (initialAdmin) the default admin role, allowing them to manage other roles.
-        for (uint256 i = 0; i < initialAdmins.length; i++) {
-            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
-        }
+        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+        _grantRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, initialAdmin);
 
-        _grantRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, initialRegistrar);
+        for (uint256 i = 0; i < registrarAdmins.length; i++) {
+            _grantRole(ATKSystemRoles.REGISTRAR_ADMIN_ROLE, registrarAdmins[i]);
+        }
 
         // Set up role hierarchy: REGISTRAR_ADMIN_ROLE can manage REGISTRAR_ROLE
         _setRoleAdmin(ATKSystemRoles.REGISTRAR_ROLE, ATKSystemRoles.REGISTRAR_ADMIN_ROLE);

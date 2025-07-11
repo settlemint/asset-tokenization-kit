@@ -458,14 +458,15 @@ contract ATKSystemImplementation is
         // Deploy the SMARTIdentityRegistryProxy. Its constructor requires the addresses of other newly created proxies
         // (storage and trusted issuers) and an initial admin.
         // Passing these as local variables is safe as they don't rely on this contract's state being prematurely read.
-        address[] memory initialAdmins = new address[](2);
-        initialAdmins[0] = initialAdmin;
-        initialAdmins[1] = address(this);
+        address[] memory initialRegistrarAdmins = new address[](3);
+        initialRegistrarAdmins[0] = initialAdmin;
+        initialRegistrarAdmins[1] = localTokenFactoryRegistryProxy;
+        initialRegistrarAdmins[2] = localAddonRegistryProxy;
 
         bytes memory identityRegistryData = abi.encodeWithSelector(
             IATKIdentityRegistry.initialize.selector,
-            initialAdmins,
             initialAdmin,
+            initialRegistrarAdmins,
             localIdentityRegistryStorageProxy,
             localTrustedIssuersRegistryProxy,
             localTopicSchemeRegistryProxy
@@ -518,9 +519,6 @@ contract ATKSystemImplementation is
         IAccessControl(localIdentityRegistryProxy).grantRole(
             ATKSystemRoles.REGISTRAR_ADMIN_ROLE, localTokenFactoryRegistryProxy
         );
-
-        // Grant DEFAULT_ADMIN_ROLE to the identity registry
-        IAccessControl(localIdentityRegistryProxy).grantRole(DEFAULT_ADMIN_ROLE, address(this));
 
         // Mark the system as bootstrapped
         _bootstrapped = true;
