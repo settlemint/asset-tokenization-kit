@@ -33,8 +33,7 @@ import { ATKContractIdentityProxy } from "./identities/ATKContractIdentityProxy.
 ///         for both user wallets and token contracts within the ATK Protocol.
 /// @dev It leverages OpenZeppelin's `Create2` library to deploy identity proxy contracts (`ATKIdentityProxy` for
 /// wallets,
-///      `ATKContractIdentityProxy` for contracts) at deterministic addresses. These proxies point to logic
-/// implementations
+///      `ATKTokenIdentityProxy` for tokens) at deterministic addresses. These proxies point to logic implementations
 ///      whose addresses are provided by the central `IATKSystem` contract, enabling upgradeability of the identity
 /// logic.
 ///      The factory is `ERC2771ContextUpgradeable` for meta-transaction support.
@@ -57,7 +56,7 @@ contract ATKIdentityFactoryImplementation is
     // --- Storage Variables ---
     /// @notice The address of the `IATKSystem` contract.
     /// @dev This system contract provides the addresses of the current logic implementations for `ATKIdentity`
-    ///      and `ATKContractIdentity` contracts that the deployed proxies will point to.
+    ///      and `ATKTokenIdentity` contracts that the deployed proxies will point to.
     address private _system;
 
     /// @notice Mapping to track whether a specific salt (represented as `bytes32`) has already been used for a CREATE2
@@ -221,8 +220,17 @@ contract ATKIdentityFactoryImplementation is
     /// 5. Emits `ContractIdentityCreated` event.
     /// @param _contract The address of the contract implementing IContractWithIdentity for which the identity is being
     /// created.
+    /// @param _salt The salt string to use for deterministic identity deployment.
     /// @return address The address of the newly created identity contract.
-    function createContractIdentity(address _contract) external virtual override returns (address) {
+    function createContractIdentity(
+        address _contract,
+        string calldata _salt
+    )
+        external
+        virtual
+        override
+        returns (address)
+    {
         if (_contract == address(0)) revert ZeroAddressNotAllowed();
         if (_contractIdentities[_contract] != address(0)) revert ContractAlreadyLinked(_contract);
 
@@ -231,13 +239,26 @@ contract ATKIdentityFactoryImplementation is
             revert("Contract does not implement IContractWithIdentity");
         }
 
-        // Deploy identity with metadata-based salt by querying the contract directly
-        address identity = _createAndRegisterContractIdentity(_contract);
+        // Deploy identity with caller-provided salt
+        address identity = _createAndRegisterContractIdentity(_contract, _salt);
 
         _contractIdentities[_contract] = identity;
         emit ContractIdentityCreated(_msgSender(), identity, _contract);
 
         return identity;
+    }
+
+    /// @inheritdoc IATKIdentityFactory
+    /// @notice Creates a deterministic on-chain identity for a given contract (backward compatibility).
+    /// @dev This function provides backward compatibility by using a default salt based on the contract address.
+    ///      It calls the main implementation with a calculated default salt.
+    /// @param _contract The address of the contract implementing IContractWithIdentity for which the identity is being
+    /// created.
+    /// @return address The address of the newly created identity contract.
+    function createContractIdentity(address _contract) external virtual override returns (address) {
+        // Create a default salt based on the contract address for backward compatibility
+        string memory defaultSalt = string.concat("Contract:", Strings.toHexString(_contract));
+        return this.createContractIdentity(_contract, defaultSalt);
     }
 
     // --- View Functions ---
@@ -290,10 +311,31 @@ contract ATKIdentityFactoryImplementation is
 
     /// @inheritdoc IATKIdentityFactory
     /// @notice Computes the deterministic address at which an identity proxy for a contract will be
-    /// deployed (or was deployed) using address-based salt.
-    /// @dev Uses only the contract address to calculate deployment address for simplicity and consistency.
-    ///      The metadata parameters are ignored for backward compatibility.
+    /// deployed (or was deployed) using the provided salt.
+    /// @dev Uses the provided salt string to calculate deployment address for flexibility.
+    ///      This allows the caller to define their own salt calculation logic.
+    /// @param _contractAddress The address of the contract for which the identity will be created.
+    /// @param _salt The salt string to use for deterministic address calculation.
+    /// @return address The pre-computed CREATE2 deployment address for the contract's identity contract.
+    function calculateContractIdentityAddress(
+        address _contractAddress,
+        string calldata _salt
+    )
+        public
+        view
+        virtual
+        override
+        returns (address)
+    {
+        bytes32 saltBytes = _calculateSaltFromString(_system, _salt);
+        return _computeContractProxyAddress(saltBytes, _contractAddress);
+    }
 
+    /// @inheritdoc IATKIdentityFactory
+    /// @notice Computes the deterministic address at which an identity proxy for a contract will be
+    /// deployed (or was deployed) using a default salt (backward compatibility).
+    /// @dev This function provides backward compatibility by using a default salt based on the contract address.
+    ///      It calls the main implementation with a calculated default salt.
     /// @param _contractAddress The address of the contract for which the identity will be created.
     /// @return address The pre-computed CREATE2 deployment address for the contract's identity contract.
     function calculateContractIdentityAddress(address _contractAddress)
@@ -303,14 +345,14 @@ contract ATKIdentityFactoryImplementation is
         override
         returns (address)
     {
-        // Ignore metadata parameters and use only the address for simplicity
-        (bytes32 saltBytes,) = _calculateSalt(CONTRACT_SALT_PREFIX, _contractAddress);
-        return _computeContractProxyAddress(saltBytes, _contractAddress);
+        // Create a default salt based on the contract address for backward compatibility
+        string memory defaultSalt = string.concat("Contract:", Strings.toHexString(_contractAddress));
+        return this.calculateContractIdentityAddress(_contractAddress, defaultSalt);
     }
 
     /// @notice Returns the address of the `IATKSystem` contract that this factory uses.
     /// @dev The `IATKSystem` contract provides the addresses for the actual logic implementations
-    ///      of `ATKIdentity` and `ATKContractIdentity` that the deployed proxies will delegate to.
+    ///      of `ATKIdentity` and `ATKTokenIdentity` that the deployed proxies will delegate to.
     /// @return address The address of the configured `IATKSystem` contract.
     function getSystem() external view returns (address) {
         return _system;
@@ -341,18 +383,24 @@ contract ATKIdentityFactoryImplementation is
         return identity;
     }
 
-    /// @notice Internal function to handle the creation and registration of a contract identity using address-based
-    /// salt.
-    /// @dev Calculates a unique salt for the `_contractAddress` using just the contract address,
+    /// @notice Internal function to handle the creation and registration of a contract identity using a provided salt.
+    /// @dev Uses the provided salt string to calculate a unique deployment salt,
     ///      checks if the salt has been taken, deploys the identity proxy using `_deployContractProxy`, and
     /// marks the salt as taken.
     /// @param _contractAddress The address of the contract (must implement IContractWithIdentity) for which to create
     /// an identity.
+    /// @param _salt The salt string to use for deterministic deployment.
     /// @return address The address of the newly deployed identity proxy.
-    function _createAndRegisterContractIdentity(address _contractAddress) private returns (address) {
-        (bytes32 saltBytes, string memory saltString) = _calculateSalt(CONTRACT_SALT_PREFIX, _contractAddress);
+    function _createAndRegisterContractIdentity(
+        address _contractAddress,
+        string calldata _salt
+    )
+        private
+        returns (address)
+    {
+        bytes32 saltBytes = _calculateSaltFromString(_system, _salt);
 
-        if (_saltTakenByteSalt[saltBytes]) revert SaltAlreadyTaken(saltString);
+        if (_saltTakenByteSalt[saltBytes]) revert SaltAlreadyTaken(_salt);
 
         address identity = _deployContractProxy(saltBytes, _contractAddress);
 
@@ -412,9 +460,8 @@ contract ATKIdentityFactoryImplementation is
         return Create2.computeAddress(_saltBytes, keccak256(abi.encodePacked(proxyBytecode, constructorArgs)));
     }
 
-    /// @notice Internal view function to compute the CREATE2 address for a `ATKContractIdentityProxy`.
-    /// @dev Similar to `_computeWalletProxyAddress` but for contract identities, using
-    /// `_getContractProxyAndConstructorArgs`.
+    /// @notice Internal view function to compute the CREATE2 address for a `ATKTokenIdentityProxy`.
+    /// @dev Similar to `_computeWalletProxyAddress` but for token identities, using `_getTokenProxyAndConstructorArgs`.
     /// @param _saltBytes The pre-calculated `bytes32` salt for the deployment.
     /// @param _initialManager The address that will be passed as the initial manager to the proxy's constructor.
     /// @return address The deterministically computed address where the proxy will be deployed.
@@ -456,12 +503,12 @@ contract ATKIdentityFactoryImplementation is
         return _deployProxy(predictedAddr, proxyBytecode, constructorArgs, _saltBytes);
     }
 
-    /// @notice Internal function to deploy a `ATKContractIdentityProxy` using CREATE2.
-    /// @dev Similar to `_deployWalletProxy` but for contract identities, using `_computeContractProxyAddress` and
-    /// `_getContractProxyAndConstructorArgs`.
+    /// @notice Internal function to deploy a `ATKTokenIdentityProxy` using CREATE2.
+    /// @dev Similar to `_deployWalletProxy` but for token identities, using `_computeTokenProxyAddress` and
+    /// `_getTokenProxyAndConstructorArgs`.
     /// @param _saltBytes The `bytes32` salt for the CREATE2 deployment.
     /// @param _accessManager The address of the access manager contract that will be set as the initial owner/manager
-    /// @return address The address of the newly deployed `ATKContractIdentityProxy`.
+    /// @return address The address of the newly deployed `ATKTokenIdentityProxy`.
     function _deployTokenProxy(bytes32 _saltBytes, address _accessManager) private returns (address) {
         address predictedAddr = _computeTokenProxyAddress(_saltBytes, _accessManager);
         (bytes memory proxyBytecode, bytes memory constructorArgs) = _getTokenProxyAndConstructorArgs(_accessManager);
@@ -498,11 +545,11 @@ contract ATKIdentityFactoryImplementation is
     }
 
     /// @notice Internal helper to get the creation bytecode and encoded constructor arguments for
-    /// `ATKContractIdentityProxy`.
-    /// @dev The constructor of `ATKContractIdentityProxy` takes the `_system` address (from factory state) and
+    /// `ATKTokenIdentityProxy`.
+    /// @dev The constructor of `ATKTokenIdentityProxy` takes the `_system` address (from factory state) and
     /// `_accessManager`.
     /// @param _accessManager The address of the access manager contract that will be set as the initial owner/manager
-    /// @return proxyBytecode The creation bytecode of `ATKContractIdentityProxy`.
+    /// @return proxyBytecode The creation bytecode of `ATKTokenIdentityProxy`.
     /// @return constructorArgs The ABI-encoded constructor arguments (`_system`, `_accessManager`).
     function _getTokenProxyAndConstructorArgs(address _accessManager)
         private

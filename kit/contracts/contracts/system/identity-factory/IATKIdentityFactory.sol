@@ -54,10 +54,23 @@ interface IATKIdentityFactory is IERC165 {
         returns (address identityContract);
 
     /// @notice Creates a new on-chain identity for a contract that implements IContractWithIdentity.
-    /// @dev This function deploys a new identity contract using the contract's
-    ///      metadata (name, symbol, decimals) if available to generate a unique salt.
-    ///      This provides predictable and meaningful identity addresses based on contract characteristics.
+    /// @dev This function deploys a new identity contract using a caller-provided salt.
+    ///      This provides flexibility for contracts to define their own salt calculation logic.
     ///      Permission checks are delegated to the contract itself via canAddClaim/canRemoveClaim.
+    /// @param _contract The address of the contract implementing IContractWithIdentity
+    /// @param _salt The salt string to use for deterministic identity deployment
+    /// @return contractIdentityAddress The address of the newly deployed contract identity contract.
+    function createContractIdentity(
+        address _contract,
+        string calldata _salt
+    )
+        external
+        returns (address contractIdentityAddress);
+
+    /// @notice Creates a new on-chain identity for a contract that implements IContractWithIdentity (backward
+    /// compatibility).
+    /// @dev This function deploys a new identity contract using a default salt based on the contract address.
+    ///      This is provided for backward compatibility. New code should use the version with explicit salt.
     /// @param _contract The address of the contract implementing IContractWithIdentity
     /// @return contractIdentityAddress The address of the newly deployed contract identity contract.
     function createContractIdentity(address _contract) external returns (address contractIdentityAddress);
@@ -95,11 +108,25 @@ interface IATKIdentityFactory is IERC165 {
         returns (address predictedAddress);
 
     /// @notice Calculates the deterministic address at which an identity contract for a contract *would be* or *was*
-    /// deployed using metadata-based salt.
-    /// @dev Uses contract metadata (name, symbol, decimals) to calculate the deployment
-    ///      address. This provides a way to predict addresses for contracts based on their characteristics.
+    /// deployed using a provided salt.
+    /// @dev Uses the provided salt string to calculate the deployment address.
+    ///      This provides flexibility for contracts to define their own salt calculation logic.
     /// @param _contractAddress The address of the contract for which the identity will be created.
+    /// @param _salt The salt string to use for deterministic address calculation.
     /// @return predictedAddress The pre-computed or actual deployment address of the contract's identity contract.
+    function calculateContractIdentityAddress(
+        address _contractAddress,
+        string calldata _salt
+    )
+        external
+        view
+        returns (address predictedAddress);
+
+    /// @notice Calculates the deterministic address for a contract identity (backward compatibility overload).
+    /// @dev Uses a default salt based on the contract address for backward compatibility.
+    ///      New code should use the version with explicit salt.
+    /// @param _contractAddress The address of the contract for which the identity will be created.
+    /// @return predictedAddress The pre-computed deployment address of the contract's identity contract.
     function calculateContractIdentityAddress(address _contractAddress)
         external
         view
