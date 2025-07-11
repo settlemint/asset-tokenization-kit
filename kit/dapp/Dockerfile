@@ -2,6 +2,7 @@ FROM oven/bun:1.2.18-slim
 WORKDIR /usr/src/app
 
 COPY .output/ /usr/src/app
+COPY drizzle/ /usr/src/app/drizzle
 
 EXPOSE 3000/tcp
 ENV NODE_ENV=production

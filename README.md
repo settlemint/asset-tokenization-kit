@@ -190,3 +190,18 @@ bunx turbo contracts#publish
 ```bash
 bunx turbo subgraph#test:integration
 ```
+
+### Database schema changes
+
+For database schema changes, you need to generate migrations first. This will
+create a new migration file in the `kit/dapp/drizzle` folder. The migrations
+will be executed automatically when the dApp starts. Also the Hasura will
+automatically track the new tables.
+
+```bash
+# Navigate to the dapp directory
+cd kit/dapp
+
+# Generate Drizzle migrations from schema changes
+bun run db:generate
+```
