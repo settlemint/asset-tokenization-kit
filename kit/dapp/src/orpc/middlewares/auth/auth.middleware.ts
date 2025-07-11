@@ -40,7 +40,7 @@ import { baseRouter } from "../../procedures/base.router";
 export const authMiddleware = baseRouter.middleware(
   async ({ context, next, errors }) => {
     // Check if valid authentication context exists
-    if (context.auth) {
+    if (context.auth?.user) {
       // Authentication is valid, proceed with the authenticated context
       return next({
         context: {
