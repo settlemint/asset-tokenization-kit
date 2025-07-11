@@ -15,7 +15,6 @@ import {
     TopicSchemeRegistryImplementationNotSet,
     IdentityFactoryImplementationNotSet,
     IdentityImplementationNotSet,
-    TokenIdentityImplementationNotSet,
     ContractIdentityImplementationNotSet,
     TokenAccessManagerImplementationNotSet,
     IndexOutOfBounds,
@@ -39,8 +38,6 @@ import { ATKIdentityFactoryImplementation } from
     "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
 import { ATKIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
-import { ATKTokenIdentityImplementation } from
-    "../../contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol";
 import { ATKContractIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from

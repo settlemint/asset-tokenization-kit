@@ -34,7 +34,6 @@ import {
     SystemNotBootstrapped,
     TokenAccessManagerImplementationNotSet,
     TokenFactoryTypeAlreadyRegistered,
-    TokenIdentityImplementationNotSet,
     TopicSchemeRegistryImplementationNotSet,
     TrustedIssuersRegistryImplementationNotSet,
     ComplianceModuleRegistryImplementationNotSet,
@@ -101,7 +100,6 @@ contract ATKSystemImplementation is
     bytes32 internal constant IDENTITY_FACTORY = keccak256("IDENTITY_FACTORY");
     bytes32 internal constant TOKEN_ACCESS_MANAGER = keccak256("TOKEN_ACCESS_MANAGER");
     bytes32 internal constant IDENTITY = keccak256("IDENTITY");
-    bytes32 internal constant TOKEN_IDENTITY = keccak256("TOKEN_IDENTITY");
     bytes32 internal constant CONTRACT_IDENTITY = keccak256("CONTRACT_IDENTITY");
     bytes32 internal constant COMPLIANCE_MODULE_REGISTRY = keccak256("COMPLIANCE_MODULE_REGISTRY");
     bytes32 internal constant ADDON_REGISTRY = keccak256("ADDON_REGISTRY");
@@ -216,8 +214,6 @@ contract ATKSystemImplementation is
     /// @param identityFactoryImplementation_ The initial address of the identity factory module's logic contract.
     /// @param identityImplementation_ The initial address of the standard identity contract's logic (template). Must be
     /// IERC734/IIdentity compliant.
-    /// @param tokenIdentityImplementation_ The initial address of the token identity contract's logic (template). Must
-    /// be IERC734/IIdentity compliant.
     /// @param tokenAccessManagerImplementation_ The initial address of the token access manager contract's logic. Must
     /// be ISMARTTokenAccessManager compliant.
     /// @param identityVerificationModule_ The initial address of the identity verification module
@@ -236,7 +232,6 @@ contract ATKSystemImplementation is
         address topicSchemeRegistryImplementation_,
         address identityFactoryImplementation_,
         address identityImplementation_, // Expected to be IERC734/IIdentity compliant
-        address tokenIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
         address contractIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
         address identityVerificationModule_,
@@ -312,12 +307,6 @@ contract ATKSystemImplementation is
         _implementations[IDENTITY] = identityImplementation_;
         emit IdentityImplementationUpdated(initialAdmin_, identityImplementation_);
 
-        // Validate and set the token identity implementation address.
-        if (tokenIdentityImplementation_ == address(0)) revert TokenIdentityImplementationNotSet();
-        _checkInterface(tokenIdentityImplementation_, _IIDENTITY_ID); // Ensure it supports OnchainID's
-            // IIdentity
-        _implementations[TOKEN_IDENTITY] = tokenIdentityImplementation_;
-        emit TokenIdentityImplementationUpdated(initialAdmin_, tokenIdentityImplementation_);
 
         // Validate and set the contract identity implementation address.
         if (contractIdentityImplementation_ == address(0)) revert ContractIdentityImplementationNotSet();
@@ -656,20 +645,6 @@ contract ATKSystemImplementation is
         emit IdentityImplementationUpdated(_msgSender(), implementation_);
     }
 
-    /// @notice Sets (updates) the address of the token identity contract's implementation (logic template).
-    /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
-    /// Reverts if `implementation` is zero or doesn't support `IIdentity` (from OnchainID standard).
-    /// Emits a `TokenIdentityImplementationUpdated` event.
-    /// @param implementation_ The new address for the token identity logic template.
-    function setTokenIdentityImplementation(address implementation_)
-        public
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
-        if (implementation_ == address(0)) revert TokenIdentityImplementationNotSet();
-        _checkInterface(implementation_, _IIDENTITY_ID);
-        _implementations[TOKEN_IDENTITY] = implementation_;
-        emit TokenIdentityImplementationUpdated(_msgSender(), implementation_);
-    }
 
     /// @notice Sets (updates) the address of the contract identity implementation (logic template).
     /// @dev Only callable by an address with the `IMPLEMENTATION_MANAGER_ROLE`.
@@ -767,11 +742,6 @@ contract ATKSystemImplementation is
         return _implementations[IDENTITY];
     }
 
-    /// @notice Returns the address of the token identity implementation.
-    /// @return The address of the token identity implementation contract.
-    function tokenIdentityImplementation() external view returns (address) {
-        return _implementations[TOKEN_IDENTITY];
-    }
 
     /// @notice Returns the address of the contract identity implementation.
     /// @return The address of the contract identity implementation contract.

@@ -14,7 +14,6 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IATKIdentityFactory } from "./IATKIdentityFactory.sol";
 import { IATKIdentity } from "./identities/IATKIdentity.sol";
-import { IATKTokenIdentity } from "./identities/IATKTokenIdentity.sol";
 import { IContractWithIdentity } from "./IContractWithIdentity.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 
@@ -25,7 +24,6 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 // Implementation imports
 import { ATKIdentityProxy } from "./identities/ATKIdentityProxy.sol";
-import { ATKTokenIdentityProxy } from "./identities/ATKTokenIdentityProxy.sol";
 import { ATKContractIdentityProxy } from "./identities/ATKContractIdentityProxy.sol";
 
 /// @title ATK Identity Factory Implementation

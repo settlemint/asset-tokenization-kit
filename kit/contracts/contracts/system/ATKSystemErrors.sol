@@ -56,11 +56,6 @@ error IdentityFactoryImplementationNotSet();
 /// identities), but its logic contract address is zero or has not been configured in the `SMARTSystem`.
 error IdentityImplementationNotSet();
 
-/// @notice Error indicating that the token identity contract implementation address has not been set.
-/// @dev This error is thrown if an operation requires the token identity implementation (the template for
-/// token-specific
-/// identities), but its logic contract address is zero or has not been configured in the `SMARTSystem`.
-error TokenIdentityImplementationNotSet();
 
 /// @notice Error indicating that the contract identity implementation address has not been set.
 /// @dev This error is thrown if an operation requires the contract identity implementation (the template for
