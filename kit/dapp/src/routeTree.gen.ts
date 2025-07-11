@@ -8,8 +8,6 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivateRouteImport } from './routes/_private'
@@ -24,17 +22,17 @@ import { Route as PrivateOnboardingInvestorRouteImport } from './routes/_private
 import { Route as PrivateOnboardedSidebarRouteImport } from './routes/_private/_onboarded/_sidebar'
 import { Route as PrivateOnboardedAssetDesignerIndexRouteImport } from './routes/_private/_onboarded/asset-designer/index'
 import { Route as PrivateOnboardedSidebarIndexRouteImport } from './routes/_private/_onboarded/_sidebar/index'
+import { Route as PrivateOnboardedSidebarActionsRouteImport } from './routes/_private/_onboarded/_sidebar/actions'
+import { Route as PrivateOnboardedSidebarActionsIndexRouteImport } from './routes/_private/_onboarded/_sidebar/actions/index'
 import { Route as PrivateOnboardedSidebarTokenStatsRouteImport } from './routes/_private/_onboarded/_sidebar/token/stats'
+import { Route as PrivateOnboardedSidebarActionsUpcomingRouteImport } from './routes/_private/_onboarded/_sidebar/actions/upcoming'
+import { Route as PrivateOnboardedSidebarActionsPendingRouteImport } from './routes/_private/_onboarded/_sidebar/actions/pending'
+import { Route as PrivateOnboardedSidebarActionsCompletedRouteImport } from './routes/_private/_onboarded/_sidebar/actions/completed'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/index'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/index'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/holders'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
-import { ServerRoute as ApiSplatServerRouteImport } from './routes/api/$'
-import { ServerRoute as ApiRpcSplatServerRouteImport } from './routes/api/rpc.$'
-import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
-
-const rootServerRouteImport = createServerRootRoute()
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -103,11 +101,41 @@ const PrivateOnboardedSidebarIndexRoute =
     path: '/',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
+const PrivateOnboardedSidebarActionsRoute =
+  PrivateOnboardedSidebarActionsRouteImport.update({
+    id: '/actions',
+    path: '/actions',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarActionsIndexRoute =
+  PrivateOnboardedSidebarActionsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => PrivateOnboardedSidebarActionsRoute,
+  } as any)
 const PrivateOnboardedSidebarTokenStatsRoute =
   PrivateOnboardedSidebarTokenStatsRouteImport.update({
     id: '/token/stats',
     path: '/token/stats',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarActionsUpcomingRoute =
+  PrivateOnboardedSidebarActionsUpcomingRouteImport.update({
+    id: '/upcoming',
+    path: '/upcoming',
+    getParentRoute: () => PrivateOnboardedSidebarActionsRoute,
+  } as any)
+const PrivateOnboardedSidebarActionsPendingRoute =
+  PrivateOnboardedSidebarActionsPendingRouteImport.update({
+    id: '/pending',
+    path: '/pending',
+    getParentRoute: () => PrivateOnboardedSidebarActionsRoute,
+  } as any)
+const PrivateOnboardedSidebarActionsCompletedRoute =
+  PrivateOnboardedSidebarActionsCompletedRouteImport.update({
+    id: '/completed',
+    path: '/completed',
+    getParentRoute: () => PrivateOnboardedSidebarActionsRoute,
   } as any)
 const PrivateOnboardedSidebarTokenFactoryAddressIndexRoute =
   PrivateOnboardedSidebarTokenFactoryAddressIndexRouteImport.update({
@@ -148,21 +176,6 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute =
         PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
     } as any,
   )
-const ApiSplatServerRoute = ApiSplatServerRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiRpcSplatServerRoute = ApiRpcSplatServerRouteImport.update({
-  id: '/api/rpc/$',
-  path: '/api/rpc/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
-const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootServerRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
@@ -173,9 +186,14 @@ export interface FileRoutesByFullPath {
   '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/onboarding/platform-new': typeof PrivateOnboardingPlatformNewRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
+  '/actions': typeof PrivateOnboardedSidebarActionsRouteWithChildren
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
+  '/actions/completed': typeof PrivateOnboardedSidebarActionsCompletedRoute
+  '/actions/pending': typeof PrivateOnboardedSidebarActionsPendingRoute
+  '/actions/upcoming': typeof PrivateOnboardedSidebarActionsUpcomingRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
+  '/actions/': typeof PrivateOnboardedSidebarActionsIndexRoute
   '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
@@ -192,7 +210,11 @@ export interface FileRoutesByTo {
   '/onboarding': typeof PrivateOnboardingIndexRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
+  '/actions/completed': typeof PrivateOnboardedSidebarActionsCompletedRoute
+  '/actions/pending': typeof PrivateOnboardedSidebarActionsPendingRoute
+  '/actions/upcoming': typeof PrivateOnboardedSidebarActionsUpcomingRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
+  '/actions': typeof PrivateOnboardedSidebarActionsIndexRoute
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
@@ -211,9 +233,14 @@ export interface FileRoutesById {
   '/_private/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/_private/onboarding/platform-new': typeof PrivateOnboardingPlatformNewRoute
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
+  '/_private/_onboarded/_sidebar/actions': typeof PrivateOnboardedSidebarActionsRouteWithChildren
   '/_private/_onboarded/_sidebar/': typeof PrivateOnboardedSidebarIndexRoute
   '/_private/_onboarded/asset-designer/': typeof PrivateOnboardedAssetDesignerIndexRoute
+  '/_private/_onboarded/_sidebar/actions/completed': typeof PrivateOnboardedSidebarActionsCompletedRoute
+  '/_private/_onboarded/_sidebar/actions/pending': typeof PrivateOnboardedSidebarActionsPendingRoute
+  '/_private/_onboarded/_sidebar/actions/upcoming': typeof PrivateOnboardedSidebarActionsUpcomingRoute
   '/_private/_onboarded/_sidebar/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
+  '/_private/_onboarded/_sidebar/actions/': typeof PrivateOnboardedSidebarActionsIndexRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/_private/_onboarded/_sidebar/token/$factoryAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
@@ -231,9 +258,14 @@ export interface FileRouteTypes {
     | '/onboarding/platform'
     | '/onboarding/platform-new'
     | '/onboarding/'
+    | '/actions'
     | '/'
     | '/asset-designer'
+    | '/actions/completed'
+    | '/actions/pending'
+    | '/actions/upcoming'
     | '/token/stats'
+    | '/actions/'
     | '/token/$factoryAddress/$tokenAddress'
     | '/token/$factoryAddress'
     | '/token/$factoryAddress/$tokenAddress/events'
@@ -250,7 +282,11 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/'
     | '/asset-designer'
+    | '/actions/completed'
+    | '/actions/pending'
+    | '/actions/upcoming'
     | '/token/stats'
+    | '/actions'
     | '/token/$factoryAddress'
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
@@ -268,9 +304,14 @@ export interface FileRouteTypes {
     | '/_private/onboarding/platform'
     | '/_private/onboarding/platform-new'
     | '/_private/onboarding/'
+    | '/_private/_onboarded/_sidebar/actions'
     | '/_private/_onboarded/_sidebar/'
     | '/_private/_onboarded/asset-designer/'
+    | '/_private/_onboarded/_sidebar/actions/completed'
+    | '/_private/_onboarded/_sidebar/actions/pending'
+    | '/_private/_onboarded/_sidebar/actions/upcoming'
     | '/_private/_onboarded/_sidebar/token/stats'
+    | '/_private/_onboarded/_sidebar/actions/'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
@@ -281,35 +322,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   PrivateRoute: typeof PrivateRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
-}
-export interface FileServerRoutesByFullPath {
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-}
-export interface FileServerRoutesByTo {
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/api/$': typeof ApiSplatServerRoute
-  '/api/auth/$': typeof ApiAuthSplatServerRoute
-  '/api/rpc/$': typeof ApiRpcSplatServerRoute
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/$' | '/api/auth/$' | '/api/rpc/$'
-  fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/$' | '/api/auth/$' | '/api/rpc/$'
-  id: '__root__' | '/api/$' | '/api/auth/$' | '/api/rpc/$'
-  fileServerRoutesById: FileServerRoutesById
-}
-export interface RootServerRouteChildren {
-  ApiSplatServerRoute: typeof ApiSplatServerRoute
-  ApiAuthSplatServerRoute: typeof ApiAuthSplatServerRoute
-  ApiRpcSplatServerRoute: typeof ApiRpcSplatServerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -405,12 +417,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarIndexRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
+    '/_private/_onboarded/_sidebar/actions': {
+      id: '/_private/_onboarded/_sidebar/actions'
+      path: '/actions'
+      fullPath: '/actions'
+      preLoaderRoute: typeof PrivateOnboardedSidebarActionsRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/actions/': {
+      id: '/_private/_onboarded/_sidebar/actions/'
+      path: '/'
+      fullPath: '/actions/'
+      preLoaderRoute: typeof PrivateOnboardedSidebarActionsIndexRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarActionsRoute
+    }
     '/_private/_onboarded/_sidebar/token/stats': {
       id: '/_private/_onboarded/_sidebar/token/stats'
       path: '/token/stats'
       fullPath: '/token/stats'
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenStatsRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/actions/upcoming': {
+      id: '/_private/_onboarded/_sidebar/actions/upcoming'
+      path: '/upcoming'
+      fullPath: '/actions/upcoming'
+      preLoaderRoute: typeof PrivateOnboardedSidebarActionsUpcomingRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarActionsRoute
+    }
+    '/_private/_onboarded/_sidebar/actions/pending': {
+      id: '/_private/_onboarded/_sidebar/actions/pending'
+      path: '/pending'
+      fullPath: '/actions/pending'
+      preLoaderRoute: typeof PrivateOnboardedSidebarActionsPendingRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarActionsRoute
+    }
+    '/_private/_onboarded/_sidebar/actions/completed': {
+      id: '/_private/_onboarded/_sidebar/actions/completed'
+      path: '/completed'
+      fullPath: '/actions/completed'
+      preLoaderRoute: typeof PrivateOnboardedSidebarActionsCompletedRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarActionsRoute
     }
     '/_private/_onboarded/_sidebar/token/$factoryAddress/': {
       id: '/_private/_onboarded/_sidebar/token/$factoryAddress/'
@@ -449,31 +496,30 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/rpc/$': {
-      id: '/api/rpc/$'
-      path: '/api/rpc/$'
-      fullPath: '/api/rpc/$'
-      preLoaderRoute: typeof ApiRpcSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
-    }
-  }
+
+interface PrivateOnboardedSidebarActionsRouteChildren {
+  PrivateOnboardedSidebarActionsCompletedRoute: typeof PrivateOnboardedSidebarActionsCompletedRoute
+  PrivateOnboardedSidebarActionsPendingRoute: typeof PrivateOnboardedSidebarActionsPendingRoute
+  PrivateOnboardedSidebarActionsUpcomingRoute: typeof PrivateOnboardedSidebarActionsUpcomingRoute
+  PrivateOnboardedSidebarActionsIndexRoute: typeof PrivateOnboardedSidebarActionsIndexRoute
 }
+
+const PrivateOnboardedSidebarActionsRouteChildren: PrivateOnboardedSidebarActionsRouteChildren =
+  {
+    PrivateOnboardedSidebarActionsCompletedRoute:
+      PrivateOnboardedSidebarActionsCompletedRoute,
+    PrivateOnboardedSidebarActionsPendingRoute:
+      PrivateOnboardedSidebarActionsPendingRoute,
+    PrivateOnboardedSidebarActionsUpcomingRoute:
+      PrivateOnboardedSidebarActionsUpcomingRoute,
+    PrivateOnboardedSidebarActionsIndexRoute:
+      PrivateOnboardedSidebarActionsIndexRoute,
+  }
+
+const PrivateOnboardedSidebarActionsRouteWithChildren =
+  PrivateOnboardedSidebarActionsRoute._addFileChildren(
+    PrivateOnboardedSidebarActionsRouteChildren,
+  )
 
 interface PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren {
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
@@ -497,6 +543,7 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren =
   )
 
 interface PrivateOnboardedSidebarRouteChildren {
+  PrivateOnboardedSidebarActionsRoute: typeof PrivateOnboardedSidebarActionsRouteWithChildren
   PrivateOnboardedSidebarIndexRoute: typeof PrivateOnboardedSidebarIndexRoute
   PrivateOnboardedSidebarTokenStatsRoute: typeof PrivateOnboardedSidebarTokenStatsRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
@@ -505,6 +552,8 @@ interface PrivateOnboardedSidebarRouteChildren {
 
 const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren =
   {
+    PrivateOnboardedSidebarActionsRoute:
+      PrivateOnboardedSidebarActionsRouteWithChildren,
     PrivateOnboardedSidebarIndexRoute: PrivateOnboardedSidebarIndexRoute,
     PrivateOnboardedSidebarTokenStatsRoute:
       PrivateOnboardedSidebarTokenStatsRoute,
@@ -582,11 +631,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiSplatServerRoute: ApiSplatServerRoute,
-  ApiAuthSplatServerRoute: ApiAuthSplatServerRoute,
-  ApiRpcSplatServerRoute: ApiRpcSplatServerRoute,
-}
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()

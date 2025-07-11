@@ -46,6 +46,7 @@ export const fallbackLng = "en";
  */
 export const namespaces = [
   "accessibility",
+  "actions",
   "asset-designer",
   "asset-types",
   "assets",

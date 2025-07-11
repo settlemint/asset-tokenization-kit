@@ -1,0 +1,29 @@
+{
+  "actions": "アクション",
+  "page": {
+    "actions": "アクション",
+    "description": "このトークンのアクションを管理・追跡する"
+  },
+  "tabs": {
+    "name": {
+      "pending": "保留中",
+      "upcoming": "予定",
+      "completed": "完了"
+    }
+  },
+  "status": {
+    "pending": "保留中のアクション",
+    "upcoming": "予定されたアクション",
+    "completed": "完了したアクション"
+  },
+  "empty": {
+    "pending": "表示する保留中のアクションはありません。",
+    "upcoming": "表示する予定されたアクションはありません。",
+    "completed": "表示する完了したアクションはありません。",
+    "default": "上のタブからアクションタイプを選択してください。"
+  },
+  "results": "{{count}}個のアクションが見つかりました",
+  "assignedTo": "割り当て先",
+  "createdBy": "作成者",
+  "dueDate": "期限"
+}

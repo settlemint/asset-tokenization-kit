@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ActivityIcon,
   BanknoteArrowUpIcon,
   ChartLine,
   ChevronRight,
@@ -160,6 +161,21 @@ export function NavAsset() {
             >
               <ChartLine />
               <span>{t("statistics")}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild>
+            <Link
+              to="/actions"
+              activeProps={{
+                "data-active": true,
+                className: "font-semibold",
+              }}
+            >
+              <ActivityIcon />
+              <span>{t("actions")}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

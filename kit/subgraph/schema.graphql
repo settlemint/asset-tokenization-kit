@@ -574,6 +574,31 @@ type TokenFixedYieldSchedulePeriod @entity(immutable: false) {
   deployedInTransaction: Bytes!
 }
 
+# --------------------------------------------------
+# ACTIONS
+# --------------------------------------------------
+
+type Action @entity(immutable: false) {
+  id: Bytes!
+  name: String!
+  type: String!
+  createdAt: BigInt!
+  activeAt: BigInt!
+  expiresAt: BigInt
+  executedAt: BigInt
+  executed: Boolean!
+  executedBy: Account
+  target: Account!
+  executors: ActionExecutor! @derivedFrom(field: "actions")
+  requiredRole: String
+}
+
+type ActionExecutor @entity(immutable: false) {
+  id: Bytes!
+  executors: [Account!]!
+  actions: [Action!]!
+}
+
 # ==================================================
 # SYSTEM STATISTICS
 # ==================================================
