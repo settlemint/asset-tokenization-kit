@@ -11,7 +11,6 @@ import { read } from "@/orpc/routes/token/routes/token.read";
 import { statsAssets } from "@/orpc/routes/token/routes/token.stats.assets";
 import { statsTransactions } from "@/orpc/routes/token/routes/token.stats.transactions";
 import { statsValue } from "@/orpc/routes/token/routes/token.stats.value";
-import { actions } from "@/orpc/routes/token/routes/token.actions";
 
 const routes = {
   create,
@@ -27,7 +26,6 @@ const routes = {
   statsAssets,
   statsTransactions,
   statsValue,
-  actions,
 };
 
 export default routes;

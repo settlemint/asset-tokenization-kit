@@ -24,7 +24,7 @@ export const ActionSchema = z.object({
     .optional(),
 });
 
-export const TokenActionsInputSchema = z.object({
+export const UserActionsInputSchema = z.object({
   status: ActionStatusSchema.optional(),
   type: ActionTypeSchema.optional(),
   assignedTo: z.string().optional(),
@@ -32,7 +32,7 @@ export const TokenActionsInputSchema = z.object({
   offset: z.number().min(0).default(0),
 });
 
-export const TokenActionsOutputSchema = z.object({
+export const UserActionsOutputSchema = z.object({
   actions: z.array(ActionSchema),
   total: z.number(),
   hasMore: z.boolean(),
@@ -41,5 +41,5 @@ export const TokenActionsOutputSchema = z.object({
 export type ActionType = z.infer<typeof ActionTypeSchema>;
 export type ActionStatus = z.infer<typeof ActionStatusSchema>;
 export type Action = z.infer<typeof ActionSchema>;
-export type TokenActionsInput = z.infer<typeof TokenActionsInputSchema>;
-export type TokenActionsOutput = z.infer<typeof TokenActionsOutputSchema>;
+export type UserActionsInput = z.infer<typeof UserActionsInputSchema>;
+export type UserActionsOutput = z.infer<typeof UserActionsOutputSchema>;

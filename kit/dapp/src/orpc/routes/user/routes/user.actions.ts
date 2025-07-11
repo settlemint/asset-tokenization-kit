@@ -1,27 +1,27 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { tokenRouter } from "@/orpc/procedures/token.router";
+import { authRouter } from "@/orpc/procedures/auth.router";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { z } from "zod/v4";
 import {
   type Action,
   type ActionStatus,
   type ActionType,
-  type TokenActionsOutput,
+  type UserActionsOutput,
   ActionStatusSchema,
   ActionTypeSchema,
-} from "./token.actions.schema";
+} from "./user.actions.schema";
 
 const logger = createLogger();
 
 /**
- * GraphQL query for retrieving actions directly from TheGraph.
+ * GraphQL query for retrieving actions assigned to a specific user.
  *
  * This query fetches actions directly with their executor information
- * for more efficient querying and filtering.
+ * for more efficient querying and filtering based on user wallet address.
  */
-const LIST_ACTIONS_QUERY = theGraphGraphql(`
-  query ListActionsQuery(
+const LIST_USER_ACTIONS_QUERY = theGraphGraphql(`
+  query ListUserActionsQuery(
     $skip: Int!
     $first: Int!
     $orderBy: Action_orderBy
@@ -61,10 +61,10 @@ const LIST_ACTIONS_QUERY = theGraphGraphql(`
 `);
 
 /**
- * GraphQL query for counting total actions matching the filter criteria
+ * GraphQL query for counting total actions assigned to a specific user
  */
-const COUNT_ACTIONS_QUERY = theGraphGraphql(`
-  query CountActionsQuery($where: Action_filter) {
+const COUNT_USER_ACTIONS_QUERY = theGraphGraphql(`
+  query CountUserActionsQuery($where: Action_filter) {
     actions(where: $where) {
       id
     }
@@ -105,8 +105,7 @@ const CountResponseSchema = z.object({
  * Maps subgraph action fields to the frontend action model
  */
 function mapSubgraphActionToAction(
-  subgraphAction: z.infer<typeof ActionsResponseSchema>["actions"][0],
-  tokenId: string
+  subgraphAction: z.infer<typeof ActionsResponseSchema>["actions"][0]
 ): Action {
   // Determine status based on executed state and timestamps
   const now = Date.now() / 1000;
@@ -135,7 +134,7 @@ function mapSubgraphActionToAction(
     subgraphAction.requiredRole
   );
 
-    return {
+  return {
     id: subgraphAction.id,
     type,
     status,
@@ -149,7 +148,7 @@ function mapSubgraphActionToAction(
     assignedTo: subgraphAction.executors?.executors?.length > 0
       ? subgraphAction.executors.executors[0]?.id ?? null
       : null,
-    token: tokenId,
+    token: subgraphAction.target.id,
     metadata: subgraphAction.requiredRole
       ? [{ key: "requiredRole", value: subgraphAction.requiredRole }]
       : undefined,
@@ -198,20 +197,22 @@ function formatActionTitle(name: string): string {
 }
 
 /**
- * Builds GraphQL where clause based on filter criteria
+ * Builds GraphQL where clause based on filter criteria and user wallet address
  */
 function buildWhereClause(
-  tokenId: string,
+  userWallet: string,
   status?: ActionStatus,
   type?: ActionType,
   assignedTo?: string
 ): Record<string, unknown> {
   const where: Record<string, unknown> = {
-    // Filter by token target directly in the query
-    target: tokenId.toLowerCase(),
+    // Filter by user wallet address - query actions where executors contain this address
+    executors_: {
+      executors_contains: [userWallet.toLowerCase()],
+    },
   };
 
-  // Filter by assignedTo - query actions where executors contain this address
+  // Override assignedTo if provided
   if (assignedTo) {
     where.executors_ = {
       executors_contains: [assignedTo.toLowerCase()],
@@ -245,14 +246,14 @@ function buildWhereClause(
   return where;
 }
 
-export const actions = tokenRouter.token.actions
+export const actions = authRouter.user.actions
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
-    const { token } = context;
+    const { auth } = context;
     const { status, type, assignedTo, limit, offset } = input;
 
-    logger.info("Fetching actions for token", {
-      tokenId: token.id,
+    logger.info("Fetching actions for user", {
+      userWallet: auth.user.wallet,
       status,
       type,
       assignedTo,
@@ -262,21 +263,21 @@ export const actions = tokenRouter.token.actions
 
     try {
       // Build where clause for the GraphQL query
-      const where = buildWhereClause(token.id, status, type, assignedTo);
+      const where = buildWhereClause(auth.user.wallet, status, type, assignedTo);
 
       // Get total count first
-      const countResponse = await context.theGraphClient.query(COUNT_ACTIONS_QUERY, {
+      const countResponse = await context.theGraphClient.query(COUNT_USER_ACTIONS_QUERY, {
         input: {
           where: Object.keys(where).length > 0 ? where : undefined,
         },
         output: CountResponseSchema,
-        error: "Failed to count actions",
+        error: "Failed to count user actions",
       });
 
       const total = countResponse.actions.length;
 
       // Get paginated results
-      const response = await context.theGraphClient.query(LIST_ACTIONS_QUERY, {
+      const response = await context.theGraphClient.query(LIST_USER_ACTIONS_QUERY, {
         input: {
           skip: offset,
           first: Math.min(limit, 1000),
@@ -285,21 +286,19 @@ export const actions = tokenRouter.token.actions
           where: Object.keys(where).length > 0 ? where : undefined,
         },
         output: ActionsResponseSchema,
-        error: "Failed to fetch actions",
+        error: "Failed to fetch user actions",
       });
 
-      // Process actions - no additional filtering needed since it's done in GraphQL
-      const actions: Action[] = response.actions.map(action =>
-        mapSubgraphActionToAction(action, token.id)
-      );
+      // Process actions
+      const actions: Action[] = response.actions.map(mapSubgraphActionToAction);
 
-      const result: TokenActionsOutput = {
+      const result: UserActionsOutput = {
         actions,
         total,
         hasMore: offset + actions.length < total,
       };
 
-      logger.info("Successfully fetched actions", {
+      logger.info("Successfully fetched user actions", {
         count: result.actions.length,
         total: result.total,
         hasMore: result.hasMore,
@@ -307,7 +306,7 @@ export const actions = tokenRouter.token.actions
 
       return result;
     } catch (error) {
-      logger.error("Error fetching token actions", { error });
+      logger.error("Error fetching user actions", { error });
 
       // Return empty result on error to prevent UI breaking
       return {

@@ -5,14 +5,15 @@ import { orpc } from "@/orpc";
 import {
   type ActionStatus,
   type ActionType,
-} from "@/orpc/routes/token/routes/token.actions.schema";
+  ActionStatusSchema,
+  ActionTypeSchema,
+} from "@/orpc/routes/user/routes/user.actions.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
 import { AlertCircleIcon, CalendarIcon, UserIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface ActionsListProps {
-  tokenAddress: string;
   status?: ActionStatus;
   type?: ActionType;
   assignedTo?: string;
@@ -21,7 +22,6 @@ interface ActionsListProps {
 }
 
 export function ActionsList({
-  tokenAddress,
   status,
   type,
   assignedTo,
@@ -31,9 +31,8 @@ export function ActionsList({
   const { t } = useTranslation(["actions", "common"]);
 
   const actionsQuery = useSuspenseQuery(
-    orpc.token.actions.queryOptions({
+    orpc.user.actions.queryOptions({
       input: {
-        tokenAddress,
         status,
         type,
         assignedTo,
@@ -50,20 +49,20 @@ export function ActionsList({
       <div className="flex flex-col items-center justify-center p-8 text-center">
         <AlertCircleIcon className="h-12 w-12 text-muted-foreground mb-4" />
         <h3 className="text-lg font-semibold mb-2">
-          {status === "PENDING"
+          {status === ActionStatusSchema.enum.PENDING
             ? t("empty.pending")
-            : status === "UPCOMING"
+            : status === ActionStatusSchema.enum.UPCOMING
               ? t("empty.upcoming")
-              : status === "COMPLETED"
+              : status === ActionStatusSchema.enum.COMPLETED
                 ? t("empty.completed")
                 : t("empty.default")}
         </h3>
         <p className="text-muted-foreground">
-          {status === "PENDING"
+          {status === ActionStatusSchema.enum.PENDING
             ? t("status.pending")
-            : status === "UPCOMING"
+            : status === ActionStatusSchema.enum.UPCOMING
               ? t("status.upcoming")
-              : status === "COMPLETED"
+              : status === ActionStatusSchema.enum.COMPLETED
                 ? t("status.completed")
                 : t("empty.default")}
         </p>
@@ -109,11 +108,11 @@ function ActionCard({ action }: ActionCardProps) {
 
   const getStatusColor = (status: ActionStatus) => {
     switch (status) {
-      case "PENDING":
+      case ActionStatusSchema.enum.PENDING:
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "UPCOMING":
+      case ActionStatusSchema.enum.UPCOMING:
         return "bg-blue-100 text-blue-800 border-blue-200";
-      case "COMPLETED":
+      case ActionStatusSchema.enum.COMPLETED:
         return "bg-green-100 text-green-800 border-green-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
@@ -122,9 +121,9 @@ function ActionCard({ action }: ActionCardProps) {
 
   const getTypeColor = (type: ActionType) => {
     switch (type) {
-      case "ADMIN":
+      case ActionTypeSchema.enum.ADMIN:
         return "bg-purple-100 text-purple-800 border-purple-200";
-      case "USER":
+      case ActionTypeSchema.enum.USER:
         return "bg-blue-100 text-blue-800 border-blue-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
@@ -149,9 +148,9 @@ function ActionCard({ action }: ActionCardProps) {
                 variant="outline"
                 className={getStatusColor(action.status)}
               >
-                {action.status === "PENDING"
+                {action.status === ActionStatusSchema.enum.PENDING
                   ? t("tabs.name.pending")
-                  : action.status === "UPCOMING"
+                  : action.status === ActionStatusSchema.enum.UPCOMING
                     ? t("tabs.name.upcoming")
                     : t("tabs.name.completed")}
               </Badge>
@@ -185,6 +184,14 @@ function ActionCard({ action }: ActionCardProps) {
               <CalendarIcon className="h-3 w-3" />
               <span>
                 {t("dueDate")}: {formatDueDate(action.dueDate)}
+              </span>
+            </div>
+          )}
+
+          {action.token && (
+            <div className="flex items-center gap-1">
+              <span>
+                Token: {action.token.slice(0, 8)}...
               </span>
             </div>
           )}

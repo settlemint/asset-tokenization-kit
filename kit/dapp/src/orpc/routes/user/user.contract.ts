@@ -12,6 +12,10 @@
  */
 
 import {
+  UserActionsInputSchema,
+  UserActionsOutputSchema,
+} from "@/orpc/routes/user/routes/user.actions.schema";
+import {
   UserListOutputSchema,
   UserListSchema,
 } from "@/orpc/routes/user/routes/user.list.schema";
@@ -78,10 +82,38 @@ const stats = baseContract
   .output(UserStatsOutputSchema);
 
 /**
+ * Get user-specific actions.
+ *
+ * This endpoint returns actions assigned to the currently authenticated user
+ * based on their wallet address. Actions are filtered by user permissions
+ * and can be further filtered by status, type, and assignedTo parameters.
+ * @auth Required - User must be authenticated
+ * @function GET
+ * @endpoint /user/actions
+ * @param status - Filter by action status (PENDING, UPCOMING, COMPLETED)
+ * @param type - Filter by action type (ADMIN, USER)
+ * @param assignedTo - Filter by specific assignee wallet address
+ * @param limit - Number of actions to return (default: 50, max: 100)
+ * @param offset - Number of actions to skip for pagination (default: 0)
+ * @returns UserActionsOutputSchema - User actions with pagination info
+ */
+const actions = baseContract
+  .route({
+    method: "GET",
+    path: "/user/actions",
+    description: "Get user-specific actions",
+    successDescription: "User actions",
+    tags: ["user"],
+  })
+  .input(UserActionsInputSchema)
+  .output(UserActionsOutputSchema);
+
+/**
  * User API contract collection.
  */
 export const userContract = {
   me,
   list,
   stats,
+  actions,
 };

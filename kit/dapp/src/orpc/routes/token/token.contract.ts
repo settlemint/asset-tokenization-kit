@@ -45,10 +45,6 @@ import {
   TokenStatsTransactionsOutputSchema,
 } from "@/orpc/routes/token/routes/token.stats.transactions.schema";
 import { TokenStatsValueOutputSchema } from "@/orpc/routes/token/routes/token.stats.value.schema";
-import {
-  TokenActionsInputSchema,
-  TokenActionsOutputSchema,
-} from "@/orpc/routes/token/routes/token.actions.schema";
 import { eventIterator } from "@orpc/server";
 
 const factoryCreate = baseContract
@@ -192,17 +188,6 @@ const unpause = baseContract
   .input(TokenUnpauseInputSchema)
   .output(eventIterator(TokenUnpauseOutputSchema));
 
-const actions = baseContract
-  .route({
-    method: "GET",
-    path: "/token/{tokenAddress}/actions",
-    description: "Get token actions",
-    successDescription: "List of token actions",
-    tags: ["token"],
-  })
-  .input(TokenActionsInputSchema)
-  .output(TokenActionsOutputSchema);
-
 export const tokenContract = {
   factoryCreate,
   factoryList,
@@ -217,5 +202,4 @@ export const tokenContract = {
   statsAssets,
   statsTransactions,
   statsValue,
-  actions,
 };
