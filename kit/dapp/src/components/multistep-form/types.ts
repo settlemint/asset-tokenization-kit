@@ -18,6 +18,7 @@ export interface StepDefinition<TFormData = unknown> {
   title: string;
   description?: string;
   groupId?: string;
+  enableFilters?: boolean;
   fields?:
     | FieldDefinition<TFormData>[]
     | ((formData: Partial<TFormData>) => FieldDefinition<TFormData>[]);
