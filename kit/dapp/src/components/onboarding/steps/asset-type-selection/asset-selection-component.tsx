@@ -419,18 +419,18 @@ export function AssetSelectionComponent({
             Deployed Asset Factories:
           </h3>
           <div className="grid grid-cols-1 gap-4">
-            {deployedFactories.map((factory: any, index: number) => (
+            {deployedFactories.map((factory, index) => (
               <div
-                key={factory.address || factory.id || index}
+                key={factory.address ?? factory.id ?? index}
                 className="rounded-lg border bg-card p-4"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h4 className="font-medium text-foreground">
-                      {factory.name || factory.typeId}
+                      {factory.name ?? factory.typeId}
                     </h4>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Contract Address: {factory.address || factory.id || "N/A"}
+                      Contract Address: {factory.address ?? factory.id ?? "N/A"}
                     </p>
                     {factory.deployedInTransaction && (
                       <p className="text-sm text-muted-foreground mt-1">
