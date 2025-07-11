@@ -1,8 +1,17 @@
 import { useWizardContext } from "@/components/multistep-form/wizard-context";
 import { Checkbox } from "@/components/ui/checkbox";
+import { VerificationDialog } from "@/components/ui/verification-dialog";
+import { useSettings } from "@/hooks/use-settings";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { authClient } from "@/lib/auth/auth.client";
+import { orpc } from "@/orpc";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeftRight, MoreHorizontal, TrendingUp, Zap } from "lucide-react";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 import { toast } from "sonner";
+
+const logger = createLogger();
 
 /**
  * Addon type definitions with descriptions
@@ -33,116 +42,45 @@ const addonDefinitions = [
 ] as const;
 
 /**
- * Wrapper component for checkbox elements to prevent event propagation.
+ * Platform Add-ons Step Component
+ *
+ * Allows users to select and deploy platform add-ons with PIN verification
+ * and real-time progress tracking.
  */
-const CheckboxWrapper = memo(
-  ({
-    onClick,
-    children,
-  }: {
-    onClick: (e: React.MouseEvent) => void;
-    children: React.ReactNode;
-  }) => <div onClick={onClick}>{children}</div>
-);
-CheckboxWrapper.displayName = "CheckboxWrapper";
-
-/**
- * Individual addon checkbox component
- */
-const AddonCheckbox = memo(
-  ({
-    addon,
-    isSelected,
-    isRequired,
-    onToggle,
-  }: {
-    addon: (typeof addonDefinitions)[number];
-    isSelected: boolean;
-    isRequired: boolean;
-    onToggle: (addonId: string) => void;
-  }) => {
-    const Icon = addon.icon;
-
-    const handleItemClick = useCallback(() => {
-      onToggle(addon.id);
-    }, [addon.id, onToggle]);
-
-    const handleCheckboxClick = useCallback((e: React.MouseEvent) => {
-      e.stopPropagation();
-    }, []);
-
-    const handleCheckboxChange = useCallback(
-      (checked: boolean) => {
-        if (checked) {
-          onToggle(addon.id);
-        } else if (!isRequired) {
-          onToggle(addon.id);
-        }
-      },
-      [addon.id, onToggle, isRequired]
-    );
-
-    return (
-      <div
-        key={addon.id}
-        className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 hover:bg-accent/50 transition-colors cursor-pointer"
-        onClick={handleItemClick}
-      >
-        <CheckboxWrapper onClick={handleCheckboxClick}>
-          <Checkbox
-            checked={isSelected}
-            onCheckedChange={handleCheckboxChange}
-            disabled={isRequired}
-          />
-        </CheckboxWrapper>
-        <div className="flex-1 space-y-1 leading-none">
-          <div className="flex items-center gap-2">
-            <Icon className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium cursor-pointer">
-              {addon.label}
-              {isRequired && <span className="text-amber-600 ml-1">*</span>}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground">{addon.description}</p>
-        </div>
-      </div>
-    );
-  }
-);
-AddonCheckbox.displayName = "AddonCheckbox";
-
-/**
- * Platform Addons Selection Component
- */
-export function PlatformAddonsComponent({
-  form,
+export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
   onNext,
   onPrevious,
   isFirstStep,
 }: {
-  form: {
-    state: {
-      values: {
-        selectedAddons?: string[];
-        selectedAssetTypes?: string[];
-      };
-    };
-    Field: (props: {
-      name: string;
-      children: (field: {
-        state: { value?: string[]; meta: { errors?: string[] } };
-        handleChange: (value: string[]) => void;
-      }) => React.ReactNode;
-    }) => React.ReactNode;
-  };
   onNext?: () => void;
   onPrevious?: () => void;
   isFirstStep?: boolean;
 }) {
-  const { clearStepError, markStepComplete } = useWizardContext();
+  const { form } = useWizardContext();
+  const { data: session } = authClient.useSession();
+  const [systemAddress] = useSettings("SYSTEM_ADDRESS");
+  const queryClient = useQueryClient();
 
-  const selectedAssetTypes = form.state.values.selectedAssetTypes ?? [];
-  const selectedAddons = form.state.values.selectedAddons ?? [];
+  // State for verification dialog
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null
+  );
+
+  // Check if user has 2FA enabled to determine available verification methods
+  const hasTwoFactor = session?.user?.twoFactorEnabled ?? false;
+  const hasPincode = session?.user?.pincodeEnabled ?? false;
+
+  // Fetch system details to get system information
+  const { data: systemDetails, isLoading: isLoadingSystem } = useQuery({
+    ...orpc.system.read.queryOptions({
+      input: { id: systemAddress ?? "" },
+    }),
+    enabled: !!systemAddress,
+  });
+
+  // Get selected asset types from the form to determine required addons
+  const selectedAssetTypes = form.state.values.selectedAssetTypes || [];
 
   // Check if any addon is required based on selected asset types
   const hasRequiredAddons = addonDefinitions.some(
@@ -154,172 +92,385 @@ export function PlatformAddonsComponent({
     (addon) => addon.isRequired && addon.isRequired(selectedAssetTypes)
   );
 
-  const handleConfirm = useCallback(() => {
+  // Addon deployment mutation
+  const { mutate: deployAddons, isPending: isDeploying } = useStreamingMutation(
+    {
+      mutationOptions: orpc.system.addonCreate.mutationOptions(),
+      onSuccess: async () => {
+        setShowVerificationModal(false);
+        setVerificationError(null);
+        toast.success("Add-ons deployed successfully!");
+        await queryClient.invalidateQueries();
+      },
+    }
+  );
+
+  // Handle addon selection/deselection
+  const handleAddonToggle = useCallback(
+    (addonId: string, isSelected: boolean) => {
+      return (field: {
+        state: { value?: string[]; meta: { errors?: string[] } };
+        handleChange: (value: string[]) => void;
+      }) => {
+        const currentValue = field.state.value || [];
+
+        if (isSelected) {
+          // Add addon if not already present
+          if (!currentValue.includes(addonId)) {
+            field.handleChange([...currentValue, addonId]);
+          }
+        } else {
+          // Check if this is a required addon
+          const addon = addonDefinitions.find((a) => a.id === addonId);
+          if (addon?.isRequired && addon.isRequired(selectedAssetTypes)) {
+            toast.warning(
+              `${addon.label} is required because you selected Bond assets`
+            );
+            return;
+          }
+
+          // Remove addon
+          field.handleChange(
+            currentValue.filter((id: string) => id !== addonId)
+          );
+        }
+      };
+    },
+    [selectedAssetTypes]
+  );
+
+  // Handle deploy button click
+  const handleDeploy = useCallback(() => {
     try {
-      clearStepError("enable-platform-addons");
+      const formValues = form.state.values;
+      const selectedAddons = formValues.selectedPlatformAddons || [];
 
-      // Check if all required addons are selected
-      const missingRequired = requiredAddons.filter(
-        (addon) => !selectedAddons.includes(addon.id)
-      );
+      if (selectedAddons.length === 0 && !hasRequiredAddons) {
+        toast.error("Please select at least one add-on to deploy");
+        return;
+      }
 
-      if (missingRequired.length > 0) {
+      // Check if system is bootstrapped before allowing addon deployment
+      if (!systemAddress) {
+        toast.error("System must be bootstrapped before deploying add-ons");
+        return;
+      }
+
+      if (!systemDetails) {
         toast.error(
-          `Required add-ons must be selected: ${missingRequired.map((a) => a.label).join(", ")}`
+          "System details not found. Please ensure the system is properly bootstrapped."
         );
         return;
       }
 
-      markStepComplete("enable-platform-addons");
-      toast.success("Platform add-ons configured successfully");
-      onNext?.();
-    } catch {
-      toast.error("Failed to configure platform add-ons");
+      // Show verification modal for PIN/OTP input
+      setVerificationError(null);
+      setShowVerificationModal(true);
+    } catch (error) {
+      toast.error("Failed to initiate add-on deployment");
+      logger.error("Add-on deployment preparation failed:", error);
     }
-  }, [
-    clearStepError,
-    markStepComplete,
-    onNext,
-    requiredAddons,
-    selectedAddons,
-  ]);
+  }, [form.state.values, hasRequiredAddons, systemAddress, systemDetails]);
+
+  // Handle PIN/OTP verification and addon deployment
+  const handleVerificationSubmit = useCallback(
+    (verificationCode: string, verificationType: "pincode" | "two-factor") => {
+      const formValues = form.state.values;
+      const selectedAddons = formValues.selectedPlatformAddons || [];
+
+      // Include required addons automatically
+      const allRequiredAddonIds = requiredAddons.map((addon) => addon.id);
+      const finalAddonIds = [
+        ...new Set([...selectedAddons, ...allRequiredAddonIds]),
+      ];
+
+      if (finalAddonIds.length === 0) {
+        setVerificationError("No add-ons selected for deployment");
+        return;
+      }
+
+      // Convert selected addon IDs to addon configurations
+      const addonConfigs = finalAddonIds.map((addonId) => {
+        const addon = addonDefinitions.find((a) => a.id === addonId);
+        if (!addon) {
+          throw new Error(`Unknown addon type: ${addonId}`);
+        }
+
+        return {
+          type: addonId as "airdrops" | "yield" | "xvp",
+          name: addon.label,
+        };
+      });
+
+      setVerificationError(null);
+
+      // Check if system is properly bootstrapped and ready for addon deployment
+      if (isLoadingSystem) {
+        setVerificationError("Loading system information. Please wait...");
+        return;
+      }
+
+      if (!systemDetails) {
+        logger.error("System details not found for address:", {
+          systemAddress,
+        });
+        setVerificationError(
+          "System not found. Please ensure the system is properly bootstrapped."
+        );
+        return;
+      }
+
+      // Use the system addon registry address - this is the correct contract for addon registration
+      const contractAddress = systemDetails.systemAddonRegistry;
+
+      if (!contractAddress) {
+        logger.error("System addon registry address not found", {
+          systemAddress,
+          systemDetails,
+          systemAddonRegistry: systemDetails.systemAddonRegistry,
+        });
+        setVerificationError(
+          "System addon registry not found. Please ensure the system is properly bootstrapped."
+        );
+        return;
+      }
+
+      logger.info("Deploying add-ons with parameters:", {
+        addonRegistryAddress: contractAddress,
+        systemAddress,
+        addonConfigs,
+        verification: {
+          verificationCode: "***",
+          verificationType,
+        },
+        userWallet: session?.user.wallet ?? "no wallet",
+        userSession: !!session?.user,
+        addonCount: addonConfigs.length,
+        addonTypes: addonConfigs.map((a) => a.type),
+        hasSystemDetails: !!systemDetails,
+        systemDetailsKeys: systemDetails ? Object.keys(systemDetails) : [],
+      });
+
+      // Deploy addons using the mutation
+      try {
+        deployAddons({
+          contract: contractAddress,
+          addons: addonConfigs,
+          verification: {
+            verificationCode,
+            verificationType,
+          },
+        });
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        const errorStack = error instanceof Error ? error.stack : undefined;
+
+        logger.error("Addon deployment failed:", {
+          error,
+          errorMessage,
+          errorStack,
+          systemAddress,
+          hasSystemDetails: !!systemDetails,
+        });
+
+        // Provide more specific error messages based on the error
+        let userMessage = "Failed to deploy add-ons. Please try again.";
+
+        if (
+          errorMessage.includes("not found") ||
+          errorMessage.includes("not exist")
+        ) {
+          userMessage =
+            "System addon registry not found. Please ensure the system is properly configured.";
+        } else if (
+          errorMessage.includes("unauthorized") ||
+          errorMessage.includes("permission")
+        ) {
+          userMessage =
+            "You don't have permission to deploy add-ons. Please check your access rights.";
+        } else if (
+          errorMessage.includes("verification") ||
+          errorMessage.includes("invalid code")
+        ) {
+          userMessage =
+            "Invalid verification code. Please check your PIN/OTP and try again.";
+        } else if (errorMessage) {
+          userMessage = errorMessage;
+        }
+
+        setVerificationError(userMessage);
+        toast.error(userMessage);
+      }
+    },
+    [
+      form.state.values,
+      requiredAddons,
+      systemAddress,
+      deployAddons,
+      session?.user,
+      isLoadingSystem,
+      systemDetails,
+    ]
+  );
+
+  // Create stable callback references for verification dialog
+  const handlePincodeSubmit = useCallback(
+    (pincode: string) => {
+      handleVerificationSubmit(pincode, "pincode");
+    },
+    [handleVerificationSubmit]
+  );
+
+  const handleOtpSubmit = useCallback(
+    (otp: string) => {
+      handleVerificationSubmit(otp, "two-factor");
+    },
+    [handleVerificationSubmit]
+  );
+
+  // Create addon toggle handler outside of Field render function
+  const createAddonHandlers = useCallback(
+    (
+      addon: (typeof addonDefinitions)[number],
+      isSelected: boolean,
+      isRequired: boolean,
+      field: any
+    ) => {
+      const handleContainerClick = () => {
+        if (isRequired || isDeploying) return;
+
+        const newCheckedState = !isSelected;
+        handleAddonToggle(addon.id, newCheckedState)(field);
+      };
+
+      const handleCheckboxClick = (e: React.MouseEvent) => {
+        // Prevent the container click from firing when clicking directly on checkbox
+        e.stopPropagation();
+      };
+
+      return { handleContainerClick, handleCheckboxClick };
+    },
+    [isDeploying, handleAddonToggle]
+  );
 
   return (
-    <div className="max-w-4xl space-y-6">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">
-          Configure Platform Add-ons
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h2 className="text-xl font-semibold">Configure Platform Add-ons</h2>
+        <p className="text-muted-foreground">
           Enhance your platform with optional features.
         </p>
-      </div>
-
-      <div className="space-y-4 mb-6">
-        <p className="text-sm">
-          Platform add-ons allow you to extend the capabilities of your
-          tokenization platform. These features — like Airdrops, Yield, or XVP —
-          are deployed as smart contracts, just like the core system.
-        </p>
-        <p className="text-sm">
-          You can enable the ones you need now, and{" "}
-          <strong>easily change or expand them later in Settings</strong>.
+        <p className="text-sm text-muted-foreground">
+          Platform add-ons are smart contracts that extend your platform's
+          functionality. Select the ones you need for your use case.
         </p>
       </div>
 
-      <div className="mb-4">
-        <h3 className="text-base font-medium text-foreground">
-          Select add-ons:
-        </h3>
-      </div>
+      {hasRequiredAddons && (
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h3 className="font-medium text-blue-900 mb-2">Required Add-ons</h3>
+          <p className="text-sm text-blue-700 mb-2">
+            Based on your selected asset types, these add-ons are required:
+          </p>
+          <ul className="text-sm text-blue-700 list-disc list-inside">
+            {requiredAddons.map((addon) => (
+              <li key={addon.id}>
+                <strong>{addon.label}</strong> - {addon.description}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-      <form.Field name="selectedAddons">
+      <form.Field name="selectedPlatformAddons">
         {(field: {
           state: { value?: string[]; meta: { errors?: string[] } };
           handleChange: (value: string[]) => void;
-        }) => {
-          const handleAddonToggle = useCallback(
-            (addonId: string) => {
-              const currentValue = field.state.value ?? [];
-              const isSelected = currentValue.includes(addonId);
+        }) => (
+          <div className="space-y-4">
+            <div className="grid gap-4">
+              {addonDefinitions.map((addon) => {
+                const isRequired = addon.isRequired
+                  ? addon.isRequired(selectedAssetTypes)
+                  : false;
+                const isSelected = (field.state.value ?? []).includes(addon.id);
+                const IconComponent = addon.icon;
 
-              if (isSelected) {
-                // Check if this is a required addon
-                const addon = addonDefinitions.find((a) => a.id === addonId);
-                if (addon?.isRequired && addon.isRequired(selectedAssetTypes)) {
-                  toast.warning(
-                    `${addon.label} is required because you selected Bond assets`
-                  );
-                  return;
-                }
-                // Remove from selection
-                field.handleChange(currentValue.filter((id) => id !== addonId));
-              } else {
-                // Add to selection
-                field.handleChange([...currentValue, addonId]);
-              }
-            },
-            [field, selectedAssetTypes]
-          );
+                const { handleContainerClick, handleCheckboxClick } =
+                  createAddonHandlers(addon, isSelected, isRequired, field);
 
-          return (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                {addonDefinitions.map((addon) => {
-                  const isRequired = addon.isRequired
-                    ? addon.isRequired(selectedAssetTypes)
-                    : false;
-                  const isSelected = (field.state.value ?? []).includes(
-                    addon.id
-                  );
-
-                  return (
-                    <AddonCheckbox
-                      key={addon.id}
-                      addon={addon}
-                      isSelected={isSelected}
-                      isRequired={isRequired}
-                      onToggle={handleAddonToggle}
-                    />
-                  );
-                })}
-
-                {/* More coming soon placeholder */}
-                <div className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-dashed p-4 opacity-60">
-                  <div className="w-5 h-5 flex items-center justify-center">
-                    <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                return (
+                  <div
+                    key={addon.id}
+                    className={`relative flex items-start space-x-3 rounded-lg border p-4 transition-colors ${
+                      isSelected
+                        ? "border-primary bg-primary/5"
+                        : "border-border"
+                    } ${isRequired ? "ring-2 ring-blue-200" : ""} ${
+                      isRequired || isDeploying
+                        ? "cursor-not-allowed opacity-75"
+                        : "hover:bg-muted/50 cursor-pointer"
+                    }`}
+                    onClick={handleContainerClick}
+                  >
+                    <div onClick={handleCheckboxClick}>
+                      <Checkbox
+                        checked={isSelected || isRequired}
+                        disabled={isRequired || isDeploying}
+                        onCheckedChange={(checked) =>
+                          handleAddonToggle(addon.id, checked === true)(field)
+                        }
+                        className="mt-1"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <IconComponent className="h-5 w-5 text-primary" />
+                        <label className="text-sm font-medium leading-6 cursor-pointer">
+                          {addon.label}
+                          {isRequired && (
+                            <span className="ml-1 text-xs text-blue-600 font-medium">
+                              *
+                            </span>
+                          )}
+                        </label>
+                      </div>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {addon.description}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1 space-y-1 leading-none">
-                    <span className="text-sm font-medium text-muted-foreground italic">
+                );
+              })}
+
+              {/* More coming soon placeholder */}
+              <div className="relative flex items-start space-x-3 rounded-lg border border-dashed border-muted-foreground/50 p-4 opacity-60">
+                <div className="flex items-center justify-center w-5 h-5 mt-1">
+                  <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium leading-6 text-muted-foreground">
                       More coming soon...
-                    </span>
+                    </label>
                   </div>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Additional platform add-ons will be available in future
+                    releases.
+                  </p>
                 </div>
               </div>
-
-              {field.state.meta.errors &&
-                field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive mt-2">
-                    {field.state.meta.errors[0]}
-                  </p>
-                )}
             </div>
-          );
-        }}
-      </form.Field>
 
-      {/* Legend and warnings */}
-      <div className="space-y-4">
-        {hasRequiredAddons && (
-          <div className="space-y-2">
-            <p className="text-sm font-medium">
-              Below the table show a legend:
-            </p>
-            <p className="text-sm text-muted-foreground">
-              (*) Required because Bond asset type is selected
-            </p>
+            {field.state.meta.errors && (
+              <p className="text-sm text-destructive">
+                {field.state.meta.errors[0]}
+              </p>
+            )}
           </div>
         )}
-
-        <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
-          <div className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center mt-0.5">
-            <span className="text-white text-xs font-bold">!</span>
-          </div>
-          <p className="text-sm text-amber-800 dark:text-amber-200">
-            This process may take up to 2–3 minutes depending on your
-            selections.
-          </p>
-        </div>
-
-        <div className="flex items-start gap-3 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-          <div className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center mt-0.5">
-            <span className="text-white text-xs font-bold">i</span>
-          </div>
-          <p className="text-sm text-blue-800 dark:text-blue-200">
-            You'll be asked to confirm each transaction using your PIN or OTP.
-          </p>
-        </div>
-      </div>
+      </form.Field>
 
       <div className="flex justify-end gap-3 pt-6">
         {!isFirstStep && (
@@ -327,18 +478,44 @@ export function PlatformAddonsComponent({
             type="button"
             onClick={onPrevious}
             className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
+            disabled={isDeploying}
           >
             Previous
           </button>
         )}
         <button
           type="button"
-          onClick={handleConfirm}
-          className="px-6 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          onClick={onNext}
+          className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
+          disabled={isDeploying}
         >
-          Deploy Add-ons
+          Skip
+        </button>
+        <button
+          type="button"
+          onClick={handleDeploy}
+          className="px-6 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isDeploying}
+        >
+          {isDeploying ? "Deploying..." : "Deploy Add-ons"}
         </button>
       </div>
+
+      {/* Verification Modal */}
+      <VerificationDialog
+        open={showVerificationModal}
+        onOpenChange={setShowVerificationModal}
+        title="Enter your PIN code to deploy add-ons"
+        description="You're about to deploy platform add-ons to the blockchain. To authorize this action, we need you to confirm your identity."
+        hasPincode={hasPincode}
+        hasTwoFactor={hasTwoFactor}
+        isLoading={isDeploying}
+        loadingText="Deploying add-ons..."
+        confirmText="Deploy Add-ons"
+        errorMessage={verificationError}
+        onPincodeSubmit={handlePincodeSubmit}
+        onOtpSubmit={handleOtpSubmit}
+      />
     </div>
   );
-}
+});
