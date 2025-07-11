@@ -1,4 +1,5 @@
-import { DetailGrid, DetailGridItem } from "@/components/detail-grid";
+import { DetailGrid } from "@/components/detail-grid/detail-grid";
+import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";

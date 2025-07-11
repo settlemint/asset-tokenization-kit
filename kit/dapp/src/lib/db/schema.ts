@@ -1,3 +1,4 @@
+/* eslint-disable no-barrel-files/no-barrel-files */
 /**
  * Database Schema Aggregator
  *
@@ -19,5 +20,5 @@
  */
 
 export * from "./schemas/auth";
-export * from "./schemas/settings";
 export * from "./schemas/exchange-rates";
+export * from "./schemas/settings";

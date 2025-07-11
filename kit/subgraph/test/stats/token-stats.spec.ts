@@ -90,7 +90,7 @@ describe("TokenStats", () => {
     expect(Array.isArray(response.tokenStatsStates)).toBe(true);
 
     expect(response.tokenStatsStates.length).toBe(6);
-    
+
     // Verify that all expected tokens are present with correct balance counts
     const tokenStats = response.tokenStatsStates;
     const expectedTokens = [
@@ -100,7 +100,7 @@ describe("TokenStats", () => {
       { symbol: "EURD", balancesCount: 6 },
       { symbol: "USDT", balancesCount: 3 },
     ];
-    
+
     for (const expected of expectedTokens) {
       const found = tokenStats.find(
         (stat) => stat.token.symbol === expected.symbol
