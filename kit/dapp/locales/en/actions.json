@@ -1,7 +1,8 @@
 {
   "actions": "Actions",
   "page": {
-    "actions": "Actions"
+    "actions": "Actions",
+    "description": "Manage and track actions for this token"
   },
   "tabs": {
     "name": {
@@ -20,5 +21,9 @@
     "upcoming": "No upcoming actions to display.",
     "completed": "No completed actions to display.",
     "default": "Select an action type from the tabs above."
-  }
+  },
+  "results": "{{count}} action(s) found",
+  "assignedTo": "Assigned to",
+  "createdBy": "Created by",
+  "dueDate": "Due"
 }
