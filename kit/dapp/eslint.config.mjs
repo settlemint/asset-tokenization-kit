@@ -6,6 +6,7 @@ import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginRouter from "@tanstack/eslint-plugin-router";
 import boundaries from "eslint-plugin-boundaries";
 import importPlugin from "eslint-plugin-import";
+import noBarrelFiles from "eslint-plugin-no-barrel-files";
 import pluginReact from "eslint-plugin-react";
 import reactCompiler from "eslint-plugin-react-compiler";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -130,6 +131,9 @@ export default defineConfig([
   // Import
   importPlugin.flatConfigs.recommended,
   importPlugin.flatConfigs.typescript,
+
+  // No Barrel Files
+  noBarrelFiles.flat,
 
   // ==========================================================================
   // 6. TYPESCRIPT TYPE-CHECKED RULES (Source Files Only)
