@@ -169,6 +169,7 @@ contract ATKIdentityRegistryImplementation is
         // Grant the caller (initialAdmin) the default admin role, allowing them to manage other roles.
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
         _grantRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, initialAdmin);
+        _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin); // Platform Admin needs to register identities
 
         for (uint256 i = 0; i < registrarAdmins.length; i++) {
             _grantRole(ATKSystemRoles.REGISTRAR_ADMIN_ROLE, registrarAdmins[i]);
