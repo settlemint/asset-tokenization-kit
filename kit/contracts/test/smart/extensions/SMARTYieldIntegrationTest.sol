@@ -13,8 +13,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     // --- Fixed Yield Schedule Integration Tests ---
 
     function test_Yield_FixedScheduleIntegration() public {
-        _setUpYieldTest();
-
         uint256 futureStartDate = block.timestamp + 1 days;
         address scheduleAddress =
             _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, futureStartDate);
@@ -36,8 +34,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_SchedulePeriodCalculations() public {
-        _setUpYieldTest();
-
         uint256 futureStartDate = block.timestamp + 1 days;
         address scheduleAddress =
             _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, futureStartDate);
@@ -65,8 +61,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_ScheduleTimeCalculations() public {
-        _setUpYieldTest();
-
         uint256 futureStartDate = block.timestamp + 1 days;
         address scheduleAddress =
             _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, futureStartDate);
@@ -92,8 +86,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     // --- Financial Calculation Tests ---
 
     function test_Yield_BasicYieldCalculation() public {
-        _setUpYieldTest();
-
         // Ensure block number is aligned before minting
         _ensureBlockAlignment();
         _mintInitialBalances();
@@ -128,8 +120,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_ZeroBalanceYieldCalculation() public {
-        _setUpYieldTest();
-
         uint256 futureStartDate = block.timestamp + 1 days;
         address scheduleAddress =
             _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, futureStartDate);
@@ -149,8 +139,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     // --- Yield Claiming Tests ---
 
     function test_Yield_ClaimYield_Success() public {
-        _setUpYieldTest();
-
         // Ensure block number is aligned before minting
         _ensureBlockAlignment();
         _mintInitialBalances();
@@ -188,8 +176,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_ClaimYield_MultiplePeriods() public {
-        _setUpYieldTest();
-
         // Ensure block number is aligned before minting
         _ensureBlockAlignment();
         _mintInitialBalances();
@@ -232,8 +218,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     // --- Administrative Function Tests ---
 
     function test_Yield_FundSchedule_Success() public {
-        _setUpYieldTest();
-
         address scheduleAddress = _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer);
         uint256 fundAmount = 100_000 ether;
 
@@ -247,8 +231,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_WithdrawFromSchedule_Success() public {
-        _setUpYieldTest();
-
         address scheduleAddress = _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer);
         uint256 fundAmount = 100_000 ether;
         uint256 withdrawAmount = 50_000 ether;
@@ -274,8 +256,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     // --- Additional Integration Tests ---
 
     function test_Yield_ScheduleEndDate_Calculation() public {
-        _setUpYieldTest();
-
         uint256 startDate = block.timestamp + 1 days;
         address scheduleAddress =
             _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, startDate);
@@ -287,8 +267,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_PeriodBoundaries() public {
-        _setUpYieldTest();
-
         uint256 startDate = block.timestamp + 1 days;
         address scheduleAddress =
             _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, startDate);
@@ -306,8 +284,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     // --- Integration Tests with Other Extensions ---
 
     function test_Yield_WithHistoricalBalances() public {
-        _setUpYieldTest();
-
         // Ensure block number is aligned before minting
         _ensureBlockAlignment();
         _mintInitialBalances();
@@ -334,8 +310,6 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_WithCompliance() public {
-        _setUpYieldTest();
-
         // Ensure block number is aligned before minting
         _ensureBlockAlignment();
         _mintInitialBalances();

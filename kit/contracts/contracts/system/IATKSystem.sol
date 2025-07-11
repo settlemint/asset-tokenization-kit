@@ -57,6 +57,11 @@ interface IATKSystem is IERC165 {
     /// @param newImplementation The address of the new token access manager module implementation contract.
     event TokenAccessManagerImplementationUpdated(address indexed sender, address indexed newImplementation);
 
+    /// @notice Emitted when the implementation (logic contract) for the system access manager module is updated.
+    /// @param sender The address that called the `updateSystemAccessManagerImplementation` function.
+    /// @param newImplementation The address of the new system access manager module implementation contract.
+    event SystemAccessManagerImplementationUpdated(address indexed sender, address indexed newImplementation);
+
     /// @notice Emitted when the implementation (logic contract) for the compliance module registry is updated.
     /// @param sender The address that called the function.
     /// @param newImplementation The address of the new compliance module registry implementation contract.
@@ -96,6 +101,7 @@ interface IATKSystem is IERC165 {
     /// @param systemAddonRegistryProxy The address of the deployed ATKSystemAddonRegistryProxy contract.
     /// @param complianceModuleRegistryProxy The address of the deployed ATKComplianceModuleRegistryProxy contract.
     /// @param identityVerificationModule The address of the deployed IdentityVerificationModule contract.
+    /// @param systemAccessManagerProxy The address of the deployed ATKSystemAccessManagerProxy contract.
     event Bootstrapped(
         address indexed sender,
         address indexed complianceProxy,
@@ -107,7 +113,8 @@ interface IATKSystem is IERC165 {
         address tokenFactoryRegistryProxy,
         address systemAddonRegistryProxy,
         address complianceModuleRegistryProxy,
-        address identityVerificationModule
+        address identityVerificationModule,
+        address systemAccessManagerProxy
     );
 
     /// @notice Initializes and sets up the entire ATK Protocol system.
@@ -202,4 +209,12 @@ interface IATKSystem is IERC165 {
     /// @notice Returns the address of the access manager implementation.
     /// @return The address of the access manager implementation contract.
     function tokenAccessManagerImplementation() external view returns (address);
+
+    /// @notice Returns the address of the system access manager proxy.
+    /// @return The address of the system access manager proxy contract.
+    function systemAccessManager() external view returns (address);
+
+    /// @notice Returns the address of the system access manager implementation.
+    /// @return The address of the system access manager implementation contract.
+    function systemAccessManagerImplementation() external view returns (address);
 }

@@ -6,6 +6,10 @@ import { recoverIdentity } from "./actions/recover-identity";
 import { setGlobalBlockedAddresses } from "./actions/set-global-blocked-addressess";
 import { setGlobalBlockedCountries } from "./actions/set-global-blocked-countries";
 import { setGlobalBlockedIdentities } from "./actions/set-global-blocked-identities";
+import {
+  setupBasicSystemRoles,
+  setupSystemModuleRoles,
+} from "./actions/setup-initial-system-roles";
 import { grantRoles } from "./assets/actions/core/grant-roles";
 import { mint } from "./assets/actions/core/mint";
 import { recoverErc20Tokens } from "./assets/actions/core/recover-erc20-tokens";
@@ -43,6 +47,34 @@ async function main() {
   // Setup the smart protocol
   await atkDeployer.setUp({
     displayUi: true,
+  });
+
+  console.log("\n=== Setting up initial system roles... ===\n");
+
+  // Set up initial system roles after bootstrap
+  const systemAccessManagerAddress =
+    atkDeployer.getSystemAccessManagerContract().address;
+  const systemAddress = atkDeployer.getSystemContract().address;
+  const identityRegistryAddress =
+    atkDeployer.getIdentityRegistryContract().address;
+  const tokenFactoryRegistryAddress =
+    atkDeployer.getTokenFactoryRegistryContract().address;
+  const systemAddonRegistryAddress =
+    atkDeployer.getSystemAddonRegistryContract().address;
+
+  // Grant basic system roles to the owner
+  await setupBasicSystemRoles(
+    systemAccessManagerAddress,
+    owner,
+    owner.address // Platform operator
+  );
+
+  // Grant system module roles to system contracts
+  await setupSystemModuleRoles(systemAccessManagerAddress, owner, {
+    systemAddress,
+    identityRegistryAddress,
+    tokenFactoryRegistryAddress,
+    addonRegistryAddress: systemAddonRegistryAddress,
   });
 
   console.log("\n=== Setting up actors... ===\n");

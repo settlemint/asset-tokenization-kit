@@ -59,8 +59,6 @@ contract ATKFundTest is AbstractATKAssetTest {
             systemUtils.tokenFactoryRegistry().registerTokenFactory("Fund", address(fundFactoryImpl), address(fundImpl))
         );
 
-        // Grant registrar role to owner so that he can create the fund
-        IAccessControl(address(fundFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities

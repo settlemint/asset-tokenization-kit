@@ -84,9 +84,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             systemUtils.tokenFactoryRegistry().registerTokenFactory("Bond", address(bondFactoryImpl), address(bondImpl))
         );
 
-        // Grant registrar role to owner so that he can create the bond
-        IAccessControl(address(bondFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
-
         fixedYieldScheduleFactory = IATKFixedYieldScheduleFactory(
             systemUtils.systemAddonRegistry().registerSystemAddon(
                 "fixed-yield-schedule-factory",
@@ -99,6 +96,8 @@ contract ATKBondTest is AbstractATKAssetTest {
             )
         );
         vm.label(address(fixedYieldScheduleFactory), "Yield Schedule Factory");
+
+        // Grant DEPLOYER_ROLE to owner on the yield schedule factory
         IAccessControl(address(fixedYieldScheduleFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
 
         vm.stopPrank();

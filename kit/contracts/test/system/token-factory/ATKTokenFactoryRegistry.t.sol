@@ -87,7 +87,7 @@ contract ATKTokenFactoryRegistryTest is Test {
     }
 
     function test_Initialize() public view {
-        assertTrue(registry.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(systemUtils.systemAccessManager().hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
     }
 
     function test_RegisterTokenFactory_Success() public {
@@ -117,7 +117,7 @@ contract ATKTokenFactoryRegistryTest is Test {
         vm.prank(user);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.REGISTRAR_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.TOKEN_MANAGER_ROLE
             )
         );
         registry.registerTokenFactory("TestFactory", address(mockTokenFactory), address(mockTokenImplementation));
@@ -197,9 +197,7 @@ contract ATKTokenFactoryRegistryTest is Test {
         vm.prank(user);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector,
-                user,
-                ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.SYSTEM_MANAGER_ROLE
             )
         );
         registry.setTokenFactoryImplementation(factoryTypeHash, address(newMockTokenFactory));
@@ -245,8 +243,7 @@ contract ATKTokenFactoryRegistryTest is Test {
 
     function test_SupportsInterface() public view {
         assertTrue(registry.supportsInterface(type(IATKTokenFactoryRegistry).interfaceId));
-        assertTrue(registry.supportsInterface(type(IAccessControl).interfaceId));
-        assertTrue(registry.supportsInterface(type(IERC165).interfaceId));
         assertTrue(registry.supportsInterface(type(IATKTypedImplementationRegistry).interfaceId));
+        assertTrue(registry.supportsInterface(type(IERC165).interfaceId));
     }
 }

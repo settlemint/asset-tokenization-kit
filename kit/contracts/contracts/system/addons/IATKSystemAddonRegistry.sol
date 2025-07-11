@@ -30,5 +30,5 @@ interface IATKSystemAddonRegistry is IAccessControl {
 
     function addon(bytes32 addonTypeHash) external view returns (address);
 
-    function initialize(address initialAdmin, address systemAddress) external;
+    function initialize(address initialAdmin, address systemAddress, address systemAccessManager) external;
 }

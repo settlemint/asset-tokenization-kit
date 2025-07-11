@@ -20,8 +20,6 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     // --- Core Extension Tests ---
 
     function test_Yield_SupportsInterface() public {
-        _setUpYieldTest();
-
         // Test ISMARTYield interface support
         bytes4 yieldInterfaceId = type(ISMARTYield).interfaceId;
         assertTrue(IERC165(address(token)).supportsInterface(yieldInterfaceId), "Should support ISMARTYield interface");
@@ -32,8 +30,6 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_InitialState() public {
-        _setUpYieldTest();
-
         // Verify initial state
         assertEq(
             ISMARTYield(address(token)).yieldSchedule(), address(0), "Initial yield schedule should be zero address"
@@ -51,8 +47,6 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     // --- Yield Schedule Management Tests ---
 
     function test_Yield_SetYieldSchedule_Success() public {
-        _setUpYieldTest();
-
         address scheduleAddress = _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer);
 
         vm.expectEmit(true, true, false, true);
@@ -65,16 +59,12 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_SetYieldSchedule_ZeroAddress_Reverts() public {
-        _setUpYieldTest();
-
         vm.expectRevert(abi.encodeWithSelector(ISMART.ZeroAddressNotAllowed.selector));
         vm.prank(tokenIssuer);
         ISMARTYield(address(token)).setYieldSchedule(address(0));
     }
 
     function test_Yield_SetYieldSchedule_AlreadySet_Reverts() public {
-        _setUpYieldTest();
-
         address scheduleAddress = _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer);
 
         // Set schedule first time
@@ -91,8 +81,6 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_SetYieldSchedule_AccessControl_Reverts() public {
-        _setUpYieldTest();
-
         address scheduleAddress = _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer);
 
         // Try to set schedule without proper role
@@ -111,8 +99,6 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     // --- Minting Restriction Tests ---
 
     function test_Yield_MintBeforeScheduleStarts_Success() public {
-        _setUpYieldTest();
-
         uint256 futureStartDate = block.timestamp + 7 days;
         address scheduleAddress =
             _createYieldSchedule(yieldScheduleFactory, ISMARTYield(address(token)), tokenIssuer, futureStartDate);
@@ -133,8 +119,6 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_MintAfterScheduleStarts_Reverts() public {
-        _setUpYieldTest();
-
         // Create a schedule that starts in the future
         uint256 futureStartDate = block.timestamp + 1 days;
         address scheduleAddress =
@@ -155,8 +139,6 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_MintWithoutSchedule_Success() public {
-        _setUpYieldTest();
-
         // Minting should work without any schedule set
         uint256 mintAmount = 1000 ether;
         uint256 initialBalance = token.balanceOf(clientBE);
@@ -167,8 +149,6 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_MintAtScheduleStartTime_Reverts() public {
-        _setUpYieldTest();
-
         // Use a future start date, then warp to that time
         uint256 startDate = block.timestamp + 1 days;
         address scheduleAddress =
@@ -191,8 +171,6 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     // --- Yield Basis Configuration Tests ---
 
     function test_Yield_YieldBasisPerUnit_Consistency() public {
-        _setUpYieldTest();
-
         // Yield basis should be consistent for all holders (using default implementation)
         uint256 basisBE = ISMARTYield(address(token)).yieldBasisPerUnit(clientBE);
         uint256 basisJP = ISMARTYield(address(token)).yieldBasisPerUnit(clientJP);
@@ -206,8 +184,6 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     }
 
     function test_Yield_YieldBasisPerUnit_NonZero() public {
-        _setUpYieldTest();
-
         uint256 basis = ISMARTYield(address(token)).yieldBasisPerUnit(clientBE);
         assertTrue(basis > 0, "Yield basis should be greater than zero");
     }
@@ -215,15 +191,11 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     // --- Yield Token Configuration Tests ---
 
     function test_Yield_YieldToken_Correct() public {
-        _setUpYieldTest();
-
         IERC20 configuredYieldToken = ISMARTYield(address(token)).yieldToken();
         assertEq(address(configuredYieldToken), yieldPaymentToken, "Yield token should match configured payment token");
     }
 
     function test_Yield_YieldToken_NotZeroAddress() public {
-        _setUpYieldTest();
-
         IERC20 configuredYieldToken = ISMARTYield(address(token)).yieldToken();
         assertTrue(address(configuredYieldToken) != address(0), "Yield token should not be zero address");
     }
@@ -231,8 +203,6 @@ abstract contract SMARTYieldUnitTest is SMARTYieldBaseTest {
     // --- Edge Cases and Error Conditions ---
 
     function test_Yield_ScheduleNotSet_Queries() public {
-        _setUpYieldTest();
-
         // Queries should work even without schedule set
         assertEq(ISMARTYield(address(token)).yieldSchedule(), address(0), "Yield schedule should be zero address");
         assertEq(

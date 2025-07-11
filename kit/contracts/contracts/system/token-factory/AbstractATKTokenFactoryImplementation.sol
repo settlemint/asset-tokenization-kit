@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity 0.8.28;
 
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
@@ -22,6 +22,8 @@ import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
+import { ATKSystemAccessControlled } from "../access-manager/ATKSystemAccessControlled.sol";
+import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
 /// @notice This contract provides functionality for registering tokens and checking their registration status,
@@ -30,11 +32,13 @@ import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.s
 /// @custom:security-contact support@settlemint.com
 
 abstract contract AbstractATKTokenFactoryImplementation is
+    Initializable,
     ERC2771ContextUpgradeable,
     ERC165Upgradeable,
-    AccessControlUpgradeable,
+    ATKSystemAccessControlled,
     IATKTokenFactory,
-    IWithTypeIdentifier
+    IWithTypeIdentifier,
+    IAccessControl
 {
     /// @notice Error when a predicted CREATE2 address is already marked as deployed by this factory.
 
@@ -97,12 +101,13 @@ abstract contract AbstractATKTokenFactoryImplementation is
         ) {
             revert InvalidIdentityVerificationModuleAddress();
         }
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.DEPLOYER_ROLE, initialAdmin);
-        _grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, initialAdmin);
+
+        _systemAddress = systemAddress;
+
+        // Set up centralized access control using the system's access manager
+        _setSystemAccessManager(IATKSystem(systemAddress).systemAccessManager());
 
         _tokenImplementation = tokenImplementation_;
-        _systemAddress = systemAddress;
         _identityVerificationModule = identityVerificationModule;
     }
 
@@ -120,11 +125,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
     ///      Emits a {TokenImplementationUpdated} event on success.
     /// @param newImplementation The new address for the token implementation contract. Cannot be the zero address.
     /// @custom:oz-upgrades-unsafe-allow state-variable-assignment
-    function updateTokenImplementation(address newImplementation)
-        public
-        virtual
-        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
-    {
+    function updateTokenImplementation(address newImplementation) public virtual onlyImplementationManager {
         if (newImplementation == address(0)) {
             revert InvalidImplementationAddress();
         }
@@ -283,7 +284,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
     function _createAccessManager(bytes memory accessManagerSaltInputData)
         internal
         virtual
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlyDeployer
         returns (ISMARTTokenAccessManager)
     {
         // Calculate salt and creation code once
@@ -324,7 +325,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
         address accessManager
     )
         internal
-        onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
+        onlyDeployer
         returns (address deployedAddress, address deployedTokenIdentityAddress)
     {
         // Calculate salt and creation code once
@@ -396,39 +397,60 @@ abstract contract AbstractATKTokenFactoryImplementation is
         public
         view
         virtual
-        override(AccessControlUpgradeable, ERC165Upgradeable, IERC165)
+        override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(IATKTokenFactory).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKTokenFactory).interfaceId || interfaceId == type(IAccessControl).interfaceId
+            || super.supportsInterface(interfaceId);
+    }
+
+    // --- IAccessControl implementation - delegate to centralized system access manager ---
+
+    function hasRole(
+        bytes32 role,
+        address account
+    )
+        public
+        view
+        override(ATKSystemAccessControlled, IAccessControl)
+        returns (bool)
+    {
+        return ATKSystemAccessControlled.hasRole(role, account);
+    }
+
+    function getRoleAdmin(bytes32 role) external view override returns (bytes32) {
+        return IATKSystemAccessManager(getSystemAccessManager()).getRoleAdmin(role);
+    }
+
+    function grantRole(bytes32 role, address account) external override {
+        IATKSystemAccessManager(getSystemAccessManager()).grantRole(role, account);
+    }
+
+    function revokeRole(bytes32 role, address account) external override {
+        IATKSystemAccessManager(getSystemAccessManager()).revokeRole(role, account);
+    }
+
+    function renounceRole(bytes32 role, address callerConfirmation) external override {
+        IATKSystemAccessManager(getSystemAccessManager()).renounceRole(role, callerConfirmation);
     }
 
     // --- ERC2771Context Overrides ---
 
     /// @dev Overrides the default implementation of _msgSender() to return the actual sender
     ///      instead of the forwarder address when using ERC2771 context.
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
+    function _msgSender() internal view override(ERC2771ContextUpgradeable) returns (address) {
         return super._msgSender();
     }
 
     /// @dev Overrides the default implementation of _msgData() to return the actual calldata
     ///      instead of the forwarder calldata when using ERC2771 context.
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
+    function _msgData() internal view override(ERC2771ContextUpgradeable) returns (bytes calldata) {
         return super._msgData();
     }
 
     /// @dev Overrides the default implementation of _contextSuffixLength() to return the actual suffix length
     ///      instead of the forwarder suffix length when using ERC2771 context.
-    function _contextSuffixLength()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
+    function _contextSuffixLength() internal view override(ERC2771ContextUpgradeable) returns (uint256) {
         return super._contextSuffixLength();
     }
 }

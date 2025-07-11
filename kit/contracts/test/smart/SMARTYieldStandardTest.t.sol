@@ -53,5 +53,8 @@ contract SMARTYieldStandardTest is SMARTYieldTest {
 
         // 3. Set token in AbstractSMARTTest
         token = ISMART(tokenAddress);
+
+        // 4. Set up default collateral claim
+        _setupDefaultCollateralClaim();
     }
 }

@@ -158,7 +158,7 @@ abstract contract AbstractSMARTTest is Test {
         mockComplianceModule.reset(); // Reset count after setup mints
     }
 
-    function _setupIdentities() internal {
+    function _setupIdentities() internal virtual {
         // (Reverted to original logic provided by user)
         // Create the token issuer identixty
         identityUtils.createClientIdentity(tokenIssuer, TestConstants.COUNTRY_CODE_BE);
