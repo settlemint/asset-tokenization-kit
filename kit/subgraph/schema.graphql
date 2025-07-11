@@ -269,45 +269,6 @@ type ComplianceModule @entity(immutable: false) {
 }
 
 # ==================================================
-# ACTIONS
-# ==================================================
-
-enum ActionType {
-  ADMIN
-  USER
-}
-
-enum ActionStatus {
-  PENDING
-  UPCOMING
-  COMPLETED
-}
-
-type Action @entity(immutable: false) {
-  id: Bytes!
-  type: ActionType!
-  status: ActionStatus!
-  title: String!
-  description: String
-  dueDate: BigInt
-  createdAt: BigInt!
-  updatedAt: BigInt!
-  createdBy: Account!
-  assignedTo: Account
-  token: Token
-  relatedEvent: Event
-  metadata: [ActionMetadata!]! @derivedFrom(field: "action")
-  deployedInTransaction: Bytes!
-}
-
-type ActionMetadata @entity(immutable: false) {
-  id: Bytes!
-  action: Action!
-  key: String!
-  value: String!
-}
-
-# ==================================================
 # TOKEN MANAGEMENT
 # ==================================================
 
