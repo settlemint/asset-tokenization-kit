@@ -104,16 +104,28 @@ export const migrateDatabase = async () => {
       migrationsFolder: "drizzle",
     });
     logger.info("Completed migrating the database");
+  } catch (err) {
+    const error = err as Error;
+    logger.error(`Error migrating the database: ${error.message}`, error);
+    // Exit the process with a non-zero code to indicate failure, if migration fails the app will not function properly
+    process.exit(1);
+  }
 
+  try {
     logger.info("Tracking all tables in Hasura");
     const database = postgresPool.options.database ?? "default";
     await trackAllTables(database, hasuraMetadataClient, {
       excludeSchemas: ["drizzle"],
     });
     logger.info("Completed tracking all tables in Hasura");
-    migrationStatus = "migrated";
   } catch (err) {
     const error = err as Error;
-    logger.error(`Error migrating the database: ${error.message}`, error);
+    // Tracking all tables in Hasura is not critical, so we can continue even if it fails
+    logger.error(
+      `Error tracking all tables in Hasura: ${error.message}`,
+      error
+    );
   }
+
+  migrationStatus = "migrated";
 };
