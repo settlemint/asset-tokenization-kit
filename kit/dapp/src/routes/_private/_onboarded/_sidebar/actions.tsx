@@ -13,7 +13,7 @@ function ActionsLayout() {
   return (
     <>
       <PageHeader title={t("page.actions")} />
-      <ActionTabs path="actions" type="Admin" />
+      <ActionTabs path="actions" />
     </>
   );
 }
