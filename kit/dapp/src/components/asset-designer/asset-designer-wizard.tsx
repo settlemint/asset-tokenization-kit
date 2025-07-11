@@ -21,10 +21,10 @@ import { FundTokenSchema } from "@/orpc/routes/token/routes/mutations/create/hel
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery } from "@tanstack/react-query";
+import { addDays, addYears } from "date-fns";
 import { Building2, Coins, PiggyBank, TrendingUp, Wallet } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { addDays, addYears } from "date-fns";
 import type { z } from "zod/v4";
 
 const logger = createLogger();
@@ -313,7 +313,8 @@ function AssetDesignerWizardComponent({
               ...commonData,
               type: "bond",
               cap: data.cap ?? "1000000",
-              maturityDate: data.maturityDate ?? new Date().toISOString(),
+              maturityDate:
+                data.maturityDate ?? new Date().getTime().toString(),
               underlyingAsset:
                 data.underlyingAsset ??
                 "0x0000000000000000000000000000000000000000",
