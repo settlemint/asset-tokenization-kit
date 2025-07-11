@@ -70,6 +70,8 @@ function PlatformOnboarding() {
   const [hasInitialized, setHasInitialized] = useState(false);
   const [isExplicitSecurityNavigation, setIsExplicitSecurityNavigation] =
     useState(false);
+  const [hasManuallyProceededFromAssets, setHasManuallyProceededFromAssets] =
+    useState(false);
 
   // Determine initial step based on what's completed
   const getInitialStep = useCallback(() => {
@@ -143,6 +145,10 @@ function PlatformOnboarding() {
 
   const handleStepChange = useCallback((stepId: string) => {
     setCurrentStepId(stepId);
+    // Reset assets progression state when leaving assets step
+    if (stepId !== "assets") {
+      setHasManuallyProceededFromAssets(false);
+    }
   }, []);
 
   const handleWalletSuccess = useCallback(() => {
@@ -236,6 +242,21 @@ function PlatformOnboarding() {
       return;
     }
 
+    // If we're on assets step and factories are deployed but user hasn't manually proceeded
+    if (
+      currentStepId === "assets" &&
+      (systemDetails?.tokenFactories.length ?? 0) > 0 &&
+      !hasManuallyProceededFromAssets
+    ) {
+      // User wants to proceed to next step - mark as manually proceeded
+      setHasManuallyProceededFromAssets(true);
+      const nextStep = steps[currentStepIndex + 1];
+      if (nextStep) {
+        setCurrentStepId(nextStep.id);
+      }
+      return;
+    }
+
     // Normal navigation - move to next step
     if (currentStepIndex < steps.length - 1) {
       const nextStep = steps[currentStepIndex + 1];
@@ -257,6 +278,7 @@ function PlatformOnboarding() {
     currentStepIndex,
     steps,
     navigate,
+    hasManuallyProceededFromAssets,
   ]);
 
   const handleBack = useCallback(() => {
@@ -285,12 +307,13 @@ function PlatformOnboarding() {
       return false; // Always enable button on system step
     }
 
-    // For assets step, enable button if no assets deployed
+    // For assets step, enable button if no assets deployed OR if assets are deployed but user hasn't proceeded
     if (
       currentStepId === "assets" &&
-      (systemDetails?.tokenFactories.length ?? 0) === 0
+      ((systemDetails?.tokenFactories.length ?? 0) === 0 ||
+        !hasManuallyProceededFromAssets)
     ) {
-      return false; // Enable the "Deploy Asset Factories" button
+      return false; // Enable the "Deploy Asset Factories" or "Enable Platform Addons" button
     }
 
     const currentStep = steps[currentStepIndex];
@@ -300,6 +323,7 @@ function PlatformOnboarding() {
     systemDetails?.tokenFactories.length,
     steps,
     currentStepIndex,
+    hasManuallyProceededFromAssets,
   ]);
 
   // Determine button labels
@@ -325,6 +349,13 @@ function PlatformOnboarding() {
     ) {
       return "Deploy Asset Factories";
     }
+    if (
+      currentStepId === "assets" &&
+      (systemDetails?.tokenFactories.length ?? 0) > 0 &&
+      !hasManuallyProceededFromAssets
+    ) {
+      return "Enable Platform Addons";
+    }
     if (currentStepIndex === steps.length - 1) {
       return t("onboarding:ui.complete");
     }
@@ -337,6 +368,7 @@ function PlatformOnboarding() {
     currentStepIndex,
     steps.length,
     t,
+    hasManuallyProceededFromAssets,
   ]);
 
   const allowedTypes: OnboardingType[] = useMemo(() => ["platform"], []);
