@@ -618,7 +618,7 @@ contract SMARTToken is
     // --- IContractWithIdentity Implementation ---
 
     /// @inheritdoc IContractWithIdentity
-    function onchainID() public view override(IContractWithIdentity, ISMART, _SMARTLogic) returns (address) {
+    function onchainID() public view override(_SMARTLogic, ISMART, IContractWithIdentity) returns (address) {
         return super.onchainID();
     }
 
