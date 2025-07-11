@@ -78,8 +78,6 @@ async function startDevServer() {
   while (true) {
     const { done, value } = await reader.read();
     if (done) {
-      // Give it a second to run db migrations
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log("Dev server started");
       break;
     }

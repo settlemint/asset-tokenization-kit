@@ -25,65 +25,6 @@ import * as schemas from "./schema";
 
 const logger = createLogger();
 
-/**
- * Creates the Drizzle ORM database instance.
- *
- * This function is wrapped with `serverOnly` to ensure database connections
- * are only established on the server side, preventing exposure of database
- * credentials and direct database access from the client.
- *
- * Configuration:
- * - Uses the PostgreSQL connection pool for efficient connection management
- * - Enables query logging in development mode for debugging SQL queries
- * - Integrates all schema definitions for type-safe database operations
- */
-const getDb = serverOnly(() =>
-  drizzle(postgresPool, {
-    /**
-     * Query logging configuration.
-     * When enabled in development, logs all SQL queries to the console
-     * for debugging and performance analysis.
-     */
-    // logger: process.env.NODE_ENV === "development",
-
-    /**
-     * Schema definitions for type-safe queries.
-     * Includes all table schemas from the schema module,
-     * providing full TypeScript support for database operations.
-     */
-    schema: schemas,
-  })
-);
-
-/**
- * The main database client instance.
- *
- * This instance is used throughout the application for all database operations.
- * It provides:
- * - Type-safe query building with full TypeScript support
- * - Automatic query result typing based on schema definitions
- * - Connection pooling for optimal performance
- * - Transaction support for complex operations
- * @example
- * ```typescript
- * // Select users
- * const users = await db.select().from(schema.user);
- *
- * // Insert with type safety
- * await db.insert(schema.user).values({
- *   email: 'user@example.com',
- *   name: 'John Doe'
- * });
- *
- * // Complex queries with joins
- * const userSessions = await db
- *   .select()
- *   .from(schema.user)
- *   .leftJoin(schema.session, eq(schema.user.id, schema.session.userId));
- * ```
- */
-export const db = getDb();
-
 let migrationStatus: "migrating" | "migrated" | "none" = "none";
 
 /**
@@ -99,6 +40,7 @@ export const migrateDatabase = async () => {
   }
   migrationStatus = "migrating";
   try {
+    const db = getDb();
     logger.info("Migrating the database");
     await migrate(db, {
       migrationsFolder: "drizzle",
@@ -129,3 +71,70 @@ export const migrateDatabase = async () => {
 
   migrationStatus = "migrated";
 };
+
+/**
+ * Creates the Drizzle ORM database instance.
+ *
+ * This function is wrapped with `serverOnly` to ensure database connections
+ * are only established on the server side, preventing exposure of database
+ * credentials and direct database access from the client.
+ *
+ * Configuration:
+ * - Uses the PostgreSQL connection pool for efficient connection management
+ * - Enables query logging in development mode for debugging SQL queries
+ * - Integrates all schema definitions for type-safe database operations
+ */
+const getDb = serverOnly(() => {
+  return drizzle(postgresPool, {
+    /**
+     * Query logging configuration.
+     * When enabled in development, logs all SQL queries to the console
+     * for debugging and performance analysis.
+     */
+    // logger: process.env.NODE_ENV === "development",
+
+    /**
+     * Schema definitions for type-safe queries.
+     * Includes all table schemas from the schema module,
+     * providing full TypeScript support for database operations.
+     */
+    schema: schemas,
+  });
+});
+
+/**
+ * Creates the Drizzle ORM database instance and migrates the database to the latest version.
+ */
+const getInitializedDb = serverOnly(async () => {
+  await migrateDatabase();
+  return getDb();
+});
+
+/**
+ * The main database client instance.
+ *
+ * This instance is used throughout the application for all database operations.
+ * It provides:
+ * - Type-safe query building with full TypeScript support
+ * - Automatic query result typing based on schema definitions
+ * - Connection pooling for optimal performance
+ * - Transaction support for complex operations
+ * @example
+ * ```typescript
+ * // Select users
+ * const users = await db.select().from(schema.user);
+ *
+ * // Insert with type safety
+ * await db.insert(schema.user).values({
+ *   email: 'user@example.com',
+ *   name: 'John Doe'
+ * });
+ *
+ * // Complex queries with joins
+ * const userSessions = await db
+ *   .select()
+ *   .from(schema.user)
+ *   .leftJoin(schema.session, eq(schema.user.id, schema.session.userId));
+ * ```
+ */
+export const db = await getInitializedDb();
