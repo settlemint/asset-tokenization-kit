@@ -515,10 +515,7 @@ contract ATKSystemImplementation is
             );
         }
 
-        // Grant REGISTRAR_ADMIN_ROLE to the token factory registry so it can manage REGISTRAR_ROLE assignments
-        IAccessControl(localIdentityRegistryProxy).grantRole(
-            ATKSystemRoles.REGISTRAR_ADMIN_ROLE, localTokenFactoryRegistryProxy
-        );
+        // REGISTRAR_ADMIN_ROLE is already granted to the token factory registry during identity registry initialization
 
         // Mark the system as bootstrapped
         _bootstrapped = true;
