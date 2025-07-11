@@ -8,6 +8,8 @@ import {
   type ActionStatus,
   type ActionType,
   type TokenActionsOutput,
+  ActionStatusSchema,
+  ActionTypeSchema,
 } from "./token.actions.schema";
 
 const logger = createLogger();
@@ -58,6 +60,17 @@ const LIST_ACTIONS_QUERY = theGraphGraphql(`
   }
 `);
 
+/**
+ * GraphQL query for counting total actions matching the filter criteria
+ */
+const COUNT_ACTIONS_QUERY = theGraphGraphql(`
+  query CountActionsQuery($where: Action_filter) {
+    actions(where: $where) {
+      id
+    }
+  }
+`);
+
 // Schema for the GraphQL response
 const ActionsResponseSchema = z.object({
   actions: z.array(
@@ -82,6 +95,13 @@ const ActionsResponseSchema = z.object({
 });
 
 /**
+ * Schema for the count query response
+ */
+const CountResponseSchema = z.object({
+  actions: z.array(z.object({ id: z.string() })),
+});
+
+/**
  * Maps subgraph action fields to the frontend action model
  */
 function mapSubgraphActionToAction(
@@ -97,16 +117,16 @@ function mapSubgraphActionToAction(
 
   let status: ActionStatus;
   if (subgraphAction.executed) {
-    status = "COMPLETED";
+    status = ActionStatusSchema.enum.COMPLETED;
   } else if (activeAt > now) {
-    status = "UPCOMING";
+    status = ActionStatusSchema.enum.UPCOMING;
   } else {
-    status = "PENDING";
+    status = ActionStatusSchema.enum.PENDING;
   }
 
   // Map type - normalize to uppercase and handle both Admin/ADMIN variations
   const type: ActionType =
-    subgraphAction.type.toUpperCase() === "ADMIN" ? "ADMIN" : "USER";
+    subgraphAction.type.toUpperCase() === "ADMIN" ? ActionTypeSchema.enum.ADMIN : ActionTypeSchema.enum.USER;
 
   // Generate description based on action name and context
   const description = generateActionDescription(
@@ -177,6 +197,54 @@ function formatActionTitle(name: string): string {
   }
 }
 
+/**
+ * Builds GraphQL where clause based on filter criteria
+ */
+function buildWhereClause(
+  tokenId: string,
+  status?: ActionStatus,
+  type?: ActionType,
+  assignedTo?: string
+): Record<string, unknown> {
+  const where: Record<string, unknown> = {
+    // Filter by token target directly in the query
+    target: tokenId.toLowerCase(),
+  };
+
+  // Filter by assignedTo - query actions where executors contain this address
+  if (assignedTo) {
+    where.executors_ = {
+      executors_contains: [assignedTo.toLowerCase()],
+    };
+  }
+
+  // Filter by type
+  if (type) {
+    if (type === ActionTypeSchema.enum.ADMIN) {
+      where.type_in = ["ADMIN", "Admin"];
+    } else if (type === ActionTypeSchema.enum.USER) {
+      where.type_not_in = ["ADMIN", "Admin"];
+    }
+  }
+
+  // Filter by status
+  if (status) {
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+
+    if (status === ActionStatusSchema.enum.COMPLETED) {
+      where.executed = true;
+    } else if (status === ActionStatusSchema.enum.UPCOMING) {
+      where.executed = false;
+      where.activeAt_gt = currentTimestamp;
+    } else if (status === ActionStatusSchema.enum.PENDING) {
+      where.executed = false;
+      where.activeAt_lte = currentTimestamp;
+    }
+  }
+
+  return where;
+}
+
 export const actions = tokenRouter.token.actions
   .use(theGraphMiddleware)
   .handler(async ({ input, context }) => {
@@ -194,18 +262,20 @@ export const actions = tokenRouter.token.actions
 
     try {
       // Build where clause for the GraphQL query
-      const where: Record<string, unknown> = {
-        // Filter by token target directly in the query
-        target: token.id.toLowerCase(),
-      };
+      const where = buildWhereClause(token.id, status, type, assignedTo);
 
-      // Filter by assignedTo - query actions where executors contain this address
-      if (assignedTo) {
-        where.executors_ = {
-          executors_contains: [assignedTo.toLowerCase()],
-        };
-      }
+      // Get total count first
+      const countResponse = await context.theGraphClient.query(COUNT_ACTIONS_QUERY, {
+        input: {
+          where: Object.keys(where).length > 0 ? where : undefined,
+        },
+        output: CountResponseSchema,
+        error: "Failed to count actions",
+      });
 
+      const total = countResponse.actions.length;
+
+      // Get paginated results
       const response = await context.theGraphClient.query(LIST_ACTIONS_QUERY, {
         input: {
           skip: offset,
@@ -218,32 +288,20 @@ export const actions = tokenRouter.token.actions
         error: "Failed to fetch actions",
       });
 
-      // Process actions directly
-      const allActions: Action[] = [];
-
-      for (const action of response.actions) {
-        const mappedAction = mapSubgraphActionToAction(action, token.id);
-
-        // Apply additional filters (token filtering is done in GraphQL query)
-        if (
-          (!type || mappedAction.type === type) &&
-          (!status || mappedAction.status === status)
-        ) {
-          allActions.push(mappedAction);
-        }
-      }
-
-      // Sort by createdAt descending
-      allActions.sort((a, b) => b.createdAt - a.createdAt);
+      // Process actions - no additional filtering needed since it's done in GraphQL
+      const actions: Action[] = response.actions.map(action =>
+        mapSubgraphActionToAction(action, token.id)
+      );
 
       const result: TokenActionsOutput = {
-        actions: allActions.slice(0, limit),
-        total: allActions.length,
-        hasMore: allActions.length > limit,
+        actions,
+        total,
+        hasMore: offset + actions.length < total,
       };
 
       logger.info("Successfully fetched actions", {
         count: result.actions.length,
+        total: result.total,
         hasMore: result.hasMore,
       });
 
