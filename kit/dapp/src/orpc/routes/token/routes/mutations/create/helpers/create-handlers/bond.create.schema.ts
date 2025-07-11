@@ -15,6 +15,8 @@ export const BondTokenSchema = TokenBaseSchema.extend({
   messages: createTokenMessagesSchema(AssetTypeEnum.bond).optional(),
   cap: z.string().describe("The cap of the bond"),
   faceValue: z.string().describe("The face value of the bond"),
-  maturityDate: timestamp().describe("The maturity date of the bond"),
+  maturityDate: timestamp()
+    .transform((date) => date.getTime().toString())
+    .describe("The maturity date of the bond"),
   underlyingAsset: ethereumAddress.describe("The underlying asset of the bond"),
 });
