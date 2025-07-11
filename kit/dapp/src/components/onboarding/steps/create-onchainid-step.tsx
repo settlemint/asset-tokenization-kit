@@ -33,8 +33,8 @@ export const CreateOnchainIdComponent = memo(function CreateOnchainIdComponent({
   const [onchainIdAddress, setOnchainIdAddress] = useState<string | null>(null);
 
   // Check if user has 2FA enabled to determine available verification methods
-  const hasTwoFactor = session?.user?.twoFactorEnabled ?? false;
-  const hasPincode = session?.user?.pincodeEnabled ?? false;
+  const hasTwoFactor = session?.user.twoFactorEnabled ?? false;
+  const hasPincode = session?.user.pincodeEnabled ?? false;
 
   // Handle deploy button click
   const handleCreate = useCallback(() => {

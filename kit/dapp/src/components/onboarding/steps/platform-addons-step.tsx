@@ -68,8 +68,8 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
   );
 
   // Check if user has 2FA enabled to determine available verification methods
-  const hasTwoFactor = session?.user?.twoFactorEnabled ?? false;
-  const hasPincode = session?.user?.pincodeEnabled ?? false;
+  const hasTwoFactor = session?.user.twoFactorEnabled ?? false;
+  const hasPincode = session?.user.pincodeEnabled ?? false;
 
   // Fetch system details to get system information
   const { data: systemDetails, isLoading: isLoadingSystem } = useQuery({

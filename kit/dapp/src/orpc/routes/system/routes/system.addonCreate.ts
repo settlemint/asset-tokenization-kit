@@ -85,7 +85,7 @@ const ADDON_TYPE_TO_IMPLEMENTATION_NAME = {
 /**
  * Generates initialization data for different addon types
  */
-function generateInitializationData(_addonConfig: SystemAddonConfig): string {
+function generateInitializationData(): string {
   // For most addons, empty initialization data is sufficient
   // The proxy will call initialize with default parameters
   return "0x";
@@ -105,7 +105,9 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
   }
 
   // Get the implementation from defaults
-  const defaultImplementation = (defaults as any)[implementationName];
+  const defaultImplementation = (defaults as Record<string, string>)[
+    implementationName
+  ];
   if (!defaultImplementation) {
     throw new Error(
       `No implementation found for addon type: ${addonConfig.type}`
@@ -139,7 +141,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .use(systemMiddleware)
-  .handler(async function* ({ input, context, errors: _errors }) {
+  .handler(async function* ({ input, context }) {
     const { contract, addons, verification } = input;
     const sender = context.auth.user;
 
@@ -163,7 +165,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
     );
 
     // Query existing system addons to check for duplicates
-    let existingAddonNames = new Set<string>();
+    const existingAddonNames = new Set<string>();
     try {
       // Note: We would need to add systemAddons to the system middleware
       // For now, we'll proceed without duplicate checking and let the contract handle it
@@ -246,7 +248,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
       try {
         // Get implementation address and initialization data
         const implementationAddress = getImplementationAddress(addonConfig);
-        const initializationData = generateInitializationData(addonConfig);
+        const initializationData = generateInitializationData();
 
         // Log the implementation details for debugging
         logger.info(`Registering addon with details:`, {
@@ -301,10 +303,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
               { id: `addon-${addonConfig.type}-${index}`, retry: 1000 }
             );
           } else if (event.status === "confirmed") {
-            const implementationName =
-              ADDON_TYPE_TO_IMPLEMENTATION_NAME[
-                type as keyof typeof ADDON_TYPE_TO_IMPLEMENTATION_NAME
-              ];
+            const implementationName = ADDON_TYPE_TO_IMPLEMENTATION_NAME[type];
 
             yield withEventMeta(
               {

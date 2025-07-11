@@ -60,7 +60,6 @@ function PlatformNewOnboarding() {
   const location = useLocation();
   // TanStack Router stores search params in location.search as an object
   const hasUrlState =
-    location.search &&
     typeof location.search === "object" &&
     Object.keys(location.search).length > 0;
 
