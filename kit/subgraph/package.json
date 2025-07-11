@@ -5,9 +5,9 @@
   "scripts": {
     "codegen": "settlemint scs subgraph codegen",
     "codegen:interfaceid": "bun run tools/interfaceid.ts",
-    "test:codegen:gql-tada": "gql-tada generate-schema http://localhost:8000/subgraphs/name/kit-integration-tests && gql-tada turbo && gql-tada generate-output",
+    "test:codegen:gql-tada": "n=0; until [ $n -ge 3 ]; do (gql-tada generate-schema http://localhost:8000/subgraphs/name/kit-integration-tests && gql-tada turbo && gql-tada generate-output) && break || { n=$((n+1)); sleep 5; }; done",
     "format": "prettier --experimental-cli --write .",
-    "compile": "mkdir -p .generated && (test -f .generated/subgraph-env || echo 'SUBGRAPH=kit:' > .generated/subgraph-env) && bunx graph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 | tee .generated/subgraph-hash.txt | xargs -I {} echo 'SUBGRAPH=kit:{}' > .generated/subgraph-env",
+    "compile": "mkdir -p .generated && (test -f .generated/subgraph-env || echo 'SUBGRAPH=kit:' > .generated/subgraph-env) && settlemint scs subgraph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 | tee .generated/subgraph-hash.txt | xargs -I {} echo 'SUBGRAPH=kit:{}' > .generated/subgraph-env",
     "publish": "bun run tools/graph-deploy.ts --local",
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
     "test:integration": "bun test --preload ./test/scripts/setup.ts"

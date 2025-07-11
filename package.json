@@ -59,7 +59,7 @@
     "test:e2e:api": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests",
     "test:e2e:api:debug": "bun run --cwd kit/e2e playwright test --config=playwright.api.config.ts --project=api-tests --ui",
     "helm": "turbo run helm",
-    "dev:up": "docker compose -p atk up -d",
+    "dev:up": "TIMESTAMP=$(date +'%s') docker compose -p atk up -d",
     "postdev:up": "settlemint connect --instance local",
     "dev:reset": "(docker compose -p atk down || true) && (docker volume ls -q --filter name=^atk | xargs -r docker volume rm || true)",
     "postdev:reset": "bun run dev:up",
