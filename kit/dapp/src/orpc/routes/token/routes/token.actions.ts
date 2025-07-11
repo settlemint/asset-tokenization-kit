@@ -13,20 +13,20 @@ import {
 const logger = createLogger();
 
 /**
- * GraphQL query for retrieving action executors from TheGraph.
+ * GraphQL query for retrieving actions directly from TheGraph.
  *
- * Action executors contain the executors (accounts that can execute the action)
- * and the associated actions. This approach allows querying actions by executor.
+ * This query fetches actions directly with their executor information
+ * for more efficient querying and filtering.
  */
-const LIST_ACTION_EXECUTORS_QUERY = theGraphGraphql(`
-  query ListActionExecutorsQuery(
+const LIST_ACTIONS_QUERY = theGraphGraphql(`
+  query ListActionsQuery(
     $skip: Int!
     $first: Int!
-    $orderBy: ActionExecutor_orderBy
+    $orderBy: Action_orderBy
     $orderDirection: OrderDirection
-    $where: ActionExecutor_filter
+    $where: Action_filter
   ) {
-    actionExecutors(
+    actions(
       where: $where
       skip: $skip
       first: $first
@@ -34,51 +34,49 @@ const LIST_ACTION_EXECUTORS_QUERY = theGraphGraphql(`
       orderDirection: $orderDirection
     ) {
       id
-      executors {
+      name
+      type
+      createdAt
+      activeAt
+      expiresAt
+      executedAt
+      executed
+      executedBy {
         id
       }
-      actions {
+      target {
         id
-        name
-        type
-        createdAt
-        activeAt
-        expiresAt
-        executedAt
-        executed
-        executedBy {
+      }
+      requiredRole
+      executors {
+        id
+        executors {
           id
         }
-        target {
-          id
-        }
-        requiredRole
       }
     }
   }
 `);
 
 // Schema for the GraphQL response
-const ActionExecutorsResponseSchema = z.object({
-  actionExecutors: z.array(
+const ActionsResponseSchema = z.object({
+  actions: z.array(
     z.object({
       id: z.string(),
-      executors: z.array(z.object({ id: z.string() })),
-      actions: z.array(
-        z.object({
-          id: z.string(),
-          name: z.string(),
-          type: z.string(),
-          createdAt: z.string(),
-          activeAt: z.string(),
-          expiresAt: z.string().nullable(),
-          executedAt: z.string().nullable(),
-          executed: z.boolean(),
-          executedBy: z.object({ id: z.string() }).nullable(),
-          target: z.object({ id: z.string() }),
-          requiredRole: z.string().nullable(),
-        })
-      ),
+      name: z.string(),
+      type: z.string(),
+      createdAt: z.string(),
+      activeAt: z.string(),
+      expiresAt: z.string().nullable(),
+      executedAt: z.string().nullable(),
+      executed: z.boolean(),
+      executedBy: z.object({ id: z.string() }).nullable(),
+      target: z.object({ id: z.string() }),
+      requiredRole: z.string().nullable(),
+      executors: z.object({
+        id: z.string(),
+        executors: z.array(z.object({ id: z.string() })),
+      }),
     })
   ),
 });
@@ -87,9 +85,7 @@ const ActionExecutorsResponseSchema = z.object({
  * Maps subgraph action fields to the frontend action model
  */
 function mapSubgraphActionToAction(
-  subgraphAction: z.infer<
-    typeof ActionExecutorsResponseSchema
-  >["actionExecutors"][0]["actions"][0],
+  subgraphAction: z.infer<typeof ActionsResponseSchema>["actions"][0],
   tokenId: string
 ): Action {
   // Determine status based on executed state and timestamps
@@ -108,27 +104,76 @@ function mapSubgraphActionToAction(
     status = "PENDING";
   }
 
-  // Map type - in subgraph it might be different values, so we need to normalize
-  const type: ActionType = subgraphAction.type === "ADMIN" ? "ADMIN" : "USER";
+  // Map type - normalize to uppercase and handle both Admin/ADMIN variations
+  const type: ActionType =
+    subgraphAction.type.toUpperCase() === "ADMIN" ? "ADMIN" : "USER";
+
+  // Generate description based on action name and context
+  const description = generateActionDescription(
+    subgraphAction.name,
+    subgraphAction.type,
+    subgraphAction.requiredRole
+  );
 
   return {
     id: subgraphAction.id,
     type,
     status,
-    title: subgraphAction.name,
-    description: null, // Not available in subgraph
+    title: formatActionTitle(subgraphAction.name),
+    description,
     dueDate: expiresAt,
     createdAt: Number(subgraphAction.createdAt),
     updatedAt: subgraphAction.executedAt
       ? Number(subgraphAction.executedAt)
       : Number(subgraphAction.createdAt),
-    createdBy: subgraphAction.target.id, // Using target as creator for now
+    createdBy: subgraphAction.target.id, // Target represents the account that will be acted upon
     assignedTo: subgraphAction.executedBy?.id ?? null,
     token: tokenId,
     metadata: subgraphAction.requiredRole
       ? [{ key: "requiredRole", value: subgraphAction.requiredRole }]
       : undefined,
   };
+}
+
+/**
+ * Generates a human-readable description based on action name and context
+ */
+function generateActionDescription(
+  name: string,
+  type: string,
+  requiredRole?: string | null
+): string {
+  const roleContext = requiredRole ? ` (requires ${requiredRole} role)` : "";
+
+  switch (name) {
+    case "ApproveXvPSettlement":
+      return `Approve the cross-venue payment settlement${roleContext}`;
+    case "ExecuteXvPSettlement":
+      return `Execute the cross-venue payment settlement after all approvals${roleContext}`;
+    case "MatureBond":
+      return `Process bond maturation and distribute final payments${roleContext}`;
+    default:
+      return `${type} action: ${name}${roleContext}`;
+  }
+}
+
+/**
+ * Formats action names for better display
+ */
+function formatActionTitle(name: string): string {
+  switch (name) {
+    case "ApproveXvPSettlement":
+      return "Approve XvP Settlement";
+    case "ExecuteXvPSettlement":
+      return "Execute XvP Settlement";
+    case "MatureBond":
+      return "Mature Bond";
+    default:
+      // Convert camelCase to Title Case
+      return name
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, (str) => str.toUpperCase());
+  }
 }
 
 export const actions = tokenRouter.token.actions
@@ -148,47 +193,42 @@ export const actions = tokenRouter.token.actions
 
     try {
       // Build where clause for the GraphQL query
-      const where: Record<string, unknown> = {};
+      const where: Record<string, unknown> = {
+        // Filter by token target directly in the query
+        target: token.id.toLowerCase(),
+      };
 
-      // Filter by assignedTo - query executors that contain this address
+      // Filter by assignedTo - query actions where executors contain this address
       if (assignedTo) {
-        where.executors_contains = [assignedTo.toLowerCase()];
+        where.executors_ = {
+          executors_contains: [assignedTo.toLowerCase()],
+        };
       }
 
-      // Additional filtering will be done on actions after fetching
+      const response = await context.theGraphClient.query(LIST_ACTIONS_QUERY, {
+        input: {
+          skip: offset,
+          first: Math.min(limit, 1000),
+          orderBy: "createdAt",
+          orderDirection: "desc",
+          where: Object.keys(where).length > 0 ? where : undefined,
+        },
+        output: ActionsResponseSchema,
+        error: "Failed to fetch actions",
+      });
 
-      const response = await context.theGraphClient.query(
-        LIST_ACTION_EXECUTORS_QUERY,
-        {
-          input: {
-            skip: offset,
-            first: Math.min(limit, 1000),
-            orderBy: "id",
-            orderDirection: "desc",
-            where: Object.keys(where).length > 0 ? where : undefined,
-          },
-          output: ActionExecutorsResponseSchema,
-          error: "Failed to fetch actions",
-        }
-      );
-
-      // Flatten all actions from all executors
+      // Process actions directly
       const allActions: Action[] = [];
 
-      for (const executor of response.actionExecutors) {
-        for (const action of executor.actions) {
-          // Only include actions for this token
-          if (action.target.id.toLowerCase() === token.id.toLowerCase()) {
-            const mappedAction = mapSubgraphActionToAction(action, token.id);
+      for (const action of response.actions) {
+        const mappedAction = mapSubgraphActionToAction(action, token.id);
 
-            // Apply additional filters
-            if (
-              (!type || mappedAction.type === type) &&
-              (!status || mappedAction.status === status)
-            ) {
-              allActions.push(mappedAction);
-            }
-          }
+        // Apply additional filters (token filtering is done in GraphQL query)
+        if (
+          (!type || mappedAction.type === type) &&
+          (!status || mappedAction.status === status)
+        ) {
+          allActions.push(mappedAction);
         }
       }
 
