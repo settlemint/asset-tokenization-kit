@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth/auth.client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -102,14 +101,28 @@ export function RecoveryCodesStep({
     useMutation({
       mutationFn: async () => {
         logger.debug("Starting mutation...");
-        return authClient.secretCodes.generate({
-          // No password required during onboarding
+        // Use direct fetch to bypass Better Auth client method inference issue
+        const response = await fetch("/api/auth/secret-codes/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include session cookies
+          body: JSON.stringify({
+            // No password required during onboarding
+            onboarding: true, // Flag to indicate this is during onboarding
+          }),
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        return response.json();
       },
       onSuccess: (data) => {
         logger.debug("Recovery codes onSuccess", data);
         // Check if there's an error in the response (like 404)
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (data && "error" in data && data.error) {
           // Handle 404 error with mock codes for development
           if (data.error.status === 404) {
@@ -127,16 +140,14 @@ export function RecoveryCodesStep({
           }
 
           toast.error(
-            `Failed to generate recovery codes: ${data.error.statusText || "Unknown error"}`
+            `Failed to generate recovery codes: ${data.error.statusText ?? "Unknown error"}`
           );
           return;
         }
 
         // Success case - real codes
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (data && "data" in data && data.data && "secretCodes" in data.data) {
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-          const codes = data.data.secretCodes || [];
+          const codes = data.data.secretCodes ?? [];
           logger.debug("Setting real codes", codes);
           setRecoveryCodes(codes);
           setRecoveryCodesFetched(true);
@@ -145,7 +156,6 @@ export function RecoveryCodesStep({
             toast.success("Recovery codes generated successfully");
           }
         } else if (
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           data &&
           "secretCodes" in data &&
           Array.isArray(data.secretCodes)
@@ -214,49 +224,18 @@ export function RecoveryCodesStep({
   return (
     <div className="h-full flex flex-col">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold">Save Your Recovery Codes</h2>
+        <h2 className="text-xl font-semibold">Your backup codes</h2>
         <p className="text-sm text-muted-foreground pt-2">
-          These codes can help you recover access to your wallet if you lose
-          your device or forget your PIN
+          Save these codes somewhere safe
+        </p>
+        <p className="text-sm pt-2">
+          These codes can each be used once to recover your wallet if you lose
+          access to your PIN or authenticator app.
         </p>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl space-y-6">
-          {/* Warning Section */}
-          <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-4">
-            <div className="flex items-start gap-3">
-              <svg
-                className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
-                />
-              </svg>
-              <div className="flex-1">
-                <h3 className="text-sm font-medium text-amber-600 dark:text-amber-400 mb-2 mt-0.5">
-                  Important Security Information
-                </h3>
-                <ul className="text-sm text-amber-600 dark:text-amber-400 space-y-1">
-                  <li>
-                    • Keep them private - anyone with these codes can access
-                    your wallet
-                  </li>
-                  <li>
-                    • Consider writing them down or storing them in a secure
-                    password manager
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
           {/* Recovery Codes Display */}
           {isGeneratingCodes ? (
             <div className="flex flex-col items-center justify-center py-12 space-y-4">
@@ -304,7 +283,7 @@ export function RecoveryCodesStep({
                       d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                     />
                   </svg>
-                  Copy All
+                  Copy codes
                 </Button>
                 <Button
                   variant="outline"
@@ -324,7 +303,7 @@ export function RecoveryCodesStep({
                       d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
                   </svg>
-                  Download
+                  Download codes
                 </Button>
               </div>
 
@@ -346,15 +325,29 @@ export function RecoveryCodesStep({
                 </div>
               </div>
 
-              {/* Security Reminder */}
-              <div className="text-center space-y-2">
-                <p className="text-xs text-muted-foreground">
-                  Make sure to store these codes in a secure location before
-                  continuing.
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Each code can only be used once for account recovery.
-                </p>
+              {/* Warning Section */}
+              <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-4">
+                <div className="flex items-start gap-3">
+                  <svg
+                    className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
+                  </svg>
+                  <div className="flex-1">
+                    <p className="text-sm text-amber-600 dark:text-amber-400 mt-0.5">
+                      Important: Keep these codes safe! they're your only way to
+                      regain access if you lose other security methods.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
@@ -403,7 +396,7 @@ export function RecoveryCodesStep({
             onClick={onNext}
             disabled={isGeneratingCodes || recoveryCodes.length === 0}
           >
-            {isLastStep ? "Complete" : "Next"}
+            {isLastStep ? "Complete" : "Confirm i've stored them"}
           </Button>
         </div>
       </div>

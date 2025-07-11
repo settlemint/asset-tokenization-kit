@@ -178,6 +178,7 @@ ingress-nginx:
       proxy-read-timeout: '3600'
       proxy-buffering: 'on'
       proxy-buffer-size: '128k'
+      proxy-busy-buffers-size: '128k'
       proxy-buffers-number: '4'
       proxy-max-temp-file-size: '1024m'
       client-body-buffer-size: '128k'

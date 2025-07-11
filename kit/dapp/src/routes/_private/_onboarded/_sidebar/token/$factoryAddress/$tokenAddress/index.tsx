@@ -123,6 +123,33 @@ function RouteComponent() {
           type="currency"
           currency={token.symbol}
         />
+
+        <DetailGridItem
+          label={t("tokens:fields.createdBy")}
+          info={t("tokens:fields.createdByInfo")}
+          value={token.createdBy.id}
+          type="address"
+        />
+
+        {token.capped?.cap && (
+          <DetailGridItem
+            label={t("tokens:fields.cap")}
+            info={t("tokens:fields.capInfo")}
+            value={token.capped.cap}
+            type="currency"
+            currency={token.symbol}
+          />
+        )}
+
+        {token.redeemable?.redeemedAmount && (
+          <DetailGridItem
+            label={t("tokens:fields.redeemedAmount")}
+            info={t("tokens:fields.redeemedAmountInfo")}
+            value={token.redeemable.redeemedAmount}
+            type="currency"
+            currency={token.symbol}
+          />
+        )}
       </DetailGrid>
 
       {token.collateral && (
@@ -140,6 +167,42 @@ function RouteComponent() {
             value={token.collateral.expiryTimestamp}
             type="date"
             emptyValue={t("tokens:fields.noExpiry")}
+          />
+        </DetailGrid>
+      )}
+
+      {token.bond && (
+        <DetailGrid title={t("tokens:details.bondInformation")}>
+          <DetailGridItem
+            label={t("tokens:fields.faceValue")}
+            info={t("tokens:fields.faceValueInfo")}
+            value={token.bond.faceValue}
+            type="currency"
+            currency={token.symbol}
+          />
+          <DetailGridItem
+            label={t("tokens:fields.isMatured")}
+            info={t("tokens:fields.isMaturedInfo")}
+            value={token.bond.isMatured}
+            type="boolean"
+          />
+          <DetailGridItem
+            label={t("tokens:fields.maturityDate")}
+            info={t("tokens:fields.maturityDateInfo")}
+            value={token.bond.maturityDate}
+            type="date"
+            emptyValue={t("tokens:fields.noExpiry")}
+          />
+        </DetailGrid>
+      )}
+
+      {token.fund && (
+        <DetailGrid title={t("tokens:details.fundInformation")}>
+          <DetailGridItem
+            label={t("tokens:fields.managementFeeBps")}
+            info={t("tokens:fields.managementFeeBpsInfo")}
+            value={token.fund.managementFeeBps}
+            type="percentage"
           />
         </DetailGrid>
       )}

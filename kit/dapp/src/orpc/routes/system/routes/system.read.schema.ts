@@ -60,9 +60,29 @@ export const SystemReadOutputSchema = z.object({
   id: ethereumAddress,
 
   /**
+   * The deployment transaction hash
+   */
+  deployedInTransaction: z.string().nullable(),
+
+  /**
+   * The identity registry contract address
+   */
+  identityRegistry: ethereumAddress.nullable(),
+
+  /**
+   * The trusted issuers registry contract address
+   */
+  trustedIssuersRegistry: ethereumAddress.nullable(),
+
+  /**
+   * The compliance engine contract address
+   */
+  compliance: ethereumAddress.nullable(),
+
+  /**
    * The token factory registry contract address
    */
-  tokenFactoryRegistry: ethereumAddress,
+  tokenFactoryRegistry: ethereumAddress.nullable(),
 
   /**
    * List of token factories deployed by this system

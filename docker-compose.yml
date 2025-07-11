@@ -114,7 +114,7 @@ services:
       retries: 5
       start_period: 5s
   portal:
-    image: ghcr.io/settlemint/btp-scs-portal:8.5.12
+    image: ghcr.io/settlemint/btp-scs-portal:8.5.13
     container_name: atk-portal
     restart: unless-stopped
     depends_on:

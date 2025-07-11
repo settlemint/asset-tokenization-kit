@@ -231,7 +231,7 @@ export function formatValue(
       const includeTime = displayName?.toLowerCase().includes("time");
 
       return (
-        <span className="text-muted-foreground">
+        <span>
           {formatDate(
             dateValue,
             {
@@ -289,6 +289,31 @@ export function formatValue(
           {safeToString(value)}
         </Badge>
       );
+    }
+
+    case "percentage": {
+      // Check if value is a Dnum (big decimal) first
+      if (isDnum(value)) {
+        // Format Dnum with locale-aware formatting
+        const formatted = formatDnum(value, {
+          locale,
+          digits: 2,
+          trailingZeros: false,
+        });
+
+        return <span className="block tabular-nums">{formatted}%</span>;
+      }
+
+      // Use safe number conversion to handle large values without precision loss
+      const percentageValue = safeToNumber(value);
+
+      // Format with proper locale
+      const formatted = new Intl.NumberFormat(locale, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      }).format(percentageValue);
+
+      return <span className="block tabular-nums">{formatted}%</span>;
     }
 
     case "number": {

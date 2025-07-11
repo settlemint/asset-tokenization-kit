@@ -67,10 +67,12 @@
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
-  "dependencies": {},
+  "dependencies": {
+    "change-case": "5.4.4"
+  },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
-    "@settlemint/sdk-cli": "2.5.0",
+    "@settlemint/sdk-cli": "2.5.1",
     "prettier": "3.6.2",
     "turbo": "2.5.4",
     "typescript": "5.8.3"

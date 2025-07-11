@@ -72,7 +72,7 @@ export function NavAsset() {
       icon: PiggyBankIcon,
       factories: factories.filter(
         (factory) =>
-          getAssetClassFromFactoryTypeId(factory.typeId) === "fixed-income"
+          getAssetClassFromFactoryTypeId(factory.typeId) === "fixedIncome"
       ),
     },
     {
@@ -80,7 +80,7 @@ export function NavAsset() {
       icon: BanknoteArrowUpIcon,
       factories: factories.filter(
         (factory) =>
-          getAssetClassFromFactoryTypeId(factory.typeId) === "flexible-income"
+          getAssetClassFromFactoryTypeId(factory.typeId) === "flexibleIncome"
       ),
     },
     {
@@ -88,7 +88,7 @@ export function NavAsset() {
       icon: CreditCardIcon,
       factories: factories.filter(
         (factory) =>
-          getAssetClassFromFactoryTypeId(factory.typeId) === "cash-equivalent"
+          getAssetClassFromFactoryTypeId(factory.typeId) === "cashEquivalent"
       ),
     },
   ];

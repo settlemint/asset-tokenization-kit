@@ -40,7 +40,7 @@ import type enErrorsTranslations from "@/locales/en/errors.json";
 import type enFormTranslations from "@/locales/en/form.json";
 import type enFormatsTranslations from "@/locales/en/formats.json";
 import type enGeneralTranslations from "@/locales/en/general.json";
-import type enIssuerDashboardTranslations from "@/locales/en/issuer-dashboard.json";
+import type enStatsTranslations from "@/locales/en/stats.json";
 import type enLanguageTranslations from "@/locales/en/language.json";
 import type enNavigationTranslations from "@/locales/en/navigation.json";
 import type enOnboardingTranslations from "@/locales/en/onboarding.json";
@@ -90,7 +90,7 @@ declare module "i18next" {
       form: typeof enFormTranslations;
       formats: typeof enFormatsTranslations;
       general: typeof enGeneralTranslations;
-      "issuer-dashboard": typeof enIssuerDashboardTranslations;
+      stats: typeof enStatsTranslations;
       language: typeof enLanguageTranslations;
       navigation: typeof enNavigationTranslations;
       onboarding: typeof enOnboardingTranslations;
