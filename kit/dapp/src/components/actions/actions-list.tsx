@@ -1,15 +1,15 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { orpc } from "@/orpc";
 import {
   type ActionStatus,
   type ActionType,
 } from "@/orpc/routes/token/routes/token.actions.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
 import { formatDistance } from "date-fns";
-import { CalendarIcon, UserIcon, AlertCircleIcon } from "lucide-react";
-import { orpc } from "@/orpc";
+import { AlertCircleIcon, CalendarIcon, UserIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ActionsListProps {
   tokenAddress: string;
@@ -98,7 +98,6 @@ interface ActionCardProps {
     dueDate: number | null;
     createdAt: number;
     updatedAt: number;
-    createdBy: string;
     assignedTo: string | null;
     token: string | null;
     metadata?: { key: string; value: string }[];
@@ -172,14 +171,14 @@ function ActionCard({ action }: ActionCardProps) {
         )}
 
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <UserIcon className="h-3 w-3" />
-            <span>
-              {action.assignedTo
-                ? `${t("assignedTo")}: ${action.assignedTo.slice(0, 8)}...`
-                : `${t("createdBy")}: ${action.createdBy.slice(0, 8)}...`}
-            </span>
-          </div>
+          {action.assignedTo && (
+            <div className="flex items-center gap-1">
+              <UserIcon className="h-3 w-3" />
+              <span>
+                {t("assignedTo")}: {action.assignedTo.slice(0, 8)}...
+              </span>
+            </div>
+          )}
 
           {action.dueDate && (
             <div className="flex items-center gap-1">

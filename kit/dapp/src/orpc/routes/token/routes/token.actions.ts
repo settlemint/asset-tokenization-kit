@@ -115,7 +115,7 @@ function mapSubgraphActionToAction(
     subgraphAction.requiredRole
   );
 
-  return {
+    return {
     id: subgraphAction.id,
     type,
     status,
@@ -126,8 +126,9 @@ function mapSubgraphActionToAction(
     updatedAt: subgraphAction.executedAt
       ? Number(subgraphAction.executedAt)
       : Number(subgraphAction.createdAt),
-    createdBy: subgraphAction.target.id, // Target represents the account that will be acted upon
-    assignedTo: subgraphAction.executedBy?.id ?? null,
+    assignedTo: subgraphAction.executors?.executors?.length > 0
+      ? subgraphAction.executors.executors[0]?.id ?? null
+      : null,
     token: tokenId,
     metadata: subgraphAction.requiredRole
       ? [{ key: "requiredRole", value: subgraphAction.requiredRole }]

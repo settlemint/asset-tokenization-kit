@@ -12,7 +12,6 @@ export const ActionSchema = z.object({
   dueDate: z.number().nullable(),
   createdAt: z.number(),
   updatedAt: z.number(),
-  createdBy: z.string(),
   assignedTo: z.string().nullable(),
   token: z.string().nullable(),
   metadata: z
