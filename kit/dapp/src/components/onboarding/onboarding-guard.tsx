@@ -25,7 +25,7 @@ import {
 } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useLocation } from "@tanstack/react-router";
 import { useEffect, type PropsWithChildren } from "react";
 
 /**
@@ -83,6 +83,10 @@ export function OnboardingGuard({
 }: OnboardingGuardProps) {
   const isMounted = useMounted();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if user is currently in an onboarding flow (to prevent premature redirects)
+  const isInOnboardingFlow = location.pathname.includes("/onboarding/");
 
   // Fetch user data
   const { data: session, isPending } = authClient.useSession();
@@ -189,7 +193,12 @@ export function OnboardingGuard({
     }
 
     // Handle not-onboarded requirement
-    if (require === "not-onboarded" && isOnboardingComplete) {
+    // Don't redirect if user is actively in onboarding flow (let them finish naturally)
+    if (
+      require === "not-onboarded" &&
+      isOnboardingComplete &&
+      !isInOnboardingFlow
+    ) {
       void navigate({ to: "/" });
       return;
     }
@@ -227,6 +236,7 @@ export function OnboardingGuard({
     onboardingType,
     allowedTypes,
     userRole,
+    isInOnboardingFlow,
   ]);
 
   if (!isMounted || !isCheckComplete) {
