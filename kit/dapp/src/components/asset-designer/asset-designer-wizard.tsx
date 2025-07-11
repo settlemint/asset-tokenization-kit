@@ -149,6 +149,7 @@ function AssetDesignerWizardComponent({
         id: "asset-type-selection",
         title: t("wizard.steps.asset-type.title"),
         description: t("wizard.steps.asset-type.description"),
+        enableFilters: true,
         groups: assetClassGroups.map((group) => ({
           id: group.assetClass,
           label: t(`navigation:${group.assetClass}`),
