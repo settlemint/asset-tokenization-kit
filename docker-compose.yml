@@ -92,7 +92,6 @@ services:
       ]
     volumes:
       - ./tools/docker/postgres/init.sql:/docker-entrypoint-initdb.d/1_init.sql:ro
-      - ./kit/dapp/.generated/database-export.sql:/docker-entrypoint-initdb.d/2_atk.sql:ro
       - atk-postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
