@@ -86,8 +86,9 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
         returns (IATKStableCoin result)
     {
         vm.startPrank(owner);
-        address stableCoinAddress =
-            stableCoinFactory.createStableCoin(name, symbol, decimals, requiredClaimTopics, initialModulePairs, TestConstants.COUNTRY_CODE_US);
+        address stableCoinAddress = stableCoinFactory.createStableCoin(
+            name, symbol, decimals, requiredClaimTopics, initialModulePairs, TestConstants.COUNTRY_CODE_US
+        );
 
         result = IATKStableCoin(stableCoinAddress);
 
@@ -152,7 +153,12 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
 
         vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidDecimals.selector, 19));
         stableCoinFactory.createStableCoin(
-            "StableCoin 19", "STBL19", 19, new uint256[](0), new SMARTComplianceModuleParamPair[](0), TestConstants.COUNTRY_CODE_US
+            "StableCoin 19",
+            "STBL19",
+            19,
+            new uint256[](0),
+            new SMARTComplianceModuleParamPair[](0),
+            TestConstants.COUNTRY_CODE_US
         );
         vm.stopPrank();
     }

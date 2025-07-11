@@ -82,8 +82,9 @@ contract ATKDepositTest is AbstractATKAssetTest {
     {
         vm.startPrank(owner);
 
-        address depositAddress =
-            depositFactory.createDeposit(name, symbol, decimals, requiredClaimTopics, initialModulePairs, TestConstants.COUNTRY_CODE_US);
+        address depositAddress = depositFactory.createDeposit(
+            name, symbol, decimals, requiredClaimTopics, initialModulePairs, TestConstants.COUNTRY_CODE_US
+        );
         result = IATKDeposit(depositAddress);
 
         vm.label(depositAddress, "Deposit");
@@ -146,7 +147,12 @@ contract ATKDepositTest is AbstractATKAssetTest {
 
         vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidDecimals.selector, 19));
         depositFactory.createDeposit(
-            "Deposit 19", "DEP19", 19, new uint256[](0), new SMARTComplianceModuleParamPair[](0), TestConstants.COUNTRY_CODE_US
+            "Deposit 19",
+            "DEP19",
+            19,
+            new uint256[](0),
+            new SMARTComplianceModuleParamPair[](0),
+            TestConstants.COUNTRY_CODE_US
         );
         vm.stopPrank();
     }

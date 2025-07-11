@@ -19,6 +19,7 @@ import {
     SystemAddonImplementationNotSet,
     SystemAddonTypeAlreadyRegistered,
     ComplianceImplementationNotSet,
+    ContractIdentityImplementationNotSet,
     IdentityFactoryImplementationNotSet,
     IdentityImplementationNotSet,
     IdentityRegistryImplementationNotSet,
@@ -101,6 +102,7 @@ contract ATKSystemImplementation is
     bytes32 internal constant TOKEN_ACCESS_MANAGER = keccak256("TOKEN_ACCESS_MANAGER");
     bytes32 internal constant IDENTITY = keccak256("IDENTITY");
     bytes32 internal constant TOKEN_IDENTITY = keccak256("TOKEN_IDENTITY");
+    bytes32 internal constant CONTRACT_IDENTITY = keccak256("CONTRACT_IDENTITY");
     bytes32 internal constant COMPLIANCE_MODULE_REGISTRY = keccak256("COMPLIANCE_MODULE_REGISTRY");
     bytes32 internal constant ADDON_REGISTRY = keccak256("ADDON_REGISTRY");
     bytes32 internal constant TOKEN_FACTORY_REGISTRY = keccak256("TOKEN_FACTORY_REGISTRY");
@@ -235,6 +237,7 @@ contract ATKSystemImplementation is
         address identityFactoryImplementation_,
         address identityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
+        address contractIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
         address identityVerificationModule_,
         address tokenFactoryRegistryImplementation_,
@@ -315,6 +318,13 @@ contract ATKSystemImplementation is
             // IIdentity
         _implementations[TOKEN_IDENTITY] = tokenIdentityImplementation_;
         emit TokenIdentityImplementationUpdated(initialAdmin_, tokenIdentityImplementation_);
+
+        // Validate and set the contract identity implementation address.
+        if (contractIdentityImplementation_ == address(0)) revert ContractIdentityImplementationNotSet();
+        _checkInterface(contractIdentityImplementation_, _IIDENTITY_ID); // Ensure it supports OnchainID's
+            // IIdentity
+        _implementations[CONTRACT_IDENTITY] = contractIdentityImplementation_;
+        emit ContractIdentityImplementationUpdated(initialAdmin_, contractIdentityImplementation_);
 
         // Validate and set the identity verification module implementation address.
         if (identityVerificationModule_ == address(0)) {
@@ -661,6 +671,21 @@ contract ATKSystemImplementation is
         emit TokenIdentityImplementationUpdated(_msgSender(), implementation_);
     }
 
+    /// @notice Sets (updates) the address of the contract identity implementation (logic template).
+    /// @dev Only callable by an address with the `IMPLEMENTATION_MANAGER_ROLE`.
+    /// Reverts if `implementation` is zero or doesn't support `IIdentity` (from OnchainID standard).
+    /// Emits a `ContractIdentityImplementationUpdated` event.
+    /// @param implementation_ The new address for the contract identity logic template.
+    function setContractIdentityImplementation(address implementation_)
+        public
+        onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
+    {
+        if (implementation_ == address(0)) revert ContractIdentityImplementationNotSet();
+        _checkInterface(implementation_, _IIDENTITY_ID);
+        _implementations[CONTRACT_IDENTITY] = implementation_;
+        emit ContractIdentityImplementationUpdated(_msgSender(), implementation_);
+    }
+
     /// @notice Sets (updates) the address of the token access manager contract's implementation (logic).
     /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
     /// Reverts if `implementation` is zero or doesn't support `ISMARTTokenAccessManager`.
@@ -746,6 +771,12 @@ contract ATKSystemImplementation is
     /// @return The address of the token identity implementation contract.
     function tokenIdentityImplementation() external view returns (address) {
         return _implementations[TOKEN_IDENTITY];
+    }
+
+    /// @notice Returns the address of the contract identity implementation.
+    /// @return The address of the contract identity implementation contract.
+    function contractIdentityImplementation() external view returns (address) {
+        return _implementations[CONTRACT_IDENTITY];
     }
 
     /// @notice Returns the address of the access manager implementation.

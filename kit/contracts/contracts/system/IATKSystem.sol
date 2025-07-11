@@ -52,6 +52,12 @@ interface IATKSystem is IERC165 {
     /// @param sender The address that called the `updateTokenIdentityImplementation` function.
     /// @param newImplementation The address of the new token identity module implementation contract.
     event TokenIdentityImplementationUpdated(address indexed sender, address indexed newImplementation);
+
+    /// @notice Emitted when the implementation (logic contract) for the contract identity module is updated.
+    /// @dev Contract identity contracts are identities associated with any contract implementing IContractWithIdentity.
+    /// @param sender The address that called the `updateContractIdentityImplementation` function.
+    /// @param newImplementation The address of the new contract identity module implementation contract.
+    event ContractIdentityImplementationUpdated(address indexed sender, address indexed newImplementation);
     /// @notice Emitted when the implementation (logic contract) for the token access manager module is updated.
     /// @param sender The address that called the `updateTokenAccessManagerImplementation` function.
     /// @param newImplementation The address of the new token access manager module implementation contract.
@@ -198,6 +204,10 @@ interface IATKSystem is IERC165 {
     /// @notice Returns the address of the token identity implementation.
     /// @return The address of the token identity implementation contract.
     function tokenIdentityImplementation() external view returns (address);
+
+    /// @notice Returns the address of the contract identity implementation.
+    /// @return The address of the contract identity implementation contract.
+    function contractIdentityImplementation() external view returns (address);
 
     /// @notice Returns the address of the access manager implementation.
     /// @return The address of the access manager implementation contract.

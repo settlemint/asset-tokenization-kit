@@ -421,7 +421,7 @@ contract TokenUtils is Test {
         // Ensure tokenAddress is the proxy address when dealing with upgradeable tokens
         vm.startPrank(_platformAdmin); // Platform admin creates the token identity
         // Use the specific token issuer's wallet address for identity creation
-        address tokenIdentityAddress = _identityFactory.createContractIdentity(tokenAddress, accessManager);
+        address tokenIdentityAddress = _identityFactory.createContractIdentity(tokenAddress);
         vm.stopPrank();
 
         // 3. Set the on-chain ID on the token contract (via the proxy)

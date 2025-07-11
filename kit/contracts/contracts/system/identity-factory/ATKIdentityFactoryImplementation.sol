@@ -26,6 +26,7 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 // Implementation imports
 import { ATKIdentityProxy } from "./identities/ATKIdentityProxy.sol";
 import { ATKTokenIdentityProxy } from "./identities/ATKTokenIdentityProxy.sol";
+import { ATKContractIdentityProxy } from "./identities/ATKContractIdentityProxy.sol";
 
 /// @title ATK Identity Factory Implementation
 /// @author SettleMint Tokenization Services
@@ -217,29 +218,16 @@ contract ATKIdentityFactoryImplementation is
     /// @inheritdoc IATKIdentityFactory
     /// @notice Creates a deterministic on-chain identity for a given contract implementing IContractWithIdentity.
     /// @dev This function performs several steps:
-    /// 1. Validates that `_contract` and `_accessManager` are not zero addresses and that an identity doesn't already
-    /// exist
-    /// for this contract.
+    /// 1. Validates that `_contract` is not zero address and that an identity doesn't already exist for this contract.
     /// 2. Verifies the contract implements IContractWithIdentity interface.
     /// 3. Calls `_createAndRegisterContractIdentity` to handle the deterministic deployment.
     /// 4. Stores the mapping from the `_contract` address to the new `identity` contract address.
     /// 5. Emits `ContractIdentityCreated` event.
     /// @param _contract The address of the contract implementing IContractWithIdentity for which the identity is being
     /// created.
-    /// @param _accessManager The address of the access manager contract that will be set as the initial owner/manager
-    /// of the contract's identity.
     /// @return address The address of the newly created identity contract.
-    function createContractIdentity(
-        address _contract,
-        address _accessManager
-    )
-        external
-        virtual
-        override
-        returns (address)
-    {
+    function createContractIdentity(address _contract) external virtual override returns (address) {
         if (_contract == address(0)) revert ZeroAddressNotAllowed();
-        if (_accessManager == address(0)) revert ZeroAddressNotAllowed();
         if (_contractIdentities[_contract] != address(0)) revert ContractAlreadyLinked(_contract);
 
         // Verify that the contract implements IContractWithIdentity
@@ -248,7 +236,7 @@ contract ATKIdentityFactoryImplementation is
         }
 
         // Deploy identity with metadata-based salt by querying the contract directly
-        address identity = _createAndRegisterContractIdentity(_contract, _accessManager);
+        address identity = _createAndRegisterContractIdentity(_contract);
 
         _contractIdentities[_contract] = identity;
         emit ContractIdentityCreated(_msgSender(), identity, _contract);
@@ -308,18 +296,17 @@ contract ATKIdentityFactoryImplementation is
     /// @notice Computes the deterministic address at which an identity proxy for a contract will be
     /// deployed (or was deployed) using metadata-based salt.
     /// @dev Uses contract metadata (name, symbol, decimals) to calculate deployment address.
-    ///      It calls `_computeTokenProxyAddress` with the calculated metadata-based salt and `_initialManager`.
+    ///      It calls `_computeContractProxyAddress` with the calculated metadata-based salt and `_contractAddress`.
     /// @param _name The name of the contract used in salt generation.
     /// @param _symbol The symbol of the contract used in salt generation.
     /// @param _decimals The decimals of the contract used in salt generation.
-    /// @param _initialManager The address that would be (or was) set as the initial management key for the contract
-    /// identity's proxy constructor.
+    /// @param _contractAddress The address of the contract for which the identity will be created.
     /// @return address The pre-computed CREATE2 deployment address for the contract's identity contract.
     function calculateContractIdentityAddress(
         string calldata _name,
         string calldata _symbol,
         uint8 _decimals,
-        address _initialManager
+        address _contractAddress
     )
         public
         view
@@ -328,7 +315,7 @@ contract ATKIdentityFactoryImplementation is
         returns (address)
     {
         (bytes32 saltBytes,) = _calculateTokenSalt(TOKEN_METADATA_SALT_PREFIX, _name, _symbol, _decimals);
-        return _computeTokenProxyAddress(saltBytes, _initialManager);
+        return _computeContractProxyAddress(saltBytes, _contractAddress);
     }
 
     /// @notice Returns the address of the `IATKSystem` contract that this factory uses.
@@ -368,19 +355,12 @@ contract ATKIdentityFactoryImplementation is
     /// salt.
     /// @dev Calculates a unique salt for the `_contractAddress` using metadata queried from the ISMART interface if
     /// available,
-    ///      checks if the salt has been taken, deploys the identity proxy using `_deployTokenProxy`, and
+    ///      checks if the salt has been taken, deploys the identity proxy using `_deployContractProxy`, and
     /// marks the salt as taken.
     /// @param _contractAddress The address of the contract (must implement IContractWithIdentity) for which to create
     /// an identity.
-    /// @param _accessManager The address of the access manager contract that will be set as the initial owner/manager
     /// @return address The address of the newly deployed identity proxy.
-    function _createAndRegisterContractIdentity(
-        address _contractAddress,
-        address _accessManager
-    )
-        private
-        returns (address)
-    {
+    function _createAndRegisterContractIdentity(address _contractAddress) private returns (address) {
         // Try to query contract metadata from ISMART interface if available
         string memory name;
         string memory symbol;
@@ -402,7 +382,7 @@ contract ATKIdentityFactoryImplementation is
 
         if (_saltTakenByteSalt[saltBytes]) revert SaltAlreadyTaken(saltString);
 
-        address identity = _deployTokenProxy(saltBytes, _accessManager);
+        address identity = _deployContractProxy(saltBytes, _contractAddress);
 
         _saltTakenByteSalt[saltBytes] = true;
         return identity;
@@ -496,6 +476,26 @@ contract ATKIdentityFactoryImplementation is
         return Create2.computeAddress(_saltBytes, keccak256(abi.encodePacked(proxyBytecode, constructorArgs)));
     }
 
+    /// @notice Internal view function to compute the CREATE2 address for a `ATKContractIdentityProxy`.
+    /// @dev Similar to `_computeWalletProxyAddress` but for contract identities, using
+    /// `_getContractProxyAndConstructorArgs`.
+    /// @param _saltBytes The pre-calculated `bytes32` salt for the deployment.
+    /// @param _contractAddress The address of the contract that will own this identity.
+    /// @return address The deterministically computed address where the proxy will be deployed.
+    function _computeContractProxyAddress(
+        bytes32 _saltBytes,
+        address _contractAddress
+    )
+        internal
+        view
+        returns (address)
+    {
+        (bytes memory proxyBytecode, bytes memory constructorArgs) =
+            _getContractProxyAndConstructorArgs(_contractAddress);
+        // slither-disable-next-line encode-packed-collision
+        return Create2.computeAddress(_saltBytes, keccak256(abi.encodePacked(proxyBytecode, constructorArgs)));
+    }
+
     /// @notice Internal function to deploy a `ATKIdentityProxy` (for wallets) using CREATE2.
     /// @dev It first computes the predicted address, then gets the proxy bytecode and constructor arguments,
     ///      and finally calls `_deployProxy` to perform the actual deployment.
@@ -517,6 +517,19 @@ contract ATKIdentityFactoryImplementation is
     function _deployTokenProxy(bytes32 _saltBytes, address _accessManager) private returns (address) {
         address predictedAddr = _computeTokenProxyAddress(_saltBytes, _accessManager);
         (bytes memory proxyBytecode, bytes memory constructorArgs) = _getTokenProxyAndConstructorArgs(_accessManager);
+        return _deployProxy(predictedAddr, proxyBytecode, constructorArgs, _saltBytes);
+    }
+
+    /// @notice Internal function to deploy a `ATKContractIdentityProxy` using CREATE2.
+    /// @dev Similar to `_deployWalletProxy` but for contract identities, using `_computeContractProxyAddress` and
+    /// `_getContractProxyAndConstructorArgs`.
+    /// @param _saltBytes The `bytes32` salt for the CREATE2 deployment.
+    /// @param _contractAddress The address of the contract that will own this identity
+    /// @return address The address of the newly deployed `ATKContractIdentityProxy`.
+    function _deployContractProxy(bytes32 _saltBytes, address _contractAddress) private returns (address) {
+        address predictedAddr = _computeContractProxyAddress(_saltBytes, _contractAddress);
+        (bytes memory proxyBytecode, bytes memory constructorArgs) =
+            _getContractProxyAndConstructorArgs(_contractAddress);
         return _deployProxy(predictedAddr, proxyBytecode, constructorArgs, _saltBytes);
     }
 
@@ -550,6 +563,22 @@ contract ATKIdentityFactoryImplementation is
     {
         proxyBytecode = type(ATKTokenIdentityProxy).creationCode;
         constructorArgs = abi.encode(_system, _accessManager);
+        // No explicit return needed due to named return variables
+    }
+
+    /// @notice Internal helper to get the creation bytecode and encoded constructor arguments for
+    /// `ATKContractIdentityProxy`.
+    /// @dev The constructor of `ATKContractIdentityProxy` takes the `_system` address and the contract address.
+    /// @param _contractAddress The address of the contract that will own this identity
+    /// @return proxyBytecode The creation bytecode of `ATKContractIdentityProxy`.
+    /// @return constructorArgs The ABI-encoded constructor arguments (`_system`, `_contractAddress`).
+    function _getContractProxyAndConstructorArgs(address _contractAddress)
+        private
+        view
+        returns (bytes memory proxyBytecode, bytes memory constructorArgs)
+    {
+        proxyBytecode = type(ATKContractIdentityProxy).creationCode;
+        constructorArgs = abi.encode(_system, _contractAddress);
         // No explicit return needed due to named return variables
     }
 

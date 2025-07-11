@@ -220,7 +220,7 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
         IATKIdentityFactory identityFactory_ = IATKIdentityFactory(system_.identityFactory());
 
         // Create the contract identity
-        contractIdentity = identityFactory_.createContractIdentity(contractAddress, accessManagerAddress);
+        contractIdentity = identityFactory_.createContractIdentity(contractAddress);
 
         // Register the contract identity with the identity registry (same as any other identity)
         ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(system_.identityRegistry());

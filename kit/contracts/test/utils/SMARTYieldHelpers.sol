@@ -69,7 +69,13 @@ abstract contract SMARTYieldHelpers is Test {
 
         vm.prank(tokenIssuer);
         return yieldScheduleFactory.create(
-            token, startDate, endDate, YIELD_RATE, PERIOD_INTERVAL, "Test Helper Yield Schedule", TestConstants.COUNTRY_CODE_US
+            token,
+            startDate,
+            endDate,
+            YIELD_RATE,
+            PERIOD_INTERVAL,
+            "Test Helper Yield Schedule",
+            TestConstants.COUNTRY_CODE_US
         );
     }
 

@@ -25,6 +25,8 @@ import { ATKIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
 import { ATKTokenIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol";
+import { ATKContractIdentityImplementation } from
+    "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
@@ -87,6 +89,7 @@ contract SystemUtils is Test {
 
         IIdentity identityImpl = new ATKIdentityImplementation(forwarder);
         IIdentity tokenIdentityImpl = new ATKTokenIdentityImplementation(forwarder);
+        IIdentity contractIdentityImpl = new ATKContractIdentityImplementation(forwarder);
 
         ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
 
@@ -120,6 +123,7 @@ contract SystemUtils is Test {
             address(factoryImpl),
             address(identityImpl),
             address(tokenIdentityImpl),
+            address(contractIdentityImpl),
             address(accessManagerImpl),
             address(identityVerificationModule),
             address(tokenFactoryRegistryImpl),

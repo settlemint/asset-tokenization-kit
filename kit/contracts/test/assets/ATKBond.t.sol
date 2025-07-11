@@ -853,7 +853,13 @@ contract ATKBondTest is AbstractATKAssetTest {
         // Create the yield schedule for our bond
         // Note: The factory automatically sets up the circular reference by calling bond.setYieldSchedule()
         address yieldScheduleAddr = fixedYieldScheduleFactory.create(
-            ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval, "Test Yield Schedule", TestConstants.COUNTRY_CODE_US
+            ISMARTYield(address(bond)),
+            startDate,
+            endDate,
+            yieldRate,
+            interval,
+            "Test Yield Schedule",
+            TestConstants.COUNTRY_CODE_US
         );
         vm.label(yieldScheduleAddr, "Yield Schedule");
 
@@ -882,7 +888,13 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         vm.startPrank(owner);
         address yieldScheduleAddr = fixedYieldScheduleFactory.create(
-            ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval, "Test Yield Schedule 2", TestConstants.COUNTRY_CODE_US
+            ISMARTYield(address(bond)),
+            startDate,
+            endDate,
+            yieldRate,
+            interval,
+            "Test Yield Schedule 2",
+            TestConstants.COUNTRY_CODE_US
         );
         vm.label(yieldScheduleAddr, "Yield Schedule");
 

@@ -57,15 +57,10 @@ interface IATKIdentityFactory is IERC165 {
     /// @dev This function deploys a new identity contract using the contract's
     ///      metadata (name, symbol, decimals) if available to generate a unique salt.
     ///      This provides predictable and meaningful identity addresses based on contract characteristics.
+    ///      Permission checks are delegated to the contract itself via canAddClaim/canRemoveClaim.
     /// @param _contract The address of the contract implementing IContractWithIdentity
-    /// @param _accessManager The address of the access manager contract to be used for the contract identity.
     /// @return contractIdentityAddress The address of the newly deployed contract identity contract.
-    function createContractIdentity(
-        address _contract,
-        address _accessManager
-    )
-        external
-        returns (address contractIdentityAddress);
+    function createContractIdentity(address _contract) external returns (address contractIdentityAddress);
 
     // --- View Functions ---
 
@@ -106,15 +101,13 @@ interface IATKIdentityFactory is IERC165 {
     /// @param _name The name of the contract used in salt generation.
     /// @param _symbol The symbol of the contract used in salt generation.
     /// @param _decimals The decimals of the contract used in salt generation.
-    /// @param _initialManager The address that would be (or was) set as the initial manager during the contract
-    /// identity's
-    /// creation.
+    /// @param _contractAddress The address of the contract for which the identity will be created.
     /// @return predictedAddress The pre-computed or actual deployment address of the contract's identity contract.
     function calculateContractIdentityAddress(
         string calldata _name,
         string calldata _symbol,
         uint8 _decimals,
-        address _initialManager
+        address _contractAddress
     )
         external
         view

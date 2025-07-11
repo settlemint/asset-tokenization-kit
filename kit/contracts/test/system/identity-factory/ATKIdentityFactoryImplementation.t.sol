@@ -69,7 +69,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
         emit ContractIdentityCreated(admin, address(0), address(token)); // address(0) will be replaced with actual
 
         vm.prank(admin);
-        address identity = factory.createContractIdentity(address(token), accessManager);
+        address identity = factory.createContractIdentity(address(token));
 
         assertTrue(identity != address(0));
         assertEq(factory.getContractIdentity(address(token)), identity);
@@ -80,7 +80,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
 
         vm.prank(unauthorizedUser);
         vm.expectRevert();
-        factory.createContractIdentity(tokenAddress, accessManager);
+        factory.createContractIdentity(tokenAddress);
     }
 
     function testCreateIdentityWithZeroWallet() public {
@@ -94,15 +94,16 @@ contract ATKIdentityFactoryImplementationTest is Test {
     function testCreateTokenIdentityWithZeroToken() public {
         vm.prank(admin);
         vm.expectRevert();
-        factory.createContractIdentity(address(0), accessManager);
+        factory.createContractIdentity(address(0));
     }
 
-    function testCreateTokenIdentityWithZeroAccessManager() public {
-        address tokenAddress = makeAddr("token");
+    function testCreateTokenIdentityWithInvalidContract() public {
+        // Create a contract that doesn't implement IContractWithIdentity
+        address invalidContract = makeAddr("invalidContract");
 
         vm.prank(admin);
         vm.expectRevert();
-        factory.createContractIdentity(tokenAddress, address(0));
+        factory.createContractIdentity(invalidContract);
     }
 
     function testCreateIdentityDeterministicAddress() public {
@@ -130,10 +131,10 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(accessManager)
         );
 
-        address predictedAddress = factory.calculateContractIdentityAddress("Token", "TKN", 18, accessManager);
+        address predictedAddress = factory.calculateContractIdentityAddress("Token", "TKN", 18, address(token));
 
         vm.prank(admin);
-        address actualAddress = factory.createContractIdentity(address(token), accessManager);
+        address actualAddress = factory.createContractIdentity(address(token));
 
         assertEq(actualAddress, predictedAddress);
     }
@@ -164,11 +165,11 @@ contract ATKIdentityFactoryImplementationTest is Test {
         );
 
         vm.prank(admin);
-        factory.createContractIdentity(address(token), accessManager);
+        factory.createContractIdentity(address(token));
 
         vm.prank(admin);
         vm.expectRevert();
-        factory.createContractIdentity(address(token), accessManager);
+        factory.createContractIdentity(address(token));
     }
 
     function testCreateMultipleIdentitiesForDifferentWallets() public {
@@ -215,10 +216,10 @@ contract ATKIdentityFactoryImplementationTest is Test {
         );
 
         vm.prank(admin);
-        address identity1 = factory.createContractIdentity(address(token1), accessManager);
+        address identity1 = factory.createContractIdentity(address(token1));
 
         vm.prank(admin);
-        address identity2 = factory.createContractIdentity(address(token2), accessManager);
+        address identity2 = factory.createContractIdentity(address(token2));
 
         assertTrue(identity1 != identity2);
         assertTrue(identity1 != address(0));
@@ -263,8 +264,9 @@ contract ATKIdentityFactoryImplementationTest is Test {
     function testCalculateTokenIdentityAddressReturnsPredictableAddress() public {
         vm.prank(admin);
 
-        address predictedAddress1 = factory.calculateContractIdentityAddress("TOKEN", "TKN", 18, accessManager);
-        address predictedAddress2 = factory.calculateContractIdentityAddress("TOKEN", "TKN", 18, accessManager);
+        address tokenAddress = makeAddr("token");
+        address predictedAddress1 = factory.calculateContractIdentityAddress("TOKEN", "TKN", 18, tokenAddress);
+        address predictedAddress2 = factory.calculateContractIdentityAddress("TOKEN", "TKN", 18, tokenAddress);
 
         assertEq(predictedAddress1, predictedAddress2);
         assertTrue(predictedAddress1 != address(0));

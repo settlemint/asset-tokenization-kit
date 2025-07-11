@@ -88,7 +88,13 @@ contract ATKFundTest is AbstractATKAssetTest {
     {
         vm.startPrank(owner);
         address fundAddress = fundFactory.createFund(
-            name_, symbol_, decimals_, managementFeeBps_, requiredClaimTopics_, initialModulePairs_, TestConstants.COUNTRY_CODE_US
+            name_,
+            symbol_,
+            decimals_,
+            managementFeeBps_,
+            requiredClaimTopics_,
+            initialModulePairs_,
+            TestConstants.COUNTRY_CODE_US
         );
 
         result = IATKFund(fundAddress);
