@@ -51,6 +51,9 @@ export const ethereumHash = z
   )
   .refine(isHash, {
     message: "Invalid Ethereum hash format",
+  })
+  .transform((value): EthereumHash => {
+    return value as EthereumHash;
   });
 
 /**
@@ -106,5 +109,5 @@ export function isEthereumHash(value: unknown): value is EthereumHash {
  * ```
  */
 export function getEthereumHash(value: unknown): EthereumHash {
-  return ethereumHash.parse(value) as EthereumHash;
+  return ethereumHash.parse(value);
 }

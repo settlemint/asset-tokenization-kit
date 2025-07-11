@@ -706,6 +706,13 @@ files:
     continue: a0bfb8e59e6c13fc8d990781f77694fe
     deploying: a51242b36009886a35d79b2c94644fb3
     generating: 530a6ed46ff9e1aa707e0af48a465be7
+    transactionHash.copyToClipboard: 07d18cf0faa495f96f68311009edcedd
+    transactionHash.copied: 6d6db52799620de23c1e87d00abde8c4
+    actions.cancel: ea4788705e6873b424c65e91c2846b19
+    verification.pincode.label: dfcbc97f1d21b9867e68fa7179492c4c
+    verification.pincode.description: 88fe2f22ddebcbf34b8318190846d852
+    transaction.waitingForMining: 836fac42d51f640bb9596eeec6193b2c
+    transaction.indexed: 1e2a6eb83ef02a51ca9f4e1300510ee4
   locales/en/dashboard.json:
     title: 2938c7f7e560ed972f8a4f68e80ff834
     subtitle: 7525fec727673326a4fc0363e1a315c7
@@ -862,6 +869,8 @@ files:
     loading: 8524de963f07201e5c086830d370797f
     next: 10ac3d04253ef7e1ddc73e6091c0cd55
     noResults: e576c23d915755d83e2d1f47bd9f6c22
+    tryAdjustingFilters: 74fa6082d4a76672a0f396cd18f67a47
+    noDataAvailable: 88669024ae1ddb039379635f7a0e0d10
     of: 8bf8854bebe108183caeb845c7676ae4
     open: c3bf447eabe632720a3aa1a7ce401274
     openMenu: 64d2cc43035360eddf790efbef5ddb30
@@ -874,6 +883,10 @@ files:
     selectAll: 4c41e0bd957698b58100a5c687d757d9
     selected: ef7de3f485174ff47f061ad27d83d0ee
     selectedRowsInfo: 35d9a5331c5ea913c727e64c6602e4b2
+    aria.selectAll: 6487830700494f5a1845717fb9ff9ac9
+    aria.selectAllWithCount: c22767b20dfe27a042a1702edd0e5280
+    aria.selectRow: 626bd5976eff730d009586de07290164
+    aria.someSelected: 001d440aca679df7fb0f206b2e205f39
     showAll: eb92025cb8c66f1850c13a9b602a1856
     showSelected: 124f8e47e1738414cb51a1aeef3351c6
     showing: b4e6101378d2a08d80df7e5da0625128
@@ -1233,7 +1246,7 @@ files:
     navigation.flexibleIncome: 496bf96707ef73e18c04fe7ecd452a8b
     navigation.cashEquivalent: 5ccbdb5f84a65180a53769ed94e1f03f
     navigation.home: 8cf04a9734132302f96da8e113e80ce5
-  locales/en/issuer-dashboard.json:
+  locales/en/stats.json:
     title: 2938c7f7e560ed972f8a4f68e80ff834
     description: 177512b9add0b40c38dad61838bf7d79
     asset-management: 177512b9add0b40c38dad61838bf7d79
@@ -1294,6 +1307,20 @@ files:
     steps.wallet.description: 6c1502ff261ec16b4812c4138ceaaea3
     steps.security.title: 1e2f6048b4c77f06f13020e8f2be9dfe
     steps.security.description: 46c220652364bead7496b5bb281e6d1b
+    steps.security.wallet-secured: 7870a695de89900bf44d384dfef2e5fb
+    steps.security.pin-enabled: aa99677f492e3dec7ab4d07a48a376bc
+    steps.security.setup-pin: afaf8c30ea8c5f1326d6efb90dd0aba0
+    steps.security.enter-pin: e437e46c14151ac74ab457110ceb4394
+    steps.security.pin-configured-title: 2a6debb53916ba26f88c324f566e305d
+    steps.security.pin-configured-description: 3ecce288fd7a157a31435c1e6bf455f7
+    steps.security.why-pin-title: aca296fca6f49d81b50f6b6d1053b029
+    steps.security.why-pin-description: a5d4271a2dfc8af7b4594cecdc81b41c
+    steps.security.features.transaction-protection: a9bed116a2883a31cf81f805c7e48b89
+    steps.security.features.account-security: a062042ce3e291bd4ce687b2fa196dff
+    steps.security.features.quick-access: 4f32a32dea642737580dd71cdfd8d3c0
+    steps.security.features.easy-remember: bb4e00650cc8c84ea84e91b0b3e6ffa4
+    steps.security.success: 3250ebdc2eafcb2978ef2f2647c22ee7
+    steps.security.error: e8ee01ca725c4cbdac6f93aa21a2fad0
     steps.system.title: f4ab320ccbad23a197a7dc05840a1458
     steps.system.description: aba1a747226f16730da32cd94e3e7852
     steps.assets.title: a24e4f92fcc9b04edfa7a02767783f8f
@@ -1608,76 +1635,195 @@ files:
     help.compliance: 3743b3e1055691e8e51043f0d141ec70
     help.security: 81dd76e995768f8f189beba32927f350
   locales/en/tokens.json:
+    actions.addressCopied: 8ab553026ffb313bbb5586df43b7116a
+    actions.copyAddress: 6b35e4c0b1b3d4d2aef429a90f84e1ab
+    actions.createToken: a8b758dea74b70495d59fc03d4f741aa
+    actions.viewDetails: 5d5cd268b8acccf04f63d81c5d0d2cab
+    actions.viewOnEtherscan: b4a95a0b3c4b23578d23edf3d20265ad
+    actions.viewEvents: 428b4fbeda709b7c79280c209ec09a25
+    actions.pause.label: 891ca908610c298ecb75fff617aab0b3
+    actions.pause.title: f356cde63fae196a41e746b199b17ffd
+    actions.pause.description: cb4ac4a81e5c68a8fd9865925b8701e0
+    actions.pause.submit: 891ca908610c298ecb75fff617aab0b3
+    actions.pause.submitting: b417c2663a27196a7939c1e45073f077
+    actions.pause.messages.preparing: 21ed0072254e33b9d3001e42975db46a
+    actions.pause.messages.submitting: 2a2be388607869b07c26cb3c9ec9275d
+    actions.pause.messages.success: f698948e8256087534eedba873a29240
+    actions.pause.messages.failed: 19ee6dcb9ef8d735e762f2cb35b56fd0
+    actions.pause.messages.error: 5c527ccf14b9d801e45f37da9df422d6
+    actions.unpause.label: f071194584c36a1819c9a520e4f4831e
+    actions.unpause.title: 0b5f03760ef27506258462acfcdff73b
+    actions.unpause.description: 3a233434511883bbe8c9b40a98fffe5e
+    actions.unpause.submit: f071194584c36a1819c9a520e4f4831e
+    actions.unpause.submitting: 1ace292b4389f29753524697190e26b1
+    actions.unpause.messages.preparing: a02dfb9328712fb3910b4439b455cd81
+    actions.unpause.messages.submitting: 280a0ec56016f6570d45edf534be4961
+    actions.unpause.messages.success: 914adb5389a88a54ee17301289f74fc0
+    actions.unpause.messages.failed: 128f98ab5e9c288f0a3727cdc3a0e1c8
+    actions.unpause.messages.error: c68bc6965b2b2a548ec8ddc76517166d
     asset-types.bond: b98e3a37b62f7207c8a0a27e0c0d8777
+    asset-types.deposit: b14b4095cfda93c81686ac81dea4dbed
     asset-types.equity: f38992a52cef8611666b2db431b493a6
     asset-types.fund: d42b2bb7ac17fc34a099909c0a2f1de9
     asset-types.stablecoin: 2f7d136a5b9efb222650243b1d38b6ff
-    asset-types.deposit: b14b4095cfda93c81686ac81dea4dbed
-    factory.create.title: 48ff6c45d10b30d2147fea6f189fcecd
-    factory.create.description: 486fc4bc0058947c926ec7f99066810e
-    factory.create.deploying: 17312e6003a0873f2b32eda82f7e44bf
-    factory.create.completed: e501702acedf6ff0b99ae0ffbacd9d39
+    bulkActions.archiveMessage: f390236a2818428013e1e81fe71e21e9
+    bulkActions.duplicateMessage: bd81d582b5b135e5d8bdf22156942911
+    columns.actions: 06df33001c1d7187fdd81ea1f5b277aa
+    columns.contractAddress: 23a36672509f4b9cb7bd6bf756cd568a
+    columns.decimals: 2b417805040de3a3df31c8fd3626b57c
+    columns.name: 49ee3087348e8d44e1feda1917443987
+    columns.paused: ec53a8c4f07baed5d8825072c89799be
+    columns.symbol: 02c86eb2792f3262c21d030a87e19793
+    columns.tokenName: cf8f8251f944305fc6a92b06faadbf30
+    columns.tokenSymbol: a9dd149493d64b2b0e59e2e475baf5f2
+    columns.totalSupply: 7ca9416c0e8045c2d9561012e42c4d15
+    details.collateralInformation: 20288cb4d28958851ff9f7678b6dab3c
+    details.holders: b099a5b6f9f22eac61e7e3176ff002c7
+    details.tokenInformation: 3ec365dd533ddb7ef3d1c111186ce872
+    details.events: 87f9f735a1d36793ceaecd4e47124b63
+    details.bondInformation: f4aed737455fe5e668553fc6a4e727d7
+    details.fundInformation: 49cdc84690b56e3b5fd0ac6c8697cd5d
+    emptyState.description: 43198125adbbc9360df3baa3c27b64a1
+    emptyState.title: 9e3d4f57df7b2dd1a9ce1845a928c2ae
     factory.create.all-completed: b66b74fca70055c14ca5b82433987cd8
-    factory.create.error.system-not-found: 1e67a31249244f3ce574957c0aeae44d
-    factory.create.error.system-not-bootstrapped: 402e92c25f77cfc4a4660f87adda61bb
-    factory.create.error.no-result: fb372574d84ee9dcecdad7dcfdd4dc6b
+    factory.create.completed: e501702acedf6ff0b99ae0ffbacd9d39
+    factory.create.deploying: 17312e6003a0873f2b32eda82f7e44bf
+    factory.create.description: 486fc4bc0058947c926ec7f99066810e
     factory.create.error.default: 6396c9436e682af92424d632c0d02040
+    factory.create.error.no-result: fb372574d84ee9dcecdad7dcfdd4dc6b
+    factory.create.error.system-not-bootstrapped: 402e92c25f77cfc4a4660f87adda61bb
+    factory.create.error.system-not-found: 1e67a31249244f3ce574957c0aeae44d
     factory.create.success: 776e88e3cbb241930801db43f2632cc7
-    factory.info.bond.title: 9c7082a1716b0aaa413358023fab9f05
+    factory.create.title: 48ff6c45d10b30d2147fea6f189fcecd
     factory.info.bond.description: 61f2f2ccb9c0e5d79562ef2b1dfa57b7
-    factory.info.deposit.title: c511fe12d6830ee73154705f480e6a35
+    factory.info.bond.title: 9c7082a1716b0aaa413358023fab9f05
     factory.info.deposit.description: aa21b11fa8afc2d306fa52e5fca5ed55
-    factory.info.equity.title: 312c92df8efe98841244aa0d8d46425d
+    factory.info.deposit.title: c511fe12d6830ee73154705f480e6a35
     factory.info.equity.description: 16d9ab6bddb01959007da552935d2edf
-    factory.info.fund.title: 29bb67fc502cc282055b5c9721ef9fcb
+    factory.info.equity.title: 312c92df8efe98841244aa0d8d46425d
     factory.info.fund.description: f88ce05f8b061ca92af035af8589e32f
-    factory.info.stablecoin.title: 6f6022eaec5ef1ee3228ec932584ae1e
+    factory.info.fund.title: 29bb67fc502cc282055b5c9721ef9fcb
     factory.info.stablecoin.description: 3ad9fe5e75a82bf048571abbe9342b80
-    factory.related.bond.box1.title: 8a73fff565adb46d17cb74410ee3dffd
-    factory.related.bond.box1.description: 2e1d1c57735ffaa866ab590adee8f63f
+    factory.info.stablecoin.title: 6f6022eaec5ef1ee3228ec932584ae1e
     factory.related.bond.box1.button: 2def13763bdf34b919d75ebaa95a99e2
-    factory.related.bond.box2.title: 0a3daad80ea6df02f9c54f642a588839
-    factory.related.bond.box2.description: 5f25a77728d4c3fcc552cf8d05da1b6e
+    factory.related.bond.box1.description: 2e1d1c57735ffaa866ab590adee8f63f
+    factory.related.bond.box1.title: 8a73fff565adb46d17cb74410ee3dffd
     factory.related.bond.box2.button: f3743292c4c182d35c32382343bf4706
-    factory.related.bond.box3.title: f57eb9c8ee274a7c50441c46966b4c8d
-    factory.related.bond.box3.description: 5a00071230df47702d559bd0eb33b84d
+    factory.related.bond.box2.description: 5f25a77728d4c3fcc552cf8d05da1b6e
+    factory.related.bond.box2.title: 0a3daad80ea6df02f9c54f642a588839
     factory.related.bond.box3.button: ff9749db698f6764b56e6024ee3e198c
-    factory.related.deposit.box1.title: 2a6f7592de3a48a144a595924c090952
-    factory.related.deposit.box1.description: e2141bc8c7fef2cc05ccc09a66c627ec
+    factory.related.bond.box3.description: 5a00071230df47702d559bd0eb33b84d
+    factory.related.bond.box3.title: f57eb9c8ee274a7c50441c46966b4c8d
     factory.related.deposit.box1.button: 2def13763bdf34b919d75ebaa95a99e2
-    factory.related.deposit.box2.title: ad93dd8051fa0797cd0f5e783ee08daf
-    factory.related.deposit.box2.description: 2c7b65f7ab8d4fb1478bb0fd4b6d6ff5
+    factory.related.deposit.box1.description: e2141bc8c7fef2cc05ccc09a66c627ec
+    factory.related.deposit.box1.title: 2a6f7592de3a48a144a595924c090952
     factory.related.deposit.box2.button: f3743292c4c182d35c32382343bf4706
-    factory.related.deposit.box3.title: dea2589f10e4731d170a2d6dbeeaaa40
-    factory.related.deposit.box3.description: d2429576ef54f1b29744662b8a920993
+    factory.related.deposit.box2.description: 2c7b65f7ab8d4fb1478bb0fd4b6d6ff5
+    factory.related.deposit.box2.title: ad93dd8051fa0797cd0f5e783ee08daf
     factory.related.deposit.box3.button: ff9749db698f6764b56e6024ee3e198c
-    factory.related.equity.box1.title: 69dde4cdbef112c7cb25fa4bb3436ea5
-    factory.related.equity.box1.description: 379b604218865845e5d999f5cca12dd8
+    factory.related.deposit.box3.description: d2429576ef54f1b29744662b8a920993
+    factory.related.deposit.box3.title: dea2589f10e4731d170a2d6dbeeaaa40
     factory.related.equity.box1.button: 2def13763bdf34b919d75ebaa95a99e2
-    factory.related.equity.box2.title: a779a0a2e3e4d3b8a8d8c650bce4dc1e
-    factory.related.equity.box2.description: a46b0e18eec39dffed014212ee84e1d8
+    factory.related.equity.box1.description: 379b604218865845e5d999f5cca12dd8
+    factory.related.equity.box1.title: 69dde4cdbef112c7cb25fa4bb3436ea5
     factory.related.equity.box2.button: f3743292c4c182d35c32382343bf4706
-    factory.related.equity.box3.title: 8e3e30d33f543df362266e8f613e318a
-    factory.related.equity.box3.description: 66bb11fbec2bf139543d9637c9ccac1d
+    factory.related.equity.box2.description: a46b0e18eec39dffed014212ee84e1d8
+    factory.related.equity.box2.title: a779a0a2e3e4d3b8a8d8c650bce4dc1e
     factory.related.equity.box3.button: ff9749db698f6764b56e6024ee3e198c
-    factory.related.fund.box1.title: a14815ae9a6670559ee12519061542d8
-    factory.related.fund.box1.description: 82d6b2c8ab17acd514030c5ffeb333c1
+    factory.related.equity.box3.description: 66bb11fbec2bf139543d9637c9ccac1d
+    factory.related.equity.box3.title: 8e3e30d33f543df362266e8f613e318a
     factory.related.fund.box1.button: 2def13763bdf34b919d75ebaa95a99e2
-    factory.related.fund.box2.title: 3ebcc09fdce1028be5c64a67d874ce70
-    factory.related.fund.box2.description: c558a5353d2cc654791d7d58c7834b40
+    factory.related.fund.box1.description: 82d6b2c8ab17acd514030c5ffeb333c1
+    factory.related.fund.box1.title: a14815ae9a6670559ee12519061542d8
     factory.related.fund.box2.button: f3743292c4c182d35c32382343bf4706
-    factory.related.fund.box3.title: 9d2251af45ec08c763211d9ab6cc4083
-    factory.related.fund.box3.description: f7d4b6cfa7ff709f4a2c6a5e4c0849c5
+    factory.related.fund.box2.description: c558a5353d2cc654791d7d58c7834b40
+    factory.related.fund.box2.title: 3ebcc09fdce1028be5c64a67d874ce70
     factory.related.fund.box3.button: ff9749db698f6764b56e6024ee3e198c
-    factory.related.stablecoin.box1.title: b0274cdffc69dd7167cebf033d464838
-    factory.related.stablecoin.box1.description: 1fab0f519ec20861bc34909f0801b958
+    factory.related.fund.box3.description: f7d4b6cfa7ff709f4a2c6a5e4c0849c5
+    factory.related.fund.box3.title: 9d2251af45ec08c763211d9ab6cc4083
     factory.related.stablecoin.box1.button: 2def13763bdf34b919d75ebaa95a99e2
-    factory.related.stablecoin.box2.title: 527db1d969f71b1a261c8bbfa6f8f8cf
-    factory.related.stablecoin.box2.description: b91c97bfc2e5bd32a680f14657645ced
+    factory.related.stablecoin.box1.description: 1fab0f519ec20861bc34909f0801b958
+    factory.related.stablecoin.box1.title: b0274cdffc69dd7167cebf033d464838
     factory.related.stablecoin.box2.button: f3743292c4c182d35c32382343bf4706
-    factory.related.stablecoin.box3.title: de099be497619db69ab51c4678110c12
-    factory.related.stablecoin.box3.description: 89306c72af4ad8854d939a2788da6215
+    factory.related.stablecoin.box2.description: b91c97bfc2e5bd32a680f14657645ced
+    factory.related.stablecoin.box2.title: 527db1d969f71b1a261c8bbfa6f8f8cf
     factory.related.stablecoin.box3.button: ff9749db698f6764b56e6024ee3e198c
+    factory.related.stablecoin.box3.description: 89306c72af4ad8854d939a2788da6215
+    factory.related.stablecoin.box3.title: de099be497619db69ab51c4678110c12
+    fields.assetType: f55434db35c06a280833ea220013eea2
+    fields.assetTypeInfo: 1f1f4abc0013c1a795ed4e37261102b0
+    fields.collateral: 20288cb4d28958851ff9f7678b6dab3c
+    fields.collateralExpiry: 3585fb2be06bf339af88bc378c8b2da1
+    fields.collateralExpiryInfo: 2a2efca13806e99bdc9735010c890f81
+    fields.collateralInfo: 8bde8976e3fdde3d6a1633f334a0c0c1
+    fields.contractAddress: 23a36672509f4b9cb7bd6bf756cd568a
+    fields.contractAddressInfo: 1742652254923592186c30dc23a6a232
+    fields.decimals: 2b417805040de3a3df31c8fd3626b57c
+    fields.decimalsInfo: 04b7651900d907a13dd13fab9de24676
+    fields.name: cf8f8251f944305fc6a92b06faadbf30
+    fields.nameInfo: 50db9b66c4dd79ef09ba6b933de9e7a3
+    fields.noExpiry: e802832461472c11f820164736f1ca60
+    fields.noRequiredClaims: faf39c42860d9527ef3644339b719400
+    fields.requiredClaims: b4b5f75c9313dd3ed3fd57af17b6407b
+    fields.requiredClaimsInfo: 19906e1a0a103b8c29adfd5727bcd29a
+    fields.status: ec53a8c4f07baed5d8825072c89799be
+    fields.statusInfo: 8378a331cc7619756606b961edb71346
+    fields.symbol: 02c86eb2792f3262c21d030a87e19793
+    fields.symbolInfo: 7b0d102060da94f561175ac427888fc2
+    fields.totalSupply: 7ca9416c0e8045c2d9561012e42c4d15
+    fields.totalSupplyInfo: 3ecae88650f3a06fcbcdc398a4de1219
+    fields.cap: 7d243629b266258f2a96321c479b067a
+    fields.capInfo: f40838156a50b70f921396a14b7fc807
+    fields.createdBy: 7b1255f8fdd0cb8751baee55621164e1
+    fields.createdByInfo: 3025041877626aade737a1e692422252
+    fields.redeemedAmount: fc833c8ac97dd4cefb6dcced0c52ed8b
+    fields.redeemedAmountInfo: 0c9de08b8e24f7160e654b36fba9f3fa
+    fields.faceValue: fcc8fc52678a2a1731db874ecaf7b963
+    fields.faceValueInfo: 93005d992e1ee660797a4654f27db7c6
+    fields.isMatured: 8bd12a58e6df5069c4ef452f5459acca
+    fields.isMaturedInfo: b442e48df42d9a1077364b0cee177536
+    fields.maturityDate: 5b4b95542e61bffad2f6d8c9d25d7be6
+    fields.maturityDateInfo: f7389d72164e863cd549f9f5dc70fe26
+    fields.managementFeeBps: 071bb32822e9bf25542b28f8f0676bb3
+    fields.managementFeeBpsInfo: 3b5b19829a4efc6baabc40258ef93f23
+    holders.actions.addressCopied: 25c724a38d42cbc9744ae78987f0ec95
+    holders.actions.copyAddress: 6b35e4c0b1b3d4d2aef429a90f84e1ab
+    holders.actions.viewOnEtherscan: b4a95a0b3c4b23578d23edf3d20265ad
+    holders.actions.viewProfile: ccd943f86a83b9411cf31a2d05054356
+    holders.bulkActions.freezeMessage: 30ee85f07f4bee55e51e989571d60cea
+    holders.bulkActions.unfreezeMessage: 33ad28d69cf976f33423a8c9dadace3f
+    holders.columns.actions: 06df33001c1d7187fdd81ea1f5b277aa
+    holders.columns.address: dd7bf230fde8d4836917806aff6a6b27
+    holders.columns.available: 78945de8de090e90045d299651a68a9b
+    holders.columns.frozen: 68abcc3d0869f8a52c2b286b3c511dd3
+    holders.columns.status: ec53a8c4f07baed5d8825072c89799be
+    holders.columns.totalBalance: c663276a4652d094df998ff166f9939b
+    holders.searchPlaceholder: 115132668c9f3a76321f5d19a50f3e85
+    holders.status.active: 4d3d769b812b6faa6b76e1a8abaece2d
+    holders.status.frozen: 68abcc3d0869f8a52c2b286b3c511dd3
+    events.title: 86e90e44d3310ede96735064a7f5204e
+    events.description: 6fd9f2dc1f8e8aa189f6d6416a3f3ad5
+    events.actions.viewDetails: 5d5cd268b8acccf04f63d81c5d0d2cab
+    events.actions.copyTransactionHash: b19e2d2127e7b4b400ee4636eb7e9bb8
+    events.actions.transactionHashCopied: 04add36b4b3641de46e29bb9a95c37d2
+    events.actions.viewOnEtherscan: b4a95a0b3c4b23578d23edf3d20265ad
+    events.columns.timestamp: a3d5de3eac8bb00ae86fd1a1005f1500
+    events.columns.txIndex: dadb5eb03e7cc3e26ce09e1b6e3879d8
+    events.columns.event: a4ecfc70574394990cf17bd83df499f7
+    events.columns.sender: 8aace3ec18d83874d22850b7eee93c7d
+    events.details.title: 12ea1a38991aa3bc4992b10adac0f3bc
+    events.details.description: 885b457ae6c7d8d6f29a0a1c2baad9a8
+    events.details.timestamp: 44749712dbec183e983dcd78a7736c41
+    events.details.blockNumber: 56df102bf56600db55a78fe25b377115
+    events.details.transactionHash: a0bd1db035c6e85fbe6f3cbbf3ff28ee
+    events.details.sender: 8aace3ec18d83874d22850b7eee93c7d
+    events.details.asset: 26e9054be7f40079575582b7ad3f7363
+    events.details.eventParameters: 78dc5333bef11d4d5773a47cae409323
+    events.searchPlaceholder: 7e91a24aadbfefc504cc4d945beee2f9
+    searchPlaceholder: dc1acdd37e8863627fda626a8a8fc0ce
+    status.active: 4d3d769b812b6faa6b76e1a8abaece2d
+    status.paused: e99180abf47a8b3a856e0bcb2656990a
+    manage: 34e34c43ec6b943c10a3cc1a1a16fb11
   locales/en/validation.json:
     common.required: 0511ee0d41117aa7b4abaaf102aa513d
     common.invalid: 746bb4d715d73e3619f797a7756096e3
@@ -1836,3 +1982,5 @@ files:
     mobile.scanQR: 15739b1bf7afe6c591f73f67643c1204
     mobile.openInWallet: 26c8e21a6b4f71168c417027170d0e85
     mobile.deepLink: b9e4727360fde248f7fc278e0f4be14e
+  locales/en/detail-grid.json:
+    info-icon-label: 0f68b904e33d9ac04605aecc958bcf52

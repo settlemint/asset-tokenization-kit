@@ -171,14 +171,6 @@ export default defineConfig([
       // ========================================================================
       // CODE QUALITY
       // ========================================================================
-      "max-lines": [
-        "warn",
-        {
-          max: 500,
-          skipBlankLines: true,
-          skipComments: true,
-        },
-      ],
       "react/no-multi-comp": [
         "error",
         {
@@ -254,6 +246,14 @@ export default defineConfig([
       // IMPORT RULES
       // ========================================================================
       "import/no-unresolved": "off", // TypeScript handles this
+      "no-restricted-imports": [
+        "error",
+        {
+          name: "zod",
+          importNames: ["z"],
+          message: "Please import `z` from `zod/v4` instead.",
+        },
+      ],
 
       // ========================================================================
       // SECURITY RULES

@@ -11,7 +11,7 @@ import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { queryClient } from "@/lib/query.client";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
-import { TokenTypeEnum } from "@/orpc/routes/token/routes/factory.create.schema";
+import { TokenTypeEnum } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import {

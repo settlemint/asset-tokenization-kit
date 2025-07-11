@@ -82,6 +82,8 @@
   "loading": "Loading...",
   "next": "Next",
   "noResults": "No results found",
+  "tryAdjustingFilters": "Try adjusting your filters to find what you're looking for",
+  "noDataAvailable": "No data available yet",
   "of": "of",
   "open": "Open",
   "openMenu": "Open menu",

@@ -20,7 +20,16 @@ import { z } from "zod/v4";
  * ]);
  * ```
  */
-export const TokenListSchema = z.array(TokenSchema);
+export const TokenListSchema = z.array(
+  TokenSchema.omit({
+    collateral: true,
+    fund: true,
+    bond: true,
+    redeemable: true,
+    capped: true,
+    createdBy: true,
+  })
+);
 
 /**
  * Schema for validating the GraphQL query response from TheGraph.

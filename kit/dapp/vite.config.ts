@@ -1,17 +1,9 @@
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
+import Terminal from "vite-plugin-terminal";
 import tsConfigPaths from "vite-tsconfig-paths";
-
-// Console forward plugin has compatibility issues with current Vite version
-// Conditionally import to avoid build errors
-let consoleForwardPlugin: any = null;
-try {
-  consoleForwardPlugin =
-    require("vite-console-forward-plugin").consoleForwardPlugin;
-} catch (error) {
-  console.warn("vite-console-forward-plugin not available:", error);
-}
 
 // Generate a build ID
 // In development: use stable "dev" to avoid unnecessary cache busting
@@ -32,19 +24,18 @@ export default defineConfig({
     port: 3000,
   },
   plugins: [
+    Terminal({
+      console: "terminal",
+      output: ["terminal", "console"],
+    }),
     tsConfigPaths(),
     tanstackStart({
       target: "bun",
-      react: {
-        babel: {
-          plugins: [["babel-plugin-react-compiler"]],
-        },
-      },
+      customViteReactPlugin: true,
     }),
+    react(),
     analyzer({
       enabled: process.env.ANALYZE === "true",
     }),
-    // Conditionally include console forward plugin if available
-    ...(consoleForwardPlugin ? [consoleForwardPlugin()] : []),
   ],
 });

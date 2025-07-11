@@ -1,4 +1,3 @@
-"use client";
 "use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
 
 import {
@@ -9,12 +8,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  useDataTableState,
+  type UseDataTableStateOptions,
+} from "@/hooks/use-data-table-state";
 import { cn } from "@/lib/utils";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   type ColumnFiltersState,
-  type RowData,
-  type SortingState,
-  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -22,11 +23,20 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  type RowData,
+  type SortingState,
   useReactTable,
+  type VisibilityState,
 } from "@tanstack/react-table";
-import { useTranslation } from "react-i18next";
+import { PackageOpen } from "lucide-react";
 import * as React from "react";
 import { type ComponentType, useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { DataTableActionBar } from "./data-table-action-bar";
+import {
+  DataTableAdvancedToolbar,
+  type DataTableAdvancedToolbarOptions,
+} from "./data-table-advanced-toolbar";
 import { DataTableColumnCell } from "./data-table-column-cell";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import {
@@ -38,38 +48,18 @@ import {
   type DataTablePaginationOptions,
 } from "./data-table-pagination";
 import {
-  DataTableAdvancedToolbar,
-  type DataTableAdvancedToolbarOptions,
-} from "./data-table-advanced-toolbar";
-import {
   DataTableToolbar,
   type DataTableToolbarOptions,
 } from "./data-table-toolbar";
-import { DataTableActionBar } from "./data-table-action-bar";
 import type { BulkAction, BulkActionGroup } from "./types/bulk-actions";
-import {
-  useDataTableState,
-  type UseDataTableStateOptions,
-} from "@/hooks/use-data-table-state";
-import { withDataTableErrorBoundary } from "./data-table-error-boundary";
 
 /**
  * Props for the DataTable component.
  * @template TData The type of data in the table rows
- * @template CParams The type of column parameters passed to column definitions
  */
-export interface DataTableProps<
-  TData,
-  CParams extends Record<string, unknown>,
-> {
-  /** Optional parameters to pass to the column definitions function */
-  columnParams?: CParams;
-  /** The column definitions for the table. Can be a function that receives params or a no-arg function */
-  columns:
-    | ((
-        params: CParams
-      ) => Parameters<typeof useReactTable<TData>>[0]["columns"])
-    | (() => Parameters<typeof useReactTable<TData>>[0]["columns"]);
+export interface DataTableProps<TData> {
+  /** The column definitions for the table */
+  columns: Parameters<typeof useReactTable<TData>>[0]["columns"];
   /** The data to be displayed in the table */
   data: TData[];
   /** Whether the table is in a loading state */
@@ -90,6 +80,8 @@ export interface DataTableProps<
   initialColumnFilters?: ColumnFiltersState;
   /** Initial page size. Defaults to 10 */
   initialPageSize?: number;
+  /** Initial column visibility state */
+  initialColumnVisibility?: VisibilityState;
   /** Additional CSS classes for the table container */
   className?: string;
   /** Custom empty state component props when data array is empty */
@@ -139,7 +131,6 @@ declare module "@tanstack/table-core" {
  * Supports both local and URL-based state management for table configuration.
  *
  * @template TData The type of data in the table rows
- * @template CParams The type of column parameters passed to column definitions
  * @param props The component props
  * @returns The rendered DataTable component with full functionality
  *
@@ -155,8 +146,7 @@ declare module "@tanstack/table-core" {
  * // With bulk actions and URL state
  * <DataTable
  *   name="products-table"
- *   columns={(params) => productColumns(params)}
- *   columnParams={{ showPrices: true }}
+ *   columns={productColumns}
  *   data={products}
  *   bulkActions={{
  *     enabled: true,
@@ -167,8 +157,7 @@ declare module "@tanstack/table-core" {
  * />
  * ```
  */
-function DataTableComponent<TData, CParams extends Record<string, unknown>>({
-  columnParams,
+function DataTableComponent<TData>({
   columns,
   data,
   icons,
@@ -179,12 +168,13 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
   initialSorting,
   initialColumnFilters,
   initialPageSize,
+  initialColumnVisibility,
   className,
   customEmptyState,
   bulkActions,
   urlState,
   onRowClick,
-}: DataTableProps<TData, CParams>) {
+}: DataTableProps<TData>) {
   const { t } = useTranslation("data-table");
 
   // Use URL state management if enabled, otherwise use local state
@@ -194,7 +184,8 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
     initialSorting: initialSorting ?? urlState?.initialSorting ?? [],
     initialColumnFilters:
       initialColumnFilters ?? urlState?.initialColumnFilters ?? [],
-    initialColumnVisibility: urlState?.initialColumnVisibility ?? {},
+    initialColumnVisibility:
+      urlState?.initialColumnVisibility ?? initialColumnVisibility ?? {},
     debounceMs: urlState?.debounceMs ?? 300,
     enableGlobalFilter: urlState?.enableGlobalFilter ?? true,
     enableRowSelection: urlState?.enableRowSelection ?? true,
@@ -209,50 +200,58 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
   const [localColumnFilters, setLocalColumnFilters] =
     useState<ColumnFiltersState>(initialColumnFilters ?? []);
   const [localColumnVisibility, setLocalColumnVisibility] =
-    useState<VisibilityState>({});
+    useState<VisibilityState>(initialColumnVisibility ?? {});
   const [localGlobalFilter, setLocalGlobalFilter] = useState("");
+
+  // Validate URL state configuration
+  const logger = useMemo(() => createLogger(), []);
 
   // Choose between URL state or local state
   const isUsingUrlState = urlState?.enabled ?? false;
-  const currentState = isUsingUrlState
-    ? tableState.tableOptions.state
-    : {
-        rowSelection: localRowSelection,
-        sorting: localSorting,
-        columnFilters: localColumnFilters,
-        columnVisibility: localColumnVisibility,
-        globalFilter: localGlobalFilter,
-        pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
-      };
 
-  const stateHandlers = isUsingUrlState
-    ? {
-        onRowSelectionChange: tableState.setRowSelection,
-        onSortingChange: tableState.setSorting,
-        onColumnFiltersChange: tableState.setColumnFilters,
-        onColumnVisibilityChange: tableState.setColumnVisibility,
-        onGlobalFilterChange: tableState.setGlobalFilter,
-        onPaginationChange: tableState.setPagination,
-      }
-    : {
-        onRowSelectionChange: setLocalRowSelection,
-        onSortingChange: setLocalSorting,
-        onColumnFiltersChange: setLocalColumnFilters,
-        onColumnVisibilityChange: setLocalColumnVisibility,
-        onGlobalFilterChange: setLocalGlobalFilter,
-        onPaginationChange: () => {
-          // Local pagination is handled differently
-        },
-      };
+  // Log warning if URL state is enabled but routePath is missing
+  if (isUsingUrlState && !urlState?.routePath) {
+    logger.warn("DataTable: URL state enabled but no routePath provided", {
+      name,
+      urlStateConfig: urlState,
+    });
+  }
+  const currentState =
+    isUsingUrlState && urlState?.routePath
+      ? tableState.tableOptions.state
+      : {
+          rowSelection: localRowSelection,
+          sorting: localSorting,
+          columnFilters: localColumnFilters,
+          columnVisibility: localColumnVisibility,
+          globalFilter: localGlobalFilter,
+          pagination: { pageIndex: 0, pageSize: initialPageSize ?? 10 },
+        };
 
-  const memoizedData = useMemo(() => data, [data]);
+  const stateHandlers =
+    isUsingUrlState && urlState?.routePath
+      ? {
+          onRowSelectionChange: tableState.setRowSelection,
+          onSortingChange: tableState.setSorting,
+          onColumnFiltersChange: tableState.setColumnFilters,
+          onColumnVisibilityChange: tableState.setColumnVisibility,
+          onGlobalFilterChange: tableState.setGlobalFilter,
+          onPaginationChange: tableState.setPagination,
+        }
+      : {
+          onRowSelectionChange: setLocalRowSelection,
+          onSortingChange: setLocalSorting,
+          onColumnFiltersChange: setLocalColumnFilters,
+          onColumnVisibilityChange: setLocalColumnVisibility,
+          onGlobalFilterChange: setLocalGlobalFilter,
+          onPaginationChange: () => {
+            // Local pagination is handled differently
+          },
+        };
 
-  const tableColumns = columnParams
-    ? columns(columnParams)
-    : columns({} as CParams);
   const table = useReactTable({
-    data: memoizedData,
-    columns: tableColumns,
+    data,
+    columns,
     enableRowSelection: true,
     enableGlobalFilter: true,
     enableColumnFilters: true,
@@ -289,10 +288,10 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
         key as keyof typeof currentState.rowSelection
       ] === true
   );
-  const selectedRows = useMemo(() => {
-    if (!isBulkActionsEnabled || selectedRowIds.length === 0) return [];
-    return table.getSelectedRowModel().rows.map((row) => row.original);
-  }, [isBulkActionsEnabled, selectedRowIds, table]);
+  const selectedRows =
+    isBulkActionsEnabled && selectedRowIds.length > 0
+      ? table.getSelectedRowModel().rows.map((row) => row.original)
+      : [];
 
   /**
    * Clears all row selections in the table.
@@ -332,6 +331,15 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
     },
     [onRowClick]
   );
+
+  /**
+   * Handles clearing all filters in the table.
+   * Resets both global filter and column filters.
+   */
+  const handleClearFilters = useCallback(() => {
+    table.resetGlobalFilter();
+    table.resetColumnFilters();
+  }, [table]);
 
   /**
    * Renders the table body with rows or empty state message.
@@ -380,9 +388,32 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
     }
 
     return (
-      <TableRow>
-        <TableCell colSpan={tableColumns.length} className="h-24 text-center">
-          {t("noResults")}
+      <TableRow className="hover:bg-transparent">
+        <TableCell
+          colSpan={columns.length}
+          className="h-64 text-center align-middle"
+        >
+          <div className="flex flex-col items-center justify-center gap-3 py-8">
+            <PackageOpen className="h-12 w-12" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium">{t("noResults")}</p>
+              <p className="text-xs text-muted-foreground/70">
+                {currentState.globalFilter ||
+                currentState.columnFilters.length > 0
+                  ? t("tryAdjustingFilters")
+                  : t("noDataAvailable")}
+              </p>
+            </div>
+            {(currentState.globalFilter ||
+              currentState.columnFilters.length > 0) && (
+              <button
+                onClick={handleClearFilters}
+                className="mt-2 text-xs font-medium text-primary hover:underline"
+              >
+                {t("clearFilters")}
+              </button>
+            )}
+          </div>
         </TableCell>
       </TableRow>
     );
@@ -409,7 +440,6 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
         data-slot="data-table"
         className={cn(
           "w-full overflow-x-auto rounded-xl bg-card text-sidebar-foreground shadow-sm",
-          "animate-in fade-in-0 slide-in-from-bottom-1 duration-300 fill-mode-both",
           className
         )}
       >
@@ -467,23 +497,22 @@ function DataTableComponent<TData, CParams extends Record<string, unknown>>({
 }
 
 /**
- * DataTable component wrapped with error boundary for production safety.
- * This is the default export that should be used in most cases.
+ * DataTable component for displaying tabular data.
  *
  * @template TData The type of data in the table rows
- * @template CParams The type of column parameters passed to column definitions
- */
-export const DataTable = withDataTableErrorBoundary(DataTableComponent, {
-  tableName: "DataTable",
-}) as <TData, CParams extends Record<string, unknown>>(
-  props: DataTableProps<TData, CParams>
-) => React.JSX.Element;
-
-/**
- * Raw DataTable component without error boundary.
- * Use this only if you need to implement custom error handling.
  *
- * @template TData The type of data in the table rows
- * @template CParams The type of column parameters passed to column definitions
+ * @example
+ * ```tsx
+ * // For route-level error handling, use TanStack Start's errorComponent
+ * export const Route = createFileRoute('/my-route')({
+ *   errorComponent: DefaultCatchBoundary,
+ *   component: MyComponent
+ * })
+ *
+ * // For component-level error isolation, wrap with DataTableErrorBoundary
+ * <DataTableErrorBoundary tableName="Users">
+ *   <DataTable columns={columns} data={data} name="users" />
+ * </DataTableErrorBoundary>
+ * ```
  */
-export const DataTableRaw = DataTableComponent;
+export const DataTable = DataTableComponent;

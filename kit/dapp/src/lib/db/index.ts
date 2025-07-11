@@ -38,7 +38,7 @@ const getDb = serverOnly(() =>
      * When enabled in development, logs all SQL queries to the console
      * for debugging and performance analysis.
      */
-    logger: process.env.NODE_ENV === "development",
+    // logger: process.env.NODE_ENV === "development",
 
     /**
      * Schema definitions for type-safe queries.

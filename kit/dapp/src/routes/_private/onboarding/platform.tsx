@@ -68,6 +68,8 @@ function PlatformOnboarding() {
   // Start with first step, will update when data loads
   const [currentStepId, setCurrentStepId] = useState("wallet");
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [isExplicitSecurityNavigation, setIsExplicitSecurityNavigation] =
+    useState(false);
 
   // Determine initial step based on what's completed
   const getInitialStep = useCallback(() => {
@@ -144,11 +146,14 @@ function PlatformOnboarding() {
   }, []);
 
   const handleWalletSuccess = useCallback(() => {
-    // Auto-advance to security step after wallet generation
+    // Auto-advance to security step after wallet generation (normal flow)
+    setIsExplicitSecurityNavigation(false); // This is automatic navigation, not explicit
     setCurrentStepId("security");
   }, []);
 
   const handleSecuritySuccess = useCallback(() => {
+    // Reset the explicit navigation flag
+    setIsExplicitSecurityNavigation(false);
     // Auto-advance to system step after PIN setup
     setCurrentStepId("system");
   }, []);
@@ -177,6 +182,10 @@ function PlatformOnboarding() {
     if (currentStepId === "wallet") {
       const nextStep = steps[currentStepIndex + 1];
       if (nextStep) {
+        // If going to security step, mark as explicit navigation (user clicked "Secure my wallet")
+        if (nextStep.id === "security") {
+          setIsExplicitSecurityNavigation(true);
+        }
         setCurrentStepId(nextStep.id);
       }
       return;
@@ -336,10 +345,6 @@ function PlatformOnboarding() {
     walletActionRef.current = action;
   }, []);
 
-  const onRegisterSecurityAction = useCallback((action: () => void) => {
-    securityActionRef.current = action;
-  }, []);
-
   const onRegisterSystemAction = useCallback((action: () => void) => {
     systemActionRef.current = action;
   }, []);
@@ -401,8 +406,11 @@ function PlatformOnboarding() {
                 } else if (currentStepId === "security") {
                   return (
                     <WalletSecurityStep
-                      onSuccess={handleSecuritySuccess}
-                      onRegisterAction={onRegisterSecurityAction}
+                      onNext={handleSecuritySuccess}
+                      onPrevious={handleWalletSuccess}
+                      isFirstStep={false}
+                      isLastStep={false}
+                      forceShowSelection={isExplicitSecurityNavigation}
                     />
                   );
                 } else if (currentStepId === "system") {

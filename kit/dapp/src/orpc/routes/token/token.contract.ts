@@ -1,27 +1,44 @@
-import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { baseContract } from "@/orpc/procedures/base.contract";
 import {
   FactoryCreateOutputSchema,
   FactoryCreateSchema,
-} from "@/orpc/routes/token/routes/factory.create.schema";
+} from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import {
   FactoryListSchema,
   TokenFactoryListSchema,
-} from "@/orpc/routes/token/routes/factory.list.schema";
+} from "@/orpc/routes/token/routes/factory/factory.list.schema";
 import {
   FactoryReadSchema,
   TokenFactoryDetailSchema,
-} from "@/orpc/routes/token/routes/factory.read.schema";
+} from "@/orpc/routes/token/routes/factory/factory.read.schema";
 import {
   TokenCreateOutputSchema,
   TokenCreateSchema,
-} from "@/orpc/routes/token/routes/token.create.schema";
+} from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
+import {
+  TokenPauseInputSchema,
+  TokenPauseOutputSchema,
+} from "@/orpc/routes/token/routes/mutations/pause/token.pause.schema";
+import {
+  TokenUnpauseInputSchema,
+  TokenUnpauseOutputSchema,
+} from "@/orpc/routes/token/routes/mutations/pause/token.unpause.schema";
+import {
+  EventsResponseSchema,
+  TokenEventsInputSchema,
+} from "@/orpc/routes/token/routes/token.events.schema";
+import {
+  TokenHoldersInputSchema,
+  TokenHoldersResponseSchema,
+} from "@/orpc/routes/token/routes/token.holders.schema";
 import {
   TokenListInputSchema,
   TokenListSchema,
 } from "@/orpc/routes/token/routes/token.list.schema";
-import { TokenMintSchema } from "@/orpc/routes/token/routes/token.mint.schema";
-import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
+import {
+  TokenReadInputSchema,
+  TokenSchema,
+} from "@/orpc/routes/token/routes/token.read.schema";
 import { TokenStatsAssetsOutputSchema } from "@/orpc/routes/token/routes/token.stats.assets.schema";
 import {
   TokenStatsTransactionsInputSchema,
@@ -29,7 +46,6 @@ import {
 } from "@/orpc/routes/token/routes/token.stats.transactions.schema";
 import { TokenStatsValueOutputSchema } from "@/orpc/routes/token/routes/token.stats.value.schema";
 import { eventIterator } from "@orpc/server";
-import { z } from "zod/v4";
 
 const factoryCreate = baseContract
   .route({
@@ -89,24 +105,13 @@ const list = baseContract
 const read = baseContract
   .route({
     method: "GET",
-    path: "/token/{id}",
-    description: "Get a token by id",
+    path: "/token/{tokenAddress}",
+    description: "Get a token by address",
     successDescription: "Token",
     tags: ["token"],
   })
-  .input(z.object({ id: z.string() }))
+  .input(TokenReadInputSchema)
   .output(TokenSchema);
-
-const mint = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/mint",
-    description: "Mint tokens",
-    successDescription: "Tokens minted",
-    tags: ["token"],
-  })
-  .input(TokenMintSchema)
-  .output(ethereumHash);
 
 const statsAssets = baseContract
   .route({
@@ -139,14 +144,61 @@ const statsValue = baseContract
   })
   .output(TokenStatsValueOutputSchema);
 
+const holders = baseContract
+  .route({
+    method: "GET",
+    path: "/token/{tokenAddress}/holders",
+    description: "Get token holders and their balances",
+    successDescription: "List of token holders with balance information",
+    tags: ["token"],
+  })
+  .input(TokenHoldersInputSchema)
+  .output(TokenHoldersResponseSchema);
+
+const events = baseContract
+  .route({
+    method: "GET",
+    path: "/token/{tokenAddress}/events",
+    description: "Get token events history",
+    successDescription: "List of token events with details",
+    tags: ["token"],
+  })
+  .input(TokenEventsInputSchema)
+  .output(EventsResponseSchema);
+
+const pause = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/pause",
+    description: "Pause token transfers",
+    successDescription: "Token paused successfully",
+    tags: ["token"],
+  })
+  .input(TokenPauseInputSchema)
+  .output(eventIterator(TokenPauseOutputSchema));
+
+const unpause = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/unpause",
+    description: "Unpause token transfers",
+    successDescription: "Token unpaused successfully",
+    tags: ["token"],
+  })
+  .input(TokenUnpauseInputSchema)
+  .output(eventIterator(TokenUnpauseOutputSchema));
+
 export const tokenContract = {
   factoryCreate,
   factoryList,
   factoryRead,
   create,
+  events,
+  holders,
   list,
   read,
-  mint,
+  pause,
+  unpause,
   statsAssets,
   statsTransactions,
   statsValue,

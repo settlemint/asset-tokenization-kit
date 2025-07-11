@@ -102,5 +102,13 @@
   "standard": "قياسي",
   "toggleColumns": "تبديل الأعمدة",
   "view": "عرض",
-  "viewDetails": "عرض التفاصيل"
+  "viewDetails": "عرض التفاصيل",
+  "aria": {
+    "selectAll": "حدد جميع الصفوف في هذه الصفحة",
+    "selectAllWithCount": "حدد جميع {{count}} الصفوف{{status}}",
+    "selectRow": "حدد الصف {{index}} من {{total}}",
+    "someSelected": " (بعضها محدد)"
+  },
+  "tryAdjustingFilters": "حاول ضبط الفلاتر الخاصة بك للعثور على ما تبحث عنه",
+  "noDataAvailable": "لا توجد بيانات متاحة بعد"
 }
