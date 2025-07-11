@@ -1,6 +1,9 @@
+import { orpc } from "@/orpc";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { CheckCircle } from "lucide-react";
 import { memo, useCallback } from "react";
+import { toast } from "sonner";
 
 /**
  * Finish Step Component
@@ -17,10 +20,23 @@ export const FinishComponent = memo(function FinishComponent({
 }) {
   const navigate = useNavigate();
 
+  // Mutation to mark onboarding as complete
+  const { mutate: completeOnboardingMutation, isPending } = useMutation(
+    orpc.user.completeOnboarding.mutationOptions({
+      onSuccess: () => {
+        toast.success("Onboarding completed successfully!");
+        void navigate({ to: "/" });
+      },
+      onError: (error: { message: string }) => {
+        toast.error(`Failed to complete onboarding: ${error.message}`);
+      },
+    })
+  );
+
   // Handle navigation to home page
   const handleGoToHome = useCallback(() => {
-    void navigate({ to: "/" });
-  }, [navigate]);
+    completeOnboardingMutation(undefined);
+  }, [completeOnboardingMutation]);
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -55,22 +71,22 @@ export const FinishComponent = memo(function FinishComponent({
 
       {/* Navigation buttons */}
       <div className="flex justify-between pt-6">
-        {!isFirstStep && (
-          <button
-            type="button"
-            onClick={onPrevious}
-            className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
-          >
-            Previous
-          </button>
-        )}
-        <div className="flex-1" />
+        <button
+          type="button"
+          onClick={onPrevious}
+          disabled={isFirstStep}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Previous
+        </button>
+
         <button
           type="button"
           onClick={handleGoToHome}
-          className="px-6 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          disabled={isPending}
+          className="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Go to my Home page
+          {isPending ? "Completing..." : "Go to my Home page"}
         </button>
       </div>
     </div>
