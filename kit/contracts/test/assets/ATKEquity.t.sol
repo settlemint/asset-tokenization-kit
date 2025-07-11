@@ -15,6 +15,7 @@ import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
+import { TestConstants } from "../Constants.sol";
 
 contract ATKEquityTest is AbstractATKAssetTest {
     IATKEquityFactory internal equityFactory;
@@ -90,7 +91,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
     {
         vm.startPrank(owner);
         address equityAddress =
-            equityFactory.createEquity(name_, symbol_, decimals_, requiredClaimTopics_, initialModulePairs_);
+            equityFactory.createEquity(name_, symbol_, decimals_, requiredClaimTopics_, initialModulePairs_, TestConstants.COUNTRY_CODE_US);
 
         result = IATKEquity(equityAddress);
 

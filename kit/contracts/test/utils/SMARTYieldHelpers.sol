@@ -7,6 +7,7 @@ import { ISMARTYield } from "../../contracts/smart/extensions/yield/ISMARTYield.
 import { ISMARTFixedYieldSchedule } from
     "../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { IATKFixedYieldScheduleFactory } from "../../contracts/addons/yield/IATKFixedYieldScheduleFactory.sol";
+import { TestConstants } from "../Constants.sol";
 
 /// @title Helper utilities for SMART Yield tests
 /// @notice Provides common helper functions and utilities for testing yield functionality
@@ -67,7 +68,9 @@ abstract contract SMARTYieldHelpers is Test {
         uint256 endDate = startDate + SCHEDULE_DURATION;
 
         vm.prank(tokenIssuer);
-        return yieldScheduleFactory.create(token, startDate, endDate, YIELD_RATE, PERIOD_INTERVAL);
+        return yieldScheduleFactory.create(
+            token, startDate, endDate, YIELD_RATE, PERIOD_INTERVAL, "Test Helper Yield Schedule", TestConstants.COUNTRY_CODE_US
+        );
     }
 
     /// @notice Funds a yield schedule with payment tokens

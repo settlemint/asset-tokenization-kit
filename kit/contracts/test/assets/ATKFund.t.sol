@@ -18,6 +18,7 @@ import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ISMARTPausable } from "../../contracts/smart/extensions/pausable/ISMARTPausable.sol";
+import { TestConstants } from "../Constants.sol";
 
 contract ATKFundTest is AbstractATKAssetTest {
     IATKFundFactory public fundFactory;
@@ -87,7 +88,7 @@ contract ATKFundTest is AbstractATKAssetTest {
     {
         vm.startPrank(owner);
         address fundAddress = fundFactory.createFund(
-            name_, symbol_, decimals_, managementFeeBps_, requiredClaimTopics_, initialModulePairs_
+            name_, symbol_, decimals_, managementFeeBps_, requiredClaimTopics_, initialModulePairs_, TestConstants.COUNTRY_CODE_US
         );
 
         result = IATKFund(fundAddress);
