@@ -5,6 +5,7 @@ import { fetchToken } from "../../token/fetch/token";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchBond } from "../bond/fetch/bond";
+import { createAction, ActionName, ActionType, Role } from "../../actions/action";
 
 export function handleBondCreated(event: BondCreated): void {
   fetchEvent(event, "BondCreated");
@@ -32,4 +33,16 @@ export function handleBondCreated(event: BondCreated): void {
   bond.isMatured = false;
   bond.underlyingAsset = event.params.underlyingAsset;
   bond.save();
+
+  createAction(
+    event,
+    ActionName.MatureBond,
+    event.params.tokenAddress,
+    ActionType.Admin,
+    bond.maturityDate,
+    null,
+    [event.transaction.from],
+    Role.DEFAULT_ADMIN_ROLE,
+    null
+  );
 }

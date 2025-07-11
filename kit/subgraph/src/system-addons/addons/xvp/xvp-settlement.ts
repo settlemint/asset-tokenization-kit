@@ -6,9 +6,12 @@ import {
 } from "../../../../generated/schema";
 import { XvPSettlement as XvPSettlementTemplate } from "../../../../generated/templates";
 import { XvPSettlement as XvPSettlementContract } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
+import { XvPSettlementApproved } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../../../account/fetch/account";
 import { fetchToken } from "../../../token/fetch/token";
 import { setBigNumber } from "../../../utils/bignumber";
+import { createAction, ActionName, ActionType } from "../../../actions/action";
+import { fetchEvent } from "../../../event/fetch/event";
 
 /**
  * Fetches or creates a Flow entity
@@ -140,4 +143,43 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
   }
 
   return xvpSettlement;
+}
+
+export function handleXvPSettlementApproved(event: XvPSettlementApproved): void {
+  fetchEvent(event, "XvPSettlementApproved");
+  
+  const approval = fetchXvPSettlementApproval(event.address, event.params.sender);
+  approval.approved = true;
+  approval.timestamp = event.block.timestamp;
+  approval.save();
+
+  const xvpSettlement = fetchXvPSettlement(event.address);
+  const approvals = xvpSettlement.approvals.load();
+  
+  let allApproved = true;
+  for (let i = 0; i < approvals.length; i++) {
+    if (!approvals[i].approved) {
+      allApproved = false;
+      break;
+    }
+  }
+
+  if (allApproved) {
+    const participants: Bytes[] = [];
+    for (let i = 0; i < approvals.length; i++) {
+      participants.push(approvals[i].account);
+    }
+    
+    createAction(
+      event,
+      ActionName.ExecuteXvPSettlement,
+      fetchAccount(event.address).id,
+      ActionType.User,
+      event.block.timestamp,
+      xvpSettlement.cutoffDate,
+      participants,
+      null,
+      null
+    );
+  }
 }
