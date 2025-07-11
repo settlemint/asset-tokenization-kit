@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
     },
     localhost: {
       url: process.env.LOCALHOST_RPC_URL || "http://127.0.0.1:8545",
-      gasPrice: 0,
+      gasPrice: "auto", // Changed from 0 to "auto" to let Hardhat determine gas price
       gasMultiplier: 1.2, // 20% buffer to prevent out-of-gas errors
       // Optional: set a reasonable gas limit
       gas: 10000000, // 10M gas limit
