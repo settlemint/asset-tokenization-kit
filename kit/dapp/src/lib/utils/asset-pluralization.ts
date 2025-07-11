@@ -15,7 +15,7 @@ type PluralizationFunction = (
  */
 const ASSET_TYPE_TO_TRANSLATION_KEY: Record<string, string> = {
   bond: "Bonds",
-  equity: "Equities", 
+  equity: "Equities",
   fund: "Funds",
   stablecoin: "Stablecoins",
   deposit: "Deposits",
@@ -57,7 +57,7 @@ export function getAssetTypePlural(
 ): string {
   // Map the API asset type to the translation key prefix
   const translationKeyPrefix = ASSET_TYPE_TO_TRANSLATION_KEY[assetType];
-  
+
   // If we don't have a mapping, fall back to basic English pluralization
   if (!translationKeyPrefix) {
     return count === 1 ? assetType : `${assetType}s`;
