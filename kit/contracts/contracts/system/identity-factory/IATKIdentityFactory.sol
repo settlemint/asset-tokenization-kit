@@ -98,17 +98,9 @@ interface IATKIdentityFactory is IERC165 {
     /// deployed using metadata-based salt.
     /// @dev Uses contract metadata (name, symbol, decimals) to calculate the deployment
     ///      address. This provides a way to predict addresses for contracts based on their characteristics.
-    /// @param _name The name of the contract used in salt generation.
-    /// @param _symbol The symbol of the contract used in salt generation.
-    /// @param _decimals The decimals of the contract used in salt generation.
     /// @param _contractAddress The address of the contract for which the identity will be created.
     /// @return predictedAddress The pre-computed or actual deployment address of the contract's identity contract.
-    function calculateContractIdentityAddress(
-        string calldata _name,
-        string calldata _symbol,
-        uint8 _decimals,
-        address _contractAddress
-    )
+    function calculateContractIdentityAddress(address _contractAddress)
         external
         view
         returns (address predictedAddress);
