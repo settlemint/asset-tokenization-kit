@@ -28,6 +28,18 @@ import { useWizardContext } from "./wizard-context";
 
 const logger = createLogger();
 
+// Utility function to validate time components
+const isValidTimeComponent = (hours: number, minutes: number): boolean => {
+  return (
+    !Number.isNaN(hours) &&
+    !Number.isNaN(minutes) &&
+    hours >= 0 &&
+    hours <= 23 &&
+    minutes >= 0 &&
+    minutes <= 59
+  );
+};
+
 interface WizardFieldProps<TFormData> {
   fieldDef: FieldDefinition<TFormData>;
   formData: Partial<TFormData>;
@@ -134,7 +146,11 @@ export function WizardField<TFormData>({
       const selectedDate = field.state.value as Date | undefined;
       if (time && selectedDate) {
         const [hours, minutes] = time.split(":").map(Number);
-        if (hours !== undefined && minutes !== undefined) {
+        if (
+          hours !== undefined &&
+          minutes !== undefined &&
+          isValidTimeComponent(hours, minutes)
+        ) {
           const newDate = new Date(selectedDate);
           newDate.setHours(hours, minutes, 0, 0);
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
