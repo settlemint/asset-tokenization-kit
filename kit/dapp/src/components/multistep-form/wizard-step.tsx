@@ -4,7 +4,7 @@ import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { cn } from "@/lib/utils";
 import { formatValidationError } from "@/lib/utils/format-validation-error";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { Loader2, Search } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useWizardFiltering } from "./use-wizard-filtering";
@@ -12,6 +12,7 @@ import { useWizardContext } from "./wizard-context";
 import { WizardField } from "./wizard-field";
 import { WizardGroup } from "./wizard-group";
 import { WizardGroupFilter } from "./wizard-group-filter";
+import { WizardNoResults } from "./wizard-no-results";
 import { WizardSearch } from "./wizard-search";
 
 const logger = createLogger();
@@ -293,19 +294,7 @@ export function WizardStep({ className }: WizardStepProps) {
         <div className="space-y-6">
           {/* Show no results state when search yields no results */}
           {searchQuery.trim() && totalResultCount === 0 ? (
-            <div className="py-8 text-center">
-              <Search className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">
-                No fields match your search
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Try adjusting your search terms or clear the search to see all
-                fields.
-              </p>
-              <Button variant="outline" size="sm" onClick={handleClearSearch}>
-                Clear search
-              </Button>
-            </div>
+            <WizardNoResults onClearSearch={handleClearSearch} />
           ) : (
             <>
               {/* Render matching regular fields */}

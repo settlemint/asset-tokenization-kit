@@ -78,7 +78,7 @@ export function useWizardFiltering<TFormData = unknown>({
     [isFieldDefined]
   );
 
-  // Helper function to search regular fields
+  // Helper function to search fields
   const searchFields = useCallback(
     (
       fields: FieldDefinition<TFormData>[] | undefined,
