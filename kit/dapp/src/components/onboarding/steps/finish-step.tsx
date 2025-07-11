@@ -19,7 +19,7 @@ export const FinishComponent = memo(function FinishComponent({
 
   // Handle navigation to home page
   const handleGoToHome = useCallback(() => {
-    navigate({ to: "/" });
+    void navigate({ to: "/" });
   }, [navigate]);
 
   return (

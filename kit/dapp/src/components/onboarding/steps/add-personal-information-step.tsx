@@ -44,6 +44,15 @@ export const AddPersonalInformationComponent = memo(
       setCurrentScreen("intro");
     }, []);
 
+    // Create event handlers for form fields
+    const createChangeHandler = useCallback(
+      (handleChange: (value: string) => void) =>
+        (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+          handleChange(e.target.value);
+        },
+      []
+    );
+
     // Render intro screen
     const renderIntroScreen = () => (
       <div className="max-w-2xl space-y-6">
@@ -143,7 +152,7 @@ export const AddPersonalInformationComponent = memo(
                       id="firstName"
                       type="text"
                       value={field.state.value ?? ""}
-                      onChange={(e) => field.handleChange(e.target.value)}
+                      onChange={createChangeHandler(field.handleChange)}
                       className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                       placeholder="First name"
                     />
@@ -166,7 +175,7 @@ export const AddPersonalInformationComponent = memo(
                       id="lastName"
                       type="text"
                       value={field.state.value ?? ""}
-                      onChange={(e) => field.handleChange(e.target.value)}
+                      onChange={createChangeHandler(field.handleChange)}
                       className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                       placeholder="Last name"
                     />
@@ -195,7 +204,7 @@ export const AddPersonalInformationComponent = memo(
                     id="email"
                     type="email"
                     value={field.state.value ?? ""}
-                    onChange={(e) => field.handleChange(e.target.value)}
+                    onChange={createChangeHandler(field.handleChange)}
                     className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                     placeholder="Email address"
                   />
@@ -224,7 +233,7 @@ export const AddPersonalInformationComponent = memo(
                   id="dateOfBirth"
                   type="date"
                   value={field.state.value ?? ""}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onChange={createChangeHandler(field.handleChange)}
                   className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                 />
                 {field.state.meta.errors &&
@@ -250,7 +259,7 @@ export const AddPersonalInformationComponent = memo(
                 <select
                   id="nationality"
                   value={field.state.value ?? ""}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onChange={createChangeHandler(field.handleChange)}
                   className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                 >
                   <option value="">Select your country</option>
@@ -288,7 +297,7 @@ export const AddPersonalInformationComponent = memo(
                       name="residencyStatus"
                       value="resident"
                       checked={field.state.value === "resident"}
-                      onChange={(e) => field.handleChange(e.target.value)}
+                      onChange={createChangeHandler(field.handleChange)}
                       className="mt-0.5"
                     />
                     <div>
@@ -305,7 +314,7 @@ export const AddPersonalInformationComponent = memo(
                       name="residencyStatus"
                       value="non-resident"
                       checked={field.state.value === "non-resident"}
-                      onChange={(e) => field.handleChange(e.target.value)}
+                      onChange={createChangeHandler(field.handleChange)}
                       className="mt-0.5"
                     />
                     <div>
@@ -322,7 +331,7 @@ export const AddPersonalInformationComponent = memo(
                       name="residencyStatus"
                       value="dual-resident"
                       checked={field.state.value === "dual-resident"}
-                      onChange={(e) => field.handleChange(e.target.value)}
+                      onChange={createChangeHandler(field.handleChange)}
                       className="mt-0.5"
                     />
                     <div>
@@ -338,7 +347,7 @@ export const AddPersonalInformationComponent = memo(
                       name="residencyStatus"
                       value="unknown"
                       checked={field.state.value === "unknown"}
-                      onChange={(e) => field.handleChange(e.target.value)}
+                      onChange={createChangeHandler(field.handleChange)}
                       className="mt-0.5"
                     />
                     <div>
@@ -372,7 +381,7 @@ export const AddPersonalInformationComponent = memo(
                   id="nationalId"
                   type="text"
                   value={field.state.value ?? ""}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onChange={createChangeHandler(field.handleChange)}
                   className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                   placeholder="Enter your National ID or SSN (optional)"
                 />

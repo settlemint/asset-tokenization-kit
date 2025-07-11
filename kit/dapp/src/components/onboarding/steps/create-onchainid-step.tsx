@@ -43,42 +43,30 @@ export const CreateOnchainIdComponent = memo(function CreateOnchainIdComponent({
   }, []);
 
   // Handle verification submission
-  const handleVerificationSubmit = useCallback(
-    (
-      _verificationCode: string,
-      _verificationType: "pincode" | "two-factor"
-    ) => {
-      // Start the creation process
-      setIsCreating(true);
-      setShowVerificationModal(false);
-      setCurrentScreen("progress");
+  const handleVerificationSubmit = useCallback(() => {
+    // Start the creation process
+    setIsCreating(true);
+    setShowVerificationModal(false);
+    setCurrentScreen("progress");
 
-      // Simulate ONCHAIN ID creation (replace with actual implementation)
-      setTimeout(() => {
-        // Simulate success with mock address
-        setOnchainIdAddress("0x1234567890123456789012345678901234567890");
-        setIsCreating(false);
-        setCurrentScreen("success");
-        toast.success("ONCHAIN ID created successfully!");
-      }, 3000);
-    },
-    []
-  );
+    // Simulate ONCHAIN ID creation (replace with actual implementation)
+    setTimeout(() => {
+      // Simulate success with mock address
+      setOnchainIdAddress("0x1234567890123456789012345678901234567890");
+      setIsCreating(false);
+      setCurrentScreen("success");
+      toast.success("ONCHAIN ID created successfully!");
+    }, 3000);
+  }, []);
 
   // Create stable callback references for verification dialog
-  const handlePincodeSubmit = useCallback(
-    (pincode: string) => {
-      handleVerificationSubmit(pincode, "pincode");
-    },
-    [handleVerificationSubmit]
-  );
+  const handlePincodeSubmit = useCallback(() => {
+    handleVerificationSubmit();
+  }, [handleVerificationSubmit]);
 
-  const handleOtpSubmit = useCallback(
-    (otp: string) => {
-      handleVerificationSubmit(otp, "two-factor");
-    },
-    [handleVerificationSubmit]
-  );
+  const handleOtpSubmit = useCallback(() => {
+    handleVerificationSubmit();
+  }, [handleVerificationSubmit]);
 
   // Handle continue after success
   const handleContinue = useCallback(() => {

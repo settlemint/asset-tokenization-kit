@@ -398,7 +398,6 @@ export function useOnboardingSteps({
     shouldShowIdentitySteps,
     user,
     t,
-    systemDetails,
   ]);
 
   const defaultValues: Partial<OnboardingFormData> = useMemo(() => {

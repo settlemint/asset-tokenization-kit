@@ -8,7 +8,7 @@ import { orpc } from "@/orpc";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeftRight, MoreHorizontal, TrendingUp, Zap } from "lucide-react";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 const logger = createLogger();
@@ -80,16 +80,19 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
   });
 
   // Get selected asset types from the form to determine required addons
-  const selectedAssetTypes = form.state.values.selectedAssetTypes || [];
+  const selectedAssetTypes = useMemo(
+    () => form.state.values.selectedAssetTypes ?? [],
+    [form.state.values.selectedAssetTypes]
+  );
 
   // Check if any addon is required based on selected asset types
-  const hasRequiredAddons = addonDefinitions.some(
-    (addon) => addon.isRequired && addon.isRequired(selectedAssetTypes)
+  const hasRequiredAddons = addonDefinitions.some((addon) =>
+    addon.isRequired?.(selectedAssetTypes)
   );
 
   // Get required addons
-  const requiredAddons = addonDefinitions.filter(
-    (addon) => addon.isRequired && addon.isRequired(selectedAssetTypes)
+  const requiredAddons = addonDefinitions.filter((addon) =>
+    addon.isRequired?.(selectedAssetTypes)
   );
 
   // Addon deployment mutation
@@ -112,7 +115,7 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
         state: { value?: string[]; meta: { errors?: string[] } };
         handleChange: (value: string[]) => void;
       }) => {
-        const currentValue = field.state.value || [];
+        const currentValue = field.state.value ?? [];
 
         if (isSelected) {
           // Add addon if not already present
@@ -122,7 +125,7 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
         } else {
           // Check if this is a required addon
           const addon = addonDefinitions.find((a) => a.id === addonId);
-          if (addon?.isRequired && addon.isRequired(selectedAssetTypes)) {
+          if (addon?.isRequired?.(selectedAssetTypes)) {
             toast.warning(
               `${addon.label} is required because you selected Bond assets`
             );
@@ -143,7 +146,7 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
   const handleDeploy = useCallback(() => {
     try {
       const formValues = form.state.values;
-      const selectedAddons = formValues.selectedPlatformAddons || [];
+      const selectedAddons = formValues.selectedPlatformAddons ?? [];
 
       if (selectedAddons.length === 0 && !hasRequiredAddons) {
         toast.error("Please select at least one add-on to deploy");
@@ -176,7 +179,7 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
   const handleVerificationSubmit = useCallback(
     (verificationCode: string, verificationType: "pincode" | "two-factor") => {
       const formValues = form.state.values;
-      const selectedAddons = formValues.selectedPlatformAddons || [];
+      const selectedAddons = formValues.selectedPlatformAddons ?? [];
 
       // Include required addons automatically
       const allRequiredAddonIds = requiredAddons.map((addon) => addon.id);
@@ -248,7 +251,7 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
         addonCount: addonConfigs.length,
         addonTypes: addonConfigs.map((a) => a.type),
         hasSystemDetails: !!systemDetails,
-        systemDetailsKeys: systemDetails ? Object.keys(systemDetails) : [],
+        systemDetailsKeys: Object.keys(systemDetails),
       });
 
       // Deploy addons using the mutation
@@ -335,7 +338,10 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
       addon: (typeof addonDefinitions)[number],
       isSelected: boolean,
       isRequired: boolean,
-      field: any
+      field: {
+        state: { value?: string[]; meta: { errors?: string[] } };
+        handleChange: (value: string[]) => void;
+      }
     ) => {
       const handleContainerClick = () => {
         if (isRequired || isDeploying) return;
@@ -349,7 +355,15 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
         e.stopPropagation();
       };
 
-      return { handleContainerClick, handleCheckboxClick };
+      const handleCheckboxChange = (checked: boolean) => {
+        handleAddonToggle(addon.id, checked)(field);
+      };
+
+      return {
+        handleContainerClick,
+        handleCheckboxClick,
+        handleCheckboxChange,
+      };
     },
     [isDeploying, handleAddonToggle]
   );
@@ -397,8 +411,11 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
                 const isSelected = (field.state.value ?? []).includes(addon.id);
                 const IconComponent = addon.icon;
 
-                const { handleContainerClick, handleCheckboxClick } =
-                  createAddonHandlers(addon, isSelected, isRequired, field);
+                const {
+                  handleContainerClick,
+                  handleCheckboxClick,
+                  handleCheckboxChange,
+                } = createAddonHandlers(addon, isSelected, isRequired, field);
 
                 return (
                   <div
@@ -418,9 +435,7 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
                       <Checkbox
                         checked={isSelected || isRequired}
                         disabled={isRequired || isDeploying}
-                        onCheckedChange={(checked) =>
-                          handleAddonToggle(addon.id, checked === true)(field)
-                        }
+                        onCheckedChange={handleCheckboxChange}
                         className="mt-1"
                       />
                     </div>
