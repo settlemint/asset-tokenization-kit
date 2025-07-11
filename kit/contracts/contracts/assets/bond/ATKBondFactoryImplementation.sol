@@ -57,16 +57,12 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         // Create the access manager for the token
         ISMARTTokenAccessManager accessManager = _createAccessManager(salt);
 
-        address tokenIdentityAddress =
-            _predictContractIdentityAddress(name_, symbol_, decimals_, address(accessManager));
-
-        // ABI encode constructor arguments for SMARTBondProxy
+        // ABI encode constructor arguments for SMARTBondProxy (no onchainID parameter)
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             cap_,
             maturityDate_,
             faceValue_,
@@ -86,9 +82,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         (deployedBondAddress, deployedTokenIdentityAddress) =
             _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager), description, countryCode_);
 
-        if (deployedTokenIdentityAddress != tokenIdentityAddress) {
-            revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
-        }
+        // Identity verification check removed - identity is now set after deployment
 
         // Add the bond to the compliance allow list, because it needs to be able to hold other tokens
         IATKCompliance(address(_compliance())).addToBypassList(deployedBondAddress);
@@ -148,14 +142,12 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
     {
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
-        address tokenIdentityAddress = _predictContractIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
 
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             cap_,
             maturityDate_,
             faceValue_,

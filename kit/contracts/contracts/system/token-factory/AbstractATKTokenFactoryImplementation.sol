@@ -20,7 +20,6 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 import { ATKRoles } from "../../assets/ATKRoles.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
@@ -273,38 +272,10 @@ abstract contract AbstractATKTokenFactoryImplementation is
         view
         returns (address)
     {
-        // Create a unique salt for the contract identity based on token metadata and initial manager
-        string memory identitySalt = _calculateIdentitySalt(name, symbol, decimals, initialManager);
-
-        // Use a placeholder address for now - this breaks the circular dependency
-        // The identity factory will use the salt to create a deterministic address
-        address placeholderTokenAddress = address(0);
-
-        return IATKIdentityFactory(IATKSystem(_systemAddress).identityFactory()).calculateContractIdentityAddress(
-            placeholderTokenAddress, identitySalt
-        );
-    }
-
-    /// @notice Calculates the identity salt for a token contract.
-    /// @dev Creates a deterministic salt based on token metadata and initial manager.
-    /// @param name The token name.
-    /// @param symbol The token symbol.
-    /// @param decimals The token decimals.
-    /// @param initialManager The initial manager address.
-    /// @return The calculated salt string.
-    function _calculateIdentitySalt(
-        string memory name,
-        string memory symbol,
-        uint8 decimals,
-        address initialManager
-    )
-        internal
-        pure
-        returns (string memory)
-    {
-        return string.concat(
-            "Token:", name, ":", symbol, ":", Strings.toString(decimals), ":", Strings.toHexString(initialManager)
-        );
+        // With the new approach, we can't predict the identity address until after token deployment
+        // This function is no longer needed, but kept for backward compatibility
+        // Return zero address to indicate identity will be set after deployment
+        return address(0);
     }
 
     /// @notice Creates a new access manager for a token using CREATE2.
@@ -381,13 +352,8 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
         isFactoryToken[deployedAddress] = true;
 
-        // Decode the token metadata from salt input data to calculate identity salt
-        (string memory name, string memory symbol, uint8 decimals) =
-            abi.decode(tokenSaltInputData, (string, string, uint8));
-        string memory identitySalt = _calculateIdentitySalt(name, symbol, decimals, accessManager);
-
-        address tokenIdentity =
-            _deployContractIdentity(deployedAddress, accessManager, identitySalt, description, country);
+        // Create identity using simple address-based approach - no complex salt needed
+        address tokenIdentity = _deployContractIdentity(deployedAddress, accessManager, description, country);
 
         emit TokenAssetCreated(
             _msgSender(), deployedAddress, tokenIdentity, ISMART(deployedAddress).registeredInterfaces(), accessManager
@@ -422,13 +388,11 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @dev Sets up contract identity, on-chain ID, and necessary roles.
     /// @param contractAddress The address of the deployed contract (proxy).
     /// @param accessManagerAddress The address of the contract's access manager.
-    /// @param identitySalt The salt used for deterministic identity deployment.
     /// @param description Human-readable description of the contract.
     /// @param country The numeric country code (ISO 3166-1 alpha-2 standard) representing the contract's jurisdiction.
     function _deployContractIdentity(
         address contractAddress,
         address accessManagerAddress,
-        string memory identitySalt,
         string memory description,
         uint16 country
     )
@@ -438,8 +402,11 @@ abstract contract AbstractATKTokenFactoryImplementation is
         IATKSystem system_ = IATKSystem(_systemAddress);
         IATKIdentityFactory identityFactory_ = IATKIdentityFactory(system_.identityFactory());
 
-        // Create the contract identity with the provided salt
-        address contractIdentity = identityFactory_.createContractIdentity(contractAddress, identitySalt);
+        // Create the contract identity using simple address-based salt
+        address contractIdentity = identityFactory_.createContractIdentity(contractAddress);
+
+        // Set the onchain ID on the token contract
+        ISMART(contractAddress).setOnchainID(contractIdentity);
 
         // Register the contract identity with the identity registry (same as any other identity)
         ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(system_.identityRegistry());

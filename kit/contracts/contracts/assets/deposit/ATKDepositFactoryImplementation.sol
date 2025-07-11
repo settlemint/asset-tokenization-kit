@@ -82,16 +82,12 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         // Create the access manager for the token
         ISMARTTokenAccessManager accessManager = _createAccessManager(salt);
 
-        address tokenIdentityAddress =
-            _predictContractIdentityAddress(name_, symbol_, decimals_, address(accessManager));
-
-        // ABI encode constructor arguments for ATKDepositProxy
+        // ABI encode constructor arguments for ATKDepositProxy (no onchainID parameter)
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             _collateralClaimTopicId,
             _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
@@ -108,9 +104,7 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         (deployedDepositAddress, deployedTokenIdentityAddress) =
             _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager), description, countryCode_);
 
-        if (deployedTokenIdentityAddress != tokenIdentityAddress) {
-            revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
-        }
+        // Identity verification check removed - identity is now set after deployment
 
         emit DepositCreated(
             _msgSender(), deployedDepositAddress, name_, symbol_, decimals_, requiredClaimTopics_, countryCode_
@@ -149,14 +143,13 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     {
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
-        address tokenIdentityAddress = _predictContractIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
-        // ABI encode constructor arguments for ATKDepositProxy
+
+        // ABI encode constructor arguments for ATKDepositProxy (no onchainID parameter)
         bytes memory constructorArgs = abi.encode(
             address(this), // The factory address is part of the constructor args
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             _collateralClaimTopicId,
             _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),

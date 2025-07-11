@@ -56,8 +56,6 @@ contract ATKEquityImplementation is
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param decimals_ The number of decimals the token uses.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param initialModulePairs_ Initial compliance module configurations.
     /// @param identityRegistry_ The address of the Identity Registry contract.
     /// @param compliance_ The address of the main compliance contract.
@@ -66,7 +64,6 @@ contract ATKEquityImplementation is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
@@ -76,7 +73,7 @@ contract ATKEquityImplementation is
         override
         initializer
     {
-        __SMART_init(name_, symbol_, decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_);
+        __SMART_init(name_, symbol_, decimals_, address(0), identityRegistry_, compliance_, initialModulePairs_);
         __SMARTCustodian_init();
         __SMARTBurnable_init();
         __SMARTPausable_init(true);

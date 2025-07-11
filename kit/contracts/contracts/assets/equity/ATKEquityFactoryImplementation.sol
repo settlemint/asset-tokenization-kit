@@ -49,16 +49,12 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
         // Create the access manager for the token
         ISMARTTokenAccessManager accessManager = _createAccessManager(salt);
 
-        address tokenIdentityAddress =
-            _predictContractIdentityAddress(name_, symbol_, decimals_, address(accessManager));
-
-        // ABI encode constructor arguments for SMARTEquityProxy
+        // ABI encode constructor arguments for SMARTEquityProxy (no onchainID parameter)
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),
@@ -74,9 +70,7 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
         (deployedEquityAddress, deployedTokenIdentityAddress) =
             _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager), description, countryCode_);
 
-        if (deployedTokenIdentityAddress != tokenIdentityAddress) {
-            revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
-        }
+        // Identity verification check removed - identity is now set after deployment
 
         // Identity registration is now handled automatically in _deployContractIdentity
 
@@ -117,13 +111,12 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
     {
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
-        address tokenIdentityAddress = _predictContractIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
+
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
             _compliance(),

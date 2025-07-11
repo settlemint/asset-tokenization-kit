@@ -9,7 +9,6 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 // Interfaces
 import { IATKSystem } from "../IATKSystem.sol";
@@ -220,11 +219,8 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
         IATKSystem system_ = IATKSystem(_systemAddress);
         IATKIdentityFactory identityFactory_ = IATKIdentityFactory(system_.identityFactory());
 
-        // Create a default salt for system addon contracts based on their address
-        string memory addonSalt = string.concat("SystemAddon:", Strings.toHexString(contractAddress));
-
         // Create the contract identity
-        contractIdentity = identityFactory_.createContractIdentity(contractAddress, addonSalt);
+        contractIdentity = identityFactory_.createContractIdentity(contractAddress);
 
         // Register the contract identity with the identity registry (same as any other identity)
         ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(system_.identityRegistry());

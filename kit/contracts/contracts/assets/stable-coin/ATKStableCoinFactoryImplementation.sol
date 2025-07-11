@@ -80,16 +80,12 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
         // Create the access manager for the token
         ISMARTTokenAccessManager accessManager = _createAccessManager(salt);
 
-        address tokenIdentityAddress =
-            _predictContractIdentityAddress(name_, symbol_, decimals_, address(accessManager));
-
-        // ABI encode constructor arguments for ATKStableCoinProxy
+        // ABI encode constructor arguments for ATKStableCoinProxy (no onchainID parameter)
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             _collateralClaimTopicId,
             _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
@@ -106,9 +102,7 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
         (deployedStableCoinAddress, deployedTokenIdentityAddress) =
             _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager), description, countryCode_);
 
-        if (deployedTokenIdentityAddress != tokenIdentityAddress) {
-            revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
-        }
+        // Identity verification check removed - identity is now set after deployment
 
         // Identity registration is now handled automatically in _deployContractIdentity
 
@@ -149,13 +143,12 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
     {
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
-        address tokenIdentityAddress = _predictContractIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
+
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             _collateralClaimTopicId,
             _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),

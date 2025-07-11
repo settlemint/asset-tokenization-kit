@@ -220,17 +220,8 @@ contract ATKIdentityFactoryImplementation is
     /// 5. Emits `ContractIdentityCreated` event.
     /// @param _contract The address of the contract implementing IContractWithIdentity for which the identity is being
     /// created.
-    /// @param _salt The salt string to use for deterministic identity deployment.
     /// @return address The address of the newly created identity contract.
-    function createContractIdentity(
-        address _contract,
-        string calldata _salt
-    )
-        external
-        virtual
-        override
-        returns (address)
-    {
+    function createContractIdentity(address _contract) external virtual override returns (address) {
         if (_contract == address(0)) revert ZeroAddressNotAllowed();
         if (_contractIdentities[_contract] != address(0)) revert ContractAlreadyLinked(_contract);
 
@@ -239,26 +230,13 @@ contract ATKIdentityFactoryImplementation is
             revert("Contract does not implement IContractWithIdentity");
         }
 
-        // Deploy identity with caller-provided salt
-        address identity = _createAndRegisterContractIdentity(_contract, _salt);
+        // Deploy identity with address-based salt
+        address identity = _createAndRegisterContractIdentity(_contract);
 
         _contractIdentities[_contract] = identity;
         emit ContractIdentityCreated(_msgSender(), identity, _contract);
 
         return identity;
-    }
-
-    /// @inheritdoc IATKIdentityFactory
-    /// @notice Creates a deterministic on-chain identity for a given contract (backward compatibility).
-    /// @dev This function provides backward compatibility by using a default salt based on the contract address.
-    ///      It calls the main implementation with a calculated default salt.
-    /// @param _contract The address of the contract implementing IContractWithIdentity for which the identity is being
-    /// created.
-    /// @return address The address of the newly created identity contract.
-    function createContractIdentity(address _contract) external virtual override returns (address) {
-        // Create a default salt based on the contract address for backward compatibility
-        string memory defaultSalt = string.concat("Contract:", Strings.toHexString(_contract));
-        return this.createContractIdentity(_contract, defaultSalt);
     }
 
     // --- View Functions ---
@@ -311,31 +289,9 @@ contract ATKIdentityFactoryImplementation is
 
     /// @inheritdoc IATKIdentityFactory
     /// @notice Computes the deterministic address at which an identity proxy for a contract will be
-    /// deployed (or was deployed) using the provided salt.
-    /// @dev Uses the provided salt string to calculate deployment address for flexibility.
-    ///      This allows the caller to define their own salt calculation logic.
-    /// @param _contractAddress The address of the contract for which the identity will be created.
-    /// @param _salt The salt string to use for deterministic address calculation.
-    /// @return address The pre-computed CREATE2 deployment address for the contract's identity contract.
-    function calculateContractIdentityAddress(
-        address _contractAddress,
-        string calldata _salt
-    )
-        public
-        view
-        virtual
-        override
-        returns (address)
-    {
-        bytes32 saltBytes = _calculateSaltFromString(_system, _salt);
-        return _computeContractProxyAddress(saltBytes, _contractAddress);
-    }
-
-    /// @inheritdoc IATKIdentityFactory
-    /// @notice Computes the deterministic address at which an identity proxy for a contract will be
-    /// deployed (or was deployed) using a default salt (backward compatibility).
-    /// @dev This function provides backward compatibility by using a default salt based on the contract address.
-    ///      It calls the main implementation with a calculated default salt.
+    /// deployed (or was deployed) using address-based salt.
+    /// @dev Uses the contract address to calculate a deterministic salt for deployment address prediction.
+    ///      This provides predictable addresses based on the contract address.
     /// @param _contractAddress The address of the contract for which the identity will be created.
     /// @return address The pre-computed CREATE2 deployment address for the contract's identity contract.
     function calculateContractIdentityAddress(address _contractAddress)
@@ -345,9 +301,8 @@ contract ATKIdentityFactoryImplementation is
         override
         returns (address)
     {
-        // Create a default salt based on the contract address for backward compatibility
-        string memory defaultSalt = string.concat("Contract:", Strings.toHexString(_contractAddress));
-        return this.calculateContractIdentityAddress(_contractAddress, defaultSalt);
+        (bytes32 saltBytes,) = _calculateSalt(CONTRACT_SALT_PREFIX, _contractAddress);
+        return _computeContractProxyAddress(saltBytes, _contractAddress);
     }
 
     /// @notice Returns the address of the `IATKSystem` contract that this factory uses.
@@ -383,24 +338,18 @@ contract ATKIdentityFactoryImplementation is
         return identity;
     }
 
-    /// @notice Internal function to handle the creation and registration of a contract identity using a provided salt.
-    /// @dev Uses the provided salt string to calculate a unique deployment salt,
+    /// @notice Internal function to handle the creation and registration of a contract identity using address-based
+    /// salt.
+    /// @dev Uses the contract address to calculate a unique deployment salt,
     ///      checks if the salt has been taken, deploys the identity proxy using `_deployContractProxy`, and
     /// marks the salt as taken.
     /// @param _contractAddress The address of the contract (must implement IContractWithIdentity) for which to create
     /// an identity.
-    /// @param _salt The salt string to use for deterministic deployment.
     /// @return address The address of the newly deployed identity proxy.
-    function _createAndRegisterContractIdentity(
-        address _contractAddress,
-        string calldata _salt
-    )
-        private
-        returns (address)
-    {
-        bytes32 saltBytes = _calculateSaltFromString(_system, _salt);
+    function _createAndRegisterContractIdentity(address _contractAddress) private returns (address) {
+        (bytes32 saltBytes, string memory saltString) = _calculateSalt(CONTRACT_SALT_PREFIX, _contractAddress);
 
-        if (_saltTakenByteSalt[saltBytes]) revert SaltAlreadyTaken(_salt);
+        if (_saltTakenByteSalt[saltBytes]) revert SaltAlreadyTaken(saltString);
 
         address identity = _deployContractProxy(saltBytes, _contractAddress);
 

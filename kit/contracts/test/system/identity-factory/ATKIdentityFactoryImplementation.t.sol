@@ -131,7 +131,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(accessManager)
         );
 
-        address predictedAddress = factory.calculateContractIdentityAddress("Token", "TKN", 18, address(token));
+        address predictedAddress = factory.calculateContractIdentityAddress(address(token));
 
         vm.prank(admin);
         address actualAddress = factory.createContractIdentity(address(token));
@@ -265,8 +265,8 @@ contract ATKIdentityFactoryImplementationTest is Test {
         vm.prank(admin);
 
         address tokenAddress = makeAddr("token");
-        address predictedAddress1 = factory.calculateContractIdentityAddress("TOKEN", "TKN", 18, tokenAddress);
-        address predictedAddress2 = factory.calculateContractIdentityAddress("TOKEN", "TKN", 18, tokenAddress);
+        address predictedAddress1 = factory.calculateContractIdentityAddress(tokenAddress);
+        address predictedAddress2 = factory.calculateContractIdentityAddress(tokenAddress);
 
         assertEq(predictedAddress1, predictedAddress2);
         assertTrue(predictedAddress1 != address(0));
