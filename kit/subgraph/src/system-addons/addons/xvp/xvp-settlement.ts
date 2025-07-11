@@ -145,17 +145,22 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
   return xvpSettlement;
 }
 
-export function handleXvPSettlementApproved(event: XvPSettlementApproved): void {
+export function handleXvPSettlementApproved(
+  event: XvPSettlementApproved
+): void {
   fetchEvent(event, "XvPSettlementApproved");
-  
-  const approval = fetchXvPSettlementApproval(event.address, event.params.sender);
+
+  const approval = fetchXvPSettlementApproval(
+    event.address,
+    event.params.sender
+  );
   approval.approved = true;
   approval.timestamp = event.block.timestamp;
   approval.save();
 
   const xvpSettlement = fetchXvPSettlement(event.address);
   const approvals = xvpSettlement.approvals.load();
-  
+
   let allApproved = true;
   for (let i = 0; i < approvals.length; i++) {
     if (!approvals[i].approved) {
@@ -169,7 +174,7 @@ export function handleXvPSettlementApproved(event: XvPSettlementApproved): void 
     for (let i = 0; i < approvals.length; i++) {
       participants.push(approvals[i].account);
     }
-    
+
     createAction(
       event,
       ActionName.ExecuteXvPSettlement,
