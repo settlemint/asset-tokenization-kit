@@ -30,5 +30,5 @@ interface IATKTokenFactoryRegistry is IAccessControl, IERC165 {
 
     function tokenFactory(bytes32 factoryTypeHash) external view returns (address);
 
-    function initialize(address initialAdmin, address systemAddress) external;
+    function initialize(address initialAdmin, address systemAddress, address systemAccessManager) external;
 }

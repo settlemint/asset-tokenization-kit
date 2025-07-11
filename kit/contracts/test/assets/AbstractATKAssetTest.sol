@@ -69,8 +69,18 @@ abstract contract AbstractATKAssetTest is Test {
         // Initialize the forwarder
         forwarder = new ATKForwarder();
 
-        // Initialize the access manager
-        vm.prank(_owner);
+        // Grant necessary system roles to the owner for testing
+        vm.startPrank(platformAdmin);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.DEPLOYER_ROLE, _owner);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.TOKEN_MANAGER_ROLE, _owner);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.REGISTRAR_ROLE, _owner);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _owner);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.IDENTITY_MANAGER_ROLE, _owner);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, _owner);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, _owner);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, _owner);
+        systemUtils.systemAccessManager().grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, _owner);
+        vm.stopPrank();
     }
 
     function _setUpIdentity(address _wallet, string memory _label) internal {
@@ -119,6 +129,7 @@ abstract contract AbstractATKAssetTest is Test {
         ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE, wallet);
         ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.CUSTODIAN_ROLE, wallet);
         ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.EMERGENCY_ROLE, wallet);
+        // Grant system-level roles that are needed for various operations
         ISMARTTokenAccessManager(accessManager).grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, wallet);
         vm.stopPrank();
     }

@@ -54,9 +54,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
                 "Deposit", address(depositFactoryImpl), address(depositImpl)
             )
         );
-
-        // Grant registrar role to owner so that he can create the deposit
-        IAccessControl(address(depositFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
         vm.stopPrank();
 
         // Initialize identities

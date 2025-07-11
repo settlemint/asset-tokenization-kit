@@ -100,7 +100,8 @@ abstract contract AbstractComplianceModuleTest is Test {
 
         // Add token issuer to the bypass list so that he is allowed to do things for testing
         vm.startPrank(platformAdmin);
-        IAccessControl(address(systemUtils.compliance())).grantRole(
+        // Grant system-level role using the system access manager
+        IAccessControl(address(systemUtils.systemAccessManager())).grantRole(
             ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, platformAdmin
         );
         IATKCompliance(address(systemUtils.compliance())).addToBypassList(tokenIssuer);
@@ -131,6 +132,9 @@ abstract contract AbstractComplianceModuleTest is Test {
         accessManager.grantRole(SMARTToken(address(smartToken)).PAUSER_ROLE(), tokenIssuer);
         accessManager.grantRole(SMARTToken(address(smartToken)).CAP_MANAGEMENT_ROLE(), tokenIssuer);
         accessManager.grantRole(SMARTToken(address(smartToken)).TOKEN_ADMIN_ROLE(), tokenIssuer);
+
+        // Grant CLAIM_MANAGER_ROLE to tokenIssuer in the token access manager
+        // This is needed for the addClaim function on the token identity
         accessManager.grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, tokenIssuer);
 
         // Create the token's on-chain identity

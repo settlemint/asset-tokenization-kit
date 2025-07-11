@@ -44,11 +44,12 @@ contract ATKTokenFactoryRegistryImplementation is
         _disableInitializers();
     }
 
-    function initialize(address initialAdmin, address systemAddress) public override initializer {
+    function initialize(address initialAdmin, address systemAddress, address systemAccessManager) public initializer {
         __ReentrancyGuard_init();
 
-        // Note: Access control is now managed centrally through ATKSystemAccessManager
-        // The system access manager is set automatically when the system is initialized
+        // Set the system access manager for centralized access control
+        _setSystemAccessManager(systemAccessManager);
+
         _system = IATKSystem(systemAddress);
     }
 
@@ -91,8 +92,29 @@ contract ATKTokenFactoryRegistryImplementation is
 
         tokenFactoryProxiesByType[factoryTypeHash] = _tokenFactoryProxy;
 
-        // Role granting is now handled by the centralized system access manager
-        // This would be done through the system's access manager instead
+        // Grant the bypass list manager role to the new token factory proxy
+        // This allows the token factory to manage bypass lists in the compliance module
+        IATKSystemAccessManager(getSystemAccessManager()).grantRole(
+            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
+        );
+
+        // Grant the identity manager role to the token factory proxy
+        // This allows the token factory to create token identities
+        IATKSystemAccessManager(getSystemAccessManager()).grantRole(
+            ATKSystemRoles.IDENTITY_MANAGER_ROLE, _tokenFactoryProxy
+        );
+
+        // Grant the claim manager role to the token factory proxy
+        // This allows the token factory to grant roles to users
+        IATKSystemAccessManager(getSystemAccessManager()).grantRole(
+            ATKSystemRoles.CLAIM_MANAGER_ROLE, _tokenFactoryProxy
+        );
+
+        // Grant the system manager role to the token factory proxy
+        // This allows the token factory to grant deployer roles to users
+        IATKSystemAccessManager(getSystemAccessManager()).grantRole(
+            ATKSystemRoles.SYSTEM_MANAGER_ROLE, _tokenFactoryProxy
+        );
 
         emit TokenFactoryRegistered(
             _msgSender(),

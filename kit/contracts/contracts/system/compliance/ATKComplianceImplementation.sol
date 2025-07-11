@@ -73,16 +73,21 @@ contract ATKComplianceImplementation is
     /// interface compatibility).
     function initialize(
         address initialAdmin,
-        address[] memory initialBypassListManagerAdmins
+        address[] memory initialBypassListManagerAdmins,
+        address systemAccessManager
     )
         public
         virtual
         initializer
     {
         __ERC165_init_unchained(); // Initializes ERC165 announcing which interfaces this contract supports
-            // Note: Access control is now managed centrally through ATKSystemAccessManager
-            // Roles are granted there instead of locally in this contract
-            // Parameters are kept for interface compatibility but not used
+
+        // Set the system access manager for centralized access control
+        _setSystemAccessManager(systemAccessManager);
+
+        // Note: Access control is now managed centrally through ATKSystemAccessManager
+        // Roles are granted there instead of locally in this contract
+        // Parameters are kept for interface compatibility but not used
     }
 
     // --- Bypass List Management Functions ---

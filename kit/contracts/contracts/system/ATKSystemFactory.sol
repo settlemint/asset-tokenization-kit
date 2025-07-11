@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { ATKSystemImplementation } from "./ATKSystemImplementation.sol";
+import { ATKSystemImplementation, ImplementationAddresses } from "./ATKSystemImplementation.sol";
 import { IATKSystemFactory } from "./IATKSystemFactory.sol";
 import {
     ComplianceImplementationNotSet,
@@ -226,23 +226,24 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         // Deploy a new ATKSystem contract instance.
         // It passes all the default implementation addresses stored in this factory, plus the factory's forwarder
         // address.
+        ImplementationAddresses memory implementations = ImplementationAddresses({
+            complianceImplementation: defaultComplianceImplementation,
+            identityRegistryImplementation: defaultIdentityRegistryImplementation,
+            identityRegistryStorageImplementation: defaultIdentityRegistryStorageImplementation,
+            trustedIssuersRegistryImplementation: defaultTrustedIssuersRegistryImplementation,
+            topicSchemeRegistryImplementation: defaultTopicSchemeRegistryImplementation,
+            identityFactoryImplementation: defaultIdentityFactoryImplementation,
+            identityImplementation: defaultIdentityImplementation,
+            tokenIdentityImplementation: defaultTokenIdentityImplementation,
+            tokenAccessManagerImplementation: defaultTokenAccessManagerImplementation,
+            tokenFactoryRegistryImplementation: defaultTokenFactoryRegistryImplementation,
+            complianceModuleRegistryImplementation: defaultComplianceModuleRegistryImplementation,
+            addonRegistryImplementation: defaultAddonRegistryImplementation,
+            systemAccessManagerImplementation: defaultSystemAccessManagerImplementation
+        });
+
         bytes memory callData = abi.encodeWithSelector(
-            ATKSystemImplementation.initialize.selector,
-            sender,
-            defaultComplianceImplementation,
-            defaultIdentityRegistryImplementation,
-            defaultIdentityRegistryStorageImplementation,
-            defaultTrustedIssuersRegistryImplementation,
-            defaultTopicSchemeRegistryImplementation,
-            defaultIdentityFactoryImplementation,
-            defaultIdentityImplementation,
-            defaultTokenIdentityImplementation,
-            defaultTokenAccessManagerImplementation,
-            defaultIdentityVerificationModule,
-            defaultTokenFactoryRegistryImplementation,
-            defaultComplianceModuleRegistryImplementation,
-            defaultAddonRegistryImplementation,
-            defaultSystemAccessManagerImplementation
+            ATKSystemImplementation.initialize.selector, sender, implementations, defaultIdentityVerificationModule
         );
 
         ERC1967Proxy proxy = new ERC1967Proxy(atkSystemImplementation, callData);

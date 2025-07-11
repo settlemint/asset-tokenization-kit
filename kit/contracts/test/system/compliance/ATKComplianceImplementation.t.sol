@@ -207,16 +207,18 @@ contract ATKComplianceImplementationTest is Test {
         // Deploy as proxy
         address[] memory initialBypassListManagers = new address[](1);
         initialBypassListManagers[0] = admin;
-        bytes memory initData =
-            abi.encodeWithSelector(ATKComplianceImplementation.initialize.selector, admin, initialBypassListManagers);
+        bytes memory initData = abi.encodeWithSelector(
+            ATKComplianceImplementation.initialize.selector,
+            admin,
+            initialBypassListManagers,
+            address(systemAccessManager)
+        );
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
 
         // Access proxy as TestableATKComplianceImplementation
         compliance = TestableATKComplianceImplementation(address(proxy));
 
-        // Set up the system access manager in the compliance contract
-        // This simulates the system access manager being set during system bootstrap
-        compliance.setSystemAccessManagerForTesting(address(systemAccessManager));
+        // System access manager is already set during initialization
 
         // Grant bypass list manager role to bypassListManager through the mock system access manager
         systemAccessManager.grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, bypassListManager);
@@ -234,7 +236,7 @@ contract ATKComplianceImplementationTest is Test {
         vm.expectRevert();
         address[] memory initialBypassListManagers = new address[](1);
         initialBypassListManagers[0] = admin;
-        compliance.initialize(admin, initialBypassListManagers);
+        compliance.initialize(admin, initialBypassListManagers, address(systemAccessManager));
     }
 
     function testSupportsInterface() public view {

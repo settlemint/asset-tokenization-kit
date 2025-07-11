@@ -178,6 +178,24 @@ contract SystemUtils is Test {
         systemAccessManager.grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, platformAdmin);
         systemAccessManager.grantRole(ATKSystemRoles.REGISTRAR_ROLE, platformAdmin);
         systemAccessManager.grantRole(ATKSystemRoles.DEPLOYER_ROLE, platformAdmin);
+        systemAccessManager.grantRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, platformAdmin);
+
+        // Grant the token factory registry permission to grant bypass list manager roles
+        // This allows the token factory registry to grant bypass list manager roles to token factory proxies
+        systemAccessManager.grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, address(tokenFactoryRegistry));
+        systemAccessManager.grantRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, address(tokenFactoryRegistry));
+
+        // Grant the token factory registry permission to grant claim manager roles
+        // This allows the token factory registry to grant claim manager roles to token factory proxies
+        systemAccessManager.grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, address(tokenFactoryRegistry));
+
+        // Grant the addon registry permission to grant bypass list manager roles
+        // This allows the addon registry to grant bypass list manager roles to addon proxies
+        systemAccessManager.grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, address(systemAddonRegistry));
+        systemAccessManager.grantRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, address(systemAddonRegistry));
+
+        // Grant admin roles to the token factory registry so it can manage roles for token factory proxies
+        systemAccessManager.grantRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, address(tokenFactoryRegistry));
 
         // --- Deploy Other Contracts ---
         mockedComplianceModule = new MockedComplianceModule();

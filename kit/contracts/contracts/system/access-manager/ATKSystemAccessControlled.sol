@@ -111,7 +111,7 @@ abstract contract ATKSystemAccessControlled {
             _;
             return;
         }
-        revert NoValidRoleFound();
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.SYSTEM_MANAGER_ROLE);
     }
 
     /// @notice Modifier for identity management operations
@@ -142,7 +142,7 @@ abstract contract ATKSystemAccessControlled {
             _;
             return;
         }
-        revert NoValidRoleFound();
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.TOKEN_MANAGER_ROLE);
     }
 
     /// @notice Modifier for compliance management operations
@@ -189,7 +189,7 @@ abstract contract ATKSystemAccessControlled {
             _;
             return;
         }
-        revert NoValidRoleFound();
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.ADDON_MANAGER_ROLE);
     }
 
     /// @notice Modifier for auditor access (read-only operations)
@@ -212,6 +212,39 @@ abstract contract ATKSystemAccessControlled {
             return;
         }
         revert NoValidRoleFound();
+    }
+
+    /// @notice Modifier for registrar operations
+    modifier onlyRegistrar() {
+        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
+
+        if (_systemAccessManager.hasRole(ATKSystemRoles.REGISTRAR_ROLE, msg.sender)) {
+            _;
+            return;
+        }
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.REGISTRAR_ROLE);
+    }
+
+    /// @notice Modifier for implementation manager operations
+    modifier onlyImplementationManager() {
+        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
+
+        if (_systemAccessManager.hasRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, msg.sender)) {
+            _;
+            return;
+        }
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE);
+    }
+
+    /// @notice Modifier for deployer operations
+    modifier onlyDeployer() {
+        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
+
+        if (_systemAccessManager.hasRole(ATKSystemRoles.DEPLOYER_ROLE, msg.sender)) {
+            _;
+            return;
+        }
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.DEPLOYER_ROLE);
     }
 
     // ================================

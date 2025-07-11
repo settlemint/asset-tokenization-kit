@@ -27,7 +27,12 @@ interface IATKCompliance is ISMARTCompliance {
     error AddressAlreadyOnBypassList(address account);
 
     // --- Functions ---
-    function initialize(address initialAdmin, address[] memory initialBypassListManagers) external;
+    function initialize(
+        address initialAdmin,
+        address[] memory initialBypassListManagers,
+        address systemAccessManager
+    )
+        external;
 
     // --- Functions ---
     /// @notice Adds an address to the compliance bypass list.
