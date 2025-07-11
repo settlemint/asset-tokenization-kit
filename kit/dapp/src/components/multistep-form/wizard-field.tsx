@@ -109,19 +109,14 @@ export function WizardField<TFormData>({
 
   const handleDateTimeSelectChange = useCallback(
     (date: Date | undefined) => {
-      const selectedDate = field.state.value as Date | undefined;
       if (date) {
-        // Preserve existing time if any
-        const newDate = selectedDate
-          ? new Date(
-              date.setHours(
-                selectedDate.getHours(),
-                selectedDate.getMinutes(),
-                0,
-                0
-              )
-            )
-          : new Date(date.setHours(0, 0, 0, 0));
+        const selectedDate = field.state.value as Date | undefined;
+        const hoursFromTimeInput = selectedDate?.getHours() ?? 0;
+        const minutesFromTimeInput = selectedDate?.getMinutes() ?? 0;
+
+        const newDate = new Date(date);
+        newDate.setHours(hoursFromTimeInput, minutesFromTimeInput, 0, 0);
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         field.handleChange(newDate as any);
       } else {
