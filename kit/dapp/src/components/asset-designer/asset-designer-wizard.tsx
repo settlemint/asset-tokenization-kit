@@ -312,9 +312,7 @@ function AssetDesignerWizardComponent({
               ...commonData,
               type: "bond",
               cap: data.cap ?? "1000000",
-              maturityDate: data.maturityDate
-                ? new Date(data.maturityDate).getTime().toString()
-                : new Date().getTime().toString(),
+              maturityDate: data.maturityDate ?? new Date().toISOString(),
               underlyingAsset:
                 data.underlyingAsset ??
                 "0x0000000000000000000000000000000000000000",
