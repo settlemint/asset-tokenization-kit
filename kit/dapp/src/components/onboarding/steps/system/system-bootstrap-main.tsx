@@ -316,7 +316,7 @@ export function SystemBootstrapMain({
         isLoading={isDeploying}
         title="Confirm System Deployment"
         description="Please verify your identity to deploy the blockchain system."
-        error={verificationError}
+        errorMessage={verificationError}
       />
     </>
   );

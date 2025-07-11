@@ -76,7 +76,7 @@ function PlatformNewOnboarding() {
 
   // Use the extracted hook for step definitions
   const { groups, steps, defaultValues } = useOnboardingSteps({
-    user,
+    user: session?.user,
     systemAddress,
     systemDetails,
     shouldShowWalletSteps,

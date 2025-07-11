@@ -53,8 +53,8 @@ export function PinSetupComponent({
   });
 
   const { mutate: enablePincode, isPending } = useMutation({
-    mutationFn: (pincode: string) =>
-      authClient.enablePincode({
+    mutationFn: async (pincode: string) =>
+      authClient.pincode.enable({
         pincode,
       }),
     onSuccess: () => {

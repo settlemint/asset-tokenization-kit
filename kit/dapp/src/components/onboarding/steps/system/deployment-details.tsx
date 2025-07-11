@@ -7,10 +7,10 @@ interface DeploymentDetailsProps {
   systemAddress?: string | null;
   systemDetails?: {
     id?: string;
-    identityRegistry?: string;
-    compliance?: string;
-    trustedIssuersRegistry?: string;
-    tokenFactoryRegistry?: string;
+    identityRegistry?: string | null;
+    compliance?: string | null;
+    trustedIssuersRegistry?: string | null;
+    tokenFactoryRegistry?: string | null;
   } | null;
 }
 
