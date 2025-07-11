@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 import { formatValidationError } from "@/lib/utils/format-validation-error";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { Loader2, Search } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import type { FieldDefinition, FieldGroup } from "./types";
+import { useWizardFiltering } from "./use-wizard-filtering";
 import { useWizardContext } from "./wizard-context";
 import { WizardField } from "./wizard-field";
 import { WizardGroup } from "./wizard-group";
@@ -69,128 +69,14 @@ export function WizardStep({ className }: WizardStepProps) {
   // Only use mutation if the step actually has one
   const shouldUseMutation = !!currentStep?.mutation;
 
-  // Search filtering functions
-  const filterFieldBySearch = useCallback(
-    (field: FieldDefinition, query: string): FieldDefinition | null => {
-      if (!query.trim()) return field;
-
-      const queryLower = query.toLowerCase();
-      const searchableText = [field.name as string, field.label]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      // Early return for fields without options
-      if (!field.options?.length) {
-        return searchableText.includes(queryLower) ? field : null;
-      }
-
-      // Filter options for fields that have them
-      const filteredOptions = field.options.filter((option) => {
-        const optionText = [option.label, option.value]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-        return optionText.includes(queryLower);
-      });
-
-      // Return field with filtered options if any match
-      if (filteredOptions.length > 0) {
-        return { ...field, options: filteredOptions };
-      }
-
-      // Fallback to field-level search if no options match
-      return searchableText.includes(queryLower) ? field : null;
-    },
-    []
-  );
-
-  // Filter fields and groups based on search query and selected groups
-  const { filteredFields, filteredGroups, totalResultCount, groupCounts } =
-    useMemo(() => {
-      if (!currentStep) {
-        return {
-          filteredFields: [],
-          filteredGroups: [],
-          totalResultCount: 0,
-          groupCounts: {},
-        };
-      }
-
-      let fieldResults: FieldDefinition[] = [];
-      let groupResults: FieldGroup[] = [];
-      const counts: Record<string, number> = {};
-
-      // Get all groups first
-      const allGroups =
-        currentStep.groups && typeof currentStep.groups === "function"
-          ? currentStep.groups(form?.state?.values ?? {})
-          : (currentStep.groups ?? []);
-
-      // Calculate counts for all groups before filtering
-      allGroups.forEach((group) => {
-        const fieldsWithSearch = group.fields
-          .map((field) => filterFieldBySearch(field, searchQuery))
-          .filter((field): field is FieldDefinition => field !== null);
-
-        // Count the total number of options/items in this group
-        const totalCount = fieldsWithSearch.reduce((acc, field) => {
-          // If field has options, count the options; otherwise count the field itself
-          return acc + (field.options?.length ?? 1);
-        }, 0);
-
-        counts[group.id] = totalCount;
-      });
-
-      // Filter regular fields
-      if (currentStep.fields) {
-        const fields =
-          typeof currentStep.fields === "function"
-            ? currentStep.fields(form?.state?.values ?? {})
-            : currentStep.fields;
-
-        fieldResults = fields
-          .map((field) => filterFieldBySearch(field, searchQuery))
-          .filter((field): field is FieldDefinition => field !== null);
-      }
-
-      // Filter groups based on selected group IDs and search
-      if (currentStep.groups) {
-        const groups = allGroups;
-
-        // Apply group filter first
-        const groupsToProcess =
-          selectedGroupIds.length > 0
-            ? groups.filter((group) => selectedGroupIds.includes(group.id))
-            : groups;
-
-        groupResults = groupsToProcess
-          .map((group) => ({
-            ...group,
-            fields: group.fields
-              .map((field) => filterFieldBySearch(field, searchQuery))
-              .filter((field): field is FieldDefinition => field !== null),
-          }))
-          .filter((group) => group.fields.length > 0);
-      }
-
-      const totalResultCount =
-        fieldResults.length +
-        groupResults.reduce((acc, group) => acc + group.fields.length, 0);
-
-      return {
-        filteredFields: fieldResults,
-        filteredGroups: groupResults,
-        totalResultCount,
-        groupCounts: counts,
-      };
-    }, [
+  // Use the custom hook for filtering logic
+  const { matchingFields, matchingGroups, totalResultCount, groupCounts } =
+    useWizardFiltering({
       currentStep,
-      form?.state?.values,
+      formValues: form?.state?.values ?? {},
       searchQuery,
       selectedGroupIds,
-      filterFieldBySearch,
-    ]);
+    });
 
   // Clear search callback
   const handleClearSearch = useCallback(() => {
@@ -422,8 +308,8 @@ export function WizardStep({ className }: WizardStepProps) {
             </div>
           ) : (
             <>
-              {/* Render filtered regular fields */}
-              {filteredFields.map((fieldDef) => {
+              {/* Render matching regular fields */}
+              {matchingFields.map((fieldDef) => {
                 try {
                   return (
                     <WizardField
@@ -450,8 +336,8 @@ export function WizardStep({ className }: WizardStepProps) {
                 }
               })}
 
-              {/* Render filtered groups */}
-              {filteredGroups.map((group) => {
+              {/* Render matching groups */}
+              {matchingGroups.map((group) => {
                 try {
                   return (
                     <WizardGroup
