@@ -1,18 +1,18 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { AlertTriangle, BadgeCheck, Info, Link } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { BadgeCheck, Link, Info, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
-import { authClient } from "@/lib/auth/auth.client";
-import { createLogger } from "@settlemint/sdk-utils/logging";
-import { orpc } from "@/orpc";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
-import { useSettings } from "@/hooks/use-settings";
 import { useWizardContext } from "@/components/multistep-form/wizard-context";
 import { VerificationDialog } from "@/components/ui/verification-dialog";
-import { AssetTypeCheckbox } from "./asset-type-checkbox";
+import { useSettings } from "@/hooks/use-settings";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { authClient } from "@/lib/auth/auth.client";
+import { orpc } from "@/orpc";
 import type { SystemReadOutput } from "@/orpc/routes/system/routes/system.read.schema";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { AssetTypeCheckbox } from "./asset-type-checkbox";
 
 const logger = createLogger();
 
@@ -127,12 +127,6 @@ export function AssetSelectionComponent({
   // Check if factories are already deployed
   const deployedFactories = systemDetails?.tokenFactories ?? [];
   const hasDeployedFactories = deployedFactories.length > 0;
-
-  // Debug: Log factory structure to see available properties
-  if (deployedFactories.length > 0) {
-    console.log("Factory object structure:", deployedFactories[0]);
-    console.log("All factory properties:", Object.keys(deployedFactories[0]));
-  }
 
   const assetTypes = useMemo(
     () => [

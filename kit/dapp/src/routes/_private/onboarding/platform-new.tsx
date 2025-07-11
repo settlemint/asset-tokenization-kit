@@ -16,8 +16,8 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   createFileRoute,
   Link,
-  useNavigate,
   useLocation,
+  useNavigate,
 } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -107,13 +107,6 @@ function PlatformNewOnboarding() {
     shouldShowSystemSetupSteps,
     shouldShowIdentitySteps,
   });
-
-  console.log("PlatformNewOnboarding component rendering...");
-  console.log("Steps:", steps.length);
-  console.log("Groups:", groups.length);
-  console.log("showWelcomeScreen:", showWelcomeScreen);
-  console.log("systemAddress:", systemAddress);
-  console.log("systemDetails:", systemDetails);
 
   const handleComplete = useCallback(
     async (data: OnboardingFormData) => {
