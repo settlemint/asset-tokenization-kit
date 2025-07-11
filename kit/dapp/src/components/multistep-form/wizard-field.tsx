@@ -279,8 +279,8 @@ export function WizardField<TFormData>({
                     mode="single"
                     selected={selectedDate}
                     captionLayout="dropdown"
-                    startMonth={fieldDef.minDate ? fieldDef.minDate : undefined}
-                    endMonth={fieldDef.maxDate ? fieldDef.maxDate : undefined}
+                    startMonth={fieldDef.minDate ?? undefined}
+                    endMonth={fieldDef.maxDate ?? undefined}
                     onSelect={handleDateTimeSelectChange}
                     disabled={isDateDisabled}
                     autoFocus
