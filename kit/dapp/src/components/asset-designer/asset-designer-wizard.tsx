@@ -24,6 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Building2, Coins, PiggyBank, TrendingUp, Wallet } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { addDays, addYears } from "date-fns";
 import type { z } from "zod/v4";
 
 const logger = createLogger();
@@ -246,11 +247,13 @@ function AssetDesignerWizardComponent({
             {
               name: "maturityDate",
               label: t("form.fields.maturityDate.label"),
-              type: "date",
+              type: "datetime",
               required: true,
               placeholder: t("form.fields.maturityDate.placeholder"),
               description: t("form.fields.maturityDate.description"),
               schema: BondTokenSchema.shape.maturityDate,
+              minDate: addDays(new Date(), 1), // 1 day from now
+              maxDate: addYears(new Date(), 100), // 100 years from now
             },
             {
               name: "underlyingAsset",

@@ -1,6 +1,13 @@
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -13,6 +20,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useField } from "@tanstack/react-form";
+import { format } from "date-fns";
+import { CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { FieldDefinition } from "./types";
 import { useWizardContext } from "./wizard-context";
@@ -30,6 +39,7 @@ export function WizardField<TFormData>({
 }: WizardFieldProps<TFormData>) {
   const [isVisible, setIsVisible] = useState(true);
   const [isChecking, setIsChecking] = useState(false);
+  const [dateOpen, setDateOpen] = useState(false);
   const { form } = useWizardContext<TFormData>();
 
   // Always call useField hook - never conditionally
@@ -95,6 +105,58 @@ export function WizardField<TFormData>({
       field.handleChange(e.target.value as any);
     },
     [field]
+  );
+
+  const handleDateTimeSelectChange = useCallback(
+    (date: Date | undefined) => {
+      const selectedDate = field.state.value as Date | undefined;
+      if (date) {
+        // Preserve existing time if any
+        const newDate = selectedDate
+          ? new Date(
+              date.setHours(
+                selectedDate.getHours(),
+                selectedDate.getMinutes(),
+                0,
+                0
+              )
+            )
+          : new Date(date.setHours(0, 0, 0, 0));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        field.handleChange(newDate as any);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        field.handleChange(undefined as any);
+      }
+      setDateOpen(false);
+    },
+    [field, setDateOpen]
+  );
+
+  const handleTimeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const time = e.target.value;
+      const selectedDate = field.state.value as Date | undefined;
+      if (time && selectedDate) {
+        const [hours, minutes] = time.split(":").map(Number);
+        if (hours !== undefined && minutes !== undefined) {
+          const newDate = new Date(selectedDate);
+          newDate.setHours(hours, minutes, 0, 0);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          field.handleChange(newDate as any);
+        }
+      }
+    },
+    [field]
+  );
+
+  const isDateDisabled = useCallback(
+    (date: Date) => {
+      if (fieldDef.minDate && date < fieldDef.minDate) return true;
+      if (fieldDef.maxDate && date > fieldDef.maxDate) return true;
+      return false;
+    },
+    [fieldDef.minDate, fieldDef.maxDate]
   );
 
   // Check field visibility
@@ -184,6 +246,75 @@ export function WizardField<TFormData>({
             )}
           </div>
         );
+
+      case "datetime": {
+        const selectedDate = field.state.value as Date | undefined;
+
+        return (
+          <div className="flex gap-4">
+            <div className="flex flex-col gap-2">
+              <Popover open={dateOpen} onOpenChange={setDateOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    id={fieldDef.name as string}
+                    className={cn(
+                      "justify-between font-normal",
+                      !selectedDate && "text-muted-foreground",
+                      field.state.meta.isTouched &&
+                        field.state.meta.errors.length > 0 &&
+                        "border-destructive"
+                    )}
+                  >
+                    <span className="flex items-center">
+                      {selectedDate
+                        ? format(selectedDate, "PPP")
+                        : (fieldDef.placeholder ?? "Select date")}
+                    </span>
+                    <CalendarDays className="ml-2 h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    captionLayout="dropdown"
+                    onSelect={handleDateTimeSelectChange}
+                    disabled={isDateDisabled}
+                    autoFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Input
+                type="time"
+                step="60"
+                value={
+                  selectedDate
+                    ? selectedDate.toTimeString().slice(0, 5)
+                    : "10:30"
+                }
+                onChange={handleTimeChange}
+                className={cn(
+                  "w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none",
+                  !selectedDate && "text-muted-foreground",
+                  field.state.meta.isTouched &&
+                    field.state.meta.errors.length > 0 &&
+                    "border-destructive"
+                )}
+              />
+            </div>
+
+            {fieldDef.postfix && (
+              <span className="text-sm text-muted-foreground self-end pb-2">
+                {fieldDef.postfix}
+              </span>
+            )}
+          </div>
+        );
+      }
 
       case "textarea":
         return (

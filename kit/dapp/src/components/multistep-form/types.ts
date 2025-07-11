@@ -53,6 +53,7 @@ export interface FieldDefinition<TFormData = unknown> {
     | "number"
     | "email"
     | "date"
+    | "datetime"
     | "select"
     | "checkbox"
     | "radio"
@@ -71,6 +72,8 @@ export interface FieldDefinition<TFormData = unknown> {
   component?: React.ComponentType<FieldComponentProps<TFormData>>;
   postfix?: string;
   variant?: "default" | "card";
+  minDate?: Date;
+  maxDate?: Date;
 }
 
 export interface FieldGroup<TFormData = unknown> {
