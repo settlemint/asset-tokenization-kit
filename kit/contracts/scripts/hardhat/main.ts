@@ -36,6 +36,7 @@ import { topicManager } from "./services/topic-manager";
 import { createAirdrops } from "./system-addons/airdrop";
 import { createDistribution } from "./system-addons/airdrop/distribution";
 import { createXvpSettlement } from "./system-addons/xvp/xvp-settlement";
+import { setAnvilNextBlockTimestamp } from "./utils/anvil";
 
 async function main() {
   console.log("\n=== Setting up smart protocol... ===\n");
@@ -82,6 +83,12 @@ async function main() {
     ATKRoles.bypassListManagerRole,
     atkDeployer.getFixedYieldScheduleFactoryContract().address
   );
+
+  console.log("\n=== Setting up anvil... ===\n");
+
+  // Set the initial block timestamp to the current time
+  const now = Math.floor(Date.now() / 1000);
+  await setAnvilNextBlockTimestamp(owner, now);
 
   console.log("\n=== Setting up topics and trusted issuers... ===\n");
 

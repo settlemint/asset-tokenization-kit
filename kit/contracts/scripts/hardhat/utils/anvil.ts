@@ -71,6 +71,16 @@ export async function mineAnvilBlock(
   return currentBlockNumber;
 }
 
+export const setAnvilNextBlockTimestamp = async (
+  actor: AbstractActor,
+  timestamp: number
+) => {
+  await actor.getWalletClient().request({
+    method: "evm_setNextBlockTimestamp",
+    params: [timestamp],
+  } as any);
+};
+
 /**
  * Increases Anvil time with verification
  * @param actor The actor to use for time manipulation
@@ -87,8 +97,6 @@ export const increaseAnvilTime = async (
     shouldWait: true,
   }
 ): Promise<number> => {
-  const publicClient = getPublicClient();
-
   // Get the current timestamp before increasing time
   const initialTimestamp = await getAnvilTimeSeconds(actor);
   const expectedTimestamp = initialTimestamp + seconds;
