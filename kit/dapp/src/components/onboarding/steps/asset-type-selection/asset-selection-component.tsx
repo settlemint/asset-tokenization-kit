@@ -124,6 +124,16 @@ export function AssetSelectionComponent({
     enabled: !!systemAddress,
   }) as { data: SystemReadOutput | undefined; isLoading: boolean };
 
+  // Check if factories are already deployed
+  const deployedFactories = systemDetails?.tokenFactories ?? [];
+  const hasDeployedFactories = deployedFactories.length > 0;
+
+  // Debug: Log factory structure to see available properties
+  if (deployedFactories.length > 0) {
+    console.log("Factory object structure:", deployedFactories[0]);
+    console.log("All factory properties:", Object.keys(deployedFactories[0]));
+  }
+
   const assetTypes = useMemo(
     () => [
       {
@@ -394,6 +404,74 @@ export function AssetSelectionComponent({
     },
     [handleVerificationSubmit]
   );
+
+  // If factories are already deployed, show success screen
+  if (hasDeployedFactories) {
+    return (
+      <div className="max-w-4xl space-y-6">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
+            <BadgeCheck className="h-6 w-6 text-green-600" />
+            Asset Factories Deployed Successfully
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            All selected asset factories have been successfully deployed. You
+            are now the initial administrator of these factories.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-base font-medium text-foreground">
+            Deployed Asset Factories:
+          </h3>
+          <div className="grid grid-cols-1 gap-4">
+            {deployedFactories.map((factory: any, index: number) => (
+              <div
+                key={factory.address || factory.id || index}
+                className="rounded-lg border bg-card p-4"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-medium text-foreground">
+                      {factory.name || factory.typeId}
+                    </h4>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Contract Address: {factory.address || factory.id || "N/A"}
+                    </p>
+                    {factory.deployedInTransaction && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Deployment Transaction: {factory.deployedInTransaction}
+                      </p>
+                    )}
+                  </div>
+                  <BadgeCheck className="h-5 w-5 text-green-600 mt-1" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3 pt-6">
+          {!isFirstStep && (
+            <button
+              type="button"
+              onClick={onPrevious}
+              className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
+            >
+              Previous
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onNext}
+            className="px-6 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Configure add-ons
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl space-y-6">

@@ -13,8 +13,13 @@ import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
 import { orpc } from "@/orpc";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  useLocation,
+} from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -50,8 +55,24 @@ function PlatformNewOnboarding() {
   const navigate = useNavigate();
   const { data: session } = authClient.useSession();
 
-  // State for welcome screen flow
+  // Check if we should show the welcome screen or go directly to the wizard
+  // If there are URL parameters with step data, we should go directly to the wizard
+  const location = useLocation();
+  // TanStack Router stores search params in location.search as an object
+  const hasUrlState =
+    location.search &&
+    typeof location.search === "object" &&
+    Object.keys(location.search).length > 0;
+
+  // State for welcome screen flow - use a more explicit approach
   const [showWelcomeScreen, setShowWelcomeScreen] = useState(true);
+
+  // Update showWelcomeScreen based on URL state
+  useEffect(() => {
+    if (hasUrlState) {
+      setShowWelcomeScreen(false);
+    }
+  }, [hasUrlState]);
 
   // Get data from loader
   const {
@@ -70,8 +91,11 @@ function PlatformNewOnboarding() {
 
   // Check if steps should be shown based on current state
   const shouldShowWalletSteps = true; // Always show for demo - in real app: !user?.wallet
-  const shouldShowSystemSetupSteps =
-    !systemAddress || (systemDetails?.tokenFactories.length ?? 0) === 0;
+
+  // Always show system setup steps during platform onboarding
+  // The wizard will handle step completion and navigation internally
+  const shouldShowSystemSetupSteps = true;
+
   const shouldShowIdentitySteps = true; // Always show for now - in real app check if user has identity
 
   // Use the extracted hook for step definitions
@@ -83,6 +107,13 @@ function PlatformNewOnboarding() {
     shouldShowSystemSetupSteps,
     shouldShowIdentitySteps,
   });
+
+  console.log("PlatformNewOnboarding component rendering...");
+  console.log("Steps:", steps.length);
+  console.log("Groups:", groups.length);
+  console.log("showWelcomeScreen:", showWelcomeScreen);
+  console.log("systemAddress:", systemAddress);
+  console.log("systemDetails:", systemDetails);
 
   const handleComplete = useCallback(
     async (data: OnboardingFormData) => {

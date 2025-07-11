@@ -425,10 +425,33 @@ export function useOnboardingSteps({
     shouldShowIdentitySteps,
     user,
     t,
+    systemDetails,
   ]);
 
-  const defaultValues: Partial<OnboardingFormData> = useMemo(
-    () => ({
+  const defaultValues: Partial<OnboardingFormData> = useMemo(() => {
+    // Map deployed factories to their corresponding asset types
+    const deployedAssetTypes: OnboardingFormData["selectedAssetTypes"] = [];
+
+    if (systemDetails?.tokenFactories) {
+      for (const factory of systemDetails.tokenFactories) {
+        // Since factory is unknown, we need to safely check if it has a typeId
+        if (factory && typeof factory === "object" && "typeId" in factory) {
+          const typeId = String(
+            (factory as { typeId: string }).typeId
+          ).toLowerCase();
+          // Map the factory typeId to the asset type
+          if (typeId.includes("bond")) deployedAssetTypes.push("bond");
+          else if (typeId.includes("equity")) deployedAssetTypes.push("equity");
+          else if (typeId.includes("deposit"))
+            deployedAssetTypes.push("deposit");
+          else if (typeId.includes("fund")) deployedAssetTypes.push("fund");
+          else if (typeId.includes("stablecoin"))
+            deployedAssetTypes.push("stablecoin");
+        }
+      }
+    }
+
+    return {
       walletGenerated: Boolean(user?.wallet),
       walletAddress: user?.wallet,
       walletSecured: false,
@@ -437,13 +460,12 @@ export function useOnboardingSteps({
       baseCurrency: (currentBaseCurrency ??
         "USD") as OnboardingFormData["baseCurrency"],
       assetFactoriesDeployed: (systemDetails?.tokenFactories.length ?? 0) > 0,
-      selectedAssetTypes: [],
+      selectedAssetTypes: deployedAssetTypes,
       selectedAddons: [],
       kycCompleted: false,
       identityRegistered: false,
-    }),
-    [user, systemAddress, systemDetails, currentBaseCurrency]
-  );
+    };
+  }, [user, systemAddress, systemDetails, currentBaseCurrency]);
 
   return { groups, steps, defaultValues, onboardingSchema };
 }
