@@ -515,8 +515,6 @@ contract ATKSystemImplementation is
             );
         }
 
-        // REGISTRAR_ADMIN_ROLE is already granted to the token factory registry during identity registry initialization
-
         // Mark the system as bootstrapped
         _bootstrapped = true;
 
@@ -534,10 +532,6 @@ contract ATKSystemImplementation is
             _complianceModuleRegistryProxy,
             _identityVerificationModule
         );
-
-        // Revoke the system's admin role for security - keep admin role on identity registry for ongoing operations
-        address systemAddress = address(this);
-        _revokeRole(DEFAULT_ADMIN_ROLE, systemAddress);
     }
 
     // --- Implementation Setter Functions ---
