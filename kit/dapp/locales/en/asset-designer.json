@@ -59,8 +59,8 @@
       },
       "maturityDate": {
         "label": "Maturity Date",
-        "placeholder": "e.g., 1735689600000",
-        "description": "The maturity date of the bond in timestamp format"
+        "placeholder": "Select date",
+        "description": "The maturity date of the bond"
       },
       "underlyingAsset": {
         "label": "Underlying Asset",
