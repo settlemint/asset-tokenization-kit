@@ -21,12 +21,18 @@ export function UserDropdown({
   user,
 }: {
   user?: {
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     email?: string;
     address?: string;
   };
 }) {
   const navigate = useNavigate();
+
+  const displayName =
+    user?.firstName && user.lastName
+      ? `${user.firstName} ${user.lastName}`
+      : (user?.firstName ?? user?.lastName ?? undefined);
 
   const handleSignOut = useCallback(async () => {
     await authClient.signOut();
@@ -46,13 +52,13 @@ export function UserDropdown({
         >
           <Web3Avatar
             email={user?.email}
-            name={user?.name}
+            name={displayName}
             address={user?.address}
             size="small"
           />
           <div className="hidden sm:grid flex-1 text-left text-sm leading-tight">
-            {user?.name ? (
-              <span className="truncate font-medium">{user.name}</span>
+            {displayName ? (
+              <span className="truncate font-medium">{displayName}</span>
             ) : (
               <Skeleton className="h-4 w-24" />
             )}
@@ -76,13 +82,13 @@ export function UserDropdown({
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Web3Avatar
               email={user?.email}
-              name={user?.name}
+              name={displayName}
               address={user?.address}
               size="small"
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
-              {user?.name ? (
-                <span className="truncate font-medium">{user.name}</span>
+              {displayName ? (
+                <span className="truncate font-medium">{displayName}</span>
               ) : (
                 <Skeleton className="h-4 w-24" />
               )}

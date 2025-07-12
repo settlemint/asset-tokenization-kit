@@ -57,7 +57,9 @@ export const me = authRouter.user.me
 
     return {
       id: user.id,
-      name: user.name,
+      name: kycProfile
+        ? `${kycProfile.firstName} ${kycProfile.lastName}`
+        : "Unknown",
       email: user.email,
       role: user.role,
       wallet: user.wallet,

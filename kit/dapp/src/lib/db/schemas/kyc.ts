@@ -45,6 +45,8 @@ export const kycProfiles = pgTable(
   (table) => [
     uniqueIndex("kyc_user_id_idx").on(table.userId),
     index("kyc_nationality_idx").on(table.nationality),
+    index("kyc_first_name_idx").on(table.firstName),
+    index("kyc_last_name_idx").on(table.lastName),
   ]
 );
 
