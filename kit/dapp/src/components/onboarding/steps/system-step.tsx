@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/form";
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
-import { queryClient } from "@/lib/query.client";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -54,6 +54,7 @@ export function SystemStep({
   // Use prop system address if provided, otherwise fall back to settings
   const systemAddress = propSystemAddress ?? systemAddressFromSettings;
   const [showPincodePrompt, setShowPincodePrompt] = useState(false);
+  const queryClient = useQueryClient();
 
   const form = useForm<PincodeFormValues>({
     resolver: zodResolver(pincodeSchema),
