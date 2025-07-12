@@ -8,6 +8,34 @@
       "when": 1751893018659,
       "tag": "0000_perpetual_joseph",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1752303321818,
+      "tag": "0001_melted_maverick",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1752308075044,
+      "tag": "0002_known_valeria_richards",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1752308732698,
+      "tag": "0003_good_the_executioner",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1752326228994,
+      "tag": "0004_vengeful_carlie_cooper",
+      "breakpoints": true
     }
   ]
 }

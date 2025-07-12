@@ -68,6 +68,18 @@ export const UserMeSchema = z.object({
    * Whether the user has completed the onboarding process.
    */
   isOnboarded: z.boolean(),
+
+  /**
+   * User's first name from KYC profile.
+   * Optional as it may not be set if KYC is not completed.
+   */
+  firstName: z.string().optional(),
+
+  /**
+   * User's last name from KYC profile.
+   * Optional as it may not be set if KYC is not completed.
+   */
+  lastName: z.string().optional(),
 });
 
 /**
