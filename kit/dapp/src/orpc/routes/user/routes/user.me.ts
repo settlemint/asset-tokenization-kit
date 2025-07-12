@@ -78,10 +78,13 @@ export const me = authRouter.user.me
 
     return {
       id: user.id,
-      name: kyc ? `${kyc.firstName} ${kyc.lastName}` : user.name,
+      name:
+        kyc?.firstName && kyc.lastName
+          ? `${kyc.firstName} ${kyc.lastName}`
+          : user.name,
       email: user.email,
       role: user.role ?? "investor",
-      wallet: user.wallet ?? "",
+      wallet: user.wallet ?? authUser.wallet, // Fallback to auth wallet if DB wallet is null
       isOnboarded: authUser.isOnboarded, // This comes from auth context, not DB
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,

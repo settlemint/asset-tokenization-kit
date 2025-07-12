@@ -30,8 +30,17 @@ export const KycProfileUpsertSchema = KycProfileInsertSchema.omit({
     nationalId: z.string().min(1).max(50).optional(),
   })
   .refine(
-    (data) => data.id ?? data.nationalId,
-    "Either id must be provided for update, or nationalId must be provided for create"
+    (data) => {
+      // For new records (no id), nationalId is required
+      if (!data.id) {
+        return !!data.nationalId;
+      }
+      // For updates (id provided), nationalId is optional
+      return true;
+    },
+    {
+      message: "National ID is required when creating a new KYC profile",
+    }
   );
 
 export const KycProfileListSchema = z.object({
