@@ -21,9 +21,11 @@ export function UserDropdown({
   user,
 }: {
   user?: {
+    name?: string;
     firstName?: string;
     lastName?: string;
     email?: string;
+    wallet?: string;
     address?: string;
   };
 }) {
@@ -32,7 +34,7 @@ export function UserDropdown({
   const displayName =
     user?.firstName && user.lastName
       ? `${user.firstName} ${user.lastName}`
-      : (user?.firstName ?? user?.lastName ?? undefined);
+      : (user?.firstName ?? user?.lastName ?? user?.name ?? undefined);
 
   const handleSignOut = useCallback(async () => {
     await authClient.signOut();
@@ -53,7 +55,7 @@ export function UserDropdown({
           <Web3Avatar
             email={user?.email}
             name={displayName}
-            address={user?.address}
+            address={user?.address ?? user?.wallet}
             size="small"
           />
           <div className="hidden sm:grid flex-1 text-left text-sm leading-tight">
@@ -83,7 +85,7 @@ export function UserDropdown({
             <Web3Avatar
               email={user?.email}
               name={displayName}
-              address={user?.address}
+              address={user?.address ?? user?.wallet}
               size="small"
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
