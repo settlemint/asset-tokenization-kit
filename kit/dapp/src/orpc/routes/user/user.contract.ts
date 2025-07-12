@@ -20,6 +20,7 @@ import {
   UserStatsInputSchema,
   UserStatsOutputSchema,
 } from "@/orpc/routes/user/routes/user.stats.schema";
+import { z } from "zod/v4";
 import { baseContract } from "../../procedures/base.contract";
 
 /**
@@ -78,10 +79,31 @@ const stats = baseContract
   .output(UserStatsOutputSchema);
 
 /**
+ * Mark onboarding as complete for the current user.
+ *
+ * This endpoint updates the user's onboarding completion status, marking
+ * that they have successfully finished the onboarding wizard flow.
+ * @auth Required - User must be authenticated
+ * @function POST
+ * @endpoint /user/complete-onboarding
+ * @returns Success message
+ */
+const completeOnboarding = baseContract
+  .route({
+    method: "POST",
+    path: "/user/complete-onboarding",
+    description: "Mark onboarding as complete for the current user",
+    successDescription: "Onboarding marked as complete",
+    tags: ["user"],
+  })
+  .output(z.object({ success: z.boolean() }));
+
+/**
  * User API contract collection.
  */
 export const userContract = {
   me,
   list,
   stats,
+  completeOnboarding,
 };

@@ -183,6 +183,16 @@ const options = {
         unique: true,
         input: false,
       },
+      /**
+       * Whether the user has completed the onboarding flow.
+       * This tracks completion of the actual onboarding wizard, separate from security setup.
+       */
+      onboardingCompleted: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
     },
   },
   /**
@@ -369,6 +379,7 @@ const getAuthConfig = serverOnly(() => {
           user: {
             ...user,
             isOnboarded: isOnboarded(user as SessionUser),
+            onboardingCompleted: user.onboardingCompleted ?? false,
           } as SessionUser,
           session,
         });
@@ -401,4 +412,5 @@ export interface SessionUser extends InferUser<typeof options> {
   wallet: EthereumAddress;
   role: UserRole;
   isOnboarded: boolean;
+  onboardingCompleted: boolean;
 }
