@@ -54,7 +54,7 @@ export function createRouter() {
         },
         retryDelay: 1000,
         gcTime: 1000 * 60 * 60 * 24, // 24 hours
-        staleTime: 1000 * 60 * 60 * 24, // 24 hours
+        staleTime: 1000 * 60 * 5, // 5 minutes
         refetchOnMount: (query) => {
           // Always refetch if invalidated
           if (query.state.isInvalidated) return true;
