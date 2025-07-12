@@ -31,10 +31,11 @@ export function UserDropdown({
 }) {
   const navigate = useNavigate();
 
+  // Match the API logic: use firstName + lastName only if BOTH are present
   const displayName =
     user?.firstName && user.lastName
       ? `${user.firstName} ${user.lastName}`
-      : (user?.firstName ?? user?.lastName ?? user?.name ?? undefined);
+      : user?.name;
 
   const handleSignOut = useCallback(async () => {
     await authClient.signOut();
