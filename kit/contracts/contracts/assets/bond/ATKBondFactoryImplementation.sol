@@ -35,6 +35,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
     /// @param underlyingAsset_ The address of the ERC20 token used as the underlying asset for the bond.
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the bond.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
+    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedBondAddress The address of the newly deployed bond contract.
     function createBond(
         string memory name_,
@@ -45,7 +46,8 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         uint256 faceValue_,
         address underlyingAsset_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        uint16 countryCode_
     )
         external
         override
@@ -55,7 +57,8 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         // Create the access manager for the token
         ISMARTTokenAccessManager accessManager = _createAccessManager(salt);
 
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, address(accessManager));
+        address tokenIdentityAddress =
+            _predictContractIdentityAddress(name_, symbol_, decimals_, address(accessManager));
 
         // ABI encode constructor arguments for SMARTBondProxy
         bytes memory constructorArgs = abi.encode(
@@ -78,9 +81,10 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         bytes memory proxyBytecode = type(ATKBondProxy).creationCode;
 
         // Deploy using the helper from the abstract contract
+        string memory description = string.concat("Bond: ", name_, " (", symbol_, ")");
         address deployedTokenIdentityAddress;
         (deployedBondAddress, deployedTokenIdentityAddress) =
-            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager));
+            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager), description, countryCode_);
 
         if (deployedTokenIdentityAddress != tokenIdentityAddress) {
             revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
@@ -99,7 +103,8 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
             cap_,
             maturityDate_,
             faceValue_,
-            underlyingAsset_
+            underlyingAsset_,
+            countryCode_
         );
 
         return deployedBondAddress;
@@ -122,6 +127,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
     /// @param underlyingAsset_ The underlying asset of the bond.
     /// @param requiredClaimTopics_ The required claim topics for the bond.
     /// @param initialModulePairs_ The initial compliance module pairs for the bond.
+    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return predictedAddress The predicted address of the bond contract.
     function predictBondAddress(
         string memory name_,
@@ -132,7 +138,8 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         uint256 faceValue_,
         address underlyingAsset_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        uint16 countryCode_
     )
         external
         view
@@ -141,7 +148,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
     {
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
+        address tokenIdentityAddress = _predictContractIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
 
         bytes memory constructorArgs = abi.encode(
             address(this),

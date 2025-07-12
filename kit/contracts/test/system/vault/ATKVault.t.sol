@@ -24,7 +24,7 @@ contract ATKVaultTest is Test {
         signers[1] = signer2;
         signers[2] = signer3;
 
-        vault = new ATKVault(signers, 2, owner, forwarder);
+        vault = new ATKVault(signers, 2, owner, forwarder, address(0));
     }
 
     function test_InitialState() public view {

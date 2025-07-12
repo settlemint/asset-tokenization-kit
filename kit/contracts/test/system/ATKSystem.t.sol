@@ -49,8 +49,8 @@ import { ATKIdentityFactoryImplementation } from
     "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
 import { ATKIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
-import { ATKTokenIdentityImplementation } from
-    "../../contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol";
+import { ATKContractIdentityImplementation } from
+    "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
@@ -81,7 +81,6 @@ contract ATKSystemTest is Test {
     bytes32 internal constant IDENTITY_FACTORY = keccak256("IDENTITY_FACTORY");
     bytes32 internal constant TOKEN_ACCESS_MANAGER = keccak256("TOKEN_ACCESS_MANAGER");
     bytes32 internal constant IDENTITY = keccak256("IDENTITY");
-    bytes32 internal constant TOKEN_IDENTITY = keccak256("TOKEN_IDENTITY");
     bytes32 internal constant COMPLIANCE_MODULE_REGISTRY = keccak256("COMPLIANCE_MODULE_REGISTRY");
     bytes32 internal constant ADDON_REGISTRY = keccak256("ADDON_REGISTRY");
     bytes32 internal constant TOKEN_FACTORY_REGISTRY = keccak256("TOKEN_FACTORY_REGISTRY");
@@ -101,7 +100,7 @@ contract ATKSystemTest is Test {
     ATKTopicSchemeRegistryImplementation public topicSchemeRegistryImpl;
     ATKIdentityFactoryImplementation public identityFactoryImpl;
     ATKIdentityImplementation public identityImpl;
-    ATKTokenIdentityImplementation public tokenIdentityImpl;
+    ATKContractIdentityImplementation public contractIdentityImpl;
     ATKTokenAccessManagerImplementation public tokenAccessManagerImpl;
     SMARTIdentityVerificationComplianceModule public identityVerificationModule;
     ATKTokenFactoryRegistryImplementation public tokenFactoryRegistryImpl;
@@ -123,7 +122,7 @@ contract ATKSystemTest is Test {
         topicSchemeRegistryImpl = new ATKTopicSchemeRegistryImplementation(forwarder);
         identityFactoryImpl = new ATKIdentityFactoryImplementation(forwarder);
         identityImpl = new ATKIdentityImplementation(forwarder);
-        tokenIdentityImpl = new ATKTokenIdentityImplementation(forwarder);
+        contractIdentityImpl = new ATKContractIdentityImplementation(forwarder);
         tokenAccessManagerImpl = new ATKTokenAccessManagerImplementation(forwarder);
         identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
         tokenFactoryRegistryImpl = new ATKTokenFactoryRegistryImplementation(forwarder);
@@ -176,6 +175,7 @@ contract ATKSystemTest is Test {
         address newIdentityFactoryImpl = address(new ATKIdentityFactoryImplementation(forwarder));
         address newIdentityImplAddr = address(new ATKIdentityImplementation(forwarder));
         address newTokenIdentityImpl = address(new ATKTokenIdentityImplementation(forwarder));
+        address newContractIdentityImpl = address(new ATKContractIdentityImplementation(forwarder));
         address newTokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
         address newIdentityVerificationModule = address(new SMARTIdentityVerificationComplianceModule(forwarder));
         address newTokenFactoryRegistryImpl = address(new ATKTokenFactoryRegistryImplementation(forwarder));
@@ -194,6 +194,7 @@ contract ATKSystemTest is Test {
             newIdentityFactoryImpl,
             newIdentityImplAddr,
             newTokenIdentityImpl,
+            newContractIdentityImpl,
             newTokenAccessManagerImpl,
             address(newIdentityVerificationModule),
             newTokenFactoryRegistryImpl,
@@ -361,6 +362,7 @@ contract ATKSystemTest is Test {
             address(identityFactoryImpl),
             address(identityImpl),
             address(tokenIdentityImpl),
+            address(contractIdentityImpl),
             address(tokenAccessManagerImpl),
             address(identityVerificationModule),
             address(tokenFactoryRegistryImpl),
@@ -382,6 +384,7 @@ contract ATKSystemTest is Test {
             address(identityFactoryImpl),
             address(identityImpl),
             address(tokenIdentityImpl),
+            address(contractIdentityImpl),
             address(tokenAccessManagerImpl),
             address(identityVerificationModule),
             address(tokenFactoryRegistryImpl),
@@ -405,6 +408,7 @@ contract ATKSystemTest is Test {
             address(identityFactoryImpl),
             address(identityImpl),
             address(tokenIdentityImpl),
+            address(contractIdentityImpl),
             address(tokenAccessManagerImpl),
             address(identityVerificationModule),
             address(tokenFactoryRegistryImpl),
@@ -582,6 +586,7 @@ contract ATKSystemTest is Test {
             address(identityFactoryImpl),
             address(identityImpl),
             address(tokenIdentityImpl),
+            address(contractIdentityImpl),
             address(tokenAccessManagerImpl),
             address(0), // Zero address for identity verification module
             address(tokenFactoryRegistryImpl),
@@ -608,6 +613,7 @@ contract ATKSystemTest is Test {
             address(identityFactoryImpl),
             address(identityImpl),
             address(tokenIdentityImpl),
+            address(contractIdentityImpl),
             address(tokenAccessManagerImpl),
             address(newModule),
             address(tokenFactoryRegistryImpl),
@@ -631,6 +637,7 @@ contract ATKSystemTest is Test {
         address newIdentityFactoryImpl = address(new ATKIdentityFactoryImplementation(forwarder));
         address newIdentityImplAddr = address(new ATKIdentityImplementation(forwarder));
         address newTokenIdentityImpl = address(new ATKTokenIdentityImplementation(forwarder));
+        address newContractIdentityImpl = address(new ATKContractIdentityImplementation(forwarder));
         address newTokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
         address newTokenFactoryRegistryImpl = address(new ATKTokenFactoryRegistryImplementation(forwarder));
         address newComplianceModuleRegistryImpl = address(new ATKComplianceModuleRegistryImplementation(forwarder));
@@ -649,6 +656,7 @@ contract ATKSystemTest is Test {
             newIdentityFactoryImpl,
             newIdentityImplAddr,
             newTokenIdentityImpl,
+            newContractIdentityImpl,
             newTokenAccessManagerImpl,
             address(newModule),
             newTokenFactoryRegistryImpl,
@@ -702,6 +710,7 @@ contract ATKSystemTest is Test {
         address newIdentityFactoryImpl = address(new ATKIdentityFactoryImplementation(forwarder));
         address newIdentityImpl = address(new ATKIdentityImplementation(forwarder));
         address newTokenIdentityImpl = address(new ATKTokenIdentityImplementation(forwarder));
+        address newContractIdentityImpl = address(new ATKContractIdentityImplementation(forwarder));
         address newTokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
         address newTokenFactoryRegistryImpl = address(new ATKTokenFactoryRegistryImplementation(forwarder));
         address newComplianceModuleRegistryImpl = address(new ATKComplianceModuleRegistryImplementation(forwarder));
@@ -718,6 +727,7 @@ contract ATKSystemTest is Test {
             newIdentityFactoryImpl,
             newIdentityImpl,
             newTokenIdentityImpl,
+            newContractIdentityImpl,
             newTokenAccessManagerImpl,
             address(newModule),
             newTokenFactoryRegistryImpl,
