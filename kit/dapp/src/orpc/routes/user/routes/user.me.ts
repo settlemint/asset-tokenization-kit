@@ -8,7 +8,7 @@
  * @see {@link @/orpc/procedures/auth.router} - Authentication requirements
  */
 
-import { kycProfiles } from "@/lib/db/schema";
+import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm";
@@ -43,28 +43,47 @@ import { eq } from "drizzle-orm";
 export const me = authRouter.user.me
   .use(databaseMiddleware)
   .handler(async ({ context }) => {
-    const user = context.auth.user;
+    const authUser = context.auth.user;
+    const userId = authUser.id;
 
-    // Fetch KYC profile to get firstName and lastName
-    const [kycProfile] = await context.db
+    // Fetch user and KYC profile in a single query with left join
+    const [result] = await context.db
       .select({
-        firstName: kycProfiles.firstName,
-        lastName: kycProfiles.lastName,
+        user: userTable,
+        kyc: {
+          firstName: kycProfiles.firstName,
+          lastName: kycProfiles.lastName,
+        },
       })
-      .from(kycProfiles)
-      .where(eq(kycProfiles.userId, user.id))
+      .from(userTable)
+      .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
+      .where(eq(userTable.id, userId))
       .limit(1);
+
+    if (!result?.user) {
+      // This should not happen as user is authenticated, but handle gracefully
+      return {
+        id: authUser.id,
+        name: authUser.name,
+        email: authUser.email,
+        role: authUser.role,
+        wallet: authUser.wallet,
+        isOnboarded: authUser.isOnboarded,
+        firstName: undefined,
+        lastName: undefined,
+      };
+    }
+
+    const { user, kyc } = result;
 
     return {
       id: user.id,
-      name: kycProfile
-        ? `${kycProfile.firstName} ${kycProfile.lastName}`
-        : "Unknown",
+      name: kyc ? `${kyc.firstName} ${kyc.lastName}` : user.name,
       email: user.email,
-      role: user.role,
-      wallet: user.wallet,
-      isOnboarded: user.isOnboarded,
-      firstName: kycProfile?.firstName,
-      lastName: kycProfile?.lastName,
+      role: user.role ?? "investor",
+      wallet: user.wallet ?? "",
+      isOnboarded: authUser.isOnboarded, // This comes from auth context, not DB
+      firstName: kyc?.firstName,
+      lastName: kyc?.lastName,
     };
   });
