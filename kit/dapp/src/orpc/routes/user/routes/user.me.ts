@@ -8,7 +8,10 @@
  * @see {@link @/orpc/procedures/auth.router} - Authentication requirements
  */
 
+import { kycProfiles } from "@/lib/db/schema";
+import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { eq } from "drizzle-orm";
 
 /**
  * Get current authenticated user information.
@@ -37,15 +40,29 @@ import { authRouter } from "@/orpc/procedures/auth.router";
  * const { data: user, isLoading } = orpc.user.me.useQuery();
  * ```
  */
-export const me = authRouter.user.me.handler(({ context }) => {
-  const user = context.auth.user;
+export const me = authRouter.user.me
+  .use(databaseMiddleware)
+  .handler(async ({ context }) => {
+    const user = context.auth.user;
 
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    wallet: user.wallet,
-    isOnboarded: user.isOnboarded,
-  };
-});
+    // Fetch KYC profile to get firstName and lastName
+    const [kycProfile] = await context.db
+      .select({
+        firstName: kycProfiles.firstName,
+        lastName: kycProfiles.lastName,
+      })
+      .from(kycProfiles)
+      .where(eq(kycProfiles.userId, user.id))
+      .limit(1);
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      wallet: user.wallet,
+      isOnboarded: user.isOnboarded,
+      firstName: kycProfile?.firstName,
+      lastName: kycProfile?.lastName,
+    };
+  });
