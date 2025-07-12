@@ -8,11 +8,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { authClient } from "@/lib/auth/auth.client";
-import { queryClient } from "@/lib/query.client";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -43,6 +42,7 @@ export function PinSetupComponent({
 }: PinSetupComponentProps) {
   const { sessionKey } = useContext(AuthQueryContext);
   const [showConfirmPincode, setShowConfirmPincode] = useState(false);
+  const queryClient = useQueryClient();
 
   const form = useForm<PincodeFormValues>({
     resolver: zodResolver(pincodeSchema),

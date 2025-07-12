@@ -161,6 +161,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         credentials={{
           confirmPassword: true,
         }}
+        settings={{
+          fields: [],
+        }}
+        signUp={{
+          fields: [],
+        }}
         /**
          * Toast notification handler for auth events.
          * Displays success, error, warning, and info messages using Sonner.
