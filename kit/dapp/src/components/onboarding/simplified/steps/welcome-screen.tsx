@@ -1,13 +1,23 @@
-import { onboardingSteps } from "@/components/onboarding/simplified/state-machine";
+import {
+  OnboardingStep,
+  onboardingSteps,
+  updateOnboardingStateMachine,
+} from "@/components/onboarding/simplified/state-machine";
+import { Button } from "@/components/ui/button";
 import { useStore } from "@tanstack/react-store";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, CircleDot } from "lucide-react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
 
 export function WelcomeScreen() {
   const { t } = useTranslation(["onboarding", "general"]);
-  const { initialSteps } = useStore(onboardingSteps);
+  const steps = useStore(onboardingSteps);
   const [isReturningUser] = useLocalStorage("isReturningUser", false);
+
+  const handleWelcomeClick = useCallback(() => {
+    updateOnboardingStateMachine({ welcome: true });
+  }, []);
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
@@ -21,24 +31,56 @@ export function WelcomeScreen() {
             : t("onboarding:welcome.description")}
         </p>
       </div>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold text-primary-foreground">
+            Before you get started...
+          </h2>
+          <p className="text-primary-foreground/80">
+            {isReturningUser
+              ? "We first need to finish the setup process. This ensures your assets are secure, your on-chain identity is established, and you're ready to experience the future of finance."
+              : "We'll guide you through a quick setup process. This ensures your assets are secure, your on-chain identity is established, and you're ready to experience the future of finance."}
+          </p>
+        </div>
+      </div>
+
       <ul className="space-y-4 text-left">
-        {initialSteps.map((step) => (
-          <li key={step} className="flex gap-3">
-            <div className="mt-1 flex-shrink-0">
-              {step ? (
-                <CheckCircle className="w-5 h-5 text-sm-state-success-background" />
-              ) : (
-                <div className="w-5 h-5 rounded-full bg-primary-foreground/20" />
-              )}
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-semibold text-primary-foreground">{step}</h3>
-              <p className="text-sm text-primary-foreground/80">{step}</p>
-            </div>
-          </li>
-        ))}
+        {steps
+          .filter((step) => step.step !== OnboardingStep.welcome)
+          .map((step) => (
+            <li key={step.step} className="flex gap-3">
+              <div className="mt-1 flex-shrink-0">
+                {step.completed ? (
+                  <CheckCircle className="w-5 h-5 text-sm-state-success-background" />
+                ) : (
+                  <CircleDot className="w-5 h-5" />
+                )}
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-semibold text-primary-foreground">
+                  {t(`onboarding:steps.${step.step}.title`, {
+                    defaultValue: step.step,
+                  })}
+                </h3>
+                <p className="text-sm text-primary-foreground/80">
+                  {t(`onboarding:steps.${step.step}.description`, {
+                    defaultValue: step.step,
+                  })}
+                </p>
+              </div>
+            </li>
+          ))}
       </ul>
-      xx
+      <div className="pt-8">
+        <Button
+          size="lg"
+          variant="default"
+          className="min-w-[200px]"
+          onClick={handleWelcomeClick}
+        >
+          Let's go
+        </Button>
+      </div>
     </div>
   );
 }

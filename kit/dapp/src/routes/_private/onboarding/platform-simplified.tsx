@@ -1,10 +1,14 @@
 import {
+  OnboardingStep,
   onboardingSteps,
   updateOnboardingStateMachine,
 } from "@/components/onboarding/simplified/state-machine";
 import { WelcomeScreen } from "@/components/onboarding/simplified/steps/welcome-screen";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createFileRoute } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
+
+const logger = createLogger();
 
 export const Route = createFileRoute(
   "/_private/onboarding/platform-simplified"
@@ -28,7 +32,7 @@ export const Route = createFileRoute(
       );
     }
 
-    updateOnboardingStateMachine(user);
+    updateOnboardingStateMachine({ user });
 
     return { user, systemDetails };
   },
@@ -36,20 +40,14 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { steps, initialSteps, nextStep, currentStep } =
-    useStore(onboardingSteps);
+  const steps = useStore(onboardingSteps);
+  logger.warn("steps", { steps });
+  const currentStep = steps.find((step) => step.current);
 
-  if (!currentStep) {
-    return <WelcomeScreen />;
+  switch (currentStep?.step) {
+    case OnboardingStep.welcome:
+      return <WelcomeScreen />;
+    default:
+      return <div>Unknown step</div>;
   }
-
-  return (
-    <div>
-      <h1>Simplified Onboarding</h1>
-      <p>Steps: {steps.join(", ")}</p>
-      <p>Initial Steps: {initialSteps.join(", ")}</p>
-      <p>Next Step: {nextStep}</p>
-      <p>Current Step: {currentStep}</p>
-    </div>
-  );
 }

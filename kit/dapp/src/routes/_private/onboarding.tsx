@@ -1,17 +1,11 @@
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
-import { updateOnboardingStateMachine } from "@/components/onboarding/simplified/state-machine";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage, useTimeout } from "usehooks-ts";
 
 export const Route = createFileRoute("/_private/onboarding")({
-  loader: async ({ context: { orpc, queryClient } }) => {
-    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
-    updateOnboardingStateMachine(user);
-    return { user };
-  },
   component: OnboardingLayout,
 });
 

@@ -4,64 +4,77 @@ import type {
 } from "@/orpc/routes/user/routes/user.me.schema";
 import { Derived, Store } from "@tanstack/react-store";
 
-export enum OnboardingSteps {
-  WALLET = "WALLET",
-  SYSTEM = "SYSTEM",
-  IDENTITY = "IDENTITY",
+export enum OnboardingStep {
+  welcome = "welcome",
+  wallet = "wallet",
+  system = "system",
+  identity = "identity",
 }
 
 export const onboardingStateMachine = new Store<
-  OnboardingState & { currentStep?: OnboardingSteps }
+  OnboardingState & { welcome: boolean }
 >({
+  welcome: false,
   wallet: false,
   system: false,
   identity: false,
-  currentStep: undefined,
 });
-
-export const initialStepsCache = new Store<OnboardingSteps[]>([]);
 
 export const onboardingSteps = new Derived({
   fn: () => {
-    const steps: OnboardingSteps[] = [];
+    const steps: {
+      step: OnboardingStep;
+      current: boolean;
+      completed: boolean;
+    }[] = [];
 
-    if (!onboardingStateMachine.state.wallet) {
-      steps.push(OnboardingSteps.WALLET);
-    }
-    if (!onboardingStateMachine.state.system) {
-      steps.push(OnboardingSteps.SYSTEM);
-    }
-    if (!onboardingStateMachine.state.identity) {
-      steps.push(OnboardingSteps.IDENTITY);
+    steps.push({
+      step: OnboardingStep.welcome,
+      current: false,
+      completed: onboardingStateMachine.state.welcome,
+    });
+
+    steps.push({
+      step: OnboardingStep.wallet,
+      current: false,
+      completed: onboardingStateMachine.state.wallet,
+    });
+
+    steps.push({
+      step: OnboardingStep.system,
+      current: false,
+      completed: onboardingStateMachine.state.system,
+    });
+
+    steps.push({
+      step: OnboardingStep.identity,
+      current: false,
+      completed: onboardingStateMachine.state.identity,
+    });
+
+    // the current step should be true for the first step that is not completed
+    const currentStep = steps.find((step) => !step.completed);
+    if (currentStep) {
+      currentStep.current = true;
     }
 
-    const initialSteps = initialStepsCache.state;
-    if (initialSteps.length === 0) {
-      initialStepsCache.setState(steps);
-    }
-
-    return {
-      steps,
-      nextStep: steps[0],
-      initialSteps,
-      currentStep: onboardingStateMachine.state.currentStep,
-    };
+    return steps;
   },
-  deps: [onboardingStateMachine, initialStepsCache],
+  deps: [onboardingStateMachine],
 });
 
 onboardingSteps.mount();
 
-export function updateOnboardingStateMachine(user: User) {
+export function updateOnboardingStateMachine({
+  user,
+  welcome = true,
+}: {
+  user?: User;
+  welcome?: boolean;
+}) {
   onboardingStateMachine.setState((prev) => ({
     ...prev,
-    ...user.onboardingState,
-  }));
-}
-
-export function setCurrentStep(step: OnboardingSteps) {
-  onboardingStateMachine.setState((prev) => ({
-    ...prev,
-    currentStep: step,
+    ...user?.onboardingState,
+    welcome,
   }));
 }
