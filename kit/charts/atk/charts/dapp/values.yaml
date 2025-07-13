@@ -280,7 +280,7 @@ job:
       image:
         registry: docker.io
         repository: alpine/git
-        tag: 2.49.0 # Or pin to a specific version
+        tag: v2.49.1 # Or pin to a specific version
         pullPolicy: IfNotPresent
 
   # Pod annotations
