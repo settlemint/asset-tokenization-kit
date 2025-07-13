@@ -17,6 +17,7 @@ import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 import { Route as PrivateOnboardingRouteImport } from './routes/_private/onboarding'
 import { Route as PrivateOnboardedRouteImport } from './routes/_private/_onboarded'
 import { Route as PrivateOnboardingIndexRouteImport } from './routes/_private/onboarding/index'
+import { Route as PrivateOnboardingPlatformSimplifiedRouteImport } from './routes/_private/onboarding/platform-simplified'
 import { Route as PrivateOnboardingPlatformNewRouteImport } from './routes/_private/onboarding/platform-new'
 import { Route as PrivateOnboardingPlatformRouteImport } from './routes/_private/onboarding/platform'
 import { Route as PrivateOnboardingIssuerRouteImport } from './routes/_private/onboarding/issuer'
@@ -64,6 +65,12 @@ const PrivateOnboardingIndexRoute = PrivateOnboardingIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PrivateOnboardingRoute,
 } as any)
+const PrivateOnboardingPlatformSimplifiedRoute =
+  PrivateOnboardingPlatformSimplifiedRouteImport.update({
+    id: '/platform-simplified',
+    path: '/platform-simplified',
+    getParentRoute: () => PrivateOnboardingRoute,
+  } as any)
 const PrivateOnboardingPlatformNewRoute =
   PrivateOnboardingPlatformNewRouteImport.update({
     id: '/platform-new',
@@ -172,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
   '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/onboarding/platform-new': typeof PrivateOnboardingPlatformNewRoute
+  '/onboarding/platform-simplified': typeof PrivateOnboardingPlatformSimplifiedRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
@@ -189,6 +197,7 @@ export interface FileRoutesByTo {
   '/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
   '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/onboarding/platform-new': typeof PrivateOnboardingPlatformNewRoute
+  '/onboarding/platform-simplified': typeof PrivateOnboardingPlatformSimplifiedRoute
   '/onboarding': typeof PrivateOnboardingIndexRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
@@ -210,6 +219,7 @@ export interface FileRoutesById {
   '/_private/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
   '/_private/onboarding/platform': typeof PrivateOnboardingPlatformRoute
   '/_private/onboarding/platform-new': typeof PrivateOnboardingPlatformNewRoute
+  '/_private/onboarding/platform-simplified': typeof PrivateOnboardingPlatformSimplifiedRoute
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
   '/_private/_onboarded/_sidebar/': typeof PrivateOnboardedSidebarIndexRoute
   '/_private/_onboarded/asset-designer/': typeof PrivateOnboardedAssetDesignerIndexRoute
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/onboarding/issuer'
     | '/onboarding/platform'
     | '/onboarding/platform-new'
+    | '/onboarding/platform-simplified'
     | '/onboarding/'
     | '/'
     | '/asset-designer'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/onboarding/issuer'
     | '/onboarding/platform'
     | '/onboarding/platform-new'
+    | '/onboarding/platform-simplified'
     | '/onboarding'
     | '/'
     | '/asset-designer'
@@ -267,6 +279,7 @@ export interface FileRouteTypes {
     | '/_private/onboarding/issuer'
     | '/_private/onboarding/platform'
     | '/_private/onboarding/platform-new'
+    | '/_private/onboarding/platform-simplified'
     | '/_private/onboarding/'
     | '/_private/_onboarded/_sidebar/'
     | '/_private/_onboarded/asset-designer/'
@@ -354,6 +367,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/onboarding/'
       preLoaderRoute: typeof PrivateOnboardingIndexRouteImport
+      parentRoute: typeof PrivateOnboardingRoute
+    }
+    '/_private/onboarding/platform-simplified': {
+      id: '/_private/onboarding/platform-simplified'
+      path: '/platform-simplified'
+      fullPath: '/onboarding/platform-simplified'
+      preLoaderRoute: typeof PrivateOnboardingPlatformSimplifiedRouteImport
       parentRoute: typeof PrivateOnboardingRoute
     }
     '/_private/onboarding/platform-new': {
@@ -538,6 +558,7 @@ interface PrivateOnboardingRouteChildren {
   PrivateOnboardingIssuerRoute: typeof PrivateOnboardingIssuerRoute
   PrivateOnboardingPlatformRoute: typeof PrivateOnboardingPlatformRoute
   PrivateOnboardingPlatformNewRoute: typeof PrivateOnboardingPlatformNewRoute
+  PrivateOnboardingPlatformSimplifiedRoute: typeof PrivateOnboardingPlatformSimplifiedRoute
   PrivateOnboardingIndexRoute: typeof PrivateOnboardingIndexRoute
 }
 
@@ -546,6 +567,8 @@ const PrivateOnboardingRouteChildren: PrivateOnboardingRouteChildren = {
   PrivateOnboardingIssuerRoute: PrivateOnboardingIssuerRoute,
   PrivateOnboardingPlatformRoute: PrivateOnboardingPlatformRoute,
   PrivateOnboardingPlatformNewRoute: PrivateOnboardingPlatformNewRoute,
+  PrivateOnboardingPlatformSimplifiedRoute:
+    PrivateOnboardingPlatformSimplifiedRoute,
   PrivateOnboardingIndexRoute: PrivateOnboardingIndexRoute,
 }
 

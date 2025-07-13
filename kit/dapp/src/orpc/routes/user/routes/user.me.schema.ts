@@ -10,6 +10,14 @@ import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { userRoles } from "@/lib/zod/validators/user-roles";
 import { z } from "zod/v4";
 
+const onboardingStateSchema = z.object({
+  wallet: z.boolean().describe("Whether the user has a wallet"),
+  system: z.boolean().describe("Whether the user has a system"),
+  identity: z.boolean().describe("Whether the user has an identity"),
+});
+
+export type OnboardingState = z.infer<typeof onboardingStateSchema>;
+
 /**
  * Schema for authenticated user information.
  *
@@ -80,6 +88,8 @@ export const UserMeSchema = z.object({
    * Optional as it may not be set if KYC is not completed.
    */
   lastName: z.string().optional(),
+
+  onboardingState: onboardingStateSchema,
 });
 
 /**

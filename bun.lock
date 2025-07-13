@@ -93,6 +93,7 @@
         "@tanstack/react-router-devtools": "1.127.3",
         "@tanstack/react-router-with-query": "1.127.3",
         "@tanstack/react-start": "1.127.6",
+        "@tanstack/react-store": "0.7.3",
         "@tanstack/react-table": "8.21.3",
         "@tanstack/router-cli": "1.127.5",
         "@tanstack/router-devtools": "1.127.3",
@@ -129,6 +130,7 @@
         "tailwind-merge": "3.3.1",
         "tailwindcss": "4.1.11",
         "tw-animate-css": "1.3.5",
+        "usehooks-ts": "3.1.1",
         "vaul": "1.1.2",
         "zod": "3.25.76",
       },
@@ -3711,6 +3713,8 @@
     "use-sidecar": ["use-sidecar@1.1.3", "", { "dependencies": { "detect-node-es": "^1.1.0", "tslib": "^2.0.0" }, "peerDependencies": { "@types/react": "*", "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc" }, "optionalPeers": ["@types/react"] }, "sha512-Fedw0aZvkhynoPYlA5WXrMCAMm+nSWdZt6lzJQ7Ok8S6Q+VsHmHpRWndVRJ8Be0ZbkfPc5LRYH+5XrzXcEeLRQ=="],
 
     "use-sync-external-store": ["use-sync-external-store@1.5.0", "", { "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-Rb46I4cGGVBmjamjphe8L/UnvJD+uPPtTkNvX5mZgqdbavhI4EbgIWJiIHXJ8bc/i9EQGPRh4DwEURJ552Do0A=="],
+
+    "usehooks-ts": ["usehooks-ts@3.1.1", "", { "dependencies": { "lodash.debounce": "^4.0.8" }, "peerDependencies": { "react": "^16.8.0  || ^17 || ^18 || ^19 || ^19.0.0-rc" } }, "sha512-I4diPp9Cq6ieSUH2wu+fDAVQO43xwtulo+fKEidHUwZPnYImbtkTjzIJYcDcJqxgmX31GVqNFURodvcgHcW0pA=="],
 
     "utf8": ["utf8@3.0.0", "", {}, "sha512-E8VjFIQ/TyQgp+TZfS6l8yp/xWppSAHzidGiRrqe4bK4XP9pTRyKFgGJpO3SN7zdX4DeomTrwaseCHovfpFcqQ=="],
 
