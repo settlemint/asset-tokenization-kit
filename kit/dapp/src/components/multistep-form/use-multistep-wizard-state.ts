@@ -151,7 +151,6 @@ export function useMultiStepWizardState({
 
   const reset = useCallback(() => {
     if (enableUrlPersistence) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [name]: _unused, ...rest } = search;
       // Note: Using 'as never' here due to TanStack Router's complex generic types
       void navigate({
