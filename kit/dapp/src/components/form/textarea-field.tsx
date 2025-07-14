@@ -1,4 +1,4 @@
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useFieldContext } from "@/hooks/use-form-contexts";
 import { cn } from "@/lib/utils";
 import {
@@ -6,30 +6,27 @@ import {
   FieldErrors,
   FieldLabel,
   FieldLayout,
-  withPostfix,
 } from "./field";
 
-export function TextField({
+export function TextAreaField({
   label,
-  postfix,
+  rows = 4,
   description,
   required = false,
 }: {
   label: string;
-  postfix?: string;
+  rows?: number;
   description?: string;
   required?: boolean;
 }) {
   // The `Field` infers that it should have a `value` type of `string`
   const field = useFieldContext<string>();
-  const InputWithPostfix = withPostfix(Input, postfix);
 
   return (
     <FieldLayout>
       <FieldLabel htmlFor={field.name} label={label} required={required} />
       <FieldDescription description={description} />
-      <InputWithPostfix
-        type="text"
+      <Textarea
         id={field.name}
         value={field.state.value}
         onChange={(e) => {
@@ -40,6 +37,7 @@ export function TextField({
             field.state.meta.errors.length > 0 &&
             "border-destructive"
         )}
+        rows={rows}
       />
       <FieldErrors {...field.state.meta} />
     </FieldLayout>
