@@ -7,24 +7,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
-import { orpc } from "@/orpc";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, Loader2, Pause, Play } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { useForm, type ControllerRenderProps } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { z } from "zod/v4";
-import {
   Form,
   FormControl,
   FormDescription,
@@ -34,6 +16,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { orpc } from "@/orpc/orpc-client";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { ChevronDown, Loader2, Pause, Play } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { useForm, type ControllerRenderProps } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { z } from "zod/v4";
 
 /**
  * Verification form schema for pause/unpause operations

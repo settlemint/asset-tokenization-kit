@@ -10,7 +10,7 @@ import {
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { cn } from "@/lib/utils";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";

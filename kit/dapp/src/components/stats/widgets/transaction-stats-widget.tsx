@@ -1,3 +1,4 @@
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import {
   Card,
   CardContent,
@@ -5,8 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 

@@ -9,7 +9,7 @@ import {
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { TokenTypeEnum } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

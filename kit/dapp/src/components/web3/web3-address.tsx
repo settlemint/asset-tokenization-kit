@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Web3Avatar } from "@/components/web3/web3-avatar";
 import { cn } from "@/lib/utils";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { memo, useCallback, useMemo } from "react";
 

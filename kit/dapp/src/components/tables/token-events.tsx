@@ -26,7 +26,7 @@ import {
   isEthereumAddress,
 } from "@/lib/zod/validators/ethereum-address";
 import { isEthereumHash } from "@/lib/zod/validators/ethereum-hash";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import type { Event as TokenEvent } from "@/orpc/routes/token/routes/token.events.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";
