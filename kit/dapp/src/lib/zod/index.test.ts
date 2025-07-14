@@ -1,5 +1,5 @@
 import { describe, expect, it, mock } from "bun:test";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { safeParse } from "./index";
 
 process.env.CI = "true";

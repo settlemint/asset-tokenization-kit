@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { z } from "zod/v4";
+import { z } from "zod";
 import {
   type AssetType,
   AssetTypeEnum,

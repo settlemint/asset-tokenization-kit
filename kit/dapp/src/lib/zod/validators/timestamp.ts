@@ -8,7 +8,7 @@
  * @module TimestampValidation
  */
 import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Creates a Zod schema that validates and normalizes timestamps in various formats.
