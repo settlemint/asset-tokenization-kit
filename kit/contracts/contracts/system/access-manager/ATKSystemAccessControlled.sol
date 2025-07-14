@@ -61,10 +61,13 @@ abstract contract ATKSystemAccessControlled {
         }
 
         // Check if caller has any of the module roles
-        for (uint256 i = 0; i < moduleRoles.length; i++) {
+        for (uint256 i = 0; i < moduleRoles.length;) {
             if (_systemAccessManager.hasRole(moduleRoles[i], msg.sender)) {
                 _;
                 return;
+            }
+            unchecked {
+                ++i;
             }
         }
 

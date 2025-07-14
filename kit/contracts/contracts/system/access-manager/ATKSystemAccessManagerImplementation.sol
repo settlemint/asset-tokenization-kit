@@ -92,10 +92,13 @@ contract ATKSystemAccessManagerImplementation is Initializable, AccessControlUpg
         }
 
         // Check if caller has any of the module roles
-        for (uint256 i = 0; i < moduleRoles.length; i++) {
+        for (uint256 i = 0; i < moduleRoles.length;) {
             if (hasRole(moduleRoles[i], _msgSender())) {
                 _;
                 return;
+            }
+            unchecked {
+                ++i;
             }
         }
 
