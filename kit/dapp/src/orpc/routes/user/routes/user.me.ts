@@ -73,7 +73,7 @@ export const me = authRouter.user.me
       ),
     ]);
 
-    const { kyc, user } = userQueryResult ?? {};
+    const { kyc } = userQueryResult ?? {};
 
     return {
       id: authUser.id,
@@ -85,12 +85,13 @@ export const me = authRouter.user.me
       role: authUser.role,
       wallet: authUser.wallet,
       isOnboarded: authUser.isOnboarded,
-      firstName: kyc?.firstName ?? "",
-      lastName: kyc?.lastName ?? "",
+      firstName: kyc?.firstName,
+      lastName: kyc?.lastName,
       onboardingState: {
         wallet: !!authUser.wallet,
-        walletSecurity: user?.pincodeEnabled || user?.twoFactorEnabled || false,
-        walletRecoveryCodes: !!user?.secretCodeVerificationId,
+        walletSecurity:
+          authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
+        walletRecoveryCodes: !!authUser.secretCodeVerificationId,
         system: !!systemAddress,
         identity: !!userQueryResult?.kyc,
       },
