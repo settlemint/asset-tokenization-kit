@@ -140,6 +140,10 @@ export const OnboardingLayout: FunctionComponent<{
     return steps;
   }, [t, currentStep, children]);
 
+  const defaultStepIndex = useMemo(() => {
+    return steps.findIndex((step) => step.id === currentStep);
+  }, [steps, currentStep]);
+
   const onStepChange = useCallback(() => {
     router.invalidate().catch((err: unknown) => {
       logger.error("Error invalidating router", err);
@@ -151,12 +155,14 @@ export const OnboardingLayout: FunctionComponent<{
 
   return (
     <MultiStepWizard
-      name="Let's get you set up!"
+      name="onboarding"
+      title="Let's get you set up!"
       description="We'll set up your wallet and will configure your identity on the blockchain to use this platform."
       steps={steps}
       groups={groups}
       onStepChange={onStepChange}
       onComplete={onComplete}
+      defaultStepIndex={defaultStepIndex}
     />
   );
 };
