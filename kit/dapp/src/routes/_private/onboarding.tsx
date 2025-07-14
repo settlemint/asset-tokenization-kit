@@ -42,7 +42,7 @@ function OnboardingLayout() {
         <div className="w-full max-w-4xl">
           <div className="rounded-xl shadow-lg overflow-hidden">
             <div
-              className="p-12"
+              className=""
               style={{
                 background: "var(--sm-wizard-sidebar-gradient)",
                 backgroundSize: "cover",
