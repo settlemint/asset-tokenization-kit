@@ -11,6 +11,8 @@
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { call } from "@orpc/server";
 import { eq } from "drizzle-orm";
 
 /**
@@ -42,36 +44,39 @@ import { eq } from "drizzle-orm";
  */
 export const me = authRouter.user.me
   .use(databaseMiddleware)
-  .handler(async ({ context }) => {
+  .handler(async ({ context, errors }) => {
     const authUser = context.auth.user;
     const userId = authUser.id;
 
     // Fetch user and KYC profile in a single query with left join
-    const [result] = await context.db
-      .select({
-        user: userTable,
-        kyc: {
-          firstName: kycProfiles.firstName,
-          lastName: kycProfiles.lastName,
+    const [[result], systemAddress] = await Promise.all([
+      context.db
+        .select({
+          user: userTable,
+          kyc: {
+            firstName: kycProfiles.firstName,
+            lastName: kycProfiles.lastName,
+          },
+        })
+        .from(userTable)
+        .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
+        .where(eq(userTable.id, userId))
+        .limit(1),
+      call(
+        read,
+        {
+          key: "SYSTEM_ADDRESS",
         },
-      })
-      .from(userTable)
-      .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
-      .where(eq(userTable.id, userId))
-      .limit(1);
+        {
+          context,
+        }
+      ),
+    ]);
 
     if (!result?.user) {
-      // This should not happen as user is authenticated, but handle gracefully
-      return {
-        id: authUser.id,
-        name: authUser.name,
-        email: authUser.email,
-        role: authUser.role,
-        wallet: authUser.wallet,
-        isOnboarded: authUser.isOnboarded,
-        firstName: undefined,
-        lastName: undefined,
-      };
+      throw errors.NOT_FOUND({
+        message: "User not found, this should not happen",
+      });
     }
 
     const { user, kyc } = result;
@@ -88,5 +93,10 @@ export const me = authRouter.user.me
       isOnboarded: authUser.isOnboarded, // This comes from auth context, not DB
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
+      onboardingState: {
+        wallet: !!user.wallet,
+        system: !!systemAddress,
+        identity: !!kyc,
+      },
     };
   });

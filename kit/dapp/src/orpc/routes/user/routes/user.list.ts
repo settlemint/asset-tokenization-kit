@@ -1,11 +1,13 @@
 import { isOnboarded } from "@/lib/auth/plugins/utils";
-import { user } from "@/lib/db/schema";
+import { user, kycProfiles } from "@/lib/db/schema";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getUserRole } from "@/lib/zod/validators/user-roles";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { read } from "@/orpc/routes/settings/routes/settings.read";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import { call } from "@orpc/server";
 import { asc, desc, eq, type AnyColumn } from "drizzle-orm";
 
 /**
@@ -63,8 +65,24 @@ export const list = authRouter.user.list
       (user[orderBy as keyof typeof user] as AnyColumn | undefined) ??
       user.createdAt;
 
-    // Execute paginated query with sorting
-    const baseQuery = context.db.select().from(user);
+    // Get system address once for all users
+    const systemAddress = await call(
+      read,
+      { key: "SYSTEM_ADDRESS" },
+      { context }
+    );
+
+    // Execute paginated query with sorting and KYC data
+    const baseQuery = context.db
+      .select({
+        user: user,
+        kyc: {
+          firstName: kycProfiles.firstName,
+          lastName: kycProfiles.lastName,
+        },
+      })
+      .from(user)
+      .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id));
 
     const result = await (
       searchByAddress
@@ -75,15 +93,28 @@ export const list = authRouter.user.list
       .limit(limit ?? 1000)
       .offset(offset);
 
-    // Transform results to include human-readable roles
-    return result.map((user) => {
+    // Transform results to include human-readable roles and onboarding state
+    return result.map(({ user, kyc }) => {
       if (!user.wallet) {
         throw new Error(`User ${user.id} has no wallet`);
       }
       return {
-        ...user,
-        isOnboarded: isOnboarded({ ...user, wallet: user.wallet }),
+        id: user.id,
+        name:
+          kyc?.firstName && kyc.lastName
+            ? `${kyc.firstName} ${kyc.lastName}`
+            : user.name,
+        email: user.email,
         role: getUserRole(user.role),
+        wallet: user.wallet,
+        isOnboarded: isOnboarded({ ...user, wallet: user.wallet }),
+        firstName: kyc?.firstName,
+        lastName: kyc?.lastName,
+        onboardingState: {
+          wallet: !!user.wallet,
+          system: !!systemAddress,
+          identity: !!kyc,
+        },
       } as User;
     });
   });
