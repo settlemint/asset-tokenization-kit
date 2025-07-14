@@ -43,6 +43,7 @@ export const SelectAssetType = withForm({
           <field.RadioField
             label={t("wizard.steps.asset-type.title")}
             options={options}
+            variant="card"
           />
         )}
       />
