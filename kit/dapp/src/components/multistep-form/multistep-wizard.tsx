@@ -25,6 +25,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   defaultValues = {},
   showProgressBar = true,
   allowStepSkipping = false,
+  onStepChange,
 }: MultiStepWizardProps<TFormData>) {
   logger.debug("MultiStepWizard initialization", {
     name,
@@ -115,8 +116,10 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
       // 1. Any previous step (stepIndex < safeCurrentStepIndex)
       // 2. Completed steps
       // 3. The next step after current
+      // 4. Steps which have a component
       const targetStep = steps[stepIndex];
       if (!targetStep) return false;
+      if (!targetStep.component) return false;
 
       return (
         stepIndex < safeCurrentStepIndex || // Allow going back to any previous step
@@ -131,22 +134,31 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     (stepIndex: number) => {
       if (canNavigateToStep(stepIndex)) {
         setCurrentStepIndex(stepIndex);
+        if (typeof onStepChange === "function") {
+          onStepChange(stepIndex);
+        }
       }
     },
-    [canNavigateToStep, setCurrentStepIndex]
+    [canNavigateToStep, setCurrentStepIndex, onStepChange]
   );
 
   const nextStep = useCallback(() => {
     if (safeCurrentStepIndex < steps.length - 1) {
       setCurrentStepIndex(Number(safeCurrentStepIndex) + 1);
+      if (typeof onStepChange === "function") {
+        onStepChange(Number(safeCurrentStepIndex) + 1);
+      }
     }
-  }, [safeCurrentStepIndex, steps.length, setCurrentStepIndex]);
+  }, [safeCurrentStepIndex, steps.length, setCurrentStepIndex, onStepChange]);
 
   const previousStep = useCallback(() => {
     if (safeCurrentStepIndex > 0) {
       setCurrentStepIndex(safeCurrentStepIndex - 1);
+      if (typeof onStepChange === "function") {
+        onStepChange(safeCurrentStepIndex - 1);
+      }
     }
-  }, [safeCurrentStepIndex, setCurrentStepIndex]);
+  }, [safeCurrentStepIndex, setCurrentStepIndex, onStepChange]);
 
   const markStepComplete = useCallback(
     (stepId: string) => {

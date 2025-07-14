@@ -137,6 +137,7 @@ export interface MultiStepWizardProps<TFormData = unknown> {
   defaultValues?: Partial<TFormData>;
   showProgressBar?: boolean;
   allowStepSkipping?: boolean;
+  onStepChange?: (stepIndex: number) => void;
 }
 
 export interface StepValidationResult {

@@ -226,6 +226,17 @@ export default defineConfig([
           },
         },
       ],
+      "@typescript-eslint/prefer-nullish-coalescing": [
+        "error",
+        {
+          ignorePrimitives: {
+            bigint: false,
+            boolean: true,
+            number: false,
+            string: false,
+          },
+        },
+      ],
 
       // ========================================================================
       // TYPESCRIPT RULES - DISABLED/RELAXED
