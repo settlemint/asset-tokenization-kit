@@ -25,6 +25,8 @@ import { Route as PrivateOnboardedSidebarRouteImport } from './routes/_private/_
 import { Route as PrivateOnboardedAssetDesignerIndexRouteImport } from './routes/_private/_onboarded/asset-designer/index'
 import { Route as PrivateOnboardedSidebarIndexRouteImport } from './routes/_private/_onboarded/_sidebar/index'
 import { Route as PrivateOnboardingPlatformsWelcomeRouteImport } from './routes/_private/onboarding/platforms/welcome'
+import { Route as PrivateOnboardingPlatformsWalletSecurityRouteImport } from './routes/_private/onboarding/platforms/wallet-security'
+import { Route as PrivateOnboardingPlatformsWalletRecoveryCodesRouteImport } from './routes/_private/onboarding/platforms/wallet-recovery-codes'
 import { Route as PrivateOnboardingPlatformsWalletRouteImport } from './routes/_private/onboarding/platforms/wallet'
 import { Route as PrivateOnboardingPlatformsSystemRouteImport } from './routes/_private/onboarding/platforms/system'
 import { Route as PrivateOnboardingPlatformsIdentityRouteImport } from './routes/_private/onboarding/platforms/identity'
@@ -111,6 +113,18 @@ const PrivateOnboardingPlatformsWelcomeRoute =
   PrivateOnboardingPlatformsWelcomeRouteImport.update({
     id: '/platforms/welcome',
     path: '/platforms/welcome',
+    getParentRoute: () => PrivateOnboardingRoute,
+  } as any)
+const PrivateOnboardingPlatformsWalletSecurityRoute =
+  PrivateOnboardingPlatformsWalletSecurityRouteImport.update({
+    id: '/platforms/wallet-security',
+    path: '/platforms/wallet-security',
+    getParentRoute: () => PrivateOnboardingRoute,
+  } as any)
+const PrivateOnboardingPlatformsWalletRecoveryCodesRoute =
+  PrivateOnboardingPlatformsWalletRecoveryCodesRouteImport.update({
+    id: '/platforms/wallet-recovery-codes',
+    path: '/platforms/wallet-recovery-codes',
     getParentRoute: () => PrivateOnboardingRoute,
   } as any)
 const PrivateOnboardingPlatformsWalletRoute =
@@ -204,6 +218,8 @@ export interface FileRoutesByFullPath {
   '/onboarding/platforms/identity': typeof PrivateOnboardingPlatformsIdentityRoute
   '/onboarding/platforms/system': typeof PrivateOnboardingPlatformsSystemRoute
   '/onboarding/platforms/wallet': typeof PrivateOnboardingPlatformsWalletRoute
+  '/onboarding/platforms/wallet-recovery-codes': typeof PrivateOnboardingPlatformsWalletRecoveryCodesRoute
+  '/onboarding/platforms/wallet-security': typeof PrivateOnboardingPlatformsWalletSecurityRoute
   '/onboarding/platforms/welcome': typeof PrivateOnboardingPlatformsWelcomeRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
@@ -225,6 +241,8 @@ export interface FileRoutesByTo {
   '/onboarding/platforms/identity': typeof PrivateOnboardingPlatformsIdentityRoute
   '/onboarding/platforms/system': typeof PrivateOnboardingPlatformsSystemRoute
   '/onboarding/platforms/wallet': typeof PrivateOnboardingPlatformsWalletRoute
+  '/onboarding/platforms/wallet-recovery-codes': typeof PrivateOnboardingPlatformsWalletRecoveryCodesRoute
+  '/onboarding/platforms/wallet-security': typeof PrivateOnboardingPlatformsWalletSecurityRoute
   '/onboarding/platforms/welcome': typeof PrivateOnboardingPlatformsWelcomeRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
@@ -250,6 +268,8 @@ export interface FileRoutesById {
   '/_private/onboarding/platforms/identity': typeof PrivateOnboardingPlatformsIdentityRoute
   '/_private/onboarding/platforms/system': typeof PrivateOnboardingPlatformsSystemRoute
   '/_private/onboarding/platforms/wallet': typeof PrivateOnboardingPlatformsWalletRoute
+  '/_private/onboarding/platforms/wallet-recovery-codes': typeof PrivateOnboardingPlatformsWalletRecoveryCodesRoute
+  '/_private/onboarding/platforms/wallet-security': typeof PrivateOnboardingPlatformsWalletSecurityRoute
   '/_private/onboarding/platforms/welcome': typeof PrivateOnboardingPlatformsWelcomeRoute
   '/_private/_onboarded/_sidebar/': typeof PrivateOnboardedSidebarIndexRoute
   '/_private/_onboarded/asset-designer/': typeof PrivateOnboardedAssetDesignerIndexRoute
@@ -274,6 +294,8 @@ export interface FileRouteTypes {
     | '/onboarding/platforms/identity'
     | '/onboarding/platforms/system'
     | '/onboarding/platforms/wallet'
+    | '/onboarding/platforms/wallet-recovery-codes'
+    | '/onboarding/platforms/wallet-security'
     | '/onboarding/platforms/welcome'
     | '/'
     | '/asset-designer'
@@ -295,6 +317,8 @@ export interface FileRouteTypes {
     | '/onboarding/platforms/identity'
     | '/onboarding/platforms/system'
     | '/onboarding/platforms/wallet'
+    | '/onboarding/platforms/wallet-recovery-codes'
+    | '/onboarding/platforms/wallet-security'
     | '/onboarding/platforms/welcome'
     | '/'
     | '/asset-designer'
@@ -319,6 +343,8 @@ export interface FileRouteTypes {
     | '/_private/onboarding/platforms/identity'
     | '/_private/onboarding/platforms/system'
     | '/_private/onboarding/platforms/wallet'
+    | '/_private/onboarding/platforms/wallet-recovery-codes'
+    | '/_private/onboarding/platforms/wallet-security'
     | '/_private/onboarding/platforms/welcome'
     | '/_private/_onboarded/_sidebar/'
     | '/_private/_onboarded/asset-designer/'
@@ -462,6 +488,20 @@ declare module '@tanstack/react-router' {
       path: '/platforms/welcome'
       fullPath: '/onboarding/platforms/welcome'
       preLoaderRoute: typeof PrivateOnboardingPlatformsWelcomeRouteImport
+      parentRoute: typeof PrivateOnboardingRoute
+    }
+    '/_private/onboarding/platforms/wallet-security': {
+      id: '/_private/onboarding/platforms/wallet-security'
+      path: '/platforms/wallet-security'
+      fullPath: '/onboarding/platforms/wallet-security'
+      preLoaderRoute: typeof PrivateOnboardingPlatformsWalletSecurityRouteImport
+      parentRoute: typeof PrivateOnboardingRoute
+    }
+    '/_private/onboarding/platforms/wallet-recovery-codes': {
+      id: '/_private/onboarding/platforms/wallet-recovery-codes'
+      path: '/platforms/wallet-recovery-codes'
+      fullPath: '/onboarding/platforms/wallet-recovery-codes'
+      preLoaderRoute: typeof PrivateOnboardingPlatformsWalletRecoveryCodesRouteImport
       parentRoute: typeof PrivateOnboardingRoute
     }
     '/_private/onboarding/platforms/wallet': {
@@ -622,6 +662,8 @@ interface PrivateOnboardingRouteChildren {
   PrivateOnboardingPlatformsIdentityRoute: typeof PrivateOnboardingPlatformsIdentityRoute
   PrivateOnboardingPlatformsSystemRoute: typeof PrivateOnboardingPlatformsSystemRoute
   PrivateOnboardingPlatformsWalletRoute: typeof PrivateOnboardingPlatformsWalletRoute
+  PrivateOnboardingPlatformsWalletRecoveryCodesRoute: typeof PrivateOnboardingPlatformsWalletRecoveryCodesRoute
+  PrivateOnboardingPlatformsWalletSecurityRoute: typeof PrivateOnboardingPlatformsWalletSecurityRoute
   PrivateOnboardingPlatformsWelcomeRoute: typeof PrivateOnboardingPlatformsWelcomeRoute
 }
 
@@ -635,6 +677,10 @@ const PrivateOnboardingRouteChildren: PrivateOnboardingRouteChildren = {
     PrivateOnboardingPlatformsIdentityRoute,
   PrivateOnboardingPlatformsSystemRoute: PrivateOnboardingPlatformsSystemRoute,
   PrivateOnboardingPlatformsWalletRoute: PrivateOnboardingPlatformsWalletRoute,
+  PrivateOnboardingPlatformsWalletRecoveryCodesRoute:
+    PrivateOnboardingPlatformsWalletRecoveryCodesRoute,
+  PrivateOnboardingPlatformsWalletSecurityRoute:
+    PrivateOnboardingPlatformsWalletSecurityRoute,
   PrivateOnboardingPlatformsWelcomeRoute:
     PrivateOnboardingPlatformsWelcomeRoute,
 }

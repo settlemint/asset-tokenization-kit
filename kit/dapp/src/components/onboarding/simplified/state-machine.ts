@@ -1,17 +1,21 @@
 import type {
+  CurrentUser,
   OnboardingState,
-  User,
 } from "@/orpc/routes/user/routes/user.me.schema";
 import { Derived, Store } from "@tanstack/react-store";
 
 export enum OnboardingStep {
   wallet = "wallet",
+  walletSecurity = "wallet-security",
+  walletRecoveryCodes = "wallet-recovery-codes",
   system = "system",
   identity = "identity",
 }
 
 export const onboardingStateMachine = new Store<OnboardingState>({
   wallet: false,
+  walletSecurity: false,
+  walletRecoveryCodes: false,
   system: false,
   identity: false,
 });
@@ -28,6 +32,18 @@ export const onboardingSteps = new Derived({
       step: OnboardingStep.wallet,
       current: false,
       completed: onboardingStateMachine.state.wallet,
+    });
+
+    steps.push({
+      step: OnboardingStep.walletSecurity,
+      current: false,
+      completed: onboardingStateMachine.state.walletSecurity,
+    });
+
+    steps.push({
+      step: OnboardingStep.walletRecoveryCodes,
+      current: false,
+      completed: onboardingStateMachine.state.walletRecoveryCodes,
     });
 
     steps.push({
@@ -55,7 +71,7 @@ export const onboardingSteps = new Derived({
 
 onboardingSteps.mount();
 
-export function updateOnboardingStateMachine({ user }: { user: User }) {
+export function updateOnboardingStateMachine({ user }: { user: CurrentUser }) {
   onboardingStateMachine.setState((prev) => ({
     ...prev,
     ...user.onboardingState,

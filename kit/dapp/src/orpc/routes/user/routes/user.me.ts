@@ -94,7 +94,9 @@ export const me = authRouter.user.me
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
       onboardingState: {
-        wallet: !!user.wallet,
+        wallet: !!authUser.wallet,
+        walletSecurity: user.pincodeEnabled || user.twoFactorEnabled,
+        walletRecoveryCodes: !!user.secretCodeVerificationId,
         system: !!systemAddress,
         identity: !!kyc,
       },
