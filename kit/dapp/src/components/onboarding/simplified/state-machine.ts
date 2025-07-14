@@ -5,16 +5,12 @@ import type {
 import { Derived, Store } from "@tanstack/react-store";
 
 export enum OnboardingStep {
-  welcome = "welcome",
   wallet = "wallet",
   system = "system",
   identity = "identity",
 }
 
-export const onboardingStateMachine = new Store<
-  OnboardingState & { welcome: boolean }
->({
-  welcome: false,
+export const onboardingStateMachine = new Store<OnboardingState>({
   wallet: false,
   system: false,
   identity: false,
@@ -27,12 +23,6 @@ export const onboardingSteps = new Derived({
       current: boolean;
       completed: boolean;
     }[] = [];
-
-    steps.push({
-      step: OnboardingStep.welcome,
-      current: false,
-      completed: onboardingStateMachine.state.welcome,
-    });
 
     steps.push({
       step: OnboardingStep.wallet,
@@ -65,16 +55,11 @@ export const onboardingSteps = new Derived({
 
 onboardingSteps.mount();
 
-export function updateOnboardingStateMachine({
-  user,
-  welcome = true,
-}: {
-  user?: User;
-  welcome?: boolean;
-}) {
+export function updateOnboardingStateMachine({ user }: { user: User }) {
   onboardingStateMachine.setState((prev) => ({
     ...prev,
-    ...user?.onboardingState,
-    welcome,
+    ...user.onboardingState,
   }));
+  const currentStep = onboardingSteps.state.find((step) => step.current);
+  return currentStep?.step ?? OnboardingStep.wallet;
 }

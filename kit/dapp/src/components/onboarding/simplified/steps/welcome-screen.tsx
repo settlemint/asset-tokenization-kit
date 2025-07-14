@@ -1,12 +1,8 @@
-import {
-  OnboardingStep,
-  onboardingSteps,
-  updateOnboardingStateMachine,
-} from "@/components/onboarding/simplified/state-machine";
+import { onboardingSteps } from "@/components/onboarding/simplified/state-machine";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { CheckCircle, CircleDot } from "lucide-react";
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
 
@@ -14,10 +10,7 @@ export function WelcomeScreen() {
   const { t } = useTranslation(["onboarding", "general"]);
   const steps = useStore(onboardingSteps);
   const [isReturningUser] = useLocalStorage("isReturningUser", false);
-
-  const handleWelcomeClick = useCallback(() => {
-    updateOnboardingStateMachine({ welcome: true });
-  }, []);
+  const navigate = useNavigate();
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
@@ -45,38 +38,36 @@ export function WelcomeScreen() {
       </div>
 
       <ul className="space-y-4 text-left">
-        {steps
-          .filter((step) => step.step !== OnboardingStep.welcome)
-          .map((step) => (
-            <li key={step.step} className="flex gap-3">
-              <div className="mt-1 flex-shrink-0">
-                {step.completed ? (
-                  <CheckCircle className="w-5 h-5 text-sm-state-success-background" />
-                ) : (
-                  <CircleDot className="w-5 h-5" />
-                )}
-              </div>
-              <div className="space-y-1">
-                <h3 className="font-semibold text-primary-foreground">
-                  {t(`onboarding:steps.${step.step}.title`, {
-                    defaultValue: step.step,
-                  })}
-                </h3>
-                <p className="text-sm text-primary-foreground/80">
-                  {t(`onboarding:steps.${step.step}.description`, {
-                    defaultValue: step.step,
-                  })}
-                </p>
-              </div>
-            </li>
-          ))}
+        {steps.map((step) => (
+          <li key={step.step} className="flex gap-3">
+            <div className="mt-1 flex-shrink-0">
+              {step.completed ? (
+                <CheckCircle className="w-5 h-5 text-sm-state-success-background" />
+              ) : (
+                <CircleDot className="w-5 h-5" />
+              )}
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-semibold text-primary-foreground">
+                {t(`onboarding:steps.${step.step}.title`, {
+                  defaultValue: step.step,
+                })}
+              </h3>
+              <p className="text-sm text-primary-foreground/80">
+                {t(`onboarding:steps.${step.step}.description`, {
+                  defaultValue: step.step,
+                })}
+              </p>
+            </div>
+          </li>
+        ))}
       </ul>
       <div className="pt-8">
         <Button
           size="lg"
           variant="default"
           className="min-w-[200px]"
-          onClick={handleWelcomeClick}
+          onClick={async () => navigate({ to: "/onboarding/platforms/wallet" })}
         >
           Let's go
         </Button>
