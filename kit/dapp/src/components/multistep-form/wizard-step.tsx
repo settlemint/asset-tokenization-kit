@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { cn } from "@/lib/utils";
 import { formatValidationError } from "@/lib/utils/format-validation-error";
+import { noop } from "@/lib/utils/noop";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -21,25 +22,14 @@ interface WizardStepProps {
   className?: string;
 }
 
-// Default no-op functions to avoid creating new functions in render
-const noop = () => {
-  /* no-op */
-};
-
 export function WizardStep({ className }: WizardStepProps) {
-  // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
   const [isValidating, setIsValidating] = useState(false);
   const [isStepVisible, setIsStepVisible] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
 
-  // Get context - this hook must always be called
   const context = useWizardContext();
 
-  // Check if context is valid - context should always be available due to useWizardContext hook
-  const contextError: string | null = null;
-
-  // Extract context values safely
   const {
     currentStepIndex = 0,
     steps = [],
@@ -51,13 +41,10 @@ export function WizardStep({ className }: WizardStepProps) {
     markStepComplete = noop,
     markStepError = noop,
     clearStepError = noop,
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   } = context || {};
 
-  // Get current step safely
   const currentStep = steps[currentStepIndex];
 
-  // Set up mutation hook (must always be called to satisfy Rules of Hooks)
   const mutation = useStreamingMutation({
     mutationOptions: {
       mutationKey: [currentStep?.mutation?.mutationKey ?? "no-mutation"],
@@ -67,10 +54,8 @@ export function WizardStep({ className }: WizardStepProps) {
     },
   });
 
-  // Only use mutation if the step actually has one
   const shouldUseMutation = !!currentStep?.mutation;
 
-  // Use the custom hook for filtering logic
   const { matchingFields, matchingGroups, totalResultCount, groupCounts } =
     useWizardFiltering({
       currentStep,
@@ -79,12 +64,10 @@ export function WizardStep({ className }: WizardStepProps) {
       selectedGroupIds,
     });
 
-  // Clear search callback
   const handleClearSearch = useCallback(() => {
     setSearchQuery("");
   }, []);
 
-  // Clear search and group filters when step changes
   useEffect(() => {
     setSearchQuery("");
     setSelectedGroupIds([]);
@@ -99,7 +82,6 @@ export function WizardStep({ className }: WizardStepProps) {
     totalResultCount,
   });
 
-  // Define handleNext with useCallback before any conditional returns
   const handleNext = useCallback(async () => {
     if (!currentStep) return;
 
@@ -189,19 +171,6 @@ export function WizardStep({ className }: WizardStepProps) {
     void checkStepVisibility();
   }, [currentStep, form?.state?.values, nextStep]);
 
-  // NOW handle conditional rendering after all hooks have been called
-  // contextError is always null, but keeping this for potential future use
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (contextError) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-center text-destructive">{contextError}</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   if (!currentStep) {
     logger.error("No step found for current index", {
       currentStepIndex,
@@ -234,7 +203,6 @@ export function WizardStep({ className }: WizardStepProps) {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!currentStep || !isStepVisible) {
     return null;
   }
