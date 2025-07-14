@@ -41,7 +41,7 @@ export function WizardStep({ className }: WizardStepProps) {
     markStepComplete = noop,
     markStepError = noop,
     clearStepError = noop,
-  } = context || {};
+  } = context;
 
   const currentStep = steps[currentStepIndex];
 
