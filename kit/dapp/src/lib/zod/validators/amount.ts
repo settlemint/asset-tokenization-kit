@@ -7,7 +7,7 @@
  * and other numerical quantities in financial applications.
  * @module AmountValidation
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Configuration options for amount validation.

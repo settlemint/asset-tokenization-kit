@@ -5,7 +5,7 @@
  * that are shared across different mutations involving transactions.
  */
 
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Transaction tracking messages with default English values

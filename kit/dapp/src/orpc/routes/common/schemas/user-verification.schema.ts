@@ -1,5 +1,5 @@
 import { verificationType } from "@/lib/zod/validators/verification-type";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * User verification schema

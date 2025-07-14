@@ -4,7 +4,7 @@ import { VerificationDialog } from "@/components/ui/verification-dialog";
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { authClient } from "@/lib/auth/auth.client";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeftRight, MoreHorizontal, TrendingUp, Zap } from "lucide-react";

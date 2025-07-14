@@ -7,7 +7,7 @@
  */
 
 import countries from "i18n-iso-countries";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 // Preload supported locales
 import localeAr from "i18n-iso-countries/langs/ar.json";

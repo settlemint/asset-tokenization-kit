@@ -1,6 +1,6 @@
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { z } from "zod/v4";
 import { kycProfiles } from "@/lib/db/schema";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { z } from "zod";
 
 export const KycProfileSelectSchema = createSelectSchema(kycProfiles);
 export const KycProfileInsertSchema = createInsertSchema(kycProfiles, {

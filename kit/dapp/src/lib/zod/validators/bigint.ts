@@ -7,7 +7,7 @@
  */
 import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
 import { abs, floor, from, multiply, toString, type Numberish } from "dnum";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Flexible BigInt validator that accepts strings, numbers, or bigints.

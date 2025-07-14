@@ -13,7 +13,10 @@ import { ExchangeRatesHistorySchema } from "./routes/exchange-rates.history.sche
 import { ExchangeRatesListSchema } from "./routes/exchange-rates.list.schema";
 import { ExchangeRatesSyncSchema } from "./routes/exchange-rates.sync.schema";
 import { exchangeRateApiResponseSchema } from "./schemas";
-import { insertCurrencySchema } from "@/lib/db/schemas/exchange-rates";
+import {
+  insertCurrencySchema,
+  currencyDataSchema,
+} from "@/lib/db/schemas/exchange-rates";
 
 // Mock the logger to avoid console output during tests
 mock.module("@settlemint/sdk-utils/logging", () => ({
@@ -219,7 +222,7 @@ describe("Exchange Rates Schemas", () => {
   describe("Currency Decimals Validation", () => {
     it("should accept valid decimal values (0-8)", () => {
       for (let i = 0; i <= 8; i++) {
-        const result = insertCurrencySchema.safeParse({
+        const result = currencyDataSchema.safeParse({
           code: "USD",
           name: "US Dollar",
           decimals: i.toString(),
@@ -232,7 +235,7 @@ describe("Exchange Rates Schemas", () => {
       const invalidValues = ["9", "10", "99", "-1", "a", ""];
 
       for (const value of invalidValues) {
-        const result = insertCurrencySchema.safeParse({
+        const result = currencyDataSchema.safeParse({
           code: "USD",
           name: "US Dollar",
           decimals: value,

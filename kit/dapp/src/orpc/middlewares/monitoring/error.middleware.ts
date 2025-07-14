@@ -2,7 +2,7 @@ import type { ORPCErrorCode } from "@orpc/client";
 import { ORPCError, ValidationError } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { APIError } from "better-auth/api";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
 
 const logger = createLogger();

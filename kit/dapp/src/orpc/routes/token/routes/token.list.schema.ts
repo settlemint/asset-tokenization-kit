@@ -1,7 +1,7 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Schema for validating an array of tokens from GraphQL responses.

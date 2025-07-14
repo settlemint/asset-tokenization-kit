@@ -4,7 +4,7 @@ import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { timestamp } from "@/lib/zod/validators/timestamp";
 import type { TokenRoles } from "@/orpc/middlewares/system/token.middleware";
 import { from } from "dnum";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Available token roles in the system

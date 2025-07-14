@@ -23,9 +23,9 @@ import {
   type OnboardingType,
   type PlatformOnboardingRequirements,
 } from "@/lib/types/onboarding";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useLocation } from "@tanstack/react-router";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, type PropsWithChildren } from "react";
 
 /**

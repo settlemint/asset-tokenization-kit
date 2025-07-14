@@ -1,4 +1,4 @@
-import type { z } from "zod/v4";
+import type { z } from "zod";
 
 // Form API types - using any to work with TanStack Form's complex generics
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars

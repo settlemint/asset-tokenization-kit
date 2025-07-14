@@ -2,7 +2,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * GraphQL query to fetch system-wide value metrics

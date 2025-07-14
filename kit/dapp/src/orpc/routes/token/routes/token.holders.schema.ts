@@ -1,6 +1,6 @@
-import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
-import { z } from "zod/v4";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { z } from "zod";
 
 /**
  * Schema for token balance information

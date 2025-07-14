@@ -1,6 +1,6 @@
 import { assetFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Schema for reading a specific token factory

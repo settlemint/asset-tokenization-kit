@@ -6,7 +6,7 @@ import { withEventMeta } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { TadaDocumentNode } from "gql.tada";
 import type { Variables } from "graphql-request";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
 
 const logger = createLogger();

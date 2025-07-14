@@ -3,7 +3,7 @@ import {
   MutationOutputSchema,
 } from "@/orpc/routes/common/schemas/mutation.schema";
 import { TransactionTrackingMessagesSchema } from "@/orpc/routes/common/schemas/transaction-messages.schema";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Messages schema for token pause operation
