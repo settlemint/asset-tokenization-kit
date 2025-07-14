@@ -11,9 +11,12 @@ Creates a high-quality pull request using multi-agent analysis.
 
 - Create feature branch if on main
 - Format files: `bun run format`
-- Analyze and split changes into logical commits
+- Analyze and split changes into logical commits with semantic messages
+  (type(scope): description)
+- Types: feat, fix, chore, docs, style, refactor, perf, test, build, ci, revert
 - Push branch
-- Create PR with summary and test plan
+- Create PR with title matching first commit message (for squash merges)
+- Include summary and test plan
 
 ## Parallel Agents
 
