@@ -10,8 +10,15 @@ import { useTranslation } from "react-i18next";
 
 const logger = createLogger();
 
+const enum OnboardingStepGroup {
+  wallet = "wallet",
+  system = "system",
+  identity = "identity",
+}
+
 type OnboardingStepDefintion = Omit<StepDefinition, "id"> & {
   id: OnboardingStep;
+  groupId: OnboardingStepGroup;
 };
 
 export const OnboardingLayout: FunctionComponent<{
@@ -23,21 +30,21 @@ export const OnboardingLayout: FunctionComponent<{
   const groups = useMemo((): StepGroup[] => {
     return [
       {
-        id: "wallet",
+        id: OnboardingStepGroup.wallet,
         title: t("wallet.title"),
         description: t("wallet.description"),
         collapsible: true,
         defaultExpanded: currentStep === OnboardingStep.wallet,
       },
       {
-        id: "system",
+        id: OnboardingStepGroup.system,
         title: t("system.title"),
         description: t("system.description"),
         collapsible: true,
         defaultExpanded: currentStep === OnboardingStep.system,
       },
       {
-        id: "identity",
+        id: OnboardingStepGroup.identity,
         title: t("steps.identity.title"),
         description: t("steps.identity.description"),
         collapsible: true,
@@ -53,26 +60,26 @@ export const OnboardingLayout: FunctionComponent<{
         id: OnboardingStep.wallet,
         title: t("steps.wallet.title"),
         description: t("steps.wallet.description"),
-        groupId: "wallet",
+        groupId: OnboardingStepGroup.wallet,
       },
       {
         id: OnboardingStep.walletSecurity,
         title: t("steps.security.title"),
         description: t("steps.security.description"),
-        groupId: "wallet",
+        groupId: OnboardingStepGroup.wallet,
       },
       {
         id: OnboardingStep.walletRecoveryCodes,
         title: "Recovery Codes",
         description: "Save your wallet recovery codes",
-        groupId: "wallet",
+        groupId: OnboardingStepGroup.wallet,
       },
       // 1. Deploy core system
       {
         id: OnboardingStep.system,
         title: t("steps.system.title"),
         description: t("steps.system.description"),
-        groupId: "system",
+        groupId: OnboardingStepGroup.system,
       },
       /* TODO: implement these steps again
       // 2. Configure platform settings
