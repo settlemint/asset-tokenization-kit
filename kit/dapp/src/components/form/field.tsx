@@ -1,17 +1,20 @@
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import React, { type ReactNode } from "react";
 
 export function FieldLabel({
   htmlFor,
   label,
   required = false,
+  className,
 }: {
   htmlFor: string;
   label: string;
   required?: boolean;
+  className?: string;
 }) {
   return (
-    <Label htmlFor={htmlFor}>
+    <Label htmlFor={htmlFor} className={className}>
       {label}
       {required && <span className="text-destructive ml-1">*</span>}
     </Label>
@@ -55,4 +58,14 @@ export function withPostfix<T extends object>(
     </div>
   );
   return ComponentWithPostfix;
+}
+
+export function errorClassNames({
+  isTouched,
+  errors,
+}: {
+  isTouched?: boolean;
+  errors: string[];
+}) {
+  return cn(isTouched && errors.length > 0 && "border-destructive");
 }

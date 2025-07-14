@@ -1,7 +1,7 @@
 import { Textarea } from "@/components/ui/textarea";
 import { useFieldContext } from "@/hooks/use-form-contexts";
-import { cn } from "@/lib/utils";
 import {
+  errorClassNames,
   FieldDescription,
   FieldErrors,
   FieldLabel,
@@ -32,11 +32,7 @@ export function TextAreaField({
         onChange={(e) => {
           field.handleChange(e.target.value);
         }}
-        className={cn(
-          field.state.meta.isTouched &&
-            field.state.meta.errors.length > 0 &&
-            "border-destructive"
-        )}
+        className={errorClassNames(field.state.meta)}
         rows={rows}
       />
       <FieldErrors {...field.state.meta} />

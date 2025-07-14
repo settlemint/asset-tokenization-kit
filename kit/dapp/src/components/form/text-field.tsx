@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { useFieldContext } from "@/hooks/use-form-contexts";
-import { cn } from "@/lib/utils";
 import {
+  errorClassNames,
   FieldDescription,
   FieldErrors,
   FieldLabel,
@@ -35,11 +35,7 @@ export function TextField({
         onChange={(e) => {
           field.handleChange(e.target.value);
         }}
-        className={cn(
-          field.state.meta.isTouched &&
-            field.state.meta.errors.length > 0 &&
-            "border-destructive"
-        )}
+        className={errorClassNames(field.state.meta)}
       />
       <FieldErrors {...field.state.meta} />
     </FieldLayout>
