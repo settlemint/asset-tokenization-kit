@@ -6,11 +6,11 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/onboarding/platforms/identity")(
   {
-    beforeLoad: async ({ context: { orpc, queryClient } }) => {
+    loader: async ({ context: { orpc, queryClient } }) => {
       const user = await queryClient.ensureQueryData(
         orpc.user.me.queryOptions()
       );
-      const currentStep = updateOnboardingStateMachine({ user });
+      const { currentStep } = updateOnboardingStateMachine({ user });
       if (currentStep !== OnboardingStep.identity) {
         return redirect({
           to: `/onboarding/platforms/${currentStep}`,

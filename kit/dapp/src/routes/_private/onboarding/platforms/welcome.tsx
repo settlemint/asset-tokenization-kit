@@ -1,27 +1,22 @@
-import {
-  onboardingSteps,
-  updateOnboardingStateMachine,
-} from "@/components/onboarding/simplified/state-machine";
+import { updateOnboardingStateMachine } from "@/components/onboarding/simplified/state-machine";
 import { Button } from "@/components/ui/button";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useStore } from "@tanstack/react-store";
 import { CheckCircle, CircleArrowRight, CircleDot } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
 
 export const Route = createFileRoute("/_private/onboarding/platforms/welcome")({
-  beforeLoad: async ({ context: { orpc, queryClient } }) => {
+  loader: async ({ context: { orpc, queryClient } }) => {
     const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
-    const currentStep = updateOnboardingStateMachine({ user });
-    return { currentStep };
+    return updateOnboardingStateMachine({ user });
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const { t } = useTranslation(["onboarding", "general"]);
-  const steps = useStore(onboardingSteps);
+  const { steps } = Route.useLoaderData();
   const [isReturningUser] = useLocalStorage("isReturningUser", false);
   const navigate = useNavigate();
 

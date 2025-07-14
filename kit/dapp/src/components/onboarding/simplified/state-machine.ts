@@ -61,5 +61,8 @@ export function updateOnboardingStateMachine({ user }: { user: User }) {
     ...user.onboardingState,
   }));
   const currentStep = onboardingSteps.state.find((step) => step.current);
-  return currentStep?.step ?? OnboardingStep.wallet;
+  return {
+    currentStep: currentStep?.step ?? OnboardingStep.wallet,
+    steps: onboardingSteps.state,
+  };
 }
