@@ -1,5 +1,6 @@
 import { formOpts } from "@/components/asset-designer/shared-form";
 import { withForm } from "@/hooks/use-app-form";
+import { useStore } from "@tanstack/react-form";
 import { useTranslation } from "react-i18next";
 
 export const Basics = withForm({
@@ -7,7 +8,8 @@ export const Basics = withForm({
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer"]);
-    const assetType = form.getFieldValue("type");
+    const assetType = useStore(form.store, (state) => state.values.type);
+
     return (
       <>
         <form.AppField
@@ -46,6 +48,7 @@ const BondBasics = withForm({
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer"]);
+
     return (
       <>
         <form.AppField
