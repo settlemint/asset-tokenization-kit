@@ -1,7 +1,7 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { timestamp } from "@/lib/zod/validators/timestamp";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Schema for an event value (key-value pair within an event)

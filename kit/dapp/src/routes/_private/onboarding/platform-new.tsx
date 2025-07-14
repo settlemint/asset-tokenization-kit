@@ -11,7 +11,7 @@ import {
 } from "@/hooks/use-onboarding-steps.tsx";
 import { authClient } from "@/lib/auth/auth.client";
 import type { OnboardingType } from "@/lib/types/onboarding";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   createFileRoute,

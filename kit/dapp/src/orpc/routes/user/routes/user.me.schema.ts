@@ -8,7 +8,7 @@
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { userRoles } from "@/lib/zod/validators/user-roles";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const onboardingStateSchema = z.object({
   wallet: z.boolean().describe("Whether the user has a wallet"),

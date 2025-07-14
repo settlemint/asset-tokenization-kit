@@ -15,7 +15,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const logger = createLogger({ level: "debug" });
 

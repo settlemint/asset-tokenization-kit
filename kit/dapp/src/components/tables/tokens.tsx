@@ -11,7 +11,7 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";

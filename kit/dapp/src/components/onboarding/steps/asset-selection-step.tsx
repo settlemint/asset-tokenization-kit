@@ -9,7 +9,7 @@ import {
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { TokenTypeEnum } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,7 +25,7 @@ import { memo, useCallback, useEffect, useMemo } from "react";
 import { type Control, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Zod schema for asset selection form validation.

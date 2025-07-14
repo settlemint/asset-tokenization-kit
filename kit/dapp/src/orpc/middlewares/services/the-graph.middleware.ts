@@ -3,7 +3,7 @@ import type { ListInput } from "@/orpc/routes/common/schemas/list.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { TadaDocumentNode } from "gql.tada";
 import type { Variables } from "graphql-request";
-import type { z } from "zod/v4";
+import type { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
 
 const logger = createLogger();

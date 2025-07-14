@@ -5,7 +5,7 @@
  * Kept close to the route implementations for better cohesion.
  * @module ExchangeRateSchemas
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Supported exchange rate providers.

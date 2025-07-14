@@ -1,3 +1,4 @@
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import {
   Card,
   CardContent,
@@ -5,11 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { useSettings } from "@/hooks/use-settings";
 import { DEFAULT_SETTINGS } from "@/lib/db/schemas/settings";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { format } from "dnum";

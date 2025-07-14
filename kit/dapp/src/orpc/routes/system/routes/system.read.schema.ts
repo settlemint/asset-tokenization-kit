@@ -18,7 +18,7 @@
  */
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Input schema for system read operations

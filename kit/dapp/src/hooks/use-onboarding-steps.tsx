@@ -21,7 +21,7 @@ import {
 } from "@/lib/zod/validators/fiat-currency";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 // Define the onboarding form schema
 const onboardingSchema = z.object({

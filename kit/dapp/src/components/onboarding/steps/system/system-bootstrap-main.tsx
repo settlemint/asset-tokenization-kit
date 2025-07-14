@@ -4,7 +4,7 @@ import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import type { SessionUser } from "@/lib/auth";
 import { authClient } from "@/lib/auth/auth.client";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle, TriangleAlert } from "lucide-react";
 import { useCallback, useState } from "react";
