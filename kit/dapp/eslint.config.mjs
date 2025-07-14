@@ -190,6 +190,12 @@ export default defineConfig([
       "react/no-unescaped-entities": "off",
       "react/prop-types": "off", // Typescript provides type safety,
       "react-perf/jsx-no-new-function-as-prop": "off", // TODO: check if this ok, seems to impact code readability more than it is helpful
+      "react/no-children-prop": [
+        "error",
+        {
+          allowFunctions: true,
+        },
+      ],
 
       // ========================================================================
       // TYPESCRIPT RULES
