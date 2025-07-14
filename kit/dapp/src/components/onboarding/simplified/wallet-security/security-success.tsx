@@ -1,19 +1,18 @@
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth/auth.client";
 import { CheckCircle, Shield } from "lucide-react";
 
 interface SecuritySuccessProps {
-  isPincodeSet: boolean;
-  isOtpEnabled: boolean;
-  onNext?: () => void;
-  onModify: () => void;
+  onNext: () => void;
 }
 
-export function SecuritySuccess({
-  isPincodeSet,
-  isOtpEnabled,
-  onNext,
-  onModify,
-}: SecuritySuccessProps) {
+export function SecuritySuccess({ onNext }: SecuritySuccessProps) {
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
+  const isPincodeSet = Boolean(user?.pincodeEnabled);
+  const isOtpEnabled = Boolean(user?.twoFactorEnabled);
+
   return (
     <div className="max-w-2xl mx-auto space-y-6 text-center">
       {/* Success animation */}
@@ -65,9 +64,6 @@ export function SecuritySuccess({
       </div>
 
       <div className="flex gap-3 pt-4">
-        <Button variant="outline" onClick={onModify} className="flex-1">
-          Modify Security
-        </Button>
         <Button onClick={onNext} className="flex-1">
           Continue
         </Button>

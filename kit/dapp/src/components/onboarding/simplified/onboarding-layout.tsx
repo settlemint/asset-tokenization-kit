@@ -3,51 +3,48 @@ import type {
   StepDefinition,
   StepGroup,
 } from "@/components/multistep-form/types";
-import {
-  OnboardingStep,
-  onboardingSteps,
-} from "@/components/onboarding/simplified/state-machine";
+import { OnboardingStep } from "@/components/onboarding/simplified/state-machine";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useRouter } from "@tanstack/react-router";
-import { useStore } from "@tanstack/react-store";
 import { useCallback, useMemo, type FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
 
 const logger = createLogger();
 
+const enum OnboardingStepGroup {
+  wallet = "wallet",
+  system = "system",
+  identity = "identity",
+}
+
 type OnboardingStepDefintion = Omit<StepDefinition, "id"> & {
   id: OnboardingStep;
+  groupId: OnboardingStepGroup;
 };
 
 export const OnboardingLayout: FunctionComponent<{
   children: React.ReactNode;
-}> = ({ children }) => {
+  currentStep: OnboardingStep;
+}> = ({ children, currentStep }) => {
   const { t } = useTranslation(["onboarding", "general"]);
-  const router = useRouter();
-
-  const currentStep = useStore(
-    onboardingSteps,
-    (state) => state.find((step) => step.current)?.step ?? OnboardingStep.wallet
-  );
 
   const groups = useMemo((): StepGroup[] => {
     return [
       {
-        id: "wallet",
+        id: OnboardingStepGroup.wallet,
         title: t("wallet.title"),
         description: t("wallet.description"),
         collapsible: true,
         defaultExpanded: currentStep === OnboardingStep.wallet,
       },
       {
-        id: "system",
+        id: OnboardingStepGroup.system,
         title: t("system.title"),
         description: t("system.description"),
         collapsible: true,
         defaultExpanded: currentStep === OnboardingStep.system,
       },
       {
-        id: "identity",
+        id: OnboardingStepGroup.identity,
         title: t("steps.identity.title"),
         description: t("steps.identity.description"),
         collapsible: true,
@@ -63,26 +60,26 @@ export const OnboardingLayout: FunctionComponent<{
         id: OnboardingStep.wallet,
         title: t("steps.wallet.title"),
         description: t("steps.wallet.description"),
-        groupId: "wallet",
+        groupId: OnboardingStepGroup.wallet,
       },
       {
         id: OnboardingStep.walletSecurity,
         title: t("steps.security.title"),
         description: t("steps.security.description"),
-        groupId: "wallet",
+        groupId: OnboardingStepGroup.wallet,
       },
       {
         id: OnboardingStep.walletRecoveryCodes,
         title: "Recovery Codes",
         description: "Save your wallet recovery codes",
-        groupId: "wallet",
+        groupId: OnboardingStepGroup.wallet,
       },
       // 1. Deploy core system
       {
         id: OnboardingStep.system,
         title: t("steps.system.title"),
         description: t("steps.system.description"),
-        groupId: "system",
+        groupId: OnboardingStepGroup.system,
       },
       /* TODO: implement these steps again
       // 2. Configure platform settings
@@ -144,11 +141,6 @@ export const OnboardingLayout: FunctionComponent<{
     return steps.findIndex((step) => step.id === currentStep);
   }, [steps, currentStep]);
 
-  const onStepChange = useCallback(() => {
-    router.invalidate().catch((err: unknown) => {
-      logger.error("Error invalidating router", err);
-    });
-  }, [router]);
   const onComplete = useCallback(() => {
     logger.info("completed");
   }, []);
@@ -160,7 +152,6 @@ export const OnboardingLayout: FunctionComponent<{
       description="We'll set up your wallet and will configure your identity on the blockchain to use this platform."
       steps={steps}
       groups={groups}
-      onStepChange={onStepChange}
       onComplete={onComplete}
       defaultStepIndex={defaultStepIndex}
     />

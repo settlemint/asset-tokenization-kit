@@ -13,7 +13,10 @@ const logger = createLogger();
 
 export const Route = createFileRoute("/_private/onboarding/platforms/wallet")({
   beforeLoad: async ({ context: { orpc, queryClient } }) => {
-    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
+    const user = await queryClient.fetchQuery({
+      ...orpc.user.me.queryOptions(),
+      staleTime: 0,
+    });
     const { currentStep } = updateOnboardingStateMachine({ user });
     // Allow the wallet step to be shown if the user is not onboarded yet
     // As the wallet is created immediately, we should be less strict here
@@ -60,11 +63,6 @@ function RouteComponent() {
     } else if (walletCreated) {
       navigate({
         to: `/onboarding/platforms/${OnboardingStep.walletSecurity}`,
-        params: {
-          onboarding: {
-            currentStep: OnboardingStep.walletSecurity,
-          },
-        },
       }).catch((err: unknown) => {
         logger.error("Error navigating to wallet security", err);
       });
@@ -79,7 +77,7 @@ function RouteComponent() {
   }, [user?.wallet]);
 
   return (
-    <OnboardingLayout>
+    <OnboardingLayout currentStep={OnboardingStep.wallet}>
       <div className="h-full flex flex-col">
         <style>{`
         @keyframes draw {

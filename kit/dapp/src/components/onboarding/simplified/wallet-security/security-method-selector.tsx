@@ -1,28 +1,21 @@
-import { Info, Lock, Shield } from "lucide-react";
+import { Lock, Shield } from "lucide-react";
+import { useCallback } from "react";
 
 interface SecurityMethodSelectorProps {
-  isPinSelected: boolean;
-  isOtpSelected: boolean;
-  hasPincode: boolean;
-  hasTwoFactor: boolean;
-  onPinToggle: () => void;
-  onOtpToggle: () => void;
-  onSetupSecurity: () => void;
-  hasAnySecurityMethod: boolean;
-  needsToSetupAny: boolean;
+  onSetupSecurity: (method: "pin" | "otp") => void;
 }
 
 export function SecurityMethodSelector({
-  isPinSelected,
-  isOtpSelected,
-  hasPincode,
-  hasTwoFactor,
-  onPinToggle,
-  onOtpToggle,
   onSetupSecurity,
-  hasAnySecurityMethod,
-  needsToSetupAny,
 }: SecurityMethodSelectorProps) {
+  const onPinSelected = useCallback(() => {
+    onSetupSecurity("pin");
+  }, [onSetupSecurity]);
+
+  const onOtpSelected = useCallback(() => {
+    onSetupSecurity("otp");
+  }, [onSetupSecurity]);
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -67,104 +60,37 @@ export function SecurityMethodSelector({
         </div>
 
         <p className="text-sm text-foreground leading-relaxed">
-          You can choose one or both options. The more layers you add, the safer
-          your wallet becomes.
+          You can choose one. As OTP is more secure, it is the recommended
+          option.
         </p>
 
-        {/* Security method toggle buttons */}
         <div className="flex gap-4 mt-6">
-          {/* PIN Code Toggle */}
           <div
-            className={`flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
-              isPinSelected
-                ? "border-primary bg-primary/5"
-                : "border-input bg-background hover:bg-muted/50"
-            }`}
-            onClick={onPinToggle}
+            className={`flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 border-input bg-background hover:bg-muted/50`}
+            onClick={onPinSelected}
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Lock className="w-5 h-5 text-primary" />
                 <span className="font-medium text-foreground">PIN Code</span>
               </div>
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  checked={isPinSelected}
-                  onChange={onPinToggle}
-                  className="w-4 h-4 text-primary bg-background border-input rounded focus:ring-ring focus:ring-2"
-                />
-                {hasPincode && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-sm-state-success rounded-full border-2 border-background"></div>
-                )}
-              </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {hasPincode ? "Already set up" : "Fast and convenient"}
-            </p>
+            <p className="text-xs text-muted-foreground">Fast and convenient</p>
           </div>
 
-          {/* OTP Toggle */}
           <div
-            className={`flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
-              isOtpSelected
-                ? "border-primary bg-primary/5"
-                : "border-input bg-background hover:bg-muted/50"
-            }`}
-            onClick={onOtpToggle}
+            className={`flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 border-input bg-background hover:bg-muted/50`}
+            onClick={onOtpSelected}
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Shield className="w-5 h-5 text-primary" />
                 <span className="font-medium text-foreground">OTP</span>
               </div>
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  checked={isOtpSelected}
-                  onChange={onOtpToggle}
-                  className="w-4 h-4 text-primary bg-background border-input rounded focus:ring-ring focus:ring-2"
-                />
-                {hasTwoFactor && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-sm-state-success rounded-full border-2 border-background"></div>
-                )}
-              </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {hasTwoFactor ? "Already set up" : "Maximum security"}
-            </p>
+            <p className="text-xs text-muted-foreground">Maximum security</p>
           </div>
         </div>
-
-        {/* Info box for when they have existing security */}
-        {hasAnySecurityMethod && (
-          <div className="rounded-lg bg-primary/10 border border-primary/20 p-4 mt-6">
-            <div className="flex items-start gap-3">
-              <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm text-primary">
-                  {hasPincode && hasTwoFactor
-                    ? "You have both PIN and OTP security enabled. You can add or remove security methods, or continue to the next step."
-                    : hasPincode
-                      ? "You have PIN security enabled. You can add OTP for additional protection, or continue to the next step."
-                      : "You have OTP security enabled. You can add PIN for quick access, or continue to the next step."}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Setup button */}
-        {needsToSetupAny && (
-          <div className="flex justify-center pt-4">
-            <button
-              onClick={onSetupSecurity}
-              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-            >
-              Set up Security
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

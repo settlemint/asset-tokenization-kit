@@ -4,7 +4,7 @@ import type {
 } from "@/orpc/routes/user/routes/user.me.schema";
 import { Derived, Store } from "@tanstack/react-store";
 
-export enum OnboardingStep {
+export const enum OnboardingStep {
   wallet = "wallet",
   walletSecurity = "wallet-security",
   walletRecoveryCodes = "wallet-recovery-codes",

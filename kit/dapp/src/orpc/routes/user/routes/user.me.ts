@@ -44,12 +44,12 @@ import { eq } from "drizzle-orm";
  */
 export const me = authRouter.user.me
   .use(databaseMiddleware)
-  .handler(async ({ context, errors }) => {
+  .handler(async ({ context }) => {
     const authUser = context.auth.user;
     const userId = authUser.id;
 
     // Fetch user and KYC profile in a single query with left join
-    const [[result], systemAddress] = await Promise.all([
+    const [[userQueryResult], systemAddress] = await Promise.all([
       context.db
         .select({
           user: userTable,
@@ -73,32 +73,26 @@ export const me = authRouter.user.me
       ),
     ]);
 
-    if (!result?.user) {
-      throw errors.NOT_FOUND({
-        message: "User not found, this should not happen",
-      });
-    }
-
-    const { user, kyc } = result;
+    const { kyc, user } = userQueryResult ?? {};
 
     return {
-      id: user.id,
+      id: authUser.id,
       name:
         kyc?.firstName && kyc.lastName
           ? `${kyc.firstName} ${kyc.lastName}`
-          : user.name,
-      email: user.email,
-      role: user.role ?? "investor",
-      wallet: user.wallet ?? authUser.wallet, // Fallback to auth wallet if DB wallet is null
-      isOnboarded: authUser.isOnboarded, // This comes from auth context, not DB
-      firstName: kyc?.firstName,
-      lastName: kyc?.lastName,
+          : authUser.name,
+      email: authUser.email,
+      role: authUser.role,
+      wallet: authUser.wallet,
+      isOnboarded: authUser.isOnboarded,
+      firstName: kyc?.firstName ?? "",
+      lastName: kyc?.lastName ?? "",
       onboardingState: {
         wallet: !!authUser.wallet,
-        walletSecurity: user.pincodeEnabled || user.twoFactorEnabled,
-        walletRecoveryCodes: !!user.secretCodeVerificationId,
+        walletSecurity: user?.pincodeEnabled || user?.twoFactorEnabled || false,
+        walletRecoveryCodes: !!user?.secretCodeVerificationId,
         system: !!systemAddress,
-        identity: !!kyc,
+        identity: !!userQueryResult?.kyc,
       },
     };
   });
