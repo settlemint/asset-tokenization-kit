@@ -18,6 +18,7 @@ export interface StepDefinition<TFormData = unknown> {
   title: string;
   description?: string;
   groupId?: string;
+  enableFilters?: boolean;
   fields?:
     | FieldDefinition<TFormData>[]
     | ((formData: Partial<TFormData>) => FieldDefinition<TFormData>[]);
@@ -53,6 +54,7 @@ export interface FieldDefinition<TFormData = unknown> {
     | "number"
     | "email"
     | "date"
+    | "datetime"
     | "select"
     | "checkbox"
     | "radio"
@@ -71,6 +73,8 @@ export interface FieldDefinition<TFormData = unknown> {
   component?: React.ComponentType<FieldComponentProps<TFormData>>;
   postfix?: string;
   variant?: "default" | "card";
+  minDate?: Date;
+  maxDate?: Date;
 }
 
 export interface FieldGroup<TFormData = unknown> {

@@ -21,6 +21,7 @@ import { FundTokenSchema } from "@/orpc/routes/token/routes/mutations/create/hel
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery } from "@tanstack/react-query";
+import { addDays, addYears } from "date-fns";
 import { Building2, Coins, PiggyBank, TrendingUp, Wallet } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -148,6 +149,7 @@ function AssetDesignerWizardComponent({
         id: "asset-type-selection",
         title: t("wizard.steps.asset-type.title"),
         description: t("wizard.steps.asset-type.description"),
+        enableFilters: true,
         groups: assetClassGroups.map((group) => ({
           id: group.assetClass,
           label: t(`navigation:${group.assetClass}`),
@@ -246,11 +248,13 @@ function AssetDesignerWizardComponent({
             {
               name: "maturityDate",
               label: t("form.fields.maturityDate.label"),
-              type: "date",
+              type: "datetime",
               required: true,
               placeholder: t("form.fields.maturityDate.placeholder"),
               description: t("form.fields.maturityDate.description"),
               schema: BondTokenSchema.shape.maturityDate,
+              minDate: addDays(new Date(), 1), // 1 day from now
+              maxDate: addYears(new Date(), 100), // 100 years from now
             },
             {
               name: "underlyingAsset",
@@ -309,9 +313,7 @@ function AssetDesignerWizardComponent({
               ...commonData,
               type: "bond",
               cap: data.cap ?? "1000000",
-              maturityDate: data.maturityDate
-                ? new Date(data.maturityDate).getTime().toString()
-                : new Date().getTime().toString(),
+              maturityDate: data.maturityDate ?? new Date(),
               underlyingAsset:
                 data.underlyingAsset ??
                 "0x0000000000000000000000000000000000000000",

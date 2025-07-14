@@ -39,15 +39,20 @@ export interface InvestorOnboardingRequirements {
  * Determines the type of onboarding needed based on platform state and user role
  * @param userRole
  * @param platformRequirements
+ * @param isInPlatformOnboarding - Whether user is currently in platform onboarding flow
  */
 export function determineOnboardingType(
   userRole: UserRole,
-  platformRequirements: PlatformOnboardingRequirements
+  platformRequirements: PlatformOnboardingRequirements,
+  isInPlatformOnboarding?: boolean
 ): OnboardingType {
-  // Platform onboarding is needed if user is admin and platform setup is incomplete
+  // Platform onboarding is needed if user is admin and either:
+  // 1. Platform setup is incomplete, OR
+  // 2. User is actively in platform onboarding flow (to prevent premature redirects)
   if (
     userRole === "admin" &&
-    !isPlatformOnboardingComplete(platformRequirements)
+    (!isPlatformOnboardingComplete(platformRequirements) ||
+      isInPlatformOnboarding)
   ) {
     return "platform";
   }
@@ -73,11 +78,9 @@ export function determineOnboardingType(
 export function isPlatformOnboardingComplete(
   requirements: PlatformOnboardingRequirements
 ): boolean {
-  return (
-    requirements.userOnboarded &&
-    requirements.hasSystem &&
-    requirements.hasTokenFactories
-  );
+  // Platform onboarding is complete when the user has explicitly completed onboarding
+  // Having factories deployed doesn't mean the onboarding flow is complete
+  return requirements.userOnboarded;
 }
 
 /**

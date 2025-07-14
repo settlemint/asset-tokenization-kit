@@ -172,7 +172,6 @@ jobs:
             kit/contracts/.generated/genesis-allocations.json
             kit/subgraph/subgraph-output.txt
             kit/subgraph/.generated/subgraph-env
-            kit/dapp/.generated/database-export.sql
 
       # Label QA results (PR only)
       - name: Label QA build status

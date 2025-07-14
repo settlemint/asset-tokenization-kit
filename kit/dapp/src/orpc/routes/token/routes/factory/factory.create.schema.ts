@@ -193,12 +193,12 @@ export const FactoryCreateMessagesSchema =
  */
 export const FactoryCreateSchema = MutationInputSchemaWithContract.extend({
   /**
-   * The system contract address to use for creating factories
-   * Defaults to the standard SettleMint system contract
+   * The token factory registry contract address to use for creating factories
+   * This should be the TokenFactoryRegistry address from the deployed system
    */
-  contract: ethereumAddress
-    .describe("The system contract address")
-    .default("0x5e771e1417100000000000000000000000020088"),
+  contract: ethereumAddress.describe(
+    "The token factory registry contract address"
+  ),
 
   /**
    * Factory or factories to create

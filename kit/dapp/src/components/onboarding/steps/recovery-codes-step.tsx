@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import type { SessionUser } from "@/lib/auth";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -57,8 +58,7 @@ interface RecoveryCodesStepProps {
   onPrevious?: () => void;
   isFirstStep?: boolean;
   isLastStep?: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user?: any; // Use any for now to match the user type from session
+  user?: SessionUser | null | undefined;
 }
 
 export function RecoveryCodesStep({

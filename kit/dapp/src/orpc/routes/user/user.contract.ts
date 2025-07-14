@@ -20,6 +20,7 @@ import {
   UserStatsInputSchema,
   UserStatsOutputSchema,
 } from "@/orpc/routes/user/routes/user.stats.schema";
+import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
 import { baseContract } from "../../procedures/base.contract";
 
 /**
@@ -84,4 +85,5 @@ export const userContract = {
   me,
   list,
   stats,
+  kyc: kycContract,
 };
