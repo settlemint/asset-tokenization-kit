@@ -34,9 +34,6 @@ abstract contract ATKSystemAccessControlled {
     // ERRORS
     // ================================
 
-    /// @notice Thrown when no valid role is found for an operation
-    error NoValidRoleFound();
-
     /// @notice Thrown when the system access manager is not set
     error SystemAccessManagerNotSet();
 
@@ -71,8 +68,8 @@ abstract contract ATKSystemAccessControlled {
             }
         }
 
-        // If no valid role found, revert
-        revert NoValidRoleFound();
+        // If no valid role found, revert with the manager role as the expected role
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, managerRole);
     }
 
     /// @notice Modifier that checks if the caller has the manager role OR system module role
@@ -88,7 +85,7 @@ abstract contract ATKSystemAccessControlled {
             _;
             return;
         }
-        revert NoValidRoleFound();
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, managerRole);
     }
 
     /// @notice Modifier for system-wide operations requiring system manager or system module role
@@ -102,7 +99,7 @@ abstract contract ATKSystemAccessControlled {
             _;
             return;
         }
-        revert NoValidRoleFound();
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.SYSTEM_MANAGER_ROLE);
     }
 
     /// @notice Modifier for operations requiring only system manager role (more restrictive)
@@ -131,7 +128,7 @@ abstract contract ATKSystemAccessControlled {
             _;
             return;
         }
-        revert NoValidRoleFound();
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.IDENTITY_MANAGER_ROLE);
     }
 
     /// @notice Modifier for token management operations
@@ -178,7 +175,7 @@ abstract contract ATKSystemAccessControlled {
             _;
             return;
         }
-        revert NoValidRoleFound();
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE);
     }
 
     /// @notice Modifier for addon management operations
@@ -203,7 +200,7 @@ abstract contract ATKSystemAccessControlled {
             _;
             return;
         }
-        revert NoValidRoleFound();
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.AUDITOR_ROLE);
     }
 
     /// @notice Modifier for default admin operations
@@ -214,7 +211,7 @@ abstract contract ATKSystemAccessControlled {
             _;
             return;
         }
-        revert NoValidRoleFound();
+        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.DEFAULT_ADMIN_ROLE);
     }
 
     /// @notice Modifier for registrar operations

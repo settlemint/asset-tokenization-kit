@@ -31,9 +31,6 @@ interface IATKSystemAccessManager is IAccessControl {
     // ERRORS
     // ================================
 
-    /// @notice Thrown when no valid role is found for an operation
-    error NoValidRoleFound();
-
     /// @notice Thrown when arrays have mismatched lengths
     error ArrayLengthMismatch();
 

@@ -43,9 +43,6 @@ contract ATKSystemAccessManagerImplementation is Initializable, AccessControlUpg
     // ERRORS
     // ================================
 
-    /// @notice Thrown when no valid role is found for an operation
-    error NoValidRoleFound();
-
     /// @notice Thrown when arrays have mismatched lengths
     error ArrayLengthMismatch();
 
@@ -102,8 +99,8 @@ contract ATKSystemAccessManagerImplementation is Initializable, AccessControlUpg
             }
         }
 
-        // If no valid role found, revert
-        revert NoValidRoleFound();
+        // If no valid role found, revert with the manager role as the expected role
+        revert IAccessControl.AccessControlUnauthorizedAccount(_msgSender(), managerRole);
     }
 
     /// @notice Modifier that checks if the caller has the manager role OR any system module role
@@ -114,7 +111,7 @@ contract ATKSystemAccessManagerImplementation is Initializable, AccessControlUpg
             _;
             return;
         }
-        revert NoValidRoleFound();
+        revert IAccessControl.AccessControlUnauthorizedAccount(_msgSender(), managerRole);
     }
 
     /// @notice Modifier for system-wide operations requiring system manager or system module role
@@ -129,7 +126,7 @@ contract ATKSystemAccessManagerImplementation is Initializable, AccessControlUpg
             _;
             return;
         }
-        revert NoValidRoleFound();
+        revert IAccessControl.AccessControlUnauthorizedAccount(_msgSender(), ATKSystemRoles.SYSTEM_MANAGER_ROLE);
     }
 
     // ================================
