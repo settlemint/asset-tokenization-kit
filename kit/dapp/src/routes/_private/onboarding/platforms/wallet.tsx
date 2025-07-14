@@ -19,5 +19,6 @@ export const Route = createFileRoute("/_private/onboarding/platforms/wallet")({
 });
 
 function RouteComponent() {
+  // Invalidating the route after a mutation by using route.invalidate() https://chatgpt.com/share/6874c73d-4274-8012-a72c-394623734845
   return <div>Wallet</div>;
 }
