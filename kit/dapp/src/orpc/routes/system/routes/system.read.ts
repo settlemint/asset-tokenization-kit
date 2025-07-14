@@ -46,6 +46,9 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
           typeId
         }
       }
+      systemAddonRegistry {
+        id
+      }
     }
   }
 `);
@@ -110,6 +113,11 @@ export const read = onboardedRouter.system.read
               ),
             })
             .nullable(),
+          systemAddonRegistry: z
+            .object({
+              id: z.string(),
+            })
+            .nullable(),
         })
         .nullable(),
     });
@@ -141,6 +149,8 @@ export const read = onboardedRouter.system.read
         ?.id as EthereumAddress,
       compliance: result.system.compliance?.id as EthereumAddress,
       tokenFactoryRegistry: result.system.tokenFactoryRegistry
+        ?.id as EthereumAddress,
+      systemAddonRegistry: result.system.systemAddonRegistry
         ?.id as EthereumAddress,
       tokenFactories:
         result.system.tokenFactoryRegistry?.tokenFactories.map((factory) => ({

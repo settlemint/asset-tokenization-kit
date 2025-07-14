@@ -4,14 +4,12 @@ import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import type { SessionUser } from "@/lib/auth";
 import { authClient } from "@/lib/auth/auth.client";
-import { queryClient } from "@/lib/query.client";
 import { orpc } from "@/orpc";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle, TriangleAlert } from "lucide-react";
 import { useCallback, useState } from "react";
-
-import { DeploymentProgress } from "./deployment-progress";
 import { DeploymentDetails } from "./deployment-details";
+import { DeploymentProgress } from "./deployment-progress";
 
 interface SystemBootstrapMainProps {
   onNext?: () => void;
@@ -29,6 +27,7 @@ export function SystemBootstrapMain({
 }: SystemBootstrapMainProps) {
   const { data: session } = authClient.useSession();
   const [systemAddress] = useSettings("SYSTEM_ADDRESS");
+  const queryClient = useQueryClient();
 
   // Modal state
   const [showVerificationModal, setShowVerificationModal] = useState(false);

@@ -2,7 +2,11 @@ import type {
   StepDefinition,
   StepGroup,
 } from "@/components/multistep-form/types";
+import { AddPersonalInformationComponent } from "@/components/onboarding/steps/add-personal-information-step";
 import { AssetSelectionComponent } from "@/components/onboarding/steps/asset-type-selection/asset-selection-component";
+import { CreateOnchainIdComponent } from "@/components/onboarding/steps/create-onchainid-step";
+import { FinishComponent } from "@/components/onboarding/steps/finish-step";
+import { PlatformAddonsComponent } from "@/components/onboarding/steps/platform-addons-step";
 import { PlatformSettingsComponent } from "@/components/onboarding/steps/platform-settings-step";
 import { RecoveryCodesStep } from "@/components/onboarding/steps/recovery-codes-step";
 import { SystemBootstrapStep } from "@/components/onboarding/steps/system-bootstrap-step";
@@ -15,7 +19,6 @@ import {
   fiatCurrency,
   fiatCurrencyMetadata,
 } from "@/lib/zod/validators/fiat-currency";
-import { Info } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
@@ -40,10 +43,13 @@ const onboardingSchema = z.object({
   identityRegistered: z.boolean().default(false),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
+  email: z.string().optional(),
   dateOfBirth: z.string().optional(),
   nationality: z.string().optional(),
-  residenceCountry: z.string().optional(),
-  investorType: z.enum(["retail", "professional", "institutional"]).optional(),
+  residencyStatus: z
+    .enum(["resident", "non-resident", "dual-resident", "unknown"])
+    .optional(),
+  nationalId: z.string().optional(),
 });
 
 export type OnboardingFormData = z.infer<typeof onboardingSchema>;
@@ -260,24 +266,23 @@ export function useOnboardingSteps({
       // 4. Enable platform addons
       dynamicSteps.push({
         id: "enable-platform-addons",
-        title: "Enable platform addons",
-        description: "Choose additional features and capabilities",
+        title: "Configure Platform Add-ons",
+        description: "Enhance your platform with optional features",
         groupId: "system",
         fields: [
           {
             name: "selectedAddons",
-            label: "Platform Addons",
+            label: "Platform Add-ons",
             type: "checkbox",
             description: "Select optional features to enhance your platform",
             options: [
               { label: "Airdrops", value: "airdrops" },
-              { label: "Cross-chain Value Transfer (XVP)", value: "xvp" },
-              { label: "Yield Farming", value: "yield" },
-              { label: "Governance", value: "governance" },
-              { label: "Analytics Dashboard", value: "analytics" },
+              { label: "Fixed Yield", value: "yield" },
+              { label: "XVP", value: "xvp" },
             ],
           },
         ],
+        component: (props) => <PlatformAddonsComponent {...props} />,
       });
     }
 
@@ -290,49 +295,7 @@ export function useOnboardingSteps({
         groupId: "identity",
         fields: [],
         onStepComplete: async () => Promise.resolve(),
-        component: ({ onNext, onPrevious, isFirstStep }) => (
-          <div className="max-w-2xl space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">
-                Create your ONCHAINID
-              </h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                Your ONCHAINID is a unique blockchain identity that enables
-                secure, compliant asset transactions. This identity will be
-                linked to your wallet and verified through our compliance
-                system.
-              </p>
-              <div className="rounded-lg bg-primary/10 border border-primary/20 p-4">
-                <div className="flex items-start gap-3">
-                  <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm text-primary">
-                      Creating your ONCHAINID will deploy a smart contract
-                      representing your identity on the blockchain. This is
-                      required for all compliant asset transactions.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-end gap-3">
-              {!isFirstStep && (
-                <button
-                  onClick={onPrevious}
-                  className="px-4 py-2 text-sm border rounded-md hover:bg-muted"
-                >
-                  Previous
-                </button>
-              )}
-              <button
-                onClick={onNext}
-                className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-              >
-                Create ONCHAINID
-              </button>
-            </div>
-          </div>
-        ),
+        component: (props) => <CreateOnchainIdComponent {...props} />,
       });
 
       // 2. Add personal information
@@ -353,6 +316,12 @@ export function useOnboardingSteps({
             label: "Last Name",
             type: "text",
             description: "Enter your legal last name",
+          },
+          {
+            name: "email",
+            label: "Email",
+            type: "text",
+            description: "Enter your email address",
           },
           {
             name: "dateOfBirth",
@@ -377,44 +346,48 @@ export function useOnboardingSteps({
             ],
           },
           {
-            name: "residenceCountry",
-            label: "Country of Residence",
+            name: "residencyStatus",
+            label: "Residency Status",
             type: "select",
-            description: "Select your country of residence",
+            description: "Select your residency status",
             options: [
-              { label: "United States", value: "US" },
-              { label: "United Kingdom", value: "GB" },
-              { label: "Germany", value: "DE" },
-              { label: "France", value: "FR" },
-              { label: "Japan", value: "JP" },
-              { label: "Canada", value: "CA" },
-              { label: "Australia", value: "AU" },
-              { label: "Other", value: "OTHER" },
+              { label: "Resident", value: "resident" },
+              { label: "Non-Resident", value: "non-resident" },
+              { label: "Dual-Resident", value: "dual-resident" },
+              { label: "Unknown", value: "unknown" },
             ],
           },
           {
-            name: "investorType",
-            label: "Investor Type",
-            type: "select",
-            description: "Select your investor classification",
-            options: [
-              { label: "Retail Investor", value: "retail" },
-              { label: "Professional Investor", value: "professional" },
-              { label: "Institutional Investor", value: "institutional" },
-            ],
+            name: "nationalId",
+            label: "National ID (optional)",
+            type: "text",
+            description: "Enter your national identification number (optional)",
           },
         ],
         validate: (data) => {
           const errors: string[] = [];
           if (!data.firstName?.trim()) errors.push("First name is required");
           if (!data.lastName?.trim()) errors.push("Last name is required");
+          if (!data.email?.trim()) errors.push("Email is required");
           if (!data.dateOfBirth) errors.push("Date of birth is required");
           if (!data.nationality) errors.push("Nationality is required");
-          if (!data.residenceCountry)
-            errors.push("Country of residence is required");
-          if (!data.investorType) errors.push("Investor type is required");
+          if (!data.residencyStatus)
+            errors.push("Residency status is required");
+          // nationalId is now optional - no validation required
           return errors.length > 0 ? errors.join(", ") : undefined;
         },
+        component: (props) => <AddPersonalInformationComponent {...props} />,
+      });
+
+      // 3. Finish onboarding
+      dynamicSteps.push({
+        id: "finish",
+        title: "Finish",
+        description: "Review and confirm your onboarding details",
+        groupId: "identity",
+        fields: [],
+        onStepComplete: async () => Promise.resolve(),
+        component: (props) => <FinishComponent {...props} />,
       });
     }
 
@@ -427,8 +400,30 @@ export function useOnboardingSteps({
     t,
   ]);
 
-  const defaultValues: Partial<OnboardingFormData> = useMemo(
-    () => ({
+  const defaultValues: Partial<OnboardingFormData> = useMemo(() => {
+    // Map deployed factories to their corresponding asset types
+    const deployedAssetTypes: OnboardingFormData["selectedAssetTypes"] = [];
+
+    if (systemDetails?.tokenFactories) {
+      for (const factory of systemDetails.tokenFactories) {
+        // Since factory is unknown, we need to safely check if it has a typeId
+        if (factory && typeof factory === "object" && "typeId" in factory) {
+          const typeId = String(
+            (factory as { typeId: string }).typeId
+          ).toLowerCase();
+          // Map the factory typeId to the asset type
+          if (typeId.includes("bond")) deployedAssetTypes.push("bond");
+          else if (typeId.includes("equity")) deployedAssetTypes.push("equity");
+          else if (typeId.includes("deposit"))
+            deployedAssetTypes.push("deposit");
+          else if (typeId.includes("fund")) deployedAssetTypes.push("fund");
+          else if (typeId.includes("stablecoin"))
+            deployedAssetTypes.push("stablecoin");
+        }
+      }
+    }
+
+    return {
       walletGenerated: Boolean(user?.wallet),
       walletAddress: user?.wallet,
       walletSecured: false,
@@ -437,13 +432,12 @@ export function useOnboardingSteps({
       baseCurrency: (currentBaseCurrency ??
         "USD") as OnboardingFormData["baseCurrency"],
       assetFactoriesDeployed: (systemDetails?.tokenFactories.length ?? 0) > 0,
-      selectedAssetTypes: [],
+      selectedAssetTypes: deployedAssetTypes,
       selectedAddons: [],
       kycCompleted: false,
       identityRegistered: false,
-    }),
-    [user, systemAddress, systemDetails, currentBaseCurrency]
-  );
+    };
+  }, [user, systemAddress, systemDetails, currentBaseCurrency]);
 
   return { groups, steps, defaultValues, onboardingSchema };
 }

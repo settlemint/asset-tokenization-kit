@@ -87,8 +87,6 @@ export const increaseAnvilTime = async (
     shouldWait: true,
   }
 ): Promise<number> => {
-  const publicClient = getPublicClient();
-
   // Get the current timestamp before increasing time
   const initialTimestamp = await getAnvilTimeSeconds(actor);
   const expectedTimestamp = initialTimestamp + seconds;

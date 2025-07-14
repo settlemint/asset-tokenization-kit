@@ -1,8 +1,7 @@
-import { queryClient } from "@/lib/query.client";
 import type { SettingKey } from "@/lib/zod/validators/settings-key";
 import { orpc } from "@/orpc";
 import type { SettingsUpsertInput } from "@/orpc/routes/settings/routes/settings.upsert.schema";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 /**
  * Custom hook for managing application settings.
@@ -25,6 +24,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 export function useSettings(
   key: SettingKey
 ): [string | null, (value: string) => void, () => void] {
+  const queryClient = useQueryClient();
+
   // Query for the current setting value
   const { data: setting } = useQuery(
     orpc.settings.read.queryOptions({

@@ -2,15 +2,14 @@ import { Button } from "@/components/ui/button";
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSlot,
   InputOTPSeparator,
+  InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { authClient } from "@/lib/auth/auth.client";
 import type { SessionUser } from "@/lib/auth";
-import { queryClient } from "@/lib/query.client";
-import { createLogger } from "@settlemint/sdk-utils/logging";
+import { authClient } from "@/lib/auth/auth.client";
 import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { useMutation } from "@tanstack/react-query";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -31,6 +30,7 @@ export function OtpSetupComponent({
   const [otpUri, setOtpUri] = useState<string | null>(null);
   const [otpCode, setOtpCode] = useState("");
   const [otpSetupError, setOtpSetupError] = useState(false);
+  const queryClient = useQueryClient();
 
   const { mutate: enableTwoFactor } = useMutation({
     mutationFn: async () => {

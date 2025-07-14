@@ -8,12 +8,11 @@ import {
 } from "@/components/ui/form";
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
-import { queryClient } from "@/lib/query.client";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc";
 import { TokenTypeEnum } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BarChart3,
   Building,
@@ -257,6 +256,7 @@ export function AssetSelectionStep({
 }: AssetSelectionStepProps) {
   const { t } = useTranslation(["onboarding", "general", "tokens"]);
   const [systemAddress] = useSettings("SYSTEM_ADDRESS");
+  const queryClient = useQueryClient();
 
   const { data: systemDetails } = useQuery({
     ...orpc.system.read.queryOptions({

@@ -85,6 +85,11 @@ export const SystemReadOutputSchema = z.object({
   tokenFactoryRegistry: ethereumAddress.nullable(),
 
   /**
+   * The system addon registry contract address
+   */
+  systemAddonRegistry: ethereumAddress.nullable(),
+
+  /**
    * List of token factories deployed by this system
    */
   tokenFactories: z.array(TokenFactorySchema),

@@ -87,6 +87,9 @@ export function OnboardingGuard({
 
   // Check if user is currently in an onboarding flow (to prevent premature redirects)
   const isInOnboardingFlow = location.pathname.includes("/onboarding/");
+  const isInPlatformOnboarding = location.pathname.includes(
+    "/onboarding/platform-new"
+  );
 
   // Fetch user data
   const { data: session, isPending } = authClient.useSession();
@@ -122,7 +125,11 @@ export function OnboardingGuard({
   const userRole = user?.role ?? "investor";
 
   const onboardingType = user
-    ? determineOnboardingType(userRole, platformRequirements)
+    ? determineOnboardingType(
+        userRole,
+        platformRequirements,
+        isInPlatformOnboarding
+      )
     : null;
 
   // Check if onboarding is complete based on type
@@ -237,6 +244,7 @@ export function OnboardingGuard({
     allowedTypes,
     userRole,
     isInOnboardingFlow,
+    isInPlatformOnboarding,
   ]);
 
   if (!isMounted || !isCheckComplete) {
@@ -252,14 +260,23 @@ export function OnboardingGuard({
     return <>{children}</>;
   }
 
-  if (require === "not-onboarded" && !isOnboardingComplete) {
-    // Additional check for allowed types
-    if (
-      !allowedTypes ||
-      !onboardingType ||
-      allowedTypes.includes(onboardingType)
-    ) {
+  if (require === "not-onboarded") {
+    // If user is actively in onboarding flow (has URL parameters), allow them to continue
+    // This handles the case where user is in the middle of onboarding process
+    if (isInOnboardingFlow && isInPlatformOnboarding) {
       return <>{children}</>;
+    }
+
+    // Otherwise, use the standard check
+    if (!isOnboardingComplete) {
+      // Additional check for allowed types
+      if (
+        !allowedTypes ||
+        !onboardingType ||
+        allowedTypes.includes(onboardingType)
+      ) {
+        return <>{children}</>;
+      }
     }
   }
 

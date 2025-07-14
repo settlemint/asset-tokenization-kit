@@ -22,7 +22,11 @@ export function PincodeInput(props: PincodeInputProps) {
       maxLength={6}
       pattern={REGEXP_ONLY_DIGITS}
       className={cn("justify-center gap-1.5", props.className)}
-      autoComplete="off"
+      autoComplete="one-time-code"
+      data-lpignore="true"
+      data-form-type="other"
+      data-1p-ignore="true"
+      inputMode="numeric"
       required
     >
       <InputOTPGroup>
