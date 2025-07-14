@@ -9,7 +9,10 @@ export const Route = createFileRoute(
   "/_private/onboarding/platforms/wallet-recovery-codes"
 )({
   beforeLoad: async ({ context: { orpc, queryClient } }) => {
-    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
+    const user = await queryClient.fetchQuery({
+      ...orpc.user.me.queryOptions(),
+      staleTime: 0,
+    });
     const { currentStep } = updateOnboardingStateMachine({ user });
     if (currentStep !== OnboardingStep.walletRecoveryCodes) {
       return redirect({
@@ -23,7 +26,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   return (
-    <OnboardingLayout>
+    <OnboardingLayout currentStep={OnboardingStep.walletRecoveryCodes}>
       <div>Wallet Recovery Codes</div>
     </OnboardingLayout>
   );

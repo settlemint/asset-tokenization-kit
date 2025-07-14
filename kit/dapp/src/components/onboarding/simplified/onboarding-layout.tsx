@@ -3,13 +3,8 @@ import type {
   StepDefinition,
   StepGroup,
 } from "@/components/multistep-form/types";
-import {
-  OnboardingStep,
-  onboardingSteps,
-} from "@/components/onboarding/simplified/state-machine";
+import { OnboardingStep } from "@/components/onboarding/simplified/state-machine";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useRouter } from "@tanstack/react-router";
-import { useStore } from "@tanstack/react-store";
 import { useCallback, useMemo, type FunctionComponent } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -21,14 +16,9 @@ type OnboardingStepDefintion = Omit<StepDefinition, "id"> & {
 
 export const OnboardingLayout: FunctionComponent<{
   children: React.ReactNode;
-}> = ({ children }) => {
+  currentStep: OnboardingStep;
+}> = ({ children, currentStep }) => {
   const { t } = useTranslation(["onboarding", "general"]);
-  const router = useRouter();
-
-  const currentStep = useStore(
-    onboardingSteps,
-    (state) => state.find((step) => step.current)?.step ?? OnboardingStep.wallet
-  );
 
   const groups = useMemo((): StepGroup[] => {
     return [
@@ -144,11 +134,6 @@ export const OnboardingLayout: FunctionComponent<{
     return steps.findIndex((step) => step.id === currentStep);
   }, [steps, currentStep]);
 
-  const onStepChange = useCallback(() => {
-    router.invalidate().catch((err: unknown) => {
-      logger.error("Error invalidating router", err);
-    });
-  }, [router]);
   const onComplete = useCallback(() => {
     logger.info("completed");
   }, []);
@@ -160,7 +145,6 @@ export const OnboardingLayout: FunctionComponent<{
       description="We'll set up your wallet and will configure your identity on the blockchain to use this platform."
       steps={steps}
       groups={groups}
-      onStepChange={onStepChange}
       onComplete={onComplete}
       defaultStepIndex={defaultStepIndex}
     />

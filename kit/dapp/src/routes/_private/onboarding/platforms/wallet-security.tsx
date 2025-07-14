@@ -14,7 +14,10 @@ export const Route = createFileRoute(
   "/_private/onboarding/platforms/wallet-security"
 )({
   beforeLoad: async ({ context: { orpc, queryClient } }) => {
-    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
+    const user = await queryClient.fetchQuery({
+      ...orpc.user.me.queryOptions(),
+      staleTime: 0,
+    });
     const { currentStep } = updateOnboardingStateMachine({ user });
     if (currentStep !== OnboardingStep.walletSecurity) {
       return redirect({
@@ -36,14 +39,16 @@ function RouteComponent() {
     }
   }, [user]);
 
-  const onNext = useCallback(() => {
-    router.invalidate().catch((err: unknown) => {
-      logger.error("Error invalidating router", err);
-    });
+  const onNext = useCallback(async () => {
+    try {
+      await router.invalidate({ sync: true });
+    } catch (err: unknown) {
+      logger.error("Error invalidating queries", err);
+    }
   }, [router]);
 
   return (
-    <OnboardingLayout>
+    <OnboardingLayout currentStep={OnboardingStep.walletSecurity}>
       <WalletSecurityMain onNext={onNext} />
     </OnboardingLayout>
   );
