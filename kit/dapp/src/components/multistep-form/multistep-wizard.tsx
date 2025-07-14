@@ -13,6 +13,7 @@ const logger = createLogger();
 
 export function MultiStepWizard<TFormData = Record<string, unknown>>({
   name,
+  title,
   description,
   steps,
   groups,
@@ -25,6 +26,8 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   defaultValues = {},
   showProgressBar = true,
   allowStepSkipping = false,
+  onStepChange,
+  defaultStepIndex = 0,
 }: MultiStepWizardProps<TFormData>) {
   logger.debug("MultiStepWizard initialization", {
     name,
@@ -49,7 +52,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     enableUrlPersistence,
     debounceMs,
     defaultState: {
-      currentStepIndex: 0,
+      currentStepIndex: defaultStepIndex,
       completedSteps: [],
       stepErrors: {},
     },
@@ -115,8 +118,10 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
       // 1. Any previous step (stepIndex < safeCurrentStepIndex)
       // 2. Completed steps
       // 3. The next step after current
+      // 4. Steps which have a component
       const targetStep = steps[stepIndex];
       if (!targetStep) return false;
+      if (!targetStep.component) return false;
 
       return (
         stepIndex < safeCurrentStepIndex || // Allow going back to any previous step
@@ -131,22 +136,31 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     (stepIndex: number) => {
       if (canNavigateToStep(stepIndex)) {
         setCurrentStepIndex(stepIndex);
+        if (typeof onStepChange === "function") {
+          onStepChange(stepIndex);
+        }
       }
     },
-    [canNavigateToStep, setCurrentStepIndex]
+    [canNavigateToStep, setCurrentStepIndex, onStepChange]
   );
 
   const nextStep = useCallback(() => {
     if (safeCurrentStepIndex < steps.length - 1) {
       setCurrentStepIndex(Number(safeCurrentStepIndex) + 1);
+      if (typeof onStepChange === "function") {
+        onStepChange(Number(safeCurrentStepIndex) + 1);
+      }
     }
-  }, [safeCurrentStepIndex, steps.length, setCurrentStepIndex]);
+  }, [safeCurrentStepIndex, steps.length, setCurrentStepIndex, onStepChange]);
 
   const previousStep = useCallback(() => {
     if (safeCurrentStepIndex > 0) {
       setCurrentStepIndex(safeCurrentStepIndex - 1);
+      if (typeof onStepChange === "function") {
+        onStepChange(safeCurrentStepIndex - 1);
+      }
     }
-  }, [safeCurrentStepIndex, setCurrentStepIndex]);
+  }, [safeCurrentStepIndex, setCurrentStepIndex, onStepChange]);
 
   const markStepComplete = useCallback(
     (stepId: string) => {
@@ -315,14 +329,15 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
             {/* Title and Progress  */}
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-primary-foreground mb-2">
-                {name
-                  ? name
-                      .split("-")
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")
-                  : "Setup Wizard"}
+                {title ??
+                  (name
+                    ? name
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")
+                    : "Setup Wizard")}
               </h2>
               <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
                 {description ?? "Configure your platform step by step"}

@@ -125,6 +125,7 @@ export interface UseMultiStepWizardStateOptions {
 
 export interface MultiStepWizardProps<TFormData = unknown> {
   name: string;
+  title?: string;
   description?: string;
   steps: StepDefinition<TFormData>[];
   groups?: StepGroup[];
@@ -137,6 +138,8 @@ export interface MultiStepWizardProps<TFormData = unknown> {
   defaultValues?: Partial<TFormData>;
   showProgressBar?: boolean;
   allowStepSkipping?: boolean;
+  onStepChange?: (stepIndex: number) => void;
+  defaultStepIndex?: number;
 }
 
 export interface StepValidationResult {
