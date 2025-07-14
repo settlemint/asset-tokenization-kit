@@ -28,6 +28,8 @@ export function handleTokenFactoryRegistered(
   tokenFactory.name = event.params.name;
   tokenFactory.typeId = getDecodedTypeId(event.params.typeId);
 
+  event.params.implementationAddress; // Implementation address, we can check on this contract if it implements certain capabilities
+
   if (event.params.typeId.equals(getEncodedTypeId("ATKBondFactory"))) {
     BondFactoryTemplate.create(event.params.proxyAddress);
   }
