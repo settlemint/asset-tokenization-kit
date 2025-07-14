@@ -34,8 +34,6 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     hasDefaultValues: !!defaultValues,
   });
 
-  // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
-
   const {
     currentStepIndex,
     completedSteps,
@@ -69,8 +67,6 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     formState: "available",
     defaultValues: defaultValues,
   });
-
-  // Note: Form data persistence is now handled by ORPC API, not URL state
 
   // Ensure currentStepIndex is valid
   const safeCurrentStepIndex = useMemo(() => {
