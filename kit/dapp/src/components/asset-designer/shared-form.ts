@@ -2,5 +2,5 @@ import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/crea
 import { formOptions } from "@tanstack/react-form";
 
 export const formOpts = formOptions({
-  defaultValues: {} as Partial<TokenCreateInput>,
+  defaultValues: {} as TokenCreateInput,
 });
