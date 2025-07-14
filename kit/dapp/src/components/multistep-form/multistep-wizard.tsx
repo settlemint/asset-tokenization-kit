@@ -163,8 +163,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   const clearStepError = useCallback(
     (stepId: string) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [stepId]: _unused, ...rest } = stepErrors;
+      const { [stepId]: _, ...rest } = stepErrors;
       setStepErrors(rest);
     },
     [stepErrors, setStepErrors]

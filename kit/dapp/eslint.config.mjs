@@ -226,6 +226,14 @@ export default defineConfig([
           },
         },
       ],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+        },
+      ],
 
       // ========================================================================
       // TYPESCRIPT RULES - DISABLED/RELAXED
