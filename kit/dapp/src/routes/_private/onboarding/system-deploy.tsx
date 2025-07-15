@@ -31,7 +31,7 @@ export const Route = createFileRoute("/_private/onboarding/system-deploy")({
     const { currentStep } = updateOnboardingStateMachine({ user, hasSystem });
 
     // Allow navigation back from system-settings even if it's not the current step
-    const fromStep = (search as { from?: string })?.from;
+    const fromStep = (search as { from?: string } | undefined)?.from;
     const isNavigatingBack = fromStep === OnboardingStep.systemSettings;
 
     if (

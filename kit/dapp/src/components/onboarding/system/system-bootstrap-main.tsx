@@ -68,23 +68,19 @@ export function SystemBootstrapMain({
   const { data: realSystemDetails } = useQuery({
     ...orpc.system.read.queryOptions({ input: { id: systemAddress ?? "" } }),
     enabled: !!systemAddress && !showDeploymentProgress && !isCreatingSystem,
-    retry: (failureCount, error) => {
-      // Only retry if it's a 404 (system not indexed yet), retry up to 3 times
-      if (error && "status" in error && error.status === 404) {
-        return failureCount < 3;
-      }
-      return false;
-    },
+    retry: 3,
     retryDelay: 1000,
     // Silently handle errors as TheGraph may not have indexed the system yet
     throwOnError: false,
   });
 
   // Monitor for indexing errors
+  const errorMessage = error?.message ?? "";
+  const currentMessage = latestMessage ?? "";
   const isIndexingError =
-    error?.message?.includes("indexing") ||
-    error?.message?.includes("Indexing timeout") ||
-    latestMessage?.includes("Waiting for indexing");
+    errorMessage.includes("indexing") ||
+    errorMessage.includes("Indexing timeout") ||
+    currentMessage.includes("Waiting for indexing");
 
   // Set deployment failed when we get indexing errors
   useEffect(() => {

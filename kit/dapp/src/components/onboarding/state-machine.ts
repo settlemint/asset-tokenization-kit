@@ -35,7 +35,7 @@ type TranslationKey = Parameters<
 >[0];
 
 export function buildOnboardingSteps(user: CurrentUser, hasSystem: boolean) {
-  const onboardingState = user.onboardingState as OnboardingState;
+  const onboardingState = user.onboardingState;
 
   const steps: {
     step: OnboardingStep;
@@ -141,7 +141,7 @@ export function updateOnboardingStateMachine({
   user: CurrentUser;
   hasSystem?: boolean;
 }) {
-  const onboardingState = user.onboardingState as OnboardingState;
+  const onboardingState = user.onboardingState;
 
   // Update the global state for the store
   currentUser = user;
