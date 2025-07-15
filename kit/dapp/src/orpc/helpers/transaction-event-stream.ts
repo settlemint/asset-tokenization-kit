@@ -205,7 +205,7 @@ export function mergeTransactionMessages(
   customMessages?: Partial<TransactionEventMessages>
 ): TransactionEventMessages {
   const defaults =
-    DEFAULT_TRANSACTION_MESSAGES[operation] ||
+    DEFAULT_TRANSACTION_MESSAGES[operation] ??
     DEFAULT_TRANSACTION_MESSAGES.transfer;
   return {
     ...defaults,

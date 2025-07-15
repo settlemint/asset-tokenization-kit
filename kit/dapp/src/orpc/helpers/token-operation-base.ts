@@ -8,13 +8,10 @@ import {
   validateTokenCapability,
   supportsInterface,
 } from "@/orpc/helpers/interface-detection";
-import {
-  validateRole,
-  TOKEN_ROLES,
-  type TokenRole,
-} from "@/orpc/helpers/role-validation";
+import { validateRole, type TokenRole } from "@/orpc/helpers/role-validation";
 import type { InterfaceId } from "@/lib/interface-ids";
 import type { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
+import type { SessionUser } from "@/lib/auth";
 
 /**
  * Base configuration for token operations
@@ -38,15 +35,15 @@ export interface TokenOperationContext {
   portalClient: ValidatedPortalClient;
   /** Contract address */
   contract: string;
-  /** Sender wallet address */
-  sender: string;
+  /** Sender user object */
+  sender: SessionUser;
   /** Challenge response credentials */
   challengeResponse: {
     verificationId?: string;
     challengeResponse?: string;
   };
   /** ORPC errors object */
-  errors: any;
+  errors: Record<string, (params: unknown) => Error>;
 }
 
 /**
@@ -59,18 +56,18 @@ export interface TokenOperationInput {
 }
 
 /**
- * Helper class for common token operation patterns
+ * Helper functions for common token operation patterns
  */
-export class TokenOperationHelper {
+export const TokenOperationHelper = {
   /**
    * Validates the operation prerequisites
    */
-  static async validateOperation(
+  async validateOperation(
     config: TokenOperationConfig,
     context: TokenOperationContext
   ): Promise<void> {
     const { requiredInterface, requiredRole, validate } = config;
-    const { portalClient, contract, sender, errors } = context;
+    const { portalClient, contract, sender } = context;
 
     // Check interface support
     if (requiredInterface) {
@@ -87,7 +84,7 @@ export class TokenOperationHelper {
       await validateRole(
         portalClient,
         contract,
-        sender,
+        sender.wallet,
         requiredRole,
         config.operationName
       );
@@ -97,18 +94,18 @@ export class TokenOperationHelper {
     if (validate) {
       await validate(context);
     }
-  }
+  },
 
   /**
    * Executes a single token operation
    */
-  static async *executeSingleOperation<TVariables extends Variables>(
-    mutation: TadaDocumentNode<any, TVariables>,
+  async *executeSingleOperation<TVariables extends Variables>(
+    mutation: TadaDocumentNode<unknown, TVariables>,
     variables: TVariables,
     context: TokenOperationContext,
     messages: Record<string, string>,
     errorMessage: string
-  ): AsyncGenerator<any, string, void> {
+  ): AsyncGenerator<unknown, string, void> {
     const transactionHash = yield* context.portalClient.mutate(
       mutation,
       variables,
@@ -116,18 +113,18 @@ export class TokenOperationHelper {
       messages
     );
     return getEthereumHash(transactionHash);
-  }
+  },
 
   /**
    * Executes a batch token operation
    */
-  static async *executeBatchOperation<TVariables extends Variables>(
-    mutation: TadaDocumentNode<any, TVariables>,
+  async *executeBatchOperation<TVariables extends Variables>(
+    mutation: TadaDocumentNode<unknown, TVariables>,
     variables: TVariables,
     context: TokenOperationContext,
     messages: Record<string, string>,
     errorMessage: string
-  ): AsyncGenerator<any, string, void> {
+  ): AsyncGenerator<unknown, string, void> {
     const transactionHash = yield* context.portalClient.mutate(
       mutation,
       variables,
@@ -135,25 +132,25 @@ export class TokenOperationHelper {
       messages
     );
     return getEthereumHash(transactionHash);
-  }
+  },
 
   /**
    * Handles challenge response for verification
    */
-  static async handleVerification(
-    sender: { wallet: string },
+  async handleVerification(
+    sender: SessionUser,
     verification: z.infer<typeof UserVerificationSchema>
   ): Promise<{ verificationId?: string; challengeResponse?: string }> {
     return handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
-  }
+  },
 
   /**
    * Checks if an interface is supported with a specific fallback
    */
-  static async checkInterfaceWithFallback(
+  async checkInterfaceWithFallback(
     portalClient: ValidatedPortalClient,
     contract: string,
     primaryInterface: string,
@@ -167,22 +164,22 @@ export class TokenOperationHelper {
     ]);
 
     return results[0] || results[1];
-  }
+  },
 
   /**
    * Converts amounts to string format for GraphQL
    */
-  static formatAmounts(amounts: (string | number | bigint)[]): string[] {
+  formatAmounts(amounts: (string | number | bigint)[]): string[] {
     return amounts.map((a) => a.toString());
-  }
+  },
 
   /**
    * Formats a single amount for GraphQL
    */
-  static formatAmount(amount: string | number | bigint): string {
+  formatAmount(amount: string | number | bigint): string {
     return amount.toString();
-  }
-}
+  },
+};
 
 /**
  * Base class for token operations that follow a common pattern
@@ -196,13 +193,13 @@ export abstract class BaseTokenOperation<TInput extends TokenOperationInput> {
   async *handler(
     input: TInput,
     context: TokenOperationContext
-  ): AsyncGenerator<any, string, void> {
+  ): AsyncGenerator<unknown, string, void> {
     // Validate operation prerequisites
     await TokenOperationHelper.validateOperation(this.config, context);
 
     // Handle verification
     const challengeResponse = await TokenOperationHelper.handleVerification(
-      { wallet: context.sender },
+      context.sender,
       input.verification
     );
 
@@ -222,5 +219,5 @@ export abstract class BaseTokenOperation<TInput extends TokenOperationInput> {
   protected abstract execute(
     input: TInput,
     context: TokenOperationContext
-  ): AsyncGenerator<any, string, void>;
+  ): AsyncGenerator<unknown, string, void>;
 }
