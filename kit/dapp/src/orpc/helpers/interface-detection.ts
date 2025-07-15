@@ -3,6 +3,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.middleware";
 import { ORPCError } from "@orpc/server";
 import { z } from "zod";
+import { interfaceCache } from "./interface-cache";
 
 /**
  * GraphQL query to check if a contract supports a specific interface
@@ -13,6 +14,26 @@ const SUPPORTS_INTERFACE_QUERY = portalGraphql(`
       address: $address
     ) {
       supportsInterface( interfaceId: $interfaceId)
+    }
+  }
+`);
+
+/**
+ * GraphQL query to check multiple interfaces at once
+ */
+const BATCH_SUPPORTS_INTERFACE_QUERY = portalGraphql(`
+  query BatchSupportsInterface($address: String!) {
+    token: ISMART(address: $address) {
+      erc165: supportsInterface(interfaceId: "0x01ffc9a7")
+      erc20: supportsInterface(interfaceId: "0x36372b07")
+      erc3643: supportsInterface(interfaceId: "0xb97d944c")
+      burnable: supportsInterface(interfaceId: "0xd7ae59db")
+      custodian: supportsInterface(interfaceId: "0x25e5ad79")
+      redeemable: supportsInterface(interfaceId: "0xf4433ab7")
+      capped: supportsInterface(interfaceId: "0x722a19dd")
+      collateral: supportsInterface(interfaceId: "0xb5cb9db3")
+      yieldSupport: supportsInterface(interfaceId: "0x85ebbbb4")
+      pausable: supportsInterface(interfaceId: "0xe78a39d8")
     }
   }
 `);
@@ -29,6 +50,12 @@ export async function supportsInterface(
   tokenAddress: string,
   interfaceId: string
 ): Promise<boolean> {
+  // Check cache first
+  const cached = interfaceCache.get(tokenAddress, interfaceId);
+  if (cached !== null) {
+    return cached;
+  }
+
   try {
     const result = await client.query(
       SUPPORTS_INTERFACE_QUERY,
@@ -44,10 +71,16 @@ export async function supportsInterface(
       "Failed to check interface support"
     );
 
-    return !!result.supports.supportsInterface;
+    const supported = result.supports.supportsInterface;
+
+    // Cache the result
+    interfaceCache.set(tokenAddress, interfaceId, supported);
+
+    return supported;
   } catch {
     // If the contract doesn't implement ERC165, it will throw
     // In that case, we assume it doesn't support the interface
+    interfaceCache.set(tokenAddress, interfaceId, false);
     return false;
   }
 }
@@ -111,43 +144,144 @@ export async function getTokenCapabilities(
   client: ValidatedPortalClient,
   tokenAddress: string
 ): Promise<TokenCapabilities> {
-  // Check all interfaces in parallel for better performance
-  const [
-    erc165,
-    erc20,
-    erc3643,
-    burnable,
-    custodian,
-    redeemable,
-    capped,
-    collateral,
-    yieldSupport,
-    pausable,
-  ] = await Promise.all([
-    supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.IERC165),
-    supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.IERC20),
-    supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.IERC3643),
-    supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.ISMARTBurnable),
-    supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.ISMARTCustodian),
-    supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.ISMARTRedeemable),
-    supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.ISMARTCapped),
-    supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.ISMARTCollateral),
-    supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.ISMARTYield),
-    supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.ISMARTPausable),
-  ]);
+  try {
+    // Try to get all capabilities in a single query
+    const result = await client.query(
+      BATCH_SUPPORTS_INTERFACE_QUERY,
+      { address: tokenAddress },
+      z.object({
+        token: z.object({
+          erc165: z.boolean(),
+          erc20: z.boolean(),
+          erc3643: z.boolean(),
+          burnable: z.boolean(),
+          custodian: z.boolean(),
+          redeemable: z.boolean(),
+          capped: z.boolean(),
+          collateral: z.boolean(),
+          yieldSupport: z.boolean(),
+          pausable: z.boolean(),
+        }),
+      }),
+      "Failed to get token capabilities"
+    );
 
-  return {
-    erc165,
-    erc20,
-    erc3643,
-    burnable,
-    custodian,
-    redeemable,
-    capped,
-    collateral,
-    yield: yieldSupport,
-    pausable,
-  };
+    // Cache all results
+    const capabilities = result.token;
+    interfaceCache.set(
+      tokenAddress,
+      ALL_INTERFACE_IDS.IERC165,
+      capabilities.erc165
+    );
+    interfaceCache.set(
+      tokenAddress,
+      ALL_INTERFACE_IDS.IERC20,
+      capabilities.erc20
+    );
+    interfaceCache.set(
+      tokenAddress,
+      ALL_INTERFACE_IDS.IERC3643,
+      capabilities.erc3643
+    );
+    interfaceCache.set(
+      tokenAddress,
+      ALL_INTERFACE_IDS.ISMARTBurnable,
+      capabilities.burnable
+    );
+    interfaceCache.set(
+      tokenAddress,
+      ALL_INTERFACE_IDS.ISMARTCustodian,
+      capabilities.custodian
+    );
+    interfaceCache.set(
+      tokenAddress,
+      ALL_INTERFACE_IDS.ISMARTRedeemable,
+      capabilities.redeemable
+    );
+    interfaceCache.set(
+      tokenAddress,
+      ALL_INTERFACE_IDS.ISMARTCapped,
+      capabilities.capped
+    );
+    interfaceCache.set(
+      tokenAddress,
+      ALL_INTERFACE_IDS.ISMARTCollateral,
+      capabilities.collateral
+    );
+    interfaceCache.set(
+      tokenAddress,
+      ALL_INTERFACE_IDS.ISMARTYield,
+      capabilities.yieldSupport
+    );
+    interfaceCache.set(
+      tokenAddress,
+      ALL_INTERFACE_IDS.ISMARTPausable,
+      capabilities.pausable
+    );
+
+    return {
+      erc165: capabilities.erc165,
+      erc20: capabilities.erc20,
+      erc3643: capabilities.erc3643,
+      burnable: capabilities.burnable,
+      custodian: capabilities.custodian,
+      redeemable: capabilities.redeemable,
+      capped: capabilities.capped,
+      collateral: capabilities.collateral,
+      yield: capabilities.yieldSupport,
+      pausable: capabilities.pausable,
+    };
+  } catch {
+    // Fallback to individual queries if batch query fails
+    const [
+      erc165,
+      erc20,
+      erc3643,
+      burnable,
+      custodian,
+      redeemable,
+      capped,
+      collateral,
+      yieldSupport,
+      pausable,
+    ] = await Promise.all([
+      supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.IERC165),
+      supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.IERC20),
+      supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.IERC3643),
+      supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.ISMARTBurnable),
+      supportsInterface(
+        client,
+        tokenAddress,
+        ALL_INTERFACE_IDS.ISMARTCustodian
+      ),
+      supportsInterface(
+        client,
+        tokenAddress,
+        ALL_INTERFACE_IDS.ISMARTRedeemable
+      ),
+      supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.ISMARTCapped),
+      supportsInterface(
+        client,
+        tokenAddress,
+        ALL_INTERFACE_IDS.ISMARTCollateral
+      ),
+      supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.ISMARTYield),
+      supportsInterface(client, tokenAddress, ALL_INTERFACE_IDS.ISMARTPausable),
+    ]);
+
+    return {
+      erc165,
+      erc20,
+      erc3643,
+      burnable,
+      custodian,
+      redeemable,
+      capped,
+      collateral,
+      yield: yieldSupport,
+      pausable,
+    };
+  }
 }
 
 /**

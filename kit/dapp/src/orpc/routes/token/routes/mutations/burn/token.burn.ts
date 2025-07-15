@@ -1,6 +1,7 @@
 import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
+import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { supportsInterface } from "@/orpc/helpers/interface-detection";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
@@ -97,13 +98,22 @@ export const burn = tokenRouter.token.burn
 
     // Choose the appropriate mutation based on single vs batch
     if (isBatch) {
+      // Validate batch arrays
+      validateBatchArrays(
+        {
+          addresses,
+          amounts,
+        },
+        "batch burn"
+      );
+
       const transactionHash = yield* context.portalClient.mutate(
         TOKEN_BATCH_BURN_MUTATION,
         {
           address: contract,
           from: sender.wallet,
           userAddresses: addresses,
-          amounts,
+          amounts: amounts.map((a) => a.toString()),
           ...challengeResponse,
         },
         messages.burnFailed,
@@ -127,7 +137,7 @@ export const burn = tokenRouter.token.burn
           address: contract,
           from: sender.wallet,
           userAddress,
-          amount,
+          amount: amount.toString(),
           ...challengeResponse,
         },
         messages.burnFailed,

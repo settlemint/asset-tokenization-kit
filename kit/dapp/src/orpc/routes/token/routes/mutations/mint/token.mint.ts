@@ -1,5 +1,6 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
+import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { validateTokenCapability } from "@/orpc/helpers/interface-detection";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
@@ -83,13 +84,22 @@ export const mint = tokenRouter.token.mint
 
     // Choose the appropriate mutation based on single vs batch
     if (isBatch) {
+      // Validate batch arrays
+      validateBatchArrays(
+        {
+          recipients,
+          amounts,
+        },
+        "batch mint"
+      );
+
       const transactionHash = yield* context.portalClient.mutate(
         TOKEN_BATCH_MINT_MUTATION,
         {
           address: contract,
           from: sender.wallet,
           toList: recipients,
-          amounts,
+          amounts: amounts.map((a) => a.toString()),
           ...challengeResponse,
         },
         messages.mintFailed,
@@ -113,7 +123,7 @@ export const mint = tokenRouter.token.mint
           address: contract,
           from: sender.wallet,
           to,
-          amount,
+          amount: amount.toString(),
           ...challengeResponse,
         },
         messages.mintFailed,

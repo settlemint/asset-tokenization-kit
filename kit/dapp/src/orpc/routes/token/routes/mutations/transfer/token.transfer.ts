@@ -1,6 +1,7 @@
 import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
+import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { supportsInterface } from "@/orpc/helpers/interface-detection";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
@@ -194,6 +195,14 @@ export const transfer = tokenRouter.token.transfer
     if (isBatch) {
       if (transferType === "standard") {
         // Standard batch transfer is supported
+        validateBatchArrays(
+          {
+            recipients,
+            amounts,
+          },
+          "batch transfer"
+        );
+
         const transactionHash = yield* context.portalClient.mutate(
           TOKEN_BATCH_TRANSFER_MUTATION,
           {
@@ -215,6 +224,17 @@ export const transfer = tokenRouter.token.transfer
             data: { errors: ["Missing required from addresses"] },
           });
         }
+
+        // Validate all arrays have matching lengths
+        validateBatchArrays(
+          {
+            from,
+            recipients,
+            amounts,
+          },
+          "batch forced transfer"
+        );
+
         const transactionHash = yield* context.portalClient.mutate(
           TOKEN_BATCH_FORCED_TRANSFER_MUTATION,
           {
