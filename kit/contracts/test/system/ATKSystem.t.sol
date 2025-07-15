@@ -93,7 +93,7 @@ contract ATKSystemTest is Test {
     address public user = address(0x2);
     MockInvalidContract public mockInvalidContract;
 
-    // Actual implementation instances
+    // Actual implementation instances (created lazily)
     ATKComplianceImplementation public complianceImpl;
     ATKIdentityRegistryImplementation public identityRegistryImpl;
     ATKIdentityRegistryStorageImplementation public identityRegistryStorageImpl;
@@ -114,21 +114,80 @@ contract ATKSystemTest is Test {
         systemUtils = new SystemUtils(admin);
         atkSystem = IATKSystem(address(systemUtils.system()));
         mockInvalidContract = new MockInvalidContract();
+        
+        // All implementations created lazily to minimize setup complexity
+    }
 
-        // Deploy actual implementations for testing updates
-        complianceImpl = new ATKComplianceImplementation(forwarder);
-        identityRegistryImpl = new ATKIdentityRegistryImplementation(forwarder);
-        identityRegistryStorageImpl = new ATKIdentityRegistryStorageImplementation(forwarder);
-        trustedIssuersRegistryImpl = new ATKTrustedIssuersRegistryImplementation(forwarder);
-        topicSchemeRegistryImpl = new ATKTopicSchemeRegistryImplementation(forwarder);
-        identityFactoryImpl = new ATKIdentityFactoryImplementation(forwarder);
-        identityImpl = new ATKIdentityImplementation(forwarder);
-        contractIdentityImpl = new ATKContractIdentityImplementation(forwarder);
-        tokenAccessManagerImpl = new ATKTokenAccessManagerImplementation(forwarder);
-        identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
-        tokenFactoryRegistryImpl = new ATKTokenFactoryRegistryImplementation(forwarder);
-        complianceModuleRegistryImpl = new ATKComplianceModuleRegistryImplementation(forwarder);
-        addonRegistryImpl = new ATKSystemAddonRegistryImplementation(forwarder);
+    // Helper functions to create implementations lazily when needed
+    function _getComplianceImpl() internal returns (ATKComplianceImplementation) {
+        if (address(complianceImpl) == address(0)) {
+            complianceImpl = new ATKComplianceImplementation(forwarder);
+        }
+        return complianceImpl;
+    }
+
+    function _getIdentityRegistryImpl() internal returns (ATKIdentityRegistryImplementation) {
+        if (address(identityRegistryImpl) == address(0)) {
+            identityRegistryImpl = new ATKIdentityRegistryImplementation(forwarder);
+        }
+        return identityRegistryImpl;
+    }
+
+    function _getIdentityFactoryImpl() internal returns (ATKIdentityFactoryImplementation) {
+        if (address(identityFactoryImpl) == address(0)) {
+            identityFactoryImpl = new ATKIdentityFactoryImplementation(forwarder);
+        }
+        return identityFactoryImpl;
+    }
+
+    function _getIdentityImpl() internal returns (ATKIdentityImplementation) {
+        if (address(identityImpl) == address(0)) {
+            identityImpl = new ATKIdentityImplementation(forwarder);
+        }
+        return identityImpl;
+    }
+
+    function _getContractIdentityImpl() internal returns (ATKContractIdentityImplementation) {
+        if (address(contractIdentityImpl) == address(0)) {
+            contractIdentityImpl = new ATKContractIdentityImplementation(forwarder);
+        }
+        return contractIdentityImpl;
+    }
+
+    // Helper functions to create remaining implementations lazily when needed
+    function _getIdentityRegistryStorageImpl() internal returns (ATKIdentityRegistryStorageImplementation) {
+        if (address(identityRegistryStorageImpl) == address(0)) {
+            identityRegistryStorageImpl = new ATKIdentityRegistryStorageImplementation(forwarder);
+        }
+        return identityRegistryStorageImpl;
+    }
+
+    function _getTrustedIssuersRegistryImpl() internal returns (ATKTrustedIssuersRegistryImplementation) {
+        if (address(trustedIssuersRegistryImpl) == address(0)) {
+            trustedIssuersRegistryImpl = new ATKTrustedIssuersRegistryImplementation(forwarder);
+        }
+        return trustedIssuersRegistryImpl;
+    }
+
+    function _getTopicSchemeRegistryImpl() internal returns (ATKTopicSchemeRegistryImplementation) {
+        if (address(topicSchemeRegistryImpl) == address(0)) {
+            topicSchemeRegistryImpl = new ATKTopicSchemeRegistryImplementation(forwarder);
+        }
+        return topicSchemeRegistryImpl;
+    }
+
+    function _getTokenAccessManagerImpl() internal returns (ATKTokenAccessManagerImplementation) {
+        if (address(tokenAccessManagerImpl) == address(0)) {
+            tokenAccessManagerImpl = new ATKTokenAccessManagerImplementation(forwarder);
+        }
+        return tokenAccessManagerImpl;
+    }
+
+    function _getIdentityVerificationModule() internal returns (SMARTIdentityVerificationComplianceModule) {
+        if (address(identityVerificationModule) == address(0)) {
+            identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
+        }
+        return identityVerificationModule;
     }
 
     function test_InitialState() public view {
@@ -218,20 +277,22 @@ contract ATKSystemTest is Test {
     }
 
     function test_SetComplianceImplementation() public {
+        ATKComplianceImplementation impl = _getComplianceImpl();
         vm.prank(admin);
         vm.expectEmit(true, true, false, false);
-        emit IATKSystem.ComplianceImplementationUpdated(admin, address(complianceImpl));
+        emit IATKSystem.ComplianceImplementationUpdated(admin, address(impl));
 
-        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(complianceImpl));
+        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(impl));
         assertEq(
-            IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE), address(complianceImpl)
+            IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE), address(impl)
         );
     }
 
     function test_SetComplianceImplementation_OnlyAdmin() public {
+        ATKComplianceImplementation impl = _getComplianceImpl();
         vm.prank(user);
         vm.expectRevert();
-        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(complianceImpl));
+        ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(impl));
     }
 
     function test_SetComplianceImplementation_ZeroAddress() public {
