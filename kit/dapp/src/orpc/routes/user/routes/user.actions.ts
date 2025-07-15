@@ -212,7 +212,7 @@ function buildWhereClause(
   const where: Record<string, unknown> = {
     // Filter by user wallet address - query actions where executors contain this address
     executors_: {
-      executors_contains: [userWallet.toLowerCase()],
+      executors_contains: userWallet.toLowerCase(),
     },
   };
 
