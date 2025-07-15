@@ -129,6 +129,18 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @notice OnchainID address associated with this vault (IIdentity contract)
     address private _onchainId;
 
+    /// @notice Flag to ensure onchainId can only be set once
+    bool private _onchainIdSet;
+
+    /// @notice Error thrown when trying to set onchainId when it's already set
+    error OnchainIdAlreadySet();
+
+    /// @notice Error thrown when trying to set an invalid onchainId
+    error InvalidOnchainId();
+
+    /// @notice Emitted when the onchainId is set
+    event OnchainIdSet(address indexed onchainId);
+
     /// @notice Error thrown when an invalid requirement is set
     /// @param requested The requested number of confirmations
     /// @param signerCount The total number of signers
@@ -170,7 +182,8 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @param _required Number of confirmations required to execute a transaction
     /// @param initialOwner Address that will have admin role
     /// @param forwarder Address of the ERC2771 forwarder for meta-transactions
-    /// @param onchainId Address of the OnchainID (IIdentity contract) to associate with this vault
+    /// @param onchainId Address of the OnchainID (IIdentity contract) to associate with this vault (can be address(0)
+    /// to set later)
     constructor(
         address[] memory _signers,
         uint256 _required,
@@ -197,8 +210,11 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         required = _required;
         emit RequirementChanged(_msgSender(), _required);
 
-        // Set the OnchainID
-        _onchainId = onchainId;
+        // Set the OnchainID if provided
+        if (onchainId != address(0)) {
+            _onchainId = onchainId;
+            _onchainIdSet = true;
+        }
     }
 
     /// @notice Allows the contract to receive ETH
@@ -234,6 +250,17 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         if (_required == 0 || _required > ownerCount) revert InvalidRequirement(_required, ownerCount);
         required = _required;
         emit RequirementChanged(_msgSender(), _required);
+    }
+
+    /// @notice Sets the OnchainID address for this vault.
+    /// @dev Can only be called by the governance role.
+    /// @param newOnchainId The new OnchainID address.
+    function setOnchainId(address newOnchainId) external onlyRole(GOVERNANCE_ROLE) {
+        if (_onchainIdSet) revert OnchainIdAlreadySet();
+        if (newOnchainId == address(0)) revert InvalidOnchainId();
+        _onchainId = newOnchainId;
+        _onchainIdSet = true;
+        emit OnchainIdSet(newOnchainId);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════════
@@ -485,7 +512,10 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         bytes calldata abiEncodedArguments,
         string calldata comment,
         address sender
-    ) private returns (uint256) {
+    )
+        private
+        returns (uint256)
+    {
         bytes memory combinedData = bytes.concat(selector, abiEncodedArguments);
         uint256 txIndex = _storeTransaction(target, value, combinedData, comment);
 

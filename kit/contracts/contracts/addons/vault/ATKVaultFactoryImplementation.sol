@@ -49,13 +49,13 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     /// @notice Creates and deploys a new `ATKVault` contract for a given configuration.
     /// @dev This function performs the following steps:
     /// 1. **Authorization Check**: Verifies the caller has the `DEPLOYER_ROLE`.
-    /// 2. **Identity Creation**: Creates a contract identity for the vault and registers it with the identity registry.
-    /// 3. **Salt Generation**: Computes a unique `salt` for CREATE2.
-    /// 4. **Constructor Arguments**: Prepares the constructor arguments for the ATKVault contract (including
-    /// onchainId).
-    /// 5. **Vault Deployment**: Deploys an `ATKVault` using CREATE2.
-    /// 6. **Event Emission**: Emits `ATKVaultCreated`.
-    /// 7. **Registry Update**: Adds the new vault to `allVaults`.
+    /// 2. **Salt Generation**: Computes a unique `salt` for CREATE2.
+    /// 3. **Constructor Arguments**: Prepares the constructor arguments for the ATKVault contract (without onchainId).
+    /// 4. **Vault Deployment**: Deploys an `ATKVault` using CREATE2.
+    /// 5. **Identity Creation**: Creates a contract identity for the vault and registers it with the identity registry.
+    /// 6. **Identity Assignment**: Sets the onchainId on the vault.
+    /// 7. **Event Emission**: Emits `ATKVaultCreated`.
+    /// 8. **Registry Update**: Adds the new vault to `allVaults`.
     /// @param signers Array of initial signer addresses
     /// @param required Number of confirmations required to execute a transaction
     /// @param initialOwner Address that will have admin role
@@ -75,21 +75,20 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         returns (address contractAddress)
     {
         bytes memory saltInputData = abi.encode(address(this), signers, required, initialOwner, salt);
-        bytes memory constructorArgs = abi.encode(signers, required, initialOwner, trustedForwarder(), address(0)); // placeholder
-            // for onchainId
+        bytes memory constructorArgs = abi.encode(signers, required, initialOwner, trustedForwarder(), address(0));
         bytes memory vaultBytecode = type(ATKVault).creationCode;
 
-        // Predict the vault address first
+        // Predict the vault address
         address expectedAddress = _predictProxyAddress(vaultBytecode, constructorArgs, saltInputData);
 
-        // Create contract identity for the vault
-        address contractIdentity = _deployContractIdentity(expectedAddress, country);
-
-        // Update constructor args with the actual onchainId
-        constructorArgs = abi.encode(signers, required, initialOwner, trustedForwarder(), contractIdentity);
-
-        // Deploy using the abstract factory method
+        // Deploy the vault first (without onchainId)
         contractAddress = _deploySystemAddon(vaultBytecode, constructorArgs, saltInputData, expectedAddress);
+
+        // Create contract identity for the vault
+        address contractIdentity = _deployContractIdentity(contractAddress, country);
+
+        // Set the onchainId on the vault
+        ATKVault(payable(contractAddress)).setOnchainId(contractIdentity);
 
         // Emit an event to log the creation of the new vault.
         emit ATKVaultCreated(contractAddress, _msgSender());
@@ -118,8 +117,7 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         returns (address predictedAddress)
     {
         bytes memory saltInputData = abi.encode(address(this), signers, required, initialOwner, salt);
-        bytes memory constructorArgs = abi.encode(signers, required, initialOwner, trustedForwarder(), address(0)); // placeholder
-            // for onchainId
+        bytes memory constructorArgs = abi.encode(signers, required, initialOwner, trustedForwarder(), address(0));
         bytes memory vaultBytecode = type(ATKVault).creationCode;
 
         return _predictProxyAddress(vaultBytecode, constructorArgs, saltInputData);

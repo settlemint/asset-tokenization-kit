@@ -84,4 +84,60 @@ contract ATKVaultTest is Test {
         assertTrue(success);
         assertEq(address(vault).balance, amount);
     }
+
+    function test_SetOnchainId() public {
+        address mockOnchainId = makeAddr("onchainId");
+
+        // Initially no onchainId set
+        assertEq(vault.onchainID(), address(0));
+
+        // Only governance role can set onchainId
+        vm.prank(owner);
+        vault.setOnchainId(mockOnchainId);
+
+        assertEq(vault.onchainID(), mockOnchainId);
+    }
+
+    function test_SetOnchainId_RevertWhenCalledByNonGovernance() public {
+        address mockOnchainId = makeAddr("onchainId");
+
+        vm.prank(signer1);
+        vm.expectRevert();
+        vault.setOnchainId(mockOnchainId);
+    }
+
+    function test_SetOnchainId_RevertWhenAlreadySet() public {
+        address mockOnchainId1 = makeAddr("onchainId1");
+        address mockOnchainId2 = makeAddr("onchainId2");
+
+        // Set first time
+        vm.prank(owner);
+        vault.setOnchainId(mockOnchainId1);
+
+        // Try to set again - should revert
+        vm.prank(owner);
+        vm.expectRevert(ATKVault.OnchainIdAlreadySet.selector);
+        vault.setOnchainId(mockOnchainId2);
+    }
+
+    function test_SetOnchainId_RevertWhenAddressZero() public {
+        vm.prank(owner);
+        vm.expectRevert(ATKVault.InvalidOnchainId.selector);
+        vault.setOnchainId(address(0));
+    }
+
+    function test_OnchainIdPermissions() public {
+        address mockOnchainId = makeAddr("onchainId");
+
+        vm.prank(owner);
+        vault.setOnchainId(mockOnchainId);
+
+        // Owner (governance role) can add/remove claims
+        assertTrue(vault.canAddClaim(owner));
+        assertTrue(vault.canRemoveClaim(owner));
+
+        // Signers cannot add/remove claims
+        assertFalse(vault.canAddClaim(signer1));
+        assertFalse(vault.canRemoveClaim(signer1));
+    }
 }
