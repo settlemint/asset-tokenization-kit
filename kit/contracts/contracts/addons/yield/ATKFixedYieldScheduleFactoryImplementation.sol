@@ -16,6 +16,7 @@ import { AbstractATKSystemAddonFactoryImplementation } from
 import { SMARTFixedYieldScheduleUpgradeable } from
     "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
 import { ATKFixedYieldProxy } from "./ATKFixedYieldProxy.sol";
+import { ATKFixedYieldScheduleUpgradeable } from "./ATKFixedYieldScheduleUpgradeable.sol";
 
 // Constants
 import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
@@ -123,11 +124,14 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         // Predict the address first for validation
         address expectedAddress = _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
 
-        // Create contract identity for the yield schedule
-        _deployContractIdentity(expectedAddress, country);
-
         // Deploy using the abstract factory method
         scheduleProxyAddress = _deploySystemAddon(proxyBytecode, constructorArgs, saltInputData, expectedAddress);
+
+        // Create contract identity for the yield schedule
+        address contractIdentity = _deployContractIdentity(scheduleProxyAddress, country);
+
+        // Set the onchain ID on the yield schedule contract
+        ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).setOnchainId(contractIdentity);
 
         // Emit an event to log the creation of the new schedule proxy.
         emit ATKFixedYieldScheduleCreated(scheduleProxyAddress, _msgSender());
