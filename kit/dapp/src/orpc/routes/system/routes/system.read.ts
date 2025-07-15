@@ -16,7 +16,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { z } from "zod/v4";
+import { z } from "zod";
 import type { SystemReadOutput } from "./system.read.schema";
 
 /**

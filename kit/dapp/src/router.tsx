@@ -17,7 +17,7 @@
 
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimental";
 import { QueryClient } from "@tanstack/react-query";

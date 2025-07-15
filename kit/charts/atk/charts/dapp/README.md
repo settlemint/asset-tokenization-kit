@@ -66,7 +66,7 @@ A Helm chart for the ATK DApp frontend
 | job.initContainer.cloneRepo.image.pullPolicy | string | `"IfNotPresent"` |  |
 | job.initContainer.cloneRepo.image.registry | string | `"docker.io"` |  |
 | job.initContainer.cloneRepo.image.repository | string | `"alpine/git"` |  |
-| job.initContainer.cloneRepo.image.tag | string | `"2.49.0"` |  |
+| job.initContainer.cloneRepo.image.tag | string | `"v2.49.1"` |  |
 | job.initContainer.hasuraCheck.endpoint | string | `"hasura.atk.svc.cluster.local:8080"` |  |
 | job.initContainer.hasuraCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | job.initContainer.hasuraCheck.image.repository | string | `"ghcr.io/settlemint/btp-waitforit"` |  |

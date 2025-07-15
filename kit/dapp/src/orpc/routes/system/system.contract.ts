@@ -12,7 +12,7 @@ import {
   SystemReadSchema,
 } from "@/orpc/routes/system/routes/system.read.schema";
 import { eventIterator } from "@orpc/server";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { baseContract } from "../../procedures/base.contract";
 import { SystemSchema } from "./routes/system.list.schema";
 

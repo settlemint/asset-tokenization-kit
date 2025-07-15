@@ -28,7 +28,7 @@ import { read } from "@/orpc/routes/settings/routes/settings.read";
 import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
 import { call, withEventMeta } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { SystemCreateMessagesSchema } from "./system.create.schema";
 
 /**

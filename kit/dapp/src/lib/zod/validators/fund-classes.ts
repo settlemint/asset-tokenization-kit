@@ -6,7 +6,7 @@
  * minimum investments, and fee structures.
  * @module FundClassValidation
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Available fund share classes based on investor qualification.

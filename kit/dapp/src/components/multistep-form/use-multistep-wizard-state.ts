@@ -2,7 +2,7 @@ import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
-import { z } from "zod/v4";
+import { z } from "zod";
 import type { UseMultiStepWizardStateOptions, WizardState } from "./types";
 
 const logger = createLogger();
@@ -151,7 +151,6 @@ export function useMultiStepWizardState({
 
   const reset = useCallback(() => {
     if (enableUrlPersistence) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [name]: _unused, ...rest } = search;
       // Note: Using 'as never' here due to TanStack Router's complex generic types
       void navigate({

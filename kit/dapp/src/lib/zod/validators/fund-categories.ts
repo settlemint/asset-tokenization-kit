@@ -6,7 +6,7 @@
  * structure, strategy, and regulatory framework.
  * @module FundCategoryValidation
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Available investment fund categories.

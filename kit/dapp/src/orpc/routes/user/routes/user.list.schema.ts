@@ -1,6 +1,6 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
-import { UserMeSchema } from "@/orpc/routes/user/routes/user.me.schema";
+import { UserSchema } from "@/orpc/routes/user/routes/user.me.schema";
 
 /**
  * Schema for user listing parameters.
@@ -14,4 +14,4 @@ export const UserListSchema = ListSchema.extend({
   searchByAddress: ethereumAddress.optional(),
 });
 
-export const UserListOutputSchema = UserMeSchema.array();
+export const UserListOutputSchema = UserSchema.array();

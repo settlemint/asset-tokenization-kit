@@ -4,7 +4,7 @@ import { decimals } from "@/lib/zod/validators/decimals";
 import { isin } from "@/lib/zod/validators/isin";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { TransactionTrackingMessagesSchema } from "@/orpc/routes/common/schemas/transaction-messages.schema";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const ModulePairSchema = z.object({
   module: z.string(),

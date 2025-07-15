@@ -1,5 +1,5 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import { z } from "zod/v4";
+import { z } from "zod";
 import {
   KycProfileListOutputSchema,
   KycProfileListSchema,
