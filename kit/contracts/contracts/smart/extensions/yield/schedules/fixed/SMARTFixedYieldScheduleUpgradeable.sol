@@ -141,6 +141,7 @@ contract SMARTFixedYieldScheduleUpgradeable is
     function supportsInterface(bytes4 interfaceId)
         public
         view
+        virtual
         override(SMARTFixedYieldScheduleLogic, AccessControlUpgradeable, ERC165Upgradeable)
         returns (bool)
     {

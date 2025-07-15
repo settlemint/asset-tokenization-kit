@@ -73,12 +73,7 @@ contract ATKSystemAddonRegistryImplementation is
         addonProxiesByType[addonTypeHash] = _addonProxy;
 
         IAccessControl(address(_system.compliance())).grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _addonProxy);
-
-        // Grant REGISTRAR_ROLE to addon factories that need to register contract identities
-        // This is needed for factories like ATKVaultFactory that create contracts implementing IContractWithIdentity
-        if (_isIdentityRegisteringFactory(name)) {
-            IAccessControl(address(_system.identityRegistry())).grantRole(ATKSystemRoles.REGISTRAR_ROLE, _addonProxy);
-        }
+        IAccessControl(address(_system.identityRegistry())).grantRole(ATKSystemRoles.REGISTRAR_ROLE, _addonProxy);
 
         (bool success, bytes memory data) =
             _addonProxy.staticcall(abi.encodeWithSelector(bytes4(keccak256("typeId()"))));
@@ -150,27 +145,5 @@ contract ATKSystemAddonRegistryImplementation is
         returns (uint256)
     {
         return super._contextSuffixLength();
-    }
-
-    /// @notice Determines if an addon factory needs REGISTRAR_ROLE for identity registration
-    /// @dev Helper function to identify factories that create contracts implementing IContractWithIdentity
-    /// @param name The name of the addon factory
-    /// @return true if the factory needs identity registration permissions
-    function _isIdentityRegisteringFactory(string calldata name) internal pure returns (bool) {
-        bytes32 nameHash = keccak256(abi.encodePacked(name));
-
-        // ATKVaultFactory creates ATKVault contracts that implement IContractWithIdentity
-        if (nameHash == keccak256(abi.encodePacked("ATKVaultFactory"))) {
-            return true;
-        }
-
-        // ATKFixedYieldScheduleFactory creates yield schedules that need to handle tokens
-        if (nameHash == keccak256(abi.encodePacked("ATKFixedYieldScheduleFactory"))) {
-            return true;
-        }
-
-        // Future addon factories that create identity-enabled contracts can be added here
-
-        return false;
     }
 }
