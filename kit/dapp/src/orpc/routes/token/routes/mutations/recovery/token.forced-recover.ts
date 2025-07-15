@@ -5,25 +5,25 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { supportsInterface } from "@/orpc/helpers/interface-detection";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenApproveMessagesSchema } from "./token.approve.schema";
+import { TokenForcedRecoverMessagesSchema } from "./token.forced-recover.schema";
 
-const TOKEN_APPROVE_MUTATION = portalGraphql(`
-  mutation TokenApprove(
+const TOKEN_FORCED_RECOVER_MUTATION = portalGraphql(`
+  mutation TokenForcedRecover(
     $verificationId: String
     $challengeResponse: String
     $address: String!
     $from: String!
-    $spender: String!
-    $amount: String!
+    $lostWallet: String!
+    $newWallet: String!
   ) {
-    approve: IERC3643Approve(
+    forcedRecoverTokens: ISMARTCustodianForcedRecoverTokens(
       address: $address
       from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
-        spender: $spender
-        amount: $amount
+        lostWallet: $lostWallet
+        newWallet: $newWallet
       }
     ) {
       transactionHash
@@ -31,26 +31,28 @@ const TOKEN_APPROVE_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenApprove = tokenRouter.token.tokenApprove
+export const tokenForcedRecover = tokenRouter.token.tokenForcedRecover
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
-    const { contract, verification, spender, amount } = input;
+    const { contract, verification, lostWallet, newWallet } = input;
     const { auth } = context;
 
     // Parse messages with defaults
-    const messages = TokenApproveMessagesSchema.parse(input.messages ?? {});
-
-    // Validate that the token supports ERC3643 interface
-    const supportsERC3643 = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.IERC3643
+    const messages = TokenForcedRecoverMessagesSchema.parse(
+      input.messages ?? {}
     );
 
-    if (!supportsERC3643) {
+    // Validate that the token supports custodian operations
+    const supportsCustodian = await supportsInterface(
+      context.portalClient,
+      contract,
+      ALL_INTERFACE_IDS.ISMARTCustodian
+    );
+
+    if (!supportsCustodian) {
       throw errors.FORBIDDEN({
         message:
-          "Token does not support approve operations. The token must implement IERC3643 interface.",
+          "Token does not support custodian operations. The token must implement ISMARTCustodian interface.",
       });
     }
 
@@ -61,15 +63,15 @@ export const tokenApprove = tokenRouter.token.tokenApprove
     });
 
     const transactionHash = yield* context.portalClient.mutate(
-      TOKEN_APPROVE_MUTATION,
+      TOKEN_FORCED_RECOVER_MUTATION,
       {
         address: contract,
         from: sender.wallet,
-        spender,
-        amount: amount.toString(),
+        lostWallet,
+        newWallet,
         ...challengeResponse,
       },
-      messages.approvalFailed,
+      messages.forcedRecoveryFailed,
       messages
     );
 

@@ -31,21 +31,49 @@ const TOKEN_TRANSFER_MUTATION = portalGraphql(`
   }
 `);
 
-const ERC20_TRANSFER_MUTATION = portalGraphql(`
-  mutation ERC20Transfer(
+const TOKEN_TRANSFER_FROM_MUTATION = portalGraphql(`
+  mutation TokenTransferFrom(
     $verificationId: String
     $challengeResponse: String
     $address: String!
     $from: String!
+    $owner: String!
     $to: String!
     $amount: String!
   ) {
-    transfer: IERC3643Transfer(
+    transferFrom: IERC3643TransferFrom(
       address: $address
       from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
+        from: $owner
+        to: $to
+        value: $amount
+      }
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const TOKEN_FORCED_TRANSFER_MUTATION = portalGraphql(`
+  mutation TokenForcedTransfer(
+    $verificationId: String
+    $challengeResponse: String
+    $address: String!
+    $from: String!
+    $owner: String!
+    $to: String!
+    $amount: String!
+  ) {
+    forcedTransfer: ISMARTCustodianForcedTransfer(
+      address: $address
+      from: $from
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
+      input: {
+        from: $owner
         to: $to
         value: $amount
       }
@@ -79,10 +107,45 @@ const TOKEN_BATCH_TRANSFER_MUTATION = portalGraphql(`
   }
 `);
 
+// Note: There is no batchTransferFrom in ERC3643 - transferFrom operations must be done individually
+
+const TOKEN_BATCH_FORCED_TRANSFER_MUTATION = portalGraphql(`
+  mutation TokenBatchForcedTransfer(
+    $verificationId: String
+    $challengeResponse: String
+    $address: String!
+    $from: String!
+    $fromList: [String!]!
+    $toList: [String!]!
+    $amounts: [String!]!
+  ) {
+    batchForcedTransfer: ISMARTCustodianBatchForcedTransfer(
+      address: $address
+      from: $from
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
+      input: {
+        fromList: $fromList
+        toList: $toList
+        amounts: $amounts
+      }
+    ) {
+      transactionHash
+    }
+  }
+`);
+
 export const transfer = tokenRouter.token.transfer
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
-    const { contract, recipients, amounts, verification } = input;
+    const {
+      contract,
+      recipients,
+      amounts,
+      from,
+      transferType = "standard",
+      verification,
+    } = input;
     const { auth } = context;
 
     // Determine if this is a batch operation
@@ -91,25 +154,34 @@ export const transfer = tokenRouter.token.transfer
     // Parse messages with defaults
     const messages = TokenTransferMessagesSchema.parse(input.messages ?? {});
 
-    // Check which interface the token supports
-    const [supportsERC20, supportsERC3643] = await Promise.all([
-      supportsInterface(
-        context.portalClient,
-        contract,
-        ALL_INTERFACE_IDS.IERC20
-      ),
-      supportsInterface(
-        context.portalClient,
-        contract,
-        ALL_INTERFACE_IDS.IERC3643
-      ),
-    ]);
+    // Validate that the token supports ERC3643 (we only support ERC3643 tokens)
+    const supportsERC3643 = await supportsInterface(
+      context.portalClient,
+      contract,
+      ALL_INTERFACE_IDS.IERC3643
+    );
 
-    if (!supportsERC20 && !supportsERC3643) {
+    if (!supportsERC3643) {
       throw errors.FORBIDDEN({
         message:
-          "Token does not support transfer operations. The token must implement IERC20 or IERC3643 interface.",
+          "Token does not support transfer operations. The token must implement IERC3643 interface.",
       });
+    }
+
+    // For forced transfers, check custodian interface
+    if (transferType === "forced") {
+      const supportsCustodian = await supportsInterface(
+        context.portalClient,
+        contract,
+        ALL_INTERFACE_IDS.ISMARTCustodian
+      );
+
+      if (!supportsCustodian) {
+        throw errors.FORBIDDEN({
+          message:
+            "Token does not support forced transfer operations. The token must implement ISMARTCustodian interface.",
+        });
+      }
     }
 
     const sender = auth.user;
@@ -118,36 +190,52 @@ export const transfer = tokenRouter.token.transfer
       type: verification.verificationType,
     });
 
-    // Choose the appropriate mutation based on single vs batch and interface support
+    // Choose the appropriate mutation based on transfer type and batch operation
     if (isBatch) {
-      // Batch operations only supported by ERC3643
-      if (!supportsERC3643) {
-        throw errors.FORBIDDEN({
+      if (transferType === "standard") {
+        // Standard batch transfer is supported
+        const transactionHash = yield* context.portalClient.mutate(
+          TOKEN_BATCH_TRANSFER_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            recipients,
+            amounts: amounts.map((a) => a.toString()),
+            ...challengeResponse,
+          },
+          messages.transferFailed,
+          messages
+        );
+        return getEthereumHash(transactionHash);
+      } else if (transferType === "forced") {
+        // Forced batch transfer is supported
+        const transactionHash = yield* context.portalClient.mutate(
+          TOKEN_BATCH_FORCED_TRANSFER_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            fromList: from ?? [],
+            toList: recipients,
+            amounts: amounts.map((a) => a.toString()),
+            ...challengeResponse,
+          },
+          messages.transferFailed,
+          messages
+        );
+        return getEthereumHash(transactionHash);
+      } else {
+        // transferType === "transferFrom" - not supported in batch, must be done individually
+        throw errors.INPUT_VALIDATION_FAILED({
           message:
-            "Token does not support batch transfer operations. The token must implement IERC3643 interface.",
+            "Batch transferFrom operations are not supported. Use individual transfers instead.",
+          data: { errors: ["Batch transferFrom not supported"] },
         });
       }
-      const transactionHash = yield* context.portalClient.mutate(
-        TOKEN_BATCH_TRANSFER_MUTATION,
-        {
-          address: contract,
-          from: sender.wallet,
-          recipients,
-          amounts: amounts.map((a) => a.toString()),
-          ...challengeResponse,
-        },
-        messages.transferFailed,
-        messages
-      );
-      return getEthereumHash(transactionHash);
     } else {
-      // Single transfers - use ERC3643 if available, otherwise ERC20
-      const mutation = supportsERC3643
-        ? TOKEN_TRANSFER_MUTATION
-        : ERC20_TRANSFER_MUTATION;
-
+      // Single transfers
       const [to] = recipients;
       const [amount] = amounts;
+      const [owner] = from ?? [];
 
       if (!to || !amount) {
         throw errors.INPUT_VALIDATION_FAILED({
@@ -156,18 +244,63 @@ export const transfer = tokenRouter.token.transfer
         });
       }
 
-      const transactionHash = yield* context.portalClient.mutate(
-        mutation,
-        {
-          address: contract,
-          from: sender.wallet,
-          to,
-          amount: amount.toString(),
-          ...challengeResponse,
-        },
-        messages.transferFailed,
-        messages
-      );
-      return getEthereumHash(transactionHash);
+      if (transferType === "standard") {
+        const transactionHash = yield* context.portalClient.mutate(
+          TOKEN_TRANSFER_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            to,
+            amount: amount.toString(),
+            ...challengeResponse,
+          },
+          messages.transferFailed,
+          messages
+        );
+        return getEthereumHash(transactionHash);
+      } else if (transferType === "transferFrom") {
+        if (!owner) {
+          throw errors.INPUT_VALIDATION_FAILED({
+            message: "Missing required owner address for transferFrom",
+            data: { errors: ["Invalid input data"] },
+          });
+        }
+        const transactionHash = yield* context.portalClient.mutate(
+          TOKEN_TRANSFER_FROM_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            owner,
+            to,
+            amount: amount.toString(),
+            ...challengeResponse,
+          },
+          messages.transferFailed,
+          messages
+        );
+        return getEthereumHash(transactionHash);
+      } else {
+        // transferType === "forced"
+        if (!owner) {
+          throw errors.INPUT_VALIDATION_FAILED({
+            message: "Missing required owner address for forced transfer",
+            data: { errors: ["Invalid input data"] },
+          });
+        }
+        const transactionHash = yield* context.portalClient.mutate(
+          TOKEN_FORCED_TRANSFER_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            owner,
+            to,
+            amount: amount.toString(),
+            ...challengeResponse,
+          },
+          messages.transferFailed,
+          messages
+        );
+        return getEthereumHash(transactionHash);
+      }
     }
   });

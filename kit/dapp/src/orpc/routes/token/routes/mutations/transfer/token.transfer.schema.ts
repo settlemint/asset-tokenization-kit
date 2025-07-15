@@ -4,7 +4,7 @@ import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verifi
 import { z } from "zod";
 
 /**
- * Schema for token transfer operation (supports both single and batch)
+ * Schema for unified token transfer operation (supports standard, transferFrom, and forced transfer)
  */
 export const TokenTransferSchema = z
   .object({
@@ -25,6 +25,24 @@ export const TokenTransferSchema = z
         z.array(amount()).min(1).max(100),
       ])
       .describe("Amount(s) of tokens to transfer"),
+    from: z
+      .union([
+        // Single from address - transform to array
+        ethereumAddress.transform((addr) => [addr]),
+        // Array of from addresses
+        z.array(ethereumAddress).min(1).max(100),
+      ])
+      .optional()
+      .describe(
+        "Address(es) to transfer from (for transferFrom and forced transfer)"
+      ),
+    transferType: z
+      .enum(["standard", "transferFrom", "forced"])
+      .optional()
+      .default("standard")
+      .describe(
+        "Type of transfer: standard (sender to recipient), transferFrom (using allowance), or forced (custodian)"
+      ),
     verification: UserVerificationSchema.describe("Verification credentials"),
     messages: z
       .object({
@@ -59,165 +77,45 @@ export const TokenTransferSchema = z
   .refine(
     (data) => {
       // Ensure arrays have the same length after transformation
-      return data.recipients.length === data.amounts.length;
-    },
-    {
-      message: "Number of recipients must match number of amounts",
-      path: ["amounts"],
-    }
-  );
+      const recipientsLength = data.recipients.length;
+      const amountsLength = data.amounts.length;
+      const fromLength = data.from?.length ?? 0;
 
-/**
- * Schema for transferFrom operation (using allowance) - supports both single and batch
- */
-export const TokenTransferFromSchema = z
-  .object({
-    contract: ethereumAddress.describe("Token contract address"),
-    from: z
-      .union([
-        // Single from address - transform to array
-        ethereumAddress.transform((addr) => [addr]),
-        // Array of from addresses
-        z.array(ethereumAddress).min(1).max(100),
-      ])
-      .describe("Address(es) to transfer from"),
-    recipients: z
-      .union([
-        // Single recipient - transform to array
-        ethereumAddress.transform((addr) => [addr]),
-        // Array of recipients
-        z.array(ethereumAddress).min(1).max(100),
-      ])
-      .describe("Recipient address(es)"),
-    amounts: z
-      .union([
-        // Single amount - transform to array
-        amount().transform((amt) => [amt]),
-        // Array of amounts
-        z.array(amount()).min(1).max(100),
-      ])
-      .describe("Amount(s) of tokens to transfer"),
-    verification: UserVerificationSchema.describe("Verification credentials"),
-    messages: z
-      .object({
-        preparingTransfer: z
-          .string()
-          .default("Preparing transferFrom operation...")
-          .describe("Message shown when preparing the transfer"),
-        submittingTransfer: z
-          .string()
-          .default("Submitting transferFrom transaction...")
-          .describe("Message shown when submitting the transaction"),
-        waitingForMining: z
-          .string()
-          .default("Waiting for transaction to be mined...")
-          .describe("Message shown while waiting for mining"),
-        transferComplete: z
-          .string()
-          .default("TransferFrom completed successfully")
-          .describe("Message shown when transfer is complete"),
-        transferFailed: z
-          .string()
-          .default("Failed to transfer tokens")
-          .describe("Message shown when transfer fails"),
-        defaultError: z
-          .string()
-          .default("An unexpected error occurred during transferFrom")
-          .describe("Default error message"),
-      })
-      .optional()
-      .describe("Custom messages for transferFrom operation"),
-  })
-  .refine(
-    (data) => {
-      // Ensure arrays have the same length after transformation
-      return (
-        data.from.length === data.recipients.length &&
-        data.from.length === data.amounts.length
-      );
+      // Standard transfer: recipients and amounts must match
+      if (data.transferType === "standard") {
+        return recipientsLength === amountsLength;
+      }
+
+      // transferFrom and forced: from, recipients, and amounts must all match
+      // (all remaining cases since transferType is an enum with only 3 values)
+      return fromLength === recipientsLength && fromLength === amountsLength;
     },
     {
       message:
-        "Number of from addresses, recipients, and amounts must all match",
+        "Number of recipients, amounts, and from addresses must match based on transfer type",
       path: ["amounts"],
     }
-  );
-
-/**
- * Schema for forced transfer operation (custodian only) - supports both single and batch
- */
-export const TokenForcedTransferSchema = z
-  .object({
-    contract: ethereumAddress.describe("Token contract address"),
-    from: z
-      .union([
-        // Single from address - transform to array
-        ethereumAddress.transform((addr) => [addr]),
-        // Array of from addresses
-        z.array(ethereumAddress).min(1).max(100),
-      ])
-      .describe("Address(es) to transfer from"),
-    recipients: z
-      .union([
-        // Single recipient - transform to array
-        ethereumAddress.transform((addr) => [addr]),
-        // Array of recipients
-        z.array(ethereumAddress).min(1).max(100),
-      ])
-      .describe("Recipient address(es)"),
-    amounts: z
-      .union([
-        // Single amount - transform to array
-        amount().transform((amt) => [amt]),
-        // Array of amounts
-        z.array(amount()).min(1).max(100),
-      ])
-      .describe("Amount(s) of tokens to transfer"),
-    verification: UserVerificationSchema.describe("Verification credentials"),
-    messages: z
-      .object({
-        preparingTransfer: z
-          .string()
-          .default("Preparing forced transfer...")
-          .describe("Message shown when preparing the transfer"),
-        submittingTransfer: z
-          .string()
-          .default("Submitting forced transfer transaction...")
-          .describe("Message shown when submitting the transaction"),
-        waitingForMining: z
-          .string()
-          .default("Waiting for transaction to be mined...")
-          .describe("Message shown while waiting for mining"),
-        transferComplete: z
-          .string()
-          .default("Forced transfer completed successfully")
-          .describe("Message shown when transfer is complete"),
-        transferFailed: z
-          .string()
-          .default("Failed to force transfer tokens")
-          .describe("Message shown when transfer fails"),
-        defaultError: z
-          .string()
-          .default("An unexpected error occurred during forced transfer")
-          .describe("Default error message"),
-      })
-      .optional()
-      .describe("Custom messages for forced transfer operation"),
-  })
+  )
   .refine(
     (data) => {
-      // Ensure arrays have the same length after transformation
-      return (
-        data.from.length === data.recipients.length &&
-        data.from.length === data.amounts.length
-      );
+      // For transferFrom and forced transfers, 'from' is required
+      if (
+        (data.transferType === "transferFrom" ||
+          data.transferType === "forced") &&
+        !data.from
+      ) {
+        return false;
+      }
+      return true;
     },
     {
       message:
-        "Number of from addresses, recipients, and amounts must all match",
-      path: ["amounts"],
+        "From address(es) required for transferFrom and forced transfers",
+      path: ["from"],
     }
   );
+
+// Note: Old separate schemas removed since we consolidated into TokenTransferSchema
 
 /**
  * Schema for transfer messages (shared structure)
@@ -249,8 +147,4 @@ export const TokenTransferMessagesSchema = z.object({
 });
 
 export type TokenTransferInput = z.infer<typeof TokenTransferSchema>;
-export type TokenTransferFromInput = z.infer<typeof TokenTransferFromSchema>;
-export type TokenForcedTransferInput = z.infer<
-  typeof TokenForcedTransferSchema
->;
 export type TokenTransferMessages = z.infer<typeof TokenTransferMessagesSchema>;

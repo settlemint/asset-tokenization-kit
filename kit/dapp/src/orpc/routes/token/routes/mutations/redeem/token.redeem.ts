@@ -29,10 +29,29 @@ const TOKEN_REDEEM_MUTATION = portalGraphql(`
   }
 `);
 
+const TOKEN_REDEEM_ALL_MUTATION = portalGraphql(`
+  mutation TokenRedeemAll(
+    $verificationId: String
+    $challengeResponse: String
+    $address: String!
+    $from: String!
+  ) {
+    redeemAll: ISMARTRedeemableRedeemAll(
+      address: $address
+      from: $from
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
+      input: {}
+    ) {
+      transactionHash
+    }
+  }
+`);
+
 export const tokenRedeem = tokenRouter.token.tokenRedeem
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
-    const { contract, verification, amount } = input;
+    const { contract, verification, amount, redeemAll } = input;
     const { auth } = context;
 
     // Parse messages with defaults
@@ -52,23 +71,43 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
       });
     }
 
+    // Validate input parameters
+    if (!redeemAll && !amount) {
+      throw errors.INPUT_VALIDATION_FAILED({
+        message: "Either amount must be provided or redeemAll must be true",
+        data: { errors: ["Invalid redeem parameters"] },
+      });
+    }
+
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
 
-    const transactionHash = yield* context.portalClient.mutate(
-      TOKEN_REDEEM_MUTATION,
-      {
-        address: contract,
-        from: sender.wallet,
-        amount: amount.toString(),
-        ...challengeResponse,
-      },
-      messages.redemptionFailed,
-      messages
-    );
+    // Choose mutation based on whether we're redeeming all or a specific amount
+    const transactionHash = redeemAll
+      ? yield* context.portalClient.mutate(
+          TOKEN_REDEEM_ALL_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            ...challengeResponse,
+          },
+          messages.redemptionFailed,
+          messages
+        )
+      : yield* context.portalClient.mutate(
+          TOKEN_REDEEM_MUTATION,
+          {
+            address: contract,
+            from: sender.wallet,
+            amount: amount?.toString() ?? "",
+            ...challengeResponse,
+          },
+          messages.redemptionFailed,
+          messages
+        );
 
     return getEthereumHash(transactionHash);
   });

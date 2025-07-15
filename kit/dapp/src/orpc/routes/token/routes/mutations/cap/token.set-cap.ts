@@ -5,25 +5,23 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { supportsInterface } from "@/orpc/helpers/interface-detection";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenApproveMessagesSchema } from "./token.approve.schema";
+import { TokenSetCapMessagesSchema } from "./token.set-cap.schema";
 
-const TOKEN_APPROVE_MUTATION = portalGraphql(`
-  mutation TokenApprove(
+const TOKEN_SET_CAP_MUTATION = portalGraphql(`
+  mutation TokenSetCap(
     $verificationId: String
     $challengeResponse: String
     $address: String!
     $from: String!
-    $spender: String!
-    $amount: String!
+    $newCap: String!
   ) {
-    approve: IERC3643Approve(
+    setCap: ISMARTCappedSetCap(
       address: $address
       from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
-        spender: $spender
-        amount: $amount
+        _cap: $newCap
       }
     ) {
       transactionHash
@@ -31,26 +29,26 @@ const TOKEN_APPROVE_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenApprove = tokenRouter.token.tokenApprove
+export const tokenSetCap = tokenRouter.token.tokenSetCap
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
-    const { contract, verification, spender, amount } = input;
+    const { contract, verification, newCap } = input;
     const { auth } = context;
 
     // Parse messages with defaults
-    const messages = TokenApproveMessagesSchema.parse(input.messages ?? {});
+    const messages = TokenSetCapMessagesSchema.parse(input.messages ?? {});
 
-    // Validate that the token supports ERC3643 interface
-    const supportsERC3643 = await supportsInterface(
+    // Validate that the token supports cap management
+    const supportsCap = await supportsInterface(
       context.portalClient,
       contract,
-      ALL_INTERFACE_IDS.IERC3643
+      ALL_INTERFACE_IDS.ISMARTCapped
     );
 
-    if (!supportsERC3643) {
+    if (!supportsCap) {
       throw errors.FORBIDDEN({
         message:
-          "Token does not support approve operations. The token must implement IERC3643 interface.",
+          "Token does not support cap management. The token must implement ISMARTCapped interface.",
       });
     }
 
@@ -61,15 +59,14 @@ export const tokenApprove = tokenRouter.token.tokenApprove
     });
 
     const transactionHash = yield* context.portalClient.mutate(
-      TOKEN_APPROVE_MUTATION,
+      TOKEN_SET_CAP_MUTATION,
       {
         address: contract,
         from: sender.wallet,
-        spender,
-        amount: amount.toString(),
+        newCap: newCap.toString(),
         ...challengeResponse,
       },
-      messages.approvalFailed,
+      messages.capUpdateFailed,
       messages
     );
 

@@ -31,17 +31,17 @@ import {
   TokenBurnInputSchema,
   TokenBurnOutputSchema,
 } from "@/orpc/routes/token/routes/mutations/burn/token.burn.schema";
-import {
-  TokenTransferSchema,
-  TokenTransferFromSchema,
-  TokenForcedTransferSchema,
-} from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.schema";
+import { TokenTransferSchema } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.schema";
 import { TokenApproveInputSchema } from "@/orpc/routes/token/routes/mutations/approve/token.approve.schema";
-import {
-  TokenRedeemInputSchema,
-  TokenRedeemAllInputSchema,
-} from "@/orpc/routes/token/routes/mutations/redeem/token.redeem.schema";
+import { TokenRedeemInputSchema } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem.schema";
 import { TokenFreezeAddressInputSchema } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-address.schema";
+import { TokenRecoverTokensInputSchema } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-tokens.schema";
+import { TokenForcedRecoverInputSchema } from "@/orpc/routes/token/routes/mutations/recovery/token.forced-recover.schema";
+import { TokenRecoverERC20InputSchema } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-erc20.schema";
+import { TokenSetCapInputSchema } from "@/orpc/routes/token/routes/mutations/cap/token.set-cap.schema";
+import { TokenSetYieldScheduleInputSchema } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule.schema";
+import { TokenAddComplianceModuleInputSchema } from "@/orpc/routes/token/routes/mutations/compliance/token.add-compliance-module.schema";
+import { TokenRemoveComplianceModuleInputSchema } from "@/orpc/routes/token/routes/mutations/compliance/token.remove-compliance-module.schema";
 import {
   EventsResponseSchema,
   TokenEventsInputSchema,
@@ -233,35 +233,13 @@ const transfer = baseContract
   .route({
     method: "POST",
     path: "/token/{contract}/transfer",
-    description: "Transfer tokens to one or more addresses",
+    description:
+      "Transfer tokens (standard, transferFrom, or forced) to one or more addresses",
     successDescription: "Tokens transferred successfully",
     tags: ["token"],
   })
   .input(TokenTransferSchema)
   .output(eventIterator(TokenMintOutputSchema)); // Reusing mint output schema for transaction hash
-
-const transferFrom = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/transfer-from",
-    description: "Transfer tokens from one address to another using allowance",
-    successDescription: "Tokens transferred successfully",
-    tags: ["token"],
-  })
-  .input(TokenTransferFromSchema)
-  .output(eventIterator(TokenMintOutputSchema));
-
-const forcedTransfer = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/forced-transfer",
-    description:
-      "Force transfer tokens without approval (custodian only) - supports batch operations",
-    successDescription: "Tokens force transferred successfully",
-    tags: ["token"],
-  })
-  .input(TokenForcedTransferSchema)
-  .output(eventIterator(TokenMintOutputSchema));
 
 const tokenApprove = baseContract
   .route({
@@ -278,22 +256,12 @@ const tokenRedeem = baseContract
   .route({
     method: "POST",
     path: "/token/{contract}/redeem",
-    description: "Redeem tokens for underlying assets",
+    description:
+      "Redeem tokens for underlying assets (supports redeem-all for bonds)",
     successDescription: "Tokens redeemed successfully",
     tags: ["token"],
   })
   .input(TokenRedeemInputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
-
-const tokenRedeemAll = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/redeem-all",
-    description: "Redeem all tokens for underlying assets (typically bonds)",
-    successDescription: "All tokens redeemed successfully",
-    tags: ["token"],
-  })
-  .input(TokenRedeemAllInputSchema)
   .output(eventIterator(TokenMintOutputSchema));
 
 const tokenFreezeAddress = baseContract
@@ -305,6 +273,84 @@ const tokenFreezeAddress = baseContract
     tags: ["token"],
   })
   .input(TokenFreezeAddressInputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const tokenRecoverTokens = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/recover-tokens",
+    description: "Recover tokens from a lost wallet to the caller's wallet",
+    successDescription: "Tokens recovered successfully",
+    tags: ["token"],
+  })
+  .input(TokenRecoverTokensInputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const tokenForcedRecover = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/forced-recover",
+    description:
+      "Force recover tokens from a lost wallet to a new wallet (custodian only)",
+    successDescription: "Tokens force recovered successfully",
+    tags: ["token"],
+  })
+  .input(TokenForcedRecoverInputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const tokenRecoverERC20 = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/recover-erc20",
+    description: "Recover mistakenly sent ERC20 tokens from the contract",
+    successDescription: "ERC20 tokens recovered successfully",
+    tags: ["token"],
+  })
+  .input(TokenRecoverERC20InputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const tokenSetCap = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/set-cap",
+    description: "Set the maximum supply cap for a capped token",
+    successDescription: "Token cap updated successfully",
+    tags: ["token"],
+  })
+  .input(TokenSetCapInputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const tokenSetYieldSchedule = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/set-yield-schedule",
+    description: "Set the yield schedule for a yield-bearing token",
+    successDescription: "Yield schedule updated successfully",
+    tags: ["token"],
+  })
+  .input(TokenSetYieldScheduleInputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const tokenAddComplianceModule = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/add-compliance-module",
+    description: "Add a compliance module to the token",
+    successDescription: "Compliance module added successfully",
+    tags: ["token"],
+  })
+  .input(TokenAddComplianceModuleInputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const tokenRemoveComplianceModule = baseContract
+  .route({
+    method: "DELETE",
+    path: "/token/{contract}/remove-compliance-module",
+    description: "Remove a compliance module from the token",
+    successDescription: "Compliance module removed successfully",
+    tags: ["token"],
+  })
+  .input(TokenRemoveComplianceModuleInputSchema)
   .output(eventIterator(TokenMintOutputSchema));
 
 export const tokenContract = {
@@ -321,12 +367,16 @@ export const tokenContract = {
   mint,
   burn,
   transfer,
-  transferFrom,
-  forcedTransfer,
   tokenApprove,
   tokenRedeem,
-  tokenRedeemAll,
   tokenFreezeAddress,
+  tokenRecoverTokens,
+  tokenForcedRecover,
+  tokenRecoverERC20,
+  tokenSetCap,
+  tokenSetYieldSchedule,
+  tokenAddComplianceModule,
+  tokenRemoveComplianceModule,
   statsAssets,
   statsTransactions,
   statsValue,

@@ -7,12 +7,16 @@ import { unpause } from "@/orpc/routes/token/routes/mutations/pause/token.unpaus
 import { mint } from "@/orpc/routes/token/routes/mutations/mint/token.mint";
 import { burn } from "@/orpc/routes/token/routes/mutations/burn/token.burn";
 import { transfer } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer";
-import { transferFrom } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer-from";
-import { forcedTransfer } from "@/orpc/routes/token/routes/mutations/transfer/token.forced-transfer";
 import { tokenApprove } from "@/orpc/routes/token/routes/mutations/approve/token.approve";
 import { tokenRedeem } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem";
-import { tokenRedeemAll } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem-all";
 import { tokenFreezeAddress } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-address";
+import { tokenRecoverTokens } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-tokens";
+import { tokenForcedRecover } from "@/orpc/routes/token/routes/mutations/recovery/token.forced-recover";
+import { tokenRecoverERC20 } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-erc20";
+import { tokenSetCap } from "@/orpc/routes/token/routes/mutations/cap/token.set-cap";
+import { tokenSetYieldSchedule } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule";
+import { tokenAddComplianceModule } from "@/orpc/routes/token/routes/mutations/compliance/token.add-compliance-module";
+import { tokenRemoveComplianceModule } from "@/orpc/routes/token/routes/mutations/compliance/token.remove-compliance-module";
 import { events } from "@/orpc/routes/token/routes/token.events";
 import { holders } from "@/orpc/routes/token/routes/token.holders";
 import { list } from "@/orpc/routes/token/routes/token.list";
@@ -35,12 +39,16 @@ const routes = {
   mint,
   burn,
   transfer,
-  transferFrom,
-  forcedTransfer,
   tokenApprove,
   tokenRedeem,
-  tokenRedeemAll,
   tokenFreezeAddress,
+  tokenRecoverTokens,
+  tokenForcedRecover,
+  tokenRecoverERC20,
+  tokenSetCap,
+  tokenSetYieldSchedule,
+  tokenAddComplianceModule,
+  tokenRemoveComplianceModule,
   statsAssets,
   statsTransactions,
   statsValue,

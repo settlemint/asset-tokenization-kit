@@ -22,8 +22,8 @@ const TOKEN_FREEZE_ADDRESS_MUTATION = portalGraphql(`
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
-        _userAddress: $userAddress
-        _freeze: $freeze
+        userAddress: $userAddress
+        freeze: $freeze
       }
     ) {
       transactionHash

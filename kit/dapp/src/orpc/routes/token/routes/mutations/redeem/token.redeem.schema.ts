@@ -21,7 +21,12 @@ export const TokenRedeemMessagesSchema =
   });
 
 export const TokenRedeemInputSchema = MutationInputSchemaWithContract.extend({
-  amount: apiBigInt.describe("The amount of tokens to redeem"),
+  amount: apiBigInt.describe("The amount of tokens to redeem").optional(),
+  redeemAll: z
+    .boolean()
+    .optional()
+    .default(false)
+    .describe("Whether to redeem all tokens (typically for bonds)"),
   messages: TokenRedeemMessagesSchema.optional(),
 });
 

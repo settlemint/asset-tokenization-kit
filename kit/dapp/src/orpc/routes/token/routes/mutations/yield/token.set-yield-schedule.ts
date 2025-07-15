@@ -5,46 +5,65 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { supportsInterface } from "@/orpc/helpers/interface-detection";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenRedeemMessagesSchema } from "./token.redeem.schema";
+import { TokenSetYieldScheduleMessagesSchema } from "./token.set-yield-schedule.schema";
 
-const TOKEN_REDEEM_ALL_MUTATION = portalGraphql(`
-  mutation TokenRedeemAll(
+const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
+  mutation TokenSetYieldSchedule(
     $verificationId: String
     $challengeResponse: String
     $address: String!
     $from: String!
+    $yieldRate: String!
+    $paymentInterval: String!
+    $startTime: String!
+    $endTime: String!
   ) {
-    redeemAll: ISMARTRedeemableRedeemAll(
+    setYieldSchedule: ISMARTYieldSetYieldSchedule(
       address: $address
       from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
+      input: {
+        yieldRate: $yieldRate
+        paymentInterval: $paymentInterval
+        startTime: $startTime
+        endTime: $endTime
+      }
     ) {
       transactionHash
     }
   }
 `);
 
-export const tokenRedeemAll = tokenRouter.token.tokenRedeemAll
+export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
-    const { contract, verification } = input;
+    const {
+      contract,
+      verification,
+      yieldRate,
+      paymentInterval,
+      startTime,
+      endTime,
+    } = input;
     const { auth } = context;
 
     // Parse messages with defaults
-    const messages = TokenRedeemMessagesSchema.parse(input.messages ?? {});
-
-    // Validate that the token supports redemption
-    const supportsRedemption = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.ISMARTRedeemable
+    const messages = TokenSetYieldScheduleMessagesSchema.parse(
+      input.messages ?? {}
     );
 
-    if (!supportsRedemption) {
+    // Validate that the token supports yield management
+    const supportsYield = await supportsInterface(
+      context.portalClient,
+      contract,
+      ALL_INTERFACE_IDS.ISMARTYield
+    );
+
+    if (!supportsYield) {
       throw errors.FORBIDDEN({
         message:
-          "Token does not support redemption operations. The token must implement ISMARTRedeemable interface.",
+          "Token does not support yield management. The token must implement ISMARTYield interface.",
       });
     }
 
@@ -55,13 +74,17 @@ export const tokenRedeemAll = tokenRouter.token.tokenRedeemAll
     });
 
     const transactionHash = yield* context.portalClient.mutate(
-      TOKEN_REDEEM_ALL_MUTATION,
+      TOKEN_SET_YIELD_SCHEDULE_MUTATION,
       {
         address: contract,
         from: sender.wallet,
+        yieldRate: yieldRate.toString(),
+        paymentInterval: paymentInterval.toString(),
+        startTime: startTime.toString(),
+        endTime: endTime.toString(),
         ...challengeResponse,
       },
-      messages.redemptionFailed,
+      messages.yieldScheduleFailed,
       messages
     );
 

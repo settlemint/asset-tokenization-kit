@@ -5,24 +5,26 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { supportsInterface } from "@/orpc/helpers/interface-detection";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenApproveMessagesSchema } from "./token.approve.schema";
+import { TokenRecoverERC20MessagesSchema } from "./token.recover-erc20.schema";
 
-const TOKEN_APPROVE_MUTATION = portalGraphql(`
-  mutation TokenApprove(
+const TOKEN_RECOVER_ERC20_MUTATION = portalGraphql(`
+  mutation TokenRecoverERC20(
     $verificationId: String
     $challengeResponse: String
     $address: String!
     $from: String!
-    $spender: String!
+    $tokenAddress: String!
+    $recipient: String!
     $amount: String!
   ) {
-    approve: IERC3643Approve(
+    recoverERC20: ISMARTRecoverERC20(
       address: $address
       from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
-        spender: $spender
+        token: $tokenAddress
+        to: $recipient
         amount: $amount
       }
     ) {
@@ -31,26 +33,29 @@ const TOKEN_APPROVE_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenApprove = tokenRouter.token.tokenApprove
+export const tokenRecoverERC20 = tokenRouter.token.tokenRecoverERC20
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
-    const { contract, verification, spender, amount } = input;
+    const { contract, verification, tokenAddress, recipient, amount } = input;
     const { auth } = context;
 
     // Parse messages with defaults
-    const messages = TokenApproveMessagesSchema.parse(input.messages ?? {});
+    const messages = TokenRecoverERC20MessagesSchema.parse(
+      input.messages ?? {}
+    );
 
-    // Validate that the token supports ERC3643 interface
-    const supportsERC3643 = await supportsInterface(
+    // Validate that the token supports ERC20 recovery operations
+    // All ISMART tokens should support this, but let's check for ERC3643 as a proxy
+    const supportsRecovery = await supportsInterface(
       context.portalClient,
       contract,
       ALL_INTERFACE_IDS.IERC3643
     );
 
-    if (!supportsERC3643) {
+    if (!supportsRecovery) {
       throw errors.FORBIDDEN({
         message:
-          "Token does not support approve operations. The token must implement IERC3643 interface.",
+          "Token does not support ERC20 recovery operations. The token must implement IERC3643 interface.",
       });
     }
 
@@ -61,15 +66,16 @@ export const tokenApprove = tokenRouter.token.tokenApprove
     });
 
     const transactionHash = yield* context.portalClient.mutate(
-      TOKEN_APPROVE_MUTATION,
+      TOKEN_RECOVER_ERC20_MUTATION,
       {
         address: contract,
         from: sender.wallet,
-        spender,
+        tokenAddress,
+        recipient,
         amount: amount.toString(),
         ...challengeResponse,
       },
-      messages.approvalFailed,
+      messages.erc20RecoveryFailed,
       messages
     );
 
