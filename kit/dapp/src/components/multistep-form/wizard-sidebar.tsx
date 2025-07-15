@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Check, ChevronDown, X } from "lucide-react";
 import { useCallback, useState, useEffect } from "react";
 import type { StepDefinition, StepStatus } from "./types";
 import { useWizardContext } from "./wizard-context";
@@ -143,75 +144,21 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
             {/* Conditional Icon Rendering with Transitions */}
             <div className="transition-all duration-300 ease-in-out flex items-center justify-center">
               {isError ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  className="text-current"
-                >
-                  <circle cx="8" cy="8" r="7" fill="#ef4444" />
-                  <path
-                    d="M6 6L10 10M10 6L6 10"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
+                <div className="flex items-center justify-center w-6 h-6 bg-destructive rounded-full">
+                  <X className="w-4 h-4 text-destructive-foreground" />
+                </div>
               ) : isCompleted ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  className="text-current"
-                >
-                  <circle cx="8" cy="8" r="7" fill="white" />
-                  <path
-                    d="M10.5 6.5L7 9.5L5.5 8"
-                    stroke="rgba(54, 139, 207, 1)"
-                    strokeWidth="1.50"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <div className="flex items-center justify-center w-5 h-5 bg-white rounded-full">
+                  <Check className="w-3 h-3 text-primary" />
+                </div>
               ) : isCurrent ? (
-                <svg
-                  width="27"
-                  height="27"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="text-current"
-                >
-                  <circle
-                    cx="8"
-                    cy="8"
-                    r="6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  />
-                  <circle cx="8" cy="8" r="3" fill="currentColor" />
-                </svg>
+                <div className="flex items-center justify-center w-7 h-7">
+                  <div className="w-6 h-6 border-2 border-current rounded-full flex items-center justify-center">
+                    <div className="w-3 h-3 bg-current rounded-full" />
+                  </div>
+                </div>
               ) : (
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="text-current"
-                >
-                  <circle
-                    cx="8"
-                    cy="8"
-                    r="6"
-                    stroke="currentColor"
-                    strokeWidth="1.75"
-                  />
-                </svg>
+                <div className="w-5 h-5 border-2 border-current rounded-full" />
               )}
             </div>
           </div>
@@ -248,13 +195,15 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
                   isCurrent
                     ? "font-bold text-primary-foreground"
                     : "font-medium text-primary-foreground/90",
-                  isError && "text-red-200"
+                  isError && "text-destructive"
                 )}
               >
                 {step.title}
               </span>
               {isError && (
-                <span className="text-xs text-red-200 font-medium">Error</span>
+                <span className="text-xs text-destructive font-medium">
+                  Error
+                </span>
               )}
             </div>
             <p
@@ -263,13 +212,13 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
                 isCurrent
                   ? "text-primary-foreground/90"
                   : "text-primary-foreground/70",
-                isError && "text-red-200/80"
+                isError && "text-destructive"
               )}
             >
               {step.description}
             </p>
             {stepErrors[step.id] && (
-              <p className="text-xs text-red-200/80 mt-1">
+              <p className="text-xs text-destructive mt-1">
                 {stepErrors[step.id]}
               </p>
             )}
@@ -332,37 +281,15 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
                         {group.title}
                       </h3>
                       {groupCompleted && (
-                        <svg
-                          className="w-4 h-4 text-green-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
+                        <Check className="w-4 h-4 text-sm-state-success" />
                       )}
                     </div>
-                    <svg
+                    <ChevronDown
                       className={cn(
                         "w-4 h-4 text-primary-foreground/60 transition-transform duration-200",
                         isExpanded ? "rotate-180" : "rotate-0"
                       )}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
+                    />
                   </div>
                   {group.description && (
                     <p className="text-xs text-primary-foreground/50 mt-1">

@@ -29,7 +29,7 @@ import { and, eq } from "drizzle-orm";
  */
 export const del = authRouter.exchangeRates.delete
   .use(databaseMiddleware)
-  .handler(async ({ input, context }) => {
+  .handler(async ({ input, context, errors }) => {
     const { baseCurrency, quoteCurrency } = input;
 
     // Check if the rate exists and is manual
@@ -46,9 +46,9 @@ export const del = authRouter.exchangeRates.delete
       .limit(1);
 
     if (!existingRate) {
-      throw new Error(
-        `No manual exchange rate found for ${baseCurrency}/${quoteCurrency}`
-      );
+      throw errors.NOT_FOUND({
+        message: `No manual exchange rate found for ${baseCurrency}/${quoteCurrency}`,
+      });
     }
 
     // Delete the manual rate

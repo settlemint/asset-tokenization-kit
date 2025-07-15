@@ -3,6 +3,7 @@ import { Token } from "../../../generated/schema";
 import { Token as TokenTemplate } from "../../../generated/templates";
 import { Token as TokenContract } from "../../../generated/templates/Token/Token";
 import { fetchAccount } from "../../account/fetch/account";
+import { initializeTokenDistributionStats } from "../../stats/token-distribution-stats";
 import { setBigNumber } from "../../utils/bignumber";
 
 export function fetchToken(address: Address): Token {
@@ -30,6 +31,9 @@ export function fetchToken(address: Address): Token {
 
     token.save();
     TokenTemplate.create(address);
+
+    // Initialize distribution stats for new token
+    initializeTokenDistributionStats(token);
   }
 
   return token;

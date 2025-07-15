@@ -8,7 +8,12 @@
  * @see {@link @/orpc/procedures/auth.router} - Authentication requirements
  */
 
+import { kycProfiles, user as userTable } from "@/lib/db/schema";
+import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { call } from "@orpc/server";
+import { eq } from "drizzle-orm";
 
 /**
  * Get current authenticated user information.
@@ -37,15 +42,58 @@ import { authRouter } from "@/orpc/procedures/auth.router";
  * const { data: user, isLoading } = orpc.user.me.useQuery();
  * ```
  */
-export const me = authRouter.user.me.handler(({ context }) => {
-  const user = context.auth.user;
+export const me = authRouter.user.me
+  .use(databaseMiddleware)
+  .handler(async ({ context }) => {
+    const authUser = context.auth.user;
+    const userId = authUser.id;
 
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    wallet: user.wallet,
-    isOnboarded: user.isOnboarded,
-  };
-});
+    // Fetch user and KYC profile in a single query with left join
+    const [[userQueryResult], systemAddress] = await Promise.all([
+      context.db
+        .select({
+          user: userTable,
+          kyc: {
+            firstName: kycProfiles.firstName,
+            lastName: kycProfiles.lastName,
+          },
+        })
+        .from(userTable)
+        .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
+        .where(eq(userTable.id, userId))
+        .limit(1),
+      call(
+        read,
+        {
+          key: "SYSTEM_ADDRESS",
+        },
+        {
+          context,
+        }
+      ),
+    ]);
+
+    const { kyc } = userQueryResult ?? {};
+
+    return {
+      id: authUser.id,
+      name:
+        kyc?.firstName && kyc.lastName
+          ? `${kyc.firstName} ${kyc.lastName}`
+          : authUser.name,
+      email: authUser.email,
+      role: authUser.role,
+      wallet: authUser.wallet,
+      isOnboarded: authUser.isOnboarded,
+      firstName: kyc?.firstName,
+      lastName: kyc?.lastName,
+      onboardingState: {
+        wallet: !!authUser.wallet,
+        walletSecurity:
+          authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
+        walletRecoveryCodes: !!authUser.secretCodeVerificationId,
+        system: !!systemAddress,
+        identity: !!userQueryResult?.kyc,
+      },
+    };
+  });

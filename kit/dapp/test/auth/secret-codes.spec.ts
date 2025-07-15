@@ -14,7 +14,7 @@ describe("Secret codes verification", () => {
     await setupUser(TEST_USER);
   });
 
-  it("can generate secret codes without", async () => {
+  it("can generate secret codes", async () => {
     const { data, error } = await authClient.secretCodes.generate(
       {
         password: TEST_USER.password,

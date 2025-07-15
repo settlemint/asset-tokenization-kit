@@ -1,9 +1,9 @@
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useCallback } from "react";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { MultiStepWizard } from "./multistep-wizard";
 import type { StepDefinition, StepGroup } from "./types";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 
 const logger = createLogger();
 

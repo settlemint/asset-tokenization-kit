@@ -100,7 +100,7 @@ git:
   image:
     registry: docker.io
     repository: alpine/git
-    tag: 2.49.0
+    tag: v2.49.1
     pullPolicy: IfNotPresent
 
 job:

@@ -1,4 +1,17 @@
 {
+  "wizard": {
+    "description": "Create a new token by selecting the token type and configuring its basic properties.",
+    "steps": {
+      "asset-type": {
+        "title": "Select Token Type",
+        "description": "Choose the type of token you want to create"
+      },
+      "token-details": {
+        "title": "Token Details",
+        "description": "Configure the basic properties of your token"
+      }
+    }
+  },
   "streaming-messages": {
     "initial-loading": "Preparing to create {{type}}...",
     "no-result-error": "No transaction hash received from {{type}} creation.",
@@ -10,6 +23,10 @@
     "title": "Create {{type}}",
     "description": "Configure your {{type}} by providing the basic information below.",
     "fields": {
+      "type": {
+        "label": "Asset Type",
+        "description": "Select the type of asset you want to create. Only asset types with deployed factories are available."
+      },
       "name": {
         "label": "Name",
         "placeholder": "e.g., Government {{type}} Series A",
@@ -29,6 +46,31 @@
         "label": "ISIN (Optional)",
         "placeholder": "e.g., US0378331005",
         "description": "The ISIN of the token. This is an optional unique identifier for the token in the financial system."
+      },
+      "cap": {
+        "label": "Token Cap",
+        "placeholder": "e.g., 1000000",
+        "description": "The maximum number of tokens that can be issued"
+      },
+      "faceValue": {
+        "label": "Face Value",
+        "placeholder": "e.g., 1000",
+        "description": "The face value of each bond token"
+      },
+      "maturityDate": {
+        "label": "Maturity Date",
+        "placeholder": "Select date",
+        "description": "The maturity date of the bond"
+      },
+      "underlyingAsset": {
+        "label": "Underlying Asset",
+        "placeholder": "e.g., 0x...",
+        "description": "The Ethereum address of the underlying asset"
+      },
+      "managementFeeBps": {
+        "label": "Management Fee (BPS)",
+        "placeholder": "e.g., 100",
+        "description": "Management fee in basis points (100 BPS = 1%)"
       }
     },
     "actions": {
@@ -41,6 +83,13 @@
     "created": "{{type}} successfully created.",
     "creation-failed": "Failed to create the {{type}}.",
     "success-toast": "{{type}} created successfully!",
-    "error-toast": "Failed to create {{type}}"
+    "error-toast": "Failed to create {{type}}",
+    "loading": "Loading available asset types...",
+    "loading-description": "Please wait while we fetch the available token factories.",
+    "no-asset-types": "No Asset Types Available",
+    "no-asset-types-description": "No token factories have been deployed yet. Please deploy token factories first before creating tokens."
+  },
+  "validation": {
+    "type-required": "Please select an asset type"
   }
 }

@@ -24,7 +24,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { getAssetClassFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatches } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -72,7 +72,7 @@ export function NavAsset() {
       icon: PiggyBankIcon,
       factories: factories.filter(
         (factory) =>
-          getAssetClassFromFactoryTypeId(factory.typeId) === "fixed-income"
+          getAssetClassFromFactoryTypeId(factory.typeId) === "fixedIncome"
       ),
     },
     {
@@ -80,7 +80,7 @@ export function NavAsset() {
       icon: BanknoteArrowUpIcon,
       factories: factories.filter(
         (factory) =>
-          getAssetClassFromFactoryTypeId(factory.typeId) === "flexible-income"
+          getAssetClassFromFactoryTypeId(factory.typeId) === "flexibleIncome"
       ),
     },
     {
@@ -88,7 +88,7 @@ export function NavAsset() {
       icon: CreditCardIcon,
       factories: factories.filter(
         (factory) =>
-          getAssetClassFromFactoryTypeId(factory.typeId) === "cash-equivalent"
+          getAssetClassFromFactoryTypeId(factory.typeId) === "cashEquivalent"
       ),
     },
   ];

@@ -7,7 +7,7 @@
  * @module ZodUtilities
  */
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 // Create logger instance with configurable log level
 const logger = createLogger();

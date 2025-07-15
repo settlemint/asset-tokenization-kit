@@ -16,9 +16,9 @@ A Helm chart for the supporting components
 |------------|------|---------|
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.0 |
 | https://stakater.github.io/stakater-charts | reloader | 2.1.5 |
-| oci://registry-1.docker.io/bitnamicharts | minio | 17.0.11 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql-ha | 16.0.18 |
-| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.9 |
+| oci://registry-1.docker.io/bitnamicharts | minio | 17.0.12 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql-ha | 16.0.21 |
+| oci://registry-1.docker.io/bitnamicharts | redis | 21.2.10 |
 
 ## Values
 
@@ -74,6 +74,7 @@ A Helm chart for the supporting components
 | ingress-nginx.controller.config.proxy-buffer-size | string | `"128k"` |  |
 | ingress-nginx.controller.config.proxy-buffering | string | `"on"` |  |
 | ingress-nginx.controller.config.proxy-buffers-number | string | `"4"` |  |
+| ingress-nginx.controller.config.proxy-busy-buffers-size | string | `"128k"` |  |
 | ingress-nginx.controller.config.proxy-max-temp-file-size | string | `"1024m"` |  |
 | ingress-nginx.controller.config.proxy-read-timeout | string | `"3600"` |  |
 | ingress-nginx.controller.config.proxy-send-timeout | string | `"3600"` |  |

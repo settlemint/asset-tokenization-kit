@@ -1,4 +1,4 @@
-import type { z } from "zod/v4";
+import type { z } from "zod";
 
 // Form API types - using any to work with TanStack Form's complex generics
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
@@ -18,7 +18,13 @@ export interface StepDefinition<TFormData = unknown> {
   title: string;
   description?: string;
   groupId?: string;
-  fields?: FieldDefinition<TFormData>[];
+  enableFilters?: boolean;
+  fields?:
+    | FieldDefinition<TFormData>[]
+    | ((formData: Partial<TFormData>) => FieldDefinition<TFormData>[]);
+  groups?:
+    | FieldGroup<TFormData>[]
+    | ((formData: Partial<TFormData>) => FieldGroup<TFormData>[]);
   validate?: (
     formData: Partial<TFormData>
   ) => Promise<string | undefined> | string | undefined;
@@ -41,12 +47,14 @@ export interface StepDefinition<TFormData = unknown> {
 
 export interface FieldDefinition<TFormData = unknown> {
   name: keyof TFormData;
-  label: string;
+  label?: string;
   description?: string;
   type:
     | "text"
     | "number"
     | "email"
+    | "date"
+    | "datetime"
     | "select"
     | "checkbox"
     | "radio"
@@ -55,10 +63,26 @@ export interface FieldDefinition<TFormData = unknown> {
   placeholder?: string;
   required?: boolean;
   schema?: z.ZodType;
-  options?: { label: string; value: string }[];
+  options?: {
+    label: string;
+    value: string;
+    description?: string;
+    icon?: React.ReactNode;
+  }[];
   dependsOn?: (formData: Partial<TFormData>) => Promise<boolean> | boolean;
   component?: React.ComponentType<FieldComponentProps<TFormData>>;
   postfix?: string;
+  variant?: "default" | "card";
+  minDate?: Date;
+  maxDate?: Date;
+}
+
+export interface FieldGroup<TFormData = unknown> {
+  id: string;
+  label: string;
+  description?: string;
+  icon?: React.ReactNode;
+  fields: FieldDefinition<TFormData>[];
 }
 
 export interface StepGroup {
@@ -101,6 +125,7 @@ export interface UseMultiStepWizardStateOptions {
 
 export interface MultiStepWizardProps<TFormData = unknown> {
   name: string;
+  title?: string;
   description?: string;
   steps: StepDefinition<TFormData>[];
   groups?: StepGroup[];
@@ -113,6 +138,8 @@ export interface MultiStepWizardProps<TFormData = unknown> {
   defaultValues?: Partial<TFormData>;
   showProgressBar?: boolean;
   allowStepSkipping?: boolean;
+  onStepChange?: (stepIndex: number) => void;
+  defaultStepIndex?: number;
 }
 
 export interface StepValidationResult {

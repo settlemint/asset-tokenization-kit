@@ -16,7 +16,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { z } from "zod/v4";
+import { z } from "zod";
 import type { SystemReadOutput } from "./system.read.schema";
 
 /**
@@ -28,6 +28,16 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
   query SystemDetails($id: ID!) {
     system(id: $id) {
       id
+      deployedInTransaction
+      identityRegistry {
+        id
+      }
+      trustedIssuersRegistry {
+        id
+      }
+      compliance {
+        id
+      }
       tokenFactoryRegistry {
         id
         tokenFactories {
@@ -35,6 +45,9 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
           name
           typeId
         }
+      }
+      systemAddonRegistry {
+        id
       }
     }
   }
@@ -72,6 +85,22 @@ export const read = onboardedRouter.system.read
       system: z
         .object({
           id: z.string(),
+          deployedInTransaction: z.string().nullable(),
+          identityRegistry: z
+            .object({
+              id: z.string(),
+            })
+            .nullable(),
+          trustedIssuersRegistry: z
+            .object({
+              id: z.string(),
+            })
+            .nullable(),
+          compliance: z
+            .object({
+              id: z.string(),
+            })
+            .nullable(),
           tokenFactoryRegistry: z
             .object({
               id: z.string(),
@@ -82,6 +111,11 @@ export const read = onboardedRouter.system.read
                   typeId: z.string(),
                 })
               ),
+            })
+            .nullable(),
+          systemAddonRegistry: z
+            .object({
+              id: z.string(),
             })
             .nullable(),
         })
@@ -109,7 +143,14 @@ export const read = onboardedRouter.system.read
     // The factory mapping no longer needs explicit type annotations thanks to Zod inference
     const output: SystemReadOutput = {
       id: result.system.id as EthereumAddress,
+      deployedInTransaction: result.system.deployedInTransaction,
+      identityRegistry: result.system.identityRegistry?.id as EthereumAddress,
+      trustedIssuersRegistry: result.system.trustedIssuersRegistry
+        ?.id as EthereumAddress,
+      compliance: result.system.compliance?.id as EthereumAddress,
       tokenFactoryRegistry: result.system.tokenFactoryRegistry
+        ?.id as EthereumAddress,
+      systemAddonRegistry: result.system.systemAddonRegistry
         ?.id as EthereumAddress,
       tokenFactories:
         result.system.tokenFactoryRegistry?.tokenFactories.map((factory) => ({

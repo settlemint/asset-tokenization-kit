@@ -14,6 +14,8 @@ services:
     image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.5
     container_name: atk-anvil
     restart: unless-stopped
+    environment:
+      - TIMESTAMP=${TIMESTAMP:-0}
     # No Gas network
     entrypoint:
       [
@@ -30,6 +32,8 @@ services:
         "0",
         "--init",
         "/opt/anvil/genesis.json",
+        "--timestamp",
+        "${TIMESTAMP}",
       ]
     ports:
       - "8545:8545" # Ethereum JSON-RPC
@@ -92,7 +96,6 @@ services:
       ]
     volumes:
       - ./tools/docker/postgres/init.sql:/docker-entrypoint-initdb.d/1_init.sql:ro
-      - ./kit/dapp/.generated/database-export.sql:/docker-entrypoint-initdb.d/2_atk.sql:ro
       - atk-postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
@@ -115,7 +118,7 @@ services:
       retries: 5
       start_period: 5s
   portal:
-    image: ghcr.io/settlemint/btp-scs-portal:8.5.12
+    image: ghcr.io/settlemint/btp-scs-portal:8.5.13
     container_name: atk-portal
     restart: unless-stopped
     depends_on:

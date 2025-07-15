@@ -1,4 +1,3 @@
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -14,6 +13,7 @@ const logger = createLogger();
 
 export function MultiStepWizard<TFormData = Record<string, unknown>>({
   name,
+  title,
   description,
   steps,
   groups,
@@ -26,6 +26,8 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   defaultValues = {},
   showProgressBar = true,
   allowStepSkipping = false,
+  onStepChange,
+  defaultStepIndex = 0,
 }: MultiStepWizardProps<TFormData>) {
   logger.debug("MultiStepWizard initialization", {
     name,
@@ -50,7 +52,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     enableUrlPersistence,
     debounceMs,
     defaultState: {
-      currentStepIndex: 0,
+      currentStepIndex: defaultStepIndex,
       completedSteps: [],
       stepErrors: {},
     },
@@ -116,8 +118,10 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
       // 1. Any previous step (stepIndex < safeCurrentStepIndex)
       // 2. Completed steps
       // 3. The next step after current
+      // 4. Steps which have a component
       const targetStep = steps[stepIndex];
       if (!targetStep) return false;
+      if (!targetStep.component) return false;
 
       return (
         stepIndex < safeCurrentStepIndex || // Allow going back to any previous step
@@ -132,22 +136,31 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     (stepIndex: number) => {
       if (canNavigateToStep(stepIndex)) {
         setCurrentStepIndex(stepIndex);
+        if (typeof onStepChange === "function") {
+          onStepChange(stepIndex);
+        }
       }
     },
-    [canNavigateToStep, setCurrentStepIndex]
+    [canNavigateToStep, setCurrentStepIndex, onStepChange]
   );
 
   const nextStep = useCallback(() => {
     if (safeCurrentStepIndex < steps.length - 1) {
       setCurrentStepIndex(Number(safeCurrentStepIndex) + 1);
+      if (typeof onStepChange === "function") {
+        onStepChange(Number(safeCurrentStepIndex) + 1);
+      }
     }
-  }, [safeCurrentStepIndex, steps.length, setCurrentStepIndex]);
+  }, [safeCurrentStepIndex, steps.length, setCurrentStepIndex, onStepChange]);
 
   const previousStep = useCallback(() => {
     if (safeCurrentStepIndex > 0) {
       setCurrentStepIndex(safeCurrentStepIndex - 1);
+      if (typeof onStepChange === "function") {
+        onStepChange(safeCurrentStepIndex - 1);
+      }
     }
-  }, [safeCurrentStepIndex, setCurrentStepIndex]);
+  }, [safeCurrentStepIndex, setCurrentStepIndex, onStepChange]);
 
   const markStepComplete = useCallback(
     (stepId: string) => {
@@ -299,76 +312,75 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   }
 
   return (
-    <ComponentErrorBoundary componentName={name || "Multi-Step Wizard"}>
-      <WizardProvider value={contextValue}>
-        <div
-          className={cn("flex", className)}
-          style={{ height: `${dynamicHeight}px` }}
-        >
-          <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
-            {/* Sidebar */}
-            <div
-              className={cn(
-                "w-[320px] flex-shrink-0 p-8 flex flex-col transition-all duration-300",
-                sidebarClassName
-              )}
-              style={sidebarStyle}
-            >
-              {/* Title and Progress */}
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold text-primary-foreground mb-2">
-                  {name
+    <WizardProvider value={contextValue}>
+      <div
+        className={cn("flex", className)}
+        style={{ height: `${dynamicHeight}px` }}
+      >
+        <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
+          {/* Sidebar */}
+          <div
+            className={cn(
+              "w-[320px] flex-shrink-0 p-8 flex flex-col transition-all duration-300",
+              sidebarClassName
+            )}
+            style={sidebarStyle}
+          >
+            {/* Title and Progress  */}
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-primary-foreground mb-2">
+                {title ??
+                  (name
                     ? name
                         .split("-")
                         .map(
                           (word) => word.charAt(0).toUpperCase() + word.slice(1)
                         )
                         .join(" ")
-                    : "Setup Wizard"}
-                </h2>
-                <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
-                  {description ?? "Configure your platform step by step"}
-                </p>
+                    : "Setup Wizard")}
+              </h2>
+              <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
+                {description ?? "Configure your platform step by step"}
+              </p>
 
-                {showProgressBar && (
-                  <div>
-                    <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
-                      <span>Step {Number(safeCurrentStepIndex) + 1}</span>
-                      <span>
-                        {Number(safeCurrentStepIndex) + 1} /{" "}
-                        {Number(steps.length)}
-                      </span>
-                    </div>
-                    <Progress
-                      value={progress}
-                      className="h-2 bg-primary-foreground/20"
-                    />
+              {showProgressBar && (
+                <div>
+                  <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
+                    <span>Step {Number(safeCurrentStepIndex) + 1}</span>
+                    <span>
+                      {Number(safeCurrentStepIndex) + 1} /{" "}
+                      {Number(steps.length)}
+                    </span>
                   </div>
-                )}
-              </div>
-
-              <WizardSidebar />
+                  <Progress
+                    value={progress}
+                    className="h-2 bg-primary-foreground/20"
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Main content */}
-            <div
-              className={cn(
-                "flex-1 flex flex-col transition-all duration-300 relative overflow-hidden",
-                contentClassName
-              )}
-              style={contentStyle}
-            >
-              <div className="flex-1 overflow-y-auto p-8">
-                <div className="w-full h-full">
-                  <form onSubmit={handleFormSubmit}>
-                    <WizardStep />
-                  </form>
-                </div>
+            <WizardSidebar />
+          </div>
+
+          {/* Main content */}
+          <div
+            className={cn(
+              "flex-1 flex flex-col transition-all duration-300 relative overflow-hidden",
+              contentClassName
+            )}
+            style={contentStyle}
+          >
+            <div className="flex-1 overflow-y-auto p-8">
+              <div className="w-full h-full">
+                <form onSubmit={handleFormSubmit}>
+                  <WizardStep />
+                </form>
               </div>
             </div>
           </div>
         </div>
-      </WizardProvider>
-    </ComponentErrorBoundary>
+      </div>
+    </WizardProvider>
   );
 }

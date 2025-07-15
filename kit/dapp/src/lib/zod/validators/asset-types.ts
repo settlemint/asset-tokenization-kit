@@ -6,7 +6,7 @@
  * asset tokenization platform's various asset categories.
  * @module AssetTypeValidation
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Tuple of valid asset types for type-safe iteration.
@@ -27,9 +27,9 @@ export const assetTypes = [
 ] as const;
 
 export const assetClasses = [
-  "fixed-income",
-  "flexible-income",
-  "cash-equivalent",
+  "fixedIncome",
+  "flexibleIncome",
+  "cashEquivalent",
 ] as const;
 
 /**
@@ -630,11 +630,11 @@ export function getAssetClassFromFactoryTypeId(
   factoryTypeId: AssetFactoryTypeId
 ): AssetClass {
   const mapping: Record<AssetFactoryTypeId, AssetClass> = {
-    ATKBondFactory: "fixed-income",
-    ATKEquityFactory: "flexible-income",
-    ATKFundFactory: "flexible-income",
-    ATKStableCoinFactory: "cash-equivalent",
-    ATKDepositFactory: "cash-equivalent",
+    ATKBondFactory: "fixedIncome",
+    ATKEquityFactory: "flexibleIncome",
+    ATKFundFactory: "flexibleIncome",
+    ATKStableCoinFactory: "cashEquivalent",
+    ATKDepositFactory: "cashEquivalent",
   };
 
   return mapping[factoryTypeId];

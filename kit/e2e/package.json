@@ -5,16 +5,13 @@
   "type": "module",
   "dependencies": {},
   "devDependencies": {
-    "@playwright/test": "1.53.2",
+    "@playwright/test": "1.54.1",
     "@types/bun": "1.2.18"
   },
   "peerDependencies": {
     "typescript": "5.8.3"
   },
   "scripts": {
-    "deps:foundry": "echo 'No Foundry projects in e2e workspace'",
-    "deps:helm": "echo 'No Helm charts in e2e workspace'",
-    "deps:install": "echo 'Dependencies installed via bun'",
     "test:e2e": "NODE_NO_WARNINGS=1 playwright test",
     "test:e2e:ui": "NODE_NO_WARNINGS=1 playwright test --ui",
     "test:e2e:ui:local": "SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT=http://localhost:3000 NODE_NO_WARNINGS=1 playwright test --ui"

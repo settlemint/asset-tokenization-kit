@@ -6,8 +6,8 @@
  * @module ISOCountryCodeValidation
  */
 
-import * as countries from "i18n-iso-countries";
-import { z } from "zod/v4";
+import countries from "i18n-iso-countries";
+import { z } from "zod";
 
 // Preload supported locales
 import localeAr from "i18n-iso-countries/langs/ar.json";
@@ -15,11 +15,13 @@ import localeDe from "i18n-iso-countries/langs/de.json";
 import localeEn from "i18n-iso-countries/langs/en.json";
 import localeJa from "i18n-iso-countries/langs/ja.json";
 
+const { registerLocale, getAlpha2Codes, getName } = countries;
+
 // Register all supported locales at module initialization
-countries.registerLocale(localeEn);
-countries.registerLocale(localeAr);
-countries.registerLocale(localeDe);
-countries.registerLocale(localeJa);
+registerLocale(localeEn);
+registerLocale(localeAr);
+registerLocale(localeDe);
+registerLocale(localeJa);
 
 /**
  * Supported locale codes for country name translations.
@@ -40,7 +42,7 @@ export const SUPPORTED_LOCALES: readonly SupportedLocale[] = [
  * Array of all valid ISO 3166-1 alpha-2 country codes.
  * Generated from the i18n-iso-countries library.
  */
-const validCountryCodes = Object.keys(countries.getAlpha2Codes()) as [
+const validCountryCodes = Object.keys(getAlpha2Codes()) as [
   string,
   ...string[],
 ];
@@ -91,7 +93,7 @@ export function getCountryName(
   locale: SupportedLocale = "en"
 ): string | undefined {
   // All supported locales are pre-registered at module initialization
-  return countries.getName(code, locale);
+  return getName(code, locale);
 }
 
 /**

@@ -60,7 +60,7 @@ export const namespaces = [
   "form",
   "formats",
   "general",
-  "issuer-dashboard",
+  "stats",
   "language",
   "navigation",
   "onboarding",
@@ -203,4 +203,5 @@ void i18n.init({
  * }
  * ```
  */
+// eslint-disable-next-line no-barrel-files/no-barrel-files
 export default i18n;

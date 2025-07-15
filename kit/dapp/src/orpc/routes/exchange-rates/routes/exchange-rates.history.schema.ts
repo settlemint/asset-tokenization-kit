@@ -8,7 +8,7 @@ import {
   fiatCurrency,
   type FiatCurrency,
 } from "@/lib/zod/validators/fiat-currency";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Schema for querying historical exchange rates.

@@ -6,7 +6,7 @@
  * market conventions and format requirements.
  * @module AssetSymbolValidation
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Zod schema for validating trading symbols for financial assets
