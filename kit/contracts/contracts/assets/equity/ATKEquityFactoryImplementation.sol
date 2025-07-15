@@ -42,7 +42,7 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
         uint16 countryCode_
     )
         external
-        override
+        override(IATKEquityFactory)
         returns (address deployedEquityAddress)
     {
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
@@ -94,15 +94,13 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
     /// @param decimals_ The decimals of the equity.
     /// @param requiredClaimTopics_ The required claim topics for the equity.
     /// @param initialModulePairs_ The initial compliance module pairs for the equity.
-    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return predictedAddress The predicted address of the equity contract.
     function predictEquityAddress(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
-        uint16 countryCode_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         external
         view

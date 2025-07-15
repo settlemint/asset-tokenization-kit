@@ -121,7 +121,6 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
     /// @param underlyingAsset_ The underlying asset of the bond.
     /// @param requiredClaimTopics_ The required claim topics for the bond.
     /// @param initialModulePairs_ The initial compliance module pairs for the bond.
-    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return predictedAddress The predicted address of the bond contract.
     function predictBondAddress(
         string memory name_,
@@ -132,8 +131,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         uint256 faceValue_,
         address underlyingAsset_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
-        uint16 countryCode_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         external
         view

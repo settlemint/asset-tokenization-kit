@@ -37,7 +37,6 @@ interface IATKFixedYieldScheduleFactory {
         uint256 endTime,
         uint256 rate,
         uint256 interval,
-        string memory description,
         uint16 country
     )
         external

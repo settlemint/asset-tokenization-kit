@@ -262,22 +262,6 @@ abstract contract AbstractATKTokenFactoryImplementation is
         return predictedAddress;
     }
 
-    function _predictContractIdentityAddress(
-        string memory name,
-        string memory symbol,
-        uint8 decimals,
-        address initialManager
-    )
-        internal
-        view
-        returns (address)
-    {
-        // With the new approach, we can't predict the identity address until after token deployment
-        // This function is no longer needed, but kept for backward compatibility
-        // Return zero address to indicate identity will be set after deployment
-        return address(0);
-    }
-
     /// @notice Creates a new access manager for a token using CREATE2.
     /// @dev Deploys SMARTTokenAccessManagerProxy with a deterministic address.
     /// @param accessManagerSaltInputData The ABI encoded data to be used for salt calculation for the access manager.

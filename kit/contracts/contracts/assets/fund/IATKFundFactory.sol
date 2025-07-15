@@ -55,7 +55,6 @@ interface IATKFundFactory is IATKTokenFactory {
     /// @param managementFeeBps_ The management fee in basis points.
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the fund.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
-    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return predictedAddress The predicted address of the fund contract.
     function predictFundAddress(
         string memory name_,
@@ -63,8 +62,7 @@ interface IATKFundFactory is IATKTokenFactory {
         uint8 decimals_,
         uint16 managementFeeBps_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
-        uint16 countryCode_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         external
         view

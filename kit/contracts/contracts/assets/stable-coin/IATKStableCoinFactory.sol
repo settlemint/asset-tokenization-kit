@@ -50,15 +50,13 @@ interface IATKStableCoinFactory is IATKTokenFactory {
     /// @param decimals_ The number of decimals for the stable coin.
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the stable coin.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
-    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return predictedAddress The predicted address of the stable coin contract.
     function predictStableCoinAddress(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
-        uint16 countryCode_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         external
         view

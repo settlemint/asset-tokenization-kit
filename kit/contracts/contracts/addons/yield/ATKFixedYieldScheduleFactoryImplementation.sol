@@ -100,7 +100,6 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     /// @param endTime The Unix timestamp for the schedule end.
     /// @param rate The yield rate in basis points.
     /// @param interval The interval for yield distributions in seconds.
-    /// @param description Human-readable description of the yield schedule.
     /// @param country Country code for compliance purposes.
     /// @return scheduleProxyAddress The address of the newly created `ATKFixedYieldProxy` contract.
     function create(
@@ -109,7 +108,6 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         uint256 endTime,
         uint256 rate,
         uint256 interval,
-        string memory description,
         uint16 country
     )
         external

@@ -858,7 +858,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             endDate,
             yieldRate,
             interval,
-            "Test Yield Schedule",
             TestConstants.COUNTRY_CODE_US
         );
         vm.label(yieldScheduleAddr, "Yield Schedule");
@@ -893,7 +892,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             endDate,
             yieldRate,
             interval,
-            "Test Yield Schedule 2",
             TestConstants.COUNTRY_CODE_US
         );
         vm.label(yieldScheduleAddr, "Yield Schedule");

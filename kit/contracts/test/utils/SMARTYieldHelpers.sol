@@ -74,7 +74,6 @@ abstract contract SMARTYieldHelpers is Test {
             endDate,
             YIELD_RATE,
             PERIOD_INTERVAL,
-            "Test Helper Yield Schedule",
             TestConstants.COUNTRY_CODE_US
         );
     }

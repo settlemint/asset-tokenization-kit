@@ -70,7 +70,6 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param underlyingAsset_ The address of the ERC20 token used as the underlying asset for the bond.
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the bond.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
-    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return predictedAddress The predicted address of the bond contract.
     function predictBondAddress(
         string memory name_,
@@ -81,8 +80,7 @@ interface IATKBondFactory is IATKTokenFactory {
         uint256 faceValue_,
         address underlyingAsset_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
-        uint16 countryCode_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         external
         view
