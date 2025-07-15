@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
@@ -30,10 +29,10 @@ import { ATKContractIdentityProxy } from "./identities/ATKContractIdentityProxy.
 /// @title ATK Identity Factory Implementation
 /// @author SettleMint Tokenization Services
 /// @notice This contract is the upgradeable logic implementation for creating and managing on-chain identities
-///         for both user wallets and token contracts within the ATK Protocol.
+///         for both user wallets and contracts within the ATK Protocol.
 /// @dev It leverages OpenZeppelin's `Create2` library to deploy identity proxy contracts (`ATKIdentityProxy` for
 /// wallets,
-///      `ATKTokenIdentityProxy` for tokens) at deterministic addresses. These proxies point to logic implementations
+///      `ATKContractIdentityProxy` for contracts) at deterministic addresses. These proxies point to logic implementations
 ///      whose addresses are provided by the central `IATKSystem` contract, enabling upgradeability of the identity
 /// logic.
 ///      The factory is `ERC2771ContextUpgradeable` for meta-transaction support.
@@ -45,8 +44,8 @@ contract ATKIdentityFactoryImplementation is
     IATKIdentityFactory
 {
     // --- Constants ---
-    /// @notice Prefix used in salt calculation for creating token identities to ensure unique salt generation.
-    /// @dev For example, salt might be `keccak256(abi.encodePacked("Token", <tokenAddressHex>))`.
+    /// @notice Prefix used in salt calculation for creating contract identities to ensure unique salt generation.
+    /// @dev For example, salt might be `keccak256(abi.encodePacked("Contract", <contractAddressHex>))`.
     string public constant CONTRACT_SALT_PREFIX = "Contract";
     /// @notice Prefix used in salt calculation for creating wallet identities to ensure unique salt generation.
     /// @dev For example, salt might be `keccak256(abi.encodePacked("OID", <walletAddressHex>))` (OID stands for
@@ -56,7 +55,7 @@ contract ATKIdentityFactoryImplementation is
     // --- Storage Variables ---
     /// @notice The address of the `IATKSystem` contract.
     /// @dev This system contract provides the addresses of the current logic implementations for `ATKIdentity`
-    ///      and `ATKTokenIdentity` contracts that the deployed proxies will point to.
+    ///      and `ATKContractIdentity` contracts that the deployed proxies will point to.
     address private _system;
 
     /// @notice Mapping to track whether a specific salt (represented as `bytes32`) has already been used for a CREATE2
@@ -74,7 +73,7 @@ contract ATKIdentityFactoryImplementation is
 
     // --- Errors ---
     /// @notice Indicates that an operation was attempted with the zero address (address(0))
-    ///         where a valid, non-zero address was expected (e.g., for a wallet or token owner).
+    ///         where a valid, non-zero address was expected (e.g., for a wallet or contract owner).
     error ZeroAddressNotAllowed();
     /// @notice Indicates that a deterministic deployment (CREATE2) was attempted with a salt that has already been
     /// used.
@@ -307,7 +306,7 @@ contract ATKIdentityFactoryImplementation is
 
     /// @notice Returns the address of the `IATKSystem` contract that this factory uses.
     /// @dev The `IATKSystem` contract provides the addresses for the actual logic implementations
-    ///      of `ATKIdentity` and `ATKTokenIdentity` that the deployed proxies will delegate to.
+    ///      of `ATKIdentity` and `ATKContractIdentity` that the deployed proxies will delegate to.
     /// @return address The address of the configured `IATKSystem` contract.
     function getSystem() external view returns (address) {
         return _system;
@@ -358,12 +357,12 @@ contract ATKIdentityFactoryImplementation is
     }
 
     /// @notice Calculates a deterministic salt for CREATE2 deployment based on a prefix and an address.
-    /// @dev Concatenates the `_saltPrefix` (e.g., "OID" or "Token") with the hexadecimal string representation
+    /// @dev Concatenates the `_saltPrefix` (e.g., "OID" or "Contract") with the hexadecimal string representation
     ///      of the `_address`. The result is then keccak256 hashed to produce the `bytes32` salt.
     ///      This ensures that for the same prefix and address, the salt is always the same.
     /// @param _saltPrefix A string prefix to ensure salt uniqueness across different types of identities (e.g., "OID"
-    /// for wallets, "Token" for tokens).
-    /// @param _address The address (wallet or token) to incorporate into the salt.
+    /// for wallets, "Contract" for contracts).
+    /// @param _address The address (wallet or contract) to incorporate into the salt.
     /// @return saltBytes The calculated `bytes32` salt value.
     /// @return saltString The string representation of the salt before hashing (prefix + hexAddress), useful for error
     /// messages.

@@ -471,15 +471,17 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
 
         // Process each contract call in the batch
         for (uint256 i = 0; i < batchSize; i++) {
-            bytes memory data = bytes.concat(selectors[i], abiEncodedArguments[i]);
-            txIndices[i] = _storeTransaction(targets[i], values[i], data, comments[i]);
+            uint256 txIndex = _storeTransaction(
+                targets[i], values[i], bytes.concat(selectors[i], abiEncodedArguments[i]), comments[i]
+            );
+            txIndices[i] = txIndex;
 
             emit SubmitContractCallTransaction(
-                sender, txIndices[i], targets[i], values[i], selectors[i], abiEncodedArguments[i], comments[i]
+                sender, txIndex, targets[i], values[i], selectors[i], abiEncodedArguments[i], comments[i]
             );
 
             // Automatically confirm each transaction
-            _confirm(txIndices[i], sender);
+            _confirm(txIndex, sender);
         }
     }
 

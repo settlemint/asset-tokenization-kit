@@ -298,30 +298,25 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
         address[] memory recipients = new address[](indices.length);
 
         for (uint256 i = 0; i < indices.length; i++) {
-            uint256 index = indices[i];
-            uint256 claimAmount = claimAmounts[i];
-            uint256 totalAmount = totalAmounts[i];
-            bytes32[] calldata merkleProof = merkleProofs[i];
-
-            if (claimAmount == 0) revert ZeroClaimAmount();
+            if (claimAmounts[i] == 0) revert ZeroClaimAmount();
 
             // Check if already fully claimed
-            if (_claimTracker.isClaimed(index, totalAmount)) revert IndexAlreadyClaimed();
+            if (_claimTracker.isClaimed(indices[i], totalAmounts[i])) revert IndexAlreadyClaimed();
 
             // Verify Merkle proof
-            if (!_verifyMerkleProof(index, account, totalAmount, merkleProof)) {
+            if (!_verifyMerkleProof(indices[i], account, totalAmounts[i], merkleProofs[i])) {
                 revert InvalidMerkleProof();
             }
 
             // Check if the new claim amount is valid
-            if (!_claimTracker.isClaimAmountValid(index, claimAmount, totalAmount)) {
+            if (!_claimTracker.isClaimAmountValid(indices[i], claimAmounts[i], totalAmounts[i])) {
                 revert InvalidClaimAmount();
             }
 
             // Record the claim
-            _claimTracker.recordClaim(index, claimAmount, totalAmount);
+            _claimTracker.recordClaim(indices[i], claimAmounts[i], totalAmounts[i]);
 
-            totalTransferred += claimAmount;
+            totalTransferred += claimAmounts[i];
             recipients[i] = account;
         }
 

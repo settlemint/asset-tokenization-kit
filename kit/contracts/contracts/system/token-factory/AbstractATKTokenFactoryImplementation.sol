@@ -332,19 +332,21 @@ abstract contract AbstractATKTokenFactoryImplementation is
         onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
         returns (address deployedAddress, address deployedTokenIdentityAddress)
     {
-        // Calculate salt and creation code once
+        // Combine calculation to reduce stack variables
         bytes32 salt = _calculateSalt(_systemAddress, tokenSaltInputData);
-        bytes memory fullCreationCode = bytes.concat(proxyCreationCode, encodedConstructorArgs);
-
-        // Predict address using pre-calculated data
-        bytes32 bytecodeHash = keccak256(fullCreationCode);
-        address predictedAddress = Create2.computeAddress(salt, bytecodeHash, address(this));
+        
+        // Calculate predicted address inline to reduce stack depth
+        address predictedAddress = Create2.computeAddress(
+            salt, 
+            keccak256(bytes.concat(proxyCreationCode, encodedConstructorArgs)), 
+            address(this)
+        );
 
         if (isFactoryToken[predictedAddress]) {
             revert AddressAlreadyDeployed(predictedAddress);
         }
 
-        deployedAddress = Create2.deploy(0, salt, fullCreationCode);
+        deployedAddress = Create2.deploy(0, salt, bytes.concat(proxyCreationCode, encodedConstructorArgs));
 
         if (deployedAddress != predictedAddress) {
             revert ProxyCreationFailed();
@@ -353,13 +355,13 @@ abstract contract AbstractATKTokenFactoryImplementation is
         isFactoryToken[deployedAddress] = true;
 
         // Create identity using simple address-based approach - no complex salt needed
-        address tokenIdentity = _deployContractIdentity(deployedAddress, accessManager, description, country);
+        deployedTokenIdentityAddress = _deployContractIdentity(deployedAddress, description, country);
 
         emit TokenAssetCreated(
-            _msgSender(), deployedAddress, tokenIdentity, ISMART(deployedAddress).registeredInterfaces(), accessManager
+            _msgSender(), deployedAddress, deployedTokenIdentityAddress, ISMART(deployedAddress).registeredInterfaces(), accessManager
         );
 
-        return (deployedAddress, tokenIdentity);
+        return (deployedAddress, deployedTokenIdentityAddress);
     }
 
     /// @notice Predicts the deployment address of a proxy using CREATE2.
@@ -387,30 +389,28 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @notice Finalizes the token creation process after deployment and initialization.
     /// @dev Sets up contract identity, on-chain ID, and necessary roles.
     /// @param contractAddress The address of the deployed contract (proxy).
-    /// @param accessManagerAddress The address of the contract's access manager.
     /// @param description Human-readable description of the contract.
     /// @param country The numeric country code (ISO 3166-1 alpha-2 standard) representing the contract's jurisdiction.
     function _deployContractIdentity(
         address contractAddress,
-        address accessManagerAddress,
         string memory description,
         uint16 country
     )
         internal
         returns (address)
     {
-        IATKSystem system_ = IATKSystem(_systemAddress);
-        IATKIdentityFactory identityFactory_ = IATKIdentityFactory(system_.identityFactory());
-
         // Create the contract identity using simple address-based salt
-        address contractIdentity = identityFactory_.createContractIdentity(contractAddress);
+        address contractIdentity = IATKIdentityFactory(IATKSystem(_systemAddress).identityFactory()).createContractIdentity(contractAddress);
 
         // Set the onchain ID on the token contract
         ISMART(contractAddress).setOnchainID(contractIdentity);
 
         // Register the contract identity with the identity registry (same as any other identity)
-        ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(system_.identityRegistry());
-        identityRegistry.registerIdentity(contractAddress, IIdentity(contractIdentity), country);
+        ISMARTIdentityRegistry(IATKSystem(_systemAddress).identityRegistry()).registerIdentity(
+            contractAddress, 
+            IIdentity(contractIdentity), 
+            country
+        );
 
         // Emit registration event for indexing
         emit ContractIdentityRegistered(_msgSender(), contractAddress, description);
