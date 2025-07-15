@@ -27,8 +27,11 @@ import { read } from "@/orpc/routes/settings/routes/settings.read";
 import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
 import { call, withEventMeta } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { z } from "zod";
 import { SystemCreateMessagesSchema } from "./system.create.schema";
+
+const logger = createLogger();
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -193,7 +196,7 @@ export const create = onboardedRouter.system.create
           { id: transactionHash, retry: 1000 }
         );
         return;
-      } else if (event.status === "confirmed") {
+      } else {
         // Transaction is confirmed, now we need to get the system address
         // Since we can't rely on TheGraph indexing, we'll extract it from the transaction receipt
         break;
@@ -232,7 +235,7 @@ export const create = onboardedRouter.system.create
       );
     } catch (error) {
       // Log the actual error for debugging
-      console.error("Portal query failed:", error);
+      logger.error("Portal query failed:", error);
       throw errors.INTERNAL_SERVER_ERROR({
         message: messages.systemCreationFailed,
         cause: new Error(
@@ -256,9 +259,9 @@ export const create = onboardedRouter.system.create
     let systemAddress: string | null = null;
 
     try {
-      console.log("Receipt logs:", receipt.logs);
-      console.log("Receipt contractAddress:", receipt.contractAddress);
-      console.log("Receipt status:", receipt.status);
+      logger.debug("Receipt logs:", receipt.logs);
+      logger.debug("Receipt contractAddress:", receipt.contractAddress);
+      logger.debug("Receipt status:", receipt.status);
 
       const logs = Array.isArray(receipt.logs) ? receipt.logs : [];
 
@@ -266,7 +269,7 @@ export const create = onboardedRouter.system.create
       // In ATK system factory, the last log usually contains the created system address
       if (logs.length > 0) {
         const lastLog = logs[logs.length - 1];
-        console.log("Last log:", lastLog);
+        logger.debug("Last log:", lastLog);
         if (lastLog && typeof lastLog === "object" && "address" in lastLog) {
           systemAddress = lastLog.address as string;
         }
@@ -277,9 +280,9 @@ export const create = onboardedRouter.system.create
         systemAddress = receipt.contractAddress;
       }
 
-      console.log("Extracted system address:", systemAddress);
+      logger.debug("Extracted system address:", systemAddress);
     } catch (error) {
-      console.error("Error parsing transaction logs:", error);
+      logger.error("Error parsing transaction logs:", error);
       // If log parsing fails, continue with null systemAddress to trigger error below
     }
 
@@ -322,13 +325,13 @@ export const create = onboardedRouter.system.create
       // If we get a valid compliance address, the system is already bootstrapped
       isAlreadyBootstrapped =
         !!bootstrapCheck.IATKSystemCompliance?.complianceProxyAddress;
-      console.log("System bootstrap check:", {
+      logger.debug("System bootstrap check:", {
         isAlreadyBootstrapped,
         complianceAddress:
           bootstrapCheck.IATKSystemCompliance?.complianceProxyAddress,
       });
     } catch (error) {
-      console.log(
+      logger.debug(
         "Bootstrap check failed, assuming system is already bootstrapped:",
         error
       );
@@ -434,7 +437,7 @@ export const create = onboardedRouter.system.create
       }
     } else {
       // System is already bootstrapped, skip bootstrap step
-      console.log("System already bootstrapped, skipping bootstrap step");
+      logger.debug("System already bootstrapped, skipping bootstrap step");
 
       // Save the system address to settings using orpc
       await call(
