@@ -2,9 +2,26 @@ import type { AssetDesignerFormData } from "@/components/asset-designer/shared-f
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
 import { withForm } from "@/hooks/use-app-form";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
+import { BondSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/bond.create.schema";
+import { FundSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
+import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { useTranslation } from "react-i18next";
+import { z } from "zod";
 
-export const Basics = withForm({
+export const BasicsSchema = TokenBaseSchema.pick({
+  name: true,
+  symbol: true,
+  decimals: true,
+  isin: true,
+  type: true,
+});
+
+export const AssetBasicsSchema = z.discriminatedUnion("type", [
+  BasicsSchema.extend(BondSchema.shape),
+  BasicsSchema.extend(FundSchema.shape),
+]);
+
+export const AssetBasics = withForm({
   ...assetDesignerFormOptions,
   props: {},
   render: function Render({ form }) {
