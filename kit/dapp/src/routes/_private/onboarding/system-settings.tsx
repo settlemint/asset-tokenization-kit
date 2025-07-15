@@ -12,8 +12,11 @@ import { orpc } from "@/orpc/orpc-client";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useCallback } from "react";
 import { toast } from "sonner";
+
+const logger = createLogger();
 
 export const Route = createFileRoute("/_private/onboarding/system-settings")({
   beforeLoad: async ({ context: { orpc, queryClient } }) => {
@@ -64,6 +67,7 @@ function RouteComponent() {
   const upsertSettingMutation = useMutation({
     ...orpc.settings.upsert.mutationOptions(),
     onSuccess: async () => {
+      logger.debug("Settings mutation successful, invalidating queries");
       await queryClient.invalidateQueries({
         queryKey: orpc.settings.read.key({
           input: { key: "BASE_CURRENCY" },
@@ -71,7 +75,8 @@ function RouteComponent() {
       });
       toast.success("Platform settings saved successfully");
     },
-    onError: () => {
+    onError: (error) => {
+      logger.error("Settings mutation failed:", error);
       toast.error("Failed to save platform settings");
     },
   });
@@ -83,15 +88,26 @@ function RouteComponent() {
         : ("USD" as FiatCurrency),
     },
     onSubmit: async ({ value }) => {
-      await upsertSettingMutation.mutateAsync({
-        key: "BASE_CURRENCY",
-        value: value.baseCurrency,
-      });
-      handleNext();
+      logger.debug("Form onSubmit called with value:", value);
+      try {
+        logger.debug("Saving base currency:", value.baseCurrency);
+        await upsertSettingMutation.mutateAsync({
+          key: "BASE_CURRENCY",
+          value: value.baseCurrency,
+        });
+        logger.debug(
+          "Base currency saved successfully, navigating to next step"
+        );
+        handleNext();
+      } catch (error) {
+        logger.error("Failed to save base currency:", error);
+        toast.error("Failed to save platform settings");
+      }
     },
   });
 
   const handleNext = useCallback(() => {
+    logger.debug("Navigating to next step:", OnboardingStep.systemAssets);
     void navigate({
       to: `/onboarding/${OnboardingStep.systemAssets}`,
     });
@@ -131,7 +147,9 @@ function RouteComponent() {
               name="baseCurrency"
               validators={{
                 onChange: ({ value }) => {
+                  logger.debug("Validating currency:", value);
                   if (!Object.keys(fiatCurrencyMetadata).includes(value)) {
+                    logger.debug("Currency validation failed:", value);
                     return "Invalid currency selection";
                   }
                   return undefined;
@@ -184,6 +202,10 @@ function RouteComponent() {
                 <Button
                   type="button"
                   onClick={() => {
+                    logger.debug("Save & Continue button clicked");
+                    logger.debug("Form state:", form.state);
+                    logger.debug("Form errors:", form.state.errors);
+                    logger.debug("Form canSubmit:", form.state.canSubmit);
                     void form.handleSubmit();
                   }}
                   disabled={form.state.isSubmitting}
