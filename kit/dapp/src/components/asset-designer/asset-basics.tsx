@@ -1,14 +1,12 @@
 import type { AssetDesignerFormData } from "@/components/asset-designer/shared-form";
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
 import { assetDesignerSteps } from "@/components/asset-designer/steps";
+
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
-import { BondSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/bond.create.schema";
-import { FundSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
 
 export const BasicsSchema = TokenBaseSchema.pick({
   name: true,
@@ -17,11 +15,6 @@ export const BasicsSchema = TokenBaseSchema.pick({
   isin: true,
   type: true,
 });
-
-export const AssetBasicsSchema = z.discriminatedUnion("type", [
-  BasicsSchema.extend(BondSchema.shape),
-  BasicsSchema.extend(FundSchema.shape),
-]);
 
 export const AssetBasics = withForm({
   ...assetDesignerFormOptions,
@@ -69,12 +62,18 @@ export const AssetBasics = withForm({
         />
         <form.Subscribe
           selector={(state) => {
-            try {
-              const parseResult = AssetBasicsSchema.safeParse(state.values);
-              return parseResult.success;
-            } catch {
-              return false;
-            }
+            const formFields: (keyof typeof state.fieldMeta)[] = [
+              "name",
+              "symbol",
+              "decimals",
+              "isin",
+              "cap",
+              "faceValue",
+              "managementFeeBps",
+            ];
+            return formFields.every((field) => {
+              return state.fieldMeta[field]?.isValid;
+            });
           }}
         >
           {(isValid) => {

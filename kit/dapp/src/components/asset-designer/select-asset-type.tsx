@@ -57,12 +57,10 @@ export const SelectAssetType = withForm({
         />
         <form.Subscribe
           selector={(state) => {
-            try {
-              const parseResult = SelectAssetTypeSchema.safeParse(state.values);
-              return parseResult.success;
-            } catch {
-              return false;
-            }
+            const formFields: (keyof typeof state.fieldMeta)[] = ["type"];
+            return formFields.every((field) => {
+              return state.fieldMeta[field]?.isValid;
+            });
           }}
         >
           {(isValid) => {
