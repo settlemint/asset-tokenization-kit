@@ -17,7 +17,22 @@ export const Route = createFileRoute("/_private/onboarding/wallet")({
       ...orpc.user.me.queryOptions(),
       staleTime: 0,
     });
-    const { currentStep } = updateOnboardingStateMachine({ user });
+
+    // Check if a system exists by trying to get the system address
+    let hasSystem = false;
+    try {
+      const systemAddress = await queryClient.fetchQuery({
+        ...orpc.settings.read.queryOptions({
+          input: { key: "SYSTEM_ADDRESS" },
+        }),
+        staleTime: 0,
+      });
+      hasSystem = !!(systemAddress && systemAddress.trim() !== "");
+    } catch {
+      hasSystem = false;
+    }
+
+    const { currentStep } = updateOnboardingStateMachine({ user, hasSystem });
     // Allow the wallet step to be shown if the user is not onboarded yet
     // As the wallet is created immediately, we should be less strict here
     if (user.isOnboarded && currentStep !== OnboardingStep.wallet) {
@@ -25,7 +40,7 @@ export const Route = createFileRoute("/_private/onboarding/wallet")({
         to: `/onboarding/${currentStep}`,
       });
     }
-    return { currentStep, user };
+    return { currentStep, user, hasSystem };
   },
   component: RouteComponent,
 });
@@ -61,10 +76,8 @@ function RouteComponent() {
     if (!isCreating && !walletCreated) {
       void handleStartCreation();
     } else if (walletCreated) {
-      navigate({
+      void navigate({
         to: `/onboarding/${OnboardingStep.walletSecurity}`,
-      }).catch((err: unknown) => {
-        logger.error("Error navigating to wallet security", err);
       });
     }
   }, [isCreating, walletCreated, navigate]);

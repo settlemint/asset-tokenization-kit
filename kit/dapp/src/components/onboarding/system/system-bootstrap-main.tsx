@@ -2,12 +2,11 @@ import { Button } from "@/components/ui/button";
 import { VerificationDialog } from "@/components/ui/verification-dialog";
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
-import type { SessionUser } from "@/lib/auth";
-import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
+import type { CurrentUser } from "@/orpc/routes/user/routes/user.me.schema";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle, TriangleAlert } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DeploymentDetails } from "./deployment-details";
 import { DeploymentProgress } from "./deployment-progress";
 
@@ -16,16 +15,14 @@ interface SystemBootstrapMainProps {
   onPrevious?: () => void;
   isFirstStep?: boolean;
   isLastStep?: boolean;
-  user?: SessionUser;
+  user?: CurrentUser;
 }
 
 export function SystemBootstrapMain({
   onNext,
   onPrevious,
   isFirstStep,
-  user,
 }: SystemBootstrapMainProps) {
-  const { data: session } = authClient.useSession();
   const [systemAddress] = useSettings("SYSTEM_ADDRESS");
   const queryClient = useQueryClient();
 
@@ -33,14 +30,14 @@ export function SystemBootstrapMain({
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [isBootstrapped, setIsBootstrapped] = useState(false);
   const [showDeploymentProgress, setShowDeploymentProgress] = useState(false);
+  const [deploymentFailed, setDeploymentFailed] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(
     null
   );
 
-  // Check if user has 2FA enabled to determine available verification methods
-  const currentUser = user ?? session?.user;
-  const hasTwoFactor = false; // TODO: Get from proper user data
-  const hasPincode = false; // TODO: Get from proper user data
+  // For system deployment, we'll use PIN code verification by default
+  const hasTwoFactor = false;
+  const hasPincode = true;
 
   // Fetch real system details when system address is available
   const { data: realSystemDetails } = useQuery({
@@ -53,6 +50,8 @@ export function SystemBootstrapMain({
     mutate: createSystemMutation,
     isPending: isCreatingSystem,
     isTracking,
+    error,
+    latestMessage,
   } = useStreamingMutation({
     mutationOptions: orpc.system.create.mutationOptions(),
     onSuccess: async () => {
@@ -62,10 +61,24 @@ export function SystemBootstrapMain({
         }),
       });
       setShowDeploymentProgress(false);
+      setDeploymentFailed(false);
       setIsBootstrapped(true);
       onNext?.();
     },
   });
+
+  // Monitor for indexing errors
+  const isIndexingError =
+    error?.message?.includes("indexing") ||
+    error?.message?.includes("Indexing timeout") ||
+    latestMessage?.includes("Waiting for indexing");
+
+  // Set deployment failed when we get indexing errors
+  useEffect(() => {
+    if (error && isIndexingError) {
+      setDeploymentFailed(true);
+    }
+  }, [error, isIndexingError]);
 
   // Wrapper function to handle errors
   const createSystem = useCallback(
@@ -74,6 +87,7 @@ export function SystemBootstrapMain({
         // Close the verification modal immediately
         setShowVerificationModal(false);
         setVerificationError(null);
+        setDeploymentFailed(false);
 
         // Show deployment progress screen
         setShowDeploymentProgress(true);
@@ -82,6 +96,7 @@ export function SystemBootstrapMain({
       } catch (error) {
         // Hide deployment progress on error
         setShowDeploymentProgress(false);
+        setDeploymentFailed(true);
 
         // Reopen the verification modal on error for retry
         setShowVerificationModal(true);
@@ -113,7 +128,9 @@ export function SystemBootstrapMain({
 
   // Determine which screen to show
   const currentScreen = showDeploymentProgress
-    ? "progress"
+    ? deploymentFailed
+      ? "failed"
+      : "progress"
     : showSuccessScreen
       ? "success"
       : "initial";
@@ -196,6 +213,13 @@ export function SystemBootstrapMain({
     setIsBootstrapped(true);
   }, []);
 
+  const handleRetryDeployment = useCallback(() => {
+    setDeploymentFailed(false);
+    setShowDeploymentProgress(false);
+    setVerificationError(null);
+    setShowVerificationModal(true);
+  }, []);
+
   return (
     <>
       <div className="h-full flex flex-col">
@@ -205,14 +229,18 @@ export function SystemBootstrapMain({
               ? "Deploying the system"
               : currentScreen === "success"
                 ? "System deployed successfully"
-                : "Initialize the system"}
+                : currentScreen === "failed"
+                  ? "System deployment failed"
+                  : "Initialize the system"}
           </h2>
           <p className="text-sm text-muted-foreground pt-2">
             {currentScreen === "progress"
               ? "We're setting up your platform by deploying the necessary smart contracts. This includes the Identity Registry, Compliance Engine, and Trusted Issuers Registry."
               : currentScreen === "success"
                 ? "You are now the initial administrator of the platform."
-                : "You're about to set up the foundation of the platform"}
+                : currentScreen === "failed"
+                  ? "The system deployment encountered an error. This is usually due to network connectivity issues or indexing delays. Please try again."
+                  : "You're about to set up the foundation of the platform"}
           </p>
           {currentScreen === "progress" && (
             <p className="text-sm text-muted-foreground pt-2">
@@ -224,7 +252,61 @@ export function SystemBootstrapMain({
 
         <div className="flex-1 overflow-y-auto">
           {currentScreen === "progress" ? (
-            <DeploymentProgress onComplete={handleDeploymentComplete} />
+            <DeploymentProgress
+              onComplete={handleDeploymentComplete}
+              currentMessage={latestMessage}
+              hasError={!!error}
+              onRetry={handleRetryDeployment}
+            />
+          ) : currentScreen === "failed" ? (
+            /* Failed Screen */
+            <div className="max-w-3xl space-y-6 text-center">
+              {/* Red Error Box */}
+              <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 text-center space-y-2">
+                <h3 className="text-lg font-semibold text-red-800 dark:text-red-200">
+                  Deployment failed
+                </h3>
+                <p className="text-sm text-red-700 dark:text-red-300">
+                  The system deployment encountered an error, likely due to
+                  network connectivity issues or indexing delays.
+                </p>
+                <div className="flex items-center justify-center pt-2">
+                  <TriangleAlert className="w-6 h-6 text-red-600 dark:text-red-400" />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">What happened?</h3>
+                <ul className="space-y-2 text-sm text-muted-foreground text-left">
+                  <li>
+                    • The transaction may have been mined but indexing is taking
+                    longer than expected
+                  </li>
+                  <li>
+                    • Network connectivity issues may have interrupted the
+                    process
+                  </li>
+                  <li>
+                    • TheGraph indexing service may be temporarily unavailable
+                  </li>
+                </ul>
+                <p className="text-sm text-muted-foreground">
+                  Don't worry - this is usually temporary. Click "Retry
+                  Deployment" to try again.
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                {!isFirstStep && (
+                  <Button variant="outline" onClick={handlePrevious}>
+                    Previous
+                  </Button>
+                )}
+                <Button onClick={handleRetryDeployment} className="flex-1">
+                  Retry Deployment
+                </Button>
+              </div>
+            </div>
           ) : currentScreen === "success" ? (
             /* Success Screen */
             <div className="max-w-3xl space-y-6 text-center">
