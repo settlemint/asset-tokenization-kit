@@ -19,9 +19,9 @@ import { useTranslation } from "react-i18next";
 export function TransactionStatsWidget() {
   const { t } = useTranslation("stats");
 
-  // Fetch just the transaction metrics - more efficient than fetching all metrics
+  // Fetch just the transaction count metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsTransactions.queryOptions({ input: { timeRange: 7 } })
+    orpc.token.statsTransactionCount.queryOptions({ input: { timeRange: 7 } })
   );
 
   return (

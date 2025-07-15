@@ -1,6 +1,8 @@
 import { list } from "@/orpc/routes/user/routes/user.list";
 import { me } from "@/orpc/routes/user/routes/user.me";
 import { stats } from "@/orpc/routes/user/routes/user.stats";
+import { statsGrowthOverTime } from "@/orpc/routes/user/routes/user.stats.growth-over-time";
+import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count";
 import kyc from "@/orpc/routes/user/kyc/kyc.router";
 
 /**
@@ -27,6 +29,8 @@ const routes = {
   me,
   list,
   stats,
+  statsGrowthOverTime,
+  statsUserCount,
   kyc,
 };
 

@@ -21,9 +21,9 @@ export function AssetStatsWidget() {
   const { t } = useTranslation("stats");
   const pluralizeAsset = useAssetTypePlural();
 
-  // Fetch just the asset metrics - more efficient than fetching all metrics
+  // Fetch just the asset count metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsAssets.queryOptions({ input: {} })
+    orpc.token.statsAssetCount.queryOptions({ input: {} })
   );
 
   // Create dynamic breakdown text using proper i18n pluralization
