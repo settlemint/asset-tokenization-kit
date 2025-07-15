@@ -7,7 +7,7 @@ import {
   OnboardingStep,
   OnboardingStepGroup,
   onboardingSteps,
-} from "@/components/onboarding/simplified/state-machine";
+} from "@/components/onboarding/state-machine";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useStore } from "@tanstack/react-store";
 import { useCallback, useMemo, type FunctionComponent } from "react";

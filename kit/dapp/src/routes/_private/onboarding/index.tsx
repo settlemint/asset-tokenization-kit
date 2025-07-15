@@ -1,4 +1,4 @@
-import { updateOnboardingStateMachine } from "@/components/onboarding/simplified/state-machine";
+import { updateOnboardingStateMachine } from "@/components/onboarding/state-machine";
 import { Button } from "@/components/ui/button";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CheckCircle, CircleArrowRight, CircleDot } from "lucide-react";

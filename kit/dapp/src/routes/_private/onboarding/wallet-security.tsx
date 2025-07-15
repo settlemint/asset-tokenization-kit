@@ -1,9 +1,9 @@
-import { OnboardingLayout } from "@/components/onboarding/simplified/onboarding-layout";
+import { OnboardingLayout } from "@/components/onboarding/onboarding-layout";
 import {
   OnboardingStep,
   updateOnboardingStateMachine,
-} from "@/components/onboarding/simplified/state-machine";
-import { WalletSecurityMain } from "@/components/onboarding/simplified/wallet-security/wallet-security-main";
+} from "@/components/onboarding/state-machine";
+import { WalletSecurityMain } from "@/components/onboarding/wallet-security/wallet-security-main";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useCallback, useEffect } from "react";

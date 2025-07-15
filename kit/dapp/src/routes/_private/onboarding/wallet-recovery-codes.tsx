@@ -1,8 +1,8 @@
-import { OnboardingLayout } from "@/components/onboarding/simplified/onboarding-layout";
+import { OnboardingLayout } from "@/components/onboarding/onboarding-layout";
 import {
   OnboardingStep,
   updateOnboardingStateMachine,
-} from "@/components/onboarding/simplified/state-machine";
+} from "@/components/onboarding/state-machine";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth.client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
