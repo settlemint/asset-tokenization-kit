@@ -471,18 +471,29 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
 
         // Process each contract call in the batch
         for (uint256 i = 0; i < batchSize; i++) {
-            uint256 txIndex = _storeTransaction(
-                targets[i], values[i], bytes.concat(selectors[i], abiEncodedArguments[i]), comments[i]
+            txIndices[i] = _processBatchTransaction(
+                targets[i], values[i], selectors[i], abiEncodedArguments[i], comments[i], sender
             );
-            txIndices[i] = txIndex;
-
-            emit SubmitContractCallTransaction(
-                sender, txIndex, targets[i], values[i], selectors[i], abiEncodedArguments[i], comments[i]
-            );
-
-            // Automatically confirm each transaction
-            _confirm(txIndex, sender);
         }
+    }
+
+    /// @dev Helper function to process a single transaction in a batch
+    function _processBatchTransaction(
+        address target,
+        uint256 value,
+        bytes4 selector,
+        bytes calldata abiEncodedArguments,
+        string calldata comment,
+        address sender
+    ) private returns (uint256) {
+        bytes memory combinedData = bytes.concat(selector, abiEncodedArguments);
+        uint256 txIndex = _storeTransaction(target, value, combinedData, comment);
+
+        emit SubmitContractCallTransaction(sender, txIndex, target, value, selector, abiEncodedArguments, comment);
+
+        // Automatically confirm the transaction
+        _confirm(txIndex, sender);
+        return txIndex;
     }
 
     /// @notice Confirms a pending transaction

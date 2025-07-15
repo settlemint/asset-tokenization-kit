@@ -8,6 +8,7 @@ import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/Co
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 // Interface imports
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
@@ -32,7 +33,8 @@ import { ATKContractIdentityProxy } from "./identities/ATKContractIdentityProxy.
 ///         for both user wallets and contracts within the ATK Protocol.
 /// @dev It leverages OpenZeppelin's `Create2` library to deploy identity proxy contracts (`ATKIdentityProxy` for
 /// wallets,
-///      `ATKContractIdentityProxy` for contracts) at deterministic addresses. These proxies point to logic implementations
+///      `ATKContractIdentityProxy` for contracts) at deterministic addresses. These proxies point to logic
+/// implementations
 ///      whose addresses are provided by the central `IATKSystem` contract, enabling upgradeability of the identity
 /// logic.
 ///      The factory is `ERC2771ContextUpgradeable` for meta-transaction support.
@@ -134,23 +136,29 @@ contract ATKIdentityFactoryImplementation is
 
         __ERC165_init_unchained();
 
-        if (
-            !IERC165(IATKSystem(systemAddress).identityImplementation()).supportsInterface(
-                type(IATKIdentity).interfaceId
-            )
-        ) {
-            revert InvalidIdentityImplementation();
-        }
-
-        if (
-            !IERC165(IATKSystem(systemAddress).contractIdentityImplementation()).supportsInterface(
-                type(IATKContractIdentity).interfaceId
-            )
-        ) {
-            revert InvalidContractIdentityImplementation();
-        }
+        // Extract to separate variables to reduce stack depth
+        address identityImpl = IATKSystem(systemAddress).identityImplementation();
+        address contractIdentityImpl = IATKSystem(systemAddress).contractIdentityImplementation();
+        
+        // Separate the interface checks
+        _validateIdentityImplementation(identityImpl);
+        _validateContractIdentityImplementation(contractIdentityImpl);
 
         _system = systemAddress;
+    }
+
+    /// @dev Helper function to validate identity implementation interface
+    function _validateIdentityImplementation(address identityImpl) private view {
+        if (!IERC165(identityImpl).supportsInterface(type(IATKIdentity).interfaceId)) {
+            revert InvalidIdentityImplementation();
+        }
+    }
+
+    /// @dev Helper function to validate contract identity implementation interface
+    function _validateContractIdentityImplementation(address contractIdentityImpl) private view {
+        if (!IERC165(contractIdentityImpl).supportsInterface(type(IATKContractIdentity).interfaceId)) {
+            revert InvalidContractIdentityImplementation();
+        }
     }
 
     // --- State-Changing Functions ---

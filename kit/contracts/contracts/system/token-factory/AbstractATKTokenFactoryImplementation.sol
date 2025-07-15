@@ -334,12 +334,10 @@ abstract contract AbstractATKTokenFactoryImplementation is
     {
         // Combine calculation to reduce stack variables
         bytes32 salt = _calculateSalt(_systemAddress, tokenSaltInputData);
-        
+
         // Calculate predicted address inline to reduce stack depth
         address predictedAddress = Create2.computeAddress(
-            salt, 
-            keccak256(bytes.concat(proxyCreationCode, encodedConstructorArgs)), 
-            address(this)
+            salt, keccak256(bytes.concat(proxyCreationCode, encodedConstructorArgs)), address(this)
         );
 
         if (isFactoryToken[predictedAddress]) {
@@ -358,7 +356,11 @@ abstract contract AbstractATKTokenFactoryImplementation is
         deployedTokenIdentityAddress = _deployContractIdentity(deployedAddress, description, country);
 
         emit TokenAssetCreated(
-            _msgSender(), deployedAddress, deployedTokenIdentityAddress, ISMART(deployedAddress).registeredInterfaces(), accessManager
+            _msgSender(),
+            deployedAddress,
+            deployedTokenIdentityAddress,
+            ISMART(deployedAddress).registeredInterfaces(),
+            accessManager
         );
 
         return (deployedAddress, deployedTokenIdentityAddress);
@@ -400,16 +402,15 @@ abstract contract AbstractATKTokenFactoryImplementation is
         returns (address)
     {
         // Create the contract identity using simple address-based salt
-        address contractIdentity = IATKIdentityFactory(IATKSystem(_systemAddress).identityFactory()).createContractIdentity(contractAddress);
+        address contractIdentity =
+            IATKIdentityFactory(IATKSystem(_systemAddress).identityFactory()).createContractIdentity(contractAddress);
 
         // Set the onchain ID on the token contract
         ISMART(contractAddress).setOnchainID(contractIdentity);
 
         // Register the contract identity with the identity registry (same as any other identity)
         ISMARTIdentityRegistry(IATKSystem(_systemAddress).identityRegistry()).registerIdentity(
-            contractAddress, 
-            IIdentity(contractIdentity), 
-            country
+            contractAddress, IIdentity(contractIdentity), country
         );
 
         // Emit registration event for indexing
