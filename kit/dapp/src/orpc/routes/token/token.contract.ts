@@ -23,10 +23,7 @@ import {
   TokenUnpauseInputSchema,
   TokenUnpauseOutputSchema,
 } from "@/orpc/routes/token/routes/mutations/pause/token.unpause.schema";
-import {
-  TokenMintInputSchema,
-  TokenMintOutputSchema,
-} from "@/orpc/routes/token/routes/mutations/mint/token.mint.schema";
+import { TokenMintInputSchema } from "@/orpc/routes/token/routes/mutations/mint/token.mint.schema";
 import {
   TokenBurnInputSchema,
   TokenBurnOutputSchema,
@@ -34,6 +31,7 @@ import {
 import { TokenTransferSchema } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.schema";
 import { TokenApproveInputSchema } from "@/orpc/routes/token/routes/mutations/approve/token.approve.schema";
 import { TokenRedeemInputSchema } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem.schema";
+import { TokenTransactionOutputSchema } from "@/orpc/routes/token/routes/mutations/common/token.transaction.schema";
 import { TokenFreezeAddressInputSchema } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-address.schema";
 import { TokenRecoverTokensInputSchema } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-tokens.schema";
 import { TokenForcedRecoverInputSchema } from "@/orpc/routes/token/routes/mutations/recovery/token.forced-recover.schema";
@@ -216,7 +214,7 @@ const mint = baseContract
     tags: ["token"],
   })
   .input(TokenMintInputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 const burn = baseContract
   .route({
@@ -239,7 +237,7 @@ const transfer = baseContract
     tags: ["token"],
   })
   .input(TokenTransferSchema)
-  .output(eventIterator(TokenMintOutputSchema)); // Reusing mint output schema for transaction hash
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 const tokenApprove = baseContract
   .route({
@@ -250,7 +248,7 @@ const tokenApprove = baseContract
     tags: ["token"],
   })
   .input(TokenApproveInputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 const tokenRedeem = baseContract
   .route({
@@ -262,7 +260,7 @@ const tokenRedeem = baseContract
     tags: ["token"],
   })
   .input(TokenRedeemInputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 const tokenFreezeAddress = baseContract
   .route({
@@ -273,7 +271,7 @@ const tokenFreezeAddress = baseContract
     tags: ["token"],
   })
   .input(TokenFreezeAddressInputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 const tokenRecoverTokens = baseContract
   .route({
@@ -284,7 +282,7 @@ const tokenRecoverTokens = baseContract
     tags: ["token"],
   })
   .input(TokenRecoverTokensInputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 const tokenForcedRecover = baseContract
   .route({
@@ -296,7 +294,7 @@ const tokenForcedRecover = baseContract
     tags: ["token"],
   })
   .input(TokenForcedRecoverInputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 const tokenRecoverERC20 = baseContract
   .route({
@@ -307,7 +305,7 @@ const tokenRecoverERC20 = baseContract
     tags: ["token"],
   })
   .input(TokenRecoverERC20InputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 const tokenSetCap = baseContract
   .route({
@@ -318,7 +316,7 @@ const tokenSetCap = baseContract
     tags: ["token"],
   })
   .input(TokenSetCapInputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 const tokenSetYieldSchedule = baseContract
   .route({
@@ -329,7 +327,7 @@ const tokenSetYieldSchedule = baseContract
     tags: ["token"],
   })
   .input(TokenSetYieldScheduleInputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 const tokenAddComplianceModule = baseContract
   .route({
@@ -340,7 +338,7 @@ const tokenAddComplianceModule = baseContract
     tags: ["token"],
   })
   .input(TokenAddComplianceModuleInputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 const tokenRemoveComplianceModule = baseContract
   .route({
@@ -351,7 +349,7 @@ const tokenRemoveComplianceModule = baseContract
     tags: ["token"],
   })
   .input(TokenRemoveComplianceModuleInputSchema)
-  .output(eventIterator(TokenMintOutputSchema));
+  .output(eventIterator(TokenTransactionOutputSchema));
 
 export const tokenContract = {
   factoryCreate,
