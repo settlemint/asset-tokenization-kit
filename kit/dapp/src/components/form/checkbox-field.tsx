@@ -24,7 +24,11 @@ export function CheckboxField({
           id={field.name}
           checked={field.state.value}
           onCheckedChange={(checked) => {
-            field.handleChange(checked as boolean);
+            if (checked === "indeterminate") {
+              field.handleChange(false);
+            } else {
+              field.handleChange(checked);
+            }
           }}
         />
         <FieldLabel
