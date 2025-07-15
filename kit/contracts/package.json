@@ -17,6 +17,7 @@
     "clean:deployments": "rm -Rf ignition/deployments/atk-local",
     "publish": "bun run clean:deployments && settlemint scs hardhat script local --script scripts/hardhat/main.ts",
     "abi-output": "bash tools/abi-output.sh",
+    "package": "echo 'Package task completed for contracts'",
     "test": "settlemint scs foundry test -vvv",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
   },
