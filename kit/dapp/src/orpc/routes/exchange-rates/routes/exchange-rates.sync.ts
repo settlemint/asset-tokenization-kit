@@ -8,9 +8,9 @@ import {
   currencies,
   fxRates,
   fxRatesLatest,
-  insertCurrencySchema,
-  insertFxRateSchema,
-  insertFxRateLatestSchema,
+  currencyDataSchema,
+  fxRateDataSchema,
+  fxRateLatestDataSchema,
 } from "@/lib/db/schema";
 import type * as schema from "@/lib/db/schema";
 import { safeParse } from "@/lib/zod";
@@ -129,13 +129,14 @@ export async function syncExchangeRatesInternal(
   }
 
   // First, ensure all currencies exist in the database
-  const currencyInserts = fiatCurrencies.map((code) =>
-    safeParse(insertCurrencySchema, {
+  const currencyInserts = fiatCurrencies.map((code) => {
+    const data = {
       code,
       name: fiatCurrencyMetadata[code].name,
       decimals: fiatCurrencyMetadata[code].decimals.toString(),
-    })
-  );
+    };
+    return safeParse(currencyDataSchema, data);
+  });
 
   await db.insert(currencies).values(currencyInserts).onConflictDoNothing();
 
@@ -151,28 +152,33 @@ export async function syncExchangeRatesInternal(
       const rateString = data.rate.toFixed(18);
 
       // Insert into time-series table
-      const fxRateData = safeParse(insertFxRateSchema, {
+      const fxRateData = {
         baseCode: baseCurrency,
         quoteCode: quoteCurrency,
-        provider: "er-api",
+        provider: "er-api" as const,
         rate: rateString,
         effectiveAt: data.effectiveAt,
-      });
+      };
+      const validatedFxRateData = safeParse(fxRateDataSchema, fxRateData);
 
-      await tx.insert(fxRates).values(fxRateData);
+      await tx.insert(fxRates).values(validatedFxRateData);
 
       // Upsert into latest rates table
-      const fxRateLatestData = safeParse(insertFxRateLatestSchema, {
+      const fxRateLatestData = {
         baseCode: baseCurrency,
         quoteCode: quoteCurrency,
-        provider: "er-api",
+        provider: "er-api" as const,
         rate: rateString,
         effectiveAt: data.effectiveAt,
-      });
+      };
+      const validatedFxRateLatestData = safeParse(
+        fxRateLatestDataSchema,
+        fxRateLatestData
+      );
 
       await tx
         .insert(fxRatesLatest)
-        .values(fxRateLatestData)
+        .values(validatedFxRateLatestData)
         .onConflictDoUpdate({
           target: [
             fxRatesLatest.baseCode,

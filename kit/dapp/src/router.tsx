@@ -17,39 +17,84 @@
 
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { NotFound } from "@/components/error/not-found";
-import { queryClient } from "@/lib/query.client";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { broadcastQueryClient } from "@tanstack/query-broadcast-client-experimental";
+import { QueryClient } from "@tanstack/react-query";
+import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { routerWithQueryClient } from "@tanstack/react-router-with-query";
+import { parse, stringify } from "superjson";
 import { routeTree } from "./routeTree.gen";
 
-/**
- * Creates and configures the application router.
- *
- * This factory function creates a TanStack Router instance with:
- * - React Query integration for coordinated data fetching
- * - Generated route tree for type-safe navigation
- * - Default error handling components
- * - Intent-based preloading strategy
- *
- * The router is wrapped with `routerWithQueryClient` to enable:
- * - Automatic query prefetching on route navigation
- * - Shared query client context between router and components
- * - Coordinated loading states between routing and data fetching
- * @returns Configured router instance with React Query integration
- * @example
- * ```tsx
- * // In your app entry point
- * import { createRouter } from './router';
- *
- * const router = createRouter();
- *
- * function App() {
- *   return <RouterProvider router={router} />;
- * }
- * ```
- */
 export function createRouter() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Only refetch on window focus in production to reduce development noise
+        refetchOnWindowFocus: process.env.NODE_ENV === "production",
+
+        // Disable background refetching to conserve resources
+        refetchIntervalInBackground: false,
+
+        // Offline-first strategy for better UX when network is unreliable
+        networkMode: "offlineFirst",
+        structuralSharing: true,
+        retry: (failureCount, error) => {
+          const queryError = error as { code?: string; status?: number };
+          if (
+            queryError.status &&
+            queryError.status >= 400 &&
+            queryError.status < 500 &&
+            queryError.status !== 408
+          ) {
+            return false;
+          }
+          return failureCount < 3;
+        },
+        retryDelay: 1000,
+        gcTime: 1000 * 60 * 60 * 24, // 24 hours
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        refetchOnMount: (query) => {
+          // Always refetch if invalidated
+          if (query.state.isInvalidated) return true;
+          // Otherwise, only refetch if this is the first fetch
+          return query.state.dataUpdateCount === 0;
+        },
+      },
+    },
+  });
+
+  const persister = createAsyncStoragePersister({
+    storage: typeof window !== "undefined" ? window.localStorage : undefined,
+    key: "atk-query-cache",
+    throttleTime: 1000,
+    serialize: (data) => stringify(data),
+    deserialize: async (data) => parse(data),
+  });
+
+  if (typeof window !== "undefined" && process.env.NODE_ENV !== "development") {
+    const buildId = process.env.BUILD_ID ?? new Date().toISOString();
+    void persistQueryClient({
+      queryClient,
+      persister,
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours,
+      buster: buildId,
+      dehydrateOptions: {
+        shouldDehydrateQuery: (query) => {
+          return query.state.status === "success";
+        },
+      },
+    });
+  }
+
+  if (typeof window !== "undefined") {
+    broadcastQueryClient({
+      queryClient,
+      broadcastChannel: "atk-query-sync",
+    });
+  }
+
   return routerWithQueryClient(
     createTanStackRouter({
       /**

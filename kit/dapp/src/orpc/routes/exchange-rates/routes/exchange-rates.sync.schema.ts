@@ -5,7 +5,7 @@
  * @module ExchangeRatesSyncSchema
  */
 import { fiatCurrency } from "@/lib/zod/validators/fiat-currency";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { exchangeRateProvider } from "../schemas";
 
 /**

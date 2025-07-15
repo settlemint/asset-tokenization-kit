@@ -6,7 +6,7 @@
  * and control structures within a company.
  * @module EquityClassValidation
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Available equity share classes.

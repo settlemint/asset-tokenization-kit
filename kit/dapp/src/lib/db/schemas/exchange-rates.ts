@@ -15,17 +15,17 @@
  * @module ExchangeRatesSchema
  */
 
+import { fiatCurrency } from "@/lib/zod/validators/fiat-currency";
 import {
-  pgTable,
-  varchar,
-  numeric,
-  timestamp,
-  primaryKey,
   index,
+  numeric,
+  pgTable,
+  primaryKey,
+  timestamp,
+  varchar,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { fiatCurrency } from "@/lib/zod/validators/fiat-currency";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Reference table for currency metadata.
@@ -156,20 +156,23 @@ export type NewFxRateLatest = typeof fxRatesLatest.$inferInsert;
  */
 
 // Currency schemas
-export const insertCurrencySchema = createInsertSchema(currencies, {
-  code: fiatCurrency(),
-  decimals: z
-    .string()
-    .regex(/^[0-8]$/, "Decimals must be between 0 and 8")
-    .optional(),
-});
+export const insertCurrencySchema = createInsertSchema(currencies);
 export const selectCurrencySchema = createSelectSchema(currencies);
 
 // Exchange rate providers
 const exchangeRateProvider = z.enum(["er-api", "ECB", "manual"]);
 
-// FX rates schemas
-export const insertFxRateSchema = createInsertSchema(fxRates, {
+// Custom validation schemas for input data
+export const currencyDataSchema = z.object({
+  code: fiatCurrency(),
+  name: z.string(),
+  decimals: z
+    .string()
+    .regex(/^[0-8]$/, "Decimals must be between 0 and 8")
+    .optional(),
+});
+
+export const fxRateDataSchema = z.object({
   baseCode: fiatCurrency(),
   quoteCode: fiatCurrency(),
   provider: exchangeRateProvider,
@@ -201,43 +204,50 @@ export const insertFxRateSchema = createInsertSchema(fxRates, {
     }
   ),
   effectiveAt: z.date(),
+  createdAt: z.date().optional(),
 });
+
+export const fxRateLatestDataSchema = z.object({
+  baseCode: fiatCurrency(),
+  quoteCode: fiatCurrency(),
+  provider: exchangeRateProvider,
+  rate: z.string().refine(
+    (val) => {
+      // Validate positive decimal numbers
+      if (!val || val.trim() === "") return false;
+
+      // Trim the value for validation
+      const trimmed = val.trim();
+
+      // Check length bounds first
+      if (trimmed.length > 40) return false;
+
+      // Use a simpler regex pattern to avoid ReDoS
+      const parts = trimmed.split(".");
+      if (parts.length > 2) return false;
+
+      // Check if all parts are valid digits
+      if (!parts.every((part) => part.length > 0 && /^\d+$/.test(part)))
+        return false;
+
+      // Ensure the number is positive (not zero)
+      const num = parseFloat(trimmed);
+      return num > 0 && isFinite(num);
+    },
+    {
+      message: "Rate must be a positive decimal number",
+    }
+  ),
+  effectiveAt: z.date(),
+  updatedAt: z.date().optional(),
+});
+
+// FX rates schemas
+export const insertFxRateSchema = createInsertSchema(fxRates);
 export const selectFxRateSchema = createSelectSchema(fxRates);
 
 // FX rates latest schemas
-export const insertFxRateLatestSchema = createInsertSchema(fxRatesLatest, {
-  baseCode: fiatCurrency(),
-  quoteCode: fiatCurrency(),
-  provider: exchangeRateProvider,
-  rate: z.string().refine(
-    (val) => {
-      // Validate positive decimal numbers
-      if (!val || val.trim() === "") return false;
-
-      // Trim the value for validation
-      const trimmed = val.trim();
-
-      // Check length bounds first
-      if (trimmed.length > 40) return false;
-
-      // Use a simpler regex pattern to avoid ReDoS
-      const parts = trimmed.split(".");
-      if (parts.length > 2) return false;
-
-      // Check if all parts are valid digits
-      if (!parts.every((part) => part.length > 0 && /^\d+$/.test(part)))
-        return false;
-
-      // Ensure the number is positive (not zero)
-      const num = parseFloat(trimmed);
-      return num > 0 && isFinite(num);
-    },
-    {
-      message: "Rate must be a positive decimal number",
-    }
-  ),
-  effectiveAt: z.date(),
-});
+export const insertFxRateLatestSchema = createInsertSchema(fxRatesLatest);
 export const selectFxRateLatestSchema = createSelectSchema(fxRatesLatest);
 
 // Parsed types from schemas

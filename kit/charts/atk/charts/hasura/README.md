@@ -27,7 +27,7 @@ A Helm chart for the hasura components
 | git.image.pullPolicy | string | `"IfNotPresent"` |  |
 | git.image.registry | string | `"docker.io"` |  |
 | git.image.repository | string | `"alpine/git"` |  |
-| git.image.tag | string | `"2.49.0"` |  |
+| git.image.tag | string | `"v2.49.1"` |  |
 | graphql-engine.config.devMode | bool | `true` |  |
 | graphql-engine.config.enableInternalConsoleAssets | bool | `true` |  |
 | graphql-engine.config.metadataOnly | bool | `false` |  |

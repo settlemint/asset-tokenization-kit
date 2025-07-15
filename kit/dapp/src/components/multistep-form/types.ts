@@ -1,4 +1,4 @@
-import type { z } from "zod/v4";
+import type { z } from "zod";
 
 // Form API types - using any to work with TanStack Form's complex generics
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
@@ -54,6 +54,7 @@ export interface FieldDefinition<TFormData = unknown> {
     | "number"
     | "email"
     | "date"
+    | "datetime"
     | "select"
     | "checkbox"
     | "radio"
@@ -72,6 +73,8 @@ export interface FieldDefinition<TFormData = unknown> {
   component?: React.ComponentType<FieldComponentProps<TFormData>>;
   postfix?: string;
   variant?: "default" | "card";
+  minDate?: Date;
+  maxDate?: Date;
 }
 
 export interface FieldGroup<TFormData = unknown> {
@@ -122,6 +125,7 @@ export interface UseMultiStepWizardStateOptions {
 
 export interface MultiStepWizardProps<TFormData = unknown> {
   name: string;
+  title?: string;
   description?: string;
   steps: StepDefinition<TFormData>[];
   groups?: StepGroup[];
@@ -134,6 +138,8 @@ export interface MultiStepWizardProps<TFormData = unknown> {
   defaultValues?: Partial<TFormData>;
   showProgressBar?: boolean;
   allowStepSkipping?: boolean;
+  onStepChange?: (stepIndex: number) => void;
+  defaultStepIndex?: number;
 }
 
 export interface StepValidationResult {

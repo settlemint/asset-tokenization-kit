@@ -226,6 +226,17 @@ export default defineConfig([
           },
         },
       ],
+      "@typescript-eslint/prefer-nullish-coalescing": [
+        "error",
+        {
+          ignorePrimitives: {
+            bigint: false,
+            boolean: true,
+            number: false,
+            string: false,
+          },
+        },
+      ],
 
       // ========================================================================
       // TYPESCRIPT RULES - DISABLED/RELAXED
@@ -253,9 +264,9 @@ export default defineConfig([
       "no-restricted-imports": [
         "error",
         {
-          name: "zod",
+          name: "zod/v4",
           importNames: ["z"],
-          message: "Please import `z` from `zod/v4` instead.",
+          message: "Please import `z` from `zod` instead.",
         },
       ],
 

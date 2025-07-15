@@ -25,7 +25,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { getAssetClassFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatches } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";

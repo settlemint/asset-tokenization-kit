@@ -1,3 +1,4 @@
+import kyc from "@/orpc/routes/user/kyc/kyc.router";
 import { actions } from "@/orpc/routes/user/routes/user.actions";
 import { list } from "@/orpc/routes/user/routes/user.list";
 import { me } from "@/orpc/routes/user/routes/user.me";
@@ -15,6 +16,7 @@ import { stats } from "@/orpc/routes/user/routes/user.stats";
  * - list: GET /user/list - List users with filtering and pagination
  * - stats: GET /user/stats - User statistics and metrics
  * - actions: GET /user/actions - User-specific actions assigned to the logged-in user
+ * - kyc: KYC profile management routes (nested namespace)
  *
  * The router is designed to be extended with additional user management
  * endpoints such as profile updates, preference management, and session control.
@@ -22,12 +24,14 @@ import { stats } from "@/orpc/routes/user/routes/user.stats";
  * @see {@link ./routes/user.me} - Current user endpoint implementation
  * @see {@link ./routes/user.stats} - User statistics endpoint implementation
  * @see {@link ./routes/user.actions} - User actions endpoint implementation
+ * @see {@link ./kyc/kyc.router} - KYC profile management routes
  */
 const routes = {
   me,
   list,
   stats,
   actions,
+  kyc,
 };
 
 export default routes;

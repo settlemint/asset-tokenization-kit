@@ -211,7 +211,7 @@ initContainer:
       repository: ghcr.io/settlemint/btp-waitforit
       tag: v7.7.5
       pullPolicy: IfNotPresent
-    timeout: 5 # Timeout in seconds for each dependency check
+    timeout: 0 # Timeout in seconds for each dependency check
     dependencies:
       # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
       - name: besu-rpc

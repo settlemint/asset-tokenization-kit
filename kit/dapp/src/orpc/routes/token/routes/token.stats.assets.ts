@@ -1,10 +1,10 @@
-import { assetType } from "@/lib/zod/validators/asset-types";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { assetType } from "@/lib/zod/validators/asset-types";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const logger = createLogger();
 

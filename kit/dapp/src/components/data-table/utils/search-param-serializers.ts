@@ -14,7 +14,7 @@
  * @see {@link https://tanstack.com/router/latest/docs/framework/react/guide/search-params} - TanStack Router search params
  */
 
-import { z } from "zod/v4";
+import { z } from "zod";
 import type {
   ColumnFilter,
   DataTableSearchParams,

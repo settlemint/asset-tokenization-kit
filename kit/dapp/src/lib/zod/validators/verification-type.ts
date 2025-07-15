@@ -6,7 +6,7 @@
  * processes and multi-factor authentication systems.
  * @module VerificationTypeValidation
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Available verification method types.

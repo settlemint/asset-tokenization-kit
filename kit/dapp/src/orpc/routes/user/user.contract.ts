@@ -11,6 +11,7 @@
  * @see {@link ./user.router} - Implementation router
  */
 
+import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
 import {
   UserActionsInputSchema,
   UserActionsOutputSchema,
@@ -116,4 +117,5 @@ export const userContract = {
   list,
   stats,
   actions,
+  kyc: kycContract,
 };

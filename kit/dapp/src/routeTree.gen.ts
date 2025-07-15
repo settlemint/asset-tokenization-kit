@@ -15,10 +15,11 @@ import { Route as AuthPathnameRouteImport } from './routes/auth.$pathname'
 import { Route as PrivateOnboardingRouteImport } from './routes/_private/onboarding'
 import { Route as PrivateOnboardedRouteImport } from './routes/_private/_onboarded'
 import { Route as PrivateOnboardingIndexRouteImport } from './routes/_private/onboarding/index'
-import { Route as PrivateOnboardingPlatformNewRouteImport } from './routes/_private/onboarding/platform-new'
-import { Route as PrivateOnboardingPlatformRouteImport } from './routes/_private/onboarding/platform'
-import { Route as PrivateOnboardingIssuerRouteImport } from './routes/_private/onboarding/issuer'
-import { Route as PrivateOnboardingInvestorRouteImport } from './routes/_private/onboarding/investor'
+import { Route as PrivateOnboardingWalletSecurityRouteImport } from './routes/_private/onboarding/wallet-security'
+import { Route as PrivateOnboardingWalletRecoveryCodesRouteImport } from './routes/_private/onboarding/wallet-recovery-codes'
+import { Route as PrivateOnboardingWalletRouteImport } from './routes/_private/onboarding/wallet'
+import { Route as PrivateOnboardingSystemRouteImport } from './routes/_private/onboarding/system'
+import { Route as PrivateOnboardingIdentityRouteImport } from './routes/_private/onboarding/identity'
 import { Route as PrivateOnboardedSidebarRouteImport } from './routes/_private/_onboarded/_sidebar'
 import { Route as PrivateOnboardedAssetDesignerIndexRouteImport } from './routes/_private/_onboarded/asset-designer/index'
 import { Route as PrivateOnboardedSidebarIndexRouteImport } from './routes/_private/_onboarded/_sidebar/index'
@@ -62,27 +63,32 @@ const PrivateOnboardingIndexRoute = PrivateOnboardingIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PrivateOnboardingRoute,
 } as any)
-const PrivateOnboardingPlatformNewRoute =
-  PrivateOnboardingPlatformNewRouteImport.update({
-    id: '/platform-new',
-    path: '/platform-new',
+const PrivateOnboardingWalletSecurityRoute =
+  PrivateOnboardingWalletSecurityRouteImport.update({
+    id: '/wallet-security',
+    path: '/wallet-security',
     getParentRoute: () => PrivateOnboardingRoute,
   } as any)
-const PrivateOnboardingPlatformRoute =
-  PrivateOnboardingPlatformRouteImport.update({
-    id: '/platform',
-    path: '/platform',
+const PrivateOnboardingWalletRecoveryCodesRoute =
+  PrivateOnboardingWalletRecoveryCodesRouteImport.update({
+    id: '/wallet-recovery-codes',
+    path: '/wallet-recovery-codes',
     getParentRoute: () => PrivateOnboardingRoute,
   } as any)
-const PrivateOnboardingIssuerRoute = PrivateOnboardingIssuerRouteImport.update({
-  id: '/issuer',
-  path: '/issuer',
+const PrivateOnboardingWalletRoute = PrivateOnboardingWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
   getParentRoute: () => PrivateOnboardingRoute,
 } as any)
-const PrivateOnboardingInvestorRoute =
-  PrivateOnboardingInvestorRouteImport.update({
-    id: '/investor',
-    path: '/investor',
+const PrivateOnboardingSystemRoute = PrivateOnboardingSystemRouteImport.update({
+  id: '/system',
+  path: '/system',
+  getParentRoute: () => PrivateOnboardingRoute,
+} as any)
+const PrivateOnboardingIdentityRoute =
+  PrivateOnboardingIdentityRouteImport.update({
+    id: '/identity',
+    path: '/identity',
     getParentRoute: () => PrivateOnboardingRoute,
   } as any)
 const PrivateOnboardedSidebarRoute = PrivateOnboardedSidebarRouteImport.update({
@@ -181,10 +187,11 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/onboarding': typeof PrivateOnboardingRouteWithChildren
   '/auth/$pathname': typeof AuthPathnameRoute
-  '/onboarding/investor': typeof PrivateOnboardingInvestorRoute
-  '/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
-  '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
-  '/onboarding/platform-new': typeof PrivateOnboardingPlatformNewRoute
+  '/onboarding/identity': typeof PrivateOnboardingIdentityRoute
+  '/onboarding/system': typeof PrivateOnboardingSystemRoute
+  '/onboarding/wallet': typeof PrivateOnboardingWalletRoute
+  '/onboarding/wallet-recovery-codes': typeof PrivateOnboardingWalletRecoveryCodesRoute
+  '/onboarding/wallet-security': typeof PrivateOnboardingWalletSecurityRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
   '/actions': typeof PrivateOnboardedSidebarActionsRouteWithChildren
   '/': typeof PrivateOnboardedSidebarIndexRoute
@@ -203,10 +210,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/auth/$pathname': typeof AuthPathnameRoute
-  '/onboarding/investor': typeof PrivateOnboardingInvestorRoute
-  '/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
-  '/onboarding/platform': typeof PrivateOnboardingPlatformRoute
-  '/onboarding/platform-new': typeof PrivateOnboardingPlatformNewRoute
+  '/onboarding/identity': typeof PrivateOnboardingIdentityRoute
+  '/onboarding/system': typeof PrivateOnboardingSystemRoute
+  '/onboarding/wallet': typeof PrivateOnboardingWalletRoute
+  '/onboarding/wallet-recovery-codes': typeof PrivateOnboardingWalletRecoveryCodesRoute
+  '/onboarding/wallet-security': typeof PrivateOnboardingWalletSecurityRoute
   '/onboarding': typeof PrivateOnboardingIndexRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
@@ -228,10 +236,11 @@ export interface FileRoutesById {
   '/_private/onboarding': typeof PrivateOnboardingRouteWithChildren
   '/auth/$pathname': typeof AuthPathnameRoute
   '/_private/_onboarded/_sidebar': typeof PrivateOnboardedSidebarRouteWithChildren
-  '/_private/onboarding/investor': typeof PrivateOnboardingInvestorRoute
-  '/_private/onboarding/issuer': typeof PrivateOnboardingIssuerRoute
-  '/_private/onboarding/platform': typeof PrivateOnboardingPlatformRoute
-  '/_private/onboarding/platform-new': typeof PrivateOnboardingPlatformNewRoute
+  '/_private/onboarding/identity': typeof PrivateOnboardingIdentityRoute
+  '/_private/onboarding/system': typeof PrivateOnboardingSystemRoute
+  '/_private/onboarding/wallet': typeof PrivateOnboardingWalletRoute
+  '/_private/onboarding/wallet-recovery-codes': typeof PrivateOnboardingWalletRecoveryCodesRoute
+  '/_private/onboarding/wallet-security': typeof PrivateOnboardingWalletSecurityRoute
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
   '/_private/_onboarded/_sidebar/actions': typeof PrivateOnboardedSidebarActionsRouteWithChildren
   '/_private/_onboarded/_sidebar/': typeof PrivateOnboardedSidebarIndexRoute
@@ -253,10 +262,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/onboarding'
     | '/auth/$pathname'
-    | '/onboarding/investor'
-    | '/onboarding/issuer'
-    | '/onboarding/platform'
-    | '/onboarding/platform-new'
+    | '/onboarding/identity'
+    | '/onboarding/system'
+    | '/onboarding/wallet'
+    | '/onboarding/wallet-recovery-codes'
+    | '/onboarding/wallet-security'
     | '/onboarding/'
     | '/actions'
     | '/'
@@ -275,10 +285,11 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/auth/$pathname'
-    | '/onboarding/investor'
-    | '/onboarding/issuer'
-    | '/onboarding/platform'
-    | '/onboarding/platform-new'
+    | '/onboarding/identity'
+    | '/onboarding/system'
+    | '/onboarding/wallet'
+    | '/onboarding/wallet-recovery-codes'
+    | '/onboarding/wallet-security'
     | '/onboarding'
     | '/'
     | '/asset-designer'
@@ -299,10 +310,11 @@ export interface FileRouteTypes {
     | '/_private/onboarding'
     | '/auth/$pathname'
     | '/_private/_onboarded/_sidebar'
-    | '/_private/onboarding/investor'
-    | '/_private/onboarding/issuer'
-    | '/_private/onboarding/platform'
-    | '/_private/onboarding/platform-new'
+    | '/_private/onboarding/identity'
+    | '/_private/onboarding/system'
+    | '/_private/onboarding/wallet'
+    | '/_private/onboarding/wallet-recovery-codes'
+    | '/_private/onboarding/wallet-security'
     | '/_private/onboarding/'
     | '/_private/_onboarded/_sidebar/actions'
     | '/_private/_onboarded/_sidebar/'
@@ -368,32 +380,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardingIndexRouteImport
       parentRoute: typeof PrivateOnboardingRoute
     }
-    '/_private/onboarding/platform-new': {
-      id: '/_private/onboarding/platform-new'
-      path: '/platform-new'
-      fullPath: '/onboarding/platform-new'
-      preLoaderRoute: typeof PrivateOnboardingPlatformNewRouteImport
+    '/_private/onboarding/wallet-security': {
+      id: '/_private/onboarding/wallet-security'
+      path: '/wallet-security'
+      fullPath: '/onboarding/wallet-security'
+      preLoaderRoute: typeof PrivateOnboardingWalletSecurityRouteImport
       parentRoute: typeof PrivateOnboardingRoute
     }
-    '/_private/onboarding/platform': {
-      id: '/_private/onboarding/platform'
-      path: '/platform'
-      fullPath: '/onboarding/platform'
-      preLoaderRoute: typeof PrivateOnboardingPlatformRouteImport
+    '/_private/onboarding/wallet-recovery-codes': {
+      id: '/_private/onboarding/wallet-recovery-codes'
+      path: '/wallet-recovery-codes'
+      fullPath: '/onboarding/wallet-recovery-codes'
+      preLoaderRoute: typeof PrivateOnboardingWalletRecoveryCodesRouteImport
       parentRoute: typeof PrivateOnboardingRoute
     }
-    '/_private/onboarding/issuer': {
-      id: '/_private/onboarding/issuer'
-      path: '/issuer'
-      fullPath: '/onboarding/issuer'
-      preLoaderRoute: typeof PrivateOnboardingIssuerRouteImport
+    '/_private/onboarding/wallet': {
+      id: '/_private/onboarding/wallet'
+      path: '/wallet'
+      fullPath: '/onboarding/wallet'
+      preLoaderRoute: typeof PrivateOnboardingWalletRouteImport
       parentRoute: typeof PrivateOnboardingRoute
     }
-    '/_private/onboarding/investor': {
-      id: '/_private/onboarding/investor'
-      path: '/investor'
-      fullPath: '/onboarding/investor'
-      preLoaderRoute: typeof PrivateOnboardingInvestorRouteImport
+    '/_private/onboarding/system': {
+      id: '/_private/onboarding/system'
+      path: '/system'
+      fullPath: '/onboarding/system'
+      preLoaderRoute: typeof PrivateOnboardingSystemRouteImport
+      parentRoute: typeof PrivateOnboardingRoute
+    }
+    '/_private/onboarding/identity': {
+      id: '/_private/onboarding/identity'
+      path: '/identity'
+      fullPath: '/onboarding/identity'
+      preLoaderRoute: typeof PrivateOnboardingIdentityRouteImport
       parentRoute: typeof PrivateOnboardingRoute
     }
     '/_private/_onboarded/_sidebar': {
@@ -583,18 +602,21 @@ const PrivateOnboardedRouteWithChildren =
   PrivateOnboardedRoute._addFileChildren(PrivateOnboardedRouteChildren)
 
 interface PrivateOnboardingRouteChildren {
-  PrivateOnboardingInvestorRoute: typeof PrivateOnboardingInvestorRoute
-  PrivateOnboardingIssuerRoute: typeof PrivateOnboardingIssuerRoute
-  PrivateOnboardingPlatformRoute: typeof PrivateOnboardingPlatformRoute
-  PrivateOnboardingPlatformNewRoute: typeof PrivateOnboardingPlatformNewRoute
+  PrivateOnboardingIdentityRoute: typeof PrivateOnboardingIdentityRoute
+  PrivateOnboardingSystemRoute: typeof PrivateOnboardingSystemRoute
+  PrivateOnboardingWalletRoute: typeof PrivateOnboardingWalletRoute
+  PrivateOnboardingWalletRecoveryCodesRoute: typeof PrivateOnboardingWalletRecoveryCodesRoute
+  PrivateOnboardingWalletSecurityRoute: typeof PrivateOnboardingWalletSecurityRoute
   PrivateOnboardingIndexRoute: typeof PrivateOnboardingIndexRoute
 }
 
 const PrivateOnboardingRouteChildren: PrivateOnboardingRouteChildren = {
-  PrivateOnboardingInvestorRoute: PrivateOnboardingInvestorRoute,
-  PrivateOnboardingIssuerRoute: PrivateOnboardingIssuerRoute,
-  PrivateOnboardingPlatformRoute: PrivateOnboardingPlatformRoute,
-  PrivateOnboardingPlatformNewRoute: PrivateOnboardingPlatformNewRoute,
+  PrivateOnboardingIdentityRoute: PrivateOnboardingIdentityRoute,
+  PrivateOnboardingSystemRoute: PrivateOnboardingSystemRoute,
+  PrivateOnboardingWalletRoute: PrivateOnboardingWalletRoute,
+  PrivateOnboardingWalletRecoveryCodesRoute:
+    PrivateOnboardingWalletRecoveryCodesRoute,
+  PrivateOnboardingWalletSecurityRoute: PrivateOnboardingWalletSecurityRoute,
   PrivateOnboardingIndexRoute: PrivateOnboardingIndexRoute,
 }
 
