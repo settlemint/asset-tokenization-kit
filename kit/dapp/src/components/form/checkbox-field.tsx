@@ -19,12 +19,7 @@ export function CheckboxField({
 
   return (
     <FieldLayout>
-      <div
-        className="flex items-center space-x-2"
-        onClick={() => {
-          field.handleChange(!field.state.value);
-        }}
-      >
+      <div className="flex items-center space-x-2">
         <Checkbox
           id={field.name}
           checked={field.state.value}
