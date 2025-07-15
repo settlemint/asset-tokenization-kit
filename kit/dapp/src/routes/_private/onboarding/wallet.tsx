@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 const logger = createLogger();
 
-export const Route = createFileRoute("/_private/onboarding/platforms/wallet")({
+export const Route = createFileRoute("/_private/onboarding/wallet")({
   beforeLoad: async ({ context: { orpc, queryClient } }) => {
     const user = await queryClient.fetchQuery({
       ...orpc.user.me.queryOptions(),
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_private/onboarding/platforms/wallet")({
     // As the wallet is created immediately, we should be less strict here
     if (user.isOnboarded && currentStep !== OnboardingStep.wallet) {
       return redirect({
-        to: `/onboarding/platforms/${currentStep}`,
+        to: `/onboarding/${currentStep}`,
       });
     }
     return { currentStep, user };
@@ -62,7 +62,7 @@ function RouteComponent() {
       void handleStartCreation();
     } else if (walletCreated) {
       navigate({
-        to: `/onboarding/platforms/${OnboardingStep.walletSecurity}`,
+        to: `/onboarding/${OnboardingStep.walletSecurity}`,
       }).catch((err: unknown) => {
         logger.error("Error navigating to wallet security", err);
       });

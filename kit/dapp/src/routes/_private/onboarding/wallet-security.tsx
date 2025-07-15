@@ -10,9 +10,7 @@ import { useCallback, useEffect } from "react";
 
 const logger = createLogger();
 
-export const Route = createFileRoute(
-  "/_private/onboarding/platforms/wallet-security"
-)({
+export const Route = createFileRoute("/_private/onboarding/wallet-security")({
   beforeLoad: async ({ context: { orpc, queryClient } }) => {
     const user = await queryClient.fetchQuery({
       ...orpc.user.me.queryOptions(),
@@ -21,7 +19,7 @@ export const Route = createFileRoute(
     const { currentStep } = updateOnboardingStateMachine({ user });
     if (currentStep !== OnboardingStep.walletSecurity) {
       return redirect({
-        to: `/onboarding/platforms/${currentStep}`,
+        to: `/onboarding/${currentStep}`,
       });
     }
     return { currentStep, user };

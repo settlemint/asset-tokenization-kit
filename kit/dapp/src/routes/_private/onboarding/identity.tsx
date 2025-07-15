@@ -4,16 +4,16 @@ import {
 } from "@/components/onboarding/simplified/state-machine";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_private/onboarding/platforms/system")({
+export const Route = createFileRoute("/_private/onboarding/identity")({
   loader: async ({ context: { orpc, queryClient } }) => {
     const user = await queryClient.fetchQuery({
       ...orpc.user.me.queryOptions(),
       staleTime: 0,
     });
     const { currentStep } = updateOnboardingStateMachine({ user });
-    if (currentStep !== OnboardingStep.system) {
+    if (currentStep !== OnboardingStep.identity) {
       return redirect({
-        to: `/onboarding/platforms/${currentStep}`,
+        to: `/onboarding/${currentStep}`,
       });
     }
     return { currentStep };
@@ -22,5 +22,5 @@ export const Route = createFileRoute("/_private/onboarding/platforms/system")({
 });
 
 function RouteComponent() {
-  return <div>System</div>;
+  return <div>Identity</div>;
 }

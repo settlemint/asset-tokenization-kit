@@ -14,7 +14,7 @@ import { toast } from "sonner";
 const logger = createLogger();
 
 export const Route = createFileRoute(
-  "/_private/onboarding/platforms/wallet-recovery-codes"
+  "/_private/onboarding/wallet-recovery-codes"
 )({
   beforeLoad: async ({ context: { orpc, queryClient } }) => {
     const user = await queryClient.fetchQuery({
@@ -24,7 +24,7 @@ export const Route = createFileRoute(
     const { currentStep } = updateOnboardingStateMachine({ user });
     if (currentStep !== OnboardingStep.walletRecoveryCodes) {
       return redirect({
-        to: `/onboarding/platforms/${currentStep}`,
+        to: `/onboarding/${currentStep}`,
       });
     }
     return { currentStep };
