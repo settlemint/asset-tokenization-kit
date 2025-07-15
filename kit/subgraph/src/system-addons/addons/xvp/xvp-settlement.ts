@@ -169,22 +169,27 @@ export function handleXvPSettlementApproved(
     }
   }
 
-  if (allApproved) {
-    const participants: Bytes[] = [];
-    for (let i = 0; i < approvals.length; i++) {
-      participants.push(approvals[i].account);
-    }
+  // if (allApproved) {
+  //   const participants: Bytes[] = [];
+  //   for (let i = 0; i < approvals.length; i++) {
+  //     // Extract the original address from the approval ID: contractAddress.concat(senderAddress)
+  //     // The approval ID contains: [contractAddress (20 bytes)][senderAddress (20 bytes)]
+  //     const originalAddressBytes = Bytes.fromUint8Array(
+  //       approvals[i].id.subarray(20)
+  //     );
+  //     participants.push(originalAddressBytes);
+  //   }
 
-    createAction(
-      event,
-      ActionName.ExecuteXvPSettlement,
-      fetchAccount(event.address).id,
-      ActionType.User,
-      event.block.timestamp,
-      xvpSettlement.cutoffDate,
-      participants,
-      null,
-      null
-    );
-  }
+  //   createAction(
+  //     event,
+  //     ActionName.ExecuteXvPSettlement,
+  //     event.address,
+  //     ActionType.User,
+  //     event.block.timestamp,
+  //     xvpSettlement.cutoffDate,
+  //     participants,
+  //     null,
+  //     null
+  //   );
+  // }
 }

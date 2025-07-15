@@ -1,16 +1,16 @@
 import { Bytes } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
+import {
+  ActionName,
+  ActionType,
+  createAction,
+  Role,
+} from "../../actions/action";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchBond } from "../bond/fetch/bond";
-import {
-  createAction,
-  ActionName,
-  ActionType,
-  Role,
-} from "../../actions/action";
 
 export function handleBondCreated(event: BondCreated): void {
   fetchEvent(event, "BondCreated");

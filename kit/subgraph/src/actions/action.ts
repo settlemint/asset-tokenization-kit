@@ -1,5 +1,6 @@
 import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { Action, ActionExecutor } from "../../generated/schema";
+import { fetchAccount } from "../account/fetch/account";
 
 export class ActionName {
   static ApproveXvPSettlement: string = "ApproveXvPSettlement";
@@ -59,7 +60,7 @@ export function createAction(
 
   action.name = actionName;
   action.type = type;
-  action.target = target;
+  action.target = fetchAccount(target).id;
   action.createdAt = event.block.timestamp;
   action.activeAt = activeAt;
   action.expiresAt = expiresAt;
@@ -90,7 +91,13 @@ export function createActionExecutor(
   }
 
   actionExecutor = new ActionExecutor(id);
-  actionExecutor.executors = executors;
+
+  // Convert executor addresses to Account entities
+  const executorAccounts: Bytes[] = [];
+  for (let i = 0; i < executors.length; i++) {
+    executorAccounts.push(fetchAccount(executors[i]).id);
+  }
+  actionExecutor.executors = executorAccounts;
   actionExecutor.actions = [action.id];
   actionExecutor.save();
 
@@ -106,7 +113,12 @@ export function updateActionExecutors(
   const id = actionExecutorId(target, requiredRole, identifier);
   const actionExecutor = ActionExecutor.load(id);
   if (actionExecutor) {
-    actionExecutor.executors = executors;
+    // Convert executor addresses to Account entities
+    const executorAccounts: Bytes[] = [];
+    for (let i = 0; i < executors.length; i++) {
+      executorAccounts.push(fetchAccount(executors[i]).id);
+    }
+    actionExecutor.executors = executorAccounts;
     actionExecutor.save();
   }
 }
@@ -122,7 +134,7 @@ export function actionExecuted(
   if (action) {
     action.executed = true;
     action.executedAt = event.block.timestamp;
-    action.executedBy = event.transaction.from;
+    action.executedBy = fetchAccount(event.transaction.from).id;
     action.save();
   }
 }
