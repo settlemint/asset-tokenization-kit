@@ -3,8 +3,17 @@ import {
   OnboardingStep,
   updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
+import { Button } from "@/components/ui/button";
+import {
+  fiatCurrencyMetadata,
+  type FiatCurrency,
+} from "@/lib/zod/validators/fiat-currency";
+import { orpc } from "@/orpc/orpc-client";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { useForm } from "@tanstack/react-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_private/onboarding/system-settings")({
   beforeLoad: async ({ context: { orpc, queryClient } }) => {
@@ -40,6 +49,47 @@ export const Route = createFileRoute("/_private/onboarding/system-settings")({
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  // Get current base currency setting
+  const { data: currentBaseCurrency } = useQuery({
+    ...orpc.settings.read.queryOptions({
+      input: { key: "BASE_CURRENCY" },
+    }),
+    retry: false,
+    throwOnError: false,
+  });
+
+  // Mutation for updating base currency
+  const upsertSettingMutation = useMutation({
+    ...orpc.settings.upsert.mutationOptions(),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: orpc.settings.read.key({
+          input: { key: "BASE_CURRENCY" },
+        }),
+      });
+      toast.success("Platform settings saved successfully");
+    },
+    onError: () => {
+      toast.error("Failed to save platform settings");
+    },
+  });
+
+  const form = useForm({
+    defaultValues: {
+      baseCurrency: currentBaseCurrency
+        ? (currentBaseCurrency as FiatCurrency)
+        : ("USD" as FiatCurrency),
+    },
+    onSubmit: async ({ value }) => {
+      await upsertSettingMutation.mutateAsync({
+        key: "BASE_CURRENCY",
+        value: value.baseCurrency,
+      });
+      handleNext();
+    },
+  });
 
   const handleNext = useCallback(() => {
     void navigate({
@@ -58,34 +108,91 @@ function RouteComponent() {
     <OnboardingLayout currentStep={OnboardingStep.systemSettings}>
       <div className="h-full flex flex-col">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold">Configure Settings</h2>
+          <h2 className="text-xl font-semibold">Configure Platform Settings</h2>
           <p className="text-sm text-muted-foreground pt-2">
-            Set up your platform configuration and preferences
+            Define how your platform behaves by default
           </p>
         </div>
 
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-2xl space-y-6">
-            <p className="text-sm text-muted-foreground">
-              Platform settings configuration will be implemented here.
-            </p>
-          </div>
-        </div>
+            <div className="space-y-4 mb-6">
+              <p className="text-sm">
+                Before you begin issuing assets, let's configure some basic
+                settings that determine how the platform behaves. These default
+                values help personalize the experience for you and your users.
+              </p>
+              <p className="text-sm">
+                You can update these preferences later in the platform settings.
+              </p>
+            </div>
 
-        <div className="mt-8 pt-6 border-t border-border">
-          <div className="flex justify-between">
-            <button
-              onClick={handlePrevious}
-              className="px-4 py-2 border border-border rounded-md hover:bg-accent"
+            <form.Field
+              name="baseCurrency"
+              validators={{
+                onChange: ({ value }) => {
+                  if (!Object.keys(fiatCurrencyMetadata).includes(value)) {
+                    return "Invalid currency selection";
+                  }
+                  return undefined;
+                },
+              }}
             >
-              Previous
-            </button>
-            <button
-              onClick={handleNext}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-            >
-              Continue
-            </button>
+              {(field) => (
+                <div className="space-y-2">
+                  <label htmlFor="baseCurrency" className="text-sm font-medium">
+                    Base Currency
+                  </label>
+                  <p className="text-sm text-muted-foreground">
+                    Choose the default currency for your platform
+                  </p>
+                  <select
+                    id="baseCurrency"
+                    value={field.state.value}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value as FiatCurrency);
+                    }}
+                    className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                  >
+                    {Object.entries(fiatCurrencyMetadata).map(
+                      ([code, metadata]) => (
+                        <option key={code} value={code}>
+                          {metadata.name} ({code})
+                        </option>
+                      )
+                    )}
+                  </select>
+                  {field.state.meta.errors.length > 0 && (
+                    <p className="text-sm text-destructive mt-2">
+                      {field.state.meta.errors[0]}
+                    </p>
+                  )}
+                </div>
+              )}
+            </form.Field>
+
+            <div className="mt-8 pt-6 border-t border-border">
+              <div className="flex justify-between">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handlePrevious}
+                  disabled={form.state.isSubmitting}
+                >
+                  Previous
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    void form.handleSubmit();
+                  }}
+                  disabled={form.state.isSubmitting}
+                  className="min-w-[120px]"
+                >
+                  {form.state.isSubmitting ? "Saving..." : "Save & Continue"}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
