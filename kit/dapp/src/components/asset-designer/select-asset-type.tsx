@@ -3,7 +3,7 @@ import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
 import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
