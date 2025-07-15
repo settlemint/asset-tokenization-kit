@@ -1,4 +1,5 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
+import { assetDesignerSteps } from "@/components/asset-designer/steps";
 import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
 import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
@@ -8,6 +9,7 @@ import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/hel
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "../ui/button";
 
 export const SelectAssetTypeSchema = TokenBaseSchema.pick({
   type: true,
@@ -42,16 +44,44 @@ export const SelectAssetType = withForm({
     }, [systemDetails, t]);
 
     return (
-      <form.AppField
-        name="type"
-        children={(field) => (
-          <field.RadioField
-            label={t("wizard.steps.asset-type.title")}
-            options={options}
-            variant="card"
-          />
-        )}
-      />
+      <>
+        <form.AppField
+          name="type"
+          children={(field) => (
+            <field.RadioField
+              label={t("wizard.steps.asset-type.title")}
+              options={options}
+              variant="card"
+            />
+          )}
+        />
+        <form.Subscribe
+          selector={(state) => {
+            try {
+              const parseResult = SelectAssetTypeSchema.safeParse(state.values);
+              return parseResult.success;
+            } catch {
+              return false;
+            }
+          }}
+        >
+          {(isValid) => {
+            return (
+              <Button
+                disabled={!isValid}
+                onClick={() => {
+                  form.setFieldValue(
+                    "step",
+                    assetDesignerSteps.selectAssetType.nextStep
+                  );
+                }}
+              >
+                Next
+              </Button>
+            );
+          }}
+        </form.Subscribe>
+      </>
     );
   },
 });

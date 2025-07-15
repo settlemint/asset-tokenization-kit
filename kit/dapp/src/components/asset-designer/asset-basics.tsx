@@ -1,5 +1,7 @@
 import type { AssetDesignerFormData } from "@/components/asset-designer/shared-form";
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
+import { assetDesignerSteps } from "@/components/asset-designer/steps";
+import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import { BondSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/bond.create.schema";
@@ -65,6 +67,32 @@ export const AssetBasics = withForm({
             return null;
           }}
         />
+        <form.Subscribe
+          selector={(state) => {
+            try {
+              const parseResult = AssetBasicsSchema.safeParse(state.values);
+              return parseResult.success;
+            } catch {
+              return false;
+            }
+          }}
+        >
+          {(isValid) => {
+            return (
+              <Button
+                disabled={!isValid}
+                onClick={() => {
+                  form.setFieldValue(
+                    "step",
+                    assetDesignerSteps.assetBasics.nextStep
+                  );
+                }}
+              >
+                Next
+              </Button>
+            );
+          }}
+        </form.Subscribe>
       </>
     );
   },
