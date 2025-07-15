@@ -209,12 +209,18 @@ export const transfer = tokenRouter.token.transfer
         return getEthereumHash(transactionHash);
       } else if (transferType === "forced") {
         // Forced batch transfer is supported
+        if (!from || from.length === 0) {
+          throw errors.INPUT_VALIDATION_FAILED({
+            message: "From addresses are required for forced batch transfers",
+            data: { errors: ["Missing required from addresses"] },
+          });
+        }
         const transactionHash = yield* context.portalClient.mutate(
           TOKEN_BATCH_FORCED_TRANSFER_MUTATION,
           {
             address: contract,
             from: sender.wallet,
-            fromList: from ?? [],
+            fromList: from,
             toList: recipients,
             amounts: amounts.map((a) => a.toString()),
             ...challengeResponse,

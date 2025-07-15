@@ -37,12 +37,14 @@ export async function supportsInterface(
         interfaceId,
       },
       z.object({
-        supports: z.boolean(),
+        supports: z.object({
+          supportsInterface: z.boolean(),
+        }),
       }),
       "Failed to check interface support"
     );
 
-    return !!result.supports;
+    return !!result.supports.supportsInterface;
   } catch {
     // If the contract doesn't implement ERC165, it will throw
     // In that case, we assume it doesn't support the interface
