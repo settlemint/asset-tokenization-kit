@@ -28,7 +28,19 @@ export const Route = createFileRoute("/_private/onboarding/system-assets")({
     }
 
     const { currentStep } = updateOnboardingStateMachine({ user, hasSystem });
-    if (user.isOnboarded && currentStep !== OnboardingStep.systemAssets) {
+
+    // Allow navigation to system-assets if:
+    // 1. User is not yet onboarded, OR
+    // 2. Current step is systemAssets, OR
+    // 3. Current step is any system step (systemDeploy, systemSettings, systemAssets, systemAddons)
+    const allowedSystemSteps = [
+      OnboardingStep.systemDeploy,
+      OnboardingStep.systemSettings,
+      OnboardingStep.systemAssets,
+      OnboardingStep.systemAddons,
+    ];
+
+    if (user.isOnboarded && !allowedSystemSteps.includes(currentStep)) {
       return redirect({
         to: `/onboarding/${currentStep}`,
       });

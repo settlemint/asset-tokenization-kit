@@ -94,9 +94,24 @@ function RouteComponent() {
 
   const handleNext = useCallback(() => {
     logger.debug("Navigating to next step:", OnboardingStep.systemAssets);
-    void navigate({
+    logger.debug(
+      "Navigation target:",
+      `/onboarding/${OnboardingStep.systemAssets}`
+    );
+
+    const navigationPromise = navigate({
       to: `/onboarding/${OnboardingStep.systemAssets}`,
     });
+
+    logger.debug("Navigation promise created:", navigationPromise);
+
+    navigationPromise
+      .then(() => {
+        logger.debug("Navigation successful");
+      })
+      .catch((error: unknown) => {
+        logger.error("Navigation failed:", error);
+      });
   }, [navigate]);
 
   const handleSaveAndContinue = useCallback(async () => {
