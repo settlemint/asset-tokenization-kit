@@ -1,477 +1,81 @@
-import { baseContract } from "@/orpc/procedures/base.contract";
-import {
-  FactoryCreateOutputSchema,
-  FactoryCreateSchema,
-} from "@/orpc/routes/token/routes/factory/factory.create.schema";
-import {
-  FactoryListSchema,
-  TokenFactoryListSchema,
-} from "@/orpc/routes/token/routes/factory/factory.list.schema";
-import {
-  FactoryReadSchema,
-  TokenFactoryDetailSchema,
-} from "@/orpc/routes/token/routes/factory/factory.read.schema";
-import {
-  TokenCreateOutputSchema,
-  TokenCreateSchema,
-} from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
-import {
-  TokenPauseInputSchema,
-  TokenPauseOutputSchema,
-} from "@/orpc/routes/token/routes/mutations/pause/token.pause.schema";
-import {
-  TokenUnpauseInputSchema,
-  TokenUnpauseOutputSchema,
-} from "@/orpc/routes/token/routes/mutations/pause/token.unpause.schema";
-import { TokenMintInputSchema } from "@/orpc/routes/token/routes/mutations/mint/token.mint.schema";
-import {
-  TokenBurnInputSchema,
-  TokenBurnOutputSchema,
-} from "@/orpc/routes/token/routes/mutations/burn/token.burn.schema";
-import { TokenTransferSchema } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.schema";
-import { TokenApproveInputSchema } from "@/orpc/routes/token/routes/mutations/approve/token.approve.schema";
-import { TokenRedeemInputSchema } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem.schema";
-import { TokenTransactionOutputSchema } from "@/orpc/routes/token/routes/mutations/common/token.transaction.schema";
-import { TokenFreezeAddressInputSchema } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-address.schema";
-import { TokenRecoverTokensInputSchema } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-tokens.schema";
-import { TokenForcedRecoverInputSchema } from "@/orpc/routes/token/routes/mutations/recovery/token.forced-recover.schema";
-import { TokenRecoverERC20InputSchema } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-erc20.schema";
-import { TokenSetCapInputSchema } from "@/orpc/routes/token/routes/mutations/cap/token.set-cap.schema";
-import { TokenSetYieldScheduleInputSchema } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule.schema";
-import { TokenAddComplianceModuleInputSchema } from "@/orpc/routes/token/routes/mutations/compliance/token.add-compliance-module.schema";
-import { TokenRemoveComplianceModuleInputSchema } from "@/orpc/routes/token/routes/mutations/compliance/token.remove-compliance-module.schema";
-import {
-  EventsResponseSchema,
-  TokenEventsInputSchema,
-} from "@/orpc/routes/token/routes/token.events.schema";
-import {
-  TokenHoldersInputSchema,
-  TokenHoldersResponseSchema,
-} from "@/orpc/routes/token/routes/token.holders.schema";
-import {
-  TokenListInputSchema,
-  TokenListSchema,
-} from "@/orpc/routes/token/routes/token.list.schema";
-import {
-  TokenReadInputSchema,
-  TokenSchema,
-} from "@/orpc/routes/token/routes/token.read.schema";
-import {
-  TokenStatsActivityByAssetInputSchema,
-  TokenStatsActivityByAssetOutputSchema,
-} from "@/orpc/routes/token/routes/token.stats.activity-by-asset.schema";
-import {
-  TokenStatsAssetCountInputSchema,
-  TokenStatsAssetCountOutputSchema,
-} from "@/orpc/routes/token/routes/token.stats.asset-count.schema";
-import { TokenStatsAssetsOutputSchema } from "@/orpc/routes/token/routes/token.stats.assets.schema";
-import {
-  TokenStatsSupplyDistributionInputSchema,
-  TokenStatsSupplyDistributionOutputSchema,
-} from "@/orpc/routes/token/routes/token.stats.supply-distribution.schema";
-import {
-  TokenStatsTotalValueInputSchema,
-  TokenStatsTotalValueOutputSchema,
-} from "@/orpc/routes/token/routes/token.stats.total-value.schema";
-import {
-  TokenStatsTransactionCountInputSchema,
-  TokenStatsTransactionCountOutputSchema,
-} from "@/orpc/routes/token/routes/token.stats.transaction-count.schema";
-import {
-  TokenStatsTransactionHistoryInputSchema,
-  TokenStatsTransactionHistoryOutputSchema,
-} from "@/orpc/routes/token/routes/token.stats.transaction-history.schema";
-import {
-  TokenStatsTransactionsInputSchema,
-  TokenStatsTransactionsOutputSchema,
-} from "@/orpc/routes/token/routes/token.stats.transactions.schema";
-import { TokenStatsValueOutputSchema } from "@/orpc/routes/token/routes/token.stats.value.schema";
-import { eventIterator } from "@orpc/server";
+// Factory contracts
+import { factoryCreateContract } from "@/orpc/routes/token/routes/factory/factory.create.contract";
+import { factoryListContract } from "@/orpc/routes/token/routes/factory/factory.list.contract";
+import { factoryReadContract } from "@/orpc/routes/token/routes/factory/factory.read.contract";
 
-const factoryCreate = baseContract
-  .route({
-    method: "POST",
-    path: "/token/factory",
-    description: "Create a new token factory",
-    successDescription: "New token factory created",
-    tags: ["token"],
-  })
-  .input(FactoryCreateSchema)
-  .output(eventIterator(FactoryCreateOutputSchema));
+// Mutation contracts
+import { tokenCreateContract } from "@/orpc/routes/token/routes/mutations/create/token.create.contract";
+import { tokenPauseContract } from "@/orpc/routes/token/routes/mutations/pause/token.pause.contract";
+import { tokenUnpauseContract } from "@/orpc/routes/token/routes/mutations/pause/token.unpause.contract";
+import { tokenMintContract } from "@/orpc/routes/token/routes/mutations/mint/token.mint.contract";
+import { tokenBurnContract } from "@/orpc/routes/token/routes/mutations/burn/token.burn.contract";
+import { tokenTransferContract } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.contract";
+import { tokenApproveContract } from "@/orpc/routes/token/routes/mutations/approve/token.approve.contract";
+import { tokenRedeemContract } from "@/orpc/routes/token/routes/mutations/redeem/token.redeem.contract";
+import { tokenFreezeAddressContract } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-address.contract";
+import { tokenRecoverTokensContract } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-tokens.contract";
+import { tokenForcedRecoverContract } from "@/orpc/routes/token/routes/mutations/recovery/token.forced-recover.contract";
+import { tokenRecoverERC20Contract } from "@/orpc/routes/token/routes/mutations/recovery/token.recover-erc20.contract";
+import { tokenSetCapContract } from "@/orpc/routes/token/routes/mutations/cap/token.set-cap.contract";
+import { tokenSetYieldScheduleContract } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule.contract";
+import { tokenAddComplianceModuleContract } from "@/orpc/routes/token/routes/mutations/compliance/token.add-compliance-module.contract";
+import { tokenRemoveComplianceModuleContract } from "@/orpc/routes/token/routes/mutations/compliance/token.remove-compliance-module.contract";
 
-const factoryList = baseContract
-  .route({
-    method: "GET",
-    path: "/token/factory",
-    description: "List all token factories",
-    successDescription: "List of token factories",
-    tags: ["token"],
-  })
-  .input(TokenFactoryListSchema)
-  .output(FactoryListSchema);
+// Query contracts
+import { tokenListContract } from "@/orpc/routes/token/routes/token.list.contract";
+import { tokenReadContract } from "@/orpc/routes/token/routes/token.read.contract";
+import { tokenEventsContract } from "@/orpc/routes/token/routes/token.events.contract";
+import { tokenHoldersContract } from "@/orpc/routes/token/routes/token.holders.contract";
 
-const factoryRead = baseContract
-  .route({
-    method: "GET",
-    path: "/token/factory/{id}",
-    description: "Get a token factory by ID",
-    successDescription: "Token factory details",
-    tags: ["token"],
-  })
-  .input(FactoryReadSchema)
-  .output(TokenFactoryDetailSchema);
-
-const create = baseContract
-  .route({
-    method: "POST",
-    path: "/token/create",
-    description: "Create a new token (deposit, bond, etc.)",
-    successDescription: "Token created successfully",
-    tags: ["token"],
-  })
-  .input(TokenCreateSchema)
-  .output(eventIterator(TokenCreateOutputSchema));
-
-const list = baseContract
-  .route({
-    method: "GET",
-    path: "/token",
-    description: "Get the list of tokens",
-    successDescription: "List of tokens",
-    tags: ["token"],
-  })
-  .input(TokenListInputSchema)
-  .output(TokenListSchema);
-
-const read = baseContract
-  .route({
-    method: "GET",
-    path: "/token/{tokenAddress}",
-    description: "Get a token by address",
-    successDescription: "Token",
-    tags: ["token"],
-  })
-  .input(TokenReadInputSchema)
-  .output(TokenSchema);
-
-const statsAssets = baseContract
-  .route({
-    method: "GET",
-    path: "/token/stats/assets",
-    description: "Get token asset statistics",
-    successDescription: "Asset statistics",
-    tags: ["token", "stats"],
-  })
-  .output(TokenStatsAssetsOutputSchema);
-
-const statsTransactions = baseContract
-  .route({
-    method: "GET",
-    path: "/token/stats/transactions",
-    description: "Get token transaction statistics",
-    successDescription: "Transaction statistics",
-    tags: ["token", "stats"],
-  })
-  .input(TokenStatsTransactionsInputSchema)
-  .output(TokenStatsTransactionsOutputSchema);
-
-const statsValue = baseContract
-  .route({
-    method: "GET",
-    path: "/token/stats/value",
-    description: "Get token value statistics",
-    successDescription: "Value statistics",
-    tags: ["token", "stats"],
-  })
-  .output(TokenStatsValueOutputSchema);
-
-const statsAssetCount = baseContract
-  .route({
-    method: "GET",
-    path: "/token/stats/asset-count",
-    description: "Get asset count statistics",
-    successDescription: "Asset count statistics",
-    tags: ["token", "stats"],
-  })
-  .input(TokenStatsAssetCountInputSchema)
-  .output(TokenStatsAssetCountOutputSchema);
-
-const statsTransactionCount = baseContract
-  .route({
-    method: "GET",
-    path: "/token/stats/transaction-count",
-    description: "Get transaction count statistics",
-    successDescription: "Transaction count statistics",
-    tags: ["token", "stats"],
-  })
-  .input(TokenStatsTransactionCountInputSchema)
-  .output(TokenStatsTransactionCountOutputSchema);
-
-const statsTotalValue = baseContract
-  .route({
-    method: "GET",
-    path: "/token/stats/total-value",
-    description: "Get total value statistics",
-    successDescription: "Total value statistics",
-    tags: ["token", "stats"],
-  })
-  .input(TokenStatsTotalValueInputSchema)
-  .output(TokenStatsTotalValueOutputSchema);
-
-const statsSupplyDistribution = baseContract
-  .route({
-    method: "GET",
-    path: "/token/stats/supply-distribution",
-    description: "Get supply distribution for charts",
-    successDescription: "Supply distribution data",
-    tags: ["token", "stats"],
-  })
-  .input(TokenStatsSupplyDistributionInputSchema)
-  .output(TokenStatsSupplyDistributionOutputSchema);
-
-const statsActivityByAsset = baseContract
-  .route({
-    method: "GET",
-    path: "/token/stats/activity-by-asset",
-    description: "Get activity breakdown by asset type",
-    successDescription: "Activity by asset data",
-    tags: ["token", "stats"],
-  })
-  .input(TokenStatsActivityByAssetInputSchema)
-  .output(TokenStatsActivityByAssetOutputSchema);
-
-const statsTransactionHistory = baseContract
-  .route({
-    method: "GET",
-    path: "/token/stats/transaction-history",
-    description: "Get transaction history over time",
-    successDescription: "Transaction history data",
-    tags: ["token", "stats"],
-  })
-  .input(TokenStatsTransactionHistoryInputSchema)
-  .output(TokenStatsTransactionHistoryOutputSchema);
-
-const holders = baseContract
-  .route({
-    method: "GET",
-    path: "/token/{tokenAddress}/holders",
-    description: "Get token holders and their balances",
-    successDescription: "List of token holders with balance information",
-    tags: ["token"],
-  })
-  .input(TokenHoldersInputSchema)
-  .output(TokenHoldersResponseSchema);
-
-const events = baseContract
-  .route({
-    method: "GET",
-    path: "/token/{tokenAddress}/events",
-    description: "Get token events history",
-    successDescription: "List of token events with details",
-    tags: ["token"],
-  })
-  .input(TokenEventsInputSchema)
-  .output(EventsResponseSchema);
-
-const pause = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/pause",
-    description: "Pause token transfers",
-    successDescription: "Token paused successfully",
-    tags: ["token"],
-  })
-  .input(TokenPauseInputSchema)
-  .output(eventIterator(TokenPauseOutputSchema));
-
-const unpause = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/unpause",
-    description: "Unpause token transfers",
-    successDescription: "Token unpaused successfully",
-    tags: ["token"],
-  })
-  .input(TokenUnpauseInputSchema)
-  .output(eventIterator(TokenUnpauseOutputSchema));
-
-const mint = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/mint",
-    description: "Mint new tokens to one or more addresses",
-    successDescription: "Tokens minted successfully",
-    tags: ["token"],
-  })
-  .input(TokenMintInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
-
-const burn = baseContract
-  .route({
-    method: "DELETE",
-    path: "/token/{contract}/burn",
-    description: "Burn tokens from one or more addresses",
-    successDescription: "Tokens burned successfully",
-    tags: ["token"],
-  })
-  .input(TokenBurnInputSchema)
-  .output(eventIterator(TokenBurnOutputSchema));
-
-const transfer = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/transfer",
-    description:
-      "Transfer tokens (standard, transferFrom, or forced) to one or more addresses",
-    successDescription: "Tokens transferred successfully",
-    tags: ["token"],
-  })
-  .input(TokenTransferSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
-
-const tokenApprove = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/approve",
-    description: "Approve an address to spend tokens on behalf of the owner",
-    successDescription: "Token allowance approved successfully",
-    tags: ["token"],
-  })
-  .input(TokenApproveInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
-
-const tokenRedeem = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/redeem",
-    description:
-      "Redeem tokens for underlying assets (supports redeem-all for bonds)",
-    successDescription: "Tokens redeemed successfully",
-    tags: ["token"],
-  })
-  .input(TokenRedeemInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
-
-const tokenFreezeAddress = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/freeze-address",
-    description: "Freeze or unfreeze an address from token transfers",
-    successDescription: "Address freeze status updated successfully",
-    tags: ["token"],
-  })
-  .input(TokenFreezeAddressInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
-
-const tokenRecoverTokens = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/recover-tokens",
-    description: "Recover tokens from a lost wallet to the caller's wallet",
-    successDescription: "Tokens recovered successfully",
-    tags: ["token"],
-  })
-  .input(TokenRecoverTokensInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
-
-const tokenForcedRecover = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/forced-recover",
-    description:
-      "Force recover tokens from a lost wallet to a new wallet (custodian only)",
-    successDescription: "Tokens force recovered successfully",
-    tags: ["token"],
-  })
-  .input(TokenForcedRecoverInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
-
-const tokenRecoverERC20 = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/recover-erc20",
-    description: "Recover mistakenly sent ERC20 tokens from the contract",
-    successDescription: "ERC20 tokens recovered successfully",
-    tags: ["token"],
-  })
-  .input(TokenRecoverERC20InputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
-
-const tokenSetCap = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/set-cap",
-    description: "Set the maximum supply cap for a capped token",
-    successDescription: "Token cap updated successfully",
-    tags: ["token"],
-  })
-  .input(TokenSetCapInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
-
-const tokenSetYieldSchedule = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/set-yield-schedule",
-    description: "Set the yield schedule for a yield-bearing token",
-    successDescription: "Yield schedule updated successfully",
-    tags: ["token"],
-  })
-  .input(TokenSetYieldScheduleInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
-
-const tokenAddComplianceModule = baseContract
-  .route({
-    method: "POST",
-    path: "/token/{contract}/add-compliance-module",
-    description: "Add a compliance module to the token",
-    successDescription: "Compliance module added successfully",
-    tags: ["token"],
-  })
-  .input(TokenAddComplianceModuleInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
-
-const tokenRemoveComplianceModule = baseContract
-  .route({
-    method: "DELETE",
-    path: "/token/{contract}/remove-compliance-module",
-    description: "Remove a compliance module from the token",
-    successDescription: "Compliance module removed successfully",
-    tags: ["token"],
-  })
-  .input(TokenRemoveComplianceModuleInputSchema)
-  .output(eventIterator(TokenTransactionOutputSchema));
+// Stats contracts
+import { tokenStatsAssetsContract } from "@/orpc/routes/token/routes/stats/assets.contract";
+import { tokenStatsTransactionsContract } from "@/orpc/routes/token/routes/stats/transactions.contract";
+import { tokenStatsValueContract } from "@/orpc/routes/token/routes/stats/value.contract";
+import { tokenStatsAssetCountContract } from "@/orpc/routes/token/routes/stats/asset-count.contract";
+import { tokenStatsTransactionCountContract } from "@/orpc/routes/token/routes/stats/transaction-count.contract";
+import { tokenStatsTotalValueContract } from "@/orpc/routes/token/routes/stats/total-value.contract";
+import { tokenStatsSupplyDistributionContract } from "@/orpc/routes/token/routes/stats/supply-distribution.contract";
+import { tokenStatsActivityByAssetContract } from "@/orpc/routes/token/routes/stats/activity-by-asset.contract";
+import { tokenStatsTransactionHistoryContract } from "@/orpc/routes/token/routes/stats/transaction-history.contract";
 
 export const tokenContract = {
-  factoryCreate,
-  factoryList,
-  factoryRead,
-  create,
-  events,
-  holders,
-  list,
-  read,
-  pause,
-  unpause,
-  mint,
-  burn,
-  transfer,
-  tokenApprove,
-  tokenRedeem,
-  tokenFreezeAddress,
-  tokenRecoverTokens,
-  tokenForcedRecover,
-  tokenRecoverERC20,
-  tokenSetCap,
-  tokenSetYieldSchedule,
-  tokenAddComplianceModule,
-  tokenRemoveComplianceModule,
-  statsActivityByAsset,
-  statsAssetCount,
-  statsAssets,
-  statsSupplyDistribution,
-  statsTotalValue,
-  statsTransactionCount,
-  statsTransactionHistory,
-  statsTransactions,
-  statsValue,
+  // Factory
+  factoryCreate: factoryCreateContract,
+  factoryList: factoryListContract,
+  factoryRead: factoryReadContract,
+
+  // Mutations
+  create: tokenCreateContract,
+  pause: tokenPauseContract,
+  unpause: tokenUnpauseContract,
+  mint: tokenMintContract,
+  burn: tokenBurnContract,
+  transfer: tokenTransferContract,
+  tokenApprove: tokenApproveContract,
+  tokenRedeem: tokenRedeemContract,
+  tokenFreezeAddress: tokenFreezeAddressContract,
+  tokenRecoverTokens: tokenRecoverTokensContract,
+  tokenForcedRecover: tokenForcedRecoverContract,
+  tokenRecoverERC20: tokenRecoverERC20Contract,
+  tokenSetCap: tokenSetCapContract,
+  tokenSetYieldSchedule: tokenSetYieldScheduleContract,
+  tokenAddComplianceModule: tokenAddComplianceModuleContract,
+  tokenRemoveComplianceModule: tokenRemoveComplianceModuleContract,
+
+  // Queries
+  list: tokenListContract,
+  read: tokenReadContract,
+  events: tokenEventsContract,
+  holders: tokenHoldersContract,
+
+  // Stats
+  statsAssets: tokenStatsAssetsContract,
+  statsTransactions: tokenStatsTransactionsContract,
+  statsValue: tokenStatsValueContract,
+  statsAssetCount: tokenStatsAssetCountContract,
+  statsTransactionCount: tokenStatsTransactionCountContract,
+  statsTotalValue: tokenStatsTotalValueContract,
+  statsSupplyDistribution: tokenStatsSupplyDistributionContract,
+  statsActivityByAsset: tokenStatsActivityByAssetContract,
+  statsTransactionHistory: tokenStatsTransactionHistoryContract,
 };
