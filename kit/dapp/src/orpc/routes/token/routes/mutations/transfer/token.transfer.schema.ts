@@ -1,5 +1,5 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { amount } from "@/lib/zod/validators/amount";
+import { apiBigInt } from "@/lib/zod/validators/bigint";
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { z } from "zod";
 
@@ -20,9 +20,9 @@ export const TokenTransferSchema = z
     amounts: z
       .union([
         // Single amount - transform to array
-        amount().transform((amt) => [amt]),
+        apiBigInt.transform((amt) => [amt]),
         // Array of amounts
-        z.array(amount()).min(1).max(100),
+        z.array(apiBigInt).min(1).max(100),
       ])
       .describe("Amount(s) of tokens to transfer"),
     from: z

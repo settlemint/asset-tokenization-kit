@@ -161,13 +161,16 @@ function createValidatedPortalClient(
           }
         ).__meta?.operationName ?? "GraphQL Mutation";
 
-      // Auto-generate event ID from operation name if not provided
+      // Auto-generate unique event ID from operation name and timestamp if not provided
       const eventId =
         trackingOptions?.eventId ??
-        operation
+        `${operation
           .replace(/([A-Z])/g, "-$1")
           .toLowerCase()
-          .replace(/^-/, "");
+          .replace(
+            /^-/,
+            ""
+          )}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
       let result: TResult;
       try {

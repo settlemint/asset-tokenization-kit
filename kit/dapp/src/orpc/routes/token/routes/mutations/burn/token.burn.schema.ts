@@ -1,3 +1,5 @@
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { apiBigInt } from "@/lib/zod/validators/bigint";
 import {
   MutationInputSchemaWithContract,
   MutationOutputSchema,
@@ -33,29 +35,17 @@ export const TokenBurnInputSchema = MutationInputSchemaWithContract.extend({
   addresses: z
     .union([
       // Single address - transform to array
-      z
-        .string()
-        .min(1, "User address must be provided")
-        .transform((addr) => [addr]),
+      ethereumAddress.transform((addr) => [addr]),
       // Array of addresses
-      z
-        .array(z.string().min(1))
-        .min(1, "At least one address required")
-        .max(100),
+      z.array(ethereumAddress).min(1, "At least one address required").max(100),
     ])
     .describe("Address(es) to burn tokens from"),
   amounts: z
     .union([
       // Single amount - transform to array
-      z
-        .string()
-        .min(1, "Amount must be provided")
-        .transform((amt) => [amt]),
+      apiBigInt.transform((amt) => [amt]),
       // Array of amounts
-      z
-        .array(z.string().min(1))
-        .min(1, "At least one amount required")
-        .max(100),
+      z.array(apiBigInt).min(1, "At least one amount required").max(100),
     ])
     .describe("Amount(s) of tokens to burn"),
   messages: TokenBurnMessagesSchema.optional(),

@@ -1,3 +1,5 @@
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { apiBigInt } from "@/lib/zod/validators/bigint";
 import {
   MutationInputSchemaWithContract,
   MutationOutputSchema,
@@ -33,13 +35,10 @@ export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
   recipients: z
     .union([
       // Single recipient - transform to array
-      z
-        .string()
-        .min(1, "Recipient address must be provided")
-        .transform((addr) => [addr]),
+      ethereumAddress.transform((addr) => [addr]),
       // Array of recipients
       z
-        .array(z.string().min(1))
+        .array(ethereumAddress)
         .min(1, "At least one recipient required")
         .max(100),
     ])
@@ -47,15 +46,9 @@ export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
   amounts: z
     .union([
       // Single amount - transform to array
-      z
-        .string()
-        .min(1, "Amount must be provided")
-        .transform((amt) => [amt]),
+      apiBigInt.transform((amt) => [amt]),
       // Array of amounts
-      z
-        .array(z.string().min(1))
-        .min(1, "At least one amount required")
-        .max(100),
+      z.array(apiBigInt).min(1, "At least one amount required").max(100),
     ])
     .describe("Amount(s) of tokens to mint"),
   messages: TokenMintMessagesSchema.optional(),
