@@ -99,6 +99,7 @@ export function DateTimeField({
   );
 
   const selectedDate = field.state.value;
+  const defaultTime = "10:30";
 
   return (
     <FieldLayout>
@@ -142,7 +143,7 @@ export function DateTimeField({
           type="time"
           step="60"
           value={
-            selectedDate ? selectedDate.toTimeString().slice(0, 5) : "10:30"
+            selectedDate ? selectedDate.toTimeString().slice(0, 5) : defaultTime
           }
           onChange={handleTimeChange}
           className={cn(
