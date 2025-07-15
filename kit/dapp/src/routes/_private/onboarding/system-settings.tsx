@@ -81,28 +81,14 @@ function RouteComponent() {
     },
   });
 
+  const { mutateAsync: upsertSetting, isPending: isUpsertPending } =
+    upsertSettingMutation;
+
   const form = useForm({
     defaultValues: {
       baseCurrency: currentBaseCurrency
         ? (currentBaseCurrency as FiatCurrency)
         : ("USD" as FiatCurrency),
-    },
-    onSubmit: async ({ value }) => {
-      logger.debug("Form onSubmit called with value:", value);
-      try {
-        logger.debug("Saving base currency:", value.baseCurrency);
-        await upsertSettingMutation.mutateAsync({
-          key: "BASE_CURRENCY",
-          value: value.baseCurrency,
-        });
-        logger.debug(
-          "Base currency saved successfully, navigating to next step"
-        );
-        handleNext();
-      } catch (error) {
-        logger.error("Failed to save base currency:", error);
-        toast.error("Failed to save platform settings");
-      }
     },
   });
 
@@ -112,6 +98,28 @@ function RouteComponent() {
       to: `/onboarding/${OnboardingStep.systemAssets}`,
     });
   }, [navigate]);
+
+  const handleSaveAndContinue = useCallback(async () => {
+    logger.debug("Save & Continue button clicked");
+    logger.debug("Form state:", form.state);
+    logger.debug("Form errors:", form.state.errors);
+
+    try {
+      const currentValue = form.state.values.baseCurrency;
+      logger.debug("Saving base currency:", currentValue);
+
+      await upsertSetting({
+        key: "BASE_CURRENCY",
+        value: currentValue,
+      });
+
+      logger.debug("Base currency saved successfully, navigating to next step");
+      handleNext();
+    } catch (error) {
+      logger.error("Failed to save base currency:", error);
+      toast.error("Failed to save platform settings");
+    }
+  }, [form.state, upsertSetting, handleNext]);
 
   const handlePrevious = useCallback(() => {
     void navigate({
@@ -195,23 +203,19 @@ function RouteComponent() {
                   type="button"
                   variant="outline"
                   onClick={handlePrevious}
-                  disabled={form.state.isSubmitting}
+                  disabled={isUpsertPending}
                 >
                   Previous
                 </Button>
                 <Button
                   type="button"
                   onClick={() => {
-                    logger.debug("Save & Continue button clicked");
-                    logger.debug("Form state:", form.state);
-                    logger.debug("Form errors:", form.state.errors);
-                    logger.debug("Form canSubmit:", form.state.canSubmit);
-                    void form.handleSubmit();
+                    void handleSaveAndContinue();
                   }}
-                  disabled={form.state.isSubmitting}
+                  disabled={isUpsertPending}
                   className="min-w-[120px]"
                 >
-                  {form.state.isSubmitting ? "Saving..." : "Save & Continue"}
+                  {isUpsertPending ? "Saving..." : "Save & Continue"}
                 </Button>
               </div>
             </div>

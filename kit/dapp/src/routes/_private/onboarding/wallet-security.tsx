@@ -10,8 +10,9 @@ import { useCallback, useEffect } from "react";
 
 const logger = createLogger();
 
-export const Route = createFileRoute("/_private/onboarding/wallet-security")({
-  beforeLoad: async ({ context: { orpc, queryClient } }) => {
+const routeConfig = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  beforeLoad: async ({ context: { orpc, queryClient } }: any) => {
     const user = await queryClient.fetchQuery({
       ...orpc.user.me.queryOptions(),
       staleTime: 0,
@@ -28,7 +29,11 @@ export const Route = createFileRoute("/_private/onboarding/wallet-security")({
     return { currentStep, user };
   },
   component: RouteComponent,
-});
+};
+
+export const Route = createFileRoute("/_private/onboarding/wallet-security")(
+  routeConfig
+);
 
 function RouteComponent() {
   const { user } = Route.useRouteContext();
