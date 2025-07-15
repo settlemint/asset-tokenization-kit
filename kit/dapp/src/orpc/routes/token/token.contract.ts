@@ -39,7 +39,31 @@ import {
   TokenReadInputSchema,
   TokenSchema,
 } from "@/orpc/routes/token/routes/token.read.schema";
+import {
+  TokenStatsActivityByAssetInputSchema,
+  TokenStatsActivityByAssetOutputSchema,
+} from "@/orpc/routes/token/routes/token.stats.activity-by-asset.schema";
+import {
+  TokenStatsAssetCountInputSchema,
+  TokenStatsAssetCountOutputSchema,
+} from "@/orpc/routes/token/routes/token.stats.asset-count.schema";
 import { TokenStatsAssetsOutputSchema } from "@/orpc/routes/token/routes/token.stats.assets.schema";
+import {
+  TokenStatsSupplyDistributionInputSchema,
+  TokenStatsSupplyDistributionOutputSchema,
+} from "@/orpc/routes/token/routes/token.stats.supply-distribution.schema";
+import {
+  TokenStatsTotalValueInputSchema,
+  TokenStatsTotalValueOutputSchema,
+} from "@/orpc/routes/token/routes/token.stats.total-value.schema";
+import {
+  TokenStatsTransactionCountInputSchema,
+  TokenStatsTransactionCountOutputSchema,
+} from "@/orpc/routes/token/routes/token.stats.transaction-count.schema";
+import {
+  TokenStatsTransactionHistoryInputSchema,
+  TokenStatsTransactionHistoryOutputSchema,
+} from "@/orpc/routes/token/routes/token.stats.transaction-history.schema";
 import {
   TokenStatsTransactionsInputSchema,
   TokenStatsTransactionsOutputSchema,
@@ -144,6 +168,72 @@ const statsValue = baseContract
   })
   .output(TokenStatsValueOutputSchema);
 
+const statsAssetCount = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/asset-count",
+    description: "Get asset count statistics",
+    successDescription: "Asset count statistics",
+    tags: ["token", "stats"],
+  })
+  .input(TokenStatsAssetCountInputSchema)
+  .output(TokenStatsAssetCountOutputSchema);
+
+const statsTransactionCount = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/transaction-count",
+    description: "Get transaction count statistics",
+    successDescription: "Transaction count statistics",
+    tags: ["token", "stats"],
+  })
+  .input(TokenStatsTransactionCountInputSchema)
+  .output(TokenStatsTransactionCountOutputSchema);
+
+const statsTotalValue = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/total-value",
+    description: "Get total value statistics",
+    successDescription: "Total value statistics",
+    tags: ["token", "stats"],
+  })
+  .input(TokenStatsTotalValueInputSchema)
+  .output(TokenStatsTotalValueOutputSchema);
+
+const statsSupplyDistribution = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/supply-distribution",
+    description: "Get supply distribution for charts",
+    successDescription: "Supply distribution data",
+    tags: ["token", "stats"],
+  })
+  .input(TokenStatsSupplyDistributionInputSchema)
+  .output(TokenStatsSupplyDistributionOutputSchema);
+
+const statsActivityByAsset = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/activity-by-asset",
+    description: "Get activity breakdown by asset type",
+    successDescription: "Activity by asset data",
+    tags: ["token", "stats"],
+  })
+  .input(TokenStatsActivityByAssetInputSchema)
+  .output(TokenStatsActivityByAssetOutputSchema);
+
+const statsTransactionHistory = baseContract
+  .route({
+    method: "GET",
+    path: "/token/stats/transaction-history",
+    description: "Get transaction history over time",
+    successDescription: "Transaction history data",
+    tags: ["token", "stats"],
+  })
+  .input(TokenStatsTransactionHistoryInputSchema)
+  .output(TokenStatsTransactionHistoryOutputSchema);
+
 const holders = baseContract
   .route({
     method: "GET",
@@ -199,7 +289,13 @@ export const tokenContract = {
   read,
   pause,
   unpause,
+  statsActivityByAsset,
+  statsAssetCount,
   statsAssets,
+  statsSupplyDistribution,
+  statsTotalValue,
+  statsTransactionCount,
+  statsTransactionHistory,
   statsTransactions,
   statsValue,
 };

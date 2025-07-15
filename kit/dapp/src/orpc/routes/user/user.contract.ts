@@ -20,6 +20,14 @@ import {
   UserStatsInputSchema,
   UserStatsOutputSchema,
 } from "@/orpc/routes/user/routes/user.stats.schema";
+import {
+  UserStatsGrowthOverTimeInputSchema,
+  UserStatsGrowthOverTimeOutputSchema,
+} from "@/orpc/routes/user/routes/user.stats.growth-over-time.schema";
+import {
+  UserStatsUserCountInputSchema,
+  UserStatsUserCountOutputSchema,
+} from "@/orpc/routes/user/routes/user.stats.user-count.schema";
 import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
 import { baseContract } from "../../procedures/base.contract";
 
@@ -78,6 +86,28 @@ const stats = baseContract
   .input(UserStatsInputSchema)
   .output(UserStatsOutputSchema);
 
+const statsUserCount = baseContract
+  .route({
+    method: "GET",
+    path: "/user/stats/user-count",
+    description: "Get user count statistics",
+    successDescription: "User count statistics",
+    tags: ["user", "stats"],
+  })
+  .input(UserStatsUserCountInputSchema)
+  .output(UserStatsUserCountOutputSchema);
+
+const statsGrowthOverTime = baseContract
+  .route({
+    method: "GET",
+    path: "/user/stats/growth-over-time",
+    description: "Get user growth over time",
+    successDescription: "User growth data",
+    tags: ["user", "stats"],
+  })
+  .input(UserStatsGrowthOverTimeInputSchema)
+  .output(UserStatsGrowthOverTimeOutputSchema);
+
 /**
  * User API contract collection.
  */
@@ -85,5 +115,7 @@ export const userContract = {
   me,
   list,
   stats,
+  statsGrowthOverTime,
+  statsUserCount,
   kyc: kycContract,
 };
