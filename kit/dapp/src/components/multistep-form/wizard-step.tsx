@@ -203,7 +203,7 @@ export function WizardStep({ className }: WizardStepProps) {
     );
   }
 
-  if (!currentStep || !isStepVisible) {
+  if (!isStepVisible) {
     return null;
   }
 
