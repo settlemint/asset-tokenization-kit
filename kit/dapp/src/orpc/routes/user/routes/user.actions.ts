@@ -212,11 +212,14 @@ function buildWhereClause(
     },
   };
 
-  // Override assignedTo if provided
+  // If assignedTo is provided, ensure it matches the authenticated user's wallet
+  // This prevents unauthorized access to other users' actions
   if (assignedTo) {
-    where.executors_ = {
-      executors_contains: [assignedTo.toLowerCase()],
-    };
+    if (assignedTo.toLowerCase() !== userWallet.toLowerCase()) {
+      // Security: Don't allow querying actions assigned to other users
+      // Return a filter that will match no results
+      where.id = "nonexistent";
+    }
   }
 
   // Filter by type
@@ -270,11 +273,11 @@ export const actions = authRouter.user.actions
         input: {
           where: Object.keys(where).length > 0 ? where : undefined,
         },
-        output: CountResponseSchema,
+        output: CountResponseSchema as any,
         error: "Failed to count user actions",
       });
 
-      const total = countResponse.actions.length;
+      const total = (countResponse as z.infer<typeof CountResponseSchema>).actions.length;
 
       // Get paginated results
       const response = await context.theGraphClient.query(LIST_USER_ACTIONS_QUERY, {
@@ -285,12 +288,12 @@ export const actions = authRouter.user.actions
           orderDirection: "desc",
           where: Object.keys(where).length > 0 ? where : undefined,
         },
-        output: ActionsResponseSchema,
+        output: ActionsResponseSchema as any,
         error: "Failed to fetch user actions",
       });
 
       // Process actions
-      const actions: Action[] = response.actions.map(mapSubgraphActionToAction);
+      const actions: Action[] = (response as z.infer<typeof ActionsResponseSchema>).actions.map(mapSubgraphActionToAction);
 
       const result: UserActionsOutput = {
         actions,
