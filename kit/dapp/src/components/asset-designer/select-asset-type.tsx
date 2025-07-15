@@ -1,4 +1,4 @@
-import { formOpts } from "@/components/asset-designer/shared-form";
+import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
 import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
 import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
@@ -9,7 +9,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 export const SelectAssetType = withForm({
-  ...formOpts,
+  ...assetDesignerFormOptions,
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
