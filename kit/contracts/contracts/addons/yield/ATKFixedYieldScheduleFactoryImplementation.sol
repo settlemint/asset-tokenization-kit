@@ -126,7 +126,7 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         address expectedAddress = _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
 
         // Create contract identity for the yield schedule
-        _deployContractIdentity(expectedAddress, _msgSender(), description, country);
+        _deployContractIdentity(expectedAddress, country);
 
         // Deploy using the abstract factory method
         scheduleProxyAddress = _deploySystemAddon(proxyBytecode, constructorArgs, saltInputData, expectedAddress);

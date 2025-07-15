@@ -60,7 +60,6 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     /// @param required Number of confirmations required to execute a transaction
     /// @param initialOwner Address that will have admin role
     /// @param salt Salt value for deterministic address generation
-    /// @param description Human-readable description of the vault
     /// @param country Country code for compliance purposes
     /// @return contractAddress Address of the newly created vault
     function createVault(
@@ -68,7 +67,6 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         uint256 required,
         address initialOwner,
         bytes32 salt,
-        string memory description,
         uint16 country
     )
         external
@@ -85,7 +83,7 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         address expectedAddress = _predictProxyAddress(vaultBytecode, constructorArgs, saltInputData);
 
         // Create contract identity for the vault
-        address contractIdentity = _deployContractIdentity(expectedAddress, initialOwner, description, country);
+        address contractIdentity = _deployContractIdentity(expectedAddress, country);
 
         // Update constructor args with the actual onchainId
         constructorArgs = abi.encode(signers, required, initialOwner, trustedForwarder(), contractIdentity);

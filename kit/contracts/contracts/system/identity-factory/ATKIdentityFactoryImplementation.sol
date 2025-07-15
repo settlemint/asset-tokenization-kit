@@ -139,7 +139,7 @@ contract ATKIdentityFactoryImplementation is
         // Extract to separate variables to reduce stack depth
         address identityImpl = IATKSystem(systemAddress).identityImplementation();
         address contractIdentityImpl = IATKSystem(systemAddress).contractIdentityImplementation();
-        
+
         // Separate the interface checks
         _validateIdentityImplementation(identityImpl);
         _validateContractIdentityImplementation(contractIdentityImpl);

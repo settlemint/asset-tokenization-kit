@@ -53,8 +53,7 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
     /// @notice Emitted when a contract identity is registered for an addon
     /// @param factory The address of the factory that registered the identity
     /// @param contractAddress The address of the addon contract
-    /// @param description A description of the addon
-    event ContractIdentityRegistered(address indexed factory, address indexed contractAddress, string description);
+    event ContractIdentityRegistered(address indexed factory, address indexed contractAddress);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
@@ -203,14 +202,10 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
     /// @notice Creates a contract identity and registers it with the identity registry
     /// @dev Centralized function for addon factories to create and register contract identities
     /// @param contractAddress The address of the addon contract
-    /// @param accessManagerAddress The address that will manage the contract identity
-    /// @param description Human-readable description of the addon
     /// @param country Country code for compliance purposes
     /// @return contractIdentity The address of the created contract identity
     function _deployContractIdentity(
         address contractAddress,
-        address accessManagerAddress,
-        string memory description,
         uint16 country
     )
         internal
@@ -227,7 +222,7 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
         identityRegistry.registerIdentity(contractAddress, IIdentity(contractIdentity), country);
 
         // Emit registration event for indexing
-        emit ContractIdentityRegistered(_msgSender(), contractAddress, description);
+        emit ContractIdentityRegistered(_msgSender(), contractAddress);
 
         return contractIdentity;
     }

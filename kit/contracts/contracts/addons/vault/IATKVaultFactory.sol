@@ -15,7 +15,6 @@ interface IATKVaultFactory {
     /// @param required Number of confirmations required to execute a transaction
     /// @param initialOwner Address that will have admin role
     /// @param salt Salt value for deterministic address generation
-    /// @param description Human-readable description of the vault
     /// @param country Country code for compliance purposes
     /// @return contractAddress Address of the newly created vault
     function createVault(
@@ -23,7 +22,6 @@ interface IATKVaultFactory {
         uint256 required,
         address initialOwner,
         bytes32 salt,
-        string memory description,
         uint16 country
     )
         external
