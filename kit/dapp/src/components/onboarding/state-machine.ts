@@ -67,32 +67,40 @@ export function buildOnboardingSteps(user: CurrentUser, hasSystem: boolean) {
     },
   ];
 
-  // Only show system steps if no system exists and user is admin
-  if (!hasSystem && user.role === "admin") {
+  // Show system steps if user is admin (always show them, but with proper completion states)
+  if (user.role === "admin") {
+    // ISSUE: Currently onboardingState.system is set to !!systemAddress, which means it's true
+    // whenever a system exists, not when all system steps are completed.
+    // Until we have individual step tracking, we need to handle this properly:
+
+    // For now, only systemDeploy is completed when system exists
+    // Other steps are never completed (since we can't track individual completion)
+    // This means the user will have to manually complete settings, assets, addons
+
     steps.push(
       {
         step: OnboardingStep.systemDeploy,
         groupId: OnboardingStepGroup.system,
         current: false,
-        completed: false, // This will be determined by checking if system exists
+        completed: hasSystem, // Complete when system is deployed
       },
       {
         step: OnboardingStep.systemSettings,
         groupId: OnboardingStepGroup.system,
         current: false,
-        completed: false,
+        completed: false, // TODO: Add individual step tracking
       },
       {
         step: OnboardingStep.systemAssets,
         groupId: OnboardingStepGroup.system,
         current: false,
-        completed: false,
+        completed: false, // TODO: Add individual step tracking
       },
       {
         step: OnboardingStep.systemAddons,
         groupId: OnboardingStepGroup.system,
         current: false,
-        completed: false,
+        completed: false, // TODO: Add individual step tracking
       }
     );
   }

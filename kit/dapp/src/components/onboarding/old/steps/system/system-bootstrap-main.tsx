@@ -23,9 +23,9 @@ export function SystemBootstrapMain({
   onNext,
   onPrevious,
   isFirstStep,
-  user,
+  user: _user, // Renamed to indicate it's intentionally unused
 }: SystemBootstrapMainProps) {
-  const { data: session } = authClient.useSession();
+  const { data: _session } = authClient.useSession();
   const [systemAddress] = useSettings("SYSTEM_ADDRESS");
   const queryClient = useQueryClient();
 
@@ -38,7 +38,7 @@ export function SystemBootstrapMain({
   );
 
   // Check if user has 2FA enabled to determine available verification methods
-  const currentUser = user ?? session?.user;
+  // This file is deprecated - use the new system components instead
   const hasTwoFactor = false; // TODO: Get from proper user data
   const hasPincode = false; // TODO: Get from proper user data
 

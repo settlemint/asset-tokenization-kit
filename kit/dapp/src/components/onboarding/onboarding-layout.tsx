@@ -127,7 +127,11 @@ export const OnboardingLayout: FunctionComponent<{
   }, [currentStep, children, steps, stepTranslationMappings]);
 
   const defaultStepIndex = useMemo(() => {
-    return stepsWithTranslations.findIndex((step) => step.id === currentStep);
+    const index = stepsWithTranslations.findIndex(
+      (step) => step.id === currentStep
+    );
+    // Ensure we never return -1, fallback to 0 if step not found
+    return index >= 0 ? index : 0;
   }, [stepsWithTranslations, currentStep]);
 
   const onComplete = useCallback(() => {

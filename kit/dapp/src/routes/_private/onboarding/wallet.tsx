@@ -4,12 +4,9 @@ import {
   updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
 import { Button } from "@/components/ui/button";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-
-const logger = createLogger();
 
 export const Route = createFileRoute("/_private/onboarding/wallet")({
   beforeLoad: async ({ context: { orpc, queryClient } }) => {

@@ -39,12 +39,6 @@ export function SystemBootstrapMain({
   const hasTwoFactor = false;
   const hasPincode = true;
 
-  // Fetch real system details when system address is available
-  const { data: realSystemDetails } = useQuery({
-    ...orpc.system.read.queryOptions({ input: { id: systemAddress ?? "" } }),
-    enabled: !!systemAddress,
-  });
-
   // System deployment mutation
   const {
     mutate: createSystemMutation,
@@ -65,6 +59,25 @@ export function SystemBootstrapMain({
       setIsBootstrapped(true);
       onNext?.();
     },
+  });
+
+  // Fetch real system details when system address is available
+  // Only enable this query when showing the success screen (system already exists)
+  // This avoids authentication issues during active deployment
+  // It's normal for this to fail initially if TheGraph hasn't indexed the system yet
+  const { data: realSystemDetails } = useQuery({
+    ...orpc.system.read.queryOptions({ input: { id: systemAddress ?? "" } }),
+    enabled: !!systemAddress && !showDeploymentProgress && !isCreatingSystem,
+    retry: (failureCount, error) => {
+      // Only retry if it's a 404 (system not indexed yet), retry up to 3 times
+      if (error && "status" in error && error.status === 404) {
+        return failureCount < 3;
+      }
+      return false;
+    },
+    retryDelay: 1000,
+    // Silently handle errors as TheGraph may not have indexed the system yet
+    throwOnError: false,
   });
 
   // Monitor for indexing errors
@@ -211,7 +224,9 @@ export function SystemBootstrapMain({
 
   const handleDeploymentComplete = useCallback(() => {
     setIsBootstrapped(true);
-  }, []);
+    // Navigate to next step after successful deployment
+    onNext?.();
+  }, [onNext]);
 
   const handleRetryDeployment = useCallback(() => {
     setDeploymentFailed(false);

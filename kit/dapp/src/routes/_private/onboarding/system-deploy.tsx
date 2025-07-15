@@ -8,7 +8,7 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useCallback } from "react";
 
 export const Route = createFileRoute("/_private/onboarding/system-deploy")({
-  beforeLoad: async ({ context: { orpc, queryClient } }) => {
+  beforeLoad: async ({ context: { orpc, queryClient }, search }) => {
     const user = await queryClient.fetchQuery({
       ...orpc.user.me.queryOptions(),
       staleTime: 0,
@@ -29,7 +29,16 @@ export const Route = createFileRoute("/_private/onboarding/system-deploy")({
     }
 
     const { currentStep } = updateOnboardingStateMachine({ user, hasSystem });
-    if (user.isOnboarded && currentStep !== OnboardingStep.systemDeploy) {
+
+    // Allow navigation back from system-settings even if it's not the current step
+    const fromStep = (search as { from?: string })?.from;
+    const isNavigatingBack = fromStep === OnboardingStep.systemSettings;
+
+    if (
+      user.isOnboarded &&
+      currentStep !== OnboardingStep.systemDeploy &&
+      !isNavigatingBack
+    ) {
       return redirect({
         to: `/onboarding/${currentStep}`,
       });
@@ -54,6 +63,8 @@ function RouteComponent() {
       to: `/onboarding/${OnboardingStep.walletRecoveryCodes}`,
     });
   }, [navigate]);
+
+  // Navigation is handled by the onNext callback when deployment completes
 
   return (
     <OnboardingLayout currentStep={OnboardingStep.systemDeploy}>

@@ -73,9 +73,10 @@ export function DeploymentProgress({
             newSteps[0].completed = false;
           }
           for (let i = 1; i < newSteps.length; i++) {
-            if (newSteps[i]) {
-              newSteps[i].inProgress = false;
-              newSteps[i].completed = false;
+            const step = newSteps[i];
+            if (step) {
+              step.inProgress = false;
+              step.completed = false;
             }
           }
         } else if (message.includes("Waiting for transaction to be mined")) {
@@ -89,9 +90,10 @@ export function DeploymentProgress({
             newSteps[1].completed = false;
           }
           for (let i = 2; i < newSteps.length; i++) {
-            if (newSteps[i]) {
-              newSteps[i].inProgress = false;
-              newSteps[i].completed = false;
+            const step = newSteps[i];
+            if (step) {
+              step.inProgress = false;
+              step.completed = false;
             }
           }
         } else if (message.includes("Waiting for indexing")) {
@@ -109,9 +111,10 @@ export function DeploymentProgress({
             newSteps[2].completed = false;
           }
           for (let i = 3; i < newSteps.length; i++) {
-            if (newSteps[i]) {
-              newSteps[i].inProgress = false;
-              newSteps[i].completed = false;
+            const step = newSteps[i];
+            if (step) {
+              step.inProgress = false;
+              step.completed = false;
             }
           }
         } else if (message.includes("Bootstrapping system")) {

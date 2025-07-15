@@ -50,6 +50,7 @@ function RouteComponent() {
   const handlePrevious = useCallback(() => {
     void navigate({
       to: `/onboarding/${OnboardingStep.systemDeploy}`,
+      search: { from: OnboardingStep.systemSettings },
     });
   }, [navigate]);
 

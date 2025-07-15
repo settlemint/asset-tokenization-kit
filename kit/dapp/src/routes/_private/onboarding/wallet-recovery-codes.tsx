@@ -21,7 +21,10 @@ export const Route = createFileRoute(
       ...orpc.user.me.queryOptions(),
       staleTime: 0,
     });
-    const { currentStep } = updateOnboardingStateMachine({ user });
+    const { currentStep } = updateOnboardingStateMachine({
+      user,
+      hasSystem: false,
+    });
     if (currentStep !== OnboardingStep.walletRecoveryCodes) {
       return redirect({
         to: `/onboarding/${currentStep}`,

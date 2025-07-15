@@ -16,7 +16,10 @@ export const Route = createFileRoute("/_private/onboarding/wallet-security")({
       ...orpc.user.me.queryOptions(),
       staleTime: 0,
     });
-    const { currentStep } = updateOnboardingStateMachine({ user });
+    const { currentStep } = updateOnboardingStateMachine({
+      user,
+      hasSystem: false,
+    });
     if (currentStep !== OnboardingStep.walletSecurity) {
       return redirect({
         to: `/onboarding/${currentStep}`,
