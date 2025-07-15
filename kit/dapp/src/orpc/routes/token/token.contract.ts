@@ -24,6 +24,25 @@ import {
   TokenUnpauseOutputSchema,
 } from "@/orpc/routes/token/routes/mutations/pause/token.unpause.schema";
 import {
+  TokenMintInputSchema,
+  TokenMintOutputSchema,
+} from "@/orpc/routes/token/routes/mutations/mint/token.mint.schema";
+import {
+  TokenBurnInputSchema,
+  TokenBurnOutputSchema,
+} from "@/orpc/routes/token/routes/mutations/burn/token.burn.schema";
+import {
+  TokenTransferSchema,
+  TokenTransferFromSchema,
+  TokenForcedTransferSchema,
+} from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.schema";
+import { TokenApproveInputSchema } from "@/orpc/routes/token/routes/mutations/approve/token.approve.schema";
+import {
+  TokenRedeemInputSchema,
+  TokenRedeemAllInputSchema,
+} from "@/orpc/routes/token/routes/mutations/redeem/token.redeem.schema";
+import { TokenFreezeAddressInputSchema } from "@/orpc/routes/token/routes/mutations/freeze/token.freeze-address.schema";
+import {
   EventsResponseSchema,
   TokenEventsInputSchema,
 } from "@/orpc/routes/token/routes/token.events.schema";
@@ -188,6 +207,106 @@ const unpause = baseContract
   .input(TokenUnpauseInputSchema)
   .output(eventIterator(TokenUnpauseOutputSchema));
 
+const mint = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/mint",
+    description: "Mint new tokens to one or more addresses",
+    successDescription: "Tokens minted successfully",
+    tags: ["token"],
+  })
+  .input(TokenMintInputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const burn = baseContract
+  .route({
+    method: "DELETE",
+    path: "/token/{contract}/burn",
+    description: "Burn tokens from one or more addresses",
+    successDescription: "Tokens burned successfully",
+    tags: ["token"],
+  })
+  .input(TokenBurnInputSchema)
+  .output(eventIterator(TokenBurnOutputSchema));
+
+const transfer = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/transfer",
+    description: "Transfer tokens to one or more addresses",
+    successDescription: "Tokens transferred successfully",
+    tags: ["token"],
+  })
+  .input(TokenTransferSchema)
+  .output(eventIterator(TokenMintOutputSchema)); // Reusing mint output schema for transaction hash
+
+const transferFrom = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/transfer-from",
+    description: "Transfer tokens from one address to another using allowance",
+    successDescription: "Tokens transferred successfully",
+    tags: ["token"],
+  })
+  .input(TokenTransferFromSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const forcedTransfer = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/forced-transfer",
+    description:
+      "Force transfer tokens without approval (custodian only) - supports batch operations",
+    successDescription: "Tokens force transferred successfully",
+    tags: ["token"],
+  })
+  .input(TokenForcedTransferSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const tokenApprove = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/approve",
+    description: "Approve an address to spend tokens on behalf of the owner",
+    successDescription: "Token allowance approved successfully",
+    tags: ["token"],
+  })
+  .input(TokenApproveInputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const tokenRedeem = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/redeem",
+    description: "Redeem tokens for underlying assets",
+    successDescription: "Tokens redeemed successfully",
+    tags: ["token"],
+  })
+  .input(TokenRedeemInputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const tokenRedeemAll = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/redeem-all",
+    description: "Redeem all tokens for underlying assets (typically bonds)",
+    successDescription: "All tokens redeemed successfully",
+    tags: ["token"],
+  })
+  .input(TokenRedeemAllInputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
+const tokenFreezeAddress = baseContract
+  .route({
+    method: "POST",
+    path: "/token/{contract}/freeze-address",
+    description: "Freeze or unfreeze an address from token transfers",
+    successDescription: "Address freeze status updated successfully",
+    tags: ["token"],
+  })
+  .input(TokenFreezeAddressInputSchema)
+  .output(eventIterator(TokenMintOutputSchema));
+
 export const tokenContract = {
   factoryCreate,
   factoryList,
@@ -199,6 +318,15 @@ export const tokenContract = {
   read,
   pause,
   unpause,
+  mint,
+  burn,
+  transfer,
+  transferFrom,
+  forcedTransfer,
+  tokenApprove,
+  tokenRedeem,
+  tokenRedeemAll,
+  tokenFreezeAddress,
   statsAssets,
   statsTransactions,
   statsValue,
