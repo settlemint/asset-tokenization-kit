@@ -14,6 +14,8 @@
     "shadcn": "bunx --bun shadcn@canary",
     "codegen:settlemint": "settlemint codegen",
     "codegen:gql-tada": "gql-tada turbo",
+    "codegen:interface-ids": "bun run ./tools/generate-interface-ids.ts",
+    "codegen": "bun run codegen:interface-ids && bun run codegen:settlemint && bun run codegen:gql-tada",
     "format": "prettier --experimental-cli --write .",
     "lint": "eslint ./src --max-warnings 0",
     "lint:fix": "eslint ./src --fix",
