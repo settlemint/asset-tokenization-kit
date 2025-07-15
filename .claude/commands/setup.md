@@ -50,6 +50,11 @@ claude mcp add --transport sse deepwiki https://mcp.deepwiki.com/sse -s user
 # Sentry - Error tracking and monitoring
 claude mcp add --transport http sentry https://mcp.sentry.dev/mcp -s user
 
+# Playwright - Browser automation
+claude mcp add playwright npx '@playwright/mcp@latest' -s user
+
+# Gemini - AI agentic helper
+claude mcp add gemini-cli -- npx -y gemini-mcp-tool -s user
 ```
 
 ## Usage
@@ -67,7 +72,10 @@ Some servers require authentication:
 
 - **Linear, DeepWiki, Sentry**: May prompt for OAuth authentication in browser
   on first use
-- **Context7**: Public access, no authentication required
+- **Context7, Playwright**: Public access, no authentication required
+- **Gemini**: Public access, no authentication required, but you need to install
+  with npx https://github.com/google-gemini/gemini-cli, launch `gemini` and sign
+  in with a non-Workspace account.
 
 ## Troubleshooting
 
