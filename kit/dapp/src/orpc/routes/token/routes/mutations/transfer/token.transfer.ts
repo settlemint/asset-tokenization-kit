@@ -75,7 +75,7 @@ const TOKEN_FORCED_TRANSFER_MUTATION = portalGraphql(`
       input: {
         from: $owner
         to: $to
-        value: $amount
+        amount: $amount
       }
     ) {
       transactionHash
