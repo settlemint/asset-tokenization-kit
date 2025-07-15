@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import {
   type ActionStatus,
   type ActionType,
