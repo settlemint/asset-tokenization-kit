@@ -2,7 +2,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { z } from "zod/v4";
+import { z } from "zod";
 import {
   type Action,
   type ActionStatus,
@@ -125,7 +125,9 @@ function mapSubgraphActionToAction(
 
   // Map type - normalize to uppercase and handle both Admin/ADMIN variations
   const type: ActionType =
-    subgraphAction.type.toUpperCase() === "ADMIN" ? ActionTypeSchema.enum.ADMIN : ActionTypeSchema.enum.USER;
+    subgraphAction.type.toUpperCase() === "ADMIN"
+      ? ActionTypeSchema.enum.ADMIN
+      : ActionTypeSchema.enum.USER;
 
   // Generate description based on action name and context
   const description = generateActionDescription(
@@ -145,9 +147,11 @@ function mapSubgraphActionToAction(
     updatedAt: subgraphAction.executedAt
       ? Number(subgraphAction.executedAt)
       : Number(subgraphAction.createdAt),
-    assignedTo: subgraphAction.executors?.executors?.length > 0
-      ? subgraphAction.executors.executors[0]?.id ?? null
-      : null,
+    assignedTo:
+      subgraphAction.executors.executors.length > 0 &&
+      subgraphAction.executors.executors[0]
+        ? subgraphAction.executors.executors[0].id
+        : null,
     token: subgraphAction.target.id,
     metadata: subgraphAction.requiredRole
       ? [{ key: "requiredRole", value: subgraphAction.requiredRole }]
@@ -226,7 +230,7 @@ function buildWhereClause(
   if (type) {
     if (type === ActionTypeSchema.enum.ADMIN) {
       where.type_in = ["ADMIN", "Admin"];
-    } else if (type === ActionTypeSchema.enum.USER) {
+    } else {
       where.type_not_in = ["ADMIN", "Admin"];
     }
   }
@@ -240,7 +244,7 @@ function buildWhereClause(
     } else if (status === ActionStatusSchema.enum.UPCOMING) {
       where.executed = false;
       where.activeAt_gt = currentTimestamp;
-    } else if (status === ActionStatusSchema.enum.PENDING) {
+    } else {
       where.executed = false;
       where.activeAt_lte = currentTimestamp;
     }
@@ -266,34 +270,45 @@ export const actions = authRouter.user.actions
 
     try {
       // Build where clause for the GraphQL query
-      const where = buildWhereClause(auth.user.wallet, status, type, assignedTo);
+      const where = buildWhereClause(
+        auth.user.wallet,
+        status,
+        type,
+        assignedTo
+      );
 
       // Get total count first
-      const countResponse = await context.theGraphClient.query(COUNT_USER_ACTIONS_QUERY, {
-        input: {
-          where: Object.keys(where).length > 0 ? where : undefined,
-        },
-        output: CountResponseSchema as any,
-        error: "Failed to count user actions",
-      });
+      const countResponse = await context.theGraphClient.query(
+        COUNT_USER_ACTIONS_QUERY,
+        {
+          input: {
+            where: Object.keys(where).length > 0 ? where : undefined,
+          },
+          output: CountResponseSchema,
+          error: "Failed to count user actions",
+        }
+      );
 
-      const total = (countResponse as z.infer<typeof CountResponseSchema>).actions.length;
+      const total = countResponse.actions.length;
 
       // Get paginated results
-      const response = await context.theGraphClient.query(LIST_USER_ACTIONS_QUERY, {
-        input: {
-          skip: offset,
-          first: Math.min(limit, 1000),
-          orderBy: "createdAt",
-          orderDirection: "desc",
-          where: Object.keys(where).length > 0 ? where : undefined,
-        },
-        output: ActionsResponseSchema as any,
-        error: "Failed to fetch user actions",
-      });
+      const response = await context.theGraphClient.query(
+        LIST_USER_ACTIONS_QUERY,
+        {
+          input: {
+            skip: offset,
+            first: Math.min(limit, 1000),
+            orderBy: "createdAt",
+            orderDirection: "desc",
+            where: Object.keys(where).length > 0 ? where : undefined,
+          },
+          output: ActionsResponseSchema,
+          error: "Failed to fetch user actions",
+        }
+      );
 
       // Process actions
-      const actions: Action[] = (response as z.infer<typeof ActionsResponseSchema>).actions.map(mapSubgraphActionToAction);
+      const actions: Action[] = response.actions.map(mapSubgraphActionToAction);
 
       const result: UserActionsOutput = {
         actions,

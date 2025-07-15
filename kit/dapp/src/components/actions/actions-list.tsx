@@ -190,9 +190,7 @@ function ActionCard({ action }: ActionCardProps) {
 
           {action.token && (
             <div className="flex items-center gap-1">
-              <span>
-                Token: {action.token.slice(0, 8)}...
-              </span>
+              <span>Token: {action.token.slice(0, 8)}...</span>
             </div>
           )}
         </div>
