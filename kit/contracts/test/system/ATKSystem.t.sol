@@ -71,6 +71,23 @@ contract MockInvalidContract {
 // This contract doesn't implement IERC165
 }
 
+// Struct to group implementation addresses to avoid stack too deep errors
+struct SystemImplementations {
+    address compliance;
+    address identityRegistry;
+    address identityRegistryStorage;
+    address trustedIssuersRegistry;
+    address topicSchemeRegistry;
+    address identityFactory;
+    address identity;
+    address contractIdentity;
+    address tokenAccessManager;
+    address identityVerificationModule;
+    address tokenFactoryRegistry;
+    address complianceModuleRegistry;
+    address addonRegistry;
+}
+
 contract ATKSystemTest is Test {
     // --- Module Type Hashes ---
     bytes32 internal constant COMPLIANCE = keccak256("COMPLIANCE");
@@ -114,7 +131,7 @@ contract ATKSystemTest is Test {
         systemUtils = new SystemUtils(admin);
         atkSystem = IATKSystem(address(systemUtils.system()));
         mockInvalidContract = new MockInvalidContract();
-        
+
         // All implementations created lazily to minimize setup complexity
     }
 
@@ -190,6 +207,50 @@ contract ATKSystemTest is Test {
         return identityVerificationModule;
     }
 
+    // Helper function to create all implementations to avoid stack too deep errors
+    function _createAllImplementations() internal returns (SystemImplementations memory) {
+        return SystemImplementations({
+            compliance: address(new ATKComplianceImplementation(forwarder)),
+            identityRegistry: address(new ATKIdentityRegistryImplementation(forwarder)),
+            identityRegistryStorage: address(new ATKIdentityRegistryStorageImplementation(forwarder)),
+            trustedIssuersRegistry: address(new ATKTrustedIssuersRegistryImplementation(forwarder)),
+            topicSchemeRegistry: address(new ATKTopicSchemeRegistryImplementation(forwarder)),
+            identityFactory: address(new ATKIdentityFactoryImplementation(forwarder)),
+            identity: address(new ATKIdentityImplementation(forwarder)),
+            contractIdentity: address(new ATKContractIdentityImplementation(forwarder)),
+            tokenAccessManager: address(new ATKTokenAccessManagerImplementation(forwarder)),
+            identityVerificationModule: address(new SMARTIdentityVerificationComplianceModule(forwarder)),
+            tokenFactoryRegistry: address(new ATKTokenFactoryRegistryImplementation(forwarder)),
+            complianceModuleRegistry: address(new ATKComplianceModuleRegistryImplementation(forwarder)),
+            addonRegistry: address(new ATKSystemAddonRegistryImplementation(forwarder))
+        });
+    }
+
+    // Helper function to create a system with given implementations
+    function _createSystemWithImplementations(SystemImplementations memory impls) internal returns (IATKSystem) {
+        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
+        bytes memory initData = abi.encodeWithSelector(
+            systemImplementation.initialize.selector,
+            admin,
+            impls.compliance,
+            impls.identityRegistry,
+            impls.identityRegistryStorage,
+            impls.trustedIssuersRegistry,
+            impls.topicSchemeRegistry,
+            impls.identityFactory,
+            impls.identity,
+            impls.contractIdentity,
+            impls.contractIdentity,
+            impls.tokenAccessManager,
+            impls.identityVerificationModule,
+            impls.tokenFactoryRegistry,
+            impls.complianceModuleRegistry,
+            impls.addonRegistry
+        );
+        ERC1967Proxy proxy = new ERC1967Proxy(address(systemImplementation), initData);
+        return IATKSystem(address(proxy));
+    }
+
     function test_InitialState() public view {
         // Check that implementation addresses are set
         assertTrue(IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE) != address(0));
@@ -227,41 +288,8 @@ contract ATKSystemTest is Test {
 
     function test_Bootstrap_OnlyAdmin() public {
         // Create a new system that hasn't been bootstrapped yet
-        address newComplianceImpl = address(new ATKComplianceImplementation(forwarder));
-        address newIdentityRegistryImpl = address(new ATKIdentityRegistryImplementation(forwarder));
-        address newIdentityStorageImpl = address(new ATKIdentityRegistryStorageImplementation(forwarder));
-        address newTrustedIssuersImpl = address(new ATKTrustedIssuersRegistryImplementation(forwarder));
-        address newTopicSchemeRegistryImpl = address(new ATKTopicSchemeRegistryImplementation(forwarder));
-        address newIdentityFactoryImpl = address(new ATKIdentityFactoryImplementation(forwarder));
-        address newIdentityImplAddr = address(new ATKIdentityImplementation(forwarder));
-        address newContractIdentityImpl = address(new ATKContractIdentityImplementation(forwarder));
-        address newTokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
-        address newIdentityVerificationModule = address(new SMARTIdentityVerificationComplianceModule(forwarder));
-        address newTokenFactoryRegistryImpl = address(new ATKTokenFactoryRegistryImplementation(forwarder));
-        address newComplianceModuleRegistryImpl = address(new ATKComplianceModuleRegistryImplementation(forwarder));
-        address newAddonRegistryImpl = address(new ATKSystemAddonRegistryImplementation(forwarder));
-
-        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
-        bytes memory initData = abi.encodeWithSelector(
-            systemImplementation.initialize.selector,
-            admin,
-            newComplianceImpl,
-            newIdentityRegistryImpl,
-            newIdentityStorageImpl,
-            newTrustedIssuersImpl,
-            newTopicSchemeRegistryImpl,
-            newIdentityFactoryImpl,
-            newIdentityImplAddr,
-            newContractIdentityImpl,
-            newContractIdentityImpl,
-            newTokenAccessManagerImpl,
-            address(newIdentityVerificationModule),
-            newTokenFactoryRegistryImpl,
-            newComplianceModuleRegistryImpl,
-            newAddonRegistryImpl
-        );
-        ERC1967Proxy proxy = new ERC1967Proxy(address(systemImplementation), initData);
-        IATKSystem newSystem = IATKSystem(address(proxy));
+        SystemImplementations memory impls = _createAllImplementations();
+        IATKSystem newSystem = _createSystemWithImplementations(impls);
 
         vm.prank(user);
         vm.expectRevert();
@@ -283,9 +311,7 @@ contract ATKSystemTest is Test {
         emit IATKSystem.ComplianceImplementationUpdated(admin, address(impl));
 
         ATKSystemImplementation(address(atkSystem)).setComplianceImplementation(address(impl));
-        assertEq(
-            IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE), address(impl)
-        );
+        assertEq(IATKTypedImplementationRegistry(address(atkSystem)).implementation(COMPLIANCE), address(impl));
     }
 
     function test_SetComplianceImplementation_OnlyAdmin() public {
@@ -412,47 +438,51 @@ contract ATKSystemTest is Test {
 
     function test_ConstructorWithZeroAddresses() public {
         ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
+        SystemImplementations memory impls = _createAllImplementations();
 
         // Test with zero compliance address
+        impls.compliance = address(0);
         bytes memory initData1 = abi.encodeWithSelector(
             systemImplementation.initialize.selector,
             admin,
-            address(0), // compliance
-            address(identityRegistryImpl),
-            address(identityRegistryStorageImpl),
-            address(trustedIssuersRegistryImpl),
-            address(topicSchemeRegistryImpl),
-            address(identityFactoryImpl),
-            address(identityImpl),
-            address(contractIdentityImpl),
-            address(contractIdentityImpl),
-            address(tokenAccessManagerImpl),
-            address(identityVerificationModule),
-            address(tokenFactoryRegistryImpl),
-            address(complianceModuleRegistryImpl),
-            address(addonRegistryImpl)
+            impls.compliance,
+            impls.identityRegistry,
+            impls.identityRegistryStorage,
+            impls.trustedIssuersRegistry,
+            impls.topicSchemeRegistry,
+            impls.identityFactory,
+            impls.identity,
+            impls.contractIdentity,
+            impls.contractIdentity,
+            impls.tokenAccessManager,
+            impls.identityVerificationModule,
+            impls.tokenFactoryRegistry,
+            impls.complianceModuleRegistry,
+            impls.addonRegistry
         );
         vm.expectRevert(abi.encodeWithSelector(ComplianceImplementationNotSet.selector));
         new ERC1967Proxy(address(systemImplementation), initData1);
 
-        // Test with zero identity registry address
+        // Reset compliance and test with zero identity registry address
+        impls.compliance = address(new ATKComplianceImplementation(forwarder));
+        impls.identityRegistry = address(0);
         bytes memory initData2 = abi.encodeWithSelector(
             systemImplementation.initialize.selector,
             admin,
-            address(complianceImpl),
-            address(0), // identity registry
-            address(identityRegistryStorageImpl),
-            address(trustedIssuersRegistryImpl),
-            address(topicSchemeRegistryImpl),
-            address(identityFactoryImpl),
-            address(identityImpl),
-            address(contractIdentityImpl),
-            address(contractIdentityImpl),
-            address(tokenAccessManagerImpl),
-            address(identityVerificationModule),
-            address(tokenFactoryRegistryImpl),
-            address(complianceModuleRegistryImpl),
-            address(addonRegistryImpl)
+            impls.compliance,
+            impls.identityRegistry,
+            impls.identityRegistryStorage,
+            impls.trustedIssuersRegistry,
+            impls.topicSchemeRegistry,
+            impls.identityFactory,
+            impls.identity,
+            impls.contractIdentity,
+            impls.contractIdentity,
+            impls.tokenAccessManager,
+            impls.identityVerificationModule,
+            impls.tokenFactoryRegistry,
+            impls.complianceModuleRegistry,
+            impls.addonRegistry
         );
         vm.expectRevert(abi.encodeWithSelector(IdentityRegistryImplementationNotSet.selector));
         new ERC1967Proxy(address(systemImplementation), initData2);
@@ -460,23 +490,26 @@ contract ATKSystemTest is Test {
 
     function test_ConstructorWithInvalidInterfaces() public {
         ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
+        SystemImplementations memory impls = _createAllImplementations();
+        impls.compliance = address(mockInvalidContract); // Invalid compliance
+
         bytes memory initData = abi.encodeWithSelector(
             systemImplementation.initialize.selector,
             admin,
-            address(mockInvalidContract), // Invalid compliance
-            address(identityRegistryImpl),
-            address(identityRegistryStorageImpl),
-            address(trustedIssuersRegistryImpl),
-            address(topicSchemeRegistryImpl),
-            address(identityFactoryImpl),
-            address(identityImpl),
-            address(contractIdentityImpl),
-            address(contractIdentityImpl),
-            address(tokenAccessManagerImpl),
-            address(identityVerificationModule),
-            address(tokenFactoryRegistryImpl),
-            address(complianceModuleRegistryImpl),
-            address(addonRegistryImpl)
+            impls.compliance,
+            impls.identityRegistry,
+            impls.identityRegistryStorage,
+            impls.trustedIssuersRegistry,
+            impls.topicSchemeRegistry,
+            impls.identityFactory,
+            impls.identity,
+            impls.contractIdentity,
+            impls.contractIdentity,
+            impls.tokenAccessManager,
+            impls.identityVerificationModule,
+            impls.tokenFactoryRegistry,
+            impls.complianceModuleRegistry,
+            impls.addonRegistry
         );
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -637,24 +670,26 @@ contract ATKSystemTest is Test {
 
     function test_Constructor_IdentityVerificationModule_ZeroAddress() public {
         ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
-        // Test constructor reverts with zero address for identity verification module
+        SystemImplementations memory impls = _createAllImplementations();
+        impls.identityVerificationModule = address(0); // Zero address for identity verification module
+
         bytes memory initData = abi.encodeWithSelector(
             systemImplementation.initialize.selector,
             admin,
-            address(complianceImpl),
-            address(identityRegistryImpl),
-            address(identityRegistryStorageImpl),
-            address(trustedIssuersRegistryImpl),
-            address(topicSchemeRegistryImpl),
-            address(identityFactoryImpl),
-            address(identityImpl),
-            address(contractIdentityImpl),
-            address(contractIdentityImpl),
-            address(tokenAccessManagerImpl),
-            address(0), // Zero address for identity verification module
-            address(tokenFactoryRegistryImpl),
-            address(complianceModuleRegistryImpl),
-            address(addonRegistryImpl)
+            impls.compliance,
+            impls.identityRegistry,
+            impls.identityRegistryStorage,
+            impls.trustedIssuersRegistry,
+            impls.topicSchemeRegistry,
+            impls.identityFactory,
+            impls.identity,
+            impls.contractIdentity,
+            impls.contractIdentity,
+            impls.tokenAccessManager,
+            impls.identityVerificationModule,
+            impls.tokenFactoryRegistry,
+            impls.complianceModuleRegistry,
+            impls.addonRegistry
         );
         vm.expectRevert(abi.encodeWithSelector(IdentityVerificationModuleNotSet.selector));
         new ERC1967Proxy(address(systemImplementation), initData);
@@ -662,81 +697,26 @@ contract ATKSystemTest is Test {
 
     function test_Constructor_IdentityVerificationModule_ValidAddress() public {
         // Test constructor succeeds with valid identity verification module address
-        SMARTIdentityVerificationComplianceModule newModule = new SMARTIdentityVerificationComplianceModule(forwarder);
-        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
+        SystemImplementations memory impls = _createAllImplementations();
+        IATKSystem newSystem = _createSystemWithImplementations(impls);
 
-        bytes memory initData = abi.encodeWithSelector(
-            systemImplementation.initialize.selector,
-            admin,
-            address(complianceImpl),
-            address(identityRegistryImpl),
-            address(identityRegistryStorageImpl),
-            address(trustedIssuersRegistryImpl),
-            address(topicSchemeRegistryImpl),
-            address(identityFactoryImpl),
-            address(identityImpl),
-            address(contractIdentityImpl),
-            address(contractIdentityImpl),
-            address(tokenAccessManagerImpl),
-            address(newModule),
-            address(tokenFactoryRegistryImpl),
-            address(complianceModuleRegistryImpl),
-            address(addonRegistryImpl)
-        );
-
-        ERC1967Proxy proxy = new ERC1967Proxy(address(systemImplementation), initData);
-        IATKSystem newSystem = IATKSystem(address(proxy));
-
-        assertEq(newSystem.identityVerificationModule(), address(newModule));
+        assertEq(newSystem.identityVerificationModule(), impls.identityVerificationModule);
     }
 
     function test_IdentityVerificationModule_UsedInBootstrap() public {
         // Create a new system that hasn't been bootstrapped yet to test bootstrap functionality
-        address newComplianceImpl = address(new ATKComplianceImplementation(forwarder));
-        address newIdentityRegistryImpl = address(new ATKIdentityRegistryImplementation(forwarder));
-        address newIdentityStorageImpl = address(new ATKIdentityRegistryStorageImplementation(forwarder));
-        address newTrustedIssuersImpl = address(new ATKTrustedIssuersRegistryImplementation(forwarder));
-        address newTopicSchemeRegistryImpl = address(new ATKTopicSchemeRegistryImplementation(forwarder));
-        address newIdentityFactoryImpl = address(new ATKIdentityFactoryImplementation(forwarder));
-        address newIdentityImplAddr = address(new ATKIdentityImplementation(forwarder));
-        address newContractIdentityImpl = address(new ATKContractIdentityImplementation(forwarder));
-        address newTokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
-        address newTokenFactoryRegistryImpl = address(new ATKTokenFactoryRegistryImplementation(forwarder));
-        address newComplianceModuleRegistryImpl = address(new ATKComplianceModuleRegistryImplementation(forwarder));
-        address newAddonRegistryImpl = address(new ATKSystemAddonRegistryImplementation(forwarder));
-        SMARTIdentityVerificationComplianceModule newModule = new SMARTIdentityVerificationComplianceModule(forwarder);
-
-        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
-        bytes memory initData = abi.encodeWithSelector(
-            systemImplementation.initialize.selector,
-            admin,
-            newComplianceImpl,
-            newIdentityRegistryImpl,
-            newIdentityStorageImpl,
-            newTrustedIssuersImpl,
-            newTopicSchemeRegistryImpl,
-            newIdentityFactoryImpl,
-            newIdentityImplAddr,
-            newContractIdentityImpl,
-            newContractIdentityImpl,
-            newTokenAccessManagerImpl,
-            address(newModule),
-            newTokenFactoryRegistryImpl,
-            newComplianceModuleRegistryImpl,
-            newAddonRegistryImpl
-        );
-        ERC1967Proxy proxy = new ERC1967Proxy(address(systemImplementation), initData);
-        IATKSystem newSystem = IATKSystem(address(proxy));
+        SystemImplementations memory impls = _createAllImplementations();
+        IATKSystem newSystem = _createSystemWithImplementations(impls);
 
         // Verify module is set before bootstrap
-        assertEq(newSystem.identityVerificationModule(), address(newModule));
+        assertEq(newSystem.identityVerificationModule(), impls.identityVerificationModule);
 
         // Bootstrap the system
         vm.prank(admin);
         newSystem.bootstrap();
 
         // Verify module is still accessible after bootstrap
-        assertEq(newSystem.identityVerificationModule(), address(newModule));
+        assertEq(newSystem.identityVerificationModule(), impls.identityVerificationModule);
     }
 
     function test_IdentityVerificationModule_ConsistencyAcrossSystemOperations() public {
@@ -761,42 +741,8 @@ contract ATKSystemTest is Test {
 
     function test_ConstructorWithAllValidParameters_IncludingIdentityVerificationModule() public {
         // Test constructor with all valid parameters including identity verification module
-        SMARTIdentityVerificationComplianceModule newModule = new SMARTIdentityVerificationComplianceModule(forwarder);
-        ATKSystemImplementation systemImplementation = new ATKSystemImplementation(forwarder);
-
-        address newComplianceImpl = address(new ATKComplianceImplementation(forwarder));
-        address newIdentityRegistryImpl = address(new ATKIdentityRegistryImplementation(forwarder));
-        address newIdentityRegistryStorageImpl = address(new ATKIdentityRegistryStorageImplementation(forwarder));
-        address newTrustedIssuersRegistryImpl = address(new ATKTrustedIssuersRegistryImplementation(forwarder));
-        address newTopicSchemeRegistryImpl = address(new ATKTopicSchemeRegistryImplementation(forwarder));
-        address newIdentityFactoryImpl = address(new ATKIdentityFactoryImplementation(forwarder));
-        address newIdentityImpl = address(new ATKIdentityImplementation(forwarder));
-        address newContractIdentityImpl = address(new ATKContractIdentityImplementation(forwarder));
-        address newTokenAccessManagerImpl = address(new ATKTokenAccessManagerImplementation(forwarder));
-        address newTokenFactoryRegistryImpl = address(new ATKTokenFactoryRegistryImplementation(forwarder));
-        address newComplianceModuleRegistryImpl = address(new ATKComplianceModuleRegistryImplementation(forwarder));
-        address newAddonRegistryImpl = address(new ATKSystemAddonRegistryImplementation(forwarder));
-
-        bytes memory initData = abi.encodeWithSelector(
-            systemImplementation.initialize.selector,
-            admin,
-            newComplianceImpl,
-            newIdentityRegistryImpl,
-            newIdentityRegistryStorageImpl,
-            newTrustedIssuersRegistryImpl,
-            newTopicSchemeRegistryImpl,
-            newIdentityFactoryImpl,
-            newIdentityImpl,
-            newContractIdentityImpl,
-            newContractIdentityImpl,
-            newTokenAccessManagerImpl,
-            address(newModule),
-            newTokenFactoryRegistryImpl,
-            newComplianceModuleRegistryImpl,
-            newAddonRegistryImpl
-        );
-        ERC1967Proxy proxy = new ERC1967Proxy(address(systemImplementation), initData);
-        IATKSystem newSystem = IATKSystem(address(proxy));
+        SystemImplementations memory impls = _createAllImplementations();
+        IATKSystem newSystem = _createSystemWithImplementations(impls);
 
         // Verify all components are properly set including identity verification module
         assertTrue(IATKTypedImplementationRegistry(address(newSystem)).implementation(COMPLIANCE) != address(0));
@@ -816,18 +762,17 @@ contract ATKSystemTest is Test {
         assertTrue(
             IATKTypedImplementationRegistry(address(newSystem)).implementation(TOKEN_ACCESS_MANAGER) != address(0)
         );
-        assertEq(newSystem.identityVerificationModule(), address(newModule));
+        assertEq(newSystem.identityVerificationModule(), impls.identityVerificationModule);
         assertEq(
             IATKTypedImplementationRegistry(address(newSystem)).implementation(TOKEN_FACTORY_REGISTRY),
-            address(newTokenFactoryRegistryImpl)
+            impls.tokenFactoryRegistry
         );
         assertEq(
             IATKTypedImplementationRegistry(address(newSystem)).implementation(COMPLIANCE_MODULE_REGISTRY),
-            address(newComplianceModuleRegistryImpl)
+            impls.complianceModuleRegistry
         );
         assertEq(
-            IATKTypedImplementationRegistry(address(newSystem)).implementation(ADDON_REGISTRY),
-            address(newAddonRegistryImpl)
+            IATKTypedImplementationRegistry(address(newSystem)).implementation(ADDON_REGISTRY), impls.addonRegistry
         );
     }
 }
