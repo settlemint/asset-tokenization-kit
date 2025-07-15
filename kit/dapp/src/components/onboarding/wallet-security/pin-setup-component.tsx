@@ -1,4 +1,4 @@
-import { PincodeInput } from "@/components/onboarding/pincode-input";
+import { PincodeInput } from "@/components/form/inputs/pincode-input";
 import { Button } from "@/components/ui/button";
 import {
   Form,

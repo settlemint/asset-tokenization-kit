@@ -1,7 +1,7 @@
 import {
   OnboardingStep,
   updateOnboardingStateMachine,
-} from "@/components/onboarding/simplified/state-machine";
+} from "@/components/onboarding/state-machine";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/onboarding/system")({
