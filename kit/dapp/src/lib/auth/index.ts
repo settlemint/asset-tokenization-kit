@@ -38,7 +38,7 @@ import {
 } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
-import { admin, apiKey, customSession, openAPI } from "better-auth/plugins";
+import { admin, apiKey, customSession } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
@@ -297,16 +297,6 @@ const options = {
     }),
 
     /**
-     * OpenAPI plugin for API documentation generation.
-     */
-    openAPI(),
-
-    /**
-     * React Start cookie integration for SSR support.
-     */
-    reactStartCookies(),
-
-    /**
      * Plugin for pincode authentication.
      */
     pincode(),
@@ -320,6 +310,11 @@ const options = {
      * Plugin for secret codes authentication.
      */
     secretCodes(),
+
+    /**
+     * React Start cookie integration for SSR support.
+     */
+    reactStartCookies(),
   ],
 } satisfies BetterAuthOptions;
 

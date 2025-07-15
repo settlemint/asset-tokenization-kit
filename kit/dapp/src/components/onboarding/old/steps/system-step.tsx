@@ -1,4 +1,4 @@
-import { PincodeInput } from "@/components/onboarding/pincode-input";
+import { PincodeInput } from "@/components/form/inputs/pincode-input";
 import {
   Form,
   FormControl,
@@ -10,13 +10,13 @@ import {
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { cn } from "@/lib/utils";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 // Pincode validation schema
 const pincodeSchema = z.object({

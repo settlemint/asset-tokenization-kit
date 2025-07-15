@@ -1,16 +1,16 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod/v4";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import type { SessionUser } from "@/lib/auth";
 
+import { HorizontalStepper } from "./horizontal-stepper";
+import { OtpSetupComponent } from "./otp-setup-component";
+import { PinSetupComponent } from "./pin-setup-component";
 import { SecurityMethodSelector } from "./security-method-selector";
 import { SecuritySuccess } from "./security-success";
-import { PinSetupComponent } from "./pin-setup-component";
-import { OtpSetupComponent } from "./otp-setup-component";
-import { HorizontalStepper } from "./horizontal-stepper";
 
 interface WalletSecurityMainProps {
   onNext?: () => void;

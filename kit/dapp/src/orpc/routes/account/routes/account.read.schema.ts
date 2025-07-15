@@ -1,6 +1,6 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { isoCountryCode } from "@/lib/zod/validators/iso-country-code";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 export const AccountReadSchema = z.object({
   wallet: ethereumAddress.describe(

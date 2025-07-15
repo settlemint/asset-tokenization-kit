@@ -2,16 +2,16 @@ import type {
   StepDefinition,
   StepGroup,
 } from "@/components/multistep-form/types";
-import { AddPersonalInformationComponent } from "@/components/onboarding/steps/add-personal-information-step";
-import { AssetSelectionComponent } from "@/components/onboarding/steps/asset-type-selection/asset-selection-component";
-import { CreateOnchainIdComponent } from "@/components/onboarding/steps/create-onchainid-step";
-import { FinishComponent } from "@/components/onboarding/steps/finish-step";
-import { PlatformAddonsComponent } from "@/components/onboarding/steps/platform-addons-step";
-import { PlatformSettingsComponent } from "@/components/onboarding/steps/platform-settings-step";
-import { RecoveryCodesStep } from "@/components/onboarding/steps/recovery-codes-step";
-import { SystemBootstrapStep } from "@/components/onboarding/steps/system-bootstrap-step";
-import { WalletDisplayStep } from "@/components/onboarding/steps/wallet-display-step";
-import { WalletSecurityStep } from "@/components/onboarding/steps/wallet-security-step";
+import { AddPersonalInformationComponent } from "@/components/onboarding/old/steps/add-personal-information-step";
+import { AssetSelectionComponent } from "@/components/onboarding/old/steps/asset-type-selection/asset-selection-component";
+import { CreateOnchainIdComponent } from "@/components/onboarding/old/steps/create-onchainid-step";
+import { FinishComponent } from "@/components/onboarding/old/steps/finish-step";
+import { PlatformAddonsComponent } from "@/components/onboarding/old/steps/platform-addons-step";
+import { PlatformSettingsComponent } from "@/components/onboarding/old/steps/platform-settings-step";
+import { RecoveryCodesStep } from "@/components/onboarding/old/steps/recovery-codes-step";
+import { SystemBootstrapStep } from "@/components/onboarding/old/steps/system-bootstrap-step";
+import { WalletDisplayStep } from "@/components/onboarding/old/steps/wallet-display-step";
+import { WalletSecurityStep } from "@/components/onboarding/old/steps/wallet-security-step";
 
 import { useSettings } from "@/hooks/use-settings";
 import type { SessionUser } from "@/lib/auth";
@@ -21,7 +21,7 @@ import {
 } from "@/lib/zod/validators/fiat-currency";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 // Define the onboarding form schema
 const onboardingSchema = z.object({
