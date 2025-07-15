@@ -409,17 +409,6 @@ contract ATKIdentityFactoryImplementation is
         return Create2.computeAddress(_saltBytes, keccak256(abi.encodePacked(proxyBytecode, constructorArgs)));
     }
 
-    /// @notice Internal view function to compute the CREATE2 address for a `ATKTokenIdentityProxy`.
-    /// @dev Similar to `_computeWalletProxyAddress` but for token identities, using `_getTokenProxyAndConstructorArgs`.
-    /// @param _saltBytes The pre-calculated `bytes32` salt for the deployment.
-    /// @param _initialManager The address that will be passed as the initial manager to the proxy's constructor.
-    /// @return address The deterministically computed address where the proxy will be deployed.
-    function _computeTokenProxyAddress(bytes32 _saltBytes, address _initialManager) internal view returns (address) {
-        (bytes memory proxyBytecode, bytes memory constructorArgs) = _getTokenProxyAndConstructorArgs(_initialManager);
-        // slither-disable-next-line encode-packed-collision
-        return Create2.computeAddress(_saltBytes, keccak256(abi.encodePacked(proxyBytecode, constructorArgs)));
-    }
-
     /// @notice Internal view function to compute the CREATE2 address for a `ATKContractIdentityProxy`.
     /// @dev Similar to `_computeWalletProxyAddress` but for contract identities, using
     /// `_getContractProxyAndConstructorArgs`.
@@ -452,18 +441,6 @@ contract ATKIdentityFactoryImplementation is
         return _deployProxy(predictedAddr, proxyBytecode, constructorArgs, _saltBytes);
     }
 
-    /// @notice Internal function to deploy a `ATKTokenIdentityProxy` using CREATE2.
-    /// @dev Similar to `_deployWalletProxy` but for token identities, using `_computeTokenProxyAddress` and
-    /// `_getTokenProxyAndConstructorArgs`.
-    /// @param _saltBytes The `bytes32` salt for the CREATE2 deployment.
-    /// @param _accessManager The address of the access manager contract that will be set as the initial owner/manager
-    /// @return address The address of the newly deployed `ATKTokenIdentityProxy`.
-    function _deployTokenProxy(bytes32 _saltBytes, address _accessManager) private returns (address) {
-        address predictedAddr = _computeTokenProxyAddress(_saltBytes, _accessManager);
-        (bytes memory proxyBytecode, bytes memory constructorArgs) = _getTokenProxyAndConstructorArgs(_accessManager);
-        return _deployProxy(predictedAddr, proxyBytecode, constructorArgs, _saltBytes);
-    }
-
     /// @notice Internal function to deploy a `ATKContractIdentityProxy` using CREATE2.
     /// @dev Similar to `_deployWalletProxy` but for contract identities, using `_computeContractProxyAddress` and
     /// `_getContractProxyAndConstructorArgs`.
@@ -490,23 +467,6 @@ contract ATKIdentityFactoryImplementation is
     {
         proxyBytecode = type(ATKIdentityProxy).creationCode;
         constructorArgs = abi.encode(_system, _initialManager);
-        // No explicit return needed due to named return variables
-    }
-
-    /// @notice Internal helper to get the creation bytecode and encoded constructor arguments for
-    /// `ATKTokenIdentityProxy`.
-    /// @dev The constructor of `ATKTokenIdentityProxy` takes the `_system` address (from factory state) and
-    /// `_accessManager`.
-    /// @param _accessManager The address of the access manager contract that will be set as the initial owner/manager
-    /// @return proxyBytecode The creation bytecode of `ATKTokenIdentityProxy`.
-    /// @return constructorArgs The ABI-encoded constructor arguments (`_system`, `_accessManager`).
-    function _getTokenProxyAndConstructorArgs(address _accessManager)
-        private
-        view
-        returns (bytes memory proxyBytecode, bytes memory constructorArgs)
-    {
-        proxyBytecode = type(ATKContractIdentityProxy).creationCode;
-        constructorArgs = abi.encode(_system, _accessManager);
         // No explicit return needed due to named return variables
     }
 
