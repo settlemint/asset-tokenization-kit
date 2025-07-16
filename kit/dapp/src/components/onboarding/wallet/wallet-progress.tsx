@@ -1,3 +1,4 @@
+import { Progress } from "@/components/ui/progress";
 import { useEffect, useState } from "react";
 
 // TODO: Translations
@@ -50,12 +51,7 @@ export function WalletProgress() {
 
       {/* Progress Bar */}
       <div className="space-y-2">
-        <div className="w-full bg-secondary rounded-full h-2">
-          <div
-            className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
-            style={{ width: `${walletCreationProgress}%` }}
-          ></div>
-        </div>
+        <Progress value={walletCreationProgress} />
         <p className="text-sm text-muted-foreground">
           {Math.round(walletCreationProgress)}% Complete
         </p>

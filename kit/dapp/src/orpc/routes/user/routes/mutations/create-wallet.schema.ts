@@ -1,6 +1,6 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { MutationOutputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
+import { z } from "zod";
 
-export const CreateWalletOutputSchema = MutationOutputSchema.extend({
-  result: ethereumAddress,
+export const CreateWalletOutputSchema = z.object({
+  wallet: ethereumAddress,
 });
