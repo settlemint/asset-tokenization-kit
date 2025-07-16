@@ -1,7 +1,7 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -23,9 +23,9 @@ const dataKeys = ["transactions"];
 export function TransactionHistoryChart() {
   const { t } = useTranslation("stats");
 
-  // Fetch just the transaction metrics which includes history data - more efficient
+  // Fetch just the transaction history data - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsTransactions.queryOptions({ input: { timeRange: 7 } }) // 7 days of data
+    orpc.token.statsTransactionHistory.queryOptions({ input: { timeRange: 7 } }) // 7 days of data
   );
 
   // Transform transaction history data for chart display

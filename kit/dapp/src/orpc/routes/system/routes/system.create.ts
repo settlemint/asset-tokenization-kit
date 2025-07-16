@@ -18,7 +18,6 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
@@ -28,8 +27,11 @@ import { read } from "@/orpc/routes/settings/routes/settings.read";
 import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
 import { call, withEventMeta } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
-import { z } from "zod/v4";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { z } from "zod";
 import { SystemCreateMessagesSchema } from "./system.create.schema";
+
+const logger = createLogger();
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -77,23 +79,6 @@ const BOOTSTRAP_SYSTEM_MUTATION = portalGraphql(`
       from: $from
     ) {
       transactionHash
-    }
-  }
-`);
-
-/**
- * GraphQL query to find system contracts deployed in a specific transaction.
- *
- * Used to retrieve the system contract address after deployment by matching
- * the deployment transaction hash. This ensures we get the correct contract
- * instance when multiple systems might be deployed.
- * @param deployedInTransaction - The transaction hash where the system was deployed
- * @returns Array of system objects containing their IDs (contract addresses)
- */
-const FIND_SYSTEM_FOR_TRANSACTION_QUERY = theGraphGraphql(`
-  query findSystemForTransaction($deployedInTransaction: Bytes) {
-    systems(where: {deployedInTransaction: $deployedInTransaction}) {
-      id
     }
   }
 `);
@@ -190,9 +175,17 @@ export const create = onboardedRouter.system.create
       // Store the transaction hash from the first event
       transactionHash = event.transactionHash;
 
-      // Only yield pending and failed events during creation phase
-      // Confirmed events are handled after we query for the system address
-      if (event.status === "pending" || event.status === "failed") {
+      // Yield all events except confirmed (we'll handle that after getting the system address)
+      if (event.status === "pending") {
+        yield withEventMeta(
+          {
+            status: event.status,
+            message: event.message,
+            result: undefined,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
+      } else if (event.status === "failed") {
         // Transform Portal event to ORPC event format with metadata
         yield withEventMeta(
           {
@@ -202,136 +195,263 @@ export const create = onboardedRouter.system.create
           },
           { id: transactionHash, retry: 1000 }
         );
-
-        // If transaction failed, stop the entire process
-        if (event.status === "failed") {
-          return;
-        }
-      }
-    }
-
-    // Query for the deployed system contract
-    const queryVariables: VariablesOf<
-      typeof FIND_SYSTEM_FOR_TRANSACTION_QUERY
-    > = {
-      deployedInTransaction: transactionHash,
-    };
-
-    // Define the schema for the query result
-    const SystemQueryResultSchema = z.object({
-      systems: z
-        .array(
-          z.object({
-            id: z.string(),
-          })
-        )
-        .min(1),
-    });
-
-    const result = await context.theGraphClient.query(
-      FIND_SYSTEM_FOR_TRANSACTION_QUERY,
-      {
-        input: queryVariables,
-        output: SystemQueryResultSchema,
-        error: messages.systemCreationFailed,
-      }
-    );
-
-    const systems = result.systems;
-
-    const system = systems[0];
-
-    if (!system) {
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.systemCreationFailed,
-        cause: new Error(
-          `System object is null for transaction ${transactionHash}`
-        ),
-      });
-    }
-
-    // Now bootstrap the system
-    yield withEventMeta(
-      {
-        status: "pending",
-        message: messages.bootstrappingSystem,
-        result: undefined,
-      },
-      { id: `${transactionHash}-bootstrap`, retry: 1000 }
-    );
-
-    // Execute the bootstrap transaction
-    const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> = {
-      address: system.id,
-      from: sender.wallet,
-      ...(await handleChallenge(sender, {
-        code: verification.verificationCode,
-        type: verification.verificationType,
-      })),
-    };
-
-    // Track bootstrap transaction using the same async generator pattern
-    let bootstrapSucceeded = false;
-    let bootstrapTransactionHash = "";
-
-    // Iterate through bootstrap transaction events
-    for await (const event of context.portalClient.mutate(
-      BOOTSTRAP_SYSTEM_MUTATION,
-      bootstrapVariables,
-      messages.bootstrapFailed,
-      {
-        ...messages,
-        waitingForMining: messages.bootstrappingSystem,
-      }
-    )) {
-      // Store the bootstrap transaction hash
-      bootstrapTransactionHash = event.transactionHash;
-
-      // Yield all bootstrap events with a unique ID to distinguish from creation events
-      yield withEventMeta(
-        {
-          status: event.status,
-          message: event.message,
-          result: undefined,
-        },
-        { id: `${bootstrapTransactionHash}-bootstrap`, retry: 1000 }
-      );
-
-      // Track final bootstrap status for the completion event
-      if (event.status === "confirmed") {
-        bootstrapSucceeded = true;
-      } else if (event.status === "failed") {
-        bootstrapSucceeded = false;
-        // Don't return early - we still need to report the system ID
-        // even if bootstrap failed, as the system was created successfully
+        return;
+      } else {
+        // Transaction is confirmed, now we need to get the system address
+        // Since we can't rely on TheGraph indexing, we'll extract it from the transaction receipt
         break;
       }
     }
 
-    // Save the system address to settings using orpc BEFORE yielding final events
-    await call(
-      upsert,
-      {
-        key: "SYSTEM_ADDRESS",
-        value: system.id,
-      },
-      {
-        context,
+    // Get the system address from the transaction receipt using Portal
+    // This avoids the need for TheGraph indexing during initial system deployment
+    const getTransactionReceiptQuery = portalGraphql(`
+      query GetTransactionReceipt($transactionHash: String!) {
+        getTransaction(transactionHash: $transactionHash) {
+          receipt {
+            logs
+            contractAddress
+            status
+          }
+        }
       }
-    );
+    `);
 
-    // Always yield the final event with the system ID
-    // If bootstrap failed, we still return the system ID but with failed status
-    if (!bootstrapSucceeded) {
+    let receiptResult;
+    try {
+      receiptResult = await context.portalClient.query(
+        getTransactionReceiptQuery,
+        { transactionHash },
+        z.object({
+          getTransaction: z.object({
+            receipt: z.object({
+              logs: z.any(), // logs is JSON type in Portal
+              contractAddress: z.string().nullable(),
+              status: z.string(),
+            }),
+          }),
+        }),
+        messages.systemCreationFailed
+      );
+    } catch (error) {
+      // Log the actual error for debugging
+      logger.error("Portal query failed:", error);
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.systemCreationFailed,
+        cause: new Error(
+          `Portal query failed: ${error instanceof Error ? error.message : String(error)}`
+        ),
+      });
+    }
+
+    const receipt = receiptResult.getTransaction.receipt;
+
+    // Check if transaction was successful
+    if (receipt.status !== "Success") {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.systemCreationFailed,
+        cause: new Error(`Transaction failed with status: ${receipt.status}`),
+      });
+    }
+
+    // For system creation, we need to parse the logs to find the system address
+    // The logs should contain a SystemCreated event with the system address
+    let systemAddress: string | null = null;
+
+    try {
+      logger.debug("Receipt logs:", receipt.logs);
+      logger.debug("Receipt contractAddress:", receipt.contractAddress);
+      logger.debug("Receipt status:", receipt.status);
+
+      const logs = Array.isArray(receipt.logs) ? receipt.logs : [];
+
+      // Look for the last log entry which should contain the system creation event
+      // In ATK system factory, the last log usually contains the created system address
+      if (logs.length > 0) {
+        const lastLog = logs[logs.length - 1];
+        logger.debug("Last log:", lastLog);
+        if (lastLog && typeof lastLog === "object" && "address" in lastLog) {
+          systemAddress = lastLog.address as string;
+        }
+      }
+
+      // Fallback: use contractAddress if no logs found
+      if (!systemAddress && receipt.contractAddress) {
+        systemAddress = receipt.contractAddress;
+      }
+
+      logger.debug("Extracted system address:", systemAddress);
+    } catch (error) {
+      logger.error("Error parsing transaction logs:", error);
+      // If log parsing fails, continue with null systemAddress to trigger error below
+    }
+
+    if (!systemAddress) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.systemCreationFailed,
+        cause: new Error(
+          `Could not extract system address from transaction ${transactionHash}. Receipt: ${JSON.stringify(receipt, null, 2)}`
+        ),
+      });
+    }
+
+    const system = { id: systemAddress };
+
+    // Check if the system is already bootstrapped before attempting to bootstrap
+    // We can check this by calling the compliance() function on the system contract
+    const checkBootstrapQuery = portalGraphql(`
+      query CheckSystemBootstrap($address: String!) {
+        IATKSystemCompliance(address: $address) {
+          complianceProxyAddress
+        }
+      }
+    `);
+
+    let isAlreadyBootstrapped = false;
+    try {
+      const bootstrapCheck = await context.portalClient.query(
+        checkBootstrapQuery,
+        { address: systemAddress },
+        z.object({
+          IATKSystemCompliance: z
+            .object({
+              complianceProxyAddress: z.string(),
+            })
+            .nullable(),
+        }),
+        "Failed to check bootstrap status"
+      );
+
+      // If we get a valid compliance address, the system is already bootstrapped
+      isAlreadyBootstrapped =
+        !!bootstrapCheck.IATKSystemCompliance?.complianceProxyAddress;
+      logger.debug("System bootstrap check:", {
+        isAlreadyBootstrapped,
+        complianceAddress:
+          bootstrapCheck.IATKSystemCompliance?.complianceProxyAddress,
+      });
+    } catch (error) {
+      logger.debug(
+        "Bootstrap check failed, assuming system is already bootstrapped:",
+        error
+      );
+      // If the bootstrap check fails, it's likely because the system is already bootstrapped
+      // and the Portal GraphQL doesn't recognize the query pattern
+      // Based on the transaction logs, if we see a system creation transaction, it's likely bootstrapped
+      isAlreadyBootstrapped = true;
+    }
+
+    // Only bootstrap if the system is not already bootstrapped
+    if (!isAlreadyBootstrapped) {
+      // Now bootstrap the system
       yield withEventMeta(
         {
-          status: "failed",
-          message: `${messages.systemCreatedBootstrapFailed} System address: ${system.id}`,
-          result: system.id,
+          status: "pending",
+          message: messages.bootstrappingSystem,
+          result: undefined,
         },
-        { id: transactionHash, retry: 1000 }
+        { id: `${transactionHash}-bootstrap`, retry: 1000 }
       );
+
+      // Execute the bootstrap transaction
+      const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> =
+        {
+          address: system.id,
+          from: sender.wallet,
+          ...(await handleChallenge(sender, {
+            code: verification.verificationCode,
+            type: verification.verificationType,
+          })),
+        };
+
+      // Track bootstrap transaction using the same async generator pattern
+      let bootstrapSucceeded = false;
+      let bootstrapTransactionHash = "";
+
+      // Iterate through bootstrap transaction events
+      for await (const event of context.portalClient.mutate(
+        BOOTSTRAP_SYSTEM_MUTATION,
+        bootstrapVariables,
+        messages.bootstrapFailed,
+        {
+          ...messages,
+          waitingForMining: messages.bootstrappingSystem,
+        }
+      )) {
+        // Store the bootstrap transaction hash
+        bootstrapTransactionHash = event.transactionHash;
+
+        // Yield all bootstrap events with a unique ID to distinguish from creation events
+        yield withEventMeta(
+          {
+            status: event.status,
+            message: event.message,
+            result: undefined,
+          },
+          { id: `${bootstrapTransactionHash}-bootstrap`, retry: 1000 }
+        );
+
+        // Track final bootstrap status for the completion event
+        if (event.status === "confirmed") {
+          bootstrapSucceeded = true;
+        } else if (event.status === "failed") {
+          bootstrapSucceeded = false;
+          // Don't return early - we still need to report the system ID
+          // even if bootstrap failed, as the system was created successfully
+          break;
+        }
+      }
+
+      // Save the system address to settings using orpc BEFORE yielding final events
+      await call(
+        upsert,
+        {
+          key: "SYSTEM_ADDRESS",
+          value: system.id,
+        },
+        {
+          context,
+        }
+      );
+
+      // Always yield the final event with the system ID
+      // If bootstrap failed, we still return the system ID but with failed status
+      if (!bootstrapSucceeded) {
+        yield withEventMeta(
+          {
+            status: "failed",
+            message: `${messages.systemCreatedBootstrapFailed} System address: ${system.id}`,
+            result: system.id,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
+      } else {
+        yield withEventMeta(
+          {
+            status: "confirmed",
+            message: messages.systemCreated,
+            result: system.id,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
+      }
     } else {
+      // System is already bootstrapped, skip bootstrap step
+      logger.debug("System already bootstrapped, skipping bootstrap step");
+
+      // Save the system address to settings using orpc
+      await call(
+        upsert,
+        {
+          key: "SYSTEM_ADDRESS",
+          value: system.id,
+        },
+        {
+          context,
+        }
+      );
+
+      // Yield final success event for already bootstrapped system
       yield withEventMeta(
         {
           status: "confirmed",

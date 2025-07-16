@@ -1,3 +1,4 @@
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import {
   Card,
   CardContent,
@@ -5,8 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -19,9 +19,9 @@ import { useTranslation } from "react-i18next";
 export function TransactionStatsWidget() {
   const { t } = useTranslation("stats");
 
-  // Fetch just the transaction metrics - more efficient than fetching all metrics
+  // Fetch just the transaction count metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsTransactions.queryOptions({ input: { timeRange: 7 } })
+    orpc.token.statsTransactionCount.queryOptions({ input: { timeRange: 7 } })
   );
 
   return (

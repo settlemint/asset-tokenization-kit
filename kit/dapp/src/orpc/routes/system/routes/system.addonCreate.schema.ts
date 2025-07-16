@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 import { MutationInputSchemaWithContract } from "../../common/schemas/mutation.schema";
 import { TransactionTrackingMessagesSchema } from "../../common/schemas/transaction-messages.schema";
 

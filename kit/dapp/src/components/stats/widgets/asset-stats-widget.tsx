@@ -1,3 +1,4 @@
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import {
   Card,
   CardContent,
@@ -5,9 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { useAssetTypePlural } from "@/lib/utils/asset-pluralization";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -21,9 +21,9 @@ export function AssetStatsWidget() {
   const { t } = useTranslation("stats");
   const pluralizeAsset = useAssetTypePlural();
 
-  // Fetch just the asset metrics - more efficient than fetching all metrics
+  // Fetch just the asset count metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsAssets.queryOptions({ input: {} })
+    orpc.token.statsAssetCount.queryOptions({ input: {} })
   );
 
   // Create dynamic breakdown text using proper i18n pluralization

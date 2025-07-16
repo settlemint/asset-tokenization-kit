@@ -21,13 +21,11 @@ import { metadata } from "@/config/metadata";
 import { bigDecimalSerializer } from "@/lib/zod/validators/bigdecimal";
 import { router } from "@/orpc/routes/router";
 import { onError } from "@orpc/client";
+import { experimental_SmartCoercionPlugin as SmartCoercionPlugin } from "@orpc/json-schema";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { CORSPlugin } from "@orpc/server/plugins";
-import {
-  experimental_ZodSmartCoercionPlugin as ZodSmartCoercionPlugin,
-  experimental_ZodToJsonSchemaConverter as ZodToJsonSchemaConverter,
-} from "@orpc/zod/zod4";
+import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   createServerFileRoute,
@@ -104,12 +102,7 @@ const handler = new OpenAPIHandler(router, {
         },
       },
     }),
-
-    /**
-     * Smart coercion plugin for Zod schemas.
-     * Automatically coerces string inputs to appropriate types.
-     */
-    new ZodSmartCoercionPlugin(),
+    new SmartCoercionPlugin(),
   ],
 });
 

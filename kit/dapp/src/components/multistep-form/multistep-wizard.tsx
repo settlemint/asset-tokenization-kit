@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useCallback, useMemo } from "react";
+import { calculateWizardHeight } from "./calculate-wizard-height";
 import type { MultiStepWizardProps, WizardContextValue } from "./types";
 import { useMultiStepWizardState } from "./use-multistep-wizard-state";
 import { WizardProvider } from "./wizard-context";
@@ -13,6 +14,7 @@ const logger = createLogger();
 
 export function MultiStepWizard<TFormData = Record<string, unknown>>({
   name,
+  title,
   description,
   steps,
   groups,
@@ -25,6 +27,8 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   defaultValues = {},
   showProgressBar = true,
   allowStepSkipping = false,
+  onStepChange,
+  defaultStepIndex = 0,
 }: MultiStepWizardProps<TFormData>) {
   logger.debug("MultiStepWizard initialization", {
     name,
@@ -33,8 +37,6 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     enableUrlPersistence,
     hasDefaultValues: !!defaultValues,
   });
-
-  // ALL HOOKS MUST BE CALLED FIRST - before any conditional returns
 
   const {
     currentStepIndex,
@@ -49,7 +51,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     enableUrlPersistence,
     debounceMs,
     defaultState: {
-      currentStepIndex: 0,
+      currentStepIndex: defaultStepIndex,
       completedSteps: [],
       stepErrors: {},
     },
@@ -69,8 +71,6 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     formState: "available",
     defaultValues: defaultValues,
   });
-
-  // Note: Form data persistence is now handled by ORPC API, not URL state
 
   // Ensure currentStepIndex is valid
   const safeCurrentStepIndex = useMemo(() => {
@@ -115,8 +115,10 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
       // 1. Any previous step (stepIndex < safeCurrentStepIndex)
       // 2. Completed steps
       // 3. The next step after current
+      // 4. Steps which have a component
       const targetStep = steps[stepIndex];
       if (!targetStep) return false;
+      if (!targetStep.component) return false;
 
       return (
         stepIndex < safeCurrentStepIndex || // Allow going back to any previous step
@@ -131,22 +133,31 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     (stepIndex: number) => {
       if (canNavigateToStep(stepIndex)) {
         setCurrentStepIndex(stepIndex);
+        if (typeof onStepChange === "function") {
+          onStepChange(stepIndex);
+        }
       }
     },
-    [canNavigateToStep, setCurrentStepIndex]
+    [canNavigateToStep, setCurrentStepIndex, onStepChange]
   );
 
   const nextStep = useCallback(() => {
     if (safeCurrentStepIndex < steps.length - 1) {
       setCurrentStepIndex(Number(safeCurrentStepIndex) + 1);
+      if (typeof onStepChange === "function") {
+        onStepChange(Number(safeCurrentStepIndex) + 1);
+      }
     }
-  }, [safeCurrentStepIndex, steps.length, setCurrentStepIndex]);
+  }, [safeCurrentStepIndex, steps.length, setCurrentStepIndex, onStepChange]);
 
   const previousStep = useCallback(() => {
     if (safeCurrentStepIndex > 0) {
       setCurrentStepIndex(safeCurrentStepIndex - 1);
+      if (typeof onStepChange === "function") {
+        onStepChange(safeCurrentStepIndex - 1);
+      }
     }
-  }, [safeCurrentStepIndex, setCurrentStepIndex]);
+  }, [safeCurrentStepIndex, setCurrentStepIndex, onStepChange]);
 
   const markStepComplete = useCallback(
     (stepId: string) => {
@@ -167,8 +178,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
 
   const clearStepError = useCallback(
     (stepId: string) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [stepId]: _unused, ...rest } = stepErrors;
+      const { [stepId]: _, ...rest } = stepErrors;
       setStepErrors(rest);
     },
     [stepErrors, setStepErrors]
@@ -228,62 +238,10 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   }, []);
 
   // Calculate dynamic height based on content
-  const dynamicHeight = useMemo(() => {
-    const baseHeight = 300; // Base height for title, progress, etc. (increased)
-    const stepHeight = 100; // Approximate height per step (increased)
-    const groupHeaderHeight = 80; // Height for group headers (increased)
-    const spacingPadding = 100; // Additional padding for margins, spacing, etc.
-    const minHeight = 600; // Minimum height
-    const maxHeight = 1000; // Maximum height to prevent excessive size (increased)
-
-    if (!groups || groups.length === 0) {
-      // No groups, calculate based on total steps
-      return Math.min(
-        Math.max(
-          baseHeight + steps.length * stepHeight + spacingPadding,
-          minHeight
-        ),
-        maxHeight
-      );
-    }
-
-    // Calculate height needed for the largest group when expanded
-    const maxGroupSize =
-      groups.length > 0
-        ? Math.max(
-            ...groups.map((group) => {
-              const groupSteps = steps.filter(
-                (step) => step.groupId === group.id
-              );
-              return groupSteps.length;
-            })
-          )
-        : 0;
-
-    // Calculate total height needed
-    const totalGroupHeaders = groups.length * groupHeaderHeight;
-    const maxGroupContent = maxGroupSize * stepHeight;
-    const calculatedHeight =
-      baseHeight + totalGroupHeaders + maxGroupContent + spacingPadding;
-    const finalHeight = Math.min(
-      Math.max(calculatedHeight, minHeight),
-      maxHeight
-    );
-
-    logger.debug("Dynamic height calculation", {
-      baseHeight,
-      totalGroupHeaders,
-      maxGroupContent,
-      spacingPadding,
-      calculatedHeight,
-      finalHeight,
-      groupsCount: groups.length,
-      maxGroupSize,
-      totalSteps: steps.length,
-    });
-
-    return finalHeight;
-  }, [steps, groups]);
+  const dynamicHeight = useMemo(
+    () => calculateWizardHeight(steps, groups),
+    [steps, groups]
+  );
 
   // NOW handle conditional rendering after all hooks have been called
   if (steps.length === 0) {
@@ -315,14 +273,15 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
             {/* Title and Progress  */}
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-primary-foreground mb-2">
-                {name
-                  ? name
-                      .split("-")
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")
-                  : "Setup Wizard"}
+                {title ??
+                  (name
+                    ? name
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")
+                    : "Setup Wizard")}
               </h2>
               <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
                 {description ?? "Configure your platform step by step"}

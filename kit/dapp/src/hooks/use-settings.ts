@@ -1,5 +1,5 @@
 import type { SettingKey } from "@/lib/zod/validators/settings-key";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import type { SettingsUpsertInput } from "@/orpc/routes/settings/routes/settings.upsert.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 

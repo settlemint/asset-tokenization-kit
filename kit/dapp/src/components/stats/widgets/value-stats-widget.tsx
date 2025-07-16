@@ -1,3 +1,4 @@
+import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import {
   Card,
   CardContent,
@@ -5,11 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { useSettings } from "@/hooks/use-settings";
 import { DEFAULT_SETTINGS } from "@/lib/db/schemas/settings";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { format } from "dnum";
@@ -26,9 +26,9 @@ const logger = createLogger();
 export function ValueStatsWidget() {
   const { t, i18n } = useTranslation("stats");
 
-  // Fetch just the value metrics - more efficient than fetching all metrics
+  // Fetch just the total value metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsValue.queryOptions({ input: {} })
+    orpc.token.statsTotalValue.queryOptions({ input: {} })
   );
 
   // Get the system's base currency from settings

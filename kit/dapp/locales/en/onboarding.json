@@ -1,4 +1,8 @@
 {
+  "welcome": {
+    "title": "Welcome to Asset Tokenization Kit",
+    "description": "Your gateway to secure, compliant asset tokenization on the blockchain."
+  },
   "card-description": "We've set up your wallet and will configure your identity on the blockchain to use this platform.",
   "card-title": "Let's get you set up!",
   "ui": {

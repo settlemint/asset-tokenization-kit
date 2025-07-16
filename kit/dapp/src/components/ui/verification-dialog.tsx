@@ -1,4 +1,4 @@
-import { PincodeInput } from "@/components/onboarding/pincode-input";
+import { PincodeInput } from "@/components/form/inputs/pincode-input";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,8 +10,8 @@ import {
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSlot,
   InputOTPSeparator,
+  InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { useForm } from "@tanstack/react-form";
 import { useCallback, useEffect, useState } from "react";

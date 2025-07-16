@@ -1,7 +1,7 @@
 import { PieChartComponent } from "@/components/charts/pie-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -22,18 +22,16 @@ const chartConfig = {
 export function AssetSupplyChart() {
   const { t } = useTranslation("stats");
 
-  // Fetch just the asset metrics which includes supply breakdown - more efficient
+  // Fetch just the supply distribution data - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsAssets.queryOptions({ input: {} })
+    orpc.token.statsSupplyDistribution.queryOptions({ input: {} })
   );
 
-  // Convert asset supply breakdown to chart data format
-  const chartData = Object.entries(metrics.assetSupplyBreakdown)
-    .filter(([, supply]) => Number(supply) > 0) // Only show asset types with supply
-    .map(([type, supply]) => ({
-      assetType: type,
-      totalSupply: Number(supply),
-    }));
+  // Convert supply distribution to chart data format
+  const chartData = metrics.supplyDistribution.map((item) => ({
+    assetType: item.assetType,
+    totalSupply: Number(item.totalSupply),
+  }));
 
   // Only include config for asset types that have data
   const activeChartConfig = Object.fromEntries(

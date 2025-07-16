@@ -7,7 +7,7 @@
  * @module EthereumHashValidation
  */
 import { isHash, type Hex } from "viem";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Zod schema for validating and normalizing Ethereum hashes (32 bytes)

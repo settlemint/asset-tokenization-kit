@@ -6,7 +6,7 @@ import { withEventMeta } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { TadaDocumentNode } from "gql.tada";
 import type { Variables } from "graphql-request";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { baseRouter } from "../../procedures/base.router";
 
 const logger = createLogger();
@@ -80,6 +80,9 @@ function createValidatedPortalClient(
      * @param {string} [trackingMessages.waitingForIndexing] - Message while waiting for indexing
      * @param {string} [trackingMessages.transactionIndexed] - Message when indexing completes
      * @param {string} [trackingMessages.indexingTimeout] - Message when indexing times out
+     * @param {object} [trackingOptions] - Optional configuration for event tracking
+     * @param {string} [trackingOptions.eventId] - Custom event ID for the withEventMeta wrapper
+     * @param {boolean} [trackingOptions.skipEventWrapper] - Skip the withEventMeta wrapper
      * @yields {TransactionEvent} Real-time transaction status updates
      * @returns {string} The transaction hash once tracking is complete
      * @throws {PORTAL_ERROR} When Portal GraphQL operation fails
@@ -109,6 +112,17 @@ function createValidatedPortalClient(
      *   updateUI(event);
      * }
      *
+     * // With custom event ID for ORPC
+     * for await (const event of client.mutate(
+     *   MINT_MUTATION,
+     *   { to: recipient, amount },
+     *   "Mint failed",
+     *   messages,
+     *   { eventId: "token-mint" }
+     * )) {
+     *   // Events will be wrapped with withEventMeta and the custom event ID
+     * }
+     *
      * // Error handling
      * try {
      *   for await (const event of client.mutate(RISKY_MUTATION, vars, "Operation failed")) {
@@ -133,6 +147,10 @@ function createValidatedPortalClient(
         waitingForIndexing?: string;
         transactionIndexed?: string;
         indexingTimeout?: string;
+      },
+      trackingOptions?: {
+        eventId?: string;
+        skipEventWrapper?: boolean;
       }
     ): AsyncGenerator<TransactionEventEmitted, string, void> {
       // Extract operation name from document metadata
@@ -142,6 +160,17 @@ function createValidatedPortalClient(
             __meta?: { operationName?: string };
           }
         ).__meta?.operationName ?? "GraphQL Mutation";
+
+      // Auto-generate unique event ID from operation name and timestamp if not provided
+      const eventId =
+        trackingOptions?.eventId ??
+        `${operation
+          .replace(/([A-Z])/g, "-$1")
+          .toLowerCase()
+          .replace(
+            /^-/,
+            ""
+          )}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
       let result: TResult;
       try {
@@ -214,16 +243,21 @@ function createValidatedPortalClient(
         });
       }
 
+      // Helper function to yield events with proper wrapper
+      const yieldEvent = (event: TransactionEventEmitted) => {
+        if (trackingOptions?.skipEventWrapper) {
+          return event;
+        }
+        return withEventMeta(event, { id: eventId, retry: 1000 });
+      };
+
       // If no theGraphClient is provided, just return the transaction hash
       if (!theGraphClient) {
-        yield withEventMeta(
-          {
-            status: "pending",
-            message: "Transaction submitted",
-            transactionHash,
-          },
-          { id: transactionHash, retry: 1000 }
-        );
+        yield yieldEvent({
+          status: "pending",
+          message: "Transaction submitted",
+          transactionHash,
+        });
         return transactionHash;
       }
 
@@ -301,14 +335,11 @@ function createValidatedPortalClient(
 
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
-          yield withEventMeta(
-            {
-              status: "failed" as const,
-              message: messages.streamTimeout,
-              transactionHash,
-            },
-            { id: transactionHash, retry: 1000 }
-          );
+          yield yieldEvent({
+            status: "failed" as const,
+            message: messages.streamTimeout,
+            transactionHash,
+          });
           throw errors.INTERNAL_SERVER_ERROR({
             message: userMessage,
             cause: new Error(messages.streamTimeout),
@@ -338,27 +369,21 @@ function createValidatedPortalClient(
         receipt = result.getTransaction?.receipt ?? undefined;
 
         if (!receipt) {
-          yield withEventMeta(
-            {
-              status: "pending",
-              message: messages.waitingForMining,
-              transactionHash,
-            },
-            { id: transactionHash, retry: 1000 }
-          );
+          yield yieldEvent({
+            status: "pending",
+            message: messages.waitingForMining,
+            transactionHash,
+          });
           await new Promise((resolve) => setTimeout(resolve, DELAY_MS));
           continue;
         }
 
         if (receipt.status !== "Success") {
-          yield withEventMeta(
-            {
-              status: "failed",
-              message: messages.transactionFailed,
-              transactionHash,
-            },
-            { id: transactionHash, retry: 1000 }
-          );
+          yield yieldEvent({
+            status: "failed",
+            message: messages.transactionFailed,
+            transactionHash,
+          });
           throw errors.INTERNAL_SERVER_ERROR({
             message: userMessage,
             cause: new Error(messages.transactionFailed),
@@ -369,14 +394,11 @@ function createValidatedPortalClient(
       }
 
       if (!receipt) {
-        yield withEventMeta(
-          {
-            status: "failed",
-            message: messages.transactionDropped,
-            transactionHash,
-          },
-          { id: transactionHash, retry: 1000 }
-        );
+        yield yieldEvent({
+          status: "failed",
+          message: messages.transactionDropped,
+          transactionHash,
+        });
         throw errors.INTERNAL_SERVER_ERROR({
           message: userMessage,
           cause: new Error(messages.transactionDropped),
@@ -388,14 +410,11 @@ function createValidatedPortalClient(
       // This ensures that the transaction data is available for queries.
       // TheGraph needs to process the block containing our transaction before
       // the dApp can display updated data.
-      yield withEventMeta(
-        {
-          status: "pending",
-          message: messages.waitingForIndexing,
-          transactionHash,
-        },
-        { id: transactionHash, retry: 1000 }
-      );
+      yield yieldEvent({
+        status: "pending",
+        message: messages.waitingForIndexing,
+        transactionHash,
+      });
 
       const targetBlockNumber = Number(receipt.blockNumber);
 
@@ -405,14 +424,11 @@ function createValidatedPortalClient(
         attempt++
       ) {
         if (Date.now() - streamStartTime > STREAM_TIMEOUT_MS) {
-          yield withEventMeta(
-            {
-              status: "failed",
-              message: messages.streamTimeout,
-              transactionHash,
-            },
-            { id: transactionHash, retry: 1000 }
-          );
+          yield yieldEvent({
+            status: "failed",
+            message: messages.streamTimeout,
+            transactionHash,
+          });
           throw errors.INTERNAL_SERVER_ERROR({
             message: userMessage,
             cause: new Error(messages.streamTimeout),
@@ -437,14 +453,11 @@ function createValidatedPortalClient(
 
         if (indexedBlock >= targetBlockNumber) {
           // Always yield the final confirmed event
-          yield withEventMeta(
-            {
-              status: "confirmed",
-              message: messages.transactionIndexed,
-              transactionHash,
-            },
-            { id: transactionHash, retry: 1000 }
-          );
+          yield yieldEvent({
+            status: "confirmed",
+            message: messages.transactionIndexed,
+            transactionHash,
+          });
           return transactionHash;
         }
 
@@ -454,14 +467,11 @@ function createValidatedPortalClient(
       }
 
       // Indexing timeout
-      yield withEventMeta(
-        {
-          status: "confirmed",
-          message: messages.indexingTimeout,
-          transactionHash,
-        },
-        { id: transactionHash, retry: 1000 }
-      );
+      yield yieldEvent({
+        status: "confirmed",
+        message: messages.indexingTimeout,
+        transactionHash,
+      });
 
       return transactionHash;
     },

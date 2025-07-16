@@ -11,6 +11,8 @@
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { call } from "@orpc/server";
 import { eq } from "drizzle-orm";
 
 /**
@@ -47,46 +49,51 @@ export const me = authRouter.user.me
     const userId = authUser.id;
 
     // Fetch user and KYC profile in a single query with left join
-    const [result] = await context.db
-      .select({
-        user: userTable,
-        kyc: {
-          firstName: kycProfiles.firstName,
-          lastName: kycProfiles.lastName,
+    const [[userQueryResult], systemAddress] = await Promise.all([
+      context.db
+        .select({
+          user: userTable,
+          kyc: {
+            firstName: kycProfiles.firstName,
+            lastName: kycProfiles.lastName,
+          },
+        })
+        .from(userTable)
+        .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
+        .where(eq(userTable.id, userId))
+        .limit(1),
+      call(
+        read,
+        {
+          key: "SYSTEM_ADDRESS",
         },
-      })
-      .from(userTable)
-      .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
-      .where(eq(userTable.id, userId))
-      .limit(1);
+        {
+          context,
+        }
+      ),
+    ]);
 
-    if (!result?.user) {
-      // This should not happen as user is authenticated, but handle gracefully
-      return {
-        id: authUser.id,
-        name: authUser.name,
-        email: authUser.email,
-        role: authUser.role,
-        wallet: authUser.wallet,
-        isOnboarded: authUser.isOnboarded,
-        firstName: undefined,
-        lastName: undefined,
-      };
-    }
-
-    const { user, kyc } = result;
+    const { kyc } = userQueryResult ?? {};
 
     return {
-      id: user.id,
+      id: authUser.id,
       name:
         kyc?.firstName && kyc.lastName
           ? `${kyc.firstName} ${kyc.lastName}`
-          : user.name,
-      email: user.email,
-      role: user.role ?? "investor",
-      wallet: user.wallet ?? authUser.wallet, // Fallback to auth wallet if DB wallet is null
-      isOnboarded: authUser.isOnboarded, // This comes from auth context, not DB
+          : authUser.name,
+      email: authUser.email,
+      role: authUser.role,
+      wallet: authUser.wallet,
+      isOnboarded: authUser.isOnboarded,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
+      onboardingState: {
+        wallet: !!authUser.wallet,
+        walletSecurity:
+          authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
+        walletRecoveryCodes: !!authUser.secretCodeVerificationId,
+        system: !!systemAddress,
+        identity: !!userQueryResult?.kyc,
+      },
     };
   });

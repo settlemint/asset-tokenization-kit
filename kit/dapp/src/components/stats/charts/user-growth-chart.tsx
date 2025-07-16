@@ -1,7 +1,7 @@
 import { AreaChartComponent } from "@/components/charts/area-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -23,9 +23,9 @@ const dataKeys = ["users"];
 export function UserGrowthChart() {
   const { t } = useTranslation("stats");
 
-  // Fetch just the user metrics which includes growth data - more efficient
+  // Fetch just the user growth data - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.user.stats.queryOptions({ input: { timeRange: 30 } }) // 30 days of data
+    orpc.user.statsGrowthOverTime.queryOptions({ input: { timeRange: 30 } }) // 30 days of data
   );
 
   // Transform user growth data for chart display

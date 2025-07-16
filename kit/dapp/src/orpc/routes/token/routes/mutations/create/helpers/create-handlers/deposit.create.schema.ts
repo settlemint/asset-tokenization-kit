@@ -21,7 +21,7 @@ import {
   TokenBaseSchema,
   createTokenMessagesSchema,
 } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Deposit token specific schema

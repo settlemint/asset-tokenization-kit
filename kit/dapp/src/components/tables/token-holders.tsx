@@ -13,7 +13,7 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { Badge } from "@/components/ui/badge";
 import { Web3Address } from "@/components/web3/web3-address";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/token/routes/token.holders.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { useSuspenseQuery } from "@tanstack/react-query";

@@ -6,16 +6,16 @@
  * @module ExchangeRatesContract
  */
 import { baseContract } from "@/orpc/procedures/base.contract";
-import { z } from "zod/v4";
+import { z } from "zod";
+import { ExchangeRatesDeleteSchema } from "./routes/exchange-rates.delete.schema";
+import { ExchangeRatesHistorySchema } from "./routes/exchange-rates.history.schema";
 import {
-  ExchangeRatesListSchema,
   ExchangeRatesListOutputSchema,
+  ExchangeRatesListSchema,
 } from "./routes/exchange-rates.list.schema";
 import { ExchangeRatesReadSchema } from "./routes/exchange-rates.read.schema";
-import { ExchangeRatesUpdateSchema } from "./routes/exchange-rates.update.schema";
-import { ExchangeRatesDeleteSchema } from "./routes/exchange-rates.delete.schema";
 import { ExchangeRatesSyncSchema } from "./routes/exchange-rates.sync.schema";
-import { ExchangeRatesHistorySchema } from "./routes/exchange-rates.history.schema";
+import { ExchangeRatesUpdateSchema } from "./routes/exchange-rates.update.schema";
 
 /**
  * Contract for reading the current exchange rate between two currencies.

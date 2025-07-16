@@ -188,7 +188,14 @@ export default defineConfig([
       // ========================================================================
       "react/react-in-jsx-scope": "off", // Not needed in React 17+
       "react/no-unescaped-entities": "off",
-      "react/prop-types": "off", // Typescript provides type safety
+      "react/prop-types": "off", // Typescript provides type safety,
+      "react-perf/jsx-no-new-function-as-prop": "off",
+      "react/no-children-prop": [
+        "error",
+        {
+          allowFunctions: true,
+        },
+      ],
 
       // ========================================================================
       // TYPESCRIPT RULES
@@ -226,6 +233,25 @@ export default defineConfig([
           },
         },
       ],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/prefer-nullish-coalescing": [
+        "error",
+        {
+          ignorePrimitives: {
+            bigint: false,
+            boolean: true,
+            number: false,
+            string: false,
+          },
+        },
+      ],
 
       // ========================================================================
       // TYPESCRIPT RULES - DISABLED/RELAXED
@@ -253,9 +279,9 @@ export default defineConfig([
       "no-restricted-imports": [
         "error",
         {
-          name: "zod",
+          name: "zod/v4",
           importNames: ["z"],
-          message: "Please import `z` from `zod/v4` instead.",
+          message: "Please import `z` from `zod` instead.",
         },
       ],
 

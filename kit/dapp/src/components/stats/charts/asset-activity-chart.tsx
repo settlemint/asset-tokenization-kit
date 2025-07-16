@@ -1,7 +1,7 @@
 import { BarChartComponent } from "@/components/charts/bar-chart";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { type ChartConfig } from "@/components/ui/chart";
-import { orpc } from "@/orpc";
+import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -35,26 +35,26 @@ const dataKeys = ["mint", "transfer", "burn", "clawback"];
 export function AssetActivityChart() {
   const { t } = useTranslation("stats");
 
-  // Fetch just the asset metrics which includes activity data - more efficient
+  // Fetch just the activity by asset data - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsAssets.queryOptions({ input: {} })
+    orpc.token.statsActivityByAsset.queryOptions({ input: {} })
   );
 
   // Transform asset activity data to chart format
   const chartData = metrics.assetActivity
     .filter(
       (activity) =>
-        activity.mintEventCount > 0 ||
-        activity.transferEventCount > 0 ||
-        activity.burnEventCount > 0 ||
-        activity.clawbackEventCount > 0
+        activity.mint > 0 ||
+        activity.transfer > 0 ||
+        activity.burn > 0 ||
+        activity.clawback > 0
     ) // Only show asset types with activity
     .map((activity) => ({
       assetType: activity.assetType,
-      mint: activity.mintEventCount,
-      transfer: activity.transferEventCount,
-      burn: activity.burnEventCount,
-      clawback: activity.clawbackEventCount,
+      mint: activity.mint,
+      transfer: activity.transfer,
+      burn: activity.burn,
+      clawback: activity.clawback,
     }));
 
   return (

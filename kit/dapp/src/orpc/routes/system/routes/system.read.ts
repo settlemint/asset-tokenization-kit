@@ -16,7 +16,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { z } from "zod/v4";
+import { z } from "zod";
 import type { SystemReadOutput } from "./system.read.schema";
 
 /**
@@ -55,11 +55,12 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
 
 /**
  * Reads system contract details including token factories.
- * @auth Required - User must be authenticated
+ * @auth Required - User must be authenticated and onboarded
  * @middleware theGraphMiddleware - Provides TheGraph client
  * @param input.id - The system contract address to query
  * @returns System details with associated token factories
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
+ * @throws {ORPCError} NOT_ONBOARDED - If user hasn't completed onboarding
  * @throws {ORPCError} NOT_FOUND - If system doesn't exist
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If TheGraph query fails
  * @example

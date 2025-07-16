@@ -6,7 +6,7 @@
  * platform. Supports role-based access control (RBAC) patterns.
  * @module RoleValidation
  */
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Available system roles with different permission levels.

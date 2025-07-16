@@ -8,7 +8,7 @@
  */
 import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
 import { from, isDnum, type Dnum } from "dnum";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 /**
  * Zod schema for validating and transforming arbitrary precision decimal numbers

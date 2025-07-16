@@ -1,12 +1,11 @@
-import type { z } from "zod/v4";
+import type { z } from "zod";
 
 // Form API types - using any to work with TanStack Form's complex generics
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FormApi<_TFormData = Record<string, unknown>> = any;
 
 export type FieldApi<
   _TFormData = Record<string, unknown>,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _TName extends keyof _TFormData = keyof _TFormData,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 > = any;
@@ -125,6 +124,7 @@ export interface UseMultiStepWizardStateOptions {
 
 export interface MultiStepWizardProps<TFormData = unknown> {
   name: string;
+  title?: string;
   description?: string;
   steps: StepDefinition<TFormData>[];
   groups?: StepGroup[];
@@ -137,6 +137,8 @@ export interface MultiStepWizardProps<TFormData = unknown> {
   defaultValues?: Partial<TFormData>;
   showProgressBar?: boolean;
   allowStepSkipping?: boolean;
+  onStepChange?: (stepIndex: number) => void;
+  defaultStepIndex?: number;
 }
 
 export interface StepValidationResult {

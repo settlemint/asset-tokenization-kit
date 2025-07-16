@@ -26,7 +26,7 @@
  */
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { MutationInputSchema } from "../../common/schemas/mutation.schema";
 import { TransactionTrackingMessagesSchema } from "../../common/schemas/transaction-messages.schema";
 
