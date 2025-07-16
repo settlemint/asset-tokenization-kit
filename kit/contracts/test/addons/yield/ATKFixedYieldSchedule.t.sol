@@ -6,8 +6,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { ISMARTFixedYieldSchedule } from
     "../../../contracts/smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
-import { SMARTFixedYieldSchedule } from
-    "../../../contracts/smart/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
+import { ATKFixedYieldScheduleUpgradeable } from "../../../contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol";
 import { ISMARTYield } from "../../../contracts/smart/extensions/yield/ISMARTYield.sol";
 
 contract MockATKToken is MockedERC20Token {
@@ -58,8 +57,8 @@ contract MockATKToken is MockedERC20Token {
     }
 }
 
-contract SMARTFixedYieldScheduleTest is Test {
-    SMARTFixedYieldSchedule public yieldSchedule;
+contract ATKFixedYieldScheduleTest is Test {
+    ATKFixedYieldScheduleUpgradeable public yieldSchedule;
     MockATKToken public atkToken;
     MockedERC20Token public underlyingToken;
 
@@ -87,9 +86,14 @@ contract SMARTFixedYieldScheduleTest is Test {
         // Deploy mock SMART token
         atkToken = new MockATKToken("ATK Token", "ATK", 18, address(underlyingToken));
 
-        // Deploy yield schedule
-        yieldSchedule =
-            new SMARTFixedYieldSchedule(address(atkToken), startDate, endDate, RATE, INTERVAL, owner, forwarder);
+        // Deploy yield schedule directly (bypassing factory for simplicity)
+        yieldSchedule = new ATKFixedYieldScheduleUpgradeable(forwarder);
+
+        // Initialize the contract
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = owner;
+
+        yieldSchedule.initialize(address(atkToken), startDate, endDate, RATE, INTERVAL, initialAdmins);
 
         // Setup tokens
         underlyingToken.mint(address(this), INITIAL_SUPPLY);
@@ -103,6 +107,12 @@ contract SMARTFixedYieldScheduleTest is Test {
         atkToken.setTotalSupplyAt(startDate + 1 days, 1500e18);
         atkToken.setBalanceOfAt(user1, startDate + 1 days, 1000e18);
         atkToken.setBalanceOfAt(user2, startDate + 1 days, 500e18);
+
+        // Grant necessary roles to owner for testing
+        vm.startPrank(owner);
+        yieldSchedule.grantRole(yieldSchedule.SUPPLY_MANAGEMENT_ROLE(), owner);
+        yieldSchedule.grantRole(yieldSchedule.EMERGENCY_ROLE(), owner);
+        vm.stopPrank();
     }
 
     function test_InitialState() public view {
@@ -469,21 +479,28 @@ contract SMARTFixedYieldScheduleTest is Test {
     }
 
     function test_InvalidConstructorParameters() public {
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = owner;
+
         // Invalid start date (in the past)
+        ATKFixedYieldScheduleUpgradeable invalidSchedule1 = new ATKFixedYieldScheduleUpgradeable(forwarder);
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidStartDate.selector);
-        new SMARTFixedYieldSchedule(address(atkToken), block.timestamp - 1, endDate, RATE, INTERVAL, owner, forwarder);
+        invalidSchedule1.initialize(address(atkToken), block.timestamp - 1, endDate, RATE, INTERVAL, initialAdmins);
 
         // Invalid end date (before start)
+        ATKFixedYieldScheduleUpgradeable invalidSchedule2 = new ATKFixedYieldScheduleUpgradeable(forwarder);
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidEndDate.selector);
-        new SMARTFixedYieldSchedule(address(atkToken), startDate, startDate - 1, RATE, INTERVAL, owner, forwarder);
+        invalidSchedule2.initialize(address(atkToken), startDate, startDate - 1, RATE, INTERVAL, initialAdmins);
 
         // Invalid rate (zero)
+        ATKFixedYieldScheduleUpgradeable invalidSchedule3 = new ATKFixedYieldScheduleUpgradeable(forwarder);
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidRate.selector);
-        new SMARTFixedYieldSchedule(address(atkToken), startDate, endDate, 0, INTERVAL, owner, forwarder);
+        invalidSchedule3.initialize(address(atkToken), startDate, endDate, 0, INTERVAL, initialAdmins);
 
         // Invalid interval (zero)
+        ATKFixedYieldScheduleUpgradeable invalidSchedule4 = new ATKFixedYieldScheduleUpgradeable(forwarder);
         vm.expectRevert(ISMARTFixedYieldSchedule.InvalidInterval.selector);
-        new SMARTFixedYieldSchedule(address(atkToken), startDate, endDate, RATE, 0, owner, forwarder);
+        invalidSchedule4.initialize(address(atkToken), startDate, endDate, RATE, 0, initialAdmins);
     }
 
     function test_InvalidPeriod() public {

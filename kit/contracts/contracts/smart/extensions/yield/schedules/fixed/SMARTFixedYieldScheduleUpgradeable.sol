@@ -4,10 +4,7 @@ pragma solidity 0.8.28;
 import { SMARTFixedYieldScheduleLogic } from "./internal/SMARTFixedYieldScheduleLogic.sol";
 import { ISMARTFixedYieldSchedule } from "./ISMARTFixedYieldSchedule.sol";
 
-abstract contract SMARTFixedYieldScheduleUpgradeable is
-    SMARTFixedYieldScheduleLogic
-{
-
+abstract contract SMARTFixedYieldScheduleUpgradeable is SMARTFixedYieldScheduleLogic {
     /// @notice Initializes the SMART Fixed Yield Schedule logic.
     /// @dev This function should be called by the implementing contract's initializer.
     /// @param tokenAddress_ Address of the `ISMARTYield` token.
@@ -27,5 +24,4 @@ abstract contract SMARTFixedYieldScheduleUpgradeable is
     {
         __SMARTFixedYieldSchedule_init_unchained(tokenAddress_, startDate_, endDate_, rate_, interval_);
     }
-
 }
