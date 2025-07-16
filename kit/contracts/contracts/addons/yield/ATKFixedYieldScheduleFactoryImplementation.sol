@@ -13,8 +13,6 @@ import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
     "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
-import { SMARTFixedYieldScheduleUpgradeable } from
-    "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
 import { ATKFixedYieldProxy } from "./ATKFixedYieldProxy.sol";
 import { ATKFixedYieldScheduleUpgradeable } from "./ATKFixedYieldScheduleUpgradeable.sol";
 
@@ -60,7 +58,7 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         address forwarder = trustedForwarder();
         // Deploy the initial implementation contract for SMARTFixedYieldSchedule.
         // The SMARTFixedYieldSchedule constructor now only calls _disableInitializers().
-        SMARTFixedYieldScheduleUpgradeable initialImplementation = new SMARTFixedYieldScheduleUpgradeable(forwarder);
+        ATKFixedYieldScheduleUpgradeable initialImplementation = new ATKFixedYieldScheduleUpgradeable(forwarder);
 
         atkFixedYieldScheduleImplementation = address(initialImplementation);
         emit ImplementationUpdated(address(0), atkFixedYieldScheduleImplementation);
