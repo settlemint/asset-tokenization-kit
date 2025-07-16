@@ -12,10 +12,6 @@ export function handleATKXvPSettlementCreated(
   xvpSettlement.deployedInTransaction = event.transaction.hash;
   xvpSettlement.save();
 
-  const factoryAccount = fetchAccount(event.address);
-  factoryAccount.lastActivity = event.block.timestamp;
-  factoryAccount.save();
-
   const approvals = xvpSettlement.approvals.load();
   for (let i = 0; i < approvals.length; i++) {
     const approval = approvals[i];
