@@ -60,38 +60,13 @@ export const AssetBasics = withForm({
             return null;
           }}
         />
-        <form.Subscribe
-          selector={(state) => {
-            const formFields: (keyof typeof state.fieldMeta)[] = [
-              "name",
-              "symbol",
-              "decimals",
-              "isin",
-              "cap",
-              "faceValue",
-              "managementFeeBps",
-            ];
-            return formFields.every((field) => {
-              return state.fieldMeta[field]?.isValid;
-            });
+        <Button
+          onClick={() => {
+            form.setFieldValue("step", assetDesignerSteps.assetBasics.nextStep);
           }}
         >
-          {(isValid) => {
-            return (
-              <Button
-                disabled={!isValid}
-                onClick={() => {
-                  form.setFieldValue(
-                    "step",
-                    assetDesignerSteps.assetBasics.nextStep
-                  );
-                }}
-              >
-                Next
-              </Button>
-            );
-          }}
-        </form.Subscribe>
+          Next
+        </Button>
       </>
     );
   },

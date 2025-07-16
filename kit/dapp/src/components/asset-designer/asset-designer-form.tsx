@@ -5,7 +5,6 @@ import {
   AssetDesignerFormSchema,
 } from "@/components/asset-designer/shared-form";
 import { useAppForm } from "@/hooks/use-app-form";
-import { useStore } from "@tanstack/react-store";
 
 export const AssetDesignerForm = () => {
   const form = useAppForm({
@@ -21,13 +20,16 @@ export const AssetDesignerForm = () => {
       },
     },
   });
-  const step = useStore(form.store, (state) => state.values.step);
-
   return (
     <form.AppForm>
-      {step === "selectAssetType" && <SelectAssetType form={form} />}
-      {step === "assetBasics" && <AssetBasics form={form} />}
-      {step === "summary" && <div>Summary</div>}
+      <form.Subscribe selector={(state) => state.values.step}>
+        {(step) => {
+          if (step === "selectAssetType")
+            return <SelectAssetType form={form} />;
+          if (step === "assetBasics") return <AssetBasics form={form} />;
+          return <div>Summary</div>;
+        }}
+      </form.Subscribe>
     </form.AppForm>
   );
 };

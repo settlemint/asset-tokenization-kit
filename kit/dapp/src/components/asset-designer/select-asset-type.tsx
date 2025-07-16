@@ -55,30 +55,16 @@ export const SelectAssetType = withForm({
             />
           )}
         />
-        <form.Subscribe
-          selector={(state) => {
-            const formFields: (keyof typeof state.fieldMeta)[] = ["type"];
-            return formFields.every((field) => {
-              return state.fieldMeta[field]?.isValid;
-            });
-          }}
-        >
-          {(isValid) => {
-            return (
-              <Button
-                disabled={!isValid}
-                onClick={() => {
-                  form.setFieldValue(
-                    "step",
-                    assetDesignerSteps.selectAssetType.nextStep
-                  );
-                }}
-              >
-                Next
-              </Button>
+        <Button
+          onClick={() => {
+            form.setFieldValue(
+              "step",
+              assetDesignerSteps.selectAssetType.nextStep
             );
           }}
-        </form.Subscribe>
+        >
+          Next
+        </Button>
       </>
     );
   },
