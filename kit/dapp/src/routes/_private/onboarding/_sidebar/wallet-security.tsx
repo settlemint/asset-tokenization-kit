@@ -1,61 +1,147 @@
-import { OnboardingLayout } from "@/components/onboarding/onboarding-layout";
 import {
   OnboardingStep,
   updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
-import { WalletSecurityMain } from "@/components/onboarding/wallet-security/wallet-security-main";
-import { createLogger } from "@settlemint/sdk-utils/logging";
-import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
-import { useCallback, useEffect } from "react";
-
-const logger = createLogger();
-
-const routeConfig = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  beforeLoad: async ({ context: { orpc, queryClient } }: any) => {
-    const user = await queryClient.fetchQuery({
-      ...orpc.user.me.queryOptions(),
-      staleTime: 0,
-    });
-    const { currentStep } = updateOnboardingStateMachine({
-      user,
-      hasSystem: false,
-    });
-    if (currentStep !== OnboardingStep.walletSecurity) {
-      return redirect({
-        to: `/onboarding/${currentStep}`,
-      });
-    }
-    return { currentStep, user };
-  },
-  component: RouteComponent,
-};
+import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
+import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
+import { SecurityMethodSelector } from "@/components/onboarding/wallet-security/security-method-selector";
+import { SecuritySuccess } from "@/components/onboarding/wallet-security/security-success";
+import { useSession } from "@/hooks/use-auth";
+import { orpc } from "@/orpc/orpc-client";
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
+import { useCallback } from "react";
+import { z } from "zod";
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/wallet-security"
-)(routeConfig);
+)({
+  validateSearch: zodValidator(
+    z.object({
+      step: z.enum(Object.values(OnboardingStep)).optional(),
+      subStep: z.enum(["intro", "pin", "otp", "complete"]).optional(),
+    })
+  ),
+  beforeLoad: async ({
+    context: { orpc, queryClient },
+    search: { step, subStep },
+  }) => {
+    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
+    const { currentStep } = updateOnboardingStateMachine({ user });
+
+    // If we're showing the complete subStep, don't redirect
+    if (subStep === "complete") {
+      return;
+    }
+
+    if (step) {
+      if (step !== OnboardingStep.walletSecurity) {
+        return redirect({
+          to: `/onboarding/${step}`,
+        });
+      }
+    } else {
+      if (currentStep !== OnboardingStep.walletSecurity) {
+        return redirect({
+          to: `/onboarding/${currentStep}`,
+        });
+      }
+    }
+  },
+  component: RouteComponent,
+});
 
 function RouteComponent() {
-  const { user } = Route.useRouteContext();
-  const router = useRouter();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const { subStep } = Route.useSearch();
+  const { refetch } = useSession();
 
-  useEffect(() => {
-    if (user) {
-      updateOnboardingStateMachine({ user });
-    }
-  }, [user]);
+  const handlePinSuccess = useCallback(async () => {
+    await refetch();
+    await queryClient.invalidateQueries({
+      queryKey: orpc.user.me.key(),
+      refetchType: "all",
+    });
+    await navigate({
+      search: () => ({
+        step: OnboardingStep.walletSecurity,
+        subStep: "complete",
+      }),
+    });
+  }, [refetch, queryClient, navigate]);
+
+  const handleOtpSuccess = useCallback(async () => {
+    await refetch();
+    await queryClient.invalidateQueries({
+      queryKey: orpc.user.me.key(),
+      refetchType: "all",
+    });
+    await navigate({
+      search: () => ({
+        step: OnboardingStep.walletSecurity,
+        subStep: "complete",
+      }),
+    });
+  }, [refetch, queryClient, navigate]);
 
   const onNext = useCallback(async () => {
-    try {
-      await router.invalidate({ sync: true });
-    } catch (err: unknown) {
-      logger.error("Error invalidating queries", err);
-    }
-  }, [router]);
+    await queryClient.invalidateQueries({
+      queryKey: orpc.user.me.key(),
+      refetchType: "all",
+    });
+    await navigate({
+      to: `/onboarding/${OnboardingStep.walletRecoveryCodes}`,
+    });
+  }, [queryClient, navigate]);
+
+  if (subStep === "complete") {
+    return <SecuritySuccess onNext={onNext} />;
+  }
+
+  if (subStep === "pin") {
+    return (
+      <PinSetupComponent
+        onSuccess={handlePinSuccess}
+        onBack={() => {
+          void navigate({
+            search: () => ({
+              step: OnboardingStep.walletSecurity,
+              subStep: "intro",
+            }),
+          });
+        }}
+      />
+    );
+  }
+
+  if (subStep === "otp") {
+    return (
+      <OtpSetupComponent
+        onSuccess={handleOtpSuccess}
+        onBack={() => {
+          void navigate({
+            search: () => ({
+              step: OnboardingStep.walletSecurity,
+              subStep: "intro",
+            }),
+          });
+        }}
+      />
+    );
+  }
 
   return (
-    <OnboardingLayout currentStep={OnboardingStep.walletSecurity}>
-      <WalletSecurityMain onNext={onNext} />
-    </OnboardingLayout>
+    <SecurityMethodSelector
+      onSetupSecurity={(method) => {
+        void navigate({
+          search: () => ({
+            step: OnboardingStep.walletSecurity,
+            subStep: method,
+          }),
+        });
+      }}
+    />
   );
 }
