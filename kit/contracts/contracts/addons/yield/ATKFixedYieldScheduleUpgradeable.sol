@@ -26,6 +26,8 @@ contract ATKFixedYieldScheduleUpgradeable is
     IContractWithIdentity
 {
     /// @notice Role for managing token supply operations
+    bytes32 public constant GOVERNANCE_ROLE = keccak256("GOVERNANCE_ROLE");
+    /// @notice Role for managing token supply operations
     bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
     /// @notice Role for emergency operations including pausing the contract and ERC20 recovery
     bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
@@ -40,19 +42,19 @@ contract ATKFixedYieldScheduleUpgradeable is
 
     /// @notice Initializes the contract when used as an upgradeable proxy.
     /// @dev This function should be called by the proxy contract after deployment to set all configuration.
-    /// @param initialOwner_ The address to be granted `DEFAULT_ADMIN_ROLE`.
     /// @param tokenAddress_ Address of the `ISMARTYield` token.
     /// @param startDate_ Start date of the yield schedule.
     /// @param endDate_ End date of the yield schedule.
     /// @param rate_ Yield rate in basis points.
     /// @param interval_ Duration of each yield interval.
+    /// @param initialAdmins_ The address to be granted `DEFAULT_ADMIN_ROLE`.
     function initialize(
         address tokenAddress_,
         uint256 startDate_,
         uint256 endDate_,
         uint256 rate_,
         uint256 interval_,
-        address initialOwner_
+        address[] memory initialAdmins_
     )
         external
         virtual
@@ -63,10 +65,10 @@ contract ATKFixedYieldScheduleUpgradeable is
         __ReentrancyGuard_init();
         __SMARTFixedYieldSchedule_init(tokenAddress_, startDate_, endDate_, rate_, interval_);
 
-        // Grant the `DEFAULT_ADMIN_ROLE` to the `initialOwner_`.
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
-        _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner_);
-        _grantRole(EMERGENCY_ROLE, initialOwner_);
+        // Grant the `DEFAULT_ADMIN_ROLE` to the `initialAdmins_`.
+        for (uint256 i = 0; i < initialAdmins_.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins_[i]);
+        }
     }
 
     /// @inheritdoc ISMARTFixedYieldSchedule
@@ -117,7 +119,7 @@ contract ATKFixedYieldScheduleUpgradeable is
     /// @notice Sets the onchain ID for this contract
     /// @dev Can only be called by an address with DEFAULT_ADMIN_ROLE
     /// @param onchainID_ The address of the onchain ID contract
-    function setOnchainId(address onchainID_) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setOnchainId(address onchainID_) external onlyRole(GOVERNANCE_ROLE) {
         if (onchainID_ == address(0)) revert InvalidOnchainID();
         _onchainID = onchainID_;
     }
@@ -129,12 +131,12 @@ contract ATKFixedYieldScheduleUpgradeable is
 
     /// @inheritdoc IContractWithIdentity
     function canAddClaim(address actor) external view override returns (bool) {
-        return hasRole(DEFAULT_ADMIN_ROLE, actor);
+        return hasRole(GOVERNANCE_ROLE, actor);
     }
 
     /// @inheritdoc IContractWithIdentity
     function canRemoveClaim(address actor) external view override returns (bool) {
-        return hasRole(DEFAULT_ADMIN_ROLE, actor);
+        return hasRole(GOVERNANCE_ROLE, actor);
     }
 
     /// @dev Override from Context and ERC2771Context to correctly identify the transaction sender
