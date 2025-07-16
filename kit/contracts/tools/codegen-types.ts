@@ -100,6 +100,7 @@ const ABI_PATHS = {
   pushAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol/IATKPushAirdropFactory.json`,
   timeBoundAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdropFactory.sol/IATKTimeBoundAirdropFactory.json`,
   xvpSettlementFactory: `${ARTIFACTS_DIR}/contracts/addons/xvp/IATKXvPSettlementFactory.sol/IATKXvPSettlementFactory.json`,
+  xvpSettlement: `${ARTIFACTS_DIR}/contracts/addons/xvp/IATKXvPSettlement.sol/IATKXvPSettlement.json`,
 } as const;
 
 const AVAILABLE_ABIS = {
@@ -147,6 +148,7 @@ const AVAILABLE_ABIS = {
     "pushAirdropFactory",
     "timeBoundAirdropFactory",
     "xvpSettlementFactory",
+    "xvpSettlement",
   ],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 

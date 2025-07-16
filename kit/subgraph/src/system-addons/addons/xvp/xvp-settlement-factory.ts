@@ -1,8 +1,8 @@
 import { ATKXvPSettlementCreated } from "../../../../generated/templates/XvPSettlementFactory/XvPSettlementFactory";
-import { fetchEvent } from "../../../event/fetch/event";
-import { fetchXvPSettlement } from "./fetch/xvp-settlement";
 import { fetchAccount } from "../../../account/fetch/account";
-import { createAction, ActionName, ActionType } from "../../../utils/actions";
+import { fetchEvent } from "../../../event/fetch/event";
+import { ActionName, ActionType, createAction } from "../../../utils/actions";
+import { fetchXvPSettlement } from "./fetch/xvp-settlement";
 
 export function handleATKXvPSettlementCreated(
   event: ATKXvPSettlementCreated
