@@ -18,7 +18,9 @@ import { toast } from "sonner";
 
 const logger = createLogger();
 
-export const Route = createFileRoute("/_private/onboarding/system-settings")({
+export const Route = createFileRoute(
+  "/_private/onboarding/_sidebar/system-settings"
+)({
   beforeLoad: async ({ context: { orpc, queryClient } }) => {
     const user = await queryClient.fetchQuery({
       ...orpc.user.me.queryOptions(),

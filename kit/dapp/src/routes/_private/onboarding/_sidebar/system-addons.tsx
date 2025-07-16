@@ -6,7 +6,9 @@ import {
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useCallback } from "react";
 
-export const Route = createFileRoute("/_private/onboarding/system-addons")({
+export const Route = createFileRoute(
+  "/_private/onboarding/_sidebar/system-addons"
+)({
   beforeLoad: async ({ context: { orpc, queryClient } }) => {
     const user = await queryClient.fetchQuery({
       ...orpc.user.me.queryOptions(),

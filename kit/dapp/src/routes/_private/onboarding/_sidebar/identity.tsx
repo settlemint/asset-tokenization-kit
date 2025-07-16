@@ -4,7 +4,7 @@ import {
 } from "@/components/onboarding/state-machine";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/_private/onboarding/identity")({
+export const Route = createFileRoute("/_private/onboarding/_sidebar/identity")({
   loader: async ({ context: { orpc, queryClient } }) => {
     const user = await queryClient.fetchQuery({
       ...orpc.user.me.queryOptions(),

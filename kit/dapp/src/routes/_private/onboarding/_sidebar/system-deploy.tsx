@@ -7,7 +7,9 @@ import { SystemBootstrapMain } from "@/components/onboarding/system/system-boots
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useCallback } from "react";
 
-export const Route = createFileRoute("/_private/onboarding/system-deploy")({
+export const Route = createFileRoute(
+  "/_private/onboarding/_sidebar/system-deploy"
+)({
   beforeLoad: async ({ context: { orpc, queryClient }, search }) => {
     const user = await queryClient.fetchQuery({
       ...orpc.user.me.queryOptions(),

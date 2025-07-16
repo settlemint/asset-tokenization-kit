@@ -31,9 +31,9 @@ const routeConfig = {
   component: RouteComponent,
 };
 
-export const Route = createFileRoute("/_private/onboarding/wallet-security")(
-  routeConfig
-);
+export const Route = createFileRoute(
+  "/_private/onboarding/_sidebar/wallet-security"
+)(routeConfig);
 
 function RouteComponent() {
   const { user } = Route.useRouteContext();

@@ -35,7 +35,7 @@ const routeConfig = {
 };
 
 export const Route = createFileRoute(
-  "/_private/onboarding/wallet-recovery-codes"
+  "/_private/onboarding/_sidebar/wallet-recovery-codes"
 )(routeConfig);
 
 function RouteComponent() {
