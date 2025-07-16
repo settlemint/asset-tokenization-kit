@@ -1,21 +1,23 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity 0.8.28;
 
+import { SMARTFixedYieldScheduleUpgradeable } from
+    "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
 import { SMARTFixedYieldScheduleLogic } from
     "../../smart/extensions/yield/schedules/fixed/internal/SMARTFixedYieldScheduleLogic.sol";
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
-import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 
 import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 
 contract ATKFixedYieldScheduleUpgradeable is
-    SMARTFixedYieldScheduleLogic,
+    SMARTFixedYieldScheduleUpgradeable,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
@@ -56,11 +58,10 @@ contract ATKFixedYieldScheduleUpgradeable is
         virtual
         initializer
     {
-        __ERC165_init();
         __AccessControl_init();
         __Pausable_init();
         __ReentrancyGuard_init();
-        __SMARTFixedYieldSchedule_init_unchained(tokenAddress_, startDate_, endDate_, rate_, interval_);
+        __SMARTFixedYieldSchedule_init(tokenAddress_, startDate_, endDate_, rate_, interval_);
 
         // Grant the `DEFAULT_ADMIN_ROLE` to the `initialOwner_`.
         _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
@@ -173,10 +174,9 @@ contract ATKFixedYieldScheduleUpgradeable is
         public
         view
         virtual
-        override(AccessControlUpgradeable, ERC165Upgradeable, IERC165, SMARTFixedYieldScheduleLogic)
+        override(AccessControlUpgradeable, SMARTFixedYieldScheduleLogic, ERC165Upgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(IContractWithIdentity).interfaceId
-            || interfaceId == type(ISMARTFixedYieldSchedule).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IContractWithIdentity).interfaceId || super.supportsInterface(interfaceId);
     }
 }
