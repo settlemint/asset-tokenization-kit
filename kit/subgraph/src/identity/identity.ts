@@ -17,6 +17,7 @@ import {
   getTokenBasePrice,
   updateSystemStatsForPriceChange,
 } from "../stats/system-stats";
+import { updateTokenTypeStatsForPriceChange } from "../stats/token-type-stats";
 import {
   isCollateralClaim,
   updateCollateral,
@@ -87,6 +88,9 @@ export function handleClaimAdded(event: ClaimAdded): void {
       const newPrice = getTokenBasePrice(identityClaim.id);
       updateSystemStatsForPriceChange(token, BigDecimal.zero(), newPrice);
 
+      // Update token type stats for price change
+      updateTokenTypeStatsForPriceChange(token, BigDecimal.zero(), newPrice);
+
       // Update account stats for all token holders
       updateAccountStatsForAllTokenHolders(token, BigDecimal.zero(), newPrice);
     }
@@ -123,6 +127,9 @@ export function handleClaimChanged(event: ClaimChanged): void {
       const newPrice = getTokenBasePrice(identityClaim.id);
       updateSystemStatsForPriceChange(token, oldPrice, newPrice);
 
+      // Update token type stats for price change
+      updateTokenTypeStatsForPriceChange(token, oldPrice, newPrice);
+
       // Update account stats for all token holders
       updateAccountStatsForAllTokenHolders(token, oldPrice, newPrice);
     }
@@ -153,6 +160,13 @@ export function handleClaimRemoved(event: ClaimRemoved): void {
     // Update system stats for price change (price goes to 0 when claim removed)
     if (token && oldPrice.notEqual(BigDecimal.zero())) {
       updateSystemStatsForPriceChange(
+        token,
+        oldPrice,
+        BigDecimal.zero() // Price becomes 0 when claim is removed
+      );
+
+      // Update token type stats for price change
+      updateTokenTypeStatsForPriceChange(
         token,
         oldPrice,
         BigDecimal.zero() // Price becomes 0 when claim is removed

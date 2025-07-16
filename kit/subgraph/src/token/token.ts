@@ -24,6 +24,7 @@ import { updateAccountStatsForBalanceChange } from "../stats/account-stats";
 import { updateSystemStatsForSupplyChange } from "../stats/system-stats";
 import { trackTokenCollateralStats } from "../stats/token-collateral-stats";
 import { trackTokenStats } from "../stats/token-stats";
+import { updateTokenTypeStatsForSupplyChange } from "../stats/token-type-stats";
 import {
   decreaseTokenBalanceValue,
   increaseTokenBalanceValue,
@@ -111,6 +112,9 @@ export function handleMintCompleted(event: MintCompleted): void {
 
   // Update system stats
   updateSystemStatsForSupplyChange(token, amountDelta);
+
+  // Update token type stats
+  updateTokenTypeStatsForSupplyChange(token, amountDelta);
 
   // Update account stats
   updateAccountStatsForBalanceChange(event.params.to, token, amountDelta);

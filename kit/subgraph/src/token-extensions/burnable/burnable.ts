@@ -4,6 +4,7 @@ import { updateAccountStatsForBalanceChange } from "../../stats/account-stats";
 import { updateSystemStatsForSupplyChange } from "../../stats/system-stats";
 import { trackTokenCollateralStats } from "../../stats/token-collateral-stats";
 import { trackTokenStats } from "../../stats/token-stats";
+import { updateTokenTypeStatsForSupplyChange } from "../../stats/token-type-stats";
 import { decreaseTokenBalanceValue } from "../../token-balance/utils/token-balance-utils";
 import { fetchToken } from "../../token/fetch/token";
 import { decreaseTokenSupply } from "../../token/utils/token-utils";
@@ -27,6 +28,9 @@ export function handleBurnCompleted(event: BurnCompleted): void {
 
   // Update system stats (negative delta for burn)
   updateSystemStatsForSupplyChange(token, amountDelta);
+
+  // Update token type stats (negative delta for burn)
+  updateTokenTypeStatsForSupplyChange(token, amountDelta);
 
   // Update account stats (negative delta for burn)
   updateAccountStatsForBalanceChange(event.params.from, token, amountDelta);

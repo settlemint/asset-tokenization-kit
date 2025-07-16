@@ -680,6 +680,17 @@ type EventStats
 # TOKEN STATISTICS
 # ==================================================
 
+# Persistent entity to store current token type state for efficient calculations
+type TokenTypeStatsState @entity(immutable: false) {
+  id: String! # Token type name
+  type: String!
+
+  # Count of tokens of this type
+  count: Int!
+  # Total value of all tokens of this type in base currency
+  totalValueInBaseCurrency: BigDecimal!
+}
+
 # Total count of tokens by type
 type TokenTypeStatsData @entity(timeseries: true) {
   id: Int8!
