@@ -52,10 +52,10 @@ export function calculateWizardHeight<T>(
     maxHeight,
   } = { ...DEFAULT_CONFIG, ...config };
 
-  // Add aggressive responsive buffer for larger screens to prevent marginal overflow
+  // Add moderate responsive buffer for larger screens to prevent marginal overflow
   const isLargeScreen =
     typeof window !== "undefined" && window.innerWidth >= 1024;
-  const responsiveBuffer = isLargeScreen ? 40 : 0;
+  const responsiveBuffer = isLargeScreen ? 32 : 0;
 
   if (!groups || groups.length === 0) {
     return Math.min(

@@ -448,33 +448,54 @@
     background: rgba(0, 0, 0, 0.2);
   }
 
-  /* Hide scrollbar on larger screens, show on hover */
+  /* Smart scrollbar behavior on larger screens */
   @media (min-width: 1024px) {
+    .sidebar-scroll {
+      /* Hide scrollbar by default, show on interaction */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+
+      /* Add accommodation space for marginal overflow */
+      padding-top: 8px;
+      padding-bottom: 20px;
+      margin-top: -8px;
+      margin-bottom: -20px;
+
+      overflow-y: auto;
+      transition: all 0.2s ease;
+    }
+
+    /* Default: hidden scrollbar */
     .sidebar-scroll::-webkit-scrollbar {
       width: 0px;
       background: transparent;
     }
 
-    /* Only show scrollbar on hover and when there's significant content overflow */
-    .sidebar-scroll:hover::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .sidebar-scroll {
-      scrollbar-width: none;
-      /* Add aggressive buffer padding to prevent marginal overflow */
-      padding-top: 8px;
-      padding-bottom: 20px;
-      margin-top: -8px;
-      margin-bottom: -20px;
-      /* Force no scrollbar for minimal overflow cases */
-      overflow-y: hidden;
-    }
-
-    /* Only enable scrolling when hovering, which indicates user intent */
-    .sidebar-scroll:hover {
+    /* Show scrollbar on hover and scroll events */
+    .sidebar-scroll:hover,
+    .sidebar-scroll:focus,
+    .sidebar-scroll.scrolling {
       scrollbar-width: thin;
-      overflow-y: auto;
+    }
+
+    .sidebar-scroll:hover::-webkit-scrollbar,
+    .sidebar-scroll:focus::-webkit-scrollbar,
+    .sidebar-scroll.scrolling::-webkit-scrollbar {
+      width: 6px;
+      background: transparent;
+    }
+
+    .sidebar-scroll:hover::-webkit-scrollbar-thumb,
+    .sidebar-scroll:focus::-webkit-scrollbar-thumb,
+    .sidebar-scroll.scrolling::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+
+    .sidebar-scroll:hover::-webkit-scrollbar-track,
+    .sidebar-scroll:focus::-webkit-scrollbar-track,
+    .sidebar-scroll.scrolling::-webkit-scrollbar-track {
+      background: transparent;
     }
   }
 }
