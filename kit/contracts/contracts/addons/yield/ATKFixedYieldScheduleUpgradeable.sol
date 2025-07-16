@@ -1,20 +1,117 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity 0.8.28;
 
-import { SMARTFixedYieldScheduleUpgradeable } from
-    "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
-
-import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
+import { SMARTFixedYieldScheduleLogic } from
+    "../../smart/extensions/yield/schedules/fixed/internal/SMARTFixedYieldScheduleLogic.sol";
+import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+import { PausableUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-contract ATKFixedYieldScheduleUpgradeable is SMARTFixedYieldScheduleUpgradeable, IContractWithIdentity {
+import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
+import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
+
+contract ATKFixedYieldScheduleUpgradeable is
+    SMARTFixedYieldScheduleLogic,
+    ERC165Upgradeable,
+    ERC2771ContextUpgradeable,
+    AccessControlUpgradeable,
+    PausableUpgradeable,
+    ReentrancyGuardUpgradeable,
+    IContractWithIdentity
+{
+    /// @notice Role for managing token supply operations
+    bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
+    /// @notice Role for emergency operations including pausing the contract and ERC20 recovery
+    bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
+
     /// @notice The address of the ONCHAINID associated with this contract
     address private _onchainID;
 
     /// @notice Error thrown when trying to set an invalid onchain ID
     error InvalidOnchainID();
 
-    constructor(address forwarder) SMARTFixedYieldScheduleUpgradeable(forwarder) { }
+    constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) { }
+
+    /// @notice Initializes the contract when used as an upgradeable proxy.
+    /// @dev This function should be called by the proxy contract after deployment to set all configuration.
+    /// @param initialOwner_ The address to be granted `DEFAULT_ADMIN_ROLE`.
+    /// @param tokenAddress_ Address of the `ISMARTYield` token.
+    /// @param startDate_ Start date of the yield schedule.
+    /// @param endDate_ End date of the yield schedule.
+    /// @param rate_ Yield rate in basis points.
+    /// @param interval_ Duration of each yield interval.
+    function initialize(
+        address tokenAddress_,
+        uint256 startDate_,
+        uint256 endDate_,
+        uint256 rate_,
+        uint256 interval_,
+        address initialOwner_
+    )
+        external
+        virtual
+        initializer
+    {
+        __ERC165_init();
+        __AccessControl_init();
+        __Pausable_init();
+        __ReentrancyGuard_init();
+        __SMARTFixedYieldSchedule_init_unchained(tokenAddress_, startDate_, endDate_, rate_, interval_);
+
+        // Grant the `DEFAULT_ADMIN_ROLE` to the `initialOwner_`.
+        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner_);
+        _grantRole(SUPPLY_MANAGEMENT_ROLE, initialOwner_);
+        _grantRole(EMERGENCY_ROLE, initialOwner_);
+    }
+
+    /// @inheritdoc ISMARTFixedYieldSchedule
+    function claimYield() external override nonReentrant whenNotPaused {
+        _claimYield();
+    }
+
+    /// @inheritdoc ISMARTFixedYieldSchedule
+    function topUpUnderlyingAsset(uint256 amount) external override nonReentrant whenNotPaused {
+        _topUpUnderlyingAsset(amount);
+    }
+
+    /// @inheritdoc ISMARTFixedYieldSchedule
+    function withdrawUnderlyingAsset(
+        address to,
+        uint256 amount
+    )
+        external
+        override
+        nonReentrant
+        onlyRole(SUPPLY_MANAGEMENT_ROLE)
+        whenNotPaused
+    {
+        _withdrawUnderlyingAsset(to, amount);
+    }
+
+    /// @inheritdoc ISMARTFixedYieldSchedule
+    function withdrawAllUnderlyingAsset(address to)
+        external
+        override
+        nonReentrant
+        onlyRole(SUPPLY_MANAGEMENT_ROLE)
+        whenNotPaused
+    {
+        _withdrawAllUnderlyingAsset(to);
+    }
+
+    /// @dev Pause the contract.
+    function pause() external onlyRole(EMERGENCY_ROLE) {
+        _pause(); // Internal OpenZeppelin Pausable function.
+    }
+
+    /// @dev Unpause the contract.
+    function unpause() external onlyRole(EMERGENCY_ROLE) {
+        _unpause(); // Internal OpenZeppelin Pausable function.
+    }
 
     /// @notice Sets the onchain ID for this contract
     /// @dev Can only be called by an address with DEFAULT_ADMIN_ROLE
@@ -39,6 +136,36 @@ contract ATKFixedYieldScheduleUpgradeable is SMARTFixedYieldScheduleUpgradeable,
         return hasRole(DEFAULT_ADMIN_ROLE, actor);
     }
 
+    /// @dev Override from Context and ERC2771Context to correctly identify the transaction sender
+    function _msgSender()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable, SMARTFixedYieldScheduleLogic)
+        returns (address)
+    {
+        return super._msgSender();
+    }
+
+    /// @dev Override from Context and ERC2771Context to correctly retrieve the transaction data
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
+        return super._msgData();
+    }
+
+    /// @dev Override from ERC2771Context to define the context suffix length
+    function _contextSuffixLength()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
+        return super._contextSuffixLength();
+    }
+
     /// @notice Checks if this contract supports a given interface
     /// @param interfaceId The interface identifier to check
     /// @return True if the interface is supported
@@ -46,9 +173,10 @@ contract ATKFixedYieldScheduleUpgradeable is SMARTFixedYieldScheduleUpgradeable,
         public
         view
         virtual
-        override(SMARTFixedYieldScheduleUpgradeable, IERC165)
+        override(AccessControlUpgradeable, ERC165Upgradeable, IERC165, SMARTFixedYieldScheduleLogic)
         returns (bool)
     {
-        return interfaceId == type(IContractWithIdentity).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IContractWithIdentity).interfaceId
+            || interfaceId == type(ISMARTFixedYieldSchedule).interfaceId || super.supportsInterface(interfaceId);
     }
 }
