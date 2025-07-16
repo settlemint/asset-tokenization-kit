@@ -35,7 +35,9 @@ contract ATKTokenAccessManagerImplementationTest is Test {
         implementation = new ATKTokenAccessManagerImplementation(forwarder);
 
         // Deploy proxy with initialization data
-        bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, admin);
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, initialAdmins);
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
         accessManager = ISMARTTokenAccessManager(address(proxy));
     }

@@ -308,15 +308,16 @@ contract ATKSystemTest is Test {
     function test_Bootstrap_OnlyDeployer() public {
         // Test that bootstrap function requires DEPLOYER_ROLE
         // Since the system is already bootstrapped, we test by checking role requirements
-        
+
         // Verify admin has DEPLOYER_ROLE (should be granted during initialization)
         assertTrue(IAccessControl(address(atkSystem)).hasRole(ATKSystemRoles.DEPLOYER_ROLE, admin));
-        
+
         // Verify user does not have DEPLOYER_ROLE
         assertFalse(IAccessControl(address(atkSystem)).hasRole(ATKSystemRoles.DEPLOYER_ROLE, user));
-        
+
         // Since the system is already bootstrapped, calling bootstrap should revert with SystemAlreadyBootstrapped
-        // But the access control check happens first, so we can test that users without DEPLOYER_ROLE get access control errors
+        // But the access control check happens first, so we can test that users without DEPLOYER_ROLE get access
+        // control errors
         vm.prank(user);
         vm.expectRevert(); // Should revert due to lack of DEPLOYER_ROLE
         atkSystem.bootstrap();
@@ -704,14 +705,18 @@ contract ATKSystemTest is Test {
     function test_IdentityVerificationModule_AccessibleAfterBootstrap() public view {
         // Test that the identity verification module is properly accessible after bootstrap
         // The system in this test is already bootstrapped via SystemUtils
-        
+
         // Verify module is accessible
         address moduleAddress = atkSystem.identityVerificationModule();
         assertTrue(moduleAddress != address(0));
         assertEq(moduleAddress, address(systemUtils.identityVerificationModule()));
-        
+
         // Verify it's the correct module type by checking interface support
-        assertTrue(SMARTIdentityVerificationComplianceModule(moduleAddress).supportsInterface(type(ISMARTComplianceModule).interfaceId));
+        assertTrue(
+            SMARTIdentityVerificationComplianceModule(moduleAddress).supportsInterface(
+                type(ISMARTComplianceModule).interfaceId
+            )
+        );
     }
 
     function test_IdentityVerificationModule_ConsistencyAcrossSystemOperations() public {
