@@ -2,11 +2,6 @@
 
 Executes test suite and auto-fixes all errors/warnings for 100% pass rate.
 
-## Auto-Loaded Context
-
-- @/CLAUDE.md
-- @/.claude/CLAUDE.md
-
 ## Step 1: Analyze Scope
 
 Select strategy:
