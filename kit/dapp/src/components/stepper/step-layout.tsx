@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 
 import { StepComponent } from "@/components/stepper/step";
 import { StepGroupComponent } from "@/components/stepper/step-group";
@@ -9,7 +9,7 @@ import { flattenSteps, getNextStep, isStepGroup } from "./utils";
 export interface StepLayoutProps<StepName, GroupName> {
   steps: StepOrGroup<StepName, GroupName>[];
   currentStep: Step<StepName>;
-  onStepChange: (step: StepOrGroup<StepName, GroupName>) => void;
+  onStepChange: (step: Step<StepName>) => void;
 
   children: (props: {
     currentStep: Step<StepName>;
@@ -19,10 +19,7 @@ export interface StepLayoutProps<StepName, GroupName> {
   className?: string;
 }
 
-export function StepLayout<
-  StepName extends string = never,
-  GroupName extends string = never,
->({
+export function StepLayout<StepName, GroupName>({
   steps,
   currentStep,
   onStepChange,
@@ -32,36 +29,29 @@ export function StepLayout<
 }: StepLayoutProps<StepName, GroupName>) {
   const allSteps = useMemo(() => flattenSteps(steps), [steps]);
 
-  const handleStepChange = useCallback(
-    (step: Step<StepName>) => {
-      onStepChange(step);
-    },
-    [onStepChange]
-  );
-
   return (
     <div className={cn("step-layout space-y-4", className)}>
       <div className="space-y-2">
         {steps.map((step) => {
           if (isStepGroup(step)) {
             return (
-              <StepGroupComponent<StepName, GroupName>
+              <StepGroupComponent
                 key={step.id}
                 group={step}
                 currentStep={currentStep}
                 allSteps={allSteps}
-                onStepChange={handleStepChange}
+                onStepChange={onStepChange}
                 navigation={navigation}
               />
             );
           }
 
           return (
-            <StepComponent<StepName>
+            <StepComponent
               key={step.id}
               step={step}
               allSteps={allSteps}
-              onStepChange={handleStepChange}
+              onStepChange={onStepChange}
               navigation={navigation}
               currentStep={currentStep}
             />

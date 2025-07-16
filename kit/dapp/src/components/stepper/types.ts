@@ -12,6 +12,6 @@ export interface StepGroup<StepName, GroupName> {
   steps: Step<StepName>[];
 }
 
-export type StepOrGroup<StepName, GroupName = never> =
+export type StepOrGroup<StepName, GroupName> =
   | Step<StepName>
   | StepGroup<StepName, GroupName>;
