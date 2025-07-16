@@ -43,11 +43,13 @@ contract ATKTokenAccessManagerImplementation is
     /// @dev This function replaces the constructor and should be called only once, typically by the deployer
     ///      or an upgrade mechanism.
     ///      It grants the `DEFAULT_ADMIN_ROLE` to the initial admin.
-    /// @param initialAdmin Address of the initial admin for the token.
-    function initialize(address initialAdmin) public initializer {
+    /// @param initialAdmins Address of the initial admin for the token.
+    function initialize(address[] calldata initialAdmins) public initializer {
         __AccessControl_init();
         // Grant standard admin role (can manage other roles) to the initial admin
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+        for (uint256 i = 0; i < initialAdmins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
+        }
     }
 
     /// @notice Checks if a given account has a specific role.
@@ -129,6 +131,21 @@ contract ATKTokenAccessManagerImplementation is
         uint256 length = roles.length;
         for (uint256 i = 0; i < length;) {
             revokeRole(roles[i], account);
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    /// @notice Renounces multiple roles from the calling account.
+    /// @dev This function calls the `renounceRole` from `AccessControlUpgradeable` for each role.
+    ///      Requires the caller to have the admin role for each `role` being revoked.
+    /// @param roles The array of role identifiers to renounce.
+    /// @param callerConfirmation The address that will confirm the renouncement.
+    function renounceMultipleRoles(bytes32[] calldata roles, address callerConfirmation) external override {
+        uint256 length = roles.length;
+        for (uint256 i = 0; i < length;) {
+            renounceRole(roles[i], callerConfirmation);
             unchecked {
                 ++i;
             }

@@ -241,7 +241,11 @@ abstract contract AbstractATKTokenFactoryImplementation is
         returns (bytes32 salt, bytes memory fullCreationCode)
     {
         salt = _calculateAccessManagerSalt(_systemAddress, accessManagerSaltInputData);
-        bytes memory constructorArgs = abi.encode(_systemAddress, initialAdmin);
+        address[] memory initialAdmins = new address[](2);
+        initialAdmins[0] = initialAdmin;
+        initialAdmins[1] = address(this); // Add the factory as an initial admin to allow the access manager to be
+            // upgraded
+        bytes memory constructorArgs = abi.encode(_systemAddress, initialAdmins);
         bytes memory bytecode = type(ATKTokenAccessManagerProxy).creationCode;
         fullCreationCode = bytes.concat(bytecode, constructorArgs);
     }
@@ -339,6 +343,17 @@ abstract contract AbstractATKTokenFactoryImplementation is
         // Create identity using simple address-based approach - no complex salt needed
         deployedTokenIdentityAddress = _deployContractIdentity(deployedAddress, description, country);
 
+        // Grant the factory the GOVERNANCE_ROLE to allow it to upgrade the onchain ID
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.GOVERNANCE_ROLE, address(this));
+
+        // Set the onchain ID on the token contract
+        ISMART(deployedAddress).setOnchainID(deployedTokenIdentityAddress);
+
+        bytes32[] memory roles = new bytes32[](2);
+        roles[0] = ATKRoles.GOVERNANCE_ROLE;
+        roles[1] = ATKRoles.DEFAULT_ADMIN_ROLE;
+        ISMARTTokenAccessManager(accessManager).renounceMultipleRoles(roles, address(this));
+
         emit TokenAssetCreated(
             _msgSender(),
             deployedAddress,
@@ -388,9 +403,6 @@ abstract contract AbstractATKTokenFactoryImplementation is
         // Create the contract identity using simple address-based salt
         address contractIdentity =
             IATKIdentityFactory(IATKSystem(_systemAddress).identityFactory()).createContractIdentity(contractAddress);
-
-        // Set the onchain ID on the token contract
-        ISMART(contractAddress).setOnchainID(contractIdentity);
 
         // Register the contract identity with the identity registry (same as any other identity)
         ISMARTIdentityRegistry(IATKSystem(_systemAddress).identityRegistry()).registerIdentity(

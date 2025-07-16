@@ -171,6 +171,8 @@ contract SystemUtils is Test {
     }
 
     function createTokenAccessManager(address initialAdmin) external returns (ISMARTTokenAccessManager) {
-        return ISMARTTokenAccessManager(address(new ATKTokenAccessManagerProxy(address(system), initialAdmin)));
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = initialAdmin;
+        return ISMARTTokenAccessManager(address(new ATKTokenAccessManagerProxy(address(system), initialAdmins)));
     }
 }

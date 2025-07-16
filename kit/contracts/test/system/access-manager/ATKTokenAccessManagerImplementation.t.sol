@@ -47,7 +47,9 @@ contract ATKTokenAccessManagerImplementationTest is Test {
 
     function test_CannotInitializeTwice() public {
         vm.expectRevert();
-        ATKTokenAccessManagerImplementation(address(accessManager)).initialize(admin);
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        ATKTokenAccessManagerImplementation(address(accessManager)).initialize(initialAdmins);
     }
 
     function test_BatchGrantRoleSuccess() public {
@@ -179,7 +181,9 @@ contract ATKTokenAccessManagerImplementationTest is Test {
     function test_DirectCallToImplementation() public {
         // Test calling initialize directly on implementation (should fail due to _disableInitializers)
         vm.expectRevert();
-        implementation.initialize(admin);
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        implementation.initialize(initialAdmins);
     }
 
     function test_ERC2771ContextIntegration() public view {
