@@ -1,4 +1,5 @@
 import type { Step } from "@/components/stepper/types";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 export const AssetDesignerSteps = [
@@ -14,23 +15,43 @@ export const AssetDesignerStepSchema = z.object({
   step: AssetDesignerStepsSchema,
 });
 
-export const steps: Step<AssetDesignerStepsType>[] = [
-  {
-    id: 1,
-    name: "selectAssetType",
-    label: "Select Asset Type",
-    description: "Select the type of asset you want to create",
-  },
-  {
-    id: 2,
-    name: "assetBasics",
-    label: "Asset Basics",
-    description: "Enter the basic details of the asset",
-  },
-  {
-    id: 3,
-    name: "summary",
-    label: "Summary",
-    description: "Review the details of the asset",
-  },
-];
+/**
+ * Hook that provides translated steps for the Asset Designer wizard.
+ *
+ * @returns Array of steps with translated labels and descriptions
+ *
+ * @example
+ * ```tsx
+ * function AssetDesignerWizard() {
+ *   const steps = useAssetDesignerSteps();
+ *
+ *   return (
+ *     <Stepper steps={steps} currentStep="selectAssetType" />
+ *   );
+ * }
+ * ```
+ */
+export function useAssetDesignerSteps(): Step<AssetDesignerStepsType>[] {
+  const { t } = useTranslation("asset-designer");
+
+  return [
+    {
+      id: 1,
+      name: "selectAssetType",
+      label: t("wizard.steps.selectAssetType.title"),
+      description: t("wizard.steps.selectAssetType.description"),
+    },
+    {
+      id: 2,
+      name: "assetBasics",
+      label: t("wizard.steps.assetBasics.title"),
+      description: t("wizard.steps.assetBasics.description"),
+    },
+    {
+      id: 3,
+      name: "summary",
+      label: t("wizard.steps.summary.title"),
+      description: t("wizard.steps.summary.description"),
+    },
+  ];
+}

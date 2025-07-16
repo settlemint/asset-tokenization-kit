@@ -9,6 +9,18 @@
       "token-details": {
         "title": "Token Details",
         "description": "Configure the basic properties of your token"
+      },
+      "selectAssetType": {
+        "title": "Select Asset Type",
+        "description": "Select the type of asset you want to create"
+      },
+      "assetBasics": {
+        "title": "Asset Basics",
+        "description": "Enter the basic details of the asset"
+      },
+      "summary": {
+        "title": "Summary",
+        "description": "Review the details of the asset"
       }
     }
   },

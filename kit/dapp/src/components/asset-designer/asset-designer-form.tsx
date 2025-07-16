@@ -5,7 +5,7 @@ import {
   AssetDesignerFormSchema,
 } from "@/components/asset-designer/shared-form";
 import {
-  steps,
+  useAssetDesignerSteps,
   type AssetDesignerStepsType,
 } from "@/components/asset-designer/steps";
 import { StepLayout } from "@/components/stepper/step-layout";
@@ -15,6 +15,7 @@ import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
 
 export const AssetDesignerForm = () => {
+  const steps = useAssetDesignerSteps();
   const form = useAppForm({
     ...assetDesignerFormOptions,
     validators: {
@@ -29,13 +30,13 @@ export const AssetDesignerForm = () => {
     },
   });
 
-  const step = useStore(form.store, (state) => state.values.step);
+  const formStep = useStore(form.store, (state) => state.values.step);
   const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
     selectAssetType: <SelectAssetType form={form} />,
     assetBasics: <AssetBasics form={form} />,
     summary: <div>Summary</div>,
   };
-  const currentStep = getStepByName(steps, step);
+  const currentStep = getStepByName(steps, formStep);
 
   return (
     <form.AppForm>

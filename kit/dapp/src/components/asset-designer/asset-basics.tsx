@@ -1,6 +1,6 @@
 import type { AssetDesignerFormData } from "@/components/asset-designer/shared-form";
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
-import { steps } from "@/components/asset-designer/steps";
+import { useAssetDesignerSteps } from "@/components/asset-designer/steps";
 import { getNextStepName } from "@/components/stepper/utils";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
@@ -12,6 +12,7 @@ export const AssetBasics = withForm({
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer"]);
+    const steps = useAssetDesignerSteps();
 
     return (
       <>

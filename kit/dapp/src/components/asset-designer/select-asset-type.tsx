@@ -1,5 +1,5 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
-import { steps } from "@/components/asset-designer/steps";
+import { useAssetDesignerSteps } from "@/components/asset-designer/steps";
 import { getNextStepName } from "@/components/stepper/utils";
 import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
@@ -16,6 +16,7 @@ export const SelectAssetType = withForm({
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
+    const steps = useAssetDesignerSteps();
     const [systemAddress] = useSettings("SYSTEM_ADDRESS");
     const { data: systemDetails } = useQuery({
       ...orpc.system.read.queryOptions({
