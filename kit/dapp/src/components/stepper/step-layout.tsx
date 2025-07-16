@@ -7,7 +7,7 @@ import type { Step, StepOrGroup } from "./types";
 import { flattenSteps, getNextStep, isStepGroup } from "./utils";
 
 export interface StepLayoutProps<StepName, GroupName> {
-  steps: StepOrGroup<StepName, GroupName>[];
+  stepsOrGroups: StepOrGroup<StepName, GroupName>[];
   currentStep: Step<StepName>;
   onStepChange: (step: Step<StepName>) => void;
 
@@ -20,24 +20,24 @@ export interface StepLayoutProps<StepName, GroupName> {
 }
 
 export function StepLayout<StepName, GroupName>({
-  steps,
+  stepsOrGroups,
   currentStep,
   onStepChange,
   children,
   className,
   navigation = "forward-only",
 }: StepLayoutProps<StepName, GroupName>) {
-  const allSteps = useMemo(() => flattenSteps(steps), [steps]);
+  const allSteps = useMemo(() => flattenSteps(stepsOrGroups), [stepsOrGroups]);
 
   return (
     <div className={cn("step-layout space-y-4", className)}>
       <div className="space-y-2">
-        {steps.map((step) => {
-          if (isStepGroup(step)) {
+        {stepsOrGroups.map((item) => {
+          if (isStepGroup(item)) {
             return (
               <StepGroupComponent
-                key={step.id}
-                group={step}
+                key={item.label}
+                group={item}
                 currentStep={currentStep}
                 allSteps={allSteps}
                 onStepChange={onStepChange}
@@ -48,8 +48,8 @@ export function StepLayout<StepName, GroupName>({
 
           return (
             <StepComponent
-              key={step.id}
-              step={step}
+              key={item.id}
+              step={item}
               allSteps={allSteps}
               onStepChange={onStepChange}
               navigation={navigation}

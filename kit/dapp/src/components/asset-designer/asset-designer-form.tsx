@@ -40,7 +40,7 @@ export const AssetDesignerForm = () => {
   return (
     <form.AppForm>
       <StepLayout
-        steps={steps}
+        stepsOrGroups={steps}
         currentStep={currentStep}
         onStepChange={(step) => {
           form.setFieldValue("step", step.name);
