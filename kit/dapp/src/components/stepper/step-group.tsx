@@ -3,6 +3,7 @@ import type { Step, StepGroup } from "@/components/stepper/types";
 import { CollapsibleChevron } from "@/components/ui/collapsible-chevron";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
+import { useEffect, useState } from "react";
 import { isGroupCompleted } from "./utils";
 
 export interface StepGroupProps<StepName, GroupName> {
@@ -20,12 +21,26 @@ export function StepGroupComponent<StepName, GroupName>({
   navigation,
   onStepChange,
 }: StepGroupProps<StepName, GroupName>) {
+  const [open, setOpen] = useState(false);
   const hasActiveStep = group.steps.some((step) => step.id === currentStep.id);
   const isCompleted = isGroupCompleted(group, currentStep);
 
+  useEffect(() => {
+    if (hasActiveStep) {
+      setOpen(true);
+    }
+  }, [hasActiveStep]);
+
+  useEffect(() => {
+    if (isCompleted) {
+      setOpen(false);
+    }
+  }, [isCompleted]);
+
   return (
     <CollapsibleChevron
-      defaultOpen={hasActiveStep}
+      open={open}
+      onOpenChange={setOpen}
       className={cn(
         hasActiveStep && "bg-primary/5 border border-primary/20 rounded-lg"
       )}
@@ -47,12 +62,10 @@ export function StepGroupComponent<StepName, GroupName>({
         </div>
       )}
     >
-      {(isExpanded) => {
-        const expanded = isExpanded;
-        const collapsed = !isExpanded;
+      {(open) => {
         return (
           <>
-            {expanded && (
+            {open && (
               <div className="pl-6 space-y-1">
                 {group.steps.map((step, index) => {
                   const isLastInGroup = index === group.steps.length - 1;
@@ -75,7 +88,7 @@ export function StepGroupComponent<StepName, GroupName>({
                 })}
               </div>
             )}
-            {collapsed && <></>}
+            {!open && <></>}
           </>
         );
       }}

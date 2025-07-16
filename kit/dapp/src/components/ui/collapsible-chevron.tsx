@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -8,9 +8,10 @@ import {
 } from "./collapsible";
 
 export interface CollapsibleChevronProps {
-  children: (isExpanded: boolean) => React.ReactNode;
-  trigger: (isExpanded: boolean) => React.ReactNode;
-  open?: boolean;
+  children: (open: boolean) => React.ReactNode;
+  trigger: (open: boolean) => React.ReactNode;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   className?: string;
 }
 
@@ -18,31 +19,25 @@ export function CollapsibleChevron({
   children,
   trigger,
   className,
-  open = false,
+  open,
+  onOpenChange,
 }: CollapsibleChevronProps) {
-  const [isExpanded, setIsExpanded] = useState(open);
-
-  const toggleExpanded = () => {
-    setIsExpanded((prev) => !prev);
-  };
-
   return (
     <div className={cn("space-y-2", className)}>
-      <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+      <Collapsible open={open} onOpenChange={onOpenChange}>
         <CollapsibleTrigger
-          onClick={toggleExpanded}
-          aria-expanded={isExpanded}
+          aria-expanded={open}
           aria-controls="expandable-content"
           className={cn(
             "flex items-center justify-between w-full p-3 rounded-lg transition-all duration-200",
             "hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           )}
         >
-          {trigger(isExpanded)}
+          {trigger(open)}
           <ChevronDown
             className={cn(
               "w-4 h-4 text-muted-foreground transition-transform duration-200",
-              isExpanded && "rotate-180"
+              open && "rotate-180"
             )}
             aria-hidden="true"
           />
@@ -51,7 +46,7 @@ export function CollapsibleChevron({
           id="expandable-content"
           className="overflow-hidden transition-all duration-300 ease-in-out"
         >
-          <div className="pb-2">{children(isExpanded)}</div>
+          <div className="pb-2">{children(open)}</div>
         </CollapsibleContent>
       </Collapsible>
     </div>
