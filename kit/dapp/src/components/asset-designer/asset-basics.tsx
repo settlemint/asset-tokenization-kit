@@ -1,14 +1,17 @@
-import { formOpts } from "@/components/asset-designer/shared-form";
+import type { AssetDesignerFormData } from "@/components/asset-designer/shared-form";
+import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
+import { assetDesignerSteps } from "@/components/asset-designer/steps";
+
+import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
-import { useStore } from "@tanstack/react-form";
+import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import { useTranslation } from "react-i18next";
 
-export const Basics = withForm({
-  ...formOpts,
+export const AssetBasics = withForm({
+  ...assetDesignerFormOptions,
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer"]);
-    const assetType = useStore(form.store, (state) => state.values.type);
 
     return (
       <>
@@ -36,15 +39,32 @@ export const Basics = withForm({
             <field.TextField label={t("form.fields.isin.label")} />
           )}
         />
-        {assetType === "bond" && <BondBasics form={form} />}
-        {assetType === "fund" && <FundBasics form={form} />}
+        <form.Subscribe
+          selector={(state) => state.values}
+          children={(values) => {
+            if (values.type === AssetTypeEnum.bond) {
+              return <BondBasics form={form} />;
+            }
+            if (values.type === AssetTypeEnum.fund) {
+              return <FundBasics form={form} />;
+            }
+            return null;
+          }}
+        />
+        <Button
+          onClick={() => {
+            form.setFieldValue("step", assetDesignerSteps.assetBasics.nextStep);
+          }}
+        >
+          Next
+        </Button>
       </>
     );
   },
 });
 
 const BondBasics = withForm({
-  ...formOpts,
+  defaultValues: {} as AssetDesignerFormData,
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer"]);
@@ -69,7 +89,7 @@ const BondBasics = withForm({
 });
 
 const FundBasics = withForm({
-  ...formOpts,
+  defaultValues: {} as AssetDesignerFormData,
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer"]);
