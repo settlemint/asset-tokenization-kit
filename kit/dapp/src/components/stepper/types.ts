@@ -6,7 +6,6 @@ export interface Step<StepName> {
 }
 
 export interface StepGroup<StepName, GroupName> {
-  id: number;
   name: GroupName;
   label: string;
   steps: Step<StepName>[];
