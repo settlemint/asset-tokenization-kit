@@ -6,6 +6,7 @@ import {
 } from "@/components/asset-designer/shared-form";
 import type { AssetDesignerStepsType } from "@/components/asset-designer/steps";
 import { useAppForm } from "@/hooks/use-app-form";
+import type { JSX } from "react";
 
 export const AssetDesignerForm = () => {
   const form = useAppForm({
@@ -24,13 +25,12 @@ export const AssetDesignerForm = () => {
   return (
     <form.AppForm>
       <form.Subscribe selector={(state) => state.values.step}>
-        {async (step) => {
-          const stepComponent: Record<AssetDesignerStepsType, React.ReactNode> =
-            {
-              selectAssetType: <SelectAssetType form={form} />,
-              assetBasics: <AssetBasics form={form} />,
-              summary: <div>Summary</div>,
-            };
+        {(step) => {
+          const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
+            selectAssetType: <SelectAssetType form={form} />,
+            assetBasics: <AssetBasics form={form} />,
+            summary: <div>Summary</div>,
+          };
 
           return stepComponent[step];
         }}
