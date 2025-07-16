@@ -1,5 +1,7 @@
 # /implement
 
+Implement the following: $ARGUMENTS
+
 # Explore
 
 First, use parallel subagents to find and read all files that may be useful for
