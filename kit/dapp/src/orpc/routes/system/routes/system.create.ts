@@ -414,6 +414,18 @@ export const create = onboardedRouter.system.create
         }
       );
 
+      // Save bootstrap completion status
+      await call(
+        upsert,
+        {
+          key: "SYSTEM_BOOTSTRAP_COMPLETE",
+          value: bootstrapSucceeded ? "true" : "false",
+        },
+        {
+          context,
+        }
+      );
+
       // Always yield the final event with the system ID
       // If bootstrap failed, we still return the system ID but with failed status
       if (!bootstrapSucceeded) {
@@ -445,6 +457,18 @@ export const create = onboardedRouter.system.create
         {
           key: "SYSTEM_ADDRESS",
           value: system.id,
+        },
+        {
+          context,
+        }
+      );
+
+      // System is already bootstrapped, so mark bootstrap as complete
+      await call(
+        upsert,
+        {
+          key: "SYSTEM_BOOTSTRAP_COMPLETE",
+          value: "true",
         },
         {
           context,

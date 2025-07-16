@@ -1,6 +1,7 @@
 import { addonCreate } from "./routes/system.addonCreate";
 import { create } from "./routes/system.create";
 import { list } from "./routes/system.list";
+import { portalRead } from "./routes/system.portal-read";
 import { read } from "./routes/system.read";
 
 /**
@@ -14,6 +15,7 @@ import { read } from "./routes/system.read";
  * - list: GET /systems - Retrieve paginated list of SMART systems
  * - create: POST /systems - Deploy a new SMART system
  * - read: GET /systems/:id - Get system details with token factories
+ * - portalRead: GET /systems/:id/portal - Get system data from Portal GraphQL
  * - addonCreate: POST /systems/addons - Register system add-ons
  *
  * The router is designed to be extended with additional system management
@@ -23,6 +25,7 @@ const routes = {
   list,
   create,
   read,
+  portalRead,
   addonCreate,
 };
 

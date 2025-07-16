@@ -61,16 +61,27 @@ export const Route = createFileRoute("/_private/onboarding/system-assets")({
       staleTime: 0,
     });
 
-    // Check if a system exists
+    // Check if a system exists AND is fully bootstrapped
     let hasSystem = false;
     try {
-      const systemAddress = await queryClient.fetchQuery({
-        ...orpc.settings.read.queryOptions({
-          input: { key: "SYSTEM_ADDRESS" },
+      const [systemAddress, bootstrapComplete] = await Promise.all([
+        queryClient.fetchQuery({
+          ...orpc.settings.read.queryOptions({
+            input: { key: "SYSTEM_ADDRESS" },
+          }),
+          staleTime: 0,
         }),
-        staleTime: 0,
-      });
-      hasSystem = !!(systemAddress && systemAddress.trim() !== "");
+        queryClient.fetchQuery({
+          ...orpc.settings.read.queryOptions({
+            input: { key: "SYSTEM_BOOTSTRAP_COMPLETE" },
+          }),
+          staleTime: 0,
+        }),
+      ]);
+
+      const hasSystemAddress = !!(systemAddress && systemAddress.trim() !== "");
+      const isBootstrapComplete = bootstrapComplete === "true";
+      hasSystem = hasSystemAddress && isBootstrapComplete;
     } catch {
       hasSystem = false;
     }
@@ -132,43 +143,20 @@ function RouteComponent() {
   });
 
   // Fallback: Get tokenFactoryRegistry directly from Portal when TheGraph fails
-  const { data: portalTokenFactoryRegistry, error: portalError } = useQuery({
-    queryKey: ["portal-token-factory-registry", systemAddress],
-    queryFn: async () => {
-      if (!systemAddress) return null;
-
-      logger.debug("Attempting Portal query for system:", systemAddress);
-
-      const response = await fetch("/api/portal/graphql", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          query: `
-            query GetTokenFactoryRegistry($systemAddress: String!) {
-              IATKSystem(address: $systemAddress) {
-                tokenFactoryRegistry
-              }
-            }
-          `,
-          variables: { systemAddress },
-        }),
-      });
-
-      const result = await response.json();
-      logger.debug("Portal response:", result);
-
-      if (result.errors) {
-        logger.error("Portal GraphQL errors:", result.errors);
-        throw new Error(`Portal query failed: ${result.errors[0]?.message}`);
-      }
-
-      return result.data?.IATKSystem?.tokenFactoryRegistry ?? null;
-    },
-    enabled: !!systemAddress && !systemDetails?.tokenFactoryRegistry,
+  const { data: portalSystemData, error: portalError } = useQuery({
+    ...orpc.system.portalRead.queryOptions({
+      input: { id: systemAddress ?? "" },
+    }),
+    enabled: !!systemAddress,
     throwOnError: false,
+    retry: (failureCount) => {
+      logger.debug("Portal query retry attempt:", failureCount);
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
   });
+
+  const portalTokenFactoryRegistry = portalSystemData?.tokenFactoryRegistry;
 
   // Factory creation streaming mutation
   const {
@@ -228,9 +216,23 @@ function RouteComponent() {
   const tokenFactoryRegistry =
     systemDetails?.tokenFactoryRegistry ?? portalTokenFactoryRegistry;
 
+  logger.debug("TokenFactoryRegistry resolution:", {
+    fromTheGraph: systemDetails?.tokenFactoryRegistry,
+    fromPortal: portalTokenFactoryRegistry,
+    final: tokenFactoryRegistry,
+    portalError: portalError?.message,
+  });
+
   const handleDeployFactories = useCallback(() => {
-    if (!systemAddress || !tokenFactoryRegistry) {
-      toast.error("System not ready for factory creation");
+    if (!systemAddress) {
+      toast.error("System address not found");
+      return;
+    }
+
+    if (!tokenFactoryRegistry) {
+      toast.error(
+        "Token Factory Registry not available yet. The system may still be initializing. Please wait a moment and try again."
+      );
       return;
     }
 
@@ -270,7 +272,7 @@ function RouteComponent() {
     portalTokenFactoryRegistry,
     portalError: portalError?.message,
     finalTokenFactoryRegistry: tokenFactoryRegistry,
-    buttonDisabled: !isFormValid || isDeploying || !tokenFactoryRegistry,
+    buttonDisabled: !isFormValid || isDeploying || !systemAddress,
   });
 
   return (
@@ -400,7 +402,7 @@ function RouteComponent() {
             <Button
               type="button"
               onClick={handleDeployFactories}
-              disabled={!isFormValid || isDeploying || !tokenFactoryRegistry}
+              disabled={!isFormValid || isDeploying || !systemAddress}
               className="min-w-[120px]"
             >
               {isDeploying ? (

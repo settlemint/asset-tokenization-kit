@@ -14,16 +14,27 @@ export const Route = createFileRoute("/_private/onboarding/system-deploy")({
       staleTime: 0,
     });
 
-    // Check if a system exists
+    // Check if a system exists AND is fully bootstrapped
     let hasSystem = false;
     try {
-      const systemAddress = await queryClient.fetchQuery({
-        ...orpc.settings.read.queryOptions({
-          input: { key: "SYSTEM_ADDRESS" },
+      const [systemAddress, bootstrapComplete] = await Promise.all([
+        queryClient.fetchQuery({
+          ...orpc.settings.read.queryOptions({
+            input: { key: "SYSTEM_ADDRESS" },
+          }),
+          staleTime: 0,
         }),
-        staleTime: 0,
-      });
-      hasSystem = !!(systemAddress && systemAddress.trim() !== "");
+        queryClient.fetchQuery({
+          ...orpc.settings.read.queryOptions({
+            input: { key: "SYSTEM_BOOTSTRAP_COMPLETE" },
+          }),
+          staleTime: 0,
+        }),
+      ]);
+
+      const hasSystemAddress = !!(systemAddress && systemAddress.trim() !== "");
+      const isBootstrapComplete = bootstrapComplete === "true";
+      hasSystem = hasSystemAddress && isBootstrapComplete;
     } catch {
       hasSystem = false;
     }

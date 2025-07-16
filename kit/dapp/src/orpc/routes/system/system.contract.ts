@@ -11,6 +11,10 @@ import {
   SystemReadOutputSchema,
   SystemReadSchema,
 } from "@/orpc/routes/system/routes/system.read.schema";
+import {
+  SystemPortalReadOutputSchema,
+  SystemPortalReadSchema,
+} from "@/orpc/routes/system/routes/system.portal-read.schema";
 import { eventIterator } from "@orpc/server";
 import { z } from "zod";
 import { baseContract } from "../../procedures/base.contract";
@@ -83,6 +87,28 @@ const read = baseContract
   .output(SystemReadOutputSchema);
 
 /**
+ * Contract definition for the system Portal read endpoint.
+ *
+ * Defines the type-safe interface for retrieving system data from Portal:
+ * - HTTP GET method with system ID parameter
+ * - Input validation for system address
+ * - Output includes tokenFactoryRegistry address from Portal
+ * - OpenAPI documentation with proper tags and descriptions
+ *
+ * This endpoint is used when TheGraph hasn't indexed the system yet.
+ */
+const portalRead = baseContract
+  .route({
+    method: "GET",
+    path: "/systems/:id/portal",
+    description: "Get system data from Portal GraphQL",
+    successDescription: "System data from Portal",
+    tags: ["system"],
+  })
+  .input(SystemPortalReadSchema)
+  .output(SystemPortalReadOutputSchema);
+
+/**
  * Contract definition for the system addon creation endpoint.
  *
  * Defines the type-safe interface for registering system addons:
@@ -113,6 +139,7 @@ const addonCreate = baseContract
  * - list: Retrieve paginated list of SMART systems
  * - create: Deploy a new SMART system
  * - read: Retrieve a specific system with its token factories
+ * - portalRead: Retrieve system data from Portal when TheGraph hasn't indexed yet
  * - addonCreate: Register system add-ons
  *
  * Future endpoints may include:
@@ -123,5 +150,6 @@ export const systemContract = {
   list,
   create,
   read,
+  portalRead,
   addonCreate,
 };
