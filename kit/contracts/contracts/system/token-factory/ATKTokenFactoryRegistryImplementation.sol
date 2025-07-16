@@ -22,6 +22,7 @@ import { InvalidImplementationInterface } from "../ATKSystemErrors.sol";
 import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";
 import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
 
 contract ATKTokenFactoryRegistryImplementation is
     Initializable,
@@ -101,6 +102,8 @@ contract ATKTokenFactoryRegistryImplementation is
             IWithTypeIdentifier(_factoryImplementation).typeId(),
             _tokenFactoryProxy,
             _factoryImplementation,
+            _tokenImplementation,
+            ISMART(_tokenImplementation).registeredInterfaces(),
             block.timestamp
         );
 
