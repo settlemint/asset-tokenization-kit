@@ -205,7 +205,7 @@ export function handleXvPSettlementApproved(
       xvpSettlement.cutoffDate,
       participants,
       null,
-      null
+      event.address.toHexString()
     );
   }
 }
@@ -237,7 +237,7 @@ export function handleXvPSettlementExecuted(
     event,
     ActionName.ExecuteXvPSettlement,
     fetchAccount(event.address).id,
-    null
+    event.address.toHexString()
   );
 }
 
