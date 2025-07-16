@@ -28,7 +28,7 @@ function RouteComponent() {
   }, [navigate]);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
+    <div className="p-12 max-w-2xl mx-auto space-y-8">
       <div className="space-y-3">
         <h1 className="text-4xl font-bold text-primary-foreground">
           {isReturningUser ? `Welcome back!` : t("onboarding:welcome.title")}

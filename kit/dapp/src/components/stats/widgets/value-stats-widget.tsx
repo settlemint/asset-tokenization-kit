@@ -26,9 +26,9 @@ const logger = createLogger();
 export function ValueStatsWidget() {
   const { t, i18n } = useTranslation("stats");
 
-  // Fetch just the value metrics - more efficient than fetching all metrics
+  // Fetch just the total value metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsValue.queryOptions({ input: {} })
+    orpc.token.statsTotalValue.queryOptions({ input: {} })
   );
 
   // Get the system's base currency from settings

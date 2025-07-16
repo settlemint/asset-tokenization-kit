@@ -43,9 +43,21 @@ export const OnboardingLayout: FunctionComponent<{
         title: "Recovery Codes",
         description: "Save your wallet recovery codes",
       },
-      [OnboardingStep.system]: {
-        title: t("steps.system.title"),
-        description: t("steps.system.description"),
+      [OnboardingStep.systemDeploy]: {
+        title: "Deploy System",
+        description: "Deploy the blockchain system",
+      },
+      [OnboardingStep.systemSettings]: {
+        title: "Configure Settings",
+        description: "Set up platform settings",
+      },
+      [OnboardingStep.systemAssets]: {
+        title: "Select Assets",
+        description: "Choose supported asset types",
+      },
+      [OnboardingStep.systemAddons]: {
+        title: "Enable Addons",
+        description: "Configure platform addons",
       },
       [OnboardingStep.identity]: {
         title: t("steps.identity.title"),
@@ -64,8 +76,8 @@ export const OnboardingLayout: FunctionComponent<{
         description: t("wallet.description"),
       },
       [OnboardingStepGroup.system]: {
-        title: t("system.title"),
-        description: t("system.description"),
+        title: "Deploy SMART System",
+        description: "Set up your blockchain platform",
       },
       [OnboardingStepGroup.identity]: {
         title: t("steps.identity.title"),
@@ -115,7 +127,11 @@ export const OnboardingLayout: FunctionComponent<{
   }, [currentStep, children, steps, stepTranslationMappings]);
 
   const defaultStepIndex = useMemo(() => {
-    return stepsWithTranslations.findIndex((step) => step.id === currentStep);
+    const index = stepsWithTranslations.findIndex(
+      (step) => step.id === currentStep
+    );
+    // Ensure we never return -1, fallback to 0 if step not found
+    return index >= 0 ? index : 0;
   }, [stepsWithTranslations, currentStep]);
 
   const onComplete = useCallback(() => {

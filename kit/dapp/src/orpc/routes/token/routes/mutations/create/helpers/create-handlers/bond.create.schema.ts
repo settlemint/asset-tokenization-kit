@@ -1,4 +1,5 @@
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
+import { apiBigInt } from "@/lib/zod/validators/bigint";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { timestamp } from "@/lib/zod/validators/timestamp";
 import {
@@ -8,8 +9,8 @@ import {
 import { z } from "zod";
 
 export const BondSchema = z.object({
-  cap: z.string().describe("The cap of the bond"),
-  faceValue: z.string().describe("The face value of the bond"),
+  cap: apiBigInt.describe("The cap of the bond"),
+  faceValue: apiBigInt.describe("The face value of the bond"),
   maturityDate: timestamp()
     .transform((date) => date.getTime().toString())
     .describe("The maturity date of the bond"),
