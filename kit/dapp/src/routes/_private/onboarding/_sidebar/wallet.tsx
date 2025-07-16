@@ -87,7 +87,22 @@ function RouteComponent() {
   const { data: user } = useQuery(orpc.user.me.queryOptions());
 
   if (subStep === "complete") {
-    return <WalletCreated />;
+    return (
+      <div>
+        <WalletCreated />
+        <footer>
+          <Button
+            onClick={async () => {
+              await navigate({
+                to: `/onboarding/${OnboardingStep.walletSecurity}`,
+              });
+            }}
+          >
+            Continue
+          </Button>
+        </footer>
+      </div>
+    );
   }
 
   if (
@@ -113,12 +128,20 @@ function RouteComponent() {
     );
   }
 
-  // If we have a wallet but subStep isn't "complete" yet, still show progress
+  // If we have a wallet but subStep isn't "complete" yet, show wallet created with continue button
   return (
     <div>
-      <WalletProgress />
+      <WalletCreated />
       <footer>
-        <Button disabled>Creating...</Button>
+        <Button
+          onClick={async () => {
+            await navigate({
+              to: `/onboarding/${OnboardingStep.walletSecurity}`,
+            });
+          }}
+        >
+          Continue
+        </Button>
       </footer>
     </div>
   );
