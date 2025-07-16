@@ -4,6 +4,7 @@ import {
   assetDesignerFormOptions,
   AssetDesignerFormSchema,
 } from "@/components/asset-designer/shared-form";
+import type { AssetDesignerStepsType } from "@/components/asset-designer/steps";
 import { useAppForm } from "@/hooks/use-app-form";
 
 export const AssetDesignerForm = () => {
@@ -23,11 +24,15 @@ export const AssetDesignerForm = () => {
   return (
     <form.AppForm>
       <form.Subscribe selector={(state) => state.values.step}>
-        {(step) => {
-          if (step === "selectAssetType")
-            return <SelectAssetType form={form} />;
-          if (step === "assetBasics") return <AssetBasics form={form} />;
-          return <div>Summary</div>;
+        {async (step) => {
+          const stepComponent: Record<AssetDesignerStepsType, React.ReactNode> =
+            {
+              selectAssetType: <SelectAssetType form={form} />,
+              assetBasics: <AssetBasics form={form} />,
+              summary: <div>Summary</div>,
+            };
+
+          return stepComponent[step];
         }}
       </form.Subscribe>
     </form.AppForm>

@@ -7,16 +7,16 @@ export const AssetDesignerSteps = [
 ] as const;
 
 const AssetDesignerStepsSchema = z.enum(AssetDesignerSteps);
-export type AssetDesignerSteps = z.infer<typeof AssetDesignerStepsSchema>;
+export type AssetDesignerStepsType = z.infer<typeof AssetDesignerStepsSchema>;
 
 export const AssetDesignerStepSchema = z.object({
   step: AssetDesignerStepsSchema,
 });
 
 export const assetDesignerSteps: Record<
-  AssetDesignerSteps,
+  AssetDesignerStepsType,
   {
-    nextStep: AssetDesignerSteps;
+    nextStep: AssetDesignerStepsType;
   }
 > = {
   selectAssetType: {
