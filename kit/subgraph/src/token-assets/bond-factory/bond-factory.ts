@@ -7,6 +7,7 @@ import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme
 import { ActionName, ActionType, createAction } from "../../utils/actions";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchBond } from "../bond/fetch/bond";
+import { Roles } from "../../access-control/utils/role";
 
 export function handleBondCreated(event: BondCreated): void {
   fetchEvent(event, "BondCreated");
@@ -45,7 +46,7 @@ export function handleBondCreated(event: BondCreated): void {
     bond.maturityDate,
     null,
     [creator.id],
-    "DEFAULT_ADMIN_ROLE",
+    Roles[0].hexString, // DEFAULT_ADMIN_ROLE
     null
   );
 }
