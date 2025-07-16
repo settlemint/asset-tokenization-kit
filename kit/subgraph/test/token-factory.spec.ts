@@ -8,6 +8,7 @@ describe("Token Factories", () => {
         tokenFactories(orderBy: name) {
           name
           typeId
+          extensions
         }
       }`
     );
@@ -17,22 +18,48 @@ describe("Token Factories", () => {
       {
         name: "bond",
         typeId: "ATKBondFactory",
+        extensions: [
+          "ACCESS_MANAGED",
+          "CUSTODIAN",
+          "PAUSABLE",
+          "BURNABLE",
+          "REDEEMABLE",
+          "HISTORICAL_BALANCES",
+          "YIELD",
+          "CAPPED",
+        ],
       },
       {
         name: "deposit",
         typeId: "ATKDepositFactory",
+        extensions: [
+          "ACCESS_MANAGED",
+          "COLLATERAL",
+          "CUSTODIAN",
+          "PAUSABLE",
+          "BURNABLE",
+        ],
       },
       {
         name: "equity",
         typeId: "ATKEquityFactory",
+        extensions: ["ACCESS_MANAGED", "CUSTODIAN", "PAUSABLE", "BURNABLE"],
       },
       {
         name: "fund",
         typeId: "ATKFundFactory",
+        extensions: ["ACCESS_MANAGED", "BURNABLE", "PAUSABLE", "CUSTODIAN"],
       },
       {
         name: "stablecoin",
         typeId: "ATKStableCoinFactory",
+        extensions: [
+          "ACCESS_MANAGED",
+          "COLLATERAL",
+          "CUSTODIAN",
+          "PAUSABLE",
+          "BURNABLE",
+        ],
       },
     ]);
   });

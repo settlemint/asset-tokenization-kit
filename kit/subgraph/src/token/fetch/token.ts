@@ -28,6 +28,7 @@ export function fetchToken(address: Address): Token {
     );
     token.deployedInTransaction = Bytes.empty();
     token.requiredClaimTopics = [];
+    token.extensions = [];
 
     token.save();
     TokenTemplate.create(address);

@@ -272,6 +272,18 @@ type ComplianceModule @entity(immutable: false) {
 # TOKEN MANAGEMENT
 # ==================================================
 
+enum TokenExtension {
+  ACCESS_MANAGED
+  BURNABLE
+  CAPPED
+  COLLATERAL
+  CUSTODIAN
+  HISTORICAL_BALANCES
+  PAUSABLE
+  REDEEMABLE
+  YIELD
+}
+
 type TokenFactoryRegistry @entity(immutable: false) {
   id: Bytes!
   system: System!
@@ -297,15 +309,6 @@ type TokenFactory @entity(immutable: false) {
   extensions: [TokenExtension!]!
 }
 
-enum TokenExtension {
-  CAPPED
-  COLLATERAL
-  CUSTODIAN
-  PAUSABLE
-  REDEEMABLE
-  YIELD
-}
-
 type Token @entity(immutable: false) {
   id: Bytes!
   createdAt: BigInt!
@@ -323,6 +326,7 @@ type Token @entity(immutable: false) {
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
   # Extensions
+  extensions: [TokenExtension!]!
   pausable: TokenPausable
   collateral: TokenCollateral
   capped: TokenCapped
