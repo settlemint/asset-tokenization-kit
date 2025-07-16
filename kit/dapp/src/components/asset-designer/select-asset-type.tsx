@@ -5,15 +5,10 @@ import { useSettings } from "@/hooks/use-settings";
 import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
-import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../ui/button";
-
-export const SelectAssetTypeSchema = TokenBaseSchema.pick({
-  type: true,
-});
 
 export const SelectAssetType = withForm({
   ...assetDesignerFormOptions,

@@ -5,16 +5,7 @@ import { assetDesignerSteps } from "@/components/asset-designer/steps";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
-import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { useTranslation } from "react-i18next";
-
-export const BasicsSchema = TokenBaseSchema.pick({
-  name: true,
-  symbol: true,
-  decimals: true,
-  isin: true,
-  type: true,
-});
 
 export const AssetBasics = withForm({
   ...assetDesignerFormOptions,
