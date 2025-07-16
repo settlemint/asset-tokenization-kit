@@ -59,7 +59,7 @@ export function isStepCompleted<StepName>(
   const stepIndex = getStepIndex(step);
   const currentStepIndex = getStepIndex(currentStep);
 
-  return stepIndex < currentStepIndex;
+  return currentStepIndex > stepIndex;
 }
 
 export function isGroupCompleted<StepName, GroupName>(
