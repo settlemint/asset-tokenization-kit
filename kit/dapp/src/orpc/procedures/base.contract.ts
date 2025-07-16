@@ -287,4 +287,16 @@ export const baseContract = oc.errors({
       details: z.string(),
     }),
   },
+
+  /**
+   * Conflict error.
+   *
+   * Thrown when a requested resource conflicts with the current state of the system:
+   * - Duplicate resource creation attempt
+   * - Resource already exists in database
+   */
+  CONFLICT: {
+    message: "Conflict",
+    status: 409,
+  },
 });

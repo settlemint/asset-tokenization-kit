@@ -124,6 +124,7 @@
     "@tanstack/react-table": "8.21.3",
     "@tanstack/router-cli": "1.127.8",
     "@tanstack/router-devtools": "1.127.9",
+    "@tanstack/zod-adapter": "1.127.9",
     "@types/crypto-js": "4.2.2",
     "better-auth": "1.2.12",
     "change-case": "5.4.4",
