@@ -470,12 +470,13 @@ type Action @entity(immutable: false) {
   executedAt: BigInt
   executedBy: Bytes
   identifier: String
+  executor: ActionExecutor @derivedFrom(field: "actions")
 }
 
 type ActionExecutor @entity(immutable: false) {
   id: Bytes!
   executors: [Bytes!]!
-  actions: [Bytes!]!
+  actions: [Action!]!
 }
 
 # ==================================================

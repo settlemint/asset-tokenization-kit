@@ -78,7 +78,11 @@ export function createActionExecutor(
 ): ActionExecutor {
   const id = actionExecutorId(action.target, action.requiredRole, identifier);
   let actionExecutor = ActionExecutor.load(id);
-  if (actionExecutor) {
+  if (actionExecutor !== null) {
+    let existingActions = actionExecutor.actions;
+    existingActions.push(action.id);
+    actionExecutor.actions = existingActions;
+    actionExecutor.save();
     return actionExecutor;
   }
 
@@ -90,20 +94,6 @@ export function createActionExecutor(
   return actionExecutor;
 }
 
-export function updateActionExecutors(
-  target: Bytes,
-  requiredRole: string,
-  identifier: string | null,
-  executors: Bytes[]
-): void {
-  const id = actionExecutorId(target, requiredRole, identifier);
-  const actionExecutor = ActionExecutor.load(id);
-  if (actionExecutor) {
-    actionExecutor.executors = executors;
-    actionExecutor.save();
-  }
-}
-
 export function actionExecuted(
   event: ethereum.Event,
   actionName: string,
@@ -112,25 +102,10 @@ export function actionExecuted(
 ): void {
   const id = actionId(actionName, target, identifier);
   const action = Action.load(id);
-  if (action) {
+  if (action !== null) {
     action.executed = true;
     action.executedAt = event.block.timestamp;
     action.executedBy = event.transaction.from;
-    action.save();
-  }
-}
-
-export function actionRevoked(
-  actionName: string,
-  target: Bytes,
-  identifier: string | null
-): void {
-  const id = actionId(actionName, target, identifier);
-  const action = Action.load(id);
-  if (action) {
-    action.executed = false;
-    action.executedAt = null;
-    action.executedBy = null;
     action.save();
   }
 }
