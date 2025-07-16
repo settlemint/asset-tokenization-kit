@@ -5,10 +5,7 @@ import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { isGroupCompleted } from "./utils";
 
-export interface StepGroupProps<
-  StepName extends string = string,
-  GroupName extends string = string,
-> {
+export interface StepGroupProps<StepName, GroupName> {
   group: StepGroup<StepName, GroupName>;
   currentStep: Step<StepName>;
   allSteps: Step<StepName>[];
@@ -16,10 +13,7 @@ export interface StepGroupProps<
   onStepChange: (step: Step<StepName>) => void;
 }
 
-export function StepGroupComponent<
-  StepName extends string = string,
-  GroupName extends string = string,
->({
+export function StepGroupComponent<StepName, GroupName>({
   group,
   currentStep,
   allSteps,
@@ -43,7 +37,7 @@ export function StepGroupComponent<
               hasActiveStep ? "text-primary" : "text-foreground"
             )}
           >
-            {group.name}
+            {group.label}
           </span>
           {isCompleted && (
             <div className="flex items-center justify-center w-5 h-5 bg-primary rounded-full">

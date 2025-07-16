@@ -3,7 +3,7 @@ import type { Step } from "@/components/stepper/types";
 import { cn } from "@/lib/utils";
 import { isStepCompleted } from "./utils";
 
-export interface StepItemProps<StepName extends string = string> {
+export interface StepItemProps<StepName> {
   step: Step<StepName>;
   currentStep: Step<StepName>;
   allSteps: Step<StepName>[];
@@ -11,14 +11,14 @@ export interface StepItemProps<StepName extends string = string> {
   onStepChange: (step: Step<StepName>) => void;
 }
 
-export function StepComponent<StepName extends string = string>({
+export function StepComponent<StepName>({
   step,
   currentStep,
   navigation,
   onStepChange,
 }: StepItemProps<StepName>) {
   const isActive = step.id === currentStep.id;
-  const isCompleted = isStepCompleted(step, currentStep);
+  const isCompleted = isStepCompleted<StepName>(step, currentStep);
   const canSelect = isActive || (isCompleted && navigation === "bidirectional");
   const status = isCompleted ? "completed" : isActive ? "active" : "pending";
 

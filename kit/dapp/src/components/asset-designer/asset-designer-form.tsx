@@ -4,8 +4,14 @@ import {
   assetDesignerFormOptions,
   AssetDesignerFormSchema,
 } from "@/components/asset-designer/shared-form";
-import type { AssetDesignerStepsType } from "@/components/asset-designer/steps";
+import {
+  steps,
+  type AssetDesignerStepsType,
+} from "@/components/asset-designer/steps";
+import { StepLayout } from "@/components/stepper/step-layout";
+import { getStepByName } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
+import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
 
 export const AssetDesignerForm = () => {
@@ -22,19 +28,29 @@ export const AssetDesignerForm = () => {
       },
     },
   });
+
+  const step = useStore(form.store, (state) => state.values.step);
+  const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
+    selectAssetType: <SelectAssetType form={form} />,
+    assetBasics: <AssetBasics form={form} />,
+    summary: <div>Summary</div>,
+  };
+  const currentStep = getStepByName(steps, step);
+
   return (
     <form.AppForm>
-      <form.Subscribe selector={(state) => state.values.step}>
-        {(step) => {
-          const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
-            selectAssetType: <SelectAssetType form={form} />,
-            assetBasics: <AssetBasics form={form} />,
-            summary: <div>Summary</div>,
-          };
-
-          return stepComponent[step];
+      <StepLayout
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={(step) => {
+          form.setFieldValue("step", step.name);
         }}
-      </form.Subscribe>
+        navigation="bidirectional"
+      >
+        {({ currentStep }) => {
+          return stepComponent[currentStep.name];
+        }}
+      </StepLayout>
     </form.AppForm>
   );
 };

@@ -1,5 +1,6 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
-import { assetDesignerSteps } from "@/components/asset-designer/steps";
+import { steps } from "@/components/asset-designer/steps";
+import { getNextStepName } from "@/components/stepper/utils";
 import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
 import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
@@ -54,7 +55,7 @@ export const SelectAssetType = withForm({
           onClick={() => {
             form.setFieldValue(
               "step",
-              assetDesignerSteps.selectAssetType.nextStep
+              getNextStepName(steps, "selectAssetType")
             );
           }}
         >

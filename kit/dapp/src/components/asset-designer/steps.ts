@@ -1,3 +1,4 @@
+import type { Step } from "@/components/stepper/types";
 import { z } from "zod";
 
 export const AssetDesignerSteps = [
@@ -13,19 +14,23 @@ export const AssetDesignerStepSchema = z.object({
   step: AssetDesignerStepsSchema,
 });
 
-export const assetDesignerSteps: Record<
-  AssetDesignerStepsType,
+export const steps: Step<AssetDesignerStepsType>[] = [
   {
-    nextStep: AssetDesignerStepsType;
-  }
-> = {
-  selectAssetType: {
-    nextStep: "assetBasics",
+    id: 1,
+    name: "selectAssetType",
+    label: "Select Asset Type",
+    description: "Select the type of asset you want to create",
   },
-  assetBasics: {
-    nextStep: "summary",
+  {
+    id: 2,
+    name: "assetBasics",
+    label: "Asset Basics",
+    description: "Enter the basic details of the asset",
   },
-  summary: {
-    nextStep: "summary",
+  {
+    id: 3,
+    name: "summary",
+    label: "Summary",
+    description: "Review the details of the asset",
   },
-};
+];

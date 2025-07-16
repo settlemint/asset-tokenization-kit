@@ -1,17 +1,14 @@
 import { cn } from "@/lib/utils";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 
 import { StepComponent } from "@/components/stepper/step";
 import { StepGroupComponent } from "@/components/stepper/step-group";
 import type { Step, StepOrGroup } from "./types";
-import { flattenSteps, isStepGroup } from "./utils";
+import { flattenSteps, getNextStep, isStepGroup } from "./utils";
 
-export interface StepLayoutProps<
-  StepName extends string = string,
-  GroupName extends string = never,
-> {
+export interface StepLayoutProps<StepName, GroupName> {
   steps: StepOrGroup<StepName, GroupName>[];
-  defaultStep: Step<StepName>;
+  currentStep: Step<StepName>;
   onStepChange: (step: StepOrGroup<StepName, GroupName>) => void;
 
   children: (props: {
@@ -23,22 +20,20 @@ export interface StepLayoutProps<
 }
 
 export function StepLayout<
-  StepName extends string = string,
+  StepName extends string = never,
   GroupName extends string = never,
 >({
   steps,
-  defaultStep,
+  currentStep,
   onStepChange,
   children,
   className,
   navigation = "forward-only",
 }: StepLayoutProps<StepName, GroupName>) {
   const allSteps = useMemo(() => flattenSteps(steps), [steps]);
-  const [currentStep, setCurrentStep] = useState<Step<StepName>>(defaultStep);
 
   const handleStepChange = useCallback(
     (step: Step<StepName>) => {
-      setCurrentStep(step);
       onStepChange(step);
     },
     [onStepChange]
@@ -76,7 +71,7 @@ export function StepLayout<
 
       {children({
         currentStep,
-        nextStep: currentStep,
+        nextStep: getNextStep(allSteps, currentStep),
       })}
     </div>
   );
