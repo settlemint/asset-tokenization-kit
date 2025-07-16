@@ -11,6 +11,7 @@ type Account @entity(immutable: false) {
   isContract: Boolean!
   identity: Identity
   country: Int
+  lastActivity: BigInt
   balances: [TokenBalance!]! @derivedFrom(field: "account")
   # Stats
   stats: AccountStatsState @derivedFrom(field: "account")
@@ -450,6 +451,31 @@ type XvPSettlementApproval @entity(immutable: false) {
   account: Account!
   approved: Boolean!
   timestamp: BigInt
+}
+
+# ==================================================
+# ACTIONS
+# ==================================================
+
+type Action @entity(immutable: false) {
+  id: Bytes!
+  name: String!
+  type: String!
+  target: Bytes!
+  createdAt: BigInt!
+  activeAt: BigInt!
+  expiresAt: BigInt
+  requiredRole: String
+  executed: Boolean!
+  executedAt: BigInt
+  executedBy: Bytes
+  identifier: String
+}
+
+type ActionExecutor @entity(immutable: false) {
+  id: Bytes!
+  executors: [Bytes!]!
+  actions: [Bytes!]!
 }
 
 # ==================================================
