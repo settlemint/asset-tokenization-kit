@@ -297,103 +297,183 @@ export const create = onboardedRouter.system.create
 
     const system = { id: systemAddress };
 
-    // For newly created systems, bootstrap is required
-    // We'll attempt to bootstrap and handle any errors gracefully
-
-    // Now bootstrap the system
-    yield withEventMeta(
-      {
-        status: "pending",
-        message: messages.bootstrappingSystem,
-        result: undefined,
-      },
-      { id: `${transactionHash}-bootstrap`, retry: 1000 }
-    );
-
-    // Execute the bootstrap transaction
-    const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> = {
-      address: system.id,
-      from: sender.wallet,
-      ...(await handleChallenge(sender, {
-        code: verification.verificationCode,
-        type: verification.verificationType,
-      })),
-    };
-
-    // Track bootstrap transaction using the same async generator pattern
-    let bootstrapSucceeded = false;
-    let bootstrapTransactionHash = "";
-
-    // Iterate through bootstrap transaction events
-    for await (const event of context.portalClient.mutate(
-      BOOTSTRAP_SYSTEM_MUTATION,
-      bootstrapVariables,
-      messages.bootstrapFailed,
-      {
-        ...messages,
-        waitingForMining: messages.bootstrappingSystem,
+    // Check if the system is already bootstrapped before attempting to bootstrap
+    // We can check this by calling the compliance() function on the system contract
+    const checkBootstrapQuery = portalGraphql(`
+      query CheckSystemBootstrap($address: String!) {
+        IATKSystemCompliance(address: $address) {
+          complianceProxyAddress
+        }
       }
-    )) {
-      // Store the bootstrap transaction hash
-      bootstrapTransactionHash = event.transactionHash;
+    `);
 
-      // Yield all bootstrap events with a unique ID to distinguish from creation events
-      yield withEventMeta(
-        {
-          status: event.status,
-          message: event.message,
-          result: undefined,
-        },
-        { id: `${bootstrapTransactionHash}-bootstrap`, retry: 1000 }
+    let isAlreadyBootstrapped = false;
+    try {
+      const bootstrapCheck = await context.portalClient.query(
+        checkBootstrapQuery,
+        { address: systemAddress },
+        z.object({
+          IATKSystemCompliance: z
+            .object({
+              complianceProxyAddress: z.string(),
+            })
+            .nullable(),
+        }),
+        "Failed to check bootstrap status"
       );
 
-      // Track final bootstrap status for the completion event
-      if (event.status === "confirmed") {
-        bootstrapSucceeded = true;
-      } else if (event.status === "failed") {
-        bootstrapSucceeded = false;
-        // Don't return early - we still need to report the system ID
-        // even if bootstrap failed, as the system was created successfully
-        break;
-      }
+      // If we get a valid compliance address, the system is already bootstrapped
+      isAlreadyBootstrapped =
+        !!bootstrapCheck.IATKSystemCompliance?.complianceProxyAddress;
+      logger.debug("System bootstrap check:", {
+        isAlreadyBootstrapped,
+        complianceAddress:
+          bootstrapCheck.IATKSystemCompliance?.complianceProxyAddress,
+      });
+    } catch (error) {
+      logger.debug(
+        "Bootstrap check failed, assuming system needs bootstrapping:",
+        error
+      );
+      // If the bootstrap check fails, assume the system needs bootstrapping
+      isAlreadyBootstrapped = false;
     }
 
-    // Save the system address to settings using orpc BEFORE yielding final events
-    await call(
-      upsert,
-      {
-        key: "SYSTEM_ADDRESS",
-        value: system.id,
-      },
-      {
-        context,
-      }
-    );
-
-    // Save bootstrap completion status
-    await call(
-      upsert,
-      {
-        key: "SYSTEM_BOOTSTRAP_COMPLETE",
-        value: bootstrapSucceeded ? "true" : "false",
-      },
-      {
-        context,
-      }
-    );
-
-    // Always yield the final event with the system ID
-    // If bootstrap failed, we still return the system ID but with failed status
-    if (!bootstrapSucceeded) {
+    // Only bootstrap if the system is not already bootstrapped
+    if (!isAlreadyBootstrapped) {
+      // Now bootstrap the system
       yield withEventMeta(
         {
-          status: "failed",
-          message: `${messages.systemCreatedBootstrapFailed} System address: ${system.id}`,
-          result: system.id,
+          status: "pending",
+          message: messages.bootstrappingSystem,
+          result: undefined,
         },
-        { id: transactionHash, retry: 1000 }
+        { id: `${transactionHash}-bootstrap`, retry: 1000 }
       );
+
+      // Execute the bootstrap transaction
+      const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> =
+        {
+          address: system.id,
+          from: sender.wallet,
+          ...(await handleChallenge(sender, {
+            code: verification.verificationCode,
+            type: verification.verificationType,
+          })),
+        };
+
+      // Track bootstrap transaction using the same async generator pattern
+      let bootstrapSucceeded = false;
+      let bootstrapTransactionHash = "";
+
+      // Iterate through bootstrap transaction events
+      for await (const event of context.portalClient.mutate(
+        BOOTSTRAP_SYSTEM_MUTATION,
+        bootstrapVariables,
+        messages.bootstrapFailed,
+        {
+          ...messages,
+          waitingForMining: messages.bootstrappingSystem,
+        }
+      )) {
+        // Store the bootstrap transaction hash
+        bootstrapTransactionHash = event.transactionHash;
+
+        // Yield all bootstrap events with a unique ID to distinguish from creation events
+        yield withEventMeta(
+          {
+            status: event.status,
+            message: event.message,
+            result: undefined,
+          },
+          { id: `${bootstrapTransactionHash}-bootstrap`, retry: 1000 }
+        );
+
+        // Track final bootstrap status for the completion event
+        if (event.status === "confirmed") {
+          bootstrapSucceeded = true;
+        } else if (event.status === "failed") {
+          bootstrapSucceeded = false;
+          // Don't return early - we still need to report the system ID
+          // even if bootstrap failed, as the system was created successfully
+          break;
+        }
+      }
+
+      // Save the system address to settings using orpc BEFORE yielding final events
+      await call(
+        upsert,
+        {
+          key: "SYSTEM_ADDRESS",
+          value: system.id,
+        },
+        {
+          context,
+        }
+      );
+
+      // Save bootstrap completion status
+      await call(
+        upsert,
+        {
+          key: "SYSTEM_BOOTSTRAP_COMPLETE",
+          value: bootstrapSucceeded ? "true" : "false",
+        },
+        {
+          context,
+        }
+      );
+
+      // Always yield the final event with the system ID
+      // If bootstrap failed, we still return the system ID but with failed status
+      if (!bootstrapSucceeded) {
+        yield withEventMeta(
+          {
+            status: "failed",
+            message: `${messages.systemCreatedBootstrapFailed} System address: ${system.id}`,
+            result: system.id,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
+      } else {
+        yield withEventMeta(
+          {
+            status: "confirmed",
+            message: messages.systemCreated,
+            result: system.id,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
+      }
     } else {
+      // System is already bootstrapped, skip bootstrap step
+      logger.debug("System already bootstrapped, skipping bootstrap step");
+
+      // Save the system address to settings using orpc
+      await call(
+        upsert,
+        {
+          key: "SYSTEM_ADDRESS",
+          value: system.id,
+        },
+        {
+          context,
+        }
+      );
+
+      // System is already bootstrapped, so mark bootstrap as complete
+      await call(
+        upsert,
+        {
+          key: "SYSTEM_BOOTSTRAP_COMPLETE",
+          value: "true",
+        },
+        {
+          context,
+        }
+      );
+
+      // Yield final success event for already bootstrapped system
       yield withEventMeta(
         {
           status: "confirmed",
