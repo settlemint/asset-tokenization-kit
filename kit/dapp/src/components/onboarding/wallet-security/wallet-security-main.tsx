@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -96,10 +96,8 @@ export function WalletSecurityMain({ onNext }: WalletSecurityMainProps) {
         </p>
       </div>
 
-      <div
-        className="flex-1 overflow-y-auto"
-        style={useMemo(() => ({ minHeight: "450px", maxHeight: "600px" }), [])}
-      >
+      <div className="flex-1 overflow-y-auto min-h-0">
+        {/* Responsive content container */}
         <div className="max-w-3xl space-y-6 pr-2">
           {/* Content based on current state */}
           {shouldShowEducationalContent && (
@@ -122,7 +120,6 @@ export function WalletSecurityMain({ onNext }: WalletSecurityMainProps) {
                 <OtpSetupComponent
                   onSuccess={handleOtpSuccess}
                   onBack={handleBackToSecurityOptions}
-                  user={user}
                 />
               )}
             </>

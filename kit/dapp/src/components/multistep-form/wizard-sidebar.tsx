@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown, X } from "lucide-react";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { StepDefinition, StepStatus } from "./types";
 import { useWizardContext } from "./wizard-context";
 
@@ -243,107 +243,103 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
     );
 
     return (
-      <div className="flex-1 overflow-y-auto">
-        <div className="space-y-4 pr-2">
-          {groups.map((group) => {
-            const groupSteps = groupedStepsByGroupId[group.id] ?? [];
-            if (groupSteps.length === 0) return null;
+      <div className="space-y-4 pr-2">
+        {groups.map((group) => {
+          const groupSteps = groupedStepsByGroupId[group.id] ?? [];
+          if (groupSteps.length === 0) return null;
 
-            // Check if any step in this group is active
-            const hasActiveStep = groupSteps.some(
-              ({ index }) => index === currentStepIndex
-            );
+          // Check if any step in this group is active
+          const hasActiveStep = groupSteps.some(
+            ({ index }) => index === currentStepIndex
+          );
 
-            const groupCompleted = isGroupCompleted(group.id);
-            const isExpanded = expandedGroups.has(group.id);
+          const groupCompleted = isGroupCompleted(group.id);
+          const isExpanded = expandedGroups.has(group.id);
 
-            return (
-              <div key={group.id} className="relative">
-                {/* Clickable Group Header */}
-                <button
-                  type="button"
-                  onClick={createGroupToggleHandler(group.id)}
-                  className={cn(
-                    "w-full text-left mb-3 p-2 rounded-lg transition-all duration-200 hover:bg-white/10",
-                    hasActiveStep && "bg-white/5"
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <h3
-                        className={cn(
-                          "text-base font-bold transition-all duration-300",
-                          hasActiveStep
-                            ? "text-primary-foreground"
-                            : "text-primary-foreground/70"
-                        )}
-                      >
-                        {group.title}
-                      </h3>
-                      {groupCompleted && (
-                        <Check className="w-4 h-4 text-sm-state-success" />
-                      )}
-                    </div>
-                    <ChevronDown
+          return (
+            <div key={group.id} className="relative">
+              {/* Clickable Group Header */}
+              <button
+                type="button"
+                onClick={createGroupToggleHandler(group.id)}
+                className={cn(
+                  "w-full text-left mb-3 p-2 rounded-lg transition-all duration-200 hover:bg-white/10",
+                  hasActiveStep && "bg-white/5"
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <h3
                       className={cn(
-                        "w-4 h-4 text-primary-foreground/60 transition-transform duration-200",
-                        isExpanded ? "rotate-180" : "rotate-0"
+                        "text-base font-bold transition-all duration-300",
+                        hasActiveStep
+                          ? "text-primary-foreground"
+                          : "text-primary-foreground/70"
                       )}
-                    />
+                    >
+                      {group.title}
+                    </h3>
+                    {groupCompleted && (
+                      <Check className="w-4 h-4 text-sm-state-success" />
+                    )}
                   </div>
-                  {group.description && (
-                    <p className="text-xs text-primary-foreground/50 mt-1">
-                      {group.description}
-                    </p>
-                  )}
-                </button>
+                  <ChevronDown
+                    className={cn(
+                      "w-4 h-4 text-primary-foreground/60 transition-transform duration-200",
+                      isExpanded ? "rotate-180" : "rotate-0"
+                    )}
+                  />
+                </div>
+                {group.description && (
+                  <p className="text-xs text-primary-foreground/50 mt-1">
+                    {group.description}
+                  </p>
+                )}
+              </button>
 
-                {/* Collapsible Group Steps */}
-                <div
-                  className={cn(
-                    "overflow-hidden transition-all duration-300 ease-in-out",
-                    isExpanded
-                      ? "max-h-[800px] opacity-100"
-                      : "max-h-0 opacity-0"
-                  )}
-                >
-                  <div className="pl-6">
-                    {groupSteps.map(({ step, index }, stepIndex) => {
-                      const isLastInGroup = stepIndex === groupSteps.length - 1;
-                      return renderStep(step, index, isLastInGroup);
-                    })}
-                  </div>
+              {/* Collapsible Group Steps */}
+              <div
+                className={cn(
+                  "overflow-hidden transition-all duration-300 ease-in-out",
+                  isExpanded ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
+                )}
+              >
+                <div className="pl-6">
+                  {groupSteps.map(({ step, index }, stepIndex) => {
+                    const isLastInGroup = stepIndex === groupSteps.length - 1;
+                    return renderStep(step, index, isLastInGroup);
+                  })}
                 </div>
               </div>
-            );
-          })}
-
-          {/* Render ungrouped steps if any */}
-          {groupedStepsByGroupId.ungrouped && (
-            <div className="relative">
-              <div className="pl-2">
-                {groupedStepsByGroupId.ungrouped.map(
-                  ({ step, index }, stepIndex) => {
-                    const isLastStep =
-                      stepIndex ===
-                      (groupedStepsByGroupId.ungrouped?.length ?? 0) - 1;
-                    return renderStep(step, index, isLastStep);
-                  }
-                )}
-              </div>
             </div>
-          )}
-        </div>
+          );
+        })}
+
+        {/* Render ungrouped steps if any */}
+        {groupedStepsByGroupId.ungrouped && (
+          <div className="relative">
+            <div className="pl-2">
+              {groupedStepsByGroupId.ungrouped.map(
+                ({ step, index }, stepIndex) => {
+                  const isLastStep =
+                    stepIndex ===
+                    (groupedStepsByGroupId.ungrouped?.length ?? 0) - 1;
+                  return renderStep(step, index, isLastStep);
+                }
+              )}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
 
   return (
-    <div className={cn("flex-1", className)}>
+    <div className={cn("flex-1 overflow-y-auto sidebar-scroll", className)}>
       {groups ? (
         renderGroupedSteps()
       ) : (
-        <div className="space-y-0 flex-1 relative">
+        <div className="space-y-0 relative">
           {steps.map((step, index) => {
             const isLastStep = index === steps.length - 1;
             return renderStep(step, index, isLastStep);

@@ -424,4 +424,57 @@
   .react-pdf__Page__annotations {
     @apply opacity-100;
   }
+
+  /* Responsive Sidebar Scrollbar */
+  .sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+
+  .sidebar-scroll:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  /* Hide scrollbar on larger screens, show on hover */
+  @media (min-width: 1024px) {
+    .sidebar-scroll::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+    }
+
+    /* Only show scrollbar on hover and when there's significant content overflow */
+    .sidebar-scroll:hover::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar-scroll {
+      scrollbar-width: none;
+      /* Add aggressive buffer padding to prevent marginal overflow */
+      padding-top: 8px;
+      padding-bottom: 20px;
+      margin-top: -8px;
+      margin-bottom: -20px;
+      /* Force no scrollbar for minimal overflow cases */
+      overflow-y: hidden;
+    }
+
+    /* Only enable scrolling when hovering, which indicates user intent */
+    .sidebar-scroll:hover {
+      scrollbar-width: thin;
+      overflow-y: auto;
+    }
+  }
 }

@@ -237,7 +237,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     return { backgroundColor: "var(--sm-background-lightest)" };
   }, []);
 
-  // Calculate dynamic height based on content
+  // Calculate dynamic height based on content with viewport constraints
   const dynamicHeight = useMemo(
     () => calculateWizardHeight(steps, groups),
     [steps, groups]
@@ -258,14 +258,17 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
   return (
     <WizardProvider value={contextValue}>
       <div
-        className={cn("flex", className)}
-        style={{ height: `${dynamicHeight}px` }}
+        className={cn("flex flex-col lg:flex-row", className)}
+        style={{
+          height: `min(${dynamicHeight}px, 90vh)`,
+          maxHeight: "90vh",
+        }}
       >
-        <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
+        <div className="flex flex-col lg:flex-row h-full w-full rounded-xl shadow-lg overflow-hidden">
           {/* Sidebar */}
           <div
             className={cn(
-              "w-[320px] flex-shrink-0 p-8 flex flex-col transition-all duration-300",
+              "w-full lg:w-[320px] flex-shrink-0 p-4 sm:p-6 lg:p-8 flex flex-col transition-all duration-300 min-h-0 overflow-hidden",
               sidebarClassName
             )}
             style={sidebarStyle}
@@ -310,12 +313,12 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
           {/* Main content */}
           <div
             className={cn(
-              "flex-1 flex flex-col transition-all duration-300 relative overflow-hidden",
+              "flex-1 flex flex-col transition-all duration-300 relative min-h-0",
               contentClassName
             )}
             style={contentStyle}
           >
-            <div className="flex-1 overflow-y-auto p-8">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
               <div className="w-full h-full">
                 <form onSubmit={handleFormSubmit}>
                   <WizardStep />

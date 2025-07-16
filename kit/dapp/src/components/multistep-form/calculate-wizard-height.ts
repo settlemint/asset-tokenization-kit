@@ -17,8 +17,8 @@ const DEFAULT_CONFIG: Required<HeightCalculationConfig> = {
   stepHeight: 100,
   groupHeaderHeight: 80,
   spacingPadding: 100,
-  minHeight: 600,
-  maxHeight: 1000,
+  minHeight: 500, // Reduced for mobile
+  maxHeight: 800, // More conservative max height
 };
 
 /**
@@ -52,10 +52,18 @@ export function calculateWizardHeight<T>(
     maxHeight,
   } = { ...DEFAULT_CONFIG, ...config };
 
+  // Add aggressive responsive buffer for larger screens to prevent marginal overflow
+  const isLargeScreen =
+    typeof window !== "undefined" && window.innerWidth >= 1024;
+  const responsiveBuffer = isLargeScreen ? 40 : 0;
+
   if (!groups || groups.length === 0) {
     return Math.min(
       Math.max(
-        baseHeight + steps.length * stepHeight + spacingPadding,
+        baseHeight +
+          steps.length * stepHeight +
+          spacingPadding +
+          responsiveBuffer,
         minHeight
       ),
       maxHeight
@@ -78,7 +86,11 @@ export function calculateWizardHeight<T>(
   const totalGroupHeaders = groups.length * groupHeaderHeight;
   const maxGroupContent = maxGroupSize * stepHeight;
   const calculatedHeight =
-    baseHeight + totalGroupHeaders + maxGroupContent + spacingPadding;
+    baseHeight +
+    totalGroupHeaders +
+    maxGroupContent +
+    spacingPadding +
+    responsiveBuffer;
   const finalHeight = Math.min(
     Math.max(calculatedHeight, minHeight),
     maxHeight

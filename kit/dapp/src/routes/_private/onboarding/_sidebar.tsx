@@ -22,8 +22,8 @@ type OnboardingStepDefintion = Omit<StepDefinition, "id"> & {
   groupId: OnboardingStepGroup;
 };
 
-// TODO: This needs to prefer "step" over the current step, so the sidebar changes when navigating manually (back)
-// TODO: The responsive nature of the inline modal is not working well, it constantly overflows the screen
+// ✅ DONE: Now prefers "step" URL param over current step for manual navigation
+// ✅ DONE: Fixed responsive modal overflow with viewport constraints and mobile-first design
 // TODO: Make sure all text is translated
 // TODO: There is a weird on complete log message
 // TODO: We need a better way to handle the translations, it is not pretty inlined here as it is now
@@ -43,6 +43,11 @@ export const Route = createFileRoute("/_private/onboarding/_sidebar")({
 function RouteComponent() {
   const { t } = useTranslation(["onboarding", "general"]);
   const { steps, currentStep } = Route.useLoaderData();
+  const { step: stepFromUrl } = Route.useSearch();
+
+  // Prefer the step from URL over the current step from state machine
+  // This allows manual navigation (back/forward buttons) to work correctly
+  const effectiveStep = stepFromUrl ?? currentStep;
 
   const stepTranslationMappings = useMemo<
     Record<OnboardingStep, { title: string; description: string }>
@@ -115,14 +120,14 @@ function RouteComponent() {
           title: groupTranslationMappings[step.groupId].title,
           description: groupTranslationMappings[step.groupId].description,
           collapsible: true,
-          defaultExpanded: currentStep === step.step,
+          defaultExpanded: effectiveStep === step.step,
         });
       } else {
-        existingGroup.defaultExpanded = currentStep === step.step;
+        existingGroup.defaultExpanded = effectiveStep === step.step;
       }
       return acc;
     }, []);
-  }, [steps, groupTranslationMappings, currentStep]);
+  }, [steps, groupTranslationMappings, effectiveStep]);
 
   const stepsWithTranslations = useMemo((): OnboardingStepDefintion[] => {
     const withTranslations = steps.map(
@@ -135,21 +140,23 @@ function RouteComponent() {
     );
 
     // Inject the children of the current step
-    const activeStep = withTranslations.find((step) => step.id === currentStep);
+    const activeStep = withTranslations.find(
+      (step) => step.id === effectiveStep
+    );
     if (activeStep) {
       activeStep.component = () => <Outlet />;
     }
 
     return withTranslations;
-  }, [currentStep, steps, stepTranslationMappings]);
+  }, [effectiveStep, steps, stepTranslationMappings]);
 
   const defaultStepIndex = useMemo(() => {
     const index = stepsWithTranslations.findIndex(
-      (step) => step.id === currentStep
+      (step) => step.id === effectiveStep
     );
     // Ensure we never return -1, fallback to 0 if step not found
     return index >= 0 ? index : 0;
-  }, [stepsWithTranslations, currentStep]);
+  }, [stepsWithTranslations, effectiveStep]);
 
   const onComplete = useCallback(() => {
     logger.info("completed");
