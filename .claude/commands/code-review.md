@@ -1,68 +1,28 @@
 # /code-review
 
-Performs fast, focused code review using concurrent agents to catch critical
-bugs, security issues, and optimizations.
+Review the changes in this PR/branch/un-committed changes like Linus Torvalds
+that is reviewing a kernel patch.
 
-## Auto-Loaded Context
+# Explore
 
-- @/CLAUDE.md
-- @/.claude/CLAUDE.md
-- @/docs/ai-context/project-structure.md
-- @/docs/ai-context/docs-overview.md
+First, use parallel subagents to find and read all files that may be useful for
+this review, either as examples or as edit targets. The subagents should return
+relevant file paths, and any other info that may be useful. If you are not sure
+about something, ask the user for clarification.
 
-## Philosophy
+# Review
 
-Prioritize high-impact findings: reliability, security, performance,
-scalability. Exclude minor issues.
+Next, think hard and write up a detailed code review in the Linus style. Use
+your judgement as to what is necessary, given the standards of this repo.
 
-## Execution
+If there are things you are not sure about, use parallel subagents to do some
+web research. They should only return useful information, no noise.
 
-User context: "$ARGUMENTS"
+If there are things you still do not understand or questions you have for the
+user, pause here to ask them before continuing.
 
-## Step 1: Parse Intent
+# Write up your work
 
-Determine scope (files, features) and focus (e.g., security). Read relevant docs
-for context.
-
-## Step 2: Concurrent Agents
-
-Launch 4 parallel agents:
-
-1. **Bug Hunter**: Detects logic errors, edge cases.
-2. **Security Scanner**: Finds vulnerabilities, auth issues.
-3. **Performance Analyzer**: Spots bottlenecks, inefficiencies.
-4. **Quality Inspector**: Checks maintainability, debt.
-
-Each analyzes assigned areas, focusing on critical impacts.
-
-## Step 3: Synthesize
-
-Filter for high-impact issues. Quantify risks and ROIs.
-
-## Minimal Output
-
-```markdown
-# Code Review Summary
-
-## 🚨 Critical Issues
-
-- Issue: [desc] | Location: [file:line] | Fix: [snippet]
-
-## 🎯 Improvements
-
-- Improvement: [desc] | ROI: [benefit]
-
-## Action Plan
-
-1. Fix criticals
-2. Apply improvements
-```
-
-## Follow-up
-
-Offer to fix issues or generate tests.
-
-## Error Handling
-
-- Ambiguous input: Search codebase
-- Gaps: Add agents if needed"
+When you are happy with your work, write up the review and create a task list.
+The user should be able to choose from this task list what they want you to fix.
+Do not implement anything on your own volition, it is as the users discretion
