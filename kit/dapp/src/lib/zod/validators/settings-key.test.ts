@@ -5,6 +5,9 @@ describe("settingKeySchema", () => {
   test("should accept valid setting keys", () => {
     expect(settingKeySchema.parse("BASE_CURRENCY")).toBe("BASE_CURRENCY");
     expect(settingKeySchema.parse("SYSTEM_ADDRESS")).toBe("SYSTEM_ADDRESS");
+    expect(settingKeySchema.parse("SYSTEM_BOOTSTRAP_COMPLETE")).toBe(
+      "SYSTEM_BOOTSTRAP_COMPLETE"
+    );
   });
 
   test("should reject invalid setting keys", () => {
@@ -15,7 +18,11 @@ describe("settingKeySchema", () => {
   });
 
   test("SETTING_KEYS should contain all expected keys", () => {
-    expect(SETTING_KEYS).toEqual(["BASE_CURRENCY", "SYSTEM_ADDRESS"]);
-    expect(SETTING_KEYS.length).toBe(2);
+    expect(SETTING_KEYS).toEqual([
+      "BASE_CURRENCY",
+      "SYSTEM_ADDRESS",
+      "SYSTEM_BOOTSTRAP_COMPLETE",
+    ]);
+    expect(SETTING_KEYS.length).toBe(3);
   });
 });

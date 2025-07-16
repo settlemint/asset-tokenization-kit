@@ -63,7 +63,7 @@ export const portalRead = onboardedRouter.system.portalRead
           result.IATKSystemTokenFactoryRegistry?.tokenFactoryRegistryAddress ??
           null,
       };
-    } catch (error) {
+    } catch {
       // If Portal query fails, return null instead of throwing
       // This allows the UI to handle the missing data gracefully
       return {
