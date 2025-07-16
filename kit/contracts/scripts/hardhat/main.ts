@@ -35,7 +35,10 @@ import { atkDeployer } from "./services/deployer";
 import { topicManager } from "./services/topic-manager";
 import { createAirdrops } from "./system-addons/airdrop";
 import { createDistribution } from "./system-addons/airdrop/distribution";
-import { createXvpSettlement } from "./system-addons/xvp/xvp-settlement";
+import {
+  createXvpSettlement,
+  approveAndExecuteXvpSettlement,
+} from "./system-addons/xvp/xvp-settlement";
 
 async function main() {
   console.log("\n=== Setting up smart protocol... ===\n");
@@ -139,7 +142,7 @@ async function main() {
   await createAirdrops(stableCoin, merkleTree);
 
   // Addon -XVP Settlement
-  await createXvpSettlement(
+  const xvpSettlementAddress = await createXvpSettlement(
     investorA, // fromActor
     investorB, // toActor
     stableCoin.address, // fromAssetAddress (stablecoin)
@@ -147,6 +150,21 @@ async function main() {
     5n * 10n ** 18n, // fromAmount (5 stablecoin)
     2n * 10n ** 18n, // toAmount (2 equity)
     false // autoExecute
+  );
+
+  // Have both participants approve the settlement to create ExecuteXvPSettlement actions
+  await approveAndExecuteXvpSettlement(
+    xvpSettlementAddress,
+    investorA,
+    stableCoin.address,
+    5n * 10n ** 18n
+  );
+
+  await approveAndExecuteXvpSettlement(
+    xvpSettlementAddress,
+    investorB,
+    equity.address,
+    2n * 10n ** 18n
   );
 
   await createPausedAsset();
