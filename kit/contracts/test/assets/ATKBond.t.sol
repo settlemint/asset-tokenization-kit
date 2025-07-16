@@ -18,8 +18,7 @@ import { ISMARTCapped } from "../../contracts/smart/extensions/capped/ISMARTCapp
 import { IATKFixedYieldScheduleFactory } from "../../contracts/addons/yield/IATKFixedYieldScheduleFactory.sol";
 import { ATKFixedYieldScheduleFactoryImplementation } from
     "../../contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
-import { SMARTFixedYieldSchedule } from
-    "../../contracts/smart/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
+import { ATKFixedYieldScheduleUpgradeable } from "../../contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol";
 import { ATKBondFactoryImplementation } from "../../contracts/assets/bond/ATKBondFactoryImplementation.sol";
 import { ATKBondImplementation } from "../../contracts/assets/bond/ATKBondImplementation.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
@@ -861,7 +860,7 @@ contract ATKBondTest is AbstractATKAssetTest {
         bond.setYieldSchedule(yieldScheduleAddr);
 
         // Verify the schedule references our bond
-        SMARTFixedYieldSchedule yieldSchedule = SMARTFixedYieldSchedule(yieldScheduleAddr);
+        ATKFixedYieldScheduleUpgradeable yieldSchedule = ATKFixedYieldScheduleUpgradeable(yieldScheduleAddr);
         assertEq(address(yieldSchedule.token()), address(bond), "FixedYield should reference the bond");
 
         // Verify the bond references the yield schedule (this was set by the factory)
