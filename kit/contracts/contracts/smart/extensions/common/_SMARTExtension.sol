@@ -40,8 +40,8 @@ abstract contract _SMARTExtension is ISMART, SMARTContext, SMARTHooks {
     /// @notice Array to store all registered interface IDs for enumeration.
     /// @dev This array works alongside the `_isInterfaceRegistered` mapping to allow retrieval
     ///      of all registered interfaces. Each interface ID is added to this array when registered
-    ///      via `_registerInterface()`. We set it to 100 to avoid hitting storage limits.
-    bytes4[100] internal _registeredInterfaces;
+    ///      via `_registerInterface()`. We set it to 50 to avoid hitting storage limits.
+    bytes4[50] internal _registeredInterfaces;
 
     /// @notice Count of registered interfaces.
     /// @dev This is used to avoid hitting storage limits.
@@ -62,7 +62,7 @@ abstract contract _SMARTExtension is ISMART, SMARTContext, SMARTHooks {
     function _registerInterface(bytes4 interfaceId) internal {
         // Only register if not already registered to avoid duplicates
         if (!_isInterfaceRegistered[interfaceId]) {
-            if (_registeredInterfacesCount >= 100) {
+            if (_registeredInterfacesCount >= 50) {
                 revert InterfaceRegistrationLimitReached();
             }
             _isInterfaceRegistered[interfaceId] = true;
