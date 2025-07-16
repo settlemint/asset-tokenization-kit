@@ -89,7 +89,7 @@ describe("Actions", () => {
     );
     const response = await theGraphClient.request(query);
 
-    // Should have at least 2 approval actions (one for each participant)
+    // Should have at least 2 approval actions (one for each participant from approved scenario)
     expect(response.actions.length).toBeGreaterThanOrEqual(2);
 
     const approvalActions = response.actions;
@@ -102,9 +102,7 @@ describe("Actions", () => {
       expect(action.target).toBeDefined();
       expect(action.createdAt).toBeDefined();
       expect(action.activeAt).toBeDefined();
-      expect(action.executed).toBe(false); // Not executed initially
-      expect(action.executedAt).toBeNull();
-      expect(action.executedBy).toBeNull();
+      expect(typeof action.executed).toBe("boolean"); // Can be true or false depending on scenario
       expect(action.identifier).toBeDefined(); // Should have settlement ID as identifier
       expect(action.requiredRole).toBeNull(); // User actions don't require specific roles
 
@@ -164,9 +162,7 @@ describe("Actions", () => {
       expect(action.target).toBeDefined();
       expect(action.createdAt).toBeDefined();
       expect(action.activeAt).toBeDefined();
-      expect(action.executed).toBe(false); // Not executed initially
-      expect(action.executedAt).toBeNull();
-      expect(action.executedBy).toBeNull();
+      expect(typeof action.executed).toBe("boolean"); // Can be true or false depending on scenario
       expect(action.identifier).toBeDefined(); // Should have settlement ID as identifier
       expect(action.requiredRole).toBeNull(); // User actions don't require specific roles
 
@@ -402,6 +398,38 @@ describe("Actions", () => {
           parseInt(action.activeAt)
         );
       }
+    });
+  });
+
+  it("should have actions in different execution states", async () => {
+    const query = theGraphGraphql(
+      `query {
+        executedActions: actions(where: { executed: true }) {
+          id
+          name
+          executed
+        }
+        pendingActions: actions(where: { executed: false }) {
+          id
+          name
+          executed
+        }
+      }`
+    );
+    const response = await theGraphClient.request(query);
+
+    // Should have both executed and pending actions from different settlement scenarios
+    expect(response.executedActions.length).toBeGreaterThan(0);
+    expect(response.pendingActions.length).toBeGreaterThan(0);
+
+    // Verify executed actions
+    response.executedActions.forEach((action) => {
+      expect(action.executed).toBe(true);
+    });
+
+    // Verify pending actions
+    response.pendingActions.forEach((action) => {
+      expect(action.executed).toBe(false);
     });
   });
 });

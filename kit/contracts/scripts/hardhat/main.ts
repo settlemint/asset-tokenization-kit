@@ -37,6 +37,7 @@ import { createAirdrops } from "./system-addons/airdrop";
 import { createDistribution } from "./system-addons/airdrop/distribution";
 import {
   createXvpSettlement,
+  approveXvpSettlement,
   approveAndExecuteXvpSettlement,
 } from "./system-addons/xvp/xvp-settlement";
 
@@ -141,8 +142,55 @@ async function main() {
   const merkleTree = new AirdropMerkleTree(distribution);
   await createAirdrops(stableCoin, merkleTree);
 
-  // Addon -XVP Settlement
-  const xvpSettlementAddress = await createXvpSettlement(
+  // Addon -XVP Settlement - Multiple scenarios for comprehensive testing
+  console.log("\n=== Creating XVP Settlement Scenarios ===\n");
+
+  // Scenario 1: Unapproved settlement (no approvals) - for tests expecting executed: false
+  console.log("🔴 Scenario 1: Creating unapproved settlement...");
+  const unapprovedSettlement = await createXvpSettlement(
+    investorA, // fromActor
+    investorB, // toActor
+    stableCoin.address, // fromAssetAddress (stablecoin)
+    equity.address, // toAssetAddress (equity)
+    3n * 10n ** 18n, // fromAmount (3 stablecoin)
+    1n * 10n ** 18n, // toAmount (1 equity)
+    false // autoExecute
+  );
+  console.log("✅ Unapproved settlement created - no actions taken");
+
+  // Scenario 2: Fully approved settlement (ready to execute) - for tests expecting approved but not executed
+  console.log("🟡 Scenario 2: Creating approved settlement...");
+  const approvedSettlement = await createXvpSettlement(
+    investorA, // fromActor
+    investorB, // toActor
+    stableCoin.address, // fromAssetAddress (stablecoin)
+    equity.address, // toAssetAddress (equity)
+    4n * 10n ** 18n, // fromAmount (4 stablecoin)
+    1n * 10n ** 18n, // toAmount (1 equity)
+    false // autoExecute
+  );
+
+  // Approve from both sides but don't execute
+  await approveXvpSettlement(
+    approvedSettlement,
+    investorA,
+    stableCoin.address,
+    4n * 10n ** 18n
+  );
+
+  await approveXvpSettlement(
+    approvedSettlement,
+    investorB,
+    equity.address,
+    1n * 10n ** 18n
+  );
+  console.log(
+    "✅ Approved settlement created - both sides approved, ready to execute"
+  );
+
+  // Scenario 3: Fully executed settlement (completed) - for tests expecting executed: true
+  console.log("🟢 Scenario 3: Creating executed settlement...");
+  const executedSettlement = await createXvpSettlement(
     investorA, // fromActor
     investorB, // toActor
     stableCoin.address, // fromAssetAddress (stablecoin)
@@ -152,20 +200,21 @@ async function main() {
     false // autoExecute
   );
 
-  // Have both participants approve the settlement to create ExecuteXvPSettlement actions
+  // Have both participants approve and execute the settlement
   await approveAndExecuteXvpSettlement(
-    xvpSettlementAddress,
+    executedSettlement,
     investorA,
     stableCoin.address,
     5n * 10n ** 18n
   );
 
   await approveAndExecuteXvpSettlement(
-    xvpSettlementAddress,
+    executedSettlement,
     investorB,
     equity.address,
     2n * 10n ** 18n
   );
+  console.log("✅ Executed settlement created - fully completed");
 
   await createPausedAsset();
 
