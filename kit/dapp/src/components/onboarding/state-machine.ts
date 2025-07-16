@@ -159,4 +159,4 @@ export function updateOnboardingStateMachine({
     currentStep: currentStep?.step ?? OnboardingStep.wallet,
     steps,
   };
-} //
+}

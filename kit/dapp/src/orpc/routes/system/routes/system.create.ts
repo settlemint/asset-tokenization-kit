@@ -297,49 +297,9 @@ export const create = onboardedRouter.system.create
 
     const system = { id: systemAddress };
 
-    // Check if the system is already bootstrapped before attempting to bootstrap
-    // We can check this by calling the compliance() function on the system contract
-    const checkBootstrapQuery = portalGraphql(`
-      query CheckSystemBootstrap($address: String!) {
-        IATKSystemCompliance(address: $address) {
-          complianceProxyAddress
-        }
-      }
-    `);
-
-    let isAlreadyBootstrapped = false;
-    try {
-      const bootstrapCheck = await context.portalClient.query(
-        checkBootstrapQuery,
-        { address: systemAddress },
-        z.object({
-          IATKSystemCompliance: z
-            .object({
-              complianceProxyAddress: z.string(),
-            })
-            .nullable(),
-        }),
-        "Failed to check bootstrap status"
-      );
-
-      // If we get a valid compliance address, the system is already bootstrapped
-      isAlreadyBootstrapped =
-        !!bootstrapCheck.IATKSystemCompliance?.complianceProxyAddress;
-      logger.debug("System bootstrap check:", {
-        isAlreadyBootstrapped,
-        complianceAddress:
-          bootstrapCheck.IATKSystemCompliance?.complianceProxyAddress,
-      });
-    } catch (error) {
-      logger.debug(
-        "Bootstrap check failed, assuming system is already bootstrapped:",
-        error
-      );
-      // If the bootstrap check fails, it's likely because the system is already bootstrapped
-      // and the Portal GraphQL doesn't recognize the query pattern
-      // Based on the transaction logs, if we see a system creation transaction, it's likely bootstrapped
-      isAlreadyBootstrapped = true;
-    }
+    // For newly created systems, bootstrap is required
+    // We'll attempt to bootstrap and handle any errors gracefully
+    const isAlreadyBootstrapped = false;
 
     // Only bootstrap if the system is not already bootstrapped
     if (!isAlreadyBootstrapped) {

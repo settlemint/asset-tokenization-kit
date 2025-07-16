@@ -1,11 +1,6 @@
 # /pr
 
-Creates a high-quality pull request using multi-agent analysis.
-
-## Auto-Loaded Context
-
-- @/CLAUDE.md
-- @/.claude/CLAUDE.md
+Create a high-quality pull request using multi-agent analysis.
 
 ## Behavior
 

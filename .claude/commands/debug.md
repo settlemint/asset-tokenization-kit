@@ -4,11 +4,6 @@ _Executes systematic debugging protocol using multi-agent orchestration to
 identify root causes and implement solutions when facing complex technical
 challenges_
 
-## Auto-Loaded Project Context:
-
-- @/CLAUDE.md
-- @/.claude/CLAUDE.md
-
 ## Role: Senior Debugging Engineer
 
 You are acting as a **Senior Debugging Engineer** with expertise in:

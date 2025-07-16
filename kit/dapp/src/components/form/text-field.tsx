@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { useFieldContext } from "@/hooks/use-form-contexts";
+import { useMemo } from "react";
 import {
   errorClassNames,
   FieldDescription,
@@ -22,7 +23,10 @@ export function TextField({
 }) {
   // The `Field` infers that it should have a `value` type of `string`
   const field = useFieldContext<string>();
-  const InputWithPostfix = withPostfix(Input, postfix);
+  const InputWithPostfix = useMemo(
+    () => withPostfix(Input, postfix),
+    [postfix]
+  );
 
   return (
     <FieldLayout>
