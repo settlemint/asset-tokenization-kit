@@ -18,6 +18,10 @@ import { SMARTContext } from "../common/SMARTContext.sol";
 ///      An 'abstract contract' is a template and cannot be deployed directly.
 
 abstract contract _SMARTExtension is ISMART, SMARTContext, SMARTHooks {
+    /// @notice Error thrown when the maximum number of interfaces is reached.
+    /// @dev This is used to avoid hitting storage limits.
+    error InterfaceRegistrationLimitReached();
+
     /// @notice Internal flag, potentially for managing forced updates or states (usage may vary or be vestigial).
     /// @dev The exact purpose of `__isForcedUpdate` might depend on specific extension implementations or
     ///      higher-level contract logic that uses it. It's a general-purpose internal flag.
@@ -36,8 +40,12 @@ abstract contract _SMARTExtension is ISMART, SMARTContext, SMARTHooks {
     /// @notice Array to store all registered interface IDs for enumeration.
     /// @dev This array works alongside the `_isInterfaceRegistered` mapping to allow retrieval
     ///      of all registered interfaces. Each interface ID is added to this array when registered
-    ///      via `_registerInterface()`.
-    bytes4[] internal _registeredInterfaces;
+    ///      via `_registerInterface()`. We set it to 100 to avoid hitting storage limits.
+    bytes4[100] internal _registeredInterfaces;
+
+    /// @notice Count of registered interfaces.
+    /// @dev This is used to avoid hitting storage limits.
+    uint256 internal _registeredInterfacesCount;
 
     // --- Implementation Functions ---
 
@@ -54,8 +62,12 @@ abstract contract _SMARTExtension is ISMART, SMARTContext, SMARTHooks {
     function _registerInterface(bytes4 interfaceId) internal {
         // Only register if not already registered to avoid duplicates
         if (!_isInterfaceRegistered[interfaceId]) {
+            if (_registeredInterfacesCount >= 100) {
+                revert InterfaceRegistrationLimitReached();
+            }
             _isInterfaceRegistered[interfaceId] = true;
-            _registeredInterfaces.push(interfaceId);
+            _registeredInterfaces[_registeredInterfacesCount] = interfaceId;
+            _registeredInterfacesCount++;
         }
     }
 
@@ -65,6 +77,10 @@ abstract contract _SMARTExtension is ISMART, SMARTContext, SMARTHooks {
     ///      automated interface detection.
     /// @return An array of `bytes4` interface identifiers that have been registered.
     function registeredInterfaces() external view returns (bytes4[] memory) {
-        return _registeredInterfaces;
+        bytes4[] memory interfaces = new bytes4[](_registeredInterfacesCount);
+        for (uint256 i = 0; i < _registeredInterfacesCount; i++) {
+            interfaces[i] = _registeredInterfaces[i];
+        }
+        return interfaces;
     }
 }
