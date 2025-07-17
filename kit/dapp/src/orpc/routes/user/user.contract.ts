@@ -11,24 +11,25 @@
  * @see {@link ./user.router} - Implementation router
  */
 
+import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
+import { createWalletContract } from "@/orpc/routes/user/routes/mutations/create-wallet.contract";
 import {
   UserListOutputSchema,
   UserListSchema,
 } from "@/orpc/routes/user/routes/user.list.schema";
 import { UserMeSchema } from "@/orpc/routes/user/routes/user.me.schema";
 import {
-  UserStatsInputSchema,
-  UserStatsOutputSchema,
-} from "@/orpc/routes/user/routes/user.stats.schema";
-import {
   UserStatsGrowthOverTimeInputSchema,
   UserStatsGrowthOverTimeOutputSchema,
 } from "@/orpc/routes/user/routes/user.stats.growth-over-time.schema";
 import {
+  UserStatsInputSchema,
+  UserStatsOutputSchema,
+} from "@/orpc/routes/user/routes/user.stats.schema";
+import {
   UserStatsUserCountInputSchema,
   UserStatsUserCountOutputSchema,
 } from "@/orpc/routes/user/routes/user.stats.user-count.schema";
-import { kycContract } from "@/orpc/routes/user/kyc/kyc.contract";
 import { baseContract } from "../../procedures/base.contract";
 
 /**
@@ -118,4 +119,5 @@ export const userContract = {
   statsGrowthOverTime,
   statsUserCount,
   kyc: kycContract,
+  createWallet: createWalletContract,
 };
