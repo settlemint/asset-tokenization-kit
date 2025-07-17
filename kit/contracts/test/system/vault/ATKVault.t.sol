@@ -24,7 +24,15 @@ contract ATKVaultTest is Test {
         signers[1] = signer2;
         signers[2] = signer3;
 
-        vault = new ATKVault(signers, 2, owner, forwarder, address(0));
+        address[] memory initialAdmins = new address[](2);
+        initialAdmins[0] = owner;
+
+        vault = new ATKVault(signers, 2, forwarder, address(0), initialAdmins);
+
+        vm.prank(owner);
+        vault.grantRole(vault.GOVERNANCE_ROLE(), owner);
+        vm.prank(owner);
+        vault.grantRole(vault.EMERGENCY_ROLE(), owner);
     }
 
     function test_InitialState() public view {

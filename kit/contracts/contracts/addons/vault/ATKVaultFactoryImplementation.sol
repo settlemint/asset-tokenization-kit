@@ -7,6 +7,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 // Interfaces
 import { IATKVaultFactory } from "./IATKVaultFactory.sol";
 import { IATKSystem } from "../../system/IATKSystem.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
@@ -75,7 +76,10 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         returns (address contractAddress)
     {
         bytes memory saltInputData = abi.encode(address(this), signers, required, initialOwner, salt);
-        bytes memory constructorArgs = abi.encode(signers, required, initialOwner, trustedForwarder(), address(0));
+        address[] memory initialAdmins = new address[](2);
+        initialAdmins[0] = initialOwner;
+        initialAdmins[1] = address(this);
+        bytes memory constructorArgs = abi.encode(signers, required, trustedForwarder(), address(0), initialAdmins);
         bytes memory vaultBytecode = type(ATKVault).creationCode;
 
         // Predict the vault address
@@ -87,8 +91,17 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         // Create contract identity for the vault
         address contractIdentity = _deployContractIdentity(contractAddress, country);
 
+        IAccessControl(contractAddress).grantRole(ATKVault(payable(contractAddress)).GOVERNANCE_ROLE(), address(this));
+
         // Set the onchainId on the vault
         ATKVault(payable(contractAddress)).setOnchainId(contractIdentity);
+
+        IAccessControl(contractAddress).renounceRole(
+            ATKVault(payable(contractAddress)).GOVERNANCE_ROLE(), address(this)
+        );
+        IAccessControl(contractAddress).renounceRole(
+            ATKVault(payable(contractAddress)).DEFAULT_ADMIN_ROLE(), address(this)
+        );
 
         // Emit an event to log the creation of the new vault.
         emit ATKVaultCreated(_msgSender(), contractAddress, contractIdentity);

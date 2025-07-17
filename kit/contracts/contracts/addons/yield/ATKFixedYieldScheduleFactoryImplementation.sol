@@ -142,7 +142,7 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         IAccessControl(scheduleProxyAddress).renounceRole(
             ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).GOVERNANCE_ROLE(), address(this)
         );
-        IAccessControl(scheduleProxyAddress).grantRole(
+        IAccessControl(scheduleProxyAddress).renounceRole(
             ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).DEFAULT_ADMIN_ROLE(), address(this)
         );
 

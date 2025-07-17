@@ -180,16 +180,16 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @notice Initializes the Vault with a set of signers and confirmation threshold
     /// @param _signers Array of initial signer addresses
     /// @param _required Number of confirmations required to execute a transaction
-    /// @param initialOwner Address that will have admin role
     /// @param forwarder Address of the ERC2771 forwarder for meta-transactions
     /// @param onchainId Address of the OnchainID (IIdentity contract) to associate with this vault (can be address(0)
     /// to set later)
+    /// @param initialAdmins Addresses that will have admin role
     constructor(
         address[] memory _signers,
         uint256 _required,
-        address initialOwner,
         address forwarder,
-        address onchainId
+        address onchainId,
+        address[] memory initialAdmins
     )
         ERC2771Context(forwarder)
         AccessControlEnumerable()
@@ -198,10 +198,10 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         // Validate that the required confirmations is a sensible number
         if (len == 0 || _required == 0 || _required > len) revert InvalidRequirement(_required, len);
 
-        // Grant admin role to the initial owner
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
-        _grantRole(EMERGENCY_ROLE, initialOwner);
-        _grantRole(GOVERNANCE_ROLE, initialOwner);
+        // Grant admin role to the initial admins
+        for (uint256 i = 0; i < initialAdmins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
+        }
 
         // Grant signer role to all initial signers
         for (uint256 i = 0; i < len; ++i) {
