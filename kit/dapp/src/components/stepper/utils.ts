@@ -2,10 +2,10 @@ import type { StepOrGroup } from "@/components/stepper/types";
 import { getElementAtIndex } from "@/lib/utils/array";
 import type { Step, StepGroup } from "./types";
 
-export function getStepById<StepId>(
-  steps: Step<StepId>[],
-  id: StepId
-): Step<StepId> {
+export function getStepById<StepId, Steps extends Step<StepId>[]>(
+  steps: Steps,
+  id: Steps[number]["id"]
+): Steps[number] {
   const step = steps.find((s) => s.id === id);
   if (!step) {
     throw new Error(`Step with id ${id} not found`);
@@ -13,19 +13,19 @@ export function getStepById<StepId>(
   return step;
 }
 
-export function getNextStepId<StepId>(
-  allSteps: Step<StepId>[],
-  currentStepId: StepId
-): StepId {
+export function getNextStepId<StepId, Steps extends Step<StepId>[]>(
+  allSteps: Steps,
+  currentStepId: Steps[number]["id"]
+): Steps[number]["id"] {
   const currentStep = getStepById(allSteps, currentStepId);
   const nextStep = getNextStep(allSteps, currentStep);
   return nextStep.id;
 }
 
-export function getNextStep<StepId>(
-  allSteps: Step<StepId>[],
-  currentStep: Step<StepId>
-): Step<StepId> {
+export function getNextStep<StepId, Steps extends Step<StepId>[]>(
+  allSteps: Steps,
+  currentStep: Steps[number]
+): Steps[number] {
   const sortedSteps = sortByStep(allSteps);
   const currentIndex = sortedSteps.findIndex(
     (step) => step.id === currentStep.id
@@ -44,7 +44,9 @@ export function getNextStep<StepId>(
   return nextStep;
 }
 
-export function getLastStep<StepId>(steps: Step<StepId>[]): Step<StepId> {
+export function getLastStep<StepId, Steps extends Step<StepId>[]>(
+  steps: Steps
+): Steps[number] {
   const sortedSteps = sortByStep(steps);
   return getElementAtIndex(sortedSteps, sortedSteps.length - 1);
 }
