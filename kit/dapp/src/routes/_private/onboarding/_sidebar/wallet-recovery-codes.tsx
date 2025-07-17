@@ -91,8 +91,10 @@ function RouteComponent() {
     void handleMutationSuccess(OnboardingStep.walletRecoveryCodes);
 
   useEffect(() => {
-    generateRecoveryCodes();
-  }, [generateRecoveryCodes]);
+    if (subStep !== "complete") {
+      generateRecoveryCodes();
+    }
+  }, [generateRecoveryCodes, subStep]);
 
   if (subStep === "complete") {
     return <RecoveryCodesComplete />;
