@@ -17,7 +17,6 @@ import { fetchCollateral } from "../token-extensions/collateral/fetch/collateral
 import { fetchCustodian } from "../token-extensions/custodian/fetch/custodian";
 import { fetchPausable } from "../token-extensions/pausable/fetch/pausable";
 import { fetchRedeemable } from "../token-extensions/redeemable/fetch/redeemable";
-import { getTokenExtensions } from "../token-extensions/utils/token-extensions-utils";
 import { fetchYield } from "../token-extensions/yield/fetch/yield";
 import { fetchToken } from "../token/fetch/token";
 import { fetchTokenFactory } from "./fetch/token-factory";
@@ -50,7 +49,11 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   token.createdBy = fetchAccount(event.transaction.from).id;
   token.identity = fetchIdentity(event.params.tokenIdentity).id;
   token.accessControl = fetchAccessControl(event.params.accessManager).id;
-  token.extensions = getTokenExtensions(event.params.interfaces);
+
+  // Set the token extensions and implemented interfaces from the Factory
+  token.extensions = tokenFactory.tokenExtensions;
+  token.implementsERC3643 = tokenFactory.tokenImplementsERC3643;
+  token.implementsSMART = tokenFactory.tokenImplementsSMART;
 
   // Initialize TokenStatsState for the new token
   const tokenStatsState = new TokenStatsState(event.params.tokenAddress);
