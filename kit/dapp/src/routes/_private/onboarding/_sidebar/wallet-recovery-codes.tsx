@@ -1,66 +1,36 @@
-import {
-  OnboardingStep,
-  updateOnboardingStateMachine,
-} from "@/components/onboarding/state-machine";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { RecoveryCodesActions } from "@/components/onboarding/wallet-security/recovery-codes-actions";
 import { RecoveryCodesComplete } from "@/components/onboarding/wallet-security/recovery-codes-complete";
 import { RecoveryCodesDisplay } from "@/components/onboarding/wallet-security/recovery-codes-display";
 import { RecoveryCodesWarning } from "@/components/onboarding/wallet-security/recovery-codes-warning";
 import { Button } from "@/components/ui/button";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { authClient } from "@/lib/auth/auth.client";
-import { orpc } from "@/orpc/orpc-client";
+import {
+  createOnboardingBeforeLoad,
+  createOnboardingSearchSchema,
+} from "@/components/onboarding/route-helpers";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
-import { z } from "zod";
 
 const logger = createLogger();
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/wallet-recovery-codes"
 )({
-  validateSearch: zodValidator(
-    z.object({
-      step: z.enum(Object.values(OnboardingStep)).optional(),
-      subStep: z.enum(["intro", "complete"]).optional(),
-    })
-  ),
-  beforeLoad: async ({
-    context: { orpc, queryClient },
-    search: { step, subStep },
-  }) => {
-    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
-    const { currentStep } = updateOnboardingStateMachine({ user });
-
-    // If we're showing the complete subStep, don't redirect
-    if (subStep === "complete") {
-      return;
-    }
-
-    if (step) {
-      if (step !== OnboardingStep.walletRecoveryCodes) {
-        throw redirect({
-          to: `/onboarding/${step}`,
-        });
-      }
-    } else {
-      if (currentStep !== OnboardingStep.walletRecoveryCodes) {
-        throw redirect({
-          to: `/onboarding/${currentStep}`,
-        });
-      }
-    }
-  },
+  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  beforeLoad: createOnboardingBeforeLoad(OnboardingStep.walletRecoveryCodes),
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate({ from: Route.fullPath });
   const { subStep } = Route.useSearch();
+  const { handleMutationSuccess, completeStepAndNavigate } =
+    useOnboardingNavigation();
 
   const {
     mutate: generateRecoveryCodes,
@@ -71,7 +41,16 @@ function RouteComponent() {
       authClient.secretCodes.generate({
         password: undefined,
       }),
+    onSuccess: async () => {
+      // Clear auth session cache to ensure UI reflects updated auth state
+      await authClient.getSession({
+        query: {
+          disableCookieCache: true,
+        },
+      });
 
+      // No need to show a toast here as the codes are displayed in the UI
+    },
     onError: (error: Error) => {
       logger.error("generateRecoveryCodes error:", error);
       toast.error(error.message || "Failed to generate recovery codes");
@@ -83,13 +62,13 @@ function RouteComponent() {
     [recoveryCodesData]
   );
 
-  // Memoized functions to avoid creating new functions in render
-  const handleCopyAll = useCallback(() => {
+  // Event handlers
+  const handleCopyAll = () => {
     void navigator.clipboard.writeText(recoveryCodes.join("\n"));
     toast.success("Recovery codes copied to clipboard!");
-  }, [recoveryCodes]);
+  };
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = () => {
     const blob = new Blob([recoveryCodes.join("\n")], {
       type: "text/plain",
     });
@@ -102,31 +81,35 @@ function RouteComponent() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast.success("Recovery codes downloaded!");
-  }, [recoveryCodes]);
+  };
 
-  const handleCopyCode = useCallback((code: string, index: number) => {
+  const handleCopyCode = (code: string, index: number) => {
     void navigator.clipboard.writeText(code);
     toast.success(`Code ${index + 1} copied!`);
-  }, []);
+  };
 
-  const onNext = useCallback(async () => {
-    await queryClient.refetchQueries({
-      queryKey: orpc.user.me.key(),
-    });
-    await navigate({
-      search: () => ({
-        step: OnboardingStep.walletRecoveryCodes,
-        subStep: "complete",
-      }),
-    });
-  }, [queryClient, navigate]);
+  const onNext = () =>
+    void handleMutationSuccess(OnboardingStep.walletRecoveryCodes, "complete");
 
   useEffect(() => {
     generateRecoveryCodes();
   }, [generateRecoveryCodes]);
 
   if (subStep === "complete") {
-    return <RecoveryCodesComplete />;
+    return (
+      <div>
+        <RecoveryCodesComplete />
+        <footer>
+          <Button
+            onClick={() =>
+              void completeStepAndNavigate(OnboardingStep.walletRecoveryCodes)
+            }
+          >
+            Continue
+          </Button>
+        </footer>
+      </div>
+    );
   }
 
   return (

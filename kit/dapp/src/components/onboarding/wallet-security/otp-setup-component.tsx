@@ -11,7 +11,7 @@ import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const logger = createLogger({ level: "debug" });
@@ -35,10 +35,25 @@ export function OtpSetupComponent({
         password: undefined,
         onboarding: true,
       }),
-    onSuccess: () => {
-      toast.success("OTP setup initiated");
+    onSuccess: async (data) => {
+      // Clear auth session cache to ensure UI reflects updated auth state
+      await authClient.getSession({
+        query: {
+          disableCookieCache: true,
+        },
+      });
+
+      // Extract OTP URI from response
+      if (data.data?.totpURI) {
+        setOtpUri(data.data.totpURI);
+        toast.success("OTP setup initiated");
+      } else {
+        setOtpSetupError(true);
+        toast.error("Failed to get OTP setup data");
+      }
     },
     onError: (error: Error) => {
+      setOtpSetupError(true);
       toast.error(error.message || "Failed to setup OTP");
     },
   });
@@ -48,12 +63,21 @@ export function OtpSetupComponent({
       authClient.twoFactor.verifyTotp({
         code,
       }),
-    onSuccess: () => {
-      toast.success("OTP verified successfully");
-      void queryClient.invalidateQueries({
-        queryKey: orpc.user.me.key(),
-        refetchType: "all",
+    onSuccess: async () => {
+      // Clear auth session cache to ensure UI reflects updated auth state
+      await authClient.getSession({
+        query: {
+          disableCookieCache: true,
+        },
       });
+
+      toast.success("OTP verified successfully");
+
+      // Invalidate user queries to get fresh data
+      await queryClient.invalidateQueries({
+        queryKey: orpc.user.me.key(),
+      });
+
       onSuccess();
     },
     onError: (error: Error) => {
@@ -102,6 +126,11 @@ export function OtpSetupComponent({
     },
     [form]
   );
+
+  // Start OTP setup when component mounts
+  useEffect(() => {
+    enableTwoFactor();
+  }, [enableTwoFactor]);
 
   if (otpSetupError) {
     return (
@@ -171,7 +200,7 @@ export function OtpSetupComponent({
             <p className="text-xs text-muted-foreground mb-1">
               Manual entry key:
             </p>
-            <code className="text-xs break-all">{otpUri}</code>
+            <code className="text-xs break-all">{otpUri || "Loading..."}</code>
           </div>
         </details>
       </div>
