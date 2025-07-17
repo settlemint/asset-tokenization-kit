@@ -456,6 +456,13 @@ type XvPSettlementApproval @entity(immutable: false) {
 # ACTIONS
 # ==================================================
 
+enum ActionStatus {
+  PENDING
+  ACTIVE
+  EXECUTED
+  EXPIRED
+}
+
 type Action @entity(immutable: false) {
   id: Bytes!
   name: String!
@@ -464,7 +471,8 @@ type Action @entity(immutable: false) {
   activeAt: BigInt!
   expiresAt: BigInt
   requiredRole: String
-  executed: Boolean!
+  status: ActionStatus!
+  executed: Boolean!  # Keep for backward compatibility
   executedAt: BigInt
   executedBy: Bytes
   identifier: String
