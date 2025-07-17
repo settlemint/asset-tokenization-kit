@@ -10,11 +10,15 @@
  * @throws {Error} When the element at the given index doesn't exist
  */
 export function getElementAtIndex<T>(elements: T[], index: number): T {
-  const element = elements[index];
-  if (!element) {
+  if (index < 0 || index >= elements.length) {
     throw new Error(
-      `Element at index ${index} not found in array (length: ${elements.length})`
+      `Invalid index ${index} for array of length ${elements.length}`
     );
+  }
+  const element = elements[index];
+  // This never happens, but we check for type safety
+  if (element === undefined) {
+    throw new Error(`Element at index ${index} is undefined`);
   }
   return element;
 }
