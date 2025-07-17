@@ -31,13 +31,14 @@ export const Route = createFileRoute("/_private")({
         ),
       ]);
 
+      // TODO: Re-enable system prefetch once system.read endpoint is fixed
       // Prefetch system details if we have a system address
       // This is non-blocking since it's only used by OnboardingGuard which has its own query
-      if (systemAddress) {
-        void queryClient.prefetchQuery(
-          orpc.system.read.queryOptions({ input: { id: systemAddress } })
-        );
-      }
+      // if (systemAddress) {
+      //   void queryClient.prefetchQuery(
+      //     orpc.system.read.queryOptions({ input: { id: systemAddress } })
+      //   );
+      // }
 
       return { user, systemAddress };
     } catch {

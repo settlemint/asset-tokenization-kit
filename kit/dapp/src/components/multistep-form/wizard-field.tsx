@@ -53,8 +53,6 @@ export function WizardField<TFormData>({
   const [isChecking, setIsChecking] = useState(false);
   const [dateOpen, setDateOpen] = useState(false);
   const { form } = useWizardContext<TFormData>();
-
-  // Always call useField hook - never conditionally
   const field = useField({
     form,
     name: fieldDef.name as string,

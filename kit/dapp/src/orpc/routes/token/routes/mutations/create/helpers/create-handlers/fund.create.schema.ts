@@ -5,12 +5,7 @@ import {
 } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { z } from "zod";
 
-/**
- * Fund token specific schema with additional required fields
- */
-export const FundTokenSchema = TokenBaseSchema.extend({
-  type: z.literal(AssetTypeEnum.fund),
-  messages: createTokenMessagesSchema(AssetTypeEnum.fund).optional(),
+export const FundSchema = z.object({
   managementFeeBps: z
     .number()
     .int()
@@ -18,3 +13,11 @@ export const FundTokenSchema = TokenBaseSchema.extend({
     .max(10000)
     .describe("Management fee in basis points (0-10000)"),
 });
+
+/**
+ * Fund token specific schema with additional required fields
+ */
+export const FundTokenSchema = TokenBaseSchema.extend({
+  type: z.literal(AssetTypeEnum.fund),
+  messages: createTokenMessagesSchema(AssetTypeEnum.fund).optional(),
+}).extend(FundSchema.shape);

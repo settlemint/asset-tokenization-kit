@@ -19,8 +19,8 @@ export const TokenBaseSchema = MutationInputSchema.extend({
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),
   isin: isin().optional(),
-  initialModulePairs: z.array(ModulePairSchema).optional().default([]),
-  requiredClaimTopics: z.array(z.string()).optional().default([]),
+  initialModulePairs: z.array(ModulePairSchema).default([]),
+  requiredClaimTopics: z.array(z.string()).default([]),
   type: assetType(),
 });
 

@@ -14,6 +14,7 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
+import { AssetDesignerForm } from "@/components/asset-designer/asset-designer-form";
 import { Button } from "@/components/ui/button";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
@@ -80,6 +81,7 @@ function Home() {
       <Link to="/asset-designer" className="mb-6 block">
         <Button>Create New Asset</Button>
       </Link>
+      <AssetDesignerForm />
     </div>
   );
 }
