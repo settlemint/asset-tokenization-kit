@@ -130,12 +130,13 @@ export function updateActionStatus(action: Action, currentTime: BigInt): void {
   }
 
   if (action.status !== newStatus) {
+    const oldStatus = action.status;
     action.status = newStatus;
     action.save();
 
     log.info("Action status updated: {} - from: {} to: {}", [
       action.id.toHexString(),
-      action.status,
+      oldStatus,
       newStatus,
     ]);
   }
