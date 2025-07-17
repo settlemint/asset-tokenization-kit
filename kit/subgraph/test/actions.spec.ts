@@ -495,7 +495,9 @@ describe("Actions", () => {
         }
 
         // Verify the status is one of the valid values
-        expect(["PENDING", "ACTIVE", "EXECUTED", "EXPIRED"]).toContain(action.status);
+        expect(["PENDING", "ACTIVE", "EXECUTED", "EXPIRED"]).toContain(
+          action.status
+        );
       });
     });
 
