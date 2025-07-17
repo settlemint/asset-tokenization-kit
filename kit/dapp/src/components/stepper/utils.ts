@@ -5,7 +5,7 @@ export function getStepByName<StepName>(
   steps: Step<StepName>[],
   name: StepName
 ): Step<StepName> {
-  const step = steps.find((s) => s.name === name);
+  const step = steps.find((s) => s.id === name);
   if (!step) {
     throw new Error("Step not found");
   }
@@ -24,7 +24,7 @@ export function getStepByIndex<StepName>(
 }
 
 export function getStepIndex<StepName>(step: Step<StepName>): number {
-  return step.id - 1;
+  return step.step - 1;
 }
 
 export function getNextStepName<StepName>(
@@ -35,9 +35,9 @@ export function getNextStepName<StepName>(
   const currentStepIndex = getStepIndex(currentStep);
   const isLastStep = currentStepIndex === steps.length - 1;
   if (isLastStep) {
-    return currentStep.name;
+    return currentStep.id;
   }
-  return getStepByIndex(steps, currentStepIndex + 1).name;
+  return getStepByIndex(steps, currentStepIndex + 1).id;
 }
 
 export function getNextStep<StepName>(

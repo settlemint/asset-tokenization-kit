@@ -36,20 +36,20 @@ export function useAssetDesignerSteps(): Step<AssetDesignerStepsType>[] {
 
   return [
     {
-      id: 1,
-      name: "selectAssetType",
+      step: 1,
+      id: "selectAssetType",
       label: t("wizard.steps.selectAssetType.title"),
       description: t("wizard.steps.selectAssetType.description"),
     },
     {
-      id: 2,
-      name: "assetBasics",
+      step: 2,
+      id: "assetBasics",
       label: t("wizard.steps.assetBasics.title"),
       description: t("wizard.steps.assetBasics.description"),
     },
     {
-      id: 3,
-      name: "summary",
+      step: 3,
+      id: "summary",
       label: t("wizard.steps.summary.title"),
       description: t("wizard.steps.summary.description"),
     },

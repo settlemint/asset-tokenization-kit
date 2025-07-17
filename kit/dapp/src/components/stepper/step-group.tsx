@@ -22,7 +22,9 @@ export function StepGroupComponent<StepName, GroupName>({
   onStepSelect,
 }: StepGroupProps<StepName, GroupName>) {
   const [open, setOpen] = useState(false);
-  const hasActiveStep = group.steps.some((step) => step.id === currentStep.id);
+  const hasActiveStep = group.steps.some(
+    (step) => step.step === currentStep.step
+  );
   const isCompleted = isGroupCompleted(group, currentStep);
 
   useEffect(() => {
@@ -71,7 +73,7 @@ export function StepGroupComponent<StepName, GroupName>({
                   const isLastInGroup = index === group.steps.length - 1;
 
                   return (
-                    <div key={step.id} className="relative">
+                    <div key={step.step} className="relative">
                       <StepComponent<StepName>
                         step={step}
                         currentStep={currentStep}

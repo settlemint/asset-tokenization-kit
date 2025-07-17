@@ -17,10 +17,10 @@ export function StepComponent<StepName>({
   navigation,
   onStepSelect,
 }: StepItemProps<StepName>) {
-  const isActive = step.id === currentStep.id;
+  const isActive = step.step === currentStep.step;
   const isCompleted = isStepCompleted<StepName>(step, currentStep);
   const canSelect =
-    isActive || (isCompleted && navigation === "next-and-previous");
+    isActive || (isCompleted && navigation === "next-and-completed");
   const status = isCompleted ? "completed" : isActive ? "active" : "pending";
 
   return (

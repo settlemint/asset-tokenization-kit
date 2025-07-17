@@ -49,7 +49,7 @@ export function StepLayout<StepName, GroupName>({
 
           return (
             <StepComponent
-              key={item.id}
+              key={item.step}
               step={item}
               allSteps={allSteps}
               onStepSelect={onStepSelect}

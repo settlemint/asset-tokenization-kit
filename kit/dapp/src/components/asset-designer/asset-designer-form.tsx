@@ -30,13 +30,14 @@ export const AssetDesignerForm = () => {
     },
   });
 
-  const formStep = useStore(form.store, (state) => state.values.step);
+  const stepId = useStore(form.store, (state) => state.values.step);
+  const currentStep = getStepByName(steps, stepId);
+
   const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
     selectAssetType: <SelectAssetType form={form} />,
     assetBasics: <AssetBasics form={form} />,
     summary: <div>Summary</div>,
   };
-  const currentStep = getStepByName(steps, formStep);
 
   return (
     <form.AppForm>
@@ -44,12 +45,12 @@ export const AssetDesignerForm = () => {
         stepsOrGroups={steps}
         currentStep={currentStep}
         onStepSelect={(step) => {
-          form.setFieldValue("step", step.name);
+          form.setFieldValue("step", step.id);
         }}
-        navigation="next-and-previous"
+        navigation="next-and-completed"
       >
         {({ currentStep }) => {
-          return stepComponent[currentStep.name];
+          return stepComponent[currentStep.id];
         }}
       </StepLayout>
     </form.AppForm>

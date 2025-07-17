@@ -1,6 +1,6 @@
 export interface Step<StepName> {
-  id: number;
-  name: StepName;
+  step: number;
+  id: StepName;
   label: string;
   description: string;
 }
@@ -15,4 +15,4 @@ export type StepOrGroup<StepName, GroupName> =
   | Step<StepName>
   | StepGroup<StepName, GroupName>;
 
-export type Navigation = "next-only" | "next-and-previous";
+export type Navigation = "next-only" | "next-and-completed";
