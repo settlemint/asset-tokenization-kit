@@ -324,7 +324,7 @@ services:
     ports:
       - "4000:4000"
   blockscout-frontend:
-    image: ghcr.io/blockscout/frontend:v2.1.1
+    image: ghcr.io/blockscout/frontend:v2.2.0
     platform: linux/amd64
     restart: unless-stopped
     container_name: atk-blockscout-frontend

@@ -184,7 +184,7 @@ The project integrates with:
 ## Coding Standards & AI Instructions
 
 CRITICAL: Write code as if the person maintaining it is a violent psychopath who
-knows where you live. Make it that clear. The Ten Universal Commandments
+knows where you live. Make it that clear. 
 
 ## Important Notes
 

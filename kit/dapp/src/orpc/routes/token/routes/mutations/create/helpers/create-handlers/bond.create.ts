@@ -59,6 +59,8 @@ export const bondCreateHandler = async function* (
       CREATE_BOND_MUTATION,
       {
         ...input,
+        cap: input.cap.toString(),
+        faceValue: input.faceValue.toString(),
         ...context.mutationVariables,
       },
       creationFailedMessage,

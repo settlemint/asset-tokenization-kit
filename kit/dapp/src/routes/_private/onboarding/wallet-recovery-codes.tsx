@@ -13,15 +13,17 @@ import { toast } from "sonner";
 
 const logger = createLogger();
 
-export const Route = createFileRoute(
-  "/_private/onboarding/wallet-recovery-codes"
-)({
-  beforeLoad: async ({ context: { orpc, queryClient } }) => {
+const routeConfig = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  beforeLoad: async ({ context: { orpc, queryClient } }: any) => {
     const user = await queryClient.fetchQuery({
       ...orpc.user.me.queryOptions(),
       staleTime: 0,
     });
-    const { currentStep } = updateOnboardingStateMachine({ user });
+    const { currentStep } = updateOnboardingStateMachine({
+      user,
+      hasSystem: false,
+    });
     if (currentStep !== OnboardingStep.walletRecoveryCodes) {
       return redirect({
         to: `/onboarding/${currentStep}`,
@@ -30,7 +32,11 @@ export const Route = createFileRoute(
     return { currentStep };
   },
   component: RouteComponent,
-});
+};
+
+export const Route = createFileRoute(
+  "/_private/onboarding/wallet-recovery-codes"
+)(routeConfig);
 
 function RouteComponent() {
   const [isRevalidating, setIsRevalidating] = useState(false);
