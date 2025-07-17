@@ -122,21 +122,21 @@ describe("stepper utils", () => {
     it("should return true when current step is after target step", () => {
       const targetStep = stepA;
       const currentStep = stepB;
-      const result = isStepCompleted(targetStep, currentStep);
+      const result = isStepCompleted({ step: targetStep, currentStep });
       expect(result).toBe(true);
     });
 
     it("should return false when current step is at target step", () => {
       const targetStep = stepB;
       const currentStep = stepB;
-      const result = isStepCompleted(targetStep, currentStep);
+      const result = isStepCompleted({ step: targetStep, currentStep });
       expect(result).toBe(false);
     });
 
     it("should return false when current step is after target step", () => {
       const targetStep = stepC;
       const currentStep = stepB;
-      const result = isStepCompleted(targetStep, currentStep);
+      const result = isStepCompleted({ step: targetStep, currentStep });
       expect(result).toBe(false);
     });
   });

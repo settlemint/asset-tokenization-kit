@@ -51,11 +51,14 @@ export function getLastStep<StepId, Steps extends Step<StepId>[]>(
   return getElementAtIndex(sortedSteps, sortedSteps.length - 1);
 }
 
-export function isStepCompleted<StepId>(
-  step: Step<StepId>,
-  currentStep: Step<StepId>
-): boolean {
-  return currentStep.step > step.step;
+export function isStepCompleted<StepId>({
+  step,
+  currentStep,
+}: {
+  step: Step<StepId>;
+  currentStep: Step<StepId>;
+}): boolean {
+  return step.step < currentStep.step;
 }
 
 export function isGroupCompleted<StepId, GroupId>(
@@ -63,7 +66,7 @@ export function isGroupCompleted<StepId, GroupId>(
   currentStep: Step<StepId>
 ): boolean {
   const lastStepInGroup = getLastStep(group.steps);
-  return isStepCompleted(lastStepInGroup, currentStep);
+  return isStepCompleted({ step: lastStepInGroup, currentStep });
 }
 
 export function isStepGroup<StepId, GroupId>(
