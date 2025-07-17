@@ -1,45 +1,67 @@
-import { OnboardingLayout } from "@/components/onboarding/onboarding-layout";
 import {
   OnboardingStep,
   updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth.client";
+import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useMutation } from "@tanstack/react-query";
-import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
+import { useCallback, useEffect, useMemo } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 
 const logger = createLogger();
 
-const routeConfig = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  beforeLoad: async ({ context: { orpc, queryClient } }: any) => {
-    const user = await queryClient.fetchQuery({
-      ...orpc.user.me.queryOptions(),
-      staleTime: 0,
-    });
-    const { currentStep } = updateOnboardingStateMachine({
-      user,
-    });
-    if (currentStep !== OnboardingStep.walletRecoveryCodes) {
-      return redirect({
-        to: `/onboarding/${currentStep}`,
-      });
-    }
-    return { currentStep };
-  },
-  component: RouteComponent,
-};
-
+// TODO: extract the different html parts in separate components
+// TODO: remove any inline SVG's, use lucide icons
+// TODO: Use the copy component, no inline custom code
+// TODO: Find (or worst case make) a useDownload hook
+// TODO: Translations
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/wallet-recovery-codes"
-)(routeConfig);
+)({
+  validateSearch: zodValidator(
+    z.object({
+      step: z.enum(Object.values(OnboardingStep)).optional(),
+      subStep: z.enum(["intro", "complete"]).optional(),
+    })
+  ),
+  beforeLoad: async ({
+    context: { orpc, queryClient },
+    search: { step, subStep },
+  }) => {
+    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
+    const { currentStep } = updateOnboardingStateMachine({ user });
+
+    // If we're showing the complete subStep, don't redirect
+    if (subStep === "complete") {
+      return;
+    }
+
+    if (step) {
+      if (step !== OnboardingStep.walletRecoveryCodes) {
+        return redirect({
+          to: `/onboarding/${step}`,
+        });
+      }
+    } else {
+      if (currentStep !== OnboardingStep.walletRecoveryCodes) {
+        return redirect({
+          to: `/onboarding/${currentStep}`,
+        });
+      }
+    }
+  },
+  component: RouteComponent,
+});
 
 function RouteComponent() {
-  const [isRevalidating, setIsRevalidating] = useState(false);
-  const router = useRouter();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const { subStep } = Route.useSearch();
 
   const {
     mutate: generateRecoveryCodes,
@@ -89,22 +111,61 @@ function RouteComponent() {
   }, []);
 
   const onNext = useCallback(async () => {
-    try {
-      setIsRevalidating(true);
-      await router.invalidate({ sync: true });
-    } catch (err: unknown) {
-      logger.error("Error invalidating queries", err);
-    } finally {
-      setIsRevalidating(false);
-    }
-  }, [router]);
+    await queryClient.invalidateQueries({
+      queryKey: orpc.user.me.key(),
+      refetchType: "all",
+    });
+    await navigate({
+      search: () => ({
+        step: OnboardingStep.walletRecoveryCodes,
+        subStep: "complete",
+      }),
+    });
+  }, [queryClient, navigate]);
 
   useEffect(() => {
     generateRecoveryCodes();
   }, [generateRecoveryCodes]);
 
+  if (subStep === "complete") {
+    return (
+      <div>
+        <div className="h-full flex flex-col">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold">Recovery Codes Saved</h2>
+            <p className="text-sm text-muted-foreground pt-2">
+              Your recovery codes have been generated and saved
+            </p>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            <div className="max-w-3xl space-y-6 pr-2">
+              <div className="space-y-4">
+                <p className="text-base text-foreground leading-relaxed">
+                  Great! You've successfully saved your recovery codes. Keep
+                  them in a safe place - you'll need them if you ever lose
+                  access to your security methods.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer>
+          <Button
+            onClick={async () => {
+              await navigate({
+                to: `/onboarding/${OnboardingStep.systemDeploy}`,
+              });
+            }}
+          >
+            Continue
+          </Button>
+        </footer>
+      </div>
+    );
+  }
+
   return (
-    <OnboardingLayout currentStep={OnboardingStep.walletRecoveryCodes}>
+    <div>
       <div className="h-full flex flex-col">
         <div className="mb-6">
           <h2 className="text-xl font-semibold">Your secret codes</h2>
@@ -255,24 +316,16 @@ function RouteComponent() {
             )}
           </div>
         </div>
-
-        {/* Navigation buttons */}
-        <div className="mt-8 pt-6 border-t border-border">
-          <div className="flex justify-end gap-3">
-            <Button
-              onClick={onNext}
-              disabled={
-                isGeneratingCodes ||
-                recoveryCodes.length === 0 ||
-                isRevalidating
-              }
-            >
-              Confirm i've stored them
-            </Button>
-          </div>
-        </div>
       </div>
-    </OnboardingLayout>
+      <footer>
+        <Button
+          onClick={onNext}
+          disabled={isGeneratingCodes || recoveryCodes.length === 0}
+        >
+          Confirm i've stored them
+        </Button>
+      </footer>
+    </div>
   );
 }
 
