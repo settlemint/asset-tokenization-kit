@@ -1,7 +1,7 @@
 import type { AssetDesignerFormData } from "@/components/asset-designer/shared-form";
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
-import { assetDesignerSteps } from "@/components/asset-designer/steps";
-
+import { useAssetDesignerSteps } from "@/components/asset-designer/steps";
+import { getNextStepId } from "@/components/stepper/utils";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
@@ -12,6 +12,7 @@ export const AssetBasics = withForm({
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer"]);
+    const steps = useAssetDesignerSteps();
 
     return (
       <>
@@ -53,7 +54,7 @@ export const AssetBasics = withForm({
         />
         <Button
           onClick={() => {
-            form.setFieldValue("step", assetDesignerSteps.assetBasics.nextStep);
+            form.setFieldValue("step", getNextStepId(steps, "assetBasics"));
           }}
         >
           Next
