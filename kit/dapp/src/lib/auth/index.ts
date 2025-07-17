@@ -26,7 +26,6 @@ import { pincode } from "@/lib/auth/plugins/pincode-plugin";
 import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
 import { twoFactor } from "@/lib/auth/plugins/two-factor";
 import { isOnboarded } from "@/lib/auth/plugins/utils";
-import { createWallet } from "@/lib/auth/wallet";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { UserRole } from "@/lib/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
@@ -117,7 +116,7 @@ const options = {
       wallet: {
         type: "string",
         required: false,
-        unique: true,
+        unique: false,
         input: false,
       },
       /**
@@ -334,11 +333,10 @@ const getAuthConfig = serverOnly(() => {
           before: async (user: User) => {
             try {
               const firstUser = await db.query.user.findFirst();
-              const walletAddress = await createWallet(user.email);
               return {
                 data: {
                   ...user,
-                  wallet: walletAddress,
+                  wallet: "0x0000000000000000000000000000000000000000",
                   role: firstUser ? "investor" : "admin",
                 },
               };

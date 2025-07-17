@@ -16,6 +16,7 @@ interface PinSetupComponentProps {
   onBack: () => void;
 }
 
+// TODO: the auto submit is super weird, why not just use the button?
 export function PinSetupComponent({
   onSuccess,
   onBack,

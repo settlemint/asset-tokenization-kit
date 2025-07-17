@@ -26,7 +26,7 @@ export const user = pgTable("user", {
   banned: boolean("banned"),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires", { withTimezone: true }),
-  wallet: text("wallet").unique().$type<Address>(),
+  wallet: text("wallet").$type<Address>(),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   pincodeEnabled: boolean("pincode_enabled").notNull().default(false),
   pincodeVerificationId: text("pincode_verification_id").unique(),
