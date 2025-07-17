@@ -66,28 +66,33 @@ abstract contract ATKSystemAccessControlled {
     modifier onlyManagerOrSystemModule(bytes32 managerRole) {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (
-            _systemAccessManager.hasRole(managerRole, msg.sender)
-                || _systemAccessManager.hasRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, msg.sender)
-        ) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](1);
+        moduleRoles[0] = ATKSystemRoles.SYSTEM_MODULE_ROLE;
+
+        (bool hasPermission,) = _systemAccessManager.checkRoles(msg.sender, managerRole, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, managerRole);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, managerRole);
+
+        _;
     }
 
     /// @notice Modifier for system-wide operations requiring system manager or system module role
     modifier onlySystemManagerOrModule() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (
-            _systemAccessManager.hasRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, msg.sender)
-                || _systemAccessManager.hasRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, msg.sender)
-        ) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](1);
+        moduleRoles[0] = ATKSystemRoles.SYSTEM_MODULE_ROLE;
+
+        (bool hasPermission,) =
+            _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.SYSTEM_MANAGER_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.SYSTEM_MANAGER_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.SYSTEM_MANAGER_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for operations requiring only system manager role (more restrictive)
@@ -95,144 +100,194 @@ abstract contract ATKSystemAccessControlled {
     modifier onlySystemManager() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (_systemAccessManager.hasRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, msg.sender)) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](0);
+
+        (bool hasPermission,) =
+            _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.SYSTEM_MANAGER_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.SYSTEM_MANAGER_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.SYSTEM_MANAGER_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for identity management operations
     modifier onlyIdentityManagerOrModule() {
+        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
+
         bytes32[] memory moduleRoles = new bytes32[](1);
         moduleRoles[0] = ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE;
 
-        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
+        (bool hasPermission,) =
+            _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.IDENTITY_MANAGER_ROLE, moduleRoles);
 
-        if (
-            _systemAccessManager.hasRole(ATKSystemRoles.IDENTITY_MANAGER_ROLE, msg.sender)
-                || _systemAccessManager.hasRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, msg.sender)
-        ) {
-            _;
-            return;
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.IDENTITY_MANAGER_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.IDENTITY_MANAGER_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for token management operations
     modifier onlyTokenManagerOrModule() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (
-            _systemAccessManager.hasRole(ATKSystemRoles.TOKEN_MANAGER_ROLE, msg.sender)
-                || _systemAccessManager.hasRole(ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE, msg.sender)
-        ) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](1);
+        moduleRoles[0] = ATKSystemRoles.TOKEN_FACTORY_MODULE_ROLE;
+
+        (bool hasPermission,) =
+            _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.TOKEN_MANAGER_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.TOKEN_MANAGER_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.TOKEN_MANAGER_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for compliance management operations
     modifier onlyComplianceManagerOrModule() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (_systemAccessManager.hasRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, msg.sender)) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](0);
+
+        (bool hasPermission,) =
+            _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.COMPLIANCE_MANAGER_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.COMPLIANCE_MANAGER_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for bypass list management operations
     modifier onlyBypassListManager() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (_systemAccessManager.hasRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, msg.sender)) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](0);
+
+        (bool hasPermission,) =
+            _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for claim policy management operations
     modifier onlyClaimPolicyManagerOrModule() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (_systemAccessManager.hasRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, msg.sender)) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](0);
+
+        (bool hasPermission,) =
+            _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for addon management operations
     modifier onlyAddonManagerOrModule() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (
-            _systemAccessManager.hasRole(ATKSystemRoles.ADDON_MANAGER_ROLE, msg.sender)
-                || _systemAccessManager.hasRole(ATKSystemRoles.ADDON_MODULE_ROLE, msg.sender)
-        ) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](1);
+        moduleRoles[0] = ATKSystemRoles.ADDON_MODULE_ROLE;
+
+        (bool hasPermission,) =
+            _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.ADDON_MANAGER_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.ADDON_MANAGER_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.ADDON_MANAGER_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for auditor access (read-only operations)
     modifier onlyAuditor() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (_systemAccessManager.hasRole(ATKSystemRoles.AUDITOR_ROLE, msg.sender)) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](0);
+
+        (bool hasPermission,) = _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.AUDITOR_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.AUDITOR_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.AUDITOR_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for default admin operations
     modifier onlyDefaultAdmin() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (_systemAccessManager.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, msg.sender)) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](0);
+
+        (bool hasPermission,) =
+            _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.DEFAULT_ADMIN_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.DEFAULT_ADMIN_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.DEFAULT_ADMIN_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for registrar operations
     modifier onlyRegistrar() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (_systemAccessManager.hasRole(ATKSystemRoles.REGISTRAR_ROLE, msg.sender)) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](0);
+
+        (bool hasPermission,) = _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.REGISTRAR_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.REGISTRAR_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.REGISTRAR_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for implementation manager operations
     modifier onlyImplementationManager() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (_systemAccessManager.hasRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, msg.sender)) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](0);
+
+        (bool hasPermission,) =
+            _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(
+                msg.sender, ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE
+            );
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE);
+
+        _;
     }
 
     /// @notice Modifier for deployer operations
     modifier onlyDeployer() {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        if (_systemAccessManager.hasRole(ATKSystemRoles.DEPLOYER_ROLE, msg.sender)) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](0);
+
+        (bool hasPermission,) = _systemAccessManager.checkRoles(msg.sender, ATKSystemRoles.DEPLOYER_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.DEPLOYER_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, ATKSystemRoles.DEPLOYER_ROLE);
+
+        _;
     }
 
     // ================================
