@@ -27,13 +27,13 @@ contract ATKTokenAccessManagerProxy is AbstractATKSystemProxy {
     /// contract
     ///    via `_performInitializationDelegatecall`.
     /// @param systemAddress The address of the `IATKSystem` contract.
-    /// @param initialAdmin The address that will be granted initial administrative privileges.
-    constructor(address systemAddress, address initialAdmin) AbstractATKSystemProxy(systemAddress) {
+    /// @param initialAdmins The addresses that will be granted initial administrative privileges.
+    constructor(address systemAddress, address[] memory initialAdmins) AbstractATKSystemProxy(systemAddress) {
         IATKSystem system_ = _getSystem();
 
         address implementation = _getSpecificImplementationAddress(system_);
         bytes memory data =
-            abi.encodeWithSelector(ATKTokenAccessManagerImplementation.initialize.selector, initialAdmin);
+            abi.encodeWithSelector(ATKTokenAccessManagerImplementation.initialize.selector, initialAdmins);
 
         _performInitializationDelegatecall(implementation, data);
     }

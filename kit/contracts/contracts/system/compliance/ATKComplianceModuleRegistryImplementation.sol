@@ -36,6 +36,10 @@ contract ATKComplianceModuleRegistryImplementation is
         __AccessControl_init();
         __ReentrancyGuard_init();
 
+        if (initialAdmins.length == 0) {
+            revert NoInitialAdmins();
+        }
+
         for (uint256 i = 0; i < initialAdmins.length; i++) {
             _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
         }

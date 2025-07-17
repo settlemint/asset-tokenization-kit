@@ -4,6 +4,7 @@ import {
   Bootstrapped,
   ComplianceImplementationUpdated,
   ComplianceModuleRegistryImplementationUpdated,
+  ContractIdentityImplementationUpdated,
   IdentityFactoryImplementationUpdated,
   IdentityImplementationUpdated,
   IdentityRegistryImplementationUpdated,
@@ -11,7 +12,6 @@ import {
   SystemAddonRegistryImplementationUpdated,
   TokenAccessManagerImplementationUpdated,
   TokenFactoryRegistryImplementationUpdated,
-  TokenIdentityImplementationUpdated,
   TopicSchemeRegistryImplementationUpdated,
   TrustedIssuersRegistryImplementationUpdated,
 } from "../../generated/templates/System/System";
@@ -145,10 +145,10 @@ export function handleTokenAccessManagerImplementationUpdated(
   fetchEvent(event, "TokenAccessManagerImplementationUpdated");
 }
 
-export function handleTokenIdentityImplementationUpdated(
-  event: TokenIdentityImplementationUpdated
+export function handleContractIdentityImplementationUpdated(
+  event: ContractIdentityImplementationUpdated
 ): void {
-  fetchEvent(event, "TokenIdentityImplementationUpdated");
+  fetchEvent(event, "ContractIdentityImplementationUpdated");
 }
 
 export function handleTrustedIssuersRegistryImplementationUpdated(

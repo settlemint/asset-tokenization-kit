@@ -9,12 +9,14 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
 
 /// @title ATKVault - A multi-signature wallet with role-based access control
 /// @notice This contract allows multiple signers to propose, confirm, and execute transactions
 /// @dev Implements OpenZeppelin's AccessControl, ERC2771Context, Pausable, and ReentrancyGuard
 /// @custom:security-contact support@settlemint.com
-contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyGuard {
+contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, ReentrancyGuard, IContractWithIdentity {
     using SafeERC20 for IERC20;
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -124,10 +126,28 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @notice Number of confirmations required to execute a transaction
     uint256 public required;
 
+    /// @notice OnchainID address associated with this vault (IIdentity contract)
+    address private _onchainId;
+
+    /// @notice Flag to ensure onchainId can only be set once
+    bool private _onchainIdSet;
+
+    /// @notice Error thrown when trying to set onchainId when it's already set
+    error OnchainIdAlreadySet();
+
+    /// @notice Error thrown when trying to set an invalid onchainId
+    error InvalidOnchainId();
+
+    /// @notice Emitted when the onchainId is set
+    event OnchainIdSet(address indexed onchainId);
+
     /// @notice Error thrown when an invalid requirement is set
     /// @param requested The requested number of confirmations
     /// @param signerCount The total number of signers
     error InvalidRequirement(uint256 requested, uint256 signerCount);
+
+    /// @notice Error thrown when no initial admins are provided
+    error NoInitialAdmins();
 
     /// @notice Error thrown when accessing a non-existent transaction
     /// @param txIndex The requested transaction index
@@ -163,13 +183,16 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @notice Initializes the Vault with a set of signers and confirmation threshold
     /// @param _signers Array of initial signer addresses
     /// @param _required Number of confirmations required to execute a transaction
-    /// @param initialOwner Address that will have admin role
     /// @param forwarder Address of the ERC2771 forwarder for meta-transactions
+    /// @param onchainId Address of the OnchainID (IIdentity contract) to associate with this vault (can be address(0)
+    /// to set later)
+    /// @param initialAdmins Addresses that will have admin role
     constructor(
         address[] memory _signers,
         uint256 _required,
-        address initialOwner,
-        address forwarder
+        address forwarder,
+        address onchainId,
+        address[] memory initialAdmins
     )
         ERC2771Context(forwarder)
         AccessControlEnumerable()
@@ -178,10 +201,14 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         // Validate that the required confirmations is a sensible number
         if (len == 0 || _required == 0 || _required > len) revert InvalidRequirement(_required, len);
 
-        // Grant admin role to the initial owner
-        _grantRole(DEFAULT_ADMIN_ROLE, initialOwner);
-        _grantRole(EMERGENCY_ROLE, initialOwner);
-        _grantRole(GOVERNANCE_ROLE, initialOwner);
+        if (initialAdmins.length == 0) {
+            revert NoInitialAdmins();
+        }
+
+        // Grant admin role to the initial admins
+        for (uint256 i = 0; i < initialAdmins.length; i++) {
+            _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
+        }
 
         // Grant signer role to all initial signers
         for (uint256 i = 0; i < len; ++i) {
@@ -189,6 +216,12 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         }
         required = _required;
         emit RequirementChanged(_msgSender(), _required);
+
+        // Set the OnchainID if provided
+        if (onchainId != address(0)) {
+            _onchainId = onchainId;
+            _onchainIdSet = true;
+        }
     }
 
     /// @notice Allows the contract to receive ETH
@@ -224,6 +257,56 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         if (_required == 0 || _required > ownerCount) revert InvalidRequirement(_required, ownerCount);
         required = _required;
         emit RequirementChanged(_msgSender(), _required);
+    }
+
+    /// @notice Sets the OnchainID address for this vault.
+    /// @dev Can only be called by the governance role.
+    /// @param newOnchainId The new OnchainID address.
+    function setOnchainId(address newOnchainId) external onlyRole(GOVERNANCE_ROLE) {
+        if (_onchainIdSet) revert OnchainIdAlreadySet();
+        if (newOnchainId == address(0)) revert InvalidOnchainId();
+        _onchainId = newOnchainId;
+        _onchainIdSet = true;
+        emit OnchainIdSet(newOnchainId);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════════
+    // IContractWithIdentity Implementation
+    // ═══════════════════════════════════════════════════════════════════════════════════
+
+    /// @notice Returns the ONCHAINID associated with this vault
+    /// @return The address of the ONCHAINID (IIdentity contract)
+    function onchainID() external view override returns (address) {
+        return _onchainId;
+    }
+
+    /// @notice Permission check: can `actor` add a claim to the vault's identity?
+    /// @dev Vaults implement permission logic directly - only governance role can manage claims
+    /// @param actor The address requesting to add a claim
+    /// @return True if the actor can add claims, false otherwise
+    function canAddClaim(address actor) external view override returns (bool) {
+        return hasRole(GOVERNANCE_ROLE, actor);
+    }
+
+    /// @notice Permission check: can `actor` remove a claim from the vault's identity?
+    /// @dev Vaults implement permission logic directly - only governance role can manage claims
+    /// @param actor The address requesting to remove a claim
+    /// @return True if the actor can remove claims, false otherwise
+    function canRemoveClaim(address actor) external view override returns (bool) {
+        return hasRole(GOVERNANCE_ROLE, actor);
+    }
+
+    /// @notice Checks if this contract implements an interface (ERC-165)
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the contract implements the interface
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AccessControlEnumerable, IERC165)
+        returns (bool)
+    {
+        return interfaceId == type(IContractWithIdentity).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /// @notice Submits a new transaction to the vault
@@ -422,16 +505,32 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
 
         // Process each contract call in the batch
         for (uint256 i = 0; i < batchSize; i++) {
-            bytes memory data = bytes.concat(selectors[i], abiEncodedArguments[i]);
-            txIndices[i] = _storeTransaction(targets[i], values[i], data, comments[i]);
-
-            emit SubmitContractCallTransaction(
-                sender, txIndices[i], targets[i], values[i], selectors[i], abiEncodedArguments[i], comments[i]
+            txIndices[i] = _processBatchTransaction(
+                targets[i], values[i], selectors[i], abiEncodedArguments[i], comments[i], sender
             );
-
-            // Automatically confirm each transaction
-            _confirm(txIndices[i], sender);
         }
+    }
+
+    /// @dev Helper function to process a single transaction in a batch
+    function _processBatchTransaction(
+        address target,
+        uint256 value,
+        bytes4 selector,
+        bytes calldata abiEncodedArguments,
+        string calldata comment,
+        address sender
+    )
+        private
+        returns (uint256)
+    {
+        bytes memory combinedData = bytes.concat(selector, abiEncodedArguments);
+        uint256 txIndex = _storeTransaction(target, value, combinedData, comment);
+
+        emit SubmitContractCallTransaction(sender, txIndex, target, value, selector, abiEncodedArguments, comment);
+
+        // Automatically confirm the transaction
+        _confirm(txIndex, sender);
+        return txIndex;
     }
 
     /// @notice Confirms a pending transaction

@@ -116,7 +116,9 @@ contract ATKTokenAccessManagerTest is Test {
 
     function test_ProxyFunctionality() public {
         // Test that the proxy correctly delegates to implementation
-        ATKTokenAccessManagerProxy proxy = new ATKTokenAccessManagerProxy(address(systemUtils.system()), admin);
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        ATKTokenAccessManagerProxy proxy = new ATKTokenAccessManagerProxy(address(systemUtils.system()), initialAdmins);
 
         // Verify it's a proxy by checking it has no direct code for the interface
         assertTrue(address(proxy) != address(0));

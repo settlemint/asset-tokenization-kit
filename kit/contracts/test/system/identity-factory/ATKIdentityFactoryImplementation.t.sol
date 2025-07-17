@@ -20,7 +20,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
     address public accessManager;
 
     event IdentityCreated(address indexed sender, address indexed identity, address indexed wallet);
-    event TokenIdentityCreated(address indexed sender, address indexed identity, address indexed token);
+    event ContractIdentityCreated(address indexed sender, address indexed identity, address indexed contractAddress);
 
     function setUp() public {
         admin = makeAddr("admin");
@@ -66,13 +66,13 @@ contract ATKIdentityFactoryImplementationTest is Test {
         );
 
         vm.expectEmit(true, false, true, true);
-        emit TokenIdentityCreated(admin, address(0), address(token)); // address(0) will be replaced with actual
+        emit ContractIdentityCreated(admin, address(0), address(token)); // address(0) will be replaced with actual
 
         vm.prank(admin);
-        address identity = factory.createTokenIdentity(address(token), accessManager);
+        address identity = factory.createContractIdentity(address(token));
 
         assertTrue(identity != address(0));
-        assertEq(factory.getTokenIdentity(address(token)), identity);
+        assertEq(factory.getContractIdentity(address(token)), identity);
     }
 
     function testCreateTokenIdentityRevertsWithUnauthorizedCaller() public {
@@ -80,7 +80,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
 
         vm.prank(unauthorizedUser);
         vm.expectRevert();
-        factory.createTokenIdentity(tokenAddress, accessManager);
+        factory.createContractIdentity(tokenAddress);
     }
 
     function testCreateIdentityWithZeroWallet() public {
@@ -94,15 +94,16 @@ contract ATKIdentityFactoryImplementationTest is Test {
     function testCreateTokenIdentityWithZeroToken() public {
         vm.prank(admin);
         vm.expectRevert();
-        factory.createTokenIdentity(address(0), accessManager);
+        factory.createContractIdentity(address(0));
     }
 
-    function testCreateTokenIdentityWithZeroAccessManager() public {
-        address tokenAddress = makeAddr("token");
+    function testCreateTokenIdentityWithInvalidContract() public {
+        // Create a contract that doesn't implement IContractWithIdentity
+        address invalidContract = makeAddr("invalidContract");
 
         vm.prank(admin);
         vm.expectRevert();
-        factory.createTokenIdentity(tokenAddress, address(0));
+        factory.createContractIdentity(invalidContract);
     }
 
     function testCreateIdentityDeterministicAddress() public {
@@ -130,10 +131,10 @@ contract ATKIdentityFactoryImplementationTest is Test {
             address(accessManager)
         );
 
-        address predictedAddress = factory.calculateTokenIdentityAddress("Token", "TKN", 18, accessManager);
+        address predictedAddress = factory.calculateContractIdentityAddress(address(token));
 
         vm.prank(admin);
-        address actualAddress = factory.createTokenIdentity(address(token), accessManager);
+        address actualAddress = factory.createContractIdentity(address(token));
 
         assertEq(actualAddress, predictedAddress);
     }
@@ -164,11 +165,11 @@ contract ATKIdentityFactoryImplementationTest is Test {
         );
 
         vm.prank(admin);
-        factory.createTokenIdentity(address(token), accessManager);
+        factory.createContractIdentity(address(token));
 
         vm.prank(admin);
         vm.expectRevert();
-        factory.createTokenIdentity(address(token), accessManager);
+        factory.createContractIdentity(address(token));
     }
 
     function testCreateMultipleIdentitiesForDifferentWallets() public {
@@ -215,16 +216,16 @@ contract ATKIdentityFactoryImplementationTest is Test {
         );
 
         vm.prank(admin);
-        address identity1 = factory.createTokenIdentity(address(token1), accessManager);
+        address identity1 = factory.createContractIdentity(address(token1));
 
         vm.prank(admin);
-        address identity2 = factory.createTokenIdentity(address(token2), accessManager);
+        address identity2 = factory.createContractIdentity(address(token2));
 
         assertTrue(identity1 != identity2);
         assertTrue(identity1 != address(0));
         assertTrue(identity2 != address(0));
-        assertEq(factory.getTokenIdentity(address(token1)), identity1);
-        assertEq(factory.getTokenIdentity(address(token2)), identity2);
+        assertEq(factory.getContractIdentity(address(token1)), identity1);
+        assertEq(factory.getContractIdentity(address(token2)), identity2);
     }
 
     function testCreateIdentityWithEmptyManagementKeys() public {
@@ -247,7 +248,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
         vm.prank(admin);
 
         address tokenAddress = makeAddr("token");
-        assertEq(factory.getTokenIdentity(tokenAddress), address(0));
+        assertEq(factory.getContractIdentity(tokenAddress), address(0));
     }
 
     function testCalculateWalletIdentityAddressReturnsPredictableAddress() public {
@@ -263,8 +264,9 @@ contract ATKIdentityFactoryImplementationTest is Test {
     function testCalculateTokenIdentityAddressReturnsPredictableAddress() public {
         vm.prank(admin);
 
-        address predictedAddress1 = factory.calculateTokenIdentityAddress("TOKEN", "TKN", 18, accessManager);
-        address predictedAddress2 = factory.calculateTokenIdentityAddress("TOKEN", "TKN", 18, accessManager);
+        address tokenAddress = makeAddr("token");
+        address predictedAddress1 = factory.calculateContractIdentityAddress(tokenAddress);
+        address predictedAddress2 = factory.calculateContractIdentityAddress(tokenAddress);
 
         assertEq(predictedAddress1, predictedAddress2);
         assertTrue(predictedAddress1 != address(0));

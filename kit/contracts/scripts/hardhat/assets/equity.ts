@@ -1,3 +1,4 @@
+import { Countries } from "../constants/countries";
 import { ATKTopic } from "../constants/topics";
 import {
   frozenInvestor,
@@ -37,6 +38,7 @@ export const createEquity = async () => {
     equity.decimals,
     [topicManager.getTopicId(ATKTopic.kyc)],
     getDefaultComplianceModules(),
+    Countries.BE,
   ]);
 
   await equity.waitUntilDeployed(transactionHash);
