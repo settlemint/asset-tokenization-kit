@@ -119,7 +119,7 @@ describe("stepper utils", () => {
   });
 
   describe("isStepCompleted", () => {
-    it("should return true when current step is before target step", () => {
+    it("should return true when current step is after target step", () => {
       const targetStep = stepA;
       const currentStep = stepB;
       const result = isStepCompleted({ step: targetStep, currentStep });
@@ -133,7 +133,7 @@ describe("stepper utils", () => {
       expect(result).toBe(false);
     });
 
-    it("should return false when current step is after target step", () => {
+    it("should return false when current step is before target step", () => {
       const targetStep = stepC;
       const currentStep = stepB;
       const result = isStepCompleted({ step: targetStep, currentStep });
