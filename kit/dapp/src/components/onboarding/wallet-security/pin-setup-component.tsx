@@ -16,7 +16,6 @@ interface PinSetupComponentProps {
   onBack: () => void;
 }
 
-// TODO: the auto submit is super weird, why not just use the button?
 export function PinSetupComponent({
   onSuccess,
   onBack,
@@ -29,12 +28,21 @@ export function PinSetupComponent({
       authClient.pincode.enable({
         pincode,
       }),
-    onSuccess: () => {
-      toast.success("PIN code set successfully");
-      void queryClient.invalidateQueries({
-        queryKey: orpc.user.me.key(),
-        refetchType: "all",
+    onSuccess: async () => {
+      // Clear auth session cache to ensure UI reflects updated auth state
+      await authClient.getSession({
+        query: {
+          disableCookieCache: true,
+        },
       });
+
+      toast.success("PIN code set successfully");
+
+      // Invalidate user queries to get fresh data
+      await queryClient.invalidateQueries({
+        queryKey: orpc.user.me.key(),
+      });
+
       onSuccess();
     },
     onError: (error: Error) => {
@@ -97,9 +105,7 @@ export function PinSetupComponent({
   const handleConfirmPincodeChange = useCallback(
     (value: string) => {
       form.setFieldValue("confirmPincode", value);
-      if (value.length === 6) {
-        void form.handleSubmit();
-      }
+      // Remove auto-submit - user must click the button to submit
     },
     [form]
   );
