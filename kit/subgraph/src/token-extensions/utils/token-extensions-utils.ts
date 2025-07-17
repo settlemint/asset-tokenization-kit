@@ -60,5 +60,5 @@ export function getTokenExtensions(
     }
   }
 
-  return extensions;
+  return extensions.sort();
 }

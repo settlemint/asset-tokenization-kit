@@ -11,6 +11,8 @@ describe("Tokens", () => {
           totalSupply
           totalSupplyExact
           extensions
+          implementsERC3643
+          implementsSMART
         }
       }`
     );
@@ -22,14 +24,18 @@ describe("Tokens", () => {
         type: "equity",
         totalSupply: "75",
         totalSupplyExact: "75000000000000000000",
-        extensions: ["CUSTODIAN", "BURNABLE", "PAUSABLE", "ACCESS_MANAGED"],
+        extensions: ["ACCESS_MANAGED", "BURNABLE", "CUSTODIAN", "PAUSABLE"],
+        implementsERC3643: false,
+        implementsSMART: true,
       },
       {
         name: "Bens Bugs",
         type: "fund",
         totalSupply: "8",
         totalSupplyExact: "800000000",
-        extensions: ["CUSTODIAN", "BURNABLE", "PAUSABLE", "ACCESS_MANAGED"],
+        extensions: ["ACCESS_MANAGED", "BURNABLE", "CUSTODIAN", "PAUSABLE"],
+        implementsERC3643: false,
+        implementsSMART: true,
       },
       {
         name: "Euro Bonds",
@@ -38,14 +44,16 @@ describe("Tokens", () => {
         totalSupplyExact: "117000000",
         extensions: [
           "ACCESS_MANAGED",
-          "CUSTODIAN",
           "BURNABLE",
-          "PAUSABLE",
-          "YIELD",
-          "REDEEMABLE",
-          "HISTORICAL_BALANCES",
           "CAPPED",
+          "CUSTODIAN",
+          "HISTORICAL_BALANCES",
+          "PAUSABLE",
+          "REDEEMABLE",
+          "YIELD",
         ],
+        implementsERC3643: false,
+        implementsSMART: true,
       },
       {
         name: "Euro Deposits",
@@ -53,12 +61,14 @@ describe("Tokens", () => {
         totalSupply: "10900",
         totalSupplyExact: "10900000000",
         extensions: [
-          "CUSTODIAN",
-          "BURNABLE",
-          "PAUSABLE",
           "ACCESS_MANAGED",
+          "BURNABLE",
           "COLLATERAL",
+          "CUSTODIAN",
+          "PAUSABLE",
         ],
+        implementsERC3643: false,
+        implementsSMART: true,
       },
       {
         name: "Paused Stablecoin",
@@ -66,12 +76,14 @@ describe("Tokens", () => {
         totalSupply: "0",
         totalSupplyExact: "0",
         extensions: [
-          "CUSTODIAN",
-          "BURNABLE",
-          "PAUSABLE",
           "ACCESS_MANAGED",
+          "BURNABLE",
           "COLLATERAL",
+          "CUSTODIAN",
+          "PAUSABLE",
         ],
+        implementsERC3643: false,
+        implementsSMART: true,
       },
       {
         name: "Tether",
@@ -79,12 +91,14 @@ describe("Tokens", () => {
         totalSupply: "760",
         totalSupplyExact: "760000000",
         extensions: [
-          "CUSTODIAN",
-          "BURNABLE",
-          "PAUSABLE",
           "ACCESS_MANAGED",
+          "BURNABLE",
           "COLLATERAL",
+          "CUSTODIAN",
+          "PAUSABLE",
         ],
+        implementsERC3643: false,
+        implementsSMART: true,
       },
     ]);
   });

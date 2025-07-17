@@ -880,8 +880,8 @@ templates:
       abis:
         - name: TokenFactoryRegistry
           file: ../contracts/.generated/artifacts/contracts/system/token-factory/IATKTokenFactoryRegistry.sol/IATKTokenFactoryRegistry.json
-        - name: BondFactory
-          file: ../contracts/.generated/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
+        - name: IERC165
+          file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
         - event: TokenFactoryImplementationUpdated(indexed address,indexed bytes32,indexed
             address)

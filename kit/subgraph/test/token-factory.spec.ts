@@ -8,7 +8,9 @@ describe("Token Factories", () => {
         tokenFactories(orderBy: name) {
           name
           typeId
-          extensions
+          tokenExtensions
+          tokenImplementsERC3643
+          tokenImplementsSMART
         }
       }`
     );
@@ -18,48 +20,68 @@ describe("Token Factories", () => {
       {
         name: "bond",
         typeId: "ATKBondFactory",
-        extensions: [
+        tokenExtensions: [
           "ACCESS_MANAGED",
-          "CUSTODIAN",
-          "PAUSABLE",
           "BURNABLE",
-          "REDEEMABLE",
-          "HISTORICAL_BALANCES",
-          "YIELD",
           "CAPPED",
+          "CUSTODIAN",
+          "HISTORICAL_BALANCES",
+          "PAUSABLE",
+          "REDEEMABLE",
+          "YIELD",
         ],
+        tokenImplementsERC3643: false,
+        tokenImplementsSMART: true,
       },
       {
         name: "deposit",
         typeId: "ATKDepositFactory",
-        extensions: [
+        tokenExtensions: [
           "ACCESS_MANAGED",
+          "BURNABLE",
           "COLLATERAL",
           "CUSTODIAN",
           "PAUSABLE",
-          "BURNABLE",
         ],
+        tokenImplementsERC3643: false,
+        tokenImplementsSMART: true,
       },
       {
         name: "equity",
         typeId: "ATKEquityFactory",
-        extensions: ["ACCESS_MANAGED", "CUSTODIAN", "PAUSABLE", "BURNABLE"],
+        tokenExtensions: [
+          "ACCESS_MANAGED",
+          "BURNABLE",
+          "CUSTODIAN",
+          "PAUSABLE",
+        ],
+        tokenImplementsERC3643: false,
+        tokenImplementsSMART: true,
       },
       {
         name: "fund",
         typeId: "ATKFundFactory",
-        extensions: ["ACCESS_MANAGED", "BURNABLE", "PAUSABLE", "CUSTODIAN"],
+        tokenExtensions: [
+          "ACCESS_MANAGED",
+          "BURNABLE",
+          "CUSTODIAN",
+          "PAUSABLE",
+        ],
+        tokenImplementsERC3643: false,
+        tokenImplementsSMART: true,
       },
       {
         name: "stablecoin",
         typeId: "ATKStableCoinFactory",
-        extensions: [
+        tokenExtensions: [
           "ACCESS_MANAGED",
+          "BURNABLE",
           "COLLATERAL",
           "CUSTODIAN",
           "PAUSABLE",
-          "BURNABLE",
         ],
+        tokenImplementsERC3643: false,
+        tokenImplementsSMART: true,
       },
     ]);
   });
