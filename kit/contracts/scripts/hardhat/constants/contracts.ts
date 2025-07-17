@@ -13,6 +13,7 @@ import {
   depositFactoryAbi,
   equityAbi,
   equityFactoryAbi,
+  fixedYieldScheduleAbi,
   fixedYieldScheduleFactoryAbi,
   fundAbi,
   fundFactoryAbi,
@@ -90,6 +91,7 @@ export const ATKContracts = {
   identityAllowListModule: identityAllowListAbi,
   // addons
   fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
+  fixedYieldSchedule: fixedYieldScheduleAbi,
   vestingAirdropFactory: vestingAirdropFactoryAbi,
   pushAirdropFactory: pushAirdropFactoryAbi,
   timeBoundAirdropFactory: timeBoundAirdropFactoryAbi,

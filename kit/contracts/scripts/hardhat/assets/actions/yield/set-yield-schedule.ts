@@ -1,5 +1,6 @@
 import { Address } from "viem";
 import { ATKContracts } from "../../../constants/contracts";
+import { ATKRoles } from "../../../constants/roles";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { atkDeployer } from "../../../services/deployer";
@@ -56,8 +57,17 @@ export const setYieldSchedule = async (
 
   const scheduleContract = owner.getContractInstance({
     address: schedule,
-    abi: ATKContracts.ismartFixedYieldSchedule,
+    abi: ATKContracts.fixedYieldSchedule,
   });
+
+  await scheduleContract.write.grantRole([
+    ATKRoles.governanceRole,
+    owner.address,
+  ]);
+  await scheduleContract.write.grantRole([
+    ATKRoles.supplyManagementRole,
+    owner.address,
+  ]);
 
   console.log(
     `[Set yield schedule] ✓ ${asset.symbol} yield schedule set with start time ${startTime.toISOString()} and end time ${endTime.toISOString()} (schedule address ${schedule})`
