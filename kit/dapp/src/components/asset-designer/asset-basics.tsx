@@ -1,7 +1,7 @@
 import type { AssetDesignerFormData } from "@/components/asset-designer/shared-form";
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
 import { useAssetDesignerSteps } from "@/components/asset-designer/steps";
-import { getNextStepName } from "@/components/stepper/utils";
+import { getNextStepId } from "@/components/stepper/utils";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
@@ -54,7 +54,7 @@ export const AssetBasics = withForm({
         />
         <Button
           onClick={() => {
-            form.setFieldValue("step", getNextStepName(steps, "assetBasics"));
+            form.setFieldValue("step", getNextStepId(steps, "assetBasics"));
           }}
         >
           Next
