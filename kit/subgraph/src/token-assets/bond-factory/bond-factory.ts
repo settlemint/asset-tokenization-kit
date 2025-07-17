@@ -1,6 +1,5 @@
 import { Bytes } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
-import { Roles } from "../../access-control/utils/role";
 import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
@@ -8,6 +7,7 @@ import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme
 import { ActionName, createAction } from "../../utils/actions";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchBond } from "../bond/fetch/bond";
+import { Roles } from "../../access-control/utils/role";
 
 export function handleBondCreated(event: BondCreated): void {
   fetchEvent(event, "BondCreated");
@@ -41,7 +41,6 @@ export function handleBondCreated(event: BondCreated): void {
   createAction(
     event,
     ActionName.MatureBond,
-    "Admin",
     event.params.tokenAddress,
     bond.maturityDate,
     null,

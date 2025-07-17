@@ -460,7 +460,6 @@ type XvPSettlementApproval @entity(immutable: false) {
 type Action @entity(immutable: false) {
   id: Bytes!
   name: String!
-  type: String!
   target: Bytes!
   createdAt: BigInt!
   activeAt: BigInt!

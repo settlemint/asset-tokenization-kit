@@ -38,7 +38,6 @@ export function actionExecutorId(
 export function createAction(
   event: ethereum.Event,
   actionName: string,
-  actionType: string,
   target: Bytes,
   activeAt: BigInt,
   expiresAt: BigInt | null,
@@ -49,7 +48,6 @@ export function createAction(
   const id = actionId(actionName, target, identifier);
   const action = new Action(id);
   action.name = actionName;
-  action.type = actionType;
   action.target = target;
   action.createdAt = event.block.timestamp;
   action.activeAt = activeAt;
