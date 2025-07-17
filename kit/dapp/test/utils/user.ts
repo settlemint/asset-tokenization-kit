@@ -1,4 +1,5 @@
 import { authClient } from "./auth-client";
+import { getOrpcClient } from "./orpc-client";
 
 export interface User {
   email: string;
@@ -110,21 +111,80 @@ export async function setupUser(user: User) {
       console.log(`[setupUser] Successfully signed up user ${user.email}`);
     }
 
-    // Step 2: Sign in and enable pincode
+    // Step 2: Sign in and create wallet if needed
     console.log(
-      `[setupUser] Step 2: Signing in user ${user.email} to enable pincode`
+      `[setupUser] Step 2: Signing in user ${user.email} to check wallet status`
     );
     const signInHeaders = await signInWithUser(user);
     console.log(
       `[setupUser] Sign in successful for ${user.email}, headers obtained`
     );
 
+    // Check if user needs a wallet
+    console.log(
+      `[setupUser] Step 2.5: Checking wallet status for ${user.email}`
+    );
+    const sessionBeforeWallet = await authClient.getSession({
+      fetchOptions: {
+        headers: signInHeaders,
+      },
+    });
+
+    const userWallet = sessionBeforeWallet.data?.user.wallet;
+    console.log(`[setupUser] User ${user.email} wallet: ${userWallet}`);
+
+    if (
+      !userWallet ||
+      userWallet === "0x0000000000000000000000000000000000000000"
+    ) {
+      console.log(
+        `[setupUser] User ${user.email} needs a wallet, creating one...`
+      );
+
+      // Create wallet using the ORPC client
+      const orpcClient = getOrpcClient(signInHeaders);
+
+      try {
+        const walletData = await orpcClient.user.createWallet({});
+        console.log(
+          `[setupUser] Successfully created wallet for ${user.email}:`,
+          walletData
+        );
+      } catch (error) {
+        console.error(
+          `[setupUser] Failed to create wallet for ${user.email}:`,
+          {
+            error: error instanceof Error ? error.message : "Unknown error",
+            fullError: JSON.stringify(error, null, 2),
+          }
+        );
+        throw new Error(
+          `Failed to create wallet: ${error instanceof Error ? error.message : "Unknown error"}`
+        );
+      }
+
+      // Get fresh headers after wallet creation
+      const freshHeaders = await signInWithUser(user);
+
+      // Verify wallet was created
+      const sessionAfterWallet = await authClient.getSession({
+        fetchOptions: {
+          headers: freshHeaders,
+        },
+      });
+      console.log(
+        `[setupUser] User ${user.email} wallet after creation: ${sessionAfterWallet.data?.user.wallet}`
+      );
+    }
+
+    // Step 3: Enable pincode
     console.log(`[setupUser] Step 3: Enabling pincode for user ${user.email}`);
+    const pincodeHeaders = await signInWithUser(user);
     const { error: pincodeError } = await authClient.pincode.enable(
       {
         pincode: DEFAULT_PINCODE,
       },
-      { headers: signInHeaders }
+      { headers: pincodeHeaders }
     );
 
     if (pincodeError) {
