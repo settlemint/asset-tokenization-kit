@@ -6,6 +6,7 @@ import {
   bondFactoryAbi,
   complianceAbi,
   complianceModuleRegistryAbi,
+  contractIdentityAbi,
   countryAllowListAbi,
   countryBlockListAbi,
   depositAbi,
@@ -36,7 +37,6 @@ import {
   systemAddonRegistryAbi,
   timeBoundAirdropFactoryAbi,
   tokenFactoryRegistryAbi,
-  tokenIdentityAbi,
   topicSchemeRegistryAbi,
   trustedIssuersRegistryAbi,
   vestingAirdropFactoryAbi,
@@ -60,7 +60,7 @@ export const ATKContracts = {
   // token
   accessManager: accessManagerAbi,
   identity: identityAbi,
-  tokenIdentity: tokenIdentityAbi,
+  contractIdentity: contractIdentityAbi,
   // tokens
   deposit: depositAbi,
   equity: equityAbi,

@@ -65,7 +65,8 @@ const CONTRACT_ADDRESSES = {
   ATKIdentityFactoryImplementation:
     "0x5e771e1417100000000000000000000000020005",
   ATKIdentityImplementation: "0x5e771e1417100000000000000000000000020006",
-  ATKTokenIdentityImplementation: "0x5e771e1417100000000000000000000000020007",
+  ATKContractIdentityImplementation:
+    "0x5e771e1417100000000000000000000000020007",
   ATKTopicSchemeRegistryImplementation:
     "0x5e771e1417100000000000000000000000020008",
   ATKTokenAccessManagerImplementation:
@@ -141,8 +142,8 @@ const CONTRACT_FILES = {
     "contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol",
   ATKIdentityImplementation:
     "contracts/system/identity-factory/identities/ATKIdentityImplementation.sol",
-  ATKTokenIdentityImplementation:
-    "contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol",
+  ATKContractIdentityImplementation:
+    "contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol",
   ATKTopicSchemeRegistryImplementation:
     "contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol",
   ATKTokenAccessManagerImplementation:
@@ -489,7 +490,7 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKTopicSchemeRegistryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityFactoryImplementation,
           CONTRACT_ADDRESSES.ATKIdentityImplementation,
-          CONTRACT_ADDRESSES.ATKTokenIdentityImplementation,
+          CONTRACT_ADDRESSES.ATKContractIdentityImplementation,
           CONTRACT_ADDRESSES.ATKTokenAccessManagerImplementation,
           CONTRACT_ADDRESSES.SMARTIdentityVerificationComplianceModule,
           CONTRACT_ADDRESSES.ATKTokenFactoryRegistryImplementation,

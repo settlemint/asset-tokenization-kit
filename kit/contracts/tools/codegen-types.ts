@@ -65,7 +65,7 @@ const ABI_PATHS = {
   // token
   accessManager: `${ARTIFACTS_DIR}/contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
   identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKIdentityImplementation.sol/ATKIdentityImplementation.json`,
-  tokenIdentity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol/ATKTokenIdentityImplementation.json`,
+  contractIdentity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol/ATKContractIdentityImplementation.json`,
   // tokens
   deposit: `${ARTIFACTS_DIR}/contracts/assets/deposit/ATKDepositImplementation.sol/ATKDepositImplementation.json`,
   equity: `${ARTIFACTS_DIR}/contracts/assets/equity/IATKEquity.sol/IATKEquity.json`,
@@ -120,7 +120,7 @@ const AVAILABLE_ABIS = {
     "complianceModuleRegistry",
     "systemAddonRegistry",
   ],
-  tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
+  tokenInfrastructure: ["accessManager", "identity", "contractIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
   openZeppelin: ["accessControl"],
   coreSmart: [
