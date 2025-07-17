@@ -2,6 +2,7 @@ import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { RecoveryCodesActions } from "@/components/onboarding/wallet-security/recovery-codes-actions";
 import { RecoveryCodesDisplay } from "@/components/onboarding/wallet-security/recovery-codes-display";
 import { RecoveryCodesWarning } from "@/components/onboarding/wallet-security/recovery-codes-warning";
+import { RecoveryCodesComplete } from "@/components/onboarding/wallet-security/recovery-codes-complete";
 import { Button } from "@/components/ui/button";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { authClient } from "@/lib/auth/auth.client";
@@ -27,7 +28,8 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { completeStepAndNavigate } = useOnboardingNavigation();
+  const { subStep } = Route.useSearch();
+  const { handleMutationSuccess } = useOnboardingNavigation();
 
   const {
     mutate: generateRecoveryCodes,
@@ -86,11 +88,15 @@ function RouteComponent() {
   };
 
   const onNext = () =>
-    void completeStepAndNavigate(OnboardingStep.walletRecoveryCodes);
+    void handleMutationSuccess(OnboardingStep.walletRecoveryCodes);
 
   useEffect(() => {
     generateRecoveryCodes();
   }, [generateRecoveryCodes]);
+
+  if (subStep === "complete") {
+    return <RecoveryCodesComplete />;
+  }
 
   return (
     <div>
