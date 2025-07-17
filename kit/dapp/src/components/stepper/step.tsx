@@ -1,5 +1,5 @@
 import { StepperIndicator, StepperTrigger } from "@/components/stepper/stepper";
-import type { Step } from "@/components/stepper/types";
+import type { Navigation, Step } from "@/components/stepper/types";
 import { cn } from "@/lib/utils";
 import { isStepCompleted } from "./utils";
 
@@ -7,19 +7,20 @@ export interface StepItemProps<StepName> {
   step: Step<StepName>;
   currentStep: Step<StepName>;
   allSteps: Step<StepName>[];
-  navigation: "forward-only" | "bidirectional";
-  onStepChange: (step: Step<StepName>) => void;
+  navigation: Navigation;
+  onStepSelect: (step: Step<StepName>) => void;
 }
 
 export function StepComponent<StepName>({
   step,
   currentStep,
   navigation,
-  onStepChange,
+  onStepSelect,
 }: StepItemProps<StepName>) {
   const isActive = step.id === currentStep.id;
   const isCompleted = isStepCompleted<StepName>(step, currentStep);
-  const canSelect = isActive || (isCompleted && navigation === "bidirectional");
+  const canSelect =
+    isActive || (isCompleted && navigation === "next-and-previous");
   const status = isCompleted ? "completed" : isActive ? "active" : "pending";
 
   return (
@@ -27,7 +28,7 @@ export function StepComponent<StepName>({
       <StepperTrigger
         disabled={!canSelect}
         onClick={() => {
-          onStepChange(step);
+          onStepSelect(step);
         }}
         className={cn(
           "flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 text-left w-full",

@@ -43,10 +43,10 @@ export const AssetDesignerForm = () => {
       <StepLayout
         stepsOrGroups={steps}
         currentStep={currentStep}
-        onStepChange={(step) => {
+        onStepSelect={(step) => {
           form.setFieldValue("step", step.name);
         }}
-        navigation="bidirectional"
+        navigation="next-and-previous"
       >
         {({ currentStep }) => {
           return stepComponent[currentStep.name];

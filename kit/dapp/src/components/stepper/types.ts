@@ -14,3 +14,5 @@ export interface StepGroup<StepName, GroupName> {
 export type StepOrGroup<StepName, GroupName> =
   | Step<StepName>
   | StepGroup<StepName, GroupName>;
+
+export type Navigation = "next-only" | "next-and-previous";

@@ -1,5 +1,5 @@
 import { StepComponent } from "@/components/stepper/step";
-import type { Step, StepGroup } from "@/components/stepper/types";
+import type { Navigation, Step, StepGroup } from "@/components/stepper/types";
 import { CollapsibleChevron } from "@/components/ui/collapsible-chevron";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
@@ -10,8 +10,8 @@ export interface StepGroupProps<StepName, GroupName> {
   group: StepGroup<StepName, GroupName>;
   currentStep: Step<StepName>;
   allSteps: Step<StepName>[];
-  navigation: "forward-only" | "bidirectional";
-  onStepChange: (step: Step<StepName>) => void;
+  navigation: Navigation;
+  onStepSelect: (step: Step<StepName>) => void;
 }
 
 export function StepGroupComponent<StepName, GroupName>({
@@ -19,7 +19,7 @@ export function StepGroupComponent<StepName, GroupName>({
   currentStep,
   allSteps,
   navigation,
-  onStepChange,
+  onStepSelect,
 }: StepGroupProps<StepName, GroupName>) {
   const [open, setOpen] = useState(false);
   const hasActiveStep = group.steps.some((step) => step.id === currentStep.id);
@@ -77,7 +77,7 @@ export function StepGroupComponent<StepName, GroupName>({
                         currentStep={currentStep}
                         allSteps={allSteps}
                         navigation={navigation}
-                        onStepChange={onStepChange}
+                        onStepSelect={onStepSelect}
                       />
 
                       {!isLastInGroup && (
