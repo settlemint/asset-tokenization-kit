@@ -15,7 +15,9 @@ export const setYieldSchedule = async (
   /** The yield rate in basis points (e.g., 500 for 5%). Must be greater than 0. */
   rate: number,
   /** The interval between yield distributions in seconds (e.g., 86400 for daily). Must be greater than 0. */
-  interval: number
+  interval: number,
+  /** The country code for the yield schedule. */
+  countryCode: number
 ) => {
   console.log(`[Set yield schedule] → Starting yield schedule setup...`);
 
@@ -39,6 +41,7 @@ export const setYieldSchedule = async (
       BigInt(Math.ceil(endTime.getTime() / 1000)),
       BigInt(rate),
       BigInt(interval),
+      countryCode,
     ])
   );
   const { schedule } = (await waitForEvent({
