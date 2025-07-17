@@ -13,12 +13,12 @@ import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
+import { TestConstants } from "../Constants.sol";
 import { ISMARTCapped } from "../../contracts/smart/extensions/capped/ISMARTCapped.sol";
 import { IATKFixedYieldScheduleFactory } from "../../contracts/addons/yield/IATKFixedYieldScheduleFactory.sol";
 import { ATKFixedYieldScheduleFactoryImplementation } from
     "../../contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
-import { SMARTFixedYieldSchedule } from
-    "../../contracts/smart/extensions/yield/schedules/fixed/SMARTFixedYieldSchedule.sol";
+import { ATKFixedYieldScheduleUpgradeable } from "../../contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol";
 import { ATKBondFactoryImplementation } from "../../contracts/assets/bond/ATKBondFactoryImplementation.sol";
 import { ATKBondImplementation } from "../../contracts/assets/bond/ATKBondImplementation.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
@@ -158,7 +158,8 @@ contract ATKBondTest is AbstractATKAssetTest {
             faceValue_,
             underlyingAsset_,
             requiredClaimTopics_,
-            initialModulePairs_
+            initialModulePairs_,
+            TestConstants.COUNTRY_CODE_US
         );
 
         result = IATKBond(bondAddress);
@@ -230,7 +231,8 @@ contract ATKBondTest is AbstractATKAssetTest {
             faceValue,
             address(underlyingAsset),
             new uint256[](0),
-            new SMARTComplianceModuleParamPair[](0)
+            new SMARTComplianceModuleParamPair[](0),
+            TestConstants.COUNTRY_CODE_US
         );
 
         vm.stopPrank();
@@ -849,15 +851,16 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         // Create the yield schedule for our bond
         // Note: The factory automatically sets up the circular reference by calling bond.setYieldSchedule()
-        address yieldScheduleAddr =
-            fixedYieldScheduleFactory.create(ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval);
+        address yieldScheduleAddr = fixedYieldScheduleFactory.create(
+            ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval, TestConstants.COUNTRY_CODE_US
+        );
         vm.label(yieldScheduleAddr, "Yield Schedule");
 
         // We need to set the yield schedule manually
         bond.setYieldSchedule(yieldScheduleAddr);
 
         // Verify the schedule references our bond
-        SMARTFixedYieldSchedule yieldSchedule = SMARTFixedYieldSchedule(yieldScheduleAddr);
+        ATKFixedYieldScheduleUpgradeable yieldSchedule = ATKFixedYieldScheduleUpgradeable(yieldScheduleAddr);
         assertEq(address(yieldSchedule.token()), address(bond), "FixedYield should reference the bond");
 
         // Verify the bond references the yield schedule (this was set by the factory)
@@ -877,8 +880,9 @@ contract ATKBondTest is AbstractATKAssetTest {
         uint256 interval = 30 days;
 
         vm.startPrank(owner);
-        address yieldScheduleAddr =
-            fixedYieldScheduleFactory.create(ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval);
+        address yieldScheduleAddr = fixedYieldScheduleFactory.create(
+            ISMARTYield(address(bond)), startDate, endDate, yieldRate, interval, TestConstants.COUNTRY_CODE_US
+        );
         vm.label(yieldScheduleAddr, "Yield Schedule");
 
         // We need to set the yield schedule manually

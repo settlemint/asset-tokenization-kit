@@ -35,7 +35,9 @@ contract ATKTokenAccessManagerImplementationTest is Test {
         implementation = new ATKTokenAccessManagerImplementation(forwarder);
 
         // Deploy proxy with initialization data
-        bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, admin);
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, initialAdmins);
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
         accessManager = ISMARTTokenAccessManager(address(proxy));
     }
@@ -47,7 +49,9 @@ contract ATKTokenAccessManagerImplementationTest is Test {
 
     function test_CannotInitializeTwice() public {
         vm.expectRevert();
-        ATKTokenAccessManagerImplementation(address(accessManager)).initialize(admin);
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        ATKTokenAccessManagerImplementation(address(accessManager)).initialize(initialAdmins);
     }
 
     function test_BatchGrantRoleSuccess() public {
@@ -179,7 +183,9 @@ contract ATKTokenAccessManagerImplementationTest is Test {
     function test_DirectCallToImplementation() public {
         // Test calling initialize directly on implementation (should fail due to _disableInitializers)
         vm.expectRevert();
-        implementation.initialize(admin);
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        implementation.initialize(initialAdmins);
     }
 
     function test_ERC2771ContextIntegration() public view {

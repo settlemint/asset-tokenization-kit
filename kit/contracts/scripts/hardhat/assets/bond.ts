@@ -1,5 +1,6 @@
 import { atkDeployer } from "../services/deployer";
 
+import { Countries } from "../constants/countries";
 import { ATKTopic } from "../constants/topics";
 import {
   frozenInvestor,
@@ -70,6 +71,7 @@ export const createBond = async (depositToken: Asset<any>) => {
         params: encodeAddressParams(bondAllowedIdentities),
       },
     ],
+    Countries.BE,
   ]);
 
   await bond.waitUntilDeployed(transactionHash);
@@ -102,7 +104,8 @@ export const createBond = async (depositToken: Asset<any>) => {
     new Date(anvilTime + 1 * 24 * 60 * 60 * 1000), // 1 day from now
     new Date(anvilTime + 4 * 24 * 60 * 60 * 1000), // 4 days from now
     50, // 0.5%
-    12 * 60 * 60 // 12 hours in seconds
+    12 * 60 * 60, // 12 hours in seconds
+    Countries.BE
   );
 
   // Make sure bond and yield can hold deposit token

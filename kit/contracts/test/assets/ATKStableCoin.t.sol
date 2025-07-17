@@ -20,6 +20,7 @@ import { SMARTComplianceModuleParamPair } from
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { ISMARTCollateral } from "../../contracts/smart/extensions/collateral/ISMARTCollateral.sol";
+import { TestConstants } from "../Constants.sol";
 
 contract ATKStableCoinTest is AbstractATKAssetTest {
     IATKStableCoinFactory public stableCoinFactory;
@@ -85,8 +86,9 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
         returns (IATKStableCoin result)
     {
         vm.startPrank(owner);
-        address stableCoinAddress =
-            stableCoinFactory.createStableCoin(name, symbol, decimals, requiredClaimTopics, initialModulePairs);
+        address stableCoinAddress = stableCoinFactory.createStableCoin(
+            name, symbol, decimals, requiredClaimTopics, initialModulePairs, TestConstants.COUNTRY_CODE_US
+        );
 
         result = IATKStableCoin(stableCoinAddress);
 
@@ -151,7 +153,12 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
 
         vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidDecimals.selector, 19));
         stableCoinFactory.createStableCoin(
-            "StableCoin 19", "STBL19", 19, new uint256[](0), new SMARTComplianceModuleParamPair[](0)
+            "StableCoin 19",
+            "STBL19",
+            19,
+            new uint256[](0),
+            new SMARTComplianceModuleParamPair[](0),
+            TestConstants.COUNTRY_CODE_US
         );
         vm.stopPrank();
     }

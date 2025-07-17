@@ -138,7 +138,7 @@ contract ATKTokenSaleTest is Test {
         vm.stopPrank();
 
         // Create and set token identity
-        tokenUtils.createAndSetTokenOnchainID(address(smartToken), tokenIssuer, address(accessManager));
+        tokenUtils.createAndSetTokenOnchainID(address(smartToken), tokenIssuer);
 
         // Deploy token sale implementation and factory
         tokenSaleImpl = new ATKTokenSaleTestable();

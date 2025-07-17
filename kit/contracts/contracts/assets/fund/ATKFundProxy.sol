@@ -20,8 +20,6 @@ contract ATKFundProxy is ATKAssetProxy {
     /// @param name_ The name of the fund.
     /// @param symbol_ The symbol of the fund.
     /// @param decimals_ The number of decimals of the fund.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param managementFeeBps_ The management fee of the fund.
     /// @param initialModulePairs_ The initial module pairs of the fund.
     /// @param identityRegistry_ The identity registry of the fund.
@@ -32,7 +30,6 @@ contract ATKFundProxy is ATKAssetProxy {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint16 managementFeeBps_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
@@ -49,7 +46,6 @@ contract ATKFundProxy is ATKAssetProxy {
             name_,
             symbol_,
             decimals_,
-            onchainID_,
             managementFeeBps_,
             initialModulePairs_,
             identityRegistry_,

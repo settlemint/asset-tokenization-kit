@@ -73,6 +73,7 @@ contract ATKSystemAddonRegistryImplementation is
         addonProxiesByType[addonTypeHash] = _addonProxy;
 
         IAccessControl(address(_system.compliance())).grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _addonProxy);
+        IAccessControl(address(_system.identityRegistry())).grantRole(ATKSystemRoles.REGISTRAR_ROLE, _addonProxy);
 
         (bool success, bytes memory data) =
             _addonProxy.staticcall(abi.encodeWithSelector(bytes4(keccak256("typeId()"))));

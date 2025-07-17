@@ -4,6 +4,7 @@ import {
   investorB,
 } from "../entities/actors/investors";
 
+import { Countries } from "../constants/countries";
 import { ATKTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
@@ -50,6 +51,7 @@ export const createDeposit = async () => {
         params: encodeAddressParams(allowedIdentities),
       },
     ],
+    Countries.BE,
   ]);
 
   await deposit.waitUntilDeployed(transactionHash);
