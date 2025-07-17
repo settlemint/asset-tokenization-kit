@@ -81,6 +81,7 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
         emit FundCreated(
             _msgSender(),
             deployedFundAddress,
+            deployedTokenIdentityAddress,
             name_,
             symbol_,
             decimals_,

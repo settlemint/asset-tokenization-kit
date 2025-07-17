@@ -10,6 +10,7 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @notice Emitted when a new bond is created.
     /// @param sender The address of the sender.
     /// @param tokenAddress The address of the newly created token.
+    /// @param onchainId The address of the onchain identity contract for the token.
     /// @param name The name of the bond.
     /// @param symbol The symbol of the bond.
     /// @param decimals The number of decimals for the bond tokens.
@@ -22,6 +23,7 @@ interface IATKBondFactory is IATKTokenFactory {
     event BondCreated(
         address indexed sender,
         address indexed tokenAddress,
+        address indexed onchainId,
         string name,
         string symbol,
         uint8 decimals,

@@ -10,6 +10,7 @@ interface IATKEquityFactory is IATKTokenFactory {
     /// @notice Emitted when a new equity is created.
     /// @param sender The address of the sender.
     /// @param tokenAddress The address of the newly created token.
+    /// @param onchainId The address of the onchain identity contract for the token.
     /// @param name The name of the equity.
     /// @param symbol The symbol of the equity.
     /// @param decimals The number of decimals for the equity tokens.
@@ -18,6 +19,7 @@ interface IATKEquityFactory is IATKTokenFactory {
     event EquityCreated(
         address indexed sender,
         address indexed tokenAddress,
+        address indexed onchainId,
         string name,
         string symbol,
         uint8 decimals,

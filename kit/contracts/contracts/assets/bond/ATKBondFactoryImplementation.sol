@@ -90,6 +90,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         emit BondCreated(
             _msgSender(),
             deployedBondAddress,
+            deployedTokenIdentityAddress,
             name_,
             symbol_,
             decimals_,

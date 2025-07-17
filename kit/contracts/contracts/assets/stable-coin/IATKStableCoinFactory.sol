@@ -10,6 +10,7 @@ interface IATKStableCoinFactory is IATKTokenFactory {
     /// @notice Emitted when a new stable coin is created.
     /// @param sender The address of the sender.
     /// @param tokenAddress The address of the newly created token.
+    /// @param onchainId The address of the onchain identity contract for the token.
     /// @param name The name of the stable coin.
     /// @param symbol The symbol of the stable coin.
     /// @param decimals The number of decimals for the stable coin tokens.
@@ -18,6 +19,7 @@ interface IATKStableCoinFactory is IATKTokenFactory {
     event StableCoinCreated(
         address indexed sender,
         address indexed tokenAddress,
+        address indexed onchainId,
         string name,
         string symbol,
         uint8 decimals,
