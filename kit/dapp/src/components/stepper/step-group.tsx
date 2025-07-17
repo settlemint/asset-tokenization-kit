@@ -1,5 +1,9 @@
 import { StepComponent } from "@/components/stepper/step";
-import type { Navigation, Step, StepGroup } from "@/components/stepper/types";
+import type {
+  NavigationMode,
+  Step,
+  StepGroup,
+} from "@/components/stepper/types";
 import { CollapsibleChevron } from "@/components/ui/collapsible-chevron";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
@@ -10,7 +14,7 @@ export interface StepGroupProps<StepId, GroupId> {
   group: StepGroup<StepId, GroupId>;
   currentStep: Step<StepId>;
   allSteps: Step<StepId>[];
-  navigation: Navigation;
+  navigation: NavigationMode;
   onStepSelect: (step: Step<StepId>) => void;
 }
 

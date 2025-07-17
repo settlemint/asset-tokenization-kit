@@ -3,7 +3,7 @@ import { useMemo } from "react";
 
 import { StepComponent } from "@/components/stepper/step";
 import { StepGroupComponent } from "@/components/stepper/step-group";
-import type { Navigation } from "@/components/stepper/types";
+import type { NavigationMode } from "@/components/stepper/types";
 import type { Step, StepOrGroup } from "./types";
 import { flattenSteps, getNextStep, isStepGroup } from "./utils";
 
@@ -16,7 +16,7 @@ export interface StepLayoutProps<StepId, GroupId> {
     currentStep: Step<StepId>;
     nextStep: Step<StepId>;
   }) => React.ReactNode;
-  navigation?: Navigation;
+  navigationMode?: NavigationMode;
   className?: string;
 }
 
@@ -26,7 +26,7 @@ export function StepLayout<StepId, GroupId>({
   onStepSelect,
   children,
   className,
-  navigation = "next-only",
+  navigationMode = "next-only",
 }: StepLayoutProps<StepId, GroupId>) {
   const allSteps = useMemo(() => flattenSteps(stepsOrGroups), [stepsOrGroups]);
 
@@ -42,7 +42,7 @@ export function StepLayout<StepId, GroupId>({
                 currentStep={currentStep}
                 allSteps={allSteps}
                 onStepSelect={onStepSelect}
-                navigation={navigation}
+                navigation={navigationMode}
               />
             );
           }
@@ -53,7 +53,7 @@ export function StepLayout<StepId, GroupId>({
               step={item}
               allSteps={allSteps}
               onStepSelect={onStepSelect}
-              navigation={navigation}
+              navigation={navigationMode}
               currentStep={currentStep}
             />
           );

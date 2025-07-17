@@ -15,4 +15,4 @@ export type StepOrGroup<StepId, GroupId> =
   | Step<StepId>
   | StepGroup<StepId, GroupId>;
 
-export type Navigation = "next-only" | "next-and-completed";
+export type NavigationMode = "next-only" | "next-and-completed";

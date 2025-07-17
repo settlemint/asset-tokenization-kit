@@ -1,5 +1,5 @@
 import { StepperIndicator, StepperTrigger } from "@/components/stepper/stepper";
-import type { Navigation, Step } from "@/components/stepper/types";
+import type { NavigationMode, Step } from "@/components/stepper/types";
 import { cn } from "@/lib/utils";
 import { isStepCompleted } from "./utils";
 
@@ -7,7 +7,7 @@ export interface StepItemProps<StepId> {
   step: Step<StepId>;
   currentStep: Step<StepId>;
   allSteps: Step<StepId>[];
-  navigation: Navigation;
+  navigation: NavigationMode;
   onStepSelect: (step: Step<StepId>) => void;
 }
 

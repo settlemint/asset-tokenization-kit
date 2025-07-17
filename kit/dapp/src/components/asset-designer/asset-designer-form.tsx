@@ -47,7 +47,7 @@ export const AssetDesignerForm = () => {
         onStepSelect={(step) => {
           form.setFieldValue("step", step.id);
         }}
-        navigation="next-and-completed"
+        navigationMode="next-and-completed"
       >
         {({ currentStep }) => {
           return stepComponent[currentStep.id];
