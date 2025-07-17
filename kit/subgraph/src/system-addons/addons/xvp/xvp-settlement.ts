@@ -19,6 +19,7 @@ import {
   actionExecuted,
   ActionName,
   createAction,
+  createActionIdentifier,
 } from "../../../utils/actions";
 import { setBigNumber } from "../../../utils/bignumber";
 
@@ -172,7 +173,11 @@ export function handleXvPSettlementApproved(
     event,
     ActionName.ApproveXvPSettlement,
     event.address,
-    approval.account.toHexString()
+    createActionIdentifier(
+      ActionName.ApproveXvPSettlement,
+      event.address,
+      approval.account
+    )
   );
 
   if (xvpSettlement.autoExecute) {
@@ -203,7 +208,7 @@ export function handleXvPSettlementApproved(
       xvpSettlement.cutoffDate,
       participants,
       null,
-      event.address.toHexString()
+      createActionIdentifier(ActionName.ExecuteXvPSettlement, event.address)
     );
   }
 }
@@ -235,7 +240,7 @@ export function handleXvPSettlementExecuted(
     event,
     ActionName.ExecuteXvPSettlement,
     event.address,
-    event.address.toHexString()
+    createActionIdentifier(ActionName.ExecuteXvPSettlement, event.address)
   );
 }
 

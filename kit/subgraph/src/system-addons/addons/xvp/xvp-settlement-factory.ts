@@ -1,6 +1,10 @@
 import { ATKXvPSettlementCreated } from "../../../../generated/templates/XvPSettlementFactory/XvPSettlementFactory";
 import { fetchEvent } from "../../../event/fetch/event";
-import { ActionName, createAction } from "../../../utils/actions";
+import {
+  ActionName,
+  createAction,
+  createActionIdentifier,
+} from "../../../utils/actions";
 import { fetchXvPSettlement } from "./fetch/xvp-settlement";
 
 export function handleATKXvPSettlementCreated(
@@ -22,7 +26,11 @@ export function handleATKXvPSettlementCreated(
       xvpSettlement.cutoffDate,
       [approval.account],
       null,
-      approval.account.toHexString()
+      createActionIdentifier(
+        ActionName.ApproveXvPSettlement,
+        event.params.settlement,
+        approval.account
+      )
     );
   }
 }

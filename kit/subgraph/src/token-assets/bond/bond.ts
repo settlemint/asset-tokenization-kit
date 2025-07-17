@@ -4,7 +4,11 @@ import {
 } from "../../../generated/templates/Bond/Bond";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchBond } from "./fetch/bond";
-import { ActionName, actionExecuted } from "../../utils/actions";
+import {
+  ActionName,
+  actionExecuted,
+  createActionIdentifier,
+} from "../../utils/actions";
 
 export function handleBondMatured(event: BondMatured): void {
   fetchEvent(event, "BondMatured");
@@ -13,7 +17,12 @@ export function handleBondMatured(event: BondMatured): void {
   bond.save();
 
   // Mark the MatureBond action as executed
-  actionExecuted(event, ActionName.MatureBond, event.address, null);
+  actionExecuted(
+    event,
+    ActionName.MatureBond,
+    event.address,
+    createActionIdentifier(ActionName.MatureBond, event.address)
+  );
 }
 
 export function handleBondRedeemed(event: BondRedeemed): void {

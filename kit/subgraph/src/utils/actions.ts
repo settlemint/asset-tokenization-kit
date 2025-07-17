@@ -1,6 +1,14 @@
 import { BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts";
 
-import { Action, ActionExecutor, ActionStatus } from "../../generated/schema";
+import { Action, ActionExecutor } from "../../generated/schema";
+
+// ActionStatus constants (enum-like values)
+export class ActionStatus {
+  static PENDING: string = "PENDING";
+  static ACTIVE: string = "ACTIVE";
+  static EXECUTED: string = "EXECUTED";
+  static EXPIRED: string = "EXPIRED";
+}
 
 export class ActionName {
   static ApproveXvPSettlement: string = "ApproveXvPSettlement";
@@ -8,12 +16,51 @@ export class ActionName {
   static MatureBond: string = "MatureBond";
 }
 
+/**
+ * Identifier patterns for different action types:
+ * - ApproveXvPSettlement: use participant address as identifier (approval.account.toHexString())
+ * - ExecuteXvPSettlement: use settlement address as identifier (settlement.address.toHexString())
+ * - MatureBond: use bond address as identifier (bond.address.toHexString())
+ *
+ * This ensures consistent and predictable action IDs across all action types.
+ */
+export function createActionIdentifier(
+  actionName: string,
+  primaryEntity: Bytes,
+  secondaryEntity: Bytes | null = null
+): string {
+  if (actionName === ActionName.ApproveXvPSettlement) {
+    // For approval actions, use participant address as identifier
+    if (secondaryEntity === null) {
+      log.error(
+        "createActionIdentifier: ApproveXvPSettlement requires participant address as secondaryEntity",
+        []
+      );
+      throw new Error("ApproveXvPSettlement requires participant address");
+    }
+    return secondaryEntity.toHexString();
+  }
+
+  if (actionName === ActionName.ExecuteXvPSettlement) {
+    // For execution actions, use settlement address as identifier
+    return primaryEntity.toHexString();
+  }
+
+  if (actionName === ActionName.MatureBond) {
+    // For bond actions, use bond address as identifier
+    return primaryEntity.toHexString();
+  }
+
+  log.error("createActionIdentifier: Unknown action name: {}", [actionName]);
+  throw new Error("Unknown action name");
+}
+
 function getActionStatus(
   currentTime: BigInt,
   activeAt: BigInt,
   expiresAt: BigInt | null,
   executed: boolean
-): ActionStatus {
+): string {
   if (executed) {
     return ActionStatus.EXECUTED;
   }
@@ -29,6 +76,42 @@ function getActionStatus(
   return ActionStatus.PENDING;
 }
 
+function isValidStatusTransition(
+  currentStatus: string,
+  newStatus: string
+): boolean {
+  // EXECUTED status is terminal - no transitions allowed
+  if (currentStatus === ActionStatus.EXECUTED) {
+    return newStatus === ActionStatus.EXECUTED;
+  }
+
+  // EXPIRED status is terminal - no transitions allowed
+  if (currentStatus === ActionStatus.EXPIRED) {
+    return newStatus === ActionStatus.EXPIRED;
+  }
+
+  // Valid transitions from PENDING
+  if (currentStatus === ActionStatus.PENDING) {
+    return (
+      newStatus === ActionStatus.PENDING ||
+      newStatus === ActionStatus.ACTIVE ||
+      newStatus === ActionStatus.EXECUTED ||
+      newStatus === ActionStatus.EXPIRED
+    );
+  }
+
+  // Valid transitions from ACTIVE
+  if (currentStatus === ActionStatus.ACTIVE) {
+    return (
+      newStatus === ActionStatus.ACTIVE ||
+      newStatus === ActionStatus.EXECUTED ||
+      newStatus === ActionStatus.EXPIRED
+    );
+  }
+
+  return false;
+}
+
 export function updateActionStatus(action: Action, currentTime: BigInt): void {
   const newStatus = getActionStatus(
     currentTime,
@@ -36,9 +119,25 @@ export function updateActionStatus(action: Action, currentTime: BigInt): void {
     action.expiresAt,
     action.executed
   );
+
+  // Validate status transition
+  if (!isValidStatusTransition(action.status, newStatus)) {
+    log.error(
+      "Invalid status transition attempted for action: {} - from: {} to: {}",
+      [action.id.toHexString(), action.status, newStatus]
+    );
+    return;
+  }
+
   if (action.status !== newStatus) {
     action.status = newStatus;
     action.save();
+
+    log.info("Action status updated: {} - from: {} to: {}", [
+      action.id.toHexString(),
+      action.status,
+      newStatus,
+    ]);
   }
 }
 
@@ -48,8 +147,12 @@ export function actionId(
   identifier: string | null
 ): Bytes {
   let idString = `${actionName}-${target.toHexString()}`;
-  if (identifier) {
+  // Use consistent delimiter handling to prevent ID collisions
+  // Always append delimiter for identifier field, even if null
+  if (identifier !== null && identifier.length > 0) {
     idString += `-${identifier}`;
+  } else {
+    idString += "-null";
   }
   return Bytes.fromUTF8(idString);
 }
@@ -60,11 +163,16 @@ export function actionExecutorId(
   identifier: string | null
 ): Bytes {
   let idString = `${target.toHexString()}`;
-  if (requiredRole) {
+  // Use consistent delimiter handling to prevent ID collisions
+  if (requiredRole !== null && requiredRole.length > 0) {
     idString += `-${requiredRole}`;
+  } else {
+    idString += "-null";
   }
-  if (identifier) {
+  if (identifier !== null && identifier.length > 0) {
     idString += `-${identifier}`;
+  } else {
+    idString += "-null";
   }
   return Bytes.fromUTF8(idString);
 }
@@ -177,14 +285,51 @@ function createActionExecutorInternal(
   let actionExecutor = ActionExecutor.load(id);
 
   if (actionExecutor !== null) {
-    // Update the executors array with new executors (fixing bug #2)
-    actionExecutor.executors = executors;
+    // Merge executors instead of overwriting to prevent data loss
+    const existingExecutors = actionExecutor.executors;
+    const mergedExecutors: Bytes[] = [];
+
+    // Add existing executors
+    for (let i = 0; i < existingExecutors.length; i++) {
+      mergedExecutors.push(existingExecutors[i]);
+    }
+
+    // Add new executors if they don't already exist
+    for (let i = 0; i < executors.length; i++) {
+      let alreadyExists = false;
+      for (let j = 0; j < existingExecutors.length; j++) {
+        if (existingExecutors[j].equals(executors[i])) {
+          alreadyExists = true;
+          break;
+        }
+      }
+      if (!alreadyExists) {
+        mergedExecutors.push(executors[i]);
+      }
+    }
+
+    actionExecutor.executors = mergedExecutors;
     actionExecutor.save();
+
+    log.info(
+      "ActionExecutor updated with merged executors: {} - existing: {}, new: {}, merged: {}",
+      [
+        id.toHexString(),
+        existingExecutors.length.toString(),
+        executors.length.toString(),
+        mergedExecutors.length.toString(),
+      ]
+    );
   } else {
     // Create new ActionExecutor
     actionExecutor = new ActionExecutor(id);
     actionExecutor.executors = executors;
     actionExecutor.save();
+
+    log.info("ActionExecutor created: {} - executors: {}", [
+      id.toHexString(),
+      executors.length.toString(),
+    ]);
   }
 
   return actionExecutor;

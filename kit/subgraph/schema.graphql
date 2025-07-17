@@ -472,7 +472,7 @@ type Action @entity(immutable: false) {
   expiresAt: BigInt
   requiredRole: String
   status: ActionStatus!
-  executed: Boolean!  # Keep for backward compatibility
+  executed: Boolean!  # DEPRECATED: Use status field instead. Keep for backward compatibility until frontend is migrated.
   executedAt: BigInt
   executedBy: Bytes
   identifier: String
