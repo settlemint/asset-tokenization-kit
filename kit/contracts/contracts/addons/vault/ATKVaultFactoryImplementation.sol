@@ -47,6 +47,34 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         _initializeAbstractSystemAddonFactory(systemAddress_, initialAdmin_);
     }
 
+    /// @notice Generates consistent deployment data for vault creation and address prediction
+    /// @param signers Array of initial signer addresses
+    /// @param required Number of confirmations required to execute a transaction
+    /// @param initialOwner Address that will have admin role
+    /// @param salt Salt value for deterministic address generation
+    /// @return saltInputData The salt input data for CREATE2
+    /// @return constructorArgs The constructor arguments for the vault
+    /// @return vaultBytecode The bytecode for the vault contract
+    function _getVaultDeploymentData(
+        address[] memory signers,
+        uint256 required,
+        address initialOwner,
+        bytes32 salt
+    )
+        private
+        view
+        returns (bytes memory saltInputData, bytes memory constructorArgs, bytes memory vaultBytecode)
+    {
+        saltInputData = abi.encode(address(this), signers, required, initialOwner, salt);
+
+        address[] memory initialAdmins = new address[](2);
+        initialAdmins[0] = initialOwner;
+        initialAdmins[1] = address(this);
+
+        constructorArgs = abi.encode(signers, required, trustedForwarder(), address(0), initialAdmins);
+        vaultBytecode = type(ATKVault).creationCode;
+    }
+
     /// @notice Creates and deploys a new `ATKVault` contract for a given configuration.
     /// @dev This function performs the following steps:
     /// 1. **Authorization Check**: Verifies the caller has the `DEPLOYER_ROLE`.
@@ -75,12 +103,8 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
         returns (address contractAddress)
     {
-        bytes memory saltInputData = abi.encode(address(this), signers, required, initialOwner, salt);
-        address[] memory initialAdmins = new address[](2);
-        initialAdmins[0] = initialOwner;
-        initialAdmins[1] = address(this);
-        bytes memory constructorArgs = abi.encode(signers, required, trustedForwarder(), address(0), initialAdmins);
-        bytes memory vaultBytecode = type(ATKVault).creationCode;
+        (bytes memory saltInputData, bytes memory constructorArgs, bytes memory vaultBytecode) =
+            _getVaultDeploymentData(signers, required, initialOwner, salt);
 
         // Predict the vault address
         address expectedAddress = _predictProxyAddress(vaultBytecode, constructorArgs, saltInputData);
@@ -129,9 +153,8 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         override(IATKVaultFactory)
         returns (address predictedAddress)
     {
-        bytes memory saltInputData = abi.encode(address(this), signers, required, initialOwner, salt);
-        bytes memory constructorArgs = abi.encode(signers, required, initialOwner, trustedForwarder(), address(0));
-        bytes memory vaultBytecode = type(ATKVault).creationCode;
+        (bytes memory saltInputData, bytes memory constructorArgs, bytes memory vaultBytecode) =
+            _getVaultDeploymentData(signers, required, initialOwner, salt);
 
         return _predictProxyAddress(vaultBytecode, constructorArgs, saltInputData);
     }
