@@ -23,7 +23,8 @@ export function updateCollateral(collateralClaim: IdentityClaim): void {
     return;
   }
 
-  const collateral = fetchCollateral(token.id);
+  const tokenAddress = Address.fromBytes(token.id);
+  const collateral = fetchCollateral(tokenAddress);
   collateral.identityClaim = collateralClaim.id;
 
   const amount = fetchIdentityClaimValue(collateralClaim, "amount");

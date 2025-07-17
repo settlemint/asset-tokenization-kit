@@ -43,7 +43,7 @@ export function fetchTokenByIdentity(identity: Identity): Token | null {
   if (identity.isContract || !identity.account) {
     return null;
   }
-  const tokenAddress = Address.fromBytes(identity.account);
+  const tokenAddress = Address.fromBytes(identity.account!);
   const token = Token.load(tokenAddress); // only load because we don't want to create a new token
   if (!token) {
     return null;
