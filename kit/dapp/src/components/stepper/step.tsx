@@ -3,22 +3,22 @@ import type { Navigation, Step } from "@/components/stepper/types";
 import { cn } from "@/lib/utils";
 import { isStepCompleted } from "./utils";
 
-export interface StepItemProps<StepName> {
-  step: Step<StepName>;
-  currentStep: Step<StepName>;
-  allSteps: Step<StepName>[];
+export interface StepItemProps<StepId> {
+  step: Step<StepId>;
+  currentStep: Step<StepId>;
+  allSteps: Step<StepId>[];
   navigation: Navigation;
-  onStepSelect: (step: Step<StepName>) => void;
+  onStepSelect: (step: Step<StepId>) => void;
 }
 
-export function StepComponent<StepName>({
+export function StepComponent<StepId>({
   step,
   currentStep,
   navigation,
   onStepSelect,
-}: StepItemProps<StepName>) {
+}: StepItemProps<StepId>) {
   const isActive = step.step === currentStep.step;
-  const isCompleted = isStepCompleted<StepName>(step, currentStep);
+  const isCompleted = isStepCompleted<StepId>(step, currentStep);
   const canSelect =
     isActive || (isCompleted && navigation === "next-and-completed");
   const status = isCompleted ? "completed" : isActive ? "active" : "pending";

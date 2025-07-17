@@ -1,18 +1,18 @@
-export interface Step<StepName> {
+export interface Step<StepId> {
   step: number;
-  id: StepName;
+  id: StepId;
   label: string;
   description: string;
 }
 
-export interface StepGroup<StepName, GroupName> {
-  name: GroupName;
+export interface StepGroup<StepId, GroupId> {
+  id: GroupId;
   label: string;
-  steps: Step<StepName>[];
+  steps: Step<StepId>[];
 }
 
-export type StepOrGroup<StepName, GroupName> =
-  | Step<StepName>
-  | StepGroup<StepName, GroupName>;
+export type StepOrGroup<StepId, GroupId> =
+  | Step<StepId>
+  | StepGroup<StepId, GroupId>;
 
 export type Navigation = "next-only" | "next-and-completed";

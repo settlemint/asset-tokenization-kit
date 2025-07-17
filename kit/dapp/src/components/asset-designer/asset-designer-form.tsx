@@ -9,7 +9,7 @@ import {
   type AssetDesignerStepsType,
 } from "@/components/asset-designer/steps";
 import { StepLayout } from "@/components/stepper/step-layout";
-import { getStepByName } from "@/components/stepper/utils";
+import { getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
@@ -31,7 +31,7 @@ export const AssetDesignerForm = () => {
   });
 
   const stepId = useStore(form.store, (state) => state.values.step);
-  const currentStep = getStepByName(steps, stepId);
+  const currentStep = getStepById(steps, stepId);
 
   const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
     selectAssetType: <SelectAssetType form={form} />,

@@ -7,27 +7,27 @@ import type { Navigation } from "@/components/stepper/types";
 import type { Step, StepOrGroup } from "./types";
 import { flattenSteps, getNextStep, isStepGroup } from "./utils";
 
-export interface StepLayoutProps<StepName, GroupName> {
-  stepsOrGroups: StepOrGroup<StepName, GroupName>[];
-  currentStep: Step<StepName>;
-  onStepSelect: (step: Step<StepName>) => void;
+export interface StepLayoutProps<StepId, GroupId> {
+  stepsOrGroups: StepOrGroup<StepId, GroupId>[];
+  currentStep: Step<StepId>;
+  onStepSelect: (step: Step<StepId>) => void;
 
   children: (props: {
-    currentStep: Step<StepName>;
-    nextStep: Step<StepName>;
+    currentStep: Step<StepId>;
+    nextStep: Step<StepId>;
   }) => React.ReactNode;
   navigation?: Navigation;
   className?: string;
 }
 
-export function StepLayout<StepName, GroupName>({
+export function StepLayout<StepId, GroupId>({
   stepsOrGroups,
   currentStep,
   onStepSelect,
   children,
   className,
   navigation = "next-only",
-}: StepLayoutProps<StepName, GroupName>) {
+}: StepLayoutProps<StepId, GroupId>) {
   const allSteps = useMemo(() => flattenSteps(stepsOrGroups), [stepsOrGroups]);
 
   return (

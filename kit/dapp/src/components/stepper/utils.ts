@@ -1,10 +1,10 @@
 import type { StepOrGroup } from "@/components/stepper/types";
 import type { Step, StepGroup } from "./types";
 
-export function getStepByName<StepName>(
-  steps: Step<StepName>[],
-  name: StepName
-): Step<StepName> {
+export function getStepById<StepId>(
+  steps: Step<StepId>[],
+  name: StepId
+): Step<StepId> {
   const step = steps.find((s) => s.id === name);
   if (!step) {
     throw new Error("Step not found");
@@ -12,10 +12,10 @@ export function getStepByName<StepName>(
   return step;
 }
 
-export function getStepByIndex<StepName>(
-  steps: Step<StepName>[],
+export function getStepByIndex<StepId>(
+  steps: Step<StepId>[],
   index: number
-): Step<StepName> {
+): Step<StepId> {
   const step = steps[index];
   if (!step) {
     throw new Error("Step not found");
@@ -23,15 +23,15 @@ export function getStepByIndex<StepName>(
   return step;
 }
 
-export function getStepIndex<StepName>(step: Step<StepName>): number {
+export function getStepIndex<StepId>(step: Step<StepId>): number {
   return step.step - 1;
 }
 
-export function getNextStepName<StepName>(
-  steps: Step<StepName>[],
-  currentStepName: StepName
-): StepName {
-  const currentStep = getStepByName(steps, currentStepName);
+export function getNextStepName<StepId>(
+  steps: Step<StepId>[],
+  currentStepName: StepId
+): StepId {
+  const currentStep = getStepById(steps, currentStepName);
   const currentStepIndex = getStepIndex(currentStep);
   const isLastStep = currentStepIndex === steps.length - 1;
   if (isLastStep) {
@@ -40,10 +40,10 @@ export function getNextStepName<StepName>(
   return getStepByIndex(steps, currentStepIndex + 1).id;
 }
 
-export function getNextStep<StepName>(
-  steps: Step<StepName>[],
-  currentStep: Step<StepName>
-): Step<StepName> {
+export function getNextStep<StepId>(
+  steps: Step<StepId>[],
+  currentStep: Step<StepId>
+): Step<StepId> {
   const currentStepIndex = getStepIndex(currentStep);
   const isLastStep = currentStepIndex === steps.length - 1;
   if (isLastStep) {
@@ -52,9 +52,9 @@ export function getNextStep<StepName>(
   return getStepByIndex(steps, currentStepIndex + 1);
 }
 
-export function isStepCompleted<StepName>(
-  step: Step<StepName>,
-  currentStep: Step<StepName>
+export function isStepCompleted<StepId>(
+  step: Step<StepId>,
+  currentStep: Step<StepId>
 ): boolean {
   const stepIndex = getStepIndex(step);
   const currentStepIndex = getStepIndex(currentStep);
@@ -62,9 +62,9 @@ export function isStepCompleted<StepName>(
   return currentStepIndex > stepIndex;
 }
 
-export function isGroupCompleted<StepName, GroupName>(
-  group: StepGroup<StepName, GroupName>,
-  currentStep: Step<StepName>
+export function isGroupCompleted<StepId, GroupId>(
+  group: StepGroup<StepId, GroupId>,
+  currentStep: Step<StepId>
 ): boolean {
   const lastStepInGroup = getStepByIndex(group.steps, group.steps.length - 1);
 
@@ -74,10 +74,10 @@ export function isGroupCompleted<StepName, GroupName>(
   return currentStepIndex > lastStepIndex;
 }
 
-export function flattenSteps<StepName, GroupName>(
-  configs: readonly StepOrGroup<StepName, GroupName>[]
-): Step<StepName>[] {
-  return configs.reduce<Step<StepName>[]>((acc, config) => {
+export function flattenSteps<StepId, GroupId>(
+  configs: readonly StepOrGroup<StepId, GroupId>[]
+): Step<StepId>[] {
+  return configs.reduce<Step<StepId>[]>((acc, config) => {
     if (isStepGroup(config)) {
       acc.push(...config.steps);
     } else {
@@ -87,8 +87,8 @@ export function flattenSteps<StepName, GroupName>(
   }, []);
 }
 
-export function isStepGroup<StepName, GroupName>(
-  config: StepOrGroup<StepName, GroupName>
-): config is StepGroup<StepName, GroupName> {
+export function isStepGroup<StepId, GroupId>(
+  config: StepOrGroup<StepId, GroupId>
+): config is StepGroup<StepId, GroupId> {
   return "steps" in config;
 }

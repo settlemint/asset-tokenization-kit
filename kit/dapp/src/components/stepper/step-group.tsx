@@ -6,21 +6,21 @@ import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { isGroupCompleted } from "./utils";
 
-export interface StepGroupProps<StepName, GroupName> {
-  group: StepGroup<StepName, GroupName>;
-  currentStep: Step<StepName>;
-  allSteps: Step<StepName>[];
+export interface StepGroupProps<StepId, GroupId> {
+  group: StepGroup<StepId, GroupId>;
+  currentStep: Step<StepId>;
+  allSteps: Step<StepId>[];
   navigation: Navigation;
-  onStepSelect: (step: Step<StepName>) => void;
+  onStepSelect: (step: Step<StepId>) => void;
 }
 
-export function StepGroupComponent<StepName, GroupName>({
+export function StepGroupComponent<StepId, GroupId>({
   group,
   currentStep,
   allSteps,
   navigation,
   onStepSelect,
-}: StepGroupProps<StepName, GroupName>) {
+}: StepGroupProps<StepId, GroupId>) {
   const [open, setOpen] = useState(false);
   const hasActiveStep = group.steps.some(
     (step) => step.step === currentStep.step
@@ -74,7 +74,7 @@ export function StepGroupComponent<StepName, GroupName>({
 
                   return (
                     <div key={step.step} className="relative">
-                      <StepComponent<StepName>
+                      <StepComponent<StepId>
                         step={step}
                         currentStep={currentStep}
                         allSteps={allSteps}
