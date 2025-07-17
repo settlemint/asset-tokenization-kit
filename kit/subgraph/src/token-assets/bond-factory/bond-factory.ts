@@ -1,6 +1,5 @@
 import { Bytes } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
-import { getRoleByName } from "../../access-control/utils/role";
 import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
@@ -46,7 +45,7 @@ export function handleBondCreated(event: BondCreated): void {
     bond.maturityDate,
     null,
     [creator.id],
-    getRoleByName("GOVERNANCE_ROLE"),
+    null,
     null
   );
 }

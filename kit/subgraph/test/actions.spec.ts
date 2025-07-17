@@ -12,7 +12,6 @@ describe("Actions", () => {
           createdAt
           activeAt
           expiresAt
-          requiredRole
           executed
           executedAt
           executedBy
@@ -68,7 +67,6 @@ describe("Actions", () => {
           createdAt
           activeAt
           expiresAt
-          requiredRole
           executed
           executedAt
           executedBy
@@ -100,7 +98,6 @@ describe("Actions", () => {
       expect(action.activeAt).toBeDefined();
       expect(typeof action.executed).toBe("boolean"); // Can be true or false depending on scenario
       expect(action.identifier).toBeDefined(); // Should have settlement ID as identifier
-      expect(action.requiredRole).toBeNull(); // User actions don't require specific roles
 
       // Verify executor relationship
       expect(action.executor).toBeDefined();
@@ -126,7 +123,6 @@ describe("Actions", () => {
           createdAt
           activeAt
           expiresAt
-          requiredRole
           executed
           executedAt
           executedBy
@@ -158,7 +154,6 @@ describe("Actions", () => {
       expect(action.activeAt).toBeDefined();
       expect(typeof action.executed).toBe("boolean"); // Can be true or false depending on scenario
       expect(action.identifier).toBeDefined(); // Should have settlement ID as identifier
-      expect(action.requiredRole).toBeNull(); // User actions don't require specific roles
 
       // Verify executor relationship
       expect(action.executor).toBeDefined();
@@ -184,7 +179,6 @@ describe("Actions", () => {
           createdAt
           activeAt
           expiresAt
-          requiredRole
           executed
           executedAt
           executedBy
@@ -217,9 +211,6 @@ describe("Actions", () => {
         expect(action.executedAt).toBeNull();
         expect(action.executedBy).toBeNull();
         expect(action.identifier).toBeNull(); // Bond actions don't use identifier
-        expect(action.requiredRole).toBe(
-          "0x0000000000000000000000000000000000000000000000000000000000000000"
-        ); // DEFAULT_ADMIN_ROLE
 
         // Verify executor relationship
         expect(action.executor).toBeDefined();
@@ -319,12 +310,10 @@ describe("Actions", () => {
         adminActions: actions(where: { name: "MatureBond" }) {
           id
           name
-          requiredRole
         }
         userActions: actions(where: { name_in: ["ApproveXvPSettlement", "ExecuteXvPSettlement"] }) {
           id
           name
-          requiredRole
         }
       }`
     );
@@ -333,7 +322,6 @@ describe("Actions", () => {
     // Verify admin actions
     response.adminActions.forEach((action) => {
       expect(action.name).toBe("MatureBond"); // Currently only bond maturity is Admin type
-      expect(action.requiredRole).toBeDefined();
     });
 
     // Verify user actions
@@ -341,7 +329,6 @@ describe("Actions", () => {
       expect(["ApproveXvPSettlement", "ExecuteXvPSettlement"]).toContain(
         action.name
       );
-      expect(action.requiredRole).toBeNull();
     });
 
     // Should have at least some user actions from XvP settlements
