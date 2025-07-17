@@ -40,7 +40,7 @@ export function fetchToken(address: Address): Token {
 }
 
 export function fetchTokenByIdentity(identity: Identity): Token | null {
-  if (identity.isContract || !identity.account) {
+  if (identity.isContract !== true || !identity.account) {
     return null;
   }
   const tokenAddress = Address.fromBytes(identity.account!);
