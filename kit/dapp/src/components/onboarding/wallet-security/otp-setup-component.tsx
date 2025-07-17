@@ -5,12 +5,13 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import type { SessionUser } from "@/lib/auth";
 import { authClient } from "@/lib/auth/auth.client";
-import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
+import { twoFactorCode } from "@/lib/zod/validators/two-factor-code";
+import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 const logger = createLogger({ level: "debug" });
@@ -18,58 +19,26 @@ const logger = createLogger({ level: "debug" });
 interface OtpSetupComponentProps {
   onSuccess: () => void;
   onBack: () => void;
-  user?: SessionUser | null | undefined;
 }
 
 export function OtpSetupComponent({
   onSuccess,
   onBack,
-  user,
 }: OtpSetupComponentProps) {
-  const { sessionKey } = useContext(AuthQueryContext);
   const [otpUri, setOtpUri] = useState<string | null>(null);
-  const [otpCode, setOtpCode] = useState("");
   const [otpSetupError, setOtpSetupError] = useState(false);
   const queryClient = useQueryClient();
 
   const { mutate: enableTwoFactor } = useMutation({
-    mutationFn: async () => {
-      logger.debug("enableTwoFactor called");
-
-      const response = await fetch("/api/auth/two-factor/enable", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          // During onboarding, we don't have a password yet
-          // The server should handle this gracefully during onboarding
-          password: undefined,
-          onboarding: true, // Flag to indicate this is during onboarding
-        }),
-        credentials: "include", // Include cookies for session
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      return response.json();
-    },
-    onSuccess: (data) => {
-      logger.debug("enableTwoFactor success:", data);
-
-      if (data && typeof data === "object" && "totpURI" in data) {
-        setOtpUri(data.totpURI as string);
-        toast.success("OTP setup initiated");
-      } else {
-        logger.warn("Invalid data format:", data);
-        toast.error("Failed to generate QR code");
-      }
+    mutationFn: async () =>
+      authClient.twoFactor.enable({
+        password: undefined,
+        onboarding: true,
+      }),
+    onSuccess: () => {
+      toast.success("OTP setup initiated");
     },
     onError: (error: Error) => {
-      logger.error("enableTwoFactor error:", error);
-      setOtpSetupError(true); // Prevent infinite loop
       toast.error(error.message || "Failed to setup OTP");
     },
   });
@@ -82,7 +51,8 @@ export function OtpSetupComponent({
     onSuccess: () => {
       toast.success("OTP verified successfully");
       void queryClient.invalidateQueries({
-        queryKey: sessionKey,
+        queryKey: orpc.user.me.key(),
+        refetchType: "all",
       });
       onSuccess();
     },
@@ -92,32 +62,45 @@ export function OtpSetupComponent({
     },
   });
 
+  const form = useForm({
+    defaultValues: {
+      otpCode: "",
+    },
+    validators: {
+      onSubmit: ({ value }) => {
+        // Validate OTP code using zod validator
+        const otpResult = twoFactorCode().safeParse(value.otpCode);
+        if (!otpResult.success) {
+          return {
+            fields: {
+              otpCode:
+                otpResult.error.issues[0]?.message ??
+                "Invalid verification code",
+            },
+          };
+        }
+      },
+    },
+    onSubmit: ({ value }) => {
+      verifyOtp(value.otpCode);
+    },
+  });
+
   const handleOtpRetry = useCallback(() => {
     setOtpSetupError(false);
     setOtpUri(null);
-    setOtpCode("");
+    form.reset();
     enableTwoFactor();
-  }, [enableTwoFactor]);
-
-  const handleVerifyOtp = useCallback(() => {
-    verifyOtp(otpCode);
-  }, [verifyOtp, otpCode]);
-
-  // Auto-initiate OTP setup on mount
-  useEffect(() => {
-    if (!user?.twoFactorEnabled && !otpUri && !otpSetupError) {
-      enableTwoFactor();
-    }
-  }, [user?.twoFactorEnabled, otpUri, otpSetupError, enableTwoFactor]);
+  }, [enableTwoFactor, form]);
 
   const handleOtpCodeChange = useCallback(
     (value: string) => {
-      setOtpCode(value);
+      form.setFieldValue("otpCode", value);
       if (value.length === 6) {
-        verifyOtp(value);
+        void form.handleSubmit();
       }
     },
-    [verifyOtp]
+    [form]
   );
 
   if (otpSetupError) {
@@ -193,52 +176,71 @@ export function OtpSetupComponent({
         </details>
       </div>
 
-      <div className="space-y-4">
-        <div className="text-center">
-          <label className="text-sm font-medium">
-            Enter the 6-digit code from your app
-          </label>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
+        <div className="space-y-4">
+          <div className="text-center">
+            <label className="text-sm font-medium">
+              Enter the 6-digit code from your app
+            </label>
+          </div>
+          <form.Field name="otpCode">
+            {(field) => (
+              <div>
+                <div className="flex justify-center">
+                  <InputOTP
+                    maxLength={6}
+                    value={field.state.value}
+                    onChange={handleOtpCodeChange}
+                    disabled={isVerifyingOtp}
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+                {field.state.meta.errors.length > 0 && (
+                  <p className="text-sm text-destructive text-center mt-2">
+                    {field.state.meta.errors[0]}
+                  </p>
+                )}
+              </div>
+            )}
+          </form.Field>
         </div>
-        <div className="flex justify-center">
-          <InputOTP
-            maxLength={6}
-            value={otpCode}
-            onChange={handleOtpCodeChange}
+
+        <div className="flex gap-3 pt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className="flex-1"
             disabled={isVerifyingOtp}
           >
-            <InputOTPGroup>
-              <InputOTPSlot index={0} />
-              <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />
-            </InputOTPGroup>
-            <InputOTPSeparator />
-            <InputOTPGroup>
-              <InputOTPSlot index={3} />
-              <InputOTPSlot index={4} />
-              <InputOTPSlot index={5} />
-            </InputOTPGroup>
-          </InputOTP>
+            Back
+          </Button>
+          <Button
+            type="submit"
+            disabled={isVerifyingOtp || form.state.values.otpCode.length !== 6}
+            className="flex-1"
+          >
+            {isVerifyingOtp ? "Verifying..." : "Verify Code"}
+          </Button>
         </div>
-      </div>
-
-      <div className="flex gap-3 pt-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="flex-1"
-          disabled={isVerifyingOtp}
-        >
-          Back
-        </Button>
-        <Button
-          onClick={handleVerifyOtp}
-          disabled={isVerifyingOtp || otpCode.length !== 6}
-          className="flex-1"
-        >
-          {isVerifyingOtp ? "Verifying..." : "Verify Code"}
-        </Button>
-      </div>
+      </form>
     </div>
   );
 }

@@ -6,12 +6,14 @@ import type {
 import {
   OnboardingStep,
   OnboardingStepGroup,
-  onboardingSteps,
+  updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useStore } from "@tanstack/react-store";
-import { useCallback, useMemo, type FunctionComponent } from "react";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { z } from "zod";
 
 const logger = createLogger();
 
@@ -20,12 +22,27 @@ type OnboardingStepDefintion = Omit<StepDefinition, "id"> & {
   groupId: OnboardingStepGroup;
 };
 
-export const OnboardingLayout: FunctionComponent<{
-  children: React.ReactNode;
-  currentStep: OnboardingStep;
-}> = ({ children, currentStep }) => {
+// TODO: This needs to prefer "step" over the current step, so the sidebar changes when navigating manually (back)
+// TODO: The responsive nature of the inline modal is not working well, it constantly overflows the screen
+// TODO: Make sure all text is translated
+// TODO: There is a weird on complete log message
+// TODO: We need a better way to handle the translations, it is not pretty inlined here as it is now
+export const Route = createFileRoute("/_private/onboarding/_sidebar")({
+  validateSearch: zodValidator(
+    z.object({
+      step: z.enum(Object.values(OnboardingStep)).optional(),
+    })
+  ),
+  loader: async ({ context: { orpc, queryClient } }) => {
+    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
+    return updateOnboardingStateMachine({ user });
+  },
+  component: RouteComponent,
+});
+
+function RouteComponent() {
   const { t } = useTranslation(["onboarding", "general"]);
-  const steps = useStore(onboardingSteps, (state) => state);
+  const { steps, currentStep } = Route.useLoaderData();
 
   const stepTranslationMappings = useMemo<
     Record<OnboardingStep, { title: string; description: string }>
@@ -120,11 +137,11 @@ export const OnboardingLayout: FunctionComponent<{
     // Inject the children of the current step
     const activeStep = withTranslations.find((step) => step.id === currentStep);
     if (activeStep) {
-      activeStep.component = () => <>{children}</>;
+      activeStep.component = () => <Outlet />;
     }
 
     return withTranslations;
-  }, [currentStep, children, steps, stepTranslationMappings]);
+  }, [currentStep, steps, stepTranslationMappings]);
 
   const defaultStepIndex = useMemo(() => {
     const index = stepsWithTranslations.findIndex(
@@ -149,4 +166,4 @@ export const OnboardingLayout: FunctionComponent<{
       defaultStepIndex={defaultStepIndex}
     />
   );
-};
+}

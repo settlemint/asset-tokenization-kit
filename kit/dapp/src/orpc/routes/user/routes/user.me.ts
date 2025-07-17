@@ -49,7 +49,7 @@ export const me = authRouter.user.me
     const userId = authUser.id;
 
     // Fetch user and KYC profile in a single query with left join
-    const [[userQueryResult], systemAddress] = await Promise.all([
+    const [[userQueryResult], systemAddress, baseCurrency] = await Promise.all([
       context.db
         .select({
           user: userTable,
@@ -71,6 +71,13 @@ export const me = authRouter.user.me
           context,
         }
       ),
+      call(
+        read,
+        {
+          key: "BASE_CURRENCY",
+        },
+        { context }
+      ),
     ]);
 
     const { kyc } = userQueryResult ?? {};
@@ -88,11 +95,14 @@ export const me = authRouter.user.me
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
       onboardingState: {
-        wallet: !!authUser.wallet,
+        isAdmin: authUser.role === "admin",
+        wallet:
+          authUser.wallet !== "0x0000000000000000000000000000000000000000",
         walletSecurity:
           authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
         walletRecoveryCodes: !!authUser.secretCodeVerificationId,
         system: !!systemAddress,
+        systemSettings: !!baseCurrency,
         identity: !!userQueryResult?.kyc,
       },
     };

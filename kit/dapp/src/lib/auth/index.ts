@@ -217,12 +217,11 @@ const options = {
         before: async (user) => {
           try {
             const firstUser = await db.query.user.findFirst();
-            const walletAddress = await createWallet(user.email);
             return {
               data: {
                 ...user,
                 role: firstUser ? "admin" : "investor",
-                wallet: walletAddress,
+                wallet: "0x0000000000000000000000000000000000000000",
               },
             };
           } catch (error) {
