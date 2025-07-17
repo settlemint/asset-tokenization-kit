@@ -1,35 +1,15 @@
 import { PincodeInput } from "@/components/form/inputs/pincode-input";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
 import { authClient } from "@/lib/auth/auth.client";
-import { AuthQueryContext } from "@daveyplate/better-auth-tanstack";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { pincode } from "@/lib/zod/validators/pincode";
+import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useContext, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { z } from "zod";
 
 const logger = createLogger({ level: "debug" });
-
-const pincodeSchema = z
-  .object({
-    pincode: z.string().length(6, "PIN code must be exactly 6 digits"),
-    confirmPincode: z.string().length(6, "PIN code must be exactly 6 digits"),
-  })
-  .refine((data) => data.pincode === data.confirmPincode, {
-    message: "PIN codes don't match",
-    path: ["confirmPincode"],
-  });
-
-type PincodeFormValues = z.infer<typeof pincodeSchema>;
 
 interface PinSetupComponentProps {
   onSuccess: () => void;
@@ -40,17 +20,8 @@ export function PinSetupComponent({
   onSuccess,
   onBack,
 }: PinSetupComponentProps) {
-  const { sessionKey } = useContext(AuthQueryContext);
   const [showConfirmPincode, setShowConfirmPincode] = useState(false);
   const queryClient = useQueryClient();
-
-  const form = useForm<PincodeFormValues>({
-    resolver: zodResolver(pincodeSchema),
-    defaultValues: {
-      pincode: "",
-      confirmPincode: "",
-    },
-  });
 
   const { mutate: enablePincode, isPending } = useMutation({
     mutationFn: async (pincode: string) =>
@@ -60,7 +31,8 @@ export function PinSetupComponent({
     onSuccess: () => {
       toast.success("PIN code set successfully");
       void queryClient.invalidateQueries({
-        queryKey: sessionKey,
+        queryKey: orpc.user.me.key(),
+        refetchType: "all",
       });
       onSuccess();
     },
@@ -70,97 +42,65 @@ export function PinSetupComponent({
     },
   });
 
-  const watchConfirmPincode = form.watch("confirmPincode");
-  const watchPincode = form.watch("pincode");
-
-  const handleSetPincode = useCallback(() => {
-    if (watchPincode.length === 6) {
-      setShowConfirmPincode(true);
-    }
-  }, [watchPincode]);
-
-  const onSubmit = useCallback(
-    (values: PincodeFormValues) => {
-      enablePincode(values.pincode);
+  const form = useForm({
+    defaultValues: {
+      pincode: "",
+      confirmPincode: "",
     },
-    [enablePincode]
-  );
+    validators: {
+      onSubmit: ({ value }) => {
+        // Validate pincode using zod validator
+        const pincodeResult = pincode().safeParse(value.pincode);
+        if (!pincodeResult.success) {
+          return {
+            fields: {
+              pincode:
+                pincodeResult.error.issues[0]?.message ?? "Invalid PIN code",
+            },
+          };
+        }
+
+        // Validate confirm pincode using zod validator
+        const confirmPincodeResult = pincode().safeParse(value.confirmPincode);
+        if (!confirmPincodeResult.success) {
+          return {
+            fields: {
+              confirmPincode:
+                confirmPincodeResult.error.issues[0]?.message ??
+                "Invalid PIN code",
+            },
+          };
+        }
+
+        // Check if both match
+        if (value.pincode !== value.confirmPincode) {
+          return { fields: { confirmPincode: "PIN codes don't match" } };
+        }
+      },
+    },
+    onSubmit: ({ value }) => {
+      enablePincode(value.pincode);
+    },
+  });
 
   const handlePincodeChange = useCallback(
     (value: string) => {
-      form.setValue("pincode", value);
-      if (value.length === 6) {
-        handleSetPincode();
+      form.setFieldValue("pincode", value);
+      if (value.length === 6 && !showConfirmPincode) {
+        setShowConfirmPincode(true);
       }
     },
-    [form, handleSetPincode]
+    [form, showConfirmPincode]
   );
 
-  const handleConfirmComplete = useCallback(() => {
-    if (watchConfirmPincode.length === 6) {
-      void form.handleSubmit(onSubmit)();
-    }
-  }, [watchConfirmPincode, form, onSubmit]);
-
-  const handleSetPinClick = useCallback(() => {
-    void form.handleSubmit(onSubmit)();
-  }, [form, onSubmit]);
-
-  const renderPincodeField = useCallback(
-    ({
-      field,
-    }: {
-      field: { value: string; onChange: (value: string) => void };
-    }) => (
-      <FormItem>
-        <FormControl>
-          <div className="space-y-4">
-            <div className="text-center">
-              <label className="text-sm font-medium">
-                {!showConfirmPincode ? "Enter PIN Code" : "PIN Code"}
-              </label>
-            </div>
-            <div className="flex justify-center">
-              <PincodeInput
-                value={field.value}
-                onChange={handlePincodeChange}
-                onComplete={handleSetPincode}
-                disabled={showConfirmPincode}
-              />
-            </div>
-          </div>
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    ),
-    [showConfirmPincode, handlePincodeChange, handleSetPincode]
-  );
-
-  const renderConfirmPincodeField = useCallback(
-    ({
-      field,
-    }: {
-      field: { value: string; onChange: (value: string) => void };
-    }) => (
-      <FormItem>
-        <FormControl>
-          <div className="space-y-4">
-            <div className="text-center">
-              <label className="text-sm font-medium">Confirm PIN Code</label>
-            </div>
-            <div className="flex justify-center">
-              <PincodeInput
-                value={field.value}
-                onChange={field.onChange}
-                onComplete={handleConfirmComplete}
-              />
-            </div>
-          </div>
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    ),
-    [handleConfirmComplete]
+  const handleConfirmPincodeChange = useCallback(
+    (value: string) => {
+      form.setFieldValue("confirmPincode", value);
+      if (value.length === 6) {
+        void form.handleSubmit();
+      }
+    },
+    [form]
   );
 
   return (
@@ -172,20 +112,61 @@ export function PinSetupComponent({
         </p>
       </div>
 
-      <Form {...form}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
         <div className="space-y-6">
-          <FormField
-            control={form.control}
-            name="pincode"
-            render={renderPincodeField}
-          />
+          <form.Field name="pincode">
+            {(field) => (
+              <div className="space-y-4">
+                <div className="text-center">
+                  <label className="text-sm font-medium">
+                    {!showConfirmPincode ? "Enter PIN Code" : "PIN Code"}
+                  </label>
+                </div>
+                <div className="flex justify-center">
+                  <PincodeInput
+                    value={field.state.value}
+                    onChange={handlePincodeChange}
+                    disabled={showConfirmPincode}
+                  />
+                </div>
+                {field.state.meta.errors.length > 0 && (
+                  <p className="text-sm text-destructive text-center">
+                    {field.state.meta.errors[0]}
+                  </p>
+                )}
+              </div>
+            )}
+          </form.Field>
 
           {showConfirmPincode && (
-            <FormField
-              control={form.control}
-              name="confirmPincode"
-              render={renderConfirmPincodeField}
-            />
+            <form.Field name="confirmPincode">
+              {(field) => (
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <label className="text-sm font-medium">
+                      Confirm PIN Code
+                    </label>
+                  </div>
+                  <div className="flex justify-center">
+                    <PincodeInput
+                      value={field.state.value}
+                      onChange={handleConfirmPincodeChange}
+                    />
+                  </div>
+                  {field.state.meta.errors.length > 0 && (
+                    <p className="text-sm text-destructive text-center">
+                      {field.state.meta.errors[0]}
+                    </p>
+                  )}
+                </div>
+              )}
+            </form.Field>
           )}
 
           <div className="flex gap-3 pt-4">
@@ -198,12 +179,11 @@ export function PinSetupComponent({
               Back
             </Button>
             <Button
-              type="button"
-              onClick={handleSetPinClick}
+              type="submit"
               disabled={
                 !showConfirmPincode ||
                 isPending ||
-                watchConfirmPincode.length !== 6
+                form.state.values.confirmPincode.length !== 6
               }
               className="flex-1"
             >
@@ -211,7 +191,7 @@ export function PinSetupComponent({
             </Button>
           </div>
         </div>
-      </Form>
+      </form>
     </div>
   );
 }

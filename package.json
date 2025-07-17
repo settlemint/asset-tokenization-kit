@@ -73,7 +73,8 @@
     "@settlemint/sdk-cli": "2.5.1",
     "prettier": "3.6.2",
     "turbo": "2.5.5",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "zod": "4.0.5"
   },
   "trustedDependencies": [
     "@sentry/cli",

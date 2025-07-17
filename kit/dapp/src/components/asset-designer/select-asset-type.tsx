@@ -1,5 +1,6 @@
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
-import { assetDesignerSteps } from "@/components/asset-designer/steps";
+import { useAssetDesignerSteps } from "@/components/asset-designer/steps";
+import { getNextStepId } from "@/components/stepper/utils";
 import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
 import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
@@ -15,6 +16,7 @@ export const SelectAssetType = withForm({
   props: {},
   render: function Render({ form }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
+    const steps = useAssetDesignerSteps();
     const [systemAddress] = useSettings("SYSTEM_ADDRESS");
     const { data: systemDetails } = useQuery({
       ...orpc.system.read.queryOptions({
@@ -52,10 +54,7 @@ export const SelectAssetType = withForm({
         />
         <Button
           onClick={() => {
-            form.setFieldValue(
-              "step",
-              assetDesignerSteps.selectAssetType.nextStep
-            );
+            form.setFieldValue("step", getNextStepId(steps, "selectAssetType"));
           }}
         >
           Next

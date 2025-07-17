@@ -8,7 +8,7 @@ bun.lock
 **/.generated
 **/.generated/**
 .github/workflows/**
-
+**/tsconfig.json
 # Subgraph generated files (to prevent cache invalidation)
 kit/subgraph/generated/**
 kit/subgraph/build/**
