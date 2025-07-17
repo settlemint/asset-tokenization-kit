@@ -266,7 +266,8 @@ export function RouterBreadcrumb({
           } else if (routePart && !routePart.startsWith("$")) {
             // Capitalize first letter of route segment
             fallbackTitle =
-              routePart.charAt(0).toUpperCase() + routePart.slice(1);
+              String(routePart.charAt(0)).toUpperCase() +
+              String(routePart.slice(1));
           }
         }
 
