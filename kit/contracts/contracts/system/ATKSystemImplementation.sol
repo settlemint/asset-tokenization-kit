@@ -502,8 +502,12 @@ contract ATKSystemImplementation is
         address[] memory initialRegistrars = new address[](2);
         initialRegistrars[0] = initialAdmin;
         initialRegistrars[1] = address(this);
-        bytes memory topicSchemeRegistryData =
-            abi.encodeWithSelector(IATKTopicSchemeRegistry.initialize.selector, initialAdmin, initialRegistrars);
+        bytes memory topicSchemeRegistryData = abi.encodeWithSelector(
+            IATKTopicSchemeRegistry.initialize.selector,
+            localSystemAccessManagerProxy, // Pass the local system access manager address
+            initialAdmin,
+            initialRegistrars
+        );
         address localTopicSchemeRegistryProxy =
             address(new ATKTypedImplementationProxy(address(this), TOPIC_SCHEME_REGISTRY, topicSchemeRegistryData));
 
@@ -559,7 +563,7 @@ contract ATKSystemImplementation is
         );
 
         // Register the topic schemes.
-        IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).batchRegisterTopicSchemes(
+        IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).initializeTopicSchemes(
             ATKTopics.names(), ATKTopics.signatures()
         );
 

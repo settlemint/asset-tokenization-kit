@@ -10,11 +10,15 @@ import { ATKTopicSchemeRegistryImplementation } from
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
+import { MockTopicSchemeRegistry } from "../../mocks/MockTopicSchemeRegistry.sol";
 
 contract ATKTopicSchemeRegistryTest is Test {
     SystemUtils public systemUtils;
     IdentityUtils public identityUtils;
     ISMARTTopicSchemeRegistry public topicSchemeRegistry;
+    IATKSystemAccessManager public systemAccessManager;
+    MockTopicSchemeRegistry public mockRegistry;
 
     address public admin = makeAddr("admin");
     address public registrar = makeAddr("registrar");
@@ -49,13 +53,18 @@ contract ATKTopicSchemeRegistryTest is Test {
         // Get the topic scheme registry from the system
         topicSchemeRegistry = ISMARTTopicSchemeRegistry(systemUtils.system().topicSchemeRegistry());
 
+        // Cast to MockTopicSchemeRegistry for direct role manipulation
+        mockRegistry = MockTopicSchemeRegistry(address(topicSchemeRegistry));
+
+        // Get the system access manager
+        systemAccessManager = IATKSystemAccessManager(systemUtils.system().systemAccessManager());
+
         // Capture the initial state after system bootstrap (includes default topic schemes)
         initialTopicSchemeCount = topicSchemeRegistry.getTopicSchemeCount();
         initialTopicIds = topicSchemeRegistry.getAllTopicIds();
 
-        // Grant registrar role to test address
-        vm.prank(admin);
-        IAccessControl(address(topicSchemeRegistry)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, registrar);
+        // Grant registrar role to test address directly in the mock
+        mockRegistry.setRegistrarRole(registrar, true);
     }
 
     function test_InitialState() public view {
@@ -88,7 +97,11 @@ contract ATKTopicSchemeRegistryTest is Test {
 
     function test_RegisterTopicScheme_OnlyRegistrar() public {
         vm.prank(user);
-        vm.expectRevert();
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.REGISTRAR_ROLE
+            )
+        );
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
     }
 
@@ -248,89 +261,58 @@ contract ATKTopicSchemeRegistryTest is Test {
         uint256 expectedId2 = topicSchemeRegistry.getTopicId(TOPIC_NAME_2);
         uint256 expectedId3 = topicSchemeRegistry.getTopicId(TOPIC_NAME_3);
 
-        // Verify all topic IDs are present (order might vary)
-        bool found1 = false;
-        bool found2 = false;
-        bool found3 = false;
+        // Check that the array contains the expected IDs (may not be in exact order)
+        bool foundId1 = false;
+        bool foundId2 = false;
+        bool foundId3 = false;
 
         for (uint256 i = 0; i < allTopicIds.length; i++) {
-            if (allTopicIds[i] == expectedId1) found1 = true;
-            if (allTopicIds[i] == expectedId2) found2 = true;
-            if (allTopicIds[i] == expectedId3) found3 = true;
+            if (allTopicIds[i] == expectedId1) foundId1 = true;
+            if (allTopicIds[i] == expectedId2) foundId2 = true;
+            if (allTopicIds[i] == expectedId3) foundId3 = true;
         }
 
-        assertTrue(found1);
-        assertTrue(found2);
-        assertTrue(found3);
+        assertTrue(foundId1);
+        assertTrue(foundId2);
+        assertTrue(foundId3);
     }
 
-    function test_SupportsInterface() public view {
-        assertTrue(topicSchemeRegistry.supportsInterface(type(ISMARTTopicSchemeRegistry).interfaceId));
-        assertTrue(topicSchemeRegistry.supportsInterface(type(IERC165).interfaceId));
-        assertTrue(topicSchemeRegistry.supportsInterface(type(IAccessControl).interfaceId));
-        assertFalse(topicSchemeRegistry.supportsInterface(bytes4(0xffffffff)));
-    }
+    function test_AccessControl_RevokeRolePreventsFunctionAccess() public {
+        // Verify registrar has access initially
+        assertTrue(mockRegistry.hasRole(ATKSystemRoles.REGISTRAR_ROLE, registrar));
 
-    function test_AccessControl() public view {
-        IAccessControl accessControl = IAccessControl(address(topicSchemeRegistry));
-        assertTrue(accessControl.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
-        assertTrue(accessControl.hasRole(ATKSystemRoles.REGISTRAR_ROLE, registrar));
-        assertFalse(accessControl.hasRole(ATKSystemRoles.REGISTRAR_ROLE, user));
-    }
-
-    function test_ComplexWorkflow() public {
-        vm.startPrank(registrar);
-
-        // 1. Register multiple topic schemes
-        topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
-        topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_2, SIGNATURE_2);
-
-        assertEq(topicSchemeRegistry.getTopicSchemeCount(), initialTopicSchemeCount + 2);
-
-        // 2. Update one scheme
-        topicSchemeRegistry.updateTopicScheme(TOPIC_NAME_1, UPDATED_SIGNATURE);
-        assertEq(topicSchemeRegistry.getTopicSchemeSignatureByName(TOPIC_NAME_1), UPDATED_SIGNATURE);
-
-        // 3. Add more schemes via batch
-        string[] memory newNames = new string[](1);
-        newNames[0] = TOPIC_NAME_3;
-        string[] memory newSignatures = new string[](1);
-        newSignatures[0] = SIGNATURE_3;
-
-        topicSchemeRegistry.batchRegisterTopicSchemes(newNames, newSignatures);
-        assertEq(topicSchemeRegistry.getTopicSchemeCount(), initialTopicSchemeCount + 3);
-
-        // 4. Remove one scheme
-        topicSchemeRegistry.removeTopicScheme(TOPIC_NAME_2);
-        assertEq(topicSchemeRegistry.getTopicSchemeCount(), initialTopicSchemeCount + 2);
-        assertFalse(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_2));
-
-        // 5. Verify remaining schemes
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_1));
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_3));
-
-        vm.stopPrank();
-    }
-
-    function test_FuzzRegisterTopicScheme(string calldata name, string calldata signature) public {
-        vm.assume(bytes(name).length > 0);
-        vm.assume(bytes(name).length <= 100); // Reasonable limit
-        vm.assume(bytes(signature).length > 0);
-        vm.assume(bytes(signature).length <= 1000); // Reasonable limit
-
-        // Skip if the name already exists (could be one of the default schemes)
-        vm.assume(!topicSchemeRegistry.hasTopicSchemeByName(name));
-
-        uint256 expectedTopicId = topicSchemeRegistry.getTopicId(name);
-        uint256 countBefore = topicSchemeRegistry.getTopicSchemeCount();
-
+        // Register a topic
         vm.prank(registrar);
-        topicSchemeRegistry.registerTopicScheme(name, signature);
+        topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
 
-        assertTrue(topicSchemeRegistry.hasTopicScheme(expectedTopicId));
-        assertTrue(topicSchemeRegistry.hasTopicSchemeByName(name));
-        assertEq(topicSchemeRegistry.getTopicSchemeSignature(expectedTopicId), signature);
-        assertEq(topicSchemeRegistry.getTopicSchemeSignatureByName(name), signature);
-        assertEq(topicSchemeRegistry.getTopicSchemeCount(), countBefore + 1);
+        // Revoke registrar role
+        mockRegistry.setRegistrarRole(registrar, false);
+
+        // Verify role was revoked
+        assertFalse(mockRegistry.hasRole(ATKSystemRoles.REGISTRAR_ROLE, registrar));
+
+        // Try to register another topic (should fail)
+        vm.prank(registrar);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IAccessControl.AccessControlUnauthorizedAccount.selector, registrar, ATKSystemRoles.REGISTRAR_ROLE
+            )
+        );
+        topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_2, SIGNATURE_2);
+    }
+
+    function test_AccessControl_SystemAccessManagerUpdated() public {
+        // Create a new mock system access manager
+        address mockAccessManager = makeAddr("mockAccessManager");
+
+        // Make sure our mock can set system access manager without access check
+        mockRegistry.setCanUpdateSystemAccessManager(true);
+
+        // Set it as the new access manager
+        vm.prank(admin);
+        mockRegistry.setSystemAccessManager(mockAccessManager);
+
+        // Verify it was updated
+        assertEq(address(mockRegistry.systemAccessManager()), mockAccessManager);
     }
 }

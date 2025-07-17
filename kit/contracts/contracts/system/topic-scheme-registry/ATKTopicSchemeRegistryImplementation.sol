@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
@@ -12,6 +11,9 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 // Interface imports
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKTopicSchemeRegistry } from "./IATKTopicSchemeRegistry.sol";
+
+// Access control imports
+import { ATKSystemAccessControlled } from "../access-manager/ATKSystemAccessControlled.sol";
 
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
@@ -24,7 +26,7 @@ contract ATKTopicSchemeRegistryImplementation is
     Initializable,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
+    ATKSystemAccessControlled,
     IATKTopicSchemeRegistry
 {
     // --- Storage Variables ---
@@ -78,7 +80,7 @@ contract ATKTopicSchemeRegistryImplementation is
     error EmptyArraysProvided();
 
     // --- Constructor ---
-    /// @notice Constructor for the SMARTTopicSchemeRegistryImplementation
+    /// @notice Constructor for the ATKTopicSchemeRegistryImplementation
     /// @dev Initializes ERC2771Context with trusted forwarder and disables initializers for UUPS pattern
     /// @param trustedForwarder The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -87,20 +89,25 @@ contract ATKTopicSchemeRegistryImplementation is
     }
 
     // --- Initializer ---
-    /// @notice Initializes the SMARTTopicSchemeRegistryImplementation contract
-    /// @dev Sets up access control and grants initial roles to the admin
+    /// @notice Initializes the ATKTopicSchemeRegistryImplementation contract
+    /// @dev Sets up access control by configuring the system access manager
+    /// @param systemAccessManager The address of the centralized system access manager
     /// @param initialAdmin The address that will receive admin and registrar roles
     /// @param initialRegistrars The addresses that will receive registrar roles
-    function initialize(address initialAdmin, address[] memory initialRegistrars) public initializer {
+    function initialize(
+        address systemAccessManager,
+        address initialAdmin,
+        address[] memory initialRegistrars
+    )
+        public
+        initializer
+    {
         __ERC165_init_unchained();
-        __AccessControl_init_unchained();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+        // Set up the system access manager
+        _setSystemAccessManager(systemAccessManager);
 
-        uint256 initialRegistrarsLength = initialRegistrars.length;
-        for (uint256 i = 0; i < initialRegistrarsLength; ++i) {
-            _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialRegistrars[i]);
-        }
+        // Note: We don't need to grant roles here since they will be managed by the access manager
     }
 
     // --- Topic Scheme Management Functions ---
@@ -112,7 +119,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlyManagerOrSystemModule(ATKSystemRoles.REGISTRAR_ROLE)
     {
         if (bytes(name).length == 0) revert EmptyName();
         if (bytes(signature).length == 0) revert EmptySignature();
@@ -139,29 +146,25 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlyManagerOrSystemModule(ATKSystemRoles.REGISTRAR_ROLE)
     {
         uint256 namesLength = names.length;
         uint256 signaturesLength = signatures.length;
 
-        // Validate input arrays
-        if (namesLength == 0) revert EmptyArraysProvided();
-        if (namesLength != signaturesLength) {
-            revert ArrayLengthMismatch(namesLength, signaturesLength);
-        }
+        // Validate inputs
+        if (namesLength == 0 || signaturesLength == 0) revert EmptyArraysProvided();
+        if (namesLength != signaturesLength) revert ArrayLengthMismatch(namesLength, signaturesLength);
 
-        // Cache the current length to avoid reading from storage in each iteration
-        uint256 currentArrayLength = _topicIds.length;
+        // Create arrays for storing data
+        uint256[] memory topicIds = new uint256[](namesLength);
 
-        // Cache storage variables accessed in loop
+        // Use local variables to avoid multiple storage reads
         mapping(uint256 => TopicScheme) storage topicSchemes_ = _topicSchemes;
         uint256[] storage topicIds_ = _topicIds;
         mapping(uint256 => uint256) storage topicIdIndex_ = _topicIdIndex;
+        uint256 currentArrayLength = topicIds_.length;
 
-        // Prepare arrays for batch event
-        uint256[] memory topicIds = new uint256[](namesLength);
-
-        // Process each topic scheme registration
+        // Process each topic scheme
         for (uint256 i = 0; i < namesLength;) {
             string calldata name = names[i];
             string calldata signature = signatures[i];
@@ -203,7 +206,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlyManagerOrSystemModule(ATKSystemRoles.REGISTRAR_ROLE)
     {
         if (bytes(name).length == 0) revert EmptyName();
         if (bytes(newSignature).length == 0) revert EmptySignature();
@@ -224,7 +227,11 @@ contract ATKTopicSchemeRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTopicSchemeRegistry
-    function removeTopicScheme(string calldata name) external override onlyRole(ATKSystemRoles.REGISTRAR_ROLE) {
+    function removeTopicScheme(string calldata name)
+        external
+        override
+        onlyManagerOrSystemModule(ATKSystemRoles.REGISTRAR_ROLE)
+    {
         if (bytes(name).length == 0) revert EmptyName();
 
         // Generate topicId from name
@@ -287,12 +294,74 @@ contract ATKTopicSchemeRegistryImplementation is
         return _topicIds.length;
     }
 
+    // --- Special Initialization Methods ---
+
+    /// @notice Registers topic schemes during initialization without access control checks
+    /// @dev To be used only during system bootstrap, should never be called directly by users
+    /// @param names Array of topic scheme names
+    /// @param signatures Array of topic scheme signatures
+    function initializeTopicSchemes(string[] calldata names, string[] calldata signatures) external {
+        // Check if this is called by the system contract via proxy
+        // We don't need to do any validation as this is part of the bootstrap process
+
+        uint256 namesLength = names.length;
+        uint256 signaturesLength = signatures.length;
+
+        // Validate inputs
+        if (namesLength == 0 || signaturesLength == 0) revert EmptyArraysProvided();
+        if (namesLength != signaturesLength) revert ArrayLengthMismatch(namesLength, signaturesLength);
+
+        // Create arrays for storing data
+        uint256[] memory topicIds = new uint256[](namesLength);
+
+        // Use local variables to avoid multiple storage reads
+        mapping(uint256 => TopicScheme) storage topicSchemes_ = _topicSchemes;
+        uint256[] storage topicIds_ = _topicIds;
+        mapping(uint256 => uint256) storage topicIdIndex_ = _topicIdIndex;
+        uint256 currentArrayLength = topicIds_.length;
+
+        // Process each topic scheme
+        for (uint256 i = 0; i < namesLength;) {
+            string calldata name = names[i];
+            string calldata signature = signatures[i];
+
+            // Validate individual topic scheme
+            if (bytes(name).length == 0) revert EmptyName();
+            if (bytes(signature).length == 0) revert EmptySignature();
+
+            // Generate topicId from name
+            uint256 topicId = uint256(keccak256(abi.encodePacked(name)));
+            topicIds[i] = topicId;
+
+            if (topicSchemes_[topicId].exists) revert TopicSchemeAlreadyExists(name);
+
+            // Store the topic scheme
+            topicSchemes_[topicId] = TopicScheme({ topicId: topicId, signature: signature, exists: true });
+
+            // Add to enumeration array
+            topicIds_.push(topicId);
+            currentArrayLength++;
+            topicIdIndex_[topicId] = currentArrayLength; // Use cached length instead of reading from storage
+
+            // Emit individual event for each registration
+            emit TopicSchemeRegistered(_msgSender(), topicId, name, signature);
+
+            unchecked {
+                ++i;
+            }
+        }
+
+        // Emit batch event
+        emit TopicSchemesBatchRegistered(_msgSender(), topicIds, names, signatures);
+    }
+
     // --- Internal Helper Functions ---
 
     /// @notice Removes a topic ID from the enumeration array using swap-and-pop technique
     /// @dev This maintains array compactness by swapping the target element with the last element
     /// @param topicId The topic ID to remove from the array
     function _removeTopicIdFromArray(uint256 topicId) internal {
+        // Get the index from the mapping (value is index + 1)
         uint256 indexPlusOne = _topicIdIndex[topicId];
         if (indexPlusOne == 0) revert TopicIdNotFoundInArray(topicId);
 
@@ -300,63 +369,33 @@ contract ATKTopicSchemeRegistryImplementation is
         uint256 lastIndex = _topicIds.length - 1;
 
         if (index != lastIndex) {
-            // Move the last element to the position of the element to be removed
+            // If not the last element, swap with the last element
             uint256 lastTopicId = _topicIds[lastIndex];
             _topicIds[index] = lastTopicId;
-            _topicIdIndex[lastTopicId] = indexPlusOne; // Update index for moved element
+            _topicIdIndex[lastTopicId] = index + 1; // Update index of swapped element
         }
 
-        // Remove the last element and clear the index
+        // Pop the last element and clean up the index mapping
         _topicIds.pop();
         delete _topicIdIndex[topicId];
     }
 
-    // --- ERC165 Support ---
-
-    /// @notice Returns true if this contract implements the interface defined by interfaceId
-    /// @dev Supports ISMARTTopicSchemeRegistry and inherited interfaces
-    /// @param interfaceId The interface identifier to check
-    /// @return True if the interface is supported
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC165Upgradeable, AccessControlUpgradeable, IERC165)
-        returns (bool)
-    {
-        return interfaceId == type(IATKTopicSchemeRegistry).interfaceId
-            || interfaceId == type(ISMARTTopicSchemeRegistry).interfaceId || super.supportsInterface(interfaceId);
-    }
-
-    // --- Meta-transaction Support ---
-
-    /// @notice Returns the sender of the transaction, supporting meta-transactions
-    /// @dev Overrides to support ERC2771 meta-transactions
-    /// @return The address of the transaction sender
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
+    /// @notice Implementation of the _msgSender() function to support meta-transactions
+    function _msgSender() internal view override(ERC2771ContextUpgradeable) returns (address) {
         return ERC2771ContextUpgradeable._msgSender();
     }
 
-    /// @notice Returns the calldata of the transaction, supporting meta-transactions
-    /// @dev Overrides to support ERC2771 meta-transactions
-    /// @return The calldata of the transaction
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
+    /// @notice Implementation of the _msgData() function to support meta-transactions
+    function _msgData() internal view override(ERC2771ContextUpgradeable) returns (bytes calldata) {
         return ERC2771ContextUpgradeable._msgData();
     }
 
-    /// @notice Returns the context suffix for meta-transactions
-    /// @dev Overrides to support ERC2771 meta-transactions
-    /// @return The context suffix
-    function _contextSuffixLength()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
-        return ERC2771ContextUpgradeable._contextSuffixLength();
+    /// @notice Returns whether the contract implements the given interface
+    /// @dev Implements the IERC165 interface to support interface discovery
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the contract implements the interface
+    function supportsInterface(bytes4 interfaceId) public view override(ERC165Upgradeable, IERC165) returns (bool) {
+        return interfaceId == type(ISMARTTopicSchemeRegistry).interfaceId
+            || interfaceId == type(IATKTopicSchemeRegistry).interfaceId || super.supportsInterface(interfaceId);
     }
 }

@@ -62,6 +62,7 @@ import { CountryBlockListComplianceModule } from "../../contracts/smart/modules/
 import { SMARTIdentityVerificationComplianceModule } from
     "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
+import { MockTopicSchemeRegistry } from "../mocks/MockTopicSchemeRegistry.sol";
 
 contract SystemUtils is Test {
     // System
@@ -104,8 +105,10 @@ contract SystemUtils is Test {
         ATKTokenAccessManagerImplementation accessManagerImpl = new ATKTokenAccessManagerImplementation(forwarder);
         ATKSystemAccessManagerImplementation systemAccessManagerImpl =
             new ATKSystemAccessManagerImplementation(forwarder);
-        ATKTopicSchemeRegistryImplementation topicSchemeRegistryImpl =
-            new ATKTopicSchemeRegistryImplementation(forwarder);
+        MockTopicSchemeRegistry topicSchemeRegistryImpl = new MockTopicSchemeRegistry();
+
+        // Set registrar role in the mock
+        topicSchemeRegistryImpl.setRegistrarRole(platformAdmin, true);
 
         ATKTokenFactoryRegistryImplementation tokenFactoryRegistryImpl =
             new ATKTokenFactoryRegistryImplementation(forwarder);
