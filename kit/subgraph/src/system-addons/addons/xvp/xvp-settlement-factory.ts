@@ -18,6 +18,7 @@ export function handleATKXvPSettlementCreated(
     createAction(
       event,
       ActionName.ApproveXvPSettlement,
+      "User",
       fetchAccount(event.params.settlement).id,
       event.block.timestamp,
       xvpSettlement.cutoffDate,

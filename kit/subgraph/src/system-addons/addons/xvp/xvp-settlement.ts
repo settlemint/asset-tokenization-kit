@@ -5,22 +5,22 @@ import {
   XvPSettlementFlow,
 } from "../../../../generated/schema";
 import { XvPSettlement as XvPSettlementTemplate } from "../../../../generated/templates";
-import { XvPSettlement as XvPSettlementContract } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import {
-  XvPSettlementApproved,
   XvPSettlementApprovalRevoked,
-  XvPSettlementExecuted,
+  XvPSettlementApproved,
   XvPSettlementCancelled,
+  XvPSettlement as XvPSettlementContract,
+  XvPSettlementExecuted,
 } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../../../account/fetch/account";
-import { fetchToken } from "../../../token/fetch/token";
-import { setBigNumber } from "../../../utils/bignumber";
 import { fetchEvent } from "../../../event/fetch/event";
+import { fetchToken } from "../../../token/fetch/token";
 import {
-  createAction,
   actionExecuted,
   ActionName,
+  createAction,
 } from "../../../utils/actions";
+import { setBigNumber } from "../../../utils/bignumber";
 
 /**
  * Fetches or creates a Flow entity
@@ -198,6 +198,7 @@ export function handleXvPSettlementApproved(
     createAction(
       event,
       ActionName.ExecuteXvPSettlement,
+      "User",
       fetchAccount(event.address).id,
       event.block.timestamp,
       xvpSettlement.cutoffDate,
