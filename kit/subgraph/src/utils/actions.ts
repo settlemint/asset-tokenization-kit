@@ -8,11 +8,6 @@ export class ActionName {
   static MatureBond: string = "MatureBond";
 }
 
-export class ActionType {
-  static Admin: string = "Admin";
-  static User: string = "User";
-}
-
 export function actionId(
   actionName: string,
   target: Bytes,
@@ -44,7 +39,6 @@ export function createAction(
   event: ethereum.Event,
   actionName: string,
   target: Bytes,
-  type: string,
   activeAt: BigInt,
   expiresAt: BigInt | null,
   executors: Bytes[],
@@ -54,7 +48,6 @@ export function createAction(
   const id = actionId(actionName, target, identifier);
   const action = new Action(id);
   action.name = actionName;
-  action.type = type;
   action.target = target;
   action.createdAt = event.block.timestamp;
   action.activeAt = activeAt;
@@ -78,18 +71,21 @@ export function createActionExecutor(
 ): ActionExecutor {
   const id = actionExecutorId(action.target, action.requiredRole, identifier);
   let actionExecutor = ActionExecutor.load(id);
+
   if (actionExecutor !== null) {
-    let existingActions = actionExecutor.actions;
-    existingActions.push(action.id);
-    actionExecutor.actions = existingActions;
+    // Update the executors array with new executors (fixing bug #2)
+    actionExecutor.executors = executors;
     actionExecutor.save();
-    return actionExecutor;
+  } else {
+    // Create new ActionExecutor
+    actionExecutor = new ActionExecutor(id);
+    actionExecutor.executors = executors;
+    actionExecutor.save();
   }
 
-  actionExecutor = new ActionExecutor(id);
-  actionExecutor.executors = executors;
-  actionExecutor.actions = [action.id];
-  actionExecutor.save();
+  // Set the executor field on the Action entity to establish the relationship
+  action.executor = actionExecutor.id;
+  action.save();
 
   return actionExecutor;
 }

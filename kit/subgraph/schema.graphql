@@ -460,7 +460,6 @@ type XvPSettlementApproval @entity(immutable: false) {
 type Action @entity(immutable: false) {
   id: Bytes!
   name: String!
-  type: String!
   target: Bytes!
   createdAt: BigInt!
   activeAt: BigInt!
@@ -470,13 +469,13 @@ type Action @entity(immutable: false) {
   executedAt: BigInt
   executedBy: Bytes
   identifier: String
-  executor: ActionExecutor @derivedFrom(field: "actions")
+  executor: ActionExecutor!  # Must be ActionExecutor! for @derivedFrom to work
 }
 
 type ActionExecutor @entity(immutable: false) {
   id: Bytes!
   executors: [Bytes!]!
-  actions: [Action!]!
+  actions: [Action!]! @derivedFrom(field: "executor")
 }
 
 # ==================================================

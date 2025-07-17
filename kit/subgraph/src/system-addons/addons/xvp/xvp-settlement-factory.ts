@@ -1,7 +1,7 @@
 import { ATKXvPSettlementCreated } from "../../../../generated/templates/XvPSettlementFactory/XvPSettlementFactory";
 import { fetchAccount } from "../../../account/fetch/account";
 import { fetchEvent } from "../../../event/fetch/event";
-import { ActionName, ActionType, createAction } from "../../../utils/actions";
+import { ActionName, createAction } from "../../../utils/actions";
 import { fetchXvPSettlement } from "./fetch/xvp-settlement";
 
 export function handleATKXvPSettlementCreated(
@@ -19,7 +19,6 @@ export function handleATKXvPSettlementCreated(
       event,
       ActionName.ApproveXvPSettlement,
       fetchAccount(event.params.settlement).id,
-      ActionType.User,
       event.block.timestamp,
       xvpSettlement.cutoffDate,
       [approval.account],

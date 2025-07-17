@@ -4,7 +4,7 @@ import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
-import { ActionName, ActionType, createAction } from "../../utils/actions";
+import { ActionName, createAction } from "../../utils/actions";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchBond } from "../bond/fetch/bond";
 import { Roles } from "../../access-control/utils/role";
@@ -42,7 +42,6 @@ export function handleBondCreated(event: BondCreated): void {
     event,
     ActionName.MatureBond,
     event.params.tokenAddress,
-    ActionType.Admin,
     bond.maturityDate,
     null,
     [creator.id],

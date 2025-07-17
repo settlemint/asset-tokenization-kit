@@ -20,7 +20,6 @@ import {
   createAction,
   actionExecuted,
   ActionName,
-  ActionType,
 } from "../../../utils/actions";
 
 /**
@@ -200,7 +199,6 @@ export function handleXvPSettlementApproved(
       event,
       ActionName.ExecuteXvPSettlement,
       fetchAccount(event.address).id,
-      ActionType.User,
       event.block.timestamp,
       xvpSettlement.cutoffDate,
       participants,
