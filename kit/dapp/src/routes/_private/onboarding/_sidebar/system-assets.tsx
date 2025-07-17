@@ -4,23 +4,23 @@ import {
   updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
 import { Button } from "@/components/ui/button";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { orpc } from "@/orpc/orpc-client";
 import { type TokenType } from "@/orpc/routes/token/routes/factory/factory.create.schema";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 import {
+  AlertCircle,
   BarChart3,
   Building,
   Coins,
+  Loader2,
   PiggyBank,
   Wallet,
-  AlertCircle,
-  Loader2,
 } from "lucide-react";
 
 const logger = createLogger();
@@ -88,7 +88,7 @@ export const Route = createFileRoute(
       hasSystem = false;
     }
 
-    const { currentStep } = updateOnboardingStateMachine({ user, hasSystem });
+    const { currentStep } = updateOnboardingStateMachine({ user });
 
     // Allow navigation to system-assets if:
     // 1. User is not yet onboarded, OR

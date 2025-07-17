@@ -22,7 +22,6 @@ const routeConfig = {
     });
     const { currentStep } = updateOnboardingStateMachine({
       user,
-      hasSystem: false,
     });
     if (currentStep !== OnboardingStep.walletRecoveryCodes) {
       return redirect({

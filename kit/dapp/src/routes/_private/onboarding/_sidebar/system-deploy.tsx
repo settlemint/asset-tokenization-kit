@@ -41,7 +41,7 @@ export const Route = createFileRoute(
       hasSystem = false;
     }
 
-    const { currentStep } = updateOnboardingStateMachine({ user, hasSystem });
+    const { currentStep } = updateOnboardingStateMachine({ user });
 
     // Allow navigation back from system-settings even if it's not the current step
     const fromStep = (search as { from?: string } | undefined)?.from;

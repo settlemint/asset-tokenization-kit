@@ -29,7 +29,7 @@ export const Route = createFileRoute(
       hasSystem = false;
     }
 
-    const { currentStep } = updateOnboardingStateMachine({ user, hasSystem });
+    const { currentStep } = updateOnboardingStateMachine({ user });
     if (user.isOnboarded && currentStep !== OnboardingStep.systemAddons) {
       return redirect({
         to: `/onboarding/${currentStep}`,

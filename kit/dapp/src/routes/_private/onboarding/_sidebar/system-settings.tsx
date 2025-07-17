@@ -9,10 +9,10 @@ import {
   type FiatCurrency,
 } from "@/lib/zod/validators/fiat-currency";
 import { orpc } from "@/orpc/orpc-client";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createLogger } from "@settlemint/sdk-utils/logging";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useCallback } from "react";
 import { toast } from "sonner";
 
@@ -52,7 +52,7 @@ export const Route = createFileRoute(
       hasSystem = false;
     }
 
-    const { currentStep } = updateOnboardingStateMachine({ user, hasSystem });
+    const { currentStep } = updateOnboardingStateMachine({ user });
     if (user.isOnboarded && currentStep !== OnboardingStep.systemSettings) {
       return redirect({
         to: `/onboarding/${currentStep}`,
@@ -152,7 +152,6 @@ function RouteComponent() {
   const handlePrevious = useCallback(() => {
     void navigate({
       to: `/onboarding/${OnboardingStep.systemDeploy}`,
-      search: { from: OnboardingStep.systemSettings },
     });
   }, [navigate]);
 
