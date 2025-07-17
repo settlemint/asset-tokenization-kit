@@ -234,10 +234,11 @@ beforeAll(async () => {
   try {
     // Phase 1: Check service health
     logger.info("Phase 1: Checking service health...");
+    // Note: Postgres health is verified by Docker's depends_on condition using pg_isready
+    // We only check HTTP services here since PostgreSQL uses database protocol, not HTTP
     const services = await Promise.all([
       checkServiceHealth("Anvil", "http://localhost:8545"),
       checkServiceHealth("Graph Node", "http://localhost:8000"),
-      checkServiceHealth("Postgres", "http://localhost:5432"),
     ]);
 
     services.forEach((service) => {
