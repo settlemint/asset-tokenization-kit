@@ -37,6 +37,7 @@ export const createPausedAsset = async () => {
 
   // needs to be done so that he can add the claims and also pause the asset
   await grantRoles(pausedStableCoin, owner, [
+    ATKRoles.governanceRole,
     ATKRoles.claimManagerRole,
     ATKRoles.emergencyRole,
   ]);
