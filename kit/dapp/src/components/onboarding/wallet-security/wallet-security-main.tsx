@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 import { authClient } from "@/lib/auth/auth.client";
@@ -26,6 +27,7 @@ const pincodeSchema = z
 type PincodeFormValues = z.infer<typeof pincodeSchema>;
 
 export function WalletSecurityMain({ onNext }: WalletSecurityMainProps) {
+  const { t } = useTranslation("onboarding");
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
@@ -79,20 +81,22 @@ export function WalletSecurityMain({ onNext }: WalletSecurityMainProps) {
     <div className="h-full flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
-          {shouldShowSuccess ? "Wallet Secured" : "Secure Your Wallet"}
+          {shouldShowSuccess
+            ? t("steps.security.wallet-secured")
+            : t("steps.security.title")}
         </h2>
         <p className="text-sm text-muted-foreground pt-2">
           {shouldShowSuccess
             ? isPincodeSet
-              ? "PIN code protection is enabled for your wallet"
+              ? t("steps.security.pin-enabled")
               : isOtpEnabled
-                ? "Two-factor authentication is enabled for your wallet"
-                : "Security setup completed"
+                ? t("steps.security.two-factor-enabled")
+                : t("steps.security.security-setup-completed")
             : shouldShowEducationalContent
               ? hasAnySecurityMethod
-                ? "Add additional security or continue to the next step"
-                : "Choose how you want to protect your assets"
-              : "Set up security for your wallet"}
+                ? t("steps.security.add-additional-security")
+                : t("steps.security.choose-protection-method")
+              : t("steps.security.setup-wallet-security")}
         </p>
       </div>
 

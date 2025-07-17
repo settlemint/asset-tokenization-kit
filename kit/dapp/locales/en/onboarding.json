@@ -36,6 +36,11 @@
       "description": "Set up protection for your wallet",
       "wallet-secured": "Wallet Secured",
       "pin-enabled": "PIN code protection is enabled for your wallet",
+      "two-factor-enabled": "Two-factor authentication is enabled for your wallet",
+      "security-setup-completed": "Security setup completed",
+      "add-additional-security": "Add additional security or continue to the next step",
+      "choose-protection-method": "Choose how you want to protect your assets",
+      "setup-wallet-security": "Set up security for your wallet",
       "setup-pin": "Set up a 6-digit PIN code to protect your wallet transactions",
       "enter-pin": "Enter a 6-digit PIN code",
       "pin-configured-title": "PIN Code Configured Successfully",
@@ -51,9 +56,21 @@
       "success": "PIN code set successfully",
       "error": "Failed to set PIN code"
     },
+    "walletRecoveryCodes": {
+      "title": "Recovery Codes",
+      "description": "Save your wallet recovery codes"
+    },
     "system": {
       "title": "Deploy System",
       "description": "Initialize the core smart contracts"
+    },
+    "systemSettings": {
+      "title": "Configure Settings",
+      "description": "Set up platform settings"
+    },
+    "systemAddons": {
+      "title": "Enable Addons",
+      "description": "Configure platform addons"
     },
     "assets": {
       "title": "Select Assets",

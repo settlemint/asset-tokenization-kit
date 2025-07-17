@@ -38,6 +38,11 @@
       "description": "Richten Sie einen Schutz für Ihre Brieftasche ein",
       "wallet-secured": "Brieftasche gesichert",
       "pin-enabled": "Der PIN-Code-Schutz ist für Ihre Brieftasche aktiviert",
+      "two-factor-enabled": "Die Zwei-Faktor-Authentifizierung ist für Ihre Brieftasche aktiviert",
+      "security-setup-completed": "Sicherheitseinrichtung abgeschlossen",
+      "add-additional-security": "Fügen Sie zusätzliche Sicherheit hinzu oder fahren Sie mit dem nächsten Schritt fort",
+      "choose-protection-method": "Wählen Sie, wie Sie Ihre Vermögenswerte schützen möchten",
+      "setup-wallet-security": "Richten Sie Sicherheit für Ihre Brieftasche ein",
       "setup-pin": "Richten Sie einen 6-stelligen PIN-Code ein, um Ihre Brieftaschen-Transaktionen zu schützen",
       "enter-pin": "Geben Sie einen 6-stelligen PIN-Code ein",
       "pin-configured-title": "PIN-Code erfolgreich konfiguriert",
@@ -52,6 +57,18 @@
       },
       "success": "PIN-Code erfolgreich festgelegt",
       "error": "Fehler beim Festlegen des PIN-Codes"
+    },
+    "walletRecoveryCodes": {
+      "title": "Wiederherstellungscodes",
+      "description": "Speichern Sie Ihre Wallet-Wiederherstellungscodes"
+    },
+    "systemSettings": {
+      "title": "Einstellungen konfigurieren",
+      "description": "Plattform-Einstellungen einrichten"
+    },
+    "systemAddons": {
+      "title": "Add-ons aktivieren",
+      "description": "Plattform-Add-ons konfigurieren"
     }
   },
   "wallet": {

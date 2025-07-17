@@ -24,7 +24,7 @@ type OnboardingStepDefintion = Omit<StepDefinition, "id"> & {
 
 // ✅ DONE: Now prefers "step" URL param over current step for manual navigation
 // ✅ DONE: Fixed responsive modal overflow with viewport constraints and mobile-first design
-// TODO: Make sure all text is translated
+// ✅ DONE: All text is now translated using proper i18n keys
 // TODO: There is a weird on complete log message
 // TODO: We need a better way to handle the translations, it is not pretty inlined here as it is now
 export const Route = createFileRoute("/_private/onboarding/_sidebar")({
@@ -62,24 +62,24 @@ function RouteComponent() {
         description: t("steps.security.description"),
       },
       [OnboardingStep.walletRecoveryCodes]: {
-        title: "Recovery Codes",
-        description: "Save your wallet recovery codes",
+        title: t("steps.walletRecoveryCodes.title"),
+        description: t("steps.walletRecoveryCodes.description"),
       },
       [OnboardingStep.systemDeploy]: {
-        title: "Deploy System",
-        description: "Deploy the blockchain system",
+        title: t("steps.system.title"),
+        description: t("steps.system.description"),
       },
       [OnboardingStep.systemSettings]: {
-        title: "Configure Settings",
-        description: "Set up platform settings",
+        title: t("steps.systemSettings.title"),
+        description: t("steps.systemSettings.description"),
       },
       [OnboardingStep.systemAssets]: {
-        title: "Select Assets",
-        description: "Choose supported asset types",
+        title: t("steps.assets.title"),
+        description: t("steps.assets.description"),
       },
       [OnboardingStep.systemAddons]: {
-        title: "Enable Addons",
-        description: "Configure platform addons",
+        title: t("steps.systemAddons.title"),
+        description: t("steps.systemAddons.description"),
       },
       [OnboardingStep.identity]: {
         title: t("steps.identity.title"),
@@ -98,8 +98,8 @@ function RouteComponent() {
         description: t("wallet.description"),
       },
       [OnboardingStepGroup.system]: {
-        title: "Deploy SMART System",
-        description: "Set up your blockchain platform",
+        title: t("system.title"),
+        description: t("system.description"),
       },
       [OnboardingStepGroup.identity]: {
         title: t("steps.identity.title"),
@@ -165,8 +165,8 @@ function RouteComponent() {
   return (
     <MultiStepWizard
       name="onboarding"
-      title="Let's get you set up!"
-      description="We'll set up your wallet and will configure your identity on the blockchain to use this platform."
+      title={t("card-title")}
+      description={t("card-description")}
       steps={stepsWithTranslations}
       groups={groups}
       onComplete={onComplete}

@@ -38,6 +38,11 @@
       "description": "ウォレットの保護を設定する",
       "wallet-secured": "ウォレットが保護されました",
       "pin-enabled": "ウォレットのためにPINコード保護が有効になっています",
+      "two-factor-enabled": "ウォレットのために二要素認証が有効になっています",
+      "security-setup-completed": "セキュリティ設定が完了しました",
+      "add-additional-security": "追加のセキュリティを追加するか、次のステップに進んでください",
+      "choose-protection-method": "資産を保護する方法を選択してください",
+      "setup-wallet-security": "ウォレットのセキュリティを設定してください",
       "setup-pin": "ウォレットの取引を保護するために6桁のPINコードを設定してください",
       "enter-pin": "6桁のPINコードを入力してください",
       "pin-configured-title": "PINコードが正常に設定されました",
@@ -52,6 +57,18 @@
       },
       "success": "PINコードが正常に設定されました",
       "error": "PINコードの設定に失敗しました"
+    },
+    "walletRecoveryCodes": {
+      "title": "回復コード",
+      "description": "ウォレットの回復コードを保存してください"
+    },
+    "systemSettings": {
+      "title": "設定の構成",
+      "description": "プラットフォーム設定をセットアップします"
+    },
+    "systemAddons": {
+      "title": "アドオンを有効にする",
+      "description": "プラットフォームアドオンを設定します"
     }
   },
   "wallet": {
