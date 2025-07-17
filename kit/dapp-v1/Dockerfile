@@ -1,4 +1,4 @@
-FROM node:24.4.0-alpine
+FROM node:24.4.1-alpine
 
 LABEL org.opencontainers.image.source="https://github.com/settlemint/asset-tokenization-kit"
 
