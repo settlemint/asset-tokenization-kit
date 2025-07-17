@@ -34,7 +34,7 @@ A Helm chart for the ATK DApp frontend
 | initContainer.graphQLCheck.image.pullPolicy | string | `"IfNotPresent"` |  |
 | initContainer.graphQLCheck.image.registry | string | `"docker.io"` |  |
 | initContainer.graphQLCheck.image.repository | string | `"curlimages/curl"` |  |
-| initContainer.graphQLCheck.image.tag | string | `"8.14.1"` |  |
+| initContainer.graphQLCheck.image.tag | string | `"8.15.0"` |  |
 | initContainer.graphQLCheck.name | string | `"wait-for-graph-subgraph-kit"` |  |
 | initContainer.graphQLCheck.query | string | `"{ __typename }"` |  |
 | initContainer.graphQLCheck.retries | int | `24` |  |
