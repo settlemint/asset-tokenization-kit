@@ -1,7 +1,14 @@
 {
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
+    ],
     "target": "es2022",
     "module": "esnext",
     "jsx": "react-jsx",
@@ -27,9 +34,15 @@
     "allowArbitraryExtensions": true,
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"],
-      "@schemas/*": ["./*.d.ts"],
-      "@/locales/*": ["./locales/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@schemas/*": [
+        "./*.d.ts"
+      ],
+      "@/locales/*": [
+        "./locales/*"
+      ]
     },
     "noImplicitAny": true,
     "noImplicitThis": true,
