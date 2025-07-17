@@ -13,7 +13,6 @@ export const TOKEN_PERMISSIONS: Record<
 > = {
   burn: ["supplyManagement"],
   create: ["deployer"],
-  factoryCreate: ["deployer"],
   mint: ["supplyManagement"],
   pause: ["emergency"],
   tokenAddComplianceModule: ["governance"],

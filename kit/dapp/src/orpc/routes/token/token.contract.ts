@@ -39,7 +39,6 @@ import { tokenStatsTransactionsContract } from "@/orpc/routes/token/routes/stats
 import { tokenStatsValueContract } from "@/orpc/routes/token/routes/stats/value.contract";
 
 const tokenContractMutations = {
-  factoryCreate: factoryCreateContract,
   create: tokenCreateContract,
   pause: tokenPauseContract,
   unpause: tokenUnpauseContract,
@@ -62,6 +61,7 @@ export type TokenContractMutations = keyof typeof tokenContractMutations;
 
 export const tokenContract = {
   // Factory
+  factoryCreate: factoryCreateContract,
   factoryList: factoryListContract,
   factoryRead: factoryReadContract,
 
