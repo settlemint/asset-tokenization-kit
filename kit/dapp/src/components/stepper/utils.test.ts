@@ -74,7 +74,7 @@ describe("stepper utils", () => {
     });
 
     it("should handle unsorted input steps", () => {
-      const steps = [stepC, stepA, stepB];
+      const steps = [stepB, stepC, stepA];
       const currentStep = stepA;
       const result = getNextStep(steps, currentStep);
       expect(result).toEqual(stepB);
@@ -119,7 +119,7 @@ describe("stepper utils", () => {
   });
 
   describe("isStepCompleted", () => {
-    it("should return true when current step is after target step", () => {
+    it("should return true when current step is before target step", () => {
       const targetStep = stepA;
       const currentStep = stepB;
       const result = isStepCompleted({ step: targetStep, currentStep });
@@ -142,7 +142,7 @@ describe("stepper utils", () => {
   });
 
   describe("isGroupCompleted", () => {
-    it("should return true when current step is past last step in group", () => {
+    it("should return true when current step is after last step in group", () => {
       const currentStep = stepF;
       const result = isGroupCompleted(group, currentStep);
       expect(result).toBe(true);
