@@ -38,6 +38,9 @@ contract ATKFixedYieldScheduleUpgradeable is
     /// @notice Error thrown when trying to set an invalid onchain ID
     error InvalidOnchainID();
 
+    /// @notice Error thrown when no initial admins are provided
+    error NoInitialAdmins();
+
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) { }
 
     /// @notice Initializes the contract when used as an upgradeable proxy.
@@ -64,6 +67,10 @@ contract ATKFixedYieldScheduleUpgradeable is
         __Pausable_init();
         __ReentrancyGuard_init();
         __SMARTFixedYieldSchedule_init(tokenAddress_, startDate_, endDate_, rate_, interval_);
+
+        if (initialAdmins_.length == 0) {
+            revert NoInitialAdmins();
+        }
 
         // Grant the `DEFAULT_ADMIN_ROLE` to the `initialAdmins_`.
         for (uint256 i = 0; i < initialAdmins_.length; i++) {

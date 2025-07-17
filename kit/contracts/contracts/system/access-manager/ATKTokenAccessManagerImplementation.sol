@@ -29,6 +29,8 @@ contract ATKTokenAccessManagerImplementation is
     AccessControlUpgradeable,
     ERC2771ContextUpgradeable
 {
+    error NoInitialAdmins();
+
     /// @notice Constructor for the ATKTokenAccessManager.
     /// @dev Initializes the contract with a forwarder address.
     /// @param forwarder The address of the trusted forwarder contract.
@@ -46,6 +48,11 @@ contract ATKTokenAccessManagerImplementation is
     /// @param initialAdmins Address of the initial admin for the token.
     function initialize(address[] calldata initialAdmins) public initializer {
         __AccessControl_init();
+
+        if (initialAdmins.length == 0) {
+            revert NoInitialAdmins();
+        }
+
         // Grant standard admin role (can manage other roles) to the initial admin
         for (uint256 i = 0; i < initialAdmins.length; i++) {
             _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);

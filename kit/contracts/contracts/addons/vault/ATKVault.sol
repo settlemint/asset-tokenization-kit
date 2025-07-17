@@ -146,6 +146,9 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @param signerCount The total number of signers
     error InvalidRequirement(uint256 requested, uint256 signerCount);
 
+    /// @notice Error thrown when no initial admins are provided
+    error NoInitialAdmins();
+
     /// @notice Error thrown when accessing a non-existent transaction
     /// @param txIndex The requested transaction index
     /// @param maxIndex The maximum valid index
@@ -197,6 +200,10 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         uint256 len = _signers.length;
         // Validate that the required confirmations is a sensible number
         if (len == 0 || _required == 0 || _required > len) revert InvalidRequirement(_required, len);
+
+        if (initialAdmins.length == 0) {
+            revert NoInitialAdmins();
+        }
 
         // Grant admin role to the initial admins
         for (uint256 i = 0; i < initialAdmins.length; i++) {
