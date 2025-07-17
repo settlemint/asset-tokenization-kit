@@ -12,11 +12,10 @@ export const Route = createFileRoute("/_private/onboarding/_sidebar/identity")({
     });
     const { currentStep } = updateOnboardingStateMachine({ user });
     if (currentStep !== OnboardingStep.identity) {
-      return redirect({
+      throw redirect({
         to: `/onboarding/${currentStep}`,
       });
     }
-    return { currentStep };
   },
   component: RouteComponent,
 });
