@@ -45,15 +45,29 @@ export class SignUpPage extends BasePage {
       .catch(() => false);
 
     if (isDialogVisible) {
-      await this.page.getByRole("button", { name: "Secure my wallet" }).click();
+      // Step 1: Create wallet
+      await this.page.getByRole("button", { name: "Create my wallet" }).click();
+      
+      // Wait for wallet creation to complete
+      await this.page.waitForSelector('text=Continue', {
+        state: "visible",
+        timeout: 30000,
+      });
+      await this.page.getByRole("button", { name: "Continue" }).click();
+      
+      // Step 2: Set up PIN security
       await this.page.getByRole("button", { name: "PIN-code" }).click();
       await this.page.locator('[data-input-otp="true"]').fill(options.pincode);
       await this.page.getByRole("button", { name: "Next" }).click();
+      
+      // Step 3: Handle recovery codes
       await this.page.waitForSelector('button[title="Copy to clipboard"]', {
         state: "visible",
         timeout: 30000,
       });
-      await this.page.getByRole("button", { name: "Next" }).click();
+      await this.page.getByRole("button", { name: "Confirm i've stored them" }).click();
+      
+      // Step 4: Complete the process
       await this.page
         .getByRole("button", { name: "Start using my wallet" })
         .click();
