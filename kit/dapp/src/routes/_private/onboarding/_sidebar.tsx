@@ -25,7 +25,7 @@ type OnboardingStepDefintion = Omit<StepDefinition, "id"> & {
 // ✅ DONE: Now prefers "step" URL param over current step for manual navigation
 // ✅ DONE: Fixed responsive modal overflow with viewport constraints and mobile-first design
 // ✅ DONE: All text is now translated using proper i18n keys
-// TODO: There is a weird on complete log message
+// ✅ DONE: Fixed weird onComplete log message - now provides proper context and data
 // TODO: We need a better way to handle the translations, it is not pretty inlined here as it is now
 export const Route = createFileRoute("/_private/onboarding/_sidebar")({
   validateSearch: zodValidator(
@@ -158,9 +158,19 @@ function RouteComponent() {
     return index >= 0 ? index : 0;
   }, [stepsWithTranslations, effectiveStep]);
 
-  const onComplete = useCallback(() => {
-    logger.info("completed");
-  }, []);
+  const onComplete = useCallback(
+    (data: unknown) => {
+      logger.info("Onboarding wizard completed successfully", {
+        finalStep: effectiveStep,
+        completedData: data,
+        timestamp: new Date().toISOString(),
+      });
+
+      // TODO: Add proper completion logic here
+      // e.g., redirect to dashboard, show success message, etc.
+    },
+    [effectiveStep]
+  );
 
   return (
     <MultiStepWizard
