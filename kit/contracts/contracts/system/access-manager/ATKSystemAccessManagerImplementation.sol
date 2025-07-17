@@ -82,36 +82,29 @@ contract ATKSystemAccessManagerImplementation is Initializable, AccessControlUpg
     /// @param managerRole The manager role to check
     /// @param moduleRoles Array of module roles to check
     modifier onlyRoles(bytes32 managerRole, bytes32[] memory moduleRoles) {
-        // Check if caller has the manager role
-        if (hasRole(managerRole, _msgSender())) {
-            _;
-            return;
+        (bool hasPermission,) = _checkRoles(_msgSender(), managerRole, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(_msgSender(), managerRole);
         }
 
-        // Check if caller has any of the module roles
-        for (uint256 i = 0; i < moduleRoles.length;) {
-            if (hasRole(moduleRoles[i], _msgSender())) {
-                _;
-                return;
-            }
-            unchecked {
-                ++i;
-            }
-        }
-
-        // If no valid role found, revert with the manager role as the expected role
-        revert IAccessControl.AccessControlUnauthorizedAccount(_msgSender(), managerRole);
+        _;
     }
 
     /// @notice Modifier that checks if the caller has the manager role OR any system module role
     /// @dev Convenience modifier for common access pattern
     /// @param managerRole The specific manager role to check
     modifier onlyManagerOrSystemModule(bytes32 managerRole) {
-        if (hasRole(managerRole, _msgSender()) || hasRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, _msgSender())) {
-            _;
-            return;
+        bytes32[] memory moduleRoles = new bytes32[](1);
+        moduleRoles[0] = ATKSystemRoles.SYSTEM_MODULE_ROLE;
+
+        (bool hasPermission,) = _checkRoles(_msgSender(), managerRole, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(_msgSender(), managerRole);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(_msgSender(), managerRole);
+
+        _;
     }
 
     /// @notice Modifier for system-wide operations requiring system manager or system module role
@@ -119,14 +112,13 @@ contract ATKSystemAccessManagerImplementation is Initializable, AccessControlUpg
         bytes32[] memory moduleRoles = new bytes32[](1);
         moduleRoles[0] = ATKSystemRoles.SYSTEM_MODULE_ROLE;
 
-        if (
-            hasRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, _msgSender())
-                || hasRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, _msgSender())
-        ) {
-            _;
-            return;
+        (bool hasPermission,) = _checkRoles(_msgSender(), ATKSystemRoles.SYSTEM_MANAGER_ROLE, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(_msgSender(), ATKSystemRoles.SYSTEM_MANAGER_ROLE);
         }
-        revert IAccessControl.AccessControlUnauthorizedAccount(_msgSender(), ATKSystemRoles.SYSTEM_MANAGER_ROLE);
+
+        _;
     }
 
     // ================================
@@ -227,9 +219,62 @@ contract ATKSystemAccessManagerImplementation is Initializable, AccessControlUpg
         return ATKSystemRoles.getAllModuleRoles();
     }
 
+    /// @notice Checks if an account has a managerRole or any of the moduleRoles
+    /// @dev This function can be used by both implementation and controlled contracts
+    /// @param account The address to check
+    /// @param managerRole The manager role to check
+    /// @param moduleRoles Array of module roles to check
+    /// @return hasPermission True if the account has required permissions, false otherwise
+    /// @return authorizedRole The first role that granted permission, or empty if no permission
+    function checkRoles(
+        address account,
+        bytes32 managerRole,
+        bytes32[] memory moduleRoles
+    )
+        external
+        view
+        returns (bool hasPermission, bytes32 authorizedRole)
+    {
+        return _checkRoles(account, managerRole, moduleRoles);
+    }
+
     // ================================
     // INTERNAL FUNCTIONS
     // ================================
+
+    /// @notice Internal implementation of role checking logic
+    /// @param account The address to check
+    /// @param managerRole The manager role to check
+    /// @param moduleRoles Array of module roles to check
+    /// @return hasPermission True if the account has required permissions
+    /// @return authorizedRole The first role that granted permission, or empty if no permission
+    function _checkRoles(
+        address account,
+        bytes32 managerRole,
+        bytes32[] memory moduleRoles
+    )
+        internal
+        view
+        returns (bool hasPermission, bytes32 authorizedRole)
+    {
+        // Check if account has the manager role
+        if (hasRole(managerRole, account)) {
+            return (true, managerRole);
+        }
+
+        // Check if account has any of the module roles
+        for (uint256 i = 0; i < moduleRoles.length;) {
+            if (hasRole(moduleRoles[i], account)) {
+                return (true, moduleRoles[i]);
+            }
+            unchecked {
+                ++i;
+            }
+        }
+
+        // No valid role found
+        return (false, bytes32(0));
+    }
 
     /// @notice Establishes the role hierarchy for the system
     /// @dev Sets up role admin relationships as defined in the requirements

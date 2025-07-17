@@ -123,7 +123,9 @@ contract MockSystemAccessManager is IATKSystemAccessManager {
         _roles[role][account] = false;
     }
 
-    function initialize(address) external override { }
+    function initialize(address) external {
+        // Removed override keyword - function doesn't exist in interface anymore
+    }
 
     function grantMultipleRoles(address account, bytes32[] calldata roles) external override {
         for (uint256 i = 0; i < roles.length; i++) {
@@ -169,6 +171,32 @@ contract MockSystemAccessManager is IATKSystemAccessManager {
 
     function getAllModuleRoles() external pure override returns (bytes32[] memory) {
         return ATKSystemRoles.getAllModuleRoles();
+    }
+
+    function checkRoles(
+        address account,
+        bytes32 managerRole,
+        bytes32[] memory moduleRoles
+    )
+        external
+        view
+        override
+        returns (bool hasPermission, bytes32 authorizedRole)
+    {
+        // Check if account has the manager role
+        if (_roles[managerRole][account]) {
+            return (true, managerRole);
+        }
+
+        // Check if account has any of the module roles
+        for (uint256 i = 0; i < moduleRoles.length; i++) {
+            if (_roles[moduleRoles[i]][account]) {
+                return (true, moduleRoles[i]);
+            }
+        }
+
+        // No valid role found
+        return (false, bytes32(0));
     }
 }
 

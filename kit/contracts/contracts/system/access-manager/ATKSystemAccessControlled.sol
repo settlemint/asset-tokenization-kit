@@ -51,25 +51,13 @@ abstract contract ATKSystemAccessControlled {
     modifier onlyRoles(bytes32 managerRole, bytes32[] memory moduleRoles) {
         if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
 
-        // Check if caller has the manager role
-        if (_systemAccessManager.hasRole(managerRole, msg.sender)) {
-            _;
-            return;
+        (bool hasPermission,) = _systemAccessManager.checkRoles(msg.sender, managerRole, moduleRoles);
+
+        if (!hasPermission) {
+            revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, managerRole);
         }
 
-        // Check if caller has any of the module roles
-        for (uint256 i = 0; i < moduleRoles.length;) {
-            if (_systemAccessManager.hasRole(moduleRoles[i], msg.sender)) {
-                _;
-                return;
-            }
-            unchecked {
-                ++i;
-            }
-        }
-
-        // If no valid role found, revert with the manager role as the expected role
-        revert IAccessControl.AccessControlUnauthorizedAccount(msg.sender, managerRole);
+        _;
     }
 
     /// @notice Modifier that checks if the caller has the manager role OR system module role
