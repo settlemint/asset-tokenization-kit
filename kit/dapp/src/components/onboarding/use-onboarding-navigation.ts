@@ -48,11 +48,10 @@ export function useOnboardingNavigation() {
    * Navigate to a substep within the current step
    */
   const navigateToSubStep = useCallback(
-    async (step: OnboardingStep, _subStep: string) => {
-      // For now, system steps don't use substeps, only wallet steps do
-      // This function is kept for future use
+    async (step: OnboardingStep, subStep: string) => {
       await navigate({
         to: `/onboarding/${step}` as const,
+        search: () => ({ step, subStep }),
       });
     },
     [navigate]

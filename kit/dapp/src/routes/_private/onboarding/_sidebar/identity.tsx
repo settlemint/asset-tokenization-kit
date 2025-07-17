@@ -7,6 +7,7 @@ import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/_private/onboarding/_sidebar/identity")({
 function RouteComponent() {
   const { t } = useTranslation(["onboarding", "common"]);
   const navigate = useNavigate();
+  const { navigateToStep } = useOnboardingNavigation();
 
   const handleComplete = () => {
     // Mark identity step as complete
@@ -40,7 +42,7 @@ function RouteComponent() {
       ? OnboardingStep.systemAddons
       : OnboardingStep.walletRecoveryCodes;
 
-    void navigate({ to: `/onboarding/${previousStep}` });
+    void navigateToStep(previousStep);
   };
 
   return (
