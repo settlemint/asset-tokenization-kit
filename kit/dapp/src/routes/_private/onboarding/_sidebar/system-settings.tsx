@@ -1,21 +1,21 @@
-import {
-  OnboardingStep,
-  updateOnboardingStateMachine,
-} from "@/components/onboarding/state-machine";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { Button } from "@/components/ui/button";
 import {
   fiatCurrencyMetadata,
   type FiatCurrency,
 } from "@/lib/zod/validators/fiat-currency";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import {
+  createOnboardingBeforeLoad,
+  createOnboardingSearchSchema,
+} from "@/components/onboarding/route-helpers";
 import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { useCallback } from "react";
 import { toast } from "sonner";
-import { z } from "zod";
 
 const logger = createLogger();
 
@@ -25,35 +25,14 @@ const logger = createLogger();
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/system-settings"
 )({
-  validateSearch: zodValidator(
-    z.object({
-      step: z.enum(Object.values(OnboardingStep)).optional(),
-    })
-  ),
-  beforeLoad: async ({ context: { orpc, queryClient }, search: { step } }) => {
-    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
-    const { currentStep } = updateOnboardingStateMachine({ user });
-
-    if (step) {
-      if (step !== OnboardingStep.systemSettings) {
-        throw redirect({
-          to: `/onboarding/${step}`,
-        });
-      }
-    } else {
-      if (currentStep !== OnboardingStep.systemSettings) {
-        throw redirect({
-          to: `/onboarding/${currentStep}`,
-        });
-      }
-    }
-  },
+  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemSettings),
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const { navigateToStep, handleMutationSuccess } = useOnboardingNavigation();
 
   // Get current base currency setting
   const { data: currentBaseCurrency } = useQuery({
@@ -78,14 +57,7 @@ function RouteComponent() {
 
         toast.success("Platform settings saved successfully");
 
-        // Refetch user data to update onboarding state
-        await queryClient.refetchQueries({
-          queryKey: orpc.user.me.key(),
-        });
-
-        await navigate({
-          to: `/onboarding/${OnboardingStep.systemAssets}`,
-        });
+        await handleMutationSuccess(OnboardingStep.systemSettings);
       },
       onError: (error) => {
         logger.error("Settings mutation failed:", error);
@@ -101,7 +73,7 @@ function RouteComponent() {
     },
   });
 
-  const handleSaveAndContinue = useCallback(async () => {
+  const handleSaveAndContinue = async () => {
     logger.debug("Save & Continue button clicked");
     logger.debug("Form state:", form.state);
     logger.debug("Form errors:", form.state.errors);
@@ -120,16 +92,9 @@ function RouteComponent() {
       logger.error("Failed to save base currency:", error);
       toast.error("Failed to save platform settings");
     }
-  }, [form.state, upsertSetting]);
+  };
 
-  const onPrevious = useCallback(async () => {
-    await navigate({
-      to: `/onboarding/${OnboardingStep.systemDeploy}`,
-      search: () => ({
-        step: OnboardingStep.systemDeploy,
-      }),
-    });
-  }, [navigate]);
+  const onPrevious = () => void navigateToStep(OnboardingStep.systemDeploy);
 
   return (
     <div className="h-full flex flex-col">
@@ -211,9 +176,7 @@ function RouteComponent() {
               </Button>
               <Button
                 type="button"
-                onClick={() => {
-                  void handleSaveAndContinue();
-                }}
+                onClick={() => void handleSaveAndContinue()}
                 disabled={isUpsertPending}
                 className="min-w-[120px]"
               >

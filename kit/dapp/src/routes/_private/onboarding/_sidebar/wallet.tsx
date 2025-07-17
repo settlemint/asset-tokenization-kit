@@ -1,81 +1,50 @@
-import {
-  OnboardingStep,
-  updateOnboardingStateMachine,
-} from "@/components/onboarding/state-machine";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { WalletCreated } from "@/components/onboarding/wallet/wallet-created";
 import { WalletIntro } from "@/components/onboarding/wallet/wallet-intro";
 import { WalletProgress } from "@/components/onboarding/wallet/wallet-progress";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/hooks/use-auth";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { authClient } from "@/lib/auth/auth.client";
+import {
+  createOnboardingBeforeLoad,
+  createOnboardingSearchSchema,
+} from "@/components/onboarding/route-helpers";
 import { orpc } from "@/orpc/orpc-client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { useState } from "react";
 import { toast } from "sonner";
-import { z } from "zod";
 
 export const Route = createFileRoute("/_private/onboarding/_sidebar/wallet")({
-  validateSearch: zodValidator(
-    z.object({
-      step: z.enum(Object.values(OnboardingStep)).optional(),
-      subStep: z.enum(["intro", "complete"]).optional(),
-    })
-  ),
-  beforeLoad: async ({
-    context: { orpc, queryClient },
-    search: { step, subStep },
-  }) => {
-    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
-    const { currentStep } = updateOnboardingStateMachine({ user });
-
-    // If we're showing the complete subStep, don't redirect
-    if (subStep === "complete") {
-      return;
-    }
-
-    if (step) {
-      if (step !== OnboardingStep.wallet) {
-        throw redirect({
-          to: `/onboarding/${step}`,
-        });
-      }
-    } else {
-      if (currentStep !== OnboardingStep.wallet) {
-        throw redirect({
-          to: `/onboarding/${currentStep}`,
-        });
-      }
-    }
-  },
+  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  beforeLoad: createOnboardingBeforeLoad(OnboardingStep.wallet),
   component: RouteComponent,
 });
 
 // TODO: The buttons need to be in a footer div at the bottom of the modal. If not step 1, it always needs a back button that goes to the previous step using the search params.
 function RouteComponent() {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate({ from: Route.fullPath });
   const [isCreating, setIsCreating] = useState(false);
   const { subStep } = Route.useSearch();
   const { refetch } = useSession();
+  const { handleMutationSuccess, completeStepAndNavigate } =
+    useOnboardingNavigation();
+
   const { mutate: createWallet } = useMutation(
     orpc.user.createWallet.mutationOptions({
       onSuccess: async () => {
+        // Clear auth session cache
         await authClient.getSession({
           query: {
             disableCookieCache: true,
           },
         });
         await refetch();
-        await queryClient.refetchQueries({
-          queryKey: orpc.user.me.key(),
-        });
-        await new Promise((resolve) => setTimeout(resolve, 4000));
+
+        // Handle the successful mutation
         setIsCreating(false);
-        await navigate({
-          search: () => ({ step: OnboardingStep.wallet, subStep: "complete" }),
-        });
+        await handleMutationSuccess(OnboardingStep.wallet, "complete");
       },
       onError: (error) => {
         setIsCreating(false);
@@ -83,7 +52,13 @@ function RouteComponent() {
       },
     })
   );
-  const { data: user } = useQuery(orpc.user.me.queryOptions());
+  const { data: user } = useQuery({
+    ...orpc.user.me.queryOptions(),
+    // Keep query active to receive real-time updates
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    staleTime: 0, // Always consider data stale to ensure fresh updates
+  });
 
   if (subStep === "complete") {
     return (
@@ -91,11 +66,7 @@ function RouteComponent() {
         <WalletCreated />
         <footer>
           <Button
-            onClick={async () => {
-              await navigate({
-                to: `/onboarding/${OnboardingStep.walletSecurity}`,
-              });
-            }}
+            onClick={() => void completeStepAndNavigate(OnboardingStep.wallet)}
           >
             Continue
           </Button>
@@ -133,11 +104,7 @@ function RouteComponent() {
       <WalletCreated />
       <footer>
         <Button
-          onClick={async () => {
-            await navigate({
-              to: `/onboarding/${OnboardingStep.walletSecurity}`,
-            });
-          }}
+          onClick={() => void completeStepAndNavigate(OnboardingStep.wallet)}
         >
           Continue
         </Button>
