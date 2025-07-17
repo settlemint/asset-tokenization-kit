@@ -104,6 +104,9 @@ contract ATKIdentityFactoryImplementation is
     error InvalidIdentityImplementation();
     /// @notice Indicates that the contract identity implementation is invalid.
     error InvalidContractIdentityImplementation();
+    /// @notice Indicates that the contract does not implement the required IContractWithIdentity interface.
+    /// @param contractAddress The address of the contract that is missing the required interface.
+    error ContractMissingIdentityInterface(address contractAddress);
 
     // --- Events ---
 
@@ -234,7 +237,7 @@ contract ATKIdentityFactoryImplementation is
 
         // Verify that the contract implements IContractWithIdentity
         if (!IERC165(_contract).supportsInterface(type(IContractWithIdentity).interfaceId)) {
-            revert("Contract does not implement IContractWithIdentity");
+            revert ContractMissingIdentityInterface(_contract);
         }
 
         // Deploy identity with address-based salt
