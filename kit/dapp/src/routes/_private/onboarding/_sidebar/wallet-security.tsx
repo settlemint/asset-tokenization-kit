@@ -6,6 +6,7 @@ import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-s
 import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
 import { SecurityMethodSelector } from "@/components/onboarding/wallet-security/security-method-selector";
 import { SecuritySuccess } from "@/components/onboarding/wallet-security/security-success";
+import { Button } from "@/components/ui/button";
 import { useSession } from "@/hooks/use-auth";
 import { orpc } from "@/orpc/orpc-client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -60,9 +61,8 @@ function RouteComponent() {
 
   const handlePinSuccess = useCallback(async () => {
     await refetch();
-    await queryClient.invalidateQueries({
+    await queryClient.refetchQueries({
       queryKey: orpc.user.me.key(),
-      refetchType: "all",
     });
     await navigate({
       search: () => ({
@@ -74,9 +74,8 @@ function RouteComponent() {
 
   const handleOtpSuccess = useCallback(async () => {
     await refetch();
-    await queryClient.invalidateQueries({
+    await queryClient.refetchQueries({
       queryKey: orpc.user.me.key(),
-      refetchType: "all",
     });
     await navigate({
       search: () => ({
@@ -87,17 +86,41 @@ function RouteComponent() {
   }, [refetch, queryClient, navigate]);
 
   const onNext = useCallback(async () => {
-    await queryClient.invalidateQueries({
+    await queryClient.refetchQueries({
       queryKey: orpc.user.me.key(),
-      refetchType: "all",
     });
     await navigate({
       to: `/onboarding/${OnboardingStep.walletRecoveryCodes}`,
     });
   }, [queryClient, navigate]);
 
+  const onPrevious = useCallback(async () => {
+    await navigate({
+      to: `/onboarding/${OnboardingStep.wallet}`,
+      search: () => ({
+        step: OnboardingStep.wallet,
+      }),
+    });
+  }, [navigate]);
+
   if (subStep === "complete") {
-    return <SecuritySuccess onNext={onNext} />;
+    return (
+      <div className="h-full flex flex-col">
+        <div className="flex-1 overflow-y-auto">
+          <SecuritySuccess onNext={onNext} hideButtons />
+        </div>
+        <div className="mt-8 pt-6 border-t border-border">
+          <div className="flex justify-between">
+            <Button type="button" variant="outline" onClick={onPrevious}>
+              Previous
+            </Button>
+            <Button type="button" onClick={onNext}>
+              Continue
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (subStep === "pin") {
@@ -133,15 +156,26 @@ function RouteComponent() {
   }
 
   return (
-    <SecurityMethodSelector
-      onSetupSecurity={(method) => {
-        void navigate({
-          search: () => ({
-            step: OnboardingStep.walletSecurity,
-            subStep: method,
-          }),
-        });
-      }}
-    />
+    <div className="h-full flex flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <SecurityMethodSelector
+          onSetupSecurity={(method) => {
+            void navigate({
+              search: () => ({
+                step: OnboardingStep.walletSecurity,
+                subStep: method,
+              }),
+            });
+          }}
+        />
+      </div>
+      <div className="mt-8 pt-6 border-t border-border">
+        <div className="flex justify-start">
+          <Button type="button" variant="outline" onClick={onPrevious}>
+            Previous
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

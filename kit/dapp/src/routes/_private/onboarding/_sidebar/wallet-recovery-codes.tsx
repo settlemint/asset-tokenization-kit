@@ -111,9 +111,8 @@ function RouteComponent() {
   }, []);
 
   const onNext = useCallback(async () => {
-    await queryClient.invalidateQueries({
+    await queryClient.refetchQueries({
       queryKey: orpc.user.me.key(),
-      refetchType: "all",
     });
     await navigate({
       search: () => ({

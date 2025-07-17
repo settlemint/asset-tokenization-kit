@@ -52,7 +52,6 @@ export const Route = createFileRoute("/_private/onboarding/_sidebar/wallet")({
   component: RouteComponent,
 });
 
-// TODO: The buttons need to be in a footer div at the bottom of the modal. If not step 1, it always needs a back button that goes to the previous step using the search params.
 function RouteComponent() {
   const queryClient = useQueryClient();
   const navigate = useNavigate({ from: Route.fullPath });
@@ -68,9 +67,8 @@ function RouteComponent() {
           },
         });
         await refetch();
-        await queryClient.invalidateQueries({
+        await queryClient.refetchQueries({
           queryKey: orpc.user.me.key(),
-          refetchType: "all",
         });
         await new Promise((resolve) => setTimeout(resolve, 4000));
         setIsCreating(false);
@@ -88,19 +86,23 @@ function RouteComponent() {
 
   if (subStep === "complete") {
     return (
-      <div>
-        <WalletCreated />
-        <footer>
-          <Button
-            onClick={async () => {
-              await navigate({
-                to: `/onboarding/${OnboardingStep.walletSecurity}`,
-              });
-            }}
-          >
-            Continue
-          </Button>
-        </footer>
+      <div className="h-full flex flex-col">
+        <div className="flex-1 overflow-y-auto">
+          <WalletCreated />
+        </div>
+        <div className="mt-8 pt-6 border-t border-border">
+          <div className="flex justify-end">
+            <Button
+              onClick={async () => {
+                await navigate({
+                  to: `/onboarding/${OnboardingStep.walletSecurity}`,
+                });
+              }}
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -111,38 +113,46 @@ function RouteComponent() {
     isCreating
   ) {
     return (
-      <div>
-        {isCreating ? <WalletProgress /> : <WalletIntro />}
-        <footer>
-          <Button
-            onClick={() => {
-              setIsCreating(true);
-              createWallet({});
-            }}
-            disabled={isCreating}
-          >
-            {isCreating ? "Creating..." : "Create my wallet"}
-          </Button>
-        </footer>
+      <div className="h-full flex flex-col">
+        <div className="flex-1 overflow-y-auto">
+          {isCreating ? <WalletProgress /> : <WalletIntro />}
+        </div>
+        <div className="mt-8 pt-6 border-t border-border">
+          <div className="flex justify-end">
+            <Button
+              onClick={() => {
+                setIsCreating(true);
+                createWallet({});
+              }}
+              disabled={isCreating}
+            >
+              {isCreating ? "Creating..." : "Create my wallet"}
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
 
   // If we have a wallet but subStep isn't "complete" yet, show wallet created with continue button
   return (
-    <div>
-      <WalletCreated />
-      <footer>
-        <Button
-          onClick={async () => {
-            await navigate({
-              to: `/onboarding/${OnboardingStep.walletSecurity}`,
-            });
-          }}
-        >
-          Continue
-        </Button>
-      </footer>
+    <div className="h-full flex flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <WalletCreated />
+      </div>
+      <div className="mt-8 pt-6 border-t border-border">
+        <div className="flex justify-end">
+          <Button
+            onClick={async () => {
+              await navigate({
+                to: `/onboarding/${OnboardingStep.walletSecurity}`,
+              });
+            }}
+          >
+            Continue
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

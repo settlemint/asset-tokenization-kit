@@ -37,6 +37,7 @@ export function WalletCreated() {
               address={user.wallet}
               showPrettyName={false}
               showFullAddress={true}
+              copyToClipboard={true}
             />
           </div>
         </div>

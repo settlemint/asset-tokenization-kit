@@ -22,10 +22,6 @@ type OnboardingStepDefintion = Omit<StepDefinition, "id"> & {
   groupId: OnboardingStepGroup;
 };
 
-// ✅ DONE: Now prefers "step" URL param over current step for manual navigation
-// ✅ DONE: Fixed responsive modal overflow with viewport constraints and mobile-first design
-// ✅ DONE: All text is now translated using proper i18n keys
-// ✅ DONE: Fixed weird onComplete log message - now provides proper context and data
 // TODO: We need a better way to handle the translations, it is not pretty inlined here as it is now
 export const Route = createFileRoute("/_private/onboarding/_sidebar")({
   validateSearch: zodValidator(

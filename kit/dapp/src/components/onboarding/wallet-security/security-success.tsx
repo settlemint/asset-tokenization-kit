@@ -4,9 +4,13 @@ import { CheckCircle, Shield } from "lucide-react";
 
 interface SecuritySuccessProps {
   onNext: () => void;
+  hideButtons?: boolean;
 }
 
-export function SecuritySuccess({ onNext }: SecuritySuccessProps) {
+export function SecuritySuccess({
+  onNext,
+  hideButtons = false,
+}: SecuritySuccessProps) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
@@ -63,11 +67,13 @@ export function SecuritySuccess({ onNext }: SecuritySuccessProps) {
         </div>
       </div>
 
-      <div className="flex gap-3 pt-4">
-        <Button onClick={onNext} className="flex-1">
-          Continue
-        </Button>
-      </div>
+      {!hideButtons && (
+        <div className="flex gap-3 pt-4">
+          <Button onClick={onNext} className="flex-1">
+            Continue
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
