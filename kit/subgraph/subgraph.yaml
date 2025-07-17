@@ -87,8 +87,8 @@ templates:
           handler: handleIdentityRegistryStorageImplementationUpdated
         - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
           handler: handleTokenAccessManagerImplementationUpdated
-        - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
-          handler: handleTokenIdentityImplementationUpdated
+        - event: ContractIdentityImplementationUpdated(indexed address,indexed address)
+          handler: handleContractIdentityImplementationUpdated
         - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
             address)
           handler: handleTrustedIssuersRegistryImplementationUpdated
@@ -264,8 +264,8 @@ templates:
       eventHandlers:
         - event: IdentityCreated(indexed address,indexed address,indexed address)
           handler: handleIdentityCreated
-        - event: TokenIdentityCreated(indexed address,indexed address,indexed address)
-          handler: handleTokenIdentityCreated
+        - event: ContractIdentityCreated(indexed address,indexed address,indexed address)
+          handler: handleContractIdentityCreated
       file: ./src/identity-factory/identity-factory.ts
   - kind: ethereum
     name: TopicSchemeRegistry
@@ -605,7 +605,7 @@ templates:
         - name: Vault
           file: ../contracts/.generated/artifacts/contracts/addons/vault/ATKVault.sol/ATKVault.json
       eventHandlers:
-        - event: ATKVaultCreated(indexed address,indexed address)
+        - event: ATKVaultCreated(indexed address,indexed address,indexed address)
           handler: handleATKVaultCreated
       file: ./src/system-addons/addons/vault/vault-factory.ts
   - kind: ethereum

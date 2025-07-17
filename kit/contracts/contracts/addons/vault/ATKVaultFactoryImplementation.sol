@@ -91,7 +91,7 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         ATKVault(payable(contractAddress)).setOnchainId(contractIdentity);
 
         // Emit an event to log the creation of the new vault.
-        emit ATKVaultCreated(contractAddress, _msgSender());
+        emit ATKVaultCreated(_msgSender(), contractAddress, contractIdentity);
 
         // Add the new vault to the list of all vaults created by this factory.
         allVaults.push(contractAddress);
