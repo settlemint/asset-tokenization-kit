@@ -1,6 +1,7 @@
 import {
   OnboardingStep,
   onboardingStateMachine,
+  updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,14 +23,20 @@ export const Route = createFileRoute("/_private/onboarding/_sidebar/identity")({
 function RouteComponent() {
   const { t } = useTranslation(["onboarding", "common"]);
   const navigate = useNavigate();
-  const { navigateToStep } = useOnboardingNavigation();
+  const { navigateToStep, refreshUserState } = useOnboardingNavigation();
 
-  const handleComplete = () => {
-    // Mark identity step as complete
-    onboardingStateMachine.setState((state) => ({
-      ...state,
-      identity: true,
-    }));
+  const handleComplete = async () => {
+    // Mark identity step as complete via proper state update
+    const updatedUser = await refreshUserState();
+    updateOnboardingStateMachine({
+      user: {
+        ...updatedUser,
+        onboardingState: {
+          ...updatedUser.onboardingState,
+          identity: true,
+        },
+      },
+    });
 
     // Navigate to home page (onboarding complete)
     void navigate({ to: "/" });

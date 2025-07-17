@@ -51,7 +51,7 @@ export function useOnboardingNavigation() {
     async (step: OnboardingStep, subStep: string) => {
       await navigate({
         to: `/onboarding/${step}` as const,
-        search: () => ({ step, subStep }),
+        search: () => ({ subStep }),
       });
     },
     [navigate]
