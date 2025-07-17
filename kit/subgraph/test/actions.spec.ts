@@ -8,7 +8,6 @@ describe("Actions", () => {
         actions(orderBy: createdAt, orderDirection: desc) {
           id
           name
-          type
           target
           createdAt
           activeAt
@@ -39,7 +38,6 @@ describe("Actions", () => {
     // Verify action structure
     expect(action.id).toBeDefined();
     expect(action.name).toBeDefined();
-    expect(action.type).toBeDefined();
     expect(action.target).toBeDefined();
     expect(action.createdAt).toBeDefined();
     expect(action.activeAt).toBeDefined();
@@ -66,7 +64,6 @@ describe("Actions", () => {
         ) {
           id
           name
-          type
           target
           createdAt
           activeAt
@@ -98,7 +95,6 @@ describe("Actions", () => {
     approvalActions.forEach((action) => {
       expect(action.id).toBeDefined();
       expect(action.name).toBe("ApproveXvPSettlement");
-      expect(action.type).toBe("User");
       expect(action.target).toBeDefined();
       expect(action.createdAt).toBeDefined();
       expect(action.activeAt).toBeDefined();
@@ -126,7 +122,6 @@ describe("Actions", () => {
         ) {
           id
           name
-          type
           target
           createdAt
           activeAt
@@ -158,7 +153,6 @@ describe("Actions", () => {
     executionActions.forEach((action) => {
       expect(action.id).toBeDefined();
       expect(action.name).toBe("ExecuteXvPSettlement");
-      expect(action.type).toBe("User");
       expect(action.target).toBeDefined();
       expect(action.createdAt).toBeDefined();
       expect(action.activeAt).toBeDefined();
@@ -186,7 +180,6 @@ describe("Actions", () => {
         ) {
           id
           name
-          type
           target
           createdAt
           activeAt
@@ -217,7 +210,6 @@ describe("Actions", () => {
       bondActions.forEach((action) => {
         expect(action.id).toBeDefined();
         expect(action.name).toBe("MatureBond");
-        expect(action.type).toBe("Admin");
         expect(action.target).toBeDefined();
         expect(action.createdAt).toBeDefined();
         expect(action.activeAt).toBeDefined(); // Should be set to maturity date
@@ -247,7 +239,6 @@ describe("Actions", () => {
           actions {
             id
             name
-            type
             target
             executed
             executor {
@@ -276,7 +267,6 @@ describe("Actions", () => {
       executor.actions.forEach((action) => {
         expect(action.id).toBeDefined();
         expect(action.name).toBeDefined();
-        expect(action.type).toBeDefined();
         expect(action.target).toBeDefined();
         expect(typeof action.executed).toBe("boolean");
         expect(action.executor.id).toBe(executor.id); // Reverse relationship should match
@@ -323,19 +313,17 @@ describe("Actions", () => {
     expect(response.pendingActions.length).toBeGreaterThan(0);
   });
 
-  it("should filter actions by type", async () => {
+  it("should filter actions by name", async () => {
     const query = theGraphGraphql(
       `query {
-        adminActions: actions(where: { type: "Admin" }) {
+        adminActions: actions(where: { name: "MatureBond" }) {
           id
           name
-          type
           requiredRole
         }
-        userActions: actions(where: { type: "User" }) {
+        userActions: actions(where: { name_in: ["ApproveXvPSettlement", "ExecuteXvPSettlement"] }) {
           id
           name
-          type
           requiredRole
         }
       }`
@@ -344,18 +332,16 @@ describe("Actions", () => {
 
     // Verify admin actions
     response.adminActions.forEach((action) => {
-      expect(action.type).toBe("Admin");
-      expect(action.requiredRole).toBeDefined();
       expect(action.name).toBe("MatureBond"); // Currently only bond maturity is Admin type
+      expect(action.requiredRole).toBeDefined();
     });
 
     // Verify user actions
     response.userActions.forEach((action) => {
-      expect(action.type).toBe("User");
-      expect(action.requiredRole).toBeNull();
       expect(["ApproveXvPSettlement", "ExecuteXvPSettlement"]).toContain(
         action.name
       );
+      expect(action.requiredRole).toBeNull();
     });
 
     // Should have at least some user actions from XvP settlements
