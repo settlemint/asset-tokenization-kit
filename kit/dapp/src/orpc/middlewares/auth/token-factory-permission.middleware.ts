@@ -29,7 +29,11 @@ export const tokenFactoryPermissionMiddleware = (
       : [];
 
     if (!userRoles.some((role) => requiredRoles.includes(role))) {
-      throw errors.FORBIDDEN();
+      throw errors.USER_NOT_AUTHORIZED({
+        data: {
+          requiredRoles,
+        },
+      });
     }
 
     return next();

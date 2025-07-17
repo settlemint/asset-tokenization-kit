@@ -2,10 +2,11 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { validateTokenCapability } from "@/orpc/helpers/interface-detection";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TokenMintMessagesSchema } from "@/orpc/routes/token/routes/mutations/mint/token.mint.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_SINGLE_MINT_MUTATION = portalGraphql(`
   mutation TokenMint(
@@ -56,6 +57,11 @@ const TOKEN_BATCH_MINT_MUTATION = portalGraphql(`
 `);
 
 export const mint = tokenRouter.token.mint
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.mint,
+    })
+  )
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
     const { contract, verification, recipients, amounts } = input;
@@ -66,15 +72,6 @@ export const mint = tokenRouter.token.mint
 
     // Parse messages with defaults
     const messages = TokenMintMessagesSchema.parse(input.messages ?? {});
-
-    // Validate that the token supports minting
-    // Most tokens implement IERC3643 which includes mint functionality
-    await validateTokenCapability(
-      context.portalClient,
-      contract,
-      "IERC3643",
-      "minting"
-    );
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {

@@ -1,8 +1,9 @@
+import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { timestamp } from "@/lib/zod/validators/timestamp";
-import type { TokenRoles } from "@/orpc/middlewares/system/token.middleware";
+import type { TokenExtensions } from "@/orpc/middlewares/system/token.middleware";
 import { from } from "dnum";
 import { z } from "zod";
 
@@ -13,9 +14,9 @@ import { z } from "zod";
  * to users for interacting with tokenized assets. Each role grants
  * specific capabilities within the token contract.
  *
- * @see {@link TokenRoles} for the complete type definition
+ * @see {@link AccessControlRoles} for the complete type definition
  */
-const ROLES: TokenRoles[] = [
+const ROLES: AccessControlRoles[] = [
   "admin",
   "bypassListManager",
   "claimManager",
@@ -28,6 +29,26 @@ const ROLES: TokenRoles[] = [
   "storageModifier",
   "supplyManagement",
   "governance",
+];
+
+/**
+ * Available token extensions in the system
+ *
+ * These extensions define the various capabilities that can be added to a token contract.
+ * Each extension grants specific capabilities within the token contract.
+ *
+ * @see {@link TokenExtensions} for the complete type definition
+ */
+const EXTENSIONS: TokenExtensions[] = [
+  "ACCESS_MANAGED",
+  "BURNABLE",
+  "CAPPED",
+  "COLLATERAL",
+  "CUSTODIAN",
+  "HISTORICAL_BALANCES",
+  "PAUSABLE",
+  "REDEEMABLE",
+  "YIELD",
 ];
 
 /**
@@ -45,39 +66,6 @@ const ROLES: TokenRoles[] = [
  * @property {Object} userPermissions.roles - Boolean flags for each role the user has
  * @property {boolean} userPermissions.isCompliant - Whether the user meets compliance requirements
  * @property {boolean} userPermissions.isAllowed - Whether the user can interact with the token
- *
- * @example
- * ```typescript
- * // Example token data that validates against this schema
- * const tokenData = {
- *   id: "0x1234567890abcdef1234567890abcdef12345678",
- *   name: "Corporate Bond Token",
- *   symbol: "CBT",
- *   decimals: 18,
- *   userPermissions: {
- *     roles: {
- *       admin: false,
- *       bypassListManager: false,
- *       claimManager: false,
- *       custodian: true,
- *       deployer: false,
- *       emergency: false,
- *       implementationManager: false,
- *       registryManager: false,
- *       registrar: false,
- *       storageModifier: false,
- *       supplyManagement: true,
- *       governance: false
- *     },
- *     isCompliant: true,
- *     isAllowed: true
- *   }
- * };
- *
- * // Validate the data
- * const validated = TokenSchema.parse(tokenData);
- * ```
- *
  * @remarks
  * - The userPermissions field is optional and will only be present when the
  *   API is called with authentication
@@ -95,9 +83,19 @@ export const RawTokenSchema = z.object({
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),
   totalSupply: z.string().describe("The total supply of the token as string"),
+  extensions: z
+    .array(z.enum(EXTENSIONS))
+    .describe("The extensions of the token"),
+  implementsERC3643: z
+    .boolean()
+    .describe("Whether the token implements ERC3643"),
+  implementsSMART: z.boolean().describe("Whether the token implements SMART"),
   pausable: z.object({
     paused: z.boolean().describe("Whether the token is paused"),
   }),
+  requiredClaimTopics: z
+    .array(z.string())
+    .describe("The required claim topics of the token"),
   collateral: z
     .object({
       collateral: bigDecimal()
@@ -147,14 +145,14 @@ export const RawTokenSchema = z.object({
     .object({
       roles: z
         .object(
-          ROLES.reduce<Record<TokenRoles, z.ZodType<boolean>>>(
+          ROLES.reduce<Record<AccessControlRoles, z.ZodType<boolean>>>(
             (acc, role) => {
               acc[role] = z
                 .boolean()
                 .describe(`Whether the user has the ${role} role`);
               return acc;
             },
-            {} as Record<TokenRoles, z.ZodType<boolean>>
+            {} as Record<AccessControlRoles, z.ZodType<boolean>>
           )
         )
         .describe("The roles of the user for the token"),
@@ -166,6 +164,12 @@ export const RawTokenSchema = z.object({
       isAllowed: z
         .boolean()
         .describe("Whether the user is allowed to interact with the token"),
+      notAllowedReason: z
+        .string()
+        .describe(
+          "The reason the user is not allowed to interact with the token"
+        )
+        .optional(),
     })
     .optional()
     .describe("The permissions of the user for the token"),
