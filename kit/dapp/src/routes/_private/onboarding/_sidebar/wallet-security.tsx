@@ -38,13 +38,13 @@ export const Route = createFileRoute(
 
     if (step) {
       if (step !== OnboardingStep.walletSecurity) {
-        return redirect({
+        throw redirect({
           to: `/onboarding/${step}`,
         });
       }
     } else {
       if (currentStep !== OnboardingStep.walletSecurity) {
-        return redirect({
+        throw redirect({
           to: `/onboarding/${currentStep}`,
         });
       }
@@ -94,33 +94,15 @@ function RouteComponent() {
     });
   }, [queryClient, navigate]);
 
-  const onPrevious = useCallback(async () => {
+  const handlePrevious = useCallback(async () => {
     await navigate({
       to: `/onboarding/${OnboardingStep.wallet}`,
-      search: () => ({
-        step: OnboardingStep.wallet,
-      }),
+      search: { subStep: "complete" },
     });
   }, [navigate]);
 
   if (subStep === "complete") {
-    return (
-      <div className="h-full flex flex-col">
-        <div className="flex-1 overflow-y-auto">
-          <SecuritySuccess onNext={onNext} hideButtons />
-        </div>
-        <div className="mt-8 pt-6 border-t border-border">
-          <div className="flex justify-between">
-            <Button type="button" variant="outline" onClick={onPrevious}>
-              Previous
-            </Button>
-            <Button type="button" onClick={onNext}>
-              Continue
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
+    return <SecuritySuccess onNext={onNext} />;
   }
 
   if (subStep === "pin") {
@@ -156,7 +138,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto">
         <SecurityMethodSelector
           onSetupSecurity={(method) => {
@@ -170,11 +152,14 @@ function RouteComponent() {
         />
       </div>
       <div className="mt-8 pt-6 border-t border-border">
-        <div className="flex justify-start">
-          <Button type="button" variant="outline" onClick={onPrevious}>
+        <footer className="flex justify-between">
+          <Button variant="outline" onClick={handlePrevious}>
             Previous
           </Button>
-        </div>
+          <div className="text-sm text-muted-foreground">
+            Choose a security method to continue
+          </div>
+        </footer>
       </div>
     </div>
   );

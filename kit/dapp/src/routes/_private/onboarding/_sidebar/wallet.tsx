@@ -37,13 +37,13 @@ export const Route = createFileRoute("/_private/onboarding/_sidebar/wallet")({
 
     if (step) {
       if (step !== OnboardingStep.wallet) {
-        return redirect({
+        throw redirect({
           to: `/onboarding/${step}`,
         });
       }
     } else {
       if (currentStep !== OnboardingStep.wallet) {
-        return redirect({
+        throw redirect({
           to: `/onboarding/${currentStep}`,
         });
       }
@@ -91,7 +91,7 @@ function RouteComponent() {
           <WalletCreated />
         </div>
         <div className="mt-8 pt-6 border-t border-border">
-          <div className="flex justify-end">
+          <footer className="flex justify-end">
             <Button
               onClick={async () => {
                 await navigate({
@@ -101,7 +101,7 @@ function RouteComponent() {
             >
               Continue
             </Button>
-          </div>
+          </footer>
         </div>
       </div>
     );
@@ -118,7 +118,7 @@ function RouteComponent() {
           {isCreating ? <WalletProgress /> : <WalletIntro />}
         </div>
         <div className="mt-8 pt-6 border-t border-border">
-          <div className="flex justify-end">
+          <footer className="flex justify-end">
             <Button
               onClick={() => {
                 setIsCreating(true);
@@ -128,7 +128,7 @@ function RouteComponent() {
             >
               {isCreating ? "Creating..." : "Create my wallet"}
             </Button>
-          </div>
+          </footer>
         </div>
       </div>
     );
@@ -141,7 +141,7 @@ function RouteComponent() {
         <WalletCreated />
       </div>
       <div className="mt-8 pt-6 border-t border-border">
-        <div className="flex justify-end">
+        <footer className="flex justify-end">
           <Button
             onClick={async () => {
               await navigate({
@@ -151,7 +151,7 @@ function RouteComponent() {
           >
             Continue
           </Button>
-        </div>
+        </footer>
       </div>
     </div>
   );

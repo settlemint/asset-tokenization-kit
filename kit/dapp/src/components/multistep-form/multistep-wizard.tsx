@@ -1,4 +1,4 @@
-import { Progress } from "@/components/ui/progress";
+import { Stepper } from "@/components/ui/stepper";
 import { cn } from "@/lib/utils";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
@@ -84,26 +84,6 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     return currentStepIndex;
   }, [currentStepIndex, steps]);
 
-  // Calculate progress based on current step (shows progress for the step you're on)
-  const progress = useMemo(() => {
-    if (steps.length === 0) return 0;
-    // Progress should include the current step being worked on
-    const currentProgress =
-      ((Number(safeCurrentStepIndex) + 1) / Number(steps.length)) * 100;
-    const finalProgress = Math.round(currentProgress);
-
-    // Temporary debug logging
-    logger.debug("Progress calculation", {
-      safeCurrentStepIndex,
-      stepsLength: steps.length,
-      currentProgress,
-      finalProgress,
-      completedStepsLength: completedSteps.length,
-    });
-
-    return finalProgress;
-  }, [safeCurrentStepIndex, steps.length, completedSteps.length]);
-
   // Navigation functions
   const canNavigateToStep = useCallback(
     (stepIndex: number) => {
@@ -188,11 +168,6 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     reset();
     form.reset();
   }, [reset, form]);
-
-  const handleFormSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
 
   // Create context value
   const contextValue: WizardContextValue<TFormData> = {
@@ -299,8 +274,9 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
                       {Number(steps.length)}
                     </span>
                   </div>
-                  <Progress
-                    value={progress}
+                  <Stepper
+                    steps={steps.length}
+                    currentStep={safeCurrentStepIndex}
                     className="h-2 bg-primary-foreground/20"
                   />
                 </div>
@@ -320,9 +296,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
           >
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
               <div className="w-full h-full">
-                <form onSubmit={handleFormSubmit}>
-                  <WizardStep />
-                </form>
+                <WizardStep />
               </div>
             </div>
           </div>

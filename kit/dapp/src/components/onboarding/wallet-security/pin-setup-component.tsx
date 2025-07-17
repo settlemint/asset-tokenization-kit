@@ -104,94 +104,95 @@ export function PinSetupComponent({
   );
 
   return (
-    <div className="max-w-md mx-auto space-y-6">
-      <div className="text-center space-y-2">
-        <h3 className="text-lg font-semibold">Set up PIN Code</h3>
-        <p className="text-sm text-muted-foreground">
-          Create a 6-digit PIN code to secure your wallet transactions
-        </p>
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-md mx-auto space-y-6">
+          <div className="text-center space-y-2">
+            <h3 className="text-lg font-semibold">Set up PIN Code</h3>
+            <p className="text-sm text-muted-foreground">
+              Create a 6-digit PIN code to secure your wallet transactions
+            </p>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void form.handleSubmit();
+            }}
+          >
+            <div className="space-y-6">
+              <form.Field name="pincode">
+                {(field) => (
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <label className="text-sm font-medium">
+                        {!showConfirmPincode ? "Enter PIN Code" : "PIN Code"}
+                      </label>
+                    </div>
+                    <div className="flex justify-center">
+                      <PincodeInput
+                        value={field.state.value}
+                        onChange={handlePincodeChange}
+                        disabled={showConfirmPincode}
+                      />
+                    </div>
+                    {field.state.meta.errors.length > 0 && (
+                      <p className="text-sm text-destructive text-center">
+                        {field.state.meta.errors[0]}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </form.Field>
+
+              {showConfirmPincode && (
+                <form.Field name="confirmPincode">
+                  {(field) => (
+                    <div className="space-y-4">
+                      <div className="text-center">
+                        <label className="text-sm font-medium">
+                          Confirm PIN Code
+                        </label>
+                      </div>
+                      <div className="flex justify-center">
+                        <PincodeInput
+                          value={field.state.value}
+                          onChange={handleConfirmPincodeChange}
+                        />
+                      </div>
+                      {field.state.meta.errors.length > 0 && (
+                        <p className="text-sm text-destructive text-center">
+                          {field.state.meta.errors[0]}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </form.Field>
+              )}
+            </div>
+          </form>
+        </div>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          void form.handleSubmit();
-        }}
-      >
-        <div className="space-y-6">
-          <form.Field name="pincode">
-            {(field) => (
-              <div className="space-y-4">
-                <div className="text-center">
-                  <label className="text-sm font-medium">
-                    {!showConfirmPincode ? "Enter PIN Code" : "PIN Code"}
-                  </label>
-                </div>
-                <div className="flex justify-center">
-                  <PincodeInput
-                    value={field.state.value}
-                    onChange={handlePincodeChange}
-                    disabled={showConfirmPincode}
-                  />
-                </div>
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive text-center">
-                    {field.state.meta.errors[0]}
-                  </p>
-                )}
-              </div>
-            )}
-          </form.Field>
-
-          {showConfirmPincode && (
-            <form.Field name="confirmPincode">
-              {(field) => (
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <label className="text-sm font-medium">
-                      Confirm PIN Code
-                    </label>
-                  </div>
-                  <div className="flex justify-center">
-                    <PincodeInput
-                      value={field.state.value}
-                      onChange={handleConfirmPincodeChange}
-                    />
-                  </div>
-                  {field.state.meta.errors.length > 0 && (
-                    <p className="text-sm text-destructive text-center">
-                      {field.state.meta.errors[0]}
-                    </p>
-                  )}
-                </div>
-              )}
-            </form.Field>
-          )}
-
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onBack}
-              className="flex-1"
-            >
-              Back
-            </Button>
-            <Button
-              type="submit"
-              disabled={
-                !showConfirmPincode ||
-                isPending ||
-                form.state.values.confirmPincode.length !== 6
-              }
-              className="flex-1"
-            >
-              {isPending ? "Setting up..." : "Set PIN Code"}
-            </Button>
-          </div>
-        </div>
-      </form>
+      <div className="mt-8 pt-6 border-t border-border">
+        <footer className="flex justify-between">
+          <Button type="button" variant="outline" onClick={onBack}>
+            Back
+          </Button>
+          <Button
+            type="button"
+            disabled={
+              !showConfirmPincode ||
+              isPending ||
+              form.state.values.confirmPincode.length !== 6
+            }
+            onClick={async () => form.handleSubmit()}
+          >
+            {isPending ? "Setting up..." : "Set PIN Code"}
+          </Button>
+        </footer>
+      </div>
     </div>
   );
 }

@@ -49,64 +49,54 @@ export const onboardingSteps = new Derived({
       {
         step: OnboardingStep.wallet,
         groupId: OnboardingStepGroup.wallet,
-        titleTranslationKey: "steps.wallet.title",
-        descriptionTranslationKey: "steps.wallet.description",
         current: false,
         completed: onboardingStateMachine.state.wallet,
+        titleTranslationKey: "steps.wallet.title",
+        descriptionTranslationKey: "steps.wallet.description",
       },
       {
         step: OnboardingStep.walletSecurity,
         groupId: OnboardingStepGroup.wallet,
-        titleTranslationKey: "steps.security.title",
-        descriptionTranslationKey: "steps.security.description",
         current: false,
         completed: onboardingStateMachine.state.walletSecurity,
       },
       {
         step: OnboardingStep.walletRecoveryCodes,
         groupId: OnboardingStepGroup.wallet,
-        titleTranslationKey: "steps.walletRecoveryCodes.title",
-        descriptionTranslationKey: "steps.walletRecoveryCodes.description",
         current: false,
         completed: onboardingStateMachine.state.walletRecoveryCodes,
       },
-      {
-        step: OnboardingStep.systemDeploy,
-        groupId: OnboardingStepGroup.system,
-        titleTranslationKey: "steps.system.title",
-        descriptionTranslationKey: "steps.system.description",
-        current: false,
-        completed: onboardingStateMachine.state.system,
-      },
-      {
-        step: OnboardingStep.systemSettings,
-        groupId: OnboardingStepGroup.system,
-        titleTranslationKey: "steps.systemSettings.title",
-        descriptionTranslationKey: "steps.systemSettings.description",
-        current: false,
-        completed: onboardingStateMachine.state.systemSettings,
-      },
-      {
-        step: OnboardingStep.systemAssets,
-        groupId: OnboardingStepGroup.system,
-        titleTranslationKey: "steps.assets.title",
-        descriptionTranslationKey: "steps.assets.description",
-        current: false,
-        completed: false, // This step is dynamic based on factory deployment status
-      },
-      {
-        step: OnboardingStep.systemAddons,
-        groupId: OnboardingStepGroup.system,
-        titleTranslationKey: "steps.systemAddons.title",
-        descriptionTranslationKey: "steps.systemAddons.description",
-        current: false,
-        completed: false, // This step is optional, can be skipped
-      },
+      ...(onboardingStateMachine.state.isAdmin
+        ? [
+          {
+            step: OnboardingStep.systemDeploy,
+            groupId: OnboardingStepGroup.system,
+            current: false,
+            completed: onboardingStateMachine.state.system,
+          },
+          {
+            step: OnboardingStep.systemSettings,
+            groupId: OnboardingStepGroup.system,
+            current: false,
+            completed: onboardingStateMachine.state.systemSettings,
+          },
+          {
+            step: OnboardingStep.systemAssets,
+            groupId: OnboardingStepGroup.system,
+            current: false,
+            completed: false, // TODO: Add individual step tracking
+          },
+          {
+            step: OnboardingStep.systemAddons,
+            groupId: OnboardingStepGroup.system,
+            current: false,
+            completed: false, // TODO: Add individual step tracking
+          },
+        ]
+        : []),
       {
         step: OnboardingStep.identity,
         groupId: OnboardingStepGroup.identity,
-        titleTranslationKey: "steps.identity.title",
-        descriptionTranslationKey: "steps.identity.description",
         current: false,
         completed: onboardingStateMachine.state.identity,
       },

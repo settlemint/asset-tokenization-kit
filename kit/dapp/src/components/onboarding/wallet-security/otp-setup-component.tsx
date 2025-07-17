@@ -141,106 +141,111 @@ export function OtpSetupComponent({
   }
 
   return (
-    <div className="max-w-md mx-auto space-y-6">
-      <div className="text-center space-y-2">
-        <h3 className="text-lg font-semibold">Set up Authenticator App</h3>
-        <p className="text-sm text-muted-foreground">
-          Scan this QR code with your authenticator app
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        {/* QR Code Container */}
-        <div className="bg-white p-4 rounded-lg border-2 border-dashed border-muted-foreground/25 text-center">
-          <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">QR Code</p>
-            <div className="h-32 w-32 mx-auto bg-muted-foreground/10 rounded flex items-center justify-center">
-              <span className="text-xs text-muted-foreground">
-                Scan with your app
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Manual Entry Option */}
-        <details className="text-sm">
-          <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-            Can't scan? Enter manually
-          </summary>
-          <div className="mt-2 p-3 bg-muted rounded-md">
-            <p className="text-xs text-muted-foreground mb-1">
-              Manual entry key:
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-md mx-auto space-y-6">
+          <div className="text-center space-y-2">
+            <h3 className="text-lg font-semibold">Set up Authenticator App</h3>
+            <p className="text-sm text-muted-foreground">
+              Scan this QR code with your authenticator app
             </p>
-            <code className="text-xs break-all">{otpUri}</code>
           </div>
-        </details>
+
+          <div className="space-y-4">
+            {/* QR Code Container */}
+            <div className="bg-white p-4 rounded-lg border-2 border-dashed border-muted-foreground/25 text-center">
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">QR Code</p>
+                <div className="h-32 w-32 mx-auto bg-muted-foreground/10 rounded flex items-center justify-center">
+                  <span className="text-xs text-muted-foreground">
+                    Scan with your app
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Manual Entry Option */}
+            <details className="text-sm">
+              <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                Can't scan? Enter manually
+              </summary>
+              <div className="mt-2 p-3 bg-muted rounded-md">
+                <p className="text-xs text-muted-foreground mb-1">
+                  Manual entry key:
+                </p>
+                <code className="text-xs break-all">{otpUri}</code>
+              </div>
+            </details>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void form.handleSubmit();
+            }}
+          >
+            <div className="space-y-4">
+              <div className="text-center">
+                <label className="text-sm font-medium">
+                  Enter the 6-digit code from your app
+                </label>
+              </div>
+              <form.Field name="otpCode">
+                {(field) => (
+                  <div>
+                    <div className="flex justify-center">
+                      <InputOTP
+                        maxLength={6}
+                        value={field.state.value}
+                        onChange={handleOtpCodeChange}
+                        disabled={isVerifyingOtp}
+                      >
+                        <InputOTPGroup>
+                          <InputOTPSlot index={0} />
+                          <InputOTPSlot index={1} />
+                          <InputOTPSlot index={2} />
+                        </InputOTPGroup>
+                        <InputOTPSeparator />
+                        <InputOTPGroup>
+                          <InputOTPSlot index={3} />
+                          <InputOTPSlot index={4} />
+                          <InputOTPSlot index={5} />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+                    {field.state.meta.errors.length > 0 && (
+                      <p className="text-sm text-destructive text-center mt-2">
+                        {field.state.meta.errors[0]}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </form.Field>
+            </div>
+          </form>
+        </div>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          void form.handleSubmit();
-        }}
-      >
-        <div className="space-y-4">
-          <div className="text-center">
-            <label className="text-sm font-medium">
-              Enter the 6-digit code from your app
-            </label>
-          </div>
-          <form.Field name="otpCode">
-            {(field) => (
-              <div>
-                <div className="flex justify-center">
-                  <InputOTP
-                    maxLength={6}
-                    value={field.state.value}
-                    onChange={handleOtpCodeChange}
-                    disabled={isVerifyingOtp}
-                  >
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                    </InputOTPGroup>
-                    <InputOTPSeparator />
-                    <InputOTPGroup>
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                </div>
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive text-center mt-2">
-                    {field.state.meta.errors[0]}
-                  </p>
-                )}
-              </div>
-            )}
-          </form.Field>
-        </div>
-
-        <div className="flex gap-3 pt-4">
+      <div className="mt-8 pt-6 border-t border-border">
+        <footer className="flex justify-between">
           <Button
             type="button"
             variant="outline"
             onClick={onBack}
-            className="flex-1"
             disabled={isVerifyingOtp}
           >
             Back
           </Button>
           <Button
-            type="submit"
+            type="button"
             disabled={isVerifyingOtp || form.state.values.otpCode.length !== 6}
-            className="flex-1"
+            onClick={async () => form.handleSubmit()}
           >
             {isVerifyingOtp ? "Verifying..." : "Verify Code"}
           </Button>
-        </div>
-      </form>
+        </footer>
+      </div>
     </div>
   );
 }

@@ -24,13 +24,13 @@ export const Route = createFileRoute(
 
     if (step) {
       if (step !== OnboardingStep.systemAssets) {
-        return redirect({
+        throw redirect({
           to: `/onboarding/${step}`,
         });
       }
     } else {
       if (currentStep !== OnboardingStep.systemAssets) {
-        return redirect({
+        throw redirect({
           to: `/onboarding/${currentStep}`,
         });
       }
