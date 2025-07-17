@@ -1,5 +1,6 @@
 import { Bytes } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
+import { getRoleByName } from "../../access-control/utils/role";
 import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
@@ -7,7 +8,6 @@ import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme
 import { ActionName, createAction } from "../../utils/actions";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchBond } from "../bond/fetch/bond";
-import { Roles } from "../../access-control/utils/role";
 
 export function handleBondCreated(event: BondCreated): void {
   fetchEvent(event, "BondCreated");
@@ -38,6 +38,7 @@ export function handleBondCreated(event: BondCreated): void {
 
   // Create MatureBond action
   const creator = fetchAccount(event.transaction.from);
+
   createAction(
     event,
     ActionName.MatureBond,
@@ -45,7 +46,7 @@ export function handleBondCreated(event: BondCreated): void {
     bond.maturityDate,
     null,
     [creator.id],
-    Roles[0].hexString, // DEFAULT_ADMIN_ROLE
+    getRoleByName("GOVERNANCE_ROLE"),
     null
   );
 }

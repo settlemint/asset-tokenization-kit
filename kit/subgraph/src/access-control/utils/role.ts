@@ -69,3 +69,12 @@ export function getRoleConfigFromBytes(bytes: Bytes): RoleConfig {
 
   return role;
 }
+
+export function getRoleByName(roleName: string): string {
+  for (let i = 0; i < Roles.length; i++) {
+    if (Roles[i].name === roleName) {
+      return Roles[i].hexString;
+    }
+  }
+  throw new Error(`Role ${roleName} not found in Roles array`);
+}
