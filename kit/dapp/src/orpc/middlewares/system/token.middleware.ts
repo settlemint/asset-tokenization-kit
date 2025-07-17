@@ -6,6 +6,7 @@ import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { isEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
@@ -147,6 +148,17 @@ export const tokenMiddleware = baseRouter.middleware(
         // We should do this in the subgraph, more fine grained so we can derive the reason here
         isAllowed: true,
         notAllowedReason: undefined,
+        actions: Object.entries(TOKEN_PERMISSIONS).reduce<
+          Record<keyof typeof TOKEN_PERMISSIONS, boolean>
+        >(
+          (acc, [action, requiredRoles]) => {
+            acc[action as keyof typeof TOKEN_PERMISSIONS] = requiredRoles.every(
+              (role) => userRoles[role]
+            );
+            return acc;
+          },
+          {} as Record<keyof typeof TOKEN_PERMISSIONS, boolean>
+        ),
       },
     });
 

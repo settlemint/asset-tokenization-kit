@@ -9,6 +9,7 @@ export const create = onboardedRouter.token.create
   .use(portalMiddleware)
   .use(systemMiddleware)
   .handler(async function* ({ input, context, errors }) {
+    // TODO: middleware for this
     const tokenFactory = context.system.tokenFactories.find(
       (tokenFactory) =>
         tokenFactory.typeId === getFactoryTypeIdFromAssetType(input.type)

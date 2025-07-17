@@ -4,6 +4,7 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { TokenSetCapMessagesSchema } from "./token.set-cap.schema";
 
 const TOKEN_SET_CAP_MUTATION = portalGraphql(`
@@ -31,7 +32,7 @@ const TOKEN_SET_CAP_MUTATION = portalGraphql(`
 export const tokenSetCap = tokenRouter.token.tokenSetCap
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: ["supplyManagement"],
+      requiredRoles: TOKEN_PERMISSIONS.tokenSetCap,
       requiredExtensions: ["CAPPED"],
     })
   )

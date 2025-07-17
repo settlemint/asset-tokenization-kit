@@ -6,6 +6,7 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TokenBurnMessagesSchema } from "@/orpc/routes/token/routes/mutations/burn/token.burn.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_SINGLE_BURN_MUTATION = portalGraphql(`
   mutation TokenBurn(
@@ -58,7 +59,7 @@ const TOKEN_BATCH_BURN_MUTATION = portalGraphql(`
 export const burn = tokenRouter.token.burn
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: ["supplyManagement"],
+      requiredRoles: TOKEN_PERMISSIONS.burn,
       requiredExtensions: ["BURNABLE"],
     })
   )

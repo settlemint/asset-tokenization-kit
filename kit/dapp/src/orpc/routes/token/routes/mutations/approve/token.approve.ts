@@ -1,8 +1,10 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { TokenApproveMessagesSchema } from "./token.approve.schema";
 
 const TOKEN_APPROVE_MUTATION = portalGraphql(`
@@ -31,6 +33,11 @@ const TOKEN_APPROVE_MUTATION = portalGraphql(`
 
 export const tokenApprove = tokenRouter.token.tokenApprove
   .use(portalMiddleware)
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.tokenApprove,
+    })
+  )
   .handler(async function* ({ input, context }) {
     const { contract, verification, spender, amount } = input;
     const { auth } = context;

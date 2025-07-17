@@ -41,7 +41,7 @@ const TOKEN_BATCH_MINT_MUTATION = portalGraphql(`
     $toList: [String!]!
     $amounts: [String!]!
   ) {
-    batchMint: IERC3643BatchMint(
+    batchMint: ISMARTBatchMint(
       address: $address
       from: $from
       verificationId: $verificationId

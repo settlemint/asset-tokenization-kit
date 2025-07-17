@@ -17,7 +17,7 @@ export function tokenPermissionMiddleware({
 }: {
   requiredRoles?: AccessControlRoles[];
   requiredExtensions?: TokenExtensions[];
-}) {
+} = {}) {
   return baseRouter.middleware(async ({ context, next, errors }) => {
     const { token } = context;
 

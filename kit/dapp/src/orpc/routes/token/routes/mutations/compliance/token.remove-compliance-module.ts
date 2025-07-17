@@ -4,6 +4,7 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { TokenRemoveComplianceModuleMessagesSchema } from "./token.remove-compliance-module.schema";
 
 const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
@@ -32,7 +33,7 @@ export const tokenRemoveComplianceModule =
   tokenRouter.token.tokenRemoveComplianceModule
     .use(
       tokenPermissionMiddleware({
-        requiredRoles: ["governance"],
+        requiredRoles: TOKEN_PERMISSIONS.tokenRemoveComplianceModule,
       })
     )
     .use(portalMiddleware)

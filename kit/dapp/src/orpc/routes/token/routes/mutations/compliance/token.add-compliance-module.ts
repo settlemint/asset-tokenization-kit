@@ -4,6 +4,7 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { TokenAddComplianceModuleMessagesSchema } from "./token.add-compliance-module.schema";
 
 const TOKEN_ADD_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
@@ -34,7 +35,7 @@ export const tokenAddComplianceModule =
   tokenRouter.token.tokenAddComplianceModule
     .use(
       tokenPermissionMiddleware({
-        requiredRoles: ["governance"],
+        requiredRoles: TOKEN_PERMISSIONS.tokenAddComplianceModule,
       })
     )
     .use(portalMiddleware)

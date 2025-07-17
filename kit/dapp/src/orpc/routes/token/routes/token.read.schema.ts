@@ -4,6 +4,7 @@ import { decimals } from "@/lib/zod/validators/decimals";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { timestamp } from "@/lib/zod/validators/timestamp";
 import type { TokenExtensions } from "@/orpc/middlewares/system/token.middleware";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { from } from "dnum";
 import { z } from "zod";
 
@@ -170,6 +171,21 @@ export const RawTokenSchema = z.object({
           "The reason the user is not allowed to interact with the token"
         )
         .optional(),
+      actions: z
+        .object(
+          Object.keys(TOKEN_PERMISSIONS).reduce<
+            Record<keyof typeof TOKEN_PERMISSIONS, z.ZodType<boolean>>
+          >(
+            (acc, action) => {
+              acc[action as keyof typeof TOKEN_PERMISSIONS] = z
+                .boolean()
+                .describe(`Whether the user can execute the ${action} action`);
+              return acc;
+            },
+            {} as Record<keyof typeof TOKEN_PERMISSIONS, z.ZodType<boolean>>
+          )
+        )
+        .describe("The actions on the token the user is allowed to execute"),
     })
     .optional()
     .describe("The permissions of the user for the token"),
