@@ -68,9 +68,8 @@ function RouteComponent() {
           },
         });
         await refetch();
-        await queryClient.invalidateQueries({
+        await queryClient.refetchQueries({
           queryKey: orpc.user.me.key(),
-          refetchType: "all",
         });
         await new Promise((resolve) => setTimeout(resolve, 4000));
         setIsCreating(false);

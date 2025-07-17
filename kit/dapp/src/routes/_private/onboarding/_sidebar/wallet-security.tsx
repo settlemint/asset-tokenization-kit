@@ -60,9 +60,8 @@ function RouteComponent() {
 
   const handlePinSuccess = useCallback(async () => {
     await refetch();
-    await queryClient.invalidateQueries({
+    await queryClient.refetchQueries({
       queryKey: orpc.user.me.key(),
-      refetchType: "all",
     });
     await navigate({
       search: () => ({
@@ -74,9 +73,8 @@ function RouteComponent() {
 
   const handleOtpSuccess = useCallback(async () => {
     await refetch();
-    await queryClient.invalidateQueries({
+    await queryClient.refetchQueries({
       queryKey: orpc.user.me.key(),
-      refetchType: "all",
     });
     await navigate({
       search: () => ({
@@ -87,9 +85,8 @@ function RouteComponent() {
   }, [refetch, queryClient, navigate]);
 
   const onNext = useCallback(async () => {
-    await queryClient.invalidateQueries({
+    await queryClient.refetchQueries({
       queryKey: orpc.user.me.key(),
-      refetchType: "all",
     });
     await navigate({
       to: `/onboarding/${OnboardingStep.walletRecoveryCodes}`,

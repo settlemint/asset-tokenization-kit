@@ -38,7 +38,6 @@ type TranslationKey = Parameters<
 
 export const onboardingSteps = new Derived({
   fn: () => {
-    console.error("onboardingStateMachine.state", onboardingStateMachine.state);
     const steps: {
       step: OnboardingStep;
       groupId: OnboardingStepGroup;
@@ -119,7 +118,6 @@ onboardingSteps.mount();
 export function updateOnboardingStateMachine({ user }: { user: CurrentUser }) {
   const onboardingState = user.onboardingState;
 
-  console.error("111onboardingState", onboardingState);
   onboardingStateMachine.setState((prev) => ({
     ...prev,
     ...onboardingState,
