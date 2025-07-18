@@ -33,39 +33,40 @@ export async function signInWithUser(user: User) {
   console.log(`[signInWithUser] Attempting to sign in user: ${user.email}`);
 
   const newHeaders = new Headers();
-  const { error: signInError } = await authClient.signIn.email(
-    {
-      email: user.email,
-      password: user.password,
-    },
-    {
-      onSuccess(context) {
-        console.log(
-          `[signInWithUser] Sign in successful for ${user.email}, processing headers`
-        );
-        let cookieFound = false;
+  const { error: signInError, data: signInData } =
+    await authClient.signIn.email(
+      {
+        email: user.email,
+        password: user.password,
+      },
+      {
+        onSuccess(context) {
+          console.log(
+            `[signInWithUser] Sign in successful for ${user.email}, processing headers`
+          );
+          let cookieFound = false;
 
-        context.response.headers.forEach((value, key) => {
-          if (
-            key.toLowerCase() === "set-cookie" &&
-            value.includes("better-auth.session_token")
-          ) {
-            cookieFound = true;
-            newHeaders.set("Cookie", value);
-            console.log(
-              `[signInWithUser] Session cookie set for ${user.email}`
+          context.response.headers.forEach((value, key) => {
+            if (
+              key.toLowerCase() === "set-cookie" &&
+              value.includes("better-auth.session_token")
+            ) {
+              cookieFound = true;
+              newHeaders.set("Cookie", value);
+              console.log(
+                `[signInWithUser] Session cookie set for ${user.email}`
+              );
+            }
+          });
+
+          if (!cookieFound) {
+            console.warn(
+              `[signInWithUser] No session cookie found in response headers for ${user.email}`
             );
           }
-        });
-
-        if (!cookieFound) {
-          console.warn(
-            `[signInWithUser] No session cookie found in response headers for ${user.email}`
-          );
-        }
-      },
-    }
-  );
+        },
+      }
+    );
 
   if (signInError) {
     console.error(`[signInWithUser] Sign in error for ${user.email}:`, {
@@ -93,15 +94,14 @@ export async function setupUser(user: User) {
     const { error: signUpError } = await authClient.signUp.email(user);
 
     if (signUpError) {
-      console.log(`[setupUser] Sign up error for ${user.email}:`, {
-        code: signUpError.code,
-        message: signUpError.message,
-        status: signUpError.status,
-        statusText: signUpError.statusText,
-        fullError: JSON.stringify(signUpError, null, 2),
-      });
-
       if (signUpError.code !== "USER_ALREADY_EXISTS") {
+        console.log(`[setupUser] Sign up error for ${user.email}:`, {
+          code: signUpError.code,
+          message: signUpError.message,
+          status: signUpError.status,
+          statusText: signUpError.statusText,
+          fullError: JSON.stringify(signUpError, null, 2),
+        });
         throw signUpError;
       }
       console.log(
@@ -188,15 +188,14 @@ export async function setupUser(user: User) {
     );
 
     if (pincodeError) {
-      console.log(`[setupUser] Pincode error for ${user.email}:`, {
-        code: pincodeError.code,
-        message: pincodeError.message,
-        status: pincodeError.status,
-        statusText: pincodeError.statusText,
-        fullError: JSON.stringify(pincodeError, null, 2),
-      });
-
       if (pincodeError.code !== "PINCODE_ALREADY_SET") {
+        console.log(`[setupUser] Pincode error for ${user.email}:`, {
+          code: pincodeError.code,
+          message: pincodeError.message,
+          status: pincodeError.status,
+          statusText: pincodeError.statusText,
+          fullError: JSON.stringify(pincodeError, null, 2),
+        });
         throw pincodeError;
       }
       console.log(
@@ -213,7 +212,7 @@ export async function setupUser(user: User) {
     const secretCodeHeaders = await signInWithUser(user);
     const { error: secretCodeError } = await authClient.secretCodes.generate(
       {
-        password: undefined,
+        password: user.password,
       },
       {
         headers: secretCodeHeaders,
