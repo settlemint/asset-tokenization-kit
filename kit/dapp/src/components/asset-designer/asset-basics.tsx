@@ -1,7 +1,9 @@
 import type { AssetDesignerFormData } from "@/components/asset-designer/shared-form";
-import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
-import { useAssetDesignerSteps } from "@/components/asset-designer/steps";
-import { getNextStepId } from "@/components/stepper/utils";
+import {
+  assetDesignerFormOptions,
+  isRequiredField,
+  onStepSubmit,
+} from "@/components/asset-designer/shared-form";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { assetSymbol } from "@/lib/zod/validators/asset-symbol";
@@ -13,10 +15,11 @@ import { z } from "zod";
 
 export const AssetBasics = withForm({
   ...assetDesignerFormOptions,
-  props: {},
-  render: function Render({ form }) {
+  props: {
+    onStepSubmit,
+  },
+  render: function Render({ form, onStepSubmit }) {
     const { t } = useTranslation(["asset-designer"]);
-    const steps = useAssetDesignerSteps();
 
     return (
       <>
@@ -26,7 +29,10 @@ export const AssetBasics = withForm({
             onChange: z.string(),
           }}
           children={(field) => (
-            <field.TextField label={t("form.fields.name.label")} />
+            <field.TextField
+              label={t("form.fields.name.label")}
+              required={isRequiredField("name")}
+            />
           )}
         />
         <form.AppField
@@ -35,7 +41,10 @@ export const AssetBasics = withForm({
             onChange: assetSymbol(),
           }}
           children={(field) => (
-            <field.TextField label={t("form.fields.symbol.label")} />
+            <field.TextField
+              label={t("form.fields.symbol.label")}
+              required={isRequiredField("symbol")}
+            />
           )}
         />
         <form.AppField
@@ -44,7 +53,10 @@ export const AssetBasics = withForm({
             onChange: z.int().min(0).max(18),
           }}
           children={(field) => (
-            <field.NumberField label={t("form.fields.decimals.label")} />
+            <field.NumberField
+              label={t("form.fields.decimals.label")}
+              required={isRequiredField("decimals")}
+            />
           )}
         />
         <form.AppField
@@ -53,7 +65,10 @@ export const AssetBasics = withForm({
             onChange: isin().optional(),
           }}
           children={(field) => (
-            <field.TextField label={t("form.fields.isin.label")} />
+            <field.TextField
+              label={t("form.fields.isin.label")}
+              required={isRequiredField("isin")}
+            />
           )}
         />
         <form.Subscribe
@@ -68,13 +83,34 @@ export const AssetBasics = withForm({
             return null;
           }}
         />
-        <Button
-          onClick={() => {
-            form.setFieldValue("step", getNextStepId(steps, "assetBasics"));
+        <form.Subscribe
+          selector={(state) => state.values}
+          children={(_values) => {
+            const fields: (keyof typeof _values)[] = [
+              "name",
+              "symbol",
+              "decimals",
+              "isin",
+              "cap",
+              "faceValue",
+            ];
+
+            const disabled = fields.some((field) => {
+              const meta = form.getFieldMeta(field);
+              const error = meta?.errors;
+              const isPristine = meta?.isPristine;
+              const requiredFieldPristine =
+                isRequiredField(field) && isPristine;
+              return (error && error.length > 0) || requiredFieldPristine;
+            });
+
+            return (
+              <Button onClick={onStepSubmit} disabled={disabled}>
+                Next
+              </Button>
+            );
           }}
-        >
-          Next
-        </Button>
+        />
       </>
     );
   },
@@ -94,7 +130,10 @@ const BondBasics = withForm({
             onChange: z.bigint(),
           }}
           children={(field) => (
-            <field.BigIntField label={t("form.fields.cap.label")} />
+            <field.BigIntField
+              label={t("form.fields.cap.label")}
+              required={isRequiredField("cap")}
+            />
           )}
         />
         <form.AppField
@@ -103,7 +142,10 @@ const BondBasics = withForm({
             onChange: z.bigint(),
           }}
           children={(field) => (
-            <field.BigIntField label={t("form.fields.faceValue.label")} />
+            <field.BigIntField
+              label={t("form.fields.faceValue.label")}
+              required={isRequiredField("faceValue")}
+            />
           )}
         />
       </>
@@ -127,6 +169,7 @@ const FundBasics = withForm({
             <field.NumberField
               label={t("form.fields.managementFeeBps.label")}
               postfix="bps"
+              required={isRequiredField("managementFeeBps")}
             />
           )}
         />
