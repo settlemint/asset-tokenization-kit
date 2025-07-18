@@ -30,6 +30,7 @@ import {
     InvalidTokenFactoryAddress,
     InvalidTokenImplementationAddress,
     InvalidTokenImplementationInterface,
+    SystemAccessManagerImplementationNotSet,
     SystemAlreadyBootstrapped,
     SystemNotBootstrapped,
     TokenAccessManagerImplementationNotSet,
@@ -351,6 +352,10 @@ contract ATKSystemImplementation is
         _implementations[TOKEN_FACTORY_REGISTRY] = tokenFactoryRegistryImplementation_;
         emit TokenFactoryRegistryImplementationUpdated(initialAdmin_, tokenFactoryRegistryImplementation_);
 
+        // Validate and set the system access manager implementation address.
+        if (systemAccessManagerImplementation_ == address(0)) revert SystemAccessManagerImplementationNotSet();
+        _checkInterface(systemAccessManagerImplementation_, _SYSTEM_ACCESS_MANAGER_ID); // Ensure it supports
+            // IATKSystemAccessManager
         _implementations[SYSTEM_ACCESS_MANAGER] = systemAccessManagerImplementation_;
         emit SystemAccessManagerImplementationUpdated(initialAdmin_, systemAccessManagerImplementation_);
     }
