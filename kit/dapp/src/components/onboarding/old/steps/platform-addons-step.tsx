@@ -103,7 +103,10 @@ export const PlatformAddonsComponent = memo(function PlatformAddonsComponent({
         setShowVerificationModal(false);
         setVerificationError(null);
         toast.success("Add-ons deployed successfully!");
-        await queryClient.invalidateQueries();
+        // Invalidate specific queries that might be affected by addon deployment
+        await queryClient.invalidateQueries({
+          queryKey: orpc.system.read.key(),
+        });
       },
     }
   );

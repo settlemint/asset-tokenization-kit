@@ -318,6 +318,11 @@ standards.
   formatValidationError
 - **State Management**: Prefer URL state for persistent UI configuration, local
   state for ephemeral interactions
+- **TanStack Query**: Configure staleTime/cacheTime for performance. Use select
+  option to transform data and minimize re-renders. Destructure only needed
+  properties (avoid spread operator). Keep select functions stable (outside
+  component or in useCallback). Never copy query data to local state - use
+  directly. Use invalidateQueries for mutations. Prefetch data in loaders for SSR
 - **Imports**: No barrel files (index.ts exports); during refactors, if you
   encounter barrel files, remove them
 - **Testing**: Use `bun:test`, not vitest; tests are stored next to the

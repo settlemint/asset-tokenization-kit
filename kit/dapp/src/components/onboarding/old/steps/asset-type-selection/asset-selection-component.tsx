@@ -213,7 +213,8 @@ export function AssetSelectionComponent({
       setVerificationError(null);
       markStepComplete("asset-selection");
       toast.success("Factories deployed successfully!");
-      await queryClient.invalidateQueries();
+      // Invalidate specific queries that might be affected by factory deployment
+      await queryClient.invalidateQueries({ queryKey: orpc.system.read.key() });
       onNext?.();
     },
   });
