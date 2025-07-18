@@ -1,5 +1,4 @@
 import { afterAll, beforeAll } from "bun:test";
-import { $ } from "bun";
 import { getOrpcClient } from "../utils/orpc-client";
 import { bootstrapSystem } from "../utils/system-bootstrap";
 import {
@@ -71,7 +70,7 @@ async function startDevServer() {
   const decoder = new TextDecoder();
 
   // Handle stdout streaming
-  if (runningDevServer.stdout) {
+  if (runningDevServer.stdout && typeof runningDevServer.stdout !== "number") {
     const reader = runningDevServer.stdout.getReader();
 
     (async () => {
@@ -105,7 +104,7 @@ async function startDevServer() {
   }
 
   // Handle stderr streaming
-  if (runningDevServer.stderr) {
+  if (runningDevServer.stderr && typeof runningDevServer.stderr !== "number") {
     const reader = runningDevServer.stderr.getReader();
 
     (async () => {
