@@ -20,7 +20,6 @@ contract ATKBondProxy is ATKAssetProxy {
     /// @param name_ The name of the bond.
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals of the bond.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
     /// @param cap_ The cap of the bond.
     /// @param maturityDate_ The maturity date of the bond.
     /// @param faceValue_ The face value of the bond.
@@ -34,7 +33,6 @@ contract ATKBondProxy is ATKAssetProxy {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint256 cap_,
         uint256 maturityDate_,
         uint256 faceValue_,
@@ -54,7 +52,6 @@ contract ATKBondProxy is ATKAssetProxy {
             name_,
             symbol_,
             decimals_,
-            onchainID_,
             cap_,
             maturityDate_,
             faceValue_,

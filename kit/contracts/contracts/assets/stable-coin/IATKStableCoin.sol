@@ -25,8 +25,6 @@ interface IATKStableCoin is
     /// @param name_ The name of the stable coin.
     /// @param symbol_ The symbol of the stable coin.
     /// @param decimals_ The number of decimals for the stable coin.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param collateralTopicId_ The topic ID of the collateral claim.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
@@ -36,7 +34,6 @@ interface IATKStableCoin is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint256 collateralTopicId_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,

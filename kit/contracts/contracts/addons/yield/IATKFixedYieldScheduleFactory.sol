@@ -36,7 +36,8 @@ interface IATKFixedYieldScheduleFactory {
         uint256 startTime,
         uint256 endTime,
         uint256 rate,
-        uint256 interval
+        uint256 interval,
+        uint16 country
     )
         external
         returns (address scheduleProxyAddress);

@@ -49,7 +49,7 @@ contract SMARTYieldStandardTest is SMARTYieldTest {
         vm.stopPrank();
 
         // 2. Create the token's on-chain identity
-        tokenUtils.createAndSetTokenOnchainID(tokenAddress, tokenIssuer, address(accessManager));
+        tokenUtils.createAndSetTokenOnchainID(tokenAddress, tokenIssuer);
 
         // 3. Set token in AbstractSMARTTest
         token = ISMART(tokenAddress);

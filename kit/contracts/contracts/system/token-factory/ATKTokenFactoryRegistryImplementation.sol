@@ -95,6 +95,9 @@ contract ATKTokenFactoryRegistryImplementation is
             ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
         );
 
+        // Grant permission to register contract identities in the identity registry
+        IAccessControl(address(_system.identityRegistry())).grantRole(ATKSystemRoles.REGISTRAR_ROLE, _tokenFactoryProxy);
+
         emit TokenFactoryRegistered(
             _msgSender(),
             _name,

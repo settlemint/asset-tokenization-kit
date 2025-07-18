@@ -12,6 +12,10 @@ import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/I
 // Interface imports
 import { SMARTComplianceModuleParamPair } from
     "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IContractWithIdentity } from "../../../contracts/system/identity-factory/IContractWithIdentity.sol";
+import { _SMARTLogic } from "../../../contracts/smart/extensions/core/internal/_SMARTLogic.sol";
+import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Core extensions
 import { SMARTUpgradeable } from "../../../contracts/smart/extensions/core/SMARTUpgradeable.sol";
@@ -45,6 +49,7 @@ import { SMARTCappedUpgradeable } from "../../../contracts/smart/extensions/capp
 contract SMARTTokenUpgradeable is
     Initializable,
     SMARTUpgradeable,
+    IContractWithIdentity,
     SMARTTokenAccessManagedUpgradeable,
     SMARTCustodianUpgradeable,
     SMARTCollateralUpgradeable,
@@ -658,5 +663,33 @@ contract SMARTTokenUpgradeable is
     /// @return The authenticated sender address.
     function _msgSender() internal view virtual override(ContextUpgradeable) returns (address) {
         return super._msgSender();
+    }
+
+    // --- IContractWithIdentity Implementation ---
+
+    /// @inheritdoc IContractWithIdentity
+    function onchainID() public view override(_SMARTLogic, ISMART, IContractWithIdentity) returns (address) {
+        return super.onchainID();
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    function canAddClaim(address actor) external view override returns (bool) {
+        return _hasRole(TOKEN_ADMIN_ROLE, actor);
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    function canRemoveClaim(address actor) external view override returns (bool) {
+        return _hasRole(TOKEN_ADMIN_ROLE, actor);
+    }
+
+    /// @notice Checks if this contract supports a given interface
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(SMARTUpgradeable, IERC165)
+        returns (bool)
+    {
+        return interfaceId == type(IContractWithIdentity).interfaceId || super.supportsInterface(interfaceId);
     }
 }
