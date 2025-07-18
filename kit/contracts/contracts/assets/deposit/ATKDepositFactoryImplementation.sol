@@ -107,7 +107,14 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         // Identity verification check removed - identity is now set after deployment
 
         emit DepositCreated(
-            _msgSender(), deployedDepositAddress, deployedTokenIdentityAddress, name_, symbol_, decimals_, requiredClaimTopics_, countryCode_
+            _msgSender(),
+            deployedDepositAddress,
+            deployedTokenIdentityAddress,
+            name_,
+            symbol_,
+            decimals_,
+            requiredClaimTopics_,
+            countryCode_
         );
 
         return deployedDepositAddress;

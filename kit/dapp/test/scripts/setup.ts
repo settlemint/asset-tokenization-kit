@@ -1,4 +1,5 @@
 import { afterAll, beforeAll } from "bun:test";
+import { $ } from "bun";
 import { getOrpcClient } from "../utils/orpc-client";
 import { bootstrapSystem } from "../utils/system-bootstrap";
 import {
@@ -64,42 +65,70 @@ async function isDevServerRunning() {
 
 async function startDevServer() {
   console.log("Starting dev server");
-  const devProcess = Bun.spawn(["bun", "run", "dev", "--", "--no-open"], {
-    stdout: "pipe",
-    stderr: "pipe",
-  });
+
+  // Create the shell command
+  const devProcess = $`bun run dev -- --no-open`.nothrow();
   runningDevServer = devProcess;
 
-  // Wait for "completed" in stdout
-  const reader = devProcess.stdout?.getReader();
+  // Stream output to console while monitoring for startup
   const decoder = new TextDecoder();
   let output = "";
+  let serverStarted = false;
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) {
-      console.log("Dev server started");
-      break;
-    }
+  // Handle stdout
+  if (devProcess.stdout) {
+    const reader = devProcess.stdout.getReader();
 
-    const chunk = decoder.decode(value);
-    output += chunk;
+    (async () => {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-    // Output to main process stdout
-    process.stdout.write(chunk);
+        const chunk = decoder.decode(value);
+        output += chunk;
 
-    // Remove all ANSI colors/styles from strings
-    const text = output.replace(
-      // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
-      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-      ""
-    );
-    if (/VITE\s+v(.*)\s+ready\s+in/i.test(text)) {
-      console.log("Dev server started");
-      reader.releaseLock();
-      break;
-    }
+        // Output to console in real-time
+        process.stdout.write(chunk);
+
+        // Check if server is ready
+        const text = output.replace(
+          // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
+          /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+          ""
+        );
+        if (/VITE\s+v(.*)\s+ready\s+in/i.test(text) && !serverStarted) {
+          serverStarted = true;
+          console.log("\nDev server is ready!");
+        }
+      }
+    })();
   }
+
+  // Handle stderr
+  if (devProcess.stderr) {
+    const stderrReader = devProcess.stderr.getReader();
+
+    (async () => {
+      while (true) {
+        const { done, value } = await stderrReader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        process.stderr.write(chunk);
+      }
+    })();
+  }
+
+  // Wait for server to be ready
+  const startTime = Date.now();
+  while (!serverStarted && Date.now() - startTime < 10_000) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  if (!serverStarted) {
+    throw new Error("Dev server did not start in time");
+  }
+
   return true;
 }
 
