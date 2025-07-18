@@ -42,16 +42,9 @@ async function startDevServerIfNotRunning() {
     console.log("Dev server already running");
     return;
   }
-  const result = await Promise.race([
-    startDevServer(),
-    (async () => {
-      await new Promise((resolve) => setTimeout(resolve, 10_000));
-      return false;
-    })(),
-  ]);
-  if (!result) {
-    throw new Error("Dev server did not start in time");
-  }
+
+  // Just call startDevServer directly - it has its own timeout logic
+  await startDevServer();
 }
 
 async function isDevServerRunning() {
@@ -66,63 +59,58 @@ async function isDevServerRunning() {
 async function startDevServer() {
   console.log("Starting dev server");
 
-  // Create the shell command
-  const devProcess = $`bun run dev -- --no-open`.nothrow();
-  runningDevServer = devProcess;
-
-  // Stream output to console while monitoring for startup
-  const decoder = new TextDecoder();
+  // Create a custom WritableStream to capture and display output
   let output = "";
   let serverStarted = false;
 
-  // Handle stdout
-  if (devProcess.stdout) {
-    const reader = devProcess.stdout.getReader();
+  const customStdout = new WritableStream({
+    write(chunk) {
+      const text = new TextDecoder().decode(chunk);
+      output += text;
+      process.stdout.write(text);
 
-    (async () => {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      // Check if server is ready
+      const cleanText = output.replace(
+        // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
+        /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+        ""
+      );
 
-        const chunk = decoder.decode(value);
-        output += chunk;
-
-        // Output to console in real-time
-        process.stdout.write(chunk);
-
-        // Check if server is ready
-        const text = output.replace(
-          // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
-          /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-          ""
-        );
-        if (/VITE\s+v(.*)\s+ready\s+in/i.test(text) && !serverStarted) {
-          serverStarted = true;
-          console.log("\nDev server is ready!");
-        }
+      if (/VITE\s+v(.*)\s+ready\s+in/i.test(cleanText) && !serverStarted) {
+        serverStarted = true;
+        console.log("\nDev server is ready!");
       }
-    })();
-  }
+    },
+  });
 
-  // Handle stderr
-  if (devProcess.stderr) {
-    const stderrReader = devProcess.stderr.getReader();
+  const customStderr = new WritableStream({
+    write(chunk) {
+      process.stderr.write(chunk);
+    },
+  });
 
-    (async () => {
-      while (true) {
-        const { done, value } = await stderrReader.read();
-        if (done) break;
+  // Use Bun shell with custom streams
+  const shellPromise = $`bun run dev -- --no-open`
+    .stdout(customStdout)
+    .stderr(customStderr)
+    .nothrow();
 
-        const chunk = decoder.decode(value);
-        process.stderr.write(chunk);
-      }
-    })();
-  }
+  // Start a separate async task to monitor the shell process
+  (async () => {
+    runningDevServer = await shellPromise;
+  })();
 
-  // Wait for server to be ready
+  // Wait for server to be ready or timeout
   const startTime = Date.now();
   while (!serverStarted && Date.now() - startTime < 10_000) {
     await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Check if we have a subprocess and if it has exited
+    if (runningDevServer && runningDevServer.exitCode !== null) {
+      throw new Error(
+        `Dev server exited with code ${runningDevServer.exitCode}`
+      );
+    }
   }
 
   if (!serverStarted) {
