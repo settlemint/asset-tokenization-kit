@@ -145,6 +145,27 @@ jobs:
         run: |
           bun dev:up
 
+      - name: Verify subgraph SystemFactory address
+        if: |
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        run: |
+          echo "Checking SystemFactory address in subgraph.yaml..."
+          EXPECTED_ADDRESS="0x5e771e1417100000000000000000000000020088"
+          ACTUAL_ADDRESS=$(grep -A2 "name: SystemFactory" kit/subgraph/subgraph.yaml | grep "address:" | sed 's/.*address: "\(.*\)"/\1/')
+          
+          if [ "$ACTUAL_ADDRESS" != "$EXPECTED_ADDRESS" ]; then
+            echo "❌ ERROR: SystemFactory address mismatch!"
+            echo "Expected: $EXPECTED_ADDRESS"
+            echo "Actual:   $ACTUAL_ADDRESS"
+            echo ""
+            echo "The subgraph.yaml file has an incorrect SystemFactory address."
+            echo "This needs to be fixed before running tests."
+            exit 1
+          else
+            echo "✅ SystemFactory address is correct: $ACTUAL_ADDRESS"
+          fi
+
       - name: CI tests
         id: qa-tests
         if: |
