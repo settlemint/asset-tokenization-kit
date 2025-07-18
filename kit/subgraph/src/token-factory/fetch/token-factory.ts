@@ -31,6 +31,9 @@ export function fetchTokenFactory(address: Address): TokenFactory {
     tokenFactory.typeId = "unknown";
     // Initialize hasTokens to false - will be set to true when first token is created
     tokenFactory.hasTokens = false;
+    tokenFactory.tokenExtensions = [];
+    tokenFactory.tokenImplementsERC3643 = false;
+    tokenFactory.tokenImplementsSMART = false;
     tokenFactory.save();
     TokenFactoryTemplate.create(address);
   }

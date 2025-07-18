@@ -1,9 +1,9 @@
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "@tanstack/react-router";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 
 export function RecoveryCodesComplete() {
-  const navigate = useNavigate();
+  const { navigateToStep } = useOnboardingNavigation();
 
   return (
     <div>
@@ -28,11 +28,7 @@ export function RecoveryCodesComplete() {
       </div>
       <footer>
         <Button
-          onClick={async () => {
-            await navigate({
-              to: `/onboarding/${OnboardingStep.systemDeploy}`,
-            });
-          }}
+          onClick={() => void navigateToStep(OnboardingStep.systemDeploy)}
         >
           Continue
         </Button>

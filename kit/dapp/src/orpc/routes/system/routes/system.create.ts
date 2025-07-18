@@ -219,13 +219,11 @@ export const create = onboardedRouter.system.create
 
     // Define the schema for the query result
     const SystemQueryResultSchema = z.object({
-      systems: z
-        .array(
-          z.object({
-            id: z.string(),
-          })
-        )
-        .min(1),
+      systems: z.array(
+        z.object({
+          id: z.string(),
+        })
+      ),
     });
 
     const result = await context.theGraphClient.query(
@@ -236,6 +234,16 @@ export const create = onboardedRouter.system.create
         error: messages.systemCreationFailed,
       }
     );
+
+    if (result.systems.length === 0) {
+      const systemNotFoundError = new Error(
+        `System not found for transaction ${transactionHash}`
+      );
+      throw errors.NOT_FOUND({
+        message: systemNotFoundError.message,
+        cause: systemNotFoundError,
+      });
+    }
 
     const systems = result.systems;
 

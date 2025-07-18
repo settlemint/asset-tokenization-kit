@@ -1,12 +1,12 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TokenTransferMessagesSchema } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_TRANSFER_MUTATION = portalGraphql(`
   mutation TokenTransfer(
@@ -138,6 +138,11 @@ const TOKEN_BATCH_FORCED_TRANSFER_MUTATION = portalGraphql(`
 
 export const transfer = tokenRouter.token.transfer
   .use(portalMiddleware)
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.transfer,
+    })
+  )
   .handler(async function* ({ input, context, errors }) {
     const {
       contract,
@@ -147,7 +152,7 @@ export const transfer = tokenRouter.token.transfer
       transferType = "standard",
       verification,
     } = input;
-    const { auth } = context;
+    const { auth, token } = context;
 
     // Determine if this is a batch operation
     const isBatch = recipients.length > 1;
@@ -155,32 +160,14 @@ export const transfer = tokenRouter.token.transfer
     // Parse messages with defaults
     const messages = TokenTransferMessagesSchema.parse(input.messages ?? {});
 
-    // Validate that the token supports ERC3643 (we only support ERC3643 tokens)
-    const supportsERC3643 = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.IERC3643
-    );
-
-    if (!supportsERC3643) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support transfer operations. The token must implement IERC3643 interface.",
-      });
-    }
-
     // For forced transfers, check custodian interface
     if (transferType === "forced") {
-      const supportsCustodian = await supportsInterface(
-        context.portalClient,
-        contract,
-        ALL_INTERFACE_IDS.ISMARTCustodian
-      );
-
+      const supportsCustodian = token.extensions.includes("CUSTODIAN");
       if (!supportsCustodian) {
-        throw errors.FORBIDDEN({
-          message:
-            "Token does not support forced transfer operations. The token must implement ISMARTCustodian interface.",
+        throw errors.TOKEN_INTERFACE_NOT_SUPPORTED({
+          data: {
+            requiredInterfaces: ["CUSTODIAN"],
+          },
         });
       }
     }

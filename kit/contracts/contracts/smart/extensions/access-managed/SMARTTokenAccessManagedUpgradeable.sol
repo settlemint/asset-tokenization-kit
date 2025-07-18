@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { _SMARTTokenAccessManagedLogic } from "./internal/_SMARTTokenAccessManagedLogic.sol";
 import { SMARTExtensionUpgradeable } from "../common/SMARTExtensionUpgradeable.sol";
+import { ISMARTTokenAccessManaged } from "./ISMARTTokenAccessManaged.sol";
 
 /// @title Abstract Contract for Upgradeable Access-Managed SMART Tokens
 /// @notice This contract serves as a base for SMART token contracts that are designed to be
@@ -27,6 +28,13 @@ abstract contract SMARTTokenAccessManagedUpgradeable is
     SMARTExtensionUpgradeable,
     _SMARTTokenAccessManagedLogic
 {
+    /// @dev Register the `ISMARTTokenAccessManaged` interface ID for ERC165. This allows factories to check if the
+    /// contract
+    /// supports the `ISMARTTokenAccessManaged` interface based on the upgradeable implementation.
+    constructor() {
+        _registerInterface(type(ISMARTTokenAccessManaged).interfaceId);
+    }
+
     // -- Initializer --
 
     /// @notice Initializes the access managed extension for an upgradeable contract.

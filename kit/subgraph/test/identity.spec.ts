@@ -6,8 +6,10 @@ describe("Identity", () => {
     const query = theGraphGraphql(
       `query {
         tokens {
-          identity {
-            id
+          account {
+            identity {
+              id
+            }
           }
         }
       }
@@ -32,7 +34,7 @@ describe("Identity", () => {
       }`
     );
     const response = await theGraphClient.request(query);
-    expect(response.identities.length).toBe(13);
+    expect(response.identities.length).toBe(14);
 
     const identityIds = response.identities.map((identity) => identity.id);
     const accountIds = response.identities

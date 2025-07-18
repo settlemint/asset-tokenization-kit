@@ -17,7 +17,7 @@ export const removeClaim = async (asset: Asset<any>, claimTopic: ATKTopic) => {
 
   const tokenIdentityContract = owner.getContractInstance({
     address: asset.identity,
-    abi: ATKContracts.tokenIdentity,
+    abi: ATKContracts.contractIdentity,
   });
 
   const claims = await tokenIdentityContract.read.getClaimIdsByTopic([

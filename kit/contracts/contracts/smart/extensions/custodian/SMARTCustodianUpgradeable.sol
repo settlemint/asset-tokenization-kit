@@ -11,6 +11,7 @@ import { SMARTHooks } from "../common/SMARTHooks.sol";
 
 // Internal implementation imports
 import { _SMARTCustodianLogic } from "./internal/_SMARTCustodianLogic.sol";
+import { ISMARTCustodian } from "./ISMARTCustodian.sol";
 
 // Error imports
 
@@ -38,6 +39,12 @@ abstract contract SMARTCustodianUpgradeable is Initializable, SMARTExtensionUpgr
     // 4. The core `SMARTUpgradeable.sol` if not already covered.
     // In the final contract's `initialize` function, ensure `__SMARTCustodian_init()` is called after other
     // essential initializers like `__ERC20_init`, `__Ownable_init` (or `__AccessControl_init`), and `__SMART_init`.
+
+    /// @dev Register the `ISMARTCustodian` interface ID for ERC165. This allows factories to check if the contract
+    /// supports the `ISMARTCustodian` interface based on the upgradeable implementation.
+    constructor() {
+        _registerInterface(type(ISMARTCustodian).interfaceId);
+    }
 
     // -- Initializer --
 

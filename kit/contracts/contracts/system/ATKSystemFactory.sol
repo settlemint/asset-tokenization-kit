@@ -10,7 +10,7 @@ import {
     TrustedIssuersRegistryImplementationNotSet,
     IdentityFactoryImplementationNotSet,
     IdentityImplementationNotSet,
-    TokenIdentityImplementationNotSet,
+    ContractIdentityImplementationNotSet,
     TokenAccessManagerImplementationNotSet,
     IndexOutOfBounds,
     TopicSchemeRegistryImplementationNotSet,
@@ -68,10 +68,10 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial standard identity
     /// implementation.
     address public immutable defaultIdentityImplementation;
-    /// @notice The default contract address for the token identity contract's logic (template/implementation).
-    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial token identity
+    /// @notice The default contract address for the contract identity contract's logic (template/implementation).
+    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial contract identity
     /// implementation.
-    address public immutable defaultTokenIdentityImplementation;
+    address public immutable defaultContractIdentityImplementation;
     /// @notice The default contract address for the token access manager contract's logic (implementation).
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial token access manager
     /// implementation.
@@ -121,7 +121,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// contract.
     /// @param identityFactoryImplementation_ The default address for the identity factory module's logic contract.
     /// @param identityImplementation_ The default address for the standard identity contract's logic (template).
-    /// @param tokenIdentityImplementation_ The default address for the token identity contract's logic (template).
     /// @param tokenAccessManagerImplementation_ The default address for the token access manager contract's logic
     /// (template).
     /// @param identityVerificationModule_ The default address for the identity verification module's
@@ -141,7 +140,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         address topicSchemeRegistryImplementation_,
         address identityFactoryImplementation_,
         address identityImplementation_,
-        address tokenIdentityImplementation_,
+        address contractIdentityImplementation_,
         address tokenAccessManagerImplementation_,
         address identityVerificationModule_,
         address tokenFactoryRegistryImplementation_,
@@ -161,7 +160,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         if (topicSchemeRegistryImplementation_ == address(0)) revert TopicSchemeRegistryImplementationNotSet();
         if (identityFactoryImplementation_ == address(0)) revert IdentityFactoryImplementationNotSet();
         if (identityImplementation_ == address(0)) revert IdentityImplementationNotSet();
-        if (tokenIdentityImplementation_ == address(0)) revert TokenIdentityImplementationNotSet();
+        if (contractIdentityImplementation_ == address(0)) revert ContractIdentityImplementationNotSet();
         if (tokenAccessManagerImplementation_ == address(0)) revert TokenAccessManagerImplementationNotSet();
         if (identityVerificationModule_ == address(0)) revert IdentityVerificationModuleNotSet();
         if (tokenFactoryRegistryImplementation_ == address(0)) revert TokenFactoryRegistryImplementationNotSet();
@@ -179,7 +178,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         defaultTopicSchemeRegistryImplementation = topicSchemeRegistryImplementation_;
         defaultIdentityFactoryImplementation = identityFactoryImplementation_;
         defaultIdentityImplementation = identityImplementation_;
-        defaultTokenIdentityImplementation = tokenIdentityImplementation_;
+        defaultContractIdentityImplementation = contractIdentityImplementation_;
         defaultTokenAccessManagerImplementation = tokenAccessManagerImplementation_;
         defaultIdentityVerificationModule = identityVerificationModule_;
         defaultTokenFactoryRegistryImplementation = tokenFactoryRegistryImplementation_;
@@ -218,7 +217,7 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
             defaultTopicSchemeRegistryImplementation,
             defaultIdentityFactoryImplementation,
             defaultIdentityImplementation,
-            defaultTokenIdentityImplementation,
+            defaultContractIdentityImplementation,
             defaultTokenAccessManagerImplementation,
             defaultIdentityVerificationModule,
             defaultTokenFactoryRegistryImplementation,

@@ -154,7 +154,7 @@
     "asset-factories-description": "Vermögenswertfabriken sind Smart Contracts, die es Ihnen ermöglichen, verschiedene Arten von tokenisierten Vermögenswerten zu erstellen und zu verwalten. Jede Fabrik verwaltet eine spezifische Vermögensklasse mit maßgeschneiderten Funktionen und Compliance-Anforderungen.",
     "factory-messages": {
       "initial-loading": "Bereite die Erstellung von Tokenfabriken vor...",
-      "factory-created": "Tokenfabrik erfolgreich erstellt.",
+      "factory-created": "{{name}} erfolgreich erstellt.",
       "creating-factory": "Erstelle Tokenfabrik...",
       "factory-creation-failed": "Fehler beim Erstellen der Tokenfabrik. Bitte versuchen Sie es erneut.",
       "batch-progress": "Erstelle Fabrik {{current}} von {{total}}...",

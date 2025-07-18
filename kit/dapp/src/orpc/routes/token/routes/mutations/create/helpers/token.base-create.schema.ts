@@ -1,4 +1,5 @@
 import { getAssetTypeCapitalized } from "@/lib/utils/asset-capitalization";
+import { assetSymbol } from "@/lib/zod/validators/asset-symbol";
 import { assetType, type AssetType } from "@/lib/zod/validators/asset-types";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { isin } from "@/lib/zod/validators/isin";
@@ -16,7 +17,7 @@ const ModulePairSchema = z.object({
  */
 export const TokenBaseSchema = MutationInputSchema.extend({
   name: z.string().describe("The name of the token"),
-  symbol: z.string().describe("The symbol of the token"),
+  symbol: assetSymbol().describe("The symbol of the token"),
   decimals: decimals(),
   isin: isin().optional(),
   initialModulePairs: z.array(ModulePairSchema).default([]),

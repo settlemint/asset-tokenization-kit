@@ -20,6 +20,7 @@ import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { ISMARTCollateral } from "../../contracts/smart/extensions/collateral/ISMARTCollateral.sol";
+import { TestConstants } from "../Constants.sol";
 
 contract ATKDepositTest is AbstractATKAssetTest {
     IATKDepositFactory public depositFactory;
@@ -81,8 +82,9 @@ contract ATKDepositTest is AbstractATKAssetTest {
     {
         vm.startPrank(owner);
 
-        address depositAddress =
-            depositFactory.createDeposit(name, symbol, decimals, requiredClaimTopics, initialModulePairs);
+        address depositAddress = depositFactory.createDeposit(
+            name, symbol, decimals, requiredClaimTopics, initialModulePairs, TestConstants.COUNTRY_CODE_US
+        );
         result = IATKDeposit(depositAddress);
 
         vm.label(depositAddress, "Deposit");
@@ -145,7 +147,12 @@ contract ATKDepositTest is AbstractATKAssetTest {
 
         vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidDecimals.selector, 19));
         depositFactory.createDeposit(
-            "Deposit 19", "DEP19", 19, new uint256[](0), new SMARTComplianceModuleParamPair[](0)
+            "Deposit 19",
+            "DEP19",
+            19,
+            new uint256[](0),
+            new SMARTComplianceModuleParamPair[](0),
+            TestConstants.COUNTRY_CODE_US
         );
         vm.stopPrank();
     }

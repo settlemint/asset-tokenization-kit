@@ -40,6 +40,7 @@ class RoleConfig {
 export const Roles = [
   new RoleConfig("DEFAULT_ADMIN_ROLE", "admin"),
   new RoleConfig("REGISTRAR_ROLE", "registrar"),
+  new RoleConfig("REGISTRAR_ADMIN_ROLE", "registrarAdmin"),
   new RoleConfig("CLAIM_MANAGER_ROLE", "claimManager"),
   new RoleConfig("DEPLOYER_ROLE", "deployer"),
   new RoleConfig("STORAGE_MODIFIER_ROLE", "storageModifier"),

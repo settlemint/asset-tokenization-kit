@@ -6,6 +6,7 @@ import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegi
 interface IATKIdentityRegistry is ISMARTIdentityRegistry {
     function initialize(
         address initialAdmin,
+        address[] memory registrarAdmins,
         address identityStorage,
         address trustedIssuersRegistry,
         address topicSchemeRegistry

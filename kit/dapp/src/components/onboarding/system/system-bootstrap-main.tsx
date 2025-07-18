@@ -353,7 +353,7 @@ export function SystemBootstrapMain({
                     Previous
                   </Button>
                 )}
-                <Button onClick={onNext} className="flex-1">
+                <Button onClick={() => onNext?.()} className="flex-1">
                   Continue
                 </Button>
               </div>

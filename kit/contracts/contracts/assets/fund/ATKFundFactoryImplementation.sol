@@ -11,6 +11,8 @@ import { IATKFund } from "./IATKFund.sol";
 import { IATKFundFactory } from "./IATKFundFactory.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IATKSystem } from "../../system/IATKSystem.sol";
+import { IATKIdentityFactory } from "../../system/identity-factory/IATKIdentityFactory.sol";
 
 // Local imports
 import { ATKFundProxy } from "./ATKFundProxy.sol";
@@ -31,6 +33,7 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
     /// @param managementFeeBps_ The management fee in basis points.
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the fund.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
+    /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedFundAddress The address of the newly deployed fund contract.
     function createFund(
         string memory name_,
@@ -38,7 +41,8 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
         uint8 decimals_,
         uint16 managementFeeBps_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        uint16 countryCode_
     )
         external
         override
@@ -48,15 +52,12 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
         // Create the access manager for the token
         ISMARTTokenAccessManager accessManager = _createAccessManager(salt);
 
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, address(accessManager));
-
-        // ABI encode constructor arguments for SMARTFundProxy
+        // ABI encode constructor arguments for SMARTFundProxy (no onchainID parameter)
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             managementFeeBps_,
             _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
@@ -68,16 +69,25 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
         bytes memory proxyBytecode = type(ATKFundProxy).creationCode;
 
         // Deploy using the helper from the abstract contract
+        string memory description = string.concat("Fund: ", name_, " (", symbol_, ")");
         address deployedTokenIdentityAddress;
         (deployedFundAddress, deployedTokenIdentityAddress) =
-            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager));
+            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager), description, countryCode_);
 
-        if (deployedTokenIdentityAddress != tokenIdentityAddress) {
-            revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
-        }
+        // Identity verification check removed - identity is now set after deployment
+
+        // Identity registration is now handled automatically in _deployContractIdentity
 
         emit FundCreated(
-            _msgSender(), deployedFundAddress, name_, symbol_, decimals_, requiredClaimTopics_, managementFeeBps_
+            _msgSender(),
+            deployedFundAddress,
+            deployedTokenIdentityAddress,
+            name_,
+            symbol_,
+            decimals_,
+            requiredClaimTopics_,
+            managementFeeBps_,
+            countryCode_
         );
 
         return deployedFundAddress;
@@ -113,13 +123,12 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
     {
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
+
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             managementFeeBps_,
             _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),

@@ -1,10 +1,10 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { TokenRecoverERC20MessagesSchema } from "./token.recover-erc20.schema";
 
 const TOKEN_RECOVER_ERC20_MUTATION = portalGraphql(`
@@ -34,8 +34,13 @@ const TOKEN_RECOVER_ERC20_MUTATION = portalGraphql(`
 `);
 
 export const tokenRecoverERC20 = tokenRouter.token.tokenRecoverERC20
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.tokenRecoverERC20,
+    })
+  )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async function* ({ input, context }) {
     const { contract, verification, tokenAddress, recipient, amount } = input;
     const { auth } = context;
 
@@ -43,21 +48,6 @@ export const tokenRecoverERC20 = tokenRouter.token.tokenRecoverERC20
     const messages = TokenRecoverERC20MessagesSchema.parse(
       input.messages ?? {}
     );
-
-    // Validate that the token supports ERC20 recovery operations
-    // All ISMART tokens should support this, but let's check for ERC3643 as a proxy
-    const supportsRecovery = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.IERC3643
-    );
-
-    if (!supportsRecovery) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support ERC20 recovery operations. The token must implement IERC3643 interface.",
-      });
-    }
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {

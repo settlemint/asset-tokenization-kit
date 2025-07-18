@@ -1,65 +1,27 @@
-import {
-  OnboardingStep,
-  updateOnboardingStateMachine,
-} from "@/components/onboarding/state-machine";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { Button } from "@/components/ui/button";
-import { orpc } from "@/orpc/orpc-client";
-import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import {
+  createOnboardingBeforeLoad,
+  createOnboardingSearchSchema,
+} from "@/components/onboarding/route-helpers";
+import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import { useCallback } from "react";
-import { z } from "zod";
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/system-addons"
 )({
-  validateSearch: zodValidator(
-    z.object({
-      step: z.enum(Object.values(OnboardingStep)).optional(),
-    })
-  ),
-  beforeLoad: async ({ context: { orpc, queryClient }, search: { step } }) => {
-    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
-    const { currentStep } = updateOnboardingStateMachine({ user });
-
-    if (step) {
-      if (step !== OnboardingStep.systemAddons) {
-        throw redirect({
-          to: `/onboarding/${step}`,
-        });
-      }
-    } else {
-      if (currentStep !== OnboardingStep.systemAddons) {
-        throw redirect({
-          to: `/onboarding/${currentStep}`,
-        });
-      }
-    }
-  },
+  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemAddons),
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const { navigateToStep, completeStepAndNavigate } = useOnboardingNavigation();
 
-  const onNext = useCallback(async () => {
-    await queryClient.refetchQueries({
-      queryKey: orpc.user.me.key(),
-    });
-    await navigate({
-      to: `/onboarding/${OnboardingStep.identity}`,
-    });
-  }, [queryClient, navigate]);
-
-  const onPrevious = useCallback(async () => {
-    await navigate({
-      to: `/onboarding/${OnboardingStep.systemAssets}`,
-      search: () => ({
-        step: OnboardingStep.systemAssets,
-      }),
-    });
-  }, [navigate]);
+  const onNext = () =>
+    void completeStepAndNavigate(OnboardingStep.systemAddons);
+  const onPrevious = () => void navigateToStep(OnboardingStep.systemAssets);
 
   return (
     <div className="h-full flex flex-col">

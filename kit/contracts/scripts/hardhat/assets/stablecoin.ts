@@ -6,6 +6,7 @@ import {
   investorB,
 } from "../entities/actors/investors";
 
+import { Countries } from "../constants/countries";
 import { ATKTopic } from "../constants/topics";
 import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
@@ -39,6 +40,7 @@ export const createStableCoin = async () => {
     stableCoin.decimals,
     [topicManager.getTopicId(ATKTopic.kyc)],
     getDefaultComplianceModules(),
+    Countries.BE,
   ]);
 
   await stableCoin.waitUntilDeployed(transactionHash);

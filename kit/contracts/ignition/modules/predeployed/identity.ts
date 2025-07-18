@@ -5,11 +5,11 @@ const IdentityModule = buildModule("IdentityModule", (m) => {
   const { forwarder } = m.useModule(ForwarderModule);
 
   const identity = m.contract("ATKIdentityImplementation", [forwarder]);
-  const tokenIdentity = m.contract("ATKTokenIdentityImplementation", [
+  const contractIdentity = m.contract("ATKContractIdentityImplementation", [
     forwarder,
   ]);
 
-  return { identity, tokenIdentity };
+  return { identity, contractIdentity };
 });
 
 export default IdentityModule;

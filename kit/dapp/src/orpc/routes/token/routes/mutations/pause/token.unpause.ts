@@ -1,9 +1,11 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TokenUnpauseMessagesSchema } from "@/orpc/routes/token/routes/mutations/pause/token.unpause.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { withEventMeta } from "@orpc/server";
 
 const TOKEN_UNPAUSE_MUTATION = portalGraphql(`
@@ -13,7 +15,7 @@ const TOKEN_UNPAUSE_MUTATION = portalGraphql(`
     $address: String!
     $from: String!
   ) {
-    unpause: IERC3643Unpause(
+    unpause: ISMARTPausableUnpause(
       address: $address
       from: $from
       verificationId: $verificationId
@@ -25,7 +27,12 @@ const TOKEN_UNPAUSE_MUTATION = portalGraphql(`
 `);
 
 export const unpause = tokenRouter.token.unpause
-  //.use(tokenPermissionMiddleware({ requiredRoles: ["supplyManagement"] }))
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.unpause,
+      requiredExtensions: ["PAUSABLE"],
+    })
+  )
   .use(portalMiddleware)
   .handler(async function* ({ input, context }) {
     const { contract, verification } = input;

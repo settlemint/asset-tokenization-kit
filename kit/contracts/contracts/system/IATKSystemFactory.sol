@@ -58,11 +58,11 @@ interface IATKSystemFactory {
     /// @return address The default identity implementation address.
     function defaultIdentityImplementation() external view returns (address);
 
-    /// @notice The default contract address for the token identity contract's logic (template/implementation).
-    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial token identity
+    /// @notice The default contract address for the contract identity contract's logic (template/implementation).
+    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial contract identity
     /// implementation.
-    /// @return address The default token identity implementation address.
-    function defaultTokenIdentityImplementation() external view returns (address);
+    /// @return address The default contract identity implementation address.
+    function defaultContractIdentityImplementation() external view returns (address);
 
     /// @notice The default contract address for the token access manager contract's logic (implementation).
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial token access manager

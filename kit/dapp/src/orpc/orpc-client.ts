@@ -11,6 +11,9 @@
  * @see {@link ./routes/router} - Main router with all endpoints
  */
 
+import { bigDecimalSerializer } from "@/lib/zod/validators/bigdecimal";
+import { bigIntSerializer } from "@/lib/zod/validators/bigint";
+import { timestampSerializer } from "@/lib/zod/validators/timestamp";
 import type { contract } from "@/orpc/routes/contract";
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
@@ -70,6 +73,11 @@ const getORPCClient = createIsomorphicFn()
           credentials: "include",
         });
       },
+      customJsonSerializers: [
+        bigDecimalSerializer,
+        bigIntSerializer,
+        timestampSerializer,
+      ],
     });
 
     return createORPCClient(link);

@@ -153,6 +153,9 @@ current_branch=$(git branch --show-current)
 
 The project integrates with:
 
+- **Grep**: Search for code snippets on GitHub via Grep.app
+  - Use Grep to search GitHub for code snippets on how to use a library,
+    framework, or tool
 - **Context7**: Library documentation (React, Next.js, etc.)
   - Working with external libraries/frameworks (React, FastAPI, Next.js, etc.)
   - Need current documentation beyond training cutoff
@@ -184,7 +187,7 @@ The project integrates with:
 ## Coding Standards & AI Instructions
 
 CRITICAL: Write code as if the person maintaining it is a violent psychopath who
-knows where you live. Make it that clear. 
+knows where you live. Make it that clear.
 
 ## Important Notes
 

@@ -167,7 +167,7 @@
     },
     "factory-messages": {
       "initial-loading": "Preparing to create token factories...",
-      "factory-created": "Token factory successfully created.",
+      "factory-created": "{{name}} successfully created.",
       "creating-factory": "Creating token factory...",
       "factory-creation-failed": "Failed to create token factory. Please try again.",
       "batch-progress": "Creating factory {{current}} of {{total}}...",

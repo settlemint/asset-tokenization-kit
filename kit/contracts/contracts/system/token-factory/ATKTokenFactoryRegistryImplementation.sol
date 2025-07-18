@@ -22,6 +22,7 @@ import { InvalidImplementationInterface } from "../ATKSystemErrors.sol";
 import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";
 import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
 
 contract ATKTokenFactoryRegistryImplementation is
     Initializable,
@@ -95,12 +96,17 @@ contract ATKTokenFactoryRegistryImplementation is
             ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
         );
 
+        // Grant permission to register contract identities in the identity registry
+        IAccessControl(address(_system.identityRegistry())).grantRole(ATKSystemRoles.REGISTRAR_ROLE, _tokenFactoryProxy);
+
         emit TokenFactoryRegistered(
             _msgSender(),
             _name,
             IWithTypeIdentifier(_factoryImplementation).typeId(),
             _tokenFactoryProxy,
             _factoryImplementation,
+            _tokenImplementation,
+            _getRegisteredInterfacesSafely(_tokenImplementation),
             block.timestamp
         );
 
@@ -172,5 +178,34 @@ contract ATKTokenFactoryRegistryImplementation is
         returns (uint256)
     {
         return super._contextSuffixLength();
+    }
+
+    /// @dev This function is used to get the registered interfaces of a token implementation.
+    /// It is used to avoid reverts when the token implementation is not a IERC165 contract.
+    function _getRegisteredInterfacesSafely(address _tokenImplementation) private view returns (bytes4[] memory) {
+        // Attempt to call supportsInterface on the _tokenImplementation.
+        // The `try` block handles potential reverts if _tokenImplementation is not a contract,
+        // or if it's a contract that doesn't implement IERC165 or its supportsInterface function.
+        try IERC165(_tokenImplementation).supportsInterface(type(ISMART).interfaceId) returns (bool isSmartSupported) {
+            // If supportsInterface call succeeds and returns true for ISMART interfaceId
+            if (isSmartSupported) {
+                // Now, try to call registeredInterfaces() on the ISMART interface.
+                // This nested try-catch handles cases where the token might claim ISMART support
+                // but its registeredInterfaces() function might still revert for some reason.
+                try ISMART(_tokenImplementation).registeredInterfaces() returns (bytes4[] memory interfaces) {
+                    return interfaces;
+                } catch {
+                    // If registeredInterfaces() reverts, return an empty array.
+                    return new bytes4[](0);
+                }
+            } else {
+                // If supportsInterface returns false for ISMART interfaceId, return an empty array.
+                return new bytes4[](0);
+            }
+        } catch {
+            // If supportsInterface call itself reverts (e.g., _tokenImplementation is not a contract,
+            // or doesn't have the supportsInterface function), return an empty array.
+            return new bytes4[](0);
+        }
     }
 }

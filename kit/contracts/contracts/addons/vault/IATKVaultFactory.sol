@@ -6,21 +6,24 @@ pragma solidity ^0.8.28;
 /// @dev Defines the functions for creating and managing ATK Vault contracts
 interface IATKVaultFactory {
     /// @notice Emitted when a new ATK Vault contract is created
-    /// @param vault Address of the newly created vault
     /// @param creator Address of the account that created the vault
-    event ATKVaultCreated(address indexed vault, address indexed creator);
+    /// @param vault Address of the newly created vault
+    /// @param contractIdentity Address of the contract identity for the vault
+    event ATKVaultCreated(address indexed creator, address indexed vault, address indexed contractIdentity);
 
     /// @notice Creates a new ATK Vault contract
     /// @param signers Array of initial signer addresses
     /// @param required Number of confirmations required to execute a transaction
     /// @param initialOwner Address that will have admin role
     /// @param salt Salt value for deterministic address generation
+    /// @param country Country code for compliance purposes
     /// @return contractAddress Address of the newly created vault
     function createVault(
         address[] memory signers,
         uint256 required,
         address initialOwner,
-        bytes32 salt
+        bytes32 salt,
+        uint16 country
     )
         external
         returns (address contractAddress);

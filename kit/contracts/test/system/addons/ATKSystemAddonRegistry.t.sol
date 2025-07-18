@@ -109,13 +109,13 @@ contract ATKSystemAddonRegistryTest is Test {
         address proxyAddress = registry.registerSystemAddon(addonName, address(mockAddonWithoutTypeId), initData);
         Vm.Log[] memory logs = vm.getRecordedLogs();
 
-        assertEq(logs.length, 2);
+        assertEq(logs.length, 3);
 
         // Manual check of event
         bytes32 eventSignature = IATKSystemAddonRegistry.SystemAddonRegistered.selector;
-        assertEq(logs[1].topics[0], eventSignature);
-        assertEq(logs[1].topics.length, 2); // 1 indexed topic
-        assertEq(address(uint160(uint256(logs[1].topics[1]))), admin);
+        assertEq(logs[2].topics[0], eventSignature);
+        assertEq(logs[2].topics.length, 2); // 1 indexed topic
+        assertEq(address(uint160(uint256(logs[2].topics[1]))), admin);
 
         (
             string memory name,
@@ -124,7 +124,7 @@ contract ATKSystemAddonRegistryTest is Test {
             address implementation,
             bytes memory data,
             uint256 timestamp
-        ) = abi.decode(logs[1].data, (string, bytes32, address, address, bytes, uint256));
+        ) = abi.decode(logs[2].data, (string, bytes32, address, address, bytes, uint256));
 
         assertEq(name, addonName);
         assertEq(typeId, bytes32(0));

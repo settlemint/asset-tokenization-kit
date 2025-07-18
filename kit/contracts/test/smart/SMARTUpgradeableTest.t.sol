@@ -52,7 +52,7 @@ contract SMARTUpgradeableTest is
         _grantAllRoles(tokenProxyAddress, tokenIssuer);
 
         // 4. Create the token's on-chain identity (using platform admin)
-        tokenUtils.createAndSetTokenOnchainID(tokenProxyAddress, tokenIssuer, address(accessManager));
+        tokenUtils.createAndSetTokenOnchainID(tokenProxyAddress, tokenIssuer);
 
         token = ISMART(tokenProxyAddress);
     }

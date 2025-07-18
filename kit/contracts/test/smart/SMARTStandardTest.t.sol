@@ -46,7 +46,7 @@ contract SMARTStandardTest is
         _grantAllRoles(tokenAddress, tokenIssuer);
 
         // 2. Create the token's on-chain identity
-        tokenUtils.createAndSetTokenOnchainID(tokenAddress, tokenIssuer, address(accessManager));
+        tokenUtils.createAndSetTokenOnchainID(tokenAddress, tokenIssuer);
 
         token = ISMART(tokenAddress);
     }

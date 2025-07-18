@@ -1,10 +1,10 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { TokenRemoveComplianceModuleMessagesSchema } from "./token.remove-compliance-module.schema";
 
 const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
@@ -15,7 +15,7 @@ const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
     $from: String!
     $moduleAddress: String!
   ) {
-    removeComplianceModule: IERC3643RemoveComplianceModule(
+    removeComplianceModule: ISMARTRemoveComplianceModule(
       address: $address
       from: $from
       verificationId: $verificationId
@@ -31,8 +31,13 @@ const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
 
 export const tokenRemoveComplianceModule =
   tokenRouter.token.tokenRemoveComplianceModule
+    .use(
+      tokenPermissionMiddleware({
+        requiredRoles: TOKEN_PERMISSIONS.tokenRemoveComplianceModule,
+      })
+    )
     .use(portalMiddleware)
-    .handler(async function* ({ input, context, errors }) {
+    .handler(async function* ({ input, context }) {
       const { contract, verification, moduleAddress } = input;
       const { auth } = context;
 
@@ -40,20 +45,6 @@ export const tokenRemoveComplianceModule =
       const messages = TokenRemoveComplianceModuleMessagesSchema.parse(
         input.messages ?? {}
       );
-
-      // Validate that the token supports compliance management
-      const supportsCompliance = await supportsInterface(
-        context.portalClient,
-        contract,
-        ALL_INTERFACE_IDS.IERC3643
-      );
-
-      if (!supportsCompliance) {
-        throw errors.FORBIDDEN({
-          message:
-            "Token does not support compliance management. The token must implement IERC3643 interface.",
-        });
-      }
 
       const sender = auth.user;
       const challengeResponse = await handleChallenge(sender, {

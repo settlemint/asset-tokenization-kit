@@ -7,10 +7,6 @@
     "description": "The request was invalid or cannot be processed.",
     "title": "Bad request"
   },
-  "blockchain": {
-    "description": "There was an error interacting with the blockchain.",
-    "title": "Blockchain error"
-  },
   "buttons": {
     "goBack": "Go back",
     "goHome": "Go home",
@@ -19,10 +15,6 @@
   "conflict": {
     "description": "The request conflicts with the current state.",
     "title": "Conflict error"
-  },
-  "contract": {
-    "description": "The smart contract operation failed.",
-    "title": "Smart contract error"
   },
   "forbidden": {
     "description": "You don't have permission to access this resource.",
@@ -36,17 +28,9 @@
     "description": "An unexpected error occurred. Please try again.",
     "title": "Unexpected error"
   },
-  "insufficientFunds": {
-    "description": "Your account does not have enough funds to complete this operation.",
-    "title": "Insufficient funds"
-  },
   "internal": {
     "description": "The server encountered an error. Please try again later.",
     "title": "Internal server error"
-  },
-  "network": {
-    "description": "Unable to connect to the network. Please check your connection.",
-    "title": "Network error"
   },
   "notFound": {
     "description": "The page you're looking for doesn't exist or has been moved.",
@@ -80,13 +64,25 @@
     "description": "The request took too long to complete. Please try again.",
     "title": "Request timeout"
   },
-  "transaction": {
-    "description": "The transaction could not be completed. Please try again.",
-    "title": "Transaction failed"
+  "tokenInterfaceNotSupported": {
+    "description": "The token contract at the provided address does not implement the required interface. Required interfaces: {{requiredInterfaces}}",
+    "title": "Token interface not supported"
   },
   "unauthorized": {
     "description": "Please sign in to continue.",
     "title": "Authentication required"
+  },
+  "userNotAllowed": {
+    "description": "You are not allowed to interact with this token. Reason: {{reason}}",
+    "title": "User not allowed"
+  },
+  "userNotAuthorized": {
+    "description": "You are not authorized to execute this action. Required roles: {{requiredRoles}}",
+    "title": "User not authorized"
+  },
+  "userNotCompliant": {
+    "description": "You are not compliant with the token's required claim topics. Required claim topics: {{requiredClaimTopics}}",
+    "title": "User not compliant"
   },
   "validation": {
     "description": "Please check your input and try again.",

@@ -9,13 +9,13 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IATKFixedYieldScheduleFactory } from "./IATKFixedYieldScheduleFactory.sol";
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
     "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
-import { SMARTFixedYieldScheduleUpgradeable } from
-    "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
 import { ATKFixedYieldProxy } from "./ATKFixedYieldProxy.sol";
+import { ATKFixedYieldScheduleUpgradeable } from "./ATKFixedYieldScheduleUpgradeable.sol";
 
 // Constants
 import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
@@ -59,7 +59,7 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         address forwarder = trustedForwarder();
         // Deploy the initial implementation contract for SMARTFixedYieldSchedule.
         // The SMARTFixedYieldSchedule constructor now only calls _disableInitializers().
-        SMARTFixedYieldScheduleUpgradeable initialImplementation = new SMARTFixedYieldScheduleUpgradeable(forwarder);
+        ATKFixedYieldScheduleUpgradeable initialImplementation = new ATKFixedYieldScheduleUpgradeable(forwarder);
 
         atkFixedYieldScheduleImplementation = address(initialImplementation);
         emit ImplementationUpdated(address(0), atkFixedYieldScheduleImplementation);
@@ -88,23 +88,27 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     /// The proxy will point to the current `atkFixedYieldScheduleImplementation`.
     /// @dev This function performs the following steps:
     /// 1. **Authorization Check**: (Retained) Verifies `token.canManageYield(_msgSender())`.
-    /// 2. **Salt Generation**: Computes a unique `salt` for CREATE2.
-    /// 3. **Initialization Data**: Prepares the `initData` for the proxy to call `initialize` on the implementation.
-    /// 4. **Proxy Deployment**: Deploys a `ATKFixedYieldProxy` using CREATE2.
-    /// 5. **Event Emission**: Emits `ATKFixedYieldScheduleCreated`.
-    /// 6. **Registry Update**: Adds the new proxy to `allSchedules`.
+    /// 2. **Identity Creation**: Creates a contract identity for the yield schedule and registers it with the identity
+    /// registry.
+    /// 3. **Salt Generation**: Computes a unique `salt` for CREATE2.
+    /// 4. **Initialization Data**: Prepares the `initData` for the proxy to call `initialize` on the implementation.
+    /// 5. **Proxy Deployment**: Deploys a `ATKFixedYieldProxy` using CREATE2.
+    /// 6. **Event Emission**: Emits `ATKFixedYieldScheduleCreated`.
+    /// 7. **Registry Update**: Adds the new proxy to `allSchedules`.
     /// @param token The `ISMARTYield`-compliant token for which the yield schedule is being created.
     /// @param startTime The Unix timestamp for the schedule start.
     /// @param endTime The Unix timestamp for the schedule end.
     /// @param rate The yield rate in basis points.
     /// @param interval The interval for yield distributions in seconds.
+    /// @param country Country code for compliance purposes.
     /// @return scheduleProxyAddress The address of the newly created `ATKFixedYieldProxy` contract.
     function create(
         ISMARTYield token,
         uint256 startTime,
         uint256 endTime,
         uint256 rate,
-        uint256 interval
+        uint256 interval,
+        uint16 country
     )
         external
         override(IATKFixedYieldScheduleFactory)
@@ -112,8 +116,11 @@ contract ATKFixedYieldScheduleFactoryImplementation is
         returns (address scheduleProxyAddress)
     {
         bytes memory saltInputData = abi.encode(address(this), address(token), startTime, endTime, rate, interval);
+        address[] memory initialAdmins = new address[](2);
+        initialAdmins[0] = _msgSender();
+        initialAdmins[1] = address(this);
         bytes memory constructorArgs =
-            abi.encode(address(this), address(token), startTime, endTime, rate, interval, _msgSender());
+            abi.encode(address(this), address(token), startTime, endTime, rate, interval, initialAdmins);
         bytes memory proxyBytecode = type(ATKFixedYieldProxy).creationCode;
 
         // Predict the address first for validation
@@ -121,6 +128,23 @@ contract ATKFixedYieldScheduleFactoryImplementation is
 
         // Deploy using the abstract factory method
         scheduleProxyAddress = _deploySystemAddon(proxyBytecode, constructorArgs, saltInputData, expectedAddress);
+
+        // Create contract identity for the yield schedule
+        address contractIdentity = _deployContractIdentity(scheduleProxyAddress, country);
+
+        IAccessControl(scheduleProxyAddress).grantRole(
+            ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).GOVERNANCE_ROLE(), address(this)
+        );
+
+        // Set the onchain ID on the yield schedule contract
+        ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).setOnchainId(contractIdentity);
+
+        IAccessControl(scheduleProxyAddress).renounceRole(
+            ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).GOVERNANCE_ROLE(), address(this)
+        );
+        IAccessControl(scheduleProxyAddress).renounceRole(
+            ATKFixedYieldScheduleUpgradeable(scheduleProxyAddress).DEFAULT_ADMIN_ROLE(), address(this)
+        );
 
         // Emit an event to log the creation of the new schedule proxy.
         emit ATKFixedYieldScheduleCreated(scheduleProxyAddress, _msgSender());

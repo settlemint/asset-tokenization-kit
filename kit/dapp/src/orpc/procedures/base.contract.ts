@@ -34,6 +34,20 @@ export const baseContract = oc.errors({
   },
 
   /**
+   * Token does not implement the required extension.
+   *
+   * Thrown when a token does not implement the required extension.
+   */
+  TOKEN_INTERFACE_NOT_SUPPORTED: {
+    status: 422,
+    message:
+      "The token contract at the provided address does not implement the required interface.",
+    data: z.object({
+      requiredInterfaces: z.array(z.string()),
+    }),
+  },
+
+  /**
    * Output validation failure error.
    *
    * Thrown when server response data fails schema validation, indicating:
@@ -101,6 +115,45 @@ export const baseContract = oc.errors({
   },
 
   /**
+   * User is not compliant with the token's required claim topics.
+   *
+   * Thrown when a user is not compliant with the token's required claim topics.
+   */
+  USER_NOT_COMPLIANT: {
+    status: 403,
+    message: "User is not compliant with the token's required claim topics.",
+    data: z.object({
+      requiredClaimTopics: z.array(z.string()),
+    }),
+  },
+
+  /**
+   * User is not allowed to interact with the token.
+   *
+   * Thrown when a user is not allowed to interact with the token.
+   */
+  USER_NOT_ALLOWED: {
+    status: 403,
+    message: "User is not allowed to interact with the token.",
+    data: z.object({
+      reason: z.string(),
+    }),
+  },
+
+  /**
+   * User does not have the required role to interact with the token.
+   *
+   * Thrown when a user does not have the required role to interact with the token.
+   */
+  USER_NOT_AUTHORIZED: {
+    status: 403,
+    message: "User does not have the required role to execute this action.",
+    data: z.object({
+      requiredRoles: z.array(z.string()),
+    }),
+  },
+
+  /**
    * Verification ID not found error.
    *
    * Thrown when a required verification ID is missing from the user's profile:
@@ -144,23 +197,6 @@ export const baseContract = oc.errors({
   TIMEOUT: {
     status: 504,
     message: "Operation timeout",
-    data: z.object({
-      details: z.unknown().optional(),
-    }),
-  },
-
-  /**
-   * Transaction failed error.
-   *
-   * Thrown when a blockchain transaction fails:
-   * - Transaction reverted
-   * - Insufficient gas
-   * - Contract execution error
-   * - Invalid transaction parameters
-   */
-  TRANSACTION_FAILED: {
-    status: 400,
-    message: "Transaction failed",
     data: z.object({
       details: z.unknown().optional(),
     }),

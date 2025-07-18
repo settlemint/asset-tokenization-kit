@@ -1,5 +1,7 @@
+import { BigIntField } from "@/components/form/bigint-field";
 import { CheckboxField } from "@/components/form/checkbox-field";
 import { DateTimeField } from "@/components/form/datetime-field";
+import { NumberField } from "@/components/form/number-field";
 import { RadioField } from "@/components/form/radio-field";
 import { SelectField } from "@/components/form/select-field";
 import { TextField } from "@/components/form/text-field";
@@ -11,10 +13,12 @@ export const { useAppForm, withForm } = createFormHook({
   fieldComponents: {
     CheckboxField,
     DateTimeField,
+    NumberField,
     RadioField,
     SelectField,
     TextAreaField,
     TextField,
+    BigIntField,
   },
   formComponents: {},
   fieldContext,

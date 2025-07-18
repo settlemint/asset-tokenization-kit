@@ -25,7 +25,19 @@ import {
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_FUND_MUTATION = portalGraphql(`
-  mutation CreateFundMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKFundFactoryImplementationATKFundFactoryImplementationCreateFundInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $verificationId: String, $challengeResponse: String!, $managementFeeBps: Int!) {
+  mutation CreateFundMutation(
+    $address: String!
+    $from: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKFundFactoryImplementationATKFundFactoryImplementationCreateFundInitialModulePairsInput!]!
+    $requiredClaimTopics: [String!]!
+    $verificationId: String
+    $challengeResponse: String!
+    $managementFeeBps: Int!
+    $countryCode: Int!
+  ) {
     CreateFund: ATKFundFactoryImplementationCreateFund(
       address: $address
       from: $from
@@ -36,6 +48,7 @@ const CREATE_FUND_MUTATION = portalGraphql(`
         initialModulePairs_: $initialModulePairs
         requiredClaimTopics_: $requiredClaimTopics
         managementFeeBps_: $managementFeeBps
+        countryCode_: $countryCode
       }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
@@ -54,11 +67,14 @@ export const fundCreateHandler = async function* (
   }
 
   yield* createToken(input, (creationFailedMessage, messages) => {
+    // Delete verification from input to avoid leaking it in the logs
+    const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
       CREATE_FUND_MUTATION,
       {
-        ...input,
+        ...otherInput,
         ...context.mutationVariables,
+        countryCode: 1, // TODO: should come from ui
       },
       creationFailedMessage,
       messages

@@ -12,6 +12,7 @@ import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { read as systemRead } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import { eq } from "drizzle-orm";
 
@@ -82,6 +83,26 @@ export const me = authRouter.user.me
 
     const { kyc } = userQueryResult ?? {};
 
+    // Check if system has token factories using existing ORPC route
+    let hasTokenFactories = false;
+    if (systemAddress) {
+      try {
+        const systemData = await call(
+          systemRead,
+          {
+            id: systemAddress,
+          },
+          {
+            context,
+          }
+        );
+        hasTokenFactories = systemData.tokenFactories.length > 0;
+      } catch {
+        // If system read fails, we assume no factories
+        hasTokenFactories = false;
+      }
+    }
+
     return {
       id: authUser.id,
       name:
@@ -103,6 +124,8 @@ export const me = authRouter.user.me
         walletRecoveryCodes: !!authUser.secretCodeVerificationId,
         system: !!systemAddress,
         systemSettings: !!baseCurrency,
+        systemAssets: hasTokenFactories,
+        systemAddons: false, // TODO: Track when addons are configured
         identity: !!userQueryResult?.kyc,
       },
     };

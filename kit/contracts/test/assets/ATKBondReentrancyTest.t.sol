@@ -13,6 +13,7 @@ import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.so
 import { ATKBondFactoryImplementation } from "../../contracts/assets/bond/ATKBondFactoryImplementation.sol";
 import { ATKBondImplementation } from "../../contracts/assets/bond/ATKBondImplementation.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { TestConstants } from "../Constants.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
@@ -170,7 +171,8 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
             faceValue,
             address(maliciousToken),
             new uint256[](0),
-            new SMARTComplianceModuleParamPair[](0)
+            new SMARTComplianceModuleParamPair[](0),
+            TestConstants.COUNTRY_CODE_US
         );
 
         result = IATKBond(bondAddress);
@@ -490,7 +492,8 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
             faceValue,
             address(normalToken),
             new uint256[](0),
-            new SMARTComplianceModuleParamPair[](0)
+            new SMARTComplianceModuleParamPair[](0),
+            TestConstants.COUNTRY_CODE_US
         );
 
         IATKBond normalBond = IATKBond(normalBondAddress);

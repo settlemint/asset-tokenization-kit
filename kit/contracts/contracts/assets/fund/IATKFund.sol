@@ -26,8 +26,6 @@ interface IATKFund is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTP
     /// @param name_ The name of the fund.
     /// @param symbol_ The symbol of the fund.
     /// @param decimals_ The number of decimals for the fund tokens.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param managementFeeBps_ The management fee in basis points.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
@@ -37,7 +35,6 @@ interface IATKFund is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTP
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint16 managementFeeBps_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,

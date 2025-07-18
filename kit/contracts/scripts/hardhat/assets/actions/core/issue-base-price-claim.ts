@@ -39,7 +39,7 @@ export const issueBasePriceClaim = async (
 
   const tokenIdentityContract = owner.getContractInstance({
     address: asset.identity,
-    abi: ATKContracts.tokenIdentity,
+    abi: ATKContracts.contractIdentity,
   });
 
   const claimIssuerIdentity = await claimIssuer.getIdentity();

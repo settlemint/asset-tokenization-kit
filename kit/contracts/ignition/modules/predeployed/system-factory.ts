@@ -25,7 +25,7 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
   const { trustedIssuerRegistry } = m.useModule(TrustedIssuerRegistryModule);
   const { topicSchemeRegistry } = m.useModule(TopicSchemeRegistryModule);
   const { identityFactory } = m.useModule(IdentityFactoryModule);
-  const { identity, tokenIdentity } = m.useModule(IdentityModule);
+  const { identity, contractIdentity } = m.useModule(IdentityModule);
   const { tokenAccessManager } = m.useModule(TokenAccessManagerModule);
 
   const { tokenFactoryRegistry } = m.useModule(TokenFactoryRegistryModule);
@@ -47,7 +47,7 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
     topicSchemeRegistry,
     identityFactory,
     identity,
-    tokenIdentity,
+    contractIdentity,
     tokenAccessManager,
     identityVerificationModule,
     tokenFactoryRegistry,

@@ -3,7 +3,6 @@ import PushAirdropFactoryModule from "./predeployed/addons/airdrop/push-airdrop-
 import TimeboundAirdropFactoryModule from "./predeployed/addons/airdrop/time-bound-airdrop.factory";
 import VestingAirdropFactoryModule from "./predeployed/addons/airdrop/vesting-airdrop-factory";
 import FixedYieldScheduleFactoryModule from "./predeployed/addons/fixed-yield-schedule-factory";
-import VaultModule from "./predeployed/addons/vault/vault";
 import VaultFactoryModule from "./predeployed/addons/vault/vault-factory";
 import XvPSettlementFactoryModule from "./predeployed/addons/xvp-settlement-factory";
 import BondModule from "./predeployed/assets/bond";
@@ -50,7 +49,6 @@ const ATKModule = buildModule("ATKModule", (m) => {
     TimeboundAirdropFactoryModule
   );
   const { vaultFactoryImplementation } = m.useModule(VaultFactoryModule);
-  const { atkVaultImplementation } = m.useModule(VaultModule);
 
   const { countryAllowListModule } = m.useModule(CountryAllowListModule);
   const { countryBlockListModule } = m.useModule(CountryBlockListModule);
@@ -77,7 +75,6 @@ const ATKModule = buildModule("ATKModule", (m) => {
     pushAirdropFactoryImplementation,
     timeBoundAirdropFactoryImplementation,
     vaultFactoryImplementation,
-    atkVaultImplementation,
     // compliancemodules
     countryAllowListModule,
     countryBlockListModule,

@@ -20,8 +20,6 @@ contract ATKEquityProxy is ATKAssetProxy {
     /// @param name_ The name of the equity.
     /// @param symbol_ The symbol of the equity.
     /// @param decimals_ The number of decimals of the equity.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param initialModulePairs_ The initial module pairs of the equity.
     /// @param identityRegistry_ The identity registry of the equity.
     /// @param compliance_ The compliance of the equity.
@@ -31,7 +29,6 @@ contract ATKEquityProxy is ATKAssetProxy {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
@@ -47,7 +44,6 @@ contract ATKEquityProxy is ATKAssetProxy {
             name_,
             symbol_,
             decimals_,
-            onchainID_,
             initialModulePairs_,
             identityRegistry_,
             compliance_,

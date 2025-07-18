@@ -48,6 +48,9 @@ claude mcp add playwright npx '@playwright/mcp@latest' -s user
 
 # Gemini - AI agentic helper
 claude mcp add gemini-cli -- npx -y gemini-mcp-tool -s user
+
+# Grep
+claude mcp add --transport http grep https://mcp.grep.app -s user
 ```
 
 ## Usage

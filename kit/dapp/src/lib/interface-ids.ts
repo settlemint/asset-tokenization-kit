@@ -15,15 +15,15 @@ const STANDARD_INTERFACE_IDS = {
 
 // Generated interface IDs
 export const INTERFACE_IDS = {
-    ISMARTBurnable: "0xd7ae59db",
-    ISMARTCapped: "0x722a19dd",
-    ISMARTCollateral: "0xb5cb9db3",
-    ISMARTCustodian: "0x25e5ad79",
-    ISMARTPausable: "0xe78a39d8",
-    ISMARTRedeemable: "0xf4433ab7",
-    ISMARTYield: "0x85ebbbb4",
-    IERC3643: "0xb97d944c",
-  } as const;
+  ISMARTBurnable: "0xd7ae59db",
+  ISMARTCapped: "0x722a19dd",
+  ISMARTCollateral: "0xb5cb9db3",
+  ISMARTCustodian: "0x25e5ad79",
+  ISMARTPausable: "0xe78a39d8",
+  ISMARTRedeemable: "0xf4433ab7",
+  ISMARTYield: "0x85ebbbb4",
+  IERC3643: "0xb97d944c",
+} as const;
 
 // Merged interface IDs for easy access
 export const ALL_INTERFACE_IDS = {

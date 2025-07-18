@@ -1,5 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import type { AnyFieldMeta } from "@tanstack/react-form";
 import React, { type ReactNode } from "react";
 
 export function FieldLabel({
@@ -26,16 +27,14 @@ export function FieldDescription({ description }: { description?: string }) {
   return <p className="text-sm text-muted-foreground">{description}</p>;
 }
 
-export function FieldErrors({
-  isTouched,
-  errors,
-}: {
-  isTouched?: boolean;
-  errors: string[];
-}) {
+export function FieldErrors({ isTouched, errors }: AnyFieldMeta) {
   if (!isTouched) return null;
   if (errors.length === 0) return null;
-  return <p className="text-sm text-destructive">{errors.join(", ")}</p>;
+  return (
+    <p className="text-sm text-destructive">
+      {errors.map((err) => err.message).join(", ")}
+    </p>
+  );
 }
 
 export function FieldLayout({ children }: { children: ReactNode }) {
