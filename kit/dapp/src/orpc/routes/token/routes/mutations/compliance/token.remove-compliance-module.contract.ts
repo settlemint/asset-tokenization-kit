@@ -3,8 +3,6 @@ import { TokenTransactionOutputSchema } from "@/orpc/routes/token/routes/mutatio
 import { TokenRemoveComplianceModuleInputSchema } from "@/orpc/routes/token/routes/mutations/compliance/token.remove-compliance-module.schema";
 import { eventIterator } from "@orpc/server";
 
-export const REQUIRED_ROLES = ["governance"] as const;
-
 export const tokenRemoveComplianceModuleContract = baseContract
   .route({
     method: "DELETE",
