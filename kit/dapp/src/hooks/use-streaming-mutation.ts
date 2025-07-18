@@ -89,6 +89,7 @@ export function useStreamingMutation<
   const [isTracking, setIsTracking] = useState(false);
   const [latestMessage, setLatestMessage] = useState<string | null>(null);
   const toastIdRef = useRef<string | number | undefined>(undefined);
+  const activeToastsRef = useRef<Set<string | number>>(new Set());
 
   // Process async iterator events
   const processStream = useCallback(
@@ -115,15 +116,30 @@ export function useStreamingMutation<
           // Access metadata if available using ORPC's symbol-based metadata
           // This provides type-safe access to retry counts and other event metadata
           const meta = Reflect.get(event, Symbol.for("orpc.event.meta")) as
-            | { retry?: number }
+            | { retry?: number; id?: string }
             | undefined;
+
+          // Use event-specific ID if available, otherwise use shared ID
+          const eventToastId = meta?.id ?? toastIdRef.current;
+          const isNewToast = meta?.id && !activeToastsRef.current.has(meta.id);
 
           switch (event.status) {
             case "pending":
-              if (!toastIdRef.current) {
-                toastIdRef.current = toast.loading(message || "Loading...");
+              if (meta?.id) {
+                // For events with unique IDs, create individual toasts
+                if (isNewToast) {
+                  activeToastsRef.current.add(meta.id);
+                  toast.loading(message || "Loading...", { id: meta.id });
+                } else {
+                  toast.loading(message, { id: meta.id });
+                }
               } else {
-                toast.loading(message, { id: toastIdRef.current });
+                // For events without unique IDs, use shared toast
+                if (!toastIdRef.current) {
+                  toastIdRef.current = toast.loading(message || "Loading...");
+                } else {
+                  toast.loading(message, { id: toastIdRef.current });
+                }
               }
               break;
 
@@ -132,9 +148,18 @@ export function useStreamingMutation<
                 finalResult = event.result;
               }
               toast.success(message || "Success", {
-                id: toastIdRef.current,
-                duration: meta?.retry ?? 5000,
+                id: eventToastId,
+                duration: Math.max(2000, meta?.retry ?? 5000), // Minimum 2 seconds
               });
+              // Clean up individual toast tracking
+              if (meta?.id) {
+                setTimeout(
+                  () => {
+                    activeToastsRef.current.delete(meta.id);
+                  },
+                  Math.max(2000, meta.retry ?? 5000)
+                );
+              }
               break;
 
             case "completed":
@@ -143,17 +168,32 @@ export function useStreamingMutation<
                 finalResult = event.result;
               }
               toast.success(message || "Completed", {
-                id: toastIdRef.current,
-                duration: meta?.retry ?? 5000,
+                id: eventToastId,
+                duration: Math.max(2000, meta?.retry ?? 5000), // Minimum 2 seconds
               });
+              // Clean up individual toast tracking
+              if (meta?.id) {
+                setTimeout(
+                  () => {
+                    activeToastsRef.current.delete(meta.id);
+                  },
+                  Math.max(2000, meta.retry ?? 5000)
+                );
+              }
               break;
 
             case "failed":
               toast.error(message || "Failed", {
-                id: toastIdRef.current,
+                id: eventToastId,
                 duration: 10000, // Longer duration for failed operations
                 description: "Check browser console for error details",
               });
+              // Clean up individual toast tracking
+              if (meta?.id) {
+                setTimeout(() => {
+                  activeToastsRef.current.delete(meta.id);
+                }, 10000);
+              }
               throw new Error(message || "Operation failed");
           }
         }
@@ -196,6 +236,7 @@ export function useStreamingMutation<
       } finally {
         setIsTracking(false);
         toastIdRef.current = undefined;
+        activeToastsRef.current.clear();
       }
     },
     []
