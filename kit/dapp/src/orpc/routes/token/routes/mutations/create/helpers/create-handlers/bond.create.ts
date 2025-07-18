@@ -23,7 +23,22 @@ import { createToken } from "@/orpc/routes/token/routes/mutations/create/helpers
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_BOND_MUTATION = portalGraphql(`
-  mutation CreateBondMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKBondFactoryImplementationATKBondFactoryImplementationCreateBondInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $cap: String!, $faceValue: String!, $maturityDate: String!, $underlyingAsset: String!, $verificationId: String, $challengeResponse: String!) {
+  mutation CreateBondMutation(
+    $address: String!
+    $from: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKBondFactoryImplementationATKBondFactoryImplementationCreateBondInitialModulePairsInput!]!
+    $requiredClaimTopics: [String!]!
+    $cap: String!
+    $faceValue: String!
+    $maturityDate: String!
+    $underlyingAsset: String!
+    $verificationId: String
+    $challengeResponse: String!
+    $countryCode: Int!
+  ) {
     CreateBond: ATKBondFactoryImplementationCreateBond(
       address: $address
       from: $from
@@ -37,6 +52,7 @@ const CREATE_BOND_MUTATION = portalGraphql(`
         faceValue_: $faceValue
         maturityDate_: $maturityDate
         underlyingAsset_: $underlyingAsset
+        countryCode_: $countryCode
       }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
@@ -62,6 +78,7 @@ export const bondCreateHandler = async function* (
         cap: input.cap.toString(),
         faceValue: input.faceValue.toString(),
         ...context.mutationVariables,
+        countryCode: 1, // TODO: should come from ui
       },
       creationFailedMessage,
       messages

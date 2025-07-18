@@ -33,40 +33,39 @@ export async function signInWithUser(user: User) {
   console.log(`[signInWithUser] Attempting to sign in user: ${user.email}`);
 
   const newHeaders = new Headers();
-  const { error: signInError, data: signInData } =
-    await authClient.signIn.email(
-      {
-        email: user.email,
-        password: user.password,
-      },
-      {
-        onSuccess(context) {
-          console.log(
-            `[signInWithUser] Sign in successful for ${user.email}, processing headers`
-          );
-          let cookieFound = false;
+  const { error: signInError } = await authClient.signIn.email(
+    {
+      email: user.email,
+      password: user.password,
+    },
+    {
+      onSuccess(context) {
+        console.log(
+          `[signInWithUser] Sign in successful for ${user.email}, processing headers`
+        );
+        let cookieFound = false;
 
-          context.response.headers.forEach((value, key) => {
-            if (
-              key.toLowerCase() === "set-cookie" &&
-              value.includes("better-auth.session_token")
-            ) {
-              cookieFound = true;
-              newHeaders.set("Cookie", value);
-              console.log(
-                `[signInWithUser] Session cookie set for ${user.email}`
-              );
-            }
-          });
-
-          if (!cookieFound) {
-            console.warn(
-              `[signInWithUser] No session cookie found in response headers for ${user.email}`
+        context.response.headers.forEach((value, key) => {
+          if (
+            key.toLowerCase() === "set-cookie" &&
+            value.includes("better-auth.session_token")
+          ) {
+            cookieFound = true;
+            newHeaders.set("Cookie", value);
+            console.log(
+              `[signInWithUser] Session cookie set for ${user.email}`
             );
           }
-        },
-      }
-    );
+        });
+
+        if (!cookieFound) {
+          console.warn(
+            `[signInWithUser] No session cookie found in response headers for ${user.email}`
+          );
+        }
+      },
+    }
+  );
 
   if (signInError) {
     console.error(`[signInWithUser] Sign in error for ${user.email}:`, {

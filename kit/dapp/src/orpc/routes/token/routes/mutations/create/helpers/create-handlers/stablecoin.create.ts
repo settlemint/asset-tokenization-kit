@@ -25,7 +25,18 @@ import {
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_STABLECOIN_MUTATION = portalGraphql(`
-  mutation CreateStableCoinMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKStableCoinFactoryImplementationATKStableCoinFactoryImplementationCreateStableCoinInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $verificationId: String, $challengeResponse: String!) {
+  mutation CreateStableCoinMutation(
+    $address: String!
+    $from: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKStableCoinFactoryImplementationATKStableCoinFactoryImplementationCreateStableCoinInitialModulePairsInput!]!
+    $requiredClaimTopics: [String!]!
+    $verificationId: String
+    $challengeResponse: String!
+    $countryCode: Int!
+  ) {
     CreateStableCoin: ATKStableCoinFactoryImplementationCreateStableCoin(
       address: $address
       from: $from
@@ -35,6 +46,7 @@ const CREATE_STABLECOIN_MUTATION = portalGraphql(`
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
         requiredClaimTopics_: $requiredClaimTopics
+        countryCode_: $countryCode
       }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
@@ -58,6 +70,7 @@ export const stablecoinCreateHandler = async function* (
       {
         ...input,
         ...context.mutationVariables,
+        countryCode: 1, // TODO: should come from ui
       },
       creationFailedMessage,
       messages

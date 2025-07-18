@@ -1,21 +1,42 @@
+import type { AssetType } from "@/lib/zod/validators/asset-types";
+import { getFactoryTypeIdFromAssetType } from "@/lib/zod/validators/asset-types";
 import type { SystemAccessControl } from "@/orpc/middlewares/system/system.middleware";
 import { baseRouter } from "@/orpc/procedures/base.router";
+import type { z } from "zod";
 
 /**
  * Middleware to check if the user has the required permission to interact with the token factory.
- * @param type - The type of the token factory.
- * @param requiredPermission - The permission required to interact with the token factory.
- * @param requiredRoles
+ * @param requiredRoles - The roles required to interact with the token factory.
+ * @param getTokenType - The function to get the token type from the input.
  * @returns The middleware function.
  */
-export const tokenFactoryPermissionMiddleware = (
-  requiredRoles: (keyof SystemAccessControl)[]
-) =>
-  baseRouter.middleware(async ({ context, next, errors }) => {
-    const { auth, tokenFactory } = context;
+export const tokenFactoryPermissionMiddleware = <
+  InputSchema extends z.ZodType,
+>({
+  requiredRoles,
+  getTokenType,
+}: {
+  requiredRoles: (keyof SystemAccessControl)[];
+  getTokenType: (input: z.infer<InputSchema>) => AssetType;
+}) =>
+  baseRouter.middleware(async ({ context, next, errors }, input) => {
+    const { auth, system } = context;
 
+    if (!system) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "System context not set",
+      });
+    }
+
+    const tokenType = getTokenType(input as z.infer<InputSchema>);
+    const tokenFactory = system.tokenFactories.find(
+      (tokenFactory) =>
+        tokenFactory.typeId === getFactoryTypeIdFromAssetType(tokenType)
+    );
     if (!tokenFactory) {
-      throw errors.SYSTEM_NOT_CREATED();
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "Token factory context not set",
+      });
     }
 
     const userRoles = auth
@@ -36,5 +57,9 @@ export const tokenFactoryPermissionMiddleware = (
       });
     }
 
-    return next();
+    return next({
+      context: {
+        tokenFactory,
+      },
+    });
   });

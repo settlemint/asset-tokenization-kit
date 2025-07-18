@@ -17,6 +17,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
   query ReadTokenQuery($id: ID!) {
     token(id: $id) {
       id
+      type
       name
       symbol
       decimals
