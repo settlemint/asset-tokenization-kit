@@ -25,7 +25,7 @@ function RouteComponent() {
   const { t } = useTranslation(["onboarding", "common"]);
   const { navigateToStep } = useOnboardingNavigation();
 
-  const handleComplete = async () => {
+  const handleComplete = () => {
     // Navigate to the next step (identity verification)
     // Note: identitySetup tracking will be implemented server-side
     void navigateToStep(OnboardingStep.identity);
