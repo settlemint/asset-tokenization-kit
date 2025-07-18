@@ -136,15 +136,17 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
     const factoryList = Array.isArray(factories) ? factories : [factories];
     const totalFactories = factoryList.length;
 
-    // Yield initial loading message
-    yield withEventMeta(
-      {
-        status: "pending",
-        message: messages.initialLoading,
-        progress: { current: 0, total: totalFactories },
-      },
-      { id: "factory-creation", retry: 1000 }
-    );
+    // Yield initial loading message only for batch operations
+    if (totalFactories > 1) {
+      yield withEventMeta(
+        {
+          status: "pending",
+          message: messages.initialLoading,
+          progress: { current: 0, total: totalFactories },
+        },
+        { id: "factory-creation", retry: 1000 }
+      );
+    }
 
     // Query existing token factories using the ORPC client
     let existingFactoryNames = new Set<string>();
@@ -192,10 +194,13 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
       const tokenImplementation =
         factory.tokenImplementation ?? defaults.tokenImplementation;
 
-      // Yield initial progress message for this factory
-      const progressMessage = messages.batchProgress
-        .replace("{{current}}", String(progress.current))
-        .replace("{{total}}", String(progress.total));
+      // For single factory, use specific message. For batch, use progress
+      const progressMessage =
+        totalFactories === 1
+          ? `Creating ${type} factory: ${name}`
+          : messages.batchProgress
+              .replace("{{current}}", String(progress.current))
+              .replace("{{total}}", String(progress.total)) + ` - ${name}`;
 
       yield withEventMeta(
         {
@@ -204,7 +209,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           currentFactory: { type, name },
           progress,
         },
-        { id: `factory-${factory.type}-${index}`, retry: 1000 }
+        { id: "factory-creation", retry: 1000 }
       );
 
       // Check if factory already exists
@@ -225,7 +230,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
             },
             progress,
           },
-          { id: `factory-${factory.type}-${index}`, retry: 1000 }
+          { id: "factory-creation", retry: 1000 }
         );
 
         results.push({
@@ -279,13 +284,18 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
                 },
                 progress,
               },
-              { id: `factory-${factory.type}-${index}`, retry: 1000 }
+              { id: "factory-creation", retry: 1000 }
             );
           } else if (event.status === "confirmed") {
+            const confirmMessage =
+              totalFactories === 1
+                ? messages.factoryCreated
+                : `${name} created successfully`;
+
             yield withEventMeta(
               {
                 status: "confirmed" as const,
-                message: messages.factoryCreated,
+                message: confirmMessage,
                 currentFactory: {
                   type,
                   name,
@@ -293,7 +303,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
                 },
                 progress,
               },
-              { id: `factory-${factory.type}-${index}`, retry: 1000 }
+              { id: "factory-creation", retry: 1000 }
             );
 
             results.push({
@@ -315,7 +325,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
                 },
                 progress,
               },
-              { id: `factory-${factory.type}-${index}`, retry: 1000 }
+              { id: "factory-creation", retry: 1000 }
             );
 
             results.push({
@@ -356,7 +366,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
         };
 
         yield withEventMeta(errorResult, {
-          id: `factory-${factory.type}-${index}`,
+          id: "factory-creation",
           retry: 1000,
         });
 
@@ -439,6 +449,6 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           total: totalFactories,
         },
       },
-      { id: "factory-creation-complete", retry: 1000 }
+      { id: "factory-creation", retry: 5000 }
     );
   });
