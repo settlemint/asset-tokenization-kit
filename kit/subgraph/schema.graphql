@@ -275,10 +275,12 @@ type ComplianceModule @entity(immutable: false) {
 
 enum TokenExtension {
   ACCESS_MANAGED
+  BOND
   BURNABLE
   CAPPED
   COLLATERAL
   CUSTODIAN
+  FUND
   HISTORICAL_BALANCES
   PAUSABLE
   REDEEMABLE
