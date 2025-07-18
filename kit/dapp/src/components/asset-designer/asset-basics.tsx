@@ -23,65 +23,62 @@ export const AssetBasics = withForm({
 
     return (
       <>
-        <form.AppField
-          name="name"
-          validators={{
-            onChange: z.string(),
-          }}
-          children={(field) => (
-            <field.TextField
-              label={t("form.fields.name.label")}
-              required={isRequiredField("name")}
-            />
-          )}
-        />
-        <form.AppField
-          name="symbol"
-          validators={{
-            onChange: assetSymbol(),
-          }}
-          children={(field) => (
-            <field.TextField
-              label={t("form.fields.symbol.label")}
-              required={isRequiredField("symbol")}
-            />
-          )}
-        />
-        <form.AppField
-          name="decimals"
-          validators={{
-            onChange: z.int().min(0).max(18),
-          }}
-          children={(field) => (
-            <field.NumberField
-              label={t("form.fields.decimals.label")}
-              required={isRequiredField("decimals")}
-            />
-          )}
-        />
-        <form.AppField
-          name="isin"
-          validators={{
-            onChange: isin().optional(),
-          }}
-          children={(field) => (
-            <field.TextField
-              label={t("form.fields.isin.label")}
-              required={isRequiredField("isin")}
-            />
-          )}
-        />
         <form.Subscribe
-          selector={(state) => state.values}
-          children={(values) => {
-            if (values.type === AssetTypeEnum.bond) {
-              return <BondBasics form={form} />;
-            }
-            if (values.type === AssetTypeEnum.fund) {
-              return <FundBasics form={form} />;
-            }
-            return null;
-          }}
+          selector={(state) => state.values.type}
+          children={(assetType) => (
+            <>
+              <form.AppField
+                name="name"
+                validators={{
+                  onChange: z.string(),
+                }}
+                children={(field) => (
+                  <field.TextField
+                    label={t("form.fields.name.label")}
+                    required={isRequiredField("name", assetType)}
+                  />
+                )}
+              />
+              <form.AppField
+                name="symbol"
+                validators={{
+                  onChange: assetSymbol(),
+                }}
+                children={(field) => (
+                  <field.TextField
+                    label={t("form.fields.symbol.label")}
+                    required={isRequiredField("symbol", assetType)}
+                  />
+                )}
+              />
+              <form.AppField
+                name="decimals"
+                validators={{
+                  onChange: z.int().min(0).max(18),
+                }}
+                children={(field) => (
+                  <field.NumberField
+                    label={t("form.fields.decimals.label")}
+                    required={isRequiredField("decimals", assetType)}
+                  />
+                )}
+              />
+              <form.AppField
+                name="isin"
+                validators={{
+                  onChange: isin().optional(),
+                }}
+                children={(field) => (
+                  <field.TextField
+                    label={t("form.fields.isin.label")}
+                    required={isRequiredField("isin", assetType)}
+                  />
+                )}
+              />
+              {assetType === AssetTypeEnum.bond && <BondBasics form={form} />}
+              {assetType === AssetTypeEnum.fund && <FundBasics form={form} />}
+            </>
+          )}
         />
         <form.Subscribe
           selector={(state) => state.values}
@@ -93,6 +90,7 @@ export const AssetBasics = withForm({
               "isin",
               "cap",
               "faceValue",
+              "managementFeeBps",
             ];
 
             const disabled = fields.some((field) => {
@@ -100,7 +98,7 @@ export const AssetBasics = withForm({
               const error = meta?.errors;
               const isPristine = meta?.isPristine;
               const requiredFieldPristine =
-                isRequiredField(field) && isPristine;
+                isRequiredField(field, _values.type) && isPristine;
               return (error && error.length > 0) || requiredFieldPristine;
             });
 
@@ -132,7 +130,7 @@ const BondBasics = withForm({
           children={(field) => (
             <field.BigIntField
               label={t("form.fields.cap.label")}
-              required={isRequiredField("cap")}
+              required={isRequiredField("cap", "bond")}
             />
           )}
         />
@@ -144,7 +142,7 @@ const BondBasics = withForm({
           children={(field) => (
             <field.BigIntField
               label={t("form.fields.faceValue.label")}
-              required={isRequiredField("faceValue")}
+              required={isRequiredField("faceValue", "bond")}
             />
           )}
         />
@@ -169,7 +167,7 @@ const FundBasics = withForm({
             <field.NumberField
               label={t("form.fields.managementFeeBps.label")}
               postfix="bps"
-              required={isRequiredField("managementFeeBps")}
+              required={isRequiredField("managementFeeBps", "fund")}
             />
           )}
         />

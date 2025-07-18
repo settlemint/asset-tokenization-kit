@@ -26,18 +26,20 @@ export const SelectAssetType = withForm({
     });
 
     const options = useMemo(() => {
-      if (!systemDetails?.tokenFactories) return [];
+      // if (!systemDetails?.tokenFactories) return [];
 
-      const assetTypes = systemDetails.tokenFactories.map((factory) => {
-        const factoryTypeId = factory.typeId as AssetFactoryTypeId;
-        return getAssetTypeFromFactoryTypeId(factoryTypeId);
-      });
+      // const assetTypes = systemDetails.tokenFactories.map((factory) => {
+      //   const factoryTypeId = factory.typeId as AssetFactoryTypeId;
+      //   return getAssetTypeFromFactoryTypeId(factoryTypeId);
+      // });
 
-      return assetTypes.map((type) => ({
-        value: type,
-        label: t(`asset-types:${type}.name`),
-        description: t(`asset-types:${type}.description`),
-      }));
+      return (["bond", "fund", "deposit", "stablecoin"] as const).map(
+        (type) => ({
+          value: type,
+          label: t(`asset-types:${type}.name`),
+          description: t(`asset-types:${type}.description`),
+        })
+      );
     }, [systemDetails, t]);
 
     return (
@@ -59,8 +61,8 @@ export const SelectAssetType = withForm({
 
             return (
               <Button onClick={onStepSubmit} disabled={disabled}>
-          Next
-        </Button>
+                Next
+              </Button>
             );
           }}
         />

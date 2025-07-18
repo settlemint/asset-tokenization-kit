@@ -1,4 +1,3 @@
-import { OnboardingGuard } from "@/components/onboarding/onboarding-guard";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded")({
@@ -7,8 +6,8 @@ export const Route = createFileRoute("/_private/_onboarded")({
 
 function LayoutComponent() {
   return (
-    <OnboardingGuard require="onboarded">
-      <Outlet />
-    </OnboardingGuard>
+    // <OnboardingGuard require="onboarded">
+    <Outlet />
+    // </OnboardingGuard>
   );
 }
