@@ -42,9 +42,11 @@ function RouteComponent() {
         });
         await refetch();
 
-        // Handle the successful mutation
-        setIsCreating(false);
-        await handleMutationSuccess(OnboardingStep.wallet, "complete");
+        // Wait for progress animation to complete (3 seconds)
+        setTimeout(() => {
+          setIsCreating(false);
+          void handleMutationSuccess(OnboardingStep.wallet, "complete");
+        }, 3000);
       },
       onError: (error) => {
         setIsCreating(false);
