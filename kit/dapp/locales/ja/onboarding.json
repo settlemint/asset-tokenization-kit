@@ -10,6 +10,20 @@
     "continue-setup": "セットアップを続行",
     "get-started": "始めましょう"
   },
+  "groups": {
+    "wallet": {
+      "title": "ウォレット",
+      "description": "ウォレットとセキュリティ対策を設定"
+    },
+    "system": {
+      "title": "システム",
+      "description": "システムをデプロイして構成"
+    },
+    "identity": {
+      "title": "アイデンティティ",
+      "description": "オンチェーン・アイデンティティを確立"
+    }
+  },
   "card-description": "あなたのウォレットを設定しました。このプラットフォームを使用するために、ブロックチェーン上であなたのアイデンティティを構成します。",
   "card-title": "設定を始めましょう！",
   "platform": {

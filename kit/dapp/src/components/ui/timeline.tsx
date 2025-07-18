@@ -44,7 +44,7 @@ function TimelineItem({
   ...props
 }: TimelineItemProps) {
   const { defaultValue } = React.useContext(TimelineContext);
-  const isCompleted = defaultValue ? step <= defaultValue : false;
+  const isCompleted = defaultValue !== undefined ? step <= defaultValue : false;
 
   return (
     <div

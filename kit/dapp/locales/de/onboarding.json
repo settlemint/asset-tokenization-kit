@@ -10,6 +10,20 @@
     "continue-setup": "Setup fortsetzen",
     "get-started": "Lassen Sie uns anfangen"
   },
+  "groups": {
+    "wallet": {
+      "title": "Wallet",
+      "description": "Richten Sie Ihr Wallet und Sicherheitsmaßnahmen ein"
+    },
+    "system": {
+      "title": "System",
+      "description": "Stellen Sie Ihr System bereit und konfigurieren Sie es"
+    },
+    "identity": {
+      "title": "Identität",
+      "description": "Etablieren Sie Ihre On-Chain-Identität"
+    }
+  },
   "card-description": "Wir haben Ihre Brieftasche eingerichtet und werden Ihre Identität auf der Blockchain konfigurieren, um diese Plattform zu nutzen.",
   "card-title": "Lassen Sie uns alles einrichten!",
   "platform": {

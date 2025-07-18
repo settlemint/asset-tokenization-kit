@@ -15,8 +15,9 @@ import {
   TimelineSeparator,
   TimelineTitle,
 } from "@/components/ui/timeline";
+import { Logo } from "@/components/logo/logo";
 import { useNavigate } from "@tanstack/react-router";
-import { Check } from "lucide-react";
+import { Check, HelpCircle, X } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
@@ -114,135 +115,167 @@ export function Welcome({ steps }: WelcomeProps) {
   return (
     <div
       style={{ background: "var(--sm-wizard-sidebar-gradient)" }}
-      className="max-h-[80vh] overflow-auto"
+      className="min-h-screen flex flex-col"
     >
-      <div className="mx-auto max-w-6xl p-6 lg:p-12 xl:p-12">
-        {/* Two column layout for all screen sizes */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 xl:gap-12 items-start">
-          {/* Left column: Welcome text and overview */}
-          <div className="space-y-6 text-left flex flex-col justify-between pl-8 pt-8 lg:pl-10 lg:pt-10 xl:pl-8 xl:pt-8">
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <h1 className="text-3xl md:text-4xl font-bold text-primary-foreground">
-                  {isReturningUser
-                    ? t("onboarding:welcome.welcome-back")
-                    : t("onboarding:welcome.title")}
-                </h1>
-                <p className="text-base md:text-lg text-primary-foreground/90">
-                  {isReturningUser
-                    ? t("onboarding:welcome.complete-journey")
-                    : t("onboarding:welcome.description")}
-                </p>
-              </div>
+      {/* Header */}
+      <div className="flex items-center justify-between p-6 lg:px-12 xl:px-12">
+        <Logo variant="horizontal" className="h-8" forcedColorMode="dark" />
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-primary-foreground hover:text-primary-foreground/80"
+            onClick={() => {
+              // TODO: Implement help functionality
+            }}
+          >
+            <HelpCircle className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-primary-foreground hover:text-primary-foreground/80"
+            onClick={() => {
+              void navigate({ to: "/" });
+            }}
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
 
+      {/* Content */}
+      <div className="flex-1 overflow-auto">
+        <div className="mx-auto max-w-6xl p-6 lg:p-12 xl:p-12 pt-0 lg:pt-6 xl:pt-6">
+          {/* Two column layout for all screen sizes */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 xl:gap-12 items-start">
+            {/* Left column: Welcome text and overview */}
+            <div className="space-y-6 text-left flex flex-col justify-between pl-8 pt-8 lg:pl-10 lg:pt-10 xl:pl-8 xl:pt-8">
               <div className="space-y-4">
-                <div className="space-y-2 text-left">
-                  <h2 className="text-xl md:text-2xl font-semibold text-primary-foreground">
-                    {t("onboarding:welcome.setup-overview")}
-                  </h2>
-                  <p className="text-primary-foreground/80 text-sm md:text-base">
+                <div className="space-y-3">
+                  <h1 className="text-3xl md:text-4xl font-bold text-primary-foreground">
                     {isReturningUser
-                      ? t("onboarding:welcome.setup-description-returning")
-                      : t("onboarding:welcome.setup-description-new")}
+                      ? t("onboarding:welcome.welcome-back")
+                      : t("onboarding:welcome.title")}
+                  </h1>
+                  <p className="text-base md:text-lg text-primary-foreground/90">
+                    {isReturningUser
+                      ? t("onboarding:welcome.complete-journey")
+                      : t("onboarding:welcome.description")}
                   </p>
                 </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2 text-left">
+                    <h2 className="text-xl md:text-2xl font-semibold text-primary-foreground">
+                      {t("onboarding:welcome.setup-overview")}
+                    </h2>
+                    <p className="text-primary-foreground/80 text-sm md:text-base">
+                      {isReturningUser
+                        ? t("onboarding:welcome.setup-description-returning")
+                        : t("onboarding:welcome.setup-description-new")}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Button in left column */}
+              <div className="flex justify-start mt-8">
+                <Button
+                  size="lg"
+                  className="min-w-[200px] bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+                  onClick={handleGetStarted}
+                >
+                  {isReturningUser
+                    ? t("onboarding:welcome.continue-setup")
+                    : t("onboarding:welcome.get-started")}
+                </Button>
               </div>
             </div>
 
-            {/* Button in left column */}
-            <div className="flex justify-start mt-8">
-              <Button
-                size="lg"
-                className="min-w-[200px] bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-                onClick={handleGetStarted}
-              >
-                {isReturningUser
-                  ? t("onboarding:welcome.continue-setup")
-                  : t("onboarding:welcome.get-started")}
-              </Button>
-            </div>
-          </div>
-
-          {/* Right column: Accordion steps */}
-          <div>
-            <div className="rounded-lg">
-              <Accordion
-                type="single"
-                collapsible
-                className="w-full"
-                style={{ background: "transparent", boxShadow: "none" }}
-                defaultValue={defaultOpenGroups[0]}
-              >
-                {(
-                  Object.entries(groupedSteps) as [
-                    OnboardingStepGroup,
-                    typeof steps,
-                  ][]
-                ).map(([groupId, groupSteps]) => (
-                  <AccordionItem
-                    key={groupId}
-                    value={groupId}
-                    className="border-b last:border-b-0"
-                  >
-                    <AccordionTrigger className="justify-start gap-3 py-4 px-6 text-left hover:no-underline [&>svg]:hidden">
-                      <div className="flex items-start gap-4">
-                        <div className="mt-0.5">{getGroupIcon(groupSteps)}</div>
-                        <div className="text-left">
-                          <h3 className="font-semibold text-base text-primary-foreground">
-                            {getGroupTitle(groupId)}
-                          </h3>
-                          <p className="text-sm text-primary-foreground/80">
-                            {getGroupDescription(groupId)}
-                          </p>
+            {/* Right column: Accordion steps */}
+            <div>
+              <div className="rounded-lg">
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="w-full"
+                  style={{ background: "transparent", boxShadow: "none" }}
+                  defaultValue={defaultOpenGroups[0]}
+                >
+                  {(
+                    Object.entries(groupedSteps) as [
+                      OnboardingStepGroup,
+                      typeof steps,
+                    ][]
+                  ).map(([groupId, groupSteps]) => (
+                    <AccordionItem
+                      key={groupId}
+                      value={groupId}
+                      className="border-b last:border-b-0"
+                    >
+                      <AccordionTrigger className="justify-start gap-3 py-4 px-6 text-left hover:no-underline [&>svg]:hidden">
+                        <div className="flex items-start gap-4">
+                          <div className="mt-0.5">
+                            {getGroupIcon(groupSteps)}
+                          </div>
+                          <div className="text-left">
+                            <h3 className="font-semibold text-base text-primary-foreground">
+                              {getGroupTitle(groupId)}
+                            </h3>
+                            <p className="text-sm text-primary-foreground/80">
+                              {getGroupDescription(groupId)}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="px-6 pb-4">
-                      <Timeline className="ml-8 space-y-3">
-                        {groupSteps.map((step, index) => (
-                          <TimelineItem
-                            key={step.step}
-                            step={index + 1}
-                            className="pb-2"
-                          >
-                            <TimelineHeader className="items-start">
-                              <TimelineSeparator className="top-[12px] left-[15px] h-[50px] w-0.5 bg-sm-graphics-primary/30" />
-                              <TimelineIndicator className="border-0 bg-transparent">
-                                <div className="-mt-[14px]">
-                                  {step.completed ? (
-                                    <div className="flex h-4 w-4 items-center justify-center rounded-full bg-sm-graphics-secondary">
-                                      <Check className="h-3 w-3 text-white" />
-                                    </div>
-                                  ) : step.current ? (
-                                    <div className="h-4 w-4 rounded-full bg-sm-state-success-background animate-pulse" />
-                                  ) : (
-                                    <div className="h-4 w-4 rounded-full border-2 border-sm-graphics-primary" />
-                                  )}
-                                </div>
-                              </TimelineIndicator>
-                              <div className="flex-1">
-                                <TimelineTitle className="text-primary-foreground">
-                                  {t(`onboarding:steps.${step.step}.title`, {
-                                    defaultValue: step.step,
-                                  })}
-                                </TimelineTitle>
-                                <TimelineContent className="text-primary-foreground/80">
-                                  {t(
-                                    `onboarding:steps.${step.step}.description`,
-                                    {
+                      </AccordionTrigger>
+                      <AccordionContent className="px-6 pb-4">
+                        <Timeline className="ml-8 space-y-3">
+                          {groupSteps.map((step, index) => (
+                            <TimelineItem
+                              key={step.step}
+                              step={index + 1}
+                              className="pb-2"
+                            >
+                              <TimelineHeader className="items-start">
+                                <TimelineSeparator className="top-[12px] left-[15px] h-[50px] w-0.5 bg-sm-graphics-primary/30" />
+                                <TimelineIndicator className="border-0 bg-transparent">
+                                  <div className="-mt-[14px]">
+                                    {step.completed ? (
+                                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-sm-graphics-secondary">
+                                        <Check className="h-3 w-3 text-white" />
+                                      </div>
+                                    ) : step.current ? (
+                                      <div className="h-4 w-4 rounded-full bg-sm-state-success-background animate-pulse" />
+                                    ) : (
+                                      <div className="h-4 w-4 rounded-full border-2 border-sm-graphics-primary" />
+                                    )}
+                                  </div>
+                                </TimelineIndicator>
+                                <div className="flex-1">
+                                  <TimelineTitle className="text-primary-foreground">
+                                    {t(`onboarding:steps.${step.step}.title`, {
                                       defaultValue: step.step,
-                                    }
-                                  )}
-                                </TimelineContent>
-                              </div>
-                            </TimelineHeader>
-                          </TimelineItem>
-                        ))}
-                      </Timeline>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+                                    })}
+                                  </TimelineTitle>
+                                  <TimelineContent className="text-primary-foreground/80">
+                                    {t(
+                                      `onboarding:steps.${step.step}.description`,
+                                      {
+                                        defaultValue: step.step,
+                                      }
+                                    )}
+                                  </TimelineContent>
+                                </div>
+                              </TimelineHeader>
+                            </TimelineItem>
+                          ))}
+                        </Timeline>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
             </div>
           </div>
         </div>

@@ -5,7 +5,6 @@ import {
 import {
   OnboardingStep,
   onboardingStateMachine,
-  updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -24,22 +23,11 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { t } = useTranslation(["onboarding", "common"]);
-  const { navigateToStep, refreshUserState } = useOnboardingNavigation();
+  const { navigateToStep } = useOnboardingNavigation();
 
   const handleComplete = async () => {
-    // Mark identity setup step as complete via proper state update
-    const updatedUser = await refreshUserState();
-    updateOnboardingStateMachine({
-      user: {
-        ...updatedUser,
-        onboardingState: {
-          ...updatedUser.onboardingState,
-          identitySetup: true,
-        },
-      },
-    });
-
     // Navigate to the next step (identity verification)
+    // Note: identitySetup tracking will be implemented server-side
     void navigateToStep(OnboardingStep.identity);
   };
 
