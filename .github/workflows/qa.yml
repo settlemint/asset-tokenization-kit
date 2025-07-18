@@ -152,7 +152,7 @@ jobs:
         run: |
           echo "Checking SystemFactory address in subgraph.yaml..."
           EXPECTED_ADDRESS="0x5e771e1417100000000000000000000000020088"
-          ACTUAL_ADDRESS=$(grep -A2 "name: SystemFactory" kit/subgraph/subgraph.yaml | grep "address:" | sed 's/.*address: "\(.*\)"/\1/')
+          ACTUAL_ADDRESS=$(yq '.dataSources[] | select(.name == "SystemFactory") | .source.address' kit/subgraph/subgraph.yaml)
           
           if [ "$ACTUAL_ADDRESS" != "$EXPECTED_ADDRESS" ]; then
             echo "❌ ERROR: SystemFactory address mismatch!"
