@@ -91,5 +91,21 @@
   "validation": {
     "description": "Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut.",
     "title": "Validierungsfehler"
+  },
+  "tokenInterfaceNotSupported": {
+    "description": "Der Token-Vertrag an der angegebenen Adresse implementiert nicht die erforderliche Schnittstelle. Erforderliche Schnittstellen: {{requiredInterfaces}}",
+    "title": "Token-Schnittstelle nicht unterstützt"
+  },
+  "userNotAllowed": {
+    "description": "Sie sind nicht berechtigt, mit diesem Token zu interagieren. Grund: {{reason}}",
+    "title": "Benutzer nicht erlaubt"
+  },
+  "userNotAuthorized": {
+    "description": "Sie sind nicht autorisiert, diese Aktion auszuführen. Erforderliche Rollen: {{requiredRoles}}",
+    "title": "Benutzer nicht autorisiert"
+  },
+  "userNotCompliant": {
+    "description": "Sie entsprechen nicht den erforderlichen Anspruchsthemen des Tokens. Erforderliche Anspruchsthemen: {{requiredClaimTopics}}",
+    "title": "Benutzer nicht konform"
   }
 }

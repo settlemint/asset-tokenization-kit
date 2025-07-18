@@ -20,5 +20,8 @@
   "transaction": {
     "waitingForMining": "في انتظار تعدين المعاملة...",
     "indexed": "تم تأكيد المعاملة وفهرستها"
-  }
+  },
+  "next": "التالي",
+  "previous": "السابق",
+  "complete": "اكمل"
 }
