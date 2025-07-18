@@ -5,9 +5,22 @@ import {
   XvPSettlementFlow,
 } from "../../../../generated/schema";
 import { XvPSettlement as XvPSettlementTemplate } from "../../../../generated/templates";
-import { XvPSettlement as XvPSettlementContract } from "../../../../generated/templates/XvPSettlement/XvPSettlement";
+import {
+  XvPSettlementApprovalRevoked,
+  XvPSettlementApproved,
+  XvPSettlementCancelled,
+  XvPSettlement as XvPSettlementContract,
+  XvPSettlementExecuted,
+} from "../../../../generated/templates/XvPSettlement/XvPSettlement";
 import { fetchAccount } from "../../../account/fetch/account";
+import { fetchEvent } from "../../../event/fetch/event";
 import { fetchToken } from "../../../token/fetch/token";
+import {
+  actionExecuted,
+  ActionName,
+  createAction,
+  createActionIdentifier,
+} from "../../../utils/actions";
 import { setBigNumber } from "../../../utils/bignumber";
 
 /**
@@ -140,4 +153,103 @@ export function fetchXvPSettlement(id: Address): XvPSettlement {
   }
 
   return xvpSettlement;
+}
+
+export function handleXvPSettlementApproved(
+  event: XvPSettlementApproved
+): void {
+  fetchEvent(event, "XvPSettlementApproved");
+
+  const approval = fetchXvPSettlementApproval(
+    event.address,
+    event.params.sender
+  );
+  approval.approved = true;
+  approval.timestamp = event.block.timestamp;
+  approval.save();
+
+  const xvpSettlement = fetchXvPSettlement(event.address);
+  actionExecuted(
+    event,
+    ActionName.ApproveXvPSettlement,
+    event.address,
+    createActionIdentifier(
+      ActionName.ApproveXvPSettlement,
+      event.address,
+      approval.account
+    )
+  );
+
+  if (xvpSettlement.autoExecute) {
+    return;
+  }
+
+  const approvals = xvpSettlement.approvals.load();
+  let allApproved = true;
+  for (let i = 0; i < approvals.length; i++) {
+    const approval = approvals[i];
+    if (!approval.approved) {
+      allApproved = false;
+      break;
+    }
+  }
+
+  if (allApproved) {
+    const participants: Bytes[] = [];
+    for (let i = 0; i < approvals.length; i++) {
+      participants.push(approvals[i].account);
+    }
+
+    createAction(
+      event,
+      ActionName.ExecuteXvPSettlement,
+      event.address,
+      event.block.timestamp,
+      xvpSettlement.cutoffDate,
+      participants,
+      null,
+      createActionIdentifier(ActionName.ExecuteXvPSettlement, event.address)
+    );
+  }
+}
+
+export function handleXvPSettlementApprovalRevoked(
+  event: XvPSettlementApprovalRevoked
+): void {
+  fetchEvent(event, "XvPSettlementApprovalRevoked");
+
+  const approval = fetchXvPSettlementApproval(
+    event.address,
+    event.params.sender
+  );
+  approval.approved = false;
+  approval.timestamp = null;
+  approval.save();
+}
+
+export function handleXvPSettlementExecuted(
+  event: XvPSettlementExecuted
+): void {
+  fetchEvent(event, "XvPSettlementExecuted");
+
+  const xvpSettlement = fetchXvPSettlement(event.address);
+  xvpSettlement.executed = true;
+  xvpSettlement.save();
+
+  actionExecuted(
+    event,
+    ActionName.ExecuteXvPSettlement,
+    event.address,
+    createActionIdentifier(ActionName.ExecuteXvPSettlement, event.address)
+  );
+}
+
+export function handleXvPSettlementCancelled(
+  event: XvPSettlementCancelled
+): void {
+  fetchEvent(event, "XvPSettlementCancelled");
+
+  const xvpSettlement = fetchXvPSettlement(event.address);
+  xvpSettlement.cancelled = true;
+  xvpSettlement.save();
 }

@@ -180,3 +180,58 @@ export async function approveAndExecuteXvpSettlement(
     throw error;
   }
 }
+
+/**
+ * Approves an XVP settlement without executing it
+ * This function performs token approval and settlement approval but does not execute
+ *
+ * @param settlementAddress - Address of the XVP settlement contract
+ * @param actor - The actor approving the settlement
+ * @param assetAddress - Address of the asset to approve
+ * @param amount - Amount to approve
+ */
+export async function approveXvpSettlement(
+  settlementAddress: Address,
+  actor: AbstractActor,
+  assetAddress: Address,
+  amount: bigint
+): Promise<void> {
+  console.log(
+    `\n=== ${actor.name} Approving XVP Settlement (No Execution) ===`
+  );
+  console.log(`Settlement: ${settlementAddress}`);
+  console.log(`Asset: ${assetAddress}`);
+  console.log(`Amount: ${formatEther(amount)}`);
+
+  try {
+    // Get the ERC20 token contract
+    const { ismartAbi } = await import("../../abi/ismart");
+    const tokenContract = actor.getContractInstance({
+      address: assetAddress,
+      abi: ismartAbi,
+    });
+
+    console.log(`Approving ${formatEther(amount)} tokens for settlement...`);
+    await tokenContract.write.approve([settlementAddress, amount]);
+
+    console.log(`✅ Token approval successful`);
+
+    // Get the XVP settlement contract
+    const { xvpSettlementAbi } = await import("../../abi/xvpSettlement");
+    const settlementContract = actor.getContractInstance({
+      address: settlementAddress,
+      abi: xvpSettlementAbi as Abi,
+    });
+
+    console.log(`Approving settlement...`);
+    await settlementContract.write.approve();
+
+    console.log(`✅ Settlement approval successful (no execution)`);
+  } catch (error) {
+    console.error(
+      `❌ Failed to approve XVP settlement for ${actor.name}:`,
+      error
+    );
+    throw error;
+  }
+}

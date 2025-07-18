@@ -1,8 +1,14 @@
 import { Bytes } from "@graphprotocol/graph-ts";
 import { BondCreated } from "../../../generated/templates/BondFactory/BondFactory";
+import { fetchAccount } from "../../account/fetch/account";
 import { fetchEvent } from "../../event/fetch/event";
 import { fetchToken } from "../../token/fetch/token";
 import { fetchTopicScheme } from "../../topic-scheme-registry/fetch/topic-scheme";
+import {
+  ActionName,
+  createAction,
+  createActionIdentifier,
+} from "../../utils/actions";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchBond } from "../bond/fetch/bond";
 
@@ -32,4 +38,18 @@ export function handleBondCreated(event: BondCreated): void {
   bond.isMatured = false;
   bond.underlyingAsset = event.params.underlyingAsset;
   bond.save();
+
+  // Create MatureBond action
+  const creator = fetchAccount(event.transaction.from);
+
+  createAction(
+    event,
+    ActionName.MatureBond,
+    event.params.tokenAddress,
+    bond.maturityDate,
+    null,
+    [creator.id],
+    null,
+    createActionIdentifier(ActionName.MatureBond, event.params.tokenAddress)
+  );
 }
