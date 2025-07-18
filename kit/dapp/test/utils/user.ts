@@ -271,3 +271,13 @@ export async function setupUser(user: User) {
     throw err;
   }
 }
+
+export async function getUserData(user: User) {
+  const headers = await signInWithUser(user);
+  const session = await authClient.getSession({}, { headers });
+  const userInfo = session.data?.user;
+  if (!userInfo) {
+    throw new Error(`User ${user.email} not found`);
+  }
+  return userInfo;
+}

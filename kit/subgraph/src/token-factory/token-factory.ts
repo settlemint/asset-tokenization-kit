@@ -19,6 +19,7 @@ import { fetchPausable } from "../token-extensions/pausable/fetch/pausable";
 import { fetchRedeemable } from "../token-extensions/redeemable/fetch/redeemable";
 import { fetchYield } from "../token-extensions/yield/fetch/yield";
 import { fetchToken } from "../token/fetch/token";
+import { getTokenType } from "../token/utils/token-utils";
 import { fetchTokenFactory } from "./fetch/token-factory";
 
 /**
@@ -44,7 +45,7 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
     token.deployedInTransaction = event.transaction.hash;
   }
   token.tokenFactory = tokenFactory.id;
-  token.type = tokenFactory.name;
+  token.type = getTokenType(tokenFactory);
   token.createdAt = event.block.timestamp;
   token.createdBy = fetchAccount(event.transaction.from).id;
   token.accessControl = fetchAccessControl(event.params.accessManager).id;

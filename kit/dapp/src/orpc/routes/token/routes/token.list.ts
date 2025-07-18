@@ -31,6 +31,7 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
         orderDirection: $orderDirection
       ) {
         id
+        type
         name
         symbol
         decimals
