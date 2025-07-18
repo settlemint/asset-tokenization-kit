@@ -34,6 +34,7 @@ import { AssetDeploymentSuccess } from "@/components/onboarding/assets/asset-dep
 import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { SectionHeader } from "@/components/onboarding/section-header";
+import { authClient } from "@/lib/auth/auth.client";
 
 const logger = createLogger();
 
@@ -108,6 +109,10 @@ function RouteComponent() {
   const [systemAddress] = useSettings("SYSTEM_ADDRESS");
   const queryClient = useQueryClient();
 
+  // Get user authentication state
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
   // Verification dialog state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(
@@ -121,9 +126,9 @@ function RouteComponent() {
     | null
   >(null);
 
-  // For factory deployment, we'll use PIN code verification by default
-  const hasTwoFactor = false;
-  const hasPincode = true;
+  // Use actual authentication state from user
+  const hasTwoFactor = Boolean(user?.twoFactorEnabled);
+  const hasPincode = Boolean(user?.pincodeEnabled);
 
   const { data: systemDetails } = useQuery({
     ...orpc.system.read.queryOptions({
@@ -339,6 +344,12 @@ function RouteComponent() {
     [systemDetails?.tokenFactories]
   );
 
+  // Stable reference for empty array
+  const deployedFactories = useMemo(
+    () => systemDetails?.tokenFactories ?? [],
+    [systemDetails?.tokenFactories]
+  );
+
   const onNext = async () => {
     if (hasDeployedAssets) {
       try {
@@ -412,7 +423,7 @@ function RouteComponent() {
               <AssetDeploymentSuccess
                 title={t("assets.asset-factories-deployed-successfully")}
                 deployedFactoriesLabel={t("assets.deployed-factories")}
-                factories={systemDetails?.tokenFactories || []}
+                factories={deployedFactories}
               />
             </div>
           ) : (

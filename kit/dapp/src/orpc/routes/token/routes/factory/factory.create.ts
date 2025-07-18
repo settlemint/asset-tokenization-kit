@@ -290,7 +290,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
             const confirmMessage =
               totalFactories === 1
                 ? messages.factoryCreated
-                : `${name} created successfully`;
+                : messages.factoryCreated.replace("{{name}}", name);
 
             yield withEventMeta(
               {
