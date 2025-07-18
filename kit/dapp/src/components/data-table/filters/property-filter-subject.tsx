@@ -1,5 +1,3 @@
-"use client";
-
 import type { ColumnMeta } from "@tanstack/react-table";
 
 /**

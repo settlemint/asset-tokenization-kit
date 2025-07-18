@@ -326,8 +326,11 @@ standards.
 - **Security**: Never commit secrets, validate all inputs
 - **Type Safety**: Use full types when possible, e.g. User and not { role?:
   string } if you just need the role; `as any` is NEVER allowed!
-- **Performance**: Only optimize performance after measuring with React DevTools
-  Profiler
+- **Performance**: The project uses React Compiler (babel-plugin-react-compiler)
+  for automatic optimizations. DO NOT go overboard with useMemo or useCallback
+  unless a component has the "use no memo" directive (only used for TanStack
+  Table compatibility) or linting requires it. React Compiler handles
+  memoization automatically
 - **Translations**: Organized into focused namespaces - use multiple namespaces
   in components as needed; use very specific translation namespaces for each
   component (e.g., "detail-grid" for the DetailGrid component, not "common");
@@ -340,7 +343,7 @@ For comprehensive rules, refer to the ESLint configuration in .eslintrc files.
 Key principles include:
 
 - Accessibility compliance (ARIA, keyboard navigation)
-- Performance optimizations (avoid unnecessary renders, use memoization)
+- Performance optimizations (React Compiler handles memoization automatically)
 - Type safety (no 'any', explicit types)
 - Modern JavaScript patterns (prefer arrow functions, template literals)
 - Security best practices (input validation, no dangerous props)

@@ -1,7 +1,3 @@
-"use client";
-
-import { useCallback } from "react";
-import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -16,6 +12,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { PieChart as PieChartIcon } from "lucide-react";
+import { useCallback } from "react";
+import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 
 export type AreaChartData = Record<string, string | number>;
 

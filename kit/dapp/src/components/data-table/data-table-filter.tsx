@@ -1,4 +1,3 @@
-"use client";
 "use no memo"; // fixes rerendering with react compiler
 
 import { Button } from "@/components/ui/button";
@@ -21,11 +20,11 @@ import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { ArrowRight, Filter, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { PropertyFilterOperatorController } from "./filters/operators/operator-controller";
+import { PropertyFilterSubject } from "./filters/property-filter-subject";
 import type { ColumnDataType } from "./filters/types/column-types";
 import type { FilterValue } from "./filters/types/filter-types";
 import { getColumn, getColumnMeta } from "./filters/utils/table-helpers";
-import { PropertyFilterOperatorController } from "./filters/operators/operator-controller";
-import { PropertyFilterSubject } from "./filters/property-filter-subject";
 import { PropertyFilterValueController } from "./filters/values/value-controller";
 import { PropertyFilterValueMenu } from "./filters/values/value-menu";
 

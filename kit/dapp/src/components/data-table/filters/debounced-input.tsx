@@ -1,8 +1,6 @@
-"use client";
-
 import { Input } from "@/components/ui/input";
-import { useCallback, useEffect, useState } from "react";
 import type { InputHTMLAttributes } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function DebouncedInput({
   value: initialValue,

@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import type { Column, Table } from "@tanstack/react-table";
 import { Download } from "lucide-react";
