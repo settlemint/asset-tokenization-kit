@@ -21,7 +21,8 @@ import {
     IdentityVerificationModuleNotSet,
     TokenFactoryRegistryImplementationNotSet,
     AddonRegistryImplementationNotSet,
-    ComplianceModuleRegistryImplementationNotSet
+    ComplianceModuleRegistryImplementationNotSet,
+    SystemAccessManagerImplementationNotSet
 } from "../../contracts/system/ATKSystemErrors.sol";
 
 // Implementations for testing
@@ -42,6 +43,8 @@ import { ATKContractIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { ATKTokenFactoryRegistryImplementation } from
     "../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
 import { ATKSystemAddonRegistryImplementation } from
@@ -72,6 +75,7 @@ contract ATKSystemFactoryTest is Test {
     address public tokenFactoryRegistryImpl;
     address public addonRegistryImpl;
     address public complianceModuleRegistryImpl;
+    address public systemAccessManagerImpl;
     address public forwarder;
 
     // Test addresses
@@ -101,6 +105,7 @@ contract ATKSystemFactoryTest is Test {
         tokenFactoryRegistryImpl = address(new ATKTokenFactoryRegistryImplementation(forwarder));
         addonRegistryImpl = address(new ATKSystemAddonRegistryImplementation(forwarder));
         complianceModuleRegistryImpl = address(new ATKComplianceModuleRegistryImplementation(forwarder));
+        systemAccessManagerImpl = address(new ATKSystemAccessManagerImplementation(forwarder));
 
         // Deploy factory with valid implementations
         factory = new ATKSystemFactory(
@@ -118,6 +123,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -154,6 +160,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -175,6 +182,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -196,6 +204,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -217,6 +226,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -238,6 +248,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -259,6 +270,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -280,6 +292,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -301,6 +314,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -322,6 +336,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -343,6 +358,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -364,6 +380,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -385,6 +402,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             address(0), // complianceModuleRegistryImpl
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -406,6 +424,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             address(0), // addonRegistryImpl
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -427,6 +446,7 @@ contract ATKSystemFactoryTest is Test {
             address(0), // tokenFactoryRegistryImpl
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             forwarder
         );
     }
@@ -559,6 +579,7 @@ contract ATKSystemFactoryTest is Test {
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
+            systemAccessManagerImpl,
             address(0) // Zero forwarder
         );
 

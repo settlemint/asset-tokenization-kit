@@ -64,6 +64,7 @@ import { IATKTopicSchemeRegistry } from "./topic-scheme-registry/IATKTopicScheme
 import { IATKCompliance } from "./compliance/IATKCompliance.sol";
 import { IATKIdentityRegistryStorage } from "./identity-registry-storage/IATKIdentityRegistryStorage.sol";
 import { IATKSystemAddonRegistry } from "./addons/IATKSystemAddonRegistry.sol";
+import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
 
 /// @title ATKSystem Contract
 /// @author SettleMint Tokenization Services
@@ -104,6 +105,7 @@ contract ATKSystemImplementation is
     bytes32 internal constant COMPLIANCE_MODULE_REGISTRY = keccak256("COMPLIANCE_MODULE_REGISTRY");
     bytes32 internal constant ADDON_REGISTRY = keccak256("ADDON_REGISTRY");
     bytes32 internal constant TOKEN_FACTORY_REGISTRY = keccak256("TOKEN_FACTORY_REGISTRY");
+    bytes32 internal constant SYSTEM_ACCESS_MANAGER = keccak256("SYSTEM_ACCESS_MANAGER");
 
     // Expected interface IDs used for validating implementation contracts.
     // These are unique identifiers for Solidity interfaces, ensuring that a contract claiming to be, for example,
@@ -122,6 +124,7 @@ contract ATKSystemImplementation is
     bytes4 private constant _ADDON_REGISTRY_ID = type(IATKSystemAddonRegistry).interfaceId;
     bytes4 private constant _TOKEN_FACTORY_REGISTRY_ID = type(IATKTokenFactoryRegistry).interfaceId;
     bytes4 private constant _IIDENTITY_ID = type(IIdentity).interfaceId;
+    bytes4 private constant _SYSTEM_ACCESS_MANAGER_ID = type(IATKSystemAccessManager).interfaceId;
 
     // --- State Variables ---
     // State variables store data persistently on the blockchain.
@@ -166,6 +169,9 @@ contract ATKSystemImplementation is
 
     /// @dev Stores the address of the token factory registry proxy contract.
     address private _tokenFactoryRegistryProxy;
+
+    /// @dev Stores the address of the system access manager proxy contract.
+    address private _systemAccessManagerProxy;
 
     // --- Internal Helper for Interface Check ---
     /// @dev Internal helper function to check if a given contract address (`implAddress`)
@@ -237,7 +243,8 @@ contract ATKSystemImplementation is
         address identityVerificationModule_,
         address tokenFactoryRegistryImplementation_,
         address complianceModuleRegistryImplementation_,
-        address addonRegistryImplementation_
+        address addonRegistryImplementation_,
+        address systemAccessManagerImplementation_
     )
         public
         initializer
@@ -343,6 +350,9 @@ contract ATKSystemImplementation is
             // ISMARTTokenFactoryRegistry
         _implementations[TOKEN_FACTORY_REGISTRY] = tokenFactoryRegistryImplementation_;
         emit TokenFactoryRegistryImplementationUpdated(initialAdmin_, tokenFactoryRegistryImplementation_);
+
+        _implementations[SYSTEM_ACCESS_MANAGER] = systemAccessManagerImplementation_;
+        emit SystemAccessManagerImplementationUpdated(initialAdmin_, systemAccessManagerImplementation_);
     }
 
     /// @dev Authorizes an upgrade to a new implementation contract.
@@ -528,7 +538,9 @@ contract ATKSystemImplementation is
             _tokenFactoryRegistryProxy,
             _addonRegistryProxy,
             _complianceModuleRegistryProxy,
-            _identityVerificationModule
+            _identityVerificationModule,
+            _systemAccessManagerProxy,
+            _implementations[SYSTEM_ACCESS_MANAGER]
         );
     }
 
@@ -750,6 +762,12 @@ contract ATKSystemImplementation is
     /// @return The address of the access manager implementation contract.
     function tokenAccessManagerImplementation() external view returns (address) {
         return _implementations[TOKEN_ACCESS_MANAGER];
+    }
+
+    /// @notice Returns the address of the system access manager implementation.
+    /// @return The address of the system access manager implementation contract.
+    function systemAccessManagerImplementation() external view returns (address) {
+        return _implementations[SYSTEM_ACCESS_MANAGER];
     }
 
     // --- Proxy Getter Functions ---
