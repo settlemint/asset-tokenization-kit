@@ -14,6 +14,9 @@ import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { IATKCompliance } from "../compliance/IATKCompliance.sol";
 import { IWithTypeIdentifier } from "./../../smart/interface/IWithTypeIdentifier.sol";
+import { IATKIdentityFactory } from "../identity-factory/IATKIdentityFactory.sol";
+import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
@@ -46,6 +49,11 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
     /// @notice Mapping indicating whether an system addon address was deployed by this factory.
     /// @dev Stores a boolean value for each system addon address, true if deployed by this factory.
     mapping(address systemAddonAddress => bool isFactorySystemAddon) public isFactorySystemAddon;
+
+    /// @notice Emitted when a contract identity is registered for an addon
+    /// @param factory The address of the factory that registered the identity
+    /// @param contractAddress The address of the addon contract
+    event ContractIdentityRegistered(address indexed factory, address indexed contractAddress);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
@@ -189,5 +197,33 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
         returns (uint256)
     {
         return super._contextSuffixLength();
+    }
+
+    /// @notice Creates a contract identity and registers it with the identity registry
+    /// @dev Centralized function for addon factories to create and register contract identities
+    /// @param contractAddress The address of the addon contract
+    /// @param country Country code for compliance purposes
+    /// @return contractIdentity The address of the created contract identity
+    function _deployContractIdentity(
+        address contractAddress,
+        uint16 country
+    )
+        internal
+        returns (address contractIdentity)
+    {
+        IATKSystem system_ = IATKSystem(_systemAddress);
+        IATKIdentityFactory identityFactory_ = IATKIdentityFactory(system_.identityFactory());
+
+        // Create the contract identity
+        contractIdentity = identityFactory_.createContractIdentity(contractAddress);
+
+        // Register the contract identity with the identity registry (same as any other identity)
+        ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(system_.identityRegistry());
+        identityRegistry.registerIdentity(contractAddress, IIdentity(contractIdentity), country);
+
+        // Emit registration event for indexing
+        emit ContractIdentityRegistered(_msgSender(), contractAddress);
+
+        return contractIdentity;
     }
 }

@@ -49,6 +49,12 @@ interface IATKTokenFactory is IERC165 {
         address accessManager
     );
 
+    /// @notice Emitted when a contract is registered with an identity and description
+    /// @param sender The address that initiated the registration
+    /// @param contractAddress The address of the contract being registered
+    /// @param description Human-readable description of the contract (for indexing/UX)
+    event ContractIdentityRegistered(address indexed sender, address indexed contractAddress, string description);
+
     /// @notice Initializes the token registry.
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The address of the token implementation contract.

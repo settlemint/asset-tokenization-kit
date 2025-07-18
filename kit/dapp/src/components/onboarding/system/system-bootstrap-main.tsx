@@ -49,11 +49,18 @@ export function SystemBootstrapMain({
   } = useStreamingMutation({
     mutationOptions: orpc.system.create.mutationOptions(),
     onSuccess: async () => {
+      // Refetch system address
       await queryClient.refetchQueries({
         queryKey: orpc.settings.read.key({
           input: { key: "SYSTEM_ADDRESS" },
         }),
       });
+
+      // Refetch user data to update onboarding state
+      await queryClient.refetchQueries({
+        queryKey: orpc.user.me.key(),
+      });
+
       setShowDeploymentProgress(false);
       setDeploymentFailed(false);
       setIsBootstrapped(true);
@@ -346,7 +353,7 @@ export function SystemBootstrapMain({
                     Previous
                   </Button>
                 )}
-                <Button onClick={onNext} className="flex-1">
+                <Button onClick={() => onNext?.()} className="flex-1">
                   Continue
                 </Button>
               </div>

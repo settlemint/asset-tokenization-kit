@@ -308,7 +308,7 @@ abstract contract _SMARTLogic is _SMARTExtension {
     /// @inheritdoc ISMART
     /// @notice Returns the on-chain ID address associated with this token.
     /// @return address The current on-chain ID address.
-    function onchainID() external view virtual override returns (address) {
+    function onchainID() public view virtual override returns (address) {
         return __onchainID;
     }
 

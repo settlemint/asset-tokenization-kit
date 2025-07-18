@@ -16,6 +16,9 @@ import { ATKRoles } from "../ATKRoles.sol";
 // Interface imports
 import { IATKStableCoin } from "./IATKStableCoin.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
+import { _SMARTLogic } from "../../smart/extensions/core/internal/_SMARTLogic.sol";
 
 // Core extensions
 import { SMARTUpgradeable } from "../../smart/extensions/core/SMARTUpgradeable.sol"; // Base SMART logic + ERC20
@@ -37,6 +40,7 @@ import { SMARTTokenAccessManagedUpgradeable } from
 contract ATKStableCoinImplementation is
     Initializable,
     IATKStableCoin,
+    IContractWithIdentity,
     SMARTUpgradeable,
     SMARTTokenAccessManagedUpgradeable,
     SMARTCollateralUpgradeable,
@@ -55,8 +59,6 @@ contract ATKStableCoinImplementation is
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param decimals_ The number of decimals the token uses.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param collateralTopicId_ The topic ID of the collateral claim.
     /// @param initialModulePairs_ Initial compliance module configurations.
     /// @param identityRegistry_ The address of the Identity Registry contract.
@@ -66,7 +68,6 @@ contract ATKStableCoinImplementation is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint256 collateralTopicId_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
@@ -77,7 +78,7 @@ contract ATKStableCoinImplementation is
         override
         initializer
     {
-        __SMART_init(name_, symbol_, decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_);
+        __SMART_init(name_, symbol_, decimals_, address(0), identityRegistry_, compliance_, initialModulePairs_);
         __SMARTCustodian_init();
         __SMARTBurnable_init();
         __SMARTPausable_init(true);
@@ -85,6 +86,28 @@ contract ATKStableCoinImplementation is
         __SMARTCollateral_init(collateralTopicId_);
 
         _registerInterface(type(IATKStableCoin).interfaceId);
+        _registerInterface(type(IContractWithIdentity).interfaceId);
+    }
+
+    // --- IContractWithIdentity Implementation ---
+    // Note: onchainID() is inherited from ISMART via SMARTUpgradeable, but we need to explicitly override due to
+    // multiple inheritance
+
+    /// @inheritdoc IContractWithIdentity
+    function onchainID() public view override(_SMARTLogic, ISMART, IContractWithIdentity) returns (address) {
+        return super.onchainID();
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    function canAddClaim(address actor) external view override returns (bool) {
+        // Delegate to AccessManager - only GOVERNANCE_ROLE can manage claims
+        return _hasRole(ATKRoles.GOVERNANCE_ROLE, actor);
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    function canRemoveClaim(address actor) external view override returns (bool) {
+        // Delegate to AccessManager - only GOVERNANCE_ROLE can manage claims
+        return _hasRole(ATKRoles.GOVERNANCE_ROLE, actor);
     }
 
     // --- ISMART Implementation ---

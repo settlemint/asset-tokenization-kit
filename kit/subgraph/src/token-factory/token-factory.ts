@@ -47,7 +47,6 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   token.type = tokenFactory.name;
   token.createdAt = event.block.timestamp;
   token.createdBy = fetchAccount(event.transaction.from).id;
-  token.identity = fetchIdentity(event.params.tokenIdentity).id;
   token.accessControl = fetchAccessControl(event.params.accessManager).id;
 
   // Set the token extensions and implemented interfaces from the Factory
@@ -97,6 +96,14 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   }
 
   token.save();
+
+  const identity = fetchIdentity(event.params.tokenIdentity);
+  identity.isContract = true;
+  identity.save();
+
+  const account = fetchAccount(event.params.tokenAddress);
+  account.identity = identity.id;
+  account.save();
 }
 
 export function handleTokenImplementationUpdated(

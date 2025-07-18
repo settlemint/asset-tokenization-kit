@@ -4,11 +4,18 @@ import {
   assetDesignerFormOptions,
   AssetDesignerFormSchema,
 } from "@/components/asset-designer/shared-form";
-import type { AssetDesignerStepsType } from "@/components/asset-designer/steps";
+import {
+  useAssetDesignerSteps,
+  type AssetDesignerStepsType,
+} from "@/components/asset-designer/steps";
+import { StepLayout } from "@/components/stepper/step-layout";
+import { getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
+import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
 
 export const AssetDesignerForm = () => {
+  const steps = useAssetDesignerSteps();
   const form = useAppForm({
     ...assetDesignerFormOptions,
     validators: {
@@ -22,19 +29,30 @@ export const AssetDesignerForm = () => {
       },
     },
   });
+
+  const stepId = useStore(form.store, (state) => state.values.step);
+  const currentStep = getStepById(steps, stepId);
+
+  const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
+    selectAssetType: <SelectAssetType form={form} />,
+    assetBasics: <AssetBasics form={form} />,
+    summary: <div>Summary</div>,
+  };
+
   return (
     <form.AppForm>
-      <form.Subscribe selector={(state) => state.values.step}>
-        {(step) => {
-          const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
-            selectAssetType: <SelectAssetType form={form} />,
-            assetBasics: <AssetBasics form={form} />,
-            summary: <div>Summary</div>,
-          };
-
-          return stepComponent[step];
+      <StepLayout
+        stepsOrGroups={steps}
+        currentStep={currentStep}
+        onStepSelect={(step) => {
+          form.setFieldValue("step", step.id);
         }}
-      </form.Subscribe>
+        navigationMode="next-and-completed"
+      >
+        {({ currentStep }) => {
+          return stepComponent[currentStep.id];
+        }}
+      </StepLayout>
     </form.AppForm>
   );
 };

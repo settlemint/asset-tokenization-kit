@@ -54,7 +54,7 @@ export const issueCollateralClaim = async (
   // 3. Get an instance of the token's identity contract, interacted with by the 'owner' (assumed token owner)
   const tokenIdentityContract = owner.getContractInstance({
     address: asset.identity!,
-    abi: ATKContracts.tokenIdentity,
+    abi: ATKContracts.contractIdentity,
   });
 
   // 4. Get the identity address of the claim issuer

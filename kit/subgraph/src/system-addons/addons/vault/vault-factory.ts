@@ -1,7 +1,9 @@
 import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { Vault as VaultTemplate } from "../../../../generated/templates";
 import { ATKVaultCreated } from "../../../../generated/templates/VaultFactory/VaultFactory";
+import { fetchAccount } from "../../../account/fetch/account";
 import { fetchEvent } from "../../../event/fetch/event";
+import { fetchIdentity } from "../../../identity/fetch/identity";
 import { fetchVault } from "./fetch/vault";
 import { fetchVaultFactory } from "./fetch/vault-factory";
 
@@ -22,6 +24,14 @@ export function handleATKVaultCreated(event: ATKVaultCreated): void {
   vault.balanceExact = BigInt.fromI32(0);
 
   vault.save();
+
+  const identity = fetchIdentity(event.params.contractIdentity);
+  identity.isContract = true;
+  identity.save();
+
+  const account = fetchAccount(event.params.vault);
+  account.identity = identity.id;
+  account.save();
 
   // Create the vault template to start tracking vault events
   VaultTemplate.create(event.params.vault);

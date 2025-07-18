@@ -44,6 +44,7 @@ type AccessControl @entity(immutable: false) {
   id: Bytes!
   admin: [Account!]!
   registrar: [Account!]!
+  registrarAdmin: [Account!]!
   claimManager: [Account!]!
   deployer: [Account!]!
   storageModifier: [Account!]!
@@ -220,7 +221,7 @@ type Identity @entity(immutable: false) {
   registry: IdentityRegistry
   claims: [IdentityClaim!]! @derivedFrom(field: "identity")
   account: Account
-  token: Token
+  isContract: Boolean
   deployedInTransaction: Bytes!
 }
 
@@ -319,7 +320,6 @@ type Token @entity(immutable: false) {
   deployedInTransaction: Bytes!
   account: Account!
   accessControl: AccessControl
-  identity: Identity
   balances: [TokenBalance!]! @derivedFrom(field: "token")
   type: String!
   tokenFactory: TokenFactory

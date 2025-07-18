@@ -1,5 +1,6 @@
 import { Address } from "viem";
 import { ATKContracts } from "../../../constants/contracts";
+import { ATKRoles } from "../../../constants/roles";
 import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { atkDeployer } from "../../../services/deployer";
@@ -15,7 +16,9 @@ export const setYieldSchedule = async (
   /** The yield rate in basis points (e.g., 500 for 5%). Must be greater than 0. */
   rate: number,
   /** The interval between yield distributions in seconds (e.g., 86400 for daily). Must be greater than 0. */
-  interval: number
+  interval: number,
+  /** The country code for the yield schedule. */
+  countryCode: number
 ) => {
   console.log(`[Set yield schedule] → Starting yield schedule setup...`);
 
@@ -39,6 +42,7 @@ export const setYieldSchedule = async (
       BigInt(Math.ceil(endTime.getTime() / 1000)),
       BigInt(rate),
       BigInt(interval),
+      countryCode,
     ])
   );
   const { schedule } = (await waitForEvent({
@@ -53,8 +57,17 @@ export const setYieldSchedule = async (
 
   const scheduleContract = owner.getContractInstance({
     address: schedule,
-    abi: ATKContracts.ismartFixedYieldSchedule,
+    abi: ATKContracts.fixedYieldSchedule,
   });
+
+  await scheduleContract.write.grantRole([
+    ATKRoles.governanceRole,
+    owner.address,
+  ]);
+  await scheduleContract.write.grantRole([
+    ATKRoles.supplyManagementRole,
+    owner.address,
+  ]);
 
   console.log(
     `[Set yield schedule] ✓ ${asset.symbol} yield schedule set with start time ${startTime.toISOString()} and end time ${endTime.toISOString()} (schedule address ${schedule})`

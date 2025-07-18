@@ -122,7 +122,6 @@ export function WalletSecurityMain({ onNext }: WalletSecurityMainProps) {
                 <OtpSetupComponent
                   onSuccess={handleOtpSuccess}
                   onBack={handleBackToSecurityOptions}
-                  user={user}
                 />
               )}
             </>

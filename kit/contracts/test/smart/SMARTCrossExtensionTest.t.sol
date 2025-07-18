@@ -210,8 +210,7 @@ contract SMARTCrossExtensionTest is Test {
 
         // Create the token identity now that the token exists
         vm.prank(owner);
-        address tokenIdentity =
-            systemUtils.identityFactory().createTokenIdentity(address(crossExtToken), address(accessManager));
+        address tokenIdentity = systemUtils.identityFactory().createContractIdentity(address(crossExtToken));
 
         // Set the identity on the token
         vm.prank(owner);

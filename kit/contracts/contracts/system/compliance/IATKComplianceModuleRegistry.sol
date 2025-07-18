@@ -8,6 +8,8 @@ interface IATKComplianceModuleRegistry is IAccessControl {
         address indexed sender, string name, bytes32 typeId, address indexed moduleAddress, uint256 timestamp
     );
 
+    error NoInitialAdmins();
+
     function registerComplianceModule(address moduleAddress) external;
 
     function complianceModule(bytes32 moduleTypeHash) external view returns (address);
