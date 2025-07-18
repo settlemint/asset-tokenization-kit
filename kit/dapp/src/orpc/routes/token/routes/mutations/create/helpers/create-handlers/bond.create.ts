@@ -71,10 +71,12 @@ export const bondCreateHandler = async function* (
   }
 
   yield* createToken(input, (creationFailedMessage, messages) => {
+    // Delete verification from input to avoid leaking it in the logs
+    const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
       CREATE_BOND_MUTATION,
       {
-        ...input,
+        ...otherInput,
         cap: input.cap.toString(),
         faceValue: input.faceValue.toString(),
         ...context.mutationVariables,

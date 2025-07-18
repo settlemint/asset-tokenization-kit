@@ -65,10 +65,12 @@ export const equityCreateHandler = async function* (
   }
 
   yield* createToken(input, (creationFailedMessage, messages) => {
+    // Delete verification from input to avoid leaking it in the logs
+    const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
       CREATE_EQUITY_MUTATION,
       {
-        ...input,
+        ...otherInput,
         ...context.mutationVariables,
         countryCode: 1, // TODO: should come from ui
       },
