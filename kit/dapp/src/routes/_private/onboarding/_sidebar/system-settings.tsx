@@ -32,7 +32,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const queryClient = useQueryClient();
-  const { navigateToStep, handleMutationSuccess } = useOnboardingNavigation();
+  const { navigateToStep, completeStepAndNavigate } = useOnboardingNavigation();
 
   // Get current base currency setting
   const { data: currentBaseCurrency } = useQuery({
@@ -57,7 +57,7 @@ function RouteComponent() {
 
         toast.success("Platform settings saved successfully");
 
-        await handleMutationSuccess(OnboardingStep.systemSettings);
+        await completeStepAndNavigate(OnboardingStep.systemSettings);
       },
       onError: (error) => {
         logger.error("Settings mutation failed:", error);

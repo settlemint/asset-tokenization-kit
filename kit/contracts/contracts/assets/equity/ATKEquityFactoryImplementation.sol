@@ -75,7 +75,14 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
         // Identity registration is now handled automatically in _deployContractIdentity
 
         emit EquityCreated(
-            _msgSender(), deployedEquityAddress, deployedTokenIdentityAddress, name_, symbol_, decimals_, requiredClaimTopics_, countryCode_
+            _msgSender(),
+            deployedEquityAddress,
+            deployedTokenIdentityAddress,
+            name_,
+            symbol_,
+            decimals_,
+            requiredClaimTopics_,
+            countryCode_
         );
 
         return deployedEquityAddress;
