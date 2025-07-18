@@ -12,6 +12,9 @@ import { SMARTHooks } from "../common/SMARTHooks.sol"; // Note: Consider if SMAR
 // Internal implementation imports
 import { _SMARTCappedLogic } from "./internal/_SMARTCappedLogic.sol";
 
+// Interface imports
+import { ISMARTCapped } from "./ISMARTCapped.sol";
+
 /// @title Upgradeable SMART Capped Token Extension
 /// @notice This contract adds a maximum total supply (a "cap") to an upgradeable SMART token.
 ///         Once the total supply reaches this cap, no more tokens can be minted.
@@ -28,6 +31,13 @@ import { _SMARTCappedLogic } from "./internal/_SMARTCappedLogic.sol";
 ///      The capping check is enforced by overriding the `_beforeMint` hook from `SMARTHooks`.
 
 abstract contract SMARTCappedUpgradeable is Initializable, SMARTExtensionUpgradeable, _SMARTCappedLogic {
+    /// @dev Register the `ISMARTCapped` interface ID for ERC165. This allows factories to check if the
+    /// contract
+    /// supports the `ISMARTCapped` interface based on the upgradeable implementation.
+    constructor() {
+        _registerInterface(type(ISMARTCapped).interfaceId);
+    }
+
     /// @notice Initializer for the upgradeable capped supply extension.
     /// @dev This function should be called only once, typically during the deployment or initialization
     ///      phase of the proxy contract that uses this logic contract (the implementation).

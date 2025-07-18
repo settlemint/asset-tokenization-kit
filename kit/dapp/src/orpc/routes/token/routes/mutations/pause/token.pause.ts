@@ -1,9 +1,11 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TokenPauseMessagesSchema } from "@/orpc/routes/token/routes/mutations/pause/token.pause.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { withEventMeta } from "@orpc/server";
 
 const TOKEN_PAUSE_MUTATION = portalGraphql(`
@@ -13,7 +15,7 @@ const TOKEN_PAUSE_MUTATION = portalGraphql(`
     $address: String!
     $from: String!
   ) {
-    pause: IERC3643Pause(
+    pause: ISMARTPausablePause(
       address: $address
       from: $from
       verificationId: $verificationId
@@ -25,7 +27,12 @@ const TOKEN_PAUSE_MUTATION = portalGraphql(`
 `);
 
 export const pause = tokenRouter.token.pause
-  //.use(tokenPermissionMiddleware({ requiredRoles: ["supplyManagement"] }))
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.pause,
+      requiredExtensions: ["PAUSABLE"],
+    })
+  )
   .use(portalMiddleware)
   .handler(async function* ({ input, context }) {
     const { contract, verification } = input;
