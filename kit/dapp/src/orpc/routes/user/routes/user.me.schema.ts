@@ -27,6 +27,12 @@ const onboardingStateSchema = z.object({
   systemSettings: z
     .boolean()
     .describe("Whether the user has configured the system settings"),
+  systemAssets: z
+    .boolean()
+    .describe("Whether the user has deployed asset factories"),
+  systemAddons: z
+    .boolean()
+    .describe("Whether the user has configured system addons"),
   identity: z.boolean().describe("Whether the user has an identity"),
 });
 

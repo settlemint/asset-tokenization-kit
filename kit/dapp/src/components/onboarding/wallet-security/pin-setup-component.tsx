@@ -148,9 +148,9 @@ export function PinSetupComponent({
               state.values.confirmPincode.length === 6;
 
             // Check for field-specific errors only when the confirm field is shown
-            const hasFieldErrors = showConfirmField
-              ? state.fieldMeta.confirmPincode.errors.length > 0
-              : false;
+            const hasFieldErrors =
+              showConfirmField &&
+              state.fieldMeta.confirmPincode.errors.length > 0;
 
             const isFormValid =
               bothPinsComplete && pinsMatch && !hasFieldErrors;
@@ -196,9 +196,9 @@ export function PinSetupComponent({
                   )}
                 </form.Field>
 
-                {showConfirmField && (
-                  <form.Field name="confirmPincode">
-                    {(field) => (
+                <form.Field name="confirmPincode">
+                  {(field) =>
+                    showConfirmField ? (
                       <div className="space-y-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
                         <div className="text-center">
                           <label className="text-sm font-medium">
@@ -241,9 +241,9 @@ export function PinSetupComponent({
                             </p>
                           )}
                       </div>
-                    )}
-                  </form.Field>
-                )}
+                    ) : null
+                  }
+                </form.Field>
 
                 <div className="flex gap-3 pt-4">
                   <Button

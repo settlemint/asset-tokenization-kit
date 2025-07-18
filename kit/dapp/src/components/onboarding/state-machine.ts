@@ -29,6 +29,8 @@ export const onboardingStateMachine = new Store<OnboardingState>({
   walletRecoveryCodes: false,
   system: false,
   systemSettings: false,
+  systemAssets: false,
+  systemAddons: false,
   identity: false,
 });
 
@@ -84,13 +86,13 @@ export const onboardingSteps = new Derived({
               step: OnboardingStep.systemAssets,
               groupId: OnboardingStepGroup.system,
               current: false,
-              completed: false, // TODO: Add individual step tracking
+              completed: onboardingStateMachine.state.systemAssets,
             },
             {
               step: OnboardingStep.systemAddons,
               groupId: OnboardingStepGroup.system,
               current: false,
-              completed: false, // TODO: Add individual step tracking
+              completed: onboardingStateMachine.state.systemAddons,
             },
           ]
         : []),
