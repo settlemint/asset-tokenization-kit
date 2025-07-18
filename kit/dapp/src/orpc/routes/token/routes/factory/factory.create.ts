@@ -287,10 +287,10 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
               { id: "factory-creation", retry: 1000 }
             );
           } else if (event.status === "confirmed") {
-            const confirmMessage =
-              totalFactories === 1
-                ? messages.factoryCreated
-                : messages.factoryCreated.replace("{{name}}", name);
+            const confirmMessage = messages.factoryCreated.replace(
+              "{{name}}",
+              name
+            );
 
             yield withEventMeta(
               {
