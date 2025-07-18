@@ -25,7 +25,18 @@ import {
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_DEPOSIT_MUTATION = portalGraphql(`
-  mutation CreateDepositMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKDepositFactoryImplementationATKDepositFactoryImplementationCreateDepositInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $verificationId: String, $challengeResponse: String!) {
+  mutation CreateDepositMutation(
+    $address: String!
+    $from: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKDepositFactoryImplementationATKDepositFactoryImplementationCreateDepositInitialModulePairsInput!]!
+    $requiredClaimTopics: [String!]!
+    $verificationId: String
+    $challengeResponse: String!
+    $countryCode: Int!
+  ) {
     CreateDeposit: ATKDepositFactoryImplementationCreateDeposit(
       address: $address
       from: $from
@@ -35,6 +46,7 @@ const CREATE_DEPOSIT_MUTATION = portalGraphql(`
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
         requiredClaimTopics_: $requiredClaimTopics
+        countryCode_: $countryCode
       }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
@@ -53,11 +65,14 @@ export const depositCreateHandler = async function* (
   }
 
   yield* createToken(input, (creationFailedMessage, messages) => {
+    // Delete verification from input to avoid leaking it in the logs
+    const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
       CREATE_DEPOSIT_MUTATION,
       {
-        ...input,
+        ...otherInput,
         ...context.mutationVariables,
+        countryCode: 1, // TODO: should come from ui
       },
       creationFailedMessage,
       messages

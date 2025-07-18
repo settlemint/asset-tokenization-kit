@@ -49,6 +49,11 @@ export function handleTokenAssetCreated(event: TokenAssetCreated): void {
   token.createdBy = fetchAccount(event.transaction.from).id;
   token.accessControl = fetchAccessControl(event.params.accessManager).id;
 
+  // Set the token extensions and implemented interfaces from the Factory
+  token.extensions = tokenFactory.tokenExtensions;
+  token.implementsERC3643 = tokenFactory.tokenImplementsERC3643;
+  token.implementsSMART = tokenFactory.tokenImplementsSMART;
+
   // Initialize TokenStatsState for the new token
   const tokenStatsState = new TokenStatsState(event.params.tokenAddress);
   tokenStatsState.token = token.id;

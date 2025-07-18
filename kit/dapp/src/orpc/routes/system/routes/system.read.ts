@@ -16,6 +16,8 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
+import { call } from "@orpc/server";
 import { z } from "zod";
 import type { SystemReadOutput } from "./system.read.schema";
 
@@ -124,9 +126,26 @@ export const read = onboardedRouter.system.read
     });
 
     // Query system details from TheGraph with automatic ID transformation
+    const systemAddress =
+      input.id === "default"
+        ? await call(
+            settingsRead,
+            {
+              key: "SYSTEM_ADDRESS",
+            },
+            {
+              context,
+            }
+          )
+        : input.id;
+    if (!systemAddress) {
+      throw errors.NOT_FOUND({
+        message: `System not found: ${input.id}`,
+      });
+    }
     const result = await context.theGraphClient.query(SYSTEM_DETAILS_QUERY, {
       input: {
-        id: input.id.toLowerCase(), // TheGraph stores addresses in lowercase
+        id: systemAddress.toLowerCase(), // TheGraph stores addresses in lowercase
       },
       output: SystemResponseSchema,
       error: `Failed to retrieve system: ${input.id}`,

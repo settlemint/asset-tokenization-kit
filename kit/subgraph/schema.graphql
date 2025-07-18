@@ -273,6 +273,18 @@ type ComplianceModule @entity(immutable: false) {
 # TOKEN MANAGEMENT
 # ==================================================
 
+enum TokenExtension {
+  ACCESS_MANAGED
+  BURNABLE
+  CAPPED
+  COLLATERAL
+  CUSTODIAN
+  HISTORICAL_BALANCES
+  PAUSABLE
+  REDEEMABLE
+  YIELD
+}
+
 type TokenFactoryRegistry @entity(immutable: false) {
   id: Bytes!
   system: System!
@@ -294,6 +306,11 @@ type TokenFactory @entity(immutable: false) {
   # This field is used for efficient filtering without expensive joins
   # Set to false when factory is created, true when first token is deployed
   hasTokens: Boolean!
+  # Implemented interfaces
+  tokenImplementsERC3643: Boolean!
+  tokenImplementsSMART: Boolean!
+  # Extensions of tokens created by this factory
+  tokenExtensions: [TokenExtension!]!
 }
 
 type Token @entity(immutable: false) {
@@ -311,7 +328,11 @@ type Token @entity(immutable: false) {
   decimals: Int!
   totalSupply: BigDecimal!
   totalSupplyExact: BigInt!
+  # Implemented interfaces
+  implementsERC3643: Boolean!
+  implementsSMART: Boolean!
   # Extensions
+  extensions: [TokenExtension!]!
   pausable: TokenPausable
   collateral: TokenCollateral
   capped: TokenCapped
