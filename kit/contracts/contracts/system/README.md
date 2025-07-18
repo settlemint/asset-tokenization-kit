@@ -58,11 +58,11 @@ graph TB
     IR -->|validates topics with| TSR
     IF -->|creates identities for| IR
     CC -->|uses modules from| CMR
-    
+
     %% Identity Factory creates both types
     IF -->|creates| RegularID[Regular Identity]
     IF -->|creates| ContractID[Contract Identity]
-    
+
     %% Cross-layer interactions
     TFR -->|factories use| IF
     TFR -->|tokens use| CC
@@ -118,12 +118,11 @@ The central coordinator that manages all protocol components:
    - Manages KYC/AML claims for natural persons
    - Used for investor verification and compliance
 
-2. **Contract Identity** (`ATKTokenIdentityImplementation`)
+2. **Contract Identity** (`ATKContractIdentityImplementation`)
    - For smart contracts and protocols
    - Allows contracts to have their own identity and claims
-   - Essential for token contracts, protocols, or other smart contracts that
-     need identity verification
-   - Enables contract-to-contract compliance checks
+   - Essential for token contracts, addons, or other smart contracts that need
+     identity verification
 
 #### Identity Storage (`identity-registry-storage/`)
 
