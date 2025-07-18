@@ -12,11 +12,11 @@ tokenization of real-world assets (RWAs)**
 
 ## 📋 What is SMART Protocol?
 
-SMART Protocol is an advanced, modular smart contract framework designed for
+SMART (SettleMint Adaptable Regulated Token) Protocol is an advanced, modular smart contract framework designed for
 creating regulatory-compliant security tokens and tokenizing real-world assets.
-Built on multiple ERC standards, it provides a complete infrastructure for:
+Built as a derivation of ERC-3643 with ERC-20 foundations using OpenZeppelin, it provides a complete infrastructure for:
 
-- **Security Token Issuance**: ERC-3643 and ERC-20 compliant tokens for
+- **Security Token Issuance**: ERC-3643 derived and ERC-20 compliant tokens for
   regulated financial instruments
 - **Asset Tokenization**: Bonds, equity shares, deposits, funds, and stablecoins
 - **Identity Management**: On-chain KYC/AML compliance with ERC-734/735
@@ -36,7 +36,7 @@ Modular components that add specific functionality:
 
 - **SMARTBurnable**: Token burning capabilities
 - **SMARTCustodian**: Address freezing and forced transfers
-- **SMARTCollateral**: Collateral proof requirements
+- **SMARTCollateral**: Collateral managed through token's OnchainID identity
 - **SMARTPausable**: Emergency pause functionality
 - **SMARTRedeemable**: Token redemption features
 - **SMARTYield**: Yield/dividend distribution
@@ -139,9 +139,9 @@ functionality:
   ERC-165, allowing external systems to query which capabilities (burnable,
   redeemable, etc.) a token supports—improving composability and tooling.
 - **Two-Step Identity Recovery Flow**: If a user loses access to their wallet,
-  recovery happens in two stages: first, the identity is recovered via the
-  Identity Registry (by a manager); then, the user reclaims tokens tied to that
-  identity—offering secure and structured recovery.
+  recovery happens in two stages: first, a new identity is registered for the new wallet via the
+  Identity Registry (by a manager) and the relationship is tracked; then, the user reclaims tokens from the lost wallet
+  after the token validates the recovery with the Identity Registry—offering secure and structured recovery.
 
 ## ⚖️ Overview Comparison
 
@@ -156,7 +156,7 @@ functionality:
 | **Compliance Model**                     | Single compliance contract, may be modular  | Fully modular compliance rules; also supports monolithic if desired         | Flexible based on project use case                                     |
 | **Compliance Configuration**             | No token-specific configuration             | Rule-specific parameters configurable per token                             | Enables rule reuse with different behaviors                            |
 | **Claim Topics Storage**                 | External Claim Topics Registry              | Defined and stored per token                                                | Improves clarity and portability of tokens                             |
-| **Identity Verification**                | Relies on Claim Topics Registry             | Token-configurable `isVerified(identity, topics)` + **optional KYC**        | Identity checks are configurable and optional                          |
+| **Identity Verification**                | Relies on Claim Topics Registry             | Handled via compliance modules calling `isVerified(identity, topics)` + **optional KYC**        | Identity checks are configurable and optional                          |
 | **KYC Optional**                         | Implied as required                         | **Optional** per token, part of the modular compliance                      | Allows issuing cryptocurrencies or unrestricted tokens                 |
 | **Authorization**                        | Agent-based role system                     | Access-control agnostic                                                     | Supports OpenZeppelin `AccessControl`, custom roles, or hybrid models  |
 | **Burning Logic**                        | Owner-initiated only (`burn(user, amount)`) | `SMARTBurnable` (admin burn) + `SMARTRedeemable` (self-burn)                | Enables more flexible redemption logic (e.g. for bonds)                |
