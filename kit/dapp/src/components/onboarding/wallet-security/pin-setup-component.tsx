@@ -149,7 +149,7 @@ export function PinSetupComponent({
 
             // Check for field-specific errors only when the confirm field is shown
             const hasFieldErrors = showConfirmField
-              ? state.fieldMeta.confirmPincode?.errors?.length > 0 || false
+              ? state.fieldMeta.confirmPincode.errors.length > 0
               : false;
 
             const isFormValid =
