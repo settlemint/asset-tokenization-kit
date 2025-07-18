@@ -64,7 +64,7 @@ export function Welcome({ steps }: WelcomeProps) {
       );
     } else if (hasCurrent) {
       return (
-        <div className="h-5 w-5 rounded-full bg-sm-accent animate-pulse" />
+        <div className="h-5 w-5 rounded-full bg-sm-state-success-background animate-pulse" />
       );
     } else {
       return (
@@ -159,8 +159,8 @@ export function Welcome({ steps }: WelcomeProps) {
                   className="border-b last:border-b-0"
                 >
                   <AccordionTrigger className="justify-start gap-3 py-4 px-6 text-left hover:no-underline [&>svg]:hidden">
-                    <div className="flex items-center gap-3">
-                      {getGroupIcon(groupSteps)}
+                    <div className="flex items-start gap-4">
+                      <div className="mt-0.5">{getGroupIcon(groupSteps)}</div>
                       <div className="text-left">
                         <h3 className="font-semibold text-base text-primary-foreground">
                           {getGroupTitle(groupId)}
@@ -179,18 +179,20 @@ export function Welcome({ steps }: WelcomeProps) {
                           step={index + 1}
                           className="pb-2"
                         >
-                          <TimelineHeader>
-                            <TimelineSeparator className="top-7 left-[15px] h-11 w-0.5 bg-sm-graphics-primary/30" />
+                          <TimelineHeader className="items-start">
+                            <TimelineSeparator className="top-[12px] left-[15px] h-[50px] w-0.5 bg-sm-graphics-primary/30" />
                             <TimelineIndicator className="border-0 bg-transparent">
-                              {step.completed ? (
-                                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-sm-graphics-secondary">
-                                  <Check className="h-3 w-3 text-white" />
-                                </div>
-                              ) : step.current ? (
-                                <div className="h-4 w-4 rounded-full bg-sm-accent animate-pulse" />
-                              ) : (
-                                <div className="h-4 w-4 rounded-full border-2 border-sm-graphics-primary" />
-                              )}
+                              <div className="-mt-[14px]">
+                                {step.completed ? (
+                                  <div className="flex h-4 w-4 items-center justify-center rounded-full bg-sm-graphics-secondary">
+                                    <Check className="h-3 w-3 text-white" />
+                                  </div>
+                                ) : step.current ? (
+                                  <div className="h-4 w-4 rounded-full bg-sm-state-success-background animate-pulse" />
+                                ) : (
+                                  <div className="h-4 w-4 rounded-full border-2 border-sm-graphics-primary" />
+                                )}
+                              </div>
                             </TimelineIndicator>
                             <div className="flex-1">
                               <TimelineTitle className="text-primary-foreground">
