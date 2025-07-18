@@ -76,8 +76,7 @@ export function PinSetupComponent({
         if (value.pincode) {
           const pincodeResult = pincode().safeParse(value.pincode);
           if (!pincodeResult.success) {
-            fieldErrors.pincode =
-              pincodeResult.error.issues[0]?.message || "Invalid PIN code";
+            fieldErrors.pincode = z.prettifyError(pincodeResult.error);
           }
         }
 
@@ -87,9 +86,9 @@ export function PinSetupComponent({
             value.confirmPincode
           );
           if (!confirmPincodeResult.success) {
-            fieldErrors.confirmPincode =
-              confirmPincodeResult.error.issues[0]?.message ||
-              "Invalid PIN code";
+            fieldErrors.confirmPincode = z.prettifyError(
+              confirmPincodeResult.error
+            );
           }
         }
 
