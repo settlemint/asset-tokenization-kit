@@ -157,3 +157,9 @@ error TokenFactoryRegistryImplementationNotSet();
 /// @dev This error is thrown if an operation requires the component implementation, but its logic contract address is
 /// zero or has not been configured in the `SMARTSystem`.
 error ComponentImplementationNotSet(bytes32 componentTypeHash);
+
+/// @notice Error indicating that the system access manager implementation address has not been set.
+/// @dev This error is thrown if an operation requires the system access manager implementation, but its logic contract
+/// address is
+/// zero or has not been configured in the `SMARTSystem`.
+error SystemAccessManagerImplementationNotSet();
