@@ -5,14 +5,7 @@ import {
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem } from "@/components/ui/form";
 import { VerificationDialog } from "@/components/ui/verification-dialog";
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
@@ -22,25 +15,25 @@ import {
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
-import { TokenTypeEnum } from "@/orpc/routes/token/routes/factory/factory.create.schema";
+import {
+  TokenTypeEnum,
+  type TokenType,
+} from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
-import {
-  BarChart3,
-  Building,
-  Coins,
-  Package,
-  PiggyBank,
-  Wallet,
-} from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 import { type Control, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
+import { AssetDeploymentSuccess } from "@/components/onboarding/assets/asset-deployment-success";
+import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
+import { InfoAlert } from "@/components/ui/info-alert";
+import { SectionHeader } from "@/components/onboarding/section-header";
 
 const logger = createLogger();
 
@@ -58,115 +51,7 @@ const assetSelectionSchema = z.object({
 
 type AssetSelectionFormValues = z.infer<typeof assetSelectionSchema>;
 
-const assetIcons = {
-  bond: Building,
-  equity: BarChart3,
-  fund: PiggyBank,
-  stablecoin: Coins,
-  deposit: Wallet,
-} as const;
-
-const CheckboxWrapper = memo(
-  ({
-    onClick,
-    children,
-  }: {
-    onClick: (e: React.MouseEvent) => void;
-    children: React.ReactNode;
-  }) => <div onClick={onClick}>{children}</div>
-);
-CheckboxWrapper.displayName = "CheckboxWrapper";
-
-const AssetTypeFieldInner = memo(
-  ({
-    assetType,
-    field,
-    t,
-    Icon,
-    handleCheckboxClick,
-    isDisabled,
-  }: {
-    assetType: AssetType;
-    field: { value: string[]; onChange: (value: string[]) => void };
-    t: ReturnType<typeof useTranslation>["t"];
-    Icon: React.ElementType;
-    handleCheckboxClick: (e: React.MouseEvent) => void;
-    isDisabled: boolean;
-  }) => {
-    const isChecked = field.value.includes(assetType) || isDisabled;
-
-    const handleItemClick = useCallback(() => {
-      if (isDisabled) return;
-
-      const newChecked = !field.value.includes(assetType);
-      if (newChecked) {
-        field.onChange([...field.value, assetType]);
-      } else {
-        field.onChange(
-          field.value.filter((value: string) => value !== assetType)
-        );
-      }
-    }, [field, assetType, isDisabled]);
-
-    const handleCheckboxChange = useCallback(
-      (checked: boolean) => {
-        if (isDisabled) return;
-
-        if (checked) {
-          field.onChange([...field.value, assetType]);
-        } else {
-          field.onChange(
-            field.value.filter((value: string) => value !== assetType)
-          );
-        }
-      },
-      [field, assetType, isDisabled]
-    );
-
-    return (
-      <FormItem
-        key={assetType}
-        className={`flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 transition-colors ${
-          isDisabled
-            ? "opacity-50 cursor-not-allowed bg-muted/50"
-            : "hover:bg-accent/50 cursor-pointer"
-        }`}
-        onClick={handleItemClick}
-      >
-        <FormControl>
-          <CheckboxWrapper onClick={handleCheckboxClick}>
-            <Checkbox
-              checked={isChecked}
-              onCheckedChange={handleCheckboxChange}
-              disabled={isDisabled}
-            />
-          </CheckboxWrapper>
-        </FormControl>
-        <div className="flex-1 space-y-1 leading-none">
-          <div className="flex items-center gap-2">
-            <Icon
-              className={`h-4 w-4 ${isDisabled ? "text-muted-foreground/50" : "text-muted-foreground"}`}
-            />
-            <FormLabel
-              className={`text-sm font-medium ${isDisabled ? "" : "cursor-pointer"}`}
-            >
-              {(
-                t as (key: string, options?: Record<string, unknown>) => string
-              )(`asset-types.${assetType}`, { ns: "tokens" })}
-            </FormLabel>
-            {isDisabled && (
-              <span className="text-xs text-muted-foreground">(Deployed)</span>
-            )}
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {(t as (key: string) => string)(`assets.descriptions.${assetType}`)}
-          </p>
-        </div>
-      </FormItem>
-    );
-  }
-);
-AssetTypeFieldInner.displayName = "AssetTypeFieldInner";
+// Asset icons and components are now imported from separate files
 
 const AssetTypeFormField = memo(
   ({
@@ -178,38 +63,38 @@ const AssetTypeFormField = memo(
     control: Control<AssetSelectionFormValues>;
     isDisabled: boolean;
   }) => {
-    const { t } = useTranslation(["onboarding", "general", "tokens"]);
-    const iconKey = assetType;
-    const Icon = iconKey in assetIcons ? assetIcons[iconKey] : Package;
-
-    const handleCheckboxClick = useCallback((e: React.MouseEvent) => {
-      e.stopPropagation();
-    }, []);
-
-    const renderField = useCallback(
-      ({
-        field,
-      }: {
-        field: { value: string[]; onChange: (value: string[]) => void };
-      }) => (
-        <AssetTypeFieldInner
-          assetType={assetType}
-          field={field}
-          t={t}
-          Icon={Icon}
-          handleCheckboxClick={handleCheckboxClick}
-          isDisabled={isDisabled}
-        />
-      ),
-      [assetType, t, Icon, handleCheckboxClick, isDisabled]
-    );
+    const Icon = getAssetIcon(assetType);
 
     return (
       <FormField
         key={assetType}
         control={control}
         name="assets"
-        render={renderField}
+        render={({ field }) => {
+          const isChecked = field.value.includes(assetType) || isDisabled;
+
+          const handleToggle = (checked: boolean) => {
+            if (isDisabled) return;
+
+            if (checked) {
+              field.onChange([...field.value, assetType]);
+            } else {
+              field.onChange(
+                field.value.filter((value: string) => value !== assetType)
+              );
+            }
+          };
+
+          return (
+            <AssetTypeCard
+              assetType={assetType}
+              icon={Icon}
+              isChecked={isChecked}
+              isDisabled={isDisabled}
+              onToggle={handleToggle}
+            />
+          );
+        }}
       />
     );
   }
@@ -230,7 +115,7 @@ function RouteComponent() {
   );
   const [pendingFactories, setPendingFactories] = useState<
     | {
-        type: string;
+        type: TokenType;
         name: string;
       }[]
     | null
@@ -507,94 +392,35 @@ function RouteComponent() {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold">
-          {hasDeployedAssets
+      <SectionHeader
+        title={
+          hasDeployedAssets
             ? t("assets.asset-types-deployed")
-            : t("assets.select-asset-types")}
-        </h2>
-        <p className="text-sm text-muted-foreground pt-2">
-          {hasDeployedAssets
+            : t("assets.select-asset-types")
+        }
+        description={
+          hasDeployedAssets
             ? t("assets.your-asset-factories-ready")
-            : t("assets.choose-asset-types")}
-        </p>
-      </div>
+            : t("assets.choose-asset-types")
+        }
+      />
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl space-y-6">
           {hasDeployedAssets ? (
             <div className="space-y-4">
-              <div className="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <svg
-                    className="h-5 w-5 text-green-600 dark:text-green-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <span className="font-medium text-green-800 dark:text-green-300">
-                    {t("assets.asset-factories-deployed-successfully")}
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider">
-                    {t("assets.deployed-factories")}
-                  </p>
-                  <div className="grid gap-2">
-                    {systemDetails?.tokenFactories.map((factory) => {
-                      const iconKey = factory.typeId as keyof typeof assetIcons;
-                      const Icon =
-                        iconKey in assetIcons ? assetIcons[iconKey] : Package;
-                      return (
-                        <div
-                          key={factory.id}
-                          className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300"
-                        >
-                          <Icon className="h-4 w-4" />
-                          <span className="font-medium">{factory.name}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
+              <AssetDeploymentSuccess
+                title={t("assets.asset-factories-deployed-successfully")}
+                deployedFactoriesLabel={t("assets.deployed-factories")}
+                factories={systemDetails?.tokenFactories || []}
+              />
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0">
-                    <svg
-                      className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-                      {t("assets.what-are-asset-factories")}
-                    </h3>
-                    <p className="text-sm text-blue-800 dark:text-blue-200">
-                      {t("assets.asset-factories-description")}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <InfoAlert
+                title={t("assets.what-are-asset-factories")}
+                description={t("assets.asset-factories-description")}
+              />
 
               <Form {...form}>
                 <div className="space-y-6">
