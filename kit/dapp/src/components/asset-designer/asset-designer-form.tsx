@@ -21,8 +21,7 @@ export const AssetDesignerForm = () => {
     validators: {
       onChange: (values) => {
         try {
-          const parseResult = AssetDesignerFormSchema.safeParse(values);
-          return parseResult.success;
+          return AssetDesignerFormSchema.safeParse(values);
         } catch {
           return false;
         }
