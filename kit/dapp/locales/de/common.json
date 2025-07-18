@@ -20,5 +20,8 @@
   "transaction": {
     "waitingForMining": "Warten auf das Mining der Transaktion...",
     "indexed": "Transaktion bestätigt und indiziert"
-  }
+  },
+  "next": "Nächster",
+  "previous": "Vorheriger",
+  "complete": "Vollständig"
 }

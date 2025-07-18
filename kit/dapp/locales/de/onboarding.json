@@ -1,27 +1,27 @@
 {
   "welcome": {
-    "title": "Willkommen zum Asset Tokenization Kit",
-    "description": "Ihr Tor zur sicheren, konformen Vermögens-Tokenisierung auf der Blockchain.",
+    "title": "Willkommen im Asset Tokenization Kit",
+    "description": "Ihr Zugang zu sicherer, konformer Asset-Tokenisierung auf der Blockchain.",
     "welcome-back": "Willkommen zurück!",
-    "complete-journey": "Lassen Sie uns Ihre Onboarding-Reise abschließen",
-    "setup-overview": "Setup-Übersicht",
-    "setup-description-returning": "Wir müssen zuerst den Setup-Prozess abschließen. Dies stellt sicher, dass Ihre Vermögenswerte sicher sind, Ihre On-Chain-Identität etabliert ist und Sie bereit sind, die Zukunft der Finanzen zu erleben.",
-    "setup-description-new": "Wir führen Sie durch einen schnellen Setup-Prozess. Dies stellt sicher, dass Ihre Vermögenswerte sicher sind, Ihre On-Chain-Identität etabliert ist und Sie bereit sind, die Zukunft der Finanzen zu erleben.",
-    "continue-setup": "Setup fortsetzen",
+    "complete-journey": "Lassen Sie uns Ihre Einarbeitungsreise abschließen",
+    "setup-overview": "Übersicht der Einrichtung",
+    "setup-description-returning": "Zuerst müssen wir den Einrichtungsprozess abschließen. Dies stellt sicher, dass Ihre Vermögenswerte sicher sind, Ihre On-Chain-Identität eingerichtet ist und Sie bereit sind, die Zukunft der Finanzen zu erleben.",
+    "setup-description-new": "Wir führen Sie durch einen schnellen Einrichtungsprozess. Dies stellt sicher, dass Ihre Vermögenswerte sicher sind, Ihre On-Chain-Identität eingerichtet ist und Sie bereit sind, die Zukunft der Finanzen zu erleben.",
+    "continue-setup": "Einrichtung fortsetzen",
     "get-started": "Lassen Sie uns anfangen"
   },
   "groups": {
     "wallet": {
       "title": "Wallet",
-      "description": "Richten Sie Ihr Wallet und Sicherheitsmaßnahmen ein"
+      "description": "Richten Sie Ihre Wallet und Sicherheitsmaßnahmen ein"
     },
     "system": {
       "title": "System",
-      "description": "Stellen Sie Ihr System bereit und konfigurieren Sie es"
+      "description": "Bereitstellen und Konfigurieren Ihres Systems"
     },
     "identity": {
       "title": "Identität",
-      "description": "Etablieren Sie Ihre On-Chain-Identität"
+      "description": "Richten Sie Ihre On-Chain-Identität ein"
     }
   },
   "card-description": "Wir haben Ihre Brieftasche eingerichtet und werden Ihre Identität auf der Blockchain konfigurieren, um diese Plattform zu nutzen.",
@@ -44,28 +44,28 @@
       "description": "Sehen Sie sich Ihre Blockchain-Brieftasche an"
     },
     "wallet-security": {
-      "title": "Brieftasche sichern",
-      "description": "Richten Sie Schutz für Ihre Brieftasche ein"
+      "title": "Sichern Sie Ihre Wallet",
+      "description": "Richten Sie einen Schutz für Ihre Wallet ein"
     },
     "wallet-recovery-codes": {
       "title": "Wiederherstellungscodes",
-      "description": "Erstellen Sie Backup-Wiederherstellungscodes"
+      "description": "Generieren Sie Backup-Wiederherstellungscodes"
     },
     "system-deploy": {
       "title": "System bereitstellen",
-      "description": "Initialisieren Sie die Kern-Smart Contracts"
+      "description": "Initialisieren Sie die Kern-Smart-Contracts"
     },
     "system-settings": {
       "title": "System konfigurieren",
-      "description": "Systemparameter und Einstellungen einrichten"
+      "description": "Richten Sie Systemparameter und -einstellungen ein"
     },
     "system-assets": {
       "title": "Asset-Typen auswählen",
       "description": "Wählen Sie unterstützte Asset-Typen aus"
     },
     "system-addons": {
-      "title": "System-Add-ons",
-      "description": "Optionale Systemfunktionen aktivieren"
+      "title": "Systemerweiterungen",
+      "description": "Aktivieren Sie optionale Systemfunktionen"
     },
     "identity-setup": {
       "title": "ONCHAINID einrichten",
