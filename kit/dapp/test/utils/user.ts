@@ -93,15 +93,14 @@ export async function setupUser(user: User) {
     const { error: signUpError } = await authClient.signUp.email(user);
 
     if (signUpError) {
-      console.log(`[setupUser] Sign up error for ${user.email}:`, {
-        code: signUpError.code,
-        message: signUpError.message,
-        status: signUpError.status,
-        statusText: signUpError.statusText,
-        fullError: JSON.stringify(signUpError, null, 2),
-      });
-
       if (signUpError.code !== "USER_ALREADY_EXISTS") {
+        console.log(`[setupUser] Sign up error for ${user.email}:`, {
+          code: signUpError.code,
+          message: signUpError.message,
+          status: signUpError.status,
+          statusText: signUpError.statusText,
+          fullError: JSON.stringify(signUpError, null, 2),
+        });
         throw signUpError;
       }
       console.log(
@@ -188,15 +187,14 @@ export async function setupUser(user: User) {
     );
 
     if (pincodeError) {
-      console.log(`[setupUser] Pincode error for ${user.email}:`, {
-        code: pincodeError.code,
-        message: pincodeError.message,
-        status: pincodeError.status,
-        statusText: pincodeError.statusText,
-        fullError: JSON.stringify(pincodeError, null, 2),
-      });
-
       if (pincodeError.code !== "PINCODE_ALREADY_SET") {
+        console.log(`[setupUser] Pincode error for ${user.email}:`, {
+          code: pincodeError.code,
+          message: pincodeError.message,
+          status: pincodeError.status,
+          statusText: pincodeError.statusText,
+          fullError: JSON.stringify(pincodeError, null, 2),
+        });
         throw pincodeError;
       }
       console.log(
@@ -213,7 +211,7 @@ export async function setupUser(user: User) {
     const secretCodeHeaders = await signInWithUser(user);
     const { error: secretCodeError } = await authClient.secretCodes.generate(
       {
-        password: undefined,
+        password: user.password,
       },
       {
         headers: secretCodeHeaders,

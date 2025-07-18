@@ -1,6 +1,9 @@
 import { afterAll, beforeAll } from "bun:test";
 import { getOrpcClient } from "../utils/orpc-client";
-import { bootstrapSystem } from "../utils/system-bootstrap";
+import {
+  bootstrapSystem,
+  bootstrapTokenFactories,
+} from "../utils/system-bootstrap";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
@@ -25,6 +28,8 @@ beforeAll(async () => {
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     console.log("Bootstrapping system");
     await bootstrapSystem(orpClient);
+    console.log("Bootstrapping token factories");
+    await bootstrapTokenFactories(orpClient);
   } catch (error) {
     console.error("Failed to setup test environment", error);
     process.exit(1);

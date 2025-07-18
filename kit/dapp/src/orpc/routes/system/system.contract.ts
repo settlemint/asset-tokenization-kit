@@ -75,7 +75,8 @@ const read = baseContract
   .route({
     method: "GET",
     path: "/systems/:id",
-    description: "Get details of a specific SMART system",
+    description:
+      "Get details of a specific SMART system (use default for id to get the system used by the dApp)",
     successDescription: "SMART system details with token factories",
     tags: ["system"],
   })

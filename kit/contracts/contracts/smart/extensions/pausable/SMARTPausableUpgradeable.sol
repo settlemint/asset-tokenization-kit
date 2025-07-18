@@ -12,6 +12,9 @@ import { SMARTExtensionUpgradeable } from "../common/SMARTExtensionUpgradeable.s
 // Internal implementation imports
 import { _SMARTPausableLogic } from "./internal/_SMARTPausableLogic.sol"; // Core pausable state and modifiers
 
+// Interface imports
+import { ISMARTPausable } from "./ISMARTPausable.sol";
+
 /// @title Upgradeable SMART Pausable Extension
 /// @notice This abstract contract provides the upgradeable (UUPS proxy pattern) implementation of pausable
 ///         functionality for a SMART token.
@@ -32,6 +35,13 @@ abstract contract SMARTPausableUpgradeable is Initializable, SMARTExtensionUpgra
     //    `SMARTPausableAccessControlAuthorization.sol`) to manage who can pause/unpause.
     // In the final contract's `initialize` function, ensure `__SMARTPausable_init()` is called after other
     // essential initializers like `__ERC20_init`, `__Ownable_init` (or `__AccessControl_init`), and `__SMART_init`.
+
+    /// @dev Register the `ISMARTPausable` interface ID for ERC165. This allows factories to check if the
+    /// contract
+    /// supports the `ISMARTPausable` interface based on the upgradeable implementation.
+    constructor() {
+        _registerInterface(type(ISMARTPausable).interfaceId);
+    }
 
     // -- Initializer --
 

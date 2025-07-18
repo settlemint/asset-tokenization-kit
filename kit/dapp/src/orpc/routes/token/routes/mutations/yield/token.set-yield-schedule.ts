@@ -1,10 +1,14 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { getTransactionReceipt } from "@/orpc/helpers/transaction-receipt";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { withEventMeta } from "@orpc/server";
+import { logger } from "better-auth";
 import { TokenSetYieldScheduleMessagesSchema } from "./token.set-yield-schedule.schema";
 
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
@@ -13,10 +17,7 @@ const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
     $challengeResponse: String
     $address: String!
     $from: String!
-    $yieldRate: String!
-    $paymentInterval: String!
-    $startTime: String!
-    $endTime: String!
+    $schedule: String!
   ) {
     setYieldSchedule: ISMARTYieldSetYieldSchedule(
       address: $address
@@ -24,10 +25,37 @@ const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
-        yieldRate: $yieldRate
-        paymentInterval: $paymentInterval
-        startTime: $startTime
+        schedule: $schedule
+      }
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
+  mutation TokenCreateYieldSchedule(
+    $verificationId: String
+    $challengeResponse: String
+    $address: String!
+    $from: String!
+    $endTime: String!
+    $interval: String!
+    $rate: String!
+    $startTime: String!
+    $token: String!
+  ) {
+    createSchedule: IATKFixedYieldScheduleFactoryCreate(
+      address: $address
+      from: $from
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
+      input: {
         endTime: $endTime
+        interval: $interval
+        rate: $rate
+        startTime: $startTime
+        token: $token
       }
     ) {
       transactionHash
@@ -36,6 +64,12 @@ const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
 `);
 
 export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.tokenSetYieldSchedule,
+      requiredExtensions: ["YIELD"],
+    })
+  )
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
     const {
@@ -53,40 +87,116 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
       input.messages ?? {}
     );
 
-    // Validate that the token supports yield management
-    const supportsYield = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.ISMARTYield
-    );
-
-    if (!supportsYield) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support yield management. The token must implement ISMARTYield interface.",
-      });
-    }
-
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
 
-    const transactionHash = yield* context.portalClient.mutate(
+    let transactionHash: string | undefined = undefined;
+
+    for await (const event of context.portalClient.mutate(
+      TOKEN_CREATE_YIELD_SCHEDULE_MUTATION,
+      {
+        address: contract,
+        from: sender.wallet,
+        endTime: endTime.toString(),
+        interval: paymentInterval.toString(),
+        rate: yieldRate.toString(),
+        startTime: startTime.toString(),
+        token: contract,
+        ...challengeResponse,
+      },
+      messages.yieldScheduleFailed,
+      messages
+    )) {
+      // Store the transaction hash from the first event
+      transactionHash = event.transactionHash;
+
+      // Yield all events except confirmed (we'll handle that after getting the system address)
+      if (event.status === "pending") {
+        yield withEventMeta(
+          {
+            status: event.status,
+            message: event.message,
+            result: undefined,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
+      } else if (event.status === "failed") {
+        // Transform Portal event to ORPC event format with metadata
+        yield withEventMeta(
+          {
+            status: event.status,
+            message: event.message,
+            result: undefined,
+          },
+          { id: transactionHash, retry: 1000 }
+        );
+        return;
+      } else {
+        // Transaction is confirmed
+        break;
+      }
+    }
+
+    if (!transactionHash) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.yieldScheduleFailed,
+        cause: new Error("Transaction hash not found"),
+      });
+    }
+
+    let receipt: Awaited<ReturnType<typeof getTransactionReceipt>>;
+    try {
+      receipt = await getTransactionReceipt(transactionHash);
+
+      // Check if transaction was successful
+      if (receipt.status !== "Success") {
+        throw errors.INTERNAL_SERVER_ERROR({
+          message: messages.yieldScheduleFailed,
+          cause: new Error(`Transaction failed with status: ${receipt.status}`),
+        });
+      }
+    } catch (err) {
+      const error = err as Error;
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.yieldScheduleFailed,
+        cause: error.message,
+      });
+    }
+
+    // Look for the last log entry which should contain the schedule created event
+    logger.debug("Receipt logs:", receipt.logs);
+    logger.debug("Receipt contractAddress:", receipt.contractAddress);
+    logger.debug("Receipt status:", receipt.status);
+    const logs = Array.isArray(receipt.logs) ? receipt.logs : [];
+    let scheduleAddress: string | undefined = undefined;
+    if (logs.length > 0) {
+      const lastLog = logs[logs.length - 1];
+      logger.debug("Last log:", lastLog);
+      if (lastLog && typeof lastLog === "object" && "address" in lastLog) {
+        scheduleAddress = lastLog.address as string;
+      }
+    }
+    if (!scheduleAddress) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: messages.yieldScheduleFailed,
+        cause: new Error("Schedule address not found"),
+      });
+    }
+
+    const setScheduleTransactionHash = yield* context.portalClient.mutate(
       TOKEN_SET_YIELD_SCHEDULE_MUTATION,
       {
         address: contract,
         from: sender.wallet,
-        yieldRate: yieldRate.toString(),
-        paymentInterval: paymentInterval.toString(),
-        startTime: startTime.toString(),
-        endTime: endTime.toString(),
+        schedule: getEthereumAddress(scheduleAddress),
         ...challengeResponse,
       },
       messages.yieldScheduleFailed,
       messages
     );
 
-    return getEthereumHash(transactionHash);
+    return getEthereumHash(setScheduleTransactionHash);
   });
