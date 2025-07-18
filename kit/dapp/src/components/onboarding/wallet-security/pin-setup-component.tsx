@@ -181,12 +181,16 @@ export function PinSetupComponent({
                         />
                       </div>
                       {field.state.meta.errors.length > 0 && (
-                        <p
+                        <div
                           id="pincode-error"
                           className="text-sm text-destructive text-center"
                         >
-                          {String(field.state.meta.errors[0])}
-                        </p>
+                          {String(field.state.meta.errors[0])
+                            .split("\n")
+                            .map((line, idx) => (
+                              <div key={idx}>{line}</div>
+                            ))}
+                        </div>
                       )}
                     </div>
                   )}
@@ -217,12 +221,16 @@ export function PinSetupComponent({
                           />
                         </div>
                         {field.state.meta.errors.length > 0 && (
-                          <p
+                          <div
                             id="confirm-pincode-error"
                             className="text-sm text-destructive text-center animate-in fade-in-0 duration-200"
                           >
-                            {String(field.state.meta.errors[0])}
-                          </p>
+                            {String(field.state.meta.errors[0])
+                              .split("\n")
+                              .map((line, idx) => (
+                                <div key={idx}>{line}</div>
+                              ))}
+                          </div>
                         )}
                         {/* Success indicator when PINs match */}
                         {field.state.value.length === 6 &&
