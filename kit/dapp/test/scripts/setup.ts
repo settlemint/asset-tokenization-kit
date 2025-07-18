@@ -59,54 +59,77 @@ async function isDevServerRunning() {
 async function startDevServer() {
   console.log("Starting dev server");
 
-  // Create a custom WritableStream to capture and display output
+  // Use Bun.spawn for better control over streams
+  runningDevServer = Bun.spawn(["bun", "run", "dev", "--", "--no-open"], {
+    stdout: "pipe",
+    stderr: "pipe",
+    stdin: "ignore",
+  });
+
   let output = "";
   let serverStarted = false;
+  const decoder = new TextDecoder();
 
-  const customStdout = new WritableStream({
-    write(chunk) {
-      const text = new TextDecoder().decode(chunk);
-      output += text;
-      process.stdout.write(text);
+  // Handle stdout streaming
+  if (runningDevServer.stdout) {
+    const reader = runningDevServer.stdout.getReader();
 
-      // Check if server is ready
-      const cleanText = output.replace(
-        // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
-        /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-        ""
-      );
+    (async () => {
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-      if (/VITE\s+v(.*)\s+ready\s+in/i.test(cleanText) && !serverStarted) {
-        serverStarted = true;
-        console.log("\nDev server is ready!");
+          const chunk = decoder.decode(value);
+          output += chunk;
+
+          // Output to console in real-time
+          process.stdout.write(chunk);
+
+          // Check if server is ready
+          const cleanText = output.replace(
+            // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
+            /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+            ""
+          );
+
+          if (/VITE\s+v(.*)\s+ready\s+in/i.test(cleanText) && !serverStarted) {
+            serverStarted = true;
+            console.log("\nDev server is ready!");
+          }
+        }
+      } catch (error) {
+        console.error("Error reading stdout:", error);
       }
-    },
-  });
+    })();
+  }
 
-  const customStderr = new WritableStream({
-    write(chunk) {
-      process.stderr.write(chunk);
-    },
-  });
+  // Handle stderr streaming
+  if (runningDevServer.stderr) {
+    const reader = runningDevServer.stderr.getReader();
 
-  // Use Bun shell with custom streams
-  const shellPromise = $`bun run dev -- --no-open`
-    .stdout(customStdout)
-    .stderr(customStderr)
-    .nothrow();
+    (async () => {
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-  // Start a separate async task to monitor the shell process
-  (async () => {
-    runningDevServer = await shellPromise;
-  })();
+          const chunk = decoder.decode(value);
+          process.stderr.write(chunk);
+        }
+      } catch (error) {
+        console.error("Error reading stderr:", error);
+      }
+    })();
+  }
 
   // Wait for server to be ready or timeout
   const startTime = Date.now();
   while (!serverStarted && Date.now() - startTime < 10_000) {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // Check if we have a subprocess and if it has exited
-    if (runningDevServer && runningDevServer.exitCode !== null) {
+    // Check if process is still running
+    if (runningDevServer.exitCode !== null) {
       throw new Error(
         `Dev server exited with code ${runningDevServer.exitCode}`
       );
