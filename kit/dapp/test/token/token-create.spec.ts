@@ -39,7 +39,6 @@ describe("Token create", () => {
 
       let isDeployed = false;
       for await (const event of result) {
-        console.log("Create token event", event);
         if (event.status !== "confirmed") {
           continue;
         }
