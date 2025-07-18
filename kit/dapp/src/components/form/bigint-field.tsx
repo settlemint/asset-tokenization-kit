@@ -10,7 +10,7 @@ import {
   withPostfix,
 } from "./field";
 
-export function NumberField({
+export function BigIntField({
   label,
   postfix,
   description,
@@ -22,7 +22,7 @@ export function NumberField({
   required?: boolean;
 }) {
   // The `Field` infers type based on usage - could be number or string
-  const field = useFieldContext<number>();
+  const field = useFieldContext<bigint | undefined>();
   const InputWithPostfix = useMemo(
     () => withPostfix(Input, postfix),
     [postfix]
@@ -34,11 +34,14 @@ export function NumberField({
       <FieldDescription description={description} />
       <InputWithPostfix
         id={field.name}
-        value={field.state.value}
-        type="number"
-        inputMode="decimal"
+        value={field.state.value?.toString()}
+        type="text"
         onChange={(e) => {
-          field.handleChange(e.target.valueAsNumber);
+          if (e.target.value === "") {
+            field.handleChange(undefined);
+          } else {
+            field.handleChange(BigInt(e.target.value));
+          }
         }}
         className={errorClassNames(field.state.meta)}
       />
