@@ -1,12 +1,8 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-// Importing necessary interfaces and common utility contracts.
-// ISMART: Defines the core interface for SMART tokens, including functions like onchainID and identityRegistry.
 import { ISMART } from "../../interface/ISMART.sol";
-// SMARTHooks: Defines standard lifecycle hooks (e.g., _beforeMint) that extensions can implement.
 import { SMARTHooks } from "../common/SMARTHooks.sol";
-// SMARTContext: Provides a consistent way to retrieve transaction sender information (e.g., _msgSender()).
 import { SMARTContext } from "../common/SMARTContext.sol";
 
 /// @title Base Contract for All SMART Token Extensions
@@ -29,7 +25,7 @@ abstract contract _SMARTExtension is ISMART, SMARTContext, SMARTHooks {
     /// @notice Internal flag, potentially for managing forced updates or states (usage may vary or be vestigial).
     /// @dev The exact purpose of `__isForcedUpdate` might depend on specific extension implementations or
     ///      higher-level contract logic that uses it. It's a general-purpose internal flag.
-    bool internal __isForcedUpdate;
+    bool internal __isForcedUpdate; // TODO: Review if this is actively used or can be deprecated/clarified.
 
     /// @notice Fixed-size array to store all registered interface IDs for enumeration.
     /// @dev Stores all registered interface IDs for enumeration and ERC165 support.
