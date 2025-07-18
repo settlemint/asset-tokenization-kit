@@ -1,4 +1,29 @@
 {
+  "welcome": {
+    "title": "アセット・トークン化キットへようこそ",
+    "description": "ブロックチェーン上での安全で準拠したアセット・トークン化への入り口。",
+    "welcome-back": "おかえりなさい！",
+    "complete-journey": "オンボーディングの旅を完了しましょう",
+    "setup-overview": "セットアップ概要",
+    "setup-description-returning": "まず、セットアップ プロセスを完了する必要があります。これにより、資産が安全で、オンチェーン ID が確立され、金融の未来を体験する準備が整います。",
+    "setup-description-new": "迅速なセットアップ プロセスをご案内します。これにより、資産が安全で、オンチェーン ID が確立され、金融の未来を体験する準備が整います。",
+    "continue-setup": "セットアップを続行",
+    "get-started": "始めましょう"
+  },
+  "groups": {
+    "wallet": {
+      "title": "ウォレット",
+      "description": "ウォレットとセキュリティ対策を設定"
+    },
+    "system": {
+      "title": "システム",
+      "description": "システムをデプロイして構成"
+    },
+    "identity": {
+      "title": "アイデンティティ",
+      "description": "オンチェーン・アイデンティティを確立"
+    }
+  },
   "card-description": "あなたのウォレットを設定しました。このプラットフォームを使用するために、ブロックチェーン上であなたのアイデンティティを構成します。",
   "card-title": "設定を始めましょう！",
   "platform": {
@@ -17,6 +42,34 @@
     "wallet": {
       "title": "あなたのウォレット",
       "description": "ブロックチェーンウォレットを表示"
+    },
+    "wallet-security": {
+      "title": "ウォレットを保護",
+      "description": "ウォレットの保護を設定"
+    },
+    "wallet-recovery-codes": {
+      "title": "復旧コード",
+      "description": "バックアップ復旧コードを生成"
+    },
+    "system-deploy": {
+      "title": "システムを展開",
+      "description": "コアスマートコントラクトを初期化します"
+    },
+    "system-settings": {
+      "title": "システムを設定",
+      "description": "システムパラメータと設定をセットアップ"
+    },
+    "system-assets": {
+      "title": "資産タイプを選択",
+      "description": "サポートされている資産タイプを選択"
+    },
+    "system-addons": {
+      "title": "システムアドオン",
+      "description": "オプションのシステム機能を有効化"
+    },
+    "identity-setup": {
+      "title": "ONChainIDをセットアップ",
+      "description": "オンチェーンアイデンティティを作成"
     },
     "system": {
       "title": "システムを展開",

@@ -7,13 +7,20 @@ tokenization**
 
 ## 📋 Overview
 
-This directory contains the complete ATK (Asset Tokenization Kit) smart contract architecture, organized into logical layers that build upon each other to create a comprehensive asset tokenization platform.
+This directory contains the complete ATK (Asset Tokenization Kit) smart contract
+architecture, organized into logical layers that build upon each other to create
+a comprehensive asset tokenization platform.
 
 **Important Distinction:**
-- **SMART Protocol** = The foundational protocol specification (like HTTP or TCP/IP)
-- **ATK (Asset Tokenization Kit)** = SettleMint's production implementation of the SMART Protocol with specific assumptions and optimizations
 
-ATK is one possible implementation of the SMART Protocol, designed for enterprise-grade asset tokenization with particular choices around access control, proxy patterns, and infrastructure management.
+- **SMART Protocol** = The foundational protocol specification (like HTTP or
+  TCP/IP)
+- **ATK (Asset Tokenization Kit)** = SettleMint's production implementation of
+  the SMART Protocol with specific assumptions and optimizations
+
+ATK is one possible implementation of the SMART Protocol, designed for
+enterprise-grade asset tokenization with particular choices around access
+control, proxy patterns, and infrastructure management.
 
 ## 🏗️ Architecture Layers
 
@@ -41,9 +48,12 @@ graph TB
 
 ### 1. **`smart/`** - Protocol Foundation
 
-The foundational layer implementing the SMART Protocol (SettleMint Adaptable Regulated Token).
+The foundational layer implementing the SMART Protocol (SettleMint Adaptable
+Regulated Token).
 
-**Purpose**: Provides the core tokenization framework based on ERC-3643 standards with modular extensions. This is the protocol specification that can be implemented in different ways.
+**Purpose**: Provides the core tokenization framework based on ERC-3643
+standards with modular extensions. This is the protocol specification that can
+be implemented in different ways.
 
 **Key Components**:
 
@@ -59,9 +69,13 @@ layers depend on.
 
 ### 2. **`system/`** - ATK Infrastructure Implementation
 
-The infrastructure layer that manages the entire ATK ecosystem. This represents ATK's specific implementation choices for how to manage the SMART Protocol in production.
+The infrastructure layer that manages the entire ATK ecosystem. This represents
+ATK's specific implementation choices for how to manage the SMART Protocol in
+production.
 
-**Purpose**: Provides centralized management of identities, compliance, factories, and access control across the entire platform. These are ATK's specific architectural decisions.
+**Purpose**: Provides centralized management of identities, compliance,
+factories, and access control across the entire platform. These are ATK's
+specific architectural decisions.
 
 **Key Components**:
 
@@ -76,9 +90,12 @@ factory systems that assets use.
 
 ### 3. **`assets/`** - ATK Asset Implementations
 
-Production-ready tokenized financial instruments built on the SMART Protocol using ATK's implementation patterns.
+Production-ready tokenized financial instruments built on the SMART Protocol
+using ATK's implementation patterns.
 
-**Purpose**: Provides ATK's specific implementations of tokenized assets for different financial use cases, following ATK's design patterns and infrastructure choices.
+**Purpose**: Provides ATK's specific implementations of tokenized assets for
+different financial use cases, following ATK's design patterns and
+infrastructure choices.
 
 **Key Components**:
 
@@ -94,9 +111,12 @@ instruments that users interact with.
 
 ### 4. **`addons/`** - ATK Operational Tools
 
-Additional functionality that extends the ATK platform with operational capabilities.
+Additional functionality that extends the ATK platform with operational
+capabilities.
 
-**Purpose**: Provides ATK's specialized tools for token distribution, treasury management, settlements, and yield distribution. These are ATK-specific extensions beyond the core SMART Protocol.
+**Purpose**: Provides ATK's specialized tools for token distribution, treasury
+management, settlements, and yield distribution. These are ATK-specific
+extensions beyond the core SMART Protocol.
 
 **Key Components**:
 

@@ -58,11 +58,11 @@ graph TB
     IR -->|validates topics with| TSR
     IF -->|creates identities for| IR
     CC -->|uses modules from| CMR
-    
+
     %% Identity Factory creates both types
     IF -->|creates| RegularID[Regular Identity]
     IF -->|creates| ContractID[Contract Identity]
-    
+
     %% Cross-layer interactions
     TFR -->|factories use| IF
     TFR -->|tokens use| CC
