@@ -12,7 +12,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { PieChart as PieChartIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 
 export type BarChartData = Record<string, string | number>;
@@ -29,6 +29,9 @@ export interface BarChartComponentProps {
   stacked?: boolean;
   className?: string;
 }
+
+// Static bar radius configuration hoisted outside component
+const BAR_RADIUS: [number, number, number, number] = [2, 2, 0, 0];
 
 /**
  * Reusable Bar Chart Component
@@ -52,23 +55,16 @@ export function BarChartComponent({
   stacked = false,
   className,
 }: BarChartComponentProps) {
-  const legendFormatter = useCallback(
-    (value: string): string => {
-      const label = config[value]?.label;
-      return typeof label === "string" ? label : value;
-    },
-    [config]
-  );
+  // Simple formatter function - React Compiler will optimize this
+  const legendFormatter = (value: string): string => {
+    const label = config[value]?.label;
+    return typeof label === "string" ? label : value;
+  };
 
   // Filter out data with zero values across all series
   const filteredData = useMemo(
     () => data.filter((item) => dataKeys.some((key) => Number(item[key]) > 0)),
     [data, dataKeys]
-  );
-
-  const barRadius = useMemo(
-    () => [2, 2, 0, 0] as [number, number, number, number],
-    []
   );
 
   // Show empty state if no data
@@ -147,7 +143,7 @@ export function BarChartComponent({
                 dataKey={key}
                 stackId={stacked ? "stack" : undefined}
                 fill={`url(#barGradient${key})`}
-                radius={barRadius}
+                radius={BAR_RADIUS}
               />
             ))}
           </BarChart>

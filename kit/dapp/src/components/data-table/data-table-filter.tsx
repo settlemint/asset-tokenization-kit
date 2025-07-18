@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useScrollBlur } from "@/hooks/use-scroll-blur";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import { ArrowRight, Filter, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -84,36 +85,8 @@ export function DataTableFilterDesktopContainer({
   children: React.ReactNode;
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showLeftBlur, setShowLeftBlur] = useState(false);
-  const [showRightBlur, setShowRightBlur] = useState(true);
-
-  // Check if there's content to scroll and update blur states
-  const checkScroll = useCallback(() => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } =
-        scrollContainerRef.current;
-
-      // Show left blur if scrolled to the right
-      setShowLeftBlur(scrollLeft > 0);
-
-      // Show right blur if there's more content to scroll to the right
-      // Add a small buffer (1px) to account for rounding errors
-      setShowRightBlur(scrollLeft + clientWidth < scrollWidth - 1);
-    }
-  }, []);
-
-  // Set up ResizeObserver to monitor container size
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      const resizeObserver = new ResizeObserver(() => {
-        checkScroll();
-      });
-      resizeObserver.observe(scrollContainerRef.current);
-      return () => {
-        resizeObserver.disconnect();
-      };
-    }
-  }, [checkScroll]);
+  const { showLeftBlur, showRightBlur, checkScroll } =
+    useScrollBlur(scrollContainerRef);
 
   // Update blur states when children change
   useEffect(() => {
@@ -158,41 +131,8 @@ export function DataTableFilterMobileContainer({
   children: React.ReactNode;
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showLeftBlur, setShowLeftBlur] = useState(false);
-  const [showRightBlur, setShowRightBlur] = useState(true);
-
-  // Check if there's content to scroll and update blur states
-  const checkScroll = useCallback(() => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } =
-        scrollContainerRef.current;
-
-      // Show left blur if scrolled to the right
-      setShowLeftBlur(scrollLeft > 0);
-
-      // Show right blur if there's more content to scroll to the right
-      // Add a small buffer (1px) to account for rounding errors
-      setShowRightBlur(scrollLeft + clientWidth < scrollWidth - 1);
-    }
-  }, []);
-
-  // Log blur states for debugging
-  // useEffect(() => {
-  //   logger.debug('Blur states - left:', showLeftBlur, 'right:', showRightBlur);
-  // }, [showLeftBlur, showRightBlur])
-
-  // Set up ResizeObserver to monitor container size
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      const resizeObserver = new ResizeObserver(() => {
-        checkScroll();
-      });
-      resizeObserver.observe(scrollContainerRef.current);
-      return () => {
-        resizeObserver.disconnect();
-      };
-    }
-  }, [checkScroll]);
+  const { showLeftBlur, showRightBlur, checkScroll } =
+    useScrollBlur(scrollContainerRef);
 
   // Update blur states when children change
   useEffect(() => {

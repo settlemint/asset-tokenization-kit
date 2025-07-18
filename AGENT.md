@@ -331,6 +331,14 @@ standards.
   unless a component has the "use no memo" directive (only used for TanStack
   Table compatibility) or linting requires it. React Compiler handles
   memoization automatically
+- **Component Structure**: Keep components small and focused for better compiler
+  optimization. Follow Hooks Rules strictly - no conditional hooks or early
+  returns that bypass hooks. Prefer plain functions over manual memoization
+- **Static Hoisting**: Move constants and pure helpers outside components when
+  they don't depend on props/state. Use custom hooks for reusable stateful logic
+- **Pure Renders**: Avoid side-effects in render. Use effects for initialization
+- **Compiler Opt-Out**: Use "use no memo"; directive sparingly as last resort for
+  components that can't be refactored to satisfy compiler rules
 - **Translations**: Organized into focused namespaces - use multiple namespaces
   in components as needed; use very specific translation namespaces for each
   component (e.g., "detail-grid" for the DetailGrid component, not "common");
