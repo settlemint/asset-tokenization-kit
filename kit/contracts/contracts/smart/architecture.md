@@ -206,110 +206,82 @@ sequenceDiagram
 
 ```mermaid
 graph TB
-    %% Multiple Tokens
+    %% Top Row - Multiple Tokens
     TokenA[Token A]
     TokenB[Token B]
     TokenC[Token C]
 
-    %% Token-Specific Compliance Configurations
-    ConfigA[Token A Compliance Config<br/>Modules: A, B<br/>Parameters: {...}]
-    ConfigB[Token B Compliance Config<br/>Modules: A, C<br/>Parameters: {...}]
-    ConfigC[Token C Compliance Config<br/>Modules: B, C<br/>Parameters: {...}]
-
-    %% Shared Compliance Contract
+    %% Middle Row - Compliance Contract
     CC[Compliance Contract<br/>Orchestration Engine]
 
-    %% Compliance Modules
-    ModuleA[Module A]
-    ModuleB[Module B]
-    ModuleC[Module C]
+    %% Right Side - Compliance Modules
+    ModuleA[Module A<br/>Global Config]
+    ModuleB[Module B<br/>Global Config]
+    ModuleC[Module C<br/>Global Config]
 
-    %% Global Module Configuration
-    GlobalA[Module A Global Config]
-    GlobalB[Module B Global Config]
-    GlobalC[Module C Global Config]
-
-    %% Relationships
-    TokenA -->|has configuration| ConfigA
-    TokenB -->|has configuration| ConfigB
-    TokenC -->|has configuration| ConfigC
-
+    %% Token to Compliance Contract
     TokenA -->|uses| CC
     TokenB -->|uses| CC
     TokenC -->|uses| CC
 
+    %% Compliance Contract to Modules
     CC -->|orchestrates| ModuleA
     CC -->|orchestrates| ModuleB
     CC -->|orchestrates| ModuleC
 
-    ConfigA -->|configures| ModuleA
-    ConfigA -->|configures| ModuleB
+    %% Token Configuration Parameters to Modules
+    TokenA -.->|"config: countries=US,UK<br/>topics=1,2"| ModuleA
+    TokenA -.->|"config: maxAmount=1000"| ModuleB
 
-    ConfigB -->|configures| ModuleA
-    ConfigB -->|configures| ModuleC
+    TokenB -.->|"config: countries=US,UK,DE<br/>topics=1,3"| ModuleA
+    TokenB -.->|"config: minBalance=100"| ModuleC
 
-    ConfigC -->|configures| ModuleB
-    ConfigC -->|configures| ModuleC
-
-    GlobalA -->|global config| ModuleA
-    GlobalB -->|global config| ModuleB
-    GlobalC -->|global config| ModuleC
-
-    ModuleA -->|verifies| Identity[Identity/Claims System]
-    ModuleB -->|verifies| Identity
-    ModuleC -->|verifies| Identity
+    TokenC -.->|"config: maxHolders=50"| ModuleB
+    TokenC -.->|"config: lockPeriod=30days"| ModuleC
 
     style CC fill:#9ff,stroke:#333,stroke-width:2px
-    style ConfigA fill:#f9f,stroke:#333,stroke-width:1px
-    style ConfigB fill:#f9f,stroke:#333,stroke-width:1px
-    style ConfigC fill:#f9f,stroke:#333,stroke-width:1px
-    style GlobalA fill:#ff9,stroke:#333,stroke-width:1px
-    style GlobalB fill:#ff9,stroke:#333,stroke-width:1px
-    style GlobalC fill:#ff9,stroke:#333,stroke-width:1px
+    style ModuleA fill:#ff9,stroke:#333,stroke-width:1px
+    style ModuleB fill:#ff9,stroke:#333,stroke-width:1px
+    style ModuleC fill:#ff9,stroke:#333,stroke-width:1px
 ```
 
-### Configuration Levels
+### Configuration Architecture
 
-#### **Global Configuration**
+The diagram shows a clean separation of concerns:
 
-- **Trusted Issuers Registry**: Defines which entities can issue identity claims
-- **Topic Scheme Registry**: Defines valid claim topics (KYC, Accreditation,
-  etc.)
-- **Module Deployment**: Shared compliance modules across all tokens
-- **Infrastructure**: Identity registry, storage contracts
+#### **Token Layer**
 
-#### **Token-Specific Configuration**
+- Multiple tokens can exist independently
+- Each token defines its own compliance requirements
+- Tokens use the shared compliance contract for orchestration
 
-- **Required Claim Topics**: Each token defines which claims investors must have
-- **Module Parameters**: Token-specific rules (allowed countries, transfer
-  limits, etc.)
-- **Compliance Rules**: Different restrictions per token type
-- **Extension Configuration**: Token-specific feature enablement
+#### **Compliance Contract**
 
-### Configuration Example
+- Single orchestration engine shared by all tokens
+- Executes compliance checks based on token-specific configuration
+- Routes requests to appropriate modules
 
-```solidity
-// Global Configuration (shared across all tokens)
-TrustedIssuersRegistry.addTrustedIssuer(kycProvider, [1, 2, 3]); // Can issue KYC, Country, Accreditation
-TopicSchemeRegistry.addTopicScheme(1, "KYC Verification");
-TopicSchemeRegistry.addTopicScheme(2, "Country Verification");
-TopicSchemeRegistry.addTopicScheme(3, "Accredited Investor");
+#### **Module Layer**
 
-// Token A Configuration (Real Estate Token)
-TokenA.setRequiredClaimTopics([1, 2]); // Requires KYC + Country
-CountryModule.setAllowedCountries(TokenA, [840, 826]); // US, UK only
-IdentityModule.setRequiredTopics(TokenA, [1, 2]);
+- Shared compliance modules with global configuration
+- Each module can be used by multiple tokens with different parameters
+- Modules contain both global settings and token-specific configuration
 
-// Token B Configuration (Corporate Bond)
-TokenB.setRequiredClaimTopics([1, 3]); // Requires KYC + Accreditation
-CountryModule.setAllowedCountries(TokenB, [840, 826, 276]); // US, UK, Germany
-IdentityModule.setRequiredTopics(TokenB, [1, 3]);
+#### **Configuration Types**
 
-// Token C Configuration (Equity Shares)
-TokenC.setRequiredClaimTopics([1, 2, 3]); // Requires KYC + Country + Accreditation
-CountryModule.setAllowedCountries(TokenC, [840]); // US only
-IdentityModule.setRequiredTopics(TokenC, [1, 2, 3]);
-```
+**Global Configuration** (applies to all tokens):
+
+- Module deployment and availability
+- Trusted issuers registry
+- Topic scheme registry
+- Infrastructure settings
+
+**Token-Specific Configuration** (per token):
+
+- Which modules to use
+- Module parameters (countries, limits, topics, etc.)
+- Compliance rules specific to token type
+- Business logic parameters
 
 ### Benefits of Shared Infrastructure
 
@@ -319,59 +291,6 @@ IdentityModule.setRequiredTopics(TokenC, [1, 2, 3]);
 4. **Scalability**: Easy to add new tokens without deploying new modules
 5. **Maintenance**: Single point of updates for compliance logic
 6. **Regulatory Alignment**: Shared global rules ensure consistency
-
-### Module Hierarchy
-
-```mermaid
-graph LR
-    Base[ISMARTComplianceModule] --> Country[Country Modules]
-    Base --> Identity[Identity Modules]
-    Base --> Transfer[Transfer Modules]
-    Base --> Time[Time Modules]
-
-    Country --> CA[Country Allow List]
-    Country --> CB[Country Block List]
-
-    Identity --> IA[Identity Allow List]
-    Identity --> IV[Identity Verification]
-    Identity --> AB[Address Block List]
-
-    Transfer --> TL[Transfer Limits]
-    Transfer --> HL[Holder Limits]
-
-    Time --> TR[Time Restrictions]
-    Time --> LP[Lock Periods]
-
-    style Base fill:#f9f,stroke:#333,stroke-width:2px
-```
-
-### Module Interface
-
-Each compliance module implements:
-
-```solidity
-interface ISMARTComplianceModule {
-    // Pre-transfer check
-    function canTransfer(
-        address from,
-        address to,
-        uint256 amount
-    ) external view returns (bool);
-
-    // Post-transfer state update
-    function transferred(
-        address from,
-        address to,
-        uint256 amount
-    ) external;
-
-    // Token creation hook
-    function created(address to, uint256 amount) external;
-
-    // Token destruction hook
-    function destroyed(address from, uint256 amount) external;
-}
-```
 
 ## Token Extensions Architecture
 
@@ -411,20 +330,17 @@ through well-defined interfaces:
      account
    - **Use Cases**: Regulatory compliance, token destruction, supply management
    - **Key Functions**: `burn(address account, uint256 amount)`
-   - **Access Control**: Supply Manager role required
 
 2. **Pausable Extension** (`extensions/pausable/`)
    - **Purpose**: Emergency pause functionality for all token transfers
    - **Use Cases**: Security incidents, regulatory orders, system maintenance
    - **Key Functions**: `pause()`, `unpause()`
-   - **Access Control**: Token Admin role required
 
 3. **Custodian Extension** (`extensions/custodian/`)
    - **Purpose**: Freeze addresses and force transfers for compliance
    - **Use Cases**: Legal orders, sanctions compliance, dispute resolution
    - **Key Functions**: `freeze(address account)`,
      `forceTransfer(from, to, amount)`
-   - **Access Control**: Compliance Manager role required
 
 #### **User-Facing Extensions**
 
@@ -432,13 +348,11 @@ through well-defined interfaces:
    - **Purpose**: Users can burn their own tokens (self-redemption)
    - **Use Cases**: Token buybacks, voluntary redemptions, exit mechanisms
    - **Key Functions**: `redeem(uint256 amount)`
-   - **Access Control**: Token holders can redeem their own tokens
 
 5. **Yield Extension** (`extensions/yield/`)
    - **Purpose**: Distribute dividends or yield to token holders
    - **Use Cases**: Dividend payments, profit sharing, interest distribution
    - **Key Functions**: `distributeYield(uint256 totalAmount)`, `claimYield()`
-   - **Access Control**: Yield Manager role for distribution
 
 #### **Data & Analytics Extensions**
 
@@ -459,18 +373,9 @@ through well-defined interfaces:
 8. **Collateral Extension** (`extensions/collateral/`)
    - **Purpose**: Require collateral backing for token issuance
    - **Use Cases**: Asset-backed tokens, stablecoins, secured instruments
-   - **Key Functions**: `addCollateral(uint256 amount)`,
-     `removeCollateral(uint256 amount)`
-   - **Features**: Maintains collateral ratios, prevents over-issuance
-
-#### **Extension Compatibility**
-
-Extensions are designed to work together seamlessly:
-
-- **Burnable + Redeemable**: Admin and user-initiated token destruction
-- **Pausable + Custodian**: Emergency controls with granular freezing
-- **Yield + Historical**: Dividend distribution based on historical snapshots
-- **Capped + Collateral**: Supply-limited tokens with backing requirements
+   - **Key Functions**: Collateral managed through token's OnchainID identity
+   - **Features**: Each token has its own identity contract for collateral
+     management
 
 #### **vs. Standard ERC-3643**
 
@@ -537,20 +442,23 @@ sequenceDiagram
 
     Note over LostWallet: Wallet Lost/Compromised
 
-    NewWallet->>Admin: Request Recovery
+    NewWallet->>Admin: Request Recovery with New Identity
     Admin->>Admin: Verify User Identity
 
-    %% Step 1: Identity Recovery
-    Admin->>IdentityRegistry: initiateRecovery(lostWallet, newWallet)
-    IdentityRegistry->>Identity: transferOwnership(newWallet)
-    Identity-->>IdentityRegistry: Ownership Updated
+    %% Step 1: Identity Recovery - User specifies new identity
+    Admin->>IdentityRegistry: initiateRecovery(lostWallet, newWallet, newIdentity)
+    IdentityRegistry->>IdentityRegistry: Track wallet relationship (old -> new)
+    IdentityRegistry->>IdentityRegistry: Register newWallet with newIdentity
+    IdentityRegistry->>IdentityRegistry: Store recovery mapping for token reclaim
 
     %% Step 2: Token Recovery (if needed)
     Admin->>Token: recover(lostWallet, newWallet)
+    Token->>IdentityRegistry: isRecoveryAllowed(lostWallet, newWallet)
+    IdentityRegistry-->>Token: Recovery permitted
     Token->>Token: Transfer Balance
-    Token->>IdentityRegistry: Update Mapping
 
-    Note over NewWallet: Recovery Complete
+    Note over NewWallet: Recovery Complete with New Identity
+    Note over IdentityRegistry: Wallet relationship tracked for token reclaim
 ```
 
 ## Gas Optimization Strategies
@@ -561,37 +469,6 @@ sequenceDiagram
 4. **Batch Operations**: Multiple operations combined where possible
 5. **Custom Errors**: Replace require strings with custom errors
 6. **Short-Circuit Evaluation**: Check cheapest conditions first
-
-## Security Architecture
-
-### Access Control Hierarchy
-
-```mermaid
-graph TD
-    Owner[Contract Owner] --> TokenAdmin[Token Admin]
-    Owner --> ComplianceAdmin[Compliance Admin]
-    Owner --> IdentityAdmin[Identity Admin]
-
-    TokenAdmin --> Pause[Pause/Unpause]
-    TokenAdmin --> Burn[Force Burn]
-    TokenAdmin --> Freeze[Freeze Accounts]
-
-    ComplianceAdmin --> AddModule[Add Modules]
-    ComplianceAdmin --> RemoveModule[Remove Modules]
-    ComplianceAdmin --> ConfigModule[Configure Modules]
-
-    IdentityAdmin --> AddIssuer[Add Issuers]
-    IdentityAdmin --> RemoveIssuer[Remove Issuers]
-    IdentityAdmin --> Recovery[Handle Recovery]
-```
-
-### Security Features
-
-1. **Role-Based Access Control**: Granular permissions for different operations
-2. **Reentrancy Protection**: All state changes follow CEI pattern
-3. **Integer Overflow Protection**: Solidity 0.8+ built-in protections
-4. **Signature Validation**: All claims cryptographically verified
-5. **Upgrade Safety**: UUPS pattern with access control
 
 ## Integration Points
 
@@ -616,23 +493,3 @@ graph LR
     KYC --> Identity[Identity Verification]
     KYC --> Claims[Claim Issuance]
 ```
-
-## Performance Characteristics
-
-### Operation Complexity
-
-| Operation                 | Gas Cost | Complexity             |
-| ------------------------- | -------- | ---------------------- |
-| Transfer (verified users) | ~150k    | O(m) where m = modules |
-| Initial Registration      | ~300k    | O(1)                   |
-| Add Compliance Module     | ~50k     | O(1)                   |
-| Identity Verification     | ~100k    | O(c) where c = claims  |
-| Burn Tokens               | ~80k     | O(1)                   |
-| Pause/Unpause             | ~30k     | O(1)                   |
-
-### Scalability Considerations
-
-1. **Module Count**: Linear scaling with number of compliance modules
-2. **Claim Verification**: Cached after first check per transaction
-3. **Storage Growth**: Minimal per-user storage requirements
-4. **Batch Operations**: Support for batch transfers and operations
