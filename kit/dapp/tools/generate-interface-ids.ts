@@ -330,6 +330,14 @@ export function getInterfaceId(name: InterfaceId): string {
 
   await Bun.write(outputFilePath, fileContent);
   logger.info(`Interface IDs saved to: ${outputFilePath}`);
+
+  // Run prettier on the generated file to ensure consistent formatting
+  try {
+    await $`bunx prettier --write ${outputFilePath}`.quiet();
+    logger.info(`Formatted generated file with Prettier`);
+  } catch (error) {
+    logger.warn(`Failed to format with Prettier: ${error}`);
+  }
 }
 
 // =============================================================================
