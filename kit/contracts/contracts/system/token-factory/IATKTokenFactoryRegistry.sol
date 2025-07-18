@@ -11,6 +11,8 @@ interface IATKTokenFactoryRegistry is IAccessControl, IERC165 {
         bytes32 typeId,
         address proxyAddress,
         address implementationAddress,
+        address tokenImplementationAddress,
+        bytes4[] tokenImplementationInterfaces,
         uint256 timestamp
     );
 

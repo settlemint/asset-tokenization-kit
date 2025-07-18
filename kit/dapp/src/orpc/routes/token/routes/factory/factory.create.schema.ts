@@ -117,7 +117,7 @@ export const FactoryCreateMessagesSchema =
     factoryCreated: z
       .string()
       .optional()
-      .default("Token factory successfully created."),
+      .default("{{name}} successfully created."),
     creatingFactory: z.string().optional().default("Creating token factory..."),
     factoryCreationFailed: z
       .string()

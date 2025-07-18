@@ -541,6 +541,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
     /// @return bool `true` if the interface is supported according to SMART logic, `false` otherwise.
     function __smart_supportsInterface(bytes4 interfaceId) internal view virtual returns (bool) {
         // Check if registered by an extension OR if it's the core ISMART interface.
-        return _isInterfaceRegistered[interfaceId] || interfaceId == type(ISMART).interfaceId;
+        return _isInterfaceRegistered(interfaceId) || interfaceId == type(ISMART).interfaceId;
     }
 }

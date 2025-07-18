@@ -1,4 +1,29 @@
 {
+  "welcome": {
+    "title": "アセットトークン化キットへようこそ",
+    "description": "ブロックチェーン上での安全で準拠したアセットトークン化へのゲートウェイです。",
+    "welcome-back": "お帰りなさい！",
+    "complete-journey": "オンボーディングの旅を完了しましょう",
+    "setup-overview": "セットアップの概要",
+    "setup-description-returning": "まず、セットアッププロセスを完了する必要があります。これにより、あなたの資産が安全で、オンチェーンのアイデンティティが確立され、金融の未来を体験する準備が整います。",
+    "setup-description-new": "迅速なセットアッププロセスを通じてご案内します。これにより、あなたの資産が安全で、オンチェーンのアイデンティティが確立され、金融の未来を体験する準備が整います。",
+    "continue-setup": "セットアップを続ける",
+    "get-started": "始めましょう"
+  },
+  "groups": {
+    "wallet": {
+      "title": "ウォレット",
+      "description": "ウォレットとセキュリティ対策を設定します"
+    },
+    "system": {
+      "title": "システム",
+      "description": "システムを展開し、構成します"
+    },
+    "identity": {
+      "title": "アイデンティティ",
+      "description": "オンチェーンのアイデンティティを確立します"
+    }
+  },
   "card-description": "あなたのウォレットを設定しました。このプラットフォームを使用するために、ブロックチェーン上であなたのアイデンティティを構成します。",
   "card-title": "設定を始めましょう！",
   "platform": {
@@ -17,6 +42,34 @@
     "wallet": {
       "title": "あなたのウォレット",
       "description": "ブロックチェーンウォレットを表示"
+    },
+    "wallet-security": {
+      "title": "ウォレットを保護する",
+      "description": "ウォレットの保護を設定します"
+    },
+    "wallet-recovery-codes": {
+      "title": "リカバリーコード",
+      "description": "バックアップリカバリーコードを生成します"
+    },
+    "system-deploy": {
+      "title": "システムを展開する",
+      "description": "コアスマートコントラクトを初期化します"
+    },
+    "system-settings": {
+      "title": "システムを構成する",
+      "description": "システムのパラメータと設定を設定します"
+    },
+    "system-assets": {
+      "title": "アセットタイプを選択する",
+      "description": "サポートされているアセットタイプを選択します"
+    },
+    "system-addons": {
+      "title": "システムアドオン",
+      "description": "オプションのシステム機能を有効にします"
+    },
+    "identity-setup": {
+      "title": "ONCHAINIDを設定する",
+      "description": "オンチェーンのアイデンティティを作成します"
     },
     "system": {
       "title": "システムを展開",
@@ -154,7 +207,7 @@
     "asset-factories-description": "資産工場は、さまざまな種類のトークン化された資産を作成および管理するためのスマートコントラクトです。各工場は特定の資産クラスを扱い、特化した機能とコンプライアンス要件を持っています。",
     "factory-messages": {
       "initial-loading": "トークン工場を作成する準備中...",
-      "factory-created": "トークン工場が正常に作成されました。",
+      "factory-created": "{{name}}が正常に作成されました。",
       "creating-factory": "トークン工場を作成中...",
       "factory-creation-failed": "トークン工場の作成に失敗しました。再試行してください。",
       "batch-progress": "現在の{{current}}の{{total}}の工場を作成中...",
