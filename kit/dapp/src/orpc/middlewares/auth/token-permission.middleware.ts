@@ -73,7 +73,7 @@ export function tokenPermissionMiddleware({
     if (
       Array.isArray(requiredRoles) &&
       !requiredRoles.every(
-        (requiredRole) => !token.userPermissions?.roles[requiredRole]
+        (requiredRole) => token.userPermissions?.roles[requiredRole]
       )
     ) {
       throw errors.USER_NOT_AUTHORIZED({
