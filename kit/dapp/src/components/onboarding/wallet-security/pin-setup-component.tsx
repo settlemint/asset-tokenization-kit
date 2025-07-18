@@ -76,7 +76,8 @@ export function PinSetupComponent({
         if (value.pincode) {
           const pincodeResult = pincode().safeParse(value.pincode);
           if (!pincodeResult.success) {
-            fieldErrors.pincode = z.prettifyError(pincodeResult.error);
+            fieldErrors.pincode =
+              pincodeResult.error.issues[0]?.message || "Invalid PIN code";
           }
         }
 
@@ -86,9 +87,9 @@ export function PinSetupComponent({
             value.confirmPincode
           );
           if (!confirmPincodeResult.success) {
-            fieldErrors.confirmPincode = z.prettifyError(
-              confirmPincodeResult.error
-            );
+            fieldErrors.confirmPincode =
+              confirmPincodeResult.error.issues[0]?.message ||
+              "Invalid PIN code";
           }
         }
 
@@ -251,49 +252,7 @@ export function PinSetupComponent({
                     type="button"
                     disabled={!isFormValid || isPending || state.isSubmitting}
                     className="flex-1"
-                    onClick={async () => {
-                      logger.debug("Button clicked, submitting form...");
-                      try {
-                        const currentValues = form.getFieldValue("pincode");
-                        const confirmValues =
-                          form.getFieldValue("confirmPincode");
-
-                        logger.debug("Current form values:", {
-                          pincode: currentValues,
-                          confirmPincode: confirmValues,
-                        });
-
-                        // Validate the form manually
-                        const validationResult = pinFormSchema.safeParse({
-                          pincode: currentValues,
-                          confirmPincode: confirmValues,
-                        });
-
-                        if (!validationResult.success) {
-                          logger.error(
-                            "Validation failed:",
-                            validationResult.error
-                          );
-                          const errorMessage = z.prettifyError(
-                            validationResult.error
-                          );
-                          toast.error(
-                            errorMessage || "Please check your PIN codes"
-                          );
-                          return;
-                        }
-
-                        // Call the API directly
-                        logger.debug(
-                          "Calling enablePincode with:",
-                          currentValues
-                        );
-                        const result = await enablePincode(currentValues);
-                        logger.debug("PIN code submitted successfully", result);
-                      } catch (error) {
-                        logger.error("Form submission error:", error);
-                      }
-                    }}
+                    onClick={() => void form.handleSubmit()}
                   >
                     {isPending ? "Setting up..." : "Set PIN Code"}
                   </Button>
