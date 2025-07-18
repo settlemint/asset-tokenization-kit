@@ -52,13 +52,18 @@ export const SelectAssetType = withForm({
             />
           )}
         />
-        <Button
-          onClick={() => {
-            form.setFieldValue("step", getNextStepId(steps, "selectAssetType"));
-          }}
-        >
+        <form.Subscribe
+          selector={(state) => state.values.type}
+          children={(type) => {
+            const disabled = !type;
+
+            return (
+              <Button onClick={onStepSubmit} disabled={disabled}>
           Next
         </Button>
+            );
+          }}
+        />
       </>
     );
   },
