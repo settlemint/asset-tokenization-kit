@@ -15,6 +15,7 @@ export type AssetDesignerFormData = z.infer<typeof AssetDesignerFormSchema>;
 
 const optionalFields: (keyof AssetDesignerFormData)[] = ["isin"];
 
+// TODO: Get this from the schema somehow, this is a temporary solution
 export const isRequiredField = (field: keyof AssetDesignerFormData) => {
   return !optionalFields.includes(field);
 };
