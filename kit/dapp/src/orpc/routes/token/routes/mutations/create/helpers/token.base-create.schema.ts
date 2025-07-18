@@ -24,8 +24,6 @@ export const TokenBaseSchema = MutationInputSchema.extend({
   type: assetType(),
 });
 
-export type TokenBaseSchema = z.infer<typeof TokenBaseSchema>;
-
 /**
  * Creates a messages schema for token creation based on the asset type
  * This reduces duplication by dynamically generating messages with the appropriate asset type name

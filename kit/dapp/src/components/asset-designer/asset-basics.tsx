@@ -1,93 +1,108 @@
-import type { FormGroupProps } from "@/components/multistep-form-v2/types";
+import type { AssetDesignerFormData } from "@/components/asset-designer/shared-form";
+import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
+import { useAssetDesignerSteps } from "@/components/asset-designer/steps";
+import { getNextStepId } from "@/components/stepper/utils";
 import { Button } from "@/components/ui/button";
-import { useAppForm } from "@/hooks/use-app-form";
+import { withForm } from "@/hooks/use-app-form";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import { useTranslation } from "react-i18next";
-import type { AssetDesignerFormData } from "./shared-form";
 
-export const AssetBasics = ({
-  store,
-  onGroupSubmit,
-}: FormGroupProps<AssetDesignerFormData>) => {
-  const type = store.state.type;
-  const form = useAppForm({
-    defaultValues: store.state,
-    onSubmit: ({ value }) => {
-      store.setState((state) => ({ ...state, ...value }));
-      onGroupSubmit(value);
-    },
-  });
+export const AssetBasics = withForm({
+  ...assetDesignerFormOptions,
+  props: {},
+  render: function Render({ form }) {
+    const { t } = useTranslation(["asset-designer"]);
+    const steps = useAssetDesignerSteps();
 
-  const { t } = useTranslation(["asset-designer"]);
+    return (
+      <>
+        <form.AppField
+          name="name"
+          children={(field) => (
+            <field.TextField label={t("form.fields.name.label")} />
+          )}
+        />
+        <form.AppField
+          name="symbol"
+          children={(field) => (
+            <field.TextField label={t("form.fields.symbol.label")} />
+          )}
+        />
+        <form.AppField
+          name="decimals"
+          children={(field) => (
+            <field.TextField label={t("form.fields.decimals.label")} />
+          )}
+        />
+        <form.AppField
+          name="isin"
+          children={(field) => (
+            <field.TextField label={t("form.fields.isin.label")} />
+          )}
+        />
+        <form.Subscribe
+          selector={(state) => state.values}
+          children={(values) => {
+            if (values.type === AssetTypeEnum.bond) {
+              return <BondBasics form={form} />;
+            }
+            if (values.type === AssetTypeEnum.fund) {
+              return <FundBasics form={form} />;
+            }
+            return null;
+          }}
+        />
+        <Button
+          onClick={() => {
+            form.setFieldValue("step", getNextStepId(steps, "assetBasics"));
+          }}
+        >
+          Next
+        </Button>
+      </>
+    );
+  },
+});
 
-  return (
-    <form.AppForm>
-      <form.AppField
-        name="name"
-        children={(field) => (
-          <field.TextField label={t("form.fields.name.label")} />
-        )}
-      />
-      <form.AppField
-        name="symbol"
-        children={(field) => (
-          <field.TextField label={t("form.fields.symbol.label")} />
-        )}
-      />
-      <form.AppField
-        name="decimals"
-        children={(field) => (
-          <field.TextField label={t("form.fields.decimals.label")} />
-        )}
-      />
-      <form.AppField
-        name="isin"
-        children={(field) => (
-          <field.TextField label={t("form.fields.isin.label")} />
-        )}
-      />
+const BondBasics = withForm({
+  defaultValues: {} as AssetDesignerFormData,
+  props: {},
+  render: function Render({ form }) {
+    const { t } = useTranslation(["asset-designer"]);
 
-      {/* Conditional fields based on asset type from store */}
-      <form.Subscribe
-        selector={(state) => state.values}
-        children={() => {
-          if (type === AssetTypeEnum.bond) {
-            return (
-              <>
-                <form.AppField
-                  name="cap"
-                  children={(field) => (
-                    <field.TextField label={t("form.fields.cap.label")} />
-                  )}
-                />
-                <form.AppField
-                  name="faceValue"
-                  children={(field) => (
-                    <field.TextField label={t("form.fields.faceValue.label")} />
-                  )}
-                />
-              </>
-            );
-          }
-          if (type === AssetTypeEnum.fund) {
-            return (
-              <>
-                <form.AppField
-                  name="managementFeeBps"
-                  children={(field) => (
-                    <field.TextField
-                      label={t("form.fields.managementFeeBps.label")}
-                    />
-                  )}
-                />
-              </>
-            );
-          }
-          return null;
-        }}
-      />
+    return (
+      <>
+        <form.AppField
+          name="cap"
+          children={(field) => (
+            <field.TextField label={t("form.fields.cap.label")} />
+          )}
+        />
+        <form.AppField
+          name="faceValue"
+          children={(field) => (
+            <field.TextField label={t("form.fields.faceValue.label")} />
+          )}
+        />
+      </>
+    );
+  },
+});
 
-      <Button onClick={async () => form.handleSubmit()}>Create Asset</Button>
-    </form.AppForm>
-  );
-};
+const FundBasics = withForm({
+  defaultValues: {} as AssetDesignerFormData,
+  props: {},
+  render: function Render({ form }) {
+    const { t } = useTranslation(["asset-designer"]);
+    return (
+      <>
+        <form.AppField
+          name="managementFeeBps"
+          children={(field) => (
+            <field.TextField label={t("form.fields.managementFeeBps.label")} />
+          )}
+        />
+      </>
+    );
+  },
+});
