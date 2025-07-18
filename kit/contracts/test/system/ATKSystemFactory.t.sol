@@ -451,6 +451,28 @@ contract ATKSystemFactoryTest is Test {
         );
     }
 
+    function test_ConstructorWithZeroSystemAccessManagerImplementation() public {
+        vm.expectRevert(SystemAccessManagerImplementationNotSet.selector);
+        new ATKSystemFactory(
+            systemImpl,
+            complianceImpl,
+            identityRegistryImpl,
+            identityRegistryStorageImpl,
+            trustedIssuersRegistryImpl,
+            topicSchemeRegistryImpl,
+            identityFactoryImpl,
+            identityImpl,
+            contractIdentityImpl,
+            tokenAccessManagerImpl,
+            identityVerificationModule,
+            tokenFactoryRegistryImpl,
+            complianceModuleRegistryImpl,
+            addonRegistryImpl,
+            address(0), // systemAccessManagerImpl
+            forwarder
+        );
+    }
+
     function test_CreateSystemSuccess() public {
         vm.prank(admin);
         address systemAddress = factory.createSystem();
