@@ -33,6 +33,9 @@ const onboardingStateSchema = z.object({
   systemAddons: z
     .boolean()
     .describe("Whether the user has configured system addons"),
+  identitySetup: z
+    .boolean()
+    .describe("Whether the user has set up their ONCHAINID"),
   identity: z.boolean().describe("Whether the user has an identity"),
 });
 

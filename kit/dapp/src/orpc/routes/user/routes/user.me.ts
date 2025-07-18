@@ -126,6 +126,7 @@ export const me = authRouter.user.me
         systemSettings: !!baseCurrency,
         systemAssets: hasTokenFactories,
         systemAddons: false, // TODO: Track when addons are configured
+        identitySetup: false, // TODO: Add logic to check if ONCHAINID is set up
         identity: !!userQueryResult?.kyc,
       },
     };
