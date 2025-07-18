@@ -1,12 +1,10 @@
-import { OnboardingStep } from "@/components/onboarding/state-machine";
-import { Button } from "@/components/ui/button";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
-import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -15,17 +13,21 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import { VerificationDialog } from "@/components/ui/verification-dialog";
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import {
+  type AssetFactoryTypeId,
   type AssetType,
   getAssetTypeFromFactoryTypeId,
-  type AssetFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import { TokenTypeEnum } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import {
   BarChart3,
   Building,
@@ -34,12 +36,11 @@ import {
   PiggyBank,
   Wallet,
 } from "lucide-react";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { type Control, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger();
 
@@ -222,6 +223,23 @@ function RouteComponent() {
   const [systemAddress] = useSettings("SYSTEM_ADDRESS");
   const queryClient = useQueryClient();
 
+  // Verification dialog state
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null
+  );
+  const [pendingFactories, setPendingFactories] = useState<
+    | {
+        type: string;
+        name: string;
+      }[]
+    | null
+  >(null);
+
+  // For factory deployment, we'll use PIN code verification by default
+  const hasTwoFactor = false;
+  const hasPincode = true;
+
   const { data: systemDetails } = useQuery({
     ...orpc.system.read.queryOptions({
       input: { id: systemAddress ?? "" },
@@ -282,61 +300,143 @@ function RouteComponent() {
       ),
     }));
 
-    createFactories({
-      verification: {
-        verificationCode: "111111",
-        verificationType: "pincode",
-      },
-      contract: systemDetails.tokenFactoryRegistry,
-      factories,
-      messages: {
-        initialLoading: t("assets.factory-messages.initial-loading"),
-        factoryCreated: t("assets.factory-messages.factory-created"),
-        creatingFactory: t("assets.factory-messages.creating-factory"),
-        factoryCreationFailed: t(
-          "assets.factory-messages.factory-creation-failed"
-        ),
-        batchProgress: t("assets.factory-messages.batch-progress"),
-        batchCompleted: t("assets.factory-messages.batch-completed"),
-        noResultError: t("assets.factory-messages.no-result-error"),
-        defaultError: t("assets.factory-messages.default-error"),
-        systemNotBootstrapped: t(
-          "assets.factory-messages.system-not-bootstrapped"
-        ),
-        transactionSubmitted: t(
-          "assets.factory-messages.transaction-submitted"
-        ),
-        factoryCreationCompleted: t(
-          "assets.factory-messages.factory-creation-completed"
-        ),
-        allFactoriesSucceeded: t(
-          "assets.factory-messages.all-factories-succeeded"
-        ),
-        someFactoriesFailed: t("assets.factory-messages.some-factories-failed"),
-        allFactoriesFailed: t("assets.factory-messages.all-factories-failed"),
-        factoryAlreadyExists: t(
-          "assets.factory-messages.factory-already-exists"
-        ),
-        allFactoriesSkipped: t("assets.factory-messages.all-factories-skipped"),
-        someFactoriesSkipped: t(
-          "assets.factory-messages.some-factories-skipped"
-        ),
-        waitingForMining: t("assets.factory-messages.waiting-for-mining"),
-        transactionFailed: t("assets.factory-messages.transaction-failed"),
-        transactionDropped: t("assets.factory-messages.transaction-dropped"),
-        waitingForIndexing: t("assets.factory-messages.waiting-for-indexing"),
-        transactionIndexed: t("assets.factory-messages.transaction-indexed"),
-        streamTimeout: t("assets.factory-messages.stream-timeout"),
-        indexingTimeout: t("assets.factory-messages.indexing-timeout"),
-      },
-    });
-  }, [
-    systemAddress,
-    systemDetails?.tokenFactoryRegistry,
-    t,
-    form,
-    createFactories,
-  ]);
+    // Store the factories and show the verification dialog
+    setPendingFactories(factories);
+    setVerificationError(null);
+    setShowVerificationModal(true);
+  }, [systemAddress, systemDetails?.tokenFactoryRegistry, t, form]);
+
+  // Handle PIN code submission
+  const handlePincodeSubmit = useCallback(
+    (pincode: string) => {
+      if (!pendingFactories || !systemDetails?.tokenFactoryRegistry) {
+        return;
+      }
+
+      setVerificationError(null);
+      setShowVerificationModal(false);
+
+      createFactories({
+        verification: {
+          verificationCode: pincode,
+          verificationType: "pincode",
+        },
+        contract: systemDetails.tokenFactoryRegistry,
+        factories: pendingFactories,
+        messages: {
+          initialLoading: t("assets.factory-messages.initial-loading"),
+          factoryCreated: t("assets.factory-messages.factory-created"),
+          creatingFactory: t("assets.factory-messages.creating-factory"),
+          factoryCreationFailed: t(
+            "assets.factory-messages.factory-creation-failed"
+          ),
+          batchProgress: t("assets.factory-messages.batch-progress"),
+          batchCompleted: t("assets.factory-messages.batch-completed"),
+          noResultError: t("assets.factory-messages.no-result-error"),
+          defaultError: t("assets.factory-messages.default-error"),
+          systemNotBootstrapped: t(
+            "assets.factory-messages.system-not-bootstrapped"
+          ),
+          transactionSubmitted: t(
+            "assets.factory-messages.transaction-submitted"
+          ),
+          factoryCreationCompleted: t(
+            "assets.factory-messages.factory-creation-completed"
+          ),
+          allFactoriesSucceeded: t(
+            "assets.factory-messages.all-factories-succeeded"
+          ),
+          someFactoriesFailed: t(
+            "assets.factory-messages.some-factories-failed"
+          ),
+          allFactoriesFailed: t("assets.factory-messages.all-factories-failed"),
+          factoryAlreadyExists: t(
+            "assets.factory-messages.factory-already-exists"
+          ),
+          allFactoriesSkipped: t(
+            "assets.factory-messages.all-factories-skipped"
+          ),
+          someFactoriesSkipped: t(
+            "assets.factory-messages.some-factories-skipped"
+          ),
+          waitingForMining: t("assets.factory-messages.waiting-for-mining"),
+          transactionFailed: t("assets.factory-messages.transaction-failed"),
+          transactionDropped: t("assets.factory-messages.transaction-dropped"),
+          waitingForIndexing: t("assets.factory-messages.waiting-for-indexing"),
+          transactionIndexed: t("assets.factory-messages.transaction-indexed"),
+          streamTimeout: t("assets.factory-messages.stream-timeout"),
+          indexingTimeout: t("assets.factory-messages.indexing-timeout"),
+        },
+      });
+    },
+    [pendingFactories, systemDetails?.tokenFactoryRegistry, createFactories, t]
+  );
+
+  // Handle OTP submission
+  const handleOtpSubmit = useCallback(
+    (otp: string) => {
+      if (!pendingFactories || !systemDetails?.tokenFactoryRegistry) {
+        return;
+      }
+
+      setVerificationError(null);
+      setShowVerificationModal(false);
+
+      createFactories({
+        verification: {
+          verificationCode: otp,
+          verificationType: "two-factor",
+        },
+        contract: systemDetails.tokenFactoryRegistry,
+        factories: pendingFactories,
+        messages: {
+          initialLoading: t("assets.factory-messages.initial-loading"),
+          factoryCreated: t("assets.factory-messages.factory-created"),
+          creatingFactory: t("assets.factory-messages.creating-factory"),
+          factoryCreationFailed: t(
+            "assets.factory-messages.factory-creation-failed"
+          ),
+          batchProgress: t("assets.factory-messages.batch-progress"),
+          batchCompleted: t("assets.factory-messages.batch-completed"),
+          noResultError: t("assets.factory-messages.no-result-error"),
+          defaultError: t("assets.factory-messages.default-error"),
+          systemNotBootstrapped: t(
+            "assets.factory-messages.system-not-bootstrapped"
+          ),
+          transactionSubmitted: t(
+            "assets.factory-messages.transaction-submitted"
+          ),
+          factoryCreationCompleted: t(
+            "assets.factory-messages.factory-creation-completed"
+          ),
+          allFactoriesSucceeded: t(
+            "assets.factory-messages.all-factories-succeeded"
+          ),
+          someFactoriesFailed: t(
+            "assets.factory-messages.some-factories-failed"
+          ),
+          allFactoriesFailed: t("assets.factory-messages.all-factories-failed"),
+          factoryAlreadyExists: t(
+            "assets.factory-messages.factory-already-exists"
+          ),
+          allFactoriesSkipped: t(
+            "assets.factory-messages.all-factories-skipped"
+          ),
+          someFactoriesSkipped: t(
+            "assets.factory-messages.some-factories-skipped"
+          ),
+          waitingForMining: t("assets.factory-messages.waiting-for-mining"),
+          transactionFailed: t("assets.factory-messages.transaction-failed"),
+          transactionDropped: t("assets.factory-messages.transaction-dropped"),
+          waitingForIndexing: t("assets.factory-messages.waiting-for-indexing"),
+          transactionIndexed: t("assets.factory-messages.transaction-indexed"),
+          streamTimeout: t("assets.factory-messages.stream-timeout"),
+          indexingTimeout: t("assets.factory-messages.indexing-timeout"),
+        },
+      });
+    },
+    [pendingFactories, systemDetails?.tokenFactoryRegistry, createFactories, t]
+  );
 
   const availableAssets = TokenTypeEnum.options;
   const hasDeployedAssets = (systemDetails?.tokenFactories.length ?? 0) > 0;
@@ -533,6 +633,19 @@ function RouteComponent() {
           </Button>
         </div>
       </div>
+
+      <VerificationDialog
+        open={showVerificationModal}
+        onOpenChange={setShowVerificationModal}
+        hasTwoFactor={hasTwoFactor}
+        hasPincode={hasPincode}
+        onPincodeSubmit={handlePincodeSubmit}
+        onOtpSubmit={handleOtpSubmit}
+        isLoading={isPending}
+        title="Confirm Asset Deployment"
+        description="Please verify your identity to deploy the asset factories."
+        errorMessage={verificationError}
+      />
     </div>
   );
 }
