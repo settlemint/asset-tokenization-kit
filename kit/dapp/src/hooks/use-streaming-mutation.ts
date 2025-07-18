@@ -153,9 +153,10 @@ export function useStreamingMutation<
               });
               // Clean up individual toast tracking
               if (meta?.id) {
+                const idToDelete = meta.id;
                 setTimeout(
                   () => {
-                    activeToastsRef.current.delete(meta.id);
+                    activeToastsRef.current.delete(idToDelete);
                   },
                   Math.max(2000, meta.retry ?? 5000)
                 );
@@ -173,9 +174,10 @@ export function useStreamingMutation<
               });
               // Clean up individual toast tracking
               if (meta?.id) {
+                const idToDelete = meta.id;
                 setTimeout(
                   () => {
-                    activeToastsRef.current.delete(meta.id);
+                    activeToastsRef.current.delete(idToDelete);
                   },
                   Math.max(2000, meta.retry ?? 5000)
                 );
@@ -190,8 +192,9 @@ export function useStreamingMutation<
               });
               // Clean up individual toast tracking
               if (meta?.id) {
+                const idToDelete = meta.id;
                 setTimeout(() => {
-                  activeToastsRef.current.delete(meta.id);
+                  activeToastsRef.current.delete(idToDelete);
                 }, 10000);
               }
               throw new Error(message || "Operation failed");
