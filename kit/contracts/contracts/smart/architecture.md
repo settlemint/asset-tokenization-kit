@@ -2,11 +2,11 @@
 
 ## Overview
 
-The SMART (SettleMint Adaptable Regulated Token) protocol is a
-comprehensive derivation of the ERC-3643 (T-REX) standard for compliant
-security tokens. Built on ERC-20 foundations using OpenZeppelin, it provides a
-more modular and flexible approach to tokenized asset compliance. This document
-details the architectural design, component relationships, and operational flows.
+The SMART (SettleMint Adaptable Regulated Token) protocol is a comprehensive
+derivation of the ERC-3643 (T-REX) standard for compliant security tokens. Built
+on ERC-20 foundations using OpenZeppelin, it provides a more modular and
+flexible approach to tokenized asset compliance. This document details the
+architectural design, component relationships, and operational flows.
 
 ## System Architecture
 
@@ -80,7 +80,8 @@ graph TB
 #### 1. **SMART Token**
 
 The main security token contract that derives from ERC-3643 principles while
-maintaining full ERC-20 compatibility through OpenZeppelin. Available in two variants:
+maintaining full ERC-20 compatibility through OpenZeppelin. Available in two
+variants:
 
 - **SMART.sol**: Non-upgradeable implementation
 - **SMARTUpgradeable.sol**: UUPS upgradeable implementation
@@ -143,7 +144,7 @@ sequenceDiagram
 
     loop For each module
         Compliance->>IdentityModule: canTransfer(token, from, to, amount, params)
-        
+
         %% Identity verification within module (only checks recipient)
         IdentityModule->>IdentityRegistry: isVerified(to, requiredClaimTopics)
         IdentityRegistry->>TopicScheme: hasTopicScheme(topic)
@@ -157,7 +158,7 @@ sequenceDiagram
         IdentityRegistry-->>IdentityModule: verification result
 
         IdentityModule-->>Compliance: true/false
-        
+
         Compliance->>Module1: canTransfer(token, from, to, amount, params)
         Module1-->>Compliance: true/false
         Compliance->>ModuleN: canTransfer(token, from, to, amount, params)
@@ -186,7 +187,8 @@ sequenceDiagram
 
 1. **Identity Verification**
    - Verify receiver has valid identity contract and required claims
-   - Sender verification is assumed (already owns tokens, so was previously verified)
+   - Sender verification is assumed (already owns tokens, so was previously
+     verified)
 
 2. **Compliance Validation**
    - Compliance engine runs through modules configured on the specific token
@@ -198,143 +200,89 @@ sequenceDiagram
    - Update compliance module states
    - Emit transfer events
 
-## Token Lifecycle
-
-### State Transitions
-
-```mermaid
-stateDiagram-v2
-    [*] --> Deployed: Deploy Token Contract
-
-    Deployed --> Configured: Set Registries & Compliance
-
-    Configured --> IdentitySetup: Add Trusted Issuers
-    note right of IdentitySetup
-        - Register claim issuers
-        - Define required topics
-        - Set verification rules
-    end note
-
-    IdentitySetup --> ComplianceSetup: Configure Modules
-    note right of ComplianceSetup
-        - Add compliance modules
-        - Set module parameters
-        - Define transfer rules
-    end note
-
-    ComplianceSetup --> Active: Token Ready
-
-    Active --> Active: Normal Operations
-    note right of Active
-        - User registration
-        - Identity verification
-        - Compliant transfers
-        - Module updates
-    end note
-
-    Active --> Paused: Emergency Pause
-    Paused --> Active: Unpause
-
-    Active --> Upgraded: Upgrade Contract
-    note left of Upgraded
-        Only for upgradeable tokens
-    end note
-    Upgraded --> Active: Continue Operations
-
-    Active --> Recovery: Wallet Recovery
-    note left of Recovery
-        - Identity recovery
-        - Token balance recovery
-    end note
-    Recovery --> Active: Recovery Complete
-```
-
 ## Compliance Module Architecture
 
 ### Multi-Token Configuration
 
 ```mermaid
 graph TB
-    %% Shared Infrastructure
-    CC[Compliance Contract]
-    CM1[Country Allow List Module]
-    CM2[Identity Verification Module]
-    CM3[Address Block List Module]
-    
     %% Multiple Tokens
-    TokenA[Token A - Real Estate]
-    TokenB[Token B - Corporate Bond]
-    TokenC[Token C - Equity Shares]
-    
-    %% Global Configuration
-    GlobalConfig[Global Module Configuration]
-    
-    %% Token-Specific Configuration
-    ConfigA[Token A Parameters]
-    ConfigB[Token B Parameters]
-    ConfigC[Token C Parameters]
-    
-    %% Shared Registries
-    IR[Identity Registry]
-    TIR[Trusted Issuers Registry]
-    TSR[Topic Scheme Registry]
-    
+    TokenA[Token A]
+    TokenB[Token B]
+    TokenC[Token C]
+
+    %% Token-Specific Compliance Configurations
+    ConfigA[Token A Compliance Config<br/>Modules: A, B<br/>Parameters: {...}]
+    ConfigB[Token B Compliance Config<br/>Modules: A, C<br/>Parameters: {...}]
+    ConfigC[Token C Compliance Config<br/>Modules: B, C<br/>Parameters: {...}]
+
+    %% Shared Compliance Contract
+    CC[Compliance Contract<br/>Orchestration Engine]
+
+    %% Compliance Modules
+    ModuleA[Module A]
+    ModuleB[Module B]
+    ModuleC[Module C]
+
+    %% Global Module Configuration
+    GlobalA[Module A Global Config]
+    GlobalB[Module B Global Config]
+    GlobalC[Module C Global Config]
+
     %% Relationships
+    TokenA -->|has configuration| ConfigA
+    TokenB -->|has configuration| ConfigB
+    TokenC -->|has configuration| ConfigC
+
     TokenA -->|uses| CC
     TokenB -->|uses| CC
     TokenC -->|uses| CC
-    
-    CC -->|orchestrates| CM1
-    CC -->|orchestrates| CM2
-    CC -->|orchestrates| CM3
-    
-    %% Global Configuration
-    GlobalConfig -->|configures| CM1
-    GlobalConfig -->|configures| CM2
-    GlobalConfig -->|configures| CM3
-    
-    %% Token-Specific Configuration
-    ConfigA -->|token params| CM1
-    ConfigA -->|token params| CM2
-    ConfigA -->|token params| CM3
-    
-    ConfigB -->|token params| CM1
-    ConfigB -->|token params| CM2
-    ConfigB -->|token params| CM3
-    
-    ConfigC -->|token params| CM1
-    ConfigC -->|token params| CM2
-    ConfigC -->|token params| CM3
-    
-    %% Shared Infrastructure
-    CM2 -->|verifies via| IR
-    IR -->|uses| TIR
-    IR -->|uses| TSR
-    
-    %% Configuration Examples
-    GlobalConfig -.->|"Global: Trusted Issuers<br/>Valid Claim Topics"| IR
-    ConfigA -.->|"Token A: Required Topics = [1,2]<br/>Allowed Countries = [840,826]"| Note1[Real Estate Compliance]
-    ConfigB -.->|"Token B: Required Topics = [1,3]<br/>Allowed Countries = [840,826,276]"| Note2[Bond Compliance]
-    ConfigC -.->|"Token C: Required Topics = [1,2,4]<br/>Allowed Countries = [840]"| Note3[Equity Compliance]
-    
+
+    CC -->|orchestrates| ModuleA
+    CC -->|orchestrates| ModuleB
+    CC -->|orchestrates| ModuleC
+
+    ConfigA -->|configures| ModuleA
+    ConfigA -->|configures| ModuleB
+
+    ConfigB -->|configures| ModuleA
+    ConfigB -->|configures| ModuleC
+
+    ConfigC -->|configures| ModuleB
+    ConfigC -->|configures| ModuleC
+
+    GlobalA -->|global config| ModuleA
+    GlobalB -->|global config| ModuleB
+    GlobalC -->|global config| ModuleC
+
+    ModuleA -->|verifies| Identity[Identity/Claims System]
+    ModuleB -->|verifies| Identity
+    ModuleC -->|verifies| Identity
+
     style CC fill:#9ff,stroke:#333,stroke-width:2px
-    style GlobalConfig fill:#ff9,stroke:#333,stroke-width:2px
     style ConfigA fill:#f9f,stroke:#333,stroke-width:1px
     style ConfigB fill:#f9f,stroke:#333,stroke-width:1px
     style ConfigC fill:#f9f,stroke:#333,stroke-width:1px
+    style GlobalA fill:#ff9,stroke:#333,stroke-width:1px
+    style GlobalB fill:#ff9,stroke:#333,stroke-width:1px
+    style GlobalC fill:#ff9,stroke:#333,stroke-width:1px
 ```
 
 ### Configuration Levels
 
 #### **Global Configuration**
+
 - **Trusted Issuers Registry**: Defines which entities can issue identity claims
-- **Topic Scheme Registry**: Defines valid claim topics (KYC, Accreditation, etc.)
+- **Topic Scheme Registry**: Defines valid claim topics (KYC, Accreditation,
+  etc.)
 - **Module Deployment**: Shared compliance modules across all tokens
 - **Infrastructure**: Identity registry, storage contracts
 
 #### **Token-Specific Configuration**
+
 - **Required Claim Topics**: Each token defines which claims investors must have
-- **Module Parameters**: Token-specific rules (allowed countries, transfer limits, etc.)
+- **Module Parameters**: Token-specific rules (allowed countries, transfer
+  limits, etc.)
 - **Compliance Rules**: Different restrictions per token type
 - **Extension Configuration**: Token-specific feature enablement
 
@@ -452,12 +400,15 @@ graph TD
 
 ### Extension Descriptions
 
-The SMART protocol's modular approach allows mixing and matching extensions based on specific tokenization needs. Each extension adds specific functionality through well-defined interfaces:
+The SMART protocol's modular approach allows mixing and matching extensions
+based on specific tokenization needs. Each extension adds specific functionality
+through well-defined interfaces:
 
 #### **Administrative Extensions**
 
 1. **Burnable Extension** (`extensions/burnable/`)
-   - **Purpose**: Allows designated administrators to burn tokens from any account
+   - **Purpose**: Allows designated administrators to burn tokens from any
+     account
    - **Use Cases**: Regulatory compliance, token destruction, supply management
    - **Key Functions**: `burn(address account, uint256 amount)`
    - **Access Control**: Supply Manager role required
@@ -471,7 +422,8 @@ The SMART protocol's modular approach allows mixing and matching extensions base
 3. **Custodian Extension** (`extensions/custodian/`)
    - **Purpose**: Freeze addresses and force transfers for compliance
    - **Use Cases**: Legal orders, sanctions compliance, dispute resolution
-   - **Key Functions**: `freeze(address account)`, `forceTransfer(from, to, amount)`
+   - **Key Functions**: `freeze(address account)`,
+     `forceTransfer(from, to, amount)`
    - **Access Control**: Compliance Manager role required
 
 #### **User-Facing Extensions**
@@ -507,7 +459,8 @@ The SMART protocol's modular approach allows mixing and matching extensions base
 8. **Collateral Extension** (`extensions/collateral/`)
    - **Purpose**: Require collateral backing for token issuance
    - **Use Cases**: Asset-backed tokens, stablecoins, secured instruments
-   - **Key Functions**: `addCollateral(uint256 amount)`, `removeCollateral(uint256 amount)`
+   - **Key Functions**: `addCollateral(uint256 amount)`,
+     `removeCollateral(uint256 amount)`
    - **Features**: Maintains collateral ratios, prevents over-issuance
 
 #### **Extension Compatibility**
@@ -521,7 +474,8 @@ Extensions are designed to work together seamlessly:
 
 #### **vs. Standard ERC-3643**
 
-Unlike standard ERC-3643 implementations, SMART protocol's derivation approach provides:
+Unlike standard ERC-3643 implementations, SMART protocol's derivation approach
+provides:
 
 - **Modular Design**: Add only needed functionality
 - **Role-Based Access**: Granular permission system
