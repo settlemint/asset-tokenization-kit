@@ -1,7 +1,14 @@
 {
   "welcome": {
     "title": "Welcome to Asset Tokenization Kit",
-    "description": "Your gateway to secure, compliant asset tokenization on the blockchain."
+    "description": "Your gateway to secure, compliant asset tokenization on the blockchain.",
+    "welcome-back": "Welcome back!",
+    "complete-journey": "Let's complete your onboarding journey",
+    "setup-overview": "Setup Overview",
+    "setup-description-returning": "We first need to finish the setup process. This ensures your assets are secure, your on-chain identity is established, and you're ready to experience the future of finance.",
+    "setup-description-new": "We'll guide you through a quick setup process. This ensures your assets are secure, your on-chain identity is established, and you're ready to experience the future of finance.",
+    "continue-setup": "Continue Setup",
+    "get-started": "Let's Get Started"
   },
   "card-description": "We've set up your wallet and will configure your identity on the blockchain to use this platform.",
   "card-title": "Let's get you set up!",
@@ -30,6 +37,34 @@
     "wallet": {
       "title": "Your Wallet",
       "description": "View your blockchain wallet"
+    },
+    "wallet-security": {
+      "title": "Secure your Wallet",
+      "description": "Set up protection for your wallet"
+    },
+    "wallet-recovery-codes": {
+      "title": "Recovery Codes",
+      "description": "Generate backup recovery codes"
+    },
+    "system-deploy": {
+      "title": "Deploy System",
+      "description": "Initialize the core smart contracts"
+    },
+    "system-settings": {
+      "title": "Configure System",
+      "description": "Set up system parameters and settings"
+    },
+    "system-assets": {
+      "title": "Select Asset Types",
+      "description": "Choose supported asset types"
+    },
+    "system-addons": {
+      "title": "System Add-ons",
+      "description": "Enable optional system features"
+    },
+    "identity-setup": {
+      "title": "Setup ONCHAINID",
+      "description": "Create your on-chain identity"
     },
     "security": {
       "title": "Secure your Wallet",

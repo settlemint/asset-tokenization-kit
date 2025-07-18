@@ -103,6 +103,7 @@ export const me = authRouter.user.me
         walletRecoveryCodes: !!authUser.secretCodeVerificationId,
         system: !!systemAddress,
         systemSettings: !!baseCurrency,
+        identitySetup: false, // TODO: Add logic to check if ONCHAINID is set up
         identity: !!userQueryResult?.kyc,
       },
     };
