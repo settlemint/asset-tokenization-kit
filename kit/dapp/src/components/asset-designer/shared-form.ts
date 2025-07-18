@@ -13,8 +13,18 @@ export const AssetDesignerFormSchema = TokenBaseSchema.extend(
 
 export type AssetDesignerFormData = z.infer<typeof AssetDesignerFormSchema>;
 
+const optionalFields: (keyof AssetDesignerFormData)[] = ["isin"];
+
+export const isRequiredField = (field: keyof AssetDesignerFormData) => {
+  return !optionalFields.includes(field);
+};
+
 export const assetDesignerFormOptions = formOptions({
   defaultValues: {
     step: "selectAssetType",
   } as AssetDesignerFormData,
 });
+
+export const onStepSubmit = () => {
+  // Only used for typing
+};
