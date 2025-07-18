@@ -1,9 +1,5 @@
 import { Address, BigInt, log } from "@graphprotocol/graph-ts";
-import {
-  IdentityClaim,
-  Token,
-  type TokenFactory,
-} from "../../../generated/schema";
+import { IdentityClaim, Token, TokenFactory } from "../../../generated/schema";
 import { fetchIdentity } from "../../identity/fetch/identity";
 import { setBigNumber } from "../../utils/bignumber";
 import { fetchTokenByIdentity } from "../fetch/token";
