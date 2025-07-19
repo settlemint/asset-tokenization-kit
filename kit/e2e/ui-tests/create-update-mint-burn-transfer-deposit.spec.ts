@@ -11,7 +11,6 @@ import { successMessageData } from "../test-data/message-data";
 import {
   adminUser,
   signUpTransferUserData,
-  signUpUserData,
 } from "../test-data/user-data";
 import { ensureUserIsAdmin, fetchWalletAddressFromDB } from "../utils/db-utils";
 
@@ -69,7 +68,7 @@ test.describe("Create, update collateral, mint and transfer deposit", () => {
     }
   });
   test("Admin user creates deposit, updates proven collateral, mints, burns and allows user to transfer deposits", async ({
-    browser,
+    browser: _browser,
   }) => {
     await adminPages.adminPage.createDeposit(depositData);
     testData.depositName = depositData.name;
