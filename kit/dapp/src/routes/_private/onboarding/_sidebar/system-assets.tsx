@@ -9,7 +9,6 @@ import { SectionHeader } from "@/components/onboarding/section-header";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
-import { Form, FormField, FormItem } from "@/components/ui/form";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/ui/verification-dialog";
 import { useSettings } from "@/hooks/use-settings";
@@ -25,16 +24,14 @@ import {
   type TokenType,
   TokenTypeEnum,
 } from "@/orpc/routes/token/routes/factory/factory.create.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { memo, useCallback, useMemo, useState } from "react";
-import { type Control, useForm } from "react-hook-form";
+import { useForm } from "@tanstack/react-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { z } from "zod";
 
 const logger = createLogger();
 
@@ -63,56 +60,49 @@ export const Route = createFileRoute(
   component: RouteComponent,
 });
 
-const assetSelectionSchema = z.object({
-  assets: z.array(TokenTypeEnum).min(1, "Select at least one asset type"),
-});
-
-type AssetSelectionFormValues = z.infer<typeof assetSelectionSchema>;
+interface AssetSelectionFormValues {
+  assets: TokenType[];
+}
 
 // Asset icons and components are now imported from separate files
 
 const AssetTypeFormField = memo(
   ({
     assetType,
-    control,
+    field,
     isDisabled,
   }: {
     assetType: AssetType;
-    control: Control<AssetSelectionFormValues>;
+    field: {
+      state: {
+        value: TokenType[];
+      };
+      handleChange: (value: TokenType[]) => void;
+    };
     isDisabled: boolean;
   }) => {
     const Icon = getAssetIcon(assetType);
+    const isChecked = field.state.value.includes(assetType) || isDisabled;
+
+    const handleToggle = (checked: boolean) => {
+      if (isDisabled) return;
+
+      if (checked) {
+        field.handleChange([...field.state.value, assetType]);
+      } else {
+        field.handleChange(
+          field.state.value.filter((value: string) => value !== assetType)
+        );
+      }
+    };
 
     return (
-      <FormField
-        key={assetType}
-        control={control}
-        name="assets"
-        render={({ field }) => {
-          const isChecked = field.value.includes(assetType) || isDisabled;
-
-          const handleToggle = (checked: boolean) => {
-            if (isDisabled) return;
-
-            if (checked) {
-              field.onChange([...field.value, assetType]);
-            } else {
-              field.onChange(
-                field.value.filter((value: string) => value !== assetType)
-              );
-            }
-          };
-
-          return (
-            <AssetTypeCard
-              assetType={assetType}
-              icon={Icon}
-              isChecked={isChecked}
-              isDisabled={isDisabled}
-              onToggle={handleToggle}
-            />
-          );
-        }}
+      <AssetTypeCard
+        assetType={assetType}
+        icon={Icon}
+        isChecked={isChecked}
+        isDisabled={isDisabled}
+        onToggle={handleToggle}
       />
     );
   }
@@ -154,10 +144,25 @@ function RouteComponent() {
     enabled: !!systemAddress,
   });
 
-  const form = useForm<AssetSelectionFormValues>({
-    resolver: zodResolver(assetSelectionSchema),
+  const form = useForm({
     defaultValues: {
-      assets: [],
+      assets: [] as TokenType[],
+    },
+    onSubmit: ({ value }: { value: AssetSelectionFormValues }) => {
+      if (!systemAddress || !systemDetails?.tokenFactoryRegistry) {
+        toast.error(t("assets.no-system"));
+        return;
+      }
+
+      const factories = value.assets.map((assetType) => ({
+        type: assetType,
+        name: t(`asset-types.${assetType}`, { ns: "tokens" }),
+      }));
+
+      // Store the factories and show the verification dialog
+      setPendingFactories(factories);
+      setVerificationError(null);
+      setShowVerificationModal(true);
     },
   });
 
@@ -182,29 +187,6 @@ function RouteComponent() {
       await completeStepAndNavigate(OnboardingStep.systemAssets);
     },
   });
-
-  const handleDeployFactories = useCallback(() => {
-    if (!systemAddress || !systemDetails?.tokenFactoryRegistry) {
-      toast.error(t("assets.no-system"));
-      return;
-    }
-
-    const values = form.getValues();
-    if (values.assets.length === 0) {
-      void form.trigger("assets");
-      return;
-    }
-
-    const factories = values.assets.map((assetType) => ({
-      type: assetType,
-      name: t(`asset-types.${assetType}`, { ns: "tokens" }),
-    }));
-
-    // Store the factories and show the verification dialog
-    setPendingFactories(factories);
-    setVerificationError(null);
-    setShowVerificationModal(true);
-  }, [systemAddress, systemDetails?.tokenFactoryRegistry, t, form]);
 
   // Create factory messages object
   const factoryMessages = useMemo(
@@ -307,55 +289,18 @@ function RouteComponent() {
   const deployedFactories = systemDetails?.tokenFactories ?? [];
 
   const onNext = useCallback(async () => {
-    if (hasDeployedAssets) {
-      try {
-        await queryClient.refetchQueries({ queryKey: orpc.user.me.key() });
-        await completeStepAndNavigate(OnboardingStep.systemAssets);
-      } catch (error) {
-        logger.error("Navigation error:", error);
-        toast.error("Failed to navigate to next step");
-      }
-      return;
+    try {
+      await queryClient.refetchQueries({ queryKey: orpc.user.me.key() });
+      await completeStepAndNavigate(OnboardingStep.systemAssets);
+    } catch (error) {
+      logger.error("Navigation error:", error);
+      toast.error("Failed to navigate to next step");
     }
-    handleDeployFactories();
-  }, [
-    hasDeployedAssets,
-    queryClient,
-    completeStepAndNavigate,
-    handleDeployFactories,
-  ]);
+  }, [queryClient, completeStepAndNavigate]);
 
   const onPrevious = useCallback(
     async () => navigateToStep(OnboardingStep.systemSettings),
     [navigateToStep]
-  );
-
-  const renderAssetTypeField = useCallback(
-    () => (
-      <FormItem>
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
-              {t("assets.available-asset-types")}
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {t("assets.select-all-asset-types")}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {availableAssets.map((assetType) => (
-              <AssetTypeFormField
-                key={assetType}
-                assetType={assetType}
-                control={form.control}
-                isDisabled={deployedAssetTypes.has(assetType)}
-              />
-            ))}
-          </div>
-        </div>
-      </FormItem>
-    ),
-    [availableAssets, form.control, t, deployedAssetTypes]
   );
 
   return (
@@ -390,43 +335,94 @@ function RouteComponent() {
                 description={t("assets.asset-factories-description")}
               />
 
-              <Form {...form}>
-                <div className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="assets"
-                    render={renderAssetTypeField}
-                  />
-
-                  {form.formState.errors.assets && (
-                    <p className="text-sm text-red-600 dark:text-red-400">
-                      {form.formState.errors.assets.message}
-                    </p>
-                  )}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  void form.handleSubmit();
+                }}
+                className="flex flex-col h-full"
+              >
+                <div className="flex-1">
+                  <div className="space-y-6">
+                    <form.Field
+                      name="assets"
+                      validators={{
+                        onChange: ({ value }) => {
+                          if (value.length === 0) {
+                            return "Select at least one asset type";
+                          }
+                          return undefined;
+                        },
+                      }}
+                    >
+                      {(field) => (
+                        <>
+                          <div className="space-y-4">
+                            <div>
+                              <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
+                                {t("assets.available-asset-types")}
+                              </h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {t("assets.select-all-asset-types")}
+                              </p>
+                            </div>
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                              {availableAssets.map((assetType) => (
+                                <AssetTypeFormField
+                                  key={assetType}
+                                  assetType={assetType}
+                                  field={{
+                                    state: {
+                                      value: field.state.value,
+                                    },
+                                    handleChange: field.handleChange,
+                                  }}
+                                  isDisabled={deployedAssetTypes.has(assetType)}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          {field.state.meta.errors.length > 0 && (
+                            <p className="text-sm text-red-600 dark:text-red-400">
+                              {field.state.meta.errors[0]}
+                            </p>
+                          )}
+                        </>
+                      )}
+                    </form.Field>
+                  </div>
                 </div>
-              </Form>
+
+                <div className="mt-8 pt-6 border-t border-border">
+                  <div className="flex justify-between">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={onPrevious}
+                    >
+                      Previous
+                    </Button>
+                    <Button type="submit" disabled={isPending}>
+                      Deploy Assets
+                    </Button>
+                  </div>
+                </div>
+              </form>
             </div>
           )}
         </div>
       </div>
 
-      <div className="mt-8 pt-6 border-t border-border">
-        <div className="flex justify-between">
-          {!hasDeployedAssets && (
-            <Button type="button" variant="outline" onClick={onPrevious}>
-              Previous
+      {hasDeployedAssets && (
+        <div className="mt-8 pt-6 border-t border-border">
+          <div className="flex justify-end">
+            <Button type="button" onClick={onNext} disabled={isPending}>
+              Continue
             </Button>
-          )}
-          <Button
-            type="button"
-            onClick={onNext}
-            disabled={isPending}
-            className={hasDeployedAssets ? "ml-auto" : ""}
-          >
-            {hasDeployedAssets ? "Continue" : "Deploy Assets"}
-          </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       <VerificationDialog
         open={showVerificationModal}
