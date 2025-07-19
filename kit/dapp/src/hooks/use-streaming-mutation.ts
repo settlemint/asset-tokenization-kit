@@ -65,12 +65,11 @@ interface StreamingMutationOptions<TData, TError, TVariables, TContext> {
  *   }
  * });
  *
- * // Call mutation with all messages
+ * // Call mutation - messages are handled by i18n middleware on the backend
  * mutate({
- *   messages: {
- *     systemCreated: t("onboarding:create-system-messages.system-created"),
- *     creatingSystem: t("onboarding:create-system-messages.creating-system"),
- *     // ... other messages
+ *   verification: {
+ *     verificationCode: "123456",
+ *     verificationType: "pincode"
  *   }
  * });
  * ```
