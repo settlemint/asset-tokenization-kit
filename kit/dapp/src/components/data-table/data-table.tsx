@@ -1,5 +1,3 @@
-"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
-
 import {
   Table,
   TableBody,
@@ -158,6 +156,7 @@ declare module "@tanstack/table-core" {
  * ```
  */
 function DataTableComponent<TData>({
+  "use no memo";
   columns,
   data,
   icons,

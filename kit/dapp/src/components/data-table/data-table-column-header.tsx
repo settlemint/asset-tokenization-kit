@@ -1,5 +1,3 @@
-"use no memo";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -94,6 +92,7 @@ export function DataTableColumnHeader<TData, TValue>({
   variant = "default",
   children,
 }: PropsWithChildren<DataTableColumnHeaderProps<TData, TValue>>) {
+  "use no memo";
   const { t } = useTranslation("data-table");
 
   /**

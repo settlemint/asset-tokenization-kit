@@ -26,6 +26,7 @@ export function useScrollBlur(
   };
 
   // Set up ResizeObserver to monitor container size
+  // React Compiler ensures checkScroll maintains a stable reference
   useEffect(() => {
     if (scrollContainerRef.current) {
       const resizeObserver = new ResizeObserver(() => {
@@ -36,7 +37,7 @@ export function useScrollBlur(
         resizeObserver.disconnect();
       };
     }
-  }, [checkScroll, scrollContainerRef]);
+  }, [scrollContainerRef]);
 
   return {
     showLeftBlur,

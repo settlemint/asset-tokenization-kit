@@ -1,5 +1,3 @@
-"use no memo"; // fixes rerendering with react compiler
-
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -39,6 +37,7 @@ import { PropertyFilterValueMenu } from "./filters/values/value-menu";
  * @returns Filter UI with responsive layout
  */
 export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
+  "use no memo";
   const isMobile = useIsMobile();
 
   // Key by filter count to force re-render when filters change
@@ -84,6 +83,7 @@ export function DataTableFilterDesktopContainer({
 }: {
   children: React.ReactNode;
 }) {
+  "use no memo";
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { showLeftBlur, showRightBlur, checkScroll } =
     useScrollBlur(scrollContainerRef);
@@ -130,6 +130,7 @@ export function DataTableFilterMobileContainer({
 }: {
   children: React.ReactNode;
 }) {
+  "use no memo";
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { showLeftBlur, showRightBlur, checkScroll } =
     useScrollBlur(scrollContainerRef);
@@ -172,6 +173,7 @@ export function DataTableFilterMobileContainer({
  * @returns Filter button with popover menu
  */
 export function TableFilter<TData>({ table }: { table: Table<TData> }) {
+  "use no memo";
   const { t } = useTranslation("data-table");
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -287,6 +289,7 @@ export function TableFilterMenuItem<TData>({
   column: Column<TData>;
   setProperty: (value: string) => void;
 }) {
+  "use no memo";
   const Icon = column.columnDef.meta?.icon;
   const displayName = column.columnDef.meta?.displayName;
 
@@ -316,6 +319,7 @@ export function TableFilterMenuItem<TData>({
  * @returns List of filter chip components
  */
 export function PropertyFilterList<TData>({ table }: { table: Table<TData> }) {
+  "use no memo";
   // Get filters directly from table state - this will re-render when table updates
   const filters = table.getState().columnFilters;
 
@@ -452,6 +456,7 @@ function RenderFilter<TData, T extends ColumnDataType>({
   table: Table<TData>;
   onRemoveFilter: (filterId: string) => void;
 }) {
+  "use no memo";
   const { value } = filter;
 
   const handleRemoveFilter = useCallback(
