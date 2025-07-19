@@ -118,6 +118,13 @@ export function createRouter() {
       defaultPreloadStaleTime: 0,
 
       /**
+       * Enable structural sharing for URL state.
+       * This preserves referential stability when only parts of the state change,
+       * reducing unnecessary re-renders.
+       */
+      defaultStructuralSharing: true,
+
+      /**
        * Default error boundary component.
        * Handles uncaught errors in route components.
        */

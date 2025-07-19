@@ -26,7 +26,9 @@ export const Route = createFileRoute("/_private/onboarding/_sidebar/wallet")({
 // TODO: The buttons need to be in a footer div at the bottom of the modal. If not step 1, it always needs a back button that goes to the previous step using the search params.
 function RouteComponent() {
   const [isCreating, setIsCreating] = useState(false);
-  const { subStep } = Route.useSearch();
+  const subStep = Route.useSearch({
+    select: (search) => search.subStep,
+  });
   const { refetch } = useSession();
   const { handleMutationSuccess, completeStepAndNavigate } =
     useOnboardingNavigation();

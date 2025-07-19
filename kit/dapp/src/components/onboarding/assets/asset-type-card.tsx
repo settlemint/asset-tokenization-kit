@@ -2,7 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
 import type { LucideIcon } from "lucide-react";
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import { useTranslation } from "react-i18next";
 
 interface AssetTypeCardProps {
@@ -34,22 +34,20 @@ export const AssetTypeCard = memo(
   }: AssetTypeCardProps) => {
     const { t } = useTranslation(["onboarding", "tokens"]);
 
-    const handleItemClick = useCallback(() => {
+    // Event handlers are automatically optimized by React Compiler - no manual memoization needed
+    const handleItemClick = () => {
       if (isDisabled) return;
       onToggle(!isChecked);
-    }, [isDisabled, isChecked, onToggle]);
+    };
 
-    const handleCheckboxClick = useCallback((e: React.MouseEvent) => {
+    const handleCheckboxClick = (e: React.MouseEvent) => {
       e.stopPropagation();
-    }, []);
+    };
 
-    const handleCheckboxChange = useCallback(
-      (checked: boolean) => {
-        if (isDisabled) return;
-        onToggle(checked);
-      },
-      [isDisabled, onToggle]
-    );
+    const handleCheckboxChange = (checked: boolean) => {
+      if (isDisabled) return;
+      onToggle(checked);
+    };
 
     return (
       <FormItem

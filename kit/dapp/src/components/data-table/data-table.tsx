@@ -1,5 +1,3 @@
-"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
-
 import {
   Table,
   TableBody,
@@ -175,6 +173,7 @@ function DataTableComponent<TData>({
   urlState,
   onRowClick,
 }: DataTableProps<TData>) {
+  "use no memo";
   const { t } = useTranslation("data-table");
 
   // Use URL state management if enabled, otherwise use local state

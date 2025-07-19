@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -164,7 +162,9 @@ export function RouterBreadcrumb({
 }: {
   customSegments?: BreadcrumbSegment[];
 }) {
-  const routerState = useRouterState();
+  const matches = useRouterState({
+    select: (state) => state.matches,
+  });
 
   // Generate breadcrumb segments from router state
   const generateSegmentsWithMetadata = (): BreadcrumbSegmentWithMetadata[] => {
@@ -184,8 +184,8 @@ export function RouterBreadcrumb({
 
     // Find the deepest match with breadcrumb data
     let breadcrumbsFromLoader: BreadcrumbMetadata[] | undefined;
-    for (let i = routerState.matches.length - 1; i >= 0; i--) {
-      const match = routerState.matches[i];
+    for (let i = matches.length - 1; i >= 0; i--) {
+      const match = matches[i];
       if (!match) continue;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const loaderData = match.loaderData as any;
@@ -218,7 +218,7 @@ export function RouterBreadcrumb({
     } else {
       // Fallback to building from route matches
       // First, collect all visible matches
-      const visibleMatches = routerState.matches.filter((match) => {
+      const visibleMatches = matches.filter((match) => {
         // Skip layout routes (those with underscore prefix)
         if (match.id.startsWith("/_") || match.id === "/") {
           return false;
