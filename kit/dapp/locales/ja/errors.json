@@ -91,5 +91,21 @@
   "validation": {
     "description": "入力内容を確認して、もう一度お試しください。",
     "title": "検証エラー"
+  },
+  "tokenInterfaceNotSupported": {
+    "description": "提供されたアドレスのトークン契約は、必要なインターフェースを実装していません。必要なインターフェース: {{requiredInterfaces}}",
+    "title": "トークンインターフェースはサポートされていません"
+  },
+  "userNotAllowed": {
+    "description": "このトークンと対話することは許可されていません。理由: {{reason}}",
+    "title": "ユーザーは許可されていません"
+  },
+  "userNotAuthorized": {
+    "description": "このアクションを実行する権限がありません。必要な役割: {{requiredRoles}}",
+    "title": "ユーザーは権限がありません"
+  },
+  "userNotCompliant": {
+    "description": "トークンの必要なクレームトピックに準拠していません。必要なクレームトピック: {{requiredClaimTopics}}",
+    "title": "ユーザーは準拠していません"
   }
 }

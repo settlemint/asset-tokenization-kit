@@ -1,5 +1,3 @@
-"use client";
-
 import {
   BanknoteArrowUpIcon,
   ChartLine,
@@ -40,11 +38,29 @@ import { useTranslation } from "react-i18next";
 export function NavAsset() {
   const { t } = useTranslation("navigation");
   const matches = useMatches();
-  const { data: factories } = useSuspenseQuery(
-    orpc.token.factoryList.queryOptions({ input: { hasTokens: true } })
-  );
 
-  if (factories.length === 0) {
+  // Pre-group factories by asset class using select function
+  // This reduces re-renders when factory data changes in ways that don't affect grouping
+  const { data: groupedFactories } = useSuspenseQuery({
+    ...orpc.token.factoryList.queryOptions({ input: { hasTokens: true } }),
+    select: (factories) => ({
+      hasFactories: factories.length > 0,
+      fixedIncome: factories.filter(
+        (factory) =>
+          getAssetClassFromFactoryTypeId(factory.typeId) === "fixedIncome"
+      ),
+      flexibleIncome: factories.filter(
+        (factory) =>
+          getAssetClassFromFactoryTypeId(factory.typeId) === "flexibleIncome"
+      ),
+      cashEquivalent: factories.filter(
+        (factory) =>
+          getAssetClassFromFactoryTypeId(factory.typeId) === "cashEquivalent"
+      ),
+    }),
+  });
+
+  if (!groupedFactories.hasFactories) {
     return null;
   }
 
@@ -70,26 +86,17 @@ export function NavAsset() {
     {
       name: t("fixedIncome"),
       icon: PiggyBankIcon,
-      factories: factories.filter(
-        (factory) =>
-          getAssetClassFromFactoryTypeId(factory.typeId) === "fixedIncome"
-      ),
+      factories: groupedFactories.fixedIncome,
     },
     {
       name: t("flexibleIncome"),
       icon: BanknoteArrowUpIcon,
-      factories: factories.filter(
-        (factory) =>
-          getAssetClassFromFactoryTypeId(factory.typeId) === "flexibleIncome"
-      ),
+      factories: groupedFactories.flexibleIncome,
     },
     {
       name: t("cashEquivalent"),
       icon: CreditCardIcon,
-      factories: factories.filter(
-        (factory) =>
-          getAssetClassFromFactoryTypeId(factory.typeId) === "cashEquivalent"
-      ),
+      factories: groupedFactories.cashEquivalent,
     },
   ];
 

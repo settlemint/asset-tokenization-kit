@@ -1,14 +1,20 @@
+import { AssetDeploymentSuccess } from "@/components/onboarding/assets/asset-deployment-success";
+import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
+import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
+import { SectionHeader } from "@/components/onboarding/section-header";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem } from "@/components/ui/form";
+import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/ui/verification-dialog";
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { authClient } from "@/lib/auth/auth.client";
 import {
   type AssetFactoryTypeId,
   type AssetType,
@@ -16,8 +22,8 @@ import {
 } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import {
-  TokenTypeEnum,
   type TokenType,
+  TokenTypeEnum,
 } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -29,12 +35,6 @@ import { type Control, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
-import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
-import { AssetDeploymentSuccess } from "@/components/onboarding/assets/asset-deployment-success";
-import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
-import { InfoAlert } from "@/components/ui/info-alert";
-import { SectionHeader } from "@/components/onboarding/section-header";
-import { authClient } from "@/lib/auth/auth.client";
 
 const logger = createLogger();
 
@@ -43,6 +43,23 @@ export const Route = createFileRoute(
 )({
   validateSearch: zodValidator(createOnboardingSearchSchema()),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemAssets),
+  loader: async ({ context: { queryClient, orpc } }) => {
+    // Get system address from settings
+    const systemAddress = await queryClient.ensureQueryData(
+      orpc.settings.read.queryOptions({
+        input: { key: "SYSTEM_ADDRESS" },
+      })
+    );
+
+    // Prefetch system details if address is available
+    if (systemAddress) {
+      await queryClient.prefetchQuery(
+        orpc.system.read.queryOptions({
+          input: { id: systemAddress },
+        })
+      );
+    }
+  },
   component: RouteComponent,
 });
 
@@ -149,21 +166,17 @@ function RouteComponent() {
     onSuccess: async () => {
       toast.success(t("assets.deployed"));
 
-      // Refetch system data to get updated factory list
-      await queryClient.invalidateQueries({
-        queryKey: orpc.system.read.key(),
-      });
-      await queryClient.invalidateQueries({
-        queryKey: orpc.system.read.queryOptions({
-          input: { id: systemAddress ?? "" },
-        }).queryKey,
-        refetchType: "all",
-      });
-
-      // Refetch user data to update onboarding state
-      await queryClient.refetchQueries({
-        queryKey: orpc.user.me.key(),
-      });
+      // Refetch all relevant data
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: orpc.system.read.key() }),
+        queryClient.invalidateQueries({
+          queryKey: orpc.system.read.queryOptions({
+            input: { id: systemAddress ?? "" },
+          }).queryKey,
+          refetchType: "all",
+        }),
+        queryClient.refetchQueries({ queryKey: orpc.user.me.key() }),
+      ]);
     },
   });
 
@@ -181,10 +194,7 @@ function RouteComponent() {
 
     const factories = values.assets.map((assetType) => ({
       type: assetType,
-      name: (t as (key: string, options?: Record<string, unknown>) => string)(
-        `asset-types.${assetType}`,
-        { ns: "tokens" }
-      ),
+      name: t(`asset-types.${assetType}`, { ns: "tokens" }),
     }));
 
     // Store the factories and show the verification dialog
@@ -193,9 +203,48 @@ function RouteComponent() {
     setShowVerificationModal(true);
   }, [systemAddress, systemDetails?.tokenFactoryRegistry, t, form]);
 
-  // Handle PIN code submission
-  const handlePincodeSubmit = useCallback(
-    (pincode: string) => {
+  // Create factory messages object
+  const factoryMessages = useMemo(
+    () => ({
+      initialLoading: t("assets.factory-messages.initial-loading"),
+      factoryCreated: t("assets.factory-messages.factory-created"),
+      creatingFactory: t("assets.factory-messages.creating-factory"),
+      factoryCreationFailed: t(
+        "assets.factory-messages.factory-creation-failed"
+      ),
+      batchProgress: t("assets.factory-messages.batch-progress"),
+      batchCompleted: t("assets.factory-messages.batch-completed"),
+      noResultError: t("assets.factory-messages.no-result-error"),
+      defaultError: t("assets.factory-messages.default-error"),
+      systemNotBootstrapped: t(
+        "assets.factory-messages.system-not-bootstrapped"
+      ),
+      transactionSubmitted: t("assets.factory-messages.transaction-submitted"),
+      factoryCreationCompleted: t(
+        "assets.factory-messages.factory-creation-completed"
+      ),
+      allFactoriesSucceeded: t(
+        "assets.factory-messages.all-factories-succeeded"
+      ),
+      someFactoriesFailed: t("assets.factory-messages.some-factories-failed"),
+      allFactoriesFailed: t("assets.factory-messages.all-factories-failed"),
+      factoryAlreadyExists: t("assets.factory-messages.factory-already-exists"),
+      allFactoriesSkipped: t("assets.factory-messages.all-factories-skipped"),
+      someFactoriesSkipped: t("assets.factory-messages.some-factories-skipped"),
+      waitingForMining: t("assets.factory-messages.waiting-for-mining"),
+      transactionFailed: t("assets.factory-messages.transaction-failed"),
+      transactionDropped: t("assets.factory-messages.transaction-dropped"),
+      waitingForIndexing: t("assets.factory-messages.waiting-for-indexing"),
+      transactionIndexed: t("assets.factory-messages.transaction-indexed"),
+      streamTimeout: t("assets.factory-messages.stream-timeout"),
+      indexingTimeout: t("assets.factory-messages.indexing-timeout"),
+    }),
+    [t]
+  );
+
+  // Handle verification code submission
+  const handleVerificationSubmit = useCallback(
+    (verificationCode: string, verificationType: "pincode" | "two-factor") => {
       if (!pendingFactories || !systemDetails?.tokenFactoryRegistry) {
         return;
       }
@@ -205,124 +254,36 @@ function RouteComponent() {
 
       createFactories({
         verification: {
-          verificationCode: pincode,
-          verificationType: "pincode",
+          verificationCode,
+          verificationType,
         },
         contract: systemDetails.tokenFactoryRegistry,
         factories: pendingFactories,
-        messages: {
-          initialLoading: t("assets.factory-messages.initial-loading"),
-          factoryCreated: t("assets.factory-messages.factory-created"),
-          creatingFactory: t("assets.factory-messages.creating-factory"),
-          factoryCreationFailed: t(
-            "assets.factory-messages.factory-creation-failed"
-          ),
-          batchProgress: t("assets.factory-messages.batch-progress"),
-          batchCompleted: t("assets.factory-messages.batch-completed"),
-          noResultError: t("assets.factory-messages.no-result-error"),
-          defaultError: t("assets.factory-messages.default-error"),
-          systemNotBootstrapped: t(
-            "assets.factory-messages.system-not-bootstrapped"
-          ),
-          transactionSubmitted: t(
-            "assets.factory-messages.transaction-submitted"
-          ),
-          factoryCreationCompleted: t(
-            "assets.factory-messages.factory-creation-completed"
-          ),
-          allFactoriesSucceeded: t(
-            "assets.factory-messages.all-factories-succeeded"
-          ),
-          someFactoriesFailed: t(
-            "assets.factory-messages.some-factories-failed"
-          ),
-          allFactoriesFailed: t("assets.factory-messages.all-factories-failed"),
-          factoryAlreadyExists: t(
-            "assets.factory-messages.factory-already-exists"
-          ),
-          allFactoriesSkipped: t(
-            "assets.factory-messages.all-factories-skipped"
-          ),
-          someFactoriesSkipped: t(
-            "assets.factory-messages.some-factories-skipped"
-          ),
-          waitingForMining: t("assets.factory-messages.waiting-for-mining"),
-          transactionFailed: t("assets.factory-messages.transaction-failed"),
-          transactionDropped: t("assets.factory-messages.transaction-dropped"),
-          waitingForIndexing: t("assets.factory-messages.waiting-for-indexing"),
-          transactionIndexed: t("assets.factory-messages.transaction-indexed"),
-          streamTimeout: t("assets.factory-messages.stream-timeout"),
-          indexingTimeout: t("assets.factory-messages.indexing-timeout"),
-        },
+        messages: factoryMessages,
       });
     },
-    [pendingFactories, systemDetails?.tokenFactoryRegistry, createFactories, t]
+    [
+      pendingFactories,
+      systemDetails?.tokenFactoryRegistry,
+      createFactories,
+      factoryMessages,
+    ]
+  );
+
+  // Handle PIN code submission
+  const handlePincodeSubmit = useCallback(
+    (pincode: string) => {
+      handleVerificationSubmit(pincode, "pincode");
+    },
+    [handleVerificationSubmit]
   );
 
   // Handle OTP submission
   const handleOtpSubmit = useCallback(
     (otp: string) => {
-      if (!pendingFactories || !systemDetails?.tokenFactoryRegistry) {
-        return;
-      }
-
-      setVerificationError(null);
-      setShowVerificationModal(false);
-
-      createFactories({
-        verification: {
-          verificationCode: otp,
-          verificationType: "two-factor",
-        },
-        contract: systemDetails.tokenFactoryRegistry,
-        factories: pendingFactories,
-        messages: {
-          initialLoading: t("assets.factory-messages.initial-loading"),
-          factoryCreated: t("assets.factory-messages.factory-created"),
-          creatingFactory: t("assets.factory-messages.creating-factory"),
-          factoryCreationFailed: t(
-            "assets.factory-messages.factory-creation-failed"
-          ),
-          batchProgress: t("assets.factory-messages.batch-progress"),
-          batchCompleted: t("assets.factory-messages.batch-completed"),
-          noResultError: t("assets.factory-messages.no-result-error"),
-          defaultError: t("assets.factory-messages.default-error"),
-          systemNotBootstrapped: t(
-            "assets.factory-messages.system-not-bootstrapped"
-          ),
-          transactionSubmitted: t(
-            "assets.factory-messages.transaction-submitted"
-          ),
-          factoryCreationCompleted: t(
-            "assets.factory-messages.factory-creation-completed"
-          ),
-          allFactoriesSucceeded: t(
-            "assets.factory-messages.all-factories-succeeded"
-          ),
-          someFactoriesFailed: t(
-            "assets.factory-messages.some-factories-failed"
-          ),
-          allFactoriesFailed: t("assets.factory-messages.all-factories-failed"),
-          factoryAlreadyExists: t(
-            "assets.factory-messages.factory-already-exists"
-          ),
-          allFactoriesSkipped: t(
-            "assets.factory-messages.all-factories-skipped"
-          ),
-          someFactoriesSkipped: t(
-            "assets.factory-messages.some-factories-skipped"
-          ),
-          waitingForMining: t("assets.factory-messages.waiting-for-mining"),
-          transactionFailed: t("assets.factory-messages.transaction-failed"),
-          transactionDropped: t("assets.factory-messages.transaction-dropped"),
-          waitingForIndexing: t("assets.factory-messages.waiting-for-indexing"),
-          transactionIndexed: t("assets.factory-messages.transaction-indexed"),
-          streamTimeout: t("assets.factory-messages.stream-timeout"),
-          indexingTimeout: t("assets.factory-messages.indexing-timeout"),
-        },
-      });
+      handleVerificationSubmit(otp, "two-factor");
     },
-    [pendingFactories, systemDetails?.tokenFactoryRegistry, createFactories, t]
+    [handleVerificationSubmit]
   );
 
   const availableAssets = TokenTypeEnum.options;
@@ -332,30 +293,20 @@ function RouteComponent() {
   const deployedAssetTypes = useMemo(
     () =>
       new Set(
-        systemDetails?.tokenFactories.map((factory) => {
-          return getAssetTypeFromFactoryTypeId(
-            factory.typeId as AssetFactoryTypeId
-          );
-        }) ?? []
+        systemDetails?.tokenFactories.map((factory) =>
+          getAssetTypeFromFactoryTypeId(factory.typeId as AssetFactoryTypeId)
+        ) ?? []
       ),
     [systemDetails?.tokenFactories]
   );
 
-  // Stable reference for empty array
-  const deployedFactories = useMemo(
-    () => systemDetails?.tokenFactories ?? [],
-    [systemDetails?.tokenFactories]
-  );
+  // Stable reference for deployed factories
+  const deployedFactories = systemDetails?.tokenFactories ?? [];
 
-  const onNext = async () => {
+  const onNext = useCallback(async () => {
     if (hasDeployedAssets) {
       try {
-        // Refresh user state to ensure onboarding state is up to date
-        await queryClient.refetchQueries({
-          queryKey: orpc.user.me.key(),
-        });
-
-        // Use completeStepAndNavigate to properly update state and navigate
+        await queryClient.refetchQueries({ queryKey: orpc.user.me.key() });
         await completeStepAndNavigate(OnboardingStep.systemAssets);
       } catch (error) {
         logger.error("Navigation error:", error);
@@ -364,11 +315,17 @@ function RouteComponent() {
       return;
     }
     handleDeployFactories();
-  };
+  }, [
+    hasDeployedAssets,
+    queryClient,
+    completeStepAndNavigate,
+    handleDeployFactories,
+  ]);
 
-  const onPrevious = async () => {
-    await navigateToStep(OnboardingStep.systemSettings);
-  };
+  const onPrevious = useCallback(
+    async () => navigateToStep(OnboardingStep.systemSettings),
+    [navigateToStep]
+  );
 
   const renderAssetTypeField = useCallback(
     () => (

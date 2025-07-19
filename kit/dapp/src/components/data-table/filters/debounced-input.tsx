@@ -1,8 +1,6 @@
-"use client";
-
 import { Input } from "@/components/ui/input";
-import { useCallback, useEffect, useState } from "react";
 import type { InputHTMLAttributes } from "react";
+import { useEffect, useState } from "react";
 
 export function DebouncedInput({
   value: initialValue,
@@ -34,9 +32,9 @@ export function DebouncedInput({
     <Input
       {...props}
       value={value}
-      onChange={useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);
-      }, [])}
+      }}
     />
   );
 }

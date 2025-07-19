@@ -149,5 +149,25 @@
       "low": "Niedrige Liquidität",
       "illiquid": "Illiquide"
     }
+  },
+  "bond": {
+    "name": "Anleihe-Token",
+    "description": "Schuldverschreibungen, die über einen bestimmten Zeitraum feste Zinsen zahlen"
+  },
+  "deposit": {
+    "name": "Einzahlungs-Token",
+    "description": "Zeitlich gesperrte Einlagen, die über einen festen Zeitraum Zinsen erwirtschaften"
+  },
+  "equity": {
+    "name": "Eigenkapital-Token",
+    "description": "Eigentumsanteile, die einen Anspruch auf Vermögenswerte und Erträge darstellen"
+  },
+  "fund": {
+    "name": "Fonds-Token",
+    "description": "Gemeinschaftliche Anlagevehikel, die Kapital von mehreren Investoren bündeln"
+  },
+  "stablecoin": {
+    "name": "Stablecoins",
+    "description": "Digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert im Verhältnis zu einem Referenzvermögen zu halten"
   }
 }

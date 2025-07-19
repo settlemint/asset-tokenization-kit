@@ -15,7 +15,7 @@ dependencies:
     repository: https://victoriametrics.github.io/helm-charts/
     condition: victoria-metrics-single.enabled
   - name: alloy
-    version: 1.1.2
+    version: 1.2.0
     repository: https://grafana.github.io/helm-charts
     condition: alloy.enabled
   - name: metrics-server
