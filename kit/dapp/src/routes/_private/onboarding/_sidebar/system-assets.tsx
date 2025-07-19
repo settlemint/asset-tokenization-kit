@@ -301,23 +301,14 @@ function RouteComponent() {
   const deployedFactories = systemDetails?.tokenFactories ?? [];
 
   const onNext = useCallback(async () => {
-    if (hasDeployedAssets) {
-      try {
-        await queryClient.refetchQueries({ queryKey: orpc.user.me.key() });
-        await completeStepAndNavigate(OnboardingStep.systemAssets);
-      } catch (error) {
-        logger.error("Navigation error:", error);
-        toast.error("Failed to navigate to next step");
-      }
-      return;
+    try {
+      await queryClient.refetchQueries({ queryKey: orpc.user.me.key() });
+      await completeStepAndNavigate(OnboardingStep.systemAssets);
+    } catch (error) {
+      logger.error("Navigation error:", error);
+      toast.error("Failed to navigate to next step");
     }
-    handleDeployFactories();
-  }, [
-    hasDeployedAssets,
-    queryClient,
-    completeStepAndNavigate,
-    handleDeployFactories,
-  ]);
+  }, [queryClient, completeStepAndNavigate]);
 
   const onPrevious = useCallback(
     async () => navigateToStep(OnboardingStep.systemSettings),
@@ -359,56 +350,74 @@ function RouteComponent() {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  handleDeployFactories();
+                  void handleDeployFactories();
                 }}
+                className="flex flex-col h-full"
               >
-                <div className="space-y-6">
-                  <form.Field
-                    name="assets"
-                    validators={{
-                      onChange: ({ value }) => {
-                        if (value.length === 0) {
-                          return "Select at least one asset type";
-                        }
-                        return undefined;
-                      },
-                    }}
-                  >
-                    {(field) => (
-                      <>
-                        <div className="space-y-4">
-                          <div>
-                            <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
-                              {t("assets.available-asset-types")}
-                            </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {t("assets.select-all-asset-types")}
+                <div className="flex-1">
+                  <div className="space-y-6">
+                    <form.Field
+                      name="assets"
+                      validators={{
+                        onChange: ({ value }) => {
+                          if (value.length === 0) {
+                            return "Select at least one asset type";
+                          }
+                          return undefined;
+                        },
+                      }}
+                    >
+                      {(field) => (
+                        <>
+                          <div className="space-y-4">
+                            <div>
+                              <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
+                                {t("assets.available-asset-types")}
+                              </h3>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {t("assets.select-all-asset-types")}
+                              </p>
+                            </div>
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                              {availableAssets.map((assetType) => (
+                                <AssetTypeFormField
+                                  key={assetType}
+                                  assetType={assetType}
+                                  field={{
+                                    state: {
+                                      value: field.state.value,
+                                    },
+                                    handleChange: field.handleChange,
+                                  }}
+                                  isDisabled={deployedAssetTypes.has(assetType)}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          {field.state.meta.errors.length > 0 && (
+                            <p className="text-sm text-red-600 dark:text-red-400">
+                              {field.state.meta.errors[0]}
                             </p>
-                          </div>
-                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            {availableAssets.map((assetType) => (
-                              <AssetTypeFormField
-                                key={assetType}
-                                assetType={assetType}
-                                field={{
-                                  state: {
-                                    value: field.state.value,
-                                  },
-                                  handleChange: field.handleChange,
-                                }}
-                                isDisabled={deployedAssetTypes.has(assetType)}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        {field.state.meta.errors.length > 0 && (
-                          <p className="text-sm text-red-600 dark:text-red-400">
-                            {field.state.meta.errors[0]}
-                          </p>
-                        )}
-                      </>
-                    )}
-                  </form.Field>
+                          )}
+                        </>
+                      )}
+                    </form.Field>
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-border">
+                  <div className="flex justify-between">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={onPrevious}
+                    >
+                      Previous
+                    </Button>
+                    <Button type="submit" disabled={isPending}>
+                      Deploy Assets
+                    </Button>
+                  </div>
                 </div>
               </form>
             </div>
@@ -416,23 +425,15 @@ function RouteComponent() {
         </div>
       </div>
 
-      <div className="mt-8 pt-6 border-t border-border">
-        <div className="flex justify-between">
-          {!hasDeployedAssets && (
-            <Button type="button" variant="outline" onClick={onPrevious}>
-              Previous
+      {hasDeployedAssets && (
+        <div className="mt-8 pt-6 border-t border-border">
+          <div className="flex justify-end">
+            <Button type="button" onClick={onNext} disabled={isPending}>
+              Continue
             </Button>
-          )}
-          <Button
-            type="button"
-            onClick={onNext}
-            disabled={isPending}
-            className={hasDeployedAssets ? "ml-auto" : ""}
-          >
-            {hasDeployedAssets ? "Continue" : "Deploy Assets"}
-          </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       <VerificationDialog
         open={showVerificationModal}
