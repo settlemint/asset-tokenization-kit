@@ -83,7 +83,6 @@ export function DataTableFilterDesktopContainer({
 }: {
   children: React.ReactNode;
 }) {
-  "use no memo";
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { showLeftBlur, showRightBlur, checkScroll } =
     useScrollBlur(scrollContainerRef);
@@ -130,7 +129,6 @@ export function DataTableFilterMobileContainer({
 }: {
   children: React.ReactNode;
 }) {
-  "use no memo";
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { showLeftBlur, showRightBlur, checkScroll } =
     useScrollBlur(scrollContainerRef);
@@ -289,7 +287,6 @@ export function TableFilterMenuItem<TData>({
   column: Column<TData>;
   setProperty: (value: string) => void;
 }) {
-  "use no memo";
   const Icon = column.columnDef.meta?.icon;
   const displayName = column.columnDef.meta?.displayName;
 
@@ -456,7 +453,6 @@ function RenderFilter<TData, T extends ColumnDataType>({
   table: Table<TData>;
   onRemoveFilter: (filterId: string) => void;
 }) {
-  "use no memo";
   const { value } = filter;
 
   const handleRemoveFilter = useCallback(

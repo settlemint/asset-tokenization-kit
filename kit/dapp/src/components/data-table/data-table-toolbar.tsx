@@ -17,7 +17,6 @@ export function DataTableToolbar<TData>({
   table,
   enableToolbar = true,
 }: DataTableToolbarProps<TData>) {
-  "use no memo";
   const hasFilters = table.getState().columnFilters.length > 0;
 
   function clearFilters() {

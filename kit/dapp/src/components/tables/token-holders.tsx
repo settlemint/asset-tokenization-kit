@@ -72,7 +72,6 @@ interface TokenHoldersTableProps {
  * ```
  */
 export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
-  "use no memo";
   const { t } = useTranslation(["tokens", "common"]);
   const router = useRouter();
   const routePath =

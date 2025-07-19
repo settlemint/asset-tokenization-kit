@@ -19,7 +19,6 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
-  "use no memo";
   const { t } = useTranslation("data-table");
 
   const handleColumnVisibilityChange = useCallback(

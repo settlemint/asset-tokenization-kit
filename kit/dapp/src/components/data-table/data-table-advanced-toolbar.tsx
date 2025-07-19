@@ -68,7 +68,6 @@ export function DataTableAdvancedToolbar<TData>({
   customActions,
   placeholder,
 }: DataTableAdvancedToolbarProps<TData>) {
-  "use no memo";
   const { t } = useTranslation("data-table");
   const isMobile = useIsMobile();
   const [searchValue, setSearchValue] = useState(

@@ -76,7 +76,6 @@ interface TokensTableProps {
  * ```
  */
 export function TokensTable({ factoryAddress }: TokensTableProps) {
-  "use no memo";
   const router = useRouter();
   const { t } = useTranslation("tokens");
   // Get the current route's path pattern from the matched route

@@ -156,7 +156,6 @@ declare module "@tanstack/table-core" {
  * ```
  */
 function DataTableComponent<TData>({
-  "use no memo";
   columns,
   data,
   icons,
@@ -174,6 +173,7 @@ function DataTableComponent<TData>({
   urlState,
   onRowClick,
 }: DataTableProps<TData>) {
+  "use no memo";
   const { t } = useTranslation("data-table");
 
   // Use URL state management if enabled, otherwise use local state

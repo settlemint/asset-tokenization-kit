@@ -55,7 +55,6 @@ export function DataTablePagination<TData>({
   table,
   enablePagination = true,
 }: DataTablePaginationProps<TData>) {
-  "use no memo";
   const { t } = useTranslation("data-table");
 
   /**
