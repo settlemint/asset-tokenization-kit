@@ -5,7 +5,6 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { TokenForcedRecoverMessagesSchema } from "./token.forced-recover.schema";
 
 const TOKEN_FORCED_RECOVER_MUTATION = portalGraphql(`
   mutation TokenForcedRecover(
@@ -41,12 +40,12 @@ export const tokenForcedRecover = tokenRouter.token.tokenForcedRecover
   .use(portalMiddleware)
   .handler(async function* ({ input, context }) {
     const { contract, verification, lostWallet, newWallet } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenForcedRecoverMessagesSchema.parse(
-      input.messages ?? {}
-    );
+    // Generate messages using server-side translations
+    const pendingMessage = t("tokens:actions.forcedRecover.messages.preparing");
+    const successMessage = t("tokens:actions.forcedRecover.messages.success");
+    const errorMessage = t("tokens:actions.forcedRecover.messages.failed");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -63,8 +62,11 @@ export const tokenForcedRecover = tokenRouter.token.tokenForcedRecover
         newWallet,
         ...challengeResponse,
       },
-      messages.forcedRecoveryFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
     return getEthereumHash(transactionHash);

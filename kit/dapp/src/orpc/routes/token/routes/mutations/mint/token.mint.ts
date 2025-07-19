@@ -5,7 +5,6 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenMintMessagesSchema } from "@/orpc/routes/token/routes/mutations/mint/token.mint.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_SINGLE_MINT_MUTATION = portalGraphql(`
@@ -65,13 +64,22 @@ export const mint = tokenRouter.token.mint
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
     const { contract, verification, recipients, amounts } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
     // Determine if this is a batch operation
     const isBatch = recipients.length > 1;
 
-    // Parse messages with defaults
-    const messages = TokenMintMessagesSchema.parse(input.messages ?? {});
+    // Generate messages using server-side translations
+    // Following simplified pattern: only pending and success messages
+    const pendingMessage = isBatch
+      ? t("tokens:actions.mint.messages.preparingBatch")
+      : t("tokens:actions.mint.messages.preparing");
+    const successMessage = isBatch
+      ? t("tokens:actions.mint.messages.successBatch")
+      : t("tokens:actions.mint.messages.success");
+    const errorMessage = isBatch
+      ? t("tokens:actions.mint.messages.failedBatch")
+      : t("tokens:actions.mint.messages.failed");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -99,9 +107,13 @@ export const mint = tokenRouter.token.mint
           amounts: amounts.map((a) => a.toString()),
           ...challengeResponse,
         },
-        messages.mintFailed,
-        messages
+        errorMessage,
+        {
+          waitingForMining: pendingMessage,
+          transactionIndexed: successMessage,
+        }
       );
+
       return getEthereumHash(transactionHash);
     } else {
       const [to] = recipients;
@@ -123,9 +135,13 @@ export const mint = tokenRouter.token.mint
           amount: amount.toString(),
           ...challengeResponse,
         },
-        messages.mintFailed,
-        messages
+        errorMessage,
+        {
+          waitingForMining: pendingMessage,
+          transactionIndexed: successMessage,
+        }
       );
+
       return getEthereumHash(transactionHash);
     }
   });

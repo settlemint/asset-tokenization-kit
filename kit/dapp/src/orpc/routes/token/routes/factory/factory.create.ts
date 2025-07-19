@@ -244,8 +244,6 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           })),
         };
 
-        let validatedHash = "";
-
         // Use the Portal client's mutate method that returns an async generator
         // This enables real-time transaction tracking for each factory creation
         const trackingMessages = {
@@ -270,71 +268,34 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           ),
         };
 
-        for await (const event of context.portalClient.mutate(
+        // Use the Portal client's mutate method that returns the transaction hash
+        const transactionHash = yield* context.portalClient.mutate(
           CREATE_TOKEN_FACTORY_MUTATION,
           variables,
           t("token-factory:messages.factoryCreationFailed"),
           trackingMessages
-        )) {
-          // Store transaction hash from the first event
-          validatedHash = event.transactionHash;
+        );
 
-          // Handle different event statuses and yield appropriate progress updates
-          if (event.status === "pending") {
-            // Yield pending events to show transaction progress
-            yield {
-              status: "pending" as const,
-              message: event.message,
-              currentFactory: {
-                type,
-                name,
-                transactionHash: validatedHash,
-              },
-              progress,
-            };
-          } else if (event.status === "confirmed") {
-            const confirmMessage = t("token-factory:messages.factoryCreated", {
-              name,
-            });
+        const confirmMessage = t("token-factory:messages.factoryCreated", {
+          name,
+        });
 
-            yield {
-              status: "confirmed" as const,
-              message: confirmMessage,
-              currentFactory: {
-                type,
-                name,
-                transactionHash: validatedHash,
-              },
-              progress,
-            };
+        yield {
+          status: "confirmed" as const,
+          message: confirmMessage,
+          currentFactory: {
+            type,
+            name,
+            transactionHash,
+          },
+          progress,
+        };
 
-            results.push({
-              type,
-              name,
-              transactionHash: validatedHash,
-            });
-          } else {
-            // event.status === "failed"
-            yield {
-              status: "failed" as const,
-              message: event.message,
-              currentFactory: {
-                type,
-                name,
-                transactionHash: validatedHash,
-                error: event.message,
-              },
-              progress,
-            };
-
-            results.push({
-              type,
-              name,
-              transactionHash: validatedHash,
-              error: event.message,
-            });
-          }
-        }
+        results.push({
+          type,
+          name,
+          transactionHash,
+        });
       } catch (error) {
         // Check for specific error types
         let errorMessage = t("token-factory:messages.defaultError");

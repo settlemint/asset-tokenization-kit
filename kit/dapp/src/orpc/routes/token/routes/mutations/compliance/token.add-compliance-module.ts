@@ -5,7 +5,6 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { TokenAddComplianceModuleMessagesSchema } from "./token.add-compliance-module.schema";
 
 const TOKEN_ADD_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   mutation TokenAddComplianceModule(
@@ -41,11 +40,17 @@ export const tokenAddComplianceModule =
     .use(portalMiddleware)
     .handler(async function* ({ input, context }) {
       const { contract, verification, moduleAddress } = input;
-      const { auth } = context;
+      const { auth, t } = context;
 
-      // Parse messages with defaults
-      const messages = TokenAddComplianceModuleMessagesSchema.parse(
-        input.messages ?? {}
+      // Generate messages using server-side translations
+      const pendingMessage = t(
+        "tokens:actions.addComplianceModule.messages.preparing"
+      );
+      const successMessage = t(
+        "tokens:actions.addComplianceModule.messages.success"
+      );
+      const errorMessage = t(
+        "tokens:actions.addComplianceModule.messages.failed"
       );
 
       const sender = auth.user;
@@ -63,8 +68,11 @@ export const tokenAddComplianceModule =
           params: JSON.stringify({}), // TODO: provide params as input to the request
           ...challengeResponse,
         },
-        messages.complianceModuleFailed,
-        messages
+        errorMessage,
+        {
+          waitingForMining: pendingMessage,
+          transactionIndexed: successMessage,
+        }
       );
 
       return getEthereumHash(transactionHash);
