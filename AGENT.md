@@ -353,6 +353,9 @@ standards.
 - **Pure Renders**: Avoid side-effects in render. Use effects for initialization
 - **Compiler Opt-Out**: Use "use no memo"; directive sparingly as last resort for
   components that can't be refactored to satisfy compiler rules
+- **Compiler Pitfalls**: Avoid manual memoization - let compiler handle it.
+  Don't ignore opt-out warnings. Minimize Context use (prefer TanStack state).
+  Handle async boundaries with loading states. Periodically remove old workarounds
 - **Translations**: Organized into focused namespaces - use multiple namespaces
   in components as needed; use very specific translation namespaces for each
   component (e.g., "detail-grid" for the DetailGrid component, not "common");
