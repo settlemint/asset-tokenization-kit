@@ -30,7 +30,6 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { z } from "zod";
 import { MutationInputSchemaWithContract } from "../../../common/schemas/mutation.schema";
-import { TransactionTrackingMessagesSchema } from "../../../common/schemas/transaction-messages.schema";
 
 /**
  * Token types supported for factory creation
@@ -104,90 +103,6 @@ const SingleFactorySchema = z.object({
 });
 
 /**
- * Combined messages schema for factory creation
- * Extends common transaction tracking messages with factory-specific messages
- *
- * TypeScript improvements:
- * - Each message field has proper type inference from Zod schema
- * - Optional fields with default values ensure type safety without requiring all messages
- * - The schema extension pattern preserves base message types while adding specific ones
- */
-export const FactoryCreateMessagesSchema =
-  TransactionTrackingMessagesSchema.extend({
-    factoryCreated: z
-      .string()
-      .optional()
-      .default("{{name}} successfully created."),
-    creatingFactory: z.string().optional().default("Creating token factory..."),
-    factoryCreationFailed: z
-      .string()
-      .optional()
-      .default("Failed to create token factory. Please try again."),
-    batchProgress: z
-      .string()
-      .optional()
-      .default("Creating factory {{current}} of {{total}}..."),
-    batchCompleted: z
-      .string()
-      .optional()
-      .default("Successfully created {{count}} token factories."),
-    // Messages used by useStreamingMutation hook for proper event handling
-    // These messages align with the streaming mutation's event status types
-    initialLoading: z
-      .string()
-      .optional()
-      .default("Preparing to create token factories..."),
-    noResultError: z
-      .string()
-      .optional()
-      .default("No factory address received from transaction."),
-    defaultError: z
-      .string()
-      .optional()
-      .default("Failed to create token factory."),
-    systemNotBootstrapped: z
-      .string()
-      .optional()
-      .default(
-        "System needs to be bootstrapped first. Please wait for system initialization to complete."
-      ),
-    transactionSubmitted: z
-      .string()
-      .optional()
-      .default("Transaction submitted. Waiting for confirmation..."),
-    factoryCreationCompleted: z
-      .string()
-      .optional()
-      .default("Factory creation completed."),
-    allFactoriesSucceeded: z
-      .string()
-      .optional()
-      .default("All {{count}} factories created successfully."),
-    someFactoriesFailed: z
-      .string()
-      .optional()
-      .default("{{success}} factories created, {{failed}} failed."),
-    allFactoriesFailed: z
-      .string()
-      .optional()
-      .default("All {{count}} factories failed to create."),
-    factoryAlreadyExists: z
-      .string()
-      .optional()
-      .default("{{name}} factory already exists, skipping..."),
-    allFactoriesSkipped: z
-      .string()
-      .optional()
-      .default("All {{count}} factories already exist."),
-    someFactoriesSkipped: z
-      .string()
-      .optional()
-      .default(
-        "{{success}} factories created, {{skipped}} skipped, {{failed}} failed."
-      ),
-  });
-
-/**
  * Main schema for factory creation
  * Supports both single factory and batch creation
  */
@@ -207,12 +122,6 @@ export const FactoryCreateSchema = MutationInputSchemaWithContract.extend({
   factories: z
     .union([SingleFactorySchema, z.array(SingleFactorySchema).min(1).max(10)])
     .describe("Factory or factories to create"),
-
-  /**
-   * Optional custom messages for the operation
-   * If not provided, default English messages will be used
-   */
-  messages: FactoryCreateMessagesSchema.optional(),
 });
 
 /**
@@ -251,7 +160,6 @@ export const FactoryCreateOutputSchema = z.object({
 // These provide compile-time TypeScript types derived from runtime schemas
 // ensuring perfect alignment between validation and type checking
 export type FactoryCreateInput = z.infer<typeof FactoryCreateSchema>;
-export type FactoryCreateMessages = z.infer<typeof FactoryCreateMessagesSchema>;
 export type FactoryCreateOutput = z.infer<typeof FactoryCreateOutputSchema>;
 export type SingleFactory = z.infer<typeof SingleFactorySchema>;
 
