@@ -220,5 +220,14 @@ export const sync = authRouter.exchangeRates.sync
     const { db } = context;
 
     // Delegate to internal sync function
-    return syncExchangeRatesInternal(db, force);
+    const result = await syncExchangeRatesInternal(db, force);
+
+    // Add translated message if no message exists
+    if (!result.message) {
+      result.message = context.t("exchange-rates:actions.sync.success", {
+        ratesUpdated: result.ratesUpdated,
+      });
+    }
+
+    return result;
   });

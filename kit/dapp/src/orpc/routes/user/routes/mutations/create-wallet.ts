@@ -22,5 +22,8 @@ export const createWallet = authRouter.user.createWallet
       })
       .where(eq(user.id, auth.user.id));
 
-    return { wallet };
+    return {
+      wallet,
+      message: context.t("user:actions.createWallet.success"),
+    };
   });

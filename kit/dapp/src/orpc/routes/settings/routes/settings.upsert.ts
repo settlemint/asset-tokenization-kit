@@ -56,5 +56,8 @@ export const upsert = authRouter.settings.upsert
       });
     }
 
-    return upsertedSetting.value;
+    return {
+      value: upsertedSetting.value,
+      message: context.t("settings:actions.upsert.success", { key }),
+    };
   });
