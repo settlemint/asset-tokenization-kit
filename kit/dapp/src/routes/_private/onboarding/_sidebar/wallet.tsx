@@ -45,7 +45,6 @@ function RouteComponent() {
         // Wait for progress animation to complete
         await new Promise((resolve) => setTimeout(resolve, 3000));
         setIsCreating(false);
-        await handleMutationSuccess(OnboardingStep.wallet, "complete");
       },
       onError: (error) => {
         setIsCreating(false);

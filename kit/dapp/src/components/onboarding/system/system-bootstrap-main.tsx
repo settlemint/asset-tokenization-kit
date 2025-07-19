@@ -64,7 +64,6 @@ export function SystemBootstrapMain({
       setShowDeploymentProgress(false);
       setDeploymentFailed(false);
       setIsBootstrapped(true);
-      onNext?.();
     },
   });
 
@@ -227,9 +226,7 @@ export function SystemBootstrapMain({
 
   const handleDeploymentComplete = useCallback(() => {
     setIsBootstrapped(true);
-    // Navigate to next step after successful deployment
-    onNext?.();
-  }, [onNext]);
+  }, []);
 
   const handleRetryDeployment = useCallback(() => {
     setDeploymentFailed(false);
