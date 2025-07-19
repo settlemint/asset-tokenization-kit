@@ -10,6 +10,7 @@
     "nize.oklch-preview",
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
-    "lokalise.i18n-ally"
+    "lokalise.i18n-ally",
+    "oxc.oxc-vscode"
   ]
 }

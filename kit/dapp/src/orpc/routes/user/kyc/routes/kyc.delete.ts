@@ -29,5 +29,8 @@ export const remove = authRouter.user.kyc.remove
       });
     }
 
-    return deleted;
+    return {
+      ...deleted,
+      message: context.t("user:kyc.actions.delete.success"),
+    };
   });

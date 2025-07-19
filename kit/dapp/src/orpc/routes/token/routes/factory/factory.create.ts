@@ -24,11 +24,9 @@ import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware"
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { withEventMeta } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
-  FactoryCreateMessagesSchema,
   type FactoryCreateOutput,
   getDefaultImplementations,
 } from "./factory.create.schema";
@@ -128,9 +126,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
   .handler(async function* ({ input, context, errors }) {
     const { contract, factories, verification } = input;
     const sender = context.auth.user;
-
-    // Parse messages with defaults
-    const messages = FactoryCreateMessagesSchema.parse(input.messages ?? {});
+    const { t } = context;
 
     // Normalize to array
     const factoryList = Array.isArray(factories) ? factories : [factories];
@@ -138,14 +134,11 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
 
     // Yield initial loading message only for batch operations
     if (totalFactories > 1) {
-      yield withEventMeta(
-        {
-          status: "pending",
-          message: messages.initialLoading,
-          progress: { current: 0, total: totalFactories },
-        },
-        { id: "factory-creation", retry: 1000 }
-      );
+      yield {
+        status: "pending",
+        message: t("token-factory:messages.initialLoading"),
+        progress: { current: 0, total: totalFactories },
+      };
     }
 
     // Query existing token factories using the ORPC client
@@ -198,40 +191,34 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
       const progressMessage =
         totalFactories === 1
           ? `Creating ${type} factory: ${name}`
-          : messages.batchProgress
-              .replace("{{current}}", String(progress.current))
-              .replace("{{total}}", String(progress.total)) + ` - ${name}`;
+          : t("token-factory:messages.batchProgress", {
+              current: progress.current,
+              total: progress.total,
+            }) + ` - ${name}`;
 
-      yield withEventMeta(
-        {
-          status: "pending" as const,
-          message: progressMessage,
-          currentFactory: { type, name },
-          progress,
-        },
-        { id: "factory-creation", retry: 1000 }
-      );
+      yield {
+        status: "pending" as const,
+        message: progressMessage,
+        currentFactory: { type, name },
+        progress,
+      };
 
       // Check if factory already exists
       if (existingFactoryNames.has(name.toLowerCase())) {
-        const skipMessage = messages.factoryAlreadyExists.replace(
-          "{{name}}",
-          name
-        );
+        const skipMessage = t("token-factory:messages.factoryAlreadyExists", {
+          name,
+        });
 
-        yield withEventMeta(
-          {
-            status: "completed" as const,
-            message: skipMessage,
-            currentFactory: {
-              type,
-              name,
-              transactionHash: "",
-            },
-            progress,
+        yield {
+          status: "completed" as const,
+          message: skipMessage,
+          currentFactory: {
+            type,
+            name,
+            transactionHash: "",
           },
-          { id: "factory-creation", retry: 1000 }
-        );
+          progress,
+        };
 
         results.push({
           type,
@@ -257,95 +244,68 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           })),
         };
 
-        let validatedHash = "";
-
         // Use the Portal client's mutate method that returns an async generator
         // This enables real-time transaction tracking for each factory creation
-        for await (const event of context.portalClient.mutate(
+        const trackingMessages = {
+          streamTimeout: t("blockchain:transactions.tracking.streamTimeout"),
+          waitingForMining: t(
+            "blockchain:transactions.tracking.waitingForMining"
+          ),
+          transactionFailed: t(
+            "blockchain:transactions.tracking.transactionFailed"
+          ),
+          transactionDropped: t(
+            "blockchain:transactions.tracking.transactionDropped"
+          ),
+          waitingForIndexing: t(
+            "blockchain:transactions.tracking.waitingForIndexing"
+          ),
+          transactionIndexed: t(
+            "blockchain:transactions.tracking.transactionIndexed"
+          ),
+          indexingTimeout: t(
+            "blockchain:transactions.tracking.indexingTimeout"
+          ),
+        };
+
+        // Use the Portal client's mutate method that returns the transaction hash
+        const transactionHash = yield* context.portalClient.mutate(
           CREATE_TOKEN_FACTORY_MUTATION,
           variables,
-          messages.factoryCreationFailed,
-          messages
-        )) {
-          // Store transaction hash from the first event
-          validatedHash = event.transactionHash;
+          t("token-factory:messages.factoryCreationFailed"),
+          trackingMessages
+        );
 
-          // Handle different event statuses and yield appropriate progress updates
-          if (event.status === "pending") {
-            // Yield pending events to show transaction progress
-            yield withEventMeta(
-              {
-                status: "pending" as const,
-                message: event.message,
-                currentFactory: {
-                  type,
-                  name,
-                  transactionHash: validatedHash,
-                },
-                progress,
-              },
-              { id: "factory-creation", retry: 1000 }
-            );
-          } else if (event.status === "confirmed") {
-            const confirmMessage = messages.factoryCreated.replace(
-              "{{name}}",
-              name
-            );
+        const confirmMessage = t("token-factory:messages.factoryCreated", {
+          name,
+        });
 
-            yield withEventMeta(
-              {
-                status: "confirmed" as const,
-                message: confirmMessage,
-                currentFactory: {
-                  type,
-                  name,
-                  transactionHash: validatedHash,
-                },
-                progress,
-              },
-              { id: "factory-creation", retry: 1000 }
-            );
+        yield {
+          status: "confirmed" as const,
+          message: confirmMessage,
+          currentFactory: {
+            type,
+            name,
+            transactionHash,
+          },
+          progress,
+        };
 
-            results.push({
-              type,
-              name,
-              transactionHash: validatedHash,
-            });
-          } else {
-            // event.status === "failed"
-            yield withEventMeta(
-              {
-                status: "failed" as const,
-                message: event.message,
-                currentFactory: {
-                  type,
-                  name,
-                  transactionHash: validatedHash,
-                  error: event.message,
-                },
-                progress,
-              },
-              { id: "factory-creation", retry: 1000 }
-            );
-
-            results.push({
-              type,
-              name,
-              transactionHash: validatedHash,
-              error: event.message,
-            });
-          }
-        }
+        results.push({
+          type,
+          name,
+          transactionHash,
+        });
       } catch (error) {
         // Check for specific error types
-        let errorMessage = messages.defaultError;
-        let errorDetail = messages.defaultError;
+        let errorMessage = t("token-factory:messages.defaultError");
+        let errorDetail = t("token-factory:messages.defaultError");
 
         if (error instanceof Error) {
           errorDetail = error.message;
           // Check for SystemNotBootstrapped error
           if (containsErrorPattern(error, "SystemNotBootstrapped")) {
-            errorMessage = messages.systemNotBootstrapped;
+            errorMessage = t("token-factory:messages.systemNotBootstrapped");
             // For critical errors like system not bootstrapped, throw proper error
             throw errors.INTERNAL_SERVER_ERROR({
               message: errorMessage,
@@ -365,10 +325,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           progress,
         };
 
-        yield withEventMeta(errorResult, {
-          id: "factory-creation",
-          retry: 1000,
-        });
+        yield errorResult;
 
         results.push({
           type,
@@ -387,68 +344,68 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
       (r) => r.error && r.error !== "Factory already exists"
     ).length;
 
-    let completionMessage = messages.factoryCreationCompleted;
+    let completionMessage = t(
+      "token-factory:messages.factoryCreationCompleted"
+    );
 
     // All succeeded
     if (successCount > 0 && failureCount === 0 && skippedCount === 0) {
-      completionMessage = messages.allFactoriesSucceeded.replace(
-        "{{count}}",
-        String(successCount)
-      );
+      completionMessage = t("token-factory:messages.allFactoriesSucceeded", {
+        count: successCount,
+      });
     }
     // All skipped
     else if (skippedCount > 0 && successCount === 0 && failureCount === 0) {
-      completionMessage = messages.allFactoriesSkipped.replace(
-        "{{count}}",
-        String(skippedCount)
-      );
+      completionMessage = t("token-factory:messages.allFactoriesSkipped", {
+        count: skippedCount,
+      });
     }
     // All failed
     else if (failureCount > 0 && successCount === 0 && skippedCount === 0) {
-      completionMessage = messages.allFactoriesFailed.replace(
-        "{{count}}",
-        String(failureCount)
-      );
+      completionMessage = t("token-factory:messages.allFactoriesFailed", {
+        count: failureCount,
+      });
     }
     // Mixed results with all three types
     else if (successCount > 0 && skippedCount > 0 && failureCount > 0) {
-      completionMessage = messages.someFactoriesSkipped
-        .replace("{{success}}", String(successCount))
-        .replace("{{skipped}}", String(skippedCount))
-        .replace("{{failed}}", String(failureCount));
+      completionMessage = t("token-factory:messages.someFactoriesSkipped", {
+        success: successCount,
+        skipped: skippedCount,
+        failed: failureCount,
+      });
     }
     // Success and skipped only
     else if (successCount > 0 && skippedCount > 0 && failureCount === 0) {
-      completionMessage = messages.someFactoriesSkipped
-        .replace("{{success}}", String(successCount))
-        .replace("{{skipped}}", String(skippedCount))
-        .replace("{{failed}}", "0");
+      completionMessage = t("token-factory:messages.someFactoriesSkipped", {
+        success: successCount,
+        skipped: skippedCount,
+        failed: 0,
+      });
     }
     // Success and failed only
     else if (successCount > 0 && failureCount > 0 && skippedCount === 0) {
-      completionMessage = messages.someFactoriesFailed
-        .replace("{{success}}", String(successCount))
-        .replace("{{failed}}", String(failureCount));
+      completionMessage = t("token-factory:messages.someFactoriesFailed", {
+        success: successCount,
+        failed: failureCount,
+      });
     }
     // Skipped and failed only
     else if (skippedCount > 0 && failureCount > 0 && successCount === 0) {
-      completionMessage = messages.someFactoriesSkipped
-        .replace("{{success}}", "0")
-        .replace("{{skipped}}", String(skippedCount))
-        .replace("{{failed}}", String(failureCount));
+      completionMessage = t("token-factory:messages.someFactoriesSkipped", {
+        success: 0,
+        skipped: skippedCount,
+        failed: failureCount,
+      });
     }
 
-    yield withEventMeta(
-      {
-        status: "completed" as const,
-        message: completionMessage,
-        results,
-        result: results, // Added for useStreamingMutation hook compatibility
-        progress: {
-          current: totalFactories,
-          total: totalFactories,
-        },
+    yield {
+      status: "completed" as const,
+      message: completionMessage,
+      results,
+      result: results, // Added for useStreamingMutation hook compatibility
+      progress: {
+        current: totalFactories,
+        total: totalFactories,
       },
-      { id: "factory-creation", retry: 5000 }
-    );
+    };
   });

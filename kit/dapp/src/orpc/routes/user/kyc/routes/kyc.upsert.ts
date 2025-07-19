@@ -68,5 +68,6 @@ export const upsert = authRouter.user.kyc.upsert
       ...profile,
       nationalIdEncrypted: undefined,
       hasNationalId: !!profile.nationalIdEncrypted,
+      message: context.t("user:kyc.actions.upsert.success"),
     };
   });

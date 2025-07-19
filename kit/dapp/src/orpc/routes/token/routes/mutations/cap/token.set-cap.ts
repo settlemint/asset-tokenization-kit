@@ -5,7 +5,6 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { TokenSetCapMessagesSchema } from "./token.set-cap.schema";
 
 const TOKEN_SET_CAP_MUTATION = portalGraphql(`
   mutation TokenSetCap(
@@ -39,10 +38,12 @@ export const tokenSetCap = tokenRouter.token.tokenSetCap
   .use(portalMiddleware)
   .handler(async function* ({ input, context }) {
     const { contract, verification, newCap } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenSetCapMessagesSchema.parse(input.messages ?? {});
+    // Generate messages using server-side translations
+    const pendingMessage = t("tokens:actions.setCap.messages.preparing");
+    const successMessage = t("tokens:actions.setCap.messages.success");
+    const errorMessage = t("tokens:actions.setCap.messages.failed");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -58,8 +59,11 @@ export const tokenSetCap = tokenRouter.token.tokenSetCap
         newCap: newCap.toString(),
         ...challengeResponse,
       },
-      messages.capUpdateFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
     return getEthereumHash(transactionHash);

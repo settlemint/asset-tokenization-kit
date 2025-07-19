@@ -105,33 +105,15 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
         pauseToken({
           contract: token.id,
           verification: values,
-          messages: {
-            preparingPause: t("tokens:actions.pause.messages.preparing"),
-            submittingPause: t("tokens:actions.pause.messages.submitting"),
-            tokenPaused: t("tokens:actions.pause.messages.success"),
-            pauseFailed: t("tokens:actions.pause.messages.failed"),
-            defaultError: t("tokens:actions.pause.messages.error"),
-            waitingForMining: t("common:transaction.waitingForMining"),
-            transactionIndexed: t("common:transaction.indexed"),
-          },
         });
       } else if (openAction === "unpause") {
         unpauseToken({
           contract: token.id,
           verification: values,
-          messages: {
-            preparingUnpause: t("tokens:actions.unpause.messages.preparing"),
-            submittingUnpause: t("tokens:actions.unpause.messages.submitting"),
-            tokenUnpaused: t("tokens:actions.unpause.messages.success"),
-            unpauseFailed: t("tokens:actions.unpause.messages.failed"),
-            defaultError: t("tokens:actions.unpause.messages.error"),
-            waitingForMining: t("common:transaction.waitingForMining"),
-            transactionIndexed: t("common:transaction.indexed"),
-          },
         });
       }
     },
-    [openAction, pauseToken, unpauseToken, token.id, t]
+    [openAction, pauseToken, unpauseToken, token.id]
   );
 
   const actions = useMemo(

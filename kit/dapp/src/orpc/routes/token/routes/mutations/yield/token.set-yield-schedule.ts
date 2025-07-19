@@ -9,7 +9,6 @@ import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { withEventMeta } from "@orpc/server";
 import { logger } from "better-auth";
-import { TokenSetYieldScheduleMessagesSchema } from "./token.set-yield-schedule.schema";
 
 const TOKEN_SET_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   mutation TokenSetYieldSchedule(
@@ -80,12 +79,16 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
       startTime,
       endTime,
     } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenSetYieldScheduleMessagesSchema.parse(
-      input.messages ?? {}
+    // Generate messages using server-side translations
+    const pendingMessage = t(
+      "tokens:actions.setYieldSchedule.messages.preparing"
     );
+    const successMessage = t(
+      "tokens:actions.setYieldSchedule.messages.success"
+    );
+    const errorMessage = t("tokens:actions.setYieldSchedule.messages.failed");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -107,8 +110,11 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
         token: contract,
         ...challengeResponse,
       },
-      messages.yieldScheduleFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     )) {
       // Store the transaction hash from the first event
       transactionHash = event.transactionHash;
@@ -142,7 +148,7 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
 
     if (!transactionHash) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.yieldScheduleFailed,
+        message: errorMessage,
         cause: new Error("Transaction hash not found"),
       });
     }
@@ -154,14 +160,14 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
       // Check if transaction was successful
       if (receipt.status !== "Success") {
         throw errors.INTERNAL_SERVER_ERROR({
-          message: messages.yieldScheduleFailed,
+          message: errorMessage,
           cause: new Error(`Transaction failed with status: ${receipt.status}`),
         });
       }
     } catch (err) {
       const error = err as Error;
       throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.yieldScheduleFailed,
+        message: errorMessage,
         cause: error.message,
       });
     }
@@ -181,7 +187,7 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
     }
     if (!scheduleAddress) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.yieldScheduleFailed,
+        message: errorMessage,
         cause: new Error("Schedule address not found"),
       });
     }
@@ -194,8 +200,11 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
         schedule: getEthereumAddress(scheduleAddress),
         ...challengeResponse,
       },
-      messages.yieldScheduleFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
     return getEthereumHash(setScheduleTransactionHash);

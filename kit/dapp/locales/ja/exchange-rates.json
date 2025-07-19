@@ -1,0 +1,13 @@
+{
+  "actions": {
+    "update": {
+      "success": "為替レート {{baseCurrency}}/{{quoteCurrency}} が {{rate}} に正常に更新されました"
+    },
+    "sync": {
+      "success": "為替レートが正常に同期されました。{{ratesUpdated}} 件のレートが更新されました。"
+    },
+    "delete": {
+      "success": "手動為替レート {{baseCurrency}}/{{quoteCurrency}} が正常に削除されました"
+    }
+  }
+}

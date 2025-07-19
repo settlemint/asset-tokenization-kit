@@ -104,5 +104,10 @@ export const update = authRouter.exchangeRates.update
         rate,
         effectiveAt,
       },
+      message: context.t("exchange-rates:actions.update.success", {
+        baseCurrency,
+        quoteCurrency,
+        rate,
+      }),
     };
   });

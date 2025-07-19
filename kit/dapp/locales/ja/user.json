@@ -1,0 +1,17 @@
+{
+  "actions": {
+    "createWallet": {
+      "success": "ウォレットが正常に作成されました"
+    }
+  },
+  "kyc": {
+    "actions": {
+      "upsert": {
+        "success": "KYCプロファイルが正常に更新されました"
+      },
+      "delete": {
+        "success": "KYCプロファイルが正常に削除されました"
+      }
+    }
+  }
+}

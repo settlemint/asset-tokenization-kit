@@ -5,7 +5,6 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { TokenFreezeAddressMessagesSchema } from "./token.freeze-address.schema";
 
 const TOKEN_FREEZE_ADDRESS_MUTATION = portalGraphql(`
   mutation TokenFreezeAddress(
@@ -41,12 +40,13 @@ export const tokenFreezeAddress = tokenRouter.token.tokenFreezeAddress
   )
   .handler(async function* ({ input, context }) {
     const { contract, verification, userAddress, freeze } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenFreezeAddressMessagesSchema.parse(
-      input.messages ?? {}
-    );
+    // Generate messages using server-side translations
+    const messageKey = freeze ? "freeze" : "unfreeze";
+    const pendingMessage = t(`tokens:actions.${messageKey}.messages.preparing`);
+    const successMessage = t(`tokens:actions.${messageKey}.messages.success`);
+    const errorMessage = t(`tokens:actions.${messageKey}.messages.failed`);
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -63,8 +63,11 @@ export const tokenFreezeAddress = tokenRouter.token.tokenFreezeAddress
         freeze,
         ...challengeResponse,
       },
-      messages.freezeFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
     return getEthereumHash(transactionHash);

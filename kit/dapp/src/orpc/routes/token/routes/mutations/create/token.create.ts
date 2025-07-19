@@ -32,5 +32,6 @@ export const create = onboardedRouter.token.create
         ...challengeResponse,
       },
       portalClient: context.portalClient,
+      t: context.t,
     });
   });

@@ -1,0 +1,10 @@
+{
+  "actions": {
+    "upsert": {
+      "success": "設定 '{{key}}' が正常に更新されました"
+    },
+    "delete": {
+      "success": "設定 '{{key}}' が正常に削除されました"
+    }
+  }
+}

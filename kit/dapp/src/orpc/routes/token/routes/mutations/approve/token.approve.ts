@@ -5,7 +5,6 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { TokenApproveMessagesSchema } from "./token.approve.schema";
 
 const TOKEN_APPROVE_MUTATION = portalGraphql(`
   mutation TokenApprove(
@@ -40,10 +39,12 @@ export const tokenApprove = tokenRouter.token.tokenApprove
   )
   .handler(async function* ({ input, context }) {
     const { contract, verification, spender, amount } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenApproveMessagesSchema.parse(input.messages ?? {});
+    // Generate messages using server-side translations
+    const pendingMessage = t("tokens:actions.approve.messages.preparing");
+    const successMessage = t("tokens:actions.approve.messages.success");
+    const errorMessage = t("tokens:actions.approve.messages.failed");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -60,8 +61,11 @@ export const tokenApprove = tokenRouter.token.tokenApprove
         amount: amount.toString(),
         ...challengeResponse,
       },
-      messages.approvalFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
     return getEthereumHash(transactionHash);

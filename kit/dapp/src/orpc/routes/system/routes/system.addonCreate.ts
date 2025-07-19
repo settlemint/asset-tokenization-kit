@@ -24,12 +24,10 @@ import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware"
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { withEventMeta } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
   type SystemAddonConfig,
-  SystemAddonCreateMessagesSchema,
   type SystemAddonCreateOutput,
   getDefaultAddonImplementations,
 } from "./system.addonCreate.schema";
@@ -144,25 +142,18 @@ export const addonCreate = onboardedRouter.system.addonCreate
   .handler(async function* ({ input, context }) {
     const { contract, addons, verification } = input;
     const sender = context.auth.user;
-
-    // Parse messages with defaults
-    const messages = SystemAddonCreateMessagesSchema.parse(
-      input.messages ?? {}
-    );
+    const { t } = context;
 
     // Normalize to array
     const addonList = Array.isArray(addons) ? addons : [addons];
     const totalAddons = addonList.length;
 
     // Yield initial loading message
-    yield withEventMeta(
-      {
-        status: "pending",
-        message: messages.initialLoading,
-        progress: { current: 0, total: totalAddons },
-      },
-      { id: "addon-registration", retry: 1000 }
-    );
+    yield {
+      status: "pending" as const,
+      message: t("system:addons.messages.preparing"),
+      progress: { current: 0, total: totalAddons },
+    };
 
     // Query existing system addons to check for duplicates
     const existingAddonNames = new Set<string>();
@@ -200,40 +191,26 @@ export const addonCreate = onboardedRouter.system.addonCreate
       const { type, name } = addonConfig;
 
       // Yield initial progress message for this addon
-      const progressMessage = messages.batchProgress
-        .replace("{{current}}", String(progress.current))
-        .replace("{{total}}", String(progress.total));
-
-      yield withEventMeta(
-        {
-          status: "pending" as const,
-          message: progressMessage,
-          currentAddon: { type, name },
-          progress,
-        },
-        { id: `addon-${addonConfig.type}-${index}`, retry: 1000 }
-      );
+      yield {
+        status: "pending" as const,
+        message: t("system:addons.messages.progress", {
+          current: progress.current,
+          total: progress.total,
+          type,
+          name,
+        }),
+        currentAddon: { type, name },
+        progress,
+      };
 
       // Check if addon already exists (if we had that data)
       if (existingAddonNames.has(name.toLowerCase())) {
-        const skipMessage = messages.addonAlreadyExists.replace(
-          "{{name}}",
-          name
-        );
-
-        yield withEventMeta(
-          {
-            status: "completed" as const,
-            message: skipMessage,
-            currentAddon: {
-              type,
-              name,
-              transactionHash: "",
-            },
-            progress,
-          },
-          { id: `addon-${addonConfig.type}-${index}`, retry: 1000 }
-        );
+        yield {
+          status: "completed" as const,
+          message: t("system:addons.messages.alreadyExists", { name }),
+          currentAddon: { type, name },
+          progress,
+        };
 
         results.push({
           type,
@@ -273,90 +250,32 @@ export const addonCreate = onboardedRouter.system.addonCreate
           })),
         };
 
-        let validatedHash = "";
-
         // Use the Portal client's mutate method that returns an async generator
-        // This enables real-time transaction tracking for each addon registration
-        for await (const event of context.portalClient.mutate(
+        const transactionHash = yield* context.portalClient.mutate(
           REGISTER_SYSTEM_ADDON_MUTATION,
           variables,
-          messages.addonRegistrationFailed,
-          messages
-        )) {
-          // Store transaction hash from the first event
-          validatedHash = event.transactionHash;
-
-          // Handle different event statuses and yield appropriate progress updates
-          if (event.status === "pending") {
-            // Yield pending events to show transaction progress
-            yield withEventMeta(
-              {
-                status: "pending" as const,
-                message: event.message,
-                currentAddon: {
-                  type,
-                  name,
-                  transactionHash: validatedHash,
-                },
-                progress,
-              },
-              { id: `addon-${addonConfig.type}-${index}`, retry: 1000 }
-            );
-          } else if (event.status === "confirmed") {
-            const implementationName = ADDON_TYPE_TO_IMPLEMENTATION_NAME[type];
-
-            yield withEventMeta(
-              {
-                status: "confirmed" as const,
-                message: messages.addonRegistered,
-                currentAddon: {
-                  type,
-                  name,
-                  transactionHash: validatedHash,
-                  implementations: {
-                    [implementationName]: implementationAddress,
-                  },
-                },
-                progress,
-              },
-              { id: `addon-${addonConfig.type}-${index}`, retry: 1000 }
-            );
-
-            results.push({
-              type,
+          t("system:addons.messages.failed", { name }),
+          {
+            waitingForMining: t("system:addons.messages.registering", { name }),
+            transactionIndexed: t("system:addons.messages.registered", {
               name,
-              transactionHash: validatedHash,
-              implementations: { [implementationName]: implementationAddress },
-            });
-          } else {
-            // event.status === "failed"
-            yield withEventMeta(
-              {
-                status: "failed" as const,
-                message: event.message,
-                currentAddon: {
-                  type,
-                  name,
-                  transactionHash: validatedHash,
-                  error: event.message,
-                },
-                progress,
-              },
-              { id: `addon-${addonConfig.type}-${index}`, retry: 1000 }
-            );
-
-            results.push({
-              type,
-              name,
-              transactionHash: validatedHash,
-              error: event.message,
-            });
+            }),
           }
-        }
+        );
+
+        const implementationName = ADDON_TYPE_TO_IMPLEMENTATION_NAME[type];
+        results.push({
+          type,
+          name,
+          transactionHash,
+          implementations: { [implementationName]: implementationAddress },
+        });
       } catch (error) {
         // Handle any errors during addon registration
         const errorMessage =
-          error instanceof Error ? error.message : messages.defaultError;
+          error instanceof Error
+            ? error.message
+            : t("system:addons.messages.defaultError");
 
         // Enhanced error logging with more details
         logger.error(`Addon registration failed for ${name}:`, {
@@ -381,33 +300,33 @@ export const addonCreate = onboardedRouter.system.addonCreate
         // Check for specific error patterns to provide better user feedback
         let specificErrorMessage = errorMessage;
         if (containsErrorPattern(error, "SystemAddonTypeAlreadyRegistered")) {
-          specificErrorMessage = messages.addonAlreadyExists.replace(
-            "{{name}}",
-            name
-          );
+          specificErrorMessage = t("system:addons.messages.alreadyExists", {
+            name,
+          });
         } else if (containsErrorPattern(error, "AccessControl")) {
-          specificErrorMessage = `Access denied: You need REGISTRAR_ROLE on the addon registry contract (${contract}) to register addons. Please contact the system administrator to grant you this role.`;
+          specificErrorMessage = t("system:addons.messages.accessDenied", {
+            contract,
+          });
         } else if (containsErrorPattern(error, "Unauthorized")) {
-          specificErrorMessage = `Access denied: You need REGISTRAR_ROLE on the addon registry contract (${contract}) to register addons. Please contact the system administrator to grant you this role.`;
+          specificErrorMessage = t("system:addons.messages.accessDenied", {
+            contract,
+          });
         } else if (containsErrorPattern(error, "implementation")) {
-          specificErrorMessage = `Invalid implementation address. The addon implementation may not be deployed or available.`;
+          specificErrorMessage = t(
+            "system:addons.messages.invalidImplementation"
+          );
         } else if (containsErrorPattern(error, "invalid")) {
-          specificErrorMessage = `Invalid addon configuration or parameters.`;
+          specificErrorMessage = t(
+            "system:addons.messages.invalidConfiguration"
+          );
         }
 
-        yield withEventMeta(
-          {
-            status: "failed" as const,
-            message: specificErrorMessage,
-            currentAddon: {
-              type,
-              name,
-              error: specificErrorMessage,
-            },
-            progress,
-          },
-          { id: `addon-${addonConfig.type}-${index}`, retry: 1000 }
-        );
+        yield {
+          status: "failed" as const,
+          message: t("system:addons.messages.failed", { name }),
+          currentAddon: { type, name, error: specificErrorMessage },
+          progress,
+        };
 
         results.push({
           type,
@@ -421,32 +340,29 @@ export const addonCreate = onboardedRouter.system.addonCreate
     const successful = results.filter((r) => !r.error);
     const failed = results.filter((r) => r.error);
 
-    let completionMessage: string;
+    // Yield final completion message
+    let finalMessage: string;
     if (failed.length === 0) {
-      completionMessage = messages.allAddonsSucceeded.replace(
-        "{{count}}",
-        String(successful.length)
-      );
+      finalMessage = t("system:addons.messages.allSuccess", {
+        count: successful.length,
+      });
     } else if (successful.length === 0) {
-      completionMessage = messages.allAddonsFailed;
+      finalMessage = t("system:addons.messages.allFailed");
     } else {
-      completionMessage = messages.someAddonsFailed
-        .replace("{{successCount}}", String(successful.length))
-        .replace("{{totalCount}}", String(totalAddons));
+      finalMessage = t("system:addons.messages.partialSuccess", {
+        successCount: successful.length,
+        totalCount: totalAddons,
+      });
     }
 
-    // Yield final completion event
-    yield withEventMeta(
-      {
-        status: "completed" as const,
-        message: completionMessage,
-        results,
-        result: results, // Added for useStreamingMutation hook compatibility
-        progress: {
-          current: totalAddons,
-          total: totalAddons,
-        },
+    yield {
+      status: "completed" as const,
+      message: finalMessage,
+      results,
+      result: results, // Added for useStreamingMutation hook compatibility
+      progress: {
+        current: totalAddons,
+        total: totalAddons,
       },
-      { id: "addon-registration-complete", retry: 1000 }
-    );
+    };
   });

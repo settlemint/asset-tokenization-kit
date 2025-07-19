@@ -4,32 +4,7 @@ import {
   MutationInputSchemaWithContract,
   MutationOutputSchema,
 } from "@/orpc/routes/common/schemas/mutation.schema";
-import { TransactionTrackingMessagesSchema } from "@/orpc/routes/common/schemas/transaction-messages.schema";
 import { z } from "zod";
-
-/**
- * Messages schema for token mint operation
- */
-export const TokenMintMessagesSchema = TransactionTrackingMessagesSchema.extend(
-  {
-    // Initial states
-    preparingMint: z.string().optional().default("Preparing to mint tokens..."),
-    submittingMint: z
-      .string()
-      .optional()
-      .default("Submitting mint transaction..."),
-
-    // Success states
-    tokensMinted: z.string().optional().default("Tokens minted successfully"),
-
-    // Error states
-    mintFailed: z.string().optional().default("Failed to mint tokens"),
-    defaultError: z
-      .string()
-      .optional()
-      .default("An error occurred while minting tokens"),
-  }
-);
 
 export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
   recipients: z
@@ -51,7 +26,6 @@ export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
       z.array(apiBigInt).min(1, "At least one amount required").max(100),
     ])
     .describe("Amount(s) of tokens to mint"),
-  messages: TokenMintMessagesSchema.optional(),
 }).refine(
   (data) => {
     // Ensure arrays have the same length after transformation

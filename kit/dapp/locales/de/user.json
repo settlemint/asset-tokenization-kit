@@ -1,0 +1,17 @@
+{
+  "actions": {
+    "createWallet": {
+      "success": "Wallet wurde erfolgreich erstellt"
+    }
+  },
+  "kyc": {
+    "actions": {
+      "upsert": {
+        "success": "KYC-Profil wurde erfolgreich aktualisiert"
+      },
+      "delete": {
+        "success": "KYC-Profil wurde erfolgreich gelöscht"
+      }
+    }
+  }
+}

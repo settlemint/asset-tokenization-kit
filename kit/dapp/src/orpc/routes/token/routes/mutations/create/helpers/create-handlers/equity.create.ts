@@ -64,7 +64,7 @@ export const equityCreateHandler = async function* (
     throw new Error("Invalid token type");
   }
 
-  yield* createToken(input, (creationFailedMessage, messages) => {
+  yield* createToken(input, context, (creationFailedMessage, messages) => {
     // Delete verification from input to avoid leaking it in the logs
     const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
