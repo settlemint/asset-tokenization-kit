@@ -11,7 +11,7 @@ export function useScrollBlur(
   const [showRightBlur, setShowRightBlur] = useState(true);
 
   // Check if there's content to scroll and update blur states
-  const checkScroll = useCallback(() => {
+  const checkScroll = () => {
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } =
         scrollContainerRef.current;
