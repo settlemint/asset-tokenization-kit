@@ -32,14 +32,13 @@ export const claimYield = async (
     eventName: "YieldClaimed",
   });
 
-  const { claimedAmount, fromPeriod, toPeriod, periodAmounts, periodYields } =
-    eventArgs as {
-      claimedAmount: bigint;
-      fromPeriod: bigint;
-      toPeriod: bigint;
-      periodAmounts: readonly bigint[];
-      periodYields: readonly bigint[];
-    };
+  const { claimedAmount, fromPeriod, toPeriod } = eventArgs as {
+    claimedAmount: bigint;
+    fromPeriod: bigint;
+    toPeriod: bigint;
+    periodAmounts: readonly bigint[];
+    periodYields: readonly bigint[];
+  };
 
   console.log(
     `[Claim yield] ✓ ${formatBaseUnits(claimedAmount, underlyingAsset.decimals)} ${underlyingAsset.symbol} yield claimed from period ${fromPeriod} to ${toPeriod}`
