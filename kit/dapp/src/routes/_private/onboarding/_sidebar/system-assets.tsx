@@ -176,15 +176,16 @@ function RouteComponent() {
     },
   });
 
-  const handleDeployFactories = useCallback(() => {
+  const handleDeployFactories = useCallback(async () => {
     if (!systemAddress || !systemDetails?.tokenFactoryRegistry) {
       toast.error(t("assets.no-system"));
       return;
     }
 
     const values = form.state.values;
-    if (values.assets.length === 0) {
-      toast.error("Select at least one asset type");
+    // Validation is already handled by the form field validator
+    if (!form.state.isValid) {
+      await form.validateAllFields("submit");
       return;
     }
 
