@@ -182,9 +182,6 @@ function RouteComponent() {
         }),
         queryClient.refetchQueries({ queryKey: orpc.user.me.key() }),
       ]);
-
-      // Navigate to next step
-      await completeStepAndNavigate(OnboardingStep.systemAssets);
     },
   });
 

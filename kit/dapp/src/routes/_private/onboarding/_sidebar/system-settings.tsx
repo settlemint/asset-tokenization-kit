@@ -56,8 +56,6 @@ function RouteComponent() {
         });
 
         toast.success("Platform settings saved successfully");
-
-        await completeStepAndNavigate(OnboardingStep.systemSettings);
       },
       onError: (error) => {
         logger.error("Settings mutation failed:", error);
@@ -88,6 +86,7 @@ function RouteComponent() {
       });
 
       logger.debug("Base currency saved successfully, navigating to next step");
+      await completeStepAndNavigate(OnboardingStep.systemSettings);
     } catch (error) {
       logger.error("Failed to save base currency:", error);
       toast.error("Failed to save platform settings");

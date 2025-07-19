@@ -30,8 +30,7 @@ function RouteComponent() {
     select: (search) => search.subStep,
   });
   const { refetch } = useSession();
-  const { handleMutationSuccess, completeStepAndNavigate } =
-    useOnboardingNavigation();
+  const { completeStepAndNavigate } = useOnboardingNavigation();
 
   const { mutate: createWallet } = useMutation(
     orpc.user.createWallet.mutationOptions({
@@ -47,7 +46,6 @@ function RouteComponent() {
         // Wait for progress animation to complete
         await new Promise((resolve) => setTimeout(resolve, 3000));
         setIsCreating(false);
-        await handleMutationSuccess(OnboardingStep.wallet, "complete");
       },
       onError: (error) => {
         setIsCreating(false);
