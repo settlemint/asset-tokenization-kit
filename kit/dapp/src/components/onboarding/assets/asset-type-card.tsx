@@ -34,7 +34,7 @@ export const AssetTypeCard = memo(
   }: AssetTypeCardProps) => {
     const { t } = useTranslation(["onboarding", "tokens"]);
 
-    // React Compiler will optimize these event handlers
+    // Event handlers are automatically optimized by React Compiler - no manual memoization needed
     const handleItemClick = () => {
       if (isDisabled) return;
       onToggle(!isChecked);
