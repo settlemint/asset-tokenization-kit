@@ -149,8 +149,20 @@ function RouteComponent() {
       assets: [] as TokenType[],
     },
     onSubmit: ({ value }: { value: AssetSelectionFormValues }) => {
-      // This will be handled by handleDeployFactories
-      logger.debug("Form submitted with values:", value);
+      if (!systemAddress || !systemDetails?.tokenFactoryRegistry) {
+        toast.error(t("assets.no-system"));
+        return;
+      }
+
+      const factories = value.assets.map((assetType) => ({
+        type: assetType,
+        name: t(`asset-types.${assetType}`, { ns: "tokens" }),
+      }));
+
+      // Store the factories and show the verification dialog
+      setPendingFactories(factories);
+      setVerificationError(null);
+      setShowVerificationModal(true);
     },
   });
 
@@ -175,30 +187,6 @@ function RouteComponent() {
       await completeStepAndNavigate(OnboardingStep.systemAssets);
     },
   });
-
-  const handleDeployFactories = useCallback(async () => {
-    if (!systemAddress || !systemDetails?.tokenFactoryRegistry) {
-      toast.error(t("assets.no-system"));
-      return;
-    }
-
-    const values = form.state.values;
-    // Validation is already handled by the form field validator
-    if (!form.state.isValid) {
-      await form.validateAllFields("submit");
-      return;
-    }
-
-    const factories = values.assets.map((assetType) => ({
-      type: assetType,
-      name: t(`asset-types.${assetType}`, { ns: "tokens" }),
-    }));
-
-    // Store the factories and show the verification dialog
-    setPendingFactories(factories);
-    setVerificationError(null);
-    setShowVerificationModal(true);
-  }, [systemAddress, systemDetails?.tokenFactoryRegistry, t, form]);
 
   // Create factory messages object
   const factoryMessages = useMemo(
@@ -350,7 +338,8 @@ function RouteComponent() {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  void handleDeployFactories();
+                  e.stopPropagation();
+                  void form.handleSubmit();
                 }}
                 className="flex flex-col h-full"
               >
