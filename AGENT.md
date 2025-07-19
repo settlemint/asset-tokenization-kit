@@ -340,6 +340,11 @@ standards.
   unless a component has the "use no memo" directive (only used for TanStack
   Table compatibility) or linting requires it. React Compiler handles
   memoization automatically
+- **TanStack Form**: Use headless hooks (useForm, useField) for fine-grained
+  updates - each field component subscribes to its own state slice. Define form
+  types/schemas (Zod/Yup) for type safety. Prefer schema validation on
+  blur/submit over keystroke. Use form.reset() for state management. Trust
+  TanStack Form's React compliance - it follows hooks rules rigorously
 - **Component Structure**: Keep components small and focused for better compiler
   optimization. Follow Hooks Rules strictly - no conditional hooks or early
   returns that bypass hooks. Prefer plain functions over manual memoization
