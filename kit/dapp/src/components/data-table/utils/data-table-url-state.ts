@@ -198,7 +198,7 @@ export function createDataTableSearchParams(options?: {
     selected: z.string().optional(),
 
     // Additional params if needed
-    ...(options?.additionalParams ?? {}),
+    ...options?.additionalParams,
   });
 
   return (search: Record<string, unknown>) => {

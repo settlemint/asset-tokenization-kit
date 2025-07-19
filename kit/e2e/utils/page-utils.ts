@@ -47,14 +47,14 @@ export async function searchAndSelectFromDialog(
 
     await option.waitFor({ state: "visible", timeout: 10000 });
     await option.click();
-  } catch (error) {
+  } catch (_error) {
     try {
       const commandOption = page
         .locator('[data-slot="command-item"]')
         .filter({ hasText: displayName })
         .first();
       await commandOption.click();
-    } catch (e) {
+    } catch (_e) {
       const fallbackOption = page
         .locator('[role="option"]')
         .filter({ hasText: displayName })
