@@ -323,6 +323,10 @@ standards.
   properties (avoid spread operator). Keep select functions stable (outside
   component or in useCallback). Never copy query data to local state - use
   directly. Use invalidateQueries for mutations. Prefetch data in loaders for SSR
+- **TanStack Router**: Use route loaders for data fetching (separates data logic
+  from UI). Enable defaultPreload: 'intent' for automatic link preloading. Use
+  selective state subscription (Route.useSearch({ select: s => s.param })) to
+  minimize re-renders. Enable structural sharing for URL state stability
 - **Imports**: No barrel files (index.ts exports); during refactors, if you
   encounter barrel files, remove them
 - **Testing**: Use `bun:test`, not vitest; tests are stored next to the

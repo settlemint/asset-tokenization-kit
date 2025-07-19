@@ -141,7 +141,9 @@ export const Route = createFileRoute(
  */
 function RouteComponent() {
   const { factory } = Route.useLoaderData();
-  const { factoryAddress } = Route.useParams();
+  const factoryAddress = Route.useParams({
+    select: (params) => params.factoryAddress,
+  });
 
   // Get the asset type from the factory typeId
   const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);

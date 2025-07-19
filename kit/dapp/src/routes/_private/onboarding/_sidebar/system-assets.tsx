@@ -43,6 +43,29 @@ export const Route = createFileRoute(
 )({
   validateSearch: zodValidator(createOnboardingSearchSchema()),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemAssets),
+  loader: async ({ context: { queryClient, orpc } }) => {
+    // Get system address from settings
+    const systemAddress = localStorage.getItem("settlemint.settings");
+    let address: string | null = null;
+
+    if (systemAddress) {
+      try {
+        const settings = JSON.parse(systemAddress);
+        address = settings.SYSTEM_ADDRESS;
+      } catch {
+        // Ignore parse errors
+      }
+    }
+
+    // Prefetch system details if address is available
+    if (address) {
+      await queryClient.prefetchQuery(
+        orpc.system.read.queryOptions({
+          input: { id: address },
+        })
+      );
+    }
+  },
   component: RouteComponent,
 });
 
