@@ -1,5 +1,4 @@
 import i18n, { fallbackLng } from "@/lib/i18n";
-import type { TFunction } from "i18next";
 import { baseRouter } from "../../procedures/base.router";
 
 /**
@@ -68,21 +67,13 @@ export const i18nMiddleware = baseRouter.middleware(
     // Get language from context, default to fallback language (English)
     const language = context.language ?? fallbackLng;
 
-    // Ensure required namespaces are loaded
-    const namespacesToLoad = ["settings", "exchange-rates", "user"];
-    for (const ns of namespacesToLoad) {
-      if (!i18n.hasResourceBundle(language, ns)) {
-        try {
-          await i18n.loadNamespaces(ns);
-        } catch {
-          // Namespace might not exist, continue
-        }
-      }
-    }
-
     // Create a new instance of the translation function for this request
     // This ensures thread safety and proper language isolation
-    const t: TFunction = i18n.getFixedT(language);
+    // Create a permissive translation function that accepts any key
+    const t = (key: string, options?: Record<string, unknown>): string => {
+      const fixedT = i18n.getFixedT(language);
+      return fixedT(key, options as any) as string;
+    };
 
     return next({
       context: {
