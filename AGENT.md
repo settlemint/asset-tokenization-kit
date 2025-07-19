@@ -363,6 +363,7 @@ standards.
   function, you shouldn't use such a function
 - **Directives**: Since we use Tanstack Start, we do not need `use client;`
 - **Linting**: Never use eslint-disable comments, fix the issues for real
+- **Forms**: Use TanStack Form exclusively for all forms. Do NOT use react-hook-form or @hookform/resolvers/zod - they have been removed from the project. For form components, use the existing TanStack Form patterns found in the codebase
 
 For comprehensive rules, refer to the ESLint configuration in .eslintrc files.
 Key principles include:
