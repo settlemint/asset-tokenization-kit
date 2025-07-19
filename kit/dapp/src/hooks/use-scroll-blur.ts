@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type RefObject } from "react";
+import { useEffect, useState, type RefObject } from "react";
 
 /**
  * Custom hook to detect scroll position and show blur effects on left/right edges
@@ -23,7 +23,7 @@ export function useScrollBlur(
       // Add a small buffer (1px) to account for rounding errors
       setShowRightBlur(scrollLeft + clientWidth < scrollWidth - 1);
     }
-  }, [scrollContainerRef]);
+  };
 
   // Set up ResizeObserver to monitor container size
   useEffect(() => {
