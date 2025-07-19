@@ -28,8 +28,7 @@ function RouteComponent() {
   const [isCreating, setIsCreating] = useState(false);
   const { subStep } = Route.useSearch();
   const { refetch } = useSession();
-  const { handleMutationSuccess, completeStepAndNavigate } =
-    useOnboardingNavigation();
+  const { completeStepAndNavigate } = useOnboardingNavigation();
 
   const { mutate: createWallet } = useMutation(
     orpc.user.createWallet.mutationOptions({
