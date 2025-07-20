@@ -1,6 +1,30 @@
-export function WalletIntro() {
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { Button } from "@/components/ui/button";
+import { orpc } from "@/orpc/orpc-client";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
+
+export function WalletIntroStep() {
+  const navigate = useNavigate();
+  const { refreshUserState } = useOnboardingNavigation();
+  const { mutate: createWallet } = useMutation(
+    orpc.user.createWallet.mutationOptions({
+      onSuccess: async () => {
+        await refreshUserState();
+        void navigate({
+          to: "/onboarding/wallet",
+          search: { subStep: "creating" },
+        });
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
+  );
+
   return (
-    <>
+    <div>
       <div className="h-full flex flex-col">
         <div className="mb-6">
           <h2 className="text-xl font-semibold">Your Wallet</h2>
@@ -78,6 +102,15 @@ export function WalletIntro() {
           </div>
         </div>
       </div>
-    </>
+      <footer>
+        <Button
+          onClick={() => {
+            createWallet({});
+          }}
+        >
+          Create my wallet
+        </Button>
+      </footer>
+    </div>
   );
 }
