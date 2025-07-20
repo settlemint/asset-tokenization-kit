@@ -2,6 +2,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { getConditionalMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
@@ -70,16 +71,8 @@ export const mint = tokenRouter.token.mint
     const isBatch = recipients.length > 1;
 
     // Generate messages using server-side translations
-    // Following simplified pattern: only pending and success messages
-    const pendingMessage = isBatch
-      ? t("tokens:actions.mint.messages.preparingBatch")
-      : t("tokens:actions.mint.messages.preparing");
-    const successMessage = isBatch
-      ? t("tokens:actions.mint.messages.successBatch")
-      : t("tokens:actions.mint.messages.success");
-    const errorMessage = isBatch
-      ? t("tokens:actions.mint.messages.failedBatch")
-      : t("tokens:actions.mint.messages.failed");
+    const { pendingMessage, successMessage, errorMessage } =
+      getConditionalMutationMessages(t, "tokens", "mint", isBatch);
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {

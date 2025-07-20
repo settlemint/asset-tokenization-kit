@@ -49,9 +49,9 @@ const getORPCClient = createIsomorphicFn()
         try {
           const headers = getHeaders();
           // Extract Accept-Language header for server-side language detection
-          const acceptLanguage = headers.get("accept-language");
+          const acceptLanguage = headers["accept-language"];
           const language =
-            acceptLanguage?.split(",")[0]?.split("-")[0] || undefined;
+            acceptLanguage?.split(",")[0]?.split("-")[0] ?? undefined;
 
           return {
             headers,

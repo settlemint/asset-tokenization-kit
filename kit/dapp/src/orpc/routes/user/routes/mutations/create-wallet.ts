@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm/sql";
 
 export const createWallet = authRouter.user.createWallet
   .use(databaseMiddleware)
-  .handler(async function ({ context: { auth, db }, errors }) {
+  .handler(async function ({ context: { auth, db, t }, errors }) {
     if (auth.user.wallet !== "0x0000000000000000000000000000000000000000") {
       throw errors.CONFLICT({
         message: "Wallet already created",
@@ -24,6 +24,6 @@ export const createWallet = authRouter.user.createWallet
 
     return {
       wallet,
-      message: context.t("user:actions.createWallet.success"),
+      message: t("user:actions.createWallet.success"),
     };
   });

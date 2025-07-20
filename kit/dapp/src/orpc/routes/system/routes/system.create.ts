@@ -290,7 +290,7 @@ export const create = onboardedRouter.system.create
       : t("system:create.messages.success");
 
     yield {
-      status: "completed" as const,
+      status: "confirmed" as const,
       message: finalMessage,
       result: system.id,
     };

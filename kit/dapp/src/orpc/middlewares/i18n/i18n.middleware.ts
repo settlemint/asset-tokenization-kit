@@ -1,5 +1,14 @@
 import i18n, { fallbackLng } from "@/lib/i18n";
+import type { TOptions } from "i18next";
 import { baseRouter } from "../../procedures/base.router";
+
+/**
+ * Context type provided by the i18n middleware
+ */
+export interface i18nContext {
+  language: string;
+  t: (key: string, options?: TOptions) => string;
+}
 
 /**
  * Internationalization (i18n) middleware for ORPC.
@@ -70,9 +79,16 @@ export const i18nMiddleware = baseRouter.middleware(
     // Create a new instance of the translation function for this request
     // This ensures thread safety and proper language isolation
     // Create a permissive translation function that accepts any key
-    const t = (key: string, options?: Record<string, unknown>): string => {
-      const fixedT = i18n.getFixedT(language);
-      return fixedT(key, options as any) as string;
+    const t = (key: string, options?: TOptions): string => {
+      // Create a wrapper that accepts any string key but maintains type safety for options
+      const translate = i18n.getFixedT(language) as (
+        key: string,
+        options?: TOptions
+      ) => unknown;
+      const result = translate(key, options);
+      // TFunction can return string | object | null | detailed result
+      // In our case, we're using it for simple string translations
+      return typeof result === "string" ? result : String(result);
     };
 
     return next({
