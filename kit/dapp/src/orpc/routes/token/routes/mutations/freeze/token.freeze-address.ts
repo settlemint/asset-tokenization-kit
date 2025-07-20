@@ -1,6 +1,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
@@ -43,10 +44,8 @@ export const tokenFreezeAddress = tokenRouter.token.tokenFreezeAddress
     const { auth, t } = context;
 
     // Generate messages using server-side translations
-    const messageKey = freeze ? "freeze" : "unfreeze";
-    const pendingMessage = t(`tokens:actions.${messageKey}.messages.preparing`);
-    const successMessage = t(`tokens:actions.${messageKey}.messages.success`);
-    const errorMessage = t(`tokens:actions.${messageKey}.messages.failed`);
+    const { pendingMessage, successMessage, errorMessage } =
+      getMutationMessages(t, "tokens", freeze ? "freeze" : "unfreeze");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {

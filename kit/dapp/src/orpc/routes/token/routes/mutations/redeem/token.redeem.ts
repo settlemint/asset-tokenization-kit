@@ -1,6 +1,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { getConditionalMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
@@ -67,21 +68,20 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
     }
 
     // Generate messages using server-side translations
-    const pendingMessage = t(
-      redeemAll
-        ? "tokens:actions.redeem.messages.preparingAll"
-        : "tokens:actions.redeem.messages.preparing"
-    );
-    const successMessage = t(
-      redeemAll
-        ? "tokens:actions.redeem.messages.successAll"
-        : "tokens:actions.redeem.messages.success"
-    );
-    const errorMessage = t(
-      redeemAll
-        ? "tokens:actions.redeem.messages.failedAll"
-        : "tokens:actions.redeem.messages.failed"
-    );
+    const { pendingMessage, successMessage, errorMessage } =
+      getConditionalMutationMessages(
+        t,
+        "tokens",
+        "redeem",
+        Boolean(redeemAll),
+        {
+          keys: {
+            preparing: redeemAll ? "preparingAll" : "preparing",
+            success: redeemAll ? "successAll" : "success",
+            failed: redeemAll ? "failedAll" : "failed",
+          },
+        }
+      );
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {

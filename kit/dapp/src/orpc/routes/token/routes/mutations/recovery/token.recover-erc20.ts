@@ -1,6 +1,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
@@ -44,9 +45,8 @@ export const tokenRecoverERC20 = tokenRouter.token.tokenRecoverERC20
     const { auth, t } = context;
 
     // Generate messages using server-side translations
-    const pendingMessage = t("tokens:actions.recoverERC20.messages.preparing");
-    const successMessage = t("tokens:actions.recoverERC20.messages.success");
-    const errorMessage = t("tokens:actions.recoverERC20.messages.failed");
+    const { pendingMessage, successMessage, errorMessage } =
+      getMutationMessages(t, "tokens", "recoverERC20");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
