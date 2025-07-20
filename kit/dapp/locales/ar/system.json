@@ -2,32 +2,32 @@
   "create": {
     "messages": {
       "alreadyExists": "النظام موجود بالفعل",
-      "creating": "جاري إنشاء النظام",
+      "creating": "إنشاء النظام",
       "creationFailed": "فشل في إنشاء النظام",
-      "queryingSystem": "جاري الاستعلام عن معلومات النظام",
+      "queryingSystem": "استعلام معلومات النظام",
       "systemNotFound": "لم يتم العثور على النظام بعد الإنشاء",
-      "bootstrapping": "جاري تهيئة النظام",
+      "bootstrapping": "تهيئة النظام",
       "bootstrapFailed": "فشل في تهيئة النظام",
       "bootstrapSuccess": "تم تهيئة النظام بنجاح",
-      "createdBootstrapFailed": "تم إنشاء النظام في {{systemAddress}} ولكن فشلت التهيئة. قد يكون التدخل اليدوي مطلوباً.",
+      "createdBootstrapFailed": "تم إنشاء النظام في {{systemAddress}} ولكن فشلت التهيئة. قد تكون هناك حاجة لتدخل يدوي.",
       "success": "تم إنشاء النظام بنجاح"
     }
   },
   "addons": {
     "messages": {
-      "preparing": "جاري التحضير لتسجيل الإضافات",
-      "progress": "جاري تسجيل {{current}} من {{total}} إضافة",
+      "preparing": "التحضير لتسجيل الإضافات",
+      "progress": "تسجيل {{current}} من {{total}} إضافة",
       "alreadyExists": "الإضافة {{name}} موجودة بالفعل",
       "failed": "فشل في تسجيل {{name}}",
-      "registering": "جاري تسجيل {{name}}",
-      "registered": "تم تسجيل {{name}} بنجاح",
+      "registering": "تسجيل {{name}}",
+      "registered": "{{name}} تم تسجيله بنجاح",
       "defaultError": "حدث خطأ أثناء تسجيل الإضافة",
-      "accessDenied": "تم رفض الوصول إلى {{name}}",
-      "invalidImplementation": "تم توفير تطبيق غير صالح",
-      "invalidConfiguration": "إعدادات غير صالحة",
-      "allSuccess": "تم تسجيل جميع الإضافات {{count}} بنجاح",
+      "accessDenied": "تم رفض الوصول لـ {{name}}",
+      "invalidImplementation": "تم توفير تنفيذ غير صالح",
+      "invalidConfiguration": "تكوين غير صالح",
+      "allSuccess": "تم تسجيل جميع {{count}} الإضافات بنجاح",
       "allFailed": "فشل في تسجيل أي إضافات",
-      "partialSuccess": "تم تسجيل {{successful}} من {{total}} إضافة بنجاح"
+      "partialSuccess": "{{successful}} من {{total}} الإضافات تم تسجيلها بنجاح"
     }
   }
 }

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-
 /// @title Interface for a generic SMART Yield Schedule contract
 /// @notice This interface defines the most basic function that any yield schedule contract, associated with a SMART
 /// token's yield extension, must implement.

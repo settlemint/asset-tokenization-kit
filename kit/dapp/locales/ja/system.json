@@ -1,33 +1,33 @@
 {
   "create": {
     "messages": {
-      "alreadyExists": "システムは既に存在します",
+      "alreadyExists": "システムはすでに存在します",
       "creating": "システムを作成中",
       "creationFailed": "システムの作成に失敗しました",
       "queryingSystem": "システム情報を照会中",
       "systemNotFound": "作成後にシステムが見つかりません",
-      "bootstrapping": "システムを初期化中",
-      "bootstrapFailed": "システムの初期化に失敗しました",
-      "bootstrapSuccess": "システムが正常に初期化されました",
-      "createdBootstrapFailed": "システムは{{systemAddress}}に作成されましたが、初期化に失敗しました。手動での対応が必要な場合があります。",
+      "bootstrapping": "システムをブートストラップ中",
+      "bootstrapFailed": "システムのブートストラップに失敗しました",
+      "bootstrapSuccess": "システムが正常にブートストラップされました",
+      "createdBootstrapFailed": "システムは{{systemAddress}}で作成されましたが、ブートストラップに失敗しました。手動での介入が必要な場合があります。",
       "success": "システムが正常に作成されました"
     }
   },
   "addons": {
     "messages": {
       "preparing": "アドオンの登録を準備中",
-      "progress": "{{total}}個中{{current}}個のアドオンを登録中",
-      "alreadyExists": "アドオン{{name}}は既に存在します",
+      "progress": "{{total}}のアドオンのうち{{current}}を登録中",
+      "alreadyExists": "アドオン{{name}}はすでに存在します",
       "failed": "{{name}}の登録に失敗しました",
       "registering": "{{name}}を登録中",
       "registered": "{{name}}が正常に登録されました",
       "defaultError": "アドオンの登録中にエラーが発生しました",
       "accessDenied": "{{name}}へのアクセスが拒否されました",
-      "invalidImplementation": "無効な実装が指定されました",
-      "invalidConfiguration": "無効な設定です",
-      "allSuccess": "{{count}}個のアドオンがすべて正常に登録されました",
+      "invalidImplementation": "提供された実装が無効です",
+      "invalidConfiguration": "無効な構成",
+      "allSuccess": "{{count}}のアドオンがすべて正常に登録されました",
       "allFailed": "アドオンの登録に失敗しました",
-      "partialSuccess": "{{total}}個中{{successful}}個のアドオンが正常に登録されました"
+      "partialSuccess": "{{total}}のアドオンのうち{{successful}}が正常に登録されました"
     }
   }
 }

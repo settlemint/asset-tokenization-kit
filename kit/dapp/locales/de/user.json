@@ -1,16 +1,16 @@
 {
   "actions": {
     "createWallet": {
-      "success": "Wallet wurde erfolgreich erstellt"
+      "success": "Die Brieftasche wurde erfolgreich erstellt"
     }
   },
   "kyc": {
     "actions": {
       "upsert": {
-        "success": "KYC-Profil wurde erfolgreich aktualisiert"
+        "success": "Das KYC-Profil wurde erfolgreich aktualisiert"
       },
       "delete": {
-        "success": "KYC-Profil wurde erfolgreich gelöscht"
+        "success": "Das KYC-Profil wurde erfolgreich gelöscht"
       }
     }
   }

@@ -1,10 +1,10 @@
 {
   "actions": {
     "upsert": {
-      "success": "Einstellung '{{key}}' wurde erfolgreich aktualisiert"
+      "success": "Die Einstellung '{{key}}' wurde erfolgreich aktualisiert"
     },
     "delete": {
-      "success": "Einstellung '{{key}}' wurde erfolgreich gelöscht"
+      "success": "Die Einstellung '{{key}}' wurde erfolgreich gelöscht"
     }
   }
 }

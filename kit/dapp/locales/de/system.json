@@ -3,30 +3,30 @@
     "messages": {
       "alreadyExists": "System existiert bereits",
       "creating": "System wird erstellt",
-      "creationFailed": "Fehler beim Erstellen des Systems",
-      "queryingSystem": "Systeminformationen werden abgefragt",
-      "systemNotFound": "System nach Erstellung nicht gefunden",
+      "creationFailed": "Erstellung des Systems fehlgeschlagen",
+      "queryingSystem": "Abfrage der Systeminformationen",
+      "systemNotFound": "System nach der Erstellung nicht gefunden",
       "bootstrapping": "System wird initialisiert",
-      "bootstrapFailed": "Fehler bei der Systeminitialisierung",
+      "bootstrapFailed": "Initialisierung des Systems fehlgeschlagen",
       "bootstrapSuccess": "System erfolgreich initialisiert",
-      "createdBootstrapFailed": "System erstellt unter {{systemAddress}}, aber Initialisierung fehlgeschlagen. Manueller Eingriff möglicherweise erforderlich.",
+      "createdBootstrapFailed": "System wurde unter {{systemAddress}} erstellt, aber die Initialisierung ist fehlgeschlagen. Manuelle Intervention kann erforderlich sein.",
       "success": "System erfolgreich erstellt"
     }
   },
   "addons": {
     "messages": {
-      "preparing": "Vorbereitung der Addon-Registrierung",
-      "progress": "Registriere {{current}} von {{total}} Addons",
+      "preparing": "Vorbereitung zur Registrierung von Addons",
+      "progress": "Registrierung von {{current}} von {{total}} Addons",
       "alreadyExists": "Addon {{name}} existiert bereits",
-      "failed": "Fehler beim Registrieren von {{name}}",
-      "registering": "Registriere {{name}}",
+      "failed": "Registrierung von {{name}} fehlgeschlagen",
+      "registering": "Registrierung von {{name}}",
       "registered": "{{name}} erfolgreich registriert",
-      "defaultError": "Ein Fehler ist bei der Addon-Registrierung aufgetreten",
+      "defaultError": "Ein Fehler ist während der Registrierung des Addons aufgetreten",
       "accessDenied": "Zugriff verweigert für {{name}}",
-      "invalidImplementation": "Ungültige Implementierung angegeben",
+      "invalidImplementation": "Ungültige Implementierung bereitgestellt",
       "invalidConfiguration": "Ungültige Konfiguration",
       "allSuccess": "Alle {{count}} Addons erfolgreich registriert",
-      "allFailed": "Keine Addons konnten registriert werden",
+      "allFailed": "Registrierung von Addons fehlgeschlagen",
       "partialSuccess": "{{successful}} von {{total}} Addons erfolgreich registriert"
     }
   }

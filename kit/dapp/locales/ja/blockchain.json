@@ -164,5 +164,16 @@
     "permit": "許可署名",
     "message": "署名するメッセージ",
     "danger": "署名する内容に注意してください！"
+  },
+  "transactions": {
+    "tracking": {
+      "streamTimeout": "取引の追跡がタイムアウトしました。取引のステータスを手動で確認してください。",
+      "waitingForMining": "取引がマイニングされるのを待っています...",
+      "transactionFailed": "取引に失敗しました",
+      "transactionDropped": "取引がメモリプールから削除されました",
+      "waitingForIndexing": "取引が確認されました。インデックス作成を待っています...",
+      "transactionIndexed": "取引が正常にインデックス作成されました。",
+      "indexingTimeout": "インデックス作成のタイムアウト。取引は成功しましたが、表示されるまでに時間がかかる場合があります。"
+    }
   }
 }
