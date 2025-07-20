@@ -1,5 +1,6 @@
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
+import { getBlockchainTransactionMessages } from "@/orpc/helpers/blockchain-transaction-messages";
 import type { ChallengeResponse } from "@/orpc/helpers/challenge-response";
 import type { i18nContext } from "@/orpc/middlewares/i18n/i18n.middleware";
 import type {
@@ -40,21 +41,13 @@ export async function* createToken(
   const { t } = context;
 
   // Build messages for transaction tracking
-  const messages = {
-    waitingForMining: t("common:transaction.waitingForMining"),
-    transactionFailed: t("common:transaction.transactionFailed"),
-    transactionDropped: t("common:transaction.transactionDropped"),
-    waitingForIndexing: t("common:transaction.waitingForIndexing"),
-    transactionIndexed: t("common:transaction.transactionIndexed"),
-    indexingTimeout: t("common:transaction.indexingTimeout"),
-    streamTimeout: t("common:transaction.streamTimeout"),
-  };
+  const messages = getBlockchainTransactionMessages(t);
 
   // Yield initial loading message
   yield withEventMeta(
     {
       status: "pending" as const,
-      message: t("tokens:create.preparing", { type: input.type }),
+      message: t("tokens:actions.create.preparing", { type: input.type }),
       tokenType: [input.type],
     },
     { id: "token-creation", retry: 1000 }
@@ -68,7 +61,7 @@ export async function* createToken(
     // Use the Portal client's mutate method that returns an async generator
     // This enables real-time transaction tracking for token creation
     for await (const event of mutateFn(
-      t("tokens:create.failed", { type: input.type }),
+      t("tokens:actions.create.failed", { type: input.type }),
       messages
     )) {
       // Store transaction hash from the first event
@@ -80,7 +73,7 @@ export async function* createToken(
         yield withEventMeta(
           {
             status: "pending" as const,
-            message: t("tokens:create.creating", { type: input.type }),
+            message: t("tokens:actions.create.creating", { type: input.type }),
             transactionHash: validatedHash,
             tokenType: [input.type],
           },
@@ -91,7 +84,7 @@ export async function* createToken(
         yield withEventMeta(
           {
             status: "confirmed" as const,
-            message: t("tokens:create.success", { type: input.type }),
+            message: t("tokens:actions.create.success", { type: input.type }),
             transactionHash: validatedHash,
             result: getEthereumHash(validatedHash),
             tokenType: [input.type],
@@ -104,7 +97,8 @@ export async function* createToken(
           {
             status: "failed" as const,
             message:
-              event.message || t("tokens:create.failed", { type: input.type }),
+              event.message ||
+              t("tokens:actions.create.failed", { type: input.type }),
             transactionHash: validatedHash,
             tokenType: [input.type],
           },
@@ -117,7 +111,7 @@ export async function* createToken(
     const errorMessage =
       error instanceof Error
         ? error.message
-        : t("tokens:create.error.default", { type: input.type });
+        : t("tokens:actions.create.error.default", { type: input.type });
     yield withEventMeta(
       {
         status: "failed" as const,

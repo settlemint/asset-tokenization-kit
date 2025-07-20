@@ -1,0 +1,33 @@
+{
+  "create": {
+    "messages": {
+      "alreadyExists": "النظام موجود بالفعل",
+      "creating": "جاري إنشاء النظام",
+      "creationFailed": "فشل في إنشاء النظام",
+      "queryingSystem": "جاري الاستعلام عن معلومات النظام",
+      "systemNotFound": "لم يتم العثور على النظام بعد الإنشاء",
+      "bootstrapping": "جاري تهيئة النظام",
+      "bootstrapFailed": "فشل في تهيئة النظام",
+      "bootstrapSuccess": "تم تهيئة النظام بنجاح",
+      "createdBootstrapFailed": "تم إنشاء النظام في {{systemAddress}} ولكن فشلت التهيئة. قد يكون التدخل اليدوي مطلوباً.",
+      "success": "تم إنشاء النظام بنجاح"
+    }
+  },
+  "addons": {
+    "messages": {
+      "preparing": "جاري التحضير لتسجيل الإضافات",
+      "progress": "جاري تسجيل {{current}} من {{total}} إضافة",
+      "alreadyExists": "الإضافة {{name}} موجودة بالفعل",
+      "failed": "فشل في تسجيل {{name}}",
+      "registering": "جاري تسجيل {{name}}",
+      "registered": "تم تسجيل {{name}} بنجاح",
+      "defaultError": "حدث خطأ أثناء تسجيل الإضافة",
+      "accessDenied": "تم رفض الوصول إلى {{name}}",
+      "invalidImplementation": "تم توفير تطبيق غير صالح",
+      "invalidConfiguration": "إعدادات غير صالحة",
+      "allSuccess": "تم تسجيل جميع الإضافات {{count}} بنجاح",
+      "allFailed": "فشل في تسجيل أي إضافات",
+      "partialSuccess": "تم تسجيل {{successful}} من {{total}} إضافة بنجاح"
+    }
+  }
+}
