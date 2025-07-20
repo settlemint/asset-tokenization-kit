@@ -129,7 +129,7 @@ export async function* createToken(
     yield withEventMeta(
       {
         status: "confirmed" as const,
-        message: t("tokens:create.success", { type: input.type }),
+        message: t("tokens:actions.create.success", { type: input.type }),
         transactionHash: validatedHash,
         result: getEthereumHash(validatedHash),
         tokenType: [input.type],
