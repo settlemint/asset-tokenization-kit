@@ -19,13 +19,7 @@ export const AssetDesignerForm = () => {
   const form = useAppForm({
     ...assetDesignerFormOptions,
     validators: {
-      onChange: (values) => {
-        try {
-          return AssetDesignerFormSchema.safeParse(values);
-        } catch {
-          return false;
-        }
-      },
+      onChange: AssetDesignerFormSchema,
     },
   });
 

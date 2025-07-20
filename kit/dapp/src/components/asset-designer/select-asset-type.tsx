@@ -1,5 +1,6 @@
 import {
   assetDesignerFormOptions,
+  isRequiredField,
   onStepSubmit,
 } from "@/components/asset-designer/shared-form";
 import { withForm } from "@/hooks/use-app-form";
@@ -13,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../ui/button";
+import type { AssetDesignerFormInputData } from "./shared-form";
 
 export const SelectAssetType = withForm({
   ...assetDesignerFormOptions,
@@ -57,9 +59,18 @@ export const SelectAssetType = withForm({
           )}
         />
         <form.Subscribe
-          selector={(state) => state.values.type}
-          children={(type) => {
-            const disabled = !type;
+          selector={(state) => state.values}
+          children={(values) => {
+            const fields: (keyof AssetDesignerFormInputData)[] = ["type"];
+
+            const disabled = fields.some((field) => {
+              const meta = form.getFieldMeta(field);
+              const error = meta?.errors;
+              const isPristine = meta?.isPristine;
+              const requiredFieldPristine =
+                isRequiredField(field, values.type) && isPristine;
+              return (error && error.length > 0) || requiredFieldPristine;
+            });
 
             return (
               <Button onClick={onStepSubmit} disabled={disabled}>

@@ -12,13 +12,15 @@ export const AssetDesignerFormSchema = TokenBaseSchema.extend(
   .extend(BondSchema.partial().shape)
   .extend(FundSchema.partial().shape);
 
-export type AssetDesignerFormData = z.infer<typeof AssetDesignerFormSchema>;
+export type AssetDesignerFormInputData = z.input<
+  typeof AssetDesignerFormSchema
+>;
 
-const optionalFields: (keyof AssetDesignerFormData)[] = ["isin"];
+const optionalFields: (keyof AssetDesignerFormInputData)[] = ["isin"];
 
 // TODO: Get this from the schema somehow, this is a temporary solution
 export const isRequiredField = (
-  field: keyof AssetDesignerFormData,
+  field: keyof AssetDesignerFormInputData,
   assetType: AssetType
 ) => {
   // Always optional fields
@@ -42,7 +44,7 @@ export const isRequiredField = (
 export const assetDesignerFormOptions = formOptions({
   defaultValues: {
     step: "selectAssetType",
-  } as AssetDesignerFormData,
+  } as AssetDesignerFormInputData,
 });
 
 export const onStepSubmit = () => {
