@@ -5,6 +5,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { useSession } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth/auth.client";
 import { twoFactorCode } from "@/lib/zod/validators/two-factor-code";
 import { orpc } from "@/orpc/orpc-client";
@@ -28,6 +29,7 @@ export function OtpSetupComponent({
   const [otpUri, setOtpUri] = useState<string | null>(null);
   const [otpSetupError, setOtpSetupError] = useState(false);
   const queryClient = useQueryClient();
+  const { refetch } = useSession();
 
   const { mutate: enableTwoFactor } = useMutation({
     mutationFn: async () =>
@@ -36,12 +38,13 @@ export function OtpSetupComponent({
         onboarding: true,
       }),
     onSuccess: async (data) => {
-      // Clear auth session cache to ensure UI reflects updated auth state
       await authClient.getSession({
         query: {
           disableCookieCache: true,
         },
       });
+      await refetch();
+      await queryClient.refetchQueries(orpc.user.me.queryOptions());
 
       // Extract OTP URI from response
       if (data.data?.totpURI) {
@@ -64,19 +67,15 @@ export function OtpSetupComponent({
         code,
       }),
     onSuccess: async () => {
-      // Clear auth session cache to ensure UI reflects updated auth state
       await authClient.getSession({
         query: {
           disableCookieCache: true,
         },
       });
+      await refetch();
+      await queryClient.refetchQueries(orpc.user.me.queryOptions());
 
       toast.success("OTP verified successfully");
-
-      // Invalidate user queries to get fresh data
-      await queryClient.invalidateQueries({
-        queryKey: orpc.user.me.key(),
-      });
 
       onSuccess();
     },
