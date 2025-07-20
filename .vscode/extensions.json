@@ -6,11 +6,11 @@
     "yoavbls.pretty-ts-errors",
     "bradlc.vscode-tailwindcss",
     "shardulm94.trailing-spaces",
-    "nomicfoundation.hardhat-solidity",
     "nize.oklch-preview",
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "lokalise.i18n-ally",
-    "oxc.oxc-vscode"
+    "oxc.oxc-vscode",
+    "juanblanco.solidity"
   ]
 }

@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { SMARTFixedYieldScheduleLogic } from "./internal/SMARTFixedYieldScheduleLogic.sol";
-import { ISMARTFixedYieldSchedule } from "./ISMARTFixedYieldSchedule.sol";
 
 abstract contract SMARTFixedYieldScheduleUpgradeable is SMARTFixedYieldScheduleLogic {
     /// @notice Initializes the SMART Fixed Yield Schedule logic.
