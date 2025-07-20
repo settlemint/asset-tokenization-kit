@@ -3,8 +3,9 @@ import {
   updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
 import type { orpc } from "@/orpc/orpc-client";
-import { redirect } from "@tanstack/react-router";
 import type { QueryClient } from "@tanstack/react-query";
+import { redirect } from "@tanstack/react-router";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 
 /**
@@ -15,12 +16,14 @@ export function createOnboardingSearchSchema(
   customSubSteps?: readonly string[]
 ) {
   const subSteps = customSubSteps ?? (["intro", "complete"] as const);
-  return z.object({
-    step: z
-      .enum(Object.values(OnboardingStep) as [string, ...string[]])
-      .optional(),
-    subStep: z.enum(subSteps as [string, ...string[]]).optional(),
-  });
+  return zodValidator(
+    z.object({
+      step: z
+        .enum(Object.values(OnboardingStep) as [string, ...string[]])
+        .optional(),
+      subStep: z.enum(subSteps as [string, ...string[]]).optional(),
+    })
+  );
 }
 
 interface BeforeLoadContext {
@@ -70,5 +73,9 @@ export function createOnboardingBeforeLoad(expectedStep: OnboardingStep) {
         });
       }
     }
+
+    return {
+      user,
+    };
   };
 }

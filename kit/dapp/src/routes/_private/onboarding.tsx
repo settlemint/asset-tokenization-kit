@@ -3,7 +3,6 @@ import { Logo } from "@/components/logo/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useLocalStorage, useTimeout } from "usehooks-ts";
 
 export const Route = createFileRoute("/_private/onboarding")({
   component: OnboardingLayout,
@@ -11,11 +10,6 @@ export const Route = createFileRoute("/_private/onboarding")({
 
 function OnboardingLayout() {
   const { t } = useTranslation(["onboarding", "general"]);
-  const [, setIsReturningUser] = useLocalStorage("isReturningUser", false);
-
-  useTimeout(() => {
-    setIsReturningUser(true);
-  }, 10 * 1000);
 
   return (
     <div className="min-h-screen w-full bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
