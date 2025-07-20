@@ -80,12 +80,21 @@ export const i18nMiddleware = baseRouter.middleware(
     // This ensures thread safety and proper language isolation
     // Create a permissive translation function that accepts any key
     const t = (key: string, options?: TOptions): string => {
+      // Extract namespace from key if present (format: "namespace:key")
+      const [namespace, ...keyParts] = key.split(":");
+      const actualKey = keyParts.length > 0 ? keyParts.join(":") : key;
+      const ns = keyParts.length > 0 ? namespace : undefined;
+
       // Create a wrapper that accepts any string key but maintains type safety for options
-      const translate = i18n.getFixedT(language) as (
+      const translate = i18n.getFixedT(language, ns) as (
         key: string,
         options?: TOptions
       ) => unknown;
-      const result = translate(key, options);
+
+      // Use the actual key without namespace prefix when namespace is specified
+      const keyToTranslate = ns ? actualKey : key;
+      const result = translate(keyToTranslate, options);
+
       // TFunction can return string | object | null | detailed result
       // In our case, we're using it for simple string translations
       return typeof result === "string" ? result : String(result);
