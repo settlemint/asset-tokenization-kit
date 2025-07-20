@@ -5,13 +5,12 @@ import js from "@eslint/js";
 import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginRouter from "@tanstack/eslint-plugin-router";
 import boundaries from "eslint-plugin-boundaries";
-import importPlugin from "eslint-plugin-import";
 import noBarrelFiles from "eslint-plugin-no-barrel-files";
+import oxlint from "eslint-plugin-oxlint";
 import pluginReact from "eslint-plugin-react";
 import reactCompiler from "eslint-plugin-react-compiler";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactPerfPlugin from "eslint-plugin-react-perf";
-import pluginSecurity from "eslint-plugin-security";
 import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -69,7 +68,12 @@ export default defineConfig([
   },
 
   // ==========================================================================
-  // 4. ARCHITECTURE BOUNDARIES
+  // 4. OXLINT INTEGRATION - Disable ESLint rules handled by oxlint
+  // ==========================================================================
+  oxlint.configs["flat/recommended"],
+
+  // ==========================================================================
+  // 5. ARCHITECTURE BOUNDARIES
   // ==========================================================================
   {
     plugins: {
@@ -111,7 +115,7 @@ export default defineConfig([
   },
 
   // ==========================================================================
-  // 5. PLUGIN CONFIGURATIONS (Recommended Configs)
+  // 6. PLUGIN CONFIGURATIONS (Recommended Configs)
   // ==========================================================================
   // React
   pluginReact.configs.flat.recommended,
@@ -125,18 +129,11 @@ export default defineConfig([
   ...pluginQuery.configs["flat/recommended"],
   ...pluginRouter.configs["flat/recommended"],
 
-  // Security
-  pluginSecurity.configs.recommended,
-
-  // Import
-  importPlugin.flatConfigs.recommended,
-  importPlugin.flatConfigs.typescript,
-
   // No Barrel Files
   noBarrelFiles.flat,
 
   // ==========================================================================
-  // 6. TYPESCRIPT TYPE-CHECKED RULES (Source Files Only)
+  // 7. TYPESCRIPT TYPE-CHECKED RULES (Source Files Only)
   // ==========================================================================
   ...tseslint.configs.strictTypeChecked.map((config) => ({
     ...config,
@@ -148,7 +145,7 @@ export default defineConfig([
   })),
 
   // ==========================================================================
-  // 7. REACT COMPILER PLUGIN
+  // 8. REACT COMPILER PLUGIN
   // ==========================================================================
   {
     files: ["src/**/*.{ts,tsx}"],
@@ -161,7 +158,7 @@ export default defineConfig([
   },
 
   // ==========================================================================
-  // 8. CUSTOM RULES FOR SOURCE FILES
+  // 9. CUSTOM RULES FOR SOURCE FILES
   // ==========================================================================
   {
     files: ["src/**/*.{ts,mts,cts,tsx}"],
@@ -275,7 +272,6 @@ export default defineConfig([
       // ========================================================================
       // IMPORT RULES
       // ========================================================================
-      "import/no-unresolved": "off", // TypeScript handles this
       "no-restricted-imports": [
         "error",
         {
@@ -285,17 +281,12 @@ export default defineConfig([
         },
       ],
 
-      // ========================================================================
-      // SECURITY RULES
-      // ========================================================================
-      "security/detect-object-injection": "off", // Too many false positives
-
       "react-perf/jsx-no-new-object-as-prop": "off",
     },
   },
 
   // ==========================================================================
-  // 9. CONFIG FILES - RELAXED RULES
+  // 10. CONFIG FILES - RELAXED RULES
   // ==========================================================================
   {
     files: ["*.config.{js,mjs,cjs,ts}"],
@@ -305,7 +296,7 @@ export default defineConfig([
   },
 
   // ==========================================================================
-  // 10. GENERATED FILES - RELAXED RULES
+  // 11. GENERATED FILES - RELAXED RULES
   // ==========================================================================
   {
     files: ["src/lib/settlemint/*.{js,mjs,cjs,ts}"],
@@ -317,7 +308,7 @@ export default defineConfig([
   },
 
   // ==========================================================================
-  // 11. TEST FILES - RELAXED RULES
+  // 12. TEST FILES - RELAXED RULES
   // ==========================================================================
   {
     files: ["**/*.test.{js,mjs,cjs,ts}"],
