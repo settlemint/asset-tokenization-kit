@@ -48,14 +48,8 @@ const getORPCClient = createIsomorphicFn()
       context: () => {
         try {
           const headers = getHeaders();
-          // Extract Accept-Language header for server-side language detection
-          const acceptLanguage = headers["accept-language"];
-          const language =
-            acceptLanguage?.split(",")[0]?.split("-")[0] ?? undefined;
-
           return {
             headers,
-            language,
           };
         } catch (error) {
           // Handle cases where there's no HTTP event in AsyncLocalStorage

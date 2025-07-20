@@ -11,6 +11,18 @@ export interface i18nContext {
 }
 
 /**
+ * Common namespaces used by ORPC routes
+ * These are the namespaces that are frequently used across mutations
+ */
+const COMMON_ORPC_NAMESPACES = [
+  "tokens", // Token operations
+  "system", // System operations
+  "errors", // Error messages
+  "common", // Common terms
+  "validation", // Validation messages
+] as const;
+
+/**
  * Internationalization (i18n) middleware for ORPC.
  *
  * This middleware provides server-side translation capabilities for ORPC procedures,
@@ -73,8 +85,25 @@ export interface i18nContext {
  */
 export const i18nMiddleware = baseRouter.middleware(
   async ({ context, next }) => {
-    // Get language from context, default to fallback language (English)
-    const language = context.language ?? fallbackLng;
+    // Get language from Accept-Language header, default to fallback language (English)
+    const acceptLanguage = context.headers["accept-language"];
+    const language =
+      acceptLanguage?.split(",")[0]?.split("-")[0] ?? fallbackLng;
+
+    // Preload common ORPC namespaces for this language
+    // This ensures they're loaded before the handler runs, preventing blocking
+    await Promise.all(
+      COMMON_ORPC_NAMESPACES.map(async (ns) =>
+        i18n.loadNamespaces(ns).catch(() => {
+          // Silently ignore errors - the namespace might not exist for all languages
+        })
+      )
+    );
+
+    // Ensure the language is loaded
+    await i18n.loadLanguages(language).catch(() => {
+      // Fall back to default language if loading fails
+    });
 
     // Create a new instance of the translation function for this request
     // This ensures thread safety and proper language isolation

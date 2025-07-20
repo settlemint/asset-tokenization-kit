@@ -7,12 +7,6 @@ import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-gr
 import type { TokenFactory } from "@/orpc/middlewares/system/system.middleware";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import type { getHeaders } from "@tanstack/react-start/server";
-// Define a more permissive translation function type for server-side usage
-// This avoids TypeScript errors when using translation keys that are loaded dynamically
-type ServerTranslationFunction = (
-  key: string,
-  options?: Record<string, unknown>
-) => string;
 import type { Address } from "viem";
 
 /**
@@ -161,41 +155,4 @@ export interface Context {
    * @see {@link @/orpc/middlewares/system/user-claims.middleware} - User claims middleware configuration
    */
   userClaimTopics?: string[];
-
-  /**
-   * Current language/locale for the request.
-   *
-   * Contains the user's preferred language code (e.g., 'en', 'de', 'ar', 'ja').
-   * This is passed from the client based on the user's language preference
-   * and is used by the i18n middleware to provide localized translations.
-   *
-   * Optional because:
-   * - Direct API calls may not provide a language preference
-   * - Defaults to English ('en') when not specified
-   * @see {@link @/orpc/middlewares/i18n/i18n.middleware} - i18n middleware implementation
-   */
-  language?: string;
-
-  /**
-   * Translation function for internationalization.
-   *
-   * Provides access to localized strings based on the current language context.
-   * This function is injected by the i18n middleware and allows procedures
-   * to return properly translated messages, errors, and content.
-   *
-   * The function supports:
-   * - Namespaced translations (e.g., 't("tokens:actions.mint.success")')
-   * - Interpolation for dynamic values
-   * - Pluralization rules
-   * - Same translation keys as used in the frontend
-   *
-   * Optional because it's only available after i18n middleware runs.
-   * @example
-   * ```typescript
-   * // In a procedure
-   * const message = context.t('tokens:actions.mint.success', { amount: 100 });
-   * ```
-   * @see {@link @/orpc/middlewares/i18n/i18n.middleware} - i18n middleware implementation
-   */
-  t?: ServerTranslationFunction;
 }
