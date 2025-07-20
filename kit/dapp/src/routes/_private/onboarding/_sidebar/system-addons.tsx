@@ -1,17 +1,16 @@
-import { OnboardingStep } from "@/components/onboarding/state-machine";
-import { Button } from "@/components/ui/button";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { Button } from "@/components/ui/button";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/system-addons"
 )({
-  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemAddons),
   component: RouteComponent,
 });

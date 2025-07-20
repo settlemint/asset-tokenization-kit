@@ -1,19 +1,18 @@
-import { OnboardingStep } from "@/components/onboarding/state-machine";
-import { RecoveryCodesActions } from "@/components/onboarding/wallet-security/recovery-codes-actions";
-import { RecoveryCodesDisplay } from "@/components/onboarding/wallet-security/recovery-codes-display";
-import { RecoveryCodesWarning } from "@/components/onboarding/wallet-security/recovery-codes-warning";
-import { RecoveryCodesComplete } from "@/components/onboarding/wallet-security/recovery-codes-complete";
-import { Button } from "@/components/ui/button";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
-import { authClient } from "@/lib/auth/auth.client";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { RecoveryCodesActions } from "@/components/onboarding/wallet-security/recovery-codes-actions";
+import { RecoveryCodesComplete } from "@/components/onboarding/wallet-security/recovery-codes-complete";
+import { RecoveryCodesDisplay } from "@/components/onboarding/wallet-security/recovery-codes-display";
+import { RecoveryCodesWarning } from "@/components/onboarding/wallet-security/recovery-codes-warning";
+import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth/auth.client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
 
@@ -22,7 +21,7 @@ const logger = createLogger();
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/wallet-recovery-codes"
 )({
-  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.walletRecoveryCodes),
   component: RouteComponent,
 });

@@ -25,11 +25,10 @@ import {
   TokenTypeEnum,
 } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useForm } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 import { memo, useCallback, useMemo, useState } from "react";
-import { useForm } from "@tanstack/react-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -38,7 +37,7 @@ const logger = createLogger();
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/system-assets"
 )({
-  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemAssets),
   loader: async ({ context: { queryClient, orpc } }) => {
     // Get system address from settings

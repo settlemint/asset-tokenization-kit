@@ -1,20 +1,19 @@
+import {
+  createOnboardingBeforeLoad,
+  createOnboardingSearchSchema,
+} from "@/components/onboarding/route-helpers";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import {
   fiatCurrencyMetadata,
   type FiatCurrency,
 } from "@/lib/zod/validators/fiat-currency";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
-import {
-  createOnboardingBeforeLoad,
-  createOnboardingSearchSchema,
-} from "@/components/onboarding/route-helpers";
 import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 import { toast } from "sonner";
 
 const logger = createLogger();
@@ -25,7 +24,7 @@ const logger = createLogger();
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/system-settings"
 )({
-  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemSettings),
   component: RouteComponent,
 });

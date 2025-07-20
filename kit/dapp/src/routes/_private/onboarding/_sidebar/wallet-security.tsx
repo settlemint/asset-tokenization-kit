@@ -1,22 +1,24 @@
-import { OnboardingStep } from "@/components/onboarding/state-machine";
-import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
-import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
-import { SecurityMethodSelector } from "@/components/onboarding/wallet-security/security-method-selector";
-import { SecuritySuccess } from "@/components/onboarding/wallet-security/security-success";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
+import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
+import { SecurityMethodSelector } from "@/components/onboarding/wallet-security/security-method-selector";
+import { SecuritySuccess } from "@/components/onboarding/wallet-security/security-success";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/wallet-security"
 )({
-  validateSearch: zodValidator(
-    createOnboardingSearchSchema(["intro", "pin", "otp", "complete"] as const)
-  ),
+  validateSearch: createOnboardingSearchSchema([
+    "intro",
+    "pin",
+    "otp",
+    "complete",
+  ] as const),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.walletSecurity),
   component: RouteComponent,
 });
