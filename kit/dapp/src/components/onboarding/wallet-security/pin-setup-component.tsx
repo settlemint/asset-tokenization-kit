@@ -1,5 +1,6 @@
 import { PincodeInput } from "@/components/form/inputs/pincode-input";
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth/auth.client";
 import { pincode } from "@/lib/zod/validators/pincode";
 import { orpc } from "@/orpc/orpc-client";
@@ -32,6 +33,7 @@ export function PinSetupComponent({
   onBack,
 }: PinSetupComponentProps) {
   const queryClient = useQueryClient();
+  const { refetch } = useSession();
 
   const { mutateAsync: enablePincode, isPending } = useMutation({
     mutationFn: async (pincode: string) =>
@@ -39,19 +41,14 @@ export function PinSetupComponent({
         pincode,
       }),
     onSuccess: async () => {
-      // Clear auth session cache to ensure UI reflects updated auth state
       await authClient.getSession({
         query: {
           disableCookieCache: true,
         },
       });
-
+      await refetch();
+      await queryClient.refetchQueries(orpc.user.me.queryOptions());
       toast.success("PIN code set successfully");
-
-      // Invalidate user queries to get fresh data
-      await queryClient.invalidateQueries({
-        queryKey: orpc.user.me.key(),
-      });
 
       onSuccess();
     },

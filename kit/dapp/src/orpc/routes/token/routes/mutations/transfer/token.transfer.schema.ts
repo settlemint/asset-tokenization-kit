@@ -44,35 +44,6 @@ export const TokenTransferSchema = z
         "Type of transfer: standard (sender to recipient), transferFrom (using allowance), or forced (custodian)"
       ),
     verification: UserVerificationSchema.describe("Verification credentials"),
-    messages: z
-      .object({
-        preparingTransfer: z
-          .string()
-          .default("Preparing token transfer...")
-          .describe("Message shown when preparing the transfer"),
-        submittingTransfer: z
-          .string()
-          .default("Submitting transfer transaction...")
-          .describe("Message shown when submitting the transaction"),
-        waitingForMining: z
-          .string()
-          .default("Waiting for transaction to be mined...")
-          .describe("Message shown while waiting for mining"),
-        transferComplete: z
-          .string()
-          .default("Token transfer completed successfully")
-          .describe("Message shown when transfer is complete"),
-        transferFailed: z
-          .string()
-          .default("Failed to transfer tokens")
-          .describe("Message shown when transfer fails"),
-        defaultError: z
-          .string()
-          .default("An unexpected error occurred during transfer")
-          .describe("Default error message"),
-      })
-      .optional()
-      .describe("Custom messages for transfer operation"),
   })
   .refine(
     (data) => {
@@ -117,34 +88,4 @@ export const TokenTransferSchema = z
 
 // Note: Old separate schemas removed since we consolidated into TokenTransferSchema
 
-/**
- * Schema for transfer messages (shared structure)
- */
-export const TokenTransferMessagesSchema = z.object({
-  preparingTransfer: z.string().default("Preparing transfer..."),
-  submittingTransfer: z.string().default("Submitting transfer transaction..."),
-  waitingForMining: z
-    .string()
-    .default("Waiting for transaction to be mined..."),
-  transferComplete: z.string().default("Transfer completed successfully"),
-  transferFailed: z.string().default("Failed to transfer tokens"),
-  waitingForIndexing: z
-    .string()
-    .default("Transaction confirmed. Waiting for indexing..."),
-  transactionIndexed: z.string().default("Transaction successfully indexed."),
-  indexingTimeout: z
-    .string()
-    .default(
-      "Indexing is taking longer than expected. Data will be available soon."
-    ),
-  streamTimeout: z
-    .string()
-    .default("Transaction tracking timed out. Please check the status later."),
-  transactionDropped: z
-    .string()
-    .default("Transaction was dropped from the network. Please try again."),
-  defaultError: z.string().default("An unexpected error occurred"),
-});
-
 export type TokenTransferInput = z.infer<typeof TokenTransferSchema>;
-export type TokenTransferMessages = z.infer<typeof TokenTransferMessagesSchema>;

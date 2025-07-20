@@ -2,10 +2,10 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { getConditionalMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenBurnMessagesSchema } from "@/orpc/routes/token/routes/mutations/burn/token.burn.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_SINGLE_BURN_MUTATION = portalGraphql(`
@@ -66,13 +66,14 @@ export const burn = tokenRouter.token.burn
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
     const { contract, verification, addresses, amounts } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
     // Determine if this is a batch operation
     const isBatch = addresses.length > 1;
 
-    // Parse messages with defaults
-    const messages = TokenBurnMessagesSchema.parse(input.messages ?? {});
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getConditionalMutationMessages(t, "tokens", "burn", isBatch);
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -100,9 +101,13 @@ export const burn = tokenRouter.token.burn
           amounts: amounts.map((a) => a.toString()),
           ...challengeResponse,
         },
-        messages.burnFailed,
-        messages
+        errorMessage,
+        {
+          waitingForMining: pendingMessage,
+          transactionIndexed: successMessage,
+        }
       );
+
       return getEthereumHash(transactionHash);
     } else {
       const [userAddress] = addresses;
@@ -124,9 +129,13 @@ export const burn = tokenRouter.token.burn
           amount: amount.toString(),
           ...challengeResponse,
         },
-        messages.burnFailed,
-        messages
+        errorMessage,
+        {
+          waitingForMining: pendingMessage,
+          transactionIndexed: successMessage,
+        }
       );
+
       return getEthereumHash(transactionHash);
     }
   });

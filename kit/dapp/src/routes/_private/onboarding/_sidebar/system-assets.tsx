@@ -185,45 +185,6 @@ function RouteComponent() {
     },
   });
 
-  // Create factory messages object
-  const factoryMessages = useMemo(
-    () => ({
-      initialLoading: t("assets.factory-messages.initial-loading"),
-      factoryCreated: t("assets.factory-messages.factory-created"),
-      creatingFactory: t("assets.factory-messages.creating-factory"),
-      factoryCreationFailed: t(
-        "assets.factory-messages.factory-creation-failed"
-      ),
-      batchProgress: t("assets.factory-messages.batch-progress"),
-      batchCompleted: t("assets.factory-messages.batch-completed"),
-      noResultError: t("assets.factory-messages.no-result-error"),
-      defaultError: t("assets.factory-messages.default-error"),
-      systemNotBootstrapped: t(
-        "assets.factory-messages.system-not-bootstrapped"
-      ),
-      transactionSubmitted: t("assets.factory-messages.transaction-submitted"),
-      factoryCreationCompleted: t(
-        "assets.factory-messages.factory-creation-completed"
-      ),
-      allFactoriesSucceeded: t(
-        "assets.factory-messages.all-factories-succeeded"
-      ),
-      someFactoriesFailed: t("assets.factory-messages.some-factories-failed"),
-      allFactoriesFailed: t("assets.factory-messages.all-factories-failed"),
-      factoryAlreadyExists: t("assets.factory-messages.factory-already-exists"),
-      allFactoriesSkipped: t("assets.factory-messages.all-factories-skipped"),
-      someFactoriesSkipped: t("assets.factory-messages.some-factories-skipped"),
-      waitingForMining: t("assets.factory-messages.waiting-for-mining"),
-      transactionFailed: t("assets.factory-messages.transaction-failed"),
-      transactionDropped: t("assets.factory-messages.transaction-dropped"),
-      waitingForIndexing: t("assets.factory-messages.waiting-for-indexing"),
-      transactionIndexed: t("assets.factory-messages.transaction-indexed"),
-      streamTimeout: t("assets.factory-messages.stream-timeout"),
-      indexingTimeout: t("assets.factory-messages.indexing-timeout"),
-    }),
-    [t]
-  );
-
   // Handle verification code submission
   const handleVerificationSubmit = useCallback(
     (verificationCode: string, verificationType: "pincode" | "two-factor") => {
@@ -241,15 +202,9 @@ function RouteComponent() {
         },
         contract: systemDetails.tokenFactoryRegistry,
         factories: pendingFactories,
-        messages: factoryMessages,
       });
     },
-    [
-      pendingFactories,
-      systemDetails?.tokenFactoryRegistry,
-      createFactories,
-      factoryMessages,
-    ]
+    [pendingFactories, systemDetails?.tokenFactoryRegistry, createFactories]
   );
 
   // Handle PIN code submission

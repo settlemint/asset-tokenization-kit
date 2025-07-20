@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin Contracts
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";

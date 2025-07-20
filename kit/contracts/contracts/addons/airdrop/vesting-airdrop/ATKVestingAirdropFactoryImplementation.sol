@@ -1,15 +1,12 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin Contracts
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // Interfaces
 import { IATKVestingAirdropFactory } from "./IATKVestingAirdropFactory.sol";
 import { IATKVestingAirdrop } from "./IATKVestingAirdrop.sol";
-import { IATKSystem } from "../../../system/IATKSystem.sol";
-import { IATKCompliance } from "../../../system/compliance/IATKCompliance.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
