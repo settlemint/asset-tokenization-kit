@@ -2,6 +2,8 @@ import {
   OnboardingStep,
   updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
+import { useSession } from "@/hooks/use-auth";
+import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
 import type { CurrentUser } from "@/orpc/routes/user/routes/user.me.schema";
 import { useQueryClient } from "@tanstack/react-query";
@@ -11,17 +13,19 @@ import { useCallback } from "react";
 export function useOnboardingNavigation() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { refetch } = useSession();
 
   /**
    * Refreshes user data and updates the onboarding state machine
    */
   const refreshUserState = useCallback(async (): Promise<CurrentUser> => {
-    // Invalidate queries to mark as stale
-    await queryClient.invalidateQueries({
-      queryKey: orpc.user.me.key(),
+    await authClient.getSession({
+      query: {
+        disableCookieCache: true,
+      },
     });
-
-    // Fetch fresh user data
+    await refetch();
+    await queryClient.refetchQueries(orpc.user.me.queryOptions());
     const updatedUser = await queryClient.fetchQuery(
       orpc.user.me.queryOptions()
     );
@@ -30,7 +34,7 @@ export function useOnboardingNavigation() {
     updateOnboardingStateMachine({ user: updatedUser });
 
     return updatedUser;
-  }, [queryClient]);
+  }, [queryClient, refetch]);
 
   /**
    * Navigate to a specific onboarding step
