@@ -30,7 +30,7 @@ export const AssetBasics = withForm({
                 children={(field) => (
                   <field.TextField
                     label={t("form.fields.name.label")}
-                    required={isRequiredField("name", assetType)}
+                    required={isRequiredField("name")}
                   />
                 )}
               />
@@ -39,7 +39,7 @@ export const AssetBasics = withForm({
                 children={(field) => (
                   <field.TextField
                     label={t("form.fields.symbol.label")}
-                    required={isRequiredField("symbol", assetType)}
+                    required={isRequiredField("symbol")}
                   />
                 )}
               />
@@ -48,7 +48,7 @@ export const AssetBasics = withForm({
                 children={(field) => (
                   <field.NumberField
                     label={t("form.fields.decimals.label")}
-                    required={isRequiredField("decimals", assetType)}
+                    required={isRequiredField("decimals")}
                   />
                 )}
               />
@@ -57,7 +57,7 @@ export const AssetBasics = withForm({
                 children={(field) => (
                   <field.TextField
                     label={t("form.fields.isin.label")}
-                    required={isRequiredField("isin", assetType)}
+                    required={isRequiredField("isin")}
                   />
                 )}
               />
@@ -68,7 +68,7 @@ export const AssetBasics = withForm({
         />
         <form.Subscribe
           selector={(state) => state.values}
-          children={(values) => {
+          children={(_values) => {
             const fields: (keyof AssetDesignerFormInputData)[] = [
               "name",
               "symbol",
@@ -84,7 +84,7 @@ export const AssetBasics = withForm({
               const error = meta?.errors;
               const isPristine = meta?.isPristine;
               const requiredFieldPristine =
-                isRequiredField(field, values.type) && isPristine;
+                isRequiredField(field) && isPristine;
               return (error && error.length > 0) || requiredFieldPristine;
             });
 
@@ -116,7 +116,7 @@ const BondBasics = withForm({
           children={(field) => (
             <field.BigIntField
               label={t("form.fields.cap.label")}
-              required={isRequiredField("cap", "bond")}
+              required={isRequiredField("cap")}
             />
           )}
         />
@@ -128,7 +128,7 @@ const BondBasics = withForm({
           children={(field) => (
             <field.BigIntField
               label={t("form.fields.faceValue.label")}
-              required={isRequiredField("faceValue", "bond")}
+              required={isRequiredField("faceValue")}
             />
           )}
         />
@@ -153,7 +153,7 @@ const FundBasics = withForm({
             <field.NumberField
               label={t("form.fields.managementFeeBps.label")}
               postfix="bps"
-              required={isRequiredField("managementFeeBps", "fund")}
+              required={isRequiredField("managementFeeBps")}
             />
           )}
         />

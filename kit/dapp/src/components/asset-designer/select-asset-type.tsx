@@ -5,10 +5,6 @@ import {
 } from "@/components/asset-designer/shared-form";
 import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
-import {
-  type AssetFactoryTypeId,
-  getAssetTypeFromFactoryTypeId,
-} from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -32,18 +28,20 @@ export const SelectAssetType = withForm({
     });
 
     const options = useMemo(() => {
-      if (!systemDetails?.tokenFactories) return [];
+      // if (!systemDetails?.tokenFactories) return [];
 
-      const assetTypes = systemDetails.tokenFactories.map((factory) => {
-        const factoryTypeId = factory.typeId as AssetFactoryTypeId;
-        return getAssetTypeFromFactoryTypeId(factoryTypeId);
-      });
+      // const assetTypes = systemDetails.tokenFactories.map((factory) => {
+      //   const factoryTypeId = factory.typeId as AssetFactoryTypeId;
+      //   return getAssetTypeFromFactoryTypeId(factoryTypeId);
+      // });
 
-      return assetTypes.map((type) => ({
-        value: type,
-        label: t(`asset-types:${type}.name`),
-        description: t(`asset-types:${type}.description`),
-      }));
+      return (["bond", "fund", "deposit", "stablecoin"] as const).map(
+        (type) => ({
+          value: type,
+          label: t(`asset-types:${type}.name`),
+          description: t(`asset-types:${type}.description`),
+        })
+      );
     }, [systemDetails, t]);
 
     return (
@@ -60,7 +58,7 @@ export const SelectAssetType = withForm({
         />
         <form.Subscribe
           selector={(state) => state.values}
-          children={(values) => {
+          children={(_values) => {
             const fields: (keyof AssetDesignerFormInputData)[] = ["type"];
 
             const disabled = fields.some((field) => {
@@ -68,7 +66,7 @@ export const SelectAssetType = withForm({
               const error = meta?.errors;
               const isPristine = meta?.isPristine;
               const requiredFieldPristine =
-                isRequiredField(field, values.type) && isPristine;
+                isRequiredField(field) && isPristine;
               return (error && error.length > 0) || requiredFieldPristine;
             });
 

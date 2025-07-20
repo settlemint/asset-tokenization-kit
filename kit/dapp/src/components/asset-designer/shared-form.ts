@@ -1,5 +1,4 @@
 import { AssetDesignerStepSchema } from "@/components/asset-designer/steps";
-import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { BondSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/bond.create.schema";
 import { FundSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/create-handlers/fund.create.schema";
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
@@ -16,29 +15,32 @@ export type AssetDesignerFormInputData = z.input<
   typeof AssetDesignerFormSchema
 >;
 
-const optionalFields: (keyof AssetDesignerFormInputData)[] = ["isin"];
+export const isRequiredField = (field: keyof AssetDesignerFormInputData) => {
+  //   const schema = AssetDesignerFormSchema.pick({
+  //     [field]: true,
+  //   });
 
-// TODO: Get this from the schema somehow, this is a temporary solution
-export const isRequiredField = (
-  field: keyof AssetDesignerFormInputData,
-  assetType: AssetType
-) => {
-  // Always optional fields
-  if (optionalFields.includes(field)) {
-    return false;
-  }
+  //   const isOptional = schema.safeParse({
+  //     [field]: undefined,
+  //   }).success;
 
-  // Asset type specific required fields
-  if (field === "cap" || field === "faceValue") {
-    return assetType === "bond";
-  }
+  // return !isOptional;
+  return isRequiredFieldForSchema(AssetDesignerFormSchema, field);
+};
 
-  if (field === "managementFeeBps") {
-    return assetType === "fund";
-  }
+export const isRequiredFieldForSchema = <TSchema extends z.ZodObject>(
+  schema: TSchema,
+  field: keyof z.input<TSchema>
+): boolean => {
+  const fieldSchema = schema.pick({
+    [field]: true as const,
+  });
 
-  // All other fields are required for all asset types
-  return true;
+  const isOptional = fieldSchema.safeParse({
+    [field]: undefined,
+  }).success;
+
+  return !isOptional;
 };
 
 export const assetDesignerFormOptions = formOptions({
