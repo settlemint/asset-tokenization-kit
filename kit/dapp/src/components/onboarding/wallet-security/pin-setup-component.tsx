@@ -31,11 +31,6 @@ export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
           const confirmResult = pincode().safeParse(value.confirmPincode);
           if (!confirmResult.success) {
             errors.confirmPincode = "Invalid PIN code format";
-          } else if (value.pincode === value.confirmPincode) {
-            // Validate match only when both are valid
-            if (value.pincode !== value.confirmPincode) {
-              errors.confirmPincode = "PIN codes don't match";
-            }
           }
         }
 

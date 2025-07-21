@@ -82,19 +82,29 @@ export function SystemDeploy() {
         open={showVerificationModal}
         onOpenChange={setShowVerificationModal}
         onSubmit={({ pincode, otp }) => {
-          if (!pincode && !otp) {
+          // Determine which verification method was provided
+          let verificationCode: string;
+          let verificationType: "pincode" | "two-factor";
+
+          if (pincode !== undefined) {
+            verificationCode = pincode;
+            verificationType = "pincode";
+          } else if (otp !== undefined) {
+            verificationCode = otp;
+            verificationType = "two-factor";
+          } else {
             throw new Error("No verification code provided");
+          }
+
+          if (!verificationCode) {
+            throw new Error("Verification code cannot be empty");
           }
 
           toast.promise(
             createSystem({
               verification: {
-                verificationCode: pincode ?? otp ?? "",
-                verificationType: pincode
-                  ? "pincode"
-                  : otp
-                    ? "two-factor"
-                    : "secret-code",
+                verificationCode,
+                verificationType,
               },
             }),
             {
