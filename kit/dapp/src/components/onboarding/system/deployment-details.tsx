@@ -1,70 +1,31 @@
 import { Button } from "@/components/ui/button";
-import { Copy, ChevronDown, ChevronUp } from "lucide-react";
+import { Web3Address } from "@/components/web3/web3-address";
+import { useSettings } from "@/hooks/use-settings";
+import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { orpc } from "@/orpc/orpc-client";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useCallback, useState } from "react";
-import { toast } from "sonner";
 
-interface DeploymentDetailsProps {
-  systemAddress?: string | null;
-  systemDetails?: {
-    id?: string;
-    identityRegistry?: string | null;
-    compliance?: string | null;
-    trustedIssuersRegistry?: string | null;
-    tokenFactoryRegistry?: string | null;
-  } | null;
-}
-
-export function DeploymentDetails({
-  systemAddress,
-  systemDetails,
-}: DeploymentDetailsProps) {
+export function DeploymentDetails() {
   const [showDetails, setShowDetails] = useState(false);
+  const [systemAddress] = useSettings("SYSTEM_ADDRESS");
 
-  const handleCopyAddress = useCallback((address: string, label: string) => {
-    void navigator.clipboard.writeText(address);
-    toast.success(`${label} address copied to clipboard!`);
-  }, []);
-
-  const handleCopySystemContract = useCallback(() => {
-    handleCopyAddress(
-      systemDetails?.id ?? systemAddress ?? "",
-      "System Contract"
-    );
-  }, [handleCopyAddress, systemDetails?.id, systemAddress]);
-
-  const handleCopyIdentityRegistry = useCallback(() => {
-    if (systemDetails?.identityRegistry) {
-      handleCopyAddress(systemDetails.identityRegistry, "Identity Registry");
-    }
-  }, [handleCopyAddress, systemDetails?.identityRegistry]);
-
-  const handleCopyCompliance = useCallback(() => {
-    if (systemDetails?.compliance) {
-      handleCopyAddress(systemDetails.compliance, "Compliance Engine");
-    }
-  }, [handleCopyAddress, systemDetails?.compliance]);
-
-  const handleCopyTrustedIssuers = useCallback(() => {
-    if (systemDetails?.trustedIssuersRegistry) {
-      handleCopyAddress(
-        systemDetails.trustedIssuersRegistry,
-        "Trusted Issuers Registry"
-      );
-    }
-  }, [handleCopyAddress, systemDetails?.trustedIssuersRegistry]);
-
-  const handleCopyTokenFactoryRegistry = useCallback(() => {
-    if (systemDetails?.tokenFactoryRegistry) {
-      handleCopyAddress(
-        systemDetails.tokenFactoryRegistry,
-        "Token Factory Registry"
-      );
-    }
-  }, [handleCopyAddress, systemDetails?.tokenFactoryRegistry]);
+  // Query system details
+  const { data: systemDetails } = useQuery({
+    ...orpc.system.read.queryOptions({
+      input: { id: systemAddress ?? "" },
+    }),
+    enabled: !!systemAddress,
+  });
 
   const toggleDetails = useCallback(() => {
     setShowDetails(!showDetails);
   }, [showDetails]);
+
+  if (!systemAddress || !systemDetails) {
+    return null;
+  }
 
   return (
     <div className="space-y-4">
@@ -89,102 +50,79 @@ export function DeploymentDetails({
 
           <div className="space-y-3">
             {/* System Contract */}
-            <div className="flex items-center justify-between p-3 bg-background rounded border">
-              <div>
-                <p className="font-medium text-sm">System Contract</p>
-                <p className="text-xs text-muted-foreground font-mono">
-                  {systemDetails?.id ?? systemAddress ?? ""}
-                </p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopySystemContract}
-                className="h-8 w-8 p-0"
-              >
-                <Copy className="h-3 w-3" />
-              </Button>
+            <div className="p-3 bg-background rounded border">
+              <p className="font-medium text-sm mb-1">System Contract</p>
+              <Web3Address
+                address={systemAddress as EthereumAddress}
+                copyToClipboard
+                showFullAddress={false}
+                showBadge={false}
+                size="small"
+                className="text-xs text-muted-foreground"
+              />
             </div>
 
             {/* Identity Registry */}
-            {systemDetails?.identityRegistry && (
-              <div className="flex items-center justify-between p-3 bg-background rounded border">
-                <div>
-                  <p className="font-medium text-sm">Identity Registry</p>
-                  <p className="text-xs text-muted-foreground font-mono">
-                    {systemDetails.identityRegistry}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCopyIdentityRegistry}
-                  className="h-8 w-8 p-0"
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
+            {systemDetails.identityRegistry && (
+              <div className="p-3 bg-background rounded border">
+                <p className="font-medium text-sm mb-1">Identity Registry</p>
+                <Web3Address
+                  address={systemDetails.identityRegistry}
+                  copyToClipboard
+                  showFullAddress={false}
+                  showBadge={false}
+                  size="small"
+                  className="text-xs text-muted-foreground"
+                />
               </div>
             )}
 
             {/* Compliance Engine */}
-            {systemDetails?.compliance && (
-              <div className="flex items-center justify-between p-3 bg-background rounded border">
-                <div>
-                  <p className="font-medium text-sm">Compliance Engine</p>
-                  <p className="text-xs text-muted-foreground font-mono">
-                    {systemDetails.compliance}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCopyCompliance}
-                  className="h-8 w-8 p-0"
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
+            {systemDetails.compliance && (
+              <div className="p-3 bg-background rounded border">
+                <p className="font-medium text-sm mb-1">Compliance Engine</p>
+                <Web3Address
+                  address={systemDetails.compliance}
+                  copyToClipboard
+                  showFullAddress={false}
+                  showBadge={false}
+                  size="small"
+                  className="text-xs text-muted-foreground"
+                />
               </div>
             )}
 
             {/* Trusted Issuers Registry */}
-            {systemDetails?.trustedIssuersRegistry && (
-              <div className="flex items-center justify-between p-3 bg-background rounded border">
-                <div>
-                  <p className="font-medium text-sm">
-                    Trusted Issuers Registry
-                  </p>
-                  <p className="text-xs text-muted-foreground font-mono">
-                    {systemDetails.trustedIssuersRegistry}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCopyTrustedIssuers}
-                  className="h-8 w-8 p-0"
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
+            {systemDetails.trustedIssuersRegistry && (
+              <div className="p-3 bg-background rounded border">
+                <p className="font-medium text-sm mb-1">
+                  Trusted Issuers Registry
+                </p>
+                <Web3Address
+                  address={systemDetails.trustedIssuersRegistry}
+                  copyToClipboard
+                  showFullAddress={false}
+                  showBadge={false}
+                  size="small"
+                  className="text-xs text-muted-foreground"
+                />
               </div>
             )}
 
             {/* Token Factory Registry */}
-            {systemDetails?.tokenFactoryRegistry && (
-              <div className="flex items-center justify-between p-3 bg-background rounded border">
-                <div>
-                  <p className="font-medium text-sm">Token Factory Registry</p>
-                  <p className="text-xs text-muted-foreground font-mono">
-                    {systemDetails.tokenFactoryRegistry}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCopyTokenFactoryRegistry}
-                  className="h-8 w-8 p-0"
-                >
-                  <Copy className="h-3 w-3" />
-                </Button>
+            {systemDetails.tokenFactoryRegistry && (
+              <div className="p-3 bg-background rounded border">
+                <p className="font-medium text-sm mb-1">
+                  Token Factory Registry
+                </p>
+                <Web3Address
+                  address={systemDetails.tokenFactoryRegistry}
+                  copyToClipboard
+                  showFullAddress={false}
+                  showBadge={false}
+                  size="small"
+                  className="text-xs text-muted-foreground"
+                />
               </div>
             )}
           </div>

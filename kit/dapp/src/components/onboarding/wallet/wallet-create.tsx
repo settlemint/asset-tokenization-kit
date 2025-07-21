@@ -1,4 +1,21 @@
-export function WalletIntro() {
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { Button } from "@/components/ui/button";
+import { orpc } from "@/orpc/orpc-client";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+export function CreateWallet() {
+  const { refreshUserState } = useOnboardingNavigation();
+
+  const { mutateAsync: createWallet, isPending: isWalletCreating } =
+    useMutation(
+      orpc.user.createWallet.mutationOptions({
+        onSuccess: async () => {
+          await refreshUserState();
+        },
+      })
+    );
+
   return (
     <>
       <div className="h-full flex flex-col">
@@ -32,7 +49,7 @@ export function WalletIntro() {
 
                 <div className="space-y-4">
                   <div className="flex gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
                     <div>
                       <h5 className="font-medium text-foreground mb-1">
                         Asset Control
@@ -46,7 +63,7 @@ export function WalletIntro() {
                   </div>
 
                   <div className="flex gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
                     <div>
                       <h5 className="font-medium text-foreground mb-1">
                         Transaction Authorization
@@ -60,7 +77,7 @@ export function WalletIntro() {
                   </div>
 
                   <div className="flex gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
                     <div>
                       <h5 className="font-medium text-foreground mb-1">
                         Identity Management
@@ -78,6 +95,21 @@ export function WalletIntro() {
           </div>
         </div>
       </div>
+      <footer>
+        <Button
+          onClick={() => {
+            toast.promise(createWallet({}), {
+              loading: "Creating your wallet...",
+              success: "Wallet created successfully!",
+              error: (error: Error) =>
+                `Failed to create wallet: ${error.message}`,
+            });
+          }}
+          disabled={isWalletCreating}
+        >
+          {isWalletCreating ? "Creating..." : "Create my wallet"}
+        </Button>
+      </footer>
     </>
   );
 }
