@@ -4,13 +4,11 @@ import { RecoveryCodeItem } from "./recovery-code-item";
 interface RecoveryCodesDisplayProps {
   isGenerating: boolean;
   recoveryCodes: string[];
-  onCopyCode: (code: string, index: number) => void;
 }
 
 export function RecoveryCodesDisplay({
   isGenerating,
   recoveryCodes,
-  onCopyCode,
 }: RecoveryCodesDisplayProps) {
   if (isGenerating) {
     return (
@@ -46,7 +44,6 @@ export function RecoveryCodesDisplay({
             key={`${code}-${index}`}
             code={code}
             index={index}
-            onCopy={onCopyCode}
           />
         ))}
       </div>
