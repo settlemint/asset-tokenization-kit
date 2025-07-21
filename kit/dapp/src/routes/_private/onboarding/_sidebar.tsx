@@ -1,173 +1,348 @@
-import { MultiStepWizard } from "@/components/multistep-form/multistep-wizard";
-import type {
-  StepDefinition,
-  StepGroup,
-} from "@/components/multistep-form/types";
 import {
-  OnboardingStep,
-  OnboardingStepGroup,
-  updateOnboardingStateMachine,
-} from "@/components/onboarding/state-machine";
-import { createLogger } from "@settlemint/sdk-utils/logging";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
-import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { z } from "zod";
+  createOnboardingBeforeLoad,
+  createOnboardingSearchSchema,
+} from "@/components/onboarding/route-helpers";
+import type { OnboardingStep } from "@/components/onboarding/state-machine";
+import { useOnboardingSteps } from "@/components/onboarding/use-onboarding-steps";
+import { Progress } from "@/components/ui/progress";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { Check, ChevronDown } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
-const logger = createLogger();
-
-type OnboardingStepDefintion = Omit<StepDefinition, "id"> & {
-  id: OnboardingStep;
-  groupId: OnboardingStepGroup;
-};
-
-// TODO: This needs to prefer "step" over the current step, so the sidebar changes when navigating manually (back)
-// TODO: The responsive nature of the inline modal is not working well, it constantly overflows the screen
-// TODO: Make sure all text is translated
-// TODO: There is a weird on complete log message
-// TODO: We need a better way to handle the translations, it is not pretty inlined here as it is now
 export const Route = createFileRoute("/_private/onboarding/_sidebar")({
-  validateSearch: zodValidator(
-    z.object({
-      step: z.enum(Object.values(OnboardingStep)).optional(),
-    })
-  ),
-  loader: async ({ context: { orpc, queryClient } }) => {
-    const user = await queryClient.ensureQueryData(orpc.user.me.queryOptions());
-    return updateOnboardingStateMachine({ user });
-  },
+  validateSearch: createOnboardingSearchSchema(),
+  beforeLoad: createOnboardingBeforeLoad(),
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { t } = useTranslation(["onboarding", "general"]);
-  const { steps, currentStep } = Route.useLoaderData();
+  const { steps, currentStep } = Route.useRouteContext();
+  const navigate = useNavigate();
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
-  const stepTranslationMappings = useMemo<
-    Record<OnboardingStep, { title: string; description: string }>
-  >(
-    () => ({
-      [OnboardingStep.wallet]: {
-        title: t("steps.wallet.title"),
-        description: t("steps.wallet.description"),
-      },
-      [OnboardingStep.walletSecurity]: {
-        title: t("steps.security.title"),
-        description: t("steps.security.description"),
-      },
-      [OnboardingStep.walletRecoveryCodes]: {
-        title: "Recovery Codes",
-        description: "Save your wallet recovery codes",
-      },
-      [OnboardingStep.systemDeploy]: {
-        title: "Deploy System",
-        description: "Deploy the blockchain system",
-      },
-      [OnboardingStep.systemSettings]: {
-        title: "Configure Settings",
-        description: "Set up platform settings",
-      },
-      [OnboardingStep.systemAssets]: {
-        title: "Select Assets",
-        description: "Choose supported asset types",
-      },
-      [OnboardingStep.systemAddons]: {
-        title: "Enable Addons",
-        description: "Configure platform addons",
-      },
-      [OnboardingStep.identitySetup]: {
-        title: t("steps.identity-setup.title"),
-        description: t("steps.identity-setup.description"),
-      },
-      [OnboardingStep.identity]: {
-        title: t("steps.identity.title"),
-        description: t("steps.identity.description"),
-      },
-    }),
-    [t]
-  );
+  const {
+    stepsWithTranslations,
+    groups,
+    currentStepIndex,
+    progress,
+    isGroupCompleted,
+    getStepStatus,
+    canNavigateToStep,
+    groupedStepsByGroupId,
+  } = useOnboardingSteps(steps, currentStep);
 
-  const groupTranslationMappings = useMemo<
-    Record<OnboardingStepGroup, { title: string; description: string }>
-  >(
-    () => ({
-      [OnboardingStepGroup.wallet]: {
-        title: t("wallet.title"),
-        description: t("wallet.description"),
-      },
-      [OnboardingStepGroup.system]: {
-        title: "Deploy SMART System",
-        description: "Set up your blockchain platform",
-      },
-      [OnboardingStepGroup.identity]: {
-        title: t("steps.identity.title"),
-        description: t("steps.identity.description"),
-      },
-    }),
-    [t]
-  );
+  // Initialize expanded groups
+  useEffect(() => {
+    const currentStep = stepsWithTranslations[currentStepIndex];
+    const currentGroupId = currentStep?.groupId;
 
-  const groups = useMemo((): StepGroup[] => {
-    return steps.reduce<StepGroup[]>((acc, step) => {
-      const existingGroup = acc.find(
-        (group) => group.id === step.groupId.toString()
-      );
-      if (!existingGroup) {
-        acc.push({
-          id: step.groupId,
-          title: groupTranslationMappings[step.groupId].title,
-          description: groupTranslationMappings[step.groupId].description,
-          collapsible: true,
-          defaultExpanded: currentStep === step.step,
-        });
-      } else {
-        existingGroup.defaultExpanded = currentStep === step.step;
+    const initialExpanded = new Set<string>();
+    groups.forEach((group) => {
+      if (
+        String(group.id) === String(currentGroupId) ||
+        group.defaultExpanded
+      ) {
+        initialExpanded.add(group.id);
       }
-      return acc;
-    }, []);
-  }, [steps, groupTranslationMappings, currentStep]);
+    });
 
-  const stepsWithTranslations = useMemo((): OnboardingStepDefintion[] => {
-    const withTranslations = steps.map(
-      (step): OnboardingStepDefintion => ({
-        ...step,
-        id: step.step,
-        title: stepTranslationMappings[step.step].title,
-        description: stepTranslationMappings[step.step].description,
-      })
-    );
+    setExpandedGroups(initialExpanded);
+  }, [groups, stepsWithTranslations, currentStepIndex]);
 
-    // Inject the children of the current step
-    const activeStep = withTranslations.find((step) => step.id === currentStep);
-    if (activeStep) {
-      activeStep.component = () => <Outlet />;
+  // Update expanded groups when current step changes
+  useEffect(() => {
+    const currentStep = stepsWithTranslations[currentStepIndex];
+    const currentGroupId = currentStep?.groupId;
+
+    if (currentGroupId) {
+      setExpandedGroups(new Set([currentGroupId]));
     }
+  }, [currentStepIndex, stepsWithTranslations, groups]);
 
-    return withTranslations;
-  }, [currentStep, steps, stepTranslationMappings]);
-
-  const defaultStepIndex = useMemo(() => {
-    const index = stepsWithTranslations.findIndex(
-      (step) => step.id === currentStep
-    );
-    // Ensure we never return -1, fallback to 0 if step not found
-    return index >= 0 ? index : 0;
-  }, [stepsWithTranslations, currentStep]);
-
-  const onComplete = useCallback(() => {
-    logger.info("completed");
+  // Toggle group expansion
+  const toggleGroupExpansion = useCallback((groupId: string) => {
+    setExpandedGroups((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(groupId)) {
+        newSet.delete(groupId);
+      } else {
+        newSet.add(groupId);
+      }
+      return newSet;
+    });
   }, []);
 
+  // Navigate to step
+  const navigateToStep = useCallback(
+    (stepId: OnboardingStep) => {
+      void navigate({ to: `/onboarding/${stepId}` as const });
+    },
+    [navigate]
+  );
+
+  // Render individual step
+  const renderStep = (
+    step: ReturnType<typeof useOnboardingSteps>["stepsWithTranslations"][0],
+    index: number,
+    isLastInGroup = false
+  ) => {
+    const status = getStepStatus(step, index);
+    const isCurrent = index === currentStepIndex;
+    const isCompleted = status === "completed";
+    const isAccessible = canNavigateToStep(index);
+
+    return (
+      <div key={step.step} className="flex items-stretch mb-0">
+        {/* Dot column with line */}
+        <div className="relative flex flex-col items-center w-12 pt-0">
+          {/* The step dot */}
+          <div
+            className={cn(
+              "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 h-6 w-6 opacity-70 text-primary-foreground transition-all duration-300 ease-in-out",
+              isCurrent && "opacity-100"
+            )}
+          >
+            {/* Conditional Icon Rendering with Transitions */}
+            <div className="transition-all duration-300 ease-in-out flex items-center justify-center">
+              {isCompleted ? (
+                <div className="flex items-center justify-center w-5 h-5 bg-white rounded-full">
+                  <Check className="w-3 h-3 text-primary" />
+                </div>
+              ) : isCurrent ? (
+                <div className="flex items-center justify-center w-7 h-7">
+                  <div className="w-6 h-6 border-2 border-current rounded-full flex items-center justify-center">
+                    <div className="w-3 h-3 bg-current rounded-full" />
+                  </div>
+                </div>
+              ) : (
+                <div className="w-5 h-5 border-2 border-current rounded-full" />
+              )}
+            </div>
+          </div>
+
+          {/* Connecting line (for all but last step) */}
+          {!isLastInGroup && (
+            <div
+              className={cn(
+                "w-0 border-l-2 border-dashed flex-grow transition-colors duration-300",
+                isCompleted ? "border-white/60" : "border-white/30"
+              )}
+            />
+          )}
+        </div>
+
+        {/* Content column */}
+        <div className="flex-1 flex items-center -mt-1 mb-4">
+          <button
+            type="button"
+            className={cn(
+              "flex flex-col w-full px-4 py-3 rounded-lg transition-all duration-200 text-left relative z-20 group",
+              isCurrent && "bg-white/10 backdrop-blur-sm",
+              !isAccessible && "cursor-not-allowed opacity-60",
+              isAccessible && "hover:bg-white/15",
+              isCompleted && !isCurrent && "cursor-pointer hover:bg-white/10"
+            )}
+            onClick={() => {
+              if (isAccessible) {
+                navigateToStep(step.step);
+              }
+            }}
+            disabled={!isAccessible}
+          >
+            <div className="flex items-center justify-between">
+              <span
+                className={cn(
+                  "text-sm transition-all duration-300",
+                  isCurrent
+                    ? "font-bold text-primary-foreground"
+                    : "font-medium text-primary-foreground/90"
+                )}
+              >
+                {step.title}
+              </span>
+            </div>
+            <p
+              className={cn(
+                "text-xs mt-1 transition-colors duration-300 leading-relaxed",
+                isCurrent
+                  ? "text-primary-foreground/90"
+                  : "text-primary-foreground/70"
+              )}
+            >
+              {step.description}
+            </p>
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Render grouped steps
+  const renderGroupedSteps = () => {
+    return (
+      <div className="flex-1 overflow-y-auto">
+        <div className="space-y-4 pr-2">
+          {groups.map((group) => {
+            const groupSteps = groupedStepsByGroupId[group.id] ?? [];
+            if (groupSteps.length === 0) {
+              return null;
+            }
+
+            // Check if any step in this group is active
+            const hasActiveStep = groupSteps.some(
+              ({ index }) => index === currentStepIndex
+            );
+
+            const groupCompleted = isGroupCompleted(group.id);
+            const isExpanded = expandedGroups.has(group.id);
+
+            return (
+              <div key={group.id} className="relative">
+                {/* Clickable Group Header */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    toggleGroupExpansion(group.id);
+                  }}
+                  className={cn(
+                    "w-full text-left mb-3 p-2 rounded-lg transition-all duration-200 hover:bg-white/10",
+                    hasActiveStep && "bg-white/5"
+                  )}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <h3
+                        className={cn(
+                          "text-base font-bold transition-all duration-300",
+                          hasActiveStep
+                            ? "text-primary-foreground"
+                            : "text-primary-foreground/70"
+                        )}
+                      >
+                        {group.title}
+                      </h3>
+                      {groupCompleted && (
+                        <Check className="w-4 h-4 text-sm-state-success" />
+                      )}
+                    </div>
+                    <ChevronDown
+                      className={cn(
+                        "w-4 h-4 text-primary-foreground/60 transition-transform duration-200",
+                        isExpanded ? "rotate-180" : "rotate-0"
+                      )}
+                    />
+                  </div>
+                  {group.description && (
+                    <p className="text-xs text-primary-foreground/50 mt-1">
+                      {group.description}
+                    </p>
+                  )}
+                </button>
+
+                {/* Collapsible Group Steps */}
+                <div
+                  className={cn(
+                    "overflow-hidden transition-all duration-300 ease-in-out",
+                    isExpanded
+                      ? "max-h-[800px] opacity-100"
+                      : "max-h-0 opacity-0"
+                  )}
+                >
+                  <div className="pl-6">
+                    {groupSteps.map(({ step, index }, stepIndex) => {
+                      const isLastInGroup = stepIndex === groupSteps.length - 1;
+                      return renderStep(step, index, isLastInGroup);
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Render ungrouped steps if any */}
+          {groupedStepsByGroupId.ungrouped && (
+            <div className="relative">
+              <div className="pl-2">
+                {groupedStepsByGroupId.ungrouped.map(
+                  ({ step, index }, stepIndex) => {
+                    const isLastStep =
+                      stepIndex ===
+                      (groupedStepsByGroupId.ungrouped?.length ?? 0) - 1;
+                    return renderStep(step, index, isLastStep);
+                  }
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <MultiStepWizard
-      name="onboarding"
-      title="Let's get you set up!"
-      description="We'll set up your wallet and will configure your identity on the blockchain to use this platform."
-      steps={stepsWithTranslations}
-      groups={groups}
-      onComplete={onComplete}
-      defaultStepIndex={defaultStepIndex}
-    />
+    <div className="flex flex-col h-full rounded-xl shadow-lg overflow-hidden">
+      <SidebarProvider>
+        <Sidebar className="w-[320px] flex-shrink-0 transition-all duration-300 group-data-[side=left]:border-0">
+          <div
+            className="h-full w-full"
+            style={{
+              background: "var(--sm-wizard-sidebar-gradient)",
+              backgroundSize: "cover",
+              backgroundPosition: "top",
+              backgroundRepeat: "no-repeat",
+            }}
+          >
+            <SidebarHeader className="p-8">
+              {/* Title and Progress */}
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-primary-foreground mb-2">
+                  Let's get you set up!
+                </h2>
+                <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
+                  We'll set up your wallet and will configure your identity on
+                  the blockchain to use this platform.
+                </p>
+
+                <div>
+                  <div className="flex justify-between text-xs text-primary-foreground/80 mb-2">
+                    <span>Step {currentStepIndex + 1}</span>
+                    <span>
+                      {currentStepIndex + 1} / {stepsWithTranslations.length}
+                    </span>
+                  </div>
+                  <Progress
+                    value={progress}
+                    className="h-2 bg-primary-foreground/20"
+                  />
+                </div>
+              </div>
+            </SidebarHeader>
+
+            <SidebarContent className="px-8">
+              {renderGroupedSteps()}
+            </SidebarContent>
+          </div>
+        </Sidebar>
+
+        {/* Main content area */}
+        <div
+          className="flex-1 flex flex-col transition-all duration-300 relative overflow-hidden"
+          style={{ backgroundColor: "var(--sm-background-lightest)" }}
+        >
+          <div className="flex-1 overflow-y-auto p-8">
+            <div className="w-full h-full">
+              <Outlet />
+            </div>
+          </div>
+        </div>
+      </SidebarProvider>
+    </div>
   );
 }

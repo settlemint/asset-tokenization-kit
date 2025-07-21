@@ -2,6 +2,8 @@ import {
   OnboardingStep,
   updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
+import { useSession } from "@/hooks/use-auth";
+import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
 import type { CurrentUser } from "@/orpc/routes/user/routes/user.me.schema";
 import { useQueryClient } from "@tanstack/react-query";
@@ -11,51 +13,31 @@ import { useCallback } from "react";
 export function useOnboardingNavigation() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { refetch } = useSession();
 
   /**
    * Refreshes user data and updates the onboarding state machine
    */
   const refreshUserState = useCallback(async (): Promise<CurrentUser> => {
-    // Invalidate queries to mark as stale
-    await queryClient.invalidateQueries({
-      queryKey: orpc.user.me.key(),
+    // Clear auth session cache
+    await authClient.getSession({
+      query: {
+        disableCookieCache: true,
+      },
     });
-
-    // Fetch fresh user data
+    await refetch();
+    await queryClient.invalidateQueries({
+      queryKey: orpc.user.me.queryKey(),
+      refetchType: "all",
+    });
     const updatedUser = await queryClient.fetchQuery(
       orpc.user.me.queryOptions()
     );
 
     // Update the state machine with new data
     updateOnboardingStateMachine({ user: updatedUser });
-
     return updatedUser;
-  }, [queryClient]);
-
-  /**
-   * Navigate to a specific onboarding step
-   */
-  const navigateToStep = useCallback(
-    async (step: OnboardingStep, _subStep?: string) => {
-      await navigate({
-        to: `/onboarding/${step}` as const,
-      });
-    },
-    [navigate]
-  );
-
-  /**
-   * Navigate to a substep within the current step
-   */
-  const navigateToSubStep = useCallback(
-    async (step: OnboardingStep, subStep: string) => {
-      await navigate({
-        to: `/onboarding/${step}` as const,
-        search: () => ({ subStep }),
-      });
-    },
-    [navigate]
-  );
+  }, [queryClient, refetch]);
 
   /**
    * Complete current step and navigate to next appropriate step
@@ -100,28 +82,28 @@ export function useOnboardingNavigation() {
         }
       }
 
-      await navigateToStep(nextStep);
+      await navigate({
+        to: `/onboarding/${nextStep}` as const,
+      });
     },
-    [refreshUserState, navigate, navigateToStep]
+    [refreshUserState, navigate]
   );
 
   /**
-   * Handle successful mutation completion
-   * Refreshes state and navigates to the completion substep
+   * Navigate directly to a specific onboarding step
    */
-  const handleMutationSuccess = useCallback(
-    async (step: OnboardingStep, subStep = "complete") => {
-      await refreshUserState();
-      await navigateToSubStep(step, subStep);
+  const navigateToStep = useCallback(
+    async (step: OnboardingStep) => {
+      await navigate({
+        to: `/onboarding/${step}` as const,
+      });
     },
-    [refreshUserState, navigateToSubStep]
+    [navigate]
   );
 
   return {
     refreshUserState,
-    navigateToStep,
-    navigateToSubStep,
     completeStepAndNavigate,
-    handleMutationSuccess,
+    navigateToStep,
   };
 }

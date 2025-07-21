@@ -1,17 +1,18 @@
-import { updateOnboardingStateMachine } from "@/components/onboarding/state-machine";
+import {
+  createOnboardingBeforeLoad,
+  createOnboardingSearchSchema,
+} from "@/components/onboarding/route-helpers";
 import { Welcome } from "@/components/onboarding/welcome";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/onboarding/")({
-  loader: async ({ context: { orpc, queryClient } }) => {
-    const user = await queryClient.fetchQuery(orpc.user.me.queryOptions());
-    return updateOnboardingStateMachine({ user });
-  },
+  validateSearch: createOnboardingSearchSchema(),
+  beforeLoad: createOnboardingBeforeLoad(),
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { steps } = Route.useLoaderData();
+  const { steps } = Route.useRouteContext();
 
   return <Welcome steps={steps} />;
 }
