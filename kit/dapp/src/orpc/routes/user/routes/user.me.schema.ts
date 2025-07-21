@@ -8,6 +8,7 @@
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { userRoles } from "@/lib/zod/validators/user-roles";
+import { verificationType } from "@/lib/zod/validators/verification-type";
 import { z } from "zod";
 
 const onboardingStateSchema = z.object({
@@ -87,6 +88,12 @@ export const UserSchema = z.object({
    * Optional as it may not be set if KYC is not completed.
    */
   lastName: z.string().optional(),
+
+  /**
+   * User's verification types.
+   * This is used to track the user's verification methods.
+   */
+  verificationTypes: z.array(verificationType),
 });
 
 /**

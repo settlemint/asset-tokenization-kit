@@ -1,3 +1,4 @@
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import {
   InputOTP,
@@ -5,31 +6,17 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useSession } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth/auth.client";
 import { twoFactorCode } from "@/lib/zod/validators/two-factor-code";
-import { orpc } from "@/orpc/orpc-client";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const logger = createLogger({ level: "debug" });
-
-interface OtpSetupComponentProps {
-  onSuccess: () => void;
-  onBack: () => void;
-}
-
-export function OtpSetupComponent({
-  onSuccess,
-  onBack,
-}: OtpSetupComponentProps) {
+export function OtpSetupComponent({ closeModal }: { closeModal: () => void }) {
+  const { refreshUserState } = useOnboardingNavigation();
   const [otpUri, setOtpUri] = useState<string | null>(null);
   const [otpSetupError, setOtpSetupError] = useState(false);
-  const queryClient = useQueryClient();
-  const { refetch } = useSession();
 
   const { mutate: enableTwoFactor } = useMutation({
     mutationFn: async () =>
@@ -38,13 +25,7 @@ export function OtpSetupComponent({
         onboarding: true,
       }),
     onSuccess: async (data) => {
-      await authClient.getSession({
-        query: {
-          disableCookieCache: true,
-        },
-      });
-      await refetch();
-      await queryClient.refetchQueries(orpc.user.me.queryOptions());
+      await refreshUserState();
 
       // Extract OTP URI from response
       if (data.data?.totpURI) {
@@ -67,20 +48,11 @@ export function OtpSetupComponent({
         code,
       }),
     onSuccess: async () => {
-      await authClient.getSession({
-        query: {
-          disableCookieCache: true,
-        },
-      });
-      await refetch();
-      await queryClient.refetchQueries(orpc.user.me.queryOptions());
-
+      await refreshUserState();
       toast.success("OTP verified successfully");
-
-      onSuccess();
+      closeModal();
     },
     onError: (error: Error) => {
-      logger.error("OTP verification error:", error);
       toast.error(error.message || "Invalid verification code");
     },
   });
@@ -143,7 +115,7 @@ export function OtpSetupComponent({
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={onBack} className="flex-1">
+          <Button variant="outline" onClick={closeModal} className="flex-1">
             Back
           </Button>
           <Button onClick={handleOtpRetry} className="flex-1">
@@ -254,11 +226,11 @@ export function OtpSetupComponent({
           <Button
             type="button"
             variant="outline"
-            onClick={onBack}
+            onClick={closeModal}
             className="flex-1"
             disabled={isVerifyingOtp}
           >
-            Back
+            Cancel
           </Button>
           <Button
             type="submit"

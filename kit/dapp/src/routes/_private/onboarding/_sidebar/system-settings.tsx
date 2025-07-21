@@ -1,20 +1,19 @@
+import {
+  createOnboardingBeforeLoad,
+  createOnboardingSearchSchema,
+} from "@/components/onboarding/route-helpers";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import {
   fiatCurrencyMetadata,
   type FiatCurrency,
 } from "@/lib/zod/validators/fiat-currency";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
-import {
-  createOnboardingBeforeLoad,
-  createOnboardingSearchSchema,
-} from "@/components/onboarding/route-helpers";
 import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 import { toast } from "sonner";
 
 const logger = createLogger();
@@ -25,7 +24,7 @@ const logger = createLogger();
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/system-settings"
 )({
-  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemSettings),
   component: RouteComponent,
 });
@@ -44,30 +43,23 @@ function RouteComponent() {
   });
 
   // Mutation for updating base currency
-  const { mutateAsync: upsertSetting, isPending: isUpsertPending } =
-    useMutation({
-      ...orpc.settings.upsert.mutationOptions(),
-      onSuccess: async () => {
-        logger.debug("Settings mutation successful, refetching queries");
-        await queryClient.refetchQueries({
-          queryKey: orpc.settings.read.key({
-            input: { key: "BASE_CURRENCY" },
-          }),
-        });
-
-        toast.success("Platform settings saved successfully");
-      },
-      onError: (error) => {
-        logger.error("Settings mutation failed:", error);
-        toast.error("Failed to save platform settings");
-      },
-    });
+  const { mutateAsync: upsertSetting, isPending: isSettingUpdating } =
+    useMutation(
+      orpc.settings.upsert.mutationOptions({
+        onSuccess: async () => {
+          logger.debug("Settings mutation successful, refetching queries");
+          await queryClient.refetchQueries({
+            queryKey: orpc.settings.read.key({
+              input: { key: "BASE_CURRENCY" },
+            }),
+          });
+        },
+      })
+    );
 
   const form = useForm({
     defaultValues: {
-      baseCurrency: currentBaseCurrency
-        ? (currentBaseCurrency as FiatCurrency)
-        : ("USD" as FiatCurrency),
+      baseCurrency: currentBaseCurrency ?? ("USD" as FiatCurrency),
     },
   });
 
@@ -80,16 +72,24 @@ function RouteComponent() {
       const currentValue = form.state.values.baseCurrency;
       logger.debug("Saving base currency:", currentValue);
 
-      await upsertSetting({
-        key: "BASE_CURRENCY",
-        value: currentValue,
-      });
+      toast.promise(
+        upsertSetting({
+          key: "BASE_CURRENCY",
+          value: currentValue as FiatCurrency,
+        }),
+        {
+          loading: "Saving platform settings...",
+          success: "Platform settings saved successfully!",
+          error: (error: Error) =>
+            `Failed to save platform settings: ${error.message}`,
+        }
+      );
 
       logger.debug("Base currency saved successfully, navigating to next step");
       await completeStepAndNavigate(OnboardingStep.systemSettings);
     } catch (error) {
       logger.error("Failed to save base currency:", error);
-      toast.error("Failed to save platform settings");
+      // Error toast is handled by toast.promise
     }
   };
 
@@ -169,17 +169,17 @@ function RouteComponent() {
                 type="button"
                 variant="outline"
                 onClick={onPrevious}
-                disabled={isUpsertPending}
+                disabled={isSettingUpdating}
               >
                 Previous
               </Button>
               <Button
                 type="button"
                 onClick={() => void handleSaveAndContinue()}
-                disabled={isUpsertPending}
+                disabled={isSettingUpdating}
                 className="min-w-[120px]"
               >
-                {isUpsertPending ? "Saving..." : "Save & Continue"}
+                {isSettingUpdating ? "Saving..." : "Save & Continue"}
               </Button>
             </div>
           </div>

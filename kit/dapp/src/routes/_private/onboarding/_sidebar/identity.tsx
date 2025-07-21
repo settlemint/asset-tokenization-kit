@@ -12,10 +12,9 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 
 export const Route = createFileRoute("/_private/onboarding/_sidebar/identity")({
-  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.identity),
   component: RouteComponent,
 });

@@ -1,20 +1,32 @@
+import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
+import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
 import { Lock, Shield } from "lucide-react";
-import { useCallback } from "react";
+import { useState } from "react";
 
-interface SecurityMethodSelectorProps {
-  onSetupSecurity: (method: "pin" | "otp") => void;
-}
+export function SecurityMethodSelector() {
+  const [securityMethod, setSecurityMethod] = useState<
+    "pin" | "otp" | undefined
+  >(undefined);
 
-export function SecurityMethodSelector({
-  onSetupSecurity,
-}: SecurityMethodSelectorProps) {
-  const onPinSelected = useCallback(() => {
-    onSetupSecurity("pin");
-  }, [onSetupSecurity]);
+  if (securityMethod === "pin") {
+    return (
+      <PinSetupComponent
+        closeModal={() => {
+          setSecurityMethod(undefined);
+        }}
+      />
+    );
+  }
 
-  const onOtpSelected = useCallback(() => {
-    onSetupSecurity("otp");
-  }, [onSetupSecurity]);
+  if (securityMethod === "otp") {
+    return (
+      <OtpSetupComponent
+        closeModal={() => {
+          setSecurityMethod(undefined);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -34,7 +46,7 @@ export function SecurityMethodSelector({
       <div className="space-y-4">
         <div className="space-y-3">
           <div className="flex gap-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
             <div>
               <h4 className="font-medium text-foreground mb-1">PIN code:</h4>
               <p className="text-sm text-muted-foreground">
@@ -45,7 +57,7 @@ export function SecurityMethodSelector({
           </div>
 
           <div className="flex gap-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
             <div>
               <h4 className="font-medium text-foreground mb-1">
                 One-Time Password (OTP):
@@ -66,8 +78,10 @@ export function SecurityMethodSelector({
 
         <div className="flex gap-4 mt-6">
           <div
-            className={`flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 border-input bg-background hover:bg-muted/50`}
-            onClick={onPinSelected}
+            className="flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 border-input bg-background hover:bg-muted/50"
+            onClick={() => {
+              setSecurityMethod("pin");
+            }}
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
@@ -79,8 +93,10 @@ export function SecurityMethodSelector({
           </div>
 
           <div
-            className={`flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 border-input bg-background hover:bg-muted/50`}
-            onClick={onOtpSelected}
+            className="flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 border-input bg-background hover:bg-muted/50"
+            onClick={() => {
+              setSecurityMethod("otp");
+            }}
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">

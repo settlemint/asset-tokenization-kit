@@ -9,14 +9,13 @@ import {
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 import { IdCard } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/identity-setup"
 )({
-  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.identitySetup),
   component: RouteComponent,
 });

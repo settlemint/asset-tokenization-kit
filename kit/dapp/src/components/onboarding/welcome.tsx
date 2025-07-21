@@ -63,15 +63,15 @@ export function Welcome({ steps }: WelcomeProps) {
           <Check className="h-3 w-3 text-white" />
         </div>
       );
-    } else if (hasCurrent) {
+    }
+    if (hasCurrent) {
       return (
         <div className="h-5 w-5 rounded-full bg-sm-state-success-background animate-pulse" />
       );
-    } else {
-      return (
-        <div className="h-5 w-5 rounded-full border-2 border-sm-graphics-primary" />
-      );
     }
+    return (
+      <div className="h-5 w-5 rounded-full border-2 border-sm-graphics-primary" />
+    );
   };
 
   const getGroupTitle = (groupId: OnboardingStepGroup) => {

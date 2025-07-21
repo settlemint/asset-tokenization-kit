@@ -6,12 +6,11 @@ import {
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/system-addons"
 )({
-  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemAddons),
   component: RouteComponent,
 });

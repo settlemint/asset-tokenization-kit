@@ -9,6 +9,7 @@
  */
 
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
+import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
@@ -115,6 +116,11 @@ export const me = authRouter.user.me
       isOnboarded: authUser.isOnboarded,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
+      verificationTypes: [
+        ...(authUser.pincodeEnabled ? ["pincode"] : []),
+        ...(authUser.twoFactorEnabled ? ["two-factor"] : []),
+        ...(authUser.secretCodeVerificationId ? ["secret-code"] : []),
+      ] as VerificationType[],
       onboardingState: {
         isAdmin: authUser.role === "admin",
         wallet:
