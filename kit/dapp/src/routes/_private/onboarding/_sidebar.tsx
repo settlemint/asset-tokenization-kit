@@ -3,6 +3,7 @@ import {
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
 import type { OnboardingStep } from "@/components/onboarding/state-machine";
+import { StepIndicator } from "@/components/onboarding/step-indicator";
 import { useOnboardingSteps } from "@/components/onboarding/use-onboarding-steps";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -103,29 +104,7 @@ function RouteComponent() {
         {/* Dot column with line */}
         <div className="relative flex flex-col items-center w-12 pt-0">
           {/* The step dot */}
-          <div
-            className={cn(
-              "flex shrink-0 items-center justify-center rounded-full text-xs font-medium z-30 h-6 w-6 opacity-70 text-primary-foreground transition-all duration-300 ease-in-out",
-              isCurrent && "opacity-100"
-            )}
-          >
-            {/* Conditional Icon Rendering with Transitions */}
-            <div className="transition-all duration-300 ease-in-out flex items-center justify-center">
-              {isCompleted ? (
-                <div className="flex items-center justify-center w-5 h-5 bg-white rounded-full">
-                  <Check className="w-3 h-3 text-primary" />
-                </div>
-              ) : isCurrent ? (
-                <div className="flex items-center justify-center w-7 h-7">
-                  <div className="w-6 h-6 border-2 border-current rounded-full flex items-center justify-center">
-                    <div className="w-3 h-3 bg-current rounded-full" />
-                  </div>
-                </div>
-              ) : (
-                <div className="w-5 h-5 border-2 border-current rounded-full" />
-              )}
-            </div>
-          </div>
+          <StepIndicator isCompleted={isCompleted} isCurrent={isCurrent} />
 
           {/* Connecting line (for all but last step) */}
           {!isLastInGroup && (

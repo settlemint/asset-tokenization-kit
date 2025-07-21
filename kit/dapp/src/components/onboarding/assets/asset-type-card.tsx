@@ -35,9 +35,7 @@ export const AssetTypeCard = memo(
 
     // Event handlers are automatically optimized by React Compiler - no manual memoization needed
     const handleItemClick = () => {
-      if (isDisabled) {
-        return;
-      }
+      if (isDisabled) return;
       onToggle(!isChecked);
     };
 
@@ -46,9 +44,7 @@ export const AssetTypeCard = memo(
     };
 
     const handleCheckboxChange = (checked: boolean) => {
-      if (isDisabled) {
-        return;
-      }
+      if (isDisabled) return;
       onToggle(checked);
     };
 

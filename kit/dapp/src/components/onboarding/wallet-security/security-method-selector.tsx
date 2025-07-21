@@ -1,3 +1,4 @@
+import { BulletPoint } from "@/components/onboarding/bullet-point";
 import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
 import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
 import { Lock, Shield } from "lucide-react";
@@ -45,8 +46,7 @@ export function SecurityMethodSelector() {
 
       <div className="space-y-4">
         <div className="space-y-3">
-          <div className="flex gap-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+          <BulletPoint>
             <div>
               <h4 className="font-medium text-foreground mb-1">PIN code:</h4>
               <p className="text-sm text-muted-foreground">
@@ -54,10 +54,9 @@ export function SecurityMethodSelector() {
                 your wallet. Easy and fast.
               </p>
             </div>
-          </div>
+          </BulletPoint>
 
-          <div className="flex gap-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+          <BulletPoint>
             <div>
               <h4 className="font-medium text-foreground mb-1">
                 One-Time Password (OTP):
@@ -68,7 +67,7 @@ export function SecurityMethodSelector() {
                 time you log in.
               </p>
             </div>
-          </div>
+          </BulletPoint>
         </div>
 
         <p className="text-sm text-foreground leading-relaxed">

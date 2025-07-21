@@ -64,11 +64,13 @@ export function Welcome({ steps }: WelcomeProps) {
         </div>
       );
     }
+
     if (hasCurrent) {
       return (
         <div className="h-5 w-5 rounded-full bg-sm-state-success-background animate-pulse" />
       );
     }
+
     return (
       <div className="h-5 w-5 rounded-full border-2 border-sm-graphics-primary" />
     );

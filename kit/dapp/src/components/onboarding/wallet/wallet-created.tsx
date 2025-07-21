@@ -2,6 +2,7 @@ import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { Web3Address } from "@/components/web3/web3-address";
+import { NULL_ADDRESS } from "@/lib/constants/addresses";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { CircleCheckBigIcon } from "lucide-react";
@@ -35,9 +36,7 @@ export function WalletCreated() {
           <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 space-y-3">
             <div className="flex items-center justify-center gap-2">
               <Web3Address
-                address={
-                  user.wallet ?? "0x0000000000000000000000000000000000000000"
-                }
+                address={user.wallet ?? NULL_ADDRESS}
                 showPrettyName={false}
                 showFullAddress
               />

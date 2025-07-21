@@ -1,3 +1,4 @@
+import { BulletPoint } from "@/components/onboarding/bullet-point";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/orpc-client";
@@ -48,8 +49,7 @@ export function CreateWallet() {
                 </h4>
 
                 <div className="space-y-4">
-                  <div className="flex gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                  <BulletPoint>
                     <div>
                       <h5 className="font-medium text-foreground mb-1">
                         Asset Control
@@ -60,10 +60,9 @@ export function CreateWallet() {
                         complete control over your digital assets.
                       </p>
                     </div>
-                  </div>
+                  </BulletPoint>
 
-                  <div className="flex gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                  <BulletPoint>
                     <div>
                       <h5 className="font-medium text-foreground mb-1">
                         Transaction Authorization
@@ -74,10 +73,9 @@ export function CreateWallet() {
                         signature.
                       </p>
                     </div>
-                  </div>
+                  </BulletPoint>
 
-                  <div className="flex gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                  <BulletPoint>
                     <div>
                       <h5 className="font-medium text-foreground mb-1">
                         Identity Management
@@ -88,7 +86,7 @@ export function CreateWallet() {
                         blockchain activities.
                       </p>
                     </div>
-                  </div>
+                  </BulletPoint>
                 </div>
               </div>
             </div>
