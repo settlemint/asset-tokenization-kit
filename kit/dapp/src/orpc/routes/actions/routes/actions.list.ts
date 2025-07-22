@@ -10,7 +10,6 @@ import {
 // Configuration constants
 const MAX_ACTIONS_PER_REQUEST = 1000;
 const DEFAULT_PAGE_SIZE = 10;
-const MAX_COUNT_QUERY_SIZE = 1000;
 
 /**
  * GraphQL query for retrieving actions from TheGraph.
@@ -63,13 +62,13 @@ const LIST_ACTIONS_QUERY = theGraphGraphql(`
  * GraphQL query for counting total actions matching the filter.
  * Used to provide accurate pagination metadata.
  *
- * Note: This is a simple count query that fetches up to 1000 records to count them.
+ * Note: This query fetches all matching actions to count them accurately.
  * For production systems with very large datasets, consider implementing a dedicated
  * count field in the subgraph schema for better performance.
  */
 const COUNT_ACTIONS_QUERY = theGraphGraphql(`
   query CountActionsQuery($where: Action_filter) {
-    actions(where: $where, first: ${MAX_COUNT_QUERY_SIZE}) {
+    actions(where: $where) {
       id
     }
   }`);
