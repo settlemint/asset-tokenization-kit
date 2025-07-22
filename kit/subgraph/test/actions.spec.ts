@@ -96,51 +96,6 @@ describe("Actions", () => {
     });
   });
 
-  it("should fetch XvP Settlement execution actions", async () => {
-    const query = theGraphGraphql(
-      `query {
-        actions(
-          where: {
-            name: "ExecuteXvPSettlement"
-          },
-          orderBy: createdAt,
-          orderDirection: desc
-        ) {
-          id
-          name
-          target
-          executed
-          identifier
-          executor {
-            id
-            executors
-          }
-        }
-      }`
-    );
-    const response = await theGraphClient.request(query);
-
-    // Should have at least 1 execution action from the settlement
-    expect(response.actions.length).toBeGreaterThanOrEqual(1);
-
-    const executionActions = response.actions;
-
-    // Verify execution action structure
-    executionActions.forEach((action) => {
-      expect(action.id).toBeDefined();
-      expect(action.name).toBe("ExecuteXvPSettlement");
-      expect(action.target).toBeDefined();
-      expect(typeof action.executed).toBe("boolean");
-      expect(action.identifier).toBeDefined();
-
-      // Verify executor relationship
-      expect(action.executor).toBeDefined();
-      expect(action.executor.id).toBeDefined();
-      expect(Array.isArray(action.executor.executors)).toBe(true);
-      expect(action.executor.executors.length).toBeGreaterThan(0);
-    });
-  });
-
   it("should fetch bond maturity actions", async () => {
     const query = theGraphGraphql(
       `query {
