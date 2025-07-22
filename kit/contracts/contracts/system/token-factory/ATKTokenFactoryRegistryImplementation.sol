@@ -24,6 +24,15 @@ import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol"
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 
+/**
+ * @title ATKTokenFactoryRegistryImplementation
+ * @author SettleMint
+ * @notice Implementation contract for the ATK Token Factory Registry
+ * @dev This contract manages the registration and deployment of token factories within the ATK ecosystem.
+ *      Each factory type (Bond, Equity, Fund, etc.) is identified by a unique type hash and deployed
+ *      as an upgradeable proxy. The registry ensures that only valid factory implementations supporting
+ *      the IATKTokenFactory interface can be registered.
+ */
 contract ATKTokenFactoryRegistryImplementation is
     Initializable,
     IATKTokenFactoryRegistry,

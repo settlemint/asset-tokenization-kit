@@ -43,6 +43,14 @@ event IdentityUpdated(IIdentity indexed _oldIdentity, IIdentity indexed _newIden
 /// @param _country is the numeric code (ISO 3166-1) of the new country
 event CountryUpdated(address indexed _investorAddress, uint16 indexed _country);
 
+/**
+ * @title IERC3643IdentityRegistry
+ * @author SettleMint
+ * @notice Interface for ERC-3643 compliant Identity Registry managing investor identities
+ * @dev This interface defines the standard for managing on-chain identities in security token ecosystems.
+ *      It handles the registration, verification, and management of investor identities, ensuring
+ *      compliance with regulatory requirements through claim verification.
+ */
 interface IERC3643IdentityRegistry {
     /// Functions
 

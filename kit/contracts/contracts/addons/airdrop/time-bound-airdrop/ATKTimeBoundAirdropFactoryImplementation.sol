@@ -18,6 +18,7 @@ import { ATKTimeBoundAirdropProxy } from "./ATKTimeBoundAirdropProxy.sol";
 import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
 
 /// @title Factory for Creating ATKTimeBoundAirdrop Proxies
+/// @author SettleMint
 /// @notice This contract serves as a factory to deploy new UUPS proxy instances of `ATKTimeBoundAirdrop` contracts.
 /// It manages a single implementation contract and allows for updating this implementation.
 /// @dev Key features of this factory:
@@ -43,6 +44,8 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     IATKTimeBoundAirdrop[] private allAirdrops;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
+    /// @param forwarder The address of the trusted forwarder for meta-transactions
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) { }
 
     /// @notice Initializes the `ATKTimeBoundAirdropFactory`.
@@ -131,6 +134,7 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     }
 
     /// @notice Returns the total number of time-bound airdrop proxy contracts created by this factory.
+    /// @return count The number of time-bound airdrop proxy contracts created
     function allAirdropsLength() external view override(IATKTimeBoundAirdropFactory) returns (uint256 count) {
         return allAirdrops.length;
     }
@@ -163,7 +167,9 @@ contract ATKTimeBoundAirdropFactoryImplementation is
         return _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
     }
 
-    /// @notice Returns the address of the current `ATKTimeBoundAirdrop` logic contract (implementation).
+    /// @notice Checks if the contract supports a given interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the contract supports the interface, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view

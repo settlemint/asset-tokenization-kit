@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { IATKPushAirdrop } from "./IATKPushAirdrop.sol";
 
 /// @title Interface for ATK Push Airdrop Factory
+/// @author SettleMint
 /// @notice Interface for creating and managing ATK Push Airdrop proxies
 /// @dev This interface defines the standard for factories that create push airdrop contracts
 interface IATKPushAirdropFactory {

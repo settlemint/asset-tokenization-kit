@@ -14,6 +14,7 @@ import { ATKVault } from "./ATKVault.sol";
 import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
 
 /// @title Factory for Creating ATKVault Proxies
+/// @author SettleMint
 /// @notice This contract serves as a factory to deploy new UUPS proxy instances of `ATKVault` contracts.
 /// It manages a single implementation contract and allows for updating this implementation.
 /// @dev Key features of this factory:
@@ -26,12 +27,16 @@ import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
 /// - **Meta-transactions**: Inherits `ERC2771Context` to support gasless operations if a trusted forwarder is
 /// configured.
 contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplementation, IATKVaultFactory {
+    /// @notice Type identifier for the ATKVaultFactory
     bytes32 public constant override typeId = keccak256("ATKVaultFactory");
 
     /// @notice An array that stores references (addresses) to all vault
     /// contracts created by this factory.
     address[] private allVaults;
 
+    /// @notice Constructor for the ATKVaultFactoryImplementation
+    /// @dev This constructor is marked with @custom:oz-upgrades-unsafe-allow to permit its use in upgradeable contracts
+    /// @param forwarder Address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) { }
 
@@ -155,18 +160,22 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         return _predictProxyAddress(vaultBytecode, constructorArgs, saltInputData);
     }
 
-    /// @notice Returns the total number of vault contracts created by this factory.
+    /// @notice Returns the total number of vault contracts created by this factory
+    /// @return count The total number of vaults created
     function allVaultsLength() external view returns (uint256 count) {
         return allVaults.length;
     }
 
-    /// @notice Returns the address of the ATKVault implementation (not used in this pattern).
-    /// @dev Since we deploy ATKVault contracts directly, this returns address(0).
+    /// @notice Returns the address of the ATKVault implementation (not used in this pattern)
+    /// @dev Since we deploy ATKVault contracts directly, this returns address(0)
+    /// @return The address of the ATKVault implementation (always address(0) in this pattern)
     function atkVaultImplementation() external pure returns (address) {
         return address(0);
     }
 
-    /// @notice Checks if a contract supports a given interface.
+    /// @notice Checks if a contract supports a given interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the contract implements the interface, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view

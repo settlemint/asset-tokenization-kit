@@ -32,8 +32,9 @@ import { SMARTCollateralUpgradeable } from "../../smart/extensions/collateral/SM
 import { SMARTTokenAccessManagedUpgradeable } from
     "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 
-/// @title ATKDeposit
-/// @notice An implementation of a deposit using the SMART extension framework,
+/// @title ATKDeposit Implementation
+/// @author SettleMint
+/// @notice An implementation of a deposit token using the SMART extension framework,
 ///         backed by collateral and using custom roles.
 /// @dev Combines core SMART features (compliance, verification) with extensions for pausing,
 ///      burning, custodian actions, and collateral tracking. Access control uses custom roles.
@@ -51,7 +52,8 @@ contract ATKDepositImplementation is
 {
     // ERC20PermitUpgradeable
     /// @custom:oz-upgrades-unsafe-allow constructor
-    /// @param forwarder_ The address of the forwarder contract.
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
+    /// @param forwarder_ The address of the trusted forwarder contract for meta-transactions
     constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
         _disableInitializers();
     }
@@ -112,10 +114,14 @@ contract ATKDepositImplementation is
 
     // --- ISMART Implementation ---
 
+    /// @notice Sets the OnchainID contract address for this token
+    /// @param _onchainID The address of the OnchainID contract
     function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setOnchainID(_onchainID);
     }
 
+    /// @notice Sets the identity registry address for the token
+    /// @param _identityRegistry The address of the identity registry contract
     function setIdentityRegistry(address _identityRegistry)
         external
         override
@@ -124,10 +130,15 @@ contract ATKDepositImplementation is
         _smart_setIdentityRegistry(_identityRegistry);
     }
 
+    /// @notice Sets the compliance contract address for the token
+    /// @param _compliance The address of the compliance contract
     function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setCompliance(_compliance);
     }
 
+    /// @notice Sets parameters for a specific compliance module
+    /// @param _module The address of the compliance module
+    /// @param _params The encoded parameters for the module
     function setParametersForComplianceModule(
         address _module,
         bytes calldata _params
@@ -139,6 +150,9 @@ contract ATKDepositImplementation is
         _smart_setParametersForComplianceModule(_module, _params);
     }
 
+    /// @notice Mints new tokens to a specified address
+    /// @param _to The address to mint tokens to
+    /// @param _amount The amount of tokens to mint
     function mint(
         address _to,
         uint256 _amount
@@ -150,6 +164,9 @@ contract ATKDepositImplementation is
         _smart_mint(_to, _amount);
     }
 
+    /// @notice Mints tokens to multiple addresses in a single transaction
+    /// @param _toList Array of addresses to mint tokens to
+    /// @param _amounts Array of amounts to mint to each address
     function batchMint(
         address[] calldata _toList,
         uint256[] calldata _amounts
@@ -161,6 +178,10 @@ contract ATKDepositImplementation is
         _smart_batchMint(_toList, _amounts);
     }
 
+    /// @notice Transfers tokens to a specified address
+    /// @param _to The address to transfer tokens to
+    /// @param _amount The amount of tokens to transfer
+    /// @return bool True if the transfer was successful
     function transfer(
         address _to,
         uint256 _amount
@@ -172,6 +193,10 @@ contract ATKDepositImplementation is
         return _smart_transfer(_to, _amount);
     }
 
+    /// @notice Recovers accidentally sent ERC20 tokens from the contract
+    /// @param token The address of the ERC20 token to recover
+    /// @param to The address to send the recovered tokens to
+    /// @param amount The amount of tokens to recover
     function recoverERC20(
         address token,
         address to,
@@ -184,6 +209,9 @@ contract ATKDepositImplementation is
         _smart_recoverERC20(token, to, amount);
     }
 
+    /// @notice Adds a new compliance module to the token
+    /// @param _module The address of the compliance module to add
+    /// @param _params The initialization parameters for the module
     function addComplianceModule(
         address _module,
         bytes calldata _params
@@ -195,6 +223,8 @@ contract ATKDepositImplementation is
         _smart_addComplianceModule(_module, _params);
     }
 
+    /// @notice Removes a compliance module from the token
+    /// @param _module The address of the compliance module to remove
     function removeComplianceModule(address _module)
         external
         override
@@ -205,6 +235,9 @@ contract ATKDepositImplementation is
 
     // --- ISMARTBurnable Implementation ---
 
+    /// @notice Burns tokens from a specified address
+    /// @param userAddress The address to burn tokens from
+    /// @param amount The amount of tokens to burn
     function burn(
         address userAddress,
         uint256 amount
@@ -216,6 +249,9 @@ contract ATKDepositImplementation is
         _smart_burn(userAddress, amount);
     }
 
+    /// @notice Burns tokens from multiple addresses in a single transaction
+    /// @param userAddresses Array of addresses to burn tokens from
+    /// @param amounts Array of amounts to burn from each address
     function batchBurn(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -229,6 +265,9 @@ contract ATKDepositImplementation is
 
     // --- ISMARTCustodian Implementation ---
 
+    /// @notice Freezes or unfreezes all tokens for a specified address
+    /// @param userAddress The address to freeze or unfreeze
+    /// @param freeze True to freeze, false to unfreeze
     function setAddressFrozen(
         address userAddress,
         bool freeze
@@ -240,6 +279,9 @@ contract ATKDepositImplementation is
         _smart_setAddressFrozen(userAddress, freeze);
     }
 
+    /// @notice Freezes a specific amount of tokens for a user
+    /// @param userAddress The address whose tokens to freeze
+    /// @param amount The amount of tokens to freeze
     function freezePartialTokens(
         address userAddress,
         uint256 amount
@@ -251,6 +293,9 @@ contract ATKDepositImplementation is
         _smart_freezePartialTokens(userAddress, amount);
     }
 
+    /// @notice Unfreezes a specific amount of tokens for a user
+    /// @param userAddress The address whose tokens to unfreeze
+    /// @param amount The amount of tokens to unfreeze
     function unfreezePartialTokens(
         address userAddress,
         uint256 amount
@@ -262,6 +307,9 @@ contract ATKDepositImplementation is
         _smart_unfreezePartialTokens(userAddress, amount);
     }
 
+    /// @notice Freezes or unfreezes tokens for multiple addresses
+    /// @param userAddresses Array of addresses to freeze or unfreeze
+    /// @param freeze Array of boolean values (true to freeze, false to unfreeze)
     function batchSetAddressFrozen(
         address[] calldata userAddresses,
         bool[] calldata freeze
@@ -273,6 +321,9 @@ contract ATKDepositImplementation is
         _smart_batchSetAddressFrozen(userAddresses, freeze);
     }
 
+    /// @notice Freezes tokens for multiple addresses with specific amounts
+    /// @param userAddresses Array of addresses whose tokens to freeze
+    /// @param amounts Array of amounts to freeze for each address
     function batchFreezePartialTokens(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -284,6 +335,9 @@ contract ATKDepositImplementation is
         _smart_batchFreezePartialTokens(userAddresses, amounts);
     }
 
+    /// @notice Unfreezes tokens for multiple addresses with specific amounts
+    /// @param userAddresses Array of addresses whose tokens to unfreeze
+    /// @param amounts Array of amounts to unfreeze for each address
     function batchUnfreezePartialTokens(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -295,6 +349,11 @@ contract ATKDepositImplementation is
         _smart_batchUnfreezePartialTokens(userAddresses, amounts);
     }
 
+    /// @notice Forces a transfer of tokens from one address to another
+    /// @param from The address to transfer tokens from
+    /// @param to The address to transfer tokens to
+    /// @param amount The amount of tokens to transfer
+    /// @return bool True if the transfer was successful
     function forcedTransfer(
         address from,
         address to,
@@ -308,6 +367,10 @@ contract ATKDepositImplementation is
         return _smart_forcedTransfer(from, to, amount);
     }
 
+    /// @notice Forces transfers of tokens between multiple address pairs
+    /// @param fromList Array of addresses to transfer tokens from
+    /// @param toList Array of addresses to transfer tokens to
+    /// @param amounts Array of amounts to transfer for each pair
     function batchForcedTransfer(
         address[] calldata fromList,
         address[] calldata toList,
@@ -320,6 +383,9 @@ contract ATKDepositImplementation is
         _smart_batchForcedTransfer(fromList, toList, amounts);
     }
 
+    /// @notice Recovers all tokens from a lost wallet to a new wallet
+    /// @param lostWallet The address of the lost wallet
+    /// @param newWallet The address to transfer all tokens to
     function forcedRecoverTokens(
         address lostWallet,
         address newWallet
@@ -333,10 +399,12 @@ contract ATKDepositImplementation is
 
     // --- ISMARTPausable Implementation ---
 
+    /// @notice Pauses all token transfers
     function pause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_pause();
     }
 
+    /// @notice Unpauses token transfers
     function unpause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_unpause();
     }
@@ -468,9 +536,11 @@ contract ATKDepositImplementation is
 
     // --- Internal Functions (Overrides) ---
 
-    /**
-     * @dev Overrides _update to ensure Pausable and Collateral checks are applied.
-     */
+    /// @notice Internal function to update token balances with pausable and collateral checks
+    /// @dev Overrides _update to ensure Pausable and Collateral checks are applied
+    /// @param from The address tokens are transferred from
+    /// @param to The address tokens are transferred to
+    /// @param value The amount of tokens being transferred
     function _update(
         address from,
         address to,
@@ -484,7 +554,9 @@ contract ATKDepositImplementation is
         super._update(from, to, value);
     }
 
-    /// @dev Resolves msgSender across Context and SMARTPausable.
+    /// @notice Returns the message sender, accounting for meta-transactions
+    /// @dev Resolves msgSender across Context and ERC2771Context
+    /// @return The address of the message sender
     function _msgSender()
         internal
         view
@@ -495,7 +567,9 @@ contract ATKDepositImplementation is
         return ERC2771ContextUpgradeable._msgSender();
     }
 
-    /// @dev Resolves msgData across Context and ERC2771Context.
+    /// @notice Returns the message data, accounting for meta-transactions
+    /// @dev Resolves msgData across Context and ERC2771Context
+    /// @return The message data
     function _msgData()
         internal
         view
@@ -506,7 +580,9 @@ contract ATKDepositImplementation is
         return ERC2771ContextUpgradeable._msgData();
     }
 
-    /// @dev Hook defining the length of the trusted forwarder address suffix in `msg.data`.
+    /// @notice Returns the length of the context suffix for meta-transactions
+    /// @dev Hook defining the length of the trusted forwarder address suffix in `msg.data`
+    /// @return The length of the context suffix
     function _contextSuffixLength()
         internal
         view

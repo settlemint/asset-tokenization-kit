@@ -18,6 +18,7 @@ import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 import { ISMARTCapped } from "../../smart/extensions/capped/ISMARTCapped.sol";
 
 /// @title Interface for a ATK Bond
+/// @author SettleMint
 /// @notice Defines the core functionality and extensions for a ATK Bond, including features like redeemability,
 /// historical balances, yield, and capping.
 interface IATKBond is

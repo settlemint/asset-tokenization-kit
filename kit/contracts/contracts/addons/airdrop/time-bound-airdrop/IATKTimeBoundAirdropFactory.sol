@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 /// @title Interface for ATK Time-Bound Airdrop Factory
+/// @author SettleMint
 /// @notice Interface for creating and managing ATK Time-Bound Airdrop proxies
 /// @dev This interface defines the standard for factories that create time-bound airdrop contracts
 interface IATKTimeBoundAirdropFactory {

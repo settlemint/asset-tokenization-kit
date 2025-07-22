@@ -22,7 +22,11 @@ import { ATKTopics } from "../../system/ATKTopics.sol";
 import { ATKDepositProxy } from "./ATKDepositProxy.sol";
 
 /// @title Implementation of the ATK Deposit Factory
+/// @author SettleMint
 /// @notice This contract is responsible for creating instances of ATK Deposit tokens.
+/// @dev This factory deploys ATK Deposit tokens with collateral support, using the SMART protocol
+///      for compliance and identity verification. It inherits from AbstractATKTokenFactoryImplementation
+///      for common factory functionality.
 contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKTokenFactoryImplementation {
     bytes32 public constant override typeId = keccak256("ATKDepositFactory");
 
@@ -121,6 +125,7 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     }
 
     /// @notice Checks if a given address implements the IATKDeposit interface.
+    /// @dev Uses ERC165 to check interface support for IATKDeposit
     /// @param tokenImplementation_ The address of the contract to check.
     /// @return bool True if the contract supports the IATKDeposit interface, false otherwise.
     function isValidTokenImplementation(address tokenImplementation_) public view override returns (bool) {
@@ -128,6 +133,7 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     }
 
     /// @notice Predicts the deployment address of a ATKDepositProxy contract.
+    /// @dev Uses CREATE2 to deterministically calculate the deployment address based on the provided parameters
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param decimals_ The decimals of the token.
@@ -173,6 +179,10 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
 
     // --- ERC165 Overrides ---
 
+    /// @notice Checks if the contract supports the given interface
+    /// @dev Implements ERC165 interface detection
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view

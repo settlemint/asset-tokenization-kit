@@ -13,8 +13,13 @@ import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodia
 import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
 
-/// @title Interface for a ATK Equity token
-/// @notice Defines the core functionality and extensions for a ATK Equity token, including voting capabilities.
+/// @title Interface for ATK Equity token
+/// @author SettleMint
+/// @notice Defines the core functionality and extensions for ATK Equity token, including voting capabilities.
+/// This interface extends multiple SMART protocol interfaces to provide comprehensive security token
+/// functionality with governance features through the IVotes extension.
+/// @dev This interface combines ERC-3643 compliant security token standards with OpenZeppelin governance
+/// capabilities, allowing equity tokens to participate in on-chain voting and governance processes.
 interface IATKEquity is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTPausable, ISMARTBurnable, IVotes {
     /// @notice Initializes the ATK Equity token contract.
     /// @param name_ The name of the equity token.

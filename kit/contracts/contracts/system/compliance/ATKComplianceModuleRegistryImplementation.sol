@@ -16,6 +16,15 @@ import {
     InvalidImplementationInterface
 } from "../ATKSystemErrors.sol";
 
+/**
+ * @title ATKComplianceModuleRegistryImplementation
+ * @author SettleMint
+ * @notice Implementation contract for the ATK Compliance Module Registry
+ * @dev This contract maintains a registry of approved compliance modules that can be used by
+ *      security tokens in the ATK ecosystem. Compliance modules implement various regulatory
+ *      requirements such as identity verification, country restrictions, and allowlisting.
+ *      Only modules supporting the ISMARTComplianceModule interface can be registered.
+ */
 contract ATKComplianceModuleRegistryImplementation is
     Initializable,
     IATKComplianceModuleRegistry,
