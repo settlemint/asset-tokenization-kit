@@ -83,8 +83,8 @@ export const AssetBasics = withForm({
               const meta = form.getFieldMeta(field);
               const error = meta?.errors;
               const isPristine = meta?.isPristine;
-              const requiredFieldPristine =
-                isRequiredField(field) && isPristine;
+              const isRequired = isRequiredField(field);
+              const requiredFieldPristine = isRequired && isPristine;
               return (error && error.length > 0) || requiredFieldPristine;
             });
 
