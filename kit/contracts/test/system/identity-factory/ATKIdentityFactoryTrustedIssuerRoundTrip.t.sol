@@ -109,9 +109,6 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
 
         vm.stopPrank();
 
-        // No need to add claim signer keys since the issuer identity contract will call addClaim
-        // on its own behalf (caller == issuer), which is automatically authorized
-
         // Step 2: Register the claim issuer in the trusted issuers registry with topics
         uint256[] memory allowedTopics = new uint256[](2);
         allowedTopics[0] = kycTopicId;
@@ -158,12 +155,13 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
             ""
         );
 
-        // The issuer identity contract calls addClaim on the user's identity
+        // The claimIssuer wallet (which has claim signer key in the issuer identity) calls addClaim
         // The ClaimAuthorizationExtension will authorize this because:
-        // 1. _msgSender() will be the issuer identity address (issuerIdentityAddr)
-        // 2. The trusted issuers registry is registered as a ClaimAuthorizer on the user's identity
-        // 3. The issuer is registered in the trusted issuers registry for this topic
-        vm.prank(issuerIdentityAddr); // Make the issuer identity contract the msg.sender
+        // 1. _msgSender() will be claimIssuer wallet
+        // 2. claimIssuer has CLAIM_SIGNER_KEY in the issuer identity, so _isAuthorizedToActForIssuer returns true
+        // 3. The trusted issuers registry is registered as a ClaimAuthorizer on the user's identity
+        // 4. The issuer identity is registered in the trusted issuers registry for this topic
+        vm.prank(claimIssuer); // The wallet with claim signer key makes the call
         bytes32 kycClaimId = userIdentity.addClaim(
             kycTopicId,
             1, // ECDSA scheme
@@ -187,7 +185,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
             ""
         );
 
-        vm.prank(issuerIdentityAddr); // Make the issuer identity contract the msg.sender
+        vm.prank(claimIssuer); // The wallet with claim signer key makes the call
         bytes32 amlClaimId = userIdentity.addClaim(
             amlTopicId,
             1, // ECDSA scheme
