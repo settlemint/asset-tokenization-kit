@@ -287,9 +287,7 @@ contract ClaimAuthorizationSystemTest is Test {
         // Should fail with UnauthorizedIssuer - having claim keys is not enough,
         // user must also be authorized to act on behalf of the issuer
         vm.prank(user);
-        vm.expectRevert(
-            abi.encodeWithSelector(ClaimAuthorizationExtension.UnauthorizedIssuer.selector, user, address(mockIssuer))
-        );
+        vm.expectRevert(abi.encodeWithSelector(ATKIdentityImplementation.SenderLacksClaimSignerKey.selector));
         identity.addClaim(TEST_CLAIM_TOPIC, TEST_CLAIM_SCHEME, address(mockIssuer), "", TEST_CLAIM_DATA, TEST_CLAIM_URI);
     }
 

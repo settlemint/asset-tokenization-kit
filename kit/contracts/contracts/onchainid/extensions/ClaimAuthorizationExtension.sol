@@ -49,11 +49,6 @@ contract ClaimAuthorizationExtension {
     /// @param notRegisteredContract The address that was attempted to be removed
     error AuthorizationContractNotRegistered(address notRegisteredContract);
 
-    /// @notice Error thrown when a caller is not authorized to act on behalf of an issuer
-    /// @param caller The address attempting to add the claim
-    /// @param issuer The issuer address for the claim
-    error UnauthorizedIssuer(address caller, address issuer);
-
     // --- Internal Functions ---
 
     /// @notice Registers a claim authorization contract
