@@ -1,4 +1,4 @@
-import { AssetBasics } from "@/components/asset-designer/asset-basics";
+import { AssetBasics } from "@/components/asset-designer/asset-basics/asset";
 import { SelectAssetType } from "@/components/asset-designer/select-asset-type";
 import {
   assetDesignerFormOptions,
@@ -19,13 +19,7 @@ export const AssetDesignerForm = () => {
   const form = useAppForm({
     ...assetDesignerFormOptions,
     validators: {
-      onChange: (values) => {
-        try {
-          return AssetDesignerFormSchema.safeParse(values);
-        } catch {
-          return false;
-        }
-      },
+      onChange: AssetDesignerFormSchema,
     },
   });
 
