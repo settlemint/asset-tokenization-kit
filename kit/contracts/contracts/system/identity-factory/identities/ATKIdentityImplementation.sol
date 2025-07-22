@@ -240,7 +240,7 @@ contract ATKIdentityImplementation is
         returns (bytes32 claimId)
     {
         // First check if any authorization contracts approve this claim
-        bool authorizedByContract = _isAuthorizedToAddClaim(_issuer, _topic);
+        bool authorizedByContract = _isAuthorizedToAddClaim(_msgSender(), _issuer, _topic);
 
         if (!authorizedByContract) {
             // If no authorization contracts approve, require CLAIM_SIGNER_KEY (existing behavior)

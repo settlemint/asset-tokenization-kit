@@ -8,6 +8,7 @@ import { ATKIdentityProxy } from "../../../../contracts/system/identity-factory/
 import { ATKTrustedIssuersRegistryImplementation } from
     "../../../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
 import { IClaimAuthorizer } from "../../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
+import { ClaimAuthorizationExtension } from "../../../../contracts/onchainid/extensions/ClaimAuthorizationExtension.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -130,7 +131,8 @@ contract ClaimAuthorizationSystemTest is Test {
         identity.registerClaimAuthorizationContract(address(trustedIssuersRegistry));
 
         // Add claim - should succeed through authorization
-        vm.prank(user);
+        // Use the issuer as the caller since mockIssuer doesn't implement ERC734
+        vm.prank(address(mockIssuer));
         bytes32 claimId = identity.addClaim(
             TEST_CLAIM_TOPIC, TEST_CLAIM_SCHEME, address(mockIssuer), "", TEST_CLAIM_DATA, TEST_CLAIM_URI
         );
@@ -148,13 +150,14 @@ contract ClaimAuthorizationSystemTest is Test {
 
     function test_AddClaim_WithoutAuthorizationFallbackToClaimKey_Success() public {
         // Don't register any authorization contracts
-        // Give user claim signer key
+        // Give mockIssuer address claim signer key (treat mockIssuer as key)
         vm.prank(owner);
-        bytes32 userKeyHash = keccak256(abi.encode(user));
-        identity.addKey(userKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        bytes32 issuerKeyHash = keccak256(abi.encode(address(mockIssuer)));
+        identity.addKey(issuerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
 
         // Add claim - should succeed through claim key
-        vm.prank(user);
+        // mockIssuer acts on its own behalf and has claim key
+        vm.prank(address(mockIssuer));
         bytes32 claimId = identity.addClaim(
             TEST_CLAIM_TOPIC, TEST_CLAIM_SCHEME, address(mockIssuer), "", TEST_CLAIM_DATA, TEST_CLAIM_URI
         );
@@ -176,13 +179,14 @@ contract ClaimAuthorizationSystemTest is Test {
         vm.prank(owner);
         identity.registerClaimAuthorizationContract(address(trustedIssuersRegistry));
 
-        // Give user claim signer key
+        // Give mockIssuer address claim signer key (treat mockIssuer as key)
         vm.prank(owner);
-        bytes32 userKeyHash = keccak256(abi.encode(user));
-        identity.addKey(userKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        bytes32 issuerKeyHash = keccak256(abi.encode(address(mockIssuer)));
+        identity.addKey(issuerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
 
         // Add claim - should succeed through claim key fallback
-        vm.prank(user);
+        // mockIssuer acts on its own behalf and has claim key
+        vm.prank(address(mockIssuer));
         bytes32 claimId = identity.addClaim(
             TEST_CLAIM_TOPIC, TEST_CLAIM_SCHEME, address(mockIssuer), "", TEST_CLAIM_DATA, TEST_CLAIM_URI
         );
@@ -211,7 +215,8 @@ contract ClaimAuthorizationSystemTest is Test {
         mockAuthContract.setAuthorization(address(mockIssuer), TEST_CLAIM_TOPIC, true);
 
         // Add claim - should succeed through mock contract authorization
-        vm.prank(user);
+        // Use the issuer as the caller since mockIssuer doesn't implement ERC734
+        vm.prank(address(mockIssuer));
         bytes32 claimId = identity.addClaim(
             TEST_CLAIM_TOPIC, TEST_CLAIM_SCHEME, address(mockIssuer), "", TEST_CLAIM_DATA, TEST_CLAIM_URI
         );
@@ -239,7 +244,8 @@ contract ClaimAuthorizationSystemTest is Test {
         trustedIssuersRegistry.addTrustedIssuer(IClaimIssuer(address(mockIssuer)), topics);
 
         // Add claim - should succeed despite first contract failing
-        vm.prank(user);
+        // Use the issuer as the caller since mockIssuer doesn't implement ERC734
+        vm.prank(address(mockIssuer));
         bytes32 claimId = identity.addClaim(
             TEST_CLAIM_TOPIC, TEST_CLAIM_SCHEME, address(mockIssuer), "", TEST_CLAIM_DATA, TEST_CLAIM_URI
         );
@@ -272,14 +278,18 @@ contract ClaimAuthorizationSystemTest is Test {
 
     // --- Edge Cases ---
 
-    function test_AddClaim_NoAuthContractsRegistered_FallbackToClaimKey() public {
+    function test_AddClaim_NoAuthContractsRegistered_RequiresIssuerAuthorization() public {
         // Give user claim signer key but don't register any auth contracts
         vm.prank(owner);
         bytes32 userKeyHash = keccak256(abi.encode(user));
         identity.addKey(userKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
 
-        // Should succeed through claim key
+        // Should fail with UnauthorizedIssuer - having claim keys is not enough,
+        // user must also be authorized to act on behalf of the issuer
         vm.prank(user);
+        vm.expectRevert(
+            abi.encodeWithSelector(ClaimAuthorizationExtension.UnauthorizedIssuer.selector, user, address(mockIssuer))
+        );
         identity.addClaim(TEST_CLAIM_TOPIC, TEST_CLAIM_SCHEME, address(mockIssuer), "", TEST_CLAIM_DATA, TEST_CLAIM_URI);
     }
 
@@ -294,7 +304,8 @@ contract ClaimAuthorizationSystemTest is Test {
         trustedIssuersRegistry.addTrustedIssuer(IClaimIssuer(address(mockIssuer)), topics);
 
         // First call succeeds
-        vm.prank(user);
+        // Use the issuer as the caller since mockIssuer doesn't implement ERC734
+        vm.prank(address(mockIssuer));
         identity.addClaim(TEST_CLAIM_TOPIC, TEST_CLAIM_SCHEME, address(mockIssuer), "", TEST_CLAIM_DATA, TEST_CLAIM_URI);
 
         // Remove authorization contract
@@ -315,8 +326,8 @@ contract MockClaimIssuer {
         return true;
     }
 
-    function supportsInterface(bytes4) external pure returns (bool) {
-        return true;
+    function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
+        return interfaceId == type(IERC165).interfaceId;
     }
 }
 

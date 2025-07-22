@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import { IClaimAuthorizer } from "./IClaimAuthorizer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 
 /// @title ClaimAuthorizationExtension
 /// @author SettleMint Tokenization Services
@@ -47,6 +48,11 @@ contract ClaimAuthorizationExtension {
     /// @notice Error thrown when trying to remove an authorization contract that is not registered
     /// @param notRegisteredContract The address that was attempted to be removed
     error AuthorizationContractNotRegistered(address notRegisteredContract);
+
+    /// @notice Error thrown when a caller is not authorized to act on behalf of an issuer
+    /// @param caller The address attempting to add the claim
+    /// @param issuer The issuer address for the claim
+    error UnauthorizedIssuer(address caller, address issuer);
 
     // --- Internal Functions ---
 
@@ -104,11 +110,17 @@ contract ClaimAuthorizationExtension {
     }
 
     /// @notice Checks if an issuer is authorized to add a claim for a specific topic
+    /// @param caller The address of the caller attempting to add the claim
     /// @param issuer The address of the issuer attempting to add the claim
     /// @param topic The claim topic for which authorization is being checked
     /// @return True if at least one registered authorization contract approves, false otherwise
     /// @dev Uses short-circuit evaluation - returns true on first approval found
-    function _isAuthorizedToAddClaim(address issuer, uint256 topic) internal view returns (bool) {
+    function _isAuthorizedToAddClaim(address caller, address issuer, uint256 topic) internal view returns (bool) {
+        // Verify that the caller is authorized to act on behalf of the issuer
+        if (!_isAuthorizedToActForIssuer(caller, issuer)) {
+            return false;
+        }
+
         uint256 contractsLength = _claimAuthorizationContracts.length;
 
         // If no authorization contracts are registered, return false
@@ -134,6 +146,52 @@ contract ClaimAuthorizationExtension {
             }
         }
 
+        return false;
+    }
+
+    /// @notice Checks if the caller is authorized to act on behalf of the issuer
+    /// @param caller The address attempting to add the claim
+    /// @param issuer The issuer address for the claim
+    /// @return authorized True if the caller is authorized to act for the issuer
+    /// @dev This function ensures that claims can only be added by authorized parties:
+    ///      - If the issuer is an EOA (no code), the caller must be the issuer
+    ///      - If the issuer is a contract implementing ERC734, the caller must be a signer key
+    function _isAuthorizedToActForIssuer(address caller, address issuer) internal view returns (bool authorized) {
+        // If the issuer is an EOA (no code), the caller must be the issuer
+        if (issuer.code.length == 0) {
+            return caller == issuer;
+        }
+
+        // If the issuer is a contract calling itself, allow it
+        if (caller == issuer) {
+            return true;
+        }
+
+        // If the issuer is a contract, check if it supports ERC734 (Key Holder)
+        // If it does, check if the caller has CLAIM_SIGNER_KEY_PURPOSE
+        try IERC165(issuer).supportsInterface(type(IERC734).interfaceId) returns (bool supportsERC734) {
+            if (supportsERC734) {
+                bytes32 callerKeyHash = keccak256(abi.encode(caller));
+                try IERC734(issuer).keyHasPurpose(callerKeyHash, 3) returns (bool hasClaimKey) {
+                    if (hasClaimKey) {
+                        return true;
+                    }
+                } catch {
+                    // If the call fails, continue to check management key
+                }
+
+                try IERC734(issuer).keyHasPurpose(callerKeyHash, 1) returns (bool hasManagementKey) {
+                    return hasManagementKey;
+                } catch {
+                    // If the call fails, treat as unauthorized
+                    return false;
+                }
+            }
+        } catch {
+            // If supportsInterface fails, continue to unauthorized
+        }
+
+        // If the issuer is a contract but doesn't support ERC734, treat as unauthorized
         return false;
     }
 
