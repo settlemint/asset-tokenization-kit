@@ -9,6 +9,7 @@ import { IATKFixedYieldScheduleFactory } from "./IATKFixedYieldScheduleFactory.s
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IWithTypeIdentifier } from "./../../smart/interface/IWithTypeIdentifier.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
@@ -19,8 +20,10 @@ import { ATKFixedYieldScheduleUpgradeable } from "./ATKFixedYieldScheduleUpgrade
 // Constants
 import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
 
-/// @title Factory for Creating ATKFixedYieldSchedule Proxies
-/// @notice This contract serves as a factory to deploy new UUPS proxy instances of `ATKFixedYieldSchedule` contracts.
+/// @title ATKFixedYieldScheduleFactoryImplementation
+/// @author SettleMint
+/// @notice Factory for Creating ATKFixedYieldSchedule Proxies
+/// This contract serves as a factory to deploy new UUPS proxy instances of `ATKFixedYieldSchedule` contracts.
 /// It manages a single implementation contract and allows for updating this implementation.
 /// @dev Key features of this factory:
 /// - **Deployment of Proxies**: Provides a `create` function to deploy new `ATKFixedYieldProxy` instances,
@@ -35,6 +38,8 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     AbstractATKSystemAddonFactoryImplementation,
     IATKFixedYieldScheduleFactory
 {
+    /// @inheritdoc IWithTypeIdentifier
+    // solhint-disable-next-line const-name-snakecase
     bytes32 public constant override typeId = keccak256("ATKFixedYieldScheduleFactory");
 
     /// @notice Address of the current `ATKFixedYieldSchedule` logic contract (implementation).
@@ -44,6 +49,9 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     /// schedule proxy contracts created by this factory.
     ISMARTFixedYieldSchedule[] private allSchedules;
 
+    /// @notice Constructor that sets the trusted forwarder for meta-transactions
+    /// @dev This constructor is safe to use with upgradeable contracts due to the custom:oz-upgrades-unsafe-allow tag
+    /// @param forwarder The address of the trusted forwarder
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) { }
 
@@ -156,11 +164,14 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     }
 
     /// @notice Returns the total number of fixed yield schedule proxy contracts created by this factory.
+    /// @return count The number of yield schedule proxies created by this factory
     function allSchedulesLength() external view returns (uint256 count) {
         return allSchedules.length;
     }
 
-    /// @notice Returns the address of the current `ATKFixedYieldSchedule` logic contract (implementation).
+    /// @notice Checks if this contract supports a given interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the interface is supported
     function supportsInterface(bytes4 interfaceId)
         public
         view

@@ -9,6 +9,7 @@ import { IATKVestingStrategy } from "./IATKVestingStrategy.sol";
 import { IATKAirdrop } from "../IATKAirdrop.sol";
 
 /// @title Interface for a ATK Vesting Airdrop
+/// @author SettleMint
 /// @notice Defines the core functionality for a vesting airdrop contract that uses pluggable claim strategies in the
 /// ATK Protocol.
 /// @dev This interface extends IATKAirdrop and defines a two-phase vesting airdrop process:

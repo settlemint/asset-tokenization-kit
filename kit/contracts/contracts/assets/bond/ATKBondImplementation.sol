@@ -39,7 +39,8 @@ import { SMARTYieldUpgradeable } from "../../smart/extensions/yield/SMARTYieldUp
 import { SMARTTokenAccessManagedUpgradeable } from
     "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 import { SMARTCappedUpgradeable } from "../../smart/extensions/capped/SMARTCappedUpgradeable.sol";
-/// @title SMARTBond
+/// @title ATKBondImplementation
+/// @author SettleMint
 /// @notice An implementation of a bond using the SMART extension framework,
 ///         backed by collateral and using custom roles.
 /// @dev Combines core SMART features (compliance, verification) with extensions for pausing,
@@ -83,8 +84,11 @@ contract ATKBondImplementation is
     /// @dev Maps holder address to amount of bonds redeemed
     mapping(address holder => uint256 redeemed) public bondRedeemed;
 
+    /// @notice Initializes the implementation contract with a trusted forwarder
+    /// @dev Constructor is only called once during implementation deployment.
+    ///      Actual initialization happens through the initialize function.
+    /// @param forwarder_ The address of the trusted forwarder contract for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
-    /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
         _disableInitializers();
     }
@@ -216,10 +220,16 @@ contract ATKBondImplementation is
 
     // --- ISMART Implementation ---
 
+    /// @notice Sets the onchain identity contract for this token
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _onchainID The address of the new onchain identity contract
     function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setOnchainID(_onchainID);
     }
 
+    /// @notice Sets the identity registry contract address
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _identityRegistry The address of the new identity registry contract
     function setIdentityRegistry(address _identityRegistry)
         external
         override
@@ -228,10 +238,17 @@ contract ATKBondImplementation is
         _smart_setIdentityRegistry(_identityRegistry);
     }
 
+    /// @notice Sets the compliance contract address
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _compliance The address of the new compliance contract
     function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setCompliance(_compliance);
     }
 
+    /// @notice Sets parameters for a specific compliance module
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _module The address of the compliance module
+    /// @param _params The encoded parameters to set for the module
     function setParametersForComplianceModule(
         address _module,
         bytes calldata _params
@@ -243,6 +260,10 @@ contract ATKBondImplementation is
         _smart_setParametersForComplianceModule(_module, _params);
     }
 
+    /// @notice Mints new bond tokens to a specified address
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
+    /// @param _to The address to mint tokens to
+    /// @param _amount The amount of tokens to mint
     function mint(
         address _to,
         uint256 _amount
@@ -254,6 +275,10 @@ contract ATKBondImplementation is
         _smart_mint(_to, _amount);
     }
 
+    /// @notice Mints bond tokens to multiple addresses in a single transaction
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
+    /// @param _toList Array of addresses to mint tokens to
+    /// @param _amounts Array of amounts to mint to each address
     function batchMint(
         address[] calldata _toList,
         uint256[] calldata _amounts
@@ -265,6 +290,11 @@ contract ATKBondImplementation is
         _smart_batchMint(_toList, _amounts);
     }
 
+    /// @notice Transfers bond tokens from the caller to another address
+    /// @dev Enforces compliance checks and restrictions. Cannot transfer after bond maturity.
+    /// @param _to The address to transfer tokens to
+    /// @param _amount The amount of tokens to transfer
+    /// @return bool Returns true if the transfer was successful
     function transfer(
         address _to,
         uint256 _amount
@@ -276,6 +306,11 @@ contract ATKBondImplementation is
         return _smart_transfer(_to, _amount);
     }
 
+    /// @notice Recovers ERC20 tokens accidentally sent to this contract
+    /// @dev Only callable by addresses with EMERGENCY_ROLE
+    /// @param token The address of the ERC20 token to recover
+    /// @param to The address to send the recovered tokens to
+    /// @param amount The amount of tokens to recover
     function recoverERC20(
         address token,
         address to,
@@ -288,6 +323,10 @@ contract ATKBondImplementation is
         _smart_recoverERC20(token, to, amount);
     }
 
+    /// @notice Adds a new compliance module to the token
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _module The address of the compliance module to add
+    /// @param _params The initialization parameters for the module
     function addComplianceModule(
         address _module,
         bytes calldata _params
@@ -299,6 +338,9 @@ contract ATKBondImplementation is
         _smart_addComplianceModule(_module, _params);
     }
 
+    /// @notice Removes a compliance module from the token
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _module The address of the compliance module to remove
     function removeComplianceModule(address _module)
         external
         override
@@ -309,6 +351,10 @@ contract ATKBondImplementation is
 
     // --- ISMARTBurnable Implementation ---
 
+    /// @notice Burns bond tokens from a specified address
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
+    /// @param userAddress The address to burn tokens from
+    /// @param amount The amount of tokens to burn
     function burn(
         address userAddress,
         uint256 amount
@@ -320,6 +366,10 @@ contract ATKBondImplementation is
         _smart_burn(userAddress, amount);
     }
 
+    /// @notice Burns bond tokens from multiple addresses in a single transaction
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
+    /// @param userAddresses Array of addresses to burn tokens from
+    /// @param amounts Array of amounts to burn from each address
     function batchBurn(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -333,12 +383,19 @@ contract ATKBondImplementation is
 
     // --- ISMARTCapped Implementation ---
 
+    /// @notice Sets a new maximum supply cap for the bond tokens
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
+    /// @param newCap The new maximum supply cap
     function setCap(uint256 newCap) external override onlyAccessManagerRole(ATKRoles.SUPPLY_MANAGEMENT_ROLE) {
         _smart_setCap(newCap);
     }
 
     // --- ISMARTCustodian Implementation ---
 
+    /// @notice Freezes or unfreezes all tokens for a specific address
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE
+    /// @param userAddress The address to freeze/unfreeze
+    /// @param freeze True to freeze the address, false to unfreeze
     function setAddressFrozen(
         address userAddress,
         bool freeze
@@ -350,6 +407,10 @@ contract ATKBondImplementation is
         _smart_setAddressFrozen(userAddress, freeze);
     }
 
+    /// @notice Freezes a specific amount of tokens for an address
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE
+    /// @param userAddress The address to freeze tokens for
+    /// @param amount The amount of tokens to freeze
     function freezePartialTokens(
         address userAddress,
         uint256 amount
@@ -361,6 +422,10 @@ contract ATKBondImplementation is
         _smart_freezePartialTokens(userAddress, amount);
     }
 
+    /// @notice Unfreezes a specific amount of tokens for an address
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE
+    /// @param userAddress The address to unfreeze tokens for
+    /// @param amount The amount of tokens to unfreeze
     function unfreezePartialTokens(
         address userAddress,
         uint256 amount
@@ -372,6 +437,10 @@ contract ATKBondImplementation is
         _smart_unfreezePartialTokens(userAddress, amount);
     }
 
+    /// @notice Freezes or unfreezes multiple addresses in a single transaction
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE
+    /// @param userAddresses Array of addresses to freeze/unfreeze
+    /// @param freeze Array of booleans indicating freeze (true) or unfreeze (false) for each address
     function batchSetAddressFrozen(
         address[] calldata userAddresses,
         bool[] calldata freeze
@@ -383,6 +452,10 @@ contract ATKBondImplementation is
         _smart_batchSetAddressFrozen(userAddresses, freeze);
     }
 
+    /// @notice Freezes specific amounts of tokens for multiple addresses
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE
+    /// @param userAddresses Array of addresses to freeze tokens for
+    /// @param amounts Array of amounts to freeze for each address
     function batchFreezePartialTokens(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -394,6 +467,10 @@ contract ATKBondImplementation is
         _smart_batchFreezePartialTokens(userAddresses, amounts);
     }
 
+    /// @notice Unfreezes specific amounts of tokens for multiple addresses
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE
+    /// @param userAddresses Array of addresses to unfreeze tokens for
+    /// @param amounts Array of amounts to unfreeze for each address
     function batchUnfreezePartialTokens(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -405,6 +482,12 @@ contract ATKBondImplementation is
         _smart_batchUnfreezePartialTokens(userAddresses, amounts);
     }
 
+    /// @notice Forces a transfer of tokens from one address to another
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE. Bypasses normal transfer restrictions.
+    /// @param from The address to transfer tokens from
+    /// @param to The address to transfer tokens to
+    /// @param amount The amount of tokens to transfer
+    /// @return bool Returns true if the transfer was successful
     function forcedTransfer(
         address from,
         address to,
@@ -418,6 +501,11 @@ contract ATKBondImplementation is
         return _smart_forcedTransfer(from, to, amount);
     }
 
+    /// @notice Forces multiple transfers of tokens in a single transaction
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE. Bypasses normal transfer restrictions.
+    /// @param fromList Array of addresses to transfer tokens from
+    /// @param toList Array of addresses to transfer tokens to
+    /// @param amounts Array of amounts to transfer
     function batchForcedTransfer(
         address[] calldata fromList,
         address[] calldata toList,
@@ -430,6 +518,10 @@ contract ATKBondImplementation is
         _smart_batchForcedTransfer(fromList, toList, amounts);
     }
 
+    /// @notice Recovers tokens from a lost wallet to a new wallet
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE. Transfers all tokens from the lost wallet.
+    /// @param lostWallet The address of the wallet that lost access
+    /// @param newWallet The address of the new wallet to receive the tokens
     function forcedRecoverTokens(
         address lostWallet,
         address newWallet
@@ -443,24 +535,38 @@ contract ATKBondImplementation is
 
     // --- ISMARTPausable Implementation ---
 
+    /// @notice Pauses all token transfers
+    /// @dev Only callable by addresses with EMERGENCY_ROLE
     function pause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_pause();
     }
 
+    /// @notice Unpauses token transfers
+    /// @dev Only callable by addresses with EMERGENCY_ROLE
     function unpause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_unpause();
     }
 
     // --- ISMARTYield Implementation ---
 
+    /// @notice Sets the yield schedule contract for the bond
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param schedule The address of the yield schedule contract
     function setYieldSchedule(address schedule) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setYieldSchedule(schedule);
     }
 
-    function yieldBasisPerUnit(address) external view override returns (uint256) {
+    /// @notice Returns the yield basis per unit for a given address
+    /// @dev Returns the face value of the bond. The address parameter is unused in this implementation.
+    /// @param holder The address to query yield basis for (unused in this implementation)
+    /// @return The face value representing the yield basis per unit
+    function yieldBasisPerUnit(address holder) external view override returns (uint256) {
         return _faceValue;
     }
 
+    /// @notice Returns the token used for yield payments
+    /// @dev Returns the underlying asset contract
+    /// @return The IERC20 token used for yield payments
     function yieldToken() external view override returns (IERC20) {
         return _underlyingAsset;
     }
@@ -629,6 +735,8 @@ contract ATKBondImplementation is
     /// @notice Implementation of the abstract burn execution using the base ERC20Upgradeable `_burn` function.
     /// @dev Assumes the inheriting contract includes an ERC20Upgradeable implementation with an internal `_burn`
     /// function. Uses reentrancy protection to prevent external call exploits.
+    /// @param from The address to redeem tokens from
+    /// @param amount The amount of tokens to redeem
     function __redeemable_redeem(address from, uint256 amount) internal virtual override nonReentrant {
         uint256 currentBalance = balanceOf(from);
 
@@ -676,9 +784,11 @@ contract ATKBondImplementation is
 
     // --- Internal Functions ---
 
-    /**
-     * @dev Overrides _update to ensure Pausable and Collateral checks are applied.
-     */
+    /// @notice Internal function that handles token transfers with pause and collateral checks
+    /// @dev Overrides _update to ensure Pausable and Collateral checks are applied.
+    /// @param from The address transferring tokens
+    /// @param to The address receiving tokens
+    /// @param value The amount of tokens being transferred
     function _update(
         address from,
         address to,
@@ -692,7 +802,9 @@ contract ATKBondImplementation is
         super._update(from, to, value);
     }
 
+    /// @notice Returns the address of the message sender
     /// @dev Resolves msgSender across Context and SMARTPausable.
+    /// @return The address of the message sender
     function _msgSender()
         internal
         view
@@ -703,7 +815,9 @@ contract ATKBondImplementation is
         return ERC2771ContextUpgradeable._msgSender();
     }
 
+    /// @notice Returns the complete calldata of the current transaction
     /// @dev Resolves msgData across Context and ERC2771Context.
+    /// @return The complete calldata of the current transaction
     function _msgData()
         internal
         view
@@ -714,7 +828,9 @@ contract ATKBondImplementation is
         return ERC2771ContextUpgradeable._msgData();
     }
 
+    /// @notice Returns the length of the trusted forwarder address suffix in calldata
     /// @dev Hook defining the length of the trusted forwarder address suffix in `msg.data`.
+    /// @return The length of the trusted forwarder address suffix
     function _contextSuffixLength()
         internal
         view

@@ -246,12 +246,12 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.ingress-nginx.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
 | support.ingress-nginx.replicaCount | int | `1` |  |
 | support.minio.enabled | bool | `true` |  |
-| support.minio.image.pullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| support.minio.image.pullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| support.minio.image.pullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| support.minio.image.repository | string | `"docker.io/minio/minio"` |  |
+| support.minio.image.tag | string | `"RELEASE.2025-07-18T21-56-31Z"` |  |
 | support.minio.ingress.enabled | bool | `true` |  |
-| support.minio.ingress.hostname | string | `"minio.k8s.orb.local"` |  |
+| support.minio.ingress.hosts[0] | string | `"minio.k8s.orb.local"` |  |
 | support.minio.ingress.ingressClassName | string | `"atk-nginx"` |  |
+| support.minio.ingress.path | string | `"/"` |  |
 | support.postgresql-ha.pgpool.pullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | support.postgresql-ha.pgpool.pullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | support.postgresql-ha.pgpool.pullSecrets[2] | string | `"image-pull-secret-harbor"` |  |

@@ -11,7 +11,7 @@
     "codegen:types": "bun run tools/codegen-types.ts",
     "artifacts:genesis": "bun run tools/artifacts-genesis.ts",
     "artifacts:abi": "bun run tools/artifacts-abi.ts",
-    "lint": "solhint --config .solhint.json ./contracts/**/*.sol",
+    "lint": "solhint --config .solhint.json --noPoster --max-warnings 0 ./contracts/**/*.sol",
     "format:forge": "settlemint scs foundry format",
     "format:prettier": "prettier --experimental-cli --write .",
     "clean:deployments": "rm -Rf ignition/deployments/atk-local",
@@ -21,14 +21,17 @@
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
   },
   "dependencies": {
-    "merkletreejs": "0.5.2"
+    "@nomicfoundation/hardhat-ignition": "0.15.13",
+    "merkletreejs": "0.5.2",
+    "viem": "2.33.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-foundry": "1.2.0",
     "@nomicfoundation/hardhat-toolbox-viem": "4.1.0",
     "@nomiclabs/hardhat-solhint": "4.1.0",
-    "hardhat": "2.26.0",
-    "solhint": "6.0.0"
+    "hardhat": "2.26.1",
+    "solhint": "6.0.0",
+    "ts-node": "10.9.2"
   },
   "peerDependencies": {}
 }

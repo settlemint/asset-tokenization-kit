@@ -18,6 +18,7 @@ import { ATKPushAirdropProxy } from "./ATKPushAirdropProxy.sol";
 import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
 
 /// @title Factory for Creating ATKPushAirdrop Proxies
+/// @author SettleMint
 /// @notice This contract serves as a factory to deploy new UUPS proxy instances of `ATKPushAirdrop` contracts.
 /// It manages a single implementation contract and allows for updating this implementation.
 /// @dev Key features of this factory:
@@ -30,6 +31,8 @@ import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
 /// - **Meta-transactions**: Inherits `ERC2771Context` to support gasless operations if a trusted forwarder is
 /// configured.
 contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImplementation, IATKPushAirdropFactory {
+    /// @notice Type identifier for the factory
+    /// @return The keccak256 hash of "ATKPushAirdropFactory"
     bytes32 public constant override typeId = keccak256("ATKPushAirdropFactory");
 
     /// @notice Address of the current `ATKPushAirdrop` logic contract (implementation).
@@ -39,6 +42,9 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     /// airdrop proxy contracts created by this factory.
     IATKPushAirdrop[] private allAirdrops;
 
+    /// @notice Constructor to initialize the factory
+    /// @dev Prevents implementation contract initialization
+    /// @param forwarder The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) { }
 
@@ -126,6 +132,7 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     }
 
     /// @notice Returns the total number of push airdrop proxy contracts created by this factory.
+    /// @return count The number of push airdrop proxies created
     function allAirdropsLength() external view override(IATKPushAirdropFactory) returns (uint256 count) {
         return allAirdrops.length;
     }
@@ -156,7 +163,9 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
         return _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
     }
 
-    /// @notice Returns the address of the current `ATKPushAirdrop` logic contract (implementation).
+    /// @notice Checks if the factory supports a specific interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view
