@@ -5,9 +5,10 @@ export const isRequiredFieldForZodObject = <TSchema extends z.ZodObject>(
   field: keyof z.infer<TSchema>
 ): boolean => {
   const fieldSchema = schema.shape[field as string];
-  const isOptional = fieldSchema.safeParse({
-    [field]: undefined,
-  }).success;
+  if (!fieldSchema) {
+    return false;
+  }
+  const isOptional = fieldSchema.safeParse(undefined).success;
 
   return !isOptional;
 };
@@ -20,9 +21,36 @@ export const isRequiredFieldForZodIntersection = <
 ): boolean => {
   const schemas = [intersection.def.left, intersection.def.right];
 
-  return schemas.some(
-    (schema) =>
-      schema instanceof z.ZodObject &&
-      isRequiredFieldForZodObject(schema, field as string)
-  );
+  return isRequiredField(schemas, field as string);
+};
+
+export const isRequiredFieldForZodDiscriminatedUnion = <
+  TDiscriminatedUnion extends z.ZodDiscriminatedUnion,
+>(
+  discriminatedUnion: TDiscriminatedUnion,
+  field: KeysOfUnion<z.input<TDiscriminatedUnion>>
+): boolean => {
+  const schemas = discriminatedUnion.options;
+
+  return isRequiredField(schemas, field as string);
+};
+
+const isRequiredField = (
+  schemas: readonly z.core.SomeType[],
+  field: string
+) => {
+  for (const schema of schemas) {
+    let result = false;
+    if (schema instanceof z.ZodObject) {
+      result = isRequiredFieldForZodObject(schema, field);
+    } else if (schema instanceof z.ZodIntersection) {
+      result = isRequiredFieldForZodIntersection(schema, field as never);
+    } else if (schema instanceof z.ZodDiscriminatedUnion) {
+      result = isRequiredFieldForZodDiscriminatedUnion(schema, field as never);
+    }
+    if (result) {
+      return true;
+    }
+  }
+  return false;
 };

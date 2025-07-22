@@ -5,8 +5,9 @@ import { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/t
 import { formOptions } from "@tanstack/react-form";
 import type { z } from "zod";
 
-export const AssetDesignerFormSchema =
-  AssetDesignerStepSchema.and(TokenCreateSchema);
+export const AssetDesignerFormSchema = TokenCreateSchema.and(
+  AssetDesignerStepSchema
+);
 
 export type AssetDesignerFormInputData = z.input<
   typeof AssetDesignerFormSchema
