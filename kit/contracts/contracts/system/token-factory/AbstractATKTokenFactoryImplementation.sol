@@ -1,18 +1,17 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKTokenFactory } from "./IATKTokenFactory.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
-import { ISMARTCustodian } from "../../smart/extensions/custodian/ISMARTCustodian.sol";
 import { ATKTokenAccessManagerProxy } from "../access-manager/ATKTokenAccessManagerProxy.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
 import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IATKSystem } from "../IATKSystem.sol";
 import { IATKIdentityFactory } from "../identity-factory/IATKIdentityFactory.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
@@ -240,7 +239,11 @@ abstract contract AbstractATKTokenFactoryImplementation is
         returns (bytes32 salt, bytes memory fullCreationCode)
     {
         salt = _calculateAccessManagerSalt(_systemAddress, accessManagerSaltInputData);
-        bytes memory constructorArgs = abi.encode(_systemAddress, initialAdmin);
+        address[] memory initialAdmins = new address[](2);
+        initialAdmins[0] = initialAdmin;
+        initialAdmins[1] = address(this); // Add the factory as an initial admin to allow the access manager to be
+            // upgraded
+        bytes memory constructorArgs = abi.encode(_systemAddress, initialAdmins);
         bytes memory bytecode = type(ATKTokenAccessManagerProxy).creationCode;
         fullCreationCode = bytes.concat(bytecode, constructorArgs);
     }
@@ -259,21 +262,6 @@ abstract contract AbstractATKTokenFactoryImplementation is
         bytes32 bytecodeHash = keccak256(fullCreationCode);
         predictedAddress = Create2.computeAddress(salt, bytecodeHash, address(this));
         return predictedAddress;
-    }
-
-    function _predictTokenIdentityAddress(
-        string memory name,
-        string memory symbol,
-        uint8 decimals,
-        address initialManager
-    )
-        internal
-        view
-        returns (address)
-    {
-        return IATKIdentityFactory(IATKSystem(_systemAddress).identityFactory()).calculateTokenIdentityAddress(
-            name, symbol, decimals, initialManager
-        );
     }
 
     /// @notice Creates a new access manager for a token using CREATE2.
@@ -316,30 +304,33 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param encodedConstructorArgs ABI-encoded constructor arguments for the proxy.
     /// @param tokenSaltInputData The ABI encoded data to be used for salt calculation for the token.
     /// @param accessManager The address of the access manager.
+    /// @param description Human-readable description of the contract for indexing.
     /// @return deployedAddress The address of the newly deployed proxy contract.
     function _deployToken(
         bytes memory proxyCreationCode,
         bytes memory encodedConstructorArgs,
         bytes memory tokenSaltInputData,
-        address accessManager
+        address accessManager,
+        string memory description,
+        uint16 country
     )
         internal
         onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
         returns (address deployedAddress, address deployedTokenIdentityAddress)
     {
-        // Calculate salt and creation code once
+        // Combine calculation to reduce stack variables
         bytes32 salt = _calculateSalt(_systemAddress, tokenSaltInputData);
-        bytes memory fullCreationCode = bytes.concat(proxyCreationCode, encodedConstructorArgs);
 
-        // Predict address using pre-calculated data
-        bytes32 bytecodeHash = keccak256(fullCreationCode);
-        address predictedAddress = Create2.computeAddress(salt, bytecodeHash, address(this));
+        // Calculate predicted address inline to reduce stack depth
+        address predictedAddress = Create2.computeAddress(
+            salt, keccak256(bytes.concat(proxyCreationCode, encodedConstructorArgs)), address(this)
+        );
 
         if (isFactoryToken[predictedAddress]) {
             revert AddressAlreadyDeployed(predictedAddress);
         }
 
-        deployedAddress = Create2.deploy(0, salt, fullCreationCode);
+        deployedAddress = Create2.deploy(0, salt, bytes.concat(proxyCreationCode, encodedConstructorArgs));
 
         if (deployedAddress != predictedAddress) {
             revert ProxyCreationFailed();
@@ -347,13 +338,29 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
         isFactoryToken[deployedAddress] = true;
 
-        address tokenIdentity = _deployTokenIdentity(deployedAddress, accessManager);
+        // Create identity using simple address-based approach - no complex salt needed
+        deployedTokenIdentityAddress = _deployContractIdentity(deployedAddress, description, country);
+
+        // Grant the factory the GOVERNANCE_ROLE to allow it to upgrade the onchain ID
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.GOVERNANCE_ROLE, address(this));
+
+        // Set the onchain ID on the token contract
+        ISMART(deployedAddress).setOnchainID(deployedTokenIdentityAddress);
+
+        bytes32[] memory roles = new bytes32[](2);
+        roles[0] = ATKRoles.GOVERNANCE_ROLE;
+        roles[1] = ATKRoles.DEFAULT_ADMIN_ROLE;
+        ISMARTTokenAccessManager(accessManager).renounceMultipleRoles(roles, address(this));
 
         emit TokenAssetCreated(
-            _msgSender(), deployedAddress, tokenIdentity, ISMART(deployedAddress).registeredInterfaces(), accessManager
+            _msgSender(),
+            deployedAddress,
+            deployedTokenIdentityAddress,
+            ISMART(deployedAddress).registeredInterfaces(),
+            accessManager
         );
 
-        return (deployedAddress, tokenIdentity);
+        return (deployedAddress, deployedTokenIdentityAddress);
     }
 
     /// @notice Predicts the deployment address of a proxy using CREATE2.
@@ -379,15 +386,31 @@ abstract contract AbstractATKTokenFactoryImplementation is
     }
 
     /// @notice Finalizes the token creation process after deployment and initialization.
-    /// @dev Sets up token identity, on-chain ID, and necessary roles.
-    /// @param tokenAddress The address of the deployed token (proxy).
-    /// @param accessManagerAddress The address of the token's access manager.
-    function _deployTokenIdentity(address tokenAddress, address accessManagerAddress) internal returns (address) {
-        IATKSystem system_ = IATKSystem(_systemAddress);
-        IATKIdentityFactory identityFactory_ = IATKIdentityFactory(system_.identityFactory());
-        address tokenIdentity = identityFactory_.createTokenIdentity(tokenAddress, accessManagerAddress);
+    /// @dev Sets up contract identity, on-chain ID, and necessary roles.
+    /// @param contractAddress The address of the deployed contract (proxy).
+    /// @param description Human-readable description of the contract.
+    /// @param country The numeric country code (ISO 3166-1 alpha-2 standard) representing the contract's jurisdiction.
+    function _deployContractIdentity(
+        address contractAddress,
+        string memory description,
+        uint16 country
+    )
+        internal
+        returns (address)
+    {
+        // Create the contract identity using simple address-based salt
+        address contractIdentity =
+            IATKIdentityFactory(IATKSystem(_systemAddress).identityFactory()).createContractIdentity(contractAddress);
 
-        return tokenIdentity;
+        // Register the contract identity with the identity registry (same as any other identity)
+        ISMARTIdentityRegistry(IATKSystem(_systemAddress).identityRegistry()).registerIdentity(
+            contractAddress, IIdentity(contractIdentity), country
+        );
+
+        // Emit registration event for indexing
+        emit ContractIdentityRegistered(_msgSender(), contractAddress, description);
+
+        return contractIdentity;
     }
 
     // --- ERC165 Overrides ---

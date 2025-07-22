@@ -56,5 +56,8 @@ export const upsert = authRouter.settings.upsert
       });
     }
 
+    // Return just the value as expected by the contract
+    // The success message is available via context.t("settings:actions.upsert.success", { key })
+    // if needed for audit logging in the future
     return upsertedSetting.value;
   });

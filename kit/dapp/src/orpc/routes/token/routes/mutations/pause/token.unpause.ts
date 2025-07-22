@@ -1,10 +1,11 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenUnpauseMessagesSchema } from "@/orpc/routes/token/routes/mutations/pause/token.unpause.schema";
-import { withEventMeta } from "@orpc/server";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_UNPAUSE_MUTATION = portalGraphql(`
   mutation TokenUnpause(
@@ -13,7 +14,7 @@ const TOKEN_UNPAUSE_MUTATION = portalGraphql(`
     $address: String!
     $from: String!
   ) {
-    unpause: IERC3643Unpause(
+    unpause: ISMARTPausableUnpause(
       address: $address
       from: $from
       verificationId: $verificationId
@@ -25,22 +26,20 @@ const TOKEN_UNPAUSE_MUTATION = portalGraphql(`
 `);
 
 export const unpause = tokenRouter.token.unpause
-  //.use(tokenPermissionMiddleware({ requiredRoles: ["supplyManagement"] }))
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.unpause,
+      requiredExtensions: ["PAUSABLE"],
+    })
+  )
   .use(portalMiddleware)
   .handler(async function* ({ input, context }) {
     const { contract, verification } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenUnpauseMessagesSchema.parse(input.messages ?? {});
-
-    yield withEventMeta(
-      {
-        status: "pending" as const,
-        message: messages.preparingUnpause,
-      },
-      { id: "token-unpause", retry: 1000 }
-    );
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getMutationMessages(t, "tokens", "unpause");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -48,85 +47,19 @@ export const unpause = tokenRouter.token.unpause
       type: verification.verificationType,
     });
 
-    yield withEventMeta(
+    const transactionHash = yield* context.portalClient.mutate(
+      TOKEN_UNPAUSE_MUTATION,
       {
-        status: "pending" as const,
-        message: messages.submittingUnpause,
+        address: contract,
+        from: sender.wallet,
+        ...challengeResponse,
       },
-      { id: "token-unpause", retry: 1000 }
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
-    let validatedHash = "";
-    let hasConfirmedEvent = false;
-
-    try {
-      for await (const event of context.portalClient.mutate(
-        TOKEN_UNPAUSE_MUTATION,
-        {
-          address: contract,
-          from: sender.wallet,
-          ...challengeResponse,
-        },
-        messages.unpauseFailed,
-        messages
-      )) {
-        validatedHash = event.transactionHash;
-
-        if (event.status === "pending") {
-          yield withEventMeta(
-            {
-              status: "pending" as const,
-              message: messages.waitingForMining,
-              transactionHash: validatedHash,
-            },
-            { id: "token-unpause", retry: 1000 }
-          );
-        } else if (event.status === "confirmed") {
-          hasConfirmedEvent = true;
-          yield withEventMeta(
-            {
-              status: "confirmed" as const,
-              message: messages.tokenUnpaused,
-              transactionHash: validatedHash,
-              result: getEthereumHash(validatedHash),
-            },
-            { id: "token-unpause", retry: 1000 }
-          );
-        } else {
-          // event.status === "failed"
-          yield withEventMeta(
-            {
-              status: "failed" as const,
-              message: event.message || messages.unpauseFailed,
-              transactionHash: validatedHash,
-            },
-            { id: "token-unpause", retry: 1000 }
-          );
-        }
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : messages.defaultError;
-      yield withEventMeta(
-        {
-          status: "failed" as const,
-          message: errorMessage,
-          transactionHash: validatedHash,
-        },
-        { id: "token-unpause", retry: 1000 }
-      );
-      return;
-    }
-
-    if (!hasConfirmedEvent && validatedHash) {
-      yield withEventMeta(
-        {
-          status: "confirmed" as const,
-          message: messages.tokenUnpaused,
-          transactionHash: validatedHash,
-          result: getEthereumHash(validatedHash),
-        },
-        { id: "token-unpause", retry: 1000 }
-      );
-    }
+    return getEthereumHash(transactionHash);
   });

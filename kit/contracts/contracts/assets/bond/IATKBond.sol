@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -68,8 +68,6 @@ interface IATKBond is
     /// @param name_ The name of the bond.
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals for the bond tokens.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param cap_ The maximum total supply of the bond tokens.
     /// @param maturityDate_ The Unix timestamp representing the bond's maturity date.
     /// @param faceValue_ The face value of each bond token in the underlying asset's base units.
@@ -82,7 +80,6 @@ interface IATKBond is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint256 cap_,
         uint256 maturityDate_,
         uint256 faceValue_,

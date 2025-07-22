@@ -1,11 +1,11 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenRecoverERC20MessagesSchema } from "./token.recover-erc20.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_RECOVER_ERC20_MUTATION = portalGraphql(`
   mutation TokenRecoverERC20(
@@ -34,30 +34,19 @@ const TOKEN_RECOVER_ERC20_MUTATION = portalGraphql(`
 `);
 
 export const tokenRecoverERC20 = tokenRouter.token.tokenRecoverERC20
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.tokenRecoverERC20,
+    })
+  )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async function* ({ input, context }) {
     const { contract, verification, tokenAddress, recipient, amount } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenRecoverERC20MessagesSchema.parse(
-      input.messages ?? {}
-    );
-
-    // Validate that the token supports ERC20 recovery operations
-    // All ISMART tokens should support this, but let's check for ERC3643 as a proxy
-    const supportsRecovery = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.IERC3643
-    );
-
-    if (!supportsRecovery) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support ERC20 recovery operations. The token must implement IERC3643 interface.",
-      });
-    }
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getMutationMessages(t, "tokens", "recoverERC20");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -75,8 +64,11 @@ export const tokenRecoverERC20 = tokenRouter.token.tokenRecoverERC20
         amount: amount.toString(),
         ...challengeResponse,
       },
-      messages.erc20RecoveryFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
     return getEthereumHash(transactionHash);

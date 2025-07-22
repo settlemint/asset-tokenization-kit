@@ -7,18 +7,18 @@
     },
     "transactions": {
       "title": "إجمالي المعاملات",
-      "description": "{{count}} معاملة في آخر {{days}} أيام"
+      "description": "{{count}} معاملة في آخر {{days}} يومًا"
     },
     "users": {
       "title": "المستخدمون النشطون",
-      "description": "{{count}} مستخدم نشط في آخر {{days}} أيام"
+      "description": "{{count}} مستخدم نشط في آخر {{days}} يومًا"
     },
     "value": {
       "title": "إجمالي القيمة",
       "description": "القيمة المجمعة لجميع الأصول"
     },
     "common": {
-      "loading": "جاري التحميل...",
+      "loading": "جارٍ التحميل...",
       "error": "خطأ في تحميل البيانات",
       "retry": "إعادة المحاولة"
     }
@@ -26,7 +26,7 @@
   "charts": {
     "assetSupply": {
       "title": "معروض الأصول",
-      "description": "إجمالي معروض الأصول عبر الوقت"
+      "description": "إجمالي إمدادات الأصول بمرور الوقت"
     },
     "assetActivity": {
       "title": "نشاط الأصول",
@@ -34,11 +34,11 @@
     },
     "userGrowth": {
       "title": "نمو المستخدمين",
-      "description": "عدد المستخدمين عبر الوقت"
+      "description": "عدد المستخدمين بمرور الوقت"
     },
     "transactionHistory": {
-      "title": "تاريخ المعاملات",
-      "description": "حجم المعاملات عبر الوقت"
+      "title": "سجل المعاملات",
+      "description": "حجم المعاملات بمرور الوقت"
     }
   }
 }

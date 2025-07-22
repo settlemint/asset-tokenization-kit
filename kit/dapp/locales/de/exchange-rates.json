@@ -1,0 +1,13 @@
+{
+  "actions": {
+    "update": {
+      "success": "Der Wechselkurs {{baseCurrency}}/{{quoteCurrency}} wurde erfolgreich auf {{rate}} aktualisiert."
+    },
+    "sync": {
+      "success": "Die Wechselkurse wurden erfolgreich synchronisiert. {{ratesUpdated}} Kurse aktualisiert."
+    },
+    "delete": {
+      "success": "Der manuelle Wechselkurs {{baseCurrency}}/{{quoteCurrency}} wurde erfolgreich gelöscht."
+    }
+  }
+}

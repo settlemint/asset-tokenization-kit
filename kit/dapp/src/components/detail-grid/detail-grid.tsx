@@ -1,5 +1,3 @@
-"use client";
-
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";

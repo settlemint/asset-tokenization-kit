@@ -1,11 +1,11 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenApproveMessagesSchema } from "./token.approve.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_APPROVE_MUTATION = portalGraphql(`
   mutation TokenApprove(
@@ -16,14 +16,14 @@ const TOKEN_APPROVE_MUTATION = portalGraphql(`
     $spender: String!
     $amount: String!
   ) {
-    approve: IERC3643Approve(
+    approve: SMARTApprove(
       address: $address
       from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
         spender: $spender
-        amount: $amount
+        value: $amount
       }
     ) {
       transactionHash
@@ -33,26 +33,18 @@ const TOKEN_APPROVE_MUTATION = portalGraphql(`
 
 export const tokenApprove = tokenRouter.token.tokenApprove
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.tokenApprove,
+    })
+  )
+  .handler(async function* ({ input, context }) {
     const { contract, verification, spender, amount } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenApproveMessagesSchema.parse(input.messages ?? {});
-
-    // Validate that the token supports ERC3643 interface
-    const supportsERC3643 = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.IERC3643
-    );
-
-    if (!supportsERC3643) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support approve operations. The token must implement IERC3643 interface.",
-      });
-    }
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getMutationMessages(t, "tokens", "approve");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -69,8 +61,11 @@ export const tokenApprove = tokenRouter.token.tokenApprove
         amount: amount.toString(),
         ...challengeResponse,
       },
-      messages.approvalFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
     return getEthereumHash(transactionHash);

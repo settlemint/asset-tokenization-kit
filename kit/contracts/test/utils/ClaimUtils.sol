@@ -170,7 +170,7 @@ contract ClaimUtils is Test {
         internal
     {
         // 1. Get token's identity contract
-        address tokenIdentityAddr = _identityFactory.getTokenIdentity(tokenAddr_);
+        address tokenIdentityAddr = _identityFactory.getContractIdentity(tokenAddr_);
         require(tokenIdentityAddr != address(0), "ClaimUtils: Token identity not found");
 
         // Add claim needs to be done by the token owner.

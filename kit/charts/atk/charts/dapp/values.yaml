@@ -243,7 +243,7 @@ initContainer:
     image:
       registry: docker.io
       repository: curlimages/curl
-      tag: 8.14.1 # Or pin to a specific version like 8.7.1
+      tag: 8.15.0 # Or pin to a specific version like 8.7.1
       pullPolicy: IfNotPresent
     # Target GraphQL endpoint URL (where POST requests are sent)
     url: "http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"

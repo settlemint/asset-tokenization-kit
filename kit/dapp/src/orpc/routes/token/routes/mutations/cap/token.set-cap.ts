@@ -1,11 +1,11 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenSetCapMessagesSchema } from "./token.set-cap.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_SET_CAP_MUTATION = portalGraphql(`
   mutation TokenSetCap(
@@ -21,7 +21,7 @@ const TOKEN_SET_CAP_MUTATION = portalGraphql(`
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
-        _cap: $newCap
+        newCap: $newCap
       }
     ) {
       transactionHash
@@ -30,27 +30,20 @@ const TOKEN_SET_CAP_MUTATION = portalGraphql(`
 `);
 
 export const tokenSetCap = tokenRouter.token.tokenSetCap
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.tokenSetCap,
+      requiredExtensions: ["CAPPED"],
+    })
+  )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async function* ({ input, context }) {
     const { contract, verification, newCap } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenSetCapMessagesSchema.parse(input.messages ?? {});
-
-    // Validate that the token supports cap management
-    const supportsCap = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.ISMARTCapped
-    );
-
-    if (!supportsCap) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support cap management. The token must implement ISMARTCapped interface.",
-      });
-    }
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getMutationMessages(t, "tokens", "setCap");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -66,8 +59,11 @@ export const tokenSetCap = tokenRouter.token.tokenSetCap
         newCap: newCap.toString(),
         ...challengeResponse,
       },
-      messages.capUpdateFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
     return getEthereumHash(transactionHash);

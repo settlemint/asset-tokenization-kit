@@ -22,23 +22,29 @@ const chartConfig = {
 export function AssetSupplyChart() {
   const { t } = useTranslation("stats");
 
-  // Fetch just the supply distribution data - more efficient
-  const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsSupplyDistribution.queryOptions({ input: {} })
-  );
+  // Fetch and transform supply distribution data with select function
+  // This reduces re-renders when other parts of the API response change
+  const {
+    data: { chartData, activeChartConfig },
+  } = useSuspenseQuery({
+    ...orpc.token.statsSupplyDistribution.queryOptions({ input: {} }),
+    select: (metrics) => {
+      // Convert supply distribution to chart data format
+      const data = metrics.supplyDistribution.map((item) => ({
+        assetType: item.assetType,
+        totalSupply: Number(item.totalSupply),
+      }));
 
-  // Convert supply distribution to chart data format
-  const chartData = metrics.supplyDistribution.map((item) => ({
-    assetType: item.assetType,
-    totalSupply: Number(item.totalSupply),
-  }));
+      // Only include config for asset types that have data
+      const activeConfig = Object.fromEntries(
+        Object.entries(chartConfig).filter(([key]) =>
+          data.some((item) => item.assetType === key)
+        )
+      ) satisfies ChartConfig;
 
-  // Only include config for asset types that have data
-  const activeChartConfig = Object.fromEntries(
-    Object.entries(chartConfig).filter(([key]) =>
-      chartData.some((item) => item.assetType === key)
-    )
-  ) satisfies ChartConfig;
+      return { chartData: data, activeChartConfig: activeConfig };
+    },
+  });
 
   return (
     <ComponentErrorBoundary componentName="Asset Supply Chart">

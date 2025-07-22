@@ -7,7 +7,7 @@
  * @module BigDecimalValidation
  */
 import type { StandardRPCCustomJsonSerializer } from "@orpc/client/standard";
-import { from, isDnum, type Dnum } from "dnum";
+import { format, from, isDnum, type Dnum } from "dnum";
 import { z } from "zod";
 
 /**
@@ -166,6 +166,6 @@ export function getBigDecimal(value: unknown): BigDecimal {
 export const bigDecimalSerializer: StandardRPCCustomJsonSerializer = {
   type: 31,
   condition: (data) => isDnum(data),
-  serialize: (data: Dnum) => data.toString(),
+  serialize: (data: Dnum) => format(data),
   deserialize: (data) => from(data),
 };

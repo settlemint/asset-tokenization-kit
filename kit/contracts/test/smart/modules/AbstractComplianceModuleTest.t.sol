@@ -134,7 +134,7 @@ abstract contract AbstractComplianceModuleTest is Test {
         accessManager.grantRole(ATKSystemRoles.CLAIM_MANAGER_ROLE, tokenIssuer);
 
         // Create the token's on-chain identity
-        tokenUtils.createAndSetTokenOnchainID(address(smartToken), tokenIssuer, address(accessManager));
+        tokenUtils.createAndSetTokenOnchainID(address(smartToken), tokenIssuer);
 
         // Issue a collateral claim
         uint256 largeCollateralAmount = type(uint256).max / 2; // Avoid hitting absolute max

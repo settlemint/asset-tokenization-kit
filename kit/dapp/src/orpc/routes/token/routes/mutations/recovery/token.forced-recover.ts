@@ -1,11 +1,11 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenForcedRecoverMessagesSchema } from "./token.forced-recover.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_FORCED_RECOVER_MUTATION = portalGraphql(`
   mutation TokenForcedRecover(
@@ -32,29 +32,20 @@ const TOKEN_FORCED_RECOVER_MUTATION = portalGraphql(`
 `);
 
 export const tokenForcedRecover = tokenRouter.token.tokenForcedRecover
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.tokenForcedRecover,
+      requiredExtensions: ["CUSTODIAN"],
+    })
+  )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async function* ({ input, context }) {
     const { contract, verification, lostWallet, newWallet } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenForcedRecoverMessagesSchema.parse(
-      input.messages ?? {}
-    );
-
-    // Validate that the token supports custodian operations
-    const supportsCustodian = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.ISMARTCustodian
-    );
-
-    if (!supportsCustodian) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support custodian operations. The token must implement ISMARTCustodian interface.",
-      });
-    }
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getMutationMessages(t, "tokens", "forcedRecover");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -71,8 +62,11 @@ export const tokenForcedRecover = tokenRouter.token.tokenForcedRecover
         newWallet,
         ...challengeResponse,
       },
-      messages.forcedRecoveryFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
     return getEthereumHash(transactionHash);

@@ -65,7 +65,7 @@ const ABI_PATHS = {
   // token
   accessManager: `${ARTIFACTS_DIR}/contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol/ISMARTTokenAccessManager.json`,
   identity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKIdentityImplementation.sol/ATKIdentityImplementation.json`,
-  tokenIdentity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKTokenIdentityImplementation.sol/ATKTokenIdentityImplementation.json`,
+  contractIdentity: `${ARTIFACTS_DIR}/contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol/ATKContractIdentityImplementation.json`,
   // tokens
   deposit: `${ARTIFACTS_DIR}/contracts/assets/deposit/ATKDepositImplementation.sol/ATKDepositImplementation.json`,
   equity: `${ARTIFACTS_DIR}/contracts/assets/equity/IATKEquity.sol/IATKEquity.json`,
@@ -96,10 +96,12 @@ const ABI_PATHS = {
   identityAllowList: `${ARTIFACTS_DIR}/contracts/smart/modules/IdentityAllowListComplianceModule.sol/IdentityAllowListComplianceModule.json`,
   // addons
   fixedYieldScheduleFactory: `${ARTIFACTS_DIR}/contracts/addons/yield/IATKFixedYieldScheduleFactory.sol/IATKFixedYieldScheduleFactory.json`,
+  fixedYieldSchedule: `${ARTIFACTS_DIR}/contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol/ATKFixedYieldScheduleUpgradeable.json`,
   vestingAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol/IATKVestingAirdropFactory.json`,
   pushAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol/IATKPushAirdropFactory.json`,
   timeBoundAirdropFactory: `${ARTIFACTS_DIR}/contracts/addons/airdrop/time-bound-airdrop/IATKTimeBoundAirdropFactory.sol/IATKTimeBoundAirdropFactory.json`,
   xvpSettlementFactory: `${ARTIFACTS_DIR}/contracts/addons/xvp/IATKXvPSettlementFactory.sol/IATKXvPSettlementFactory.json`,
+  xvpSettlement: `${ARTIFACTS_DIR}/contracts/addons/xvp/IATKXvPSettlement.sol/IATKXvPSettlement.json`,
 } as const;
 
 const AVAILABLE_ABIS = {
@@ -120,7 +122,7 @@ const AVAILABLE_ABIS = {
     "complianceModuleRegistry",
     "systemAddonRegistry",
   ],
-  tokenInfrastructure: ["accessManager", "identity", "tokenIdentity"],
+  tokenInfrastructure: ["accessManager", "identity", "contractIdentity"],
   assetTokens: ["deposit", "equity", "fund", "stablecoin", "bond"],
   openZeppelin: ["accessControl"],
   coreSmart: [
@@ -143,10 +145,12 @@ const AVAILABLE_ABIS = {
   ],
   addons: [
     "fixedYieldScheduleFactory",
+    "fixedYieldSchedule",
     "vestingAirdropFactory",
     "pushAirdropFactory",
     "timeBoundAirdropFactory",
     "xvpSettlementFactory",
+    "xvpSettlement",
   ],
 } satisfies Record<string, (keyof typeof ABI_PATHS)[]>;
 

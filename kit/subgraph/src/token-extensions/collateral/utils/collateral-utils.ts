@@ -3,7 +3,7 @@ import { IdentityClaim } from "../../../../generated/schema";
 import { fetchIdentity } from "../../../identity/fetch/identity";
 import { fetchIdentityClaimValue } from "../../../identity/fetch/identity-claim-value";
 import { trackTokenCollateralStats } from "../../../stats/token-collateral-stats";
-import { fetchToken } from "../../../token/fetch/token";
+import { fetchTokenByIdentity } from "../../../token/fetch/token";
 import { setBigNumber } from "../../../utils/bignumber";
 import { fetchCollateral } from "../fetch/collateral";
 
@@ -15,15 +15,15 @@ export function updateCollateral(collateralClaim: IdentityClaim): void {
   const identityAddress = Address.fromBytes(collateralClaim.identity);
 
   const identity = fetchIdentity(identityAddress);
-  if (!identity.token) {
+  const token = fetchTokenByIdentity(identity);
+  if (!token) {
     log.warning(`No token found for identity {}`, [
       identityAddress.toHexString(),
     ]);
     return;
   }
 
-  const tokenAddress = Address.fromBytes(identity.token!);
-  const token = fetchToken(tokenAddress);
+  const tokenAddress = Address.fromBytes(token.id);
   const collateral = fetchCollateral(tokenAddress);
   collateral.identityClaim = collateralClaim.id;
 

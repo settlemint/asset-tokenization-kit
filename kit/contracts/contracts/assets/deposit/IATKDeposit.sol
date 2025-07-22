@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
@@ -25,8 +25,6 @@ interface IATKDeposit is
     /// @param name_ The name of the deposit token.
     /// @param symbol_ The symbol of the deposit token.
     /// @param decimals_ The number of decimals for the deposit token.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param collateralTopicId_ The topic ID of the collateral claim.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
@@ -36,7 +34,6 @@ interface IATKDeposit is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint256 collateralTopicId_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,

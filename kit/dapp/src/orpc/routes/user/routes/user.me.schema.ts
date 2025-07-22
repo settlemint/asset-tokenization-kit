@@ -11,6 +11,7 @@ import { userRoles } from "@/lib/zod/validators/user-roles";
 import { z } from "zod";
 
 const onboardingStateSchema = z.object({
+  isAdmin: z.boolean().describe("Whether the user is an admin").default(false),
   wallet: z.boolean().describe("Whether the user has a wallet"),
   walletSecurity: z
     .boolean()
@@ -23,6 +24,18 @@ const onboardingStateSchema = z.object({
       "Whether the user has received the recovery codes for the wallet"
     ),
   system: z.boolean().describe("Whether the user has a system"),
+  systemSettings: z
+    .boolean()
+    .describe("Whether the user has configured the system settings"),
+  systemAssets: z
+    .boolean()
+    .describe("Whether the user has deployed asset factories"),
+  systemAddons: z
+    .boolean()
+    .describe("Whether the user has configured system addons"),
+  identitySetup: z
+    .boolean()
+    .describe("Whether the user has set up their ONCHAINID"),
   identity: z.boolean().describe("Whether the user has an identity"),
 });
 
@@ -56,7 +69,7 @@ export const UserSchema = z.object({
    * User's Ethereum wallet address.
    * Used for blockchain transactions and ownership verification.
    */
-  wallet: ethereumAddress,
+  wallet: ethereumAddress.nullable().describe("User's Ethereum wallet address"),
 
   /**
    * Whether the user has completed the onboarding process.

@@ -20,5 +20,8 @@
   "transaction": {
     "waitingForMining": "トランザクションのマイニングを待っています...",
     "indexed": "トランザクションが確認され、インデックス化されました"
-  }
+  },
+  "next": "次へ",
+  "previous": "前へ",
+  "complete": "完了"
 }

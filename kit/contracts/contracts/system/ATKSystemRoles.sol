@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 /// @title ATKSystemRoles
 /// @notice Library defining role constants for the ATK protocol's access control system
@@ -10,8 +10,13 @@ library ATKSystemRoles {
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
     /// @notice Role for managing registration operations
-    /// @dev Assigned to entities responsible for user registration
+    /// @dev Assigned to entities responsible for user and contract registration (e.g., token factories)
     bytes32 public constant REGISTRAR_ROLE = keccak256("REGISTRAR_ROLE");
+
+    /// @notice Role for managing registrar role assignments
+    /// @dev Assigned to entities responsible for granting/revoking REGISTRAR_ROLE (e.g., token factory registry)
+    /// This provides an intermediate level between DEFAULT_ADMIN_ROLE and REGISTRAR_ROLE
+    bytes32 public constant REGISTRAR_ADMIN_ROLE = keccak256("REGISTRAR_ADMIN_ROLE");
 
     /// @notice Role for managing claims
     /// @dev Assigned to entities responsible for handling token claims

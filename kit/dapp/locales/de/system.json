@@ -1,0 +1,33 @@
+{
+  "create": {
+    "messages": {
+      "alreadyExists": "System existiert bereits",
+      "creating": "System wird erstellt",
+      "creationFailed": "Erstellung des Systems fehlgeschlagen",
+      "queryingSystem": "Abfrage der Systeminformationen",
+      "systemNotFound": "System nach der Erstellung nicht gefunden",
+      "bootstrapping": "System wird initialisiert",
+      "bootstrapFailed": "Initialisierung des Systems fehlgeschlagen",
+      "bootstrapSuccess": "System erfolgreich initialisiert",
+      "createdBootstrapFailed": "System wurde unter {{systemAddress}} erstellt, aber die Initialisierung ist fehlgeschlagen. Manuelle Intervention kann erforderlich sein.",
+      "success": "System erfolgreich erstellt"
+    }
+  },
+  "addons": {
+    "messages": {
+      "preparing": "Vorbereitung zur Registrierung von Addons",
+      "progress": "Registrierung von {{current}} von {{total}} Addons",
+      "alreadyExists": "Addon {{name}} existiert bereits",
+      "failed": "Registrierung von {{name}} fehlgeschlagen",
+      "registering": "Registrierung von {{name}}",
+      "registered": "{{name}} erfolgreich registriert",
+      "defaultError": "Ein Fehler ist während der Registrierung des Addons aufgetreten",
+      "accessDenied": "Zugriff verweigert für {{name}}",
+      "invalidImplementation": "Ungültige Implementierung bereitgestellt",
+      "invalidConfiguration": "Ungültige Konfiguration",
+      "allSuccess": "Alle {{count}} Addons erfolgreich registriert",
+      "allFailed": "Registrierung von Addons fehlgeschlagen",
+      "partialSuccess": "{{successful}} von {{total}} Addons erfolgreich registriert"
+    }
+  }
+}

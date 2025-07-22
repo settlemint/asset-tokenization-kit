@@ -1,12 +1,12 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { getConditionalMutationMessages } from "@/orpc/helpers/mutation-messages";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenBurnMessagesSchema } from "@/orpc/routes/token/routes/mutations/burn/token.burn.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_SINGLE_BURN_MUTATION = portalGraphql(`
   mutation TokenBurn(
@@ -41,14 +41,14 @@ const TOKEN_BATCH_BURN_MUTATION = portalGraphql(`
     $userAddresses: [String!]!
     $amounts: [String!]!
   ) {
-    batchBurn: IERC3643BatchBurn(
+    batchBurn: ISMARTBurnableBatchBurn(
       address: $address
       from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
-        _userAddresses: $userAddresses
-        _amounts: $amounts
+        userAddresses: $userAddresses
+        amounts: $amounts
       }
     ) {
       transactionHash
@@ -57,38 +57,23 @@ const TOKEN_BATCH_BURN_MUTATION = portalGraphql(`
 `);
 
 export const burn = tokenRouter.token.burn
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.burn,
+      requiredExtensions: ["BURNABLE"],
+    })
+  )
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
     const { contract, verification, addresses, amounts } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
     // Determine if this is a batch operation
     const isBatch = addresses.length > 1;
 
-    // Parse messages with defaults
-    const messages = TokenBurnMessagesSchema.parse(input.messages ?? {});
-
-    // Validate that the token supports burning
-    // Check for ISMARTBurnable first, then fall back to IERC3643
-    const [supportsBurnable, supportsERC3643] = await Promise.all([
-      supportsInterface(
-        context.portalClient,
-        contract,
-        ALL_INTERFACE_IDS.ISMARTBurnable
-      ),
-      supportsInterface(
-        context.portalClient,
-        contract,
-        ALL_INTERFACE_IDS.IERC3643
-      ),
-    ]);
-
-    if (!supportsBurnable && !supportsERC3643) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support burning operations. The token must implement ISMARTBurnable or IERC3643 interface.",
-      });
-    }
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getConditionalMutationMessages(t, "tokens", "burn", isBatch);
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -116,9 +101,13 @@ export const burn = tokenRouter.token.burn
           amounts: amounts.map((a) => a.toString()),
           ...challengeResponse,
         },
-        messages.burnFailed,
-        messages
+        errorMessage,
+        {
+          waitingForMining: pendingMessage,
+          transactionIndexed: successMessage,
+        }
       );
+
       return getEthereumHash(transactionHash);
     } else {
       const [userAddress] = addresses;
@@ -140,9 +129,13 @@ export const burn = tokenRouter.token.burn
           amount: amount.toString(),
           ...challengeResponse,
         },
-        messages.burnFailed,
-        messages
+        errorMessage,
+        {
+          waitingForMining: pendingMessage,
+          transactionIndexed: successMessage,
+        }
       );
+
       return getEthereumHash(transactionHash);
     }
   });

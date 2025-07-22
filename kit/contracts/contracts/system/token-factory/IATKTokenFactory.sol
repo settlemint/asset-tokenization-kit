@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
@@ -48,6 +48,12 @@ interface IATKTokenFactory is IERC165 {
         bytes4[] interfaces,
         address accessManager
     );
+
+    /// @notice Emitted when a contract is registered with an identity and description
+    /// @param sender The address that initiated the registration
+    /// @param contractAddress The address of the contract being registered
+    /// @param description Human-readable description of the contract (for indexing/UX)
+    event ContractIdentityRegistered(address indexed sender, address indexed contractAddress, string description);
 
     /// @notice Initializes the token registry.
     /// @param systemAddress The address of the `IATKSystem` contract.

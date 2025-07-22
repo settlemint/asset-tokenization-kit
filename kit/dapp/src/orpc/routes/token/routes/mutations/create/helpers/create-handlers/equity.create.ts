@@ -25,7 +25,18 @@ import {
 import type { TokenCreateInput } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 const CREATE_EQUITY_MUTATION = portalGraphql(`
-  mutation CreateEquityMutation($address: String!, $from: String!, $symbol: String!, $name: String!, $decimals: Int!, $initialModulePairs: [ATKEquityFactoryImplementationATKEquityFactoryImplementationCreateEquityInitialModulePairsInput!]!, $requiredClaimTopics: [String!]!, $verificationId: String, $challengeResponse: String!) {
+  mutation CreateEquityMutation(
+    $address: String!
+    $from: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKEquityFactoryImplementationATKEquityFactoryImplementationCreateEquityInitialModulePairsInput!]!
+    $requiredClaimTopics: [String!]!
+    $verificationId: String
+    $challengeResponse: String!
+    $countryCode: Int!
+  ) {
     CreateEquity: ATKEquityFactoryImplementationCreateEquity(
       address: $address
       from: $from
@@ -35,6 +46,7 @@ const CREATE_EQUITY_MUTATION = portalGraphql(`
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
         requiredClaimTopics_: $requiredClaimTopics
+        countryCode_: $countryCode
       }
       verificationId: $verificationId
       challengeResponse: $challengeResponse
@@ -52,12 +64,15 @@ export const equityCreateHandler = async function* (
     throw new Error("Invalid token type");
   }
 
-  yield* createToken(input, (creationFailedMessage, messages) => {
+  yield* createToken(input, context, (creationFailedMessage, messages) => {
+    // Delete verification from input to avoid leaking it in the logs
+    const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
       CREATE_EQUITY_MUTATION,
       {
-        ...input,
+        ...otherInput,
         ...context.mutationVariables,
+        countryCode: 1, // TODO: should come from ui
       },
       creationFailedMessage,
       messages

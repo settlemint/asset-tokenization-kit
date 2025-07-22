@@ -40,7 +40,7 @@ export const issueAssetClassificationClaim = async (
 
   const tokenIdentityContract = owner.getContractInstance({
     address: asset.identity,
-    abi: ATKContracts.tokenIdentity,
+    abi: ATKContracts.contractIdentity,
   });
 
   const claimIssuerIdentityAddress = await claimIssuer.getIdentity();

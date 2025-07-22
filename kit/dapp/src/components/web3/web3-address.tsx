@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useMemo } from "react";
 
 interface Web3AddressProps {
   address: EthereumAddress;
@@ -30,35 +30,35 @@ function Web3AddressComponent({
   showSymbol = true,
   showPrettyName = true,
 }: Web3AddressProps) {
-  const { data: users } = useQuery(
-    orpc.user.list.queryOptions({
+  // Select only the first user from the list to minimize re-renders
+  const { data: user } = useQuery({
+    ...orpc.user.list.queryOptions({
       input: {
         searchByAddress: address,
       },
-      staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    })
-  );
+    }),
+    select: (users) => users[0],
+    staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes as it rarely changes
+  });
 
-  const user = users?.[0];
-
-  const { data: tokens } = useQuery(
-    orpc.token.list.queryOptions({
+  // Select only the first token from the list to minimize re-renders
+  const { data: token } = useQuery({
+    ...orpc.token.list.queryOptions({
       input: {
         searchByAddress: address,
       },
-      staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    })
-  );
-
-  const token = tokens?.[0];
+    }),
+    select: (tokens) => tokens[0],
+    staleTime: 1000 * 60 * 30, // Cache token metadata for 30 minutes as it rarely changes
+  });
 
   // Memoize truncated address display
   const truncatedAddressDisplay = useMemo(() => {
     return `${address.slice(0, 6)}…${address.slice(-4)}`;
   }, [address]);
 
-  const renderAddress = useCallback(
-    (addressClassName?: string) => {
+  const displayContent = useMemo(() => {
+    const renderAddress = (addressClassName?: string) => {
       const displayValue = showFullAddress ? address : truncatedAddressDisplay;
 
       return (
@@ -66,11 +66,8 @@ function Web3AddressComponent({
           {displayValue}
         </span>
       );
-    },
-    [address, showFullAddress, truncatedAddressDisplay]
-  );
+    };
 
-  const displayContent = useMemo(() => {
     if (avatarOnly) return null;
 
     if (showPrettyName && token?.name) {
@@ -118,10 +115,11 @@ function Web3AddressComponent({
     token,
     user,
     showBadge,
-    renderAddress,
     address,
     showSymbol,
     showPrettyName,
+    showFullAddress,
+    truncatedAddressDisplay,
   ]);
 
   if (copyToClipboard && !avatarOnly) {

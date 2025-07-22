@@ -44,7 +44,7 @@ export class PortfolioPage extends BasePage {
     }
   }
 
-  async verifyMyAssetBalance(options: { expectedAmount: string }) {
+  async verifyMyAssetBalance(_options: { expectedAmount: string }) {
     await this.page.getByRole("link", { name: "My assets" }).click();
   }
 
@@ -153,7 +153,7 @@ export class PortfolioPage extends BasePage {
             }
 
             return formattedActual;
-          } catch (error) {
+          } catch (_error) {
             return "PARSE_ERROR";
           }
         },

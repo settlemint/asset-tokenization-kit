@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
@@ -20,8 +20,6 @@ interface IATKEquity is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMAR
     /// @param name_ The name of the equity token.
     /// @param symbol_ The symbol of the equity token.
     /// @param decimals_ The number of decimals for the equity token.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
     /// @param compliance_ The address of the compliance contract.
@@ -30,7 +28,6 @@ interface IATKEquity is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMAR
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,

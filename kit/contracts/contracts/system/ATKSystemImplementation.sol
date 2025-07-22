@@ -8,7 +8,6 @@ import {
     ContextUpgradeable
 } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
@@ -16,24 +15,16 @@ import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/
 
 import { IATKSystem } from "./IATKSystem.sol";
 import {
-    SystemAddonImplementationNotSet,
-    SystemAddonTypeAlreadyRegistered,
     ComplianceImplementationNotSet,
+    ContractIdentityImplementationNotSet,
     IdentityFactoryImplementationNotSet,
     IdentityImplementationNotSet,
     IdentityRegistryImplementationNotSet,
     IdentityRegistryStorageImplementationNotSet,
     IdentityVerificationModuleNotSet,
-    InvalidAddonAddress,
     InvalidImplementationInterface,
-    InvalidTokenFactoryAddress,
-    InvalidTokenImplementationAddress,
-    InvalidTokenImplementationInterface,
     SystemAlreadyBootstrapped,
-    SystemNotBootstrapped,
     TokenAccessManagerImplementationNotSet,
-    TokenFactoryTypeAlreadyRegistered,
-    TokenIdentityImplementationNotSet,
     TopicSchemeRegistryImplementationNotSet,
     TrustedIssuersRegistryImplementationNotSet,
     ComplianceModuleRegistryImplementationNotSet,
@@ -43,9 +34,6 @@ import {
 import { ATKTypedImplementationProxy } from "./ATKTypedImplementationProxy.sol";
 
 // Compliance modules
-import { SMARTIdentityVerificationComplianceModule } from
-    "../smart/modules/SMARTIdentityVerificationComplianceModule.sol";
-
 import { ISMARTComplianceModule } from "../smart/interface/ISMARTComplianceModule.sol";
 
 // Constants
@@ -100,7 +88,7 @@ contract ATKSystemImplementation is
     bytes32 internal constant IDENTITY_FACTORY = keccak256("IDENTITY_FACTORY");
     bytes32 internal constant TOKEN_ACCESS_MANAGER = keccak256("TOKEN_ACCESS_MANAGER");
     bytes32 internal constant IDENTITY = keccak256("IDENTITY");
-    bytes32 internal constant TOKEN_IDENTITY = keccak256("TOKEN_IDENTITY");
+    bytes32 internal constant CONTRACT_IDENTITY = keccak256("CONTRACT_IDENTITY");
     bytes32 internal constant COMPLIANCE_MODULE_REGISTRY = keccak256("COMPLIANCE_MODULE_REGISTRY");
     bytes32 internal constant ADDON_REGISTRY = keccak256("ADDON_REGISTRY");
     bytes32 internal constant TOKEN_FACTORY_REGISTRY = keccak256("TOKEN_FACTORY_REGISTRY");
@@ -214,8 +202,6 @@ contract ATKSystemImplementation is
     /// @param identityFactoryImplementation_ The initial address of the identity factory module's logic contract.
     /// @param identityImplementation_ The initial address of the standard identity contract's logic (template). Must be
     /// IERC734/IIdentity compliant.
-    /// @param tokenIdentityImplementation_ The initial address of the token identity contract's logic (template). Must
-    /// be IERC734/IIdentity compliant.
     /// @param tokenAccessManagerImplementation_ The initial address of the token access manager contract's logic. Must
     /// be ISMARTTokenAccessManager compliant.
     /// @param identityVerificationModule_ The initial address of the identity verification module
@@ -234,7 +220,7 @@ contract ATKSystemImplementation is
         address topicSchemeRegistryImplementation_,
         address identityFactoryImplementation_,
         address identityImplementation_, // Expected to be IERC734/IIdentity compliant
-        address tokenIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
+        address contractIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
         address identityVerificationModule_,
         address tokenFactoryRegistryImplementation_,
@@ -309,12 +295,12 @@ contract ATKSystemImplementation is
         _implementations[IDENTITY] = identityImplementation_;
         emit IdentityImplementationUpdated(initialAdmin_, identityImplementation_);
 
-        // Validate and set the token identity implementation address.
-        if (tokenIdentityImplementation_ == address(0)) revert TokenIdentityImplementationNotSet();
-        _checkInterface(tokenIdentityImplementation_, _IIDENTITY_ID); // Ensure it supports OnchainID's
+        // Validate and set the contract identity implementation address.
+        if (contractIdentityImplementation_ == address(0)) revert ContractIdentityImplementationNotSet();
+        _checkInterface(contractIdentityImplementation_, _IIDENTITY_ID); // Ensure it supports OnchainID's
             // IIdentity
-        _implementations[TOKEN_IDENTITY] = tokenIdentityImplementation_;
-        emit TokenIdentityImplementationUpdated(initialAdmin_, tokenIdentityImplementation_);
+        _implementations[CONTRACT_IDENTITY] = contractIdentityImplementation_;
+        emit ContractIdentityImplementationUpdated(initialAdmin_, contractIdentityImplementation_);
 
         // Validate and set the identity verification module implementation address.
         if (identityVerificationModule_ == address(0)) {
@@ -458,9 +444,15 @@ contract ATKSystemImplementation is
         // Deploy the SMARTIdentityRegistryProxy. Its constructor requires the addresses of other newly created proxies
         // (storage and trusted issuers) and an initial admin.
         // Passing these as local variables is safe as they don't rely on this contract's state being prematurely read.
+        address[] memory initialRegistrarAdmins = new address[](3);
+        initialRegistrarAdmins[0] = initialAdmin;
+        initialRegistrarAdmins[1] = localTokenFactoryRegistryProxy;
+        initialRegistrarAdmins[2] = localAddonRegistryProxy;
+
         bytes memory identityRegistryData = abi.encodeWithSelector(
             IATKIdentityRegistry.initialize.selector,
             initialAdmin,
+            initialRegistrarAdmins,
             localIdentityRegistryStorageProxy,
             localTrustedIssuersRegistryProxy,
             localTopicSchemeRegistryProxy
@@ -640,19 +632,19 @@ contract ATKSystemImplementation is
         emit IdentityImplementationUpdated(_msgSender(), implementation_);
     }
 
-    /// @notice Sets (updates) the address of the token identity contract's implementation (logic template).
-    /// @dev Only callable by an address with the `DEFAULT_ADMIN_ROLE`.
+    /// @notice Sets (updates) the address of the contract identity implementation (logic template).
+    /// @dev Only callable by an address with the `IMPLEMENTATION_MANAGER_ROLE`.
     /// Reverts if `implementation` is zero or doesn't support `IIdentity` (from OnchainID standard).
-    /// Emits a `TokenIdentityImplementationUpdated` event.
-    /// @param implementation_ The new address for the token identity logic template.
-    function setTokenIdentityImplementation(address implementation_)
+    /// Emits a `ContractIdentityImplementationUpdated` event.
+    /// @param implementation_ The new address for the contract identity logic template.
+    function setContractIdentityImplementation(address implementation_)
         public
         onlyRole(ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE)
     {
-        if (implementation_ == address(0)) revert TokenIdentityImplementationNotSet();
+        if (implementation_ == address(0)) revert ContractIdentityImplementationNotSet();
         _checkInterface(implementation_, _IIDENTITY_ID);
-        _implementations[TOKEN_IDENTITY] = implementation_;
-        emit TokenIdentityImplementationUpdated(_msgSender(), implementation_);
+        _implementations[CONTRACT_IDENTITY] = implementation_;
+        emit ContractIdentityImplementationUpdated(_msgSender(), implementation_);
     }
 
     /// @notice Sets (updates) the address of the token access manager contract's implementation (logic).
@@ -736,10 +728,10 @@ contract ATKSystemImplementation is
         return _implementations[IDENTITY];
     }
 
-    /// @notice Returns the address of the token identity implementation.
-    /// @return The address of the token identity implementation contract.
-    function tokenIdentityImplementation() external view returns (address) {
-        return _implementations[TOKEN_IDENTITY];
+    /// @notice Returns the address of the contract identity implementation.
+    /// @return The address of the contract identity implementation contract.
+    function contractIdentityImplementation() external view returns (address) {
+        return _implementations[CONTRACT_IDENTITY];
     }
 
     /// @notice Returns the address of the access manager implementation.
@@ -813,6 +805,8 @@ contract ATKSystemImplementation is
     function identityVerificationModule() public view returns (address) {
         return _identityVerificationModule;
     }
+
+    // --- Governance Functions ---
 
     // --- Internal Functions (Overrides for ERC2771Context and ERC165/AccessControl) ---
 

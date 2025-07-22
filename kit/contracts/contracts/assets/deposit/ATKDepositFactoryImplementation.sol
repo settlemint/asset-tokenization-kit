@@ -62,13 +62,16 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     /// @param decimals_ The number of decimals for the deposit token.
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the deposit token.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
+    /// @param countryCode_ The numeric country code (ISO 3166-1 alpha-2 standard) representing the token's
+    /// jurisdiction.
     /// @return deployedDepositAddress The address of the newly deployed deposit token contract.
     function createDeposit(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
         uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        uint16 countryCode_
     )
         external
         override
@@ -79,15 +82,12 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         // Create the access manager for the token
         ISMARTTokenAccessManager accessManager = _createAccessManager(salt);
 
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, address(accessManager));
-
-        // ABI encode constructor arguments for ATKDepositProxy
+        // ABI encode constructor arguments for ATKDepositProxy (no onchainID parameter)
         bytes memory constructorArgs = abi.encode(
             address(this),
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             _collateralClaimTopicId,
             _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),
@@ -99,15 +99,23 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         bytes memory proxyBytecode = type(ATKDepositProxy).creationCode;
 
         // Deploy using the helper from the abstract contract
+        string memory description = string.concat("Deposit: ", name_, " (", symbol_, ")");
         address deployedTokenIdentityAddress;
         (deployedDepositAddress, deployedTokenIdentityAddress) =
-            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager));
+            _deployToken(proxyBytecode, constructorArgs, salt, address(accessManager), description, countryCode_);
 
-        if (deployedTokenIdentityAddress != tokenIdentityAddress) {
-            revert TokenIdentityAddressMismatch(deployedTokenIdentityAddress, tokenIdentityAddress);
-        }
+        // Identity verification check removed - identity is now set after deployment
 
-        emit DepositCreated(_msgSender(), deployedDepositAddress, name_, symbol_, decimals_, requiredClaimTopics_);
+        emit DepositCreated(
+            _msgSender(),
+            deployedDepositAddress,
+            deployedTokenIdentityAddress,
+            name_,
+            symbol_,
+            decimals_,
+            requiredClaimTopics_,
+            countryCode_
+        );
 
         return deployedDepositAddress;
     }
@@ -140,14 +148,13 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     {
         bytes memory salt = _buildSaltInput(name_, symbol_, decimals_);
         address accessManagerAddress_ = _predictAccessManagerAddress(salt);
-        address tokenIdentityAddress = _predictTokenIdentityAddress(name_, symbol_, decimals_, accessManagerAddress_);
-        // ABI encode constructor arguments for ATKDepositProxy
+
+        // ABI encode constructor arguments for ATKDepositProxy (no onchainID parameter)
         bytes memory constructorArgs = abi.encode(
             address(this), // The factory address is part of the constructor args
             name_,
             symbol_,
             decimals_,
-            tokenIdentityAddress,
             _collateralClaimTopicId,
             _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
             _identityRegistry(),

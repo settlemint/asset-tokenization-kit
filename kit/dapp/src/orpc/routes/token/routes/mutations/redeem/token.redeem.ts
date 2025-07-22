@@ -1,11 +1,11 @@
-import { ALL_INTERFACE_IDS } from "@/lib/interface-ids";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { supportsInterface } from "@/orpc/helpers/interface-detection";
+import { getConditionalMutationMessages } from "@/orpc/helpers/mutation-messages";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenRedeemMessagesSchema } from "./token.redeem.schema";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_REDEEM_MUTATION = portalGraphql(`
   mutation TokenRedeem(
@@ -41,7 +41,6 @@ const TOKEN_REDEEM_ALL_MUTATION = portalGraphql(`
       from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
-      input: {}
     ) {
       transactionHash
     }
@@ -49,27 +48,16 @@ const TOKEN_REDEEM_ALL_MUTATION = portalGraphql(`
 `);
 
 export const tokenRedeem = tokenRouter.token.tokenRedeem
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.tokenRedeem,
+      requiredExtensions: ["REDEEMABLE"],
+    })
+  )
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
     const { contract, verification, amount, redeemAll } = input;
-    const { auth } = context;
-
-    // Parse messages with defaults
-    const messages = TokenRedeemMessagesSchema.parse(input.messages ?? {});
-
-    // Validate that the token supports redemption
-    const supportsRedemption = await supportsInterface(
-      context.portalClient,
-      contract,
-      ALL_INTERFACE_IDS.ISMARTRedeemable
-    );
-
-    if (!supportsRedemption) {
-      throw errors.FORBIDDEN({
-        message:
-          "Token does not support redemption operations. The token must implement ISMARTRedeemable interface.",
-      });
-    }
+    const { auth, t } = context;
 
     // Validate input parameters
     if (!redeemAll && !amount) {
@@ -78,6 +66,22 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
         data: { errors: ["Invalid redeem parameters"] },
       });
     }
+
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getConditionalMutationMessages(
+        t,
+        "tokens",
+        "redeem",
+        Boolean(redeemAll),
+        {
+          keys: {
+            preparing: redeemAll ? "preparingAll" : "preparing",
+            success: redeemAll ? "successAll" : "success",
+            failed: redeemAll ? "failedAll" : "failed",
+          },
+        }
+      );
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -94,8 +98,11 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
             from: sender.wallet,
             ...challengeResponse,
           },
-          messages.redemptionFailed,
-          messages
+          errorMessage,
+          {
+            waitingForMining: pendingMessage,
+            transactionIndexed: successMessage,
+          }
         )
       : yield* context.portalClient.mutate(
           TOKEN_REDEEM_MUTATION,
@@ -105,8 +112,11 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
             amount: amount?.toString() ?? "",
             ...challengeResponse,
           },
-          messages.redemptionFailed,
-          messages
+          errorMessage,
+          {
+            waitingForMining: pendingMessage,
+            transactionIndexed: successMessage,
+          }
         );
 
     return getEthereumHash(transactionHash);

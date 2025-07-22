@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -17,7 +17,10 @@ import { ATKRoles } from "../ATKRoles.sol";
 
 // Interface imports
 import { IATKBond } from "./IATKBond.sol";
+import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
+import { ISMART } from "../../smart/interface/ISMART.sol";
+import { _SMARTLogic } from "../../smart/extensions/core/internal/_SMARTLogic.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 // Core extensions
@@ -45,6 +48,7 @@ import { SMARTCappedUpgradeable } from "../../smart/extensions/capped/SMARTCappe
 contract ATKBondImplementation is
     Initializable,
     IATKBond,
+    IContractWithIdentity,
     SMARTUpgradeable,
     SMARTTokenAccessManagedUpgradeable,
     SMARTCustodianUpgradeable,
@@ -89,8 +93,6 @@ contract ATKBondImplementation is
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param decimals_ The number of decimals the token uses.
-    /// @param onchainID_ Optional address of an existing onchain identity contract. Pass address(0) to create a new
-    /// one.
     /// @param cap_ Token cap
     /// @param maturityDate_ Bond maturity date
     /// @param faceValue_ Bond face value
@@ -103,7 +105,6 @@ contract ATKBondImplementation is
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address onchainID_,
         uint256 cap_,
         uint256 maturityDate_,
         uint256 faceValue_,
@@ -128,7 +129,7 @@ contract ATKBondImplementation is
             revert InvalidUnderlyingAsset();
         }
 
-        __SMART_init(name_, symbol_, decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_);
+        __SMART_init(name_, symbol_, decimals_, address(0), identityRegistry_, compliance_, initialModulePairs_);
         __SMARTTokenAccessManaged_init(accessManager_);
         __SMARTCustodian_init();
         __SMARTBurnable_init();
@@ -140,6 +141,7 @@ contract ATKBondImplementation is
         __ReentrancyGuard_init();
 
         _registerInterface(type(IATKBond).interfaceId);
+        _registerInterface(type(IContractWithIdentity).interfaceId);
 
         _maturityDate = maturityDate_;
         _faceValue = faceValue_;
@@ -650,6 +652,29 @@ contract ATKBondImplementation is
 
         emit BondRedeemed(_msgSender(), from, amount, underlyingAmount);
     }
+
+    // --- IContractWithIdentity Implementation ---
+    // Note: onchainID() is inherited from ISMART via SMARTUpgradeable, but we need to explicitly override due to
+    // multiple inheritance
+
+    /// @inheritdoc IContractWithIdentity
+    function onchainID() public view override(_SMARTLogic, ISMART, IContractWithIdentity) returns (address) {
+        return super.onchainID();
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    function canAddClaim(address actor) external view override returns (bool) {
+        // Delegate to AccessManager - only GOVERNANCE_ROLE can manage claims
+        return _hasRole(ATKRoles.GOVERNANCE_ROLE, actor);
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    function canRemoveClaim(address actor) external view override returns (bool) {
+        // Delegate to AccessManager - only GOVERNANCE_ROLE can manage claims
+        return _hasRole(ATKRoles.GOVERNANCE_ROLE, actor);
+    }
+
+    // --- Internal Functions ---
 
     /**
      * @dev Overrides _update to ensure Pausable and Collateral checks are applied.

@@ -57,18 +57,23 @@ export const namespaces = [
   "deposits-table",
   "detail-grid",
   "errors",
+  "exchange-rates",
   "form",
   "formats",
   "general",
-  "stats",
+  "issuer-dashboard",
   "language",
   "navigation",
   "onboarding",
   "seo",
+  "settings",
+  "stats",
+  "system",
   "theme",
   "toast",
   "token-factory",
   "tokens",
+  "user",
   "validation",
   "wallet",
 ] as const;
@@ -166,10 +171,8 @@ const initialResources = {
  * The void operator is used to explicitly discard the promise,
  * as initialization happens synchronously for our use case.
  */
-// eslint-disable-next-line import/no-named-as-default-member
 i18n.use(lazyLoadBackend).use(initReactI18next);
 
-// eslint-disable-next-line import/no-named-as-default-member
 void i18n.init({
   resources: initialResources,
   lng: fallbackLng,

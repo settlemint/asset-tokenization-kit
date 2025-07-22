@@ -1,5 +1,3 @@
-"use no memo";
-
 import {
   ActionsCell,
   type ActionItem,
@@ -17,6 +15,7 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { format } from "dnum";
 import {
   Coins,
   Copy,
@@ -232,6 +231,9 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
         }),
         columnHelper.accessor("totalSupply", {
           header: t("columns.totalSupply"),
+          cell: (cellProps) => {
+            return format(cellProps.getValue());
+          },
           meta: {
             displayName: t("columns.totalSupply"),
             type: "number",

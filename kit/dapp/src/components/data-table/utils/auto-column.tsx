@@ -1,10 +1,8 @@
-"use client";
-
-import type { ColumnDef, CellContext } from "@tanstack/react-table";
-import { flexRender } from "@tanstack/react-table";
 import { formatValue } from "@/lib/utils/format-value";
-import { withAutoFilterFn } from "../filters/functions/auto-filter";
+import type { CellContext, ColumnDef } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
+import { withAutoFilterFn } from "../filters/functions/auto-filter";
 
 /**
  * Component wrapper for formatValue to use in cell rendering

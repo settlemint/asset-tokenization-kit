@@ -1,7 +1,4 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useCallback, useMemo, useState } from "react";
 
 import { authClient } from "@/lib/auth/auth.client";
 import { OtpSetupComponent } from "./otp-setup-component";
@@ -12,18 +9,6 @@ import { SecuritySuccess } from "./security-success";
 interface WalletSecurityMainProps {
   onNext: () => void;
 }
-
-const pincodeSchema = z
-  .object({
-    pincode: z.string().length(6, "PIN code must be exactly 6 digits"),
-    confirmPincode: z.string().length(6, "PIN code must be exactly 6 digits"),
-  })
-  .refine((data) => data.pincode === data.confirmPincode, {
-    message: "PIN codes don't match",
-    path: ["confirmPincode"],
-  });
-
-type PincodeFormValues = z.infer<typeof pincodeSchema>;
 
 export function WalletSecurityMain({ onNext }: WalletSecurityMainProps) {
   const { data: session } = authClient.useSession();
@@ -47,25 +32,10 @@ export function WalletSecurityMain({ onNext }: WalletSecurityMainProps) {
   const shouldShowEducationalContent =
     selectedSecurityMethod === null && !shouldShowSuccess;
 
-  const form = useForm<PincodeFormValues>({
-    resolver: zodResolver(pincodeSchema),
-    defaultValues: {
-      pincode: "",
-      confirmPincode: "",
-    },
-  });
-
-  // Reset state on mount
-  useEffect(() => {
-    setSelectedSecurityMethod(null);
-    form.reset();
-  }, [form, hasPincode, hasTwoFactor]);
-
   // Callbacks
   const handleBackToSecurityOptions = useCallback(() => {
     setSelectedSecurityMethod(null);
-    form.reset();
-  }, [form]);
+  }, []);
 
   const handlePinSuccess = useCallback(() => {
     setIsPincodeSet(true);
@@ -122,7 +92,6 @@ export function WalletSecurityMain({ onNext }: WalletSecurityMainProps) {
                 <OtpSetupComponent
                   onSuccess={handleOtpSuccess}
                   onBack={handleBackToSecurityOptions}
-                  user={user}
                 />
               )}
             </>

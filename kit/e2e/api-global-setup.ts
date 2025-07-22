@@ -9,7 +9,7 @@ import { adminApiUser } from "./test-data/user-data";
 import { ensureUserIsAdmin, isPincodeEnabledInDB } from "./utils/db-utils";
 import { ensureApiPincodeIsSetup } from "./utils/setup-utils";
 
-const e2eDir = path.dirname(fileURLToPath(import.meta.url));
+const _e2eDir = path.dirname(fileURLToPath(import.meta.url));
 
 const API_KEY_NAME_TO_ENSURE = "test-apikey";
 

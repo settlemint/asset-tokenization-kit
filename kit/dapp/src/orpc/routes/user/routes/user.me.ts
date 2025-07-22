@@ -12,6 +12,7 @@ import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { read as systemRead } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import { eq } from "drizzle-orm";
 
@@ -49,7 +50,7 @@ export const me = authRouter.user.me
     const userId = authUser.id;
 
     // Fetch user and KYC profile in a single query with left join
-    const [[userQueryResult], systemAddress] = await Promise.all([
+    const [[userQueryResult], systemAddress, baseCurrency] = await Promise.all([
       context.db
         .select({
           user: userTable,
@@ -71,9 +72,36 @@ export const me = authRouter.user.me
           context,
         }
       ),
+      call(
+        read,
+        {
+          key: "BASE_CURRENCY",
+        },
+        { context }
+      ),
     ]);
 
     const { kyc } = userQueryResult ?? {};
+
+    // Check if system has token factories using existing ORPC route
+    let hasTokenFactories = false;
+    if (systemAddress) {
+      try {
+        const systemData = await call(
+          systemRead,
+          {
+            id: systemAddress,
+          },
+          {
+            context,
+          }
+        );
+        hasTokenFactories = systemData.tokenFactories.length > 0;
+      } catch {
+        // If system read fails, we assume no factories
+        hasTokenFactories = false;
+      }
+    }
 
     return {
       id: authUser.id,
@@ -88,11 +116,17 @@ export const me = authRouter.user.me
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
       onboardingState: {
-        wallet: !!authUser.wallet,
+        isAdmin: authUser.role === "admin",
+        wallet:
+          authUser.wallet !== "0x0000000000000000000000000000000000000000",
         walletSecurity:
           authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
         walletRecoveryCodes: !!authUser.secretCodeVerificationId,
         system: !!systemAddress,
+        systemSettings: !!baseCurrency,
+        systemAssets: hasTokenFactories,
+        systemAddons: false, // TODO: Track when addons are configured
+        identitySetup: false, // TODO: Add logic to check if ONCHAINID is set up
         identity: !!userQueryResult?.kyc,
       },
     };

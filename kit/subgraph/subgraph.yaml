@@ -87,8 +87,8 @@ templates:
           handler: handleIdentityRegistryStorageImplementationUpdated
         - event: TokenAccessManagerImplementationUpdated(indexed address,indexed address)
           handler: handleTokenAccessManagerImplementationUpdated
-        - event: TokenIdentityImplementationUpdated(indexed address,indexed address)
-          handler: handleTokenIdentityImplementationUpdated
+        - event: ContractIdentityImplementationUpdated(indexed address,indexed address)
+          handler: handleContractIdentityImplementationUpdated
         - event: TrustedIssuersRegistryImplementationUpdated(indexed address,indexed
             address)
           handler: handleTrustedIssuersRegistryImplementationUpdated
@@ -264,8 +264,8 @@ templates:
       eventHandlers:
         - event: IdentityCreated(indexed address,indexed address,indexed address)
           handler: handleIdentityCreated
-        - event: TokenIdentityCreated(indexed address,indexed address,indexed address)
-          handler: handleTokenIdentityCreated
+        - event: ContractIdentityCreated(indexed address,indexed address,indexed address)
+          handler: handleContractIdentityCreated
       file: ./src/identity-factory/identity-factory.ts
   - kind: ethereum
     name: TopicSchemeRegistry
@@ -472,8 +472,8 @@ templates:
         - name: Token
           file: ../contracts/.generated/artifacts/contracts/smart/interface/ISMART.sol/ISMART.json
       eventHandlers:
-        - event: BondCreated(indexed address,indexed
-            address,string,string,uint8,uint256[],uint256,uint256,uint256,address)
+        - event: BondCreated(indexed address,indexed address,indexed
+            address,string,string,uint8,uint256[],uint256,uint256,uint256,address,uint16)
           handler: handleBondCreated
       file: ./src/token-assets/bond-factory/bond-factory.ts
   - kind: ethereum
@@ -491,8 +491,8 @@ templates:
         - name: DepositFactory
           file: ../contracts/.generated/artifacts/contracts/assets/deposit/IATKDepositFactory.sol/IATKDepositFactory.json
       eventHandlers:
-        - event: DepositCreated(indexed address,indexed
-            address,string,string,uint8,uint256[])
+        - event: DepositCreated(indexed address,indexed address,indexed
+            address,string,string,uint8,uint256[],uint16)
           handler: handleDepositCreated
       file: ./src/token-assets/deposit-factory/deposit-factory.ts
   - kind: ethereum
@@ -510,8 +510,8 @@ templates:
         - name: EquityFactory
           file: ../contracts/.generated/artifacts/contracts/assets/equity/IATKEquityFactory.sol/IATKEquityFactory.json
       eventHandlers:
-        - event: EquityCreated(indexed address,indexed
-            address,string,string,uint8,uint256[])
+        - event: EquityCreated(indexed address,indexed address,indexed
+            address,string,string,uint8,uint256[],uint16)
           handler: handleEquityCreated
       file: ./src/token-assets/equity-factory/equity-factory.ts
   - kind: ethereum
@@ -547,8 +547,8 @@ templates:
         - name: FundFactory
           file: ../contracts/.generated/artifacts/contracts/assets/fund/IATKFundFactory.sol/IATKFundFactory.json
       eventHandlers:
-        - event: FundCreated(indexed address,indexed
-            address,string,string,uint8,uint256[],uint16)
+        - event: FundCreated(indexed address,indexed address,indexed
+            address,string,string,uint8,uint256[],uint16,uint16)
           handler: handleFundCreated
       file: ./src/token-assets/fund-factory/fund-factory.ts
   - kind: ethereum
@@ -566,8 +566,8 @@ templates:
         - name: StableCoinFactory
           file: ../contracts/.generated/artifacts/contracts/assets/stable-coin/IATKStableCoinFactory.sol/IATKStableCoinFactory.json
       eventHandlers:
-        - event: StableCoinCreated(indexed address,indexed
-            address,string,string,uint8,uint256[])
+        - event: StableCoinCreated(indexed address,indexed address,indexed
+            address,string,string,uint8,uint256[],uint16)
           handler: handleStableCoinCreated
       file: ./src/token-assets/stable-coin-factory/stable-coin-factory.ts
   - kind: ethereum
@@ -605,7 +605,7 @@ templates:
         - name: Vault
           file: ../contracts/.generated/artifacts/contracts/addons/vault/ATKVault.sol/ATKVault.json
       eventHandlers:
-        - event: ATKVaultCreated(indexed address,indexed address)
+        - event: ATKVaultCreated(indexed address,indexed address,indexed address)
           handler: handleATKVaultCreated
       file: ./src/system-addons/addons/vault/vault-factory.ts
   - kind: ethereum
@@ -880,14 +880,14 @@ templates:
       abis:
         - name: TokenFactoryRegistry
           file: ../contracts/.generated/artifacts/contracts/system/token-factory/IATKTokenFactoryRegistry.sol/IATKTokenFactoryRegistry.json
-        - name: BondFactory
-          file: ../contracts/.generated/artifacts/contracts/assets/bond/IATKBondFactory.sol/IATKBondFactory.json
+        - name: IERC165
+          file: ../contracts/.generated/artifacts/@openzeppelin/contracts/utils/introspection/IERC165.sol/IERC165.json
       eventHandlers:
         - event: TokenFactoryImplementationUpdated(indexed address,indexed bytes32,indexed
             address)
           handler: handleTokenFactoryImplementationUpdated
         - event: TokenFactoryRegistered(indexed
-            address,string,bytes32,address,address,uint256)
+            address,string,bytes32,address,address,address,bytes4[],uint256)
           handler: handleTokenFactoryRegistered
       file: ./src/token-factory/token-factory-registry.ts
   - kind: ethereum

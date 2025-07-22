@@ -1,9 +1,13 @@
-import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
-import { assetDesignerSteps } from "@/components/asset-designer/steps";
+import {
+  assetDesignerFormOptions,
+  onStepSubmit,
+} from "@/components/asset-designer/shared-form";
 import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
-import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
-import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
+import {
+  type AssetFactoryTypeId,
+  getAssetTypeFromFactoryTypeId,
+} from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -12,8 +16,10 @@ import { Button } from "../ui/button";
 
 export const SelectAssetType = withForm({
   ...assetDesignerFormOptions,
-  props: {},
-  render: function Render({ form }) {
+  props: {
+    onStepSubmit,
+  },
+  render: function Render({ form, onStepSubmit }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
     const [systemAddress] = useSettings("SYSTEM_ADDRESS");
     const { data: systemDetails } = useQuery({
@@ -50,16 +56,18 @@ export const SelectAssetType = withForm({
             />
           )}
         />
-        <Button
-          onClick={() => {
-            form.setFieldValue(
-              "step",
-              assetDesignerSteps.selectAssetType.nextStep
+        <form.Subscribe
+          selector={(state) => state.values.type}
+          children={(type) => {
+            const disabled = !type;
+
+            return (
+              <Button onClick={onStepSubmit} disabled={disabled}>
+                Next
+              </Button>
             );
           }}
-        >
-          Next
-        </Button>
+        />
       </>
     );
   },

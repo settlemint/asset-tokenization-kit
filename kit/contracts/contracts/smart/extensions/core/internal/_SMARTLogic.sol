@@ -308,7 +308,7 @@ abstract contract _SMARTLogic is _SMARTExtension {
     /// @inheritdoc ISMART
     /// @notice Returns the on-chain ID address associated with this token.
     /// @return address The current on-chain ID address.
-    function onchainID() external view virtual override returns (address) {
+    function onchainID() public view virtual override returns (address) {
         return __onchainID;
     }
 
@@ -541,6 +541,6 @@ abstract contract _SMARTLogic is _SMARTExtension {
     /// @return bool `true` if the interface is supported according to SMART logic, `false` otherwise.
     function __smart_supportsInterface(bytes4 interfaceId) internal view virtual returns (bool) {
         // Check if registered by an extension OR if it's the core ISMART interface.
-        return _isInterfaceRegistered[interfaceId] || interfaceId == type(ISMART).interfaceId;
+        return _isInterfaceRegistered(interfaceId) || interfaceId == type(ISMART).interfaceId;
     }
 }

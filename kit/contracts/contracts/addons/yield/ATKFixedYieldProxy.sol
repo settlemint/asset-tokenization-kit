@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import { IATKFixedYieldScheduleFactory } from "./IATKFixedYieldScheduleFactory.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { SMARTFixedYieldScheduleUpgradeable } from
-    "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
+import { ATKFixedYieldScheduleUpgradeable } from "./ATKFixedYieldScheduleUpgradeable.sol";
 
 /// @notice Custom error when the provided factory address is invalid (e.g. zero address or does not support the
 /// required interface).
@@ -37,7 +36,7 @@ contract ATKFixedYieldProxy is Proxy {
     /// @param endDate The end date of the yield schedule.
     /// @param rate The rate of the yield schedule.
     /// @param interval The interval of the yield schedule.
-    /// @param initialOwner The initial owner of the yield schedule.
+    /// @param initialAdmins The initial admins of the yield schedule.
     constructor(
         address factoryAddress,
         address tokenAddress,
@@ -45,7 +44,7 @@ contract ATKFixedYieldProxy is Proxy {
         uint256 endDate,
         uint256 rate,
         uint256 interval,
-        address initialOwner
+        address[] memory initialAdmins
     ) {
         if (factoryAddress == address(0)) {
             revert InvalidFactoryAddress();
@@ -60,13 +59,13 @@ contract ATKFixedYieldProxy is Proxy {
         address implementationAddress = _getImplementationAddressFromFactory();
 
         bytes memory initData = abi.encodeWithSelector(
-            SMARTFixedYieldScheduleUpgradeable.initialize.selector,
+            ATKFixedYieldScheduleUpgradeable.initialize.selector,
             tokenAddress,
             startDate,
             endDate,
             rate,
             interval,
-            initialOwner
+            initialAdmins
         );
 
         _performInitializationDelegatecall(implementationAddress, initData);
