@@ -1269,7 +1269,7 @@
 
     "@tanstack/router-devtools": ["@tanstack/router-devtools@1.129.4", "", { "dependencies": { "@tanstack/react-router-devtools": "^1.129.4", "clsx": "^2.1.1", "goober": "^2.1.16" }, "peerDependencies": { "@tanstack/react-router": "^1.129.4", "csstype": "^3.0.10", "react": ">=18.0.0 || >=19.0.0", "react-dom": ">=18.0.0 || >=19.0.0" }, "optionalPeers": ["csstype"] }, "sha512-NZRJpIS0FgmKgcBzNHcj1gYTAE+yWO7k6/YBroHp7z40FlrZ3bEX9U5I+GwsJjdgN+HUua2GjpS2E2pMIde2Qw=="],
 
-    "@tanstack/router-devtools-core": ["@tanstack/router-devtools-core@1.129.4", "", { "dependencies": { "clsx": "^2.1.1", "goober": "^2.1.16", "solid-js": "^1.9.5" }, "peerDependencies": { "@tanstack/router-core": "^1.129.4", "csstype": "^3.0.10", "tiny-invariant": "^1.3.3" }, "optionalPeers": ["csstype"] }, "sha512-/MLKNZBwsSjGo5wBbVKH6pJCw/ODaun9MCGtjcaeTPvKztGPIIepBh6shkfgTKV+pShkacscADjLl/fEoVT0UQ=="],
+    "@tanstack/router-devtools-core": ["@tanstack/router-devtools-core@1.129.5", "", { "dependencies": { "clsx": "^2.1.1", "goober": "^2.1.16", "solid-js": "^1.9.5" }, "peerDependencies": { "@tanstack/router-core": "^1.129.5", "csstype": "^3.0.10", "tiny-invariant": "^1.3.3" }, "optionalPeers": ["csstype"] }, "sha512-V4zFbe0L4wZMk9VFJVyv7N9YpTD+jYZEShE+NZkJm/+XmvcV/Hnis/25frId8sA+Bsb1h9cM2cC/9Q3Ee8igDw=="],
 
     "@tanstack/router-generator": ["@tanstack/router-generator@1.129.4", "", { "dependencies": { "@tanstack/router-core": "^1.129.4", "@tanstack/router-utils": "1.121.21", "@tanstack/virtual-file-routes": "^1.121.21", "prettier": "^3.5.0", "recast": "^0.23.11", "source-map": "^0.7.4", "tsx": "^4.19.2", "zod": "^3.24.2" } }, "sha512-YvpAorxjor+tLlOq8YYtrX//kkowDGKEnJBgcszSgjw3iwViynbyPA31xBRyBwvWCRbXT1nRuXFYswVRd0Jvyg=="],
 
@@ -1305,13 +1305,13 @@
 
     "@trigger.dev/sdk": ["@trigger.dev/sdk@3.3.13", "", { "dependencies": { "@opentelemetry/api": "1.9.0", "@opentelemetry/api-logs": "0.52.1", "@opentelemetry/semantic-conventions": "1.25.1", "@trigger.dev/core": "3.3.13", "chalk": "^5.2.0", "cronstrue": "^2.21.0", "debug": "^4.3.4", "evt": "^2.4.13", "slug": "^6.0.0", "terminal-link": "^3.0.0", "ulid": "^2.3.0", "uuid": "^9.0.0", "ws": "^8.11.0" }, "peerDependencies": { "zod": "^3.0.0" } }, "sha512-iXtHMnzvzmPfBk7+whpWOElBJt6viCoA3r8xgrrrurj8oxjIVe4UvdDiB7wbUJJ44WROWEb0wVKyQut1L/FwQQ=="],
 
-    "@triplit/client": ["@triplit/client@1.0.47", "", { "dependencies": { "@triplit/db": "^1.1.8", "@triplit/logger": "^0.0.3", "comlink": "^4.4.1", "superjson": "^2.2.1" } }, "sha512-UY7ixa0iU3ak22vvxPPkxP8NiQQAyB5N9qgrLIjTr4i1DDOXgd5wI8L4ozrJP1mwDKOR5Pi8gb1/ixIpWUB3nA=="],
+    "@triplit/client": ["@triplit/client@1.0.48", "", { "dependencies": { "@triplit/db": "^1.1.8", "@triplit/logger": "^0.0.3", "comlink": "^4.4.1", "superjson": "^2.2.1" } }, "sha512-nL7Qidnm3sNWUpzGJyRGm5c++eGZQKugLDaYyllvYrzpEeG4kB+TQe+DwKXABgJ+iDxA9PbOJs/Hizl2y6eRRQ=="],
 
     "@triplit/db": ["@triplit/db@1.1.8", "", { "dependencies": { "@triplit/logger": "^0.0.3", "core-js": "^3.41.0", "elen": "^1.0.10", "nanoid": "^5.1.0", "sorted-btree": "^1.8.1", "web-worker": "^1.5.0" }, "peerDependencies": { "better-sqlite3": "*", "expo-sqlite": "*", "lmdb": "*", "uuidv7": "*" }, "optionalPeers": ["better-sqlite3", "expo-sqlite", "lmdb", "uuidv7"] }, "sha512-rxFslurkhY6rCDhqXNtkmnZ7CcIQBR9ngU5kOl6AiCRyiEUN5/C0OPd/x1nUZauwOFsF9fU8V9ljeL/NoCYfww=="],
 
     "@triplit/logger": ["@triplit/logger@0.0.3", "", { "peerDependencies": { "typescript": "^5.0.0" } }, "sha512-hHcoD6/BsNwBtXjEp8Wiy0/YA2SqIYXd1nMukEPBmFkjT7Cd30eqtsBRT0NRq2mIFX2mr5h9JaO27zDToKnwdw=="],
 
-    "@triplit/react": ["@triplit/react@1.0.47", "", { "dependencies": { "@triplit/client": "^1.0.47" }, "peerDependencies": { "react": "*" } }, "sha512-p4ulfR7SmkzFrAsa/LMbe/D5Pc2pEu2d8UvApecLmcn5280r8GoD6T3cmDn9GJprM06h7Sov+86BIRd2pc/QUA=="],
+    "@triplit/react": ["@triplit/react@1.0.48", "", { "dependencies": { "@triplit/client": "^1.0.48" }, "peerDependencies": { "react": "*" } }, "sha512-Dv5nDg218Pc05D/5jecctOCqK0AsEyvYNvlH4/j6dwao24LuVP+z1e60y86g954CwLWF4tQrdDx5jD62LEGqXQ=="],
 
     "@trpc/client": ["@trpc/client@11.0.0-rc.700", "", { "peerDependencies": { "@trpc/server": "11.0.0-rc.700+e5c0c1a82", "typescript": ">=5.7.2" } }, "sha512-8yktSkK/jbDss4pA+3EwwDY972qBrvGN49Kpa7oA/0My40YohlEwrEwLLI5+rdICUi3MFv7jkqzKydgXHJJPRw=="],
 

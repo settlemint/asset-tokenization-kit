@@ -65,7 +65,7 @@ async function _issueClaim(
     encodedClaimData
   );
 
-  const identityContract = actor.getContractInstance({
+  const identityContract = claimIssuer.getContractInstance({
     address: identityAddress,
     abi: ATKContracts.identity,
   });
