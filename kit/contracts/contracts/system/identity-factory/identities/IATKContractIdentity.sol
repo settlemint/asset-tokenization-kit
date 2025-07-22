@@ -17,4 +17,12 @@ interface IATKContractIdentity is IIdentity {
     /// @notice Returns the address of the contract that owns this identity
     /// @return The contract address
     function contractAddress() external view returns (address);
+
+    /// @notice Registers a claim authorization contract
+    /// @param authorizationContract The address of the contract implementing IClaimAuthorizer
+    function registerClaimAuthorizationContract(address authorizationContract) external;
+
+    /// @notice Removes a claim authorization contract
+    /// @param authorizationContract The address of the contract to remove
+    function removeClaimAuthorizationContract(address authorizationContract) external;
 }

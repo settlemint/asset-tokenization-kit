@@ -175,8 +175,9 @@ contract ATKIdentityFactoryImplementation is
     /// 3. Interacts with the newly deployed identity contract (as `IERC734`) to add any additional `_managementKeys`
     /// provided.
     ///    It ensures a management key is not the wallet itself (which is already a manager).
-    /// 4. Stores the mapping from the `_wallet` address to the new `identity` contract address.
-    /// 5. Emits an `IdentityCreated` event.
+    /// 4. Registers the trusted issuers registry as a claim authorization contract on the identity.
+    /// 5. Stores the mapping from the `_wallet` address to the new `identity` contract address.
+    /// 6. Emits an `IdentityCreated` event.
     /// @param _wallet The investor wallet address for which the identity is being created. This address will also be
     /// set as an initial manager of the identity.
     /// @param _managementKeys An array of `bytes32` values representing additional management keys (keccak256 hashes of
@@ -215,6 +216,10 @@ contract ATKIdentityFactoryImplementation is
             }
         }
 
+        // Register the trusted issuers registry as a claim authorization contract
+        address trustedIssuersRegistry = IATKSystem(_system).trustedIssuersRegistry();
+        IATKIdentity(identity).registerClaimAuthorizationContract(trustedIssuersRegistry);
+
         _identities[_wallet] = identity;
         emit IdentityCreated(_msgSender(), identity, _wallet);
         return identity;
@@ -226,8 +231,9 @@ contract ATKIdentityFactoryImplementation is
     /// 1. Validates that `_contract` is not zero address and that an identity doesn't already exist for this contract.
     /// 2. Verifies the contract implements IContractWithIdentity interface.
     /// 3. Calls `_createAndRegisterContractIdentity` to handle the deterministic deployment.
-    /// 4. Stores the mapping from the `_contract` address to the new `identity` contract address.
-    /// 5. Emits `ContractIdentityCreated` event.
+    /// 4. Registers the trusted issuers registry as a claim authorization contract on the identity.
+    /// 5. Stores the mapping from the `_contract` address to the new `identity` contract address.
+    /// 6. Emits `ContractIdentityCreated` event.
     /// @param _contract The address of the contract implementing IContractWithIdentity for which the identity is being
     /// created.
     /// @return address The address of the newly created identity contract.
@@ -242,6 +248,10 @@ contract ATKIdentityFactoryImplementation is
 
         // Deploy identity with address-based salt
         address identity = _createAndRegisterContractIdentity(_contract);
+
+        // Register the trusted issuers registry as a claim authorization contract
+        address trustedIssuersRegistry = IATKSystem(_system).trustedIssuersRegistry();
+        IATKContractIdentity(identity).registerClaimAuthorizationContract(trustedIssuersRegistry);
 
         _contractIdentities[_contract] = identity;
         emit ContractIdentityCreated(_msgSender(), identity, _contract);
