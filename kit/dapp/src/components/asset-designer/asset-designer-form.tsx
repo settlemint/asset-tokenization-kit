@@ -1,4 +1,4 @@
-import { AssetBasics } from "@/components/asset-designer/asset-basics";
+import { AssetBasics } from "@/components/asset-designer/asset-basics/asset";
 import { SelectAssetType } from "@/components/asset-designer/select-asset-type";
 import {
   assetDesignerFormOptions,
