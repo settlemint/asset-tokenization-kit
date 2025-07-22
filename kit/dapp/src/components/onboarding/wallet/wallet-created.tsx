@@ -6,8 +6,10 @@ import { NULL_ADDRESS } from "@/lib/constants/addresses";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { CircleCheckBigIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function WalletCreated() {
+  const { t } = useTranslation(["common", "onboarding"]);
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
   const { completeStepAndNavigate } = useOnboardingNavigation();
 
@@ -23,14 +25,14 @@ export function WalletCreated() {
 
           <div className="space-y-2">
             <p className="text-base text-muted-foreground">
-              Congratulations! Your Web3 wallet has been successfully created
+              {t("onboarding:wallet.success-message")}
             </p>
           </div>
         </div>
 
         <div className="space-y-4">
           <h3 className="text-base font-medium text-foreground">
-            This is your wallet address
+            {t("onboarding:wallet.wallet-address-title")}
           </h3>
 
           <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 space-y-3">
@@ -44,11 +46,11 @@ export function WalletCreated() {
           </div>
         </div>
       </div>
-      <footer>
+      <footer className="mt-6">
         <Button
           onClick={() => void completeStepAndNavigate(OnboardingStep.wallet)}
         >
-          Continue
+          {t("common:continue")}
         </Button>
       </footer>
     </>

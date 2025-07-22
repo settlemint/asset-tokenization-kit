@@ -14,6 +14,7 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 const logger = createLogger();
@@ -30,6 +31,7 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
+  const { t } = useTranslation(["common"]);
   const queryClient = useQueryClient();
   const { navigateToStep, completeStepAndNavigate } = useOnboardingNavigation();
 
@@ -171,7 +173,7 @@ function RouteComponent() {
                 onClick={onPrevious}
                 disabled={isSettingUpdating}
               >
-                Previous
+                {t("common:previous")}
               </Button>
               <Button
                 type="button"

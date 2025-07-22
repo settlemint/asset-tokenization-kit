@@ -88,12 +88,6 @@ export const UserSchema = z.object({
    * Optional as it may not be set if KYC is not completed.
    */
   lastName: z.string().optional(),
-
-  /**
-   * User's verification types.
-   * This is used to track the user's verification methods.
-   */
-  verificationTypes: z.array(verificationType),
 });
 
 /**
@@ -122,6 +116,12 @@ export const UserSchema = z.object({
  */
 export const UserMeSchema = z.object({
   ...UserSchema.shape,
+
+  /**
+   * User's verification types.
+   * This is used to track the user's verification methods.
+   */
+  verificationTypes: z.array(verificationType),
 
   /**
    * User's onboarding state.

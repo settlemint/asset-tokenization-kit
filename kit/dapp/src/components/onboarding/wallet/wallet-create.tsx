@@ -3,9 +3,11 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/orpc-client";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export function CreateWallet() {
+  const { t } = useTranslation(["onboarding"]);
   const { refreshUserState } = useOnboardingNavigation();
 
   const { mutateAsync: createWallet, isPending: isWalletCreating } =
@@ -19,11 +21,11 @@ export function CreateWallet() {
 
   return (
     <>
-      <div className="h-full flex flex-col">
+      <div className="flex flex-col">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold">Your Wallet</h2>
+          <h2 className="text-xl font-semibold">{t("steps.wallet.title")}</h2>
           <p className="text-sm text-muted-foreground pt-2">
-            Your Digital Key to the Blockchain
+            {t("wallet.subtitle")}
           </p>
         </div>
       </div>
@@ -32,32 +34,24 @@ export function CreateWallet() {
           <div className="space-y-8">
             <div className="space-y-6">
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-foreground">
-                  Your Digital Key to the Blockchain
-                </h3>
                 <p className="text-base text-foreground leading-relaxed">
-                  Think of your wallet as your master key that unlocks all your
-                  digital assets and identity on the blockchain. It's a secure
-                  set of cryptographic codes that proves you own your tokens and
-                  allows you to authorize transactions.
+                  {t("wallet.intro")}
                 </p>
               </div>
 
               <div className="space-y-5">
                 <h4 className="text-base font-semibold text-foreground">
-                  What your wallet enables:
+                  {t("wallet.what-your-wallet-enables")}
                 </h4>
 
                 <div className="space-y-4">
                   <BulletPoint>
                     <div>
                       <h5 className="font-medium text-foreground mb-1">
-                        Asset Control
+                        {t("wallet.asset-control")}
                       </h5>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        View, manage, and interact with tokenized assets on the
-                        Asset Tokenization Kit platform. Your wallet gives you
-                        complete control over your digital assets.
+                        {t("wallet.asset-control-description")}
                       </p>
                     </div>
                   </BulletPoint>
@@ -65,12 +59,10 @@ export function CreateWallet() {
                   <BulletPoint>
                     <div>
                       <h5 className="font-medium text-foreground mb-1">
-                        Transaction Authorization
+                        {t("wallet.invest-in-digital-assets")}
                       </h5>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        Securely authorize every transaction - from trading
-                        tokens to registering your ONCHAINID - with your digital
-                        signature.
+                        {t("wallet.invest-in-digital-assets-description")}
                       </p>
                     </div>
                   </BulletPoint>
@@ -78,12 +70,10 @@ export function CreateWallet() {
                   <BulletPoint>
                     <div>
                       <h5 className="font-medium text-foreground mb-1">
-                        Identity Management
+                        {t("wallet.manage-your-digital-assets")}
                       </h5>
                       <p className="text-sm text-muted-foreground leading-relaxed">
-                        Your wallet forms the foundation for your unique
-                        ONCHAINID, linking your verified identity to all
-                        blockchain activities.
+                        {t("wallet.manage-your-digital-assets-description")}
                       </p>
                     </div>
                   </BulletPoint>
@@ -93,19 +83,21 @@ export function CreateWallet() {
           </div>
         </div>
       </div>
-      <footer>
+      <footer className="mt-6">
         <Button
           onClick={() => {
             toast.promise(createWallet({}), {
-              loading: "Creating your wallet...",
-              success: "Wallet created successfully!",
+              loading: t("wallet.creating-wallet"),
+              success: t("wallet.wallet-created-successfully"),
               error: (error: Error) =>
-                `Failed to create wallet: ${error.message}`,
+                t("wallet.failed-to-create-wallet", {
+                  error: error.message,
+                }),
             });
           }}
           disabled={isWalletCreating}
         >
-          {isWalletCreating ? "Creating..." : "Create my wallet"}
+          {isWalletCreating ? t("wallet.creating-wallet") : t("wallet.submit")}
         </Button>
       </footer>
     </>

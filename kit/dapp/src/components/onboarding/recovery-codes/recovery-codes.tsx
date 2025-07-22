@@ -1,33 +1,40 @@
-import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth.client";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { RecoveryCodesActions } from "./recovery-codes-actions";
 import { RecoveryCodesDisplay } from "./recovery-codes-display";
 import { RecoveryCodesWarning } from "./recovery-codes-warning";
 import { useRecoveryCodes } from "./use-recovery-codes";
 
+const logger = createLogger();
+
 export function RecoveryCodes() {
-  const { refreshUserState, completeStepAndNavigate } =
-    useOnboardingNavigation();
+  const { t } = useTranslation(["onboarding"]);
+  const { refreshUserState } = useOnboardingNavigation();
   const {
     mutate: generateRecoveryCodes,
     isPending: isGenerating,
     data: recoveryCodesData,
+    isSuccess: isGenerated,
+    isError: isGeneratedError,
   } = useMutation({
-    mutationFn: async () =>
-      await authClient.secretCodes.generate({
+    mutationFn: async () => {
+      return await authClient.secretCodes.generate({
         password: undefined,
-      }),
-    onSuccess: async () => {
-      await refreshUserState();
-      toast.success("Recovery codes generated successfully!");
+      });
+    },
+    onSuccess: () => {
+      toast.success(t("wallet-security.recovery-codes.generated-success"));
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to generate recovery codes");
+      toast.error(
+        error.message || t("wallet-security.recovery-codes.generated-error")
+      );
     },
   });
 
@@ -36,22 +43,44 @@ export function RecoveryCodes() {
     [recoveryCodesData]
   );
 
+  const onConfirm = useCallback(async () => {
+    try {
+      await authClient.secretCodes.confirm({
+        stored: true,
+      });
+      await refreshUserState();
+    } catch (error) {
+      logger.error("Failed to confirm recovery codes", error);
+      toast.error(t("wallet-security.recovery-codes.confirm-error"));
+    }
+  }, [refreshUserState, t]);
+
   const { handleCopyAll, handleDownload } = useRecoveryCodes(recoveryCodes);
 
   useEffect(() => {
-    generateRecoveryCodes();
-  }, [generateRecoveryCodes]);
+    const isFinished = isGenerated || isGeneratedError;
+    if (isGenerating || isFinished) {
+      return;
+    }
+    const debounceTimeout = setTimeout(() => {
+      generateRecoveryCodes();
+    }, 200); // 200ms debounce
+    return () => {
+      clearTimeout(debounceTimeout);
+    };
+  }, [generateRecoveryCodes, isGenerated, isGeneratedError, isGenerating]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold">Your secret codes</h2>
+        <h2 className="text-xl font-semibold">
+          {t("wallet-security.recovery-codes.title")}
+        </h2>
         <p className="text-sm text-muted-foreground pt-2">
-          Save these codes somewhere safe
+          {t("wallet-security.recovery-codes.description")}
         </p>
         <p className="text-sm pt-2">
-          These codes can be used to recover your wallet if you forget your pin
-          or lose access to your authenticator app.
+          {t("wallet-security.recovery-codes.description-2")}
         </p>
       </div>
 
@@ -75,12 +104,10 @@ export function RecoveryCodes() {
 
       <footer className="pt-6">
         <Button
-          onClick={async () => {
-            await completeStepAndNavigate(OnboardingStep.walletRecoveryCodes);
-          }}
+          onClick={onConfirm}
           disabled={isGenerating || recoveryCodes.length === 0}
         >
-          Confirm i've stored them
+          {t("wallet-security.recovery-codes.confirm")}
         </Button>
       </footer>
     </div>

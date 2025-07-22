@@ -2,8 +2,10 @@ import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Shield } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function SecuritySuccess() {
+  const { t } = useTranslation(["onboarding", "general"]);
   const { completeStepAndNavigate } = useOnboardingNavigation();
 
   return (
@@ -21,10 +23,10 @@ export function SecuritySuccess() {
 
       <div className="space-y-4">
         <h3 className="text-xl font-semibold text-foreground">
-          Your wallet is now secured!
+          {t("wallet-security.method-selector.success")}
         </h3>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Your security setup is complete.
+          {t("wallet-security.method-selector.success-description")}
         </p>
       </div>
 
@@ -35,7 +37,7 @@ export function SecuritySuccess() {
           }
           className="flex-1"
         >
-          Continue
+          {t("general:continue")}
         </Button>
       </div>
     </div>

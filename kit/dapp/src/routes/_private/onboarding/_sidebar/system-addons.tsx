@@ -1,11 +1,12 @@
-import { OnboardingStep } from "@/components/onboarding/state-machine";
-import { Button } from "@/components/ui/button";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { Button } from "@/components/ui/button";
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/system-addons"
@@ -16,6 +17,7 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
+  const { t } = useTranslation(["common"]);
   const { navigateToStep, completeStepAndNavigate } = useOnboardingNavigation();
 
   const onNext = () =>
@@ -42,10 +44,10 @@ function RouteComponent() {
       <div className="mt-8 pt-6 border-t border-border">
         <div className="flex justify-between">
           <Button type="button" variant="outline" onClick={onPrevious}>
-            Previous
+            {t("common:previous")}
           </Button>
           <Button type="button" onClick={onNext}>
-            Continue
+            {t("common:continue")}
           </Button>
         </div>
       </div>

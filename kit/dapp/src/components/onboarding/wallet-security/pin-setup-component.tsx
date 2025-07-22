@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth.client";
 import { pincode } from "@/lib/zod/validators/pincode";
 import { useForm } from "@tanstack/react-form";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
   const { refreshUserState } = useOnboardingNavigation();
+  const { t } = useTranslation(["onboarding", "common"]);
 
   const form = useForm({
     defaultValues: {
@@ -16,31 +18,35 @@ export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
     },
     validators: {
       onChange: ({ value }) => {
-        const errors: Record<string, string> = {};
+        const errors: Partial<Record<keyof typeof value, string>> = {};
 
         // Validate pincode
-        if (value.pincode && value.pincode.length === 6) {
+        if (value.pincode) {
           const pincodeResult = pincode().safeParse(value.pincode);
           if (!pincodeResult.success) {
-            errors.pincode = "Invalid PIN code format";
+            errors.pincode = t("wallet-security.pincode.invalid-pin-format");
           }
         }
 
         // Validate confirmPincode
-        if (value.confirmPincode && value.confirmPincode.length === 6) {
+        if (value.confirmPincode) {
           const confirmResult = pincode().safeParse(value.confirmPincode);
           if (!confirmResult.success) {
-            errors.confirmPincode = "Invalid PIN code format";
+            errors.confirmPincode = t(
+              "wallet-security.pincode.invalid-pin-format"
+            );
           }
         }
 
         // Check match when both are complete
         if (
-          value.pincode.length === 6 &&
-          value.confirmPincode.length === 6 &&
+          Object.keys(errors).length === 0 &&
+          value.pincode.length === value.confirmPincode.length &&
           value.pincode !== value.confirmPincode
         ) {
-          errors.confirmPincode = "PIN codes don't match";
+          errors.confirmPincode = t(
+            "wallet-security.pincode.pin-codes-dont-match"
+          );
         }
 
         return Object.keys(errors).length > 0 ? { fields: errors } : undefined;
@@ -51,7 +57,7 @@ export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
         pincode: value.pincode,
       });
       await refreshUserState();
-      toast.success("PIN code set successfully");
+      toast.success(t("wallet-security.pincode.success"));
       closeModal();
     },
   });
@@ -65,9 +71,11 @@ export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
       className="max-w-md mx-auto space-y-6"
     >
       <div className="text-center space-y-2">
-        <h3 className="text-lg font-semibold">Set up PIN Code</h3>
+        <h3 className="text-lg font-semibold">
+          {t("wallet-security.pincode.title")}
+        </h3>
         <p className="text-sm text-muted-foreground">
-          Create a 6-digit PIN code to secure your wallet transactions
+          {t("wallet-security.pincode.description")}
         </p>
       </div>
 
@@ -86,7 +94,7 @@ export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
                 {(field) => (
                   <div className="space-y-2">
                     <label className="text-sm font-medium block text-center">
-                      Enter PIN Code
+                      {t("wallet-security.pincode.enter-pin")}
                     </label>
                     <div className="flex justify-center">
                       <PincodeInput
@@ -109,7 +117,7 @@ export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
                   {(field) => (
                     <div className="space-y-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
                       <label className="text-sm font-medium block text-center">
-                        Confirm PIN Code
+                        {t("wallet-security.pincode.confirm-pin")}
                       </label>
                       <div className="flex justify-center">
                         <PincodeInput
@@ -126,7 +134,7 @@ export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
                         state.values.pincode === field.state.value &&
                         field.state.meta.errors.length === 0 && (
                           <p className="text-sm text-green-600 text-center">
-                            ✓ PIN codes match
+                            {t("wallet-security.pincode.pin-codes-match")}
                           </p>
                         )}
                     </div>
@@ -141,14 +149,16 @@ export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
                   onClick={closeModal}
                   className="flex-1"
                 >
-                  Cancel
+                  {t("common:actions.cancel")}
                 </Button>
                 <Button
                   type="submit"
                   disabled={!isValid || state.isSubmitting}
                   className="flex-1"
                 >
-                  {state.isSubmitting ? "Setting up..." : "Set PIN Code"}
+                  {state.isSubmitting
+                    ? t("wallet-security.pincode.submitting")
+                    : t("wallet-security.pincode.set-pin")}
                 </Button>
               </div>
             </div>

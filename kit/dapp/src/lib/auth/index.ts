@@ -182,6 +182,15 @@ const options = {
         unique: true,
         input: false,
       },
+      /**
+       * Whether the user has confirmed the secret codes.
+       */
+      secretCodesConfirmed: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
     },
   },
   /**
