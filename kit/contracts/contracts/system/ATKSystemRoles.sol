@@ -58,58 +58,58 @@ library ATKSystemRoles {
     /// @dev This role allows adding/removing addresses from the bypass list that can bypass compliance checks
     bytes32 public constant BYPASS_LIST_MANAGER_ADMIN_ROLE = keccak256("BYPASS_LIST_MANAGER_ADMIN_ROLE");
 
-    // @notice Role identifier for addresses that can manage the system
-    // @dev This role bootstraps the system, manage upgrades, implementation references
+    /// @notice Role identifier for addresses that can manage the system
+    /// @dev This role bootstraps the system, manage upgrades, implementation references
     bytes32 public constant SYSTEM_MANAGER_ROLE = keccak256("SYSTEM_MANAGER_ROLE");
 
-    // @notice Role identifier for addresses that can manage the identity registry
-    // @dev This role register identities, recover identities, manage user onboarding
+    /// @notice Role identifier for addresses that can manage the identity registry
+    /// @dev This role register identities, recover identities, manage user onboarding
     bytes32 public constant IDENTITY_MANAGER_ROLE = keccak256("IDENTITY_MANAGER_ROLE");
 
-    // @notice Role identifier for addresses that can manage the token
-    // @dev This role manages token configuration and deployment
+    /// @notice Role identifier for addresses that can manage the token
+    /// @dev This role manages token configuration and deployment
     bytes32 public constant TOKEN_MANAGER_ROLE = keccak256("TOKEN_MANAGER_ROLE");
 
-    // @notice Role identifier for addresses that can manage the compliance
-    // @dev this role registers compliance modules and has access on the compliance modules to configure global things
-    // also has access to the bypass list
+    /// @notice Role identifier for addresses that can manage the compliance
+    /// @dev this role registers compliance modules and has access on the compliance modules to configure global things
+    /// also has access to the bypass list
     bytes32 public constant COMPLIANCE_MANAGER_ROLE = keccak256("COMPLIANCE_MANAGER_ROLE");
 
-    // @notice Role identifier for addresses that can manage the addons
-    // @dev This role manages the addons, can add new addons, remove existing addons, and upgrade existing addons
+    /// @notice Role identifier for addresses that can manage the addons
+    /// @dev This role manages the addons, can add new addons, remove existing addons, and upgrade existing addons
     bytes32 public constant ADDON_MANAGER_ROLE = keccak256("ADDON_MANAGER_ROLE");
 
-    // @notice Role identifier for addresses that can manage the claim policies
-    // @dev This role manages trusted issuers and claim topics
+    /// @notice Role identifier for addresses that can manage the claim policies
+    /// @dev This role manages trusted issuers and claim topics
     bytes32 public constant CLAIM_POLICY_MANAGER_ROLE = keccak256("CLAIM_POLICY_MANAGER_ROLE");
 
-    // @notice Role identifier for addresses that can audit the system
-    // @dev This role is view only. It's for permissions, identities, audit logs and system state
+    /// @notice Role identifier for addresses that can audit the system
+    /// @dev This role is view only. It's for permissions, identities, audit logs and system state
     bytes32 public constant AUDITOR_ROLE = keccak256("AUDITOR_ROLE");
 
-    // @notice Role identifier for addresses that can manage the system modules
-    // @dev This role is used to manage the system modules. It is allowed to register compliance modules, has access to
-    // the register topic schemes. is the roleAdmin of IDENTITY_REGISTRY_MODULE, TOKEN_FACTORY_REGISTRY_MODULE_ROLE,
-    // ADDON_REGISTRY_MODULE_ROLE
+    /// @notice Role identifier for addresses that can manage the system modules
+    /// @dev This role is used to manage the system modules. It is allowed to register compliance modules, has access to
+    /// the register topic schemes. is the roleAdmin of IDENTITY_REGISTRY_MODULE, TOKEN_FACTORY_REGISTRY_MODULE_ROLE,
+    /// ADDON_REGISTRY_MODULE_ROLE
     bytes32 public constant SYSTEM_MODULE_ROLE = keccak256("SYSTEM_MODULE_ROLE");
 
-    // @notice Role identifier for addresses that can manage the identity registry module
-    // @dev This role can modify storage on the identity storage contract
+    /// @notice Role identifier for addresses that can manage the identity registry module
+    /// @dev This role can modify storage on the identity storage contract
     bytes32 public constant IDENTITY_REGISTRY_MODULE_ROLE = keccak256("IDENTITY_REGISTRY_MODULE_ROLE");
 
-    // @notice Role identifier for addresses that can manage the token factory registry module
-    // @dev This role is the adminRole of TOKEN_FACTORY_MODULE_ROLE
+    /// @notice Role identifier for addresses that can manage the token factory registry module
+    /// @dev This role is the adminRole of TOKEN_FACTORY_MODULE_ROLE
     bytes32 public constant TOKEN_FACTORY_REGISTRY_MODULE_ROLE = keccak256("TOKEN_FACTORY_REGISTRY_MODULE_ROLE");
 
-    // @notice Role identifier for addresses that can manage the token factory module
-    // @dev This role will be able to add token contracts to the allowlist of compliance
+    /// @notice Role identifier for addresses that can manage the token factory module
+    /// @dev This role will be able to add token contracts to the allowlist of compliance
     bytes32 public constant TOKEN_FACTORY_MODULE_ROLE = keccak256("TOKEN_FACTORY_MODULE_ROLE");
 
-    // @notice Role identifier for addresses that can manage the addon registry module
-    // @dev This role can modify storage on the addon registry contract
+    /// @notice Role identifier for addresses that can manage the addon registry module
+    /// @dev This role can modify storage on the addon registry contract
     bytes32 public constant ADDON_REGISTRY_MODULE_ROLE = keccak256("ADDON_REGISTRY_MODULE_ROLE");
 
-    // @notice Role identifier for addresses that can manage the addon module
-    // @dev This role will be able to add addons to the allowlist of compliance
+    /// @notice Role identifier for addresses that can manage the addon module
+    /// @dev This role will be able to add addons to the allowlist of compliance
     bytes32 public constant ADDON_MODULE_ROLE = keccak256("ADDON_MODULE_ROLE");
 }

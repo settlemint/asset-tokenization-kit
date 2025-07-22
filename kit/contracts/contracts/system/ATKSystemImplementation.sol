@@ -23,9 +23,6 @@ import {
     IdentityRegistryStorageImplementationNotSet,
     IdentityVerificationModuleNotSet,
     InvalidImplementationInterface,
-    InvalidTokenFactoryAddress,
-    InvalidTokenImplementationAddress,
-    InvalidTokenImplementationInterface,
     SystemAccessManagerImplementationNotSet,
     SystemAlreadyBootstrapped,
     TokenAccessManagerImplementationNotSet,
@@ -229,6 +226,8 @@ contract ATKSystemImplementation is
     /// @param complianceModuleRegistryImplementation_ The initial address of the compliance module registry module's
     /// logic contract.
     /// @param addonRegistryImplementation_ The initial address of the addon registry module's logic contract.
+    /// @param systemAccessManagerImplementation_ The initial address of the system access manager module's logic
+    /// contract.
     function initialize(
         address initialAdmin_,
         address complianceImplementation_,

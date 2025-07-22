@@ -102,6 +102,9 @@ interface IATKSystem is IERC165 {
     /// @param systemAddonRegistryProxy The address of the deployed ATKSystemAddonRegistryProxy contract.
     /// @param complianceModuleRegistryProxy The address of the deployed ATKComplianceModuleRegistryProxy contract.
     /// @param identityVerificationModule The address of the deployed IdentityVerificationModule contract.
+    /// @param systemAccessManagerProxy The address of the deployed ATKSystemAccessManagerProxy contract.
+    /// @param systemAccessManagerImplementation The address of the deployed ATKSystemAccessManagerImplementation
+    /// contract.
     event Bootstrapped(
         address indexed sender,
         address indexed complianceProxy,
