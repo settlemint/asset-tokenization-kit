@@ -47,6 +47,7 @@ contract ClaimAuthorizationSystemTest is Test {
     address user = makeAddr("user");
     address admin = makeAddr("admin");
     address unauthorizedKey = makeAddr("unauthorizedKey");
+    address issuerOwner = makeAddr("issuerOwner");
 
     function setUp() public {
         // Deploy identity system with proxy
@@ -69,10 +70,10 @@ contract ClaimAuthorizationSystemTest is Test {
         mockIssuer = new MockClaimIssuer();
         mockAuthContract = new MockAuthorizationContract();
 
-        // Deploy issuer identity (using same logic contract)
+        // Deploy issuer identity (using same logic contract but different owner)
         issuerIdentityProxy = new ERC1967Proxy(
             address(identityLogic),
-            abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, owner, new address[](0))
+            abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, issuerOwner, new address[](0))
         );
         issuerIdentity = ATKIdentityImplementation(address(issuerIdentityProxy));
     }
@@ -296,13 +297,13 @@ contract ClaimAuthorizationSystemTest is Test {
         address issuerManagementKey = makeAddr("issuerManagementKey");
         address claimSignerKey = makeAddr("claimSignerKey");
 
-        // Add a separate management key to the issuer identity (different from owner)
-        vm.prank(owner);
+        // Add additional management and claim signer keys to the issuer identity (using issuerOwner)
+        vm.prank(issuerOwner);
         bytes32 issuerManagementKeyHash = keccak256(abi.encode(issuerManagementKey));
         issuerIdentity.addKey(issuerManagementKeyHash, MANAGEMENT_KEY_PURPOSE, 1);
 
         // Add a claim signer key to the issuer identity
-        vm.prank(owner);
+        vm.prank(issuerOwner);
         bytes32 claimSignerKeyHash = keccak256(abi.encode(claimSignerKey));
         issuerIdentity.addKey(claimSignerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
 
