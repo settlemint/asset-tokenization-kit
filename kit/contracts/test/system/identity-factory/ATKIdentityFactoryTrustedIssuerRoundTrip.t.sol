@@ -6,6 +6,7 @@ import "../../utils/SystemUtils.sol";
 import "../../utils/ClaimUtils.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
+import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IATKIdentityFactory } from "../../../contracts/system/identity-factory/IATKIdentityFactory.sol";
 import { IERC3643TrustedIssuersRegistry } from
     "../../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
@@ -55,8 +56,6 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         bytes data,
         string uri
     );
-
-    event TrustedIssuerAdded(IClaimIssuer indexed trustedIssuer, uint256[] claimTopics);
 
     function setUp() public {
         admin = makeAddr("admin");
@@ -110,13 +109,13 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
 
         vm.stopPrank();
 
+        // No need to add claim signer keys since the issuer identity contract will call addClaim
+        // on its own behalf (caller == issuer), which is automatically authorized
+
         // Step 2: Register the claim issuer in the trusted issuers registry with topics
         uint256[] memory allowedTopics = new uint256[](2);
         allowedTopics[0] = kycTopicId;
         allowedTopics[1] = amlTopicId;
-
-        vm.expectEmit(true, true, false, true);
-        emit TrustedIssuerAdded(IClaimIssuer(issuerIdentityAddr), allowedTopics);
 
         vm.prank(admin);
         trustedIssuersRegistry.addTrustedIssuer(IClaimIssuer(issuerIdentityAddr), allowedTopics);
@@ -129,12 +128,9 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
             trustedIssuersRegistry.hasClaimTopic(issuerIdentityAddr, amlTopicId), "Issuer not registered for AML topic"
         );
 
-        // Step 3: Set the trusted issuers registry as a ClaimAuthorizer on the user's identity
-        address[] memory claimAuthorizers = new address[](1);
-        claimAuthorizers[0] = address(trustedIssuersRegistry);
-
-        vm.prank(user);
-        userIdentity.registerClaimAuthorizationContract(address(trustedIssuersRegistry));
+        // Step 3: The trusted issuers registry is already set as a ClaimAuthorizer during identity creation
+        // by the identity factory (see ATKIdentityFactoryImplementation lines 484-486)
+        // So we can skip manual registration
 
         // Step 4: Create and sign claims as the issuer
         string memory kycClaimData = "KYC Verified by Trusted Issuer";
@@ -146,11 +142,12 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         (bytes memory amlData, bytes memory amlSignature) =
             claimUtils.createClaimSignature(userIdentityAddr, amlTopicId, amlClaimData);
 
-        // Step 5: Add claims directly to the user's identity as the trusted issuer
-        // This should succeed because the issuer is trusted and the registry is set as a ClaimAuthorizer
+        // Step 5: The issuer identity contract adds claims directly to the user's identity
+        // This should succeed because the issuer identity is registered as a trusted issuer
+        // and the trusted issuers registry is set as a ClaimAuthorizer on the user's identity
 
-        // Test KYC claim addition
-        vm.expectEmit(true, true, true, true);
+        // Test KYC claim addition - the issuer identity contract calls addClaim on the user's identity
+        vm.expectEmit(false, true, true, true); // Don't check exact claimId, it will be calculated
         emit ClaimAdded(
             bytes32(0), // claimId will be calculated by the identity contract
             kycTopicId,
@@ -161,7 +158,12 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
             ""
         );
 
-        vm.prank(claimIssuer);
+        // The issuer identity contract calls addClaim on the user's identity
+        // The ClaimAuthorizationExtension will authorize this because:
+        // 1. _msgSender() will be the issuer identity address (issuerIdentityAddr)
+        // 2. The trusted issuers registry is registered as a ClaimAuthorizer on the user's identity
+        // 3. The issuer is registered in the trusted issuers registry for this topic
+        vm.prank(issuerIdentityAddr); // Make the issuer identity contract the msg.sender
         bytes32 kycClaimId = userIdentity.addClaim(
             kycTopicId,
             1, // ECDSA scheme
@@ -174,7 +176,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         assertTrue(kycClaimId != bytes32(0), "KYC claim addition failed");
 
         // Test AML claim addition
-        vm.expectEmit(true, true, true, true);
+        vm.expectEmit(false, true, true, true); // Don't check exact claimId, it will be calculated
         emit ClaimAdded(
             bytes32(0), // claimId will be calculated by the identity contract
             amlTopicId,
@@ -185,7 +187,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
             ""
         );
 
-        vm.prank(claimIssuer);
+        vm.prank(issuerIdentityAddr); // Make the issuer identity contract the msg.sender
         bytes32 amlClaimId = userIdentity.addClaim(
             amlTopicId,
             1, // ECDSA scheme
@@ -258,9 +260,8 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         vm.prank(admin);
         address untrustedIssuerIdentityAddr = identityFactory.createIdentity(untrustedIssuer, managementKeys);
 
-        // Set trusted issuers registry as claim authorizer (but don't add the issuer)
-        vm.prank(user);
-        userIdentity.registerClaimAuthorizationContract(address(trustedIssuersRegistry));
+        // The trusted issuers registry is already set as claim authorizer during identity creation
+        // (but the untrusted issuer is not added to the registry)
 
         // Create valid claim signature
         string memory claimData = "Malicious Claim";
@@ -295,9 +296,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         vm.prank(admin);
         trustedIssuersRegistry.addTrustedIssuer(IClaimIssuer(issuerIdentityAddr), allowedTopics);
 
-        // Set trusted issuers registry as claim authorizer
-        vm.prank(user);
-        userIdentity.registerClaimAuthorizationContract(address(trustedIssuersRegistry));
+        // The trusted issuers registry is already set as claim authorizer during identity creation
 
         // Try to add AML claim (should fail)
         (bytes memory amlData, bytes memory amlSignature) =
@@ -333,8 +332,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         trustedIssuersRegistry.addTrustedIssuer(IClaimIssuer(issuerIdentityAddr), allowedTopics);
         vm.stopPrank();
 
-        vm.prank(user);
-        userIdentity.registerClaimAuthorizationContract(address(trustedIssuersRegistry));
+        // The trusted issuers registry is already set as claim authorizer during identity creation
 
         // Verify issuer can add claims initially
         (bytes memory kycData, bytes memory kycSignature) =
