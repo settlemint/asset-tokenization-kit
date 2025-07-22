@@ -74,14 +74,12 @@ export const CommonBasics = withForm({
     return (
       <>
         <CommonFields form={form} />
-        <form.AppForm>
-          <form.StepSubmitButton
-            label="Next"
-            onStepSubmit={onStepSubmit}
-            validate={commonFields}
-            checkRequiredFn={isRequiredField}
-          />
-        </form.AppForm>
+        <form.StepSubmitButton
+          label="Next"
+          onStepSubmit={onStepSubmit}
+          validate={commonFields}
+          checkRequiredFn={isRequiredField}
+        />
       </>
     );
   },

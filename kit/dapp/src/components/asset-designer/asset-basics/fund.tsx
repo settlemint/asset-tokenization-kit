@@ -34,14 +34,13 @@ export const FundBasics = withForm({
             />
           )}
         />
-        <form.AppForm>
-          <form.StepSubmitButton
-            label="Next"
-            onStepSubmit={onStepSubmit}
-            validate={fundFields}
-            checkRequiredFn={isRequiredField}
-          />
-        </form.AppForm>
+
+        <form.StepSubmitButton
+          label="Next"
+          onStepSubmit={onStepSubmit}
+          validate={fundFields}
+          checkRequiredFn={isRequiredField}
+        />
       </>
     );
   },

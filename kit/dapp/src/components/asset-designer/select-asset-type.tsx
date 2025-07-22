@@ -60,14 +60,13 @@ export const SelectAssetType = withForm({
             />
           )}
         />
-        <form.AppForm>
+
           <form.StepSubmitButton
             label="Next"
             onStepSubmit={onStepSubmit}
             validate={assetTypeFields}
             checkRequiredFn={isRequiredField}
           />
-        </form.AppForm>
       </>
     );
   },

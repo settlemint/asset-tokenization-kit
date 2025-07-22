@@ -44,14 +44,12 @@ export const BondBasics = withForm({
             />
           )}
         />
-        <form.AppForm>
-          <form.StepSubmitButton
-            label="Next"
-            onStepSubmit={onStepSubmit}
-            validate={bondFields}
-            checkRequiredFn={isRequiredField}
-          />
-        </form.AppForm>
+        <form.StepSubmitButton
+          label="Next"
+          onStepSubmit={onStepSubmit}
+          validate={bondFields}
+          checkRequiredFn={isRequiredField}
+        />
       </>
     );
   },
