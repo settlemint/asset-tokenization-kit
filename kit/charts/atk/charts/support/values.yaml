@@ -317,36 +317,55 @@ reloader:
 
 minio:
   enabled: true
+  image:
+    repository: docker.io/minio/minio
+    tag: RELEASE.2025-07-18T21-56-31Z
+  fullnameOverride: 'minio'
+  mode: standalone
+  replicas: 1
+  persistence:
+    enabled: true
+    size: 1Gi
+  rootUser: "admin"
+  rootPassword: "atk-password"
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 200m
+
+  # Automatic bucket creation
+  buckets:
+    - name: atk
+      policy: none
+      purge: false
+
+  # Automatic user/service account creation
+  users:
+    - accessKey: atk-service
+      secretKey: atk-service-secret
+      policy: readwrite
+
+  # Ingress configuration
+  ingress:
+    enabled: true
+    ingressClassName: atk-nginx
+    path: /
+    hosts:
+      - minio.k8s.orb.local
+
+  consoleIngress:
+    enabled: true
+    ingressClassName: atk-nginx
+    path: /
+    hosts:
+      - minio-console.k8s.orb.local
+
+  # Image pull secrets (using global scope to avoid template bug)
   global:
-    security:
-      allowInsecureImages: true
     imagePullSecrets:
       - image-pull-secret-docker
       - image-pull-secret-ghcr
       - image-pull-secret-harbor
-  image:
-    registry: docker.io
-  fullnameOverride: 'minio'
-  # defaultBuckets: atk
-  auth:
-    rootUser: admin
-    rootPassword: atk-password
-  statefulset:
-    replicaCount: 1
-  provisioning:
-    enabled: true
-    config:
-      - name: region
-        options:
-          name: eu-central-1
-    extraCommands: |-
-      if ! mc admin user svcacct info provisioning atk-service >/dev/null 2>&1; then
-        echo "Adding atk-service user"
-        mc admin user svcacct add provisioning "admin" --access-key "atk-service" --secret-key "atk-service-secret"
-      fi
-  console:
-    image:
-      registry: docker.io
-  defaultInitContainers:
-    image:
-      registry: docker.io
