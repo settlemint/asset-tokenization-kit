@@ -5,13 +5,11 @@ import js from "@eslint/js";
 import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginRouter from "@tanstack/eslint-plugin-router";
 import boundaries from "eslint-plugin-boundaries";
-import importPlugin from "eslint-plugin-import";
 import noBarrelFiles from "eslint-plugin-no-barrel-files";
 import pluginReact from "eslint-plugin-react";
 import reactCompiler from "eslint-plugin-react-compiler";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactPerfPlugin from "eslint-plugin-react-perf";
-import pluginSecurity from "eslint-plugin-security";
 import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -124,13 +122,6 @@ export default defineConfig([
   // TanStack
   ...pluginQuery.configs["flat/recommended"],
   ...pluginRouter.configs["flat/recommended"],
-
-  // Security
-  pluginSecurity.configs.recommended,
-
-  // Import
-  importPlugin.flatConfigs.recommended,
-  importPlugin.flatConfigs.typescript,
 
   // No Barrel Files
   noBarrelFiles.flat,
@@ -275,7 +266,6 @@ export default defineConfig([
       // ========================================================================
       // IMPORT RULES
       // ========================================================================
-      "import/no-unresolved": "off", // TypeScript handles this
       "no-restricted-imports": [
         "error",
         {
@@ -284,11 +274,6 @@ export default defineConfig([
           message: "Please import `z` from `zod` instead.",
         },
       ],
-
-      // ========================================================================
-      // SECURITY RULES
-      // ========================================================================
-      "security/detect-object-injection": "off", // Too many false positives
 
       "react-perf/jsx-no-new-object-as-prop": "off",
     },

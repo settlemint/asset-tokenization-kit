@@ -2,38 +2,9 @@ import {
   MutationInputSchemaWithContract,
   MutationOutputSchema,
 } from "@/orpc/routes/common/schemas/mutation.schema";
-import { TransactionTrackingMessagesSchema } from "@/orpc/routes/common/schemas/transaction-messages.schema";
-import { z } from "zod";
+import type { z } from "zod";
 
-/**
- * Messages schema for token pause operation
- */
-export const TokenPauseMessagesSchema =
-  TransactionTrackingMessagesSchema.extend({
-    // Initial states
-    preparingPause: z
-      .string()
-      .optional()
-      .default("Preparing to pause token..."),
-    submittingPause: z
-      .string()
-      .optional()
-      .default("Submitting pause transaction..."),
-
-    // Success states
-    tokenPaused: z.string().optional().default("Token paused successfully"),
-
-    // Error states
-    pauseFailed: z.string().optional().default("Failed to pause token"),
-    defaultError: z
-      .string()
-      .optional()
-      .default("An error occurred while pausing the token"),
-  });
-
-export const TokenPauseInputSchema = MutationInputSchemaWithContract.extend({
-  messages: TokenPauseMessagesSchema.optional(),
-});
+export const TokenPauseInputSchema = MutationInputSchemaWithContract;
 
 /**
  * Output schema for token pause operation

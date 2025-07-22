@@ -36,8 +36,8 @@ function _getTimeoutConfig(): NetworkTimeoutConfig {
   if (chain.id === 31337) {
     return {
       pollingInterval: 50, // 50ms - fast local feedback
-      retryCount: 100, // 5 second timeout (50ms * 100 = 5s)
-      timeoutDescription: "5 seconds",
+      retryCount: 500, // 25 second timeout (50ms * 500 = 25s)
+      timeoutDescription: "25 seconds",
     };
   }
 

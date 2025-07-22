@@ -318,6 +318,15 @@ standards.
   formatValidationError
 - **State Management**: Prefer URL state for persistent UI configuration, local
   state for ephemeral interactions
+- **TanStack Query**: Configure staleTime/cacheTime for performance. Use select
+  option to transform data and minimize re-renders. Destructure only needed
+  properties (avoid spread operator). Keep select functions stable (outside
+  component or in useCallback). Never copy query data to local state - use
+  directly. Use invalidateQueries for mutations. Prefetch data in loaders for SSR
+- **TanStack Router**: Use route loaders for data fetching (separates data logic
+  from UI). Enable defaultPreload: 'intent' for automatic link preloading. Use
+  selective state subscription (Route.useSearch({ select: s => s.param })) to
+  minimize re-renders. Enable structural sharing for URL state stability
 - **Imports**: No barrel files (index.ts exports); during refactors, if you
   encounter barrel files, remove them
 - **Testing**: Use `bun:test`, not vitest; tests are stored next to the
@@ -326,8 +335,27 @@ standards.
 - **Security**: Never commit secrets, validate all inputs
 - **Type Safety**: Use full types when possible, e.g. User and not { role?:
   string } if you just need the role; `as any` is NEVER allowed!
-- **Performance**: Only optimize performance after measuring with React DevTools
-  Profiler
+- **Performance**: The project uses React Compiler (babel-plugin-react-compiler)
+  for automatic optimizations. DO NOT go overboard with useMemo or useCallback
+  unless a component has the "use no memo" directive (only used for TanStack
+  Table compatibility) or linting requires it. React Compiler handles
+  memoization automatically
+- **TanStack Form**: Use headless hooks (useForm, useField) for fine-grained
+  updates - each field component subscribes to its own state slice. Define form
+  types/schemas (Zod/Yup) for type safety. Prefer schema validation on
+  blur/submit over keystroke. Use form.reset() for state management. Trust
+  TanStack Form's React compliance - it follows hooks rules rigorously
+- **Component Structure**: Keep components small and focused for better compiler
+  optimization. Follow Hooks Rules strictly - no conditional hooks or early
+  returns that bypass hooks. Prefer plain functions over manual memoization
+- **Static Hoisting**: Move constants and pure helpers outside components when
+  they don't depend on props/state. Use custom hooks for reusable stateful logic
+- **Pure Renders**: Avoid side-effects in render. Use effects for initialization
+- **Compiler Opt-Out**: Use "use no memo"; directive sparingly as last resort for
+  components that can't be refactored to satisfy compiler rules
+- **Compiler Pitfalls**: Avoid manual memoization - let compiler handle it.
+  Don't ignore opt-out warnings. Minimize Context use (prefer TanStack state).
+  Handle async boundaries with loading states. Periodically remove old workarounds
 - **Translations**: Organized into focused namespaces - use multiple namespaces
   in components as needed; use very specific translation namespaces for each
   component (e.g., "detail-grid" for the DetailGrid component, not "common");
@@ -335,12 +363,13 @@ standards.
   function, you shouldn't use such a function
 - **Directives**: Since we use Tanstack Start, we do not need `use client;`
 - **Linting**: Never use eslint-disable comments, fix the issues for real
+- **Forms**: Use TanStack Form exclusively for all forms. Do NOT use react-hook-form or @hookform/resolvers/zod - they have been removed from the project. For form components, use the existing TanStack Form patterns found in the codebase
 
 For comprehensive rules, refer to the ESLint configuration in .eslintrc files.
 Key principles include:
 
 - Accessibility compliance (ARIA, keyboard navigation)
-- Performance optimizations (avoid unnecessary renders, use memoization)
+- Performance optimizations (React Compiler handles memoization automatically)
 - Type safety (no 'any', explicit types)
 - Modern JavaScript patterns (prefer arrow functions, template literals)
 - Security best practices (input validation, no dangerous props)

@@ -13,10 +13,6 @@ interface EventStat {
   eventsCount: number;
 }
 
-interface EventStatsResponse {
-  eventStats_collection: EventStat[];
-}
-
 describe("EventStats", () => {
   it("should fetch event stats aggregated by hour", async () => {
     const query = theGraphGraphql(

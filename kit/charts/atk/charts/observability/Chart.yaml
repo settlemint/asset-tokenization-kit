@@ -11,11 +11,11 @@ maintainers:
     url: https://settlemint.com
 dependencies:
   - name: victoria-metrics-single
-    version: 0.23.0
+    version: 0.24.0
     repository: https://victoriametrics.github.io/helm-charts/
     condition: victoria-metrics-single.enabled
   - name: alloy
-    version: 1.1.2
+    version: 1.2.0
     repository: https://grafana.github.io/helm-charts
     condition: alloy.enabled
   - name: metrics-server
@@ -35,7 +35,7 @@ dependencies:
     repository: https://grafana.github.io/helm-charts
     condition: loki.enabled
   - name: prometheus-node-exporter
-    version: 4.47.1
+    version: 4.47.2
     repository: https://prometheus-community.github.io/helm-charts
     condition: prometheus-node-exporter.enabled
   - name: tempo

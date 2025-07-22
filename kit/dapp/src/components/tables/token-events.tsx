@@ -1,5 +1,3 @@
-"use no memo";
-
 import {
   ActionsCell,
   type ActionItem,
@@ -85,6 +83,7 @@ function EventDetailsSheet({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  "use no memo";
   const { t } = useTranslation(["tokens", "common"]);
 
   const handleOpenAutoFocus = useCallback((e: Event) => {

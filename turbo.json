@@ -15,10 +15,10 @@
       "dependsOn": ["ci:base", "format"]
     },
     "ci:base": {
-      "dependsOn": ["compile", "codegen", "lint", "test", "typecheck"]
+      "dependsOn": ["compile", "codegen", "lint", "test", "typecheck", "build"]
     },
     "ci:gha": {
-      "dependsOn": ["ci:base", "test:integration", "build"]
+      "dependsOn": ["ci:base", "test:integration"]
     },
     "ci:gha:main": {
       "dependsOn": ["publish", "ci:gha"]

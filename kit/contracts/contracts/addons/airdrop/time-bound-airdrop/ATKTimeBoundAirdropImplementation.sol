@@ -10,15 +10,6 @@ import { ATKAmountClaimTracker } from "../claim-tracker/ATKAmountClaimTracker.so
 import { IATKTimeBoundAirdrop } from "./IATKTimeBoundAirdrop.sol";
 import { IATKAirdrop } from "../IATKAirdrop.sol";
 
-import {
-    InvalidInputArrayLengths,
-    InvalidMerkleProof,
-    BatchSizeExceedsLimit,
-    ZeroClaimAmount,
-    InvalidClaimAmount,
-    IndexAlreadyClaimed
-} from "../ATKAirdropErrors.sol";
-
 /// @title ATK Time-Bound Airdrop Implementation
 /// @author SettleMint Tokenization Services
 /// @notice Implementation of a time-bound airdrop contract where claims are restricted to a specific time window

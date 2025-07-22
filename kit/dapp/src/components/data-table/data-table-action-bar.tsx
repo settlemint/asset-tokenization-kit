@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,13 +15,13 @@ import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-const logger = createLogger();
 import type {
   BulkAction,
   BulkActionBarProps,
   BulkActionContext,
 } from "./types/bulk-actions";
+
+const logger = createLogger();
 
 export function DataTableActionBar<TData>({
   selectedRowIds,

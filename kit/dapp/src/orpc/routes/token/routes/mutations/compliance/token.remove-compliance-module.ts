@@ -1,11 +1,11 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { TokenRemoveComplianceModuleMessagesSchema } from "./token.remove-compliance-module.schema";
 
 const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   mutation TokenRemoveComplianceModule(
@@ -39,12 +39,11 @@ export const tokenRemoveComplianceModule =
     .use(portalMiddleware)
     .handler(async function* ({ input, context }) {
       const { contract, verification, moduleAddress } = input;
-      const { auth } = context;
+      const { auth, t } = context;
 
-      // Parse messages with defaults
-      const messages = TokenRemoveComplianceModuleMessagesSchema.parse(
-        input.messages ?? {}
-      );
+      // Generate messages using server-side translations
+      const { pendingMessage, successMessage, errorMessage } =
+        getMutationMessages(t, "tokens", "removeComplianceModule");
 
       const sender = auth.user;
       const challengeResponse = await handleChallenge(sender, {
@@ -60,8 +59,11 @@ export const tokenRemoveComplianceModule =
           moduleAddress,
           ...challengeResponse,
         },
-        messages.complianceModuleRemovalFailed,
-        messages
+        errorMessage,
+        {
+          waitingForMining: pendingMessage,
+          transactionIndexed: successMessage,
+        }
       );
 
       return getEthereumHash(transactionHash);

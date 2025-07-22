@@ -7,14 +7,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  FieldDescription,
+  FieldErrors,
+  FieldLabel,
+  FieldLayout,
+} from "@/components/form/field";
 import { Input } from "@/components/ui/input";
 import {
   Sheet,
@@ -27,23 +24,19 @@ import {
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Loader2, Pause, Play } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { useForm, type ControllerRenderProps } from "react-hook-form";
+import { useForm } from "@tanstack/react-form";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
 
 /**
- * Verification form schema for pause/unpause operations
+ * Verification form values for pause/unpause operations
  */
-const VerificationSchema = z.object({
-  verificationCode: z.string().min(6, "Verification code must be 6 digits"),
-  verificationType: z.literal("pincode"),
-});
-
-type VerificationFormValues = z.infer<typeof VerificationSchema>;
+interface VerificationFormValues {
+  verificationCode: string;
+  verificationType: "pincode";
+}
 
 interface ManageDropdownProps {
   token: Token;
@@ -96,11 +89,13 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
     },
   });
 
-  const form = useForm<VerificationFormValues>({
-    resolver: zodResolver(VerificationSchema),
+  const form = useForm({
     defaultValues: {
       verificationCode: "",
-      verificationType: "pincode",
+      verificationType: "pincode" as const,
+    },
+    onSubmit: ({ value }: { value: VerificationFormValues }) => {
+      handleSubmit(value);
     },
   });
 
@@ -110,33 +105,15 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
         pauseToken({
           contract: token.id,
           verification: values,
-          messages: {
-            preparingPause: t("tokens:actions.pause.messages.preparing"),
-            submittingPause: t("tokens:actions.pause.messages.submitting"),
-            tokenPaused: t("tokens:actions.pause.messages.success"),
-            pauseFailed: t("tokens:actions.pause.messages.failed"),
-            defaultError: t("tokens:actions.pause.messages.error"),
-            waitingForMining: t("common:transaction.waitingForMining"),
-            transactionIndexed: t("common:transaction.indexed"),
-          },
         });
       } else if (openAction === "unpause") {
         unpauseToken({
           contract: token.id,
           verification: values,
-          messages: {
-            preparingUnpause: t("tokens:actions.unpause.messages.preparing"),
-            submittingUnpause: t("tokens:actions.unpause.messages.submitting"),
-            tokenUnpaused: t("tokens:actions.unpause.messages.success"),
-            unpauseFailed: t("tokens:actions.unpause.messages.failed"),
-            defaultError: t("tokens:actions.unpause.messages.error"),
-            waitingForMining: t("common:transaction.waitingForMining"),
-            transactionIndexed: t("common:transaction.indexed"),
-          },
         });
       }
     },
-    [openAction, pauseToken, unpauseToken, token.id, t]
+    [openAction, pauseToken, unpauseToken, token.id]
   );
 
   const actions = useMemo(
@@ -177,34 +154,6 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
     setOpenAction(null);
     form.reset();
   }, [form]);
-
-  const renderVerificationField = useCallback(
-    ({
-      field,
-    }: {
-      field: ControllerRenderProps<VerificationFormValues, "verificationCode">;
-    }) => (
-      <FormItem>
-        <FormLabel>{t("common:verification.pincode.label")}</FormLabel>
-        <FormControl>
-          <Input
-            {...field}
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            maxLength={6}
-            placeholder="123456"
-            disabled={isLoading || isTracking}
-          />
-        </FormControl>
-        <FormDescription>
-          {t("common:verification.pincode.description")}
-        </FormDescription>
-        <FormMessage />
-      </FormItem>
-    ),
-    [t, isLoading, isTracking]
-  );
 
   return (
     <>
@@ -256,43 +205,78 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
             </SheetDescription>
           </SheetHeader>
 
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-6 mt-6"
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void form.handleSubmit();
+            }}
+            className="space-y-6 mt-6"
+          >
+            <form.Field
+              name="verificationCode"
+              validators={{
+                onChange: ({ value }) => {
+                  if (value.length < 6) {
+                    return "Verification code must be 6 digits";
+                  }
+                  return undefined;
+                },
+              }}
             >
-              <FormField
-                control={form.control}
-                name="verificationCode"
-                render={renderVerificationField}
-              />
+              {(field) => (
+                <FieldLayout>
+                  <FieldLabel
+                    htmlFor="verificationCode"
+                    label={t("common:verification.pincode.label")}
+                  />
+                  <Input
+                    id="verificationCode"
+                    value={field.state.value}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value);
+                    }}
+                    onBlur={field.handleBlur}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={6}
+                    placeholder="123456"
+                    disabled={isLoading || isTracking}
+                  />
+                  <FieldDescription
+                    description={t("common:verification.pincode.description")}
+                  />
+                  <FieldErrors {...field.state.meta} />
+                </FieldLayout>
+              )}
+            </form.Field>
 
-              <SheetFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCancel}
-                  disabled={isLoading || isTracking}
-                >
-                  {t("common:actions.cancel")}
-                </Button>
-                <Button type="submit" disabled={isLoading || isTracking}>
-                  {isLoading || isTracking ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      {openAction === "pause"
-                        ? t("tokens:actions.pause.submitting")
-                        : t("tokens:actions.unpause.submitting")}
-                    </>
-                  ) : openAction === "pause" ? (
-                    t("tokens:actions.pause.submit")
-                  ) : (
-                    t("tokens:actions.unpause.submit")
-                  )}
-                </Button>
-              </SheetFooter>
-            </form>
-          </Form>
+            <SheetFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                disabled={isLoading || isTracking}
+              >
+                {t("common:actions.cancel")}
+              </Button>
+              <Button type="submit" disabled={isLoading || isTracking}>
+                {isLoading || isTracking ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {openAction === "pause"
+                      ? t("tokens:actions.pause.submitting")
+                      : t("tokens:actions.unpause.submitting")}
+                  </>
+                ) : openAction === "pause" ? (
+                  t("tokens:actions.pause.submit")
+                ) : (
+                  t("tokens:actions.unpause.submit")
+                )}
+              </Button>
+            </SheetFooter>
+          </form>
         </SheetContent>
       </Sheet>
     </>

@@ -1,11 +1,12 @@
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
+import { getBlockchainTransactionMessages } from "@/orpc/helpers/blockchain-transaction-messages";
 import type { ChallengeResponse } from "@/orpc/helpers/challenge-response";
+import type { i18nContext } from "@/orpc/middlewares/i18n/i18n.middleware";
 import type {
   TransactionEventEmitted,
   ValidatedPortalClient,
 } from "@/orpc/middlewares/services/portal.middleware";
-import { createTokenMessagesSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import type {
   TokenCreateInput,
   TokenCreateOutput,
@@ -18,26 +19,35 @@ export interface TokenCreateContext {
     from: EthereumAddress;
   } & ChallengeResponse;
   portalClient: ValidatedPortalClient;
+  t: i18nContext["t"];
 }
 
 export async function* createToken(
   input: TokenCreateInput,
+  context: TokenCreateContext,
   mutateFn: (
     creationFailedMessage: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    messages: any
+    messages: {
+      waitingForMining: string;
+      transactionFailed: string;
+      transactionDropped: string;
+      waitingForIndexing: string;
+      transactionIndexed: string;
+      indexingTimeout: string;
+      streamTimeout: string;
+    }
   ) => AsyncGenerator<TransactionEventEmitted, string, void>
 ): AsyncGenerator<TokenCreateOutput> {
-  // Parse messages with type-specific defaults using strategy
-  const messages = createTokenMessagesSchema(input.type).parse(
-    input.messages ?? {}
-  );
+  const { t } = context;
+
+  // Build messages for transaction tracking
+  const messages = getBlockchainTransactionMessages(t);
 
   // Yield initial loading message
   yield withEventMeta(
     {
       status: "pending" as const,
-      message: messages.initialLoading,
+      message: t("tokens:actions.create.preparing", { type: input.type }),
       tokenType: [input.type],
     },
     { id: "token-creation", retry: 1000 }
@@ -51,7 +61,7 @@ export async function* createToken(
     // Use the Portal client's mutate method that returns an async generator
     // This enables real-time transaction tracking for token creation
     for await (const event of mutateFn(
-      messages.tokenCreationFailed,
+      t("tokens:actions.create.failed", { type: input.type }),
       messages
     )) {
       // Store transaction hash from the first event
@@ -63,7 +73,7 @@ export async function* createToken(
         yield withEventMeta(
           {
             status: "pending" as const,
-            message: messages.creatingToken,
+            message: t("tokens:actions.create.creating", { type: input.type }),
             transactionHash: validatedHash,
             tokenType: [input.type],
           },
@@ -74,7 +84,7 @@ export async function* createToken(
         yield withEventMeta(
           {
             status: "confirmed" as const,
-            message: messages.tokenCreated,
+            message: t("tokens:actions.create.success", { type: input.type }),
             transactionHash: validatedHash,
             result: getEthereumHash(validatedHash),
             tokenType: [input.type],
@@ -86,7 +96,9 @@ export async function* createToken(
         yield withEventMeta(
           {
             status: "failed" as const,
-            message: event.message || messages.tokenCreationFailed,
+            message:
+              event.message ||
+              t("tokens:actions.create.failed", { type: input.type }),
             transactionHash: validatedHash,
             tokenType: [input.type],
           },
@@ -97,7 +109,9 @@ export async function* createToken(
   } catch (error) {
     // Handle any errors during mutation execution
     const errorMessage =
-      error instanceof Error ? error.message : messages.defaultError;
+      error instanceof Error
+        ? error.message
+        : t("tokens:actions.create.error.default", { type: input.type });
     yield withEventMeta(
       {
         status: "failed" as const,
@@ -115,7 +129,7 @@ export async function* createToken(
     yield withEventMeta(
       {
         status: "confirmed" as const,
-        message: messages.tokenCreated,
+        message: t("tokens:actions.create.success", { type: input.type }),
         transactionHash: validatedHash,
         result: getEthereumHash(validatedHash),
         tokenType: [input.type],

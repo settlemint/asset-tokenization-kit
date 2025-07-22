@@ -862,7 +862,6 @@ export class AdminPage extends BasePage {
   async verifySuccessMessage(partialMessage: string) {
     const toastSelector =
       '[data-sonner-toast][data-type="success"][data-mounted="true"][data-visible="true"]';
-    const titleSelector = `${toastSelector} [data-title]`;
 
     await expect
       .poll(
@@ -991,7 +990,7 @@ export class AdminPage extends BasePage {
     await detailsLink.click();
     const singularForm = this.getSingularForm(options.sidebarAssetTypes);
     await this.page.waitForURL(
-      new RegExp(`.*\/assets\/${singularForm}\/0x[a-fA-F0-9]{40}`)
+      new RegExp(`.*\\/assets\\/${singularForm}\\/0x[a-fA-F0-9]{40}`)
     );
   }
 
@@ -1019,7 +1018,7 @@ export class AdminPage extends BasePage {
       );
     }
 
-    await this.page.waitForURL(/.*\/assets\/.*\/0x[a-fA-F0-9]{40}/);
+    await this.page.waitForURL(/.*\\/assets\\/.*\\/0x[a-fA-F0-9]{40}/);
   }
 
   public getTableBodyLocator(): Locator {

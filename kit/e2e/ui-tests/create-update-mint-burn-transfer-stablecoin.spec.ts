@@ -64,7 +64,7 @@ test.describe("Create, update collateral, mint, burn and transfer stablecoin", (
     }
   });
   test("Admin user creates stablecoin, updates proven collateral, mints and burns stablecoins", async ({
-    browser,
+    browser: _browser,
   }) => {
     await adminPages.adminPage.createStablecoin(stablecoinData);
     testData.stablecoinName = stablecoinData.name;
