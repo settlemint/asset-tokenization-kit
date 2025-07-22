@@ -1,5 +1,6 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
+  Action,
   XvPSettlement,
   XvPSettlementApproval,
   XvPSettlementFlow,
@@ -17,6 +18,7 @@ import { fetchEvent } from "../../../event/fetch/event";
 import { fetchToken } from "../../../token/fetch/token";
 import {
   actionExecuted,
+  actionId,
   ActionName,
   createAction,
   createActionIdentifier,
@@ -200,16 +202,30 @@ export function handleXvPSettlementApproved(
       participants.push(approvals[i].account);
     }
 
-    createAction(
-      event,
+    // Check if ExecuteXvPSettlement action already exists to prevent duplicates
+    const executeActionIdentifier = createActionIdentifier(
+      ActionName.ExecuteXvPSettlement,
+      event.address
+    );
+    const executeActionId = actionId(
       ActionName.ExecuteXvPSettlement,
       event.address,
-      event.block.timestamp,
-      xvpSettlement.cutoffDate,
-      participants,
-      null,
-      createActionIdentifier(ActionName.ExecuteXvPSettlement, event.address)
+      executeActionIdentifier
     );
+    const existingExecuteAction = Action.load(executeActionId);
+
+    if (!existingExecuteAction) {
+      createAction(
+        event,
+        ActionName.ExecuteXvPSettlement,
+        event.address,
+        event.block.timestamp,
+        xvpSettlement.cutoffDate,
+        participants,
+        null,
+        executeActionIdentifier
+      );
+    }
   }
 }
 
