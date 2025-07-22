@@ -11,6 +11,7 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/ui/verification-dialog";
+import { useAppForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
 import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { authClient } from "@/lib/auth/auth.client";
@@ -29,7 +30,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { memo, useCallback, useMemo, useState } from "react";
-import { useForm } from "@tanstack/react-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -144,7 +144,7 @@ function RouteComponent() {
     enabled: !!systemAddress,
   });
 
-  const form = useForm({
+  const form = useAppForm({
     defaultValues: {
       assets: [] as TokenType[],
     },

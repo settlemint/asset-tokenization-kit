@@ -1,4 +1,8 @@
-import { Label } from "@/components/ui/label";
+import {
+  FormDescription,
+  FormLabel,
+  FormMessage,
+} from "@/components/form/tanstack-form";
 import { cn } from "@/lib/utils";
 import type { AnyFieldMeta } from "@tanstack/react-form";
 import React, { type ReactNode } from "react";
@@ -15,25 +19,23 @@ export function FieldLabel({
   className?: string;
 }) {
   return (
-    <Label htmlFor={htmlFor} className={className}>
+    <FormLabel htmlFor={htmlFor} className={className}>
       {label}
       {required && <span className="text-destructive ml-1">*</span>}
-    </Label>
+    </FormLabel>
   );
 }
 
 export function FieldDescription({ description }: { description?: string }) {
   if (!description) return null;
-  return <p className="text-sm text-muted-foreground">{description}</p>;
+  return <FormDescription>{description}</FormDescription>;
 }
 
 export function FieldErrors({ isTouched, errors }: AnyFieldMeta) {
   if (!isTouched) return null;
   if (errors.length === 0) return null;
   return (
-    <p className="text-sm text-destructive">
-      {errors.map((err) => err.message).join(", ")}
-    </p>
+    <FormMessage>{errors.map((err) => err.message).join(", ")}</FormMessage>
   );
 }
 
