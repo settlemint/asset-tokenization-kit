@@ -8,6 +8,7 @@ import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ERC735 } from "../../../onchainid/extensions/ERC735.sol";
+import { ClaimAuthorizationExtension } from "../../../onchainid/extensions/ClaimAuthorizationExtension.sol";
 
 /// @title ATK Contract Identity Implementation Contract
 /// @author SettleMint Tokenization Services
@@ -20,7 +21,8 @@ contract ATKContractIdentityImplementation is
     IATKContractIdentity,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    ERC735
+    ERC735,
+    ClaimAuthorizationExtension
 {
     // --- State Variables ---
 
@@ -81,10 +83,32 @@ contract ATKContractIdentityImplementation is
         return _contractAddress;
     }
 
+    // --- Claim Authorization Management Functions ---
+
+    /// @notice Registers a claim authorization contract
+    /// @param authorizationContract The address of the contract implementing IClaimAuthorization
+    /// @dev Only the contract that owns this identity can register authorization contracts
+    function registerClaimAuthorizationContract(address authorizationContract) external {
+        if (!IContractWithIdentity(_contractAddress).canAddClaim(_msgSender())) {
+            revert UnauthorizedOperation(_msgSender());
+        }
+        _registerClaimAuthorizationContract(authorizationContract);
+    }
+
+    /// @notice Removes a claim authorization contract
+    /// @param authorizationContract The address of the contract to remove
+    /// @dev Only the contract that owns this identity can remove authorization contracts
+    function removeClaimAuthorizationContract(address authorizationContract) external {
+        if (!IContractWithIdentity(_contractAddress).canRemoveClaim(_msgSender())) {
+            revert UnauthorizedOperation(_msgSender());
+        }
+        _removeClaimAuthorizationContract(authorizationContract);
+    }
+
     // --- ERC735 (Claim Holder) Functions - Overridden for Access Control ---
 
     /// @inheritdoc IERC735
-    /// @dev Adds or updates a claim. Permission check is delegated to the contract via canAddClaim.
+    /// @dev Adds or updates a claim. Checks authorization contracts first, falls back to contract permission check.
     function addClaim(
         uint256 _topic,
         uint256 _scheme,
@@ -98,9 +122,16 @@ contract ATKContractIdentityImplementation is
         override(ERC735, IERC735)
         returns (bytes32 claimId)
     {
-        if (!IContractWithIdentity(_contractAddress).canAddClaim(_msgSender())) {
-            revert UnauthorizedOperation(_msgSender());
+        // First check if any authorization contracts approve this claim
+        bool authorizedByContract = _isAuthorizedToAddClaim(_issuer, _topic);
+
+        if (!authorizedByContract) {
+            // If no authorization contracts approve, check contract permission (existing behavior)
+            if (!IContractWithIdentity(_contractAddress).canAddClaim(_msgSender())) {
+                revert UnauthorizedOperation(_msgSender());
+            }
         }
+
         return ERC735.addClaim(_topic, _scheme, _issuer, _signature, _data, _uri);
     }
 

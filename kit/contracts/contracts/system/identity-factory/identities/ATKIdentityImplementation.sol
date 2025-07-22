@@ -14,6 +14,7 @@ import { ERC734 } from "../../../onchainid/extensions/ERC734.sol";
 import { ERC735 } from "../../../onchainid/extensions/ERC735.sol";
 import { OnChainIdentity } from "../../../onchainid/extensions/OnChainIdentity.sol";
 import { OnChainIdentityWithRevocation } from "../../../onchainid/extensions/OnChainIdentityWithRevocation.sol";
+import { ClaimAuthorizationExtension } from "../../../onchainid/extensions/ClaimAuthorizationExtension.sol";
 
 /// @title ATK Identity Implementation Contract (Logic for Wallet Identities)
 /// @author SettleMint Tokenization Services
@@ -28,7 +29,8 @@ contract ATKIdentityImplementation is
     ERC735,
     OnChainIdentityWithRevocation,
     ERC165Upgradeable,
-    ERC2771ContextUpgradeable
+    ERC2771ContextUpgradeable,
+    ClaimAuthorizationExtension
 {
     // --- State Variables ---
     bool private _smartIdentityInitialized;
@@ -100,6 +102,22 @@ contract ATKIdentityImplementation is
     /// @param _claimId The ID of the claim to revoke
     function revokeClaim(bytes32 _claimId, address _identity) external virtual override onlyManager returns (bool) {
         return _revokeClaim(_claimId, _identity);
+    }
+
+    // --- Claim Authorization Management Functions ---
+
+    /// @notice Registers a claim authorization contract
+    /// @param authorizationContract The address of the contract implementing IClaimAuthorization
+    /// @dev Only management keys can register authorization contracts
+    function registerClaimAuthorizationContract(address authorizationContract) external onlyManager {
+        _registerClaimAuthorizationContract(authorizationContract);
+    }
+
+    /// @notice Removes a claim authorization contract
+    /// @param authorizationContract The address of the contract to remove
+    /// @dev Only management keys can remove authorization contracts
+    function removeClaimAuthorizationContract(address authorizationContract) external onlyManager {
+        _removeClaimAuthorizationContract(authorizationContract);
     }
 
     // --- ERC734 (Key Holder) Functions - Overridden for Access Control & Specific Logic ---
@@ -206,7 +224,8 @@ contract ATKIdentityImplementation is
     // --- ERC735 (Claim Holder) Functions - Overridden for Access Control ---
 
     /// @inheritdoc IERC735
-    /// @dev Adds or updates a claim. Requires CLAIM_SIGNER_KEY purpose from the sender.
+    /// @dev Adds or updates a claim. Checks authorization contracts first, falls back to CLAIM_SIGNER_KEY if no
+    /// authorization contracts.
     function addClaim(
         uint256 _topic,
         uint256 _scheme,
@@ -218,9 +237,19 @@ contract ATKIdentityImplementation is
         public
         virtual
         override(ERC735, IERC735) // Overrides ERC735's implementation and fulfills IERC735
-        onlyClaimKey
         returns (bytes32 claimId)
     {
+        // First check if any authorization contracts approve this claim
+        bool authorizedByContract = _isAuthorizedToAddClaim(_issuer, _topic);
+
+        if (!authorizedByContract) {
+            // If no authorization contracts approve, require CLAIM_SIGNER_KEY (existing behavior)
+            bytes32 senderKeyHash = keccak256(abi.encode(_msgSender()));
+            if (!(_msgSender() == address(this) || keyHasPurpose(senderKeyHash, CLAIM_SIGNER_KEY_PURPOSE))) {
+                revert SenderLacksClaimSignerKey();
+            }
+        }
+
         return ERC735.addClaim(_topic, _scheme, _issuer, _signature, _data, _uri);
     }
 
