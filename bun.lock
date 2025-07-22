@@ -34,6 +34,7 @@
         "@nomiclabs/hardhat-solhint": "4.1.0",
         "hardhat": "2.26.0",
         "solhint": "6.0.0",
+        "ts-node": "10.9.2",
       },
     },
     "kit/dapp": {
