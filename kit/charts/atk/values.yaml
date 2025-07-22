@@ -358,14 +358,14 @@ support:
   minio:
     enabled: true
     image:
-      pullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
+      repository: docker.io/minio/minio
+      tag: RELEASE.2025-07-18T21-56-31Z
     ingress:
       enabled: true
-      ingressClassName: "atk-nginx"
-      hostname: minio.k8s.orb.local
+      ingressClassName: atk-nginx
+      path: /
+      hosts:
+        - minio.k8s.orb.local
 
 observability:
   enabled: true
