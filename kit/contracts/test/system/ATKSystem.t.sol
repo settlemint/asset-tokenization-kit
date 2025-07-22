@@ -53,6 +53,8 @@ import { ATKContractIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKTokenFactoryRegistryImplementation } from
@@ -87,6 +89,7 @@ struct SystemImplementations {
     address tokenFactoryRegistry;
     address complianceModuleRegistry;
     address addonRegistry;
+    address systemAccessManager;
 }
 
 contract ATKSystemTest is Test {
@@ -223,7 +226,8 @@ contract ATKSystemTest is Test {
             identityVerificationModule: address(new SMARTIdentityVerificationComplianceModule(forwarder)),
             tokenFactoryRegistry: address(new ATKTokenFactoryRegistryImplementation(forwarder)),
             complianceModuleRegistry: address(new ATKComplianceModuleRegistryImplementation(forwarder)),
-            addonRegistry: address(new ATKSystemAddonRegistryImplementation(forwarder))
+            addonRegistry: address(new ATKSystemAddonRegistryImplementation(forwarder)),
+            systemAccessManager: address(new ATKSystemAccessManagerImplementation(forwarder))
         });
     }
 
@@ -245,7 +249,8 @@ contract ATKSystemTest is Test {
             impls.identityVerificationModule,
             impls.tokenFactoryRegistry,
             impls.complianceModuleRegistry,
-            impls.addonRegistry
+            impls.addonRegistry,
+            impls.systemAccessManager
         );
         ERC1967Proxy proxy = new ERC1967Proxy(address(systemImplementation), initData);
         return IATKSystem(address(proxy));
@@ -460,7 +465,8 @@ contract ATKSystemTest is Test {
             impls.identityVerificationModule,
             impls.tokenFactoryRegistry,
             impls.complianceModuleRegistry,
-            impls.addonRegistry
+            impls.addonRegistry,
+            impls.systemAccessManager
         );
         vm.expectRevert(abi.encodeWithSelector(ComplianceImplementationNotSet.selector));
         new ERC1967Proxy(address(systemImplementation), initData1);
@@ -483,7 +489,8 @@ contract ATKSystemTest is Test {
             impls.identityVerificationModule,
             impls.tokenFactoryRegistry,
             impls.complianceModuleRegistry,
-            impls.addonRegistry
+            impls.addonRegistry,
+            impls.systemAccessManager
         );
         vm.expectRevert(abi.encodeWithSelector(IdentityRegistryImplementationNotSet.selector));
         new ERC1967Proxy(address(systemImplementation), initData2);
@@ -509,7 +516,8 @@ contract ATKSystemTest is Test {
             impls.identityVerificationModule,
             impls.tokenFactoryRegistry,
             impls.complianceModuleRegistry,
-            impls.addonRegistry
+            impls.addonRegistry,
+            impls.systemAccessManager
         );
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -685,7 +693,8 @@ contract ATKSystemTest is Test {
             impls.identityVerificationModule,
             impls.tokenFactoryRegistry,
             impls.complianceModuleRegistry,
-            impls.addonRegistry
+            impls.addonRegistry,
+            impls.systemAccessManager
         );
         vm.expectRevert();
         new ERC1967Proxy(address(systemImplementation), initData);
