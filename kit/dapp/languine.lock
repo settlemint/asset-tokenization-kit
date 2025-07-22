@@ -658,6 +658,13 @@ files:
     transaction.messages.speedUp: c284f69410343558706730683399a0c7
     transaction.messages.cancel: 10a116b7028087fedd9895d00c6dc2b2
     transaction.messages.viewOnExplorer: bb0f02c8b42a3692127555aaec4f1ad5
+    transactions.tracking.streamTimeout: 0806f0ff1ded7b72e40ae785a8adffe4
+    transactions.tracking.waitingForMining: 836fac42d51f640bb9596eeec6193b2c
+    transactions.tracking.transactionFailed: 3f864e377ad88afe0f99e0d1e16cec03
+    transactions.tracking.transactionDropped: e2944ef81f1177481c9563fa98e914da
+    transactions.tracking.waitingForIndexing: ca7fc64a863f5e3acf65cb47101c7484
+    transactions.tracking.transactionIndexed: 1156815d7857c055cdcbc959ec71abdd
+    transactions.tracking.indexingTimeout: 6a10b5095d322a87cf60ee4fa2c599eb
     contract.events.Transfer: 6950810f0d2bba97a6f710c7b965b84e
     contract.events.Approval: 0162bce636a63c3ae499224203e06ed0
     contract.events.OwnershipTransferred: d880e86ef4544b37b4daac2d24c9d269
@@ -1693,6 +1700,23 @@ files:
     messages.createSuccess: 3fa373758bc793a57c47aab8fff33418
     messages.createError: 6a429870b3a4a2f74179a74f842a2fce
     messages.insufficientFunds: d757e4d37765b68eb26fa64847beffd5
+    messages.factoryCreated: f3a7bb228572062418418082d368965b
+    messages.creatingFactory: 5f24605f081ea5daad1e7801f3379f94
+    messages.factoryCreationFailed: de2890c8832acc0d158813e8b1bd4e14
+    messages.batchProgress: 6b00e35836f5f2cc396c60a992976b02
+    messages.batchCompleted: d418c8a481a12fa69b1384f392c1c2fb
+    messages.initialLoading: 6cc2ca1eb43991c88a2cedb0d7cceb8f
+    messages.noResultError: 38eee11ecceeb55f36d324fdfd507da9
+    messages.defaultError: 6e5e30285f5a7b62064152b9216f8962
+    messages.systemNotBootstrapped: 402e92c25f77cfc4a4660f87adda61bb
+    messages.transactionSubmitted: 5637d4f856416e68c128fdbabee6a68b
+    messages.factoryCreationCompleted: 7d411c2250801af2407bdd5685b9cfeb
+    messages.allFactoriesSucceeded: 247be28301d3d155d736e81c229f8860
+    messages.someFactoriesFailed: ece9591bfd1499a6380cb4e9ae59ab51
+    messages.allFactoriesFailed: a01323cbc4703fcb29b1795a4ef7737e
+    messages.factoryAlreadyExists: 7051868cc225e51b5090f6b8262f967f
+    messages.allFactoriesSkipped: 1f75106db250bd4a01dd4fb16744bf58
+    messages.someFactoriesSkipped: 67738da4db72268fbd1785fd76b3c24c
     help.whatIsFactory: 30d9d1b219762b9525e5ae639365c8e2
     help.deploymentCosts: ee4a6f329fb802b9192253953c7ff2b2
     help.compliance: 3743b3e1055691e8e51043f0d141ec70
@@ -1704,6 +1728,14 @@ files:
     actions.viewDetails: 5d5cd268b8acccf04f63d81c5d0d2cab
     actions.viewOnEtherscan: b4a95a0b3c4b23578d23edf3d20265ad
     actions.viewEvents: 428b4fbeda709b7c79280c209ec09a25
+    actions.create.preparing: 141286bc9b229468d8c697f03ad14790
+    actions.create.creating: d4af7f27b9cb7b40815407cf3e90bc07
+    actions.create.success: d579d0e255ef720368a9c5498a460758
+    actions.create.failed: 2093ffd3ee2cdb0e66affcf69152daf4
+    actions.create.messages.pending: d4af7f27b9cb7b40815407cf3e90bc07
+    actions.create.messages.success: d579d0e255ef720368a9c5498a460758
+    actions.create.messages.error: 2093ffd3ee2cdb0e66affcf69152daf4
+    actions.create.error.default: 401435f37f23cafc80797af8a20c6a66
     actions.pause.label: 891ca908610c298ecb75fff617aab0b3
     actions.pause.title: f356cde63fae196a41e746b199b17ffd
     actions.pause.description: cb4ac4a81e5c68a8fd9865925b8701e0
@@ -1724,6 +1756,175 @@ files:
     actions.unpause.messages.success: 914adb5389a88a54ee17301289f74fc0
     actions.unpause.messages.failed: 128f98ab5e9c288f0a3727cdc3a0e1c8
     actions.unpause.messages.error: c68bc6965b2b2a548ec8ddc76517166d
+    actions.mint.label: f8730cec73aec466d31a1619c9977929
+    actions.mint.title: 25116d094172ca1b7678e0de977bb11b
+    actions.mint.description: 6c54e22807af2343f16303885da0c644
+    actions.mint.submit: f8730cec73aec466d31a1619c9977929
+    actions.mint.submitting: 8ed7c27854bfd1e3d8dcb53aa93a6163
+    actions.mint.messages.preparing: 28caec187c71df1dcd605437551575ee
+    actions.mint.messages.preparingBatch: 0caeec913d8821a48f22e2fbba5d446d
+    actions.mint.messages.submitting: dac666cad16dec57f65e4609788e92a8
+    actions.mint.messages.submittingBatch: 70d6d3725f76e38fbf5499b09e099d52
+    actions.mint.messages.success: 60b1a86c0e08fb80de5356a6783d2e84
+    actions.mint.messages.successBatch: 2ba94a74a8c6b5488fb61ede1e2bb993
+    actions.mint.messages.failed: 38636dea3311e210dd7e021d07bd4627
+    actions.mint.messages.failedBatch: 22821c9c535917931ff1d9fa644423c1
+    actions.mint.messages.error: 97b4e054da717ae832210cc755631bb5
+    actions.burn.label: 030c56fa5d9ffea1f616f851bfe296e7
+    actions.burn.title: 030c56fa5d9ffea1f616f851bfe296e7
+    actions.burn.description: da2fd610fab2dcff96f5d08cb8c0fde1
+    actions.burn.submit: 030c56fa5d9ffea1f616f851bfe296e7
+    actions.burn.submitting: 9694d43afe9267f2b1f43ef1d8876796
+    actions.burn.messages.preparing: 77253132d732fb881e32c8368b872f4c
+    actions.burn.messages.submitting: 0b2fdf9ae4de00498cfd80c4fb51022f
+    actions.burn.messages.success: 21ba4c4fd09427dbcd86ea90d07e19d6
+    actions.burn.messages.failed: 7e3fac4565233d36bb63118d7fa3ce00
+    actions.burn.messages.error: 3d619a3f3656522c35a1437d771c3b2e
+    actions.transfer.label: 19ca29ca8fef015d6310e1e20a4da4b1
+    actions.transfer.title: 19ca29ca8fef015d6310e1e20a4da4b1
+    actions.transfer.description: 41d341f3ea318f71292eb2b4c32f0891
+    actions.transfer.submit: 19ca29ca8fef015d6310e1e20a4da4b1
+    actions.transfer.submitting: 7dcd22b96a9090c921e232ddf9252381
+    actions.transfer.messages.preparing: 6572f6693bc7cedd38015c008952cda9
+    actions.transfer.messages.submitting: 4745433bb06b0e42221eb89f70b31675
+    actions.transfer.messages.success: 29eba1b94197efc1c70acbb85c8b9eab
+    actions.transfer.messages.failed: c47a5a4e04aa0cbb9ec5f536d0834566
+    actions.transfer.messages.error: cb1cbaf9620be004e2916a12b6a8fb7d
+    actions.approve.label: 1aa4e5ae0320c9ff7d96a520e40aa28b
+    actions.approve.title: c4c3fcc8fe773fe6f6143276415a8521
+    actions.approve.description: af7b47b1639abacc38e5b6b641806031
+    actions.approve.submit: 6f7351657f795bc1357a53142b1184cc
+    actions.approve.submitting: 99213e6970fd78b50d3ef1f67dd2fc9e
+    actions.approve.messages.preparing: d33b250fcfad6e02b54683d7b42a2ba0
+    actions.approve.messages.submitting: fc7ec488780278b90e35dd4b1d2de9aa
+    actions.approve.messages.success: 71aca93733e196417d016f1710b0cbf8
+    actions.approve.messages.failed: b4e740c41bb96272a8b0e1bf882a1c1a
+    actions.approve.messages.error: fdb5c80bb77964500565c8f74535770c
+    actions.freeze.label: 618354dc5a85343c586c88f2a40bc45c
+    actions.freeze.title: 618354dc5a85343c586c88f2a40bc45c
+    actions.freeze.description: f111d86f27e9af5a57393f4bbbe2b531
+    actions.freeze.submit: 65467087a19145f43129bba42781aea0
+    actions.freeze.submitting: a8acb461dd81eecc646314d5502d9c3d
+    actions.freeze.messages.preparing: f8de3db2f11cc64b1ae5a586534a11e0
+    actions.freeze.messages.submitting: 40fc13efd5631a3c5e390cefa967ca68
+    actions.freeze.messages.success: eddd01f1e4f746601e589bc103d8c9e8
+    actions.freeze.messages.failed: 17291f3c2265b5535c9a6d359e298ac7
+    actions.freeze.messages.error: c5302bddab58e69ccf91760491341d6e
+    actions.unfreeze.label: 5f845dc7628708e547816b6ed47f16eb
+    actions.unfreeze.title: 5f845dc7628708e547816b6ed47f16eb
+    actions.unfreeze.description: 934b60ece10a54d0bcf40c7a7b3bcc99
+    actions.unfreeze.submit: 94ace1673ece7c95c4b616b34941f062
+    actions.unfreeze.submitting: f0fcadfb60ad3b47a1974ab0d002aa6e
+    actions.unfreeze.messages.preparing: 0d1f91bacd83a127e754d830fd26ab1b
+    actions.unfreeze.messages.submitting: 78a2358211c52fc399e3c36be4aef2ee
+    actions.unfreeze.messages.success: 6397585e884c5c0260aa89423ae9e305
+    actions.unfreeze.messages.failed: 6995623a9ed5ee7f4bcf7a5f3c4b36ba
+    actions.unfreeze.messages.error: a6dcafe91c8c84c8b7e3659ec891a77b
+    actions.setCap.label: 05a9f6d862cc958f26ab114b8486591c
+    actions.setCap.title: 34f97d629a4aafcccdb0949684bdb864
+    actions.setCap.description: 1f3e30cfb07408c255759bbd3893961d
+    actions.setCap.submit: bb9af948b0b871df296912c51baa9d3d
+    actions.setCap.submitting: 91ac9314436211c0e7da549717fd9968
+    actions.setCap.messages.preparing: 8453fd2bf20dda98c389d2c787cbd29d
+    actions.setCap.messages.submitting: 3db94b56aa84626a5e59fbb415db385a
+    actions.setCap.messages.success: e7796168b6f20e6dd10844ff9f58d50a
+    actions.setCap.messages.failed: adcd26173fbb2c74b4b8c37f275588ea
+    actions.setCap.messages.error: 44d6370ed358c738b536dcc0588b9b98
+    actions.addCompliance.label: 5ae8f1ed7f893388f687811eb1cc1985
+    actions.addCompliance.title: 5ae8f1ed7f893388f687811eb1cc1985
+    actions.addCompliance.description: f232c0616b3f52874c4bfdd755de3777
+    actions.addCompliance.submit: 4410620e29b23c70a1260bf04f3ec538
+    actions.addCompliance.submitting: b377ccfb428acae10b7a82300eb068f9
+    actions.addCompliance.messages.preparing: 9b2966a57c3b4c6285d795fc78d09313
+    actions.addCompliance.messages.submitting: cde4dde0dbf63245e12716b79abed97b
+    actions.addCompliance.messages.success: c030005c09e69139230fcd83616c93d7
+    actions.addCompliance.messages.failed: 94a9f28e6b0f8565a48a41c5f5cb5182
+    actions.addCompliance.messages.error: 0550a15a86be7521be45301b06f81ab5
+    actions.removeCompliance.label: 65df7ba3cbe8870669056d5a30eef860
+    actions.removeCompliance.title: 65df7ba3cbe8870669056d5a30eef860
+    actions.removeCompliance.description: 4d1593272d0c763b36bf8e2360761234
+    actions.removeCompliance.submit: 9756c3dfbe3fd923025d1cc09684cbe3
+    actions.removeCompliance.submitting: 2606a5163a515cc843dd741edd8e3451
+    actions.removeCompliance.messages.preparing: 4c8fbcd08024471d122bb2047682f45a
+    actions.removeCompliance.messages.submitting: b9a75a523fd1944a251dc54e754f5326
+    actions.removeCompliance.messages.success: c6946a97eb1ab23290f7b124839d8842
+    actions.removeCompliance.messages.failed: a67b1aa2b42af89874d55641cc8a2b77
+    actions.removeCompliance.messages.error: 3ee2e02e2ac4e696722fccef2de1d769
+    actions.forcedRecover.label: 7a5e7e37316228985993a8e40557318c
+    actions.forcedRecover.title: 7f8c0b18487dcddb7ab42708a65911a4
+    actions.forcedRecover.description: c0e16856ec23f7927ff7eee3e8f648ba
+    actions.forcedRecover.submit: 7a5e7e37316228985993a8e40557318c
+    actions.forcedRecover.submitting: 6636105e14c3f81d5b62ec28861f07d0
+    actions.forcedRecover.messages.preparing: a3fe1915fc1218e23a967cf4524043b6
+    actions.forcedRecover.messages.submitting: 52a36c59519baaffd8be3f83a88b1468
+    actions.forcedRecover.messages.success: fa7894f41ceba8b3492ffbe6143d096d
+    actions.forcedRecover.messages.failed: 85e2cfc9ed174adb8686b94988404e59
+    actions.forcedRecover.messages.error: 6d651f64c2e0ffaf4bb7542e42281179
+    actions.recoverTokens.label: 78451b27eb8a8f662b93d7f7bd2f8c62
+    actions.recoverTokens.title: b0bc44bf76efbe38e3e57223bc07ce08
+    actions.recoverTokens.description: c9356d5ad274bd2f3735da0e736df5fd
+    actions.recoverTokens.submit: 556b050ce914d18480d6ea30308c7790
+    actions.recoverTokens.submitting: 6636105e14c3f81d5b62ec28861f07d0
+    actions.recoverTokens.messages.preparing: 3028b2e1891c6ad2a13f3210e05fc836
+    actions.recoverTokens.messages.submitting: 52a36c59519baaffd8be3f83a88b1468
+    actions.recoverTokens.messages.success: fa7894f41ceba8b3492ffbe6143d096d
+    actions.recoverTokens.messages.failed: 85e2cfc9ed174adb8686b94988404e59
+    actions.recoverTokens.messages.error: 6d651f64c2e0ffaf4bb7542e42281179
+    actions.recoverERC20.label: c59c6f2e498053fa8b8210e3814b273c
+    actions.recoverERC20.title: 0d99f586fa9b824b55d4cbdd929000e4
+    actions.recoverERC20.description: ac069a9b7ef854119172708d45c8d766
+    actions.recoverERC20.submit: 556b050ce914d18480d6ea30308c7790
+    actions.recoverERC20.submitting: 6636105e14c3f81d5b62ec28861f07d0
+    actions.recoverERC20.messages.preparing: 08ae94666fe5cb9694d76222be96f3cb
+    actions.recoverERC20.messages.submitting: 52a36c59519baaffd8be3f83a88b1468
+    actions.recoverERC20.messages.success: 1f545c996038136102e1eb14bb69278e
+    actions.recoverERC20.messages.failed: b52aa594bc03454c1cbe7eeae6fc4616
+    actions.recoverERC20.messages.error: 6d651f64c2e0ffaf4bb7542e42281179
+    actions.redeem.label: a49df4530d1258d3fae55c1adee5b670
+    actions.redeem.title: a49df4530d1258d3fae55c1adee5b670
+    actions.redeem.description: 15ae402b92a663352070bfb89c0ab9fc
+    actions.redeem.submit: 81ed4dcb851fefbbbc791eeef4cd97a2
+    actions.redeem.submitting: 355cee84cd738e471b2c953e06c3e6c4
+    actions.redeem.messages.preparing: 62cfee0e0611b0454c742255a537f10d
+    actions.redeem.messages.preparingAll: 0fbb25c74019778bba5162adb1f1b0c8
+    actions.redeem.messages.submitting: f1e98bc9dacb5d7d5c590930c4c1dd9f
+    actions.redeem.messages.success: 063847bad2a11bc1c3b6844c08c4f0d0
+    actions.redeem.messages.successAll: 3c9ec12329fe4b21924d78231c5f07af
+    actions.redeem.messages.failed: 7ee5136317cfbd8b5a4746513fc014ba
+    actions.redeem.messages.failedAll: 9a931ee6aa139a1194e33c9fd58bb2a4
+    actions.redeem.messages.error: 5171e9c74b7e9ef77797fb2f3d87df19
+    actions.redeemAll.label: 6981cbec8717a2e072588b0f07fbc928
+    actions.redeemAll.title: badc1b280517b5d94c72b39b12748012
+    actions.redeemAll.description: 9fdb74063601df5c123166efb69ea2aa
+    actions.redeemAll.submit: 6981cbec8717a2e072588b0f07fbc928
+    actions.redeemAll.submitting: dcad282f85099e38500ae96affcefb14
+    actions.redeemAll.messages.preparing: 0fbb25c74019778bba5162adb1f1b0c8
+    actions.redeemAll.messages.submitting: f1e98bc9dacb5d7d5c590930c4c1dd9f
+    actions.redeemAll.messages.success: 3c9ec12329fe4b21924d78231c5f07af
+    actions.redeemAll.messages.failed: 9a931ee6aa139a1194e33c9fd58bb2a4
+    actions.redeemAll.messages.error: 5171e9c74b7e9ef77797fb2f3d87df19
+    actions.setYieldSchedule.label: 7afc3615bda33f1be77b6d2d8d6a6d25
+    actions.setYieldSchedule.title: b7ffa1ebdcbe11665ea28623268ef0e6
+    actions.setYieldSchedule.description: 50144f87f99d23d36bf1d7421f459d6f
+    actions.setYieldSchedule.submit: 5458df94884bb822240e4c75aa6fefb9
+    actions.setYieldSchedule.submitting: 7df29f2b145bab37d1e2a376313ea3b9
+    actions.setYieldSchedule.messages.preparing: 2e91f733b06f5396478443b70e437631
+    actions.setYieldSchedule.messages.submitting: 0fb3dc0989073cceadb702c12c190221
+    actions.setYieldSchedule.messages.success: 1283913f97019fce1618f968ba1ea220
+    actions.setYieldSchedule.messages.failed: d9b9c4eca99b8ec70e25f9a183b53a5e
+    actions.setYieldSchedule.messages.error: 19c0fdf0439ffd07a5113a9dddef0547
+    actions.setYieldSchedule.messages.noSchedules: b27caf3c2ef67595e9cd1de293f6becf
+    actions.setYieldSchedule.messages.invalidSchedule: cca58e8868658dd16fc53370afa13523
+    actions.transferFrom.messages.preparing: 9a51daee33c723572b55ea80db095dce
+    actions.transferFrom.messages.submitting: 81bc2a4e0baa45026e070586f67e05b3
+    actions.transferFrom.messages.success: d5afdf5cdb6d4eccc60ce9ff112054b7
+    actions.transferFrom.messages.failed: 0297f38d76975df450abe93cf02842c6
+    actions.transferFrom.messages.error: 63f2c75394eb3bb5620a7ecd52ee0ee6
+    actions.forcedTransfer.messages.preparing: 49a0d65ba8a42aedf9ebd5dda7f689c1
+    actions.forcedTransfer.messages.submitting: 14e10ab62d923b5c117e9dbade44bb05
+    actions.forcedTransfer.messages.success: 42c5de639f2392b252d34586cecb3c9a
+    actions.forcedTransfer.messages.failed: c23e7dee4115b018326ba3c5f0b75a23
+    actions.forcedTransfer.messages.error: c71ee95cce3fde0addc1eec6bdef0e6e
     asset-types.bond: b98e3a37b62f7207c8a0a27e0c0d8777
     asset-types.deposit: b14b4095cfda93c81686ac81dea4dbed
     asset-types.equity: f38992a52cef8611666b2db431b493a6
@@ -2081,3 +2282,38 @@ files:
     charts.transactionHistory.currentPeriod: 222a267cc5778206b253be35ee3ddab5
     tables.latestEvents: 8b0807a79d36ca9fece2ab62e26bdd9f
     tables.actions: c054a7deca822c899ac734543443b094
+  locales/en/exchange-rates.json:
+    actions.update.success: c2918fbfb72a4fd2cc289d18d6399e8c
+    actions.sync.success: 3bda7523129d6c307b0656db4fc5ad75
+    actions.delete.success: 22e87daf7b4f244ee5acb12ae6ef44f6
+  locales/en/settings.json:
+    actions.upsert.success: 42daae8b6e024d29d02a90b83ae69bc4
+    actions.delete.success: e4519eac64d809aeb2ab1eb28a4d11f2
+  locales/en/system.json:
+    create.messages.alreadyExists: ced11d6b0274e6afdf6dbe59c8dc3219
+    create.messages.creating: f370a4c3440177574c039bab67e8763c
+    create.messages.creationFailed: 677a544a6340b84307f5c624af6ee67e
+    create.messages.queryingSystem: 422c09fe3f1043e4bc38515ee1ea92eb
+    create.messages.systemNotFound: 67f8ab2b1ce219c04f9c8e56ac5fa3ec
+    create.messages.bootstrapping: c683c31431335902e63f9ef3a48ca64a
+    create.messages.bootstrapFailed: 0c7fdb1c68339969c6e78b8ed79ad880
+    create.messages.bootstrapSuccess: e57410ca8ce3a3b30853e211924bc521
+    create.messages.createdBootstrapFailed: 820c7892332354b78722f8b7f8714670
+    create.messages.success: da24665b76de1e30cc18539595326cc4
+    addons.messages.preparing: 119919a643bc3fb78734793c09dbd3ba
+    addons.messages.progress: 68969e22db13a5803b4f05e155586db2
+    addons.messages.alreadyExists: 40a23c21bc00751fa83d6490fdafd3e5
+    addons.messages.failed: 6754f19735f88e5da315cb772e2a8e7f
+    addons.messages.registering: 2ef2bc26528473b9c5de8b5d4600c022
+    addons.messages.registered: 5f7c02b1d1f320d909240a9924a04497
+    addons.messages.defaultError: 2a6c27d41e8889c70ff013ab1f115588
+    addons.messages.accessDenied: 2ea4dc508a89208235caf6067eff845f
+    addons.messages.invalidImplementation: 337077ee180f33bc090ab1e97fb9b93a
+    addons.messages.invalidConfiguration: 85265e940fbb820dd2475946e7bc48d9
+    addons.messages.allSuccess: 764e31a1183f0aeee6ef3af769732276
+    addons.messages.allFailed: a5b2258c172d365a252134459507ae91
+    addons.messages.partialSuccess: 796e480417451db44dbe8de5b7c61356
+  locales/en/user.json:
+    actions.createWallet.success: b88395946e210c0e477fd810ccc76ef3
+    kyc.actions.upsert.success: 1903eed75779e13466b475202764f541
+    kyc.actions.delete.success: 0668b88fc70a39baa6bffd9e3e107169

@@ -287,7 +287,7 @@ services:
       - ./tools/docker/minio/init.sh:/init.sh
     restart: "no"
   blockscout-backend:
-    image: ghcr.io/blockscout/blockscout:8.1.1
+    image: ghcr.io/blockscout/blockscout:8.1.2
     container_name: atk-blockscout-backend
     restart: unless-stopped
     depends_on:

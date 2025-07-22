@@ -44,6 +44,7 @@ export function WizardStep({ className }: WizardStepProps) {
   } = context;
 
   const currentStep = steps[currentStepIndex];
+  const shouldUseMutation = !!currentStep?.mutation;
 
   const mutation = useStreamingMutation({
     mutationOptions: {
@@ -53,8 +54,6 @@ export function WizardStep({ className }: WizardStepProps) {
         (currentStep?.mutation?.mutationFn as any) ?? (() => null), // Type assertion for now
     },
   });
-
-  const shouldUseMutation = !!currentStep?.mutation;
 
   const { matchingFields, matchingGroups, totalResultCount, groupCounts } =
     useWizardFiltering({

@@ -138,16 +138,20 @@ async function main() {
   const merkleTree = new AirdropMerkleTree(distribution);
   await createAirdrops(stableCoin, merkleTree);
 
-  // Addon -XVP Settlement
+  // Addon -XVP Settlement - Single scenario for actions testing
+  console.log("\n=== Creating XVP Settlement ===\n");
+
+  // Single unapproved settlement (provides pending actions for testing)
   await createXvpSettlement(
-    investorA, // fromActor
-    investorB, // toActor
-    stableCoin.address, // fromAssetAddress (stablecoin)
-    equity.address, // toAssetAddress (equity)
-    5n * 10n ** 18n, // fromAmount (5 stablecoin)
-    2n * 10n ** 18n, // toAmount (2 equity)
-    false // autoExecute
+    investorA,
+    investorB,
+    stableCoin.address,
+    equity.address,
+    3n * 10n ** 18n,
+    1n * 10n ** 18n,
+    false
   );
+  console.log("✅ XVP settlement created");
 
   await createPausedAsset();
 

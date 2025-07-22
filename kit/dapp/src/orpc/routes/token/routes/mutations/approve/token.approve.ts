@@ -1,11 +1,11 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { TokenApproveMessagesSchema } from "./token.approve.schema";
 
 const TOKEN_APPROVE_MUTATION = portalGraphql(`
   mutation TokenApprove(
@@ -40,10 +40,11 @@ export const tokenApprove = tokenRouter.token.tokenApprove
   )
   .handler(async function* ({ input, context }) {
     const { contract, verification, spender, amount } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenApproveMessagesSchema.parse(input.messages ?? {});
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getMutationMessages(t, "tokens", "approve");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -60,8 +61,11 @@ export const tokenApprove = tokenRouter.token.tokenApprove
         amount: amount.toString(),
         ...challengeResponse,
       },
-      messages.approvalFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
     return getEthereumHash(transactionHash);

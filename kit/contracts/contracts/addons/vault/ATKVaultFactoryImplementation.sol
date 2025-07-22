@@ -1,12 +1,8 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
-
-// OpenZeppelin Contracts
-import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+pragma solidity ^0.8.28;
 
 // Interfaces
 import { IATKVaultFactory } from "./IATKVaultFactory.sol";
-import { IATKSystem } from "../../system/IATKSystem.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Implementations

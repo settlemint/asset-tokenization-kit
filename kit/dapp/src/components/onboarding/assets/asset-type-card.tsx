@@ -1,5 +1,9 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
+import {
+  FormControl,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/tanstack-form";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
 import type { LucideIcon } from "lucide-react";
 import { memo } from "react";

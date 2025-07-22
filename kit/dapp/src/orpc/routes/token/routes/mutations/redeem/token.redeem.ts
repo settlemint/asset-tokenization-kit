@@ -1,11 +1,11 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { getConditionalMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { TokenRedeemMessagesSchema } from "./token.redeem.schema";
 
 const TOKEN_REDEEM_MUTATION = portalGraphql(`
   mutation TokenRedeem(
@@ -57,10 +57,7 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
     const { contract, verification, amount, redeemAll } = input;
-    const { auth } = context;
-
-    // Parse messages with defaults
-    const messages = TokenRedeemMessagesSchema.parse(input.messages ?? {});
+    const { auth, t } = context;
 
     // Validate input parameters
     if (!redeemAll && !amount) {
@@ -69,6 +66,22 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
         data: { errors: ["Invalid redeem parameters"] },
       });
     }
+
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getConditionalMutationMessages(
+        t,
+        "tokens",
+        "redeem",
+        Boolean(redeemAll),
+        {
+          keys: {
+            preparing: redeemAll ? "preparingAll" : "preparing",
+            success: redeemAll ? "successAll" : "success",
+            failed: redeemAll ? "failedAll" : "failed",
+          },
+        }
+      );
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -85,8 +98,11 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
             from: sender.wallet,
             ...challengeResponse,
           },
-          messages.redemptionFailed,
-          messages
+          errorMessage,
+          {
+            waitingForMining: pendingMessage,
+            transactionIndexed: successMessage,
+          }
         )
       : yield* context.portalClient.mutate(
           TOKEN_REDEEM_MUTATION,
@@ -96,8 +112,11 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
             amount: amount?.toString() ?? "",
             ...challengeResponse,
           },
-          messages.redemptionFailed,
-          messages
+          errorMessage,
+          {
+            waitingForMining: pendingMessage,
+            transactionIndexed: successMessage,
+          }
         );
 
     return getEthereumHash(transactionHash);

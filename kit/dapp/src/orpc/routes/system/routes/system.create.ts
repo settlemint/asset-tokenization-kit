@@ -26,10 +26,9 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
 import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
-import { call, withEventMeta } from "@orpc/server";
+import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { z } from "zod";
-import { SystemCreateMessagesSchema } from "./system.create.schema";
 
 /**
  * GraphQL mutation for creating a new system contract instance.
@@ -141,9 +140,7 @@ export const create = onboardedRouter.system.create
   .handler(async function* ({ input, context, errors }) {
     const { contract, verification } = input;
     const sender = context.auth.user;
-
-    // Parse messages with defaults using Zod schema
-    const messages = SystemCreateMessagesSchema.parse(input.messages ?? {});
+    const { t } = context;
 
     // Check if system already exists using orpc
     const existingSystem = await call(
@@ -158,8 +155,7 @@ export const create = onboardedRouter.system.create
 
     if (existingSystem) {
       throw errors.RESOURCE_ALREADY_EXISTS({
-        message:
-          "System already exists. Only one system is allowed per platform.",
+        message: t("system:create.messages.alreadyExists"),
         cause: new Error(
           `System already deployed at address: ${existingSystem}`
         ),
@@ -176,39 +172,20 @@ export const create = onboardedRouter.system.create
       })),
     };
 
-    // Use the Portal client's mutate method that returns an async generator
-    // This enables real-time transaction tracking with automatic status updates
-    let transactionHash = "";
+    // Generate messages using server-side translations
+    const pendingMessage = t("system:create.messages.creating");
+    const errorMessage = t("system:create.messages.creationFailed");
 
-    // Iterate through transaction events as they occur
-    for await (const event of context.portalClient.mutate(
+    // Use the Portal client's mutate method that returns an async generator
+    const transactionHash = yield* context.portalClient.mutate(
       CREATE_SYSTEM_MUTATION,
       createSystemVariables,
-      messages.systemCreationFailed,
-      messages
-    )) {
-      // Store the transaction hash from the first event
-      transactionHash = event.transactionHash;
-
-      // Only yield pending and failed events during creation phase
-      // Confirmed events are handled after we query for the system address
-      if (event.status === "pending" || event.status === "failed") {
-        // Transform Portal event to ORPC event format with metadata
-        yield withEventMeta(
-          {
-            status: event.status,
-            message: event.message,
-            result: undefined,
-          },
-          { id: transactionHash, retry: 1000 }
-        );
-
-        // If transaction failed, stop the entire process
-        if (event.status === "failed") {
-          return;
-        }
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: t("system:create.messages.queryingSystem"),
       }
-    }
+    );
 
     // Query for the deployed system contract
     const queryVariables: VariablesOf<
@@ -231,17 +208,14 @@ export const create = onboardedRouter.system.create
       {
         input: queryVariables,
         output: SystemQueryResultSchema,
-        error: messages.systemCreationFailed,
+        error: errorMessage,
       }
     );
 
     if (result.systems.length === 0) {
-      const systemNotFoundError = new Error(
-        `System not found for transaction ${transactionHash}`
-      );
       throw errors.NOT_FOUND({
-        message: systemNotFoundError.message,
-        cause: systemNotFoundError,
+        message: t("system:create.messages.systemNotFound"),
+        cause: new Error(`System not found for transaction ${transactionHash}`),
       });
     }
 
@@ -251,7 +225,7 @@ export const create = onboardedRouter.system.create
 
     if (!system) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: messages.systemCreationFailed,
+        message: errorMessage,
         cause: new Error(
           `System object is null for transaction ${transactionHash}`
         ),
@@ -259,14 +233,13 @@ export const create = onboardedRouter.system.create
     }
 
     // Now bootstrap the system
-    yield withEventMeta(
-      {
-        status: "pending",
-        message: messages.bootstrappingSystem,
-        result: undefined,
-      },
-      { id: `${transactionHash}-bootstrap`, retry: 1000 }
-    );
+    const bootstrapPendingMessage = t("system:create.messages.bootstrapping");
+    const bootstrapErrorMessage = t("system:create.messages.bootstrapFailed");
+
+    yield {
+      status: "pending" as const,
+      message: bootstrapPendingMessage,
+    };
 
     // Execute the bootstrap transaction
     const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> = {
@@ -279,41 +252,21 @@ export const create = onboardedRouter.system.create
     };
 
     // Track bootstrap transaction using the same async generator pattern
-    let bootstrapSucceeded = false;
-    let bootstrapTransactionHash = "";
-
-    // Iterate through bootstrap transaction events
-    for await (const event of context.portalClient.mutate(
-      BOOTSTRAP_SYSTEM_MUTATION,
-      bootstrapVariables,
-      messages.bootstrapFailed,
-      {
-        ...messages,
-        waitingForMining: messages.bootstrappingSystem,
-      }
-    )) {
-      // Store the bootstrap transaction hash
-      bootstrapTransactionHash = event.transactionHash;
-
-      // Yield all bootstrap events with a unique ID to distinguish from creation events
-      yield withEventMeta(
+    let bootstrapSucceeded = true;
+    try {
+      yield* context.portalClient.mutate(
+        BOOTSTRAP_SYSTEM_MUTATION,
+        bootstrapVariables,
+        bootstrapErrorMessage,
         {
-          status: event.status,
-          message: event.message,
-          result: undefined,
-        },
-        { id: `${bootstrapTransactionHash}-bootstrap`, retry: 1000 }
+          waitingForMining: bootstrapPendingMessage,
+          transactionIndexed: t("system:create.messages.bootstrapSuccess"),
+        }
       );
-
-      // Track final bootstrap status for the completion event
-      if (event.status === "confirmed") {
-        bootstrapSucceeded = true;
-      } else if (event.status === "failed") {
-        bootstrapSucceeded = false;
-        // Don't return early - we still need to report the system ID
-        // even if bootstrap failed, as the system was created successfully
-        break;
-      }
+    } catch {
+      bootstrapSucceeded = false;
+      // Don't throw - we still need to report the system ID
+      // even if bootstrap failed, as the system was created successfully
     }
 
     // Save the system address to settings using orpc BEFORE yielding final events
@@ -328,27 +281,19 @@ export const create = onboardedRouter.system.create
       }
     );
 
-    // Always yield the final event with the system ID
-    // If bootstrap failed, we still return the system ID but with failed status
-    if (!bootstrapSucceeded) {
-      yield withEventMeta(
-        {
-          status: "failed",
-          message: `${messages.systemCreatedBootstrapFailed} System address: ${system.id}`,
-          result: system.id,
-        },
-        { id: transactionHash, retry: 1000 }
-      );
-    } else {
-      yield withEventMeta(
-        {
-          status: "confirmed",
-          message: messages.systemCreated,
-          result: system.id,
-        },
-        { id: transactionHash, retry: 1000 }
-      );
-    }
+    // Always yield the final message with the system ID
+    // If bootstrap failed, we still return the system ID but with a warning
+    const finalMessage = !bootstrapSucceeded
+      ? t("system:create.messages.createdBootstrapFailed", {
+          systemAddress: system.id,
+        })
+      : t("system:create.messages.success");
 
-    return;
+    yield {
+      status: "confirmed" as const,
+      message: finalMessage,
+      result: system.id,
+    };
+
+    return system.id;
   });
