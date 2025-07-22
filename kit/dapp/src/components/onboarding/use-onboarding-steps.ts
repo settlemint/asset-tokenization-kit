@@ -62,28 +62,28 @@ export function useOnboardingSteps(
         description: t("steps.wallet.description"),
       },
       [OnboardingStep.walletSecurity]: {
-        title: t("steps.security.title"),
-        description: t("steps.security.description"),
+        title: t("steps.wallet-security.title"),
+        description: t("steps.wallet-security.description"),
       },
       [OnboardingStep.walletRecoveryCodes]: {
-        title: "Recovery Codes",
-        description: "Save your wallet recovery codes",
+        title: t("steps.wallet-recovery-codes.title"),
+        description: t("steps.wallet-recovery-codes.description"),
       },
       [OnboardingStep.systemDeploy]: {
-        title: "Deploy System",
-        description: "Deploy the blockchain system",
+        title: t("steps.system-deploy.title"),
+        description: t("steps.system-deploy.description"),
       },
       [OnboardingStep.systemSettings]: {
-        title: "Configure Settings",
-        description: "Set up platform settings",
+        title: t("steps.system-settings.title"),
+        description: t("steps.system-settings.description"),
       },
       [OnboardingStep.systemAssets]: {
-        title: "Select Assets",
-        description: "Choose supported asset types",
+        title: t("steps.system-assets.title"),
+        description: t("steps.system-assets.description"),
       },
       [OnboardingStep.systemAddons]: {
-        title: "Enable Addons",
-        description: "Configure platform addons",
+        title: t("steps.system-addons.title"),
+        description: t("steps.system-addons.description"),
       },
       [OnboardingStep.identitySetup]: {
         title: t("steps.identity-setup.title"),
@@ -107,8 +107,8 @@ export function useOnboardingSteps(
         description: t("groups.wallet.description"),
       },
       [OnboardingStepGroup.system]: {
-        title: "Deploy SMART System",
-        description: "Set up your blockchain platform",
+        title: t("groups.system.title"),
+        description: t("groups.system.description"),
       },
       [OnboardingStepGroup.identity]: {
         title: t("groups.identity.title"),

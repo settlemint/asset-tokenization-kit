@@ -16,8 +16,8 @@
       "description": "Set up your wallet and security measures"
     },
     "system": {
-      "title": "System",
-      "description": "Deploy and configure your system"
+      "title": "Deploy SMART System",
+      "description": "Set up your blockchain platform"
     },
     "identity": {
       "title": "Identity",

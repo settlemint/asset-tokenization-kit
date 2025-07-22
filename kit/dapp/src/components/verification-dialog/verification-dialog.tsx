@@ -16,8 +16,9 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useState } from "react";
-
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
 interface VerificationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -37,14 +38,39 @@ export function VerificationDialog({
   onSubmit,
   onCancel,
 }: VerificationDialogProps) {
+  const { t } = useTranslation("components");
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
   const hasPincode = user.verificationTypes.includes("pincode");
   const hasTwoFactor = user.verificationTypes.includes("two-factor");
 
   const [useOtp, setUseOtp] = useState(!hasPincode && hasTwoFactor);
 
+  const codeSchema = useMemo(
+    () =>
+      z.object({
+        code: z.string().length(6, {
+          message: t("verificationDialog.codeLengthError"),
+        }),
+      }),
+    [t]
+  );
+
+  const onValidate = useCallback(
+    ({ value }: { value: z.infer<typeof codeSchema> }) => {
+      const result = codeSchema.safeParse(value);
+      if (result.error) {
+        return result.error.message;
+      }
+    },
+    [codeSchema]
+  );
+
   const form = useForm({
     defaultValues: { code: "" },
+    validators: {
+      onChange: onValidate,
+      onMount: onValidate,
+    },
     onSubmit: ({ value }) => {
       onSubmit(useOtp ? { otp: value.code } : { pincode: value.code });
       handleClose();
@@ -76,7 +102,9 @@ export function VerificationDialog({
             {(field) => (
               <div className="flex flex-col items-center space-y-4">
                 <label className="text-base font-medium">
-                  {useOtp ? "Authenticator Code" : "PIN Code"}
+                  {useOtp
+                    ? t("verificationDialog.authenticatorCode")
+                    : t("verificationDialog.pinCode")}
                 </label>
                 {useOtp ? (
                   <InputOTP
@@ -117,13 +145,18 @@ export function VerificationDialog({
           )}
 
           <div className="flex flex-col space-y-2">
-            <Button
-              type="submit"
-              disabled={form.state.values.code.length !== 6}
-              className="w-full"
-            >
-              Confirm
-            </Button>
+            <form.Subscribe
+              selector={(state) => state.errors}
+              children={(errors) => (
+                <Button
+                  type="submit"
+                  disabled={Object.keys(errors).length > 0}
+                  className="w-full"
+                >
+                  {t("verificationDialog.confirm")}
+                </Button>
+              )}
+            />
 
             {hasPincode && hasTwoFactor && (
               <Button
@@ -135,8 +168,8 @@ export function VerificationDialog({
                 className="w-full"
               >
                 {useOtp
-                  ? "Use PIN Code instead"
-                  : "Use Authenticator App instead"}
+                  ? t("verificationDialog.usePinInstead")
+                  : t("verificationDialog.useAuthenticatorInstead")}
               </Button>
             )}
 
@@ -146,7 +179,7 @@ export function VerificationDialog({
               onClick={handleClose}
               className="w-full"
             >
-              Cancel
+              {t("verificationDialog.cancel")}
             </Button>
           </div>
         </form>
