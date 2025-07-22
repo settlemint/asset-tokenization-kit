@@ -11,6 +11,14 @@ event ClaimTopicAdded(uint256 indexed _claimTopic);
 /// @param _claimTopic is the required claim removed from the Claim Topics Registry.
 event ClaimTopicRemoved(uint256 indexed _claimTopic);
 
+/**
+ * @title IERC3643ClaimTopicsRegistry
+ * @author SettleMint
+ * @notice Interface for ERC-3643 compliant Claim Topics Registry managing required claim topics
+ * @dev This interface defines the standard for managing claim topics that investors must have
+ *      verified on their identity contracts. Claim topics represent different types of verifications
+ *      such as KYC, AML, accreditation status, etc.
+ */
 interface IERC3643ClaimTopicsRegistry {
     /**
      * @dev Add a trusted claim topic (For example: KYC=1, AML=2).

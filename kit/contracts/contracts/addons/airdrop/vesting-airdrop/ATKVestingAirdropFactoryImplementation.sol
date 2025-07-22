@@ -18,6 +18,7 @@ import { ATKVestingAirdropProxy } from "./ATKVestingAirdropProxy.sol";
 import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
 
 /// @title Factory for Creating ATKVestingAirdrop Proxies
+/// @author SettleMint
 /// @notice This contract serves as a factory to deploy new UUPS proxy instances of `ATKVestingAirdrop` contracts.
 /// It manages a single implementation contract and allows for updating this implementation.
 /// @dev Key features of this factory:
@@ -134,6 +135,7 @@ contract ATKVestingAirdropFactoryImplementation is
     }
 
     /// @notice Returns the total number of vesting airdrop proxy contracts created by this factory.
+    /// @return count The total number of vesting airdrop proxy contracts created.
     function allAirdropsLength() external view returns (uint256 count) {
         return allAirdrops.length;
     }
@@ -167,7 +169,9 @@ contract ATKVestingAirdropFactoryImplementation is
         return _predictProxyAddress(proxyBytecode, constructorArgs, saltInputData);
     }
 
-    /// @notice Returns the address of the current `ATKVestingAirdrop` logic contract (implementation).
+    /// @notice Checks if this contract supports a specific interface.
+    /// @param interfaceId The interface identifier to check for support.
+    /// @return bool True if the interface is supported, false otherwise.
     function supportsInterface(bytes4 interfaceId)
         public
         view

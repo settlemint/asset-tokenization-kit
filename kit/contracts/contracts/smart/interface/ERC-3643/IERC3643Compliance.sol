@@ -11,6 +11,14 @@ event TokenBound(address indexed _token);
 /// @param _token is the address of the token to unbind.
 event TokenUnbound(address indexed _token);
 
+/**
+ * @title IERC3643Compliance
+ * @author SettleMint
+ * @notice Interface for ERC-3643 compliant Compliance contract managing transfer restrictions
+ * @dev This interface defines the standard for compliance contracts that enforce transfer rules
+ *      for security tokens. It manages compliance modules that implement various regulatory
+ *      requirements and restrictions on token transfers.
+ */
 interface IERC3643Compliance {
     /// Functions
 
