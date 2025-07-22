@@ -61,7 +61,8 @@ contract IATKIdentityTest is Test {
         implementation = new ATKIdentityImplementation(forwarder);
 
         // Deploy proxy with initialization data
-        bytes memory initData = abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, user1);
+        bytes memory initData =
+            abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, user1, new address[](0));
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
         identity = IATKIdentity(address(proxy));
     }
@@ -83,14 +84,15 @@ contract IATKIdentityTest is Test {
         // Use the implementation directly for this test
         vm.expectRevert(ERC734.InvalidInitialManagementKey.selector);
         new ERC1967Proxy(
-            address(implementation), abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, address(0))
+            address(implementation),
+            abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, address(0), new address[](0))
         );
     }
 
     function test_CannotInitializeTwice() public {
         // Identity is already initialized, so trying to initialize again should fail
         vm.expectRevert();
-        identity.initialize(admin);
+        identity.initialize(admin, new address[](0));
     }
 
     function test_AddKeySuccess() public {

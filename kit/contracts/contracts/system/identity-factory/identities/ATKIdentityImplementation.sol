@@ -80,15 +80,37 @@ contract ATKIdentityImplementation is
      * @notice Initializes the ATKIdentityImplementation state.
      * @dev This function is intended to be called only once by a proxy contract via delegatecall.
      *      It sets the initial management key for this identity and initializes ERC165 support.
+     *      It also registers the provided claim authorization contracts.
      *      This replaces the old `__Identity_init` call.
      * @param initialManagementKey The address to be set as the initial management key for this identity.
+     * @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
+     * authorizers.
      */
-    function initialize(address initialManagementKey) external override(ERC734, IATKIdentity) initializer {
+    function initialize(
+        address initialManagementKey,
+        address[] calldata claimAuthorizationContracts
+    )
+        external
+        override(IATKIdentity)
+        initializer
+    {
         if (_smartIdentityInitialized) revert AlreadyInitialized();
         _smartIdentityInitialized = true;
 
         __ERC165_init_unchained(); // Initialize ERC165 storage
         __ERC734_init(initialManagementKey);
+
+        // Register the claim authorization contracts
+        // This is done during initialization when we have full control over the identity
+        uint256 contractsLength = claimAuthorizationContracts.length;
+        for (uint256 i = 0; i < contractsLength;) {
+            if (claimAuthorizationContracts[i] != address(0)) {
+                _registerClaimAuthorizationContract(claimAuthorizationContracts[i]);
+            }
+            unchecked {
+                ++i;
+            }
+        }
     }
 
     // --- OnchainIdentityWithRevocation Functions ---

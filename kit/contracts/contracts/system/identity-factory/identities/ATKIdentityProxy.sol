@@ -33,13 +33,22 @@ contract ATKIdentityProxy is AbstractATKSystemProxy {
     /// `ATKIdentityImplementation` inherits) via `_performInitializationDelegatecall`.
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param initialManagementKey The address to be set as the first management key for this identity.
-    constructor(address systemAddress, address initialManagementKey) AbstractATKSystemProxy(systemAddress) {
+    /// @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
+    /// authorizers.
+    constructor(
+        address systemAddress,
+        address initialManagementKey,
+        address[] memory claimAuthorizationContracts
+    )
+        AbstractATKSystemProxy(systemAddress)
+    {
         if (initialManagementKey == address(0)) revert ZeroAddressNotAllowed();
 
         IATKSystem system_ = _getSystem();
         address implementation = _getSpecificImplementationAddress(system_);
 
-        bytes memory data = abi.encodeWithSelector(IATKIdentity.initialize.selector, initialManagementKey);
+        bytes memory data =
+            abi.encodeWithSelector(IATKIdentity.initialize.selector, initialManagementKey, claimAuthorizationContracts);
 
         _performInitializationDelegatecall(implementation, data);
     }

@@ -12,7 +12,9 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 interface IATKContractIdentity is IIdentity {
     /// @notice Initializes the contract identity with its owner contract address
     /// @param contractAddr The address of the contract that owns this identity
-    function initialize(address contractAddr) external;
+    /// @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
+    /// authorizers
+    function initialize(address contractAddr, address[] calldata claimAuthorizationContracts) external;
 
     /// @notice Returns the address of the contract that owns this identity
     /// @return The contract address

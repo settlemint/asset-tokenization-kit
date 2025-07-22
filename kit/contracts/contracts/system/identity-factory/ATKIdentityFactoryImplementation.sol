@@ -171,13 +171,13 @@ contract ATKIdentityFactoryImplementation is
     /// @dev This function performs several steps:
     /// 1. Validates that `_wallet` is not the zero address and that an identity doesn't already exist for this wallet.
     /// 2. Calls `_createAndRegisterWalletIdentity` to handle the deterministic deployment of the `ATKIdentityProxy`.
-    ///    The `_wallet` itself is passed as the `_initialManager` to the proxy constructor.
+    ///    The `_wallet` itself is passed as the `_initialManager` to the proxy constructor, and claim authorization
+    ///    contracts (including the trusted issuers registry) are automatically registered during initialization.
     /// 3. Interacts with the newly deployed identity contract (as `IERC734`) to add any additional `_managementKeys`
     /// provided.
     ///    It ensures a management key is not the wallet itself (which is already a manager).
-    /// 4. Registers the trusted issuers registry as a claim authorization contract on the identity.
-    /// 5. Stores the mapping from the `_wallet` address to the new `identity` contract address.
-    /// 6. Emits an `IdentityCreated` event.
+    /// 4. Stores the mapping from the `_wallet` address to the new `identity` contract address.
+    /// 5. Emits an `IdentityCreated` event.
     /// @param _wallet The investor wallet address for which the identity is being created. This address will also be
     /// set as an initial manager of the identity.
     /// @param _managementKeys An array of `bytes32` values representing additional management keys (keccak256 hashes of
@@ -216,10 +216,6 @@ contract ATKIdentityFactoryImplementation is
             }
         }
 
-        // Register the trusted issuers registry as a claim authorization contract
-        address trustedIssuersRegistry = IATKSystem(_system).trustedIssuersRegistry();
-        IATKIdentity(identity).registerClaimAuthorizationContract(trustedIssuersRegistry);
-
         _identities[_wallet] = identity;
         emit IdentityCreated(_msgSender(), identity, _wallet);
         return identity;
@@ -230,10 +226,10 @@ contract ATKIdentityFactoryImplementation is
     /// @dev This function performs several steps:
     /// 1. Validates that `_contract` is not zero address and that an identity doesn't already exist for this contract.
     /// 2. Verifies the contract implements IContractWithIdentity interface.
-    /// 3. Calls `_createAndRegisterContractIdentity` to handle the deterministic deployment.
-    /// 4. Registers the trusted issuers registry as a claim authorization contract on the identity.
-    /// 5. Stores the mapping from the `_contract` address to the new `identity` contract address.
-    /// 6. Emits `ContractIdentityCreated` event.
+    /// 3. Calls `_createAndRegisterContractIdentity` to handle the deterministic deployment. Claim authorization
+    ///    contracts (including the trusted issuers registry) are automatically registered during initialization.
+    /// 4. Stores the mapping from the `_contract` address to the new `identity` contract address.
+    /// 5. Emits `ContractIdentityCreated` event.
     /// @param _contract The address of the contract implementing IContractWithIdentity for which the identity is being
     /// created.
     /// @return address The address of the newly created identity contract.
@@ -248,10 +244,6 @@ contract ATKIdentityFactoryImplementation is
 
         // Deploy identity with address-based salt
         address identity = _createAndRegisterContractIdentity(_contract);
-
-        // Register the trusted issuers registry as a claim authorization contract
-        address trustedIssuersRegistry = IATKSystem(_system).trustedIssuersRegistry();
-        IATKContractIdentity(identity).registerClaimAuthorizationContract(trustedIssuersRegistry);
 
         _contractIdentities[_contract] = identity;
         emit ContractIdentityCreated(_msgSender(), identity, _contract);
@@ -287,6 +279,8 @@ contract ATKIdentityFactoryImplementation is
     /// salt
     ///      and the `_initialManager` (which is part of the proxy's constructor arguments, affecting its creation code
     /// hash).
+    ///      The claim authorization contracts array (containing the trusted issuers registry) is retrieved from the
+    /// system for address calculation.
     ///      This allows prediction of the identity address before actual deployment.
     /// @param _walletAddress The investor wallet address for which to calculate the potential identity contract
     /// address.
@@ -475,34 +469,41 @@ contract ATKIdentityFactoryImplementation is
     }
 
     /// @notice Internal helper to get the creation bytecode and encoded constructor arguments for `ATKIdentityProxy`.
-    /// @dev The constructor of `ATKIdentityProxy` takes the `_system` address (from factory state) and
-    /// `_initialManager`.
+    /// @dev The constructor of `ATKIdentityProxy` takes the `_system` address (from factory state),
+    /// `_initialManager`, and an array of claim authorization contracts.
     /// @param _initialManager The address to be encoded as the initial manager argument.
     /// @return proxyBytecode The creation bytecode of `ATKIdentityProxy`.
-    /// @return constructorArgs The ABI-encoded constructor arguments (`_system`, `_initialManager`).
+    /// @return constructorArgs The ABI-encoded constructor arguments (`_system`, `_initialManager`,
+    /// `_claimAuthorizationContracts`).
     function _getWalletProxyAndConstructorArgs(address _initialManager)
         private
         view
         returns (bytes memory proxyBytecode, bytes memory constructorArgs)
     {
         proxyBytecode = type(ATKIdentityProxy).creationCode;
-        constructorArgs = abi.encode(_system, _initialManager);
+        address[] memory claimAuthorizationContracts = new address[](1);
+        claimAuthorizationContracts[0] = IATKSystem(_system).trustedIssuersRegistry();
+        constructorArgs = abi.encode(_system, _initialManager, claimAuthorizationContracts);
         // No explicit return needed due to named return variables
     }
 
     /// @notice Internal helper to get the creation bytecode and encoded constructor arguments for
     /// `ATKContractIdentityProxy`.
-    /// @dev The constructor of `ATKContractIdentityProxy` takes the `_system` address and the contract address.
+    /// @dev The constructor of `ATKContractIdentityProxy` takes the `_system` address, the contract address,
+    /// and an array of claim authorization contracts.
     /// @param _contractAddress The address of the contract that will own this identity
     /// @return proxyBytecode The creation bytecode of `ATKContractIdentityProxy`.
-    /// @return constructorArgs The ABI-encoded constructor arguments (`_system`, `_contractAddress`).
+    /// @return constructorArgs The ABI-encoded constructor arguments (`_system`, `_contractAddress`,
+    /// `_claimAuthorizationContracts`).
     function _getContractProxyAndConstructorArgs(address _contractAddress)
         private
         view
         returns (bytes memory proxyBytecode, bytes memory constructorArgs)
     {
         proxyBytecode = type(ATKContractIdentityProxy).creationCode;
-        constructorArgs = abi.encode(_system, _contractAddress);
+        address[] memory claimAuthorizationContracts = new address[](1);
+        claimAuthorizationContracts[0] = IATKSystem(_system).trustedIssuersRegistry();
+        constructorArgs = abi.encode(_system, _contractAddress, claimAuthorizationContracts);
         // No explicit return needed due to named return variables
     }
 

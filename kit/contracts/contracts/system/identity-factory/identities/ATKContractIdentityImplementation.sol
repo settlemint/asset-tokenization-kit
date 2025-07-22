@@ -58,7 +58,16 @@ contract ATKContractIdentityImplementation is
     /// @notice Initializes the ATKContractIdentityImplementation.
     /// @dev Intended to be called once by a proxy via delegatecall.
     /// @param contractAddr The address of the contract that owns this identity
-    function initialize(address contractAddr) external override initializer {
+    /// @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
+    /// authorizers
+    function initialize(
+        address contractAddr,
+        address[] calldata claimAuthorizationContracts
+    )
+        external
+        override
+        initializer
+    {
         if (contractAddr == address(0)) revert InvalidContractAddress();
 
         // Verify the contract implements IContractWithIdentity
@@ -73,6 +82,18 @@ contract ATKContractIdentityImplementation is
         __ERC165_init_unchained();
 
         _contractAddress = contractAddr;
+
+        // Register the claim authorization contracts
+        // This is done during initialization when we have full control over the identity
+        uint256 contractsLength = claimAuthorizationContracts.length;
+        for (uint256 i = 0; i < contractsLength;) {
+            if (claimAuthorizationContracts[i] != address(0)) {
+                _registerClaimAuthorizationContract(claimAuthorizationContracts[i]);
+            }
+            unchecked {
+                ++i;
+            }
+        }
     }
 
     // --- View Functions ---

@@ -11,6 +11,7 @@ import { IClaimAuthorizer } from "../../../../contracts/onchainid/extensions/ICl
 import { ClaimAuthorizationExtension } from "../../../../contracts/onchainid/extensions/ClaimAuthorizationExtension.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
@@ -37,18 +38,23 @@ contract ClaimAuthorizationSystemTest is Test {
     ATKTrustedIssuersRegistryImplementation trustedIssuersRegistry;
 
     MockClaimIssuer mockIssuer;
+    ATKIdentityImplementation issuerIdentity;
+    ERC1967Proxy issuerIdentityProxy;
     MockAuthorizationContract mockAuthContract;
 
     // --- Test Actors ---
     address owner = makeAddr("owner");
     address user = makeAddr("user");
     address admin = makeAddr("admin");
+    address unauthorizedKey = makeAddr("unauthorizedKey");
 
     function setUp() public {
         // Deploy identity system with proxy
         identityLogic = new ATKIdentityImplementation(address(0));
-        identityProxy =
-            new ERC1967Proxy(address(identityLogic), abi.encodeWithSelector(identityLogic.initialize.selector, owner));
+        identityProxy = new ERC1967Proxy(
+            address(identityLogic),
+            abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, owner, new address[](0))
+        );
         identity = ATKIdentityImplementation(address(identityProxy));
 
         // Deploy trusted address(mockIssuer)s registry
@@ -59,9 +65,16 @@ contract ClaimAuthorizationSystemTest is Test {
         );
         trustedIssuersRegistry = ATKTrustedIssuersRegistryImplementation(address(trustedIssuersRegistryProxy));
 
-        // Deploy mock contracts
+        // Deploy mock contracts and issuer identity
         mockIssuer = new MockClaimIssuer();
         mockAuthContract = new MockAuthorizationContract();
+
+        // Deploy issuer identity (using same logic contract)
+        issuerIdentityProxy = new ERC1967Proxy(
+            address(identityLogic),
+            abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, owner, new address[](0))
+        );
+        issuerIdentity = ATKIdentityImplementation(address(issuerIdentityProxy));
     }
 
     // --- Authorization Contract Registration Tests ---
@@ -279,16 +292,37 @@ contract ClaimAuthorizationSystemTest is Test {
     // --- Edge Cases ---
 
     function test_AddClaim_NoAuthContractsRegistered_RequiresIssuerAuthorization() public {
-        // Give user claim signer key but don't register any auth contracts
-        vm.prank(owner);
-        bytes32 userKeyHash = keccak256(abi.encode(user));
-        identity.addKey(userKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        // Set up issuerIdentity with management and claim signer keys
+        address issuerManagementKey = makeAddr("issuerManagementKey");
+        address claimSignerKey = makeAddr("claimSignerKey");
 
-        // Should fail with UnauthorizedIssuer - having claim keys is not enough,
-        // user must also be authorized to act on behalf of the issuer
-        vm.prank(user);
+        // Add a separate management key to the issuer identity (different from owner)
+        vm.prank(owner);
+        bytes32 issuerManagementKeyHash = keccak256(abi.encode(issuerManagementKey));
+        issuerIdentity.addKey(issuerManagementKeyHash, MANAGEMENT_KEY_PURPOSE, 1);
+
+        // Add a claim signer key to the issuer identity
+        vm.prank(owner);
+        bytes32 claimSignerKeyHash = keccak256(abi.encode(claimSignerKey));
+        issuerIdentity.addKey(claimSignerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+
+        // Register trusted issuers registry
+        vm.prank(owner);
+        identity.registerClaimAuthorizationContract(address(trustedIssuersRegistry));
+
+        // Add the issuerIdentity to trusted issuers registry for this topic
+        vm.prank(admin);
+        uint256[] memory topics = new uint256[](1);
+        topics[0] = TEST_CLAIM_TOPIC;
+        trustedIssuersRegistry.addTrustedIssuer(IClaimIssuer(address(issuerIdentity)), topics);
+
+        // Try to add claim using an unauthorized key (not management or claim signer)
+        // This should fail because unauthorizedKey is not authorized to act on behalf of issuerIdentity
+        vm.prank(unauthorizedKey);
         vm.expectRevert(abi.encodeWithSelector(ATKIdentityImplementation.SenderLacksClaimSignerKey.selector));
-        identity.addClaim(TEST_CLAIM_TOPIC, TEST_CLAIM_SCHEME, address(mockIssuer), "", TEST_CLAIM_DATA, TEST_CLAIM_URI);
+        identity.addClaim(
+            TEST_CLAIM_TOPIC, TEST_CLAIM_SCHEME, address(issuerIdentity), "", TEST_CLAIM_DATA, TEST_CLAIM_URI
+        );
     }
 
     function test_AddClaim_AuthContractRemovedBetweenCalls() public {
