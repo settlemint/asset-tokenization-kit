@@ -28,7 +28,7 @@ interface AssetSelectionFormValues {
 export function AssetTypeSelection() {
   const { navigateToStep, refreshUserState, completeStepAndNavigate } =
     useOnboardingNavigation();
-  const { t } = useTranslation(["onboarding", "general", "tokens"]);
+  const { t } = useTranslation(["onboarding", "common", "tokens"]);
   const [systemAddress] = useSettings("SYSTEM_ADDRESS");
   const queryClient = useQueryClient();
 
@@ -116,7 +116,7 @@ export function AssetTypeSelection() {
           factories: pendingFactories,
         }),
         {
-          loading: "Deploying asset factories...",
+          loading: t("assets.deploying-toast"),
           success: t("assets.deployed"),
           error: (error: Error) =>
             `Failed to deploy asset factories: ${error.message}`,
@@ -194,7 +194,7 @@ export function AssetTypeSelection() {
                     validators={{
                       onChange: ({ value }) => {
                         if (value.length === 0) {
-                          return "Select at least one asset type";
+                          return t("assets.validation-error");
                         }
                         return undefined;
                       },
@@ -266,10 +266,10 @@ export function AssetTypeSelection() {
               <div className="mt-8 pt-6 border-t border-border">
                 <div className="flex justify-between">
                   <Button type="button" variant="outline" onClick={onPrevious}>
-                    Previous
+                    {t("common:previous")}
                   </Button>
                   <Button type="submit" disabled={isFactoriesCreating}>
-                    Deploy Assets
+                    {t("assets.deploy-assets")}
                   </Button>
                 </div>
               </div>
@@ -288,8 +288,8 @@ export function AssetTypeSelection() {
             handleOtpSubmit(otp);
           }
         }}
-        title="Confirm Asset Deployment"
-        description="Please verify your identity to deploy the asset factories."
+        title={t("assets.confirm-deployment-title")}
+        description={t("assets.confirm-deployment-description")}
         errorMessage={verificationError}
       />
     </>

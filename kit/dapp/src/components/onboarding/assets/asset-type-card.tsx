@@ -75,7 +75,9 @@ export const AssetTypeCard = memo(
               {t(`asset-types.${assetType}`, { ns: "tokens" })}
             </label>
             {isDisabled && (
-              <span className="text-xs text-muted-foreground">(Deployed)</span>
+              <span className="text-xs text-muted-foreground">
+                {t("assets.deployed-label")}
+              </span>
             )}
           </div>
           <p className="text-sm text-muted-foreground">

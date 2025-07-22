@@ -32,9 +32,11 @@ export function SystemDeploy() {
     <>
       <div className="h-full flex flex-col">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold">Initialize the system</h2>
+          <h2 className="text-xl font-semibold">
+            {t("system.initialize-title")}
+          </h2>
           <p className="text-sm text-muted-foreground pt-2">
-            You're about to set up the foundation of the platform
+            {t("system.initialize-subtitle")}
           </p>
         </div>
 
@@ -45,22 +47,22 @@ export function SystemDeploy() {
                 <TriangleAlert className="h-5 w-5 text-sm-state-warning mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
                   <p className="text-sm text-sm-state-warning">
-                    This action will deploy blockchain smart contracts and
-                    cannot be undone. Once deployed, the system will be
-                    permanently active on the blockchain.
+                    {t("system.deployment-warning")}
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">What gets deployed:</h3>
+              <h3 className="text-lg font-semibold">
+                {t("system.what-gets-deployed")}
+              </h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>• Core system smart contract</li>
-                <li>• Identity Registry for user verification</li>
-                <li>• Compliance Engine for regulatory requirements</li>
-                <li>• Trusted Issuers Registry for authorized parties</li>
-                <li>• Token Factory Registry for asset creation</li>
+                <li>{t("system.core-system-contract")}</li>
+                <li>{t("system.identity-registry")}</li>
+                <li>{t("system.compliance-engine")}</li>
+                <li>{t("system.trusted-issuers")}</li>
+                <li>{t("system.token-factory")}</li>
               </ul>
             </div>
 
@@ -72,7 +74,7 @@ export function SystemDeploy() {
                 disabled={isCreatingSystem}
                 className="flex-1"
               >
-                {isCreatingSystem ? "Deploying..." : "Deploy System"}
+                {isCreatingSystem ? t("system.deploying") : t("system.deploy")}
               </Button>
             </div>
           </div>
@@ -110,15 +112,15 @@ export function SystemDeploy() {
               },
             }),
             {
-              loading: "Deploying system...",
-              success: "System deployed successfully!",
+              loading: t("system.deploying-toast"),
+              success: t("system.deployed-toast"),
               error: (error: Error) =>
-                `Failed to deploy system: ${error.message}`,
+                `${t("system.failed-toast")}${error.message}`,
             }
           );
         }}
-        title="Confirm System Deployment"
-        description="Please verify your identity to deploy the blockchain system."
+        title={t("system.confirm-deployment-title")}
+        description={t("system.confirm-deployment-description")}
       />
     </>
   );

@@ -14,7 +14,7 @@ const logger = createLogger();
 
 export function AssetDeployment() {
   const { navigateToStep, completeStepAndNavigate } = useOnboardingNavigation();
-  const { t } = useTranslation(["onboarding", "general", "tokens"]);
+  const { t } = useTranslation(["onboarding", "common"]);
   const [systemAddress] = useSettings("SYSTEM_ADDRESS");
   const queryClient = useQueryClient();
 
@@ -67,10 +67,10 @@ export function AssetDeployment() {
       <div className="mt-8 pt-6 border-t border-border">
         <div className="flex justify-between">
           <Button type="button" variant="outline" onClick={onPrevious}>
-            Previous
+            {t("common:previous")}
           </Button>
           <Button type="button" onClick={onNext}>
-            Continue
+            {t("common:continue")}
           </Button>
         </div>
       </div>

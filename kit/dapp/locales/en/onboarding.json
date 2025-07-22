@@ -24,29 +24,6 @@
       "description": "Establish your on-chain identity"
     }
   },
-  "card-description": "We've set up your wallet and will configure your identity on the blockchain to use this platform.",
-  "card-title": "Let's get you set up!",
-  "ui": {
-    "next": "Next",
-    "back": "Back",
-    "cancel": "Cancel",
-    "complete": "Complete",
-    "error": "Error",
-    "step": "Step",
-    "settlemint": "SettleMint"
-  },
-  "platform": {
-    "title": "Platform Setup",
-    "description": "Let's set up your digital asset platform"
-  },
-  "issuer": {
-    "title": "Issuer Setup",
-    "description": "Set up your account to start issuing digital assets"
-  },
-  "investor": {
-    "title": "Investor Setup",
-    "description": "Set up your account to start investing in digital assets"
-  },
   "steps": {
     "wallet": {
       "title": "Your Wallet",
@@ -79,18 +56,6 @@
     "identity-setup": {
       "title": "Setup ONCHAINID",
       "description": "Create your on-chain identity"
-    },
-    "security": {
-      "title": "Secure your Wallet",
-      "description": "Set up protection for your wallet"
-    },
-    "system": {
-      "title": "Deploy System",
-      "description": "Initialize the core smart contracts"
-    },
-    "assets": {
-      "title": "Select Assets",
-      "description": "Choose supported asset types"
     },
     "identity": {
       "title": "Verify Identity",
@@ -148,6 +113,30 @@
       "invalid-pin-format": "Invalid PIN code format",
       "pin-codes-dont-match": "PIN codes don't match"
     },
+    "otp": {
+      "setup-initiated": "OTP setup initiated",
+      "setup-failed": "Failed to get OTP setup data",
+      "setup-error": "Failed to setup OTP",
+      "verified-success": "OTP verified successfully",
+      "invalid-code": "Invalid verification code",
+      "setup-failed-title": "Setup Failed",
+      "setup-failed-description": "Failed to setup OTP authentication. Please try again.",
+      "back": "Back",
+      "try-again": "Try Again",
+      "setting-up": "Setting up OTP...",
+      "setting-up-description": "Please wait while we generate your QR code.",
+      "setup-title": "Set up Authenticator App",
+      "setup-description": "Scan this QR code with your authenticator app",
+      "qr-code-label": "QR Code",
+      "scan-with-app": "Scan with your app",
+      "manual-entry": "Can't scan? Enter manually",
+      "manual-entry-key": "Manual entry key:",
+      "loading": "Loading...",
+      "enter-code": "Enter the 6-digit code from your app",
+      "cancel": "Cancel",
+      "verifying": "Verifying...",
+      "verify-code": "Verify Code"
+    },
     "recovery-codes": {
       "title": "Your secret codes",
       "description": "Save these codes somewhere safe",
@@ -182,6 +171,28 @@
     "smart-system-description": "SMART System is SettleMint's comprehensive blockchain system that enables compliant asset tokenization with built-in identity management and regulatory compliance.",
     "system-deployment": "System deployment",
     "deployment-time-notice": "This process may take 2-3 minutes to complete",
+    "initialize-title": "Initialize the system",
+    "initialize-subtitle": "You're about to set up the foundation of the platform",
+    "deployment-warning": "This action will deploy blockchain smart contracts and cannot be undone. Once deployed, the system will be permanently active on the blockchain.",
+    "what-gets-deployed": "What gets deployed:",
+    "core-system-contract": "• Core system smart contract",
+    "identity-registry": "• Identity Registry for user verification",
+    "compliance-engine": "• Compliance Engine for regulatory requirements",
+    "trusted-issuers": "• Trusted Issuers Registry for authorized parties",
+    "token-factory": "• Token Factory Registry for asset creation",
+    "deploying": "Deploying...",
+    "deploying-toast": "Deploying system...",
+    "deployed-toast": "System deployed successfully!",
+    "failed-toast": "Failed to deploy system: ",
+    "confirm-deployment-title": "Confirm System Deployment",
+    "confirm-deployment-description": "Please verify your identity to deploy the blockchain system.",
+    "view-deployment-details": "View Deployment Details",
+    "deployed-contracts": "Deployed Contract Addresses",
+    "system-contract": "System Contract",
+    "identity-registry-label": "Identity Registry",
+    "compliance-engine-label": "Compliance Engine",
+    "trusted-issuers-label": "Trusted Issuers Registry",
+    "token-factory-label": "Token Factory Registry",
     "messages": {
       "initial-loading": "Preparing to deploy your SMART system...",
       "no-result-error": "System deployment completed but no address was returned",
@@ -222,12 +233,18 @@
     "select-all-asset-types": "Select all the asset types you plan to tokenize",
     "select-description": "Select one or more asset types to deploy their factory contracts",
     "deploy": "Deploy Selected Assets",
+    "deploy-assets": "Deploy Assets",
     "deployed": "Asset factories deployed successfully",
     "asset-factories-deployed-successfully": "Asset Factories Deployed Successfully",
     "deployed-factories": "Deployed Factories",
+    "deployed-label": "(Deployed)",
     "no-system": "System not found. Please deploy the system first.",
     "what-are-asset-factories": "What are asset factories?",
     "asset-factories-description": "Asset factories are smart contracts that enable you to create and manage different types of tokenized assets. Each factory handles a specific asset class with tailored features and compliance requirements.",
+    "deploying-toast": "Deploying asset factories...",
+    "validation-error": "Select at least one asset type",
+    "confirm-deployment-title": "Confirm Asset Deployment",
+    "confirm-deployment-description": "Please verify your identity to deploy the asset factories.",
     "descriptions": {
       "bond": "Tokenized debt securities with fixed income features",
       "equity": "Digital shares representing ownership in companies",
