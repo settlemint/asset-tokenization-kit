@@ -16,6 +16,7 @@ import { read } from "@/orpc/routes/settings/routes/settings.read";
 import { read as systemRead } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import { eq } from "drizzle-orm";
+import { zeroAddress } from "viem";
 
 /**
  * Get current authenticated user information.
@@ -123,8 +124,7 @@ export const me = authRouter.user.me
       ] as VerificationType[],
       onboardingState: {
         isAdmin: authUser.role === "admin",
-        wallet:
-          authUser.wallet !== "0x0000000000000000000000000000000000000000",
+        wallet: authUser.wallet !== zeroAddress,
         walletSecurity:
           authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
         walletRecoveryCodes: authUser.secretCodesConfirmed ?? false,

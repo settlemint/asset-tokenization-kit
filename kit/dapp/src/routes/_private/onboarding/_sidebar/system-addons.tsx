@@ -17,7 +17,7 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { t } = useTranslation(["common"]);
+  const { t } = useTranslation(["common", "onboarding"]);
   const { completeStepAndNavigate } = useOnboardingNavigation();
 
   const onNext = () =>
@@ -26,16 +26,18 @@ function RouteComponent() {
   return (
     <div className="flex flex-col">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold">Enable Addons</h2>
+        <h2 className="text-xl font-semibold">
+          {t("onboarding:system-addons.title")}
+        </h2>
         <p className="text-sm text-muted-foreground pt-2">
-          Enable additional features and integrations for your platform
+          {t("onboarding:system-addons.subtitle")}
         </p>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl space-y-6">
           <p className="text-sm text-muted-foreground">
-            Platform addons configuration will be implemented here.
+            {t("onboarding:system-addons.description")}
           </p>
         </div>
       </div>

@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { Check, ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding/_sidebar")({
   validateSearch: createOnboardingSearchSchema(),
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/_private/onboarding/_sidebar")({
 });
 
 function RouteComponent() {
+  const { t } = useTranslation(["onboarding"]);
   const { steps, currentStep } = Route.useRouteContext();
   const navigate = useNavigate();
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
@@ -284,11 +286,10 @@ function RouteComponent() {
               {/* Title and Progress */}
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-primary-foreground mb-2">
-                  Let's get you set up!
+                  {t("onboarding:sidebar.title")}
                 </h2>
                 <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
-                  We'll set up your wallet and will configure your identity on
-                  the blockchain to use this platform.
+                  {t("onboarding:sidebar.description")}
                 </p>
 
                 <div>
@@ -320,7 +321,7 @@ function RouteComponent() {
           <div className="flex-1 p-8">
             <div
               className="w-full overflow-y-auto"
-              style={{ maxHeight: "calc(100% - 300px)" }}
+              style={{ maxHeight: "calc(100% - 200px)" }}
             >
               <Outlet />
             </div>

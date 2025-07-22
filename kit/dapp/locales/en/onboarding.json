@@ -10,6 +10,10 @@
     "continue-setup": "Continue Setup",
     "get-started": "Let's Get Started"
   },
+  "sidebar": {
+    "title": "Let's get you set up!",
+    "description": "We'll set up your wallet and will configure your identity on the blockchain to use this platform."
+  },
   "groups": {
     "wallet": {
       "title": "Wallet",
@@ -234,5 +238,10 @@
       "saving": "Saving...",
       "saveAndContinue": "Save & Continue"
     }
+  },
+  "system-addons": {
+    "title": "Enable Addons",
+    "subtitle": "Enable additional features and integrations for your platform",
+    "description": "Platform addons configuration will be implemented here."
   }
 }
