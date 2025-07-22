@@ -2,9 +2,7 @@ import type { AssetDesignerFormInputData } from "@/components/asset-designer/sha
 import {
   assetDesignerFormOptions,
   isRequiredField,
-  isStepSubmitDisabled,
 } from "@/components/asset-designer/shared-form";
-import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
@@ -76,17 +74,14 @@ export const CommonBasics = withForm({
     return (
       <>
         <CommonFields form={form} />
-        <form.Subscribe
-          selector={(state) => state.values}
-          children={(_values) => {
-            const disabled = isStepSubmitDisabled(commonFields, form);
-            return (
-              <Button onClick={onStepSubmit} disabled={disabled}>
-                Next
-              </Button>
-            );
-          }}
-        />
+        <form.AppForm>
+          <form.StepSubmitButton
+            label="Next"
+            onStepSubmit={onStepSubmit}
+            validate={commonFields}
+            checkRequiredFn={isRequiredField}
+          />
+        </form.AppForm>
       </>
     );
   },

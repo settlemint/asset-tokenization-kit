@@ -3,15 +3,17 @@ import {
   CommonFields,
 } from "@/components/asset-designer/asset-basics/common";
 import type { AssetDesignerFormInputData } from "@/components/asset-designer/shared-form";
-import {
-  isRequiredField,
-  isStepSubmitDisabled,
-} from "@/components/asset-designer/shared-form";
-import { Button } from "@/components/ui/button";
+import { isRequiredField } from "@/components/asset-designer/shared-form";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
 import { useTranslation } from "react-i18next";
+
+const bondFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
+  ...commonFields,
+  "cap",
+  "faceValue",
+];
 
 export const BondBasics = withForm({
   defaultValues: {} as AssetDesignerFormInputData,
@@ -42,23 +44,14 @@ export const BondBasics = withForm({
             />
           )}
         />
-        <form.Subscribe
-          selector={(state) => state.values}
-          children={(_values) => {
-            const fields: KeysOfUnion<AssetDesignerFormInputData>[] = [
-              ...commonFields,
-              "cap",
-              "faceValue",
-            ];
-
-            const disabled = isStepSubmitDisabled(fields, form);
-            return (
-              <Button onClick={onStepSubmit} disabled={disabled}>
-                Next
-              </Button>
-            );
-          }}
-        />
+        <form.AppForm>
+          <form.StepSubmitButton
+            label="Next"
+            onStepSubmit={onStepSubmit}
+            validate={bondFields}
+            checkRequiredFn={isRequiredField}
+          />
+        </form.AppForm>
       </>
     );
   },

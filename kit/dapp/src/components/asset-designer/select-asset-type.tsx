@@ -11,7 +11,8 @@ import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "../ui/button";
+
+const assetTypeFields: KeysOfUnion<AssetDesignerFormInputData>[] = ["type"];
 
 export const SelectAssetType = withForm({
   ...assetDesignerFormOptions,
@@ -57,30 +58,14 @@ export const SelectAssetType = withForm({
             />
           )}
         />
-        <form.Subscribe
-          selector={(state) => state.values}
-          children={(_values) => {
-            const fields: KeysOfUnion<AssetDesignerFormInputData>[] = ["type"];
-
-            const disabled = fields.some((field) => {
-              const meta = form.getFieldMeta(field);
-              if (meta === undefined) {
-                return true;
-              }
-              const errors = meta.errors;
-              const isPristine = meta.isPristine;
-              const requiredFieldPristine =
-                isRequiredField(field) && isPristine;
-              return errors.length > 0 || requiredFieldPristine;
-            });
-
-            return (
-              <Button onClick={onStepSubmit} disabled={disabled}>
-                Next
-              </Button>
-            );
-          }}
-        />
+        <form.AppForm>
+          <form.StepSubmitButton
+            label="Next"
+            onStepSubmit={onStepSubmit}
+            validate={assetTypeFields}
+            checkRequiredFn={isRequiredField}
+          />
+        </form.AppForm>
       </>
     );
   },
