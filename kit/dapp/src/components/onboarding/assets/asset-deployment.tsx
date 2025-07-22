@@ -2,10 +2,9 @@ import { AssetDeploymentSuccess } from "@/components/onboarding/assets/asset-dep
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-settings";
 import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -13,16 +12,13 @@ import { toast } from "sonner";
 const logger = createLogger();
 
 export function AssetDeployment() {
-  const { navigateToStep, completeStepAndNavigate } = useOnboardingNavigation();
+  const { completeStepAndNavigate } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common"]);
-  const [systemAddress] = useSettings("SYSTEM_ADDRESS");
-  const queryClient = useQueryClient();
 
   const { data: systemDetails } = useQuery({
     ...orpc.system.read.queryOptions({
-      input: { id: systemAddress ?? "" },
+      input: { id: "default" },
     }),
-    enabled: !!systemAddress,
   });
 
   // Stable reference for deployed factories
@@ -30,18 +26,12 @@ export function AssetDeployment() {
 
   const onNext = useCallback(async () => {
     try {
-      await queryClient.refetchQueries({ queryKey: orpc.user.me.key() });
       await completeStepAndNavigate(OnboardingStep.systemAssets);
     } catch (error) {
       logger.error("Navigation error:", error);
       toast.error("Failed to navigate to next step");
     }
-  }, [queryClient, completeStepAndNavigate]);
-
-  const onPrevious = useCallback(
-    async () => navigateToStep(OnboardingStep.systemSettings),
-    [navigateToStep]
-  );
+  }, [completeStepAndNavigate]);
 
   return (
     <div className="h-full flex flex-col">
@@ -66,9 +56,6 @@ export function AssetDeployment() {
 
       <div className="mt-8 pt-6 border-t border-border">
         <div className="flex justify-between">
-          <Button type="button" variant="outline" onClick={onPrevious}>
-            {t("common:previous")}
-          </Button>
           <Button type="button" onClick={onNext}>
             {t("common:continue")}
           </Button>

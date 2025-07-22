@@ -25,7 +25,7 @@ function RouteComponent() {
   const onPrevious = () => void navigateToStep(OnboardingStep.systemAssets);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">Enable Addons</h2>
         <p className="text-sm text-muted-foreground pt-2">

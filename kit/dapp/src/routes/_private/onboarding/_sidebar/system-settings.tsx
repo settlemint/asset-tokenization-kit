@@ -31,9 +31,9 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { t } = useTranslation(["common"]);
+  const { t } = useTranslation(["onboarding", "common"]);
   const queryClient = useQueryClient();
-  const { navigateToStep, completeStepAndNavigate } = useOnboardingNavigation();
+  const { completeStepAndNavigate } = useOnboardingNavigation();
 
   // Get current base currency setting
   const { data: currentBaseCurrency } = useQuery({
@@ -55,6 +55,7 @@ function RouteComponent() {
               input: { key: "BASE_CURRENCY" },
             }),
           });
+          await completeStepAndNavigate(OnboardingStep.systemSettings);
         },
       })
     );
@@ -65,58 +66,44 @@ function RouteComponent() {
     },
   });
 
-  const handleSaveAndContinue = async () => {
+  const handleSaveAndContinue = () => {
     logger.debug("Save & Continue button clicked");
     logger.debug("Form state:", form.state);
     logger.debug("Form errors:", form.state.errors);
 
-    try {
-      const currentValue = form.state.values.baseCurrency;
-      logger.debug("Saving base currency:", currentValue);
+    const currentValue = form.state.values.baseCurrency;
+    logger.debug("Saving base currency:", currentValue);
 
-      toast.promise(
-        upsertSetting({
-          key: "BASE_CURRENCY",
-          value: currentValue as FiatCurrency,
-        }),
-        {
-          loading: "Saving platform settings...",
-          success: "Platform settings saved successfully!",
-          error: (error: Error) =>
-            `Failed to save platform settings: ${error.message}`,
-        }
-      );
-
-      logger.debug("Base currency saved successfully, navigating to next step");
-      await completeStepAndNavigate(OnboardingStep.systemSettings);
-    } catch (error) {
-      logger.error("Failed to save base currency:", error);
-      // Error toast is handled by toast.promise
-    }
+    toast.promise(
+      upsertSetting({
+        key: "BASE_CURRENCY",
+        value: currentValue as FiatCurrency,
+      }),
+      {
+        loading: t("system-settings.toast.saving"),
+        success: t("system-settings.toast.success"),
+        error: (error: Error) =>
+          t("system-settings.toast.error", {
+            message: error.message,
+          }),
+      }
+    );
   };
-
-  const onPrevious = () => void navigateToStep(OnboardingStep.systemDeploy);
 
   return (
     <div className="h-full flex flex-col">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold">Configure Platform Settings</h2>
+        <h2 className="text-xl font-semibold">{t("system-settings.title")}</h2>
         <p className="text-sm text-muted-foreground pt-2">
-          Define how your platform behaves by default
+          {t("system-settings.subtitle")}
         </p>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl space-y-6">
           <div className="space-y-4 mb-6">
-            <p className="text-sm">
-              Before you begin issuing assets, let's configure some basic
-              settings that determine how the platform behaves. These default
-              values help personalize the experience for you and your users.
-            </p>
-            <p className="text-sm">
-              You can update these preferences later in the platform settings.
-            </p>
+            <p className="text-sm">{t("system-settings.description.intro")}</p>
+            <p className="text-sm">{t("system-settings.description.update")}</p>
           </div>
 
           <form.Field
@@ -126,7 +113,9 @@ function RouteComponent() {
                 logger.debug("Validating currency:", value);
                 if (!Object.keys(fiatCurrencyMetadata).includes(value)) {
                   logger.debug("Currency validation failed:", value);
-                  return "Invalid currency selection";
+                  return t(
+                    "system-settings.form.baseCurrency.validation.invalid"
+                  );
                 }
                 return undefined;
               },
@@ -135,10 +124,10 @@ function RouteComponent() {
             {(field) => (
               <div className="space-y-2">
                 <label htmlFor="baseCurrency" className="text-sm font-medium">
-                  Base Currency
+                  {t("system-settings.form.baseCurrency.label")}
                 </label>
                 <p className="text-sm text-muted-foreground">
-                  Choose the default currency for your platform
+                  {t("system-settings.form.baseCurrency.description")}
                 </p>
                 <select
                   id="baseCurrency"
@@ -169,19 +158,15 @@ function RouteComponent() {
             <div className="flex justify-between">
               <Button
                 type="button"
-                variant="outline"
-                onClick={onPrevious}
-                disabled={isSettingUpdating}
-              >
-                {t("common:previous")}
-              </Button>
-              <Button
-                type="button"
-                onClick={() => void handleSaveAndContinue()}
+                onClick={() => {
+                  handleSaveAndContinue();
+                }}
                 disabled={isSettingUpdating}
                 className="min-w-[120px]"
               >
-                {isSettingUpdating ? "Saving..." : "Save & Continue"}
+                {isSettingUpdating
+                  ? t("system-settings.buttons.saving")
+                  : t("system-settings.buttons.saveAndContinue")}
               </Button>
             </div>
           </div>

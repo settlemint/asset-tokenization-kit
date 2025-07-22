@@ -1,4 +1,3 @@
-import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
@@ -14,7 +13,7 @@ const logger = createLogger();
 
 export function SystemDeploy() {
   const { t } = useTranslation(["onboarding"]);
-  const { completeStepAndNavigate } = useOnboardingNavigation();
+  const { refreshUserState } = useOnboardingNavigation();
 
   // Modal state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
@@ -33,7 +32,7 @@ export function SystemDeploy() {
           for await (const event of result) {
             logger.info("system deployment event", event);
             if (event.status === "confirmed") {
-              await completeStepAndNavigate(OnboardingStep.systemDeploy);
+              await refreshUserState();
             }
           }
         },

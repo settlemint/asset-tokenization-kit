@@ -1,11 +1,9 @@
 import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
 import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
-import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
-import { useSettings } from "@/hooks/use-settings";
 import {
   type AssetFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
@@ -15,6 +13,7 @@ import {
   type TokenType,
   TokenTypeEnum,
 } from "@/orpc/routes/token/routes/factory/factory.create.schema";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
@@ -25,11 +24,11 @@ interface AssetSelectionFormValues {
   assets: TokenType[];
 }
 
+const logger = createLogger();
+
 export function AssetTypeSelection() {
-  const { navigateToStep, refreshUserState, completeStepAndNavigate } =
-    useOnboardingNavigation();
+  const { refreshUserState } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common", "tokens"]);
-  const [systemAddress] = useSettings("SYSTEM_ADDRESS");
   const queryClient = useQueryClient();
 
   // Verification dialog state
@@ -47,9 +46,8 @@ export function AssetTypeSelection() {
 
   const { data: systemDetails } = useQuery({
     ...orpc.system.read.queryOptions({
-      input: { id: systemAddress ?? "" },
+      input: { id: "default" },
     }),
-    enabled: !!systemAddress,
   });
 
   const form = useForm({
@@ -57,7 +55,7 @@ export function AssetTypeSelection() {
       assets: [] as TokenType[],
     },
     onSubmit: ({ value }: { value: AssetSelectionFormValues }) => {
-      if (!systemAddress || !systemDetails?.tokenFactoryRegistry) {
+      if (!systemDetails?.tokenFactoryRegistry) {
         toast.error(t("assets.no-system"));
         return;
       }
@@ -77,21 +75,22 @@ export function AssetTypeSelection() {
   const { mutateAsync: createFactories, isPending: isFactoriesCreating } =
     useMutation(
       orpc.token.factoryCreate.mutationOptions({
-        onSuccess: async () => {
+        onSuccess: async (result) => {
+          for await (const event of result) {
+            logger.info("token factory deployment event", event);
+          }
           // Refetch all relevant data
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: orpc.system.read.key() }),
             queryClient.invalidateQueries({
               queryKey: orpc.system.read.queryOptions({
-                input: { id: systemAddress ?? "" },
+                input: { id: "default" },
               }).queryKey,
               refetchType: "all",
             }),
             queryClient.refetchQueries({ queryKey: orpc.user.me.key() }),
           ]);
-          // Refresh user state to update onboarding state
           await refreshUserState();
-          await completeStepAndNavigate(OnboardingStep.systemAssets);
         },
       })
     );
@@ -155,11 +154,6 @@ export function AssetTypeSelection() {
     [systemDetails?.tokenFactories]
   );
 
-  const onPrevious = useCallback(
-    async () => navigateToStep(OnboardingStep.systemSettings),
-    [navigateToStep]
-  );
-
   return (
     <>
       <div className="h-full flex flex-col">
@@ -215,7 +209,8 @@ export function AssetTypeSelection() {
                             {availableAssets.map((assetType) => {
                               const Icon = getAssetIcon(assetType);
                               const isDisabled =
-                                deployedAssetTypes.has(assetType);
+                                deployedAssetTypes.has(assetType) ||
+                                isFactoriesCreating;
                               const isChecked =
                                 field.state.value.includes(assetType) ||
                                 isDisabled;
@@ -265,9 +260,6 @@ export function AssetTypeSelection() {
 
               <div className="mt-8 pt-6 border-t border-border">
                 <div className="flex justify-between">
-                  <Button type="button" variant="outline" onClick={onPrevious}>
-                    {t("common:previous")}
-                  </Button>
                   <Button type="submit" disabled={isFactoriesCreating}>
                     {t("assets.deploy-assets")}
                   </Button>

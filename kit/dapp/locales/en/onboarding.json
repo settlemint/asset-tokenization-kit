@@ -187,11 +187,8 @@
     "your-asset-factories-ready": "Your asset factories are ready for tokenization",
     "choose-asset-types": "Choose the types of assets you want to tokenize on your platform",
     "info": "Select the types of digital assets your platform will support. You can add more asset types later.",
-    "select-label": "Available Asset Types",
     "available-asset-types": "Available Asset Types",
     "select-all-asset-types": "Select all the asset types you plan to tokenize",
-    "select-description": "Select one or more asset types to deploy their factory contracts",
-    "deploy": "Deploy Selected Assets",
     "deploy-assets": "Deploy Assets",
     "deployed": "Asset factories deployed successfully",
     "asset-factories-deployed-successfully": "Asset Factories Deployed Successfully",
@@ -210,32 +207,32 @@
       "fund": "Investment fund tokens for pooled investments",
       "stablecoin": "Price-stable digital currencies",
       "deposit": "Tokenized bank deposits and certificates"
+    }
+  },
+  "system-settings": {
+    "title": "Configure Platform Settings",
+    "subtitle": "Define how your platform behaves by default",
+    "description": {
+      "intro": "Before you begin issuing assets, let's configure some basic settings that determine how the platform behaves. These default values help personalize the experience for you and your users.",
+      "update": "You can update these preferences later in the platform settings."
     },
-    "factory-messages": {
-      "initial-loading": "Preparing to create token factories...",
-      "factory-created": "{{name}} successfully created.",
-      "creating-factory": "Creating token factory...",
-      "factory-creation-failed": "Failed to create token factory. Please try again.",
-      "batch-progress": "Creating factory {{current}} of {{total}}...",
-      "batch-completed": "Successfully created {{count}} token factories.",
-      "no-result-error": "No factory address received from transaction.",
-      "default-error": "Failed to create token factory.",
-      "system-not-bootstrapped": "System needs to be bootstrapped first. Please wait for system initialization to complete.",
-      "transaction-submitted": "Transaction submitted. Waiting for confirmation...",
-      "factory-creation-completed": "Factory creation completed.",
-      "all-factories-succeeded": "All {{count}} factories created successfully.",
-      "some-factories-failed": "{{success}} factories created, {{failed}} failed.",
-      "all-factories-failed": "All {{count}} factories failed to create.",
-      "factory-already-exists": "{{name}} factory already exists, skipping...",
-      "all-factories-skipped": "All {{count}} factories already exist.",
-      "some-factories-skipped": "{{success}} factories created, {{skipped}} skipped, {{failed}} failed.",
-      "waiting-for-mining": "Waiting for transaction confirmation...",
-      "transaction-failed": "Transaction failed",
-      "transaction-dropped": "Transaction was not confirmed on-chain in time",
-      "waiting-for-indexing": "Waiting for factory to be indexed...",
-      "transaction-indexed": "Factory successfully indexed",
-      "stream-timeout": "Transaction tracking timed out",
-      "indexing-timeout": "Factory indexing timed out"
+    "form": {
+      "baseCurrency": {
+        "label": "Base Currency",
+        "description": "Choose the default currency for your platform",
+        "validation": {
+          "invalid": "Invalid currency selection"
+        }
+      }
+    },
+    "toast": {
+      "saving": "Saving platform settings...",
+      "success": "Platform settings saved successfully!",
+      "error": "Failed to save platform settings: {{message}}"
+    },
+    "buttons": {
+      "saving": "Saving...",
+      "saveAndContinue": "Save & Continue"
     }
   }
 }

@@ -1,7 +1,7 @@
+import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { Web3Address } from "@/components/web3/web3-address";
-import { useSettings } from "@/hooks/use-settings";
-import { type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -9,23 +9,22 @@ import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export function DeploymentDetails() {
-  const { t } = useTranslation("onboarding");
+  const { t } = useTranslation(["onboarding", "common"]);
+  const { completeStepAndNavigate } = useOnboardingNavigation();
   const [showDetails, setShowDetails] = useState(false);
-  const [systemAddress] = useSettings("SYSTEM_ADDRESS");
 
   // Query system details
   const { data: systemDetails } = useQuery({
     ...orpc.system.read.queryOptions({
-      input: { id: systemAddress ?? "" },
+      input: { id: "default" },
     }),
-    enabled: !!systemAddress,
   });
 
   const toggleDetails = useCallback(() => {
     setShowDetails(!showDetails);
   }, [showDetails]);
 
-  if (!systemAddress || !systemDetails) {
+  if (!systemDetails) {
     return null;
   }
 
@@ -57,7 +56,7 @@ export function DeploymentDetails() {
                 {t("system.system-contract")}
               </p>
               <Web3Address
-                address={systemAddress as EthereumAddress}
+                address={systemDetails.id}
                 copyToClipboard
                 showFullAddress={false}
                 showBadge={false}
@@ -136,6 +135,15 @@ export function DeploymentDetails() {
           </div>
         </div>
       )}
+      <footer className="mt-6">
+        <Button
+          onClick={() =>
+            void completeStepAndNavigate(OnboardingStep.systemSettings)
+          }
+        >
+          {t("common:continue")}
+        </Button>
+      </footer>
     </div>
   );
 }
