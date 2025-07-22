@@ -49,7 +49,7 @@
     "eslint-plugin-react-hooks": "6.0.0-rc1",
     "eslint-plugin-react-perf": "3.3.3",
     "globals": "16.3.0",
-    "gql.tada": "1.8.11",
+    "gql.tada": "1.8.12",
     "languine": "3.1.4",
     "minimatch": "10.0.3",
     "typescript": "5.8.3",
