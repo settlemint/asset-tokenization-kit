@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -10,13 +8,13 @@ import {
 import { cn } from "@/lib/utils";
 import { formatDate, formatDateRange } from "@/lib/utils/date";
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
-import { useTranslation } from "react-i18next";
 import { Ellipsis } from "lucide-react";
-import { cloneElement, isValidElement, useState, useCallback } from "react";
+import { cloneElement, isValidElement, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { take, uniq } from "../../data-table-array";
-import { isColumnOptionArray } from "../utils/type-guards";
 import type { ColumnOption, ElementType } from "../types/column-types";
 import type { FilterValue } from "../types/filter-types";
+import { isColumnOptionArray } from "../utils/type-guards";
 import { PropertyFilterValueMenu } from "./value-menu";
 
 interface PropertyFilterValueDisplayProps<TData, TValue> {

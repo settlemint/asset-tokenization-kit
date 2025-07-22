@@ -1,0 +1,10 @@
+{
+  "actions": {
+    "upsert": {
+      "success": "Setting '{{key}}' has been successfully updated"
+    },
+    "delete": {
+      "success": "Setting '{{key}}' has been successfully deleted"
+    }
+  }
+}

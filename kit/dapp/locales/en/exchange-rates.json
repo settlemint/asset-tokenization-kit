@@ -1,0 +1,13 @@
+{
+  "actions": {
+    "update": {
+      "success": "Exchange rate {{baseCurrency}}/{{quoteCurrency}} has been successfully updated to {{rate}}"
+    },
+    "sync": {
+      "success": "Exchange rates have been successfully synchronized. {{ratesUpdated}} rates updated."
+    },
+    "delete": {
+      "success": "Manual exchange rate {{baseCurrency}}/{{quoteCurrency}} has been successfully deleted"
+    }
+  }
+}

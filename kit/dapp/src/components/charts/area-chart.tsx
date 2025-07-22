@@ -1,7 +1,3 @@
-"use client";
-
-import { useCallback } from "react";
-import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -16,6 +12,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { PieChart as PieChartIcon } from "lucide-react";
+import { Area, AreaChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 
 export type AreaChartData = Record<string, string | number>;
 
@@ -57,13 +54,11 @@ export function AreaChartComponent({
   className,
   tickFormatter,
 }: AreaChartComponentProps) {
-  const legendFormatter = useCallback(
-    (value: string): string => {
-      const label = config[value]?.label;
-      return typeof label === "string" ? label : value;
-    },
-    [config]
-  );
+  // Simple formatter function - React Compiler will optimize this
+  const legendFormatter = (value: string): string => {
+    const label = config[value]?.label;
+    return typeof label === "string" ? label : value;
+  };
 
   // Show empty state if no data
   if (data.length === 0) {

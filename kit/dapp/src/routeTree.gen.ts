@@ -28,6 +28,7 @@ import { Route as PrivateOnboardingSidebarSystemSettingsRouteImport } from './ro
 import { Route as PrivateOnboardingSidebarSystemDeployRouteImport } from './routes/_private/onboarding/_sidebar/system-deploy'
 import { Route as PrivateOnboardingSidebarSystemAssetsRouteImport } from './routes/_private/onboarding/_sidebar/system-assets'
 import { Route as PrivateOnboardingSidebarSystemAddonsRouteImport } from './routes/_private/onboarding/_sidebar/system-addons'
+import { Route as PrivateOnboardingSidebarIdentitySetupRouteImport } from './routes/_private/onboarding/_sidebar/identity-setup'
 import { Route as PrivateOnboardingSidebarIdentityRouteImport } from './routes/_private/onboarding/_sidebar/identity'
 import { Route as PrivateOnboardedSidebarTokenStatsRouteImport } from './routes/_private/_onboarded/_sidebar/token/stats'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/index'
@@ -132,6 +133,12 @@ const PrivateOnboardingSidebarSystemAddonsRoute =
     path: '/system-addons',
     getParentRoute: () => PrivateOnboardingSidebarRoute,
   } as any)
+const PrivateOnboardingSidebarIdentitySetupRoute =
+  PrivateOnboardingSidebarIdentitySetupRouteImport.update({
+    id: '/identity-setup',
+    path: '/identity-setup',
+    getParentRoute: () => PrivateOnboardingSidebarRoute,
+  } as any)
 const PrivateOnboardingSidebarIdentityRoute =
   PrivateOnboardingSidebarIdentityRouteImport.update({
     id: '/identity',
@@ -205,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/auth/$pathname': typeof AuthPathnameRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
+  '/onboarding/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/onboarding/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
   '/onboarding/system-assets': typeof PrivateOnboardingSidebarSystemAssetsRoute
   '/onboarding/system-deploy': typeof PrivateOnboardingSidebarSystemDeployRoute
@@ -226,6 +234,7 @@ export interface FileRoutesByTo {
   '/auth/$pathname': typeof AuthPathnameRoute
   '/onboarding': typeof PrivateOnboardingIndexRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
+  '/onboarding/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/onboarding/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
   '/onboarding/system-assets': typeof PrivateOnboardingSidebarSystemAssetsRoute
   '/onboarding/system-deploy': typeof PrivateOnboardingSidebarSystemDeployRoute
@@ -252,6 +261,7 @@ export interface FileRoutesById {
   '/_private/onboarding/_sidebar': typeof PrivateOnboardingSidebarRouteWithChildren
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
   '/_private/onboarding/_sidebar/identity': typeof PrivateOnboardingSidebarIdentityRoute
+  '/_private/onboarding/_sidebar/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/_private/onboarding/_sidebar/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
   '/_private/onboarding/_sidebar/system-assets': typeof PrivateOnboardingSidebarSystemAssetsRoute
   '/_private/onboarding/_sidebar/system-deploy': typeof PrivateOnboardingSidebarSystemDeployRoute
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/auth/$pathname'
     | '/onboarding/'
     | '/onboarding/identity'
+    | '/onboarding/identity-setup'
     | '/onboarding/system-addons'
     | '/onboarding/system-assets'
     | '/onboarding/system-deploy'
@@ -297,6 +308,7 @@ export interface FileRouteTypes {
     | '/auth/$pathname'
     | '/onboarding'
     | '/onboarding/identity'
+    | '/onboarding/identity-setup'
     | '/onboarding/system-addons'
     | '/onboarding/system-assets'
     | '/onboarding/system-deploy'
@@ -322,6 +334,7 @@ export interface FileRouteTypes {
     | '/_private/onboarding/_sidebar'
     | '/_private/onboarding/'
     | '/_private/onboarding/_sidebar/identity'
+    | '/_private/onboarding/_sidebar/identity-setup'
     | '/_private/onboarding/_sidebar/system-addons'
     | '/_private/onboarding/_sidebar/system-assets'
     | '/_private/onboarding/_sidebar/system-deploy'
@@ -494,6 +507,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardingSidebarSystemAddonsRouteImport
       parentRoute: typeof PrivateOnboardingSidebarRoute
     }
+    '/_private/onboarding/_sidebar/identity-setup': {
+      id: '/_private/onboarding/_sidebar/identity-setup'
+      path: '/identity-setup'
+      fullPath: '/onboarding/identity-setup'
+      preLoaderRoute: typeof PrivateOnboardingSidebarIdentitySetupRouteImport
+      parentRoute: typeof PrivateOnboardingSidebarRoute
+    }
     '/_private/onboarding/_sidebar/identity': {
       id: '/_private/onboarding/_sidebar/identity'
       path: '/identity'
@@ -631,6 +651,7 @@ const PrivateOnboardedRouteWithChildren =
 
 interface PrivateOnboardingSidebarRouteChildren {
   PrivateOnboardingSidebarIdentityRoute: typeof PrivateOnboardingSidebarIdentityRoute
+  PrivateOnboardingSidebarIdentitySetupRoute: typeof PrivateOnboardingSidebarIdentitySetupRoute
   PrivateOnboardingSidebarSystemAddonsRoute: typeof PrivateOnboardingSidebarSystemAddonsRoute
   PrivateOnboardingSidebarSystemAssetsRoute: typeof PrivateOnboardingSidebarSystemAssetsRoute
   PrivateOnboardingSidebarSystemDeployRoute: typeof PrivateOnboardingSidebarSystemDeployRoute
@@ -644,6 +665,8 @@ const PrivateOnboardingSidebarRouteChildren: PrivateOnboardingSidebarRouteChildr
   {
     PrivateOnboardingSidebarIdentityRoute:
       PrivateOnboardingSidebarIdentityRoute,
+    PrivateOnboardingSidebarIdentitySetupRoute:
+      PrivateOnboardingSidebarIdentitySetupRoute,
     PrivateOnboardingSidebarSystemAddonsRoute:
       PrivateOnboardingSidebarSystemAddonsRoute,
     PrivateOnboardingSidebarSystemAssetsRoute:

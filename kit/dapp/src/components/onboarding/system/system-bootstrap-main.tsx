@@ -64,7 +64,6 @@ export function SystemBootstrapMain({
       setShowDeploymentProgress(false);
       setDeploymentFailed(false);
       setIsBootstrapped(true);
-      onNext?.();
     },
   });
 
@@ -171,24 +170,6 @@ export function SystemBootstrapMain({
           verificationCode: pincode,
           verificationType: "pincode",
         },
-        messages: {
-          streamTimeout: "Transaction stream timeout",
-          waitingForMining: "Waiting for transaction to be mined...",
-          transactionFailed: "Transaction failed",
-          transactionDropped: "Transaction was dropped",
-          waitingForIndexing: "Waiting for indexing...",
-          transactionIndexed: "Transaction indexed successfully",
-          indexingTimeout: "Indexing timeout",
-          systemCreated: "System created successfully",
-          creatingSystem: "Creating system...",
-          systemCreationFailed: "System creation failed",
-          bootstrappingSystem: "Bootstrapping system...",
-          bootstrapFailed: "Bootstrap failed",
-          systemCreatedBootstrapFailed: "System created but bootstrap failed",
-          initialLoading: "Loading...",
-          noResultError: "No result received",
-          defaultError: "An error occurred",
-        },
       });
     },
     [createSystem]
@@ -202,24 +183,6 @@ export function SystemBootstrapMain({
           verificationCode: otp,
           verificationType: "two-factor",
         },
-        messages: {
-          streamTimeout: "Transaction stream timeout",
-          waitingForMining: "Waiting for transaction to be mined...",
-          transactionFailed: "Transaction failed",
-          transactionDropped: "Transaction was dropped",
-          waitingForIndexing: "Waiting for indexing...",
-          transactionIndexed: "Transaction indexed successfully",
-          indexingTimeout: "Indexing timeout",
-          systemCreated: "System created successfully",
-          creatingSystem: "Creating system...",
-          systemCreationFailed: "System creation failed",
-          bootstrappingSystem: "Bootstrapping system...",
-          bootstrapFailed: "Bootstrap failed",
-          systemCreatedBootstrapFailed: "System created but bootstrap failed",
-          initialLoading: "Loading...",
-          noResultError: "No result received",
-          defaultError: "An error occurred",
-        },
       });
     },
     [createSystem]
@@ -227,9 +190,7 @@ export function SystemBootstrapMain({
 
   const handleDeploymentComplete = useCallback(() => {
     setIsBootstrapped(true);
-    // Navigate to next step after successful deployment
-    onNext?.();
-  }, [onNext]);
+  }, []);
 
   const handleRetryDeployment = useCallback(() => {
     setDeploymentFailed(false);

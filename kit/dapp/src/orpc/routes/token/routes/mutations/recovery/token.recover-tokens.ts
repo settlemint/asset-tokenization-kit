@@ -1,11 +1,11 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { TokenRecoverTokensMessagesSchema } from "./token.recover-tokens.schema";
 
 const TOKEN_RECOVER_TOKENS_MUTATION = portalGraphql(`
   mutation TokenRecoverTokens(
@@ -38,12 +38,11 @@ export const tokenRecoverTokens = tokenRouter.token.tokenRecoverTokens
   .use(portalMiddleware)
   .handler(async function* ({ input, context }) {
     const { contract, verification, lostWallet } = input;
-    const { auth } = context;
+    const { auth, t } = context;
 
-    // Parse messages with defaults
-    const messages = TokenRecoverTokensMessagesSchema.parse(
-      input.messages ?? {}
-    );
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getMutationMessages(t, "tokens", "recoverTokens");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -59,8 +58,11 @@ export const tokenRecoverTokens = tokenRouter.token.tokenRecoverTokens
         lostWallet,
         ...challengeResponse,
       },
-      messages.recoveryFailed,
-      messages
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
     );
 
     return getEthereumHash(transactionHash);

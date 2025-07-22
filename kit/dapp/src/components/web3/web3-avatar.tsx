@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { type VariantProps, cva } from "class-variance-authority";
 import MD5 from "crypto-js/md5";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useMemo } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 
 const web3AvatarVariants = cva("rounded-full", {
@@ -167,13 +167,14 @@ const Web3AvatarComponent = memo(function Web3Avatar({
     return getJazziconSeed(identifier);
   }, [identifier]);
 
-  const handleImageError = useCallback(() => {
+  // React Compiler will optimize these handlers
+  const handleImageError = () => {
     onError?.();
-  }, [onError]);
+  };
 
-  const handleImageLoad = useCallback(() => {
+  const handleImageLoad = () => {
     onLoad?.();
-  }, [onLoad]);
+  };
 
   // Determine border radius based on shape
   const shapeClass = shape === "square" ? "rounded-lg" : "rounded-full";

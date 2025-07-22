@@ -164,5 +164,16 @@
     "permit": "Genehmigungsunterschrift",
     "message": "Nachricht zum Unterzeichnen",
     "danger": "Sei vorsichtig, was du unterschreibst!"
+  },
+  "transactions": {
+    "tracking": {
+      "streamTimeout": "Die Transaktionsverfolgung hat die Zeitüberschreitung erreicht. Bitte überprüfen Sie den Transaktionsstatus manuell.",
+      "waitingForMining": "Warten auf die Bestätigung der Transaktion...",
+      "transactionFailed": "Transaktion fehlgeschlagen",
+      "transactionDropped": "Die Transaktion wurde aus dem Mempool entfernt",
+      "waitingForIndexing": "Transaktion bestätigt. Warten auf die Indizierung...",
+      "transactionIndexed": "Transaktion erfolgreich indiziert.",
+      "indexingTimeout": "Zeitüberschreitung bei der Indizierung. Die Transaktion war erfolgreich, könnte jedoch einige Zeit in Anspruch nehmen, um angezeigt zu werden."
+    }
   }
 }

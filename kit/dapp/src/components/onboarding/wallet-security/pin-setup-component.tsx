@@ -1,5 +1,6 @@
 import { PincodeInput } from "@/components/form/inputs/pincode-input";
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth/auth.client";
 import { pincode } from "@/lib/zod/validators/pincode";
 import { orpc } from "@/orpc/orpc-client";
@@ -32,6 +33,7 @@ export function PinSetupComponent({
   onBack,
 }: PinSetupComponentProps) {
   const queryClient = useQueryClient();
+  const { refetch } = useSession();
 
   const { mutateAsync: enablePincode, isPending } = useMutation({
     mutationFn: async (pincode: string) =>
@@ -39,19 +41,14 @@ export function PinSetupComponent({
         pincode,
       }),
     onSuccess: async () => {
-      // Clear auth session cache to ensure UI reflects updated auth state
       await authClient.getSession({
         query: {
           disableCookieCache: true,
         },
       });
-
+      await refetch();
+      await queryClient.refetchQueries(orpc.user.me.queryOptions());
       toast.success("PIN code set successfully");
-
-      // Invalidate user queries to get fresh data
-      await queryClient.invalidateQueries({
-        queryKey: orpc.user.me.key(),
-      });
 
       onSuccess();
     },
@@ -148,9 +145,9 @@ export function PinSetupComponent({
               state.values.confirmPincode.length === 6;
 
             // Check for field-specific errors only when the confirm field is shown
-            const hasFieldErrors = showConfirmField
-              ? state.fieldMeta.confirmPincode.errors.length > 0
-              : false;
+            const hasFieldErrors =
+              showConfirmField &&
+              state.fieldMeta.confirmPincode.errors.length > 0;
 
             const isFormValid =
               bothPinsComplete && pinsMatch && !hasFieldErrors;
@@ -196,9 +193,9 @@ export function PinSetupComponent({
                   )}
                 </form.Field>
 
-                {showConfirmField && (
-                  <form.Field name="confirmPincode">
-                    {(field) => (
+                <form.Field name="confirmPincode">
+                  {(field) =>
+                    showConfirmField ? (
                       <div className="space-y-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
                         <div className="text-center">
                           <label className="text-sm font-medium">
@@ -241,9 +238,9 @@ export function PinSetupComponent({
                             </p>
                           )}
                       </div>
-                    )}
-                  </form.Field>
-                )}
+                    ) : null
+                  }
+                </form.Field>
 
                 <div className="flex gap-3 pt-4">
                   <Button

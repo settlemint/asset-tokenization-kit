@@ -29,6 +29,35 @@
         "label": "ISIN（オプション）",
         "placeholder": "例：US0378331005",
         "description": "トークンのISINです。これは金融システムにおけるトークンのオプションの一意の識別子です。"
+      },
+      "type": {
+        "label": "資産の種類",
+        "description": "作成したい資産の種類を選択してください。デプロイされたファクトリーを持つ資産の種類のみが利用可能です。"
+      },
+      "cap": {
+        "label": "トークンの上限",
+        "placeholder": "例：1000000",
+        "description": "発行可能なトークンの最大数"
+      },
+      "faceValue": {
+        "label": "額面価値",
+        "placeholder": "例：1000",
+        "description": "各債券トークンの額面価値"
+      },
+      "maturityDate": {
+        "label": "満期日",
+        "placeholder": "日付を選択",
+        "description": "債券の満期日"
+      },
+      "underlyingAsset": {
+        "label": "基礎資産",
+        "placeholder": "例：0x...",
+        "description": "基礎資産のEthereumアドレス"
+      },
+      "managementFeeBps": {
+        "label": "管理手数料（BPS）",
+        "placeholder": "例：100",
+        "description": "ベーシスポイントでの管理手数料（100 BPS = 1%）"
       }
     },
     "actions": {
@@ -41,6 +70,38 @@
     "created": "{{type}}が正常に作成されました。",
     "creation-failed": "{{type}}の作成に失敗しました。",
     "success-toast": "{{type}}が正常に作成されました！",
-    "error-toast": "{{type}}の作成に失敗しました"
+    "error-toast": "{{type}}の作成に失敗しました",
+    "loading": "利用可能な資産の種類を読み込んでいます...",
+    "loading-description": "利用可能なトークンファクトリーを取得していますのでお待ちください。",
+    "no-asset-types": "利用可能な資産の種類はありません",
+    "no-asset-types-description": "トークンファクトリーはまだデプロイされていません。トークンを作成する前にトークンファクトリーをデプロイしてください。"
+  },
+  "wizard": {
+    "description": "トークンの種類を選択し、その基本的なプロパティを設定して新しいトークンを作成します。",
+    "steps": {
+      "asset-type": {
+        "title": "トークンの種類を選択",
+        "description": "作成したいトークンの種類を選択してください"
+      },
+      "token-details": {
+        "title": "トークンの詳細",
+        "description": "トークンの基本的なプロパティを設定します"
+      },
+      "selectAssetType": {
+        "title": "資産の種類を選択",
+        "description": "作成したい資産の種類を選択してください"
+      },
+      "assetBasics": {
+        "title": "資産の基本情報",
+        "description": "資産の基本的な詳細を入力してください"
+      },
+      "summary": {
+        "title": "概要",
+        "description": "資産の詳細を確認します"
+      }
+    }
+  },
+  "validation": {
+    "type-required": "資産の種類を選択してください"
   }
 }

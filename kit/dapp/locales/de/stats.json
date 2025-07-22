@@ -2,11 +2,11 @@
   "title": "Statistiken",
   "widgets": {
     "assets": {
-      "title": "Gesamte Assets",
-      "empty": "Noch keine Assets"
+      "title": "Gesamtvermögen",
+      "empty": "Noch keine Vermögenswerte"
     },
     "transactions": {
-      "title": "Gesamte Transaktionen",
+      "title": "Gesamttransaktionen",
       "description": "{{count}} Transaktionen in den letzten {{days}} Tagen"
     },
     "users": {
@@ -14,31 +14,31 @@
       "description": "{{count}} aktive Benutzer in den letzten {{days}} Tagen"
     },
     "value": {
-      "title": "Gesamter Wert",
-      "description": "Kombinierter Wert aller Assets"
+      "title": "Gesamtwert",
+      "description": "Kombinierter Wert aller Vermögenswerte"
     },
     "common": {
-      "loading": "Laden...",
+      "loading": "Wird geladen...",
       "error": "Fehler beim Laden der Daten",
-      "retry": "Wiederholen"
+      "retry": "Erneut versuchen"
     }
   },
   "charts": {
     "assetSupply": {
       "title": "Asset-Angebot",
-      "description": "Gesamtangebot von Assets über die Zeit"
+      "description": "Gesamtangebot an Vermögenswerten im Laufe der Zeit"
     },
     "assetActivity": {
-      "title": "Asset-Aktivität",
-      "description": "Asset-Transaktionsaktivität"
+      "title": "Vermögensaktivität",
+      "description": "Aktivität von Vermögenstransaktionen"
     },
     "userGrowth": {
       "title": "Benutzerwachstum",
-      "description": "Anzahl der Benutzer über die Zeit"
+      "description": "Anzahl der Benutzer im Laufe der Zeit"
     },
     "transactionHistory": {
-      "title": "Transaktionshistorie",
-      "description": "Transaktionsvolumen über die Zeit"
+      "title": "Transaktionsverlauf",
+      "description": "Transaktionsvolumen im Laufe der Zeit"
     }
   }
 }

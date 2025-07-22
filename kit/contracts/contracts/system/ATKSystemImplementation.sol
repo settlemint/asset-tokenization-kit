@@ -8,7 +8,6 @@ import {
     ContextUpgradeable
 } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
@@ -16,8 +15,6 @@ import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/
 
 import { IATKSystem } from "./IATKSystem.sol";
 import {
-    SystemAddonImplementationNotSet,
-    SystemAddonTypeAlreadyRegistered,
     ComplianceImplementationNotSet,
     ContractIdentityImplementationNotSet,
     IdentityFactoryImplementationNotSet,
@@ -25,16 +22,13 @@ import {
     IdentityRegistryImplementationNotSet,
     IdentityRegistryStorageImplementationNotSet,
     IdentityVerificationModuleNotSet,
-    InvalidAddonAddress,
     InvalidImplementationInterface,
     InvalidTokenFactoryAddress,
     InvalidTokenImplementationAddress,
     InvalidTokenImplementationInterface,
     SystemAccessManagerImplementationNotSet,
     SystemAlreadyBootstrapped,
-    SystemNotBootstrapped,
     TokenAccessManagerImplementationNotSet,
-    TokenFactoryTypeAlreadyRegistered,
     TopicSchemeRegistryImplementationNotSet,
     TrustedIssuersRegistryImplementationNotSet,
     ComplianceModuleRegistryImplementationNotSet,
@@ -44,9 +38,6 @@ import {
 import { ATKTypedImplementationProxy } from "./ATKTypedImplementationProxy.sol";
 
 // Compliance modules
-import { SMARTIdentityVerificationComplianceModule } from
-    "../smart/modules/SMARTIdentityVerificationComplianceModule.sol";
-
 import { ISMARTComplianceModule } from "../smart/interface/ISMARTComplianceModule.sol";
 
 // Constants

@@ -13,6 +13,7 @@ export enum OnboardingStep {
   systemSettings = "system-settings",
   systemAssets = "system-assets",
   systemAddons = "system-addons",
+  identitySetup = "identity-setup",
   identity = "identity",
 }
 
@@ -29,6 +30,9 @@ export const onboardingStateMachine = new Store<OnboardingState>({
   walletRecoveryCodes: false,
   system: false,
   systemSettings: false,
+  systemAssets: false,
+  systemAddons: false,
+  identitySetup: false,
   identity: false,
 });
 
@@ -84,16 +88,22 @@ export const onboardingSteps = new Derived({
               step: OnboardingStep.systemAssets,
               groupId: OnboardingStepGroup.system,
               current: false,
-              completed: false, // TODO: Add individual step tracking
+              completed: onboardingStateMachine.state.systemAssets,
             },
             {
               step: OnboardingStep.systemAddons,
               groupId: OnboardingStepGroup.system,
               current: false,
-              completed: false, // TODO: Add individual step tracking
+              completed: onboardingStateMachine.state.systemAddons,
             },
           ]
         : []),
+      {
+        step: OnboardingStep.identitySetup,
+        groupId: OnboardingStepGroup.identity,
+        current: false,
+        completed: onboardingStateMachine.state.identitySetup,
+      },
       {
         step: OnboardingStep.identity,
         groupId: OnboardingStepGroup.identity,

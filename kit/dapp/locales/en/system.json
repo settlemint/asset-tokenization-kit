@@ -1,0 +1,33 @@
+{
+  "create": {
+    "messages": {
+      "alreadyExists": "System already exists",
+      "creating": "Creating system",
+      "creationFailed": "Failed to create system",
+      "queryingSystem": "Querying system information",
+      "systemNotFound": "System not found after creation",
+      "bootstrapping": "Bootstrapping system",
+      "bootstrapFailed": "Failed to bootstrap system",
+      "bootstrapSuccess": "System bootstrapped successfully",
+      "createdBootstrapFailed": "System created at {{systemAddress}} but bootstrap failed. Manual intervention may be required.",
+      "success": "System created successfully"
+    }
+  },
+  "addons": {
+    "messages": {
+      "preparing": "Preparing to register addons",
+      "progress": "Registering {{current}} of {{total}} addons",
+      "alreadyExists": "Addon {{name}} already exists",
+      "failed": "Failed to register {{name}}",
+      "registering": "Registering {{name}}",
+      "registered": "{{name}} registered successfully",
+      "defaultError": "An error occurred during addon registration",
+      "accessDenied": "Access denied for {{name}}",
+      "invalidImplementation": "Invalid implementation provided",
+      "invalidConfiguration": "Invalid configuration",
+      "allSuccess": "All {{count}} addons registered successfully",
+      "allFailed": "Failed to register any addons",
+      "partialSuccess": "{{successful}} of {{total}} addons registered successfully"
+    }
+  }
+}

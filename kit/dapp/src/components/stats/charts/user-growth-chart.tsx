@@ -23,16 +23,16 @@ const dataKeys = ["users"];
 export function UserGrowthChart() {
   const { t } = useTranslation("stats");
 
-  // Fetch just the user growth data - more efficient
-  const { data: metrics } = useSuspenseQuery(
-    orpc.user.statsGrowthOverTime.queryOptions({ input: { timeRange: 30 } }) // 30 days of data
-  );
-
-  // Transform user growth data for chart display
-  const chartData = metrics.userGrowth.map((dataPoint) => ({
-    timestamp: dataPoint.timestamp,
-    users: dataPoint.users,
-  }));
+  // Fetch and transform user growth data with select function
+  // This reduces re-renders when other parts of the API response change
+  const { data: chartData } = useSuspenseQuery({
+    ...orpc.user.statsGrowthOverTime.queryOptions({ input: { timeRange: 30 } }), // 30 days of data
+    select: (metrics) =>
+      metrics.userGrowth.map((dataPoint) => ({
+        timestamp: dataPoint.timestamp,
+        users: dataPoint.users,
+      })),
+  });
 
   return (
     <ComponentErrorBoundary componentName="User Growth Chart">

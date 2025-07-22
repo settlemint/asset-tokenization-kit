@@ -65,7 +65,7 @@ test.describe("Create, mint, burn and transfer equity", () => {
       await adminContext.close();
     }
   });
-  test("Admin user creates, mints and burns equity", async ({ browser }) => {
+  test("Admin user creates, mints and burns equity", async ({ browser: _browser }) => {
     await adminPages.adminPage.createEquity(equityData);
     testData.equityName = equityData.name;
     await adminPages.adminPage.verifySuccessMessage(
