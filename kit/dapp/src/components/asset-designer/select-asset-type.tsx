@@ -1,21 +1,22 @@
 import {
   assetDesignerFormOptions,
   isRequiredField,
-  onStepSubmit,
+  type AssetDesignerFormInputData,
 } from "@/components/asset-designer/shared-form";
 import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
+import { noop } from "@/lib/utils/noop";
+import type { KeysOfUnion } from "@/lib/utils/union";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../ui/button";
-import type { AssetDesignerFormInputData } from "./shared-form";
 
 export const SelectAssetType = withForm({
   ...assetDesignerFormOptions,
   props: {
-    onStepSubmit,
+    onStepSubmit: noop,
   },
   render: function Render({ form, onStepSubmit }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
@@ -59,15 +60,18 @@ export const SelectAssetType = withForm({
         <form.Subscribe
           selector={(state) => state.values}
           children={(_values) => {
-            const fields: (keyof AssetDesignerFormInputData)[] = ["type"];
+            const fields: KeysOfUnion<AssetDesignerFormInputData>[] = ["type"];
 
             const disabled = fields.some((field) => {
               const meta = form.getFieldMeta(field);
-              const error = meta?.errors;
-              const isPristine = meta?.isPristine;
+              if (meta === undefined) {
+                return true;
+              }
+              const errors = meta.errors;
+              const isPristine = meta.isPristine;
               const requiredFieldPristine =
                 isRequiredField(field) && isPristine;
-              return (error && error.length > 0) || requiredFieldPristine;
+              return errors.length > 0 || requiredFieldPristine;
             });
 
             return (

@@ -2,19 +2,19 @@ import type { AssetDesignerFormInputData } from "@/components/asset-designer/sha
 import {
   assetDesignerFormOptions,
   isRequiredField,
-  onStepSubmit,
 } from "@/components/asset-designer/shared-form";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/use-app-form";
+import { noop } from "@/lib/utils/noop";
+import type { KeysOfUnion } from "@/lib/utils/union";
 import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
 import { basisPoints } from "@/lib/zod/validators/basis-points";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
 
 export const AssetBasics = withForm({
   ...assetDesignerFormOptions,
   props: {
-    onStepSubmit,
+    onStepSubmit: noop,
   },
   render: function Render({ form, onStepSubmit }) {
     const { t } = useTranslation(["asset-designer"]);
@@ -69,7 +69,7 @@ export const AssetBasics = withForm({
         <form.Subscribe
           selector={(state) => state.values}
           children={(_values) => {
-            const fields: (keyof AssetDesignerFormInputData)[] = [
+            const fields: KeysOfUnion<AssetDesignerFormInputData>[] = [
               "name",
               "symbol",
               "decimals",
@@ -81,11 +81,14 @@ export const AssetBasics = withForm({
 
             const disabled = fields.some((field) => {
               const meta = form.getFieldMeta(field);
-              const error = meta?.errors;
-              const isPristine = meta?.isPristine;
+              if (meta === undefined) {
+                return true;
+              }
+              const errors = meta.errors;
+              const isPristine = meta.isPristine;
               const isRequired = isRequiredField(field);
               const requiredFieldPristine = isRequired && isPristine;
-              return (error && error.length > 0) || requiredFieldPristine;
+              return errors.length > 0 || requiredFieldPristine;
             });
 
             return (
@@ -110,9 +113,6 @@ const BondBasics = withForm({
       <>
         <form.AppField
           name="cap"
-          validators={{
-            onChange: z.bigint(),
-          }}
           children={(field) => (
             <field.BigIntField
               label={t("form.fields.cap.label")}
@@ -122,9 +122,6 @@ const BondBasics = withForm({
         />
         <form.AppField
           name="faceValue"
-          validators={{
-            onChange: z.bigint(),
-          }}
           children={(field) => (
             <field.BigIntField
               label={t("form.fields.faceValue.label")}
