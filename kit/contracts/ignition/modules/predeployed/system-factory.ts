@@ -8,6 +8,7 @@ import IdentityRegistryModule from "./identity-registry";
 import IdentityRegistryStorageModule from "./identity-registry-storage";
 import IdentityVerificationModule from "./modules/identity-verification-module";
 import SystemModule from "./system";
+import SystemAccessManagerModule from "./system-access-manager";
 import SystemAddonRegistryModule from "./system-addon-registry";
 import TokenAccessManagerModule from "./token-access-manager";
 import TokenFactoryRegistryModule from "./token-factory-registry";
@@ -33,6 +34,7 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
     ComplianceModuleRegistryModule
   );
   const { systemAddonRegistry } = m.useModule(SystemAddonRegistryModule);
+  const { systemAccessManager } = m.useModule(SystemAccessManagerModule);
 
   const { identityVerificationModule } = m.useModule(
     IdentityVerificationModule
@@ -53,6 +55,7 @@ const SystemFactoryModule = buildModule("SystemFactoryModule", (m) => {
     tokenFactoryRegistry,
     complianceModuleRegistry,
     systemAddonRegistry,
+    systemAccessManager,
     forwarder,
   ]);
 
