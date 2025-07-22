@@ -76,6 +76,10 @@ function RouteComponent() {
         title: "Enable Addons",
         description: "Configure platform addons",
       },
+      [OnboardingStep.identitySetup]: {
+        title: t("steps.identity-setup.title"),
+        description: t("steps.identity-setup.description"),
+      },
       [OnboardingStep.identity]: {
         title: t("steps.identity.title"),
         description: t("steps.identity.description"),

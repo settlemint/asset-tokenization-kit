@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 /// @title ATKSystemRoles
+/// @author SettleMint
 /// @notice Library defining role constants for the ATK protocol's access control system
 /// @dev These roles are used with OpenZeppelin's AccessControl contract
 library ATKSystemRoles {

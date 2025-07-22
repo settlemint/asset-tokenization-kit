@@ -476,6 +476,39 @@ type XvPSettlementApproval @entity(immutable: false) {
 }
 
 # ==================================================
+# ACTIONS
+# ==================================================
+
+enum ActionStatus {
+  PENDING
+  ACTIVE
+  EXECUTED
+  EXPIRED
+}
+
+type Action @entity(immutable: false) {
+  id: Bytes!
+  name: String!
+  target: Bytes!
+  createdAt: BigInt!
+  activeAt: BigInt!
+  expiresAt: BigInt
+  requiredRole: String
+  status: ActionStatus!
+  executed: Boolean!  # DEPRECATED: Use status field instead. Keep for backward compatibility until frontend is migrated.
+  executedAt: BigInt
+  executedBy: Bytes
+  identifier: String
+  executor: ActionExecutor!  # Must be ActionExecutor! for @derivedFrom to work
+}
+
+type ActionExecutor @entity(immutable: false) {
+  id: Bytes!
+  executors: [Bytes!]!
+  actions: [Action!]! @derivedFrom(field: "executor")
+}
+
+# ==================================================
 # AIRDROP
 # ==================================================
 

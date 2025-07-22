@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { SMARTFixedYieldScheduleUpgradeable } from
     "../../smart/extensions/yield/schedules/fixed/SMARTFixedYieldScheduleUpgradeable.sol";
@@ -16,6 +16,12 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 
+/// @title ATKFixedYieldScheduleUpgradeable
+/// @author SettleMint
+/// @notice Upgradeable implementation of a fixed yield schedule for SMART tokens
+/// @dev This contract implements a fixed yield schedule that can be used to distribute
+/// yield to token holders at fixed intervals. It includes access control, pausability,
+/// reentrancy protection, and meta-transaction support.
 contract ATKFixedYieldScheduleUpgradeable is
     SMARTFixedYieldScheduleUpgradeable,
     ERC165Upgradeable,
@@ -41,6 +47,8 @@ contract ATKFixedYieldScheduleUpgradeable is
     /// @notice Error thrown when no initial admins are provided
     error NoInitialAdmins();
 
+    /// @notice Constructor that sets the trusted forwarder for meta-transactions
+    /// @param forwarder The address of the trusted forwarder
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) { }
 
     /// @notice Initializes the contract when used as an upgradeable proxy.
@@ -50,7 +58,7 @@ contract ATKFixedYieldScheduleUpgradeable is
     /// @param endDate_ End date of the yield schedule.
     /// @param rate_ Yield rate in basis points.
     /// @param interval_ Duration of each yield interval.
-    /// @param initialAdmins_ The address to be granted `DEFAULT_ADMIN_ROLE`.
+    /// @param initialAdmins_ Array of addresses to be granted `DEFAULT_ADMIN_ROLE`.
     function initialize(
         address tokenAddress_,
         uint256 startDate_,
@@ -113,12 +121,14 @@ contract ATKFixedYieldScheduleUpgradeable is
         _withdrawAllUnderlyingAsset(to);
     }
 
-    /// @dev Pause the contract.
+    /// @notice Pauses all contract operations
+    /// @dev Can only be called by addresses with EMERGENCY_ROLE
     function pause() external onlyRole(EMERGENCY_ROLE) {
         _pause(); // Internal OpenZeppelin Pausable function.
     }
 
-    /// @dev Unpause the contract.
+    /// @notice Unpauses all contract operations
+    /// @dev Can only be called by addresses with EMERGENCY_ROLE
     function unpause() external onlyRole(EMERGENCY_ROLE) {
         _unpause(); // Internal OpenZeppelin Pausable function.
     }
@@ -146,7 +156,9 @@ contract ATKFixedYieldScheduleUpgradeable is
         return hasRole(GOVERNANCE_ROLE, actor);
     }
 
-    /// @dev Override from Context and ERC2771Context to correctly identify the transaction sender
+    /// @notice Override from Context and ERC2771Context to correctly identify the transaction sender
+    /// @dev Handles meta-transactions by extracting the actual sender from the transaction data
+    /// @return The address of the message sender
     function _msgSender()
         internal
         view
@@ -156,7 +168,9 @@ contract ATKFixedYieldScheduleUpgradeable is
         return super._msgSender();
     }
 
-    /// @dev Override from Context and ERC2771Context to correctly retrieve the transaction data
+    /// @notice Override from Context and ERC2771Context to correctly retrieve the transaction data
+    /// @dev Handles meta-transactions by extracting the actual data from the transaction
+    /// @return The calldata of the message
     function _msgData()
         internal
         view
@@ -166,7 +180,9 @@ contract ATKFixedYieldScheduleUpgradeable is
         return super._msgData();
     }
 
-    /// @dev Override from ERC2771Context to define the context suffix length
+    /// @notice Override from ERC2771Context to define the context suffix length
+    /// @dev Used for meta-transaction processing to determine where the actual data ends
+    /// @return The length of the context suffix
     function _contextSuffixLength()
         internal
         view

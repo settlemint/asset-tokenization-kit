@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
@@ -18,7 +18,8 @@ error InitializationWithZeroAddress();
 /// @notice Custom error for when direct ETH transfers to the proxy are attempted.
 error ETHTransfersNotAllowed();
 
-/// @title Proxy for ATKXvPSettlement, managed by a factory.
+/// @title ATKXvPSettlementProxy - Proxy for ATKXvPSettlement, managed by a factory
+/// @author SettleMint
 /// @notice This contract is a proxy that delegates calls to an implementation
 /// of ATKXvPSettlement. The implementation address is fetched from a specified
 /// ATKXvPSettlementFactory contract.
@@ -108,7 +109,8 @@ contract ATKXvPSettlementProxy is Proxy {
         return _getImplementationAddressFromFactory();
     }
 
-    /// @notice Fallback function to reject any direct Ether transfers to this proxy contract.
+    /// @notice Fallback function to reject any direct Ether transfers to this proxy contract
+    /// @dev This prevents accidental ETH transfers to the proxy
     receive() external payable virtual {
         revert ETHTransfersNotAllowed();
     }

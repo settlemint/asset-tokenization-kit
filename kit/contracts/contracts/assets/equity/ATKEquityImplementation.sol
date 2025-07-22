@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -11,7 +11,6 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ERC20VotesUpgradeable } from
     "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-import { NoncesUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/NoncesUpgradeable.sol";
 
 // Constants
 import { ATKRoles } from "../ATKRoles.sol";
@@ -34,6 +33,14 @@ import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMAR
 import { SMARTTokenAccessManagedUpgradeable } from
     "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 
+/// @title ATKEquityImplementation - A security token representing equity shares
+/// @author SettleMint
+/// @notice This contract implements a security token that represents equity shares with voting rights,
+/// compliance modules, custodian features, and role-based access control. It supports governance
+/// capabilities through the ERC20Votes extension and implements ERC-3643 compliant security tokens.
+/// @dev Inherits from multiple OpenZeppelin contracts to provide comprehensive security token functionality
+/// with governance capabilities, meta-transactions support, and upgradeable architecture using UUPS pattern.
+/// @custom:security-contact support@settlemint.com
 contract ATKEquityImplementation is
     Initializable,
     IATKEquity,
@@ -46,8 +53,11 @@ contract ATKEquityImplementation is
     ERC20VotesUpgradeable, // TODO?
     ERC2771ContextUpgradeable
 {
+    /// @notice Constructor that disables initialization for the implementation contract
+    /// @dev This constructor prevents the implementation contract from being initialized.
+    /// Only the proxy instances can be initialized.
     /// @custom:oz-upgrades-unsafe-allow constructor
-    /// @param forwarder_ The address of the forwarder contract.
+    /// @param forwarder_ The address of the trusted forwarder contract for meta-transactions
     constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
         _disableInitializers();
     }
@@ -106,10 +116,16 @@ contract ATKEquityImplementation is
 
     // --- ISMART Implementation ---
 
+    /// @notice Sets the OnchainID contract address for the equity token
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _onchainID The address of the OnchainID contract to associate with this token
     function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setOnchainID(_onchainID);
     }
 
+    /// @notice Sets the Identity Registry contract address
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _identityRegistry The address of the Identity Registry contract
     function setIdentityRegistry(address _identityRegistry)
         external
         override
@@ -118,10 +134,17 @@ contract ATKEquityImplementation is
         _smart_setIdentityRegistry(_identityRegistry);
     }
 
+    /// @notice Sets the Compliance contract address
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _compliance The address of the main compliance contract
     function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setCompliance(_compliance);
     }
 
+    /// @notice Sets parameters for a specific compliance module
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _module The address of the compliance module
+    /// @param _params The encoded parameters to set for the module
     function setParametersForComplianceModule(
         address _module,
         bytes calldata _params
@@ -133,6 +156,10 @@ contract ATKEquityImplementation is
         _smart_setParametersForComplianceModule(_module, _params);
     }
 
+    /// @notice Mints new equity tokens to a specified address
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
+    /// @param _to The address to receive the minted tokens
+    /// @param _amount The amount of tokens to mint
     function mint(
         address _to,
         uint256 _amount
@@ -144,6 +171,10 @@ contract ATKEquityImplementation is
         _smart_mint(_to, _amount);
     }
 
+    /// @notice Mints equity tokens to multiple addresses in a single transaction
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Arrays must have the same length.
+    /// @param _toList Array of addresses to receive the minted tokens
+    /// @param _amounts Array of amounts to mint to each corresponding address
     function batchMint(
         address[] calldata _toList,
         uint256[] calldata _amounts
@@ -155,6 +186,11 @@ contract ATKEquityImplementation is
         _smart_batchMint(_toList, _amounts);
     }
 
+    /// @notice Transfers equity tokens to a specified address
+    /// @dev Checks compliance and custodian restrictions before transfer
+    /// @param _to The address to receive the tokens
+    /// @param _amount The amount of tokens to transfer
+    /// @return bool indicating whether the transfer was successful
     function transfer(
         address _to,
         uint256 _amount
@@ -166,6 +202,11 @@ contract ATKEquityImplementation is
         return _smart_transfer(_to, _amount);
     }
 
+    /// @notice Recovers accidentally sent ERC20 tokens from the contract
+    /// @dev Only callable by addresses with EMERGENCY_ROLE
+    /// @param token The address of the ERC20 token to recover
+    /// @param to The address to send the recovered tokens to
+    /// @param amount The amount of tokens to recover
     function recoverERC20(
         address token,
         address to,
@@ -178,6 +219,10 @@ contract ATKEquityImplementation is
         _smart_recoverERC20(token, to, amount);
     }
 
+    /// @notice Adds a new compliance module to the equity token
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _module The address of the compliance module to add
+    /// @param _params The encoded parameters for the module
     function addComplianceModule(
         address _module,
         bytes calldata _params
@@ -189,6 +234,9 @@ contract ATKEquityImplementation is
         _smart_addComplianceModule(_module, _params);
     }
 
+    /// @notice Removes a compliance module from the equity token
+    /// @dev Only callable by addresses with GOVERNANCE_ROLE
+    /// @param _module The address of the compliance module to remove
     function removeComplianceModule(address _module)
         external
         override
@@ -199,6 +247,10 @@ contract ATKEquityImplementation is
 
     // --- ISMARTBurnable Implementation ---
 
+    /// @notice Burns equity tokens from a specified address
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE
+    /// @param userAddress The address from which to burn tokens
+    /// @param amount The amount of tokens to burn
     function burn(
         address userAddress,
         uint256 amount
@@ -210,6 +262,10 @@ contract ATKEquityImplementation is
         _smart_burn(userAddress, amount);
     }
 
+    /// @notice Burns equity tokens from multiple addresses in a single transaction
+    /// @dev Only callable by addresses with SUPPLY_MANAGEMENT_ROLE. Arrays must have the same length.
+    /// @param userAddresses Array of addresses from which to burn tokens
+    /// @param amounts Array of amounts to burn from each corresponding address
     function batchBurn(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -223,6 +279,10 @@ contract ATKEquityImplementation is
 
     // --- ISMARTCustodian Implementation ---
 
+    /// @notice Freezes or unfreezes an address from transferring tokens
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE
+    /// @param userAddress The address to freeze or unfreeze
+    /// @param freeze True to freeze the address, false to unfreeze
     function setAddressFrozen(
         address userAddress,
         bool freeze
@@ -234,6 +294,10 @@ contract ATKEquityImplementation is
         _smart_setAddressFrozen(userAddress, freeze);
     }
 
+    /// @notice Freezes a specific amount of tokens for an address
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE
+    /// @param userAddress The address for which to freeze tokens
+    /// @param amount The amount of tokens to freeze
     function freezePartialTokens(
         address userAddress,
         uint256 amount
@@ -245,6 +309,10 @@ contract ATKEquityImplementation is
         _smart_freezePartialTokens(userAddress, amount);
     }
 
+    /// @notice Unfreezes a specific amount of tokens for an address
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE
+    /// @param userAddress The address for which to unfreeze tokens
+    /// @param amount The amount of tokens to unfreeze
     function unfreezePartialTokens(
         address userAddress,
         uint256 amount
@@ -256,6 +324,10 @@ contract ATKEquityImplementation is
         _smart_unfreezePartialTokens(userAddress, amount);
     }
 
+    /// @notice Freezes or unfreezes multiple addresses in a single transaction
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE. Arrays must have the same length.
+    /// @param userAddresses Array of addresses to freeze or unfreeze
+    /// @param freeze Array of boolean values indicating whether to freeze (true) or unfreeze (false)
     function batchSetAddressFrozen(
         address[] calldata userAddresses,
         bool[] calldata freeze
@@ -267,6 +339,10 @@ contract ATKEquityImplementation is
         _smart_batchSetAddressFrozen(userAddresses, freeze);
     }
 
+    /// @notice Freezes specific amounts of tokens for multiple addresses
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE. Arrays must have the same length.
+    /// @param userAddresses Array of addresses for which to freeze tokens
+    /// @param amounts Array of amounts to freeze for each corresponding address
     function batchFreezePartialTokens(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -278,6 +354,10 @@ contract ATKEquityImplementation is
         _smart_batchFreezePartialTokens(userAddresses, amounts);
     }
 
+    /// @notice Unfreezes specific amounts of tokens for multiple addresses
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE. Arrays must have the same length.
+    /// @param userAddresses Array of addresses for which to unfreeze tokens
+    /// @param amounts Array of amounts to unfreeze for each corresponding address
     function batchUnfreezePartialTokens(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -289,6 +369,12 @@ contract ATKEquityImplementation is
         _smart_batchUnfreezePartialTokens(userAddresses, amounts);
     }
 
+    /// @notice Forces a transfer of tokens from one address to another
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE. Bypasses compliance checks.
+    /// @param from The address to transfer tokens from
+    /// @param to The address to transfer tokens to
+    /// @param amount The amount of tokens to transfer
+    /// @return bool indicating whether the transfer was successful
     function forcedTransfer(
         address from,
         address to,
@@ -302,6 +388,12 @@ contract ATKEquityImplementation is
         return _smart_forcedTransfer(from, to, amount);
     }
 
+    /// @notice Forces multiple transfers of tokens in a single transaction
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE. Arrays must have the same length. Bypasses compliance
+    /// checks.
+    /// @param fromList Array of addresses to transfer tokens from
+    /// @param toList Array of addresses to transfer tokens to
+    /// @param amounts Array of amounts to transfer for each corresponding address pair
     function batchForcedTransfer(
         address[] calldata fromList,
         address[] calldata toList,
@@ -314,6 +406,10 @@ contract ATKEquityImplementation is
         _smart_batchForcedTransfer(fromList, toList, amounts);
     }
 
+    /// @notice Recovers all tokens from a lost wallet to a new wallet
+    /// @dev Only callable by addresses with CUSTODIAN_ROLE. Used for account recovery scenarios.
+    /// @param lostWallet The address of the wallet that lost access
+    /// @param newWallet The address of the new wallet to receive the tokens
     function forcedRecoverTokens(
         address lostWallet,
         address newWallet
@@ -327,10 +423,14 @@ contract ATKEquityImplementation is
 
     // --- ISMARTPausable Implementation ---
 
+    /// @notice Pauses all token transfers
+    /// @dev Only callable by addresses with EMERGENCY_ROLE
     function pause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_pause();
     }
 
+    /// @notice Unpauses token transfers
+    /// @dev Only callable by addresses with EMERGENCY_ROLE
     function unpause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_unpause();
     }
@@ -376,6 +476,10 @@ contract ATKEquityImplementation is
     // --- Hooks (Overrides for Chaining) ---
     // These ensure that logic from multiple inherited extensions (SMART, SMARTCustodian, etc.) is called correctly.
 
+    /// @notice Hook called before minting tokens
+    /// @dev Executes validation logic from multiple extensions before minting
+    /// @param to The address that will receive the minted tokens
+    /// @param amount The amount of tokens to mint
     /// @inheritdoc SMARTHooks
     function _beforeMint(
         address to,
@@ -388,6 +492,11 @@ contract ATKEquityImplementation is
         super._beforeMint(to, amount);
     }
 
+    /// @notice Hook called before transferring tokens
+    /// @dev Executes validation logic from multiple extensions before transfer
+    /// @param from The address sending the tokens
+    /// @param to The address receiving the tokens
+    /// @param amount The amount of tokens to transfer
     /// @inheritdoc SMARTHooks
     function _beforeTransfer(
         address from,
@@ -401,6 +510,10 @@ contract ATKEquityImplementation is
         super._beforeTransfer(from, to, amount);
     }
 
+    /// @notice Hook called before burning tokens
+    /// @dev Executes validation logic from multiple extensions before burning
+    /// @param from The address from which tokens will be burned
+    /// @param amount The amount of tokens to burn
     /// @inheritdoc SMARTHooks
     function _beforeBurn(
         address from,
@@ -413,6 +526,10 @@ contract ATKEquityImplementation is
         super._beforeBurn(from, amount);
     }
 
+    /// @notice Hook called before redeeming tokens
+    /// @dev Executes validation logic from multiple extensions before redemption
+    /// @param owner The address that owns the tokens to be redeemed
+    /// @param amount The amount of tokens to redeem
     /// @inheritdoc SMARTHooks
     function _beforeRedeem(
         address owner,
@@ -425,11 +542,20 @@ contract ATKEquityImplementation is
         super._beforeRedeem(owner, amount);
     }
 
+    /// @notice Hook called after minting tokens
+    /// @dev Executes post-mint logic from multiple extensions
+    /// @param to The address that received the minted tokens
+    /// @param amount The amount of tokens minted
     /// @inheritdoc SMARTHooks
     function _afterMint(address to, uint256 amount) internal virtual override(SMARTUpgradeable, SMARTHooks) {
         super._afterMint(to, amount);
     }
 
+    /// @notice Hook called after transferring tokens
+    /// @dev Executes post-transfer logic from multiple extensions
+    /// @param from The address that sent the tokens
+    /// @param to The address that received the tokens
+    /// @param amount The amount of tokens transferred
     /// @inheritdoc SMARTHooks
     function _afterTransfer(
         address from,
@@ -443,11 +569,19 @@ contract ATKEquityImplementation is
         super._afterTransfer(from, to, amount);
     }
 
+    /// @notice Hook called after burning tokens
+    /// @dev Executes post-burn logic from multiple extensions
+    /// @param from The address from which tokens were burned
+    /// @param amount The amount of tokens burned
     /// @inheritdoc SMARTHooks
     function _afterBurn(address from, uint256 amount) internal virtual override(SMARTUpgradeable, SMARTHooks) {
         super._afterBurn(from, amount);
     }
 
+    /// @notice Hook called after recovering tokens from a lost wallet
+    /// @dev Executes post-recovery logic from multiple extensions
+    /// @param lostWallet The address of the wallet that lost access
+    /// @param newWallet The address of the new wallet that received the tokens
     /// @inheritdoc SMARTHooks
     function _afterRecoverTokens(
         address lostWallet,
@@ -462,9 +596,11 @@ contract ATKEquityImplementation is
 
     // --- Internal Functions (Overrides) ---
 
-    /**
-     * @dev Overrides _update to ensure Pausable and Collateral checks are applied.
-     */
+    /// @notice Internal function to update token balances
+    /// @dev Overrides _update to ensure Pausable and Collateral checks are applied.
+    /// @param from The address sending tokens (address(0) for minting)
+    /// @param to The address receiving tokens (address(0) for burning)
+    /// @param value The amount of tokens being transferred
     function _update(
         address from,
         address to,
@@ -478,7 +614,9 @@ contract ATKEquityImplementation is
         super._update(from, to, value);
     }
 
-    /// @dev Resolves msgSender across Context and SMARTPausable.
+    /// @notice Returns the address of the transaction sender
+    /// @dev Resolves msgSender across Context and ERC2771Context for meta-transaction support
+    /// @return The address of the transaction sender
     function _msgSender()
         internal
         view
@@ -489,7 +627,9 @@ contract ATKEquityImplementation is
         return ERC2771ContextUpgradeable._msgSender();
     }
 
-    /// @dev Resolves msgData across Context and ERC2771Context.
+    /// @notice Returns the calldata of the transaction
+    /// @dev Resolves msgData across Context and ERC2771Context for meta-transaction support
+    /// @return The calldata of the transaction
     function _msgData()
         internal
         view
@@ -500,7 +640,9 @@ contract ATKEquityImplementation is
         return ERC2771ContextUpgradeable._msgData();
     }
 
+    /// @notice Returns the length of the context suffix for ERC2771
     /// @dev Hook defining the length of the trusted forwarder address suffix in `msg.data`.
+    /// @return The length of the context suffix
     function _contextSuffixLength()
         internal
         view

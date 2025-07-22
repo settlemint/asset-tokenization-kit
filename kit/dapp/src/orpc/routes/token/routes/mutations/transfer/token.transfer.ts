@@ -5,7 +5,6 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TokenTransferMessagesSchema } from "@/orpc/routes/token/routes/mutations/transfer/token.transfer.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 const TOKEN_TRANSFER_MUTATION = portalGraphql(`
@@ -152,13 +151,25 @@ export const transfer = tokenRouter.token.transfer
       transferType = "standard",
       verification,
     } = input;
-    const { auth, token } = context;
+    const { auth, token, t } = context;
 
     // Determine if this is a batch operation
     const isBatch = recipients.length > 1;
 
-    // Parse messages with defaults
-    const messages = TokenTransferMessagesSchema.parse(input.messages ?? {});
+    // Generate messages using server-side translations based on transfer type and batch mode
+    const getTranslationKey = (type: string, key: string) => {
+      const prefix =
+        type === "forced"
+          ? "forcedTransfer"
+          : type === "transferFrom"
+            ? "transferFrom"
+            : "transfer";
+      return `tokens:actions.${prefix}.messages.${key}${isBatch ? "Batch" : ""}`;
+    };
+
+    const pendingMessage = t(getTranslationKey(transferType, "preparing"));
+    const successMessage = t(getTranslationKey(transferType, "success"));
+    const errorMessage = t(getTranslationKey(transferType, "failed"));
 
     // For forced transfers, check custodian interface
     if (transferType === "forced") {
@@ -199,9 +210,13 @@ export const transfer = tokenRouter.token.transfer
             amounts: amounts.map((a) => a.toString()),
             ...challengeResponse,
           },
-          messages.transferFailed,
-          messages
+          errorMessage,
+          {
+            waitingForMining: pendingMessage,
+            transactionIndexed: successMessage,
+          }
         );
+
         return getEthereumHash(transactionHash);
       } else if (transferType === "forced") {
         // Forced batch transfer is supported
@@ -232,9 +247,13 @@ export const transfer = tokenRouter.token.transfer
             amounts: amounts.map((a) => a.toString()),
             ...challengeResponse,
           },
-          messages.transferFailed,
-          messages
+          errorMessage,
+          {
+            waitingForMining: pendingMessage,
+            transactionIndexed: successMessage,
+          }
         );
+
         return getEthereumHash(transactionHash);
       } else {
         // transferType === "transferFrom" - not supported in batch, must be done individually
@@ -267,9 +286,13 @@ export const transfer = tokenRouter.token.transfer
             amount: amount.toString(),
             ...challengeResponse,
           },
-          messages.transferFailed,
-          messages
+          errorMessage,
+          {
+            waitingForMining: pendingMessage,
+            transactionIndexed: successMessage,
+          }
         );
+
         return getEthereumHash(transactionHash);
       } else if (transferType === "transferFrom") {
         if (!owner) {
@@ -288,9 +311,13 @@ export const transfer = tokenRouter.token.transfer
             amount: amount.toString(),
             ...challengeResponse,
           },
-          messages.transferFailed,
-          messages
+          errorMessage,
+          {
+            waitingForMining: pendingMessage,
+            transactionIndexed: successMessage,
+          }
         );
+
         return getEthereumHash(transactionHash);
       } else {
         // transferType === "forced"
@@ -310,9 +337,13 @@ export const transfer = tokenRouter.token.transfer
             amount: amount.toString(),
             ...challengeResponse,
           },
-          messages.transferFailed,
-          messages
+          errorMessage,
+          {
+            waitingForMining: pendingMessage,
+            transactionIndexed: successMessage,
+          }
         );
+
         return getEthereumHash(transactionHash);
       }
     }

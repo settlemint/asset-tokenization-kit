@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -8,6 +8,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IATKClaimTracker } from "./claim-tracker/IATKClaimTracker.sol";
 
 /// @title Interface for a ATK Airdrop
+/// @author SettleMint
 /// @notice Defines the core functionality for Merkle-based airdrop distributions in the ATK Protocol.
 /// @dev This interface provides the base functionality for airdrop contracts including:
 ///      - Merkle proof verification
@@ -20,8 +21,8 @@ interface IATKAirdrop {
 
     /// @notice Emitted when tokens are transferred from the airdrop contract.
     /// @dev Fired on user claims or admin-initiated push distributions.
-    /// @param index The allocation index from the Merkle tree.
     /// @param recipient The address that received the tokens.
+    /// @param index The allocation index from the Merkle tree.
     /// @param amount The amount transferred.
     event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
 

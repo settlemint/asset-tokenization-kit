@@ -1,22 +1,30 @@
-import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
-import { useAssetDesignerSteps } from "@/components/asset-designer/steps";
-import { getNextStepId } from "@/components/stepper/utils";
+import {
+  assetDesignerFormOptions,
+  isRequiredField,
+  type AssetDesignerFormInputData,
+} from "@/components/asset-designer/shared-form";
 import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
-import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
-import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
+import { noop } from "@/lib/utils/noop";
+import type { KeysOfUnion } from "@/lib/utils/union";
+import {
+  getAssetTypeFromFactoryTypeId,
+  type AssetFactoryTypeId,
+} from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "../ui/button";
+
+const assetTypeFields: KeysOfUnion<AssetDesignerFormInputData>[] = ["type"];
 
 export const SelectAssetType = withForm({
   ...assetDesignerFormOptions,
-  props: {},
-  render: function Render({ form }) {
+  props: {
+    onStepSubmit: noop,
+  },
+  render: function Render({ form, onStepSubmit }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
-    const steps = useAssetDesignerSteps();
     const [systemAddress] = useSettings("SYSTEM_ADDRESS");
     const { data: systemDetails } = useQuery({
       ...orpc.system.read.queryOptions({
@@ -52,13 +60,13 @@ export const SelectAssetType = withForm({
             />
           )}
         />
-        <Button
-          onClick={() => {
-            form.setFieldValue("step", getNextStepId(steps, "selectAssetType"));
-          }}
-        >
-          Next
-        </Button>
+
+          <form.StepSubmitButton
+            label="Next"
+            onStepSubmit={onStepSubmit}
+            validate={assetTypeFields}
+            checkRequiredFn={isRequiredField}
+          />
       </>
     );
   },

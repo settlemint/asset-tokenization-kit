@@ -1,6 +1,3 @@
-"use client";
-"use no memo"; // fixes rerendering with react compiler, v9 of tanstack table will fix this
-
 import { Button } from "@/components/ui/button";
 import type { Table } from "@tanstack/react-table";
 import { FilterXIcon } from "lucide-react";

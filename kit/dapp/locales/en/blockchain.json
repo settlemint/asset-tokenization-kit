@@ -46,6 +46,17 @@
       "viewOnExplorer": "View on block explorer"
     }
   },
+  "transactions": {
+    "tracking": {
+      "streamTimeout": "Transaction tracking timed out. Please check the transaction status manually.",
+      "waitingForMining": "Waiting for transaction to be mined...",
+      "transactionFailed": "Transaction failed",
+      "transactionDropped": "Transaction was dropped from the mempool",
+      "waitingForIndexing": "Transaction confirmed. Waiting for indexing...",
+      "transactionIndexed": "Transaction successfully indexed.",
+      "indexingTimeout": "Indexing timeout. The transaction was successful but may take time to appear."
+    }
+  },
   "contract": {
     "events": {
       "Transfer": "Transfer",

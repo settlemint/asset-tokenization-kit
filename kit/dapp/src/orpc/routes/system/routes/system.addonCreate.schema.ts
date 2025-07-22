@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { MutationInputSchemaWithContract } from "../../common/schemas/mutation.schema";
-import { TransactionTrackingMessagesSchema } from "../../common/schemas/transaction-messages.schema";
 
 /**
  * Supported system addon types enum
@@ -48,51 +47,10 @@ const SystemAddonConfigSchema = z.object({
 });
 
 /**
- * System addon create messages schema for localization
- */
-export const SystemAddonCreateMessagesSchema =
-  TransactionTrackingMessagesSchema.extend({
-    initialLoading: z
-      .string()
-      .default("Preparing to register system add-ons..."),
-    addonRegistered: z.string().default("Add-on registered successfully"),
-    registeringAddon: z.string().default("Registering add-on..."),
-    addonRegistrationFailed: z.string().default("Add-on registration failed"),
-    batchProgress: z
-      .string()
-      .default("Registering add-on {{current}} of {{total}}..."),
-    batchCompleted: z.string().default("All add-ons registered successfully"),
-    noResultError: z.string().default("No registration result received"),
-    defaultError: z.string().default("Add-on registration failed"),
-    systemNotBootstrapped: z
-      .string()
-      .default("System not properly bootstrapped"),
-    addonAlreadyExists: z
-      .string()
-      .default("Add-on {{name}} already registered"),
-    allAddonsSucceeded: z
-      .string()
-      .default("All {{count}} add-ons registered successfully"),
-    someAddonsFailed: z
-      .string()
-      .default(
-        "{{successCount}} of {{totalCount}} add-ons registered successfully"
-      ),
-    allAddonsFailed: z.string().default("All add-on registrations failed"),
-    allAddonsSkipped: z.string().default("All add-ons were already registered"),
-    someAddonsSkipped: z
-      .string()
-      .default(
-        "{{successCount}} new add-ons registered, {{skippedCount}} already existed"
-      ),
-  });
-
-/**
  * Input schema for system addon creation
  */
 export const SystemAddonCreateSchema = MutationInputSchemaWithContract.extend({
   addons: z.union([SystemAddonConfigSchema, z.array(SystemAddonConfigSchema)]),
-  messages: SystemAddonCreateMessagesSchema.optional(),
 });
 
 /**

@@ -12,7 +12,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[solidity]": {
-    "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
+    "editor.defaultFormatter": "JuanBlanco.solidity"
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -37,10 +37,9 @@
   "cursor.terminal.usePreviewBox": true,
   "dotenv.enableAutocloaking": false,
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
     "source.fixAll": "explicit",
     "source.organizeImports": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.fixAll.oxlint": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.fontLigatures": true,

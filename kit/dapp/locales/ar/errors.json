@@ -91,5 +91,21 @@
   "validation": {
     "description": "يرجى التحقق من مدخلاتك والمحاولة مرة أخرى.",
     "title": "خطأ في التحقق"
+  },
+  "tokenInterfaceNotSupported": {
+    "description": "العقد الرمزي في العنوان المقدم لا ينفذ الواجهة المطلوبة. الواجهات المطلوبة: {{requiredInterfaces}}",
+    "title": "واجهة الرمز غير مدعومة"
+  },
+  "userNotAllowed": {
+    "description": "لا يُسمح لك بالتفاعل مع هذا الرمز. السبب: {{reason}}",
+    "title": "المستخدم غير مسموح له"
+  },
+  "userNotAuthorized": {
+    "description": "لا يُسمح لك بتنفيذ هذا الإجراء. الأدوار المطلوبة: {{requiredRoles}}",
+    "title": "المستخدم غير مخول"
+  },
+  "userNotCompliant": {
+    "description": "أنت غير متوافق مع مواضيع المطالبة المطلوبة للرمز. مواضيع المطالبة المطلوبة: {{requiredClaimTopics}}",
+    "title": "المستخدم غير متوافق"
   }
 }

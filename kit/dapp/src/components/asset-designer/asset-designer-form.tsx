@@ -1,4 +1,4 @@
-import { AssetBasics } from "@/components/asset-designer/asset-basics";
+import { AssetBasics } from "@/components/asset-designer/asset-basics/asset";
 import { SelectAssetType } from "@/components/asset-designer/select-asset-type";
 import {
   assetDesignerFormOptions,
@@ -9,7 +9,7 @@ import {
   type AssetDesignerStepsType,
 } from "@/components/asset-designer/steps";
 import { StepLayout } from "@/components/stepper/step-layout";
-import { getStepById } from "@/components/stepper/utils";
+import { getNextStep, getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
@@ -19,23 +19,22 @@ export const AssetDesignerForm = () => {
   const form = useAppForm({
     ...assetDesignerFormOptions,
     validators: {
-      onChange: (values) => {
-        try {
-          const parseResult = AssetDesignerFormSchema.safeParse(values);
-          return parseResult.success;
-        } catch {
-          return false;
-        }
-      },
+      onChange: AssetDesignerFormSchema,
     },
   });
 
   const stepId = useStore(form.store, (state) => state.values.step);
   const currentStep = getStepById(steps, stepId);
+  const incrementStep = () => {
+    const nextStep = getNextStep(steps, currentStep);
+    form.setFieldValue("step", nextStep.id);
+  };
 
   const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
-    selectAssetType: <SelectAssetType form={form} />,
-    assetBasics: <AssetBasics form={form} />,
+    selectAssetType: (
+      <SelectAssetType form={form} onStepSubmit={incrementStep} />
+    ),
+    assetBasics: <AssetBasics form={form} onStepSubmit={incrementStep} />,
     summary: <div>Summary</div>,
   };
 

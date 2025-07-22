@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -18,6 +18,7 @@ import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 import { ISMARTCapped } from "../../smart/extensions/capped/ISMARTCapped.sol";
 
 /// @title Interface for a ATK Bond
+/// @author SettleMint
 /// @notice Defines the core functionality and extensions for a ATK Bond, including features like redeemability,
 /// historical balances, yield, and capping.
 interface IATKBond is

@@ -1,4 +1,29 @@
 {
+  "welcome": {
+    "title": "Willkommen im Asset Tokenization Kit",
+    "description": "Ihr Zugang zu sicherer, konformer Asset-Tokenisierung auf der Blockchain.",
+    "welcome-back": "Willkommen zurück!",
+    "complete-journey": "Lassen Sie uns Ihre Einarbeitungsreise abschließen",
+    "setup-overview": "Übersicht der Einrichtung",
+    "setup-description-returning": "Zuerst müssen wir den Einrichtungsprozess abschließen. Dies stellt sicher, dass Ihre Vermögenswerte sicher sind, Ihre On-Chain-Identität eingerichtet ist und Sie bereit sind, die Zukunft der Finanzen zu erleben.",
+    "setup-description-new": "Wir führen Sie durch einen schnellen Einrichtungsprozess. Dies stellt sicher, dass Ihre Vermögenswerte sicher sind, Ihre On-Chain-Identität eingerichtet ist und Sie bereit sind, die Zukunft der Finanzen zu erleben.",
+    "continue-setup": "Einrichtung fortsetzen",
+    "get-started": "Lassen Sie uns anfangen"
+  },
+  "groups": {
+    "wallet": {
+      "title": "Wallet",
+      "description": "Richten Sie Ihre Wallet und Sicherheitsmaßnahmen ein"
+    },
+    "system": {
+      "title": "System",
+      "description": "Bereitstellen und Konfigurieren Ihres Systems"
+    },
+    "identity": {
+      "title": "Identität",
+      "description": "Richten Sie Ihre On-Chain-Identität ein"
+    }
+  },
   "card-description": "Wir haben Ihre Brieftasche eingerichtet und werden Ihre Identität auf der Blockchain konfigurieren, um diese Plattform zu nutzen.",
   "card-title": "Lassen Sie uns alles einrichten!",
   "platform": {
@@ -17,6 +42,34 @@
     "wallet": {
       "title": "Ihre Brieftasche",
       "description": "Sehen Sie sich Ihre Blockchain-Brieftasche an"
+    },
+    "wallet-security": {
+      "title": "Sichern Sie Ihre Wallet",
+      "description": "Richten Sie einen Schutz für Ihre Wallet ein"
+    },
+    "wallet-recovery-codes": {
+      "title": "Wiederherstellungscodes",
+      "description": "Generieren Sie Backup-Wiederherstellungscodes"
+    },
+    "system-deploy": {
+      "title": "System bereitstellen",
+      "description": "Initialisieren Sie die Kern-Smart-Contracts"
+    },
+    "system-settings": {
+      "title": "System konfigurieren",
+      "description": "Richten Sie Systemparameter und -einstellungen ein"
+    },
+    "system-assets": {
+      "title": "Asset-Typen auswählen",
+      "description": "Wählen Sie unterstützte Asset-Typen aus"
+    },
+    "system-addons": {
+      "title": "Systemerweiterungen",
+      "description": "Aktivieren Sie optionale Systemfunktionen"
+    },
+    "identity-setup": {
+      "title": "ONCHAINID einrichten",
+      "description": "Erstellen Sie Ihre On-Chain-Identität"
     },
     "system": {
       "title": "System bereitstellen",
@@ -154,7 +207,7 @@
     "asset-factories-description": "Vermögenswertfabriken sind Smart Contracts, die es Ihnen ermöglichen, verschiedene Arten von tokenisierten Vermögenswerten zu erstellen und zu verwalten. Jede Fabrik verwaltet eine spezifische Vermögensklasse mit maßgeschneiderten Funktionen und Compliance-Anforderungen.",
     "factory-messages": {
       "initial-loading": "Bereite die Erstellung von Tokenfabriken vor...",
-      "factory-created": "Tokenfabrik erfolgreich erstellt.",
+      "factory-created": "{{name}} erfolgreich erstellt.",
       "creating-factory": "Erstelle Tokenfabrik...",
       "factory-creation-failed": "Fehler beim Erstellen der Tokenfabrik. Bitte versuchen Sie es erneut.",
       "batch-progress": "Erstelle Fabrik {{current}} von {{total}}...",

@@ -22,7 +22,9 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { subStep } = Route.useSearch();
+  const subStep = Route.useSearch({
+    select: (search) => search.subStep,
+  });
   const { handleMutationSuccess, completeStepAndNavigate, navigateToSubStep } =
     useOnboardingNavigation();
 

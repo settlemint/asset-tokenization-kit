@@ -12,7 +12,7 @@ dependencies:
   repository: https://stakater.github.io/stakater-charts
   version: 2.1.5
 - name: minio
-  repository: oci://registry-1.docker.io/bitnamicharts
-  version: 17.0.13
-digest: sha256:164eff3ac85dd212885ce2b317deca8622181c9422447733943e384a12d3174c
-generated: "2025-07-16T07:01:07.471574302Z"
+  repository: https://charts.min.io/
+  version: 5.4.0
+digest: sha256:60cd231ef400295f6046a7656e2c1a1c0ad36e03b99e7142f80e9fedc3951187
+generated: "2025-07-22T15:22:13.445344+03:00"

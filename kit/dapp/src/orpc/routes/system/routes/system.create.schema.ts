@@ -28,45 +28,6 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { z } from "zod";
 import { MutationInputSchema } from "../../common/schemas/mutation.schema";
-import { TransactionTrackingMessagesSchema } from "../../common/schemas/transaction-messages.schema";
-
-/**
- * Combined messages schema for system creation
- * Extends common transaction tracking messages with system-specific messages
- */
-export const SystemCreateMessagesSchema =
-  TransactionTrackingMessagesSchema.extend({
-    systemCreated: z
-      .string()
-      .optional()
-      .default("System successfully created and bootstrapped."),
-    creatingSystem: z.string().optional().default("Creating new system..."),
-    systemCreationFailed: z
-      .string()
-      .optional()
-      .default("Failed to create system. Please try again."),
-    bootstrappingSystem: z
-      .string()
-      .optional()
-      .default("Bootstrapping system..."),
-    bootstrapFailed: z
-      .string()
-      .optional()
-      .default("Failed to bootstrap system. Please try again."),
-    systemCreatedBootstrapFailed: z
-      .string()
-      .optional()
-      .default(
-        "System created but bootstrap failed. You may need to manually bootstrap the system."
-      ),
-    // Messages used by useStreamingMutation hook
-    initialLoading: z.string().optional().default("Creating new system..."),
-    noResultError: z
-      .string()
-      .optional()
-      .default("No system address received from transaction."),
-    defaultError: z.string().optional().default("Failed to create system."),
-  });
 
 export const SystemCreateSchema = MutationInputSchema.extend({
   /**
@@ -79,13 +40,6 @@ export const SystemCreateSchema = MutationInputSchema.extend({
   contract: ethereumAddress
     .describe("The address of the contract to call this function on")
     .default("0x5e771e1417100000000000000000000000020088"),
-
-  /**
-   * Optional custom messages for the operation.
-   * If not provided, default English messages will be used.
-   * This allows for localization by passing translated messages from the client.
-   */
-  messages: SystemCreateMessagesSchema.optional(),
 });
 
 /**
@@ -96,6 +50,3 @@ export const SystemCreateOutputSchema = z.object({
   message: z.string(),
   result: ethereumAddress.optional(),
 });
-
-// Type exports
-export type SystemCreateMessages = z.infer<typeof SystemCreateMessagesSchema>;

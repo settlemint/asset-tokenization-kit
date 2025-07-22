@@ -39,14 +39,14 @@ export class XvpSettlementPage extends BasePage {
         ).toBeVisible();
         await addButton.click();
         await this.page
-          .locator(`button#flows\.${i}\.from`)
+          .locator(`button#flows\\.${i}\\.from`)
           .waitFor({ state: "visible", timeout: 5000 });
       }
 
-      const fromButtonId = `button#flows\.${i}\.from`;
-      const toButtonId = `button#flows\.${i}\.to`;
-      const assetButtonId = `button#flows\.${i}\.asset`;
-      const amountInputId = `input#flows\.${i}\.amount`;
+      const fromButtonId = `button#flows\\.${i}\\.from`;
+      const toButtonId = `button#flows\\.${i}\\.to`;
+      const assetButtonId = `button#flows\\.${i}\\.asset`;
+      const amountInputId = `input#flows\\.${i}\\.amount`;
 
       const fromButton = this.page.locator(fromButtonId);
       await expect(

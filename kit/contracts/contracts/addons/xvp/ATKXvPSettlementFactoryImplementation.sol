@@ -18,7 +18,8 @@ import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
 import { IATKSystem } from "../../system/IATKSystem.sol";
 import { IATKCompliance } from "../../system/compliance/IATKCompliance.sol";
 
-/// @title XvPSettlementFactory - A factory contract for creating XvPSettlement contracts
+/// @title ATKXvPSettlementFactoryImplementation - A factory contract for creating XvPSettlement contracts
+/// @author SettleMint
 /// @notice This contract allows the creation of new XvPSettlement contracts with deterministic addresses using CREATE2.
 /// @dev Inherits from ERC2771ContextUpgradeable for meta-transaction support and AccessControlUpgradeable for role
 /// management.

@@ -5,15 +5,15 @@
  * responses. Preserves full type inference from ORPC.
  */
 
+import { formatValidationError } from "@/lib/utils/format-validation-error";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import type {
   UseMutationOptions,
   UseMutationResult,
 } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
-import { formatValidationError } from "@/lib/utils/format-validation-error";
 
 const logger = createLogger();
 
@@ -65,12 +65,11 @@ interface StreamingMutationOptions<TData, TError, TVariables, TContext> {
  *   }
  * });
  *
- * // Call mutation with all messages
+ * // Call mutation - messages are handled by i18n middleware on the backend
  * mutate({
- *   messages: {
- *     systemCreated: t("onboarding:create-system-messages.system-created"),
- *     creatingSystem: t("onboarding:create-system-messages.creating-system"),
- *     // ... other messages
+ *   verification: {
+ *     verificationCode: "123456",
+ *     verificationType: "pincode"
  *   }
  * });
  * ```

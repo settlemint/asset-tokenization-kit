@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 // Interface imports
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
@@ -11,8 +11,11 @@ import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.s
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
 import { ISMARTCollateral } from "../../smart/extensions/collateral/ISMARTCollateral.sol";
 
-/// @title Interface for a ATK Deposit token
-/// @notice Defines the core functionality and extensions for a ATK Deposit token.
+/// @title Interface for ATK Deposit token
+/// @author SettleMint
+/// @notice Defines the core functionality and extensions for an ATK Deposit token
+/// @dev This interface combines SMART token functionality with access management,
+///      collateral tracking, custodian controls, pausability, and burning capabilities
 interface IATKDeposit is
     ISMART,
     ISMARTTokenAccessManaged,

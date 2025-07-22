@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { StorageSlot } from "@openzeppelin/contracts/utils/StorageSlot.sol";
@@ -18,6 +18,7 @@ error InitializationWithZeroAddress();
 error ETHTransfersNotAllowed();
 
 /// @title Proxy for ATKTimeBoundAirdrop, managed by a factory.
+/// @author SettleMint
 /// @notice This contract is a proxy that delegates calls to an implementation
 /// of ATKTimeBoundAirdrop. The implementation address is fetched from a specified
 /// ATKTimeBoundAirdropFactory contract.
@@ -65,15 +66,17 @@ contract ATKTimeBoundAirdropProxy is Proxy {
         _performInitializationDelegatecall(implementationAddress, initData);
     }
 
-    /// @dev Internal function to retrieve the IATKTimeBoundAirdropFactory contract instance from the stored
+    /// @notice Internal function to retrieve the IATKTimeBoundAirdropFactory contract instance from the stored
     /// address.
+    /// @dev Reads the factory address from the designated storage slot.
     /// @return An IATKTimeBoundAirdropFactory instance.
     function _getFactory() internal view returns (IATKTimeBoundAirdropFactory) {
         return
             IATKTimeBoundAirdropFactory(StorageSlot.getAddressSlot(_ATK_TIME_BOUND_AIRDROP_FACTORY_ADDRESS_SLOT).value);
     }
 
-    /// @dev Fetches the implementation address from the factory.
+    /// @notice Fetches the implementation address from the factory.
+    /// @dev Queries the factory contract for the current implementation address and validates it.
     /// @return The address of the time-bound airdrop implementation.
     function _getImplementationAddressFromFactory() internal view returns (address) {
         IATKTimeBoundAirdropFactory factory = _getFactory();
@@ -85,7 +88,8 @@ contract ATKTimeBoundAirdropProxy is Proxy {
         return implementation;
     }
 
-    /// @dev Performs the delegatecall to initialize the implementation contract.
+    /// @notice Performs the delegatecall to initialize the implementation contract.
+    /// @dev Executes the initialization logic on the implementation contract via delegatecall.
     /// @param implementationAddress_ The non-zero address of the logic contract to `delegatecall` to.
     /// @param initializeData_ The ABI-encoded data for the `initialize` function call.
     function _performInitializationDelegatecall(
@@ -105,8 +109,8 @@ contract ATKTimeBoundAirdropProxy is Proxy {
         }
     }
 
-    /// @dev Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms.
-    /// It retrieves the implementation address from the configured factory.
+    /// @notice Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms.
+    /// @dev It retrieves the implementation address from the configured factory.
     /// @return The address of the current logic/implementation contract for time-bound airdrops.
     function _implementation() internal view override returns (address) {
         return _getImplementationAddressFromFactory();
