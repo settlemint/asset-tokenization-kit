@@ -10,7 +10,7 @@ Create a high-quality pull request using multi-agent analysis.
   (type(scope): description)
 - Types: feat, fix, chore, docs, style, refactor, perf, test, build, ci, revert
 - Push branch
-- Create PR with title matching first commit message (for squash merges)
+- Create PR with title describing the most important changes (for squash merges)
 - Include summary and test plan
 
 ## Parallel Agents
