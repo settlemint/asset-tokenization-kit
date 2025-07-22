@@ -27,6 +27,8 @@ import { ATKContractIdentityImplementation } from
     "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
 import { ATKTokenAccessManagerImplementation } from
     "../../contracts/system/access-manager/ATKTokenAccessManagerImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { ATKTopicSchemeRegistryImplementation } from
     "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKTokenFactoryRegistryImplementation } from
@@ -110,6 +112,9 @@ contract SystemUtils is Test {
         identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
         vm.label(address(identityVerificationModule), "Identity Verification Module");
 
+        ATKSystemAccessManagerImplementation systemAccessManagerImpl =
+            new ATKSystemAccessManagerImplementation(forwarder);
+
         systemFactory = new ATKSystemFactory(
             address(systemImplementation),
             address(complianceImpl),
@@ -125,6 +130,7 @@ contract SystemUtils is Test {
             address(tokenFactoryRegistryImpl),
             address(complianceModuleRegistryImpl),
             address(systemAddonRegistryImpl),
+            address(systemAccessManagerImpl),
             forwarder
         );
         vm.label(address(systemFactory), "System Factory");
