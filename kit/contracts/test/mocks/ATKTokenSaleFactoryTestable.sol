@@ -5,7 +5,7 @@ import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/I
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 
-import { ATKTokenSaleProxy } from "../../contracts/assets/token-sale/ATKTokenSaleProxy.sol";
+import { ATKTokenSaleProxy } from "../../contracts/addons/token-sale/ATKTokenSaleProxy.sol";
 
 /// @title ATKTokenSaleFactoryTestable
 /// @notice Testable version of ATKTokenSaleFactory for unit tests
