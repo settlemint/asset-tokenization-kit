@@ -259,7 +259,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @return address The blockchain address of the `ATKSystem` contract found at the given `index`.
     function getSystemAtIndex(uint256 index) external view returns (address) {
         // Check for valid index to prevent errors.
-        if (index > atkSystems.length - 1) revert IndexOutOfBounds(index, atkSystems.length);
+        // solhint-disable-next-line gas-strict-inequalities
+        if (atkSystems.length == 0 || index >= atkSystems.length) revert IndexOutOfBounds(index, atkSystems.length);
         return atkSystems[index];
     }
 }
