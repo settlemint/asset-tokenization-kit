@@ -10,6 +10,7 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback } from "react";
+import { zeroAddress } from "viem";
 
 const logger = createLogger();
 
@@ -23,7 +24,7 @@ export function useOnboardingNavigation() {
    */
   const refreshUserState = useCallback(async (): Promise<CurrentUser> => {
     try {
-      if (!session?.user.wallet) {
+      if (session?.user.wallet === zeroAddress) {
         // Clear auth session cache (only for non-wallet users, all other operations automatically update the cookie)
         await authClient.getSession({
           query: {

@@ -6,9 +6,11 @@ import { orpc } from "@/orpc/orpc-client";
 import { useMutation } from "@tanstack/react-query";
 import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export function SystemDeploy() {
+  const { t } = useTranslation(["onboarding"]);
   const { refreshUserState, completeStepAndNavigate } =
     useOnboardingNavigation();
 

@@ -1,3 +1,4 @@
+import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth.client";
@@ -15,7 +16,7 @@ const logger = createLogger();
 
 export function RecoveryCodes() {
   const { t } = useTranslation(["onboarding"]);
-  const { refreshUserState } = useOnboardingNavigation();
+  const { completeStepAndNavigate } = useOnboardingNavigation();
   const {
     mutate: generateRecoveryCodes,
     isPending: isGenerating,
@@ -48,12 +49,12 @@ export function RecoveryCodes() {
       await authClient.secretCodes.confirm({
         stored: true,
       });
-      await refreshUserState();
+      await completeStepAndNavigate(OnboardingStep.walletRecoveryCodes);
     } catch (error) {
       logger.error("Failed to confirm recovery codes", error);
       toast.error(t("wallet-security.recovery-codes.confirm-error"));
     }
-  }, [refreshUserState, t]);
+  }, [completeStepAndNavigate, t]);
 
   const { handleCopyAll, handleDownload } = useRecoveryCodes(recoveryCodes);
 
