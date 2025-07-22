@@ -156,7 +156,13 @@
       "generated-error": "Failed to generate secret codes",
       "confirm-error": "Failed to confirm secret codes",
       "confirm": "Confirm I've stored them",
-      "warning": "Important: Keep these codes safe! They're your only way to regain access if you lose other security methods."
+      "warning": "Important: Keep these codes safe! They're your only way to regain access if you lose other security methods.",
+      "copy-all": "Copy all",
+      "download": "Download",
+      "your-recovery-codes": "Your Secret Codes ({{count}})",
+      "generating": "Generating your secret codes...",
+      "copied-to-clipboard": "Secret codes copied to clipboard!",
+      "downloaded": "Secret codes downloaded!"
     }
   },
   "system": {

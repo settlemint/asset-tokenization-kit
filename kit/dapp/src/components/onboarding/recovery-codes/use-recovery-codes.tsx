@@ -1,11 +1,13 @@
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export function useRecoveryCodes(recoveryCodes: string[]) {
+  const { t } = useTranslation(["onboarding"]);
   const handleCopyAll = useCallback(() => {
     void navigator.clipboard.writeText(recoveryCodes.join("\n"));
-    toast.success("Recovery codes copied to clipboard!");
-  }, [recoveryCodes]);
+    toast.success(t("wallet-security.recovery-codes.copied-to-clipboard"));
+  }, [recoveryCodes, t]);
 
   const handleDownload = useCallback(() => {
     const blob = new Blob([recoveryCodes.join("\n")], {
@@ -19,8 +21,8 @@ export function useRecoveryCodes(recoveryCodes: string[]) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success("Recovery codes downloaded!");
-  }, [recoveryCodes]);
+    toast.success(t("wallet-security.recovery-codes.downloaded"));
+  }, [recoveryCodes, t]);
 
   return {
     handleCopyAll,

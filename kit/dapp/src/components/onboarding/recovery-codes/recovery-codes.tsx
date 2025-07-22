@@ -64,7 +64,7 @@ export function RecoveryCodes() {
     }
     const debounceTimeout = setTimeout(() => {
       generateRecoveryCodes();
-    }, 200); // 200ms debounce
+    }, 200);
     return () => {
       clearTimeout(debounceTimeout);
     };

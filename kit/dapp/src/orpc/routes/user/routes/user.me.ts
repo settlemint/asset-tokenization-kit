@@ -127,7 +127,7 @@ export const me = authRouter.user.me
           authUser.wallet !== "0x0000000000000000000000000000000000000000",
         walletSecurity:
           authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
-        walletRecoveryCodes: authUser.secretCodesConfirmed,
+        walletRecoveryCodes: authUser.secretCodesConfirmed ?? false,
         system: !!systemAddress,
         systemSettings: !!baseCurrency,
         systemAssets: hasTokenFactories,
