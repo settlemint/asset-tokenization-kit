@@ -2,10 +2,10 @@
 pragma solidity 0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { ATKTokenSaleTestable } from "../mocks/ATKTokenSaleTestable.sol";
-import { ATKTokenSaleFactoryTestable } from "../mocks/ATKTokenSaleFactoryTestable.sol";
-import { IATKTokenSale } from "../../contracts/assets/token-sale/IATKTokenSale.sol";
-import { MockedSMARTToken } from "../mocks/MockedSMARTToken.sol";
+import { ATKTokenSaleTestable } from "../../mocks/ATKTokenSaleTestable.sol";
+import { ATKTokenSaleFactoryTestable } from "../../mocks/ATKTokenSaleFactoryTestable.sol";
+import { IATKTokenSale } from "../../../contracts/addons/token-sale/IATKTokenSale.sol";
+import { MockedSMARTToken } from "../../mocks/MockedSMARTToken.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
