@@ -3,16 +3,18 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { Button } from "@/components/ui/button";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { orpc } from "@/orpc/orpc-client";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation } from "@tanstack/react-query";
 import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
+const logger = createLogger();
+
 export function SystemDeploy() {
   const { t } = useTranslation(["onboarding"]);
-  const { refreshUserState, completeStepAndNavigate } =
-    useOnboardingNavigation();
+  const { completeStepAndNavigate } = useOnboardingNavigation();
 
   // Modal state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
@@ -21,9 +23,19 @@ export function SystemDeploy() {
   const { mutateAsync: createSystem, isPending: isCreatingSystem } =
     useMutation(
       orpc.system.create.mutationOptions({
-        onSuccess: async () => {
-          await refreshUserState();
-          await completeStepAndNavigate(OnboardingStep.systemDeploy);
+        mutationFn: async ({ verification }) => {
+          const result = await orpc.system.create.call({
+            verification,
+          });
+          return result;
+        },
+        onSuccess: async (result) => {
+          for await (const event of result) {
+            logger.info("system deployment event", event);
+            if (event.status === "confirmed") {
+              await completeStepAndNavigate(OnboardingStep.systemDeploy);
+            }
+          }
         },
       })
     );

@@ -155,22 +155,6 @@
     }
   },
   "system": {
-    "title": "Deploy SMART System",
-    "system-deployed": "System Deployed",
-    "deploy-smart-system": "Deploy SMART System",
-    "description": "Initialize the core infrastructure for your platform",
-    "your-blockchain-infrastructure-ready": "Your blockchain infrastructure is ready",
-    "deploy-blockchain-infrastructure": "Deploy your blockchain infrastructure for asset tokenization",
-    "info": "The SMART system is the foundation of your digital asset platform. It manages all token operations and ensures compliance.",
-    "deploy": "Deploy System",
-    "deployed": "System deployed successfully",
-    "system-deployed-successfully": "System Deployed Successfully",
-    "success": "System successfully deployed!",
-    "contract-address": "Contract Address",
-    "what-is-smart-system": "What is a SMART system?",
-    "smart-system-description": "SMART System is SettleMint's comprehensive blockchain system that enables compliant asset tokenization with built-in identity management and regulatory compliance.",
-    "system-deployment": "System deployment",
-    "deployment-time-notice": "This process may take 2-3 minutes to complete",
     "initialize-title": "Initialize the system",
     "initialize-subtitle": "You're about to set up the foundation of the platform",
     "deployment-warning": "This action will deploy blockchain smart contracts and cannot be undone. Once deployed, the system will be permanently active on the blockchain.",
@@ -181,6 +165,7 @@
     "trusted-issuers": "• Trusted Issuers Registry for authorized parties",
     "token-factory": "• Token Factory Registry for asset creation",
     "deploying": "Deploying...",
+    "deploy": "Deploy System",
     "deploying-toast": "Deploying system...",
     "deployed-toast": "System deployed successfully!",
     "failed-toast": "Failed to deploy system: ",
@@ -192,33 +177,7 @@
     "identity-registry-label": "Identity Registry",
     "compliance-engine-label": "Compliance Engine",
     "trusted-issuers-label": "Trusted Issuers Registry",
-    "token-factory-label": "Token Factory Registry",
-    "messages": {
-      "initial-loading": "Preparing to deploy your SMART system...",
-      "no-result-error": "System deployment completed but no address was returned",
-      "default-error": "Failed to deploy your SMART system",
-      "created": "System successfully created and bootstrapped.",
-      "creating": "Creating new system...",
-      "creation-failed": "Failed to create system. Please try again.",
-      "bootstrapping-system": "Bootstrapping system...",
-      "bootstrap-failed": "Failed to bootstrap system. Please try again.",
-      "system-created-bootstrap-failed": "System created but bootstrap failed. You may need to manually bootstrap the system.",
-      "pending": {
-        "mining": "Deploying your SMART system...",
-        "indexing": "Indexing the new SMART system..."
-      },
-      "error": "Failed to deploy your SMART system",
-      "timeout": "Transaction tracking timeout"
-    },
-    "transaction-tracking": {
-      "stream-timeout": "System deployment tracking timed out after 90 seconds",
-      "waiting-for-mining": "Deploying your SMART system on chain...",
-      "transaction-failed": "System deployment transaction failed",
-      "transaction-dropped": "System deployment transaction was not confirmed on-chain in time",
-      "waiting-for-indexing": "Waiting for system to be indexed...",
-      "transaction-indexed": "System successfully indexed and ready to use",
-      "indexing-timeout": "System indexing timed out, please refresh the page"
-    }
+    "token-factory-label": "Token Factory Registry"
   },
   "assets": {
     "title": "Select Asset Types",
