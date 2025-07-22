@@ -34,7 +34,7 @@ export function AssetDeployment() {
   }, [completeStepAndNavigate]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
           {t("assets.asset-types-deployed")}

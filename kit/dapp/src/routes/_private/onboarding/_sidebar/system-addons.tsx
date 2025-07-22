@@ -18,11 +18,10 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { t } = useTranslation(["common"]);
-  const { navigateToStep, completeStepAndNavigate } = useOnboardingNavigation();
+  const { completeStepAndNavigate } = useOnboardingNavigation();
 
   const onNext = () =>
     void completeStepAndNavigate(OnboardingStep.systemAddons);
-  const onPrevious = () => void navigateToStep(OnboardingStep.systemAssets);
 
   return (
     <div className="flex flex-col">
@@ -43,9 +42,6 @@ function RouteComponent() {
 
       <div className="mt-8 pt-6 border-t border-border">
         <div className="flex justify-between">
-          <Button type="button" variant="outline" onClick={onPrevious}>
-            {t("common:previous")}
-          </Button>
           <Button type="button" onClick={onNext}>
             {t("common:continue")}
           </Button>
