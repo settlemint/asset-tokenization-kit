@@ -51,6 +51,7 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
 
     /// @notice Maximum number of items allowed in batch operations to prevent OOM and gas limit issues.
     /// @dev Set to 100 to balance usability with gas efficiency.
+    /// @return Maximum allowed batch size (100)
     uint256 public constant MAX_BATCH_SIZE = 100;
 
     // --- Modifiers ---
@@ -82,6 +83,8 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
     /// @dev Set once at initialization and immutable thereafter. Handles claim tracking logic.
     IATKClaimTracker internal _claimTracker;
 
+    /// @notice Constructor to initialize the airdrop base contract
+    /// @dev Disables initializers to prevent implementation contract initialization
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
@@ -209,13 +212,13 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
 
     // --- Internal Functions ---
 
-    /// @dev Verifies a Merkle proof for a claim.
+    /// @notice Verifies a Merkle proof for a claim.
+    /// @dev IMPORTANT: Derived contracts implementing `claim` must ensure `account` == `_msgSender()`.
     /// @param index The index of the claim in the Merkle tree.
     /// @param account The address claiming the tokens.
     /// @param totalAmount The total amount allocated for this index.
     /// @param merkleProof The Merkle proof array.
     /// @return verified True if the proof is valid, false otherwise.
-    /// @dev IMPORTANT: Derived contracts implementing `claim` must ensure `account` == `_msgSender()`.
     function _verifyMerkleProof(
         uint256 index,
         address account,
@@ -231,7 +234,8 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
         return MerkleProof.verify(merkleProof, _merkleRoot, node);
     }
 
-    /// @dev Internal function to process a single claim.
+    /// @notice Internal function to process a single claim.
+    /// @dev Validates claim, verifies proof, records claim, and transfers tokens.
     /// @param index The index in the Merkle tree.
     /// @param account The address receiving the tokens.
     /// @param claimAmount The amount to transfer.
@@ -269,7 +273,8 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
         emit AirdropTokensTransferred(account, index, claimAmount);
     }
 
-    /// @dev Internal function to process a batch claim.
+    /// @notice Internal function to process a batch claim.
+    /// @dev Processes multiple claims in a single transaction with batch size validation.
     /// @param indices The indices in the Merkle tree.
     /// @param account The address receiving the tokens.
     /// @param claimAmounts The amounts to transfer for each index.
@@ -335,7 +340,9 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
 
     // --- Context Overrides (ERC2771) ---
 
-    /// @dev Returns the sender of the transaction, supporting ERC2771 meta-transactions.
+    /// @notice Returns the sender of the transaction, supporting ERC2771 meta-transactions.
+    /// @dev Overrides both ContextUpgradeable and ERC2771ContextUpgradeable implementations.
+    /// @return sender The address of the transaction sender.
     function _msgSender()
         internal
         view
@@ -346,7 +353,9 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
         return ERC2771ContextUpgradeable._msgSender();
     }
 
-    /// @dev Returns the calldata of the transaction, supporting ERC2771 meta-transactions.
+    /// @notice Returns the calldata of the transaction, supporting ERC2771 meta-transactions.
+    /// @dev Overrides both ContextUpgradeable and ERC2771ContextUpgradeable implementations.
+    /// @return data The calldata of the transaction.
     function _msgData()
         internal
         view
@@ -357,7 +366,9 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
         return ERC2771ContextUpgradeable._msgData();
     }
 
-    /// @dev Returns the context suffix length for ERC2771 compatibility.
+    /// @notice Returns the context suffix length for ERC2771 compatibility.
+    /// @dev Overrides both ContextUpgradeable and ERC2771ContextUpgradeable implementations.
+    /// @return The length of the context suffix for meta-transactions.
     function _contextSuffixLength()
         internal
         view

@@ -18,6 +18,7 @@ error InitializationWithZeroAddress();
 error ETHTransfersNotAllowed();
 
 /// @title Proxy for ATKVestingAirdrop, managed by a factory.
+/// @author SettleMint
 /// @notice This contract is a proxy that delegates calls to an implementation
 /// of ATKVestingAirdrop. The implementation address is fetched from a specified
 /// ATKVestingAirdropFactory contract.
@@ -122,6 +123,7 @@ contract ATKVestingAirdropProxy is Proxy {
     }
 
     /// @notice Fallback function to reject any direct Ether transfers to this proxy contract.
+    /// @dev Reverts with ETHTransfersNotAllowed error when ETH is sent to this contract.
     receive() external payable virtual {
         revert ETHTransfersNotAllowed();
     }

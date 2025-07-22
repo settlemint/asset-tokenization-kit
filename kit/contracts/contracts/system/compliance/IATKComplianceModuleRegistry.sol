@@ -3,6 +3,14 @@ pragma solidity ^0.8.28;
 
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
+/**
+ * @title IATKComplianceModuleRegistry
+ * @author SettleMint
+ * @notice Interface for the ATK Compliance Module Registry, managing available compliance modules
+ * @dev This registry maintains a list of approved compliance modules that can be used by tokens
+ *      in the ATK ecosystem. Compliance modules implement various regulatory requirements such as
+ *      identity verification, country restrictions, and allowlisting.
+ */
 interface IATKComplianceModuleRegistry is IAccessControl {
     event ComplianceModuleRegistered(
         address indexed sender, string name, bytes32 typeId, address indexed moduleAddress, uint256 timestamp

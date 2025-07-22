@@ -4,6 +4,14 @@ pragma solidity ^0.8.28;
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
+/**
+ * @title IATKTokenFactoryRegistry
+ * @author SettleMint
+ * @notice Interface for the ATK Token Factory Registry, managing token factory deployments
+ * @dev This registry tracks and manages different types of token factories (Bond, Equity, Fund, etc.)
+ *      within the ATK ecosystem. Each factory type is identified by a unique type hash and can be
+ *      upgraded independently through its implementation address.
+ */
 interface IATKTokenFactoryRegistry is IAccessControl, IERC165 {
     event TokenFactoryRegistered(
         address indexed sender,

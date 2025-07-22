@@ -33,6 +33,7 @@ import { SMARTTokenAccessManagedUpgradeable } from
     "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 
 /// @title ATKStableCoin
+/// @author SettleMint
 /// @notice An implementation of a stablecoin using the SMART extension framework,
 ///         backed by collateral and using custom roles.
 /// @dev Combines core SMART features (compliance, verification) with extensions for pausing,
@@ -112,10 +113,14 @@ contract ATKStableCoinImplementation is
 
     // --- ISMART Implementation ---
 
+    /// @notice Sets the on-chain identity contract address
+    /// @param _onchainID The address of the on-chain identity contract
     function setOnchainID(address _onchainID) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setOnchainID(_onchainID);
     }
 
+    /// @notice Sets the identity registry contract address
+    /// @param _identityRegistry The address of the identity registry contract
     function setIdentityRegistry(address _identityRegistry)
         external
         override
@@ -124,10 +129,15 @@ contract ATKStableCoinImplementation is
         _smart_setIdentityRegistry(_identityRegistry);
     }
 
+    /// @notice Sets the compliance contract address
+    /// @param _compliance The address of the compliance contract
     function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKRoles.GOVERNANCE_ROLE) {
         _smart_setCompliance(_compliance);
     }
 
+    /// @notice Sets parameters for a compliance module
+    /// @param _module The address of the compliance module
+    /// @param _params The encoded parameters for the compliance module
     function setParametersForComplianceModule(
         address _module,
         bytes calldata _params
@@ -139,6 +149,9 @@ contract ATKStableCoinImplementation is
         _smart_setParametersForComplianceModule(_module, _params);
     }
 
+    /// @notice Mints new tokens to a specified address
+    /// @param _to The address to mint tokens to
+    /// @param _amount The amount of tokens to mint
     function mint(
         address _to,
         uint256 _amount
@@ -150,6 +163,9 @@ contract ATKStableCoinImplementation is
         _smart_mint(_to, _amount);
     }
 
+    /// @notice Mints tokens to multiple addresses in a batch
+    /// @param _toList Array of addresses to mint tokens to
+    /// @param _amounts Array of amounts to mint to each address
     function batchMint(
         address[] calldata _toList,
         uint256[] calldata _amounts
@@ -161,6 +177,10 @@ contract ATKStableCoinImplementation is
         _smart_batchMint(_toList, _amounts);
     }
 
+    /// @notice Transfers tokens to a specified address
+    /// @param _to The address to transfer tokens to
+    /// @param _amount The amount of tokens to transfer
+    /// @return bool indicating success of the transfer
     function transfer(
         address _to,
         uint256 _amount
@@ -172,6 +192,10 @@ contract ATKStableCoinImplementation is
         return _smart_transfer(_to, _amount);
     }
 
+    /// @notice Recovers accidentally sent ERC20 tokens
+    /// @param token The address of the ERC20 token to recover
+    /// @param to The address to send recovered tokens to
+    /// @param amount The amount of tokens to recover
     function recoverERC20(
         address token,
         address to,
@@ -184,6 +208,9 @@ contract ATKStableCoinImplementation is
         _smart_recoverERC20(token, to, amount);
     }
 
+    /// @notice Adds a new compliance module
+    /// @param _module The address of the compliance module to add
+    /// @param _params The encoded parameters for the compliance module
     function addComplianceModule(
         address _module,
         bytes calldata _params
@@ -195,6 +222,8 @@ contract ATKStableCoinImplementation is
         _smart_addComplianceModule(_module, _params);
     }
 
+    /// @notice Removes a compliance module
+    /// @param _module The address of the compliance module to remove
     function removeComplianceModule(address _module)
         external
         override
@@ -205,6 +234,9 @@ contract ATKStableCoinImplementation is
 
     // --- ISMARTBurnable Implementation ---
 
+    /// @notice Burns tokens from a specified address
+    /// @param userAddress The address to burn tokens from
+    /// @param amount The amount of tokens to burn
     function burn(
         address userAddress,
         uint256 amount
@@ -216,6 +248,9 @@ contract ATKStableCoinImplementation is
         _smart_burn(userAddress, amount);
     }
 
+    /// @notice Burns tokens from multiple addresses in a batch
+    /// @param userAddresses Array of addresses to burn tokens from
+    /// @param amounts Array of amounts to burn from each address
     function batchBurn(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -229,6 +264,9 @@ contract ATKStableCoinImplementation is
 
     // --- ISMARTCustodian Implementation ---
 
+    /// @notice Freezes or unfreezes an address
+    /// @param userAddress The address to freeze or unfreeze
+    /// @param freeze True to freeze, false to unfreeze
     function setAddressFrozen(
         address userAddress,
         bool freeze
@@ -240,6 +278,9 @@ contract ATKStableCoinImplementation is
         _smart_setAddressFrozen(userAddress, freeze);
     }
 
+    /// @notice Freezes a partial amount of tokens for an address
+    /// @param userAddress The address to freeze tokens for
+    /// @param amount The amount of tokens to freeze
     function freezePartialTokens(
         address userAddress,
         uint256 amount
@@ -251,6 +292,9 @@ contract ATKStableCoinImplementation is
         _smart_freezePartialTokens(userAddress, amount);
     }
 
+    /// @notice Unfreezes a partial amount of tokens for an address
+    /// @param userAddress The address to unfreeze tokens for
+    /// @param amount The amount of tokens to unfreeze
     function unfreezePartialTokens(
         address userAddress,
         uint256 amount
@@ -262,6 +306,9 @@ contract ATKStableCoinImplementation is
         _smart_unfreezePartialTokens(userAddress, amount);
     }
 
+    /// @notice Freezes or unfreezes multiple addresses in a batch
+    /// @param userAddresses Array of addresses to freeze or unfreeze
+    /// @param freeze Array of booleans indicating freeze (true) or unfreeze (false) for each address
     function batchSetAddressFrozen(
         address[] calldata userAddresses,
         bool[] calldata freeze
@@ -273,6 +320,9 @@ contract ATKStableCoinImplementation is
         _smart_batchSetAddressFrozen(userAddresses, freeze);
     }
 
+    /// @notice Freezes partial tokens for multiple addresses in a batch
+    /// @param userAddresses Array of addresses to freeze tokens for
+    /// @param amounts Array of amounts to freeze for each address
     function batchFreezePartialTokens(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -284,6 +334,9 @@ contract ATKStableCoinImplementation is
         _smart_batchFreezePartialTokens(userAddresses, amounts);
     }
 
+    /// @notice Unfreezes partial tokens for multiple addresses in a batch
+    /// @param userAddresses Array of addresses to unfreeze tokens for
+    /// @param amounts Array of amounts to unfreeze for each address
     function batchUnfreezePartialTokens(
         address[] calldata userAddresses,
         uint256[] calldata amounts
@@ -295,6 +348,11 @@ contract ATKStableCoinImplementation is
         _smart_batchUnfreezePartialTokens(userAddresses, amounts);
     }
 
+    /// @notice Forces a transfer of tokens from one address to another
+    /// @param from The address to transfer tokens from
+    /// @param to The address to transfer tokens to
+    /// @param amount The amount of tokens to transfer
+    /// @return bool indicating success of the transfer
     function forcedTransfer(
         address from,
         address to,
@@ -308,6 +366,10 @@ contract ATKStableCoinImplementation is
         return _smart_forcedTransfer(from, to, amount);
     }
 
+    /// @notice Forces transfers of tokens from multiple addresses to other addresses
+    /// @param fromList Array of addresses to transfer tokens from
+    /// @param toList Array of addresses to transfer tokens to
+    /// @param amounts Array of amounts to transfer
     function batchForcedTransfer(
         address[] calldata fromList,
         address[] calldata toList,
@@ -320,6 +382,9 @@ contract ATKStableCoinImplementation is
         _smart_batchForcedTransfer(fromList, toList, amounts);
     }
 
+    /// @notice Recovers all tokens from a lost wallet and transfers them to a new wallet
+    /// @param lostWallet The address of the lost wallet
+    /// @param newWallet The address of the new wallet to transfer tokens to
     function forcedRecoverTokens(
         address lostWallet,
         address newWallet
@@ -333,10 +398,12 @@ contract ATKStableCoinImplementation is
 
     // --- ISMARTPausable Implementation ---
 
+    /// @notice Pauses all token transfers
     function pause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_pause();
     }
 
+    /// @notice Unpauses token transfers
     function unpause() external override onlyAccessManagerRole(ATKRoles.EMERGENCY_ROLE) {
         _smart_unpause();
     }

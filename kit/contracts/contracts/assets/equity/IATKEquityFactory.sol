@@ -5,7 +5,12 @@ import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.so
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 /// @title Interface for the ATK Equity Factory
+/// @author SettleMint
 /// @notice Defines the functions for creating and predicting addresses of ATK Equity instances.
+/// This factory interface provides standardized methods for deploying new equity token contracts
+/// with deterministic addresses and comprehensive initialization parameters.
+/// @dev Extends IATKTokenFactory to provide equity-specific deployment functionality with
+/// support for compliance modules, claim topics, and jurisdictional requirements.
 interface IATKEquityFactory is IATKTokenFactory {
     /// @notice Emitted when a new equity is created.
     /// @param sender The address of the sender.

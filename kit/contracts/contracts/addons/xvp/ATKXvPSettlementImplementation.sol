@@ -13,6 +13,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IATKXvPSettlement } from "./IATKXvPSettlement.sol";
 
 /// @title ATKXvPSettlementImplementation - A contract for cross-value proposition settlements
+/// @author SettleMint
 /// @notice This contract facilitates atomic swaps between parties with multiple token flows.
 /// Parties can approve the settlement, and once all parties are approved, the settlement can be executed.
 /// @dev This contract supports:
@@ -128,34 +129,51 @@ contract ATKXvPSettlementImplementation is
         }
     }
 
+    /// @notice Returns the cutoff date after which the settlement expires
+    /// @return The cutoff date timestamp in seconds since epoch
     function cutoffDate() public view returns (uint256) {
         return _cutoffDate;
     }
 
+    /// @notice Returns whether the settlement should auto-execute when all approvals are received
+    /// @return True if auto-execute is enabled, false otherwise
     function autoExecute() public view returns (bool) {
         return _autoExecute;
     }
 
+    /// @notice Returns whether the settlement has been executed
+    /// @return True if the settlement has been executed, false otherwise
     function executed() public view returns (bool) {
         return _executed;
     }
 
+    /// @notice Returns whether the settlement has been cancelled
+    /// @return True if the settlement has been cancelled, false otherwise
     function cancelled() public view returns (bool) {
         return _cancelled;
     }
 
+    /// @notice Returns all flows in the settlement
+    /// @return Array of all flows defined in the settlement
     function flows() public view returns (Flow[] memory) {
         return _flows;
     }
 
+    /// @notice Returns whether an account has approved the settlement
+    /// @param account The account to check approvals for
+    /// @return True if the account has approved the settlement, false otherwise
     function approvals(address account) public view returns (bool) {
         return _approvals[account];
     }
 
+    /// @notice Returns the timestamp when the settlement was created
+    /// @return The creation timestamp in seconds since epoch
     function createdAt() public view returns (uint256) {
         return _createdAt;
     }
 
+    /// @notice Returns the name of the settlement
+    /// @return The settlement name as a string
     function name() public view returns (string memory) {
         return _name;
     }
@@ -190,7 +208,7 @@ contract ATKXvPSettlementImplementation is
     }
 
     /// @notice Executes the flows if all approvals are in place
-    /// @return success True if execution was successful
+    /// @return True if execution was successful
     function execute() external nonReentrant onlyOpen returns (bool) {
         return _executeSettlement();
     }
@@ -213,7 +231,7 @@ contract ATKXvPSettlementImplementation is
 
     /// @notice Revokes approval for a XvP settlement
     /// @dev The caller must have previously approved the settlement
-    /// @return success True if the revocation was successful
+    /// @return True if the revocation was successful
     function revokeApproval() external nonReentrant onlyInvolvedSender returns (bool) {
         if (!_approvals[_msgSender()]) revert SenderNotApprovedSettlement();
 
@@ -223,6 +241,9 @@ contract ATKXvPSettlementImplementation is
         return true;
     }
 
+    /// @notice Cancels the settlement
+    /// @dev The caller must be involved in the settlement and it must not be executed yet
+    /// @return True if the cancellation was successful
     function cancel() external nonReentrant onlyNotExecuted onlyInvolvedSender returns (bool) {
         _cancelled = true;
 
