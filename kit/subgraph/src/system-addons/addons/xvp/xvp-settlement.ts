@@ -186,22 +186,47 @@ export function handleXvPSettlementApproved(
     return;
   }
 
-  const approvals = xvpSettlement.approvals.load();
+  // Manual approval lookup instead of using derived field .load()
+  // Get flows from contract to extract approver addresses
+  const settlementContract = XvPSettlementContract.bind(event.address);
+  const flows = settlementContract.try_flows();
+
+  if (flows.reverted) {
+    return;
+  }
+
+  const approvers: Address[] = [];
+
+  // Collect unique approvers (from addresses) from flows
+  for (let i = 0; i < flows.value.length; i++) {
+    const flow = flows.value[i];
+
+    let fromExists = false;
+    for (let j = 0; j < approvers.length; j++) {
+      if (approvers[j].equals(flow.from)) {
+        fromExists = true;
+        break;
+      }
+    }
+    if (!fromExists) {
+      approvers.push(flow.from);
+    }
+  }
+
+  // Check if all approvals are done
   let allApproved = true;
-  for (let i = 0; i < approvals.length; i++) {
-    const approval = approvals[i];
+  const participants: Bytes[] = [];
+
+  for (let i = 0; i < approvers.length; i++) {
+    const approval = fetchXvPSettlementApproval(event.address, approvers[i]);
     if (!approval.approved) {
       allApproved = false;
       break;
     }
+    participants.push(approval.account);
   }
 
   if (allApproved) {
-    const participants: Bytes[] = [];
-    for (let i = 0; i < approvals.length; i++) {
-      participants.push(approvals[i].account);
-    }
-
     // Check if ExecuteXvPSettlement action already exists to prevent duplicates
     const executeActionIdentifier = createActionIdentifier(
       ActionName.ExecuteXvPSettlement,
