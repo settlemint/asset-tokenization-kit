@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { ATKTokenSale } from "../../contracts/assets/token-sale/ATKTokenSale.sol";
+import { ATKTokenSale } from "../../contracts/addons/token-sale/ATKTokenSale.sol";
 
 /// @title ATKTokenSaleTestable
 /// @notice Testable version of ATKTokenSale with additional helper functions
