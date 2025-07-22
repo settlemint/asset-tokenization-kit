@@ -395,7 +395,7 @@
     @apply bg-sidebar-accent;
   }
 
-  .AuthProvider [data-slot="separator-root"] {
+  .AuthProvider [data-slot="separator"] {
     @apply shrink-1;
   }
 

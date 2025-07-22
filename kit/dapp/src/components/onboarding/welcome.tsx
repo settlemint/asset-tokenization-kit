@@ -1,3 +1,4 @@
+import { Logo } from "@/components/logo/logo";
 import { OnboardingStepGroup } from "@/components/onboarding/state-machine";
 import {
   Accordion,
@@ -15,7 +16,6 @@ import {
   TimelineSeparator,
   TimelineTitle,
 } from "@/components/ui/timeline";
-import { Logo } from "@/components/logo/logo";
 import { useNavigate } from "@tanstack/react-router";
 import { Check, HelpCircle, X } from "lucide-react";
 import { useCallback } from "react";
@@ -115,7 +115,7 @@ export function Welcome({ steps }: WelcomeProps) {
   return (
     <div
       style={{ background: "var(--sm-wizard-sidebar-gradient)" }}
-      className="min-h-screen flex flex-col"
+      className="flex flex-col"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-6 lg:px-12 xl:px-12">
