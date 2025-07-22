@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 /// @title Airdrop Test Utils
 /// @notice Shared utilities for airdrop test contracts

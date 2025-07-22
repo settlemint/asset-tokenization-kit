@@ -4,7 +4,8 @@ pragma solidity ^0.8.27;
 import { IATKXvPSettlement } from "./IATKXvPSettlement.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-/// @title IATKXvPSettlementFactory Interface
+/// @title IATKXvPSettlementFactory - Interface for the XvP Settlement Factory contract
+/// @author SettleMint
 /// @notice Interface for the XvP Settlement Factory contract
 /// @dev Defines the core functionality that must be implemented by the XvP Settlement Factory
 interface IATKXvPSettlementFactory is IERC165 {
@@ -13,7 +14,8 @@ interface IATKXvPSettlementFactory is IERC165 {
     /// @param creator The address that created the settlement contract
     event ATKXvPSettlementCreated(address indexed settlement, address indexed creator);
 
-    /// @notice Returns a unique identifier for the type of this contract.
+    /// @notice Returns a unique identifier for the type of this contract
+    /// @return The unique type identifier as a bytes32 hash
     function typeId() external pure returns (bytes32);
 
     /// @notice Returns the address of the current XvPSettlement implementation contract

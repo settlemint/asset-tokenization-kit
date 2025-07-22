@@ -156,11 +156,12 @@ contract ATKSystemImplementation is
     address private _tokenFactoryRegistryProxy;
 
     // --- Internal Helper for Interface Check ---
+    /// @notice Internal helper function to check if a given contract address supports a specific interface
     /// @dev Internal helper function to check if a given contract address (`implAddress`)
     /// supports a specific interface (`interfaceId`) using ERC165 introspection.
     /// ERC165 is a standard for publishing and detecting what interfaces a smart contract implements.
-    /// @param implAddress The address of the contract to check.
-    /// @param interfaceId The 4-byte identifier of the interface to check for support.
+    /// @param implAddress The address of the contract to check
+    /// @param interfaceId The 4-byte identifier of the interface to check for support
     function _checkInterface(address implAddress, bytes4 interfaceId) private view {
         // Allow zero address to pass here; specific `NotSet` errors are thrown elsewhere if an address is required but
         // zero.
@@ -178,6 +179,9 @@ contract ATKSystemImplementation is
         }
     }
 
+    /// @notice Constructor that disables initialization of the implementation contract
+    /// @dev Uses OpenZeppelin's oz-upgrades-unsafe-allow pattern to prevent the implementation from being initialized
+    /// @param forwarder_ The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
         _disableInitializers();
@@ -201,6 +205,9 @@ contract ATKSystemImplementation is
     /// contract.
     /// @param identityFactoryImplementation_ The initial address of the identity factory module's logic contract.
     /// @param identityImplementation_ The initial address of the standard identity contract's logic (template). Must be
+    /// IERC734/IIdentity compliant.
+    /// @param contractIdentityImplementation_ The initial address of the contract identity contract's logic (template).
+    /// Must be
     /// IERC734/IIdentity compliant.
     /// @param tokenAccessManagerImplementation_ The initial address of the token access manager contract's logic. Must
     /// be ISMARTTokenAccessManager compliant.
@@ -333,9 +340,11 @@ contract ATKSystemImplementation is
         emit TokenFactoryRegistryImplementationUpdated(initialAdmin_, tokenFactoryRegistryImplementation_);
     }
 
+    /// @notice Authorizes an upgrade to a new implementation contract
     /// @dev Authorizes an upgrade to a new implementation contract.
     /// The UUPS upgrade mechanism is used.
     /// Only the `DEFAULT_ADMIN_ROLE` can authorize an upgrade.
+    /// @param newImplementation The address of the new implementation contract
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) { }
 
     // --- Bootstrap Function ---
@@ -810,6 +819,7 @@ contract ATKSystemImplementation is
 
     // --- Internal Functions (Overrides for ERC2771Context and ERC165/AccessControl) ---
 
+    /// @notice Returns the address of the original transaction sender
     /// @dev Overrides the `_msgSender()` function from OpenZeppelin's `Context` and `ERC2771Context`.
     /// This ensures that in the context of a meta-transaction (via a trusted forwarder), `msg.sender` (and thus
     /// the return value of this function) correctly refers to the original user who signed the transaction,
@@ -820,6 +830,7 @@ contract ATKSystemImplementation is
         return super._msgSender(); // Calls the ERC2771Context implementation.
     }
 
+    /// @notice Returns the original call data of the transaction
     /// @dev Overrides the `_msgData()` function from OpenZeppelin's `Context` and `ERC2771Context`.
     /// Similar to `_msgSender()`, this ensures that `msg.data` (and the return value of this function)
     /// refers to the original call data from the user in a meta-transaction context.
@@ -834,6 +845,7 @@ contract ATKSystemImplementation is
         return super._msgData(); // Calls the ERC2771Context implementation.
     }
 
+    /// @notice Returns the length of the context suffix for meta-transactions
     /// @dev Overrides `_contextSuffixLength` from OpenZeppelin's `ERC2771Context`.
     /// This function is part of the ERC2771 meta-transaction standard. It indicates the length of the suffix
     /// appended to the call data by a forwarder, which typically contains the original sender's address.
@@ -854,7 +866,7 @@ contract ATKSystemImplementation is
     /// It explicitly supports the `IATKSystem` interface and inherits support for other interfaces
     /// like `IERC165` (from `ERC165`) and `IAccessControl` (from `AccessControl`).
     /// @param interfaceId The 4-byte interface identifier to check.
-    /// @return `true` if the contract supports the interface, `false` otherwise.
+    /// @return supported `true` if the contract supports the interface, `false` otherwise.
     function supportsInterface(bytes4 interfaceId)
         public
         view

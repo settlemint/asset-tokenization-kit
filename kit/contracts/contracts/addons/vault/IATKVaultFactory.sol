@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 /// @title IATKVaultFactory Interface
+/// @author SettleMint
 /// @notice Interface for the ATK Vault Factory contract
 /// @dev Defines the functions for creating and managing ATK Vault contracts
 interface IATKVaultFactory {
@@ -49,7 +50,8 @@ interface IATKVaultFactory {
     /// @param initialAdmin_ Address that will have admin role
     function initialize(address systemAddress_, address initialAdmin_) external;
 
-    /// @notice Returns the address of the current ATKVault logic contract (implementation).
-    /// @dev This function is expected to be available on the factory contract.
+    /// @notice Returns the address of the current ATKVault logic contract (implementation)
+    /// @dev This function is expected to be available on the factory contract
+    /// @return The address of the ATKVault implementation
     function atkVaultImplementation() external view returns (address);
 }

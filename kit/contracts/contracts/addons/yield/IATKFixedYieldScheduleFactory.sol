@@ -3,6 +3,12 @@ pragma solidity ^0.8.28;
 
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 
+/// @title IATKFixedYieldScheduleFactory
+/// @author SettleMint
+/// @notice Interface for the ATKFixedYieldScheduleFactory contract
+/// @dev This interface defines the functions and events for creating and managing
+/// ATKFixedYieldSchedule proxy contracts. The factory deploys proxies that delegate
+/// to a shared implementation contract, which can be updated by authorized roles.
 interface IATKFixedYieldScheduleFactory {
     /// @notice Emitted when the `atkFixedYieldScheduleImplementation` is updated.
     /// @param oldImplementation The address of the previous implementation contract.
@@ -25,12 +31,19 @@ interface IATKFixedYieldScheduleFactory {
     /// @dev This function is expected to be available on the factory contract.
     /// It's typically created automatically if the factory has a public state variable
     /// named `atkFixedYieldScheduleImplementation`.
+    /// @return The address of the current implementation contract
     function atkFixedYieldScheduleImplementation() external view returns (address);
 
     /// @notice Creates a new ATKFixedYieldSchedule proxy contract.
-    /// @dev This function is expected to be available on the factory contract.
-    /// It's typically created automatically if the factory has a public state variable
-    /// named `atkFixedYieldScheduleImplementation`.
+    /// @dev This function deploys a new proxy contract that delegates to the current implementation.
+    /// The proxy is deployed using CREATE2 for deterministic addresses.
+    /// @param token The `ISMARTYield`-compliant token for which the yield schedule is being created
+    /// @param startTime The Unix timestamp for the schedule start
+    /// @param endTime The Unix timestamp for the schedule end
+    /// @param rate The yield rate in basis points
+    /// @param interval The interval for yield distributions in seconds
+    /// @param country Country code for compliance purposes
+    /// @return scheduleProxyAddress The address of the newly created `ATKFixedYieldProxy` contract
     function create(
         ISMARTYield token,
         uint256 startTime,

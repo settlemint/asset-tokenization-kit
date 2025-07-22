@@ -5,6 +5,7 @@ import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.so
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 /// @title Interface for the ATK Fund Factory
+/// @author SettleMint
 /// @notice Defines the functions for creating and predicting addresses of ATK Fund instances.
 interface IATKFundFactory is IATKTokenFactory {
     /// @notice Emitted when a new fund is created.
