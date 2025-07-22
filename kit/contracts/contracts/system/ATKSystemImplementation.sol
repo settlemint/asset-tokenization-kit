@@ -836,6 +836,12 @@ contract ATKSystemImplementation is
         return _tokenFactoryRegistryProxy;
     }
 
+    /// @notice Gets the address of the system access manager's proxy contract.
+    /// @return The address of the system access manager proxy contract.
+    function systemAccessManager() public view returns (address) {
+        return _systemAccessManagerProxy;
+    }
+
     // --- Identity Verification Module ---
 
     /// @notice Gets the address of the identity verification module's proxy contract.

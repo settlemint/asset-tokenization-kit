@@ -192,6 +192,10 @@ interface IATKSystem is IERC165 {
     /// @return The address of the compliance module registry contract.
     function complianceModuleRegistry() external view returns (address);
 
+    /// @notice Returns the address of the system access manager.
+    /// @return The address of the system access manager proxy contract.
+    function systemAccessManager() external view returns (address);
+
     /// @notice Retrieves the smart contract address of the proxy for the identity verification module.
     /// @dev This function returns the stable, unchanging address of the identity verification module's proxy contract.
     /// To interact with the identity verification module (e.g., to verify an identity or check verification status),
