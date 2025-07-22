@@ -21,14 +21,16 @@
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
   },
   "dependencies": {
+    "@nomicfoundation/hardhat-ignition": "0.15.13",
     "merkletreejs": "0.5.2"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-foundry": "1.2.0",
     "@nomicfoundation/hardhat-toolbox-viem": "4.1.0",
     "@nomiclabs/hardhat-solhint": "4.1.0",
-    "hardhat": "2.26.0",
-    "solhint": "6.0.0"
+    "hardhat": "2.26.1",
+    "solhint": "6.0.0",
+    "ts-node": "10.9.2"
   },
   "peerDependencies": {}
 }
