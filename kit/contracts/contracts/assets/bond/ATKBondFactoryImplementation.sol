@@ -17,8 +17,10 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 import { ATKBondProxy } from "./ATKBondProxy.sol";
 
 /// @title Implementation of the ATK Bond Factory
+/// @author SettleMint
 /// @notice This contract is responsible for creating instances of ATK Bonds.
 contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactoryImplementation {
+    /// @notice Type identifier for the bond factory implementation
     bytes32 public constant override typeId = keccak256("ATKBondFactory");
 
     /// @notice Constructor for the ATKBondFactoryImplementation.
@@ -164,6 +166,9 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
 
     // --- ERC165 Overrides ---
 
+    /// @notice Check if the contract supports a specific interface
+    /// @param interfaceId The interface identifier to check
+    /// @return bool True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view

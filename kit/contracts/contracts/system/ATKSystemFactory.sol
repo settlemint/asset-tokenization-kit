@@ -126,6 +126,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// contract.
     /// @param identityFactoryImplementation_ The default address for the identity factory module's logic contract.
     /// @param identityImplementation_ The default address for the standard identity contract's logic (template).
+    /// @param contractIdentityImplementation_ The default address for the contract identity contract's logic
+    /// (template).
     /// @param tokenAccessManagerImplementation_ The default address for the token access manager contract's logic
     /// (template).
     /// @param identityVerificationModule_ The default address for the identity verification module's
@@ -268,7 +270,8 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @return address The blockchain address of the `ATKSystem` contract found at the given `index`.
     function getSystemAtIndex(uint256 index) external view returns (address) {
         // Check for valid index to prevent errors.
-        if (index >= atkSystems.length) revert IndexOutOfBounds(index, atkSystems.length);
+        // solhint-disable-next-line gas-strict-inequalities
+        if (atkSystems.length == 0 || index >= atkSystems.length) revert IndexOutOfBounds(index, atkSystems.length);
         return atkSystems[index];
     }
 }

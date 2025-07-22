@@ -1,26 +1,27 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity 0.8.28;
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import { ATKTokenSaleTestable } from "../mocks/ATKTokenSaleTestable.sol";
-import { ATKTokenSaleProxy } from "../../contracts/assets/token-sale/ATKTokenSaleProxy.sol";
-import { ATKTokenSaleFactoryTestable } from "../mocks/ATKTokenSaleFactoryTestable.sol";
-import { IATKTokenSale } from "../../contracts/assets/token-sale/IATKTokenSale.sol";
+import { ATKTokenSaleTestable } from "../../mocks/ATKTokenSaleTestable.sol";
+import { ATKTokenSaleProxy } from "../../../contracts/addons/token-sale/ATKTokenSaleProxy.sol";
+import { ATKTokenSaleFactoryTestable } from "../../mocks/ATKTokenSaleFactoryTestable.sol";
+import { IATKTokenSale } from "../../../contracts/addons/token-sale/IATKTokenSale.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Real SMART token imports (using correct paths)
-import { SMARTToken } from "../smart/examples/SMARTToken.sol";
-import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
+import { SMARTToken } from "../../smart/examples/SMARTToken.sol";
+import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from
-    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
-import { SystemUtils } from "../utils/SystemUtils.sol";
-import { IdentityUtils } from "../utils/IdentityUtils.sol";
-import { TokenUtils } from "../utils/TokenUtils.sol";
-import { ClaimUtils } from "../utils/ClaimUtils.sol";
-import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
-import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
+import { SystemUtils } from "../../utils/SystemUtils.sol";
+import { IdentityUtils } from "../../utils/IdentityUtils.sol";
+import { TokenUtils } from "../../utils/TokenUtils.sol";
+import { ClaimUtils } from "../../utils/ClaimUtils.sol";
+import { ISMARTTokenAccessManager } from
+    "../../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
+import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 
 // Standard ERC20 token for USDC
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";

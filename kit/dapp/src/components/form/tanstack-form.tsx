@@ -3,35 +3,13 @@ import * as React from "react";
 
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import {
-  createFormHook,
-  createFormHookContexts,
-  useStore,
-} from "@tanstack/react-form";
+import { useStore } from "@tanstack/react-form";
 
-const {
-  fieldContext,
-  formContext,
-  useFieldContext: _useFieldContext,
-  useFormContext,
-} = createFormHookContexts();
+import { useFieldContext as _useFieldContext } from "@/hooks/use-form-contexts";
 
-const { useAppForm, withForm } = createFormHook({
-  fieldContext,
-  formContext,
-  fieldComponents: {
-    FormLabel,
-    FormControl,
-    FormDescription,
-    FormMessage,
-    FormItem,
-  },
-  formComponents: {},
-});
-
-type FormItemContextValue = {
+interface FormItemContextValue {
   id: string;
-};
+}
 
 const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue
@@ -56,9 +34,6 @@ const useFieldContext = () => {
   const { name, store, ...fieldContext } = _useFieldContext();
 
   const errors = useStore(store, (state) => state.meta.errors);
-  if (!fieldContext) {
-    throw new Error("useFieldContext should be used within <FormItem>");
-  }
 
   return {
     id,
@@ -99,7 +74,7 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
       id={formItemId}
       aria-describedby={
         !errors.length
-          ? `${formDescriptionId}`
+          ? formDescriptionId
           : `${formDescriptionId} ${formMessageId}`
       }
       aria-invalid={!!errors.length}
@@ -140,14 +115,4 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
-export {
-  useAppForm,
-  useFormContext,
-  useFieldContext,
-  withForm,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-};
+export { FormControl, FormDescription, FormItem, FormLabel, FormMessage };

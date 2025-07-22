@@ -13,6 +13,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
 
 /// @title ATKVault - A multi-signature wallet with role-based access control
+/// @author SettleMint
 /// @notice This contract allows multiple signers to propose, confirm, and execute transactions
 /// @dev Implements OpenZeppelin's AccessControl, ERC2771Context, Pausable, and ReentrancyGuard
 /// @custom:security-contact support@settlemint.com
@@ -22,7 +23,9 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
 
     /// @notice Role identifier for signers who can submit and confirm transactions
     bytes32 public constant SIGNER_ROLE = keccak256("SIGNER_ROLE");
+    /// @notice Role identifier for emergency operations (pause/unpause)
     bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
+    /// @notice Role identifier for governance operations (changing requirements, setting onchain ID)
     bytes32 public constant GOVERNANCE_ROLE = keccak256("GOVERNANCE_ROLE");
 
     /// @notice Emitted when ETH is deposited to the vault
@@ -139,6 +142,7 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     error InvalidOnchainId();
 
     /// @notice Emitted when the onchainId is set
+    /// @param onchainId The address of the new OnchainID (IIdentity contract)
     event OnchainIdSet(address indexed onchainId);
 
     /// @notice Error thrown when an invalid requirement is set
@@ -511,7 +515,15 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
         }
     }
 
-    /// @dev Helper function to process a single transaction in a batch
+    /// @notice Helper function to process a single transaction in a batch
+    /// @dev Combines selector and arguments, stores transaction, emits event, and confirms it
+    /// @param target Contract address to call
+    /// @param value Amount of ETH to send with the call
+    /// @param selector Function selector (first 4 bytes of the function signature)
+    /// @param abiEncodedArguments ABI-encoded arguments for the function call
+    /// @param comment Description of the transaction
+    /// @param sender Address of the signer who submitted the transaction
+    /// @return txIndex Index of the created transaction
     function _processBatchTransaction(
         address target,
         uint256 value,
