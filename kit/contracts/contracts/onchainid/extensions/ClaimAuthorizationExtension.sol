@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { IClaimAuthorizer } from "./IClaimAuthorizer.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
+import { ERC734KeyPurposes } from "../ERC734KeyPurposes.sol";
 
 /// @title ClaimAuthorizationExtension
 /// @author SettleMint Tokenization Services
@@ -163,11 +164,11 @@ contract ClaimAuthorizationExtension {
         }
 
         // If the issuer is a contract, check if it supports ERC734 (Key Holder)
-        // If it does, check if the caller has CLAIM_SIGNER_KEY_PURPOSE
+        // If it does, check if the caller has ACTION_KEY_PURPOSE
         try IERC165(issuer).supportsInterface(type(IERC734).interfaceId) returns (bool supportsERC734) {
             if (supportsERC734) {
                 bytes32 callerKeyHash = keccak256(abi.encode(caller));
-                try IERC734(issuer).keyHasPurpose(callerKeyHash, 3) returns (bool hasClaimKey) {
+                try IERC734(issuer).keyHasPurpose(callerKeyHash, ERC734KeyPurposes.ACTION_KEY) returns (bool hasClaimKey) {
                     if (hasClaimKey) {
                         return true;
                     }
@@ -175,7 +176,7 @@ contract ClaimAuthorizationExtension {
                     // If the call fails, continue to check management key
                 }
 
-                try IERC734(issuer).keyHasPurpose(callerKeyHash, 1) returns (bool hasManagementKey) {
+                try IERC734(issuer).keyHasPurpose(callerKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY) returns (bool hasManagementKey) {
                     return hasManagementKey;
                 } catch {
                     // If the call fails, treat as unauthorized
