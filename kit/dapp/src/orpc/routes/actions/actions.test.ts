@@ -204,18 +204,12 @@ describe("Actions Schemas", () => {
   describe("ActionsListSchema", () => {
     it("should validate list parameters with all filters", () => {
       const validInput = {
-        offset: 0,
-        limit: 20,
-        orderBy: "createdAt",
-        orderDirection: "desc" as const,
         status: "PENDING" as const,
         target: "0x1234567890123456789012345678901234567890",
         requiredRole: "admin",
         name: "settlement",
       };
       const result = safeParse(ActionsListSchema, validInput);
-      expect(result.offset).toBe(0);
-      expect(result.limit).toBe(20);
       expect(result.status).toBe("PENDING");
       expect(result.target).toBe("0x1234567890123456789012345678901234567890");
       expect(result.requiredRole).toBe("admin");
@@ -223,26 +217,12 @@ describe("Actions Schemas", () => {
     });
 
     it("should work without optional filters", () => {
-      const minimalInput = {
-        offset: 10,
-        limit: 50,
-      };
+      const minimalInput = {};
       const result = safeParse(ActionsListSchema, minimalInput);
-      expect(result.offset).toBe(10);
-      expect(result.limit).toBe(50);
       expect(result.status).toBeUndefined();
       expect(result.target).toBeUndefined();
       expect(result.requiredRole).toBeUndefined();
       expect(result.name).toBeUndefined();
-    });
-
-    it("should apply defaults when no params provided", () => {
-      const emptyInput = {};
-      const result = safeParse(ActionsListSchema, emptyInput);
-      expect(result.offset).toBe(0);
-      expect(result.limit).toBeUndefined();
-      expect(result.orderDirection).toBe("asc");
-      expect(result.orderBy).toBe("id");
     });
 
     it("should reject invalid status filter", () => {
@@ -337,59 +317,16 @@ describe("Actions Schemas", () => {
     };
 
     it("should validate ActionsListResponseSchema", () => {
-      const validResponse = {
-        data: [mockAction],
-        total: 1,
-        offset: 0,
-        limit: 20,
-      };
+      const validResponse = [mockAction];
       const result = safeParse(ActionsListResponseSchema, validResponse);
-      expect(result.data).toHaveLength(1);
-      expect(result.total).toBe(1);
-      expect(result.offset).toBe(0);
-      expect(result.limit).toBe(20);
+      expect(result).toHaveLength(1);
+      expect(result[0]?.id).toBe(mockAction.id);
     });
 
     it("should validate ActionsListResponseSchema with empty data", () => {
-      const emptyResponse = {
-        data: [],
-        total: 0,
-        offset: 0,
-        limit: 20,
-      };
+      const emptyResponse: (typeof mockAction)[] = [];
       const result = safeParse(ActionsListResponseSchema, emptyResponse);
-      expect(result.data).toHaveLength(0);
-      expect(result.total).toBe(0);
-    });
-
-    it("should validate ActionsListResponseSchema without limit", () => {
-      const noLimitResponse = {
-        data: [mockAction],
-        total: 1,
-        offset: 0,
-      };
-      const result = safeParse(ActionsListResponseSchema, noLimitResponse);
-      expect(result.limit).toBeUndefined();
-    });
-
-    it("should reject negative total or offset", () => {
-      const negativeTotalResponse = {
-        data: [],
-        total: -1,
-        offset: 0,
-      };
-      expect(() =>
-        safeParse(ActionsListResponseSchema, negativeTotalResponse)
-      ).toThrow();
-
-      const negativeOffsetResponse = {
-        data: [],
-        total: 0,
-        offset: -1,
-      };
-      expect(() =>
-        safeParse(ActionsListResponseSchema, negativeOffsetResponse)
-      ).toThrow();
+      expect(result).toHaveLength(0);
     });
 
     it("should validate ActionsReadResponseSchema", () => {
@@ -480,20 +417,10 @@ describe("Actions Schemas", () => {
       expect(result.identifier).toBe(longString);
     });
 
-    it("should handle boundary pagination values", () => {
-      const boundaryValues = [
-        { offset: 0, limit: 1 }, // Minimum values
-        { offset: 999999, limit: 1000 }, // Large values
-        { offset: 0 }, // No limit
-      ];
-
-      for (const values of boundaryValues) {
-        const result = safeParse(ActionsListSchema, values);
-        expect(result.offset).toBe(values.offset);
-        if (values.limit) {
-          expect(result.limit).toBe(values.limit);
-        }
-      }
+    it("should handle empty filters", () => {
+      const emptyFilters = {};
+      const result = safeParse(ActionsListSchema, emptyFilters);
+      expect(result).toEqual({});
     });
   });
 });

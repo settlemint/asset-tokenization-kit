@@ -7,12 +7,8 @@ import {
   type ActionsListResponse,
 } from "./actions.list.schema";
 
-// Configuration constants
-const MAX_ACTIONS_PER_REQUEST = 1000;
-const DEFAULT_PAGE_SIZE = 10;
-
 /**
- * GraphQL query for retrieving actions from TheGraph.
+ * GraphQL query for retrieving all actions from TheGraph.
  *
  * Actions represent time-bound, executable tasks that users can perform on assets.
  * Each action has specific executors (authorized addresses), timing constraints,
@@ -20,8 +16,6 @@ const DEFAULT_PAGE_SIZE = 10;
  * accessible to the authenticated user.
  *
  * This query supports:
- * - Paginated retrieval using skip/first parameters
- * - Flexible sorting by any Action field (createdAt, activeAt, etc.)
  * - Filtering by status, target address, required role, and name
  * - User-scoped results (only actions the user can execute)
  *
@@ -30,14 +24,8 @@ const DEFAULT_PAGE_SIZE = 10;
  * Actions are automatically filtered by the user's address in the executors list.
  */
 const LIST_ACTIONS_QUERY = theGraphGraphql(`
-  query ListActionsQuery($skip: Int!, $first: Int!, $orderBy: Action_orderBy, $orderDirection: OrderDirection, $where: Action_filter) {
-    actions(
-        where: $where
-        skip: $skip
-        first: $first
-        orderBy: $orderBy
-        orderDirection: $orderDirection
-      ) {
+  query ListActionsQuery($where: Action_filter) {
+    actions(where: $where) {
         id
         name
         target
@@ -59,24 +47,9 @@ const LIST_ACTIONS_QUERY = theGraphGraphql(`
   `);
 
 /**
- * GraphQL query for counting total actions matching the filter.
- * Used to provide accurate pagination metadata.
- *
- * Note: This query fetches all matching actions to count them accurately.
- * For production systems with very large datasets, consider implementing a dedicated
- * count field in the subgraph schema for better performance.
- */
-const COUNT_ACTIONS_QUERY = theGraphGraphql(`
-  query CountActionsQuery($where: Action_filter) {
-    actions(where: $where) {
-      id
-    }
-  }`);
-
-/**
  * Actions listing route handler.
  *
- * Retrieves a paginated list of actions accessible to the authenticated user.
+ * Retrieves all actions accessible to the authenticated user.
  * Actions are automatically filtered to only include those where the user is
  * listed as an authorized executor. Additional filtering is available by status,
  * target address, required role, and action name.
@@ -84,9 +57,9 @@ const COUNT_ACTIONS_QUERY = theGraphGraphql(`
  * Authentication: Required (uses authenticated router)
  * Method: GET /actions/list
  *
- * @param input - List parameters including pagination, sorting, and filtering
+ * @param input - Filter parameters
  * @param context - Request context with TheGraph client and authenticated user
- * @returns Promise<ActionsListResponse> - Paginated list of user's actions
+ * @returns Promise<ActionsListResponse> - List of user's actions
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws INTERNAL_SERVER_ERROR - If TheGraph query fails
  *
@@ -100,12 +73,6 @@ const COUNT_ACTIONS_QUERY = theGraphGraphql(`
  * // Get actions targeting a specific address
  * const tokenActions = await orpc.actions.list.query({
  *   target: '0x1234567890123456789012345678901234567890'
- * });
- *
- * // Get second page of actions (20 per page)
- * const page2 = await orpc.actions.list.query({
- *   offset: 20,
- *   limit: 20
  * });
  * ```
  *
@@ -137,35 +104,13 @@ export const list = authRouter.actions.list
       where.name_contains_nocase = input.name;
     }
 
-    // Execute both queries in parallel for performance
-    const [response, countResponse] = await Promise.all([
-      // Get paginated data
-      context.theGraphClient.query(LIST_ACTIONS_QUERY, {
-        input: {
-          skip: input.offset,
-          first: input.limit
-            ? Math.min(input.limit, MAX_ACTIONS_PER_REQUEST)
-            : DEFAULT_PAGE_SIZE,
-          orderBy: input.orderBy,
-          orderDirection: input.orderDirection,
-          where,
-        },
-        output: ActionsResponseSchema,
-        error: "Failed to list actions",
-      }),
-      // Get total count for pagination metadata
-      context.theGraphClient.query(COUNT_ACTIONS_QUERY, {
-        input: { where },
-        output: ActionsResponseSchema,
-        error: "Failed to count actions",
-      }),
-    ]);
+    // Execute query
+    const response = await context.theGraphClient.query(LIST_ACTIONS_QUERY, {
+      input: { where },
+      output: ActionsResponseSchema,
+      error: "Failed to list actions",
+    });
 
-    // Return paginated response with accurate total count
-    return {
-      data: response.actions,
-      total: countResponse.actions.length, // Actual total count across all pages
-      offset: input.offset,
-      limit: input.limit,
-    };
+    // Return simple list response
+    return response.actions;
   });

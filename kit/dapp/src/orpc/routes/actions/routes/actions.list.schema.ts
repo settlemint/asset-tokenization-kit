@@ -1,5 +1,4 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
-import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { z } from "zod";
 
 /**
@@ -97,11 +96,11 @@ export const ActionsResponseSchema = z.object({
 /**
  * Input schema for actions listing queries.
  *
- * Extends the base ListSchema with actions-specific filtering parameters.
+ * Contains actions-specific filtering parameters.
  * Note that user filtering is handled automatically server-side - only actions
  * accessible to the authenticated user are returned.
  */
-export const ActionsListSchema = ListSchema.extend({
+export const ActionsListSchema = z.object({
   /**
    * Filter by action status.
    *
@@ -145,30 +144,9 @@ export const ActionsListSchema = ListSchema.extend({
 /**
  * Response schema for the actions list endpoint.
  *
- * Returns a paginated list of actions with metadata about the result set.
- * The data array contains the actual action objects.
+ * Returns a simple array of actions matching the query criteria.
  */
-export const ActionsListResponseSchema = z.object({
-  data: ActionsListDataSchema.describe(
-    "Array of actions matching the query criteria"
-  ),
-  total: z
-    .number()
-    .int()
-    .nonnegative()
-    .describe("Total number of actions available (before pagination)"),
-  offset: z
-    .number()
-    .int()
-    .nonnegative()
-    .describe("The offset used for this query"),
-  limit: z
-    .number()
-    .int()
-    .positive()
-    .optional()
-    .describe("The limit used for this query"),
-});
+export const ActionsListResponseSchema = ActionsListDataSchema;
 
 // Type exports for enhanced TypeScript integration
 export type Action = z.infer<typeof ActionSchema>;
