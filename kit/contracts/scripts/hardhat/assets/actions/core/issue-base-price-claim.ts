@@ -1,4 +1,4 @@
-import { claimIssuer, owner } from "../../../constants/actors";
+import { claimIssuer } from "../../../constants/actors";
 import {
   ATK_BASE_CURRENCY_CODE,
   ATK_BASE_CURRENCY_DECIMALS,
@@ -37,12 +37,11 @@ export const issueBasePriceClaim = async (
     encodedBasePriceData
   );
 
-  const tokenIdentityContract = owner.getContractInstance({
+  const claimIssuerIdentity = await claimIssuer.getIdentity();
+  const tokenIdentityContract = claimIssuer.getContractInstance({
     address: asset.identity,
     abi: ATKContracts.contractIdentity,
   });
-
-  const claimIssuerIdentity = await claimIssuer.getIdentity();
 
   const transactionHash = await withDecodedRevertReason(() =>
     tokenIdentityContract.write.addClaim([

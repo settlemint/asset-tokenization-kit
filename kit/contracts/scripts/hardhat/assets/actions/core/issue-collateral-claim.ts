@@ -1,4 +1,4 @@
-import { claimIssuer, owner } from "../../../constants/actors";
+import { claimIssuer } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
 
 import { KeyType } from "../../../constants/key-types";
@@ -51,14 +51,15 @@ export const issueCollateralClaim = async (
     encodedCollateralData
   );
 
+  const claimIssuerIdentityAddress = await claimIssuer.getIdentity();
+
   // 3. Get an instance of the token's identity contract, interacted with by the 'owner' (assumed token owner)
-  const tokenIdentityContract = owner.getContractInstance({
+  const tokenIdentityContract = claimIssuer.getContractInstance({
     address: asset.identity!,
     abi: ATKContracts.contractIdentity,
   });
 
   // 4. Get the identity address of the claim issuer
-  const claimIssuerIdentityAddress = await claimIssuer.getIdentity();
 
   // 5. The token owner adds the claim (signed by the claimIssuer) to the token's identity contract
   // Corresponds to clientIdentity.addClaim(...) in Solidity, called by the token owner

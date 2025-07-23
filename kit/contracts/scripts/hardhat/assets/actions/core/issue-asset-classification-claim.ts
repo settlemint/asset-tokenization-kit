@@ -1,4 +1,4 @@
-import { claimIssuer, owner } from "../../../constants/actors";
+import { claimIssuer } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
 
 import { KeyType } from "../../../constants/key-types";
@@ -38,12 +38,12 @@ export const issueAssetClassificationClaim = async (
     encodedAssetClassificationData
   );
 
-  const tokenIdentityContract = owner.getContractInstance({
+  const claimIssuerIdentityAddress = await claimIssuer.getIdentity();
+
+  const tokenIdentityContract = claimIssuer.getContractInstance({
     address: asset.identity,
     abi: ATKContracts.contractIdentity,
   });
-
-  const claimIssuerIdentityAddress = await claimIssuer.getIdentity();
 
   const transactionHash = await withDecodedRevertReason(() =>
     tokenIdentityContract.write.addClaim([

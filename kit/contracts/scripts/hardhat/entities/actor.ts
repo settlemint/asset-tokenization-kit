@@ -76,8 +76,6 @@ export class Actor {
    * @throws Error if the wallet client cannot be initialized.
    */
   async initialize(): Promise<void> {
-    console.log(`[${this.name}] Address: ${this.address}`);
-
     const wallets = await hre.viem.getWalletClients();
 
     if (!wallets[this.accountIndex]) {
@@ -85,6 +83,8 @@ export class Actor {
     }
     this.walletClient = wallets[this.accountIndex];
     this._address = wallets[this.accountIndex].account.address;
+
+    console.log(`[${this.name}] Address: ${this.address}`);
 
     this.initialized = true;
   }
