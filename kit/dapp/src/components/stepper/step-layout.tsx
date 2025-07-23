@@ -31,8 +31,8 @@ export function StepLayout<StepId, GroupId>({
   const allSteps = useMemo(() => flattenSteps(stepsOrGroups), [stepsOrGroups]);
 
   return (
-    <div className={cn("step-layout space-y-4", className)}>
-      <div className="space-y-2">
+    <div className={cn("step-layout flex gap-6", className)}>
+      <div className="flex-shrink-0 w-80 space-y-2">
         {stepsOrGroups.map((item) => {
           if (isStepGroup(item)) {
             return (
@@ -60,10 +60,12 @@ export function StepLayout<StepId, GroupId>({
         })}
       </div>
 
-      {children({
-        currentStep,
-        nextStep: getNextStep(allSteps, currentStep),
-      })}
+      <div className="flex-1 min-w-0">
+        {children({
+          currentStep,
+          nextStep: getNextStep(allSteps, currentStep),
+        })}
+      </div>
     </div>
   );
 }

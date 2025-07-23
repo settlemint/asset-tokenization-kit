@@ -4,6 +4,11 @@ import {
 } from "@/components/asset-designer/asset-basics/common";
 import type { AssetDesignerFormInputData } from "@/components/asset-designer/shared-form";
 import { isRequiredField } from "@/components/asset-designer/shared-form";
+import {
+  FormStep,
+  FormStepContent,
+  FormStepSubmit,
+} from "@/components/form/multi-step/form-step";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
@@ -24,33 +29,37 @@ export const BondBasics = withForm({
     const { t } = useTranslation(["asset-designer"]);
 
     return (
-      <>
-        <CommonFields form={form} />
-        <form.AppField
-          name="cap"
-          children={(field) => (
-            <field.BigIntField
-              label={t("form.fields.cap.label")}
-              required={isRequiredField("cap")}
-            />
-          )}
-        />
-        <form.AppField
-          name="faceValue"
-          children={(field) => (
-            <field.BigIntField
-              label={t("form.fields.faceValue.label")}
-              required={isRequiredField("faceValue")}
-            />
-          )}
-        />
-        <form.StepSubmitButton
-          label="Next"
-          onStepSubmit={onStepSubmit}
-          validate={bondFields}
-          checkRequiredFn={isRequiredField}
-        />
-      </>
+      <FormStep>
+        <FormStepContent>
+          <CommonFields form={form} />
+          <form.AppField
+            name="cap"
+            children={(field) => (
+              <field.BigIntField
+                label={t("form.fields.cap.label")}
+                required={isRequiredField("cap")}
+              />
+            )}
+          />
+          <form.AppField
+            name="faceValue"
+            children={(field) => (
+              <field.BigIntField
+                label={t("form.fields.faceValue.label")}
+                required={isRequiredField("faceValue")}
+              />
+            )}
+          />
+        </FormStepContent>
+        <FormStepSubmit>
+          <form.StepSubmitButton
+            label="Next"
+            onStepSubmit={onStepSubmit}
+            validate={bondFields}
+            checkRequiredFn={isRequiredField}
+          />
+        </FormStepSubmit>
+      </FormStep>
     );
   },
 });
