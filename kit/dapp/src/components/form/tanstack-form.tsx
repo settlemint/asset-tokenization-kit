@@ -57,7 +57,7 @@ function FormLabel({
     <Label
       data-slot="form-label"
       data-error={!!errors.length}
-      className={cn("data-[error=true]:text-destructive", className)}
+      className={className}
       htmlFor={formItemId}
       {...props}
     />
@@ -97,11 +97,12 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 }
 
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
-  const { errors, formMessageId } = useFieldContext();
+  const { errors, formMessageId, getMeta } = useFieldContext();
+  const meta = getMeta();
   const body = errors.length
     ? String(errors.at(0)?.message ?? "")
     : props.children;
-  if (!body) return null;
+  if (!body || !meta.isTouched) return null;
 
   return (
     <p
