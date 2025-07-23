@@ -12,6 +12,8 @@
     "reset": "orb delete k8s --force && orb start k8s",
     "dependencies": "bun run tools/dependencies.ts",
     "artifacts": "bun run tools/copy-artifacts.ts",
+    "artifacts:compress": "bun run tools/compress-files.ts",
+    "artifacts:all": "bun run artifacts && bun run artifacts:compress",
     "xlint": "ct lint --chart-dirs . --check-version-increment=false --target-branch main --all",
     "compile": "helm template atk --output-dir dist --include-crds",
     "package:harbor": "bun run tools/package-harbor.ts",

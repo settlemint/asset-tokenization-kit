@@ -1,0 +1,16 @@
+{{- if .Files.Glob "abis/*.json.gz" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.fullname" . }}-abis
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/component: abis-data
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" . ) | nindent 4 }}
+  {{- end }}
+binaryData:
+{{- range $path, $_ := .Files.Glob "abis/*.json.gz" }}
+  {{ base $path }}: {{ $.Files.Get $path | b64enc }}
+{{- end }}
+{{- end }}

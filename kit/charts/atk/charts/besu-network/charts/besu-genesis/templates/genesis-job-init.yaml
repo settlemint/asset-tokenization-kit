@@ -14,8 +14,11 @@ metadata:
     app.kubernetes.io/release: {{ .Release.Name }}
     app.kubernetes.io/managed-by: helm
   namespace: {{ .Release.Namespace }}
-{{- if .Values.initJob.annotations }}
   annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+{{- if .Values.initJob.annotations }}
 {{- toYaml .Values.initJob.annotations | nindent 4 }}
 {{- end}}
 spec:
@@ -36,17 +39,28 @@ spec:
       restartPolicy: Never
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "besu-genesis.serviceAccountName" . }}
+      initContainers:
+      {{- if .Files.Glob "files/genesis-output.json.gz" }}
+        - name: create-empty-contract-data
+          image: busybox:latest
+          command:  
+            - /bin/sh
+            - -c
+            - |
+              echo "Creating empty contract allocation file as placeholder..."
+              echo '{}' | gzip > /genesis-pvc/genesis-output.json.gz
+              echo "Empty contract data created (will be replaced by proper data in future)"
+              ls -la /genesis-pvc/
+          volumeMounts:
+            - name: genesis-pvc
+              mountPath: /genesis-pvc
+      {{- end }}
       volumes:
         - name: generated-config
           emptyDir: {}
         - name: genesis-pvc
           persistentVolumeClaim:
             claimName: besu-genesis-pvc
-        {{- if .Files.Glob "files/genesis-output.json" }}
-        - name: contracts-config
-          configMap:
-            name: contracts-genesis
-        {{- end }}
       containers:
         - name: generate-genesis
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -58,11 +72,7 @@ spec:
               mountPath: /generated-config
             - name: genesis-pvc
               mountPath: /genesis-pvc
-            {{- if .Files.Glob "files/genesis-output.json" }}
-            - name: contracts-config
-              mountPath: /contracts
-              readOnly: true
-            {{- end }}
+            # Contracts data is now read from PVC
           command:
             - /bin/bash
             - -c
@@ -149,7 +159,18 @@ spec:
 
               # Merge contract allocations from genesis-output.json
               echo "Merging contract allocations..."
-              CONTRACT_ALLOC_FILE="/contracts/genesis-output.json"
+              CONTRACT_ALLOC_COMPRESSED="/genesis-pvc/genesis-output.json.gz"
+              CONTRACT_ALLOC_FILE="/tmp/genesis-output.json"
+              
+              # Decompress the file if it exists (loaded by external data job)
+              if [ -f "$CONTRACT_ALLOC_COMPRESSED" ]; then
+                echo "Decompressing contract allocations..."
+                gunzip -c "$CONTRACT_ALLOC_COMPRESSED" > "$CONTRACT_ALLOC_FILE"
+                echo "Decompression complete"
+              else
+                echo "Warning: Contract allocations file not found - may be loaded by data job"
+              fi
+              
               if [ -f "$CONTRACT_ALLOC_FILE" ]; then
                 echo "Genesis file allocations:"
                 jq '.alloc' "$GENESIS_FILE"
@@ -161,7 +182,7 @@ spec:
                 jq '.alloc' "$GENESIS_FILE"
                 echo "Contract allocations merged successfully"
               else
-                echo "Warning: Contract allocations file not found at $CONTRACT_ALLOC_FILE"
+                echo "Warning: Contract allocations file not found - genesis will use default allocations"
               fi
 
               safeWriteGenesisConfigmap $FOLDER_PATH

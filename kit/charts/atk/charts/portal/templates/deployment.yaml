@@ -52,8 +52,33 @@ spec:
       {{- if .Values.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
+      initContainers:
+      {{- if .Files.Glob "abis/*.json.gz" }}
+        - name: decompress-abis
+          image: busybox:latest
+          command:
+            - sh
+            - -c
+            - |
+              echo "Decompressing ABI files from ConfigMap..."
+              for file in /compressed-abis/*.json.gz; do
+                if [ -f "$file" ]; then
+                  filename=$(basename "$file" .gz)
+                  gunzip -c "$file" > "/abis/$filename"
+                  echo "Decompressed $filename"
+                fi
+              done
+              echo "All ABI files processed"
+              ls -la /abis/
+          volumeMounts:
+            - name: abis-configmap
+              mountPath: /compressed-abis
+              readOnly: true
+            - name: abis
+              mountPath: /abis
+      {{- end }}
       {{- if .Values.initContainers }}
-      initContainers: {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
       {{- end }}
       containers:
         - name: portal
@@ -100,21 +125,18 @@ spec:
           resources: {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
           volumeMounts:
-            {{- range $path, $_ := .Files.Glob "abis/*.json" }}
-            {{- $filename := base $path }}
-            - name: abi-{{ $filename | trimSuffix ".json" | lower | replace "_" "-" }}
-              mountPath: /abis/{{ $filename }}
-              subPath: {{ $filename }}
-            {{- end }}
+            - name: abis
+              mountPath: /abis
             {{- if .Values.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
       volumes:
-        {{- range $path, $_ := .Files.Glob "abis/*.json" }}
-        {{- $filename := base $path }}
-        - name: abi-{{ $filename | trimSuffix ".json" | lower | replace "_" "-" }}
+        - name: abis
+          emptyDir: {}
+        {{- if .Files.Glob "abis/*.json.gz" }}
+        - name: abis-configmap
           configMap:
-            name: {{ include "common.names.fullname" $ }}-{{ $filename | trimSuffix ".json" | lower | replace "_" "-" }}
+            name: {{ include "common.names.fullname" . }}-abis
         {{- end }}
         {{- if .Values.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}

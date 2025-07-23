@@ -389,6 +389,56 @@ helm template atk ./atk --debug
 helm install atk ./atk --dry-run
 ```
 
+## Helm Chart Testing on OrbStack
+
+When making changes to Helm charts, always test them on the OrbStack cluster before committing:
+
+### Chart Change Testing Workflow
+
+```bash
+# 1. After modifying charts, update dependencies
+cd atk/charts/support && helm dependency update
+cd ../.. 
+
+# 2. Test chart rendering and validation
+helm lint atk
+helm template atk ./atk --debug > /tmp/atk-template.yaml
+
+# 3. Deploy to OrbStack for integration testing
+bun run helm:secrets          # Inject secrets from 1Password
+bun run artifacts             # Copy contract artifacts
+bun run helm:subgraph        # Update subgraph hash
+bun run helm                  # Install/upgrade ATK
+
+# 4. Validate services are working
+kubectl get pods -n atk
+kubectl get services -n atk
+
+# 5. Test specific service functionality
+# For Redis changes:
+kubectl exec -n atk redis-0 -- redis-cli ping
+kubectl exec -n atk redis-0 -- redis-cli set test-key "hello"
+kubectl exec -n atk redis-0 -- redis-cli get test-key
+```
+
+### Why OrbStack Testing is Critical
+
+- **Dependency Verification**: Ensures chart dependencies resolve correctly
+- **Template Validation**: Catches Kubernetes YAML syntax and logic errors
+- **Integration Testing**: Validates services work together (e.g., Redis with eRPC caching)
+- **Resource Validation**: Confirms resource limits and storage work properly
+- **Service Discovery**: Tests Kubernetes DNS and service connectivity
+- **Configuration Validation**: Ensures values.yaml changes take effect
+
+### Common Issues Caught by OrbStack Testing
+
+1. **Missing Dependencies**: Chart dependencies not updated after changes
+2. **Template Errors**: Invalid Kubernetes resources or missing values
+3. **Service Connectivity**: Services can't reach each other due to naming changes
+4. **Storage Issues**: PVC creation failures or mount problems
+5. **Resource Limits**: Insufficient resources causing pod failures
+6. **Configuration Drift**: Values not properly applied to deployments
+
 ## Important Notes
 
 1. **Chart Versions**: Follow semantic versioning
@@ -396,3 +446,4 @@ helm install atk ./atk --dry-run
 3. **Templates**: Use consistent naming and labels
 4. **Values**: Provide sensible defaults
 5. **Documentation**: Update README for each chart
+6. **OrbStack Testing**: Always test chart changes on OrbStack before committing
