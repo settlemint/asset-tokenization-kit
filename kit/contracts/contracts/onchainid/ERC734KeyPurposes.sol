@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 /**
  * @title ERC734KeyPurposes
+ * @author SettleMint
  * @notice Library defining key purposes used in ERC-734 identity contracts
  * @dev Constants representing the intended use cases for cryptographic keys in identity management
  */

@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 /**
  * @title ERC734KeyTypes
+ * @author SettleMint
  * @notice Library defining key types used in ERC-734 identity contracts
  * @dev Constants representing cryptographic key types for identity management
  */
