@@ -25,6 +25,7 @@ import { addDays, addYears } from "date-fns";
 import { Building2, Coins, PiggyBank, TrendingUp, Wallet } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { zeroAddress } from "viem";
 import type { z } from "zod";
 
 const logger = createLogger();
@@ -314,9 +315,7 @@ function AssetDesignerWizardComponent({
               type: "bond",
               cap: data.cap ?? "1000000",
               maturityDate: data.maturityDate ?? new Date(),
-              underlyingAsset:
-                data.underlyingAsset ??
-                "0x0000000000000000000000000000000000000000",
+              underlyingAsset: data.underlyingAsset ?? zeroAddress,
               faceValue: data.faceValue ?? "1000000",
             });
           }

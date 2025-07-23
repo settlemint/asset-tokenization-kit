@@ -1,3 +1,5 @@
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import {
   InputOTP,
@@ -5,31 +7,19 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useSession } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth/auth.client";
 import { twoFactorCode } from "@/lib/zod/validators/two-factor-code";
-import { orpc } from "@/orpc/orpc-client";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const logger = createLogger({ level: "debug" });
-
-interface OtpSetupComponentProps {
-  onSuccess: () => void;
-  onBack: () => void;
-}
-
-export function OtpSetupComponent({
-  onSuccess,
-  onBack,
-}: OtpSetupComponentProps) {
+export function OtpSetupComponent({ closeModal }: { closeModal: () => void }) {
+  const { t } = useTranslation("onboarding");
+  const { refreshUserState } = useOnboardingNavigation();
   const [otpUri, setOtpUri] = useState<string | null>(null);
   const [otpSetupError, setOtpSetupError] = useState(false);
-  const queryClient = useQueryClient();
-  const { refetch } = useSession();
 
   const { mutate: enableTwoFactor } = useMutation({
     mutationFn: async () =>
@@ -38,26 +28,20 @@ export function OtpSetupComponent({
         onboarding: true,
       }),
     onSuccess: async (data) => {
-      await authClient.getSession({
-        query: {
-          disableCookieCache: true,
-        },
-      });
-      await refetch();
-      await queryClient.refetchQueries(orpc.user.me.queryOptions());
+      await refreshUserState();
 
       // Extract OTP URI from response
       if (data.data?.totpURI) {
         setOtpUri(data.data.totpURI);
-        toast.success("OTP setup initiated");
+        toast.success(t("wallet-security.otp.setup-initiated"));
       } else {
         setOtpSetupError(true);
-        toast.error("Failed to get OTP setup data");
+        toast.error(t("wallet-security.otp.setup-failed"));
       }
     },
     onError: (error: Error) => {
       setOtpSetupError(true);
-      toast.error(error.message || "Failed to setup OTP");
+      toast.error(error.message || t("wallet-security.otp.setup-error"));
     },
   });
 
@@ -67,21 +51,12 @@ export function OtpSetupComponent({
         code,
       }),
     onSuccess: async () => {
-      await authClient.getSession({
-        query: {
-          disableCookieCache: true,
-        },
-      });
-      await refetch();
-      await queryClient.refetchQueries(orpc.user.me.queryOptions());
-
-      toast.success("OTP verified successfully");
-
-      onSuccess();
+      await refreshUserState();
+      toast.success(t("wallet-security.otp.verified-success"));
+      closeModal();
     },
     onError: (error: Error) => {
-      logger.error("OTP verification error:", error);
-      toast.error(error.message || "Invalid verification code");
+      toast.error(error.message || t("wallet-security.otp.invalid-code"));
     },
   });
 
@@ -98,7 +73,7 @@ export function OtpSetupComponent({
             fields: {
               otpCode:
                 otpResult.error.issues[0]?.message ??
-                "Invalid verification code",
+                t("wallet-security.otp.invalid-code"),
             },
           };
         }
@@ -136,18 +111,18 @@ export function OtpSetupComponent({
       <div className="max-w-md mx-auto space-y-6 text-center">
         <div className="space-y-2">
           <h3 className="text-lg font-semibold text-destructive">
-            Setup Failed
+            {t("wallet-security.otp.setup-failed-title")}
           </h3>
           <p className="text-sm text-muted-foreground">
-            Failed to setup OTP authentication. Please try again.
+            {t("wallet-security.otp.setup-failed-description")}
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={onBack} className="flex-1">
-            Back
+          <Button variant="outline" onClick={closeModal} className="flex-1">
+            {t("wallet-security.otp.back")}
           </Button>
           <Button onClick={handleOtpRetry} className="flex-1">
-            Try Again
+            {t("wallet-security.otp.try-again")}
           </Button>
         </div>
       </div>
@@ -158,9 +133,11 @@ export function OtpSetupComponent({
     return (
       <div className="max-w-md mx-auto space-y-6 text-center">
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold">Setting up OTP...</h3>
+          <h3 className="text-lg font-semibold">
+            {t("wallet-security.otp.setting-up")}
+          </h3>
           <p className="text-sm text-muted-foreground">
-            Please wait while we generate your QR code.
+            {t("wallet-security.otp.setting-up-description")}
           </p>
         </div>
         <div className="animate-spin h-8 w-8 border-b-2 border-primary rounded-full mx-auto" />
@@ -169,106 +146,111 @@ export function OtpSetupComponent({
   }
 
   return (
-    <div className="max-w-md mx-auto space-y-6">
-      <div className="text-center space-y-2">
-        <h3 className="text-lg font-semibold">Set up Authenticator App</h3>
-        <p className="text-sm text-muted-foreground">
-          Scan this QR code with your authenticator app
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        {/* QR Code Container */}
-        <div className="bg-white p-4 rounded-lg border-2 border-dashed border-muted-foreground/25 text-center">
-          <div className="space-y-2">
-            <p className="text-xs text-muted-foreground">QR Code</p>
-            <div className="h-32 w-32 mx-auto bg-muted-foreground/10 rounded flex items-center justify-center">
-              <span className="text-xs text-muted-foreground">
-                Scan with your app
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Manual Entry Option */}
-        <details className="text-sm">
-          <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-            Can't scan? Enter manually
-          </summary>
-          <div className="mt-2 p-3 bg-muted rounded-md">
-            <p className="text-xs text-muted-foreground mb-1">
-              Manual entry key:
-            </p>
-            <code className="text-xs break-all">{otpUri || "Loading..."}</code>
-          </div>
-        </details>
-      </div>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          void form.handleSubmit();
-        }}
-      >
-        <div className="space-y-4">
-          <div className="text-center">
-            <label className="text-sm font-medium">
-              Enter the 6-digit code from your app
-            </label>
-          </div>
-          <form.Field name="otpCode">
-            {(field) => (
-              <div>
-                <div className="flex justify-center">
-                  <InputOTP
-                    maxLength={6}
-                    value={field.state.value}
-                    onChange={handleOtpCodeChange}
-                    disabled={isVerifyingOtp}
-                  >
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                    </InputOTPGroup>
-                    <InputOTPSeparator />
-                    <InputOTPGroup>
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                </div>
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive text-center mt-2">
-                    {field.state.meta.errors[0]}
-                  </p>
-                )}
-              </div>
-            )}
-          </form.Field>
-        </div>
-
+    <OnboardingStepLayout
+      title={t("wallet-security.otp.setup-title")}
+      description={t("wallet-security.otp.setup-description")}
+      actions={
         <div className="flex gap-3 pt-4">
           <Button
             type="button"
             variant="outline"
-            onClick={onBack}
+            onClick={closeModal}
             className="flex-1"
             disabled={isVerifyingOtp}
           >
-            Back
+            {t("wallet-security.otp.cancel")}
           </Button>
           <Button
             type="submit"
             disabled={isVerifyingOtp || form.state.values.otpCode.length !== 6}
             className="flex-1"
           >
-            {isVerifyingOtp ? "Verifying..." : "Verify Code"}
+            {isVerifyingOtp
+              ? t("wallet-security.otp.verifying")
+              : t("wallet-security.otp.verify-code")}
           </Button>
         </div>
-      </form>
-    </div>
+      }
+    >
+      <>
+        <div className="space-y-4">
+          {/* QR Code Container */}
+          <div className="bg-white p-4 rounded-lg border-2 border-dashed border-muted-foreground/25 text-center">
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                {t("wallet-security.otp.qr-code-label")}
+              </p>
+              <div className="h-32 w-32 mx-auto bg-muted-foreground/10 rounded flex items-center justify-center">
+                <span className="text-xs text-muted-foreground">
+                  {t("wallet-security.otp.scan-with-app")}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Manual Entry Option */}
+          <details className="text-sm">
+            <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+              {t("wallet-security.otp.manual-entry")}
+            </summary>
+            <div className="mt-2 p-3 bg-muted rounded-md">
+              <p className="text-xs text-muted-foreground mb-1">
+                {t("wallet-security.otp.manual-entry-key")}
+              </p>
+              <code className="text-xs break-all">
+                {otpUri || t("wallet-security.otp.loading")}
+              </code>
+            </div>
+          </details>
+        </div>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            void form.handleSubmit();
+          }}
+        >
+          <div className="space-y-4">
+            <div className="text-center">
+              <label className="text-sm font-medium">
+                {t("wallet-security.otp.enter-code")}
+              </label>
+            </div>
+            <form.Field name="otpCode">
+              {(field) => (
+                <div>
+                  <div className="flex justify-center">
+                    <InputOTP
+                      maxLength={6}
+                      value={field.state.value}
+                      onChange={handleOtpCodeChange}
+                      disabled={isVerifyingOtp}
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                      </InputOTPGroup>
+                      <InputOTPSeparator />
+                      <InputOTPGroup>
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+                  {field.state.meta.errors.length > 0 && (
+                    <p className="text-sm text-destructive text-center mt-2">
+                      {field.state.meta.errors[0]}
+                    </p>
+                  )}
+                </div>
+              )}
+            </form.Field>
+          </div>
+        </form>
+      </>
+    </OnboardingStepLayout>
   );
 }

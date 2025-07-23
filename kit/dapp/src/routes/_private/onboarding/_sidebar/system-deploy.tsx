@@ -1,28 +1,28 @@
-import { OnboardingStep } from "@/components/onboarding/state-machine";
-import { SystemBootstrapMain } from "@/components/onboarding/system/system-bootstrap-main";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { DeploymentDetails } from "@/components/onboarding/system/deployment-details";
+import { SystemDeploy } from "@/components/onboarding/system/system-deploy";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/system-deploy"
 )({
-  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemDeploy),
-  component: RouteComponent,
+  component: SystemDeployComponent,
 });
 
-function RouteComponent() {
-  const { navigateToStep, completeStepAndNavigate } = useOnboardingNavigation();
+function SystemDeployComponent() {
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
-  const onNext = () =>
-    void completeStepAndNavigate(OnboardingStep.systemDeploy);
-  const onPrevious = () =>
-    void navigateToStep(OnboardingStep.walletRecoveryCodes);
+  if (!user.onboardingState.system) {
+    return <SystemDeploy />;
+  }
 
-  return <SystemBootstrapMain onNext={onNext} onPrevious={onPrevious} />;
+  return <DeploymentDetails />;
 }

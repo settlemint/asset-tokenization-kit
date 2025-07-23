@@ -322,7 +322,8 @@ standards.
   option to transform data and minimize re-renders. Destructure only needed
   properties (avoid spread operator). Keep select functions stable (outside
   component or in useCallback). Never copy query data to local state - use
-  directly. Use invalidateQueries for mutations. Prefetch data in loaders for SSR
+  directly. Use invalidateQueries for mutations. Prefetch data in loaders for
+  SSR
 - **TanStack Router**: Use route loaders for data fetching (separates data logic
   from UI). Enable defaultPreload: 'intent' for automatic link preloading. Use
   selective state subscription (Route.useSearch({ select: s => s.param })) to
@@ -351,19 +352,30 @@ standards.
 - **Static Hoisting**: Move constants and pure helpers outside components when
   they don't depend on props/state. Use custom hooks for reusable stateful logic
 - **Pure Renders**: Avoid side-effects in render. Use effects for initialization
-- **Compiler Opt-Out**: Use "use no memo"; directive sparingly as last resort for
-  components that can't be refactored to satisfy compiler rules
+- **Compiler Opt-Out**: Use "use no memo"; directive sparingly as last resort
+  for components that can't be refactored to satisfy compiler rules
 - **Compiler Pitfalls**: Avoid manual memoization - let compiler handle it.
   Don't ignore opt-out warnings. Minimize Context use (prefer TanStack state).
-  Handle async boundaries with loading states. Periodically remove old workarounds
+  Handle async boundaries with loading states. Periodically remove old
+  workarounds
 - **Translations**: Organized into focused namespaces - use multiple namespaces
   in components as needed; use very specific translation namespaces for each
   component (e.g., "detail-grid" for the DetailGrid component, not "common");
   never pass around `t` from the translations hook, if you cannot get `t` into a
   function, you shouldn't use such a function
+- **Localization Guidelines**:
+  - The UI is in multiple languages. Always put translations of a component in
+    kit/dapp/locales/en/\*.json.
+  - Only english is required, the other translations should not be generated
+    automatically.
+  - If you see hardcoded translations in a component move them to a json
+    translation file
 - **Directives**: Since we use Tanstack Start, we do not need `use client;`
 - **Linting**: Never use eslint-disable comments, fix the issues for real
-- **Forms**: Use TanStack Form exclusively for all forms. Do NOT use react-hook-form or @hookform/resolvers/zod - they have been removed from the project. For form components, use the existing TanStack Form patterns found in the codebase
+- **Forms**: Use TanStack Form exclusively for all forms. Do NOT use
+  react-hook-form or @hookform/resolvers/zod - they have been removed from the
+  project. For form components, use the existing TanStack Form patterns found in
+  the codebase
 
 For comprehensive rules, refer to the ESLint configuration in .eslintrc files.
 Key principles include:
