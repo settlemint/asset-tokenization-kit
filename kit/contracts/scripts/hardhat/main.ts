@@ -96,6 +96,7 @@ async function main() {
     topicManager.getTopicId(ATKTopic.collateral),
     topicManager.getTopicId(ATKTopic.assetClassification),
     topicManager.getTopicId(ATKTopic.basePrice),
+    topicManager.getTopicId(ATKTopic.isin),
   ]);
 
   console.log("\n=== Verify the actors... ===\n");

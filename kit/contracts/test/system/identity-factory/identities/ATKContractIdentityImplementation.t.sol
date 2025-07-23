@@ -79,12 +79,12 @@ contract FailingClaimAuthorizer is IClaimAuthorizer, ERC165 {
 /// @title Mock claim issuer that can validate claims
 contract MockClaimIssuer is ERC165 {
     mapping(bytes32 => bool) public validClaims;
-    
+
     function setClaimValid(address identity, uint256 topic, bytes memory signature, bytes memory data, bool valid) external {
         bytes32 claimHash = keccak256(abi.encode(identity, topic, signature, data));
         validClaims[claimHash] = valid;
     }
-    
+
     function isClaimValid(
         IIdentity identity,
         uint256 topic,
@@ -94,7 +94,7 @@ contract MockClaimIssuer is ERC165 {
         bytes32 claimHash = keccak256(abi.encode(address(identity), topic, signature, data));
         return validClaims[claimHash];
     }
-    
+
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(IClaimIssuer).interfaceId || super.supportsInterface(interfaceId);
     }
@@ -136,9 +136,9 @@ contract ATKContractIdentityImplementationTest is Test {
         string uri
     );
     event ClaimRemoved(
-        bytes32 indexed claimId, 
-        uint256 indexed topic, 
-        uint256 scheme, 
+        bytes32 indexed claimId,
+        uint256 indexed topic,
+        uint256 scheme,
         address indexed issuer,
         bytes signature,
         bytes data,
@@ -180,7 +180,7 @@ contract ATKContractIdentityImplementationTest is Test {
 
     function testInitializeSuccess() public {
         MockContractWithIdentity newMockContract = new MockContractWithIdentity(identityOwner, claimManager);
-        
+
         address[] memory authorizers = new address[](2);
         authorizers[0] = address(claimAuthorizer1);
         authorizers[1] = address(claimAuthorizer2);
@@ -192,7 +192,7 @@ contract ATKContractIdentityImplementationTest is Test {
         );
 
         assertEq(IATKContractIdentity(address(newProxy)).contractAddress(), address(newMockContract));
-        
+
         address[] memory registeredAuthorizers = IATKContractIdentity(address(newProxy)).getClaimAuthorizationContracts();
         assertEq(registeredAuthorizers.length, 2);
         assertEq(registeredAuthorizers[0], address(claimAuthorizer1));
@@ -210,7 +210,7 @@ contract ATKContractIdentityImplementationTest is Test {
 
     function testInitializeWithInvalidContractFails() public {
         address invalidContract = makeAddr("invalidContract");
-        
+
         // Since the invalid contract doesn't implement IContractWithIdentity,
         // the initialize call should revert with InvalidContractAddress
         vm.expectRevert();
@@ -252,7 +252,7 @@ contract ATKContractIdentityImplementationTest is Test {
     function testAddClaimWithAuthorizationContract() public {
         // Setup: authorize the mockClaimIssuer as an issuer for the topic
         claimAuthorizer1.setAuthorization(address(mockClaimIssuer), CLAIM_TOPIC, true);
-        
+
         // Set up the mock claim issuer to validate this specific claim
         mockClaimIssuer.setClaimValid(address(proxy), CLAIM_TOPIC, CLAIM_SIGNATURE, CLAIM_DATA, true);
 
@@ -263,7 +263,7 @@ contract ATKContractIdentityImplementationTest is Test {
         );
 
         assertTrue(claimId != bytes32(0));
-        
+
         // Verify the claim
         (uint256 topic, , address issuer, , , ) = IERC735(address(proxy)).getClaim(claimId);
         assertEq(topic, CLAIM_TOPIC);
@@ -277,7 +277,7 @@ contract ATKContractIdentityImplementationTest is Test {
 
         // Only authorize in the second contract
         claimAuthorizer2.setAuthorization(address(mockClaimIssuer), CLAIM_TOPIC, true);
-        
+
         // Set up the mock claim issuer to validate this specific claim
         mockClaimIssuer.setClaimValid(address(proxy), CLAIM_TOPIC, CLAIM_SIGNATURE, CLAIM_DATA, true);
 
@@ -307,7 +307,7 @@ contract ATKContractIdentityImplementationTest is Test {
 
         // Authorize in the working authorizer
         claimAuthorizer1.setAuthorization(address(mockClaimIssuer), CLAIM_TOPIC, true);
-        
+
         // Set up the mock claim issuer to validate this specific claim
         mockClaimIssuer.setClaimValid(address(proxy), CLAIM_TOPIC, CLAIM_SIGNATURE, CLAIM_DATA, true);
 
