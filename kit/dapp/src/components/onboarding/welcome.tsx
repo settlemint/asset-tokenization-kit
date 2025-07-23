@@ -117,7 +117,7 @@ export function Welcome({ steps }: WelcomeProps) {
   return (
     <div
       style={{ background: "var(--sm-wizard-sidebar-gradient)" }}
-      className="flex flex-col h-full"
+      className="flex flex-col h-full rounded-xl shadow-lg"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-6 lg:px-12 xl:px-12">
