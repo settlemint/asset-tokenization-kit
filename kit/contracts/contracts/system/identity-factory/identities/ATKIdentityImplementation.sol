@@ -15,7 +15,7 @@ import { ERC735 } from "../../../onchainid/extensions/ERC735.sol";
 import { OnChainIdentity } from "../../../onchainid/extensions/OnChainIdentity.sol";
 import { OnChainIdentityWithRevocation } from "../../../onchainid/extensions/OnChainIdentityWithRevocation.sol";
 import { ClaimAuthorizationExtension } from "../../../onchainid/extensions/ClaimAuthorizationExtension.sol";
-import { ERC734KeyPurposes } from "@onchainid/contracts/extensions/ERC734KeyPurposes.sol";
+import { ERC734KeyPurposes } from "../../../onchainid/ERC734KeyPurposes.sol";
 
 /// @title ATK Identity Implementation Contract (Logic for Wallet Identities)
 /// @author SettleMint Tokenization Services

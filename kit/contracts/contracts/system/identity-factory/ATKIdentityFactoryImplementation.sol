@@ -17,8 +17,8 @@ import { IATKIdentity } from "./identities/IATKIdentity.sol";
 import { IATKContractIdentity } from "./identities/IATKContractIdentity.sol";
 import { IContractWithIdentity } from "./IContractWithIdentity.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
-import { ERC734KeyPurposes } from "@onchainid/contracts/extensions/ERC734KeyPurposes.sol";
-import { ERC734KeyTypes } from "@onchainid/contracts/extensions/ERC734KeyTypes.sol";
+import { ERC734KeyPurposes } from "../../onchainid/ERC734KeyPurposes.sol";
+import { ERC734KeyTypes } from "../../onchainid/ERC734KeyTypes.sol";
 
 // System imports
 import { InvalidSystemAddress } from "../ATKSystemErrors.sol"; // Assuming this is correctly placed
