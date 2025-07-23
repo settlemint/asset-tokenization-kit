@@ -50,6 +50,11 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
       }
       systemAddonRegistry {
         id
+        systemAddons {
+          id
+          name
+          typeId
+        }
       }
     }
   }
@@ -119,6 +124,13 @@ export const read = onboardedRouter.system.read
           systemAddonRegistry: z
             .object({
               id: z.string(),
+              systemAddons: z.array(
+                z.object({
+                  id: z.string(),
+                  name: z.string(),
+                  typeId: z.string(),
+                })
+              ),
             })
             .nullable(),
         })
@@ -177,6 +189,12 @@ export const read = onboardedRouter.system.read
           id: factory.id as EthereumAddress,
           name: factory.name,
           typeId: factory.typeId,
+        })) ?? [],
+      systemAddons:
+        result.system.systemAddonRegistry?.systemAddons.map((addon) => ({
+          id: addon.id as EthereumAddress,
+          name: addon.name,
+          typeId: addon.typeId,
         })) ?? [],
     };
 

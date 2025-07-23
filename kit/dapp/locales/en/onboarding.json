@@ -242,8 +242,43 @@
     }
   },
   "system-addons": {
-    "title": "Enable Addons",
-    "subtitle": "Enable additional features and integrations for your platform",
-    "description": "Platform addons configuration will be implemented here."
+    "addon-selection": {
+      "title": "Enable Addons",
+      "description": "Enable additional features and integrations for your platform",
+      "addon-types": {
+        "airdrops": {
+          "title": "Airdrops",
+          "description": "Enable airdrop functionality for your platform. This allows you to create airdrops for your assets."
+        },
+        "yield": {
+          "title": "Yield",
+          "description": "Enable yield functionality for your platform. This allows you to create yield-bearing assets like bonds and other fixed income products."
+        },
+        "xvp": {
+          "title": "XvP",
+          "description": "Enable XvP (Delivery vs Payment) functionality for your platform. This allows users to settle their positions using XvP instead of the default delivery vs payment mechanism."
+        }
+      },
+      "no-system": "System not found. Please deploy the system first.",
+      "deploying-toast": "Deploying addons...",
+      "deployed-toast": "Addons deployed successfully!",
+      "failed-toast": "Failed to deploy addons: ",
+      "what-are-addons": "What are addons?",
+      "addons-description": "Addons are additional features and integrations for your platform. They can be enabled or disabled here.",
+      "validation": {
+        "invalid": "Select at least one addon"
+      },
+      "select-all-addons": "Select all the addons you plan to enable",
+      "available-addons": "Available Addons",
+      "deploy-addons": "Deploy Addons",
+      "confirm-deployment-title": "Confirm Addon Deployment",
+      "confirm-deployment-description": "Please verify your identity to deploy the addons."
+    },
+    "addon-deployment": {
+      "title": "Addons Deployed",
+      "description": "Your addons are ready for use",
+      "addons-deployed-successfully": "Addons Deployed Successfully",
+      "deployed-addons": "Deployed Addons"
+    }
   }
 }

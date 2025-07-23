@@ -54,6 +54,26 @@ const TokenFactorySchema = z.object({
 });
 
 /**
+ * System addon information schema
+ */
+const SystemAddonSchema = z.object({
+  /**
+   * The addon contract address
+   */
+  id: z.string(),
+
+  /**
+   * The name of the addon
+   */
+  name: z.string(),
+
+  /**
+   * The type identifier of the addon
+   */
+  typeId: z.string(),
+});
+
+/**
  * Output schema for system read operations
  */
 export const SystemReadOutputSchema = z.object({
@@ -96,6 +116,11 @@ export const SystemReadOutputSchema = z.object({
    * List of token factories deployed by this system
    */
   tokenFactories: z.array(TokenFactorySchema),
+
+  /**
+   * List of system addons deployed by this system
+   */
+  systemAddons: z.array(SystemAddonSchema),
 });
 
 // Type exports

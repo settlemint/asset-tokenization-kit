@@ -1,5 +1,6 @@
+import type { OnboardingStep } from "@/components/onboarding/state-machine";
 import {
-  OnboardingStep,
+  onboardingSteps,
   updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
 import { useSession } from "@/hooks/use-auth";
@@ -9,6 +10,7 @@ import type { CurrentUser } from "@/orpc/routes/user/routes/user.me.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { useStore } from "@tanstack/react-store";
 import { useCallback } from "react";
 import { zeroAddress } from "viem";
 
@@ -18,6 +20,7 @@ export function useOnboardingNavigation() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { refetch, data: session } = useSession();
+  const steps = useStore(onboardingSteps);
 
   /**
    * Refreshes user data and updates the onboarding state machine
@@ -60,41 +63,16 @@ export function useOnboardingNavigation() {
   const completeStepAndNavigate = useCallback(
     async (currentStep: OnboardingStep, nextStep?: OnboardingStep) => {
       // Refresh state to ensure we have latest data
-      const updatedUser = await refreshUserState();
+      await refreshUserState();
 
       // Determine next step if not provided
-      // TODO: should we not use the state machine to determine the next step?
       if (!nextStep) {
-        switch (currentStep) {
-          case OnboardingStep.wallet:
-            nextStep = OnboardingStep.walletSecurity;
-            break;
-          case OnboardingStep.walletSecurity:
-            nextStep = OnboardingStep.walletRecoveryCodes;
-            break;
-          case OnboardingStep.walletRecoveryCodes:
-            nextStep = updatedUser.onboardingState.isAdmin
-              ? OnboardingStep.systemDeploy
-              : OnboardingStep.identity;
-            break;
-          case OnboardingStep.systemDeploy:
-            nextStep = OnboardingStep.systemSettings;
-            break;
-          case OnboardingStep.systemSettings:
-            nextStep = OnboardingStep.systemAssets;
-            break;
-          case OnboardingStep.systemAssets:
-            nextStep = OnboardingStep.systemAddons;
-            break;
-          case OnboardingStep.systemAddons:
-            nextStep = OnboardingStep.identity;
-            break;
-          case OnboardingStep.identity:
-            // Navigate to home - onboarding complete
-            await navigate({ to: "/" });
-            return;
-          default:
-            throw new Error(`Unknown step: ${currentStep}`);
+        const currentStepIndex = steps.findIndex(
+          (step) => step.step === currentStep
+        );
+        nextStep = steps[currentStepIndex + 1]?.step;
+        if (!nextStep) {
+          throw new Error(`Unknown step: ${currentStep}`);
         }
       }
 
@@ -106,7 +84,7 @@ export function useOnboardingNavigation() {
         to: `/onboarding/${nextStep}` as const,
       });
     },
-    [refreshUserState, navigate]
+    [refreshUserState, navigate, steps]
   );
 
   /**

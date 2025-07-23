@@ -1,36 +1,33 @@
-import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
-import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { getAddonIcon } from "@/components/onboarding/system-addons/addon-icons";
+import { AddonTypeCard } from "@/components/onboarding/system-addons/addon-type-card";
+import { getAddonTypeFromTypeId } from "@/components/onboarding/system-addons/addon-types-mapping";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { useAppForm } from "@/hooks/use-app-form";
-import {
-  type AssetFactoryTypeId,
-  getAssetTypeFromFactoryTypeId,
-} from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import {
-  type TokenType,
-  TokenTypeEnum,
-} from "@/orpc/routes/token/routes/factory/factory.create.schema";
+  type SystemAddonType,
+  SystemAddonTypeEnum,
+} from "@/orpc/routes/system/routes/system.addonCreate.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-interface AssetSelectionFormValues {
-  assets: TokenType[];
+interface SystemAddonsSelectionFormValues {
+  addons: SystemAddonType[];
 }
 
 const logger = createLogger();
 
-export function AssetTypeSelection() {
+export function SystemAddonsSelection() {
   const { refreshUserState } = useOnboardingNavigation();
-  const { t } = useTranslation(["onboarding", "common", "tokens"]);
+  const { t } = useTranslation(["onboarding", "common"]);
   const queryClient = useQueryClient();
 
   // Verification dialog state
@@ -38,9 +35,9 @@ export function AssetTypeSelection() {
   const [verificationError, setVerificationError] = useState<string | null>(
     null
   );
-  const [pendingFactories, setPendingFactories] = useState<
+  const [pendingAddons, setPendingAddons] = useState<
     | {
-        type: TokenType;
+        type: SystemAddonType;
         name: string;
       }[]
     | null
@@ -54,32 +51,32 @@ export function AssetTypeSelection() {
 
   const form = useAppForm({
     defaultValues: {
-      assets: [] as TokenType[],
+      addons: [] as SystemAddonType[],
     },
-    onSubmit: ({ value }: { value: AssetSelectionFormValues }) => {
-      if (!systemDetails?.tokenFactoryRegistry) {
-        toast.error(t("assets.no-system"));
+    onSubmit: ({ value }: { value: SystemAddonsSelectionFormValues }) => {
+      if (!systemDetails?.systemAddonRegistry) {
+        toast.error(t("system-addons.addon-selection.no-system"));
         return;
       }
 
-      const factories = value.assets.map((assetType) => ({
-        type: assetType,
-        name: t(`asset-types.${assetType}`, { ns: "tokens" }),
+      const addons = value.addons.map((addon) => ({
+        type: addon,
+        name: t(`system-addons.addon-selection.addon-types.${addon}.title`),
       }));
 
-      // Store the factories and show the verification dialog
-      setPendingFactories(factories);
+      // Store the addons and show the verification dialog
+      setPendingAddons(addons);
       setVerificationError(null);
       setShowVerificationModal(true);
     },
   });
 
-  const { mutateAsync: createFactories, isPending: isFactoriesCreating } =
+  const { mutateAsync: createAddons, isPending: isAddonsCreating } =
     useMutation(
-      orpc.token.factoryCreate.mutationOptions({
+      orpc.system.addonCreate.mutationOptions({
         onSuccess: async (result) => {
           for await (const event of result) {
-            logger.info("token factory deployment event", event);
+            logger.info("system addon deployment event", event);
             if (event.status === "failed") {
               throw new Error(event.message);
             }
@@ -102,7 +99,7 @@ export function AssetTypeSelection() {
   // Handle verification code submission
   const handleVerificationSubmit = useCallback(
     (verification: UserVerification) => {
-      if (!pendingFactories || !systemDetails?.tokenFactoryRegistry) {
+      if (!pendingAddons || !systemDetails?.systemAddonRegistry) {
         return;
       }
 
@@ -110,44 +107,44 @@ export function AssetTypeSelection() {
       setShowVerificationModal(false);
 
       toast.promise(
-        createFactories({
+        createAddons({
           verification,
-          contract: systemDetails.tokenFactoryRegistry,
-          factories: pendingFactories,
+          contract: systemDetails.systemAddonRegistry,
+          addons: pendingAddons,
         }),
         {
-          loading: t("assets.deploying-toast"),
-          success: t("assets.deployed"),
+          loading: t("system-addons.addon-selection.deploying-toast"),
+          success: t("system-addons.addon-selection.deployed-toast"),
           error: (error: Error) =>
-            `Failed to deploy asset factories: ${error.message}`,
+            `${t("system-addons.addon-selection.failed-toast")}${error.message}`,
         }
       );
     },
-    [pendingFactories, systemDetails?.tokenFactoryRegistry, createFactories, t]
+    [pendingAddons, createAddons, t, systemDetails?.systemAddonRegistry]
   );
 
-  const availableAssets = TokenTypeEnum.options;
+  const availableAddons = SystemAddonTypeEnum.options;
 
-  // Create a set of already deployed asset types for easy lookup
-  const deployedAssetTypes = useMemo(
+  // Create a set of already deployed addons for easy lookup
+  const deployedAddons = useMemo(
     () =>
       new Set(
-        systemDetails?.tokenFactories.map((factory) =>
-          getAssetTypeFromFactoryTypeId(factory.typeId as AssetFactoryTypeId)
+        systemDetails?.systemAddons.map((addon) =>
+          getAddonTypeFromTypeId(addon.typeId)
         ) ?? []
       ),
-    [systemDetails?.tokenFactories]
+    [systemDetails?.systemAddons]
   );
 
   return (
     <OnboardingStepLayout
-      title={t("assets.select-asset-types")}
-      description={t("assets.choose-asset-types")}
+      title={t("system-addons.addon-selection.title")}
+      description={t("system-addons.addon-selection.description")}
     >
       <div className="max-w-2xl space-y-6">
         <InfoAlert
-          title={t("assets.what-are-asset-factories")}
-          description={t("assets.asset-factories-description")}
+          title={t("system-addons.addon-selection.what-are-addons")}
+          description={t("system-addons.addon-selection.addons-description")}
         />
 
         <form
@@ -161,11 +158,13 @@ export function AssetTypeSelection() {
           <div className="flex-1">
             <div className="space-y-6">
               <form.Field
-                name="assets"
+                name="addons"
                 validators={{
                   onChange: ({ value }) => {
                     if (value.length === 0) {
-                      return t("assets.validation-error");
+                      return t(
+                        "system-addons.addon-selection.validation.invalid"
+                      );
                     }
                     return undefined;
                   },
@@ -176,20 +175,19 @@ export function AssetTypeSelection() {
                     <div className="space-y-4">
                       <div>
                         <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-1">
-                          {t("assets.available-asset-types")}
+                          {t("system-addons.addon-selection.available-addons")}
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {t("assets.select-all-asset-types")}
+                          {t("system-addons.addon-selection.select-all-addons")}
                         </p>
                       </div>
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {availableAssets.map((assetType) => {
-                          const Icon = getAssetIcon(assetType);
+                        {availableAddons.map((addon) => {
+                          const Icon = getAddonIcon(addon);
                           const isDisabled =
-                            deployedAssetTypes.has(assetType) ||
-                            isFactoriesCreating;
+                            deployedAddons.has(addon) || isAddonsCreating;
                           const isChecked =
-                            field.state.value.includes(assetType) || isDisabled;
+                            field.state.value.includes(addon) || isDisabled;
 
                           const handleToggle = (checked: boolean) => {
                             if (isDisabled) {
@@ -197,23 +195,20 @@ export function AssetTypeSelection() {
                             }
 
                             if (checked) {
-                              field.handleChange([
-                                ...field.state.value,
-                                assetType,
-                              ]);
+                              field.handleChange([...field.state.value, addon]);
                             } else {
                               field.handleChange(
                                 field.state.value.filter(
-                                  (value: string) => value !== assetType
+                                  (value: string) => value !== addon
                                 )
                               );
                             }
                           };
 
                           return (
-                            <AssetTypeCard
-                              key={assetType}
-                              assetType={assetType}
+                            <AddonTypeCard
+                              key={addon}
+                              addonType={addon}
                               icon={Icon}
                               isChecked={isChecked}
                               isDisabled={isDisabled}
@@ -236,8 +231,8 @@ export function AssetTypeSelection() {
 
           <div className="mt-8 pt-6 border-t border-border">
             <div className="flex justify-between">
-              <Button type="submit" disabled={isFactoriesCreating}>
-                {t("assets.deploy-assets")}
+              <Button type="submit" disabled={isAddonsCreating}>
+                {t("system-addons.addon-selection.deploy-addons")}
               </Button>
             </div>
           </div>
@@ -248,8 +243,10 @@ export function AssetTypeSelection() {
         open={showVerificationModal}
         onOpenChange={setShowVerificationModal}
         onSubmit={handleVerificationSubmit}
-        title={t("assets.confirm-deployment-title")}
-        description={t("assets.confirm-deployment-description")}
+        title={t("system-addons.addon-selection.confirm-deployment-title")}
+        description={t(
+          "system-addons.addon-selection.confirm-deployment-description"
+        )}
         errorMessage={verificationError}
       />
     </OnboardingStepLayout>

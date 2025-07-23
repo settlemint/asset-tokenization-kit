@@ -85,8 +85,9 @@ export const me = authRouter.user.me
 
     const { kyc } = userQueryResult ?? {};
 
-    // Check if system has token factories using existing ORPC route
+    // Check if system has token factories/addons using existing ORPC route
     let hasTokenFactories = false;
+    let hasSystemAddons = false;
     if (systemAddress) {
       try {
         const systemData = await call(
@@ -99,9 +100,11 @@ export const me = authRouter.user.me
           }
         );
         hasTokenFactories = systemData.tokenFactories.length > 0;
+        hasSystemAddons = systemData.systemAddons.length > 0;
       } catch {
-        // If system read fails, we assume no factories
+        // If system read fails, we assume no factories and addons
         hasTokenFactories = false;
+        hasSystemAddons = false;
       }
     }
 
@@ -131,7 +134,7 @@ export const me = authRouter.user.me
         system: !!systemAddress,
         systemSettings: !!baseCurrency,
         systemAssets: hasTokenFactories,
-        systemAddons: false, // TODO: Track when addons are configured
+        systemAddons: hasSystemAddons,
         identitySetup: false, // TODO: Add logic to check if ONCHAINID is set up
         identity: !!userQueryResult?.kyc,
       },
