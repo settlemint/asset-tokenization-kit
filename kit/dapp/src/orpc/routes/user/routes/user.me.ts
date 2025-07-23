@@ -12,7 +12,8 @@ import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
+import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { read as systemRead } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import { eq } from "drizzle-orm";
@@ -52,36 +53,44 @@ export const me = authRouter.user.me
     const userId = authUser.id;
 
     // Fetch user and KYC profile in a single query with left join
-    const [[userQueryResult], systemAddress, baseCurrency] = await Promise.all([
-      context.db
-        .select({
-          user: userTable,
-          kyc: {
-            firstName: kycProfiles.firstName,
-            lastName: kycProfiles.lastName,
+    const [[userQueryResult], systemAddress, baseCurrency, account] =
+      await Promise.all([
+        context.db
+          .select({
+            user: userTable,
+            kyc: {
+              firstName: kycProfiles.firstName,
+              lastName: kycProfiles.lastName,
+            },
+          })
+          .from(userTable)
+          .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
+          .where(eq(userTable.id, userId))
+          .limit(1),
+        call(
+          settingsRead,
+          {
+            key: "SYSTEM_ADDRESS",
           },
-        })
-        .from(userTable)
-        .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
-        .where(eq(userTable.id, userId))
-        .limit(1),
-      call(
-        read,
-        {
-          key: "SYSTEM_ADDRESS",
-        },
-        {
-          context,
-        }
-      ),
-      call(
-        read,
-        {
-          key: "BASE_CURRENCY",
-        },
-        { context }
-      ),
-    ]);
+          {
+            context,
+          }
+        ),
+        call(
+          settingsRead,
+          {
+            key: "BASE_CURRENCY",
+          },
+          { context }
+        ),
+        call(
+          readAccount,
+          {
+            wallet: authUser.wallet,
+          },
+          { context }
+        ),
+      ]);
 
     const { kyc } = userQueryResult ?? {};
 
@@ -135,7 +144,7 @@ export const me = authRouter.user.me
         systemSettings: !!baseCurrency,
         systemAssets: hasTokenFactories,
         systemAddons: hasSystemAddons,
-        identitySetup: false, // TODO: Add logic to check if ONCHAINID is set up
+        identitySetup: !!account.identity,
         identity: !!userQueryResult?.kyc,
       },
     };

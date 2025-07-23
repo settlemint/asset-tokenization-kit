@@ -5,7 +5,7 @@ import {
   KycProfileUpsert,
   KycProfileUpsertSchema,
 } from "@/orpc/routes/user/kyc/kyc.schema";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -28,15 +28,17 @@ export function KycForm({ onComplete }: KycFormProps) {
   const { t } = useTranslation(["components"]);
   const { data: session } = authClient.useSession();
 
-  const { data: account } = useSuspenseQuery({
+  const { data: account } = useQuery({
     ...orpc.account.me.queryOptions(),
   });
-  const { data: kyc } = useSuspenseQuery({
+  const { data: kyc } = useQuery({
     ...orpc.user.kyc.read.queryOptions({
       input: {
         userId: session?.user.id ?? "",
       },
       enabled: !!session?.user.id,
+      retry: false,
+      throwOnError: false,
     }),
   });
 
