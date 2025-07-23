@@ -8,6 +8,7 @@
 
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { userRoles } from "@/lib/zod/validators/user-roles";
+import { verificationType } from "@/lib/zod/validators/verification-type";
 import { z } from "zod";
 
 const onboardingStateSchema = z.object({
@@ -115,6 +116,12 @@ export const UserSchema = z.object({
  */
 export const UserMeSchema = z.object({
   ...UserSchema.shape,
+
+  /**
+   * User's verification types.
+   * This is used to track the user's verification methods.
+   */
+  verificationTypes: z.array(verificationType),
 
   /**
    * User's onboarding state.

@@ -1,0 +1,11 @@
+{
+  "verificationDialog": {
+    "authenticatorCode": "Authenticator Code",
+    "pinCode": "PIN Code",
+    "confirm": "Confirm",
+    "usePinInstead": "Use PIN Code instead",
+    "useAuthenticatorInstead": "Use Authenticator App instead",
+    "codeLengthError": "Code must be 6 digits",
+    "cancel": "Cancel"
+  }
+}

@@ -10,42 +10,23 @@
     "continue-setup": "Continue Setup",
     "get-started": "Let's Get Started"
   },
+  "sidebar": {
+    "title": "Let's get you set up!",
+    "description": "We'll set up your wallet and will configure your identity on the blockchain to use this platform."
+  },
   "groups": {
     "wallet": {
       "title": "Wallet",
       "description": "Set up your wallet and security measures"
     },
     "system": {
-      "title": "System",
-      "description": "Deploy and configure your system"
+      "title": "Deploy SMART System",
+      "description": "Set up your blockchain platform"
     },
     "identity": {
       "title": "Identity",
       "description": "Establish your on-chain identity"
     }
-  },
-  "card-description": "We've set up your wallet and will configure your identity on the blockchain to use this platform.",
-  "card-title": "Let's get you set up!",
-  "ui": {
-    "next": "Next",
-    "back": "Back",
-    "cancel": "Cancel",
-    "complete": "Complete",
-    "error": "Error",
-    "step": "Step",
-    "settlemint": "SettleMint"
-  },
-  "platform": {
-    "title": "Platform Setup",
-    "description": "Let's set up your digital asset platform"
-  },
-  "issuer": {
-    "title": "Issuer Setup",
-    "description": "Set up your account to start issuing digital assets"
-  },
-  "investor": {
-    "title": "Investor Setup",
-    "description": "Set up your account to start investing in digital assets"
   },
   "steps": {
     "wallet": {
@@ -80,34 +61,6 @@
       "title": "Setup ONCHAINID",
       "description": "Create your on-chain identity"
     },
-    "security": {
-      "title": "Secure your Wallet",
-      "description": "Set up protection for your wallet",
-      "wallet-secured": "Wallet Secured",
-      "pin-enabled": "PIN code protection is enabled for your wallet",
-      "setup-pin": "Set up a 6-digit PIN code to protect your wallet transactions",
-      "enter-pin": "Enter a 6-digit PIN code",
-      "pin-configured-title": "PIN Code Configured Successfully",
-      "pin-configured-description": "Your wallet is now protected with PIN code verification",
-      "why-pin-title": "Why set up a PIN code?",
-      "why-pin-description": "A PIN code adds an extra layer of security to your wallet, protecting your assets and transactions from unauthorized access.",
-      "features": {
-        "transaction-protection": "Transaction Protection",
-        "account-security": "Account Security",
-        "quick-access": "Quick Access",
-        "easy-remember": "Easy to Remember"
-      },
-      "success": "PIN code set successfully",
-      "error": "Failed to set PIN code"
-    },
-    "system": {
-      "title": "Deploy System",
-      "description": "Initialize the core smart contracts"
-    },
-    "assets": {
-      "title": "Select Assets",
-      "description": "Choose supported asset types"
-    },
     "identity": {
       "title": "Verify Identity",
       "description": "Complete KYC verification",
@@ -117,76 +70,120 @@
     }
   },
   "wallet": {
-    "title": "Your Wallet",
-    "your-wallet": "Your Wallet",
-    "generate-your-wallet": "Your Wallet",
-    "description": "Your blockchain wallet for secure transactions",
-    "blockchain-identity-ready": "Your blockchain identity is ready to use",
-    "create-secure-wallet": "We've created a secure blockchain wallet for you to interact with the platform",
-    "info": "Your wallet is your gateway to the blockchain. It allows you to hold digital assets and execute transactions securely.",
-    "generate": "Generate Wallet",
-    "success": "Wallet successfully created!",
-    "generated": "Wallet generated successfully",
-    "wallet-generated-successfully": "Your Wallet is ready",
-    "already-exists": "Wallet already exists for this user",
-    "creation-failed": "Failed to create wallet. Please try again.",
-    "address-label": "Wallet Address",
-    "what-is-wallet": "What is a wallet?",
-    "wallet-description": "A blockchain wallet is your digital identity that allows you to interact with smart contracts and manage digital assets securely.",
-    "features": {
-      "secure": "Secure",
-      "secure-description": "Protected by cryptographic keys",
-      "instant": "Instant",
-      "instant-description": "Create and access immediately",
-      "protected": "Protected",
-      "protected-description": "Your keys, your assets",
-      "global": "Global",
-      "global-description": "Access from anywhere"
+    "subtitle": "Your Digital Key to the Blockchain",
+    "intro": "Think of your wallet as your master key that unlocks all your digital assets and identity on the blockchain. It's a secure set of cryptographic codes that proves you own your tokens and allows you to authorize transactions.",
+    "what-your-wallet-enables": "What your wallet enables:",
+    "asset-control": "Asset Control",
+    "asset-control-description": "View, manage, and interact with tokenized assets on the Asset Tokenization Kit platform. Your wallet gives you complete control over your digital assets.",
+    "invest-in-digital-assets": "Invest in Digital Assets",
+    "invest-in-digital-assets-description": "Explore and invest in a wide range of digital assets, including stocks, bonds, and more.",
+    "manage-your-digital-assets": "Manage Your Digital Assets",
+    "manage-your-digital-assets-description": "Easily manage your digital assets, including buying, selling, and transferring them.",
+    "submit": "Create my wallet",
+    "creating-wallet": "Creating...",
+    "wallet-created-successfully": "Wallet created successfully!",
+    "failed-to-create-wallet": "Failed to create wallet. Please try again.",
+    "success-message": "Congratulations! Your Web3 wallet has been successfully created",
+    "wallet-address-title": "This is your wallet address",
+    "wallet-address-description": "Your wallet address is your unique identifier on the blockchain. It's used to send and receive digital assets, and to interact with smart contracts."
+  },
+  "wallet-security": {
+    "method-selector": {
+      "title": "Secure your Wallet",
+      "description": "Just like your bank card requires a PIN to confirm payments, your wallet also needs protection to authorize actions securely.\n\nTo keep it safe, you can secure it with a PIN code or enable one-time passwords (OTP) for added protection.",
+      "pin": {
+        "title": "PIN code",
+        "description": "A simple 6 digit code you enter on your device to quickly unlock your wallet. Easy and fast.",
+        "summary": "Fast and convenient"
+      },
+      "otp": {
+        "title": "One-Time Password (OTP)",
+        "description": "A time-based code generated by an authenticator app on your phone. Offers stronger security by requiring a unique code each time you log in.",
+        "summary": "Maximum security"
+      },
+      "choose-one": "You can choose one. As OTP is more secure, it is the recommended option.",
+      "success": "Your wallet is now secured!",
+      "success-description": "Your wallet is now secured! You can now continue to the next step."
+    },
+    "pincode": {
+      "title": "Set up a PIN code",
+      "description": "Create a 6-digit PIN code to secure your wallet transactions",
+      "enter-pin": "Enter PIN Code",
+      "confirm-pin": "Confirm PIN Code",
+      "pin-codes-match": "✓ PIN codes match",
+      "submitting": "Setting up...",
+      "set-pin": "Set PIN Code",
+      "success": "PIN code set successfully",
+      "invalid-pin-format": "Invalid PIN code format",
+      "pin-codes-dont-match": "PIN codes don't match"
+    },
+    "otp": {
+      "setup-initiated": "OTP setup initiated",
+      "setup-failed": "Failed to get OTP setup data",
+      "setup-error": "Failed to setup OTP",
+      "verified-success": "OTP verified successfully",
+      "invalid-code": "Invalid verification code",
+      "setup-failed-title": "Setup Failed",
+      "setup-failed-description": "Failed to setup OTP authentication. Please try again.",
+      "back": "Back",
+      "try-again": "Try Again",
+      "setting-up": "Setting up OTP...",
+      "setting-up-description": "Please wait while we generate your QR code.",
+      "setup-title": "Set up Authenticator App",
+      "setup-description": "Scan this QR code with your authenticator app",
+      "qr-code-label": "QR Code",
+      "scan-with-app": "Scan with your app",
+      "manual-entry": "Can't scan? Enter manually",
+      "manual-entry-key": "Manual entry key:",
+      "loading": "Loading...",
+      "enter-code": "Enter the 6-digit code from your app",
+      "cancel": "Cancel",
+      "verifying": "Verifying...",
+      "verify-code": "Verify Code"
+    },
+    "recovery-codes": {
+      "title": "Your secret codes",
+      "description": "Save these codes somewhere safe",
+      "description-2": "These codes can be used to recover your wallet if you forget your pin or lose access to your authenticator app.",
+      "generated-success": "Secret codes generated successfully!",
+      "generated-error": "Failed to generate secret codes",
+      "confirm-error": "Failed to confirm secret codes",
+      "confirm": "Confirm I've stored them",
+      "warning": "Important: Keep these codes safe! They're your only way to regain access if you lose other security methods.",
+      "copy-all": "Copy all",
+      "download": "Download",
+      "your-recovery-codes": "Your Secret Codes ({{count}})",
+      "generating": "Generating your secret codes...",
+      "copied-to-clipboard": "Secret codes copied to clipboard!",
+      "downloaded": "Secret codes downloaded!"
     }
   },
   "system": {
-    "title": "Deploy SMART System",
-    "system-deployed": "System Deployed",
-    "deploy-smart-system": "Deploy SMART System",
-    "description": "Initialize the core infrastructure for your platform",
-    "your-blockchain-infrastructure-ready": "Your blockchain infrastructure is ready",
-    "deploy-blockchain-infrastructure": "Deploy your blockchain infrastructure for asset tokenization",
-    "info": "The SMART system is the foundation of your digital asset platform. It manages all token operations and ensures compliance.",
+    "initialize-title": "Initialize the system",
+    "initialize-subtitle": "You're about to set up the foundation of the platform",
+    "deployment-warning": "This action will deploy blockchain smart contracts and cannot be undone. Once deployed, the system will be permanently active on the blockchain.",
+    "what-gets-deployed": "What gets deployed:",
+    "core-system-contract": "• Core system smart contract",
+    "identity-registry": "• Identity Registry for user verification",
+    "compliance-engine": "• Compliance Engine for regulatory requirements",
+    "trusted-issuers": "• Trusted Issuers Registry for authorized parties",
+    "token-factory": "• Token Factory Registry for asset creation",
+    "deploying": "Deploying...",
     "deploy": "Deploy System",
-    "deployed": "System deployed successfully",
-    "system-deployed-successfully": "System Deployed Successfully",
-    "success": "System successfully deployed!",
-    "contract-address": "Contract Address",
-    "what-is-smart-system": "What is a SMART system?",
-    "smart-system-description": "SMART System is SettleMint's comprehensive blockchain system that enables compliant asset tokenization with built-in identity management and regulatory compliance.",
-    "system-deployment": "System deployment",
-    "deployment-time-notice": "This process may take 2-3 minutes to complete",
-    "messages": {
-      "initial-loading": "Preparing to deploy your SMART system...",
-      "no-result-error": "System deployment completed but no address was returned",
-      "default-error": "Failed to deploy your SMART system",
-      "created": "System successfully created and bootstrapped.",
-      "creating": "Creating new system...",
-      "creation-failed": "Failed to create system. Please try again.",
-      "bootstrapping-system": "Bootstrapping system...",
-      "bootstrap-failed": "Failed to bootstrap system. Please try again.",
-      "system-created-bootstrap-failed": "System created but bootstrap failed. You may need to manually bootstrap the system.",
-      "pending": {
-        "mining": "Deploying your SMART system...",
-        "indexing": "Indexing the new SMART system..."
-      },
-      "error": "Failed to deploy your SMART system",
-      "timeout": "Transaction tracking timeout"
-    },
-    "transaction-tracking": {
-      "stream-timeout": "System deployment tracking timed out after 90 seconds",
-      "waiting-for-mining": "Deploying your SMART system on chain...",
-      "transaction-failed": "System deployment transaction failed",
-      "transaction-dropped": "System deployment transaction was not confirmed on-chain in time",
-      "waiting-for-indexing": "Waiting for system to be indexed...",
-      "transaction-indexed": "System successfully indexed and ready to use",
-      "indexing-timeout": "System indexing timed out, please refresh the page"
-    }
+    "deploying-toast": "Deploying system...",
+    "deployed-toast": "System deployed successfully!",
+    "failed-toast": "Failed to deploy system: ",
+    "confirm-deployment-title": "Confirm System Deployment",
+    "confirm-deployment-description": "Please verify your identity to deploy the blockchain system.",
+    "view-deployment-details": "View Deployment Details",
+    "deployed-contracts": "Deployed Contract Addresses",
+    "system-contract": "System Contract",
+    "identity-registry-label": "Identity Registry",
+    "compliance-engine-label": "Compliance Engine",
+    "trusted-issuers-label": "Trusted Issuers Registry",
+    "token-factory-label": "Token Factory Registry",
+    "deployment-details-title": "Deployment Details",
+    "deployment-details-description": "View the details of the system deployment"
   },
   "assets": {
     "title": "Select Asset Types",
@@ -196,49 +193,57 @@
     "your-asset-factories-ready": "Your asset factories are ready for tokenization",
     "choose-asset-types": "Choose the types of assets you want to tokenize on your platform",
     "info": "Select the types of digital assets your platform will support. You can add more asset types later.",
-    "select-label": "Available Asset Types",
     "available-asset-types": "Available Asset Types",
     "select-all-asset-types": "Select all the asset types you plan to tokenize",
-    "select-description": "Select one or more asset types to deploy their factory contracts",
-    "deploy": "Deploy Selected Assets",
+    "deploy-assets": "Deploy Assets",
     "deployed": "Asset factories deployed successfully",
     "asset-factories-deployed-successfully": "Asset Factories Deployed Successfully",
     "deployed-factories": "Deployed Factories",
+    "deployed-label": "(Deployed)",
     "no-system": "System not found. Please deploy the system first.",
     "what-are-asset-factories": "What are asset factories?",
     "asset-factories-description": "Asset factories are smart contracts that enable you to create and manage different types of tokenized assets. Each factory handles a specific asset class with tailored features and compliance requirements.",
+    "deploying-toast": "Deploying asset factories...",
+    "validation-error": "Select at least one asset type",
+    "confirm-deployment-title": "Confirm Asset Deployment",
+    "confirm-deployment-description": "Please verify your identity to deploy the asset factories.",
     "descriptions": {
       "bond": "Tokenized debt securities with fixed income features",
       "equity": "Digital shares representing ownership in companies",
       "fund": "Investment fund tokens for pooled investments",
       "stablecoin": "Price-stable digital currencies",
       "deposit": "Tokenized bank deposits and certificates"
-    },
-    "factory-messages": {
-      "initial-loading": "Preparing to create token factories...",
-      "factory-created": "{{name}} successfully created.",
-      "creating-factory": "Creating token factory...",
-      "factory-creation-failed": "Failed to create token factory. Please try again.",
-      "batch-progress": "Creating factory {{current}} of {{total}}...",
-      "batch-completed": "Successfully created {{count}} token factories.",
-      "no-result-error": "No factory address received from transaction.",
-      "default-error": "Failed to create token factory.",
-      "system-not-bootstrapped": "System needs to be bootstrapped first. Please wait for system initialization to complete.",
-      "transaction-submitted": "Transaction submitted. Waiting for confirmation...",
-      "factory-creation-completed": "Factory creation completed.",
-      "all-factories-succeeded": "All {{count}} factories created successfully.",
-      "some-factories-failed": "{{success}} factories created, {{failed}} failed.",
-      "all-factories-failed": "All {{count}} factories failed to create.",
-      "factory-already-exists": "{{name}} factory already exists, skipping...",
-      "all-factories-skipped": "All {{count}} factories already exist.",
-      "some-factories-skipped": "{{success}} factories created, {{skipped}} skipped, {{failed}} failed.",
-      "waiting-for-mining": "Waiting for transaction confirmation...",
-      "transaction-failed": "Transaction failed",
-      "transaction-dropped": "Transaction was not confirmed on-chain in time",
-      "waiting-for-indexing": "Waiting for factory to be indexed...",
-      "transaction-indexed": "Factory successfully indexed",
-      "stream-timeout": "Transaction tracking timed out",
-      "indexing-timeout": "Factory indexing timed out"
     }
+  },
+  "system-settings": {
+    "title": "Configure Platform Settings",
+    "subtitle": "Define how your platform behaves by default",
+    "description": {
+      "intro": "Before you begin issuing assets, let's configure some basic settings that determine how the platform behaves. These default values help personalize the experience for you and your users.",
+      "update": "You can update these preferences later in the platform settings."
+    },
+    "form": {
+      "baseCurrency": {
+        "label": "Base Currency",
+        "description": "Choose the default currency for your platform",
+        "validation": {
+          "invalid": "Invalid currency selection"
+        }
+      }
+    },
+    "toast": {
+      "saving": "Saving platform settings...",
+      "success": "Platform settings saved successfully!",
+      "error": "Failed to save platform settings: {{message}}"
+    },
+    "buttons": {
+      "saving": "Saving...",
+      "saveAndContinue": "Save & Continue"
+    }
+  },
+  "system-addons": {
+    "title": "Enable Addons",
+    "subtitle": "Enable additional features and integrations for your platform",
+    "description": "Platform addons configuration will be implemented here."
   }
 }

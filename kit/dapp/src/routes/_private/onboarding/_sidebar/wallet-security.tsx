@@ -1,70 +1,28 @@
-import { OnboardingStep } from "@/components/onboarding/state-machine";
-import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
-import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
-import { SecurityMethodSelector } from "@/components/onboarding/wallet-security/security-method-selector";
-import { SecuritySuccess } from "@/components/onboarding/wallet-security/security-success";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { SecurityMethodSelector } from "@/components/onboarding/wallet-security/security-method-selector";
+import { SecuritySuccess } from "@/components/onboarding/wallet-security/security-success";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/wallet-security"
 )({
-  validateSearch: zodValidator(
-    createOnboardingSearchSchema(["intro", "pin", "otp", "complete"] as const)
-  ),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.walletSecurity),
-  component: RouteComponent,
+  component: SetupWalletSecurityComponent,
 });
 
-function RouteComponent() {
-  const subStep = Route.useSearch({
-    select: (search) => search.subStep,
-  });
-  const { handleMutationSuccess, completeStepAndNavigate, navigateToSubStep } =
-    useOnboardingNavigation();
+function SetupWalletSecurityComponent() {
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
-  const handleSecuritySuccess = () =>
-    void handleMutationSuccess(OnboardingStep.walletSecurity, "complete");
-
-  const onNext = () =>
-    void completeStepAndNavigate(OnboardingStep.walletSecurity);
-
-  if (subStep === "complete") {
-    return <SecuritySuccess onNext={onNext} />;
+  if (!user.onboardingState.walletSecurity) {
+    return <SecurityMethodSelector />;
   }
 
-  if (subStep === "pin") {
-    return (
-      <PinSetupComponent
-        onSuccess={handleSecuritySuccess}
-        onBack={() =>
-          void navigateToSubStep(OnboardingStep.walletSecurity, "intro")
-        }
-      />
-    );
-  }
-
-  if (subStep === "otp") {
-    return (
-      <OtpSetupComponent
-        onSuccess={handleSecuritySuccess}
-        onBack={() =>
-          void navigateToSubStep(OnboardingStep.walletSecurity, "intro")
-        }
-      />
-    );
-  }
-
-  return (
-    <SecurityMethodSelector
-      onSetupSecurity={(method) =>
-        void navigateToSubStep(OnboardingStep.walletSecurity, method)
-      }
-    />
-  );
+  return <SecuritySuccess />;
 }

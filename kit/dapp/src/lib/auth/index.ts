@@ -41,6 +41,7 @@ import { admin, apiKey, customSession } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
+import { zeroAddress } from "viem";
 import { db } from "../db";
 import * as authSchema from "../db/schemas/auth";
 import { env } from "../env";
@@ -182,6 +183,15 @@ const options = {
         unique: true,
         input: false,
       },
+      /**
+       * Whether the user has confirmed the secret codes.
+       */
+      secretCodesConfirmed: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
     },
   },
   /**
@@ -220,7 +230,7 @@ const options = {
               data: {
                 ...user,
                 role: firstUser ? "admin" : "investor",
-                wallet: "0x0000000000000000000000000000000000000000",
+                wallet: zeroAddress,
               },
             };
           } catch (error) {
@@ -336,7 +346,7 @@ const getAuthConfig = serverOnly(() => {
               return {
                 data: {
                   ...user,
-                  wallet: "0x0000000000000000000000000000000000000000",
+                  wallet: zeroAddress,
                   role: firstUser ? "investor" : "admin",
                 },
               };
