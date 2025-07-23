@@ -45,6 +45,10 @@ function RouteComponent() {
     throwOnError: false,
   });
 
+  const { mutateAsync: syncExchangeRates } = useMutation(
+    orpc.exchangeRates.sync.mutationOptions()
+  );
+
   // Mutation for updating base currency
   const { mutateAsync: upsertSetting, isPending: isSettingUpdating } =
     useMutation(
@@ -56,6 +60,19 @@ function RouteComponent() {
               input: { key: "BASE_CURRENCY" },
             }),
           });
+
+          // Sync exchange rates but don't let failures block navigation
+          try {
+            await syncExchangeRates({
+              force: true,
+            });
+            logger.debug("Exchange rates synced successfully");
+          } catch (error) {
+            logger.error("Failed to sync exchange rates:", error);
+            // Show a non-blocking warning toast
+            toast.warning(t("system-settings.toast.exchangeRateSyncWarning"));
+          }
+
           await completeStepAndNavigate(OnboardingStep.systemSettings);
         },
       })

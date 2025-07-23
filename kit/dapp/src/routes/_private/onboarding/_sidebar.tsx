@@ -313,7 +313,7 @@ function RouteComponent() {
 
         {/* Main content area */}
         <div
-          className="flex-1 flex flex-col transition-all duration-300 relative"
+          className="OnboardingSidebar__main flex-1 flex flex-col transition-all duration-300 relative"
           style={{ backgroundColor: "var(--sm-background-lightest)" }}
         >
           <div className="flex-1 p-8">

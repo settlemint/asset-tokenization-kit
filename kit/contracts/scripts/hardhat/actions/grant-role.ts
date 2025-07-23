@@ -1,12 +1,12 @@
 import type { Address, Hex } from "viem";
 import { ATKContracts } from "../constants/contracts";
-import type { AbstractActor } from "../entities/actors/abstract-actor";
+import type { Actor } from "../entities/actor";
 import { withDecodedRevertReason } from "../utils/decode-revert-reason";
 import { waitForSuccess } from "../utils/wait-for-success";
 
 export const grantRole = async (
   contractAddress: Address,
-  admin: AbstractActor,
+  admin: Actor,
   role: Hex,
   address: Address
 ) => {

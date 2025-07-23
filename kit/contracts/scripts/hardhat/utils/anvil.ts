@@ -1,4 +1,4 @@
-import type { AbstractActor } from "../entities/actors/abstract-actor";
+import type { Actor } from "../entities/actor";
 import { getPublicClient } from "./public-client";
 
 /**
@@ -9,7 +9,7 @@ import { getPublicClient } from "./public-client";
  * @returns The new block number
  */
 export async function mineAnvilBlock(
-  actor: AbstractActor,
+  actor: Actor,
   options: {
     blocks?: number;
     shouldWait?: boolean;
@@ -79,7 +79,7 @@ export async function mineAnvilBlock(
  * @returns The new timestamp in seconds
  */
 export const increaseAnvilTime = async (
-  actor: AbstractActor,
+  actor: Actor,
   seconds: number,
   options: {
     shouldWait?: boolean;
@@ -144,9 +144,7 @@ export const increaseAnvilTime = async (
   return currentTimestamp;
 };
 
-export const getAnvilTimeSeconds = async (
-  actor: AbstractActor
-): Promise<number> => {
+export const getAnvilTimeSeconds = async (actor: Actor): Promise<number> => {
   const block = (await actor.getWalletClient().request({
     method: "eth_getBlockByNumber",
     params: ["latest", false],
@@ -165,7 +163,7 @@ export const getAnvilTimeSeconds = async (
 };
 
 export const getAnvilTimeMilliseconds = async (
-  actor: AbstractActor
+  actor: Actor
 ): Promise<number> => {
   const timestampSeconds = await getAnvilTimeSeconds(actor);
   const timestampMs = timestampSeconds * 1000;
@@ -175,7 +173,7 @@ export const getAnvilTimeMilliseconds = async (
   return timestampMs;
 };
 
-export const getAnvilDate = async (actor: AbstractActor): Promise<Date> => {
+export const getAnvilDate = async (actor: Actor): Promise<Date> => {
   const timestamp = await getAnvilTimeSeconds(actor);
   const date = new Date(timestamp * 1000);
 
@@ -189,7 +187,7 @@ export const getAnvilDate = async (actor: AbstractActor): Promise<Date> => {
  * @param actor The actor to use for the check
  * @returns True if running on Anvil
  */
-export const isAnvilNode = async (actor: AbstractActor): Promise<boolean> => {
+export const isAnvilNode = async (actor: Actor): Promise<boolean> => {
   try {
     // Try to call an Anvil-specific method
     await actor.getWalletClient().request({

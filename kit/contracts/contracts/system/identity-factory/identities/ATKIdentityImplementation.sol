@@ -14,6 +14,8 @@ import { ERC734 } from "../../../onchainid/extensions/ERC734.sol";
 import { ERC735 } from "../../../onchainid/extensions/ERC735.sol";
 import { OnChainIdentity } from "../../../onchainid/extensions/OnChainIdentity.sol";
 import { OnChainIdentityWithRevocation } from "../../../onchainid/extensions/OnChainIdentityWithRevocation.sol";
+import { ClaimAuthorizationExtension } from "../../../onchainid/extensions/ClaimAuthorizationExtension.sol";
+import { ERC734KeyPurposes } from "../../../onchainid/ERC734KeyPurposes.sol";
 
 /// @title ATK Identity Implementation Contract (Logic for Wallet Identities)
 /// @author SettleMint Tokenization Services
@@ -28,7 +30,8 @@ contract ATKIdentityImplementation is
     ERC735,
     OnChainIdentityWithRevocation,
     ERC165Upgradeable,
-    ERC2771ContextUpgradeable
+    ERC2771ContextUpgradeable,
+    ClaimAuthorizationExtension
 {
     // --- State Variables ---
     bool private _smartIdentityInitialized;
@@ -47,7 +50,7 @@ contract ATKIdentityImplementation is
         if (
             !(
                 _msgSender() == address(this)
-                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), MANAGEMENT_KEY_PURPOSE)
+                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.MANAGEMENT_KEY)
             )
         ) {
             revert SenderLacksManagementKey();
@@ -59,10 +62,22 @@ contract ATKIdentityImplementation is
         if (
             !(
                 _msgSender() == address(this)
-                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), CLAIM_SIGNER_KEY_PURPOSE)
+                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.CLAIM_SIGNER_KEY)
             )
         ) {
             revert SenderLacksClaimSignerKey();
+        }
+        _;
+    }
+
+    modifier onlyActionKey() {
+        if (
+            !(
+                _msgSender() == address(this)
+                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.ACTION_KEY)
+            )
+        ) {
+            revert SenderLacksActionKey();
         }
         _;
     }
@@ -78,15 +93,37 @@ contract ATKIdentityImplementation is
      * @notice Initializes the ATKIdentityImplementation state.
      * @dev This function is intended to be called only once by a proxy contract via delegatecall.
      *      It sets the initial management key for this identity and initializes ERC165 support.
+     *      It also registers the provided claim authorization contracts.
      *      This replaces the old `__Identity_init` call.
      * @param initialManagementKey The address to be set as the initial management key for this identity.
+     * @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
+     * authorizers.
      */
-    function initialize(address initialManagementKey) external override(ERC734, IATKIdentity) initializer {
+    function initialize(
+        address initialManagementKey,
+        address[] calldata claimAuthorizationContracts
+    )
+        external
+        override(IATKIdentity)
+        initializer
+    {
         if (_smartIdentityInitialized) revert AlreadyInitialized();
         _smartIdentityInitialized = true;
 
         __ERC165_init_unchained(); // Initialize ERC165 storage
         __ERC734_init(initialManagementKey);
+
+        // Register the claim authorization contracts
+        // This is done during initialization when we have full control over the identity
+        uint256 contractsLength = claimAuthorizationContracts.length;
+        for (uint256 i = 0; i < contractsLength;) {
+            if (claimAuthorizationContracts[i] != address(0)) {
+                _registerClaimAuthorizationContract(claimAuthorizationContracts[i], _msgSender());
+            }
+            unchecked {
+                ++i;
+            }
+        }
     }
 
     // --- OnchainIdentityWithRevocation Functions ---
@@ -100,6 +137,22 @@ contract ATKIdentityImplementation is
     /// @param _claimId The ID of the claim to revoke
     function revokeClaim(bytes32 _claimId, address _identity) external virtual override onlyManager returns (bool) {
         return _revokeClaim(_claimId, _identity);
+    }
+
+    // --- Claim Authorization Management Functions ---
+
+    /// @notice Registers a claim authorization contract
+    /// @param authorizationContract The address of the contract implementing IClaimAuthorization
+    /// @dev Only management keys can register authorization contracts
+    function registerClaimAuthorizationContract(address authorizationContract) external onlyManager {
+        _registerClaimAuthorizationContract(authorizationContract, _msgSender());
+    }
+
+    /// @notice Removes a claim authorization contract
+    /// @param authorizationContract The address of the contract to remove
+    /// @dev Only management keys can remove authorization contracts
+    function removeClaimAuthorizationContract(address authorizationContract) external onlyManager {
+        _removeClaimAuthorizationContract(authorizationContract, _msgSender());
     }
 
     // --- ERC734 (Key Holder) Functions - Overridden for Access Control & Specific Logic ---
@@ -147,11 +200,11 @@ contract ATKIdentityImplementation is
 
         bytes32 senderKeyHash = keccak256(abi.encode(_msgSender()));
         if (executionToApprove.to == address(this)) {
-            if (!keyHasPurpose(senderKeyHash, MANAGEMENT_KEY_PURPOSE)) {
+            if (!keyHasPurpose(senderKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY)) {
                 revert SenderLacksManagementKey();
             }
         } else {
-            if (!keyHasPurpose(senderKeyHash, ACTION_KEY_PURPOSE)) {
+            if (!keyHasPurpose(senderKeyHash, ERC734KeyPurposes.ACTION_KEY)) {
                 revert SenderLacksActionKey();
             }
         }
@@ -177,9 +230,9 @@ contract ATKIdentityImplementation is
         bytes32 senderKeyHash = keccak256(abi.encode(_msgSender()));
         bool autoApproved = false;
 
-        if (keyHasPurpose(senderKeyHash, MANAGEMENT_KEY_PURPOSE)) {
+        if (keyHasPurpose(senderKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY)) {
             autoApproved = true;
-        } else if (_to != address(this) && keyHasPurpose(senderKeyHash, ACTION_KEY_PURPOSE)) {
+        } else if (_to != address(this) && keyHasPurpose(senderKeyHash, ERC734KeyPurposes.ACTION_KEY)) {
             autoApproved = true;
         }
 
@@ -206,7 +259,8 @@ contract ATKIdentityImplementation is
     // --- ERC735 (Claim Holder) Functions - Overridden for Access Control ---
 
     /// @inheritdoc IERC735
-    /// @dev Adds or updates a claim. Requires CLAIM_SIGNER_KEY purpose from the sender.
+    /// @dev Adds or updates a claim. Checks authorization contracts first, falls back to CLAIM_ACTION_KEY if no
+    /// authorization contracts.
     function addClaim(
         uint256 _topic,
         uint256 _scheme,
@@ -218,9 +272,19 @@ contract ATKIdentityImplementation is
         public
         virtual
         override(ERC735, IERC735) // Overrides ERC735's implementation and fulfills IERC735
-        onlyClaimKey
         returns (bytes32 claimId)
     {
+        // First check if any authorization contracts approve this claim
+        bool authorizedByContract = _isAuthorizedToAddClaim(_msgSender(), _issuer, _topic);
+
+        if (!authorizedByContract) {
+            // If no authorization contracts approve, require ACTION_KEY (existing behavior)
+            bytes32 senderKeyHash = keccak256(abi.encode(_msgSender()));
+            if (!(_msgSender() == address(this) || keyHasPurpose(senderKeyHash, ERC734KeyPurposes.ACTION_KEY))) {
+                revert SenderLacksActionKey();
+            }
+        }
+
         return ERC735.addClaim(_topic, _scheme, _issuer, _signature, _data, _uri);
     }
 
@@ -230,7 +294,7 @@ contract ATKIdentityImplementation is
         public
         virtual
         override(ERC735, IERC735)
-        onlyClaimKey
+        onlyActionKey
         returns (bool success)
     {
         return ERC735.removeClaim(_claimId);

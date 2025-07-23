@@ -1,5 +1,5 @@
+import { owner } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
 import { getAnvilTimeSeconds, increaseAnvilTime } from "../../../utils/anvil";
 import { waitForSuccess } from "../../../utils/wait-for-success";

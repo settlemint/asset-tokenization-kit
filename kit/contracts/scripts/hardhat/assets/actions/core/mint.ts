@@ -1,7 +1,7 @@
 import { Address, isAddress as isAddressViem } from "viem";
+import { owner } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
-import { owner } from "../../../entities/actors/owner";
+import type { Actor } from "../../../entities/actor";
 import type { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { formatBaseUnits } from "../../../utils/format-base-units";
@@ -10,7 +10,7 @@ import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const mint = async (
   asset: Asset<any>,
-  to: AbstractActor | Asset<any> | Address,
+  to: Actor | Asset<any> | Address,
   amount: bigint
 ) => {
   console.log(`[Mint] → Starting mint operation...`);

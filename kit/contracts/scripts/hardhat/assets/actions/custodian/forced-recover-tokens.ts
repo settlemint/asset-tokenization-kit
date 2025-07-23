@@ -1,14 +1,14 @@
 import { Address } from "viem";
 import { ATKContracts } from "../../../constants/contracts";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
+import type { Actor } from "../../../entities/actor";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const forcedRecoverTokens = async (
   asset: Asset<any>,
-  custodian: AbstractActor,
-  newWallet: AbstractActor,
+  custodian: Actor,
+  newWallet: Actor,
   lostWallet: Address
 ) => {
   console.log(`[Forced recover tokens] → Starting forced token recovery...`);

@@ -1,5 +1,5 @@
 import { ATKContracts } from "../../../constants/contracts";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
+import type { Actor } from "../../../entities/actor";
 import type { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { formatBaseUnits } from "../../../utils/format-base-units";
@@ -8,8 +8,8 @@ import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const transfer = async (
   asset: Asset<any>,
-  from: AbstractActor,
-  to: AbstractActor | Asset<any>,
+  from: Actor,
+  to: Actor | Asset<any>,
   amount: bigint
 ) => {
   console.log(`[Transfer] → Starting transfer operation...`);
