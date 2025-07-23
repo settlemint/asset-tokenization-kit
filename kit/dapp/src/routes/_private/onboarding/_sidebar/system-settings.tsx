@@ -64,10 +64,6 @@ function RouteComponent() {
       })
     );
 
-  const { mutateAsync: syncExchangeRates } = useMutation(
-    orpc.exchangeRates.sync.mutationOptions()
-  );
-
   const form = useForm({
     defaultValues: {
       baseCurrency: currentBaseCurrency ?? ("USD" as FiatCurrency),
