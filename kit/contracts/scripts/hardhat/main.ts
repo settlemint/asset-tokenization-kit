@@ -18,18 +18,18 @@ import { createEquity } from "./assets/equity";
 import { createFund } from "./assets/fund";
 import { createPausedAsset } from "./assets/paused";
 import { createStableCoin } from "./assets/stablecoin";
-import { Countries } from "./constants/countries";
-import { ATKRoles } from "./constants/roles";
-import { ATKTopic } from "./constants/topics";
-import { claimIssuer } from "./entities/actors/claim-issuer";
 import {
+  claimIssuer,
   frozenInvestor,
   investorA,
   investorANew,
   investorB,
   maliciousInvestor,
-} from "./entities/actors/investors";
-import { owner } from "./entities/actors/owner";
+  owner,
+} from "./constants/actors";
+import { Countries } from "./constants/countries";
+import { ATKRoles } from "./constants/roles";
+import { ATKTopic } from "./constants/topics";
 import { AirdropMerkleTree } from "./entities/airdrop/merkle-tree";
 import { atkDeployer } from "./services/deployer";
 import { topicManager } from "./services/topic-manager";
@@ -96,6 +96,7 @@ async function main() {
     topicManager.getTopicId(ATKTopic.collateral),
     topicManager.getTopicId(ATKTopic.assetClassification),
     topicManager.getTopicId(ATKTopic.basePrice),
+    topicManager.getTopicId(ATKTopic.isin),
   ]);
 
   console.log("\n=== Verify the actors... ===\n");

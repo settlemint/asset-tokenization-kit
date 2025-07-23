@@ -1,5 +1,5 @@
+import { owner } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { formatBaseUnits } from "../../../utils/format-base-units";

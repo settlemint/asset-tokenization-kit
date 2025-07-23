@@ -1,7 +1,7 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem";
+import { owner } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
 import type { ATKTopic } from "../../../constants/topics";
-import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
 import { atkDeployer } from "../../../services/deployer";
 import { topicManager } from "../../../services/topic-manager";

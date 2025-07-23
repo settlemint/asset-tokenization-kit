@@ -23,13 +23,23 @@ contract ATKContractIdentityProxy is AbstractATKSystemProxy {
     ///      It initializes the proxy and the underlying contract identity state.
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param contractAddress The address of the contract that will own this identity.
-    constructor(address systemAddress, address contractAddress) AbstractATKSystemProxy(systemAddress) {
+    /// @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
+    /// authorizers.
+    constructor(
+        address systemAddress,
+        address contractAddress,
+        address[] memory claimAuthorizationContracts
+    )
+        AbstractATKSystemProxy(systemAddress)
+    {
         if (contractAddress == address(0)) revert ZeroAddressNotAllowed();
 
         IATKSystem system_ = _getSystem();
         address implementation = _getSpecificImplementationAddress(system_);
 
-        bytes memory data = abi.encodeWithSelector(IATKContractIdentity.initialize.selector, contractAddress);
+        bytes memory data = abi.encodeWithSelector(
+            IATKContractIdentity.initialize.selector, contractAddress, claimAuthorizationContracts
+        );
 
         _performInitializationDelegatecall(implementation, data);
     }
