@@ -41,16 +41,27 @@ spec:
       serviceAccountName: {{ include "besu-genesis.serviceAccountName" . }}
       initContainers:
       {{- if .Files.Glob "files/genesis-output.json.gz" }}
-        - name: create-empty-contract-data
+        - name: copy-contract-data
           image: busybox:latest
           command:  
             - /bin/sh
             - -c
             - |
-              echo "Creating empty contract allocation file as placeholder..."
-              echo '{}' | gzip > /genesis-pvc/genesis-output.json.gz
-              echo "Empty contract data created (will be replaced by proper data in future)"
-              ls -la /genesis-pvc/
+              echo "Copying contract allocation data to PVC..."
+              cat > /genesis-pvc/genesis-output.json.gz << 'EOF'
+              {{- .Files.Get "files/genesis-output.json.gz" | b64enc | nindent 14 }}
+              EOF
+              base64 -d /genesis-pvc/genesis-output.json.gz > /genesis-pvc/genesis-output.json.gz.tmp
+              mv /genesis-pvc/genesis-output.json.gz.tmp /genesis-pvc/genesis-output.json.gz
+              echo "Contract data copied successfully"
+              echo "File size: $(ls -lh /genesis-pvc/genesis-output.json.gz | awk '{print $5}')"
+              # Verify the file is valid gzip
+              if gunzip -t /genesis-pvc/genesis-output.json.gz 2>/dev/null; then
+                echo "File is valid gzip format"
+              else
+                echo "ERROR: File is not valid gzip format"
+                exit 1
+              fi
           volumeMounts:
             - name: genesis-pvc
               mountPath: /genesis-pvc
