@@ -11,7 +11,7 @@ import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/m
 import { ERC735 } from "../../../onchainid/extensions/ERC735.sol";
 import { ClaimAuthorizationExtension } from "../../../onchainid/extensions/ClaimAuthorizationExtension.sol";
 import { OnChainContractIdentity } from "../../../onchainid/extensions/OnChainContractIdentity.sol";
-import { ClaimSchemes } from "../../../onchainid/ClaimSchemes.sol";
+import { ERC735ClaimSchemes } from "../../../onchainid/ERC735ClaimSchemes.sol";
 
 /// @title ATK Contract Identity Implementation Contract
 /// @author SettleMint Tokenization Services
@@ -282,7 +282,7 @@ contract ATKContractIdentityImplementation is
 
         return subject.addClaim(
             topic,
-            ClaimSchemes.SCHEME_CONTRACT,
+            ERC735ClaimSchemes.SCHEME_CONTRACT,
             address(this),
             "", // Empty signature for contract scheme
             data,

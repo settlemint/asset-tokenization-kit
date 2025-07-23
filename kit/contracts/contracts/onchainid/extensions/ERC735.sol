@@ -5,7 +5,7 @@ import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol"; // Required for addClaim's issuer
     // validation
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol"; // Required for IClaimIssuer interface
-import { ClaimSchemes } from "../ClaimSchemes.sol";
+import { ERC735ClaimSchemes } from "../ERC735ClaimSchemes.sol";
 
 /// @title ERC735 Claim Holder Standard Implementation
 /// @dev Implementation of the IERC735 (Claim Holder) standard.
@@ -55,12 +55,12 @@ contract ERC735 is IERC735 {
         }
 
         if (_issuer != address(this)) {
-            if (_scheme == ClaimSchemes.SCHEME_ECDSA) {
+            if (_scheme == ERC735ClaimSchemes.SCHEME_ECDSA) {
                 require(
                     IClaimIssuer(_issuer).isClaimValid(IIdentity(address(this)), _topic, _signature, _data),
                     "Invalid ECDSA claim"
                 );
-            } else if (_scheme == ClaimSchemes.SCHEME_CONTRACT) {
+            } else if (_scheme == ERC735ClaimSchemes.SCHEME_CONTRACT) {
                 if (msg.sender != _issuer) {
                     revert UnauthorizedContractClaim(msg.sender, _issuer);
                 }

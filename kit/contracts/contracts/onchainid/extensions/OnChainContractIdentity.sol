@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
-import { ClaimSchemes } from "../ClaimSchemes.sol";
+import { ERC735ClaimSchemes } from "../ERC735ClaimSchemes.sol";
 
 /**
  * @title OnChainContractIdentity
@@ -62,7 +62,7 @@ abstract contract OnChainContractIdentity is IClaimIssuer {
         ) {
             return (
                 storedTopic == topic && storedIssuer == address(this) && keccak256(storedData) == keccak256(data)
-                    && scheme == ClaimSchemes.SCHEME_CONTRACT
+                    && scheme == ERC735ClaimSchemes.SCHEME_CONTRACT
             );
         } catch {
             return false;
@@ -99,7 +99,7 @@ abstract contract OnChainContractIdentity is IClaimIssuer {
 
         return subject.addClaim(
             topic,
-            ClaimSchemes.SCHEME_CONTRACT,
+            ERC735ClaimSchemes.SCHEME_CONTRACT,
             address(this),
             "", // Empty signature for contract scheme
             data,

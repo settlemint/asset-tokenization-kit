@@ -16,7 +16,7 @@ import { ERC735 } from "../../../../contracts/onchainid/extensions/ERC735.sol";
 import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "../../../utils/SystemUtils.sol";
 import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
-import { ClaimSchemes } from "../../../../contracts/onchainid/ClaimSchemes.sol";
+import { ERC735ClaimSchemes } from "../../../../contracts/onchainid/ERC735ClaimSchemes.sol";
 import { OnChainContractIdentity } from "../../../../contracts/onchainid/extensions/OnChainContractIdentity.sol";
 
 /// @title Mock Contract With Identity - Represents a contract (like a token) that has an associated identity
@@ -313,7 +313,7 @@ contract ATKContractIdentityImplementationTest is Test {
 
     // Test constants
     uint256 constant CLAIM_TOPIC = 1;
-    uint256 constant CLAIM_SCHEME = ERC734KeyTypes.ECDSA;
+    uint256 constant CLAIM_SCHEME = ERC735ClaimSchemes.SCHEME_ECDSA;
     bytes constant CLAIM_DATA = hex"1234";
     bytes constant CLAIM_SIGNATURE = hex"5678";
     string constant CLAIM_URI = "https://example.com/claim";
@@ -858,7 +858,7 @@ contract ATKContractIdentityImplementationTest is Test {
         // Verify the claim was added to the subject identity
         MockIdentityReceiver.ClaimData memory claim = subjectIdentity.getClaimData(claimId);
         assertEq(claim.topic, CLAIM_TOPIC);
-        assertEq(claim.scheme, ClaimSchemes.SCHEME_CONTRACT);
+        assertEq(claim.scheme, ERC735ClaimSchemes.SCHEME_CONTRACT);
         assertEq(claim.issuer, address(proxy));
         assertEq(claim.signature, "");
         assertEq(claim.data, CLAIM_DATA);
@@ -910,7 +910,7 @@ contract ATKContractIdentityImplementationTest is Test {
 
         // Set up the mock to return the claim
         subjectIdentity.setClaimForValidation(
-            claimId, CLAIM_TOPIC, ClaimSchemes.SCHEME_CONTRACT, address(proxy), "", CLAIM_DATA, CLAIM_URI
+            claimId, CLAIM_TOPIC, ERC735ClaimSchemes.SCHEME_CONTRACT, address(proxy), "", CLAIM_DATA, CLAIM_URI
         );
 
         // Validate the claim
@@ -982,7 +982,7 @@ contract ATKContractIdentityImplementationTest is Test {
         emptyIdentity.setClaimForValidation(
             keccak256(abi.encode(address(proxy), CLAIM_TOPIC)),
             CLAIM_TOPIC,
-            ClaimSchemes.SCHEME_CONTRACT,
+            ERC735ClaimSchemes.SCHEME_CONTRACT,
             address(0x123), // wrong issuer
             "",
             CLAIM_DATA,
