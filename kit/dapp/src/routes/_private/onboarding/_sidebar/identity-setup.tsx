@@ -6,9 +6,30 @@ import {
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
+import { InfoAlert } from "@/components/ui/info-alert";
+import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
+import { useAppForm } from "@/hooks/use-app-form";
+import { isoCountryCode } from "@/lib/zod/validators/iso-country-code";
+import { orpc } from "@/orpc/orpc-client";
+import { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ShieldCheck } from "lucide-react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import z from "zod";
+
+const identitySetupFormSchema = z.object({
+  country: isoCountryCode,
+});
+
+const logger = createLogger();
 
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/identity-setup"
@@ -20,44 +41,123 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { t } = useTranslation(["onboarding", "common"]);
-  const { navigateToStep } = useOnboardingNavigation();
+  const { refreshUserState } = useOnboardingNavigation();
+  const queryClient = useQueryClient();
 
-  const handleComplete = () => {
-    // Navigate to the next step (identity verification)
-    // Note: identitySetup tracking will be implemented server-side
-    void navigateToStep(OnboardingStep.identity);
-  };
+  const { data: account } = useSuspenseQuery({
+    ...orpc.account.me.queryOptions(),
+  });
+  const { data: systemDetails } = useQuery({
+    ...orpc.system.read.queryOptions({
+      input: { id: "default" },
+    }),
+  });
+
+  // Verification dialog state
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null
+  );
+
+  const { mutateAsync: createIdentity, isPending: isIdentityCreating } =
+    useMutation(
+      orpc.system.identityCreate.mutationOptions({
+        onSuccess: async (result) => {
+          for await (const event of result) {
+            logger.info("identity creation event", event);
+            if (event.status === "failed") {
+              throw new Error(event.message);
+            }
+          }
+          // Refetch all relevant data
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: orpc.account.me.queryOptions().queryKey,
+              refetchType: "all",
+            }),
+          ]);
+          await refreshUserState();
+        },
+      })
+    );
+
+  const form = useAppForm({
+    defaultValues: {
+      country: account?.country ?? ".",
+    },
+    validators: {
+      onSubmit: identitySetupFormSchema,
+    },
+    onSubmit: () => {
+      setShowVerificationModal(true);
+    },
+  });
+
+  // Handle verification code submission
+  const handleVerificationSubmit = useCallback(
+    (verification: UserVerification) => {
+      if (!systemDetails?.identityRegistry) {
+        return;
+      }
+
+      setVerificationError(null);
+      setShowVerificationModal(false);
+
+      toast.promise(
+        createIdentity({
+          verification,
+          country: form.state.values.country,
+        }),
+        {
+          loading: t("identity-setup.deploying-toast"),
+          success: t("identity-setup.deployed-toast"),
+          error: (error: Error) =>
+            `${t("identity-setup.failed-toast")}${error.message}`,
+        }
+      );
+    },
+    [createIdentity, t, systemDetails?.identityRegistry]
+  );
 
   return (
     <OnboardingStepLayout
-      title={t("onboarding:steps.identity-setup.title")}
-      description={t("onboarding:steps.identity-setup.description")}
-      actions={
-        <Button onClick={handleComplete} className="w-40">
-          {t("common:continue")}
-        </Button>
-      }
+      title={t("steps.identity-setup.title")}
+      description={t("steps.identity-setup.description")}
     >
-      <div className="text-center space-y-4">
-        <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-          <ShieldCheck className="w-8 h-8 text-primary" />
-        </div>
-      </div>
-      <div className="space-y-6">
-        <div className="bg-muted/50 rounded-lg p-6 space-y-4 flex flex-col items-center">
-          <p className="text-sm text-center">
-            {t("onboarding:identity-setup.info")}
-          </p>
-          <div className="bg-info/10 border border-info/20 rounded-md p-4 w-full">
-            <h3 className="text-sm text-info-foreground font-medium mb-1">
-              {t("onboarding:identity-setup.coming-soon")}
-            </h3>
-            <p className="text-sm text-info-foreground">
-              {t("onboarding:identity-setup.coming-soon-description")}
-            </p>
-          </div>
-        </div>
-      </div>
+      <InfoAlert title={t("identity-setup.info")} />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void form.handleSubmit();
+        }}
+        className="space-y-6"
+      >
+        <form.AppForm>
+          <form.AppField
+            name="country"
+            children={(field) => (
+              <field.CountrySelectField
+                label={t("identity-setup.form.country")}
+                required={true}
+                disabled={isIdentityCreating}
+              />
+            )}
+          />
+          <Button type="submit" disabled={isIdentityCreating}>
+            {isIdentityCreating
+              ? t("identity-setup.form.submitting")
+              : t("identity-setup.form.submit")}
+          </Button>
+        </form.AppForm>
+      </form>
+      <VerificationDialog
+        open={showVerificationModal}
+        onOpenChange={setShowVerificationModal}
+        onSubmit={handleVerificationSubmit}
+        title={t("identity-setup.confirm-title")}
+        description={t("identity-setup.confirm-description")}
+        errorMessage={verificationError}
+      />
     </OnboardingStepLayout>
   );
 }

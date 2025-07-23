@@ -93,6 +93,11 @@ export const SystemReadOutputSchema = z.object({
   identityRegistry: ethereumAddress.nullable(),
 
   /**
+   * The identity factory contract address
+   */
+  identityFactory: ethereumAddress.nullable(),
+
+  /**
    * The trusted issuers registry contract address
    */
   trustedIssuersRegistry: ethereumAddress.nullable(),

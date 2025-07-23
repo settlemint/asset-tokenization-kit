@@ -34,6 +34,9 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
       identityRegistry {
         id
       }
+      identityFactory {
+        id
+      }
       trustedIssuersRegistry {
         id
       }
@@ -95,6 +98,11 @@ export const read = onboardedRouter.system.read
           id: z.string(),
           deployedInTransaction: z.string().nullable(),
           identityRegistry: z
+            .object({
+              id: z.string(),
+            })
+            .nullable(),
+          identityFactory: z
             .object({
               id: z.string(),
             })
@@ -177,6 +185,7 @@ export const read = onboardedRouter.system.read
       id: result.system.id as EthereumAddress,
       deployedInTransaction: result.system.deployedInTransaction,
       identityRegistry: result.system.identityRegistry?.id as EthereumAddress,
+      identityFactory: result.system.identityFactory?.id as EthereumAddress,
       trustedIssuersRegistry: result.system.trustedIssuersRegistry
         ?.id as EthereumAddress,
       compliance: result.system.compliance?.id as EthereumAddress,

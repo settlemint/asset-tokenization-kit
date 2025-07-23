@@ -1,47 +1,47 @@
 import { useAppForm } from "@/hooks/use-app-form";
 import { authClient } from "@/lib/auth/auth.client";
-import { isoCountryCode } from "@/lib/zod/validators/iso-country-code";
+import { orpc } from "@/orpc/orpc-client";
 import {
   KycProfileUpsert,
   KycProfileUpsertSchema,
 } from "@/orpc/routes/user/kyc/kyc.schema";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-type FormValues = KycProfileUpsert & {
-  country: string;
-};
+type FormValues = KycProfileUpsert;
 
 interface KycFormProps {
   onComplete: () => void;
 }
 
-const DEFAULT_VALUES: FormValues = {
-  firstName: "",
-  lastName: "",
-  dob: new Date(1980, 0, 1),
-  country: "",
-  residencyStatus: "resident",
-};
-
 const KYC_FORM_FIELDS = [
   "firstName",
   "lastName",
   "dob",
-  "country",
   "residencyStatus",
 ] as const;
 
-const kycFormSchema = KycProfileUpsertSchema.extend({
-  country: isoCountryCode,
-});
+const kycFormSchema = KycProfileUpsertSchema;
 
 export function KycForm({ onComplete }: KycFormProps) {
   const { t } = useTranslation(["components"]);
   const { data: session } = authClient.useSession();
 
+  const { data: account } = useSuspenseQuery({
+    ...orpc.account.me.queryOptions(),
+  });
+  const { data: kyc } = useSuspenseQuery({
+    ...orpc.user.kyc.read.queryOptions({
+      input: {
+        userId: session?.user.id ?? "",
+      },
+      enabled: !!session?.user.id,
+    }),
+  });
+
   const form = useAppForm({
-    defaultValues: session?.user.kycProfile ?? DEFAULT_VALUES,
+    defaultValues: kyc as FormValues,
     validators: {
       onChange: kycFormSchema,
     },
@@ -98,19 +98,12 @@ export function KycForm({ onComplete }: KycFormProps) {
         )}
       />
       <form.AppField
-        name="country"
-        children={(field) => (
-          <field.CountrySelectField
-            label={t("kycForm.country")}
-            required={true}
-          />
-        )}
-      />
-      <form.AppField
         name="residencyStatus"
         children={(field) => (
           <field.SelectField
-            label={t("kycForm.residencyStatus")}
+            label={t("kycForm.residencyStatus", {
+              country: account?.country ?? ".",
+            })}
             required={true}
             options={residencyStatusOptions}
           />

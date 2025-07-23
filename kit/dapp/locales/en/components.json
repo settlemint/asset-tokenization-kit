@@ -12,7 +12,14 @@
     "firstName": "First Name",
     "lastName": "Last Name",
     "dob": "Date of Birth",
-    "country": "Country",
-    "residencyStatus": "Residency Status"
+    "residencyStatus": "Residency Status",
+    "residencyStatusOptions": {
+      "resident": "I currently live in this country and am considered a legal/tax resident",
+      "non_resident": "I do not live in this country and am not considered a legal/tax resident",
+      "dual_resident": "I am considered a resident in more than one country",
+      "unknown": "I am not sure about my residency status or I prefer not to disclose it"
+    },
+    "nationalId": "National ID",
+    "submit": "Save & Continue"
   }
 }

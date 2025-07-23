@@ -2,7 +2,7 @@ import { memo } from "react";
 
 interface InfoAlertProps {
   title: string;
-  description: string;
+  description?: string;
 }
 
 export const InfoAlert = memo(({ title, description }: InfoAlertProps) => {
@@ -28,9 +28,11 @@ export const InfoAlert = memo(({ title, description }: InfoAlertProps) => {
           <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
             {title}
           </h3>
-          <p className="text-sm text-blue-800 dark:text-blue-200">
-            {description}
-          </p>
+          {description && (
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              {description}
+            </p>
+          )}
         </div>
       </div>
     </div>

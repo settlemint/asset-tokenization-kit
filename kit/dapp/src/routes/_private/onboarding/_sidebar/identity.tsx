@@ -6,6 +6,7 @@ import {
 } from "@/components/onboarding/route-helpers";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { InfoAlert } from "@/components/ui/info-alert";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
@@ -31,6 +32,7 @@ function RouteComponent() {
       title={t("onboarding:steps.identity.title")}
       description={t("onboarding:steps.identity.description")}
     >
+      <InfoAlert title={t("onboarding:identity.intro")} />
       <KycForm onComplete={handleComplete} />
     </OnboardingStepLayout>
   );
