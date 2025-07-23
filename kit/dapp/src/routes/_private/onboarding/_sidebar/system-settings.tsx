@@ -56,10 +56,17 @@ function RouteComponent() {
               input: { key: "BASE_CURRENCY" },
             }),
           });
+          await syncExchangeRates({
+            force: true,
+          });
           await completeStepAndNavigate(OnboardingStep.systemSettings);
         },
       })
     );
+
+  const { mutateAsync: syncExchangeRates } = useMutation(
+    orpc.exchangeRates.sync.mutationOptions()
+  );
 
   const form = useForm({
     defaultValues: {
