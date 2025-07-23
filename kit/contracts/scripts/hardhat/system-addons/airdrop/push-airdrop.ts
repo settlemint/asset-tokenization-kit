@@ -1,5 +1,5 @@
 import { parseEther } from "viem";
-import { owner } from "../../constants/actorss/owner";
+import { owner } from "../../constants/actors";
 import { AirdropMerkleTree } from "../../entities/airdrop/merkle-tree";
 import { PushAirdrop } from "../../entities/airdrop/push-airdrop";
 import { Asset } from "../../entities/asset";

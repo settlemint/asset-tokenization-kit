@@ -13,7 +13,7 @@ import type {
 } from "viem";
 
 import ATKOnboardingModule from "../../../ignition/modules/onboarding";
-import { owner } from "../constants/actorss/owner";
+import { owner } from "../constants/actors";
 import { ATKContracts } from "../constants/contracts";
 // --- Utility Imports ---
 

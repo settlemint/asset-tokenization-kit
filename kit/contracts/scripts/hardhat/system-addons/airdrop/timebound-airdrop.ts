@@ -1,4 +1,4 @@
-import { owner } from "../../constants/actorss/owner";
+import { owner } from "../../constants/actors";
 import { AirdropMerkleTree } from "../../entities/airdrop/merkle-tree";
 import { TimeBoundAirdrop } from "../../entities/airdrop/timebound-airdrop";
 import { Asset } from "../../entities/asset";
