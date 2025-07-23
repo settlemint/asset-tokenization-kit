@@ -107,15 +107,10 @@ describe("Actions Schemas", () => {
       id: "action-123",
       name: "Test Action",
       target: "0x1234567890123456789012345678901234567890",
-      createdAt: BigInt(1700000000),
       activeAt: BigInt(1700000100),
-      expiresAt: BigInt(1700000200),
-      requiredRole: "admin",
       status: "ACTIVE" as const,
-      executed: false,
       executedAt: null,
       executedBy: null,
-      identifier: "test-identifier",
       executor: {
         id: "executor-1",
         executors: ["0x1234567890123456789012345678901234567890"],
@@ -127,22 +122,18 @@ describe("Actions Schemas", () => {
       expect(result.id).toBe("action-123");
       expect(result.name).toBe("Test Action");
       expect(result.status).toBe("ACTIVE");
-      expect(result.createdAt).toBe(BigInt(1700000000));
+      expect(result.activeAt).toBe(BigInt(1700000100));
     });
 
     it("should handle null optional fields", () => {
       const actionWithNulls = {
         ...validAction,
-        expiresAt: null,
-        requiredRole: null,
         executedAt: null,
         executedBy: null,
-        identifier: null,
       };
       const result = safeParse(ActionSchema, actionWithNulls);
-      expect(result.expiresAt).toBeNull();
-      expect(result.requiredRole).toBeNull();
-      expect(result.identifier).toBeNull();
+      expect(result.executedAt).toBeNull();
+      expect(result.executedBy).toBeNull();
     });
 
     it("should require all mandatory fields", () => {
@@ -150,10 +141,8 @@ describe("Actions Schemas", () => {
         "id",
         "name",
         "target",
-        "createdAt",
         "activeAt",
         "status",
-        "executed",
         "executor",
       ];
 
@@ -194,8 +183,7 @@ describe("Actions Schemas", () => {
     it("should validate bigint timestamps", () => {
       const stringTimestamps = {
         ...validAction,
-        createdAt: "1700000000", // String instead of bigint
-        activeAt: "1700000100",
+        activeAt: "1700000100", // String instead of bigint
       };
       expect(() => safeParse(ActionSchema, stringTimestamps)).toThrow();
     });
@@ -206,13 +194,11 @@ describe("Actions Schemas", () => {
       const validInput = {
         status: "PENDING" as const,
         target: "0x1234567890123456789012345678901234567890",
-        requiredRole: "admin",
         name: "settlement",
       };
       const result = safeParse(ActionsListSchema, validInput);
       expect(result.status).toBe("PENDING");
       expect(result.target).toBe("0x1234567890123456789012345678901234567890");
-      expect(result.requiredRole).toBe("admin");
       expect(result.name).toBe("settlement");
     });
 
@@ -221,7 +207,6 @@ describe("Actions Schemas", () => {
       const result = safeParse(ActionsListSchema, minimalInput);
       expect(result.status).toBeUndefined();
       expect(result.target).toBeUndefined();
-      expect(result.requiredRole).toBeUndefined();
       expect(result.name).toBeUndefined();
     });
 
@@ -253,11 +238,6 @@ describe("Actions Schemas", () => {
       expect(targetResult.target).toBe(
         "0x1234567890123456789012345678901234567890"
       );
-
-      // Test role filter
-      const roleFilter = { requiredRole: "executor" };
-      const roleResult = safeParse(ActionsListSchema, roleFilter);
-      expect(roleResult.requiredRole).toBe("executor");
 
       // Test name filter
       const nameFilter = { name: "bond maturity" };
@@ -301,15 +281,10 @@ describe("Actions Schemas", () => {
       id: "action-123",
       name: "Test Action",
       target: "0x1234567890123456789012345678901234567890",
-      createdAt: BigInt(1700000000),
       activeAt: BigInt(1700000100),
-      expiresAt: null,
-      requiredRole: null,
       status: "ACTIVE" as const,
-      executed: false,
       executedAt: null,
       executedBy: null,
-      identifier: null,
       executor: {
         id: "executor-1",
         executors: ["0x1234567890123456789012345678901234567890"],
@@ -361,22 +336,17 @@ describe("Actions Schemas", () => {
         id: "action-123",
         name: "Test Action",
         target: "0x1234567890123456789012345678901234567890",
-        createdAt: BigInt("99999999999999999"),
         activeAt: BigInt("99999999999999999"),
-        expiresAt: BigInt("99999999999999999"),
-        requiredRole: null,
         status: "PENDING" as const,
-        executed: false,
         executedAt: null,
         executedBy: null,
-        identifier: null,
         executor: {
           id: "executor-1",
           executors: [],
         },
       };
       const result = safeParse(ActionSchema, largeTimestamp);
-      expect(result.createdAt).toBe(BigInt("99999999999999999"));
+      expect(result.activeAt).toBe(BigInt("99999999999999999"));
     });
 
     it("should handle maximum array length for executors", () => {
@@ -398,15 +368,10 @@ describe("Actions Schemas", () => {
         id: longString,
         name: longString,
         target: "0x1234567890123456789012345678901234567890",
-        createdAt: BigInt(1700000000),
         activeAt: BigInt(1700000100),
-        expiresAt: null,
-        requiredRole: longString,
         status: "PENDING" as const,
-        executed: false,
         executedAt: null,
         executedBy: null,
-        identifier: longString,
         executor: {
           id: longString,
           executors: ["0x1234567890123456789012345678901234567890"],
@@ -414,7 +379,7 @@ describe("Actions Schemas", () => {
       };
       const result = safeParse(ActionSchema, actionWithLongStrings);
       expect(result.name).toBe(longString);
-      expect(result.identifier).toBe(longString);
+      expect(result.id).toBe(longString);
     });
 
     it("should handle empty filters", () => {

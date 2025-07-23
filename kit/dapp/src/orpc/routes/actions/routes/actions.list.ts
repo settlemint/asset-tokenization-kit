@@ -29,15 +29,10 @@ const LIST_ACTIONS_QUERY = theGraphGraphql(`
         id
         name
         target
-        createdAt
         activeAt
-        expiresAt
-        requiredRole
         status
-        executed
         executedAt
         executedBy
-        identifier
         executor {
           id
           executors
@@ -96,9 +91,6 @@ export const list = authRouter.actions.list
     }
     if (input.target !== undefined) {
       where.target = input.target.toLowerCase();
-    }
-    if (input.requiredRole !== undefined) {
-      where.requiredRole = input.requiredRole;
     }
     if (input.name !== undefined) {
       where.name_contains_nocase = input.name;

@@ -61,11 +61,8 @@ describe("Actions API", () => {
           id: expect.stringMatching(/^0x[a-fA-F0-9]+$/),
           name: expect.any(String),
           target: expect.stringMatching(/^0x[a-fA-F0-9]{40}$/),
-          createdAt: expect.any(BigInt),
           activeAt: expect.any(BigInt),
           status: expect.stringMatching(/^(PENDING|ACTIVE|EXECUTED|EXPIRED)$/),
-          executed: expect.any(Boolean),
-          identifier: expect.any(String),
           executor: expect.objectContaining({
             id: expect.stringMatching(/^0x[a-fA-F0-9]+$/),
             executors: expect.arrayContaining([
@@ -75,9 +72,6 @@ describe("Actions API", () => {
         });
 
         // Optional fields
-        if (action.expiresAt !== null) {
-          expect(action.expiresAt).toBeInstanceOf(BigInt);
-        }
         if (action.executedAt !== null) {
           expect(action.executedAt).toBeInstanceOf(BigInt);
         }
@@ -163,11 +157,8 @@ describe("Actions API", () => {
         id: actionId,
         name: expect.any(String),
         target: expect.stringMatching(/^0x[a-fA-F0-9]{40}$/),
-        createdAt: expect.any(BigInt),
         activeAt: expect.any(BigInt),
         status: expect.stringMatching(/^(PENDING|ACTIVE|EXECUTED|EXPIRED)$/),
-        executed: expect.any(Boolean),
-        identifier: expect.any(String),
         executor: expect.objectContaining({
           id: expect.stringMatching(/^0x[a-fA-F0-9]+$/),
           executors: expect.arrayContaining([
@@ -177,8 +168,6 @@ describe("Actions API", () => {
       });
 
       // Check optional fields
-      expect(result.data).toHaveProperty("expiresAt");
-      expect(result.data).toHaveProperty("requiredRole");
       expect(result.data).toHaveProperty("executedAt");
       expect(result.data).toHaveProperty("executedBy");
     });

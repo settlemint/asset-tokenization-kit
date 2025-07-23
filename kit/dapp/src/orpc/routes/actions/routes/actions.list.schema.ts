@@ -41,22 +41,8 @@ export const ActionSchema = z.object({
   id: z.string().describe("Unique identifier for the action"),
   name: z.string().describe("Human-readable name of the action"),
   target: ethereumAddress.describe("Target address for the action"),
-  createdAt: z.bigint().describe("Timestamp when the action was created"),
   activeAt: z.bigint().describe("Timestamp when the action becomes active"),
-  expiresAt: z
-    .bigint()
-    .nullable()
-    .describe("Timestamp when the action expires (null if no expiry)"),
-  requiredRole: z
-    .string()
-    .nullable()
-    .describe("Role required to execute the action (null if no role required)"),
   status: ActionStatusSchema.describe("Current status of the action"),
-  executed: z
-    .boolean()
-    .describe(
-      "DEPRECATED: Whether the action has been executed (use status instead)"
-    ),
   executedAt: z
     .bigint()
     .nullable()
@@ -64,10 +50,6 @@ export const ActionSchema = z.object({
   executedBy: ethereumAddress
     .nullable()
     .describe("Address that executed the action"),
-  identifier: z
-    .string()
-    .nullable()
-    .describe("Optional identifier for the action"),
   executor: ActionExecutorSchema.describe(
     "Executor information for the action"
   ),
@@ -120,17 +102,6 @@ export const ActionsListSchema = z.object({
   target: ethereumAddress
     .optional()
     .describe("Filter actions by their target address"),
-
-  /**
-   * Filter by required role.
-   *
-   * When specified, only actions requiring the specified role will be returned.
-   * This is useful for filtering actions by permission level.
-   */
-  requiredRole: z
-    .string()
-    .optional()
-    .describe("Filter actions by the role required to execute them"),
 
   /**
    * Filter by action name.
