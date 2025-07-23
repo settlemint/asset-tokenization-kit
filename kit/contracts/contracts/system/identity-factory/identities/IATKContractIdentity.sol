@@ -36,4 +36,20 @@ interface IATKContractIdentity is IIdentity {
     /// @param authorizationContract The address to check
     /// @return True if registered, false otherwise
     function isClaimAuthorizationContractRegistered(address authorizationContract) external view returns (bool);
+
+    /// @notice Issues a claim to a subject identity on behalf of the associated contract
+    /// @dev Only the associated contract can call this function to issue claims
+    /// @param subject The identity contract to add the claim to
+    /// @param topic The claim topic
+    /// @param data The claim data
+    /// @param uri The claim URI (e.g., IPFS hash)
+    /// @return claimId The ID of the created claim
+    function issueClaimTo(
+        IIdentity subject,
+        uint256 topic,
+        bytes memory data,
+        string memory uri
+    )
+        external
+        returns (bytes32 claimId);
 }
