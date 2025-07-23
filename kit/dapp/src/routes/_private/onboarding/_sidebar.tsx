@@ -268,11 +268,11 @@ function RouteComponent() {
   };
 
   return (
-    <div className="OnboardingSidebar flex flex-col h-full rounded-xl shadow-lg overflow-hidden">
+    <div className="OnboardingSidebar flex flex-col h-full rounded-xl shadow-lg overflow-y-hidden">
       <SidebarProvider>
         <Sidebar className="w-[320px] flex-shrink-0 transition-all duration-300 group-data-[side=left]:border-0">
           <div
-            className="w-full overflow-y-auto"
+            className="w-full overflow-y-auto h-full"
             style={{
               background: "var(--sm-wizard-sidebar-gradient)",
               backgroundSize: "cover",
@@ -319,7 +319,7 @@ function RouteComponent() {
           <div className="flex-1 p-8">
             <div
               className="w-full overflow-y-auto"
-              style={{ maxHeight: "calc(100% - 200px)" }}
+              style={{ maxHeight: "calc(100% - 80px)" }}
             >
               <Outlet />
             </div>

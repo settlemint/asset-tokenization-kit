@@ -429,9 +429,12 @@
 
   .OnboardingSidebar [data-slot="sidebar-wrapper"] {
     min-height: initial;
+    height: 100%;
   }
 
-  .OnboardingSidebar [data-slot="sidebar-container"] {
-    height: initial;
+  .OnboardingSidebar [data-slot="sidebar-container"],
+  .OnboardingSidebar [data-slot="sidebar"],
+  .OnboardingSidebar [data-slot="sidebar-inner"] {
+    height: 100%;
   }
 }
