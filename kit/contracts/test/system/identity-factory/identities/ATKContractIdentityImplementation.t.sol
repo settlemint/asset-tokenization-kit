@@ -20,6 +20,7 @@ import { SMARTComplianceModuleParamPair } from
 import { ATKTopics } from "../../../../contracts/system/ATKTopics.sol";
 import { ATKRoles } from "../../../../contracts/assets/ATKRoles.sol";
 import "../../../utils/SystemUtils.sol";
+import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
 
 /// @title Mock contract that implements IContractWithIdentity
 contract MockContractWithIdentity is IContractWithIdentity, ERC165 {
@@ -120,7 +121,6 @@ contract ATKContractIdentityImplementationTest is Test {
 
     // Claim test data
     uint256 constant CLAIM_TOPIC = 1;
-    uint256 constant CLAIM_SCHEME = 1;
     bytes constant CLAIM_DATA = hex"1234";
     bytes constant CLAIM_SIGNATURE = hex"5678";
     string constant CLAIM_URI = "https://example.com/claim";
@@ -233,7 +233,7 @@ contract ATKContractIdentityImplementationTest is Test {
         // Use the identity itself as the issuer for self-attested claims
         vm.prank(identityOwner);
         bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
-            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+            CLAIM_TOPIC, ERC734KeyTypes.ECDSA, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
         );
 
         assertTrue(claimId != bytes32(0));
@@ -242,7 +242,7 @@ contract ATKContractIdentityImplementationTest is Test {
             IERC735(address(proxy)).getClaim(claimId);
 
         assertEq(topic, CLAIM_TOPIC);
-        assertEq(scheme, CLAIM_SCHEME);
+        assertEq(scheme, ERC734KeyTypes.ECDSA);
         assertEq(issuer, address(proxy));
         assertEq(signature, CLAIM_SIGNATURE);
         assertEq(data, CLAIM_DATA);
@@ -259,7 +259,7 @@ contract ATKContractIdentityImplementationTest is Test {
         // Now claimIssuer can add claims with the mockClaimIssuer as the issuer because authorization contract approves
         vm.prank(claimIssuer);
         bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
-            CLAIM_TOPIC, CLAIM_SCHEME, address(mockClaimIssuer), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+            CLAIM_TOPIC, ERC734KeyTypes.ECDSA, address(mockClaimIssuer), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
         );
 
         assertTrue(claimId != bytes32(0));
@@ -284,7 +284,7 @@ contract ATKContractIdentityImplementationTest is Test {
         // Should succeed because at least one authorizer approves
         vm.prank(claimIssuer);
         bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
-            CLAIM_TOPIC, CLAIM_SCHEME, address(mockClaimIssuer), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+            CLAIM_TOPIC, ERC734KeyTypes.ECDSA, address(mockClaimIssuer), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
         );
 
         assertTrue(claimId != bytes32(0));
@@ -296,7 +296,7 @@ contract ATKContractIdentityImplementationTest is Test {
             abi.encodeWithSelector(ATKContractIdentityImplementation.UnauthorizedOperation.selector, unauthorizedUser)
         );
         IATKContractIdentity(address(proxy)).addClaim(
-            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+            CLAIM_TOPIC, ERC734KeyTypes.ECDSA, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
         );
     }
 
@@ -314,7 +314,7 @@ contract ATKContractIdentityImplementationTest is Test {
         // Should succeed despite one authorizer failing
         vm.prank(claimIssuer);
         bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
-            CLAIM_TOPIC, CLAIM_SCHEME, address(mockClaimIssuer), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+            CLAIM_TOPIC, ERC734KeyTypes.ECDSA, address(mockClaimIssuer), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
         );
 
         assertTrue(claimId != bytes32(0));
@@ -324,13 +324,13 @@ contract ATKContractIdentityImplementationTest is Test {
         // Add a claim first
         vm.prank(identityOwner);
         bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
-            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+            CLAIM_TOPIC, ERC734KeyTypes.ECDSA, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
         );
 
         // Remove the claim
         vm.prank(claimManager);
         vm.expectEmit(true, true, true, true);
-        emit ClaimRemoved(claimId, CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI);
+        emit ClaimRemoved(claimId, CLAIM_TOPIC, ERC734KeyTypes.ECDSA, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI);
 
         bool success = IATKContractIdentity(address(proxy)).removeClaim(claimId);
         assertTrue(success);
@@ -344,7 +344,7 @@ contract ATKContractIdentityImplementationTest is Test {
         // Add a claim first
         vm.prank(identityOwner);
         bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
-            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+            CLAIM_TOPIC, ERC734KeyTypes.ECDSA, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
         );
 
         // Try to remove without permission
@@ -415,7 +415,7 @@ contract ATKContractIdentityImplementationTest is Test {
         // Add multiple claims with same topic
         vm.startPrank(identityOwner);
         IATKContractIdentity(address(proxy)).addClaim(
-            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+            CLAIM_TOPIC, ERC734KeyTypes.ECDSA, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
         );
 
         // Add a second claim with different scheme to test multiple claims for same topic
@@ -529,7 +529,7 @@ contract ATKContractIdentityImplementationTest is Test {
         // Add a claim to the token's identity (self-attested)
         vm.prank(admin);
         bytes32 claimId =
-            IERC735(tokenIdentity).addClaim(CLAIM_TOPIC, CLAIM_SCHEME, tokenIdentity, CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI);
+            IERC735(tokenIdentity).addClaim(CLAIM_TOPIC, ERC734KeyTypes.ECDSA, tokenIdentity, CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI);
 
         // Verify the claim was added
         (uint256 topic,,,,,) = IERC735(tokenIdentity).getClaim(claimId);
