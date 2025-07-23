@@ -5,13 +5,13 @@
 import { describe, expect, it } from "bun:test";
 import { z } from "zod";
 import {
-  type ComplianceTypeId,
-  ComplianceTypeIdEnum,
   complianceModulePair,
   complianceModulePairArray,
   complianceParams,
+  type ComplianceTypeId,
   complianceTypeId,
   complianceTypeIdArray,
+  ComplianceTypeIdEnum,
   complianceTypeIdRecord,
   complianceTypeIds,
   complianceTypeIdSet,
@@ -646,7 +646,7 @@ describe("parser functions", () => {
 
   describe("getComplianceTypeIdArray", () => {
     it("should parse valid arrays", () => {
-      const validArray = [
+      const validArray: ComplianceTypeId[] = [
         "AddressBlockListComplianceModule",
         "CountryAllowListComplianceModule",
       ];
@@ -662,7 +662,7 @@ describe("parser functions", () => {
 
   describe("getComplianceTypeIdSet", () => {
     it("should parse valid sets", () => {
-      const validSet = new Set([
+      const validSet = new Set<ComplianceTypeId>([
         "AddressBlockListComplianceModule",
         "CountryAllowListComplianceModule",
       ]);
@@ -828,8 +828,8 @@ describe("complianceModulePairArray", () => {
 
     const result = validator.parse(validPairs);
     expect(result).toHaveLength(2);
-    expect(result[0].typeId).toBe("AddressBlockListComplianceModule");
-    expect(result[1].typeId).toBe("CountryAllowListComplianceModule");
+    expect(result[0]?.typeId).toBe("AddressBlockListComplianceModule");
+    expect(result[1]?.typeId).toBe("CountryAllowListComplianceModule");
   });
 
   it("should accept empty arrays", () => {
@@ -955,8 +955,8 @@ describe("compliance module pair utility functions", () => {
       ];
       const result = getComplianceModulePairArray(validArray);
       expect(result).toHaveLength(2);
-      expect(result[0].typeId).toBe("CountryBlockListComplianceModule");
-      expect(result[1].typeId).toBe(
+      expect(result[0]?.typeId).toBe("CountryBlockListComplianceModule");
+      expect(result[1]?.typeId).toBe(
         "SMARTIdentityVerificationComplianceModule"
       );
     });
