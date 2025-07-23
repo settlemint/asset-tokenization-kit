@@ -1,6 +1,7 @@
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Card, CardContent } from "@/components/ui/card";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
@@ -33,8 +34,12 @@ function OnboardingLayout() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 max-h-full overflow-hidden p-16 pt-8 lg:-mt-[8vh] lg:px-[10vw] lg:py-[10vh]">
-        <Outlet />
+      <div className="flex flex-col justify-center items-center">
+        <Card className="p-0 gap-0">
+          <CardContent className="p-0 m-0">
+            <Outlet />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

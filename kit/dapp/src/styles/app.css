@@ -99,9 +99,10 @@
   --sm-border: oklch(0.2264 0 87 / 12%);
   /* Step Wizard Sidebar Gradient */
   --sm-wizard-sidebar-gradient: linear-gradient(
-    45deg,
-    rgba(52, 110, 238, 0.5),
-    rgba(137, 214, 162, 0.8)
+    135deg,
+    var(--sm-graphics-secondary) 0%,
+    var(--sm-graphics-tertiary) 50%,
+    var(--sm-graphics-primary) 100%
   );
   /* shadcn colors */
   --background: var(--sm-background-lightest);
@@ -174,9 +175,10 @@
   --sm-border: oklch(1 0 87 / 12%);
   /* Step Wizard Sidebar Gradient */
   --sm-wizard-sidebar-gradient: linear-gradient(
-    45deg,
-    rgba(0, 0, 0, 0.8),
-    rgba(0, 0, 0, 0.5)
+    135deg,
+    var(--sm-graphics-secondary) 0%,
+    var(--sm-graphics-tertiary) 50%,
+    var(--sm-graphics-primary) 100%
   );
   /* shadcn colors */
   --background: var(--sm-background-lightest);
