@@ -24,7 +24,7 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
     error AlreadyInitialized();
     error SenderLacksManagementKey();
     error SenderLacksActionKey();
-    error SenderLacksClaimSignerKey();
+
     // Errors for checks that might be redundant if ERC734.sol handles them robustly
     error ReplicatedExecutionIdDoesNotExist(uint256 executionId);
     error ReplicatedExecutionAlreadyPerformed(uint256 executionId);
@@ -38,11 +38,11 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
         _;
     }
 
-    modifier onlyClaimKey() {
+    modifier onlyActionKey() {
         if (
-            !(msg.sender == address(this) || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.CLAIM_SIGNER_KEY))
+            !(msg.sender == address(this) || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.ACTION_KEY))
         ) {
-            revert SenderLacksClaimSignerKey();
+            revert SenderLacksActionKey();
         }
         _;
     }
@@ -181,7 +181,7 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
         public
         virtual
         override(ERC735, IERC735) // Overrides ERC735's implementation and fulfills IERC735
-        onlyClaimKey
+        onlyActionKey
         returns (bytes32 claimId)
     {
         return ERC735.addClaim(_topic, _scheme, _issuer, _signature, _data, _uri);

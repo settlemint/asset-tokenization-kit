@@ -70,6 +70,18 @@ contract ATKIdentityImplementation is
         _;
     }
 
+    modifier onlyActionKey() {
+        if (
+            !(
+                _msgSender() == address(this)
+                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.ACTION_KEY)
+            )
+        ) {
+            revert SenderLacksActionKey();
+        }
+        _;
+    }
+
     /// @notice Constructor for the `ATKIdentityImplementation`.
     /// @dev Initializes ERC2771 context with the provided forwarder.
     ///      The main identity initialization (setting the first management key) is done via `initializeATKIdentity`.
@@ -247,7 +259,7 @@ contract ATKIdentityImplementation is
     // --- ERC735 (Claim Holder) Functions - Overridden for Access Control ---
 
     /// @inheritdoc IERC735
-    /// @dev Adds or updates a claim. Checks authorization contracts first, falls back to CLAIM_SIGNER_KEY if no
+    /// @dev Adds or updates a claim. Checks authorization contracts first, falls back to CLAIM_ACTION_KEY if no
     /// authorization contracts.
     function addClaim(
         uint256 _topic,
@@ -266,10 +278,10 @@ contract ATKIdentityImplementation is
         bool authorizedByContract = _isAuthorizedToAddClaim(_msgSender(), _issuer, _topic);
 
         if (!authorizedByContract) {
-            // If no authorization contracts approve, require CLAIM_SIGNER_KEY (existing behavior)
+            // If no authorization contracts approve, require ACTION_KEY (existing behavior)
             bytes32 senderKeyHash = keccak256(abi.encode(_msgSender()));
-            if (!(_msgSender() == address(this) || keyHasPurpose(senderKeyHash, ERC734KeyPurposes.CLAIM_SIGNER_KEY))) {
-                revert SenderLacksClaimSignerKey();
+            if (!(_msgSender() == address(this) || keyHasPurpose(senderKeyHash, ERC734KeyPurposes.ACTION_KEY))) {
+                revert SenderLacksActionKey();
             }
         }
 
@@ -282,7 +294,7 @@ contract ATKIdentityImplementation is
         public
         virtual
         override(ERC735, IERC735)
-        onlyClaimKey
+        onlyActionKey
         returns (bool success)
     {
         return ERC735.removeClaim(_claimId);

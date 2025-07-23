@@ -320,7 +320,7 @@ contract ClaimAuthorizationSystemTest is Test {
         // Try to add claim using an unauthorized key (not management or claim signer)
         // This should fail because unauthorizedKey is not authorized to act on behalf of issuerIdentity
         vm.prank(unauthorizedKey);
-        vm.expectRevert(abi.encodeWithSelector(ATKIdentityImplementation.SenderLacksClaimSignerKey.selector));
+        vm.expectRevert(abi.encodeWithSelector(ATKIdentityImplementation.SenderLacksActionKey.selector));
         identity.addClaim(
             TEST_CLAIM_TOPIC, TEST_CLAIM_SCHEME, address(issuerIdentity), "", TEST_CLAIM_DATA, TEST_CLAIM_URI
         );

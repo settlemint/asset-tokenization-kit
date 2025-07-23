@@ -260,7 +260,7 @@ contract IATKIdentityTest is Test {
         // Add claim signer key
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add claim using the identity contract itself as the issuer (self-issued claim)
         uint256 topic = 1;
@@ -293,9 +293,9 @@ contract IATKIdentityTest is Test {
         assertEq(retUri, uri);
     }
 
-    function test_AddClaimRequiresClaimSignerKey() public {
-        vm.prank(user2); // user2 has no claim signer key
-        vm.expectRevert(ATKIdentityImplementation.SenderLacksClaimSignerKey.selector);
+    function test_AddClaimRequiresClaimActionKey() public {
+        vm.prank(user2); // user2 has no action key
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksActionKey.selector);
         identity.addClaim(1, 1, address(identity), "signature", "data", "uri");
     }
 
@@ -303,7 +303,7 @@ contract IATKIdentityTest is Test {
         // Add claim signer key
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add claim using the identity contract itself as the issuer
         vm.prank(claimer);
@@ -318,16 +318,16 @@ contract IATKIdentityTest is Test {
         assertTrue(success);
     }
 
-    function test_RemoveClaimRequiresClaimSignerKey() public {
+    function test_RemoveClaimRequiresActionKey() public {
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         vm.prank(claimer);
         bytes32 claimId = identity.addClaim(1, 1, address(identity), "signature", "data", "uri");
 
-        vm.prank(user2); // user2 has no claim signer key
-        vm.expectRevert(ATKIdentityImplementation.SenderLacksClaimSignerKey.selector);
+        vm.prank(user2); // user2 has no action key
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksActionKey.selector);
         identity.removeClaim(claimId);
     }
 
@@ -335,7 +335,7 @@ contract IATKIdentityTest is Test {
         // Add claim signer key
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add claim using the identity contract itself as the issuer
         bytes memory signature = "signature";
@@ -357,7 +357,7 @@ contract IATKIdentityTest is Test {
         // Add claim signer key
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add claim using the identity contract itself as the issuer
         vm.prank(claimer);
@@ -422,7 +422,7 @@ contract IATKIdentityTest is Test {
         // Add claim signer key
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add multiple claims with same topic using the identity contract itself as the issuer
         vm.prank(claimer);
