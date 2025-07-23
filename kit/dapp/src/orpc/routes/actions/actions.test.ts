@@ -16,10 +16,6 @@ import {
   ActionsResponseSchema,
   ActionsListDataSchema,
 } from "./routes/actions.list.schema";
-import {
-  ActionsReadSchema,
-  ActionsReadResponseSchema,
-} from "./routes/actions.read.schema";
 
 // Mock the logger to avoid console output during tests
 mock.module("@settlemint/sdk-utils/logging", () => ({
@@ -246,36 +242,6 @@ describe("Actions Schemas", () => {
     });
   });
 
-  describe("ActionsReadSchema", () => {
-    it("should validate read schema with valid ID", () => {
-      const validInput = {
-        id: "action-id-123",
-      };
-      const result = safeParse(ActionsReadSchema, validInput);
-      expect(result.id).toBe("action-id-123");
-    });
-
-    it("should reject missing ID", () => {
-      const missingId = {};
-      expect(() => safeParse(ActionsReadSchema, missingId)).toThrow();
-    });
-
-    it("should accept various ID formats", () => {
-      const idFormats = [
-        "action-123",
-        "0x1234567890123456789012345678901234567890123456789012345678901234",
-        "uuid-format-id",
-        "simple-id",
-      ];
-
-      for (const id of idFormats) {
-        const input = { id };
-        const result = safeParse(ActionsReadSchema, input);
-        expect(result.id).toBe(id);
-      }
-    });
-  });
-
   describe("Response Schemas", () => {
     const mockAction = {
       id: "action-123",
@@ -302,15 +268,6 @@ describe("Actions Schemas", () => {
       const emptyResponse: (typeof mockAction)[] = [];
       const result = safeParse(ActionsListResponseSchema, emptyResponse);
       expect(result).toHaveLength(0);
-    });
-
-    it("should validate ActionsReadResponseSchema", () => {
-      const validResponse = {
-        data: mockAction,
-      };
-      const result = safeParse(ActionsReadResponseSchema, validResponse);
-      expect(result.data.id).toBe("action-123");
-      expect(result.data.name).toBe("Test Action");
     });
 
     it("should validate ActionsResponseSchema (GraphQL response)", () => {

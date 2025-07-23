@@ -10,7 +10,6 @@
  *
  * Routes:
  * - list: Retrieve paginated list of user's actions with filtering
- * - read: Get detailed information about a specific action
  *
  * Note: Action execution is handled by resource-specific routes rather than
  * a generic actions.execute endpoint. For example:
@@ -20,11 +19,9 @@
  *
  * @see {@link ./actions.contract} - Type-safe contract definitions
  * @see {@link ./routes/actions.list} - List implementation
- * @see {@link ./routes/actions.read} - Read implementation
  */
 
 import { list } from "./routes/actions.list";
-import { read } from "./routes/actions.read";
 
 /**
  * Actions router collection.
@@ -38,7 +35,6 @@ import { read } from "./routes/actions.read";
  */
 const actionsRouter = {
   list,
-  read,
 };
 
 export default actionsRouter;

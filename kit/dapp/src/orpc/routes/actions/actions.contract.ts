@@ -22,10 +22,6 @@ import {
   ActionsListResponseSchema,
   ActionsListSchema,
 } from "./routes/actions.list.schema";
-import {
-  ActionsReadResponseSchema,
-  ActionsReadSchema,
-} from "./routes/actions.read.schema";
 
 /**
  * List actions for the authenticated user.
@@ -67,55 +63,11 @@ const list = baseContract
   .output(ActionsListResponseSchema);
 
 /**
- * Read a single action by ID.
- *
- * This endpoint retrieves detailed information about a specific action,
- * including its executor information, target details, and execution status.
- * The action must be accessible to the authenticated user (user must be
- * listed as an executor).
- *
- * @auth Required - User must be authenticated
- * @function GET
- * @endpoint /actions/read
- * @input ActionsReadSchema - Action ID to query
- * @returns ActionsReadResponseSchema - Detailed action information
- * @throws NOT_FOUND - If action with given ID is not found or not accessible to user
- * @example
- * ```typescript
- * // Read specific action details
- * const action = await client.actions.read({
- *   id: "0x1234567890123456789012345678901234567890123456789012345678901234"
- * });
- *
- * // Check if action is currently executable
- * const canExecute = action.status === "ACTIVE" &&
- *                    (!action.requiredRole || userHasRole(action.requiredRole));
- *
- * // Execute via resource-specific endpoint
- * if (canExecute && action.identifier === "mature-bond") {
- *   await client.tokens.mature({ tokenId: action.target, verification: {...} });
- * }
- * ```
- */
-const read = baseContract
-  .route({
-    method: "GET",
-    path: "/actions/read",
-    description:
-      "Read detailed information about a specific action accessible to the user",
-    successDescription: "Action information retrieved successfully",
-    tags: ["actions"],
-  })
-  .input(ActionsReadSchema)
-  .output(ActionsReadResponseSchema);
-
-/**
  * Actions API contract collection.
  *
  * Exports all actions-related API contracts for use in the main contract registry.
  * Currently includes:
  * - list: Retrieve actions available to the authenticated user
- * - read: Get detailed information about a specific action
  *
  * Action execution is handled by resource-specific endpoints:
  * - Bond maturity: tokens.mature
@@ -124,5 +76,4 @@ const read = baseContract
  */
 export const actionsContract = {
   list,
-  read,
 };
