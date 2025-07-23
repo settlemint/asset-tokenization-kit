@@ -19,7 +19,7 @@ export function FieldLabel({
   className?: string;
 }) {
   return (
-    <FormLabel htmlFor={htmlFor} className={`mb-4 ${className}`}>
+    <FormLabel htmlFor={htmlFor} className={className}>
       {label}
       {required && <span className="text-destructive ml-1">*</span>}
     </FormLabel>

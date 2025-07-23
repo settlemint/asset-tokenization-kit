@@ -1,4 +1,5 @@
 import { AssetBasics } from "@/components/asset-designer/asset-basics/asset";
+import { ComplianceModules } from "@/components/asset-designer/compliance-modules";
 import { SelectAssetType } from "@/components/asset-designer/select-asset-type";
 import {
   assetDesignerFormOptions,
@@ -35,6 +36,9 @@ export const AssetDesignerForm = () => {
       <SelectAssetType form={form} onStepSubmit={incrementStep} />
     ),
     assetBasics: <AssetBasics form={form} onStepSubmit={incrementStep} />,
+    complianceModules: (
+      <ComplianceModules form={form} onStepSubmit={incrementStep} />
+    ),
     summary: <div>Summary</div>,
   };
 

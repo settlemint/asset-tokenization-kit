@@ -18,6 +18,10 @@
         "title": "Asset Basics",
         "description": "Enter the basic details of the asset"
       },
+      "complianceModules": {
+        "title": "Compliance Modules",
+        "description": "Enable and configure compliance modules to control who can access your asset."
+      },
       "summary": {
         "title": "Summary",
         "description": "Review the details of the asset"
@@ -88,6 +92,13 @@
     "actions": {
       "create": "Create {{type}}",
       "creating": "Creating..."
+    },
+    "buttons": {
+      "next": "Next",
+      "back": "Back",
+      "enable": "Enable",
+      "cancel": "Cancel",
+      "submit": "Submit"
     }
   },
   "messages": {
@@ -103,5 +114,9 @@
   },
   "validation": {
     "type-required": "Please select an asset type"
+  },
+  "compliance": {
+    "title": "Compliance Modules",
+    "description": "Enable and configure compliance modules to control who can access your asset"
   }
 }
