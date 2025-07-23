@@ -5,6 +5,7 @@ import { me } from "@/orpc/routes/user/routes/user.me";
 import { stats } from "@/orpc/routes/user/routes/user.stats";
 import { statsGrowthOverTime } from "@/orpc/routes/user/routes/user.stats.growth-over-time";
 import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count";
+import { list as actionsList } from "@/orpc/routes/actions/routes/actions.list";
 
 /**
  * User router module.
@@ -18,6 +19,7 @@ import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count"
  * - list: GET /user/list - List users with filtering and pagination
  * - stats: GET /user/stats - User statistics and metrics
  * - kyc: KYC profile management routes (nested namespace)
+ * - actions: GET /user/me/actions - User's accessible actions (alias for /actions/list)
  *
  * The router is designed to be extended with additional user management
  * endpoints such as profile updates, preference management, and session control.
@@ -27,7 +29,10 @@ import { statsUserCount } from "@/orpc/routes/user/routes/user.stats.user-count"
  * @see {@link ./kyc/kyc.router} - KYC profile management routes
  */
 const routes = {
-  me,
+  me: {
+    ...me,
+    actions: actionsList,
+  },
   list,
   stats,
   statsGrowthOverTime,
