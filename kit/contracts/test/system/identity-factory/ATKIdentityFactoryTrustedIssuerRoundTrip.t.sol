@@ -423,7 +423,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
     }
 
     /**
-     * @notice Tests that wallets with other key purposes (not CLAIM_SIGNER or MANAGEMENT) cannot add claims
+     * @notice Tests that wallets with other key purposes (not CLAIM_SIGNER, MANAGEMENT, or ACTION) cannot add claims
      */
     function testWalletWithWrongKeyPurposeCannotAddClaims() public {
         // Create identities
@@ -439,24 +439,24 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         trustedIssuersRegistry.addTrustedIssuer(IClaimIssuer(issuerIdentityAddr), allowedTopics);
         vm.stopPrank();
 
-        // Create wallet and give it ACTION_KEY (purpose 2) instead of CLAIM_SIGNER_KEY (purpose 3) or MANAGEMENT_KEY (purpose 1)
-        address actionKeyWallet = makeAddr("actionKeyWallet");
+        // Create wallet and give it ENCRYPTION_KEY (purpose 4) instead of authorized purposes (MANAGEMENT_KEY, ACTION_KEY, or CLAIM_SIGNER_KEY)
+        address encryptionKeyWallet = makeAddr("encryptionKeyWallet");
 
         vm.prank(claimIssuer); // Owner of issuer identity adds the key
-        bytes32 actionKey = keccak256(abi.encode(actionKeyWallet));
-        IERC734(issuerIdentityAddr).addKey(actionKey, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
+        bytes32 encryptionKey = keccak256(abi.encode(encryptionKeyWallet));
+        IERC734(issuerIdentityAddr).addKey(encryptionKey, ERC734KeyPurposes.ENCRYPTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Create a valid claim signature
         (bytes memory claimData, bytes memory signature) = claimUtils.createClaimSignature(
             userIdentityAddr,
             kycTopicId,
-            "KYC Claim from Action Key Wallet"
+            "KYC Claim from Encryption Key Wallet"
         );
 
-        // Attempt to add claim with ACTION_KEY wallet should fail
-        // ACTION_KEY is not sufficient for claim authorization - only CLAIM_SIGNER_KEY or MANAGEMENT_KEY are allowed
-        vm.prank(actionKeyWallet);
-        vm.expectRevert(); // Should revert because ACTION_KEY (purpose 2) is not authorized for claim operations
+        // Attempt to add claim with ENCRYPTION_KEY wallet should fail
+        // ENCRYPTION_KEY is not sufficient for claim authorization - only MANAGEMENT_KEY, ACTION_KEY, or CLAIM_SIGNER_KEY are allowed
+        vm.prank(encryptionKeyWallet);
+        vm.expectRevert(); // Should revert because ENCRYPTION_KEY (purpose 4) is not authorized for claim operations
         userIdentity.addClaim(
             kycTopicId,
             1,
