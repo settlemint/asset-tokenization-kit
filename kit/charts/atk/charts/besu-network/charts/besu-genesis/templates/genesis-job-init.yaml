@@ -39,33 +39,6 @@ spec:
       restartPolicy: Never
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
       serviceAccountName: {{ include "besu-genesis.serviceAccountName" . }}
-      initContainers:
-      {{- if .Files.Glob "files/genesis-output.json.gz" }}
-        - name: copy-contract-data
-          image: busybox:latest
-          command:  
-            - /bin/sh
-            - -c
-            - |
-              echo "Copying contract allocation data to PVC..."
-              cat > /genesis-pvc/genesis-output.json.gz << 'EOF'
-              {{- .Files.Get "files/genesis-output.json.gz" | b64enc | nindent 14 }}
-              EOF
-              base64 -d /genesis-pvc/genesis-output.json.gz > /genesis-pvc/genesis-output.json.gz.tmp
-              mv /genesis-pvc/genesis-output.json.gz.tmp /genesis-pvc/genesis-output.json.gz
-              echo "Contract data copied successfully"
-              echo "File size: $(ls -lh /genesis-pvc/genesis-output.json.gz | awk '{print $5}')"
-              # Verify the file is valid gzip
-              if gunzip -t /genesis-pvc/genesis-output.json.gz 2>/dev/null; then
-                echo "File is valid gzip format"
-              else
-                echo "ERROR: File is not valid gzip format"
-                exit 1
-              fi
-          volumeMounts:
-            - name: genesis-pvc
-              mountPath: /genesis-pvc
-      {{- end }}
       volumes:
         - name: generated-config
           emptyDir: {}
@@ -83,7 +56,6 @@ spec:
               mountPath: /generated-config
             - name: genesis-pvc
               mountPath: /genesis-pvc
-            # Contracts data is now read from PVC
           command:
             - /bin/bash
             - -c
@@ -168,33 +140,8 @@ spec:
                 fi
               fi
 
-              # Merge contract allocations from genesis-output.json
-              echo "Merging contract allocations..."
-              CONTRACT_ALLOC_COMPRESSED="/genesis-pvc/genesis-output.json.gz"
-              CONTRACT_ALLOC_FILE="/tmp/genesis-output.json"
-              
-              # Decompress the file if it exists (loaded by external data job)
-              if [ -f "$CONTRACT_ALLOC_COMPRESSED" ]; then
-                echo "Decompressing contract allocations..."
-                gunzip -c "$CONTRACT_ALLOC_COMPRESSED" > "$CONTRACT_ALLOC_FILE"
-                echo "Decompression complete"
-              else
-                echo "Warning: Contract allocations file not found - may be loaded by data job"
-              fi
-              
-              if [ -f "$CONTRACT_ALLOC_FILE" ]; then
-                echo "Genesis file allocations:"
-                jq '.alloc' "$GENESIS_FILE"
-                echo "Contract allocations to merge:"
-                cat "$CONTRACT_ALLOC_FILE"
-                # Use jq to merge the allocations
-                jq -s '.[0] as $genesis | .[1] as $contracts | $genesis | .alloc = ($genesis.alloc + $contracts)' "$GENESIS_FILE" "$CONTRACT_ALLOC_FILE" > "$GENESIS_FILE.tmp" && mv "$GENESIS_FILE.tmp" "$GENESIS_FILE"
-                echo "Merged allocations:"
-                jq '.alloc' "$GENESIS_FILE"
-                echo "Contract allocations merged successfully"
-              else
-                echo "Warning: Contract allocations file not found - genesis will use default allocations"
-              fi
+              # Contract allocations are no longer needed - genesis uses default allocations
+              echo "Using default genesis allocations (no additional contract data required)"
 
               safeWriteGenesisConfigmap $FOLDER_PATH
 
