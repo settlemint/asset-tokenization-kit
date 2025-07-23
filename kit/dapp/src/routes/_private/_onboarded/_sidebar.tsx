@@ -29,7 +29,7 @@ function LayoutComponent() {
   const user = session?.user;
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="OnboardingSidebar">
       <AppSidebar className="group-data-[side=left]:border-0" />
       <SidebarInset className="bg-sidebar">
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 bg-sidebar">

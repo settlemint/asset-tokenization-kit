@@ -426,4 +426,12 @@
   .react-pdf__Page__annotations {
     @apply opacity-100;
   }
+
+  .OnboardingSidebar [data-slot="sidebar-wrapper"] {
+    min-height: initial;
+  }
+
+  .OnboardingSidebar [data-slot="sidebar-container"] {
+    height: initial;
+  }
 }
