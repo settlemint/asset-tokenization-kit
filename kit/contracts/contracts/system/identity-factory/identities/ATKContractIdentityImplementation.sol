@@ -104,6 +104,26 @@ contract ATKContractIdentityImplementation is
         return _contractAddress;
     }
 
+    /// @inheritdoc IATKContractIdentity
+    function getClaimAuthorizationContracts() 
+        external 
+        view 
+        override(ClaimAuthorizationExtension, IATKContractIdentity) 
+        returns (address[] memory) 
+    {
+        return _claimAuthorizationContracts;
+    }
+
+    /// @inheritdoc IATKContractIdentity
+    function isClaimAuthorizationContractRegistered(address authorizationContract) 
+        external 
+        view 
+        override(ClaimAuthorizationExtension, IATKContractIdentity) 
+        returns (bool) 
+    {
+        return _authContractIndex[authorizationContract] != 0;
+    }
+
     // --- Claim Authorization Management Functions ---
 
     /// @notice Registers a claim authorization contract

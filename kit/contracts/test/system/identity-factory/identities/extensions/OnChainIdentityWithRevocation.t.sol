@@ -31,8 +31,12 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
 
     // --- Modifiers for Access Control ---
     modifier onlyManager() {
-        if (!(msg.sender == address(this) || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.MANAGEMENT_KEY)))
-        {
+        if (
+            !(
+                msg.sender == address(this)
+                    || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.MANAGEMENT_KEY)
+            )
+        ) {
             revert SenderLacksManagementKey();
         }
         _;
@@ -40,7 +44,10 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
 
     modifier onlyActionKey() {
         if (
-            !(msg.sender == address(this) || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.ACTION_KEY))
+            !(
+                msg.sender == address(this)
+                    || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.ACTION_KEY)
+            )
         ) {
             revert SenderLacksActionKey();
         }

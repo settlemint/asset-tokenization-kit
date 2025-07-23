@@ -25,8 +25,6 @@ contract IATKIdentityTest is Test {
     address public claimer = makeAddr("claimer");
     address public forwarder = makeAddr("forwarder");
 
-
-
     // Events from ERC734
     event KeyAdded(bytes32 indexed key, uint256 indexed purpose, uint256 indexed keyType);
     event KeyRemoved(bytes32 indexed key, uint256 indexed purpose, uint256 indexed keyType);
@@ -143,8 +141,9 @@ contract IATKIdentityTest is Test {
 
     function test_ExecuteWithManagementKey() public {
         // Execute call to self (requires management key)
-        bytes memory data =
-        abi.encodeWithSelector(identity.addKey.selector, keccak256(abi.encode(user2)), ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
+        bytes memory data = abi.encodeWithSelector(
+            identity.addKey.selector, keccak256(abi.encode(user2)), ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA
+        );
 
         // The execution will fail because auto-approval doesn't work correctly
         // (this.approve() makes msg.sender the contract itself)
@@ -237,8 +236,9 @@ contract IATKIdentityTest is Test {
 
     function test_ApproveRequiresCorrectKey() public {
         // Create execution to self
-        bytes memory data =
-            abi.encodeWithSelector(identity.addKey.selector, keccak256(abi.encode(user2)), ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
+        bytes memory data = abi.encodeWithSelector(
+            identity.addKey.selector, keccak256(abi.encode(user2)), ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA
+        );
         vm.prank(admin); // admin has no keys
         uint256 executionId = identity.execute(address(identity), 0, data);
 
@@ -415,7 +415,9 @@ contract IATKIdentityTest is Test {
         uint256[] memory purposes = identity.getKeyPurposes(user2KeyHash);
         assertEq(purposes.length, 2);
         assertTrue(purposes[0] == ERC734KeyPurposes.ACTION_KEY || purposes[1] == ERC734KeyPurposes.ACTION_KEY);
-        assertTrue(purposes[0] == ERC734KeyPurposes.CLAIM_SIGNER_KEY || purposes[1] == ERC734KeyPurposes.CLAIM_SIGNER_KEY);
+        assertTrue(
+            purposes[0] == ERC734KeyPurposes.CLAIM_SIGNER_KEY || purposes[1] == ERC734KeyPurposes.CLAIM_SIGNER_KEY
+        );
     }
 
     function test_ClaimsByTopic() public {

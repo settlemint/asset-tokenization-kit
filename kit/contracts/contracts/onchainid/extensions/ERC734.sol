@@ -11,8 +11,6 @@ import { ERC734KeyPurposes } from "../ERC734KeyPurposes.sol";
 /// @dev Implementation of the IERC734 (Key Holder) standard.
 /// This contract manages keys with different purposes and allows for execution of operations based on key approvals.
 contract ERC734 is IERC734, ReentrancyGuard {
-
-
     // --- Custom Errors ---
     error KeyCannotBeZero();
     error KeyAlreadyHasThisPurpose(bytes32 key, uint256 purpose);

@@ -11,8 +11,6 @@ import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { ERC734KeyTypes } from "../../contracts/onchainid/ERC734KeyTypes.sol";
 
 contract ClaimUtils is Test {
-
-
     address internal _platformAdmin;
     address internal _claimIssuer;
     uint256 internal _claimIssuerPrivateKey;

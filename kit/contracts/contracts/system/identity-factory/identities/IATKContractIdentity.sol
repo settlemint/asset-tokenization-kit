@@ -27,4 +27,13 @@ interface IATKContractIdentity is IIdentity {
     /// @notice Removes a claim authorization contract
     /// @param authorizationContract The address of the contract to remove
     function removeClaimAuthorizationContract(address authorizationContract) external;
+
+    /// @notice Returns all registered claim authorization contracts
+    /// @return Array of authorization contract addresses
+    function getClaimAuthorizationContracts() external view returns (address[] memory);
+
+    /// @notice Checks if a contract is registered as a claim authorization contract
+    /// @param authorizationContract The address to check
+    /// @return True if registered, false otherwise
+    function isClaimAuthorizationContractRegistered(address authorizationContract) external view returns (bool);
 }

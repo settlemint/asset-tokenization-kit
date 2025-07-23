@@ -65,10 +65,6 @@ contract ERC734Test is Test {
     bytes32 public constant MANAGEMENT_KEY = keccak256("management_key");
     bytes32 public constant ACTION_KEY = keccak256("action_key");
 
-
-
-
-
     function setUp() public {
         initialManagementKey = vm.addr(initialManagementKeyPrivateKey);
         erc734 = new MockERC734(initialManagementKey);
@@ -97,7 +93,9 @@ contract ERC734Test is Test {
         assertEq(encryptionKeys.length, 0);
 
         // Check that test keys don't have any purposes
-        assertTrue(newContract.keyHasPurpose(keccak256(abi.encode(initialManagementKey)), ERC734KeyPurposes.MANAGEMENT_KEY));
+        assertTrue(
+            newContract.keyHasPurpose(keccak256(abi.encode(initialManagementKey)), ERC734KeyPurposes.MANAGEMENT_KEY)
+        );
         assertFalse(newContract.keyHasPurpose(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY));
         assertFalse(newContract.keyHasPurpose(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY));
         assertFalse(newContract.keyHasPurpose(TEST_KEY_2, ERC734KeyPurposes.MANAGEMENT_KEY));
@@ -159,7 +157,9 @@ contract ERC734Test is Test {
         erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
 
         vm.expectRevert(
-            abi.encodeWithSelector(ERC734.KeyAlreadyHasThisPurpose.selector, TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY)
+            abi.encodeWithSelector(
+                ERC734.KeyAlreadyHasThisPurpose.selector, TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY
+            )
         );
         erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
     }
@@ -196,7 +196,9 @@ contract ERC734Test is Test {
     function test_RemoveKey_NonexistentPurpose() public {
         erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
 
-        vm.expectRevert(abi.encodeWithSelector(ERC734.KeyDoesNotHaveThisPurpose.selector, TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY));
+        vm.expectRevert(
+            abi.encodeWithSelector(ERC734.KeyDoesNotHaveThisPurpose.selector, TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY)
+        );
         erc734.removeKey(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY);
     }
 

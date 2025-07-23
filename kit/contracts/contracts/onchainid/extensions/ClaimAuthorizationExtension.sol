@@ -168,7 +168,9 @@ contract ClaimAuthorizationExtension {
         try IERC165(issuer).supportsInterface(type(IERC734).interfaceId) returns (bool supportsERC734) {
             if (supportsERC734) {
                 bytes32 callerKeyHash = keccak256(abi.encode(caller));
-                try IERC734(issuer).keyHasPurpose(callerKeyHash, ERC734KeyPurposes.ACTION_KEY) returns (bool hasClaimKey) {
+                try IERC734(issuer).keyHasPurpose(callerKeyHash, ERC734KeyPurposes.ACTION_KEY) returns (
+                    bool hasClaimKey
+                ) {
                     if (hasClaimKey) {
                         return true;
                     }
@@ -176,7 +178,9 @@ contract ClaimAuthorizationExtension {
                     // If the call fails, continue to check management key
                 }
 
-                try IERC734(issuer).keyHasPurpose(callerKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY) returns (bool hasManagementKey) {
+                try IERC734(issuer).keyHasPurpose(callerKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY) returns (
+                    bool hasManagementKey
+                ) {
                     return hasManagementKey;
                 } catch {
                     // If the call fails, treat as unauthorized
@@ -195,14 +199,14 @@ contract ClaimAuthorizationExtension {
 
     /// @notice Returns all registered claim authorization contracts
     /// @return Array of authorization contract addresses
-    function getClaimAuthorizationContracts() external view returns (address[] memory) {
+    function getClaimAuthorizationContracts() external view virtual returns (address[] memory) {
         return _claimAuthorizationContracts;
     }
 
     /// @notice Checks if a contract is registered as a claim authorization contract
     /// @param authorizationContract The address to check
     /// @return True if registered, false otherwise
-    function isClaimAuthorizationContractRegistered(address authorizationContract) external view returns (bool) {
+    function isClaimAuthorizationContractRegistered(address authorizationContract) external view virtual returns (bool) {
         return _authContractIndex[authorizationContract] != 0;
     }
 }
