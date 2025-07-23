@@ -45,6 +45,10 @@ function RouteComponent() {
     throwOnError: false,
   });
 
+  const { mutateAsync: syncExchangeRates } = useMutation(
+    orpc.exchangeRates.sync.mutationOptions()
+  );
+
   // Mutation for updating base currency
   const { mutateAsync: upsertSetting, isPending: isSettingUpdating } =
     useMutation(
