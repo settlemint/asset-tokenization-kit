@@ -219,7 +219,7 @@ export async function setupUser(user: User) {
     );
 
     if (secretCodeError) {
-      console.log(`[setupUser] Secret code error for ${user.email}:`, {
+      console.log(`[setupUser] Generate secret code error for ${user.email}:`, {
         code: secretCodeError.code,
         message: secretCodeError.message,
         status: secretCodeError.status,
@@ -232,9 +232,32 @@ export async function setupUser(user: User) {
       `[setupUser] Successfully generated secret codes for ${user.email}`
     );
 
-    // Step 5: Check onboarding status
+    // Step 5: Confirm secret codes
     console.log(
-      `[setupUser] Step 5: Checking onboarding status for user ${user.email}`
+      `[setupUser] Step 5: Confirming secret codes for user ${user.email}`
+    );
+    const confirmSecretCodeHeaders = await signInWithUser(user);
+    const { error: confirmSecretCodeError } =
+      await authClient.secretCodes.confirm(
+        {
+          stored: true,
+        },
+        { headers: confirmSecretCodeHeaders }
+      );
+    if (confirmSecretCodeError) {
+      console.log(`[setupUser] Confirm secret code error for ${user.email}:`, {
+        code: confirmSecretCodeError.code,
+        message: confirmSecretCodeError.message,
+        status: confirmSecretCodeError.status,
+        statusText: confirmSecretCodeError.statusText,
+        fullError: JSON.stringify(confirmSecretCodeError, null, 2),
+      });
+      throw confirmSecretCodeError;
+    }
+
+    // Step 6: Check onboarding status
+    console.log(
+      `[setupUser] Step 6: Checking onboarding status for user ${user.email}`
     );
     const sessionHeaders = await signInWithUser(user);
     const session = await authClient.getSession({
