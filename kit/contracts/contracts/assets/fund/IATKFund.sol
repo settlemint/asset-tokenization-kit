@@ -14,6 +14,7 @@ import { ISMARTPausable } from "../../smart/extensions/pausable/ISMARTPausable.s
 import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.sol";
 
 /// @title Interface for a ATK Fund
+/// @author SettleMint
 /// @notice Defines the core functionality and extensions for a ATK Fund, including voting capabilities.
 interface IATKFund is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTPausable, ISMARTBurnable, IVotes {
     /// @notice Emitted when management fees are collected

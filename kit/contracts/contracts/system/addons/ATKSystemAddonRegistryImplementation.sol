@@ -19,6 +19,15 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 import { IATKTypedImplementationRegistry } from "../IATKTypedImplementationRegistry.sol";
 import { ATKTypedImplementationProxy } from "../ATKTypedImplementationProxy.sol";
 
+/**
+ * @title ATKSystemAddonRegistryImplementation
+ * @author SettleMint
+ * @notice Implementation contract for the ATK System Addon Registry
+ * @dev This contract manages the registration and deployment of system addons, which are
+ *      supplementary modules that extend the core ATK system functionality. It handles
+ *      the creation of proxy contracts for each addon and maintains a registry of addon
+ *      implementations that can be upgraded by authorized parties.
+ */
 contract ATKSystemAddonRegistryImplementation is
     Initializable,
     IATKSystemAddonRegistry,

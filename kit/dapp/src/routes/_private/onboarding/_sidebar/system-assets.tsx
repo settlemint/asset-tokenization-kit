@@ -1,10 +1,10 @@
+import { AssetDeployment } from "@/components/onboarding/assets/asset-deployment";
+import { AssetTypeSelection } from "@/components/onboarding/assets/asset-type-selection";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
-import { AssetDeployment } from "@/components/onboarding/assets/asset-deployment";
-import { AssetTypeSelection } from "@/components/onboarding/assets/asset-type-selection";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";

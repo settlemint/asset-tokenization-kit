@@ -57,7 +57,7 @@ A Helm chart for the blockscout components
 | blockscout-stack.blockscout.envFromSecret.ETHEREUM_JSONRPC_TRACE_URL | string | `"http://erpc:4000"` |  |
 | blockscout-stack.blockscout.envFromSecret.SECRET_KEY_BASE | string | `"atk"` |  |
 | blockscout-stack.blockscout.image.repository | string | `"ghcr.io/blockscout/blockscout"` |  |
-| blockscout-stack.blockscout.image.tag | string | `"8.1.1"` |  |
+| blockscout-stack.blockscout.image.tag | string | `"8.1.2"` |  |
 | blockscout-stack.blockscout.ingress.className | string | `"atk-nginx"` |  |
 | blockscout-stack.blockscout.ingress.enabled | bool | `true` |  |
 | blockscout-stack.blockscout.ingress.hostname | string | `"explorer.k8s.orb.local"` |  |

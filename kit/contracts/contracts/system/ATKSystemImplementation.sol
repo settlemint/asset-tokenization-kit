@@ -23,6 +23,7 @@ import {
     IdentityRegistryStorageImplementationNotSet,
     IdentityVerificationModuleNotSet,
     InvalidImplementationInterface,
+    SystemAccessManagerImplementationNotSet,
     SystemAlreadyBootstrapped,
     TokenAccessManagerImplementationNotSet,
     TopicSchemeRegistryImplementationNotSet,
@@ -52,6 +53,8 @@ import { IATKTopicSchemeRegistry } from "./topic-scheme-registry/IATKTopicScheme
 import { IATKCompliance } from "./compliance/IATKCompliance.sol";
 import { IATKIdentityRegistryStorage } from "./identity-registry-storage/IATKIdentityRegistryStorage.sol";
 import { IATKSystemAddonRegistry } from "./addons/IATKSystemAddonRegistry.sol";
+import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
+import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystemAccessManagerImplementation.sol";
 
 /// @title ATKSystem Contract
 /// @author SettleMint Tokenization Services
@@ -92,6 +95,7 @@ contract ATKSystemImplementation is
     bytes32 internal constant COMPLIANCE_MODULE_REGISTRY = keccak256("COMPLIANCE_MODULE_REGISTRY");
     bytes32 internal constant ADDON_REGISTRY = keccak256("ADDON_REGISTRY");
     bytes32 internal constant TOKEN_FACTORY_REGISTRY = keccak256("TOKEN_FACTORY_REGISTRY");
+    bytes32 internal constant SYSTEM_ACCESS_MANAGER = keccak256("SYSTEM_ACCESS_MANAGER");
 
     // Expected interface IDs used for validating implementation contracts.
     // These are unique identifiers for Solidity interfaces, ensuring that a contract claiming to be, for example,
@@ -110,6 +114,7 @@ contract ATKSystemImplementation is
     bytes4 private constant _ADDON_REGISTRY_ID = type(IATKSystemAddonRegistry).interfaceId;
     bytes4 private constant _TOKEN_FACTORY_REGISTRY_ID = type(IATKTokenFactoryRegistry).interfaceId;
     bytes4 private constant _IIDENTITY_ID = type(IIdentity).interfaceId;
+    bytes4 private constant _SYSTEM_ACCESS_MANAGER_ID = type(IATKSystemAccessManager).interfaceId;
 
     // --- State Variables ---
     // State variables store data persistently on the blockchain.
@@ -155,12 +160,16 @@ contract ATKSystemImplementation is
     /// @dev Stores the address of the token factory registry proxy contract.
     address private _tokenFactoryRegistryProxy;
 
+    /// @dev Stores the address of the system access manager proxy contract.
+    address private _systemAccessManagerProxy;
+
     // --- Internal Helper for Interface Check ---
+    /// @notice Internal helper function to check if a given contract address supports a specific interface
     /// @dev Internal helper function to check if a given contract address (`implAddress`)
     /// supports a specific interface (`interfaceId`) using ERC165 introspection.
     /// ERC165 is a standard for publishing and detecting what interfaces a smart contract implements.
-    /// @param implAddress The address of the contract to check.
-    /// @param interfaceId The 4-byte identifier of the interface to check for support.
+    /// @param implAddress The address of the contract to check
+    /// @param interfaceId The 4-byte identifier of the interface to check for support
     function _checkInterface(address implAddress, bytes4 interfaceId) private view {
         // Allow zero address to pass here; specific `NotSet` errors are thrown elsewhere if an address is required but
         // zero.
@@ -178,6 +187,9 @@ contract ATKSystemImplementation is
         }
     }
 
+    /// @notice Constructor that disables initialization of the implementation contract
+    /// @dev Uses OpenZeppelin's oz-upgrades-unsafe-allow pattern to prevent the implementation from being initialized
+    /// @param forwarder_ The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
         _disableInitializers();
@@ -202,6 +214,9 @@ contract ATKSystemImplementation is
     /// @param identityFactoryImplementation_ The initial address of the identity factory module's logic contract.
     /// @param identityImplementation_ The initial address of the standard identity contract's logic (template). Must be
     /// IERC734/IIdentity compliant.
+    /// @param contractIdentityImplementation_ The initial address of the contract identity contract's logic (template).
+    /// Must be
+    /// IERC734/IIdentity compliant.
     /// @param tokenAccessManagerImplementation_ The initial address of the token access manager contract's logic. Must
     /// be ISMARTTokenAccessManager compliant.
     /// @param identityVerificationModule_ The initial address of the identity verification module
@@ -211,6 +226,8 @@ contract ATKSystemImplementation is
     /// @param complianceModuleRegistryImplementation_ The initial address of the compliance module registry module's
     /// logic contract.
     /// @param addonRegistryImplementation_ The initial address of the addon registry module's logic contract.
+    /// @param systemAccessManagerImplementation_ The initial address of the system access manager module's logic
+    /// contract.
     function initialize(
         address initialAdmin_,
         address complianceImplementation_,
@@ -225,7 +242,8 @@ contract ATKSystemImplementation is
         address identityVerificationModule_,
         address tokenFactoryRegistryImplementation_,
         address complianceModuleRegistryImplementation_,
-        address addonRegistryImplementation_
+        address addonRegistryImplementation_,
+        address systemAccessManagerImplementation_
     )
         public
         initializer
@@ -331,11 +349,20 @@ contract ATKSystemImplementation is
             // ISMARTTokenFactoryRegistry
         _implementations[TOKEN_FACTORY_REGISTRY] = tokenFactoryRegistryImplementation_;
         emit TokenFactoryRegistryImplementationUpdated(initialAdmin_, tokenFactoryRegistryImplementation_);
+
+        // Validate and set the system access manager implementation address.
+        if (systemAccessManagerImplementation_ == address(0)) revert SystemAccessManagerImplementationNotSet();
+        _checkInterface(systemAccessManagerImplementation_, _SYSTEM_ACCESS_MANAGER_ID); // Ensure it supports
+            // IATKSystemAccessManager
+        _implementations[SYSTEM_ACCESS_MANAGER] = systemAccessManagerImplementation_;
+        emit SystemAccessManagerImplementationUpdated(initialAdmin_, systemAccessManagerImplementation_);
     }
 
+    /// @notice Authorizes an upgrade to a new implementation contract
     /// @dev Authorizes an upgrade to a new implementation contract.
     /// The UUPS upgrade mechanism is used.
     /// Only the `DEFAULT_ADMIN_ROLE` can authorize an upgrade.
+    /// @param newImplementation The address of the new implementation contract
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) { }
 
     // --- Bootstrap Function ---
@@ -376,6 +403,7 @@ contract ATKSystemImplementation is
         }
         if (_implementations[ADDON_REGISTRY] == address(0)) revert AddonRegistryImplementationNotSet();
         if (_implementations[TOKEN_FACTORY_REGISTRY] == address(0)) revert TokenFactoryRegistryImplementationNotSet();
+        if (_implementations[SYSTEM_ACCESS_MANAGER] == address(0)) revert SystemAccessManagerImplementationNotSet();
 
         // The caller of this bootstrap function (who must be an admin) will also be set as the initial admin
         // for some of the newly deployed proxy contracts where applicable.
@@ -466,6 +494,15 @@ contract ATKSystemImplementation is
         address localIdentityFactoryProxy =
             address(new ATKTypedImplementationProxy(address(this), IDENTITY_FACTORY, identityFactoryData));
 
+        // Deploy the ATKSystemAccessManagerProxy, linking it to this ATKSystem and setting an initial admin.
+        address[] memory initialSystemAccessManagerAdmins = new address[](1);
+        initialSystemAccessManagerAdmins[0] = initialAdmin;
+        bytes memory systemAccessManagerData = abi.encodeWithSelector(
+            ATKSystemAccessManagerImplementation.initialize.selector, initialSystemAccessManagerAdmins
+        );
+        address localSystemAccessManagerProxy =
+            address(new ATKTypedImplementationProxy(address(this), SYSTEM_ACCESS_MANAGER, systemAccessManagerData));
+
         // --- Effects (Update state variables for proxy addresses) ---
         // Now that all proxies are created, update the contract's state variables to store their addresses.
         _complianceProxy = localComplianceProxy;
@@ -477,6 +514,7 @@ contract ATKSystemImplementation is
         _complianceModuleRegistryProxy = localComplianceModuleRegistryProxy;
         _tokenFactoryRegistryProxy = localTokenFactoryRegistryProxy;
         _addonRegistryProxy = localAddonRegistryProxy;
+        _systemAccessManagerProxy = localSystemAccessManagerProxy;
 
         // --- Interactions (Part 2: Call methods on newly created proxies to link them) ---
         // After all proxy state variables are set, perform any necessary interactions between the new proxies.
@@ -516,7 +554,9 @@ contract ATKSystemImplementation is
             _tokenFactoryRegistryProxy,
             _addonRegistryProxy,
             _complianceModuleRegistryProxy,
-            _identityVerificationModule
+            _identityVerificationModule,
+            _systemAccessManagerProxy,
+            _implementations[SYSTEM_ACCESS_MANAGER]
         );
     }
 
@@ -740,6 +780,12 @@ contract ATKSystemImplementation is
         return _implementations[TOKEN_ACCESS_MANAGER];
     }
 
+    /// @notice Returns the address of the system access manager implementation.
+    /// @return The address of the system access manager implementation contract.
+    function systemAccessManagerImplementation() external view returns (address) {
+        return _implementations[SYSTEM_ACCESS_MANAGER];
+    }
+
     // --- Proxy Getter Functions ---
     // These public view functions allow anyone to query the stable addresses of the proxy contracts for each module.
     // Interactions with the SMART Protocol modules should always go through these proxy addresses.
@@ -798,6 +844,12 @@ contract ATKSystemImplementation is
         return _tokenFactoryRegistryProxy;
     }
 
+    /// @notice Gets the address of the system access manager's proxy contract.
+    /// @return The address of the system access manager proxy contract.
+    function systemAccessManager() public view returns (address) {
+        return _systemAccessManagerProxy;
+    }
+
     // --- Identity Verification Module ---
 
     /// @notice Gets the address of the identity verification module's proxy contract.
@@ -810,6 +862,7 @@ contract ATKSystemImplementation is
 
     // --- Internal Functions (Overrides for ERC2771Context and ERC165/AccessControl) ---
 
+    /// @notice Returns the address of the original transaction sender
     /// @dev Overrides the `_msgSender()` function from OpenZeppelin's `Context` and `ERC2771Context`.
     /// This ensures that in the context of a meta-transaction (via a trusted forwarder), `msg.sender` (and thus
     /// the return value of this function) correctly refers to the original user who signed the transaction,
@@ -820,6 +873,7 @@ contract ATKSystemImplementation is
         return super._msgSender(); // Calls the ERC2771Context implementation.
     }
 
+    /// @notice Returns the original call data of the transaction
     /// @dev Overrides the `_msgData()` function from OpenZeppelin's `Context` and `ERC2771Context`.
     /// Similar to `_msgSender()`, this ensures that `msg.data` (and the return value of this function)
     /// refers to the original call data from the user in a meta-transaction context.
@@ -834,6 +888,7 @@ contract ATKSystemImplementation is
         return super._msgData(); // Calls the ERC2771Context implementation.
     }
 
+    /// @notice Returns the length of the context suffix for meta-transactions
     /// @dev Overrides `_contextSuffixLength` from OpenZeppelin's `ERC2771Context`.
     /// This function is part of the ERC2771 meta-transaction standard. It indicates the length of the suffix
     /// appended to the call data by a forwarder, which typically contains the original sender's address.
@@ -854,7 +909,7 @@ contract ATKSystemImplementation is
     /// It explicitly supports the `IATKSystem` interface and inherits support for other interfaces
     /// like `IERC165` (from `ERC165`) and `IAccessControl` (from `AccessControl`).
     /// @param interfaceId The 4-byte interface identifier to check.
-    /// @return `true` if the contract supports the interface, `false` otherwise.
+    /// @return supported `true` if the contract supports the interface, `false` otherwise.
     function supportsInterface(bytes4 interfaceId)
         public
         view

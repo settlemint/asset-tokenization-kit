@@ -1,6 +1,11 @@
 {
   "extends": "solhint:recommended",
   "rules": {
+    "gas-small-strings": "off",
+    "function-max-lines": "off",
+    "avoid-low-level-calls": "off",
+    "no-inline-assembly": "off",
+    "import-path-check": "off",
     "immutable-vars-naming": "off",
     "no-empty-blocks": "off",
     "func-name-mixedcase": "off",

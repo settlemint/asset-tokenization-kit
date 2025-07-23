@@ -14,9 +14,9 @@ A Helm chart for the supporting components
 
 | Repository | Name | Version |
 |------------|------|---------|
+| https://charts.min.io/ | minio | 5.4.0 |
 | https://kubernetes.github.io/ingress-nginx | ingress-nginx | 4.13.0 |
 | https://stakater.github.io/stakater-charts | reloader | 2.1.5 |
-| oci://registry-1.docker.io/bitnamicharts | minio | 17.0.15 |
 | oci://registry-1.docker.io/bitnamicharts | postgresql-ha | 16.0.22 |
 | oci://registry-1.docker.io/bitnamicharts | redis | 21.2.12 |
 
@@ -129,22 +129,37 @@ A Helm chart for the supporting components
 | ingress-nginx.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | ingress-nginx.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | ingress-nginx.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
-| minio.auth.rootPassword | string | `"atk-password"` |  |
-| minio.auth.rootUser | string | `"admin"` |  |
-| minio.console.image.registry | string | `"docker.io"` |  |
-| minio.defaultInitContainers.image.registry | string | `"docker.io"` |  |
+| minio.buckets[0].name | string | `"atk"` |  |
+| minio.buckets[0].policy | string | `"none"` |  |
+| minio.buckets[0].purge | bool | `false` |  |
+| minio.consoleIngress.enabled | bool | `true` |  |
+| minio.consoleIngress.hosts[0] | string | `"minio-console.k8s.orb.local"` |  |
+| minio.consoleIngress.ingressClassName | string | `"atk-nginx"` |  |
+| minio.consoleIngress.path | string | `"/"` |  |
 | minio.enabled | bool | `true` |  |
 | minio.fullnameOverride | string | `"minio"` |  |
 | minio.global.imagePullSecrets[0] | string | `"image-pull-secret-docker"` |  |
 | minio.global.imagePullSecrets[1] | string | `"image-pull-secret-ghcr"` |  |
 | minio.global.imagePullSecrets[2] | string | `"image-pull-secret-harbor"` |  |
-| minio.global.security.allowInsecureImages | bool | `true` |  |
-| minio.image.registry | string | `"docker.io"` |  |
-| minio.provisioning.config[0].name | string | `"region"` |  |
-| minio.provisioning.config[0].options.name | string | `"eu-central-1"` |  |
-| minio.provisioning.enabled | bool | `true` |  |
-| minio.provisioning.extraCommands | string | `"if ! mc admin user svcacct info provisioning atk-service >/dev/null 2>&1; then\n  echo \"Adding atk-service user\"\n  mc admin user svcacct add provisioning \"admin\" --access-key \"atk-service\" --secret-key \"atk-service-secret\"\nfi"` |  |
-| minio.statefulset.replicaCount | int | `1` |  |
+| minio.image.repository | string | `"docker.io/minio/minio"` |  |
+| minio.image.tag | string | `"RELEASE.2025-07-18T21-56-31Z"` |  |
+| minio.ingress.enabled | bool | `true` |  |
+| minio.ingress.hosts[0] | string | `"minio.k8s.orb.local"` |  |
+| minio.ingress.ingressClassName | string | `"atk-nginx"` |  |
+| minio.ingress.path | string | `"/"` |  |
+| minio.mode | string | `"standalone"` |  |
+| minio.persistence.enabled | bool | `true` |  |
+| minio.persistence.size | string | `"1Gi"` |  |
+| minio.replicas | int | `1` |  |
+| minio.resources.limits.cpu | string | `"200m"` |  |
+| minio.resources.limits.memory | string | `"512Mi"` |  |
+| minio.resources.requests.cpu | string | `"100m"` |  |
+| minio.resources.requests.memory | string | `"256Mi"` |  |
+| minio.rootPassword | string | `"atk-password"` |  |
+| minio.rootUser | string | `"admin"` |  |
+| minio.users[0].accessKey | string | `"atk-service"` |  |
+| minio.users[0].policy | string | `"readwrite"` |  |
+| minio.users[0].secretKey | string | `"atk-service-secret"` |  |
 | postgresql-ha.commonLabels."app.kubernetes.io/managed-by" | string | `"helm"` |  |
 | postgresql-ha.commonLabels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | postgresql-ha.enabled | bool | `true` |  |

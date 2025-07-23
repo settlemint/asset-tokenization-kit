@@ -5,6 +5,7 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
+import { useAppForm } from "@/hooks/use-app-form";
 import {
   type AssetFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
@@ -15,7 +16,6 @@ import {
   TokenTypeEnum,
 } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -51,7 +51,7 @@ export function AssetTypeSelection() {
     }),
   });
 
-  const form = useForm({
+  const form = useAppForm({
     defaultValues: {
       assets: [] as TokenType[],
     },

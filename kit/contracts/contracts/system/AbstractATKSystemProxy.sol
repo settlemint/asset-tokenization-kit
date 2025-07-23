@@ -24,9 +24,9 @@ abstract contract AbstractATKSystemProxy is Proxy {
     bytes32 private constant _ATK_SYSTEM_ADDRESS_SLOT =
         0x6430307501c2cc3d2d4fb0a554183112a402a38cdc96135a87867e0457146f96;
 
-    /// @dev Internal function to retrieve the `IATKSystem` contract instance from the stored
-    /// address.
-    /// @return An `IATKSystem` instance pointing to the stored system contract address.
+    /// @notice Internal function to retrieve the `IATKSystem` contract instance from the stored address
+    /// @dev Retrieves the system contract address from the fixed storage slot and returns it as an IATKSystem instance
+    /// @return An `IATKSystem` instance pointing to the stored system contract address
     function _getSystem() internal view returns (IATKSystem) {
         // Retrieve registry address from the fixed slot
         return IATKSystem(StorageSlot.getAddressSlot(_ATK_SYSTEM_ADDRESS_SLOT).value);
@@ -75,12 +75,13 @@ abstract contract AbstractATKSystemProxy is Proxy {
         }
     }
 
+    /// @notice Returns the address of the current implementation contract
     /// @dev Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms (e.g., fallback,
     /// upgrades).
     /// It retrieves the `IATKSystem` instance and then calls the abstract `_getSpecificImplementationAddress`
     /// which the child contract must implement. The child's implementation is responsible for returning a valid
     /// address or reverting with its specific "ImplementationNotSet" error.
-    /// @return The address of the current logic/implementation contract.
+    /// @return The address of the current logic/implementation contract
     function _implementation() internal view override returns (address) {
         IATKSystem system_ = _getSystem();
         return _getSpecificImplementationAddress(system_);

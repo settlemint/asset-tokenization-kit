@@ -10,6 +10,7 @@ import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.so
 import { TokenImplementationNotSet } from "../../system/ATKSystemErrors.sol";
 
 /// @title Proxy contract for ATK Bonds, using ATKAssetProxy.
+/// @author SettleMint
 /// @notice This contract serves as a proxy, allowing for upgradeability of the underlying bond logic.
 /// It retrieves the implementation address from the ISMARTTokenFactory contract via ATKAssetProxy.
 contract ATKBondProxy is ATKAssetProxy {

@@ -18,7 +18,8 @@ error InitializationWithZeroAddress();
 /// @notice Custom error for when direct ETH transfers to the proxy are attempted.
 error ETHTransfersNotAllowed();
 
-/// @title Proxy for ATKXvPSettlement, managed by a factory.
+/// @title ATKXvPSettlementProxy - Proxy for ATKXvPSettlement, managed by a factory
+/// @author SettleMint
 /// @notice This contract is a proxy that delegates calls to an implementation
 /// of ATKXvPSettlement. The implementation address is fetched from a specified
 /// ATKXvPSettlementFactory contract.
@@ -108,7 +109,8 @@ contract ATKXvPSettlementProxy is Proxy {
         return _getImplementationAddressFromFactory();
     }
 
-    /// @notice Fallback function to reject any direct Ether transfers to this proxy contract.
+    /// @notice Fallback function to reject any direct Ether transfers to this proxy contract
+    /// @dev This prevents accidental ETH transfers to the proxy
     receive() external payable virtual {
         revert ETHTransfersNotAllowed();
     }

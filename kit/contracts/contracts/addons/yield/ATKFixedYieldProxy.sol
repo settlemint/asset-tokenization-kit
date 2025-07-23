@@ -17,8 +17,10 @@ error InitializationWithZeroAddress();
 /// @notice Custom error for when direct ETH transfers to the proxy are attempted.
 error ETHTransfersNotAllowed();
 
-/// @title Proxy for ATKFixedYieldSchedule, managed by a factory.
-/// @notice This contract is a proxy that delegates calls to an implementation
+/// @title ATKFixedYieldProxy
+/// @author SettleMint
+/// @notice Proxy for ATKFixedYieldSchedule, managed by a factory.
+/// This contract is a proxy that delegates calls to an implementation
 /// of ATKFixedYieldSchedule. The implementation address is fetched from a specified
 /// ATKFixedYieldScheduleFactory contract.
 /// @dev This proxy is intended to be deployed by ATKFixedYieldScheduleFactory.
@@ -71,14 +73,16 @@ contract ATKFixedYieldProxy is Proxy {
         _performInitializationDelegatecall(implementationAddress, initData);
     }
 
-    /// @dev Internal function to retrieve the IATKFixedYieldScheduleFactory contract instance from the stored
+    /// @notice Internal function to retrieve the IATKFixedYieldScheduleFactory contract instance from the stored
     /// address.
+    /// @dev Retrieves the factory address from the designated storage slot
     /// @return An IATKFixedYieldScheduleFactory instance.
     function _getFactory() internal view returns (IATKFixedYieldScheduleFactory) {
         return IATKFixedYieldScheduleFactory(StorageSlot.getAddressSlot(_ATK_FIXED_YIELD_FACTORY_ADDRESS_SLOT).value);
     }
 
-    /// @dev Fetches the implementation address from the factory.
+    /// @notice Fetches the implementation address from the factory.
+    /// @dev Retrieves the current implementation address from the factory contract and validates it
     /// @return The address of the fixed yield schedule implementation.
     function _getImplementationAddressFromFactory() internal view returns (address) {
         IATKFixedYieldScheduleFactory factory = _getFactory();
@@ -94,7 +98,8 @@ contract ATKFixedYieldProxy is Proxy {
         return implementation;
     }
 
-    /// @dev Performs the delegatecall to initialize the implementation contract.
+    /// @notice Performs the delegatecall to initialize the implementation contract.
+    /// @dev Executes a delegatecall to the implementation with the provided initialization data
     /// @param implementationAddress_ The non-zero address of the logic contract to `delegatecall` to.
     /// @param initializeData_ The ABI-encoded data for the `initialize` function call.
     function _performInitializationDelegatecall(
@@ -114,14 +119,15 @@ contract ATKFixedYieldProxy is Proxy {
         }
     }
 
-    /// @dev Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms.
-    /// It retrieves the implementation address from the configured factory.
+    /// @notice Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms.
+    /// @dev Retrieves the implementation address from the configured factory for delegation
     /// @return The address of the current logic/implementation contract for fixed yield schedules.
     function _implementation() internal view override returns (address) {
         return _getImplementationAddressFromFactory();
     }
 
     /// @notice Fallback function to reject any direct Ether transfers to this proxy contract.
+    /// @dev This prevents accidental ETH transfers to the proxy contract.
     receive() external payable virtual {
         revert ETHTransfersNotAllowed();
     }
