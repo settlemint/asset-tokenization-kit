@@ -307,7 +307,7 @@ function RouteComponent() {
               </div>
             </SidebarHeader>
 
-            <SidebarContent className="px-8 ">
+            <SidebarContent className="px-8 relative">
               {renderGroupedSteps()}
             </SidebarContent>
           </div>

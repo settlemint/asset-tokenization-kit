@@ -34,7 +34,7 @@ function OnboardingLayout() {
         </div>
       </div>
 
-      <div className="flex flex-col justify-center items-center px-16 lg:px-[5vw] 2xl:px-[16vw]">
+      <div className="flex flex-col justify-center items-center h-[calc(100vh-200px)] px-16 lg:px-[5vw] 2xl:px-[16vw]">
         <Card className="p-0 gap-0">
           <CardContent className="p-0 m-0">
             <Outlet />
