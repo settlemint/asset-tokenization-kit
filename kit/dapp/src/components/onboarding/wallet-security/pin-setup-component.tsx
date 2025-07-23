@@ -1,4 +1,5 @@
 import { PincodeInput } from "@/components/form/inputs/pincode-input";
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth.client";
@@ -63,66 +64,39 @@ export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        void form.handleSubmit();
-      }}
-      className="max-w-md mx-auto space-y-6"
+    <OnboardingStepLayout
+      title={t("wallet-security.pincode.title")}
+      description={t("wallet-security.pincode.description")}
     >
-      <div className="text-center space-y-2">
-        <h3 className="text-lg font-semibold">
-          {t("wallet-security.pincode.title")}
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          {t("wallet-security.pincode.description")}
-        </p>
-      </div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void form.handleSubmit();
+        }}
+        className="space-y-6"
+      >
+        <form.Subscribe>
+          {(state) => {
+            const showConfirmField = state.values.pincode.length === 6;
+            const isValid =
+              state.values.pincode.length === 6 &&
+              state.values.confirmPincode.length === 6 &&
+              state.values.pincode === state.values.confirmPincode &&
+              !state.errors.length;
 
-      <form.Subscribe>
-        {(state) => {
-          const showConfirmField = state.values.pincode.length === 6;
-          const isValid =
-            state.values.pincode.length === 6 &&
-            state.values.confirmPincode.length === 6 &&
-            state.values.pincode === state.values.confirmPincode &&
-            !state.errors.length;
-
-          return (
-            <div className="space-y-6">
-              <form.Field name="pincode">
-                {(field) => (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium block text-center">
-                      {t("wallet-security.pincode.enter-pin")}
-                    </label>
-                    <div className="flex justify-center">
-                      <PincodeInput
-                        value={field.state.value}
-                        onChange={field.handleChange}
-                        autoFocus
-                      />
-                    </div>
-                    {field.state.meta.errors.length > 0 && (
-                      <p className="text-sm text-destructive text-center">
-                        {field.state.meta.errors[0]}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </form.Field>
-
-              {showConfirmField && (
-                <form.Field name="confirmPincode">
+            return (
+              <div className="space-y-6">
+                <form.Field name="pincode">
                   {(field) => (
-                    <div className="space-y-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
+                    <div className="space-y-2">
                       <label className="text-sm font-medium block text-center">
-                        {t("wallet-security.pincode.confirm-pin")}
+                        {t("wallet-security.pincode.enter-pin")}
                       </label>
                       <div className="flex justify-center">
                         <PincodeInput
                           value={field.state.value}
                           onChange={field.handleChange}
+                          autoFocus
                         />
                       </div>
                       {field.state.meta.errors.length > 0 && (
@@ -130,41 +104,64 @@ export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
                           {field.state.meta.errors[0]}
                         </p>
                       )}
-                      {field.state.value.length === 6 &&
-                        state.values.pincode === field.state.value &&
-                        field.state.meta.errors.length === 0 && (
-                          <p className="text-sm text-green-600 text-center">
-                            {t("wallet-security.pincode.pin-codes-match")}
-                          </p>
-                        )}
                     </div>
                   )}
                 </form.Field>
-              )}
 
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={closeModal}
-                  className="flex-1"
-                >
-                  {t("common:actions.cancel")}
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={!isValid || state.isSubmitting}
-                  className="flex-1"
-                >
-                  {state.isSubmitting
-                    ? t("wallet-security.pincode.submitting")
-                    : t("wallet-security.pincode.set-pin")}
-                </Button>
+                {showConfirmField && (
+                  <form.Field name="confirmPincode">
+                    {(field) => (
+                      <div className="space-y-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
+                        <label className="text-sm font-medium block text-center">
+                          {t("wallet-security.pincode.confirm-pin")}
+                        </label>
+                        <div className="flex justify-center">
+                          <PincodeInput
+                            value={field.state.value}
+                            onChange={field.handleChange}
+                          />
+                        </div>
+                        {field.state.meta.errors.length > 0 && (
+                          <p className="text-sm text-destructive text-center">
+                            {field.state.meta.errors[0]}
+                          </p>
+                        )}
+                        {field.state.value.length === 6 &&
+                          state.values.pincode === field.state.value &&
+                          field.state.meta.errors.length === 0 && (
+                            <p className="text-sm text-green-600 text-center">
+                              {t("wallet-security.pincode.pin-codes-match")}
+                            </p>
+                          )}
+                      </div>
+                    )}
+                  </form.Field>
+                )}
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={closeModal}
+                    className="flex-1"
+                  >
+                    {t("common:actions.cancel")}
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={!isValid || state.isSubmitting}
+                    className="flex-1"
+                  >
+                    {state.isSubmitting
+                      ? t("wallet-security.pincode.submitting")
+                      : t("wallet-security.pincode.set-pin")}
+                  </Button>
+                </div>
               </div>
-            </div>
-          );
-        }}
-      </form.Subscribe>
-    </form>
+            );
+          }}
+        </form.Subscribe>
+      </form>
+    </OnboardingStepLayout>
   );
 }

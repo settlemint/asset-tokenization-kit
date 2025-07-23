@@ -89,8 +89,8 @@
   },
   "wallet-security": {
     "method-selector": {
-      "description": "Just like your bank card requires a PIN to confirm payments, your wallet also needs protection to authorize actions securely.",
-      "intro": "Your wallet controls access to your valuable digital assets and identity. To keep it safe, you can secure it with a PIN code or enable one-time passwords (OTP) for added protection.",
+      "title": "Secure your Wallet",
+      "description": "Just like your bank card requires a PIN to confirm payments, your wallet also needs protection to authorize actions securely.\n\nTo keep it safe, you can secure it with a PIN code or enable one-time passwords (OTP) for added protection.",
       "pin": {
         "title": "PIN code",
         "description": "A simple 6 digit code you enter on your device to quickly unlock your wallet. Easy and fast.",
@@ -181,7 +181,9 @@
     "identity-registry-label": "Identity Registry",
     "compliance-engine-label": "Compliance Engine",
     "trusted-issuers-label": "Trusted Issuers Registry",
-    "token-factory-label": "Token Factory Registry"
+    "token-factory-label": "Token Factory Registry",
+    "deployment-details-title": "Deployment Details",
+    "deployment-details-description": "View the details of the system deployment"
   },
   "assets": {
     "title": "Select Asset Types",

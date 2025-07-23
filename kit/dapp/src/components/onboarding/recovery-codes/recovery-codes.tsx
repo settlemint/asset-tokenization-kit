@@ -1,3 +1,4 @@
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -72,18 +73,21 @@ export function RecoveryCodes() {
   }, [generateRecoveryCodes, isGenerated, isGeneratedError, isGenerating]);
 
   return (
-    <div className="flex flex-col">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold">
-          {t("wallet-security.recovery-codes.title")}
-        </h2>
-        <p className="text-sm text-muted-foreground pt-2">
-          {t("wallet-security.recovery-codes.description")}
-        </p>
-        <p className="text-sm pt-2">
-          {t("wallet-security.recovery-codes.description-2")}
-        </p>
-      </div>
+    <OnboardingStepLayout
+      title={t("wallet-security.recovery-codes.title")}
+      description={t("wallet-security.recovery-codes.description")}
+      actions={
+        <Button
+          onClick={onConfirm}
+          disabled={isGenerating || recoveryCodes.length === 0}
+        >
+          {t("wallet-security.recovery-codes.confirm")}
+        </Button>
+      }
+    >
+      <p className="text-sm mb-6">
+        {t("wallet-security.recovery-codes.description-2")}
+      </p>
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl space-y-6">
@@ -102,15 +106,6 @@ export function RecoveryCodes() {
           {recoveryCodes.length > 0 && <RecoveryCodesWarning />}
         </div>
       </div>
-
-      <footer className="pt-6">
-        <Button
-          onClick={onConfirm}
-          disabled={isGenerating || recoveryCodes.length === 0}
-        >
-          {t("wallet-security.recovery-codes.confirm")}
-        </Button>
-      </footer>
-    </div>
+    </OnboardingStepLayout>
   );
 }

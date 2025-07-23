@@ -1,3 +1,4 @@
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
@@ -91,14 +92,24 @@ function RouteComponent() {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold">{t("system-settings.title")}</h2>
-        <p className="text-sm text-muted-foreground pt-2">
-          {t("system-settings.subtitle")}
-        </p>
-      </div>
-
+    <OnboardingStepLayout
+      title={t("system-settings.title")}
+      description={t("system-settings.subtitle")}
+      actions={
+        <Button
+          type="button"
+          onClick={() => {
+            handleSaveAndContinue();
+          }}
+          disabled={isSettingUpdating}
+          className="min-w-[120px]"
+        >
+          {isSettingUpdating
+            ? t("system-settings.buttons.saving")
+            : t("system-settings.buttons.saveAndContinue")}
+        </Button>
+      }
+    >
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl space-y-6">
           <div className="space-y-4 mb-6">
@@ -153,25 +164,8 @@ function RouteComponent() {
               </div>
             )}
           </form.Field>
-
-          <div className="mt-8 pt-6 border-t border-border">
-            <div className="flex justify-between">
-              <Button
-                type="button"
-                onClick={() => {
-                  handleSaveAndContinue();
-                }}
-                disabled={isSettingUpdating}
-                className="min-w-[120px]"
-              >
-                {isSettingUpdating
-                  ? t("system-settings.buttons.saving")
-                  : t("system-settings.buttons.saveAndContinue")}
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
-    </div>
+    </OnboardingStepLayout>
   );
 }

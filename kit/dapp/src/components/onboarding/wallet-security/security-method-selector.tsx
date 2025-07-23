@@ -1,4 +1,5 @@
 import { BulletPoint } from "@/components/onboarding/bullet-point";
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
 import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
 import { Lock, Shield } from "lucide-react";
@@ -33,17 +34,10 @@ export function SecurityMethodSelector() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <p className="text-sm text-foreground leading-relaxed">
-          {t("wallet-security.method-selector.description")}
-        </p>
-
-        <p className="text-sm text-foreground leading-relaxed">
-          {t("wallet-security.method-selector.intro")}
-        </p>
-      </div>
-
+    <OnboardingStepLayout
+      title={t("wallet-security.method-selector.title")}
+      description={t("wallet-security.method-selector.description")}
+    >
       <div className="space-y-4">
         <div className="space-y-3">
           <BulletPoint>
@@ -113,6 +107,6 @@ export function SecurityMethodSelector() {
           </div>
         </div>
       </div>
-    </div>
+    </OnboardingStepLayout>
   );
 }

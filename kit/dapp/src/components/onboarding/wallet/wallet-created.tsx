@@ -1,3 +1,4 @@
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,21 @@ export function WalletCreated() {
   const { completeStepAndNavigate } = useOnboardingNavigation();
 
   return (
-    <>
+    <OnboardingStepLayout
+      title={t("onboarding:wallet.success-title", {
+        defaultValue: t("onboarding:wallet.wallet-created-title", {
+          defaultValue: "Wallet Created",
+        }),
+      })}
+      description={t("onboarding:wallet.success-message")}
+      actions={
+        <Button
+          onClick={() => void completeStepAndNavigate(OnboardingStep.wallet)}
+        >
+          {t("common:continue")}
+        </Button>
+      }
+    >
       <div className="space-y-6">
         <div className="text-center space-y-4">
           <div className="flex justify-center">
@@ -22,19 +37,11 @@ export function WalletCreated() {
               <CircleCheckBigIcon className="w-8 h-8 text-green-600 dark:text-green-400" />
             </div>
           </div>
-
-          <div className="space-y-2">
-            <p className="text-base text-muted-foreground">
-              {t("onboarding:wallet.success-message")}
-            </p>
-          </div>
         </div>
-
         <div className="space-y-4">
           <h3 className="text-base font-medium text-foreground">
             {t("onboarding:wallet.wallet-address-title")}
           </h3>
-
           <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 space-y-3">
             <div className="flex items-center justify-center gap-2">
               <Web3Address
@@ -46,13 +53,6 @@ export function WalletCreated() {
           </div>
         </div>
       </div>
-      <footer className="mt-6">
-        <Button
-          onClick={() => void completeStepAndNavigate(OnboardingStep.wallet)}
-        >
-          {t("common:continue")}
-        </Button>
-      </footer>
-    </>
+    </OnboardingStepLayout>
   );
 }

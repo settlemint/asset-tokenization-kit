@@ -1,3 +1,4 @@
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,19 @@ export function DeploymentDetails() {
   }
 
   return (
-    <div className="space-y-4">
+    <OnboardingStepLayout
+      title={t("system.deployment-details-title")}
+      description={t("system.deployment-details-description")}
+      actions={
+        <Button
+          onClick={() =>
+            void completeStepAndNavigate(OnboardingStep.systemSettings)
+          }
+        >
+          {t("common:continue")}
+        </Button>
+      }
+    >
       <Button
         variant="outline"
         onClick={toggleDetails}
@@ -135,15 +148,6 @@ export function DeploymentDetails() {
           </div>
         </div>
       )}
-      <footer className="mt-6">
-        <Button
-          onClick={() =>
-            void completeStepAndNavigate(OnboardingStep.systemSettings)
-          }
-        >
-          {t("common:continue")}
-        </Button>
-      </footer>
-    </div>
+    </OnboardingStepLayout>
   );
 }

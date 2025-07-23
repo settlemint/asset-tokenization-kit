@@ -1,3 +1,4 @@
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -9,9 +10,24 @@ export function SecuritySuccess() {
   const { completeStepAndNavigate } = useOnboardingNavigation();
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 text-center">
-      <div className="flex justify-center mb-6">
-        <div className="relative">
+    <OnboardingStepLayout
+      title={t("wallet-security.method-selector.success")}
+      description={t("wallet-security.method-selector.success-description")}
+      actions={
+        <div className="flex gap-3 pt-4">
+          <Button
+            onClick={() =>
+              void completeStepAndNavigate(OnboardingStep.walletSecurity)
+            }
+            className="flex-1"
+          >
+            {t("general:continue")}
+          </Button>
+        </div>
+      }
+    >
+      <div className="flex justify-center">
+        <div className="relative m-4">
           <div className="w-20 h-20 bg-sm-state-success/10 rounded-full flex items-center justify-center">
             <Shield className="w-10 h-10 text-sm-state-success" />
           </div>
@@ -20,26 +36,6 @@ export function SecuritySuccess() {
           </div>
         </div>
       </div>
-
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-foreground">
-          {t("wallet-security.method-selector.success")}
-        </h3>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {t("wallet-security.method-selector.success-description")}
-        </p>
-      </div>
-
-      <div className="flex gap-3 pt-4">
-        <Button
-          onClick={() =>
-            void completeStepAndNavigate(OnboardingStep.walletSecurity)
-          }
-          className="flex-1"
-        >
-          {t("general:continue")}
-        </Button>
-      </div>
-    </div>
+    </OnboardingStepLayout>
   );
 }

@@ -1,4 +1,5 @@
 import { AssetDeploymentSuccess } from "@/components/onboarding/assets/asset-deployment-success";
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
@@ -34,16 +35,15 @@ export function AssetDeployment() {
   }, [completeStepAndNavigate]);
 
   return (
-    <div className="flex flex-col">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold">
-          {t("assets.asset-types-deployed")}
-        </h2>
-        <p className="text-sm text-muted-foreground pt-2">
-          {t("assets.your-asset-factories-ready")}
-        </p>
-      </div>
-
+    <OnboardingStepLayout
+      title={t("assets.asset-types-deployed")}
+      description={t("assets.your-asset-factories-ready")}
+      actions={
+        <Button type="button" onClick={onNext}>
+          {t("common:continue")}
+        </Button>
+      }
+    >
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl space-y-6">
           <AssetDeploymentSuccess
@@ -53,14 +53,6 @@ export function AssetDeployment() {
           />
         </div>
       </div>
-
-      <div className="mt-8 pt-6 border-t border-border">
-        <div className="flex justify-between">
-          <Button type="button" onClick={onNext}>
-            {t("common:continue")}
-          </Button>
-        </div>
-      </div>
-    </div>
+    </OnboardingStepLayout>
   );
 }
