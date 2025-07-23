@@ -51,6 +51,7 @@ export const namespaces = [
   "assets",
   "auth",
   "blockchain",
+  "compliance-modules",
   "common",
   "dashboard",
   "data-table",

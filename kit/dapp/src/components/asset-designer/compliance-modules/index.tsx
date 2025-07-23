@@ -1,6 +1,7 @@
 // TODO: initialModulePairs can also be undefined, but the linting is saying it's always a non nullish value
 
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
+import { ComplianceModulesGrid } from "@/components/compliance-modules-grid";
 import {
   FormStep,
   FormStepContent,
@@ -29,11 +30,10 @@ export const ComplianceModules = withForm({
         <FormStepTitle>{t("compliance.title")}</FormStepTitle>
         <FormStepDescription>{t("compliance.description")}</FormStepDescription>
         <FormStepContent>
-          <div>
-            {complianceTypeIds.map((module) => (
-              <div key={module}>{module}</div>
-            ))}
-          </div>
+          <ComplianceModulesGrid
+            complianceTypeIds={complianceTypeIds}
+            onModuleSelect={noop}
+          />
         </FormStepContent>
         <FormStepSubmit>
           <form.StepSubmitButton

@@ -1,0 +1,28 @@
+{
+  "modules": {
+    "addressBlockList": {
+      "title": "Adress-Sperrliste",
+      "description": "Spezifische Wallet-Adressen vom Zugriff auf Ihr Asset blockieren. Nützlich, um bekannte schlechte Akteure oder sanktionierte Adressen von der Teilnahme abzuhalten."
+    },
+    "countryAllowList": {
+      "title": "Länder-Zulassungsliste",
+      "description": "Nur Investoren aus bestimmten Ländern den Zugang zu Ihrem Asset ermöglichen. Ideal für regionsspezifische Compliance-Anforderungen und regulatorische Beschränkungen."
+    },
+    "countryBlockList": {
+      "title": "Länder-Sperrliste",
+      "description": "Investoren aus bestimmten Ländern oder Gerichtsbarkeiten blockieren. Wesentlich für die Einhaltung von Sanktionen und die Vermeidung eingeschränkter Märkte."
+    },
+    "identityAllowList": {
+      "title": "Identitäts-Zulassungsliste",
+      "description": "Nur verifizierte Identitäten aus Ihrer genehmigten Liste den Zugang zum Asset ermöglichen. Perfekt für exklusive Angebote und private Platzierungen."
+    },
+    "identityBlockList": {
+      "title": "Identitäts-Sperrliste",
+      "description": "Spezifische verifizierte Identitäten vom Zugriff auf Ihr Asset blockieren. Nützlich für die Entfernung problematischer Investoren bei gleichzeitiger Compliance-Wahrung."
+    },
+    "smartIdentityVerification": {
+      "title": "SMART-Identitätsverifizierung",
+      "description": "SMART-Protokoll-Identitätsverifizierung für alle Investoren erfordern. Bietet umfassende KYC/AML-Compliance durch dezentrale Identitätsverifizierung."
+    }
+  }
+}

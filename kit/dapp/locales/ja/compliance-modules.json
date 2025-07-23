@@ -1,0 +1,28 @@
+{
+  "modules": {
+    "addressBlockList": {
+      "title": "アドレスブロックリスト",
+      "description": "特定のウォレットアドレスがあなたの資産にアクセスすることをブロックします。悪意のある行為者や制裁対象のアドレスの参加を防ぐのに有用です。"
+    },
+    "countryAllowList": {
+      "title": "国許可リスト",
+      "description": "特定の国の投資家のみがあなたの資産にアクセスできるようにします。地域固有のコンプライアンス要件と規制制限に最適です。"
+    },
+    "countryBlockList": {
+      "title": "国ブロックリスト",
+      "description": "特定の国や管轄区域からの投資家をブロックします。制裁への準拠と制限市場の回避に不可欠です。"
+    },
+    "identityAllowList": {
+      "title": "ID許可リスト",
+      "description": "承認リストからの検証済みIDのみが資産にアクセスできるようにします。独占的な提供やプライベートプレースメントに最適です。"
+    },
+    "identityBlockList": {
+      "title": "IDブロックリスト",
+      "description": "特定の検証済みIDがあなたの資産にアクセスすることをブロックします。コンプライアンスを維持しながら問題のある投資家を除去するのに有用です。"
+    },
+    "smartIdentityVerification": {
+      "title": "SMART ID検証",
+      "description": "すべての投資家にSMARTプロトコルのID検証を要求します。分散化されたID検証を通じて包括的なKYC/AMLコンプライアンスを提供します。"
+    }
+  }
+}
