@@ -28,6 +28,28 @@ export const router = baseRouter.router({
   ),
 
   /**
+   * Actions-related API procedures.
+   *
+   * Lazy-loaded module containing actions management operations.
+   * Actions represent time-bound, executable tasks that users can perform on assets.
+   * This module provides endpoints for listing and reading action details,
+   * with automatic filtering to only show actions accessible to the authenticated user.
+   *
+   * **Architecture Decision**: Actions are implemented as a top-level namespace
+   * rather than nested under tokens (e.g., /tokens/{id}/actions) for several reasons:
+   * - Actions are domain entities that can target various resources, not just tokens
+   * - Provides unified "my actions" view for users across all entities
+   * - Enables efficient querying without multiple API calls
+   * - Maintains consistent authorization model with centralized user filtering
+   * - Future-proof for actions targeting accounts, systems, compliance modules, etc.
+   *
+   * @see {@link ./actions/actions.router} - Actions router implementation
+   */
+  actions: baseRouter.actions.lazy(
+    async () => import("./actions/actions.router")
+  ),
+
+  /**
    * Exchange rates API procedures.
    *
    * Lazy-loaded module containing foreign exchange rate management operations.

@@ -1,4 +1,5 @@
 import { accountContract } from "@/orpc/routes/account/account.contract";
+import { actionsContract } from "@/orpc/routes/actions/actions.contract";
 import { exchangeRatesContract } from "@/orpc/routes/exchange-rates/exchange-rates.contract";
 import { settingsContract } from "@/orpc/routes/settings/settings.contract";
 import { systemContract } from "@/orpc/routes/system/system.contract";
@@ -34,6 +35,18 @@ export const contract = {
    * @see {@link ./account/account.router} - Corresponding router implementation
    */
   account: accountContract,
+
+  /**
+   * Actions-related API contract.
+   *
+   * Contains type definitions for actions management procedures.
+   * Actions represent time-bound, executable tasks that users can perform on assets.
+   * This contract provides type-safe access to action listing and details operations,
+   * with automatic filtering to only show actions accessible to the authenticated user.
+   * @see {@link ./actions/actions.contract} - Actions contract implementation
+   * @see {@link ./actions/actions.router} - Corresponding router implementation
+   */
+  actions: actionsContract,
 
   /**
    * Exchange rates API contract.
