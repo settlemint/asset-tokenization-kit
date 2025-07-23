@@ -162,6 +162,53 @@ export const complianceParams = () =>
     .describe("Compliance module configuration with type-specific parameters");
 
 /**
+ * Schema for a compliance module pair that combines typeId and params.
+ * This is used for the 'initialModulePairs' field in token creation schemas.
+ * @example
+ * ```typescript
+ * // Address-based compliance module pair
+ * const addressPair = complianceModulePair().parse({
+ *   typeId: "AddressBlockListComplianceModule",
+ *   params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"]
+ * });
+ *
+ * // Country-based compliance module pair
+ * const countryPair = complianceModulePair().parse({
+ *   typeId: "CountryAllowListComplianceModule",
+ *   params: ["US", "GB"]
+ * });
+ *
+ * // Array of compliance module pairs
+ * const modulePairs = complianceModulePairArray().parse([
+ *   { typeId: "AddressBlockListComplianceModule", params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"] },
+ *   { typeId: "CountryAllowListComplianceModule", params: ["US", "GB"] }
+ * ]);
+ * ```
+ */
+export const complianceModulePair = () =>
+  complianceParams().describe("Compliance module pair with typeId and params");
+
+/**
+ * Creates an array validator for multiple compliance module pairs.
+ * Used for the 'initialModulePairs' field in token creation.
+ * @returns A Zod array schema that validates a list of compliance module pairs
+ * @example
+ * ```typescript
+ * const schema = complianceModulePairArray();
+ * schema.parse([
+ *   { typeId: "AddressBlockListComplianceModule", params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"] },
+ *   { typeId: "CountryAllowListComplianceModule", params: ["US", "GB"] }
+ * ]); // Valid
+ * schema.parse([]); // Valid - empty array allowed
+ * ```
+ */
+export const complianceModulePairArray = () =>
+  z
+    .array(complianceModulePair())
+    .default([])
+    .describe("Array of compliance module pairs for token initialization");
+
+/**
  * Creates an array validator for multiple compliance module typeIds.
  * Ensures at least one compliance module is selected.
  * @returns A Zod array schema that validates a list of compliance module typeIds
@@ -261,6 +308,22 @@ export type ComplianceTypeId = z.infer<ReturnType<typeof complianceTypeId>>;
  * Ensures type safety for the discriminated union.
  */
 export type ComplianceParams = z.infer<ReturnType<typeof complianceParams>>;
+
+/**
+ * Type representing a compliance module pair with typeId and params.
+ * Used for token initialization and configuration.
+ */
+export type ComplianceModulePair = z.infer<
+  ReturnType<typeof complianceModulePair>
+>;
+
+/**
+ * Type representing an array of compliance module pairs.
+ * Used for the 'initialModulePairs' field in token creation schemas.
+ */
+export type ComplianceModulePairArray = z.infer<
+  ReturnType<typeof complianceModulePairArray>
+>;
 
 /**
  * Type representing an array of validated compliance module typeIds.
@@ -482,4 +545,88 @@ export function getComplianceDescription(typeId: ComplianceTypeId): string {
   };
 
   return descriptions[typeId];
+}
+
+/**
+ * Type guard to check if a value is a valid compliance module pair.
+ * @param value - The value to check
+ * @returns `true` if the value is a valid compliance module pair, `false` otherwise
+ * @example
+ * ```typescript
+ * const pair = {
+ *   typeId: "AddressBlockListComplianceModule",
+ *   params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"]
+ * };
+ * if (isComplianceModulePair(pair)) {
+ *   // TypeScript knows pair is ComplianceModulePair here
+ *   console.log(`Valid compliance module pair: ${pair.typeId}`);
+ * }
+ * ```
+ */
+export function isComplianceModulePair(
+  value: unknown
+): value is ComplianceModulePair {
+  return complianceModulePair().safeParse(value).success;
+}
+
+/**
+ * Safely parse and return a compliance module pair or throw an error.
+ * @param value - The value to parse
+ * @returns The validated compliance module pair
+ * @throws {Error} If the value is not a valid compliance module pair
+ * @example
+ * ```typescript
+ * try {
+ *   const pair = getComplianceModulePair({
+ *     typeId: "CountryAllowListComplianceModule",
+ *     params: ["US", "GB"]
+ *   }); // Valid
+ * } catch (error) {
+ *   console.error("Invalid compliance module pair");
+ * }
+ * ```
+ */
+export function getComplianceModulePair(value: unknown): ComplianceModulePair {
+  return complianceModulePair().parse(value);
+}
+
+/**
+ * Type guard to check if a value is a valid compliance module pair array.
+ * @param value - The value to check
+ * @returns `true` if the value is a valid compliance module pair array, `false` otherwise
+ * @example
+ * ```typescript
+ * const pairs = [
+ *   { typeId: "AddressBlockListComplianceModule", params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"] },
+ *   { typeId: "CountryAllowListComplianceModule", params: ["US", "GB"] }
+ * ];
+ * if (isComplianceModulePairArray(pairs)) {
+ *   console.log("Valid compliance module pair array");
+ * }
+ * ```
+ */
+export function isComplianceModulePairArray(
+  value: unknown
+): value is ComplianceModulePairArray {
+  return complianceModulePairArray().safeParse(value).success;
+}
+
+/**
+ * Safely parse and return a compliance module pair array or throw an error.
+ * @param value - The value to parse
+ * @returns The validated compliance module pair array
+ * @throws {Error} If the value is not a valid compliance module pair array
+ * @example
+ * ```typescript
+ * const pairs = getComplianceModulePairArray([
+ *   { typeId: "AddressBlockListComplianceModule", params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"] },
+ *   { typeId: "CountryAllowListComplianceModule", params: ["US", "GB"] }
+ * ]); // Valid
+ * const empty = getComplianceModulePairArray([]); // Valid - empty array allowed
+ * ```
+ */
+export function getComplianceModulePairArray(
+  value: unknown
+): ComplianceModulePairArray {
+  return complianceModulePairArray().parse(value);
 }

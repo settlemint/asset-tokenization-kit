@@ -7,6 +7,8 @@ import { z } from "zod";
 import {
   type ComplianceTypeId,
   ComplianceTypeIdEnum,
+  complianceModulePair,
+  complianceModulePairArray,
   complianceParams,
   complianceTypeId,
   complianceTypeIdArray,
@@ -15,11 +17,15 @@ import {
   complianceTypeIdSet,
   complianceTypeIdWithDefault,
   getComplianceDescription,
+  getComplianceModulePair,
+  getComplianceModulePairArray,
   getComplianceParams,
   getComplianceTypeId,
   getComplianceTypeIdArray,
   getComplianceTypeIdSet,
   isAddressBasedCompliance,
+  isComplianceModulePair,
+  isComplianceModulePairArray,
   isComplianceParams,
   isComplianceTypeId,
   isComplianceTypeIdArray,
@@ -766,6 +772,209 @@ describe("integration with Zod schemas", () => {
       description: "Blocks specific addresses from transactions",
       isAddressBased: true,
       isCountryBased: false,
+    });
+  });
+});
+
+describe("complianceModulePair", () => {
+  const validator = complianceModulePair();
+
+  it("should accept valid compliance module pairs", () => {
+    const addressPair = {
+      typeId: "AddressBlockListComplianceModule" as const,
+      params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
+    };
+    const countryPair = {
+      typeId: "CountryAllowListComplianceModule" as const,
+      params: ["US", "GB"],
+    };
+    const smartPair = {
+      typeId: "SMARTIdentityVerificationComplianceModule" as const,
+      params: [],
+    };
+
+    expect(() => validator.parse(addressPair)).not.toThrow();
+    expect(() => validator.parse(countryPair)).not.toThrow();
+    expect(() => validator.parse(smartPair)).not.toThrow();
+
+    const addressResult = validator.parse(addressPair);
+    expect(addressResult.typeId).toBe("AddressBlockListComplianceModule");
+    expect(addressResult.params).toHaveLength(1);
+  });
+
+  it("should reject invalid compliance module pairs", () => {
+    const invalidPair = {
+      typeId: "InvalidModule",
+      params: [],
+    };
+    expect(() => validator.parse(invalidPair)).toThrow();
+  });
+});
+
+describe("complianceModulePairArray", () => {
+  const validator = complianceModulePairArray();
+
+  it("should accept valid arrays of compliance module pairs", () => {
+    const validPairs = [
+      {
+        typeId: "AddressBlockListComplianceModule" as const,
+        params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
+      },
+      {
+        typeId: "CountryAllowListComplianceModule" as const,
+        params: ["US", "GB"],
+      },
+    ];
+
+    const result = validator.parse(validPairs);
+    expect(result).toHaveLength(2);
+    expect(result[0].typeId).toBe("AddressBlockListComplianceModule");
+    expect(result[1].typeId).toBe("CountryAllowListComplianceModule");
+  });
+
+  it("should accept empty arrays", () => {
+    const result = validator.parse([]);
+    expect(result).toEqual([]);
+  });
+
+  it("should use default empty array when no value provided", () => {
+    const result = validator.parse(undefined);
+    expect(result).toEqual([]);
+  });
+
+  it("should reject arrays with invalid pairs", () => {
+    const invalidPairs = [
+      {
+        typeId: "AddressBlockListComplianceModule" as const,
+        params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
+      },
+      {
+        typeId: "InvalidModule",
+        params: [],
+      },
+    ];
+    expect(() => validator.parse(invalidPairs)).toThrow();
+  });
+
+  it("should reject non-array types", () => {
+    expect(() => validator.parse("not-an-array")).toThrow();
+    expect(() => validator.parse(123)).toThrow();
+    expect(() => validator.parse(null)).toThrow();
+  });
+});
+
+describe("compliance module pair utility functions", () => {
+  describe("isComplianceModulePair", () => {
+    it("should return true for valid pairs", () => {
+      const validPair = {
+        typeId: "AddressBlockListComplianceModule" as const,
+        params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
+      };
+      expect(isComplianceModulePair(validPair)).toBe(true);
+    });
+
+    it("should return false for invalid pairs", () => {
+      const invalidPair = {
+        typeId: "InvalidModule",
+        params: [],
+      };
+      expect(isComplianceModulePair(invalidPair)).toBe(false);
+      expect(isComplianceModulePair(null)).toBe(false);
+      expect(isComplianceModulePair("not-a-pair")).toBe(false);
+    });
+
+    it("should work as a type guard", () => {
+      const pair = {
+        typeId: "CountryAllowListComplianceModule" as const,
+        params: ["US", "GB"],
+      };
+      if (isComplianceModulePair(pair)) {
+        // TypeScript should recognize pair as ComplianceModulePair here
+        expect(pair.typeId).toBe("CountryAllowListComplianceModule");
+      }
+    });
+  });
+
+  describe("getComplianceModulePair", () => {
+    it("should parse valid pairs", () => {
+      const validPair = {
+        typeId: "IdentityAllowListComplianceModule" as const,
+        params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
+      };
+      const result = getComplianceModulePair(validPair);
+      expect(result.typeId).toBe("IdentityAllowListComplianceModule");
+      expect(result.params).toHaveLength(1);
+    });
+
+    it("should throw for invalid pairs", () => {
+      const invalidPair = {
+        typeId: "InvalidModule",
+        params: [],
+      };
+      expect(() => getComplianceModulePair(invalidPair)).toThrow();
+      expect(() => getComplianceModulePair(null)).toThrow();
+    });
+  });
+
+  describe("isComplianceModulePairArray", () => {
+    it("should return true for valid arrays", () => {
+      const validArray = [
+        {
+          typeId: "AddressBlockListComplianceModule" as const,
+          params: ["0x71c7656ec7ab88b098defb751b7401b5f6d8976f"],
+        },
+      ];
+      expect(isComplianceModulePairArray(validArray)).toBe(true);
+      expect(isComplianceModulePairArray([])).toBe(true); // Empty array is valid
+    });
+
+    it("should return false for invalid arrays", () => {
+      const invalidArray = [
+        {
+          typeId: "InvalidModule",
+          params: [],
+        },
+      ];
+      expect(isComplianceModulePairArray(invalidArray)).toBe(false);
+      expect(isComplianceModulePairArray("not-an-array")).toBe(false);
+      expect(isComplianceModulePairArray(null)).toBe(false);
+    });
+  });
+
+  describe("getComplianceModulePairArray", () => {
+    it("should parse valid arrays", () => {
+      const validArray = [
+        {
+          typeId: "CountryBlockListComplianceModule" as const,
+          params: ["CN", "RU"],
+        },
+        {
+          typeId: "SMARTIdentityVerificationComplianceModule" as const,
+          params: [],
+        },
+      ];
+      const result = getComplianceModulePairArray(validArray);
+      expect(result).toHaveLength(2);
+      expect(result[0].typeId).toBe("CountryBlockListComplianceModule");
+      expect(result[1].typeId).toBe(
+        "SMARTIdentityVerificationComplianceModule"
+      );
+    });
+
+    it("should parse empty arrays", () => {
+      const result = getComplianceModulePairArray([]);
+      expect(result).toEqual([]);
+    });
+
+    it("should throw for invalid arrays", () => {
+      const invalidArray = [
+        {
+          typeId: "InvalidModule",
+          params: [],
+        },
+      ];
+      expect(() => getComplianceModulePairArray(invalidArray)).toThrow();
+      expect(() => getComplianceModulePairArray("not-an-array")).toThrow();
     });
   });
 });
