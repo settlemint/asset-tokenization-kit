@@ -43,6 +43,13 @@
       "when": 1753171677262,
       "tag": "0005_striped_mach_iv",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1753271667499,
+      "tag": "0006_aspiring_gideon",
+      "breakpoints": true
     }
   ]
 }

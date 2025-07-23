@@ -280,5 +280,21 @@
       "addons-deployed-successfully": "Addons Deployed Successfully",
       "deployed-addons": "Deployed Addons"
     }
+  },
+  "identity-setup": {
+    "title": "Setup ONCHAINID",
+    "description": "Create your on-chain identity",
+    "info": "Setting up your ONCHAINID creates a secure, decentralized identity that enables you to interact with digital assets while maintaining privacy and compliance.",
+    "coming-soon": "Coming Soon",
+    "coming-soon-description": "ONCHAINID setup is currently under development. For now, we'll prepare your identity framework for future use."
+  },
+  "identity": {
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dob": "Date of Birth",
+      "nationality": "Nationality",
+      "residencyStatus": "Residency Status"
+    }
   }
 }

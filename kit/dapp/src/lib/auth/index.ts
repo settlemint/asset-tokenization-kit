@@ -26,6 +26,7 @@ import { pincode } from "@/lib/auth/plugins/pincode-plugin";
 import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
 import { twoFactor } from "@/lib/auth/plugins/two-factor";
 import { isOnboarded } from "@/lib/auth/plugins/utils";
+import { kycProfiles, type KycProfile } from "@/lib/db/schemas/kyc";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { UserRole } from "@/lib/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
@@ -367,10 +368,14 @@ const getAuthConfig = serverOnly(() => {
     plugins: [
       ...enhancedOptions.plugins,
       customSession(async ({ user, session }) => {
+        const kycProfile = await db.query.kycProfiles.findFirst({
+          where: eq(kycProfiles.userId, user.id),
+        });
         return Promise.resolve({
           user: {
             ...user,
             isOnboarded: isOnboarded(user as SessionUser),
+            kycProfile,
           } as SessionUser,
           session,
         });
@@ -403,4 +408,5 @@ export interface SessionUser extends InferUser<typeof options> {
   wallet: EthereumAddress;
   role: UserRole;
   isOnboarded: boolean;
+  kycProfile?: KycProfile;
 }

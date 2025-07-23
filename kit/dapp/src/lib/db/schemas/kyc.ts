@@ -1,10 +1,10 @@
 import {
+  date,
+  index,
+  pgEnum,
   pgTable,
   text,
   timestamp,
-  pgEnum,
-  date,
-  index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
@@ -12,6 +12,8 @@ import { user } from "./auth";
 export const residencyStatusEnum = pgEnum("residency_status", [
   "resident",
   "non_resident",
+  "dual_resident",
+  "unknown",
 ]);
 
 export const kycProfiles = pgTable(
@@ -28,8 +30,6 @@ export const kycProfiles = pgTable(
 
     dob: date("dob", { mode: "date" }).notNull(),
 
-    nationality: text("nationality").notNull(),
-
     residencyStatus: residencyStatusEnum("residency_status").notNull(),
 
     nationalIdEncrypted: text("national_id_encrypted").notNull(),
@@ -44,7 +44,6 @@ export const kycProfiles = pgTable(
   },
   (table) => [
     uniqueIndex("kyc_user_id_idx").on(table.userId),
-    index("kyc_nationality_idx").on(table.nationality),
     index("kyc_first_name_idx").on(table.firstName),
     index("kyc_last_name_idx").on(table.lastName),
   ]

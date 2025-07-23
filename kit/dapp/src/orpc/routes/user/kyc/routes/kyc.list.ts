@@ -13,7 +13,6 @@ import {
 } from "drizzle-orm";
 
 export const list = authRouter.user.kyc.list
-  // .use(permissionsMiddleware({ user: ["list"] }))
   .use(databaseMiddleware)
   .handler(async ({ context, input, errors }) => {
     const { userId, limit, offset, orderDirection, orderBy, search } = input;

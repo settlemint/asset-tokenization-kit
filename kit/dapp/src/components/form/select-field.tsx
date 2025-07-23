@@ -19,19 +19,21 @@ interface SelectOption {
   label: string;
 }
 
+export interface SelectFieldProps {
+  label: string;
+  description?: string;
+  required?: boolean;
+  options?: SelectOption[];
+  placeholder?: string;
+}
+
 export function SelectField({
   label,
   description,
   required = false,
   options = [],
   placeholder,
-}: {
-  label: string;
-  description?: string;
-  required?: boolean;
-  options?: SelectOption[];
-  placeholder?: string;
-}) {
+}: SelectFieldProps) {
   // The `Field` infers that it should have a `value` type of `string`
   const field = useFieldContext<string>();
 

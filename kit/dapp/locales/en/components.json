@@ -7,5 +7,12 @@
     "useAuthenticatorInstead": "Use Authenticator App instead",
     "codeLengthError": "Code must be 6 digits",
     "cancel": "Cancel"
+  },
+  "kycForm": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "dob": "Date of Birth",
+    "country": "Country",
+    "residencyStatus": "Residency Status"
   }
 }
