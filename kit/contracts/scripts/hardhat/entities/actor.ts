@@ -1,19 +1,35 @@
+import hre from "hardhat";
 import {
-  type Abi,
-  type Address,
-  type Chain,
-  type GetContractReturnType,
-  type PublicClient,
-  type Transport,
-  type WalletClient,
+  Abi,
+  Address,
+  Chain,
+  GetContractReturnType,
+  PublicClient,
+  Transport,
+  WalletClient,
+  encodeAbiParameters,
   formatEther,
   getContract as getViemContract,
+  keccak256,
+  parseAbiParameters,
 } from "viem";
-import type { Account } from "viem/accounts";
-import { atkDeployer } from "../../services/deployer";
-import { withDecodedRevertReason } from "../../utils/decode-revert-reason";
-import { getPublicClient } from "../../utils/public-client";
-import { waitForEvent } from "../../utils/wait-for-event";
+import {
+  Account,
+  LocalAccount,
+  generatePrivateKey,
+  privateKeyToAccount,
+} from "viem/accounts";
+import { ATKContracts } from "../constants/contracts";
+import { KeyPurpose } from "../constants/key-purposes";
+import { KeyType } from "../constants/key-types";
+import { ATKTopic } from "../constants/topics";
+import { atkDeployer } from "../services/deployer";
+import { topicManager } from "../services/topic-manager";
+import { createClaim } from "../utils/create-claim";
+import { withDecodedRevertReason } from "../utils/decode-revert-reason";
+import { getPublicClient } from "../utils/public-client";
+import { waitForEvent } from "../utils/wait-for-event";
+import { waitForSuccess } from "../utils/wait-for-success";
 
 // Chain to ensure identity creation operations are serialized across all actors
 // To avoid replacement transactions when in sync
@@ -24,8 +40,12 @@ let identityCreationQueue: Promise<void> = Promise.resolve();
  * An actor typically represents a user or an automated agent with its own wallet (Signer).
  * It requires HardhatRuntimeEnvironment for accessing ethers and contract artifacts.
  */
-export abstract class AbstractActor {
+export class Actor {
   protected initialized = false;
+
+  private accountIndex: number;
+  private walletClient: WalletClient<Transport, Chain, Account> | null = null;
+  private readonly signer: LocalAccount;
 
   protected _address: Address | undefined;
   protected _identityPromise: Promise<`0x${string}`> | undefined;
@@ -33,16 +53,20 @@ export abstract class AbstractActor {
 
   public readonly name: string;
   public readonly countryCode: number;
-  constructor(name: string, countryCode: number) {
+
+  constructor(
+    name: string,
+    countryCode: number,
+    accountIndex: number,
+    privateKey?: `0x${string}`
+  ) {
     this.name = name;
     this.countryCode = countryCode;
+    this.accountIndex = accountIndex;
+
+    const pk = privateKey ?? generatePrivateKey();
+    this.signer = privateKeyToAccount(pk);
   }
-  /**
-   * Abstract method to be implemented by subclasses.
-   * It should retrieve or create an ethers.js Signer instance representing the actor's wallet.
-   * @returns A Promise that resolves to an ethers Signer.
-   */
-  abstract getWalletClient(): WalletClient<Transport, Chain, Account>;
 
   /**
    * Initializes the actor by fetching and storing the wallet client (Signer).
@@ -53,6 +77,14 @@ export abstract class AbstractActor {
    */
   async initialize(): Promise<void> {
     console.log(`[${this.name}] Address: ${this.address}`);
+
+    const wallets = await hre.viem.getWalletClients();
+
+    if (!wallets[this.accountIndex]) {
+      throw new Error("Could not get a default wallet client from Hardhat.");
+    }
+    this.walletClient = wallets[this.accountIndex];
+    this._address = wallets[this.accountIndex].account.address;
 
     this.initialized = true;
   }
@@ -77,6 +109,21 @@ export abstract class AbstractActor {
     }
   }
 
+  /**
+   * Synchronously returns the singleton WalletClient instance for the default signer.
+   * Ensure `initializeDefaultWalletClient` has been called and completed before using this.
+   *
+   * @returns The default WalletClient instance.
+   * @throws Error if the client has not been initialized via `initializeDefaultWalletClient`.
+   */
+  public getWalletClient(): WalletClient<Transport, Chain, Account> {
+    if (!this.walletClient) {
+      throw new Error("Wallet client not initialized");
+    }
+
+    return this.walletClient;
+  }
+
   async getIdentity(): Promise<`0x${string}`> {
     if (this._identityPromise) {
       return this._identityPromise;
@@ -86,20 +133,39 @@ export abstract class AbstractActor {
       // Internal function to create the identity
       const createIdentity = async (): Promise<`0x${string}`> => {
         const identityFactory = atkDeployer.getIdentityFactoryContract();
-        const transactionHash = await withDecodedRevertReason(() =>
-          identityFactory.write.createIdentity([this.address, []])
+        const createIdentityTransactionHash = await withDecodedRevertReason(
+          () => identityFactory.write.createIdentity([this.address, []])
         );
 
-        const { identity } = (await waitForEvent({
-          transactionHash,
+        const { identity: identityAddress } = (await waitForEvent({
+          transactionHash: createIdentityTransactionHash,
           contract: identityFactory,
           eventName: "IdentityCreated",
         })) as { identity: `0x${string}` };
 
-        this._identity = identity;
-        console.log(`[${this.name}] identity: ${identity}`);
+        const identityContract = this.getContractInstance({
+          address: identityAddress,
+          abi: ATKContracts.identity,
+        });
 
-        return identity;
+        const addKeyTransactionHash = await withDecodedRevertReason(() =>
+          identityContract.write.addKey([
+            keccak256(
+              encodeAbiParameters(parseAbiParameters("address"), [
+                this.signer.address,
+              ])
+            ),
+            KeyPurpose.claimSigner,
+            KeyType.ecdsa,
+          ])
+        );
+
+        await waitForSuccess(addKeyTransactionHash);
+
+        this._identity = identityAddress;
+        console.log(`[${this.name}] identity: ${identityAddress}`);
+
+        return identityAddress;
       };
 
       // Chain this identity creation to the queue
@@ -151,6 +217,30 @@ export abstract class AbstractActor {
       abi,
       client: { public: getPublicClient(), wallet: walletClient },
     });
+  }
+
+  /**
+   * Create a claim signed by this issuer
+   * @param subjectIdentityAddress - The address of the identity to attach the claim to
+   * @param claimTopic - The topic of the claim
+   * @param claimData - The data of the claim
+   * @returns The claim data and signature
+   */
+  async createClaim(
+    subjectIdentityAddress: `0x${string}`,
+    claimTopic: ATKTopic,
+    claimData: `0x${string}`
+  ): Promise<{
+    data: `0x${string}`;
+    signature: `0x${string}`;
+    topicId: bigint;
+  }> {
+    return createClaim(
+      this.signer,
+      subjectIdentityAddress,
+      topicManager.getTopicId(claimTopic),
+      claimData
+    );
   }
 
   async getBalance() {

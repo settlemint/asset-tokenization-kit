@@ -13,8 +13,8 @@ import type {
 } from "viem";
 
 import ATKOnboardingModule from "../../../ignition/modules/onboarding";
+import { owner } from "../constants/actorss/owner";
 import { ATKContracts } from "../constants/contracts";
-import { owner } from "../entities/actors/owner";
 // --- Utility Imports ---
 
 // Type for the keys of CONTRACT_METADATA, e.g., "system" | "compliance" | ...

@@ -1,5 +1,5 @@
 import { ATKContracts } from "../../../constants/contracts";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
+import type { Actor } from "../../../entities/actor";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { formatBaseUnits } from "../../../utils/format-base-units";
@@ -8,7 +8,7 @@ import { waitForEvent } from "../../../utils/wait-for-event";
 export const claimYield = async (
   asset: Asset<any>,
   underlyingAsset: Asset<any>,
-  actor: AbstractActor
+  actor: Actor
 ) => {
   console.log(`[Claim yield] → Starting yield claim...`);
 

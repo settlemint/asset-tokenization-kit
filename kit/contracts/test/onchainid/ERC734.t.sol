@@ -4,6 +4,8 @@ pragma solidity ^0.8.28;
 import { Test, console } from "forge-std/Test.sol";
 import { ERC734 } from "../../contracts/onchainid/extensions/ERC734.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
+import { ERC734KeyPurposes } from "../../contracts/onchainid/ERC734KeyPurposes.sol";
+import { ERC734KeyTypes } from "../../contracts/onchainid/ERC734KeyTypes.sol";
 
 contract MockERC734 is ERC734 {
     constructor(address initialManagementKey) ERC734(initialManagementKey, false) { }
@@ -63,13 +65,9 @@ contract ERC734Test is Test {
     bytes32 public constant MANAGEMENT_KEY = keccak256("management_key");
     bytes32 public constant ACTION_KEY = keccak256("action_key");
 
-    uint256 public constant MANAGEMENT_PURPOSE = 1;
-    uint256 public constant ACTION_PURPOSE = 2;
-    uint256 public constant CLAIM_SIGNER_PURPOSE = 3;
-    uint256 public constant ENCRYPTION_PURPOSE = 4;
 
-    uint256 public constant ECDSA_TYPE = 1;
-    uint256 public constant RSA_TYPE = 2;
+
+
 
     function setUp() public {
         initialManagementKey = vm.addr(initialManagementKeyPrivateKey);
@@ -86,23 +84,23 @@ contract ERC734Test is Test {
         MockERC734 newContract = new MockERC734(initialManagementKey);
 
         // Check that no keys exist initially
-        bytes32[] memory managementKeys = newContract.getKeysByPurpose(MANAGEMENT_PURPOSE);
+        bytes32[] memory managementKeys = newContract.getKeysByPurpose(ERC734KeyPurposes.MANAGEMENT_KEY);
         assertEq(managementKeys.length, 1);
 
-        bytes32[] memory actionKeys = newContract.getKeysByPurpose(ACTION_PURPOSE);
+        bytes32[] memory actionKeys = newContract.getKeysByPurpose(ERC734KeyPurposes.ACTION_KEY);
         assertEq(actionKeys.length, 0);
 
-        bytes32[] memory claimSignerKeys = newContract.getKeysByPurpose(CLAIM_SIGNER_PURPOSE);
+        bytes32[] memory claimSignerKeys = newContract.getKeysByPurpose(ERC734KeyPurposes.CLAIM_SIGNER_KEY);
         assertEq(claimSignerKeys.length, 0);
 
-        bytes32[] memory encryptionKeys = newContract.getKeysByPurpose(ENCRYPTION_PURPOSE);
+        bytes32[] memory encryptionKeys = newContract.getKeysByPurpose(ERC734KeyPurposes.ENCRYPTION_KEY);
         assertEq(encryptionKeys.length, 0);
 
         // Check that test keys don't have any purposes
-        assertTrue(newContract.keyHasPurpose(keccak256(abi.encode(initialManagementKey)), MANAGEMENT_PURPOSE));
-        assertFalse(newContract.keyHasPurpose(TEST_KEY_1, MANAGEMENT_PURPOSE));
-        assertFalse(newContract.keyHasPurpose(TEST_KEY_1, ACTION_PURPOSE));
-        assertFalse(newContract.keyHasPurpose(TEST_KEY_2, MANAGEMENT_PURPOSE));
+        assertTrue(newContract.keyHasPurpose(keccak256(abi.encode(initialManagementKey)), ERC734KeyPurposes.MANAGEMENT_KEY));
+        assertFalse(newContract.keyHasPurpose(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY));
+        assertFalse(newContract.keyHasPurpose(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY));
+        assertFalse(newContract.keyHasPurpose(TEST_KEY_2, ERC734KeyPurposes.MANAGEMENT_KEY));
 
         // Check that getting a non-existent key returns empty data
         (uint256[] memory purposes, uint256 keyType, bytes32 key) = newContract.getKey(TEST_KEY_1);
@@ -117,73 +115,73 @@ contract ERC734Test is Test {
 
     function test_AddKey() public {
         vm.expectEmit(true, true, true, true);
-        emit IERC734.KeyAdded(TEST_KEY_1, MANAGEMENT_PURPOSE, ECDSA_TYPE);
+        emit IERC734.KeyAdded(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
 
-        bool success = erc734.addKey(TEST_KEY_1, MANAGEMENT_PURPOSE, ECDSA_TYPE);
+        bool success = erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
         assertTrue(success);
 
         // Verify key was added
         (uint256[] memory purposes, uint256 keyType, bytes32 key) = erc734.getKey(TEST_KEY_1);
         assertEq(purposes.length, 1);
-        assertEq(purposes[0], MANAGEMENT_PURPOSE);
-        assertEq(keyType, ECDSA_TYPE);
+        assertEq(purposes[0], ERC734KeyPurposes.MANAGEMENT_KEY);
+        assertEq(keyType, ERC734KeyTypes.ECDSA);
         assertEq(key, TEST_KEY_1);
 
         // Verify keyHasPurpose - management keys have access to all purposes
-        assertTrue(erc734.keyHasPurpose(TEST_KEY_1, MANAGEMENT_PURPOSE));
-        assertTrue(erc734.keyHasPurpose(TEST_KEY_1, ACTION_PURPOSE)); // Management keys can do everything
+        assertTrue(erc734.keyHasPurpose(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY));
+        assertTrue(erc734.keyHasPurpose(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY)); // Management keys can do everything
     }
 
     function test_AddMultiplePurposesToSameKey() public {
         // Add first purpose
-        erc734.addKey(TEST_KEY_1, MANAGEMENT_PURPOSE, ECDSA_TYPE);
+        erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
 
         // Add second purpose to same key
         vm.expectEmit(true, true, true, true);
-        emit IERC734.KeyAdded(TEST_KEY_1, ACTION_PURPOSE, ECDSA_TYPE);
+        emit IERC734.KeyAdded(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
-        bool success = erc734.addKey(TEST_KEY_1, ACTION_PURPOSE, ECDSA_TYPE);
+        bool success = erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
         assertTrue(success);
 
         // Verify both purposes exist
         (uint256[] memory purposes,,) = erc734.getKey(TEST_KEY_1);
         assertEq(purposes.length, 2);
-        assertTrue(erc734.keyHasPurpose(TEST_KEY_1, MANAGEMENT_PURPOSE));
-        assertTrue(erc734.keyHasPurpose(TEST_KEY_1, ACTION_PURPOSE));
+        assertTrue(erc734.keyHasPurpose(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY));
+        assertTrue(erc734.keyHasPurpose(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY));
     }
 
     function test_AddKey_ZeroKey() public {
         vm.expectRevert(ERC734.KeyCannotBeZero.selector);
-        erc734.addKey(bytes32(0), MANAGEMENT_PURPOSE, ECDSA_TYPE);
+        erc734.addKey(bytes32(0), ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
     }
 
     function test_AddKey_DuplicatePurpose() public {
-        erc734.addKey(TEST_KEY_1, MANAGEMENT_PURPOSE, ECDSA_TYPE);
+        erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
 
         vm.expectRevert(
-            abi.encodeWithSelector(ERC734.KeyAlreadyHasThisPurpose.selector, TEST_KEY_1, MANAGEMENT_PURPOSE)
+            abi.encodeWithSelector(ERC734.KeyAlreadyHasThisPurpose.selector, TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY)
         );
-        erc734.addKey(TEST_KEY_1, MANAGEMENT_PURPOSE, ECDSA_TYPE);
+        erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
     }
 
     function test_RemoveKey() public {
         // Add key with multiple purposes
-        erc734.addKey(TEST_KEY_1, MANAGEMENT_PURPOSE, ECDSA_TYPE);
-        erc734.addKey(TEST_KEY_1, ACTION_PURPOSE, ECDSA_TYPE);
+        erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
+        erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Remove one purpose
         vm.expectEmit(true, true, true, true);
-        emit IERC734.KeyRemoved(TEST_KEY_1, MANAGEMENT_PURPOSE, ECDSA_TYPE);
+        emit IERC734.KeyRemoved(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
 
-        bool success = erc734.removeKey(TEST_KEY_1, MANAGEMENT_PURPOSE);
+        bool success = erc734.removeKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY);
         assertTrue(success);
 
         // Verify purpose was removed but key still exists
-        assertFalse(erc734.keyHasPurpose(TEST_KEY_1, MANAGEMENT_PURPOSE));
-        assertTrue(erc734.keyHasPurpose(TEST_KEY_1, ACTION_PURPOSE));
+        assertFalse(erc734.keyHasPurpose(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY));
+        assertTrue(erc734.keyHasPurpose(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY));
 
         // Remove last purpose
-        erc734.removeKey(TEST_KEY_1, ACTION_PURPOSE);
+        erc734.removeKey(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY);
 
         // Verify key is completely removed
         (uint256[] memory purposes,,) = erc734.getKey(TEST_KEY_1);
@@ -192,22 +190,22 @@ contract ERC734Test is Test {
 
     function test_RemoveKey_NonexistentKey() public {
         vm.expectRevert(abi.encodeWithSelector(ERC734.KeyDoesNotExist.selector, TEST_KEY_1));
-        erc734.removeKey(TEST_KEY_1, MANAGEMENT_PURPOSE);
+        erc734.removeKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY);
     }
 
     function test_RemoveKey_NonexistentPurpose() public {
-        erc734.addKey(TEST_KEY_1, MANAGEMENT_PURPOSE, ECDSA_TYPE);
+        erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
 
-        vm.expectRevert(abi.encodeWithSelector(ERC734.KeyDoesNotHaveThisPurpose.selector, TEST_KEY_1, ACTION_PURPOSE));
-        erc734.removeKey(TEST_KEY_1, ACTION_PURPOSE);
+        vm.expectRevert(abi.encodeWithSelector(ERC734.KeyDoesNotHaveThisPurpose.selector, TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY));
+        erc734.removeKey(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY);
     }
 
     function test_GetKeysByPurpose() public {
-        erc734.addKey(TEST_KEY_1, MANAGEMENT_PURPOSE, ECDSA_TYPE);
-        erc734.addKey(TEST_KEY_2, MANAGEMENT_PURPOSE, RSA_TYPE);
-        erc734.addKey(ACTION_KEY, ACTION_PURPOSE, ECDSA_TYPE);
+        erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
+        erc734.addKey(TEST_KEY_2, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.RSA);
+        erc734.addKey(ACTION_KEY, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
-        bytes32[] memory managementKeys = erc734.getKeysByPurpose(MANAGEMENT_PURPOSE);
+        bytes32[] memory managementKeys = erc734.getKeysByPurpose(ERC734KeyPurposes.MANAGEMENT_KEY);
         assertEq(managementKeys.length, 3);
 
         // Order might vary, so check both keys are present
@@ -226,15 +224,15 @@ contract ERC734Test is Test {
                 )
         );
 
-        bytes32[] memory actionKeys = erc734.getKeysByPurpose(ACTION_PURPOSE);
+        bytes32[] memory actionKeys = erc734.getKeysByPurpose(ERC734KeyPurposes.ACTION_KEY);
         assertEq(actionKeys.length, 1);
         assertEq(actionKeys[0], ACTION_KEY);
     }
 
     function test_GetKeyPurposes() public {
-        erc734.addKey(TEST_KEY_1, MANAGEMENT_PURPOSE, ECDSA_TYPE);
-        erc734.addKey(TEST_KEY_1, ACTION_PURPOSE, ECDSA_TYPE);
-        erc734.addKey(TEST_KEY_1, CLAIM_SIGNER_PURPOSE, ECDSA_TYPE);
+        erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
+        erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
+        erc734.addKey(TEST_KEY_1, ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
 
         uint256[] memory purposes = erc734.getKeyPurposes(TEST_KEY_1);
         assertEq(purposes.length, 3);
@@ -245,9 +243,9 @@ contract ERC734Test is Test {
         bool hasClaimSigner = false;
 
         for (uint256 i = 0; i < purposes.length; i++) {
-            if (purposes[i] == MANAGEMENT_PURPOSE) hasManagement = true;
-            if (purposes[i] == ACTION_PURPOSE) hasAction = true;
-            if (purposes[i] == CLAIM_SIGNER_PURPOSE) hasClaimSigner = true;
+            if (purposes[i] == ERC734KeyPurposes.MANAGEMENT_KEY) hasManagement = true;
+            if (purposes[i] == ERC734KeyPurposes.ACTION_KEY) hasAction = true;
+            if (purposes[i] == ERC734KeyPurposes.CLAIM_SIGNER_KEY) hasClaimSigner = true;
         }
 
         assertTrue(hasManagement);
@@ -341,17 +339,17 @@ contract ERC734Test is Test {
     }
 
     function test_KeyHasPurpose_ManagementKeyAccess() public {
-        erc734.addKey(MANAGEMENT_KEY, MANAGEMENT_PURPOSE, ECDSA_TYPE);
+        erc734.addKey(MANAGEMENT_KEY, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
 
         // Management keys should have access to all purposes
-        assertTrue(erc734.keyHasPurpose(MANAGEMENT_KEY, MANAGEMENT_PURPOSE));
-        assertTrue(erc734.keyHasPurpose(MANAGEMENT_KEY, ACTION_PURPOSE));
-        assertTrue(erc734.keyHasPurpose(MANAGEMENT_KEY, CLAIM_SIGNER_PURPOSE));
-        assertTrue(erc734.keyHasPurpose(MANAGEMENT_KEY, ENCRYPTION_PURPOSE));
+        assertTrue(erc734.keyHasPurpose(MANAGEMENT_KEY, ERC734KeyPurposes.MANAGEMENT_KEY));
+        assertTrue(erc734.keyHasPurpose(MANAGEMENT_KEY, ERC734KeyPurposes.ACTION_KEY));
+        assertTrue(erc734.keyHasPurpose(MANAGEMENT_KEY, ERC734KeyPurposes.CLAIM_SIGNER_KEY));
+        assertTrue(erc734.keyHasPurpose(MANAGEMENT_KEY, ERC734KeyPurposes.ENCRYPTION_KEY));
     }
 
     function test_KeyHasPurpose_NonexistentKey() public view {
-        assertFalse(erc734.keyHasPurpose(TEST_KEY_1, MANAGEMENT_PURPOSE));
+        assertFalse(erc734.keyHasPurpose(TEST_KEY_1, ERC734KeyPurposes.MANAGEMENT_KEY));
     }
 
     function test_MultipleExecutions() public {

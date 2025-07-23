@@ -15,6 +15,7 @@ import { ERC735 } from "../../../onchainid/extensions/ERC735.sol";
 import { OnChainIdentity } from "../../../onchainid/extensions/OnChainIdentity.sol";
 import { OnChainIdentityWithRevocation } from "../../../onchainid/extensions/OnChainIdentityWithRevocation.sol";
 import { ClaimAuthorizationExtension } from "../../../onchainid/extensions/ClaimAuthorizationExtension.sol";
+import { ERC734KeyPurposes } from "@onchainid/contracts/extensions/ERC734KeyPurposes.sol";
 
 /// @title ATK Identity Implementation Contract (Logic for Wallet Identities)
 /// @author SettleMint Tokenization Services
@@ -49,7 +50,7 @@ contract ATKIdentityImplementation is
         if (
             !(
                 _msgSender() == address(this)
-                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), MANAGEMENT_KEY_PURPOSE)
+                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.MANAGEMENT_KEY)
             )
         ) {
             revert SenderLacksManagementKey();
@@ -61,7 +62,7 @@ contract ATKIdentityImplementation is
         if (
             !(
                 _msgSender() == address(this)
-                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), CLAIM_SIGNER_KEY_PURPOSE)
+                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.CLAIM_SIGNER_KEY)
             )
         ) {
             revert SenderLacksClaimSignerKey();
@@ -187,11 +188,11 @@ contract ATKIdentityImplementation is
 
         bytes32 senderKeyHash = keccak256(abi.encode(_msgSender()));
         if (executionToApprove.to == address(this)) {
-            if (!keyHasPurpose(senderKeyHash, MANAGEMENT_KEY_PURPOSE)) {
+            if (!keyHasPurpose(senderKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY)) {
                 revert SenderLacksManagementKey();
             }
         } else {
-            if (!keyHasPurpose(senderKeyHash, ACTION_KEY_PURPOSE)) {
+            if (!keyHasPurpose(senderKeyHash, ERC734KeyPurposes.ACTION_KEY)) {
                 revert SenderLacksActionKey();
             }
         }
@@ -217,9 +218,9 @@ contract ATKIdentityImplementation is
         bytes32 senderKeyHash = keccak256(abi.encode(_msgSender()));
         bool autoApproved = false;
 
-        if (keyHasPurpose(senderKeyHash, MANAGEMENT_KEY_PURPOSE)) {
+        if (keyHasPurpose(senderKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY)) {
             autoApproved = true;
-        } else if (_to != address(this) && keyHasPurpose(senderKeyHash, ACTION_KEY_PURPOSE)) {
+        } else if (_to != address(this) && keyHasPurpose(senderKeyHash, ERC734KeyPurposes.ACTION_KEY)) {
             autoApproved = true;
         }
 
@@ -267,7 +268,7 @@ contract ATKIdentityImplementation is
         if (!authorizedByContract) {
             // If no authorization contracts approve, require CLAIM_SIGNER_KEY (existing behavior)
             bytes32 senderKeyHash = keccak256(abi.encode(_msgSender()));
-            if (!(_msgSender() == address(this) || keyHasPurpose(senderKeyHash, CLAIM_SIGNER_KEY_PURPOSE))) {
+            if (!(_msgSender() == address(this) || keyHasPurpose(senderKeyHash, ERC734KeyPurposes.CLAIM_SIGNER_KEY))) {
                 revert SenderLacksClaimSignerKey();
             }
         }

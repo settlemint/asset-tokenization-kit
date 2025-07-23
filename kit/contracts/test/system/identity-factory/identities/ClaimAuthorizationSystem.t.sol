@@ -14,6 +14,8 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { ERC734KeyPurposes } from "../../../../contracts/onchainid/ERC734KeyPurposes.sol";
+import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
 
 /// @title ClaimAuthorizationSystem Test
 /// @notice Tests for the new claim authorization system (SRT-754)
@@ -21,8 +23,6 @@ import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy
 /// registry
 contract ClaimAuthorizationSystemTest is Test {
     // --- Test Constants ---
-    uint256 constant MANAGEMENT_KEY_PURPOSE = 1;
-    uint256 constant CLAIM_SIGNER_KEY_PURPOSE = 3;
     uint256 constant TEST_CLAIM_TOPIC = 1;
     uint256 constant TEST_CLAIM_SCHEME = 1;
     string constant TEST_CLAIM_URI = "https://example.com/claim";
@@ -167,7 +167,7 @@ contract ClaimAuthorizationSystemTest is Test {
         // Give mockIssuer address claim signer key (treat mockIssuer as key)
         vm.prank(owner);
         bytes32 issuerKeyHash = keccak256(abi.encode(address(mockIssuer)));
-        identity.addKey(issuerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        identity.addKey(issuerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add claim - should succeed through claim key
         // mockIssuer acts on its own behalf and has claim key
@@ -196,7 +196,7 @@ contract ClaimAuthorizationSystemTest is Test {
         // Give mockIssuer address claim signer key (treat mockIssuer as key)
         vm.prank(owner);
         bytes32 issuerKeyHash = keccak256(abi.encode(address(mockIssuer)));
-        identity.addKey(issuerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        identity.addKey(issuerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add claim - should succeed through claim key fallback
         // mockIssuer acts on its own behalf and has claim key
@@ -300,12 +300,12 @@ contract ClaimAuthorizationSystemTest is Test {
         // Add additional management and claim signer keys to the issuer identity (using issuerOwner)
         vm.prank(issuerOwner);
         bytes32 issuerManagementKeyHash = keccak256(abi.encode(issuerManagementKey));
-        issuerIdentity.addKey(issuerManagementKeyHash, MANAGEMENT_KEY_PURPOSE, 1);
+        issuerIdentity.addKey(issuerManagementKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
 
         // Add a claim signer key to the issuer identity
         vm.prank(issuerOwner);
         bytes32 claimSignerKeyHash = keccak256(abi.encode(claimSignerKey));
-        issuerIdentity.addKey(claimSignerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        issuerIdentity.addKey(claimSignerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Register trusted issuers registry
         vm.prank(owner);

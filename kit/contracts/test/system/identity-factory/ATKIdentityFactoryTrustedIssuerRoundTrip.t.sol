@@ -13,6 +13,8 @@ import { IERC3643TrustedIssuersRegistry } from
 import { ISMARTTopicSchemeRegistry } from "../../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import { IATKIdentity } from "../../../contracts/system/identity-factory/identities/IATKIdentity.sol";
+import { ERC734KeyPurposes } from "../../../contracts/onchainid/ERC734KeyPurposes.sol";
+import { ERC734KeyTypes } from "../../../contracts/onchainid/ERC734KeyTypes.sol";
 
 /**
  * @title ATK Identity Factory Trusted Issuer Round Trip Test
@@ -110,11 +112,11 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         vm.stopPrank();
 
         // Add claim signer key to the issuer's identity so the claimIssuer wallet can act on behalf of the issuer identity
-        // The claimIssuer wallet needs either CLAIM_SIGNER_KEY (purpose 3) or MANAGEMENT_KEY (purpose 1) 
+        // The claimIssuer wallet needs either CLAIM_SIGNER_KEY (purpose 3) or MANAGEMENT_KEY (purpose 1)
         // in the issuer identity to be authorized to add claims on behalf of that issuer
         vm.prank(claimIssuer);
         bytes32 issuerKey = keccak256(abi.encode(claimIssuer));
-        IERC734(issuerIdentityAddr).addKey(issuerKey, 3, 1); // 3 = CLAIM_SIGNER_KEY, 1 = ECDSA
+        IERC734(issuerIdentityAddr).addKey(issuerKey, ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
 
         // Step 2: Register the claim issuer in the trusted issuers registry with topics
         uint256[] memory allowedTopics = new uint256[](2);
@@ -155,7 +157,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         emit ClaimAdded(
             bytes32(0), // claimId will be calculated by the identity contract
             kycTopicId,
-            1, // ECDSA scheme
+            ERC734KeyTypes.ECDSA,
             issuerIdentityAddr,
             kycSignature,
             kycData,
@@ -171,7 +173,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         vm.prank(claimIssuer); // The wallet with claim signer key makes the call
         bytes32 kycClaimId = userIdentity.addClaim(
             kycTopicId,
-            1, // ECDSA scheme
+            ERC734KeyTypes.ECDSA,
             issuerIdentityAddr,
             kycSignature,
             kycData,
@@ -185,7 +187,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         emit ClaimAdded(
             bytes32(0), // claimId will be calculated by the identity contract
             amlTopicId,
-            1, // ECDSA scheme
+            ERC734KeyTypes.ECDSA,
             issuerIdentityAddr,
             amlSignature,
             amlData,
@@ -195,7 +197,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         vm.prank(claimIssuer); // The wallet with claim signer key makes the call
         bytes32 amlClaimId = userIdentity.addClaim(
             amlTopicId,
-            1, // ECDSA scheme
+            ERC734KeyTypes.ECDSA,
             issuerIdentityAddr,
             amlSignature,
             amlData,
@@ -370,29 +372,29 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         address userIdentityAddr = identityFactory.createIdentity(user, managementKeys);
         userIdentity = IATKIdentity(userIdentityAddr);
         address issuerIdentityAddr = identityFactory.createIdentity(claimIssuer, managementKeys);
-        
+
         // Register issuer in trusted issuers registry for KYC topic
         uint256[] memory allowedTopics = new uint256[](1);
         allowedTopics[0] = kycTopicId;
         trustedIssuersRegistry.addTrustedIssuer(IClaimIssuer(issuerIdentityAddr), allowedTopics);
         vm.stopPrank();
-        
+
         // Add claim signer key to the issuer identity for the claimIssuer wallet (this is the authorized wallet)
         vm.prank(claimIssuer);
         bytes32 issuerKey = keccak256(abi.encode(claimIssuer));
-        IERC734(issuerIdentityAddr).addKey(issuerKey, 3, 1); // 3 = CLAIM_SIGNER_KEY, 1 = ECDSA
-        
+        IERC734(issuerIdentityAddr).addKey(issuerKey, ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
+
         // Create an unauthorized wallet that does NOT have any keys in the issuer identity
         address unauthorizedWallet = makeAddr("unauthorizedWallet");
         // Do not add any keys for this wallet in the issuer identity
-        
+
         // Create a valid claim signature
         (bytes memory claimData, bytes memory signature) = claimUtils.createClaimSignature(
             userIdentityAddr,
             kycTopicId,
             "KYC Claim from Unauthorized Wallet"
         );
-        
+
         // Attempt to add claim with unauthorized wallet should fail
         // Even though the issuer is trusted for this topic, the wallet has no authority to act for the issuer
         vm.prank(unauthorizedWallet);
@@ -405,7 +407,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
             claimData,
             ""
         );
-        
+
         // Verify that the authorized wallet can still add claims successfully
         vm.prank(claimIssuer); // This wallet has CLAIM_SIGNER_KEY in the issuer identity
         bytes32 claimId = userIdentity.addClaim(
@@ -416,7 +418,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
             claimData,
             ""
         );
-        
+
         assertTrue(claimId != bytes32(0), "Authorized claim addition should succeed");
     }
 
@@ -430,27 +432,27 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         address userIdentityAddr = identityFactory.createIdentity(user, managementKeys);
         userIdentity = IATKIdentity(userIdentityAddr);
         address issuerIdentityAddr = identityFactory.createIdentity(claimIssuer, managementKeys);
-        
+
         // Register issuer in trusted issuers registry for KYC topic
         uint256[] memory allowedTopics = new uint256[](1);
         allowedTopics[0] = kycTopicId;
         trustedIssuersRegistry.addTrustedIssuer(IClaimIssuer(issuerIdentityAddr), allowedTopics);
         vm.stopPrank();
-        
+
         // Create wallet and give it ACTION_KEY (purpose 2) instead of CLAIM_SIGNER_KEY (purpose 3) or MANAGEMENT_KEY (purpose 1)
         address actionKeyWallet = makeAddr("actionKeyWallet");
-        
+
         vm.prank(claimIssuer); // Owner of issuer identity adds the key
         bytes32 actionKey = keccak256(abi.encode(actionKeyWallet));
-        IERC734(issuerIdentityAddr).addKey(actionKey, 2, 1); // 2 = ACTION_KEY, 1 = ECDSA
-        
+        IERC734(issuerIdentityAddr).addKey(actionKey, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
+
         // Create a valid claim signature
         (bytes memory claimData, bytes memory signature) = claimUtils.createClaimSignature(
             userIdentityAddr,
             kycTopicId,
             "KYC Claim from Action Key Wallet"
         );
-        
+
         // Attempt to add claim with ACTION_KEY wallet should fail
         // ACTION_KEY is not sufficient for claim authorization - only CLAIM_SIGNER_KEY or MANAGEMENT_KEY are allowed
         vm.prank(actionKeyWallet);

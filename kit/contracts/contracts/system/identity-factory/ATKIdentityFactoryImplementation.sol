@@ -17,6 +17,8 @@ import { IATKIdentity } from "./identities/IATKIdentity.sol";
 import { IATKContractIdentity } from "./identities/IATKContractIdentity.sol";
 import { IContractWithIdentity } from "./IContractWithIdentity.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
+import { ERC734KeyPurposes } from "@onchainid/contracts/extensions/ERC734KeyPurposes.sol";
+import { ERC734KeyTypes } from "@onchainid/contracts/extensions/ERC734KeyTypes.sol";
 
 // System imports
 import { InvalidSystemAddress } from "../ATKSystemErrors.sol"; // Assuming this is correctly placed
@@ -208,8 +210,7 @@ contract ATKIdentityFactoryImplementation is
             for (uint256 i = 0; i < managementKeysLength;) {
                 // Prevent adding the wallet's own key again if it was passed in _managementKeys
                 if (_managementKeys[i] == keccak256(abi.encodePacked(_wallet))) revert WalletInManagementKeys();
-                identityContract.addKey(_managementKeys[i], 1, 1); // Add key with ERC734 purpose 1 (MANAGEMENT_KEY) and
-                    // type 1 (ECDSA key/address).
+                identityContract.addKey(_managementKeys[i], ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
                 unchecked {
                     ++i;
                 }
