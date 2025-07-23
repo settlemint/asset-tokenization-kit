@@ -1,6 +1,6 @@
 import { atkDeployer } from "../../services/deployer";
 
-import { owner } from "../../entities/actors/owner";
+import { owner } from "../../constants/actors";
 import { AirdropMerkleTree } from "../../entities/airdrop/merkle-tree";
 import { VestingAirdrop } from "../../entities/airdrop/vesting-airdrop";
 import { Asset } from "../../entities/asset";

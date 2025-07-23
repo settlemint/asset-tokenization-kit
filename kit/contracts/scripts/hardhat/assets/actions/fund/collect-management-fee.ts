@@ -1,5 +1,5 @@
+import { owner } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
 import { increaseAnvilTime } from "../../../utils/anvil";
 import { formatBaseUnits } from "../../../utils/format-base-units";

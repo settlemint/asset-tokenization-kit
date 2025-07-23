@@ -1,11 +1,11 @@
+import { claimIssuer } from "../../../constants/actors";
 import {
   ATK_BASE_CURRENCY_CODE,
   ATK_BASE_CURRENCY_DECIMALS,
 } from "../../../constants/base-currency";
 import { ATKContracts } from "../../../constants/contracts";
+import { KeyType } from "../../../constants/key-types";
 import { ATKTopic } from "../../../constants/topics";
-import { claimIssuer } from "../../../entities/actors/claim-issuer";
-import { owner } from "../../../entities/actors/owner";
 import type { Asset } from "../../../entities/asset";
 import { encodeClaimData } from "../../../utils/claim-scheme-utils";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
@@ -37,17 +37,16 @@ export const issueBasePriceClaim = async (
     encodedBasePriceData
   );
 
-  const tokenIdentityContract = owner.getContractInstance({
+  const claimIssuerIdentity = await claimIssuer.getIdentity();
+  const tokenIdentityContract = claimIssuer.getContractInstance({
     address: asset.identity,
     abi: ATKContracts.contractIdentity,
   });
 
-  const claimIssuerIdentity = await claimIssuer.getIdentity();
-
   const transactionHash = await withDecodedRevertReason(() =>
     tokenIdentityContract.write.addClaim([
       topicId,
-      BigInt(1), // ECDSA
+      KeyType.ecdsa,
       claimIssuerIdentity,
       basePriceClaimSignature,
       basePriceClaimData,

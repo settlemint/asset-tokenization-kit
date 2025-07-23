@@ -1,5 +1,5 @@
 import { ATKContracts } from "../../../constants/contracts";
-import { AbstractActor } from "../../../entities/actors/abstract-actor";
+import type { Actor } from "../../../entities/actor";
 import type { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { formatBaseUnits } from "../../../utils/format-base-units";
@@ -8,7 +8,7 @@ import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const redeem = async (
   asset: Asset<any>,
-  actor: AbstractActor,
+  actor: Actor,
   amount: bigint
 ) => {
   console.log(`[Redeemed] → Starting redemption...`);

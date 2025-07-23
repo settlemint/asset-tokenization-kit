@@ -6,9 +6,9 @@
  */
 
 import { parseArgs } from "node:util";
+import { owner } from "../constants/actors";
 import { ATKContracts } from "../constants/contracts";
 import { ATKRoles } from "../constants/roles";
-import { owner } from "../entities/actors/owner";
 import { atkDeployer } from "../services/deployer";
 
 async function main() {
