@@ -22,6 +22,7 @@ import { tokenTransferContract } from "@/orpc/routes/token/routes/mutations/tran
 import { tokenSetYieldScheduleContract } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule.contract";
 
 // Query contracts
+import { tokenActionsContract } from "@/orpc/routes/token/routes/token.actions.contract";
 import { tokenEventsContract } from "@/orpc/routes/token/routes/token.events.contract";
 import { tokenHoldersContract } from "@/orpc/routes/token/routes/token.holders.contract";
 import { tokenListContract } from "@/orpc/routes/token/routes/token.list.contract";
@@ -69,6 +70,7 @@ export const tokenContract = {
   ...tokenContractMutations,
 
   // Queries
+  actions: tokenActionsContract,
   list: tokenListContract,
   read: tokenReadContract,
   events: tokenEventsContract,
