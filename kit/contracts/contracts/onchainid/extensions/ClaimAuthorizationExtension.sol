@@ -54,8 +54,9 @@ contract ClaimAuthorizationExtension {
 
     /// @notice Registers a claim authorization contract
     /// @param authorizationContract The address of the contract implementing IClaimAuthorization
+    /// @param sender The address to emit in the event (should be _msgSender() for meta-transaction compatibility)
     /// @dev This function should be called by inheriting contracts with proper access control
-    function _registerClaimAuthorizationContract(address authorizationContract) internal {
+    function _registerClaimAuthorizationContract(address authorizationContract, address sender) internal {
         if (authorizationContract == address(0)) {
             revert InvalidAuthorizationContract(authorizationContract);
         }
@@ -78,13 +79,14 @@ contract ClaimAuthorizationExtension {
         _claimAuthorizationContracts.push(authorizationContract);
         _authContractIndex[authorizationContract] = _claimAuthorizationContracts.length;
 
-        emit ClaimAuthorizationContractRegistered(msg.sender, authorizationContract);
+        emit ClaimAuthorizationContractRegistered(sender, authorizationContract);
     }
 
     /// @notice Removes a claim authorization contract
     /// @param authorizationContract The address of the contract to remove
+    /// @param sender The address to emit in the event (should be _msgSender() for meta-transaction compatibility)
     /// @dev This function should be called by inheriting contracts with proper access control
-    function _removeClaimAuthorizationContract(address authorizationContract) internal {
+    function _removeClaimAuthorizationContract(address authorizationContract, address sender) internal {
         uint256 indexPlusOne = _authContractIndex[authorizationContract];
         if (indexPlusOne == 0) {
             revert AuthorizationContractNotRegistered(authorizationContract);
@@ -102,7 +104,7 @@ contract ClaimAuthorizationExtension {
         _claimAuthorizationContracts.pop();
         delete _authContractIndex[authorizationContract];
 
-        emit ClaimAuthorizationContractRemoved(msg.sender, authorizationContract);
+        emit ClaimAuthorizationContractRemoved(sender, authorizationContract);
     }
 
     /// @notice Checks if an issuer is authorized to add a claim for a specific topic

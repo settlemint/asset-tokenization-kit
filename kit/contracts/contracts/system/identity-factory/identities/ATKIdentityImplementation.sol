@@ -118,7 +118,7 @@ contract ATKIdentityImplementation is
         uint256 contractsLength = claimAuthorizationContracts.length;
         for (uint256 i = 0; i < contractsLength;) {
             if (claimAuthorizationContracts[i] != address(0)) {
-                _registerClaimAuthorizationContract(claimAuthorizationContracts[i]);
+                _registerClaimAuthorizationContract(claimAuthorizationContracts[i], _msgSender());
             }
             unchecked {
                 ++i;
@@ -145,14 +145,14 @@ contract ATKIdentityImplementation is
     /// @param authorizationContract The address of the contract implementing IClaimAuthorization
     /// @dev Only management keys can register authorization contracts
     function registerClaimAuthorizationContract(address authorizationContract) external onlyManager {
-        _registerClaimAuthorizationContract(authorizationContract);
+        _registerClaimAuthorizationContract(authorizationContract, _msgSender());
     }
 
     /// @notice Removes a claim authorization contract
     /// @param authorizationContract The address of the contract to remove
     /// @dev Only management keys can remove authorization contracts
     function removeClaimAuthorizationContract(address authorizationContract) external onlyManager {
-        _removeClaimAuthorizationContract(authorizationContract);
+        _removeClaimAuthorizationContract(authorizationContract, _msgSender());
     }
 
     // --- ERC734 (Key Holder) Functions - Overridden for Access Control & Specific Logic ---

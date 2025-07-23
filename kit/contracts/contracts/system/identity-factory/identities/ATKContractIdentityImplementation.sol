@@ -88,7 +88,7 @@ contract ATKContractIdentityImplementation is
         uint256 contractsLength = claimAuthorizationContracts.length;
         for (uint256 i = 0; i < contractsLength;) {
             if (claimAuthorizationContracts[i] != address(0)) {
-                _registerClaimAuthorizationContract(claimAuthorizationContracts[i]);
+                _registerClaimAuthorizationContract(claimAuthorizationContracts[i], _msgSender());
             }
             unchecked {
                 ++i;
@@ -133,7 +133,7 @@ contract ATKContractIdentityImplementation is
         if (!IContractWithIdentity(_contractAddress).canAddClaim(_msgSender())) {
             revert UnauthorizedOperation(_msgSender());
         }
-        _registerClaimAuthorizationContract(authorizationContract);
+        _registerClaimAuthorizationContract(authorizationContract, _msgSender());
     }
 
     /// @notice Removes a claim authorization contract
@@ -143,7 +143,7 @@ contract ATKContractIdentityImplementation is
         if (!IContractWithIdentity(_contractAddress).canRemoveClaim(_msgSender())) {
             revert UnauthorizedOperation(_msgSender());
         }
-        _removeClaimAuthorizationContract(authorizationContract);
+        _removeClaimAuthorizationContract(authorizationContract, _msgSender());
     }
 
     // --- ERC735 (Claim Holder) Functions - Overridden for Access Control ---
