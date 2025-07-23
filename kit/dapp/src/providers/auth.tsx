@@ -174,7 +174,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         toast={handleToast}
         localization={localization}
       >
-        {children}
+        <div className="AuthProvider">{children}</div>
       </AuthUIProviderTanstack>
     </AuthQueryProvider>
   );
