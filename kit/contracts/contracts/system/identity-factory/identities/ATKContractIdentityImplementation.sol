@@ -105,21 +105,21 @@ contract ATKContractIdentityImplementation is
     }
 
     /// @inheritdoc IATKContractIdentity
-    function getClaimAuthorizationContracts() 
-        external 
-        view 
-        override(ClaimAuthorizationExtension, IATKContractIdentity) 
-        returns (address[] memory) 
+    function getClaimAuthorizationContracts()
+        external
+        view
+        override(ClaimAuthorizationExtension, IATKContractIdentity)
+        returns (address[] memory)
     {
         return _claimAuthorizationContracts;
     }
 
     /// @inheritdoc IATKContractIdentity
-    function isClaimAuthorizationContractRegistered(address authorizationContract) 
-        external 
-        view 
-        override(ClaimAuthorizationExtension, IATKContractIdentity) 
-        returns (bool) 
+    function isClaimAuthorizationContractRegistered(address authorizationContract)
+        external
+        view
+        override(ClaimAuthorizationExtension, IATKContractIdentity)
+        returns (bool)
     {
         return _authContractIndex[authorizationContract] != 0;
     }

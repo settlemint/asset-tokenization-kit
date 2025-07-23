@@ -206,7 +206,12 @@ contract ClaimAuthorizationExtension {
     /// @notice Checks if a contract is registered as a claim authorization contract
     /// @param authorizationContract The address to check
     /// @return True if registered, false otherwise
-    function isClaimAuthorizationContractRegistered(address authorizationContract) external view virtual returns (bool) {
+    function isClaimAuthorizationContractRegistered(address authorizationContract)
+        external
+        view
+        virtual
+        returns (bool)
+    {
         return _authContractIndex[authorizationContract] != 0;
     }
 }

@@ -15,6 +15,7 @@ import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { ERC735 } from "../../../../contracts/onchainid/extensions/ERC735.sol";
 import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "../../../utils/SystemUtils.sol";
+import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
 
 /// @title Mock Contract With Identity - Represents a contract (like a token) that has an associated identity
 /// @dev This contract demonstrates the role of a "Contract" in the hierarchy: ContractOwner → Contract → Identity
@@ -82,7 +83,15 @@ contract FailingClaimAuthorizer is IClaimAuthorizer, ERC165 {
 contract MockClaimIssuer is ERC165 {
     mapping(bytes32 => bool) public validClaims;
 
-    function setClaimValid(address identity, uint256 topic, bytes memory signature, bytes memory data, bool valid) external {
+    function setClaimValid(
+        address identity,
+        uint256 topic,
+        bytes memory signature,
+        bytes memory data,
+        bool valid
+    )
+        external
+    {
         bytes32 claimHash = keccak256(abi.encode(identity, topic, signature, data));
         validClaims[claimHash] = valid;
     }
@@ -92,7 +101,11 @@ contract MockClaimIssuer is ERC165 {
         uint256 topic,
         bytes calldata signature,
         bytes calldata data
-    ) external view returns (bool) {
+    )
+        external
+        view
+        returns (bool)
+    {
         bytes32 claimHash = keccak256(abi.encode(address(identity), topic, signature, data));
         return validClaims[claimHash];
     }
@@ -103,30 +116,49 @@ contract MockClaimIssuer is ERC165 {
 }
 
 /// @title ATK Contract Identity Implementation Test
-/// @notice Tests the complete role hierarchy: ContractOwner → Contract → Identity (has Authorizers) → Claim Issuers
+/// @notice Tests the complete role hierarchy and authorization flow:
+///
+/// ROLE HIERARCHY:
+/// 1. ContractOwner - Owns the contract (e.g., token contract) and can manage claims directly
+/// 2. Contract - Has an associated identity and defines who can add/remove claims via contract permissions
+/// 3. Identity - The identity contract that holds claims and has registered authorizers
+/// 4. Authorizers - Smart contracts that can whitelist specific claim issuers for specific topics
+/// 5. Claim Issuers - External entities that can add claims directly IF whitelisted by an authorizer
+///
+/// AUTHORIZATION FLOW:
+/// - ContractOwner can ALWAYS add/remove claims (via contract permissions)
+/// - ClaimManager can ALWAYS add/remove claims (via contract permissions)
+/// - External Claim Issuers can ONLY add claims if:
+///   a) They are whitelisted by at least one registered authorizer
+///   b) The authorizer approves them for the specific claim topic
+///   c) They provide valid claim signatures
+///
+/// PURPOSE:
+/// This design allows trusted claim issuers to add claims directly to identities
+/// instead of having to create off-chain claims and send them to the contract owner.
 contract ATKContractIdentityImplementationTest is Test {
     SystemUtils public systemUtils;
     ATKContractIdentityImplementation public implementation;
     ATKContractIdentityProxy public proxy;
-    
-    // ROLE ACTORS
-    MockContractWithIdentity public testContract;
-    MockClaimAuthorizer public trustedIssuerAuthorizer;
-    MockClaimAuthorizer public secondaryAuthorizer;
-    FailingClaimAuthorizer public failingAuthorizer;
-    MockClaimIssuer public externalClaimIssuer;
-    MockClaimIssuer public anotherClaimIssuer;
 
-    // ROLE ADDRESSES
-    address public admin;
-    address public contractOwner;      // Can add claims via contract permissions
-    address public claimManager;       // Can also add claims via contract permissions  
-    address public unauthorizedUser;   // Cannot add claims via any method
-    address public trustedForwarder;
+    // ROLE ACTORS - Smart contracts representing different entities in the hierarchy
+    MockContractWithIdentity public testContract; // Contract that has an identity (e.g., token contract)
+    MockClaimAuthorizer public trustedIssuerAuthorizer; // Primary authorizer for whitelisting claim issuers
+    MockClaimAuthorizer public secondaryAuthorizer; // Secondary authorizer for different claim types
+    FailingClaimAuthorizer public failingAuthorizer; // Test authorizer that always fails (for error handling)
+    MockClaimIssuer public externalClaimIssuer; // External claim issuer that can be whitelisted
+    MockClaimIssuer public anotherClaimIssuer; // Another external claim issuer
+
+    // ROLE ADDRESSES - EOAs representing different user types
+    address public admin; // System admin
+    address public contractOwner; // Owner of the contract - can ALWAYS add/remove claims
+    address public claimManager; // Designated claim manager - can ALWAYS add/remove claims
+    address public unauthorizedUser; // Regular user - CANNOT add claims unless whitelisted
+    address public trustedForwarder; // Meta-transaction forwarder
 
     // Test constants
     uint256 constant CLAIM_TOPIC = 1;
-    uint256 constant CLAIM_SCHEME = 1;
+    uint256 constant CLAIM_SCHEME = ERC734KeyTypes.ECDSA;
     bytes constant CLAIM_DATA = hex"1234";
     bytes constant CLAIM_SIGNATURE = hex"5678";
     string constant CLAIM_URI = "https://example.com/claim";
@@ -177,11 +209,7 @@ contract ATKContractIdentityImplementationTest is Test {
         address[] memory initialAuthorizers = new address[](1);
         initialAuthorizers[0] = address(trustedIssuerAuthorizer);
 
-        proxy = new ATKContractIdentityProxy(
-            address(systemUtils.system()), 
-            address(testContract), 
-            initialAuthorizers
-        );
+        proxy = new ATKContractIdentityProxy(address(systemUtils.system()), address(testContract), initialAuthorizers);
     }
 
     // ============================================================
@@ -190,20 +218,18 @@ contract ATKContractIdentityImplementationTest is Test {
 
     function testInitializeSuccess() public {
         MockContractWithIdentity newContract = new MockContractWithIdentity(contractOwner, claimManager);
-        
+
         address[] memory authorizers = new address[](2);
         authorizers[0] = address(trustedIssuerAuthorizer);
         authorizers[1] = address(secondaryAuthorizer);
 
-        ATKContractIdentityProxy newProxy = new ATKContractIdentityProxy(
-            address(systemUtils.system()),
-            address(newContract),
-            authorizers
-        );
+        ATKContractIdentityProxy newProxy =
+            new ATKContractIdentityProxy(address(systemUtils.system()), address(newContract), authorizers);
 
         assertEq(IATKContractIdentity(address(newProxy)).contractAddress(), address(newContract));
-        
-        address[] memory registeredAuthorizers = IATKContractIdentity(address(newProxy)).getClaimAuthorizationContracts();
+
+        address[] memory registeredAuthorizers =
+            IATKContractIdentity(address(newProxy)).getClaimAuthorizationContracts();
         assertEq(registeredAuthorizers.length, 2);
         assertEq(registeredAuthorizers[0], address(trustedIssuerAuthorizer));
         assertEq(registeredAuthorizers[1], address(secondaryAuthorizer));
@@ -211,13 +237,9 @@ contract ATKContractIdentityImplementationTest is Test {
 
     function testInitializeWithZeroAddressFails() public {
         address systemAddress = address(systemUtils.system());
-        
+
         vm.expectRevert(ZeroAddressNotAllowed.selector);
-        new ATKContractIdentityProxy(
-            systemAddress,
-            address(0),
-            new address[](0)
-        );
+        new ATKContractIdentityProxy(systemAddress, address(0), new address[](0));
     }
 
     function testInitializeWithInvalidContractFails() public {
@@ -225,11 +247,7 @@ contract ATKContractIdentityImplementationTest is Test {
         address systemAddress = address(systemUtils.system());
 
         vm.expectRevert();
-        new ATKContractIdentityProxy(
-            systemAddress,
-            invalidContract,
-            new address[](0)
-        );
+        new ATKContractIdentityProxy(systemAddress, invalidContract, new address[](0));
     }
 
     function testCannotReinitialize() public {
@@ -286,14 +304,16 @@ contract ATKContractIdentityImplementationTest is Test {
     function testExternalClaimIssuerCanAddClaimsWhenWhitelisted() public {
         bytes memory issuerClaimData = abi.encode("External issuer claim");
         bytes memory issuerSignature = abi.encodePacked(bytes32(uint256(0x1)), bytes32(uint256(0x2)), uint8(27));
-        
+
         // Setup the external claim issuer to validate this claim
         externalClaimIssuer.setClaimValid(address(proxy), CLAIM_TOPIC, issuerSignature, issuerClaimData, true);
 
         // Initially, external claim issuer cannot add claims
         vm.prank(address(externalClaimIssuer));
         vm.expectRevert(
-            abi.encodeWithSelector(ATKContractIdentityImplementation.UnauthorizedOperation.selector, address(externalClaimIssuer))
+            abi.encodeWithSelector(
+                ATKContractIdentityImplementation.UnauthorizedOperation.selector, address(externalClaimIssuer)
+            )
         );
         IATKContractIdentity(address(proxy)).addClaim(
             CLAIM_TOPIC, CLAIM_SCHEME, address(externalClaimIssuer), issuerSignature, issuerClaimData, "external-claim"
@@ -309,9 +329,9 @@ contract ATKContractIdentityImplementationTest is Test {
         );
 
         assertTrue(claimId != bytes32(0), "Whitelisted external claim issuer should be able to add claims");
-        
+
         // Verify the claim was added correctly
-        (uint256 topic, , address issuer, , bytes memory data, string memory uri) = 
+        (uint256 topic,, address issuer,, bytes memory data, string memory uri) =
             IERC735(address(proxy)).getClaim(claimId);
         assertEq(topic, CLAIM_TOPIC);
         assertEq(issuer, address(externalClaimIssuer));
@@ -324,14 +344,14 @@ contract ATKContractIdentityImplementationTest is Test {
         // ============================================================
         // SETUP: Create different types of claims and signatures
         // ============================================================
-        
+
         bytes memory contractOwnerData = abi.encode("Contract owner self-attested claim");
         bytes memory contractOwnerSig = abi.encodePacked(bytes32(uint256(0x10)), bytes32(uint256(0x20)), uint8(27));
-        
+
         bytes memory externalIssuerData = abi.encode("External issuer verified claim");
         bytes memory externalIssuerSig = abi.encodePacked(bytes32(uint256(0x30)), bytes32(uint256(0x40)), uint8(27));
-        
-        bytes memory anotherIssuerData = abi.encode("Another issuer claim");  
+
+        bytes memory anotherIssuerData = abi.encode("Another issuer claim");
         bytes memory anotherIssuerSig = abi.encodePacked(bytes32(uint256(0x50)), bytes32(uint256(0x60)), uint8(27));
 
         // Setup claim issuers to validate their claims
@@ -341,7 +361,7 @@ contract ATKContractIdentityImplementationTest is Test {
         // ============================================================
         // STEP 1: Contract Owner adds self-attested claim (via contract permissions)
         // ============================================================
-        
+
         vm.prank(contractOwner);
         bytes32 ownerClaimId = IATKContractIdentity(address(proxy)).addClaim(
             CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), contractOwnerSig, contractOwnerData, "self-attested"
@@ -351,10 +371,12 @@ contract ATKContractIdentityImplementationTest is Test {
         // ============================================================
         // STEP 2: External Claim Issuer cannot add claims (not whitelisted)
         // ============================================================
-        
+
         vm.prank(address(externalClaimIssuer));
         vm.expectRevert(
-            abi.encodeWithSelector(ATKContractIdentityImplementation.UnauthorizedOperation.selector, address(externalClaimIssuer))
+            abi.encodeWithSelector(
+                ATKContractIdentityImplementation.UnauthorizedOperation.selector, address(externalClaimIssuer)
+            )
         );
         IATKContractIdentity(address(proxy)).addClaim(
             CLAIM_TOPIC, CLAIM_SCHEME, address(externalClaimIssuer), externalIssuerSig, externalIssuerData, "external"
@@ -363,21 +385,21 @@ contract ATKContractIdentityImplementationTest is Test {
         // ============================================================
         // STEP 3: Contract Owner manages authorizers (adds external issuer to whitelist)
         // ============================================================
-        
+
         // Contract owner can manage authorizers on the identity
         vm.prank(contractOwner);
         IATKContractIdentity(address(proxy)).registerClaimAuthorizationContract(address(secondaryAuthorizer));
-        
+
         // Whitelist external claim issuer via primary authorizer
         trustedIssuerAuthorizer.setAuthorization(address(externalClaimIssuer), CLAIM_TOPIC, true);
-        
-        // Whitelist another claim issuer via secondary authorizer  
+
+        // Whitelist another claim issuer via secondary authorizer
         secondaryAuthorizer.setAuthorization(address(anotherClaimIssuer), CLAIM_TOPIC + 1, true);
 
         // ============================================================
         // STEP 4: Whitelisted External Claim Issuers can now add claims
         // ============================================================
-        
+
         // First external issuer can add claims (whitelisted via primary authorizer)
         vm.prank(address(externalClaimIssuer));
         bytes32 externalClaimId = IATKContractIdentity(address(proxy)).addClaim(
@@ -395,12 +417,12 @@ contract ATKContractIdentityImplementationTest is Test {
         // ============================================================
         // STEP 5: Verify all claims exist on the same identity
         // ============================================================
-        
-        (uint256 ownerTopic, , address ownerIssuer, , bytes memory ownerData, string memory ownerUri) = 
+
+        (uint256 ownerTopic,, address ownerIssuer,, bytes memory ownerData, string memory ownerUri) =
             IERC735(address(proxy)).getClaim(ownerClaimId);
-        (uint256 externalTopic, , address externalIssuer, , bytes memory externalData, string memory externalUri) = 
+        (uint256 externalTopic,, address externalIssuer,, bytes memory externalData, string memory externalUri) =
             IERC735(address(proxy)).getClaim(externalClaimId);
-        (uint256 anotherTopic, , address anotherIssuer, , bytes memory anotherData, string memory anotherUri) = 
+        (uint256 anotherTopic,, address anotherIssuer,, bytes memory anotherData, string memory anotherUri) =
             IERC735(address(proxy)).getClaim(anotherClaimId);
 
         // Contract owner's self-attested claim
@@ -424,17 +446,24 @@ contract ATKContractIdentityImplementationTest is Test {
         // ============================================================
         // STEP 6: Contract Owner can remove authorizer access
         // ============================================================
-        
+
         // Remove authorization for external claim issuer
         trustedIssuerAuthorizer.setAuthorization(address(externalClaimIssuer), CLAIM_TOPIC, false);
-        
+
         // External claim issuer can no longer add claims
         vm.prank(address(externalClaimIssuer));
         vm.expectRevert(
-            abi.encodeWithSelector(ATKContractIdentityImplementation.UnauthorizedOperation.selector, address(externalClaimIssuer))
+            abi.encodeWithSelector(
+                ATKContractIdentityImplementation.UnauthorizedOperation.selector, address(externalClaimIssuer)
+            )
         );
         IATKContractIdentity(address(proxy)).addClaim(
-            CLAIM_TOPIC + 2, CLAIM_SCHEME, address(externalClaimIssuer), externalIssuerSig, externalIssuerData, "blocked"
+            CLAIM_TOPIC + 2,
+            CLAIM_SCHEME,
+            address(externalClaimIssuer),
+            externalIssuerSig,
+            externalIssuerData,
+            "blocked"
         );
 
         // But contract owner can still add claims
@@ -450,13 +479,15 @@ contract ATKContractIdentityImplementationTest is Test {
     // ============================================================
 
     function testContractOwnerCanManageAuthorizers() public {
-        // Contract owner can register new authorizers 
+        // Contract owner can register new authorizers
         vm.prank(contractOwner);
         vm.expectEmit(true, true, false, true);
         emit ClaimAuthorizationContractRegistered(contractOwner, address(secondaryAuthorizer));
         IATKContractIdentity(address(proxy)).registerClaimAuthorizationContract(address(secondaryAuthorizer));
 
-        assertTrue(IATKContractIdentity(address(proxy)).isClaimAuthorizationContractRegistered(address(secondaryAuthorizer)));
+        assertTrue(
+            IATKContractIdentity(address(proxy)).isClaimAuthorizationContractRegistered(address(secondaryAuthorizer))
+        );
 
         // Contract owner can remove authorizers
         vm.prank(contractOwner);
@@ -464,7 +495,11 @@ contract ATKContractIdentityImplementationTest is Test {
         emit ClaimAuthorizationContractRemoved(contractOwner, address(trustedIssuerAuthorizer));
         IATKContractIdentity(address(proxy)).removeClaimAuthorizationContract(address(trustedIssuerAuthorizer));
 
-        assertFalse(IATKContractIdentity(address(proxy)).isClaimAuthorizationContractRegistered(address(trustedIssuerAuthorizer)));
+        assertFalse(
+            IATKContractIdentity(address(proxy)).isClaimAuthorizationContractRegistered(
+                address(trustedIssuerAuthorizer)
+            )
+        );
     }
 
     function testUnauthorizedUserCannotManageAuthorizers() public {
@@ -654,7 +689,8 @@ contract ATKContractIdentityImplementationTest is Test {
 
     function testIsClaimValidAlwaysReturnsFalse() public view {
         // Contract identities don't issue claims, so this should always return false
-        bool isValid = IIdentity(address(proxy)).isClaimValid(IIdentity(address(0)), CLAIM_TOPIC, CLAIM_SIGNATURE, CLAIM_DATA);
+        bool isValid =
+            IIdentity(address(proxy)).isClaimValid(IIdentity(address(0)), CLAIM_TOPIC, CLAIM_SIGNATURE, CLAIM_DATA);
         assertFalse(isValid, "Contract identities should not validate claims");
     }
 

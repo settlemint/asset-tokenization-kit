@@ -25,27 +25,26 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 contract MockContractWithIdentity is IContractWithIdentity {
     address public override onchainID;
     address public admin;
-    
+
     constructor(address _admin) {
         admin = _admin;
     }
-    
+
     function setOnchainID(address _onchainID) external {
         require(msg.sender == admin, "Only admin can set onchainID");
         onchainID = _onchainID;
     }
-    
+
     function canAddClaim(address actor) external view override returns (bool) {
         return actor == admin;
     }
-    
+
     function canRemoveClaim(address actor) external view override returns (bool) {
         return actor == admin;
     }
-    
+
     function supportsInterface(bytes4 interfaceId) external pure override returns (bool) {
-        return interfaceId == type(IContractWithIdentity).interfaceId ||
-               interfaceId == type(IERC165).interfaceId;
+        return interfaceId == type(IContractWithIdentity).interfaceId || interfaceId == type(IERC165).interfaceId;
     }
 }
 
@@ -76,7 +75,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
     // Identity contracts
     IATKIdentity public userIdentity;
     IIdentity public issuerIdentity;
-    
+
     // Contract identity test variables
     MockContractWithIdentity public mockContract;
     IIdentity public contractIdentity;
@@ -125,7 +124,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
             identityFactory,
             topicSchemeRegistry
         );
-        
+
         // Create mock contract for testing contract identities
         mockContract = new MockContractWithIdentity(admin);
     }
@@ -486,7 +485,7 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         address contractIdentityAddr = identityFactory.createContractIdentity(address(mockContract));
         contractIdentity = IIdentity(contractIdentityAddr);
         assertTrue(contractIdentityAddr != address(0), "Contract identity creation failed");
-        
+
         // Set the contract's onchainID to point to the created identity
         mockContract.setOnchainID(contractIdentityAddr);
         assertEq(mockContract.onchainID(), contractIdentityAddr, "Contract onchainID not set correctly");
@@ -499,7 +498,8 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
 
         vm.stopPrank();
 
-        // Add claim signer key to the issuer's identity so the claimIssuer wallet can act on behalf of the issuer identity
+        // Add claim signer key to the issuer's identity so the claimIssuer wallet can act on behalf of the issuer
+        // identity
         vm.prank(claimIssuer);
         bytes32 issuerKey = keccak256(abi.encode(claimIssuer));
         IERC734(issuerIdentityAddr).addKey(issuerKey, ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
@@ -549,38 +549,18 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         );
 
         vm.prank(claimIssuer);
-        bytes32 kycClaimId = contractIdentity.addClaim(
-            kycTopicId,
-            ERC734KeyTypes.ECDSA,
-            issuerIdentityAddr,
-            kycSignature,
-            kycData,
-            ""
-        );
+        bytes32 kycClaimId =
+            contractIdentity.addClaim(kycTopicId, ERC734KeyTypes.ECDSA, issuerIdentityAddr, kycSignature, kycData, "");
 
         assertTrue(kycClaimId != bytes32(0), "KYC claim addition to contract identity failed");
 
         // Test AML claim addition for contract identity
         vm.expectEmit(false, true, true, true);
-        emit ClaimAdded(
-            bytes32(0),
-            amlTopicId,
-            ERC734KeyTypes.ECDSA,
-            issuerIdentityAddr,
-            amlSignature,
-            amlData,
-            ""
-        );
+        emit ClaimAdded(bytes32(0), amlTopicId, ERC734KeyTypes.ECDSA, issuerIdentityAddr, amlSignature, amlData, "");
 
         vm.prank(claimIssuer);
-        bytes32 amlClaimId = contractIdentity.addClaim(
-            amlTopicId,
-            ERC734KeyTypes.ECDSA,
-            issuerIdentityAddr,
-            amlSignature,
-            amlData,
-            ""
-        );
+        bytes32 amlClaimId =
+            contractIdentity.addClaim(amlTopicId, ERC734KeyTypes.ECDSA, issuerIdentityAddr, amlSignature, amlData, "");
 
         assertTrue(amlClaimId != bytes32(0), "AML claim addition to contract identity failed");
 
@@ -757,13 +737,15 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
 
         // The key insight here is that contract identities delegate permission checks
         // to the contract itself via canAddClaim/canRemoveClaim functions
-        
+
         // Verify the contract identity was created correctly
         assertTrue(contractIdentityAddr != address(0), "Contract identity should be created");
         assertEq(mockContract.onchainID(), contractIdentityAddr, "Contract should reference its identity");
         assertTrue(mockContract.canAddClaim(admin), "Admin should be able to add claims to contract");
         assertFalse(mockContract.canAddClaim(nonAdmin), "Non-admin should not be able to add claims to contract");
         assertTrue(mockContract.canRemoveClaim(admin), "Admin should be able to remove claims from contract");
-        assertFalse(mockContract.canRemoveClaim(nonAdmin), "Non-admin should not be able to remove claims from contract");
+        assertFalse(
+            mockContract.canRemoveClaim(nonAdmin), "Non-admin should not be able to remove claims from contract"
+        );
     }
 }
