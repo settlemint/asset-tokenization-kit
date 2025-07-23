@@ -1,3 +1,4 @@
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { z } from "zod";
 
 /**
@@ -26,7 +27,7 @@ export type ActionStatus = z.infer<typeof ActionStatusSchema>;
 export const ActionExecutorSchema = z.object({
   id: z.string().describe("Unique identifier for the action executor"),
   executors: z
-    .array(z.string())
+    .array(ethereumAddress)
     .describe("List of addresses authorized to execute actions"),
 });
 
@@ -39,15 +40,14 @@ export const ActionExecutorSchema = z.object({
 export const ActionSchema = z.object({
   id: z.string().describe("Unique identifier for the action"),
   name: z.string().describe("Human-readable name of the action"),
-  target: z.string().describe("Target address for the action"),
+  target: ethereumAddress.describe("Target address for the action"),
   activeAt: z.bigint().describe("Timestamp when the action becomes active"),
   status: ActionStatusSchema.describe("Current status of the action"),
   executedAt: z
     .bigint()
     .nullable()
     .describe("Timestamp when the action was executed"),
-  executedBy: z
-    .string()
+  executedBy: ethereumAddress
     .nullable()
     .describe("Address that executed the action"),
   executor: ActionExecutorSchema.describe(
@@ -99,8 +99,7 @@ export const ActionsListSchema = z.object({
    * When specified, only actions targeting the specified address will be returned.
    * This is useful for showing actions related to a specific token or contract.
    */
-  target: z
-    .string()
+  target: ethereumAddress
     .optional()
     .describe("Filter actions by their target address"),
 
