@@ -17,6 +17,7 @@ import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "../../../utils/SystemUtils.sol";
 import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
 import { ClaimSchemes } from "../../../../contracts/onchainid/ClaimSchemes.sol";
+import { OnChainContractIdentity } from "../../../../contracts/onchainid/extensions/OnChainContractIdentity.sol";
 
 /// @title Mock Contract With Identity - Represents a contract (like a token) that has an associated identity
 /// @dev This contract demonstrates the role of a "Contract" in the hierarchy: ContractOwner → Contract → Identity
@@ -871,7 +872,7 @@ contract ATKContractIdentityImplementationTest is Test {
         // Contract owner cannot issue claims directly
         vm.prank(contractOwner);
         vm.expectRevert(
-            abi.encodeWithSelector(ATKContractIdentityImplementation.UnauthorizedOperation.selector, contractOwner)
+            abi.encodeWithSelector(OnChainContractIdentity.UnauthorizedContractOperation.selector, contractOwner)
         );
         IATKContractIdentity(address(proxy)).issueClaimTo(
             IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI
@@ -880,7 +881,7 @@ contract ATKContractIdentityImplementationTest is Test {
         // Unauthorized user cannot issue claims
         vm.prank(unauthorizedUser);
         vm.expectRevert(
-            abi.encodeWithSelector(ATKContractIdentityImplementation.UnauthorizedOperation.selector, unauthorizedUser)
+            abi.encodeWithSelector(OnChainContractIdentity.UnauthorizedContractOperation.selector, unauthorizedUser)
         );
         IATKContractIdentity(address(proxy)).issueClaimTo(
             IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI
@@ -893,7 +894,7 @@ contract ATKContractIdentityImplementationTest is Test {
         ATKContractIdentityImplementation uninitializedImpl = new ATKContractIdentityImplementation(trustedForwarder);
         MockIdentityReceiver subjectIdentity = new MockIdentityReceiver();
 
-        vm.expectRevert(ATKContractIdentityImplementation.AssociatedContractNotSet.selector);
+        vm.expectRevert(OnChainContractIdentity.AssociatedContractNotSet.selector);
         uninitializedImpl.issueClaimTo(IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI);
     }
 

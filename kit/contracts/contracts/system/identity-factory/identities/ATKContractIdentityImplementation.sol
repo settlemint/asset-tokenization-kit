@@ -10,6 +10,7 @@ import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/int
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ERC735 } from "../../../onchainid/extensions/ERC735.sol";
 import { ClaimAuthorizationExtension } from "../../../onchainid/extensions/ClaimAuthorizationExtension.sol";
+import { OnChainContractIdentity } from "../../../onchainid/extensions/OnChainContractIdentity.sol";
 import { ClaimSchemes } from "../../../onchainid/ClaimSchemes.sol";
 
 /// @title ATK Contract Identity Implementation Contract
@@ -24,7 +25,8 @@ contract ATKContractIdentityImplementation is
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     ERC735,
-    ClaimAuthorizationExtension
+    ClaimAuthorizationExtension,
+    OnChainContractIdentity
 {
     // --- State Variables ---
 
@@ -45,9 +47,6 @@ contract ATKContractIdentityImplementation is
 
     /// @dev Error thrown when the caller is not authorized for the operation
     error UnauthorizedOperation(address caller);
-
-    /// @dev Error thrown when the associated contract is not set
-    error AssociatedContractNotSet();
 
     // --- Constructor ---
 
@@ -253,49 +252,14 @@ contract ATKContractIdentityImplementation is
 
     // --- IIdentity Specific Functions ---
 
-    /// @notice Validates a claim by checking its existence on the subject identity
-    /// @dev For CONTRACT scheme claims, validation is done by existence rather than signature verification
-    /// @param subject The identity contract to check for the claim
-    /// @param topic The claim topic to validate
-    /// @param data The claim data to validate
-    /// @return True if the claim exists with matching parameters, false otherwise
-    function isClaimValid(
-        IIdentity subject,
-        uint256 topic,
-        bytes calldata, /* sig - not used for contract scheme */
-        bytes calldata data
-    )
-        external
-        view
-        override
-        returns (bool)
-    {
-        bytes32 claimId = keccak256(abi.encode(address(this), topic));
+    // --- OnChainContractIdentity Implementation ---
 
-        try subject.getClaim(claimId) returns (
-            uint256 storedTopic,
-            uint256 scheme,
-            address storedIssuer,
-            bytes memory, /* signature - not used */
-            bytes memory storedData,
-            string memory /* uri - not used */
-        ) {
-            return (
-                storedTopic == topic && storedIssuer == address(this) && keccak256(storedData) == keccak256(data)
-                    && scheme == ClaimSchemes.SCHEME_CONTRACT
-            );
-        } catch {
-            return false;
-        }
+    /// @inheritdoc OnChainContractIdentity
+    function getAssociatedContract() public view override returns (address) {
+        return _contractAddress;
     }
 
-    /// @notice Issues a claim to a subject identity on behalf of the associated contract
-    /// @dev Only the associated contract can call this function to issue claims
-    /// @param subject The identity contract to add the claim to
-    /// @param topic The claim topic
-    /// @param data The claim data
-    /// @param uri The claim URI (e.g., IPFS hash)
-    /// @return claimId The ID of the created claim
+    /// @inheritdoc IATKContractIdentity
     function issueClaimTo(
         IIdentity subject,
         uint256 topic,
@@ -303,14 +267,17 @@ contract ATKContractIdentityImplementation is
         string memory uri
     )
         external
+        virtual
+        override(IATKContractIdentity, OnChainContractIdentity)
         returns (bytes32 claimId)
     {
-        if (_contractAddress == address(0)) {
-            revert AssociatedContractNotSet();
+        address associatedContract = getAssociatedContract();
+        if (associatedContract == address(0)) {
+            revert OnChainContractIdentity.AssociatedContractNotSet();
         }
 
-        if (_msgSender() != _contractAddress) {
-            revert UnauthorizedOperation(_msgSender());
+        if (msg.sender != associatedContract) {
+            revert OnChainContractIdentity.UnauthorizedContractOperation(msg.sender);
         }
 
         return subject.addClaim(
