@@ -56,9 +56,19 @@ function RouteComponent() {
               input: { key: "BASE_CURRENCY" },
             }),
           });
-          await syncExchangeRates({
-            force: true,
-          });
+
+          // Sync exchange rates but don't let failures block navigation
+          try {
+            await syncExchangeRates({
+              force: true,
+            });
+            logger.debug("Exchange rates synced successfully");
+          } catch (error) {
+            logger.error("Failed to sync exchange rates:", error);
+            // Show a non-blocking warning toast
+            toast.warning(t("system-settings.toast.exchangeRateSyncWarning"));
+          }
+
           await completeStepAndNavigate(OnboardingStep.systemSettings);
         },
       })
