@@ -23,27 +23,32 @@ library ATKTopics {
     /// @notice Topic identifier for base price claims
     string public constant TOPIC_BASE_PRICE = "basePrice";
 
+    /// @notice Topic identifier for contract identity claims
+    string public constant TOPIC_CONTRACT_IDENTITY = "contractIdentity";
+
     /// @notice Get all topic names for registry registration
     /// @return _names Array of topic names for batchRegisterTopicSchemes
     function names() internal pure returns (string[] memory _names) {
-        _names = new string[](6);
+        _names = new string[](7);
         _names[0] = TOPIC_KYC;
         _names[1] = TOPIC_AML;
         _names[2] = TOPIC_COLLATERAL;
         _names[3] = TOPIC_ISIN;
         _names[4] = TOPIC_ASSET_CLASSIFICATION;
         _names[5] = TOPIC_BASE_PRICE;
+        _names[6] = TOPIC_CONTRACT_IDENTITY;
     }
 
     /// @notice Get all topic signatures for registry registration
     /// @return _signatures Array of topic signatures for batchRegisterTopicSchemes
     function signatures() internal pure returns (string[] memory _signatures) {
-        _signatures = new string[](6);
+        _signatures = new string[](7);
         _signatures[0] = "string claim"; // kyc
         _signatures[1] = "string claim"; // aml
         _signatures[2] = "uint256 amount, uint256 expiryTimestamp"; // collateral
         _signatures[3] = "string isin"; // isin
         _signatures[4] = "string class, string category"; // assetClassification
         _signatures[5] = "uint256 amount, string currencyCode, uint8 decimals"; // basePrice
+        _signatures[6] = "address contractAddress"; // contractIdentity
     }
 }

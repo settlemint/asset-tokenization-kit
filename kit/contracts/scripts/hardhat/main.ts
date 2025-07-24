@@ -89,6 +89,13 @@ async function main() {
   await topicManager.initialize();
 
   // Add the claim issuer as a trusted issuer
+  await grantRole(
+    atkDeployer.getTrustedIssuersRegistryContract().address,
+    owner,
+    ATKRoles.registrarRole,
+    owner.address
+  );
+
   const claimIssuerIdentity = await claimIssuer.getIdentity();
   await addTrustedIssuer(claimIssuerIdentity, [
     topicManager.getTopicId(ATKTopic.kyc),

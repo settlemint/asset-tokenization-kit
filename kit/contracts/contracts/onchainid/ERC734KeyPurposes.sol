@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-/**
- * @title ERC734KeyPurposes
- * @author SettleMint
- * @notice Library defining key purposes used in ERC-734 identity contracts
- * @dev Constants representing the intended use cases for cryptographic keys in identity management
- */
+/// @title ERC734KeyPurposes
+/// @author SettleMint
+/// @notice Library defining key purposes used in ERC-734 identity contracts
+/// @dev Constants representing the intended use cases for cryptographic keys in identity management
 library ERC734KeyPurposes {
     /// @notice Management key purpose - allows managing the identity, including adding/removing other keys
     uint256 public constant MANAGEMENT_KEY = 1;

@@ -5,14 +5,12 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { ERC734KeyPurposes } from "../ERC734KeyPurposes.sol";
 
-/**
- * @title OnChainIdentity
- * @author SettleMint
- * @notice Abstract contract providing core functionality for on-chain identity management
- * @dev This contract implements the IIdentity interface and provides methods for validating
- *      claims and recovering signers from signatures. It serves as a base for identity
- *      contracts that manage claims and keys on-chain.
- */
+/// @title OnChainIdentity
+/// @author SettleMint
+/// @notice Abstract contract providing core functionality for on-chain identity management
+/// @dev This contract implements the IIdentity interface and provides methods for validating
+///      claims and recovering signers from signatures. It serves as a base for identity
+///      contracts that manage claims and keys on-chain.
 abstract contract OnChainIdentity is IIdentity {
     function keyHasPurpose(bytes32 _key, uint256 _purpose) public view virtual override returns (bool exists);
 

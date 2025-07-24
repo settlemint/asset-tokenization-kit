@@ -16,6 +16,8 @@ import { ERC735 } from "../../../../contracts/onchainid/extensions/ERC735.sol";
 import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "../../../utils/SystemUtils.sol";
 import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
+import { ERC735ClaimSchemes } from "../../../../contracts/onchainid/ERC735ClaimSchemes.sol";
+import { OnChainContractIdentity } from "../../../../contracts/onchainid/extensions/OnChainContractIdentity.sol";
 
 /// @title Mock Contract With Identity - Represents a contract (like a token) that has an associated identity
 /// @dev This contract demonstrates the role of a "Contract" in the hierarchy: ContractOwner → Contract → Identity
@@ -115,6 +117,159 @@ contract MockClaimIssuer is ERC165 {
     }
 }
 
+/// @title Mock Identity Receiver - Represents an identity that can receive claims
+/// @dev This mock allows us to test the issueClaimTo functionality
+contract MockIdentityReceiver is IIdentity, ERC165 {
+    struct ClaimData {
+        uint256 topic;
+        uint256 scheme;
+        address issuer;
+        bytes signature;
+        bytes data;
+        string uri;
+    }
+
+    mapping(bytes32 => ClaimData) public claims;
+    mapping(bytes32 => bool) public claimExists;
+
+    // For testing isClaimValid
+    mapping(bytes32 => ClaimData) private validationClaims;
+
+    function addClaim(
+        uint256 _topic,
+        uint256 _scheme,
+        address _issuer,
+        bytes memory _signature,
+        bytes memory _data,
+        string memory _uri
+    )
+        external
+        override
+        returns (bytes32 claimId)
+    {
+        claimId = keccak256(abi.encode(_issuer, _topic));
+        claims[claimId] = ClaimData(_topic, _scheme, _issuer, _signature, _data, _uri);
+        claimExists[claimId] = true;
+        return claimId;
+    }
+
+    // Helper for testing - returns claim in a struct
+    function getClaimData(bytes32 _claimId) external view returns (ClaimData memory) {
+        // Check validation claims first (for testing isClaimValid)
+        if (validationClaims[_claimId].issuer != address(0)) {
+            return validationClaims[_claimId];
+        }
+
+        require(claimExists[_claimId], "Claim does not exist");
+        return claims[_claimId];
+    }
+
+    // IERC735 getClaim implementation
+    function getClaim(bytes32 _claimId)
+        external
+        view
+        override
+        returns (
+            uint256 topic,
+            uint256 scheme,
+            address issuer,
+            bytes memory signature,
+            bytes memory data,
+            string memory uri
+        )
+    {
+        // Check validation claims first (for testing isClaimValid)
+        if (validationClaims[_claimId].issuer != address(0)) {
+            ClaimData memory validClaim = validationClaims[_claimId];
+            return (
+                validClaim.topic,
+                validClaim.scheme,
+                validClaim.issuer,
+                validClaim.signature,
+                validClaim.data,
+                validClaim.uri
+            );
+        }
+
+        // Fall back to regular claims
+        require(claimExists[_claimId], "Claim does not exist");
+        ClaimData memory regularClaim = claims[_claimId];
+        return (
+            regularClaim.topic,
+            regularClaim.scheme,
+            regularClaim.issuer,
+            regularClaim.signature,
+            regularClaim.data,
+            regularClaim.uri
+        );
+    }
+
+    // For testing isClaimValid - set up expected claim data
+    function setClaimForValidation(
+        bytes32 _claimId,
+        uint256 _topic,
+        uint256 _scheme,
+        address _issuer,
+        bytes memory _signature,
+        bytes memory _data,
+        string memory _uri
+    )
+        external
+    {
+        validationClaims[_claimId] = ClaimData(_topic, _scheme, _issuer, _signature, _data, _uri);
+    }
+
+    // Stub implementations for other IERC735/IIdentity methods
+    function removeClaim(bytes32) external pure override returns (bool) {
+        return true;
+    }
+
+    function getClaimIdsByTopic(uint256) external pure override returns (bytes32[] memory) {
+        return new bytes32[](0);
+    }
+
+    function addKey(bytes32, uint256, uint256) external pure override returns (bool) {
+        return true;
+    }
+
+    function removeKey(bytes32, uint256) external pure override returns (bool) {
+        return true;
+    }
+
+    function execute(address, uint256, bytes calldata) external payable override returns (uint256) {
+        return 0;
+    }
+
+    function approve(uint256, bool) external pure override returns (bool) {
+        return true;
+    }
+
+    function getKey(bytes32) external pure override returns (uint256[] memory, uint256, bytes32) {
+        return (new uint256[](0), 0, bytes32(0));
+    }
+
+    function getKeyPurposes(bytes32) external pure override returns (uint256[] memory) {
+        return new uint256[](0);
+    }
+
+    function getKeysByPurpose(uint256) external pure override returns (bytes32[] memory) {
+        return new bytes32[](0);
+    }
+
+    function keyHasPurpose(bytes32, uint256) external pure override returns (bool) {
+        return false;
+    }
+
+    function isClaimValid(IIdentity, uint256, bytes calldata, bytes calldata) external pure override returns (bool) {
+        return false;
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IIdentity).interfaceId || interfaceId == type(IERC735).interfaceId
+            || super.supportsInterface(interfaceId);
+    }
+}
+
 /// @title ATK Contract Identity Implementation Test
 /// @notice Tests the complete role hierarchy and authorization flow:
 ///
@@ -158,7 +313,7 @@ contract ATKContractIdentityImplementationTest is Test {
 
     // Test constants
     uint256 constant CLAIM_TOPIC = 1;
-    uint256 constant CLAIM_SCHEME = ERC734KeyTypes.ECDSA;
+    uint256 constant CLAIM_SCHEME = ERC735ClaimSchemes.SCHEME_ECDSA;
     bytes constant CLAIM_DATA = hex"1234";
     bytes constant CLAIM_SIGNATURE = hex"5678";
     string constant CLAIM_URI = "https://example.com/claim";
@@ -684,14 +839,170 @@ contract ATKContractIdentityImplementationTest is Test {
     }
 
     // ============================================================
+    // ISSUE CLAIM TO TESTS
+    // ============================================================
+
+    /// @notice Test that the associated contract can issue claims to other identities
+    function testContractCanIssueClaimsToOtherIdentities() public {
+        // Create a subject identity to receive the claim
+        MockIdentityReceiver subjectIdentity = new MockIdentityReceiver();
+
+        // Issue claim from the contract
+        vm.prank(address(testContract));
+        bytes32 claimId = IATKContractIdentity(address(proxy)).issueClaimTo(
+            IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI
+        );
+
+        assertTrue(claimId != bytes32(0), "Should return valid claim ID");
+
+        // Verify the claim was added to the subject identity
+        MockIdentityReceiver.ClaimData memory claim = subjectIdentity.getClaimData(claimId);
+        assertEq(claim.topic, CLAIM_TOPIC);
+        assertEq(claim.scheme, ERC735ClaimSchemes.SCHEME_CONTRACT);
+        assertEq(claim.issuer, address(proxy));
+        assertEq(claim.signature, "");
+        assertEq(claim.data, CLAIM_DATA);
+        assertEq(claim.uri, CLAIM_URI);
+    }
+
+    /// @notice Test that only the associated contract can issue claims
+    function testOnlyContractCanIssueClaims() public {
+        MockIdentityReceiver subjectIdentity = new MockIdentityReceiver();
+
+        // Contract owner cannot issue claims directly
+        vm.prank(contractOwner);
+        vm.expectRevert(
+            abi.encodeWithSelector(OnChainContractIdentity.UnauthorizedContractOperation.selector, contractOwner)
+        );
+        IATKContractIdentity(address(proxy)).issueClaimTo(
+            IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI
+        );
+
+        // Unauthorized user cannot issue claims
+        vm.prank(unauthorizedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(OnChainContractIdentity.UnauthorizedContractOperation.selector, unauthorizedUser)
+        );
+        IATKContractIdentity(address(proxy)).issueClaimTo(
+            IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI
+        );
+    }
+
+    /// @notice Test issuing claim fails when contract address is not set
+    function testIssueClaimFailsWhenContractNotSet() public {
+        // Deploy a new implementation without initializing
+        ATKContractIdentityImplementation uninitializedImpl = new ATKContractIdentityImplementation(trustedForwarder);
+        MockIdentityReceiver subjectIdentity = new MockIdentityReceiver();
+
+        vm.expectRevert(OnChainContractIdentity.AssociatedContractNotSet.selector);
+        uninitializedImpl.issueClaimTo(IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI);
+    }
+
+    /// @notice Test that issued claims can be validated correctly
+    function testIsClaimValidForContractScheme() public {
+        // Create a subject identity and issue a claim to it
+        MockIdentityReceiver subjectIdentity = new MockIdentityReceiver();
+
+        vm.prank(address(testContract));
+        bytes32 claimId = IATKContractIdentity(address(proxy)).issueClaimTo(
+            IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI
+        );
+
+        // Set up the mock to return the claim
+        subjectIdentity.setClaimForValidation(
+            claimId, CLAIM_TOPIC, ERC735ClaimSchemes.SCHEME_CONTRACT, address(proxy), "", CLAIM_DATA, CLAIM_URI
+        );
+
+        // Validate the claim
+        bool isValid = IIdentity(address(proxy)).isClaimValid(
+            IIdentity(address(subjectIdentity)),
+            CLAIM_TOPIC,
+            "", // signature not used for contract scheme
+            CLAIM_DATA
+        );
+
+        assertTrue(isValid, "Contract scheme claim should be valid");
+
+        // Test with wrong data
+        isValid =
+            IIdentity(address(proxy)).isClaimValid(IIdentity(address(subjectIdentity)), CLAIM_TOPIC, "", hex"9999");
+
+        assertFalse(isValid, "Claim with wrong data should be invalid");
+
+        // Test with wrong topic
+        isValid =
+            IIdentity(address(proxy)).isClaimValid(IIdentity(address(subjectIdentity)), CLAIM_TOPIC + 1, "", CLAIM_DATA);
+
+        assertFalse(isValid, "Claim with wrong topic should be invalid");
+    }
+
+    /// @notice Test issuing multiple claims to different identities
+    function testIssueMultipleClaimsToDifferentIdentities() public {
+        MockIdentityReceiver identity1 = new MockIdentityReceiver();
+        MockIdentityReceiver identity2 = new MockIdentityReceiver();
+
+        bytes memory data1 = abi.encode("Claim for identity 1");
+        bytes memory data2 = abi.encode("Claim for identity 2");
+
+        // Issue claims to both identities
+        vm.startPrank(address(testContract));
+
+        bytes32 claimId1 =
+            IATKContractIdentity(address(proxy)).issueClaimTo(IIdentity(address(identity1)), CLAIM_TOPIC, data1, "uri1");
+
+        bytes32 claimId2 = IATKContractIdentity(address(proxy)).issueClaimTo(
+            IIdentity(address(identity2)), CLAIM_TOPIC + 1, data2, "uri2"
+        );
+
+        vm.stopPrank();
+
+        // Verify claims
+        MockIdentityReceiver.ClaimData memory claim1 = identity1.getClaimData(claimId1);
+        assertEq(claim1.data, data1);
+        assertEq(claim1.uri, "uri1");
+
+        MockIdentityReceiver.ClaimData memory claim2 = identity2.getClaimData(claimId2);
+        assertEq(claim2.data, data2);
+        assertEq(claim2.uri, "uri2");
+    }
+
+    // ============================================================
     // INTERFACE COMPLIANCE TESTS
     // ============================================================
 
-    function testIsClaimValidAlwaysReturnsFalse() public view {
-        // Contract identities don't issue claims, so this should always return false
-        bool isValid =
-            IIdentity(address(proxy)).isClaimValid(IIdentity(address(0)), CLAIM_TOPIC, CLAIM_SIGNATURE, CLAIM_DATA);
-        assertFalse(isValid, "Contract identities should not validate claims");
+    function testIsClaimValidReturnsFalseForInvalidClaims() public {
+        // Test with a valid identity but no claims - should return false
+        MockIdentityReceiver emptyIdentity = new MockIdentityReceiver();
+        bool isValid = IIdentity(address(proxy)).isClaimValid(
+            IIdentity(address(emptyIdentity)), CLAIM_TOPIC, CLAIM_SIGNATURE, CLAIM_DATA
+        );
+        assertFalse(isValid, "Should return false when no claims exist");
+
+        // Test with wrong issuer claim - should return false
+        emptyIdentity.setClaimForValidation(
+            keccak256(abi.encode(address(proxy), CLAIM_TOPIC)),
+            CLAIM_TOPIC,
+            ERC735ClaimSchemes.SCHEME_CONTRACT,
+            address(0x123), // wrong issuer
+            "",
+            CLAIM_DATA,
+            CLAIM_URI
+        );
+        isValid = IIdentity(address(proxy)).isClaimValid(IIdentity(address(emptyIdentity)), CLAIM_TOPIC, "", CLAIM_DATA);
+        assertFalse(isValid, "Should return false when issuer doesn't match");
+
+        // Test with wrong scheme - should return false
+        emptyIdentity.setClaimForValidation(
+            keccak256(abi.encode(address(proxy), CLAIM_TOPIC)),
+            CLAIM_TOPIC,
+            999, // wrong scheme
+            address(proxy),
+            "",
+            CLAIM_DATA,
+            CLAIM_URI
+        );
+        isValid = IIdentity(address(proxy)).isClaimValid(IIdentity(address(emptyIdentity)), CLAIM_TOPIC, "", CLAIM_DATA);
+        assertFalse(isValid, "Should return false when scheme is not CONTRACT");
     }
 
     function testSupportsInterface() public view {

@@ -5,6 +5,7 @@ import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol"; // Required for addClaim's issuer
     // validation
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol"; // Required for IClaimIssuer interface
+import { ERC735ClaimSchemes } from "../ERC735ClaimSchemes.sol";
 
 /// @title ERC735 Claim Holder Standard Implementation
 /// @dev Implementation of the IERC735 (Claim Holder) standard.
@@ -26,6 +27,8 @@ contract ERC735 is IERC735 {
     error IssuerCannotBeZeroAddress();
     error ClaimNotValidAccordingToIssuer(address issuer, uint256 topic);
     error ClaimDoesNotExist(bytes32 claimId);
+    error UnsupportedClaimScheme(uint256 scheme);
+    error UnauthorizedContractClaim(address caller, address issuer);
 
     /// @dev See {IERC735-addClaim}.
     /// Adds or updates a claim. Emits {ClaimAdded} or {ClaimChanged}.
@@ -52,9 +55,17 @@ contract ERC735 is IERC735 {
         }
 
         if (_issuer != address(this)) {
-            require(
-                IClaimIssuer(_issuer).isClaimValid(IIdentity(address(this)), _topic, _signature, _data), "invalid claim"
-            );
+            if (_scheme == ERC735ClaimSchemes.SCHEME_ECDSA) {
+                if (!IClaimIssuer(_issuer).isClaimValid(IIdentity(address(this)), _topic, _signature, _data)) {
+                    revert ClaimNotValidAccordingToIssuer(_issuer, _topic);
+                }
+            } else if (_scheme == ERC735ClaimSchemes.SCHEME_CONTRACT) {
+                if (msg.sender != _issuer) {
+                    revert UnauthorizedContractClaim(msg.sender, _issuer);
+                }
+            } else {
+                revert UnsupportedClaimScheme(_scheme);
+            }
         }
 
         bytes32 claimId = keccak256(abi.encode(_issuer, _topic));
