@@ -640,18 +640,18 @@ contract ATKIdentityFactoryImplementation is
         return system.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, caller);
     }
 
-    /// @notice Sets the identity factory's own OnChain ID.
-    /// @dev This is called after the factory creates its own identity during bootstrap.
-    ///      Only callable by the system admin.
+    /// @notice Sets the identity factory's own OnChain ID and issues a self-claim.
+    /// @dev This is called during bootstrap by the system contract only. After setting the identity,
+    ///      it issues a CONTRACT_IDENTITY claim to itself to attest that the factory is a contract identity.
     /// @param identityAddress The address of the identity factory's own identity contract.
     function setOnchainID(address identityAddress) external {
-        IATKSystem system = IATKSystem(_system);
-        require(
-            system.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, _msgSender()),
-            "ATKIdentityFactory: Only admin can set onchainID"
-        );
+        require(_msgSender() == _system, "ATKIdentityFactory: Only system can set onchainID");
         require(_onchainID == address(0), "ATKIdentityFactory: OnchainID already set");
         require(identityAddress != address(0), "ATKIdentityFactory: Invalid identity address");
         _onchainID = identityAddress;
+
+        // Issue a CONTRACT_IDENTITY claim to the factory's own identity
+        // This provides self-attestation that the identity factory is a contract with an identity
+        _issueContractIdentityClaim(identityAddress, address(this));
     }
 }

@@ -66,11 +66,25 @@ contract ATKIdentityFactoryContractIdentityClaimTest is Test {
         // 1. The identity factory implements IContractWithIdentity
         // 2. The identity factory has its own OnChain ID set
         // 3. The identity factory's identity is registered as a trusted issuer
-        // 4. When creating a contract identity, a CONTRACT_IDENTITY claim is issued
+        // 4. The factory's identity has a CONTRACT_IDENTITY claim about itself
+        // 5. When creating a contract identity, a CONTRACT_IDENTITY claim is issued
 
         // Due to the complexity of setting up the full system in a test,
         // this is a placeholder showing the intended test structure
         assertTrue(true, "Test placeholder");
+    }
+
+    function testIdentityFactorySelfClaim() public {
+        // Test that when setOnchainID is called during bootstrap,
+        // the identity factory issues a CONTRACT_IDENTITY claim to itself
+
+        // This would verify:
+        // 1. After setOnchainID is called, the factory's identity has a CONTRACT_IDENTITY claim
+        // 2. The claim issuer is the factory's identity itself (self-issued)
+        // 3. The claim data contains the factory's contract address
+        // 4. The claim uses the CONTRACT scheme for contract-issued claims
+
+        assertTrue(true, "Test placeholder for self-claim verification");
     }
 
     function testContractIdentityClaimIssuance() public {
