@@ -208,5 +208,4 @@ void i18n.init({
  * ```
  */
 
-// eslint-disable-next-line no-barrel-files/no-barrel-files
-export { default } from "i18next";
+export default i18n;
