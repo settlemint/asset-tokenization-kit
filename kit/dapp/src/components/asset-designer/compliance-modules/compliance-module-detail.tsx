@@ -7,21 +7,20 @@ import {
   type ComplianceTypeId,
 } from "@/lib/zod/validators/compliance";
 import { useStore } from "@tanstack/react-store";
-import { useTranslation } from "react-i18next";
 import { zeroAddress, zeroHash } from "viem";
 import { CountryAllowlistModuleDetail } from "./country-allowlist-module-detail";
 
+const empty: string[] = [];
 export const ComplianceModuleDetail = withForm({
   ...assetDesignerFormOptions,
   props: {
-    activeTypeId: null as ComplianceTypeId | null,
+    activeTypeId:
+      ComplianceTypeIdEnum.CountryAllowListComplianceModule as ComplianceTypeId,
     setActiveTypeId: (_typeId: ComplianceTypeId | null) => {
       noop();
     },
   },
   render: function Render({ form, activeTypeId, setActiveTypeId }) {
-    const { t } = useTranslation("asset-designer");
-
     const initialModulePairs = useStore(
       form.store,
       (state) => state.values.initialModulePairs
@@ -61,7 +60,7 @@ export const ComplianceModuleDetail = withForm({
               (modulePair) =>
                 modulePair.typeId ===
                 ComplianceTypeIdEnum.CountryAllowListComplianceModule
-            )?.values ?? []
+            )?.values ?? empty
           }
           onEnable={(values) => {
             setModulePair({
@@ -92,14 +91,6 @@ export const ComplianceModuleDetail = withForm({
       ),
     };
 
-    if (activeTypeId) {
-      return <>{complianceDetailComponents[activeTypeId]}</>;
-    }
-
-    // This is not possible to reach, because typescript will error if there is no component configured for a compliance module typeId in the map above
-    console.error(
-      `Component not configured for compliance module withtypeId: ${activeTypeId}`
-    );
-    return <div>{t("messages.comingSoon")}</div>;
+    return <>{complianceDetailComponents[activeTypeId]}</>;
   },
 });

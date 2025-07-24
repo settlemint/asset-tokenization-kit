@@ -23,7 +23,7 @@ import { useStore } from "@tanstack/react-store";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const validate: never[] = [];
+const empty: never[] = [];
 
 export const ComplianceModules = withForm({
   ...assetDesignerFormOptions,
@@ -118,7 +118,7 @@ export const ComplianceModules = withForm({
           <form.StepSubmitButton
             label={t("form.buttons.next")}
             onStepSubmit={onStepSubmit}
-            validate={validate}
+            validate={empty}
             checkRequiredFn={() => false}
           />
         </FormStepSubmit>
