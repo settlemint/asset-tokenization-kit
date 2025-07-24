@@ -19,10 +19,7 @@ interface PinSetupModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function PinSetupModal({
-  open,
-  onOpenChange,
-}: PinSetupModalProps) {
+export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {
   const { refreshUserState } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common"]);
 
