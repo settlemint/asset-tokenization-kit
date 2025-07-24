@@ -1,10 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { type ComplianceTypeId } from "@/lib/zod/validators/compliance";
 import {
@@ -16,6 +9,13 @@ import {
   UserIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import {
+  SelectableCard,
+  SelectableCardIcon,
+  SelectableCardContent,
+  SelectableCardTitle,
+  SelectableCardDescription,
+} from "@/components/selectable-card";
 
 interface ComplianceModuleConfig {
   icon: React.ComponentType<{ className?: string }>;
@@ -27,32 +27,32 @@ const complianceModuleConfig = {
   AddressBlockListComplianceModule: {
     icon: BanIcon,
     titleKey: "modules.addressBlockList.title",
-    descriptionKey: "modules.addressBlockList.description",
+    descriptionKey: "modules.addressBlockList.shortDescription",
   },
   CountryAllowListComplianceModule: {
     icon: CheckCircleIcon,
     titleKey: "modules.countryAllowList.title",
-    descriptionKey: "modules.countryAllowList.description",
+    descriptionKey: "modules.countryAllowList.shortDescription",
   },
   CountryBlockListComplianceModule: {
     icon: MapPinIcon,
     titleKey: "modules.countryBlockList.title",
-    descriptionKey: "modules.countryBlockList.description",
+    descriptionKey: "modules.countryBlockList.shortDescription",
   },
   IdentityAllowListComplianceModule: {
     icon: UserIcon,
     titleKey: "modules.identityAllowList.title",
-    descriptionKey: "modules.identityAllowList.description",
+    descriptionKey: "modules.identityAllowList.shortDescription",
   },
   IdentityBlockListComplianceModule: {
     icon: ShieldIcon,
     titleKey: "modules.identityBlockList.title",
-    descriptionKey: "modules.identityBlockList.description",
+    descriptionKey: "modules.identityBlockList.shortDescription",
   },
   SMARTIdentityVerificationComplianceModule: {
     icon: ShieldCheckIcon,
     titleKey: "modules.smartIdentityVerification.title",
-    descriptionKey: "modules.smartIdentityVerification.description",
+    descriptionKey: "modules.smartIdentityVerification.shortDescription",
   },
 } as const satisfies Record<ComplianceTypeId, ComplianceModuleConfig>;
 
@@ -89,31 +89,22 @@ export function ComplianceModulesGrid({
         const IconComponent = config.icon;
 
         return (
-          <Card
+          <SelectableCard
             key={typeId}
-            className="cursor-pointer transition-colors hover:bg-muted/50"
             onClick={() => {
               onModuleSelect(typeId);
             }}
           >
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                  <IconComponent className="h-5 w-5 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <CardTitle className="text-base">
-                    {t(config.titleKey)}
-                  </CardTitle>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-sm leading-relaxed">
+            <SelectableCardIcon>
+              <IconComponent className="w-4 h-4" />
+            </SelectableCardIcon>
+            <SelectableCardContent>
+              <SelectableCardTitle>{t(config.titleKey)}</SelectableCardTitle>
+              <SelectableCardDescription>
                 {t(config.descriptionKey)}
-              </CardDescription>
-            </CardContent>
-          </Card>
+              </SelectableCardDescription>
+            </SelectableCardContent>
+          </SelectableCard>
         );
       })}
     </div>
