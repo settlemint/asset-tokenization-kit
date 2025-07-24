@@ -134,7 +134,7 @@ jobs:
       - name: Generate artifacts
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == true)
         run: |
           bunx turbo run artifacts --concurrency=100%
 
