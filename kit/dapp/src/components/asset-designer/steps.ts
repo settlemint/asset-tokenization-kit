@@ -49,7 +49,7 @@ export function useAssetDesignerSteps(): Step<AssetDesignerStepsType>[] {
       description: t("wizard.steps.assetBasics.description"),
     },
     {
-      step: 0,
+      step: 3,
       id: "complianceModules",
       label: t("wizard.steps.complianceModules.title"),
       description: t("wizard.steps.complianceModules.description"),
