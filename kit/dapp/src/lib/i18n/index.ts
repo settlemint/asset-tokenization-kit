@@ -53,6 +53,7 @@ export const namespaces = [
   "blockchain",
   "compliance-modules",
   "common",
+  "country-multiselect",
   "dashboard",
   "data-table",
   "deposits-table",

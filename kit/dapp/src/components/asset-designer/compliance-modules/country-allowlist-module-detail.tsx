@@ -1,4 +1,5 @@
 import { complianceModuleConfig } from "@/components/compliance/config";
+import { CountryMultiselect } from "@/components/country/country-multiselect";
 import { Button } from "@/components/ui/button";
 import { ComplianceTypeIdEnum } from "@/lib/zod/validators/compliance";
 import { ArrowLeftIcon } from "lucide-react";
@@ -51,6 +52,7 @@ export function CountryAllowlistModuleDetail({
               {t("modules.countryAllowList.description")}
             </p>
           </div>
+          <CountryMultiselect />
         </div>
       </div>
 
