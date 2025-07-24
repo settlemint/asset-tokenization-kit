@@ -1,8 +1,8 @@
-import { BulletPoint } from "@/components/onboarding/bullet-point";
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
 import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
-import { Lock, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, CheckCircle, X } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -37,73 +37,137 @@ export function SecurityMethodSelector() {
     <OnboardingStepLayout
       title={t("wallet-security.method-selector.title")}
       description={t("wallet-security.method-selector.description")}
+      fullWidth
     >
-      <div className="space-y-4">
-        <div className="space-y-3">
-          <BulletPoint>
-            <div>
-              <h4 className="font-medium text-foreground mb-1">
+      <div className="space-y-6">
+        <div className="rounded-lg border w-full overflow-hidden">
+          {/* Fixed Header */}
+          <div className="border-b bg-muted/50">
+            <div className="grid grid-cols-10 gap-0 w-full">
+              <div className="col-span-4 p-4 font-medium text-foreground text-left">
+                {t("wallet-security.method-selector.comparison.feature")}
+              </div>
+              <div className="col-span-3 p-4 font-medium text-foreground text-center">
                 {t("wallet-security.method-selector.pin.title")}
-              </h4>
-              <p className="text-sm text-muted-foreground">
-                {t("wallet-security.method-selector.pin.description")}
-              </p>
-            </div>
-          </BulletPoint>
-
-          <BulletPoint>
-            <div>
-              <h4 className="font-medium text-foreground mb-1">
+              </div>
+              <div className="col-span-3 p-4 font-medium text-foreground text-center">
                 {t("wallet-security.method-selector.otp.title")}
-              </h4>
-              <p className="text-sm text-muted-foreground">
-                {t("wallet-security.method-selector.otp.description")}
-              </p>
-            </div>
-          </BulletPoint>
-        </div>
-
-        <p className="text-sm text-foreground leading-relaxed">
-          {t("wallet-security.method-selector.choose-one")}
-        </p>
-
-        <div className="flex gap-4 mt-6">
-          <div
-            className="flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 border-input bg-background hover:bg-muted/50"
-            onClick={() => {
-              setSecurityMethod("pin");
-            }}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Lock className="w-5 h-5 text-primary" />
-                <span className="font-medium text-foreground">
-                  {t("wallet-security.method-selector.pin.title")}
-                </span>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {t("wallet-security.method-selector.pin.summary")}
-            </p>
           </div>
 
-          <div
-            className="flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 border-input bg-background hover:bg-muted/50"
-            onClick={() => {
-              setSecurityMethod("otp");
-            }}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-primary" />
-                <span className="font-medium text-foreground">
-                  {t("wallet-security.method-selector.otp.title")}
-                </span>
+          {/* Scrollable Body */}
+          <div className="max-h-64 overflow-y-auto">
+            <div className="divide-y">
+              <div className="grid grid-cols-10 gap-0 w-full">
+                <div className="col-span-4 p-4 font-medium text-sm">
+                  {t(
+                    "wallet-security.method-selector.comparison.security-level"
+                  )}
+                </div>
+                <div className="col-span-3 p-4 text-center text-sm">
+                  {t(
+                    "wallet-security.method-selector.comparison.security-good"
+                  )}
+                </div>
+                <div className="col-span-3 p-4 text-center text-sm">
+                  {t(
+                    "wallet-security.method-selector.comparison.security-maximum"
+                  )}
+                </div>
+              </div>
+              <div className="grid grid-cols-10 gap-0 w-full">
+                <div className="col-span-4 p-4 font-medium text-sm">
+                  {t("wallet-security.method-selector.comparison.ease-of-use")}
+                </div>
+                <div className="col-span-3 p-4 text-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                </div>
+                <div className="col-span-3 p-4 text-center text-sm">
+                  <AlertTriangle className="w-4 h-4 text-yellow-500 mx-auto" />
+                </div>
+              </div>
+              <div className="grid grid-cols-10 gap-0 w-full">
+                <div className="col-span-4 p-4 font-medium text-sm">
+                  {t("wallet-security.method-selector.comparison.setup-time")}
+                </div>
+                <div className="col-span-3 p-4 text-center text-sm">
+                  {t(
+                    "wallet-security.method-selector.comparison.setup-time-pin"
+                  )}
+                </div>
+                <div className="col-span-3 p-4 text-center text-sm">
+                  {t(
+                    "wallet-security.method-selector.comparison.setup-time-otp"
+                  )}
+                </div>
+              </div>
+              <div className="grid grid-cols-10 gap-0 w-full">
+                <div className="col-span-4 p-4 font-medium text-sm">
+                  {t(
+                    "wallet-security.method-selector.comparison.requires-phone-app"
+                  )}
+                </div>
+                <div className="col-span-3 p-4 text-center text-sm">
+                  <X className="w-4 h-4 text-red-500 mx-auto" />
+                </div>
+                <div className="col-span-3 p-4 text-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                </div>
+              </div>
+              <div className="grid grid-cols-10 gap-0 w-full">
+                <div className="col-span-4 p-4 font-medium text-sm">
+                  {t(
+                    "wallet-security.method-selector.comparison.offline-access"
+                  )}
+                </div>
+                <div className="col-span-3 p-4 text-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                </div>
+                <div className="col-span-3 p-4 text-center text-sm">
+                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                </div>
+              </div>
+              <div className="grid grid-cols-10 gap-0 w-full">
+                <div className="col-span-4 p-4 font-medium text-sm">
+                  {t("wallet-security.method-selector.comparison.description")}
+                </div>
+                <div className="col-span-3 p-4 text-center text-xs text-muted-foreground">
+                  {t("wallet-security.method-selector.pin.summary")}
+                </div>
+                <div className="col-span-3 p-4 text-center text-xs text-muted-foreground">
+                  {t("wallet-security.method-selector.otp.summary")}
+                </div>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {t("wallet-security.method-selector.otp.summary")}
-            </p>
+          </div>
+
+          {/* Fixed Buttons */}
+          <div className="border-t bg-background">
+            <div className="grid grid-cols-10 gap-0 w-full">
+              <div className="col-span-4 p-4"></div>
+              <div className="col-span-3 p-4 text-center">
+                <Button
+                  onClick={() => {
+                    setSecurityMethod("pin");
+                  }}
+                  variant="outline"
+                  className="w-full"
+                >
+                  {t("wallet-security.method-selector.comparison.choose-pin")}
+                </Button>
+              </div>
+              <div className="col-span-3 p-4 text-center">
+                <Button
+                  onClick={() => {
+                    setSecurityMethod("otp");
+                  }}
+                  className="w-full"
+                >
+                  {t("wallet-security.method-selector.comparison.choose-otp")}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -3,11 +3,13 @@ export function OnboardingStepLayout({
   description,
   actions,
   children,
+  fullWidth = false,
 }: {
   title: React.ReactNode;
   description: React.ReactNode;
   actions?: React.ReactNode;
   children: React.ReactNode;
+  fullWidth?: boolean;
 }) {
   return (
     <>
@@ -18,7 +20,9 @@ export function OnboardingStepLayout({
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl space-y-6 pr-2">{children}</div>
+        <div className={`${fullWidth ? "" : "max-w-3xl"} space-y-6 pr-2`}>
+          {children}
+        </div>
       </div>
       {actions && (
         <footer className="OnboardingStepLayout__footer absolute bottom-8 right-8 max-w-3xl mt-6">

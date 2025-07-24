@@ -103,6 +103,21 @@
         "summary": "Maximum security"
       },
       "choose-one": "You can choose one. As OTP is more secure, it is the recommended option.",
+      "comparison": {
+        "feature": "Feature",
+        "security-level": "Security level",
+        "ease-of-use": "Ease of use",
+        "setup-time": "Setup time",
+        "requires-phone-app": "Requires phone app",
+        "offline-access": "Offline access",
+        "description": "Description",
+        "security-good": "Good",
+        "security-maximum": "Maximum",
+        "setup-time-pin": "1 minute",
+        "setup-time-otp": "2-3 minutes",
+        "choose-pin": "Choose PIN",
+        "choose-otp": "Choose OTP"
+      },
       "success": "Your wallet is now secured!",
       "success-description": "Your wallet is now secured! You can now continue to the next step."
     },
