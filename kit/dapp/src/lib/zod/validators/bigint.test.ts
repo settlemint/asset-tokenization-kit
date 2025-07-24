@@ -11,7 +11,9 @@ describe("apiBigInt", () => {
 
     it("should parse a very large number string", () => {
       const largeNum = "123456789012345678901234567890";
-      expect(validator.parse(largeNum)).toBe(123456789012345678901234567890n);
+      expect(validator.parse(largeNum)).toBe(
+        123_456_789_012_345_678_901_234_567_890n
+      );
     });
 
     it("should parse zero", () => {
@@ -21,7 +23,7 @@ describe("apiBigInt", () => {
     it("should parse negative numbers", () => {
       expect(validator.parse("-123")).toBe(-123n);
       expect(validator.parse("-999999999999999999999")).toBe(
-        -999999999999999999999n
+        -999_999_999_999_999_999_999n
       );
     });
 
@@ -56,21 +58,25 @@ describe("apiBigInt", () => {
 
     it("should handle scientific notation strings", () => {
       // Now we handle scientific notation properly
-      expect(validator.parse("1e10")).toBe(10000000000n);
-      expect(validator.parse("1.23e4")).toBe(12300n);
+      expect(validator.parse("1e10")).toBe(10_000_000_000n);
+      expect(validator.parse("1.23e4")).toBe(12_300n);
       expect(validator.parse("5e3")).toBe(5000n);
-      expect(validator.parse("-2.5e6")).toBe(-2500000n);
+      expect(validator.parse("-2.5e6")).toBe(-2_500_000n);
       expect(validator.parse("1.23e-2")).toBe(0n); // 0.0123 truncates to 0
     });
 
     it("should handle very large scientific notation", () => {
       // Test with numbers that would exceed Number.MAX_SAFE_INTEGER
-      expect(validator.parse("9e15")).toBe(9000000000000000n);
-      expect(validator.parse("1.5e18")).toBe(1500000000000000000n);
+      expect(validator.parse("9e15")).toBe(9_000_000_000_000_000n);
+      expect(validator.parse("1.5e18")).toBe(1_500_000_000_000_000_000n);
 
       // Test with even larger numbers that exceed JavaScript's Number precision
-      expect(validator.parse("1e30")).toBe(1000000000000000000000000000000n);
-      expect(validator.parse("5.5e25")).toBe(55000000000000000000000000n);
+      expect(validator.parse("1e30")).toBe(
+        1_000_000_000_000_000_000_000_000_000_000n
+      );
+      expect(validator.parse("5.5e25")).toBe(
+        55_000_000_000_000_000_000_000_000n
+      );
     });
   });
 
@@ -107,7 +113,7 @@ describe("apiBigInt", () => {
     it("should reject Infinity and NaN", () => {
       expect(() => validator.parse(Infinity)).toThrow();
       expect(() => validator.parse(-Infinity)).toThrow();
-      expect(() => validator.parse(NaN)).toThrow();
+      expect(() => validator.parse(Number.NaN)).toThrow();
     });
 
     it("should reject multiple decimal points", () => {
@@ -129,14 +135,14 @@ describe("apiBigInt", () => {
     it("should return proper type", () => {
       const result = validator.parse("67890");
       // Test that the type is correctly inferred
-      expect(result).toBe(67890n);
+      expect(result).toBe(67_890n);
     });
 
     it("should handle safeParse", () => {
       const result = validator.safeParse("12345");
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data).toBe(12345n);
+        expect(result.data).toBe(12_345n);
       }
     });
   });

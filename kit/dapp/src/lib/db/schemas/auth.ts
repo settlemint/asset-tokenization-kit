@@ -101,7 +101,7 @@ export const apikey = pgTable("apikey", {
   lastRefillAt: timestamp("last_refill_at", { withTimezone: true }),
   enabled: boolean("enabled").default(true),
   rateLimitEnabled: boolean("rate_limit_enabled").default(true),
-  rateLimitTimeWindow: integer("rate_limit_time_window").default(60000),
+  rateLimitTimeWindow: integer("rate_limit_time_window").default(60_000),
   rateLimitMax: integer("rate_limit_max").default(60),
   requestCount: integer("request_count"),
   remaining: integer("remaining"),

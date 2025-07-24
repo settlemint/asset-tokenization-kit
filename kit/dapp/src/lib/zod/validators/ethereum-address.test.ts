@@ -55,7 +55,7 @@ describe("ethereumAddress", () => {
     });
 
     it("should reject non-string values", () => {
-      expect(() => ethereumAddress.parse(123456)).toThrow();
+      expect(() => ethereumAddress.parse(123_456)).toThrow();
       expect(() => ethereumAddress.parse(null)).toThrow();
       expect(() => ethereumAddress.parse(undefined)).toThrow();
       expect(() => ethereumAddress.parse({})).toThrow();
@@ -121,7 +121,7 @@ describe("ethereumAddress", () => {
       // Invalid addresses
       expect(ethereumAddress.safeParse("0xinvalid").success).toBe(false);
       expect(ethereumAddress.safeParse("not-an-address").success).toBe(false);
-      expect(ethereumAddress.safeParse(123456).success).toBe(false);
+      expect(ethereumAddress.safeParse(123_456).success).toBe(false);
       expect(ethereumAddress.safeParse(null).success).toBe(false);
       expect(ethereumAddress.safeParse(undefined).success).toBe(false);
     });
@@ -136,7 +136,7 @@ describe("ethereumAddress", () => {
     it("should throw for invalid input", () => {
       expect(() => ethereumAddress.parse("0xinvalid")).toThrow();
       expect(() => ethereumAddress.parse("not-an-address")).toThrow();
-      expect(() => ethereumAddress.parse(123456)).toThrow();
+      expect(() => ethereumAddress.parse(123_456)).toThrow();
       expect(() => ethereumAddress.parse(null)).toThrow();
       expect(() => ethereumAddress.parse(undefined)).toThrow();
     });

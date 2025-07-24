@@ -1,4 +1,5 @@
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import { assetType } from "@/lib/zod/validators/asset-types";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
@@ -7,30 +8,6 @@ import type { TokenExtensions } from "@/orpc/middlewares/system/token.middleware
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { from } from "dnum";
 import { z } from "zod";
-
-/**
- * Available token roles in the system
- *
- * These roles define the various permission levels that can be assigned
- * to users for interacting with tokenized assets. Each role grants
- * specific capabilities within the token contract.
- *
- * @see {@link AccessControlRoles} for the complete type definition
- */
-const ROLES: AccessControlRoles[] = [
-  "admin",
-  "bypassListManager",
-  "claimManager",
-  "custodian",
-  "deployer",
-  "emergency",
-  "implementationManager",
-  "registryManager",
-  "registrar",
-  "storageModifier",
-  "supplyManagement",
-  "governance",
-];
 
 /**
  * Available token extensions in the system
@@ -80,6 +57,7 @@ const EXTENSIONS: TokenExtensions[] = [
  */
 export const RawTokenSchema = z.object({
   id: ethereumAddress.describe("The token contract address"),
+  type: assetType(),
   name: z.string().describe("The name of the token"),
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),
@@ -146,15 +124,52 @@ export const RawTokenSchema = z.object({
     .object({
       roles: z
         .object(
-          ROLES.reduce<Record<AccessControlRoles, z.ZodType<boolean>>>(
-            (acc, role) => {
-              acc[role] = z
+          (() => {
+            const rolesSchema: Record<
+              AccessControlRoles,
+              z.ZodType<boolean>
+            > = {
+              admin: z
                 .boolean()
-                .describe(`Whether the user has the ${role} role`);
-              return acc;
-            },
-            {} as Record<AccessControlRoles, z.ZodType<boolean>>
-          )
+                .describe("Whether the user has the admin role"),
+              registrar: z
+                .boolean()
+                .describe("Whether the user has the registrar role"),
+              claimManager: z
+                .boolean()
+                .describe("Whether the user has the claimManager role"),
+              deployer: z
+                .boolean()
+                .describe("Whether the user has the deployer role"),
+              storageModifier: z
+                .boolean()
+                .describe("Whether the user has the storageModifier role"),
+              registryManager: z
+                .boolean()
+                .describe("Whether the user has the registryManager role"),
+              governance: z
+                .boolean()
+                .describe("Whether the user has the governance role"),
+              supplyManagement: z
+                .boolean()
+                .describe("Whether the user has the supplyManagement role"),
+              custodian: z
+                .boolean()
+                .describe("Whether the user has the custodian role"),
+              emergency: z
+                .boolean()
+                .describe("Whether the user has the emergency role"),
+              implementationManager: z
+                .boolean()
+                .describe(
+                  "Whether the user has the implementationManager role"
+                ),
+              bypassListManager: z
+                .boolean()
+                .describe("Whether the user has the bypassListManager role"),
+            };
+            return rolesSchema;
+          })()
         )
         .describe("The roles of the user for the token"),
       isCompliant: z
@@ -173,17 +188,82 @@ export const RawTokenSchema = z.object({
         .optional(),
       actions: z
         .object(
-          Object.keys(TOKEN_PERMISSIONS).reduce<
-            Record<keyof typeof TOKEN_PERMISSIONS, z.ZodType<boolean>>
-          >(
-            (acc, action) => {
-              acc[action as keyof typeof TOKEN_PERMISSIONS] = z
+          (() => {
+            const actionsSchema: Record<
+              keyof typeof TOKEN_PERMISSIONS,
+              z.ZodType<boolean>
+            > = {
+              burn: z
                 .boolean()
-                .describe(`Whether the user can execute the ${action} action`);
-              return acc;
-            },
-            {} as Record<keyof typeof TOKEN_PERMISSIONS, z.ZodType<boolean>>
-          )
+                .describe("Whether the user can execute the burn action"),
+              create: z
+                .boolean()
+                .describe("Whether the user can execute the create action"),
+              mint: z
+                .boolean()
+                .describe("Whether the user can execute the mint action"),
+              pause: z
+                .boolean()
+                .describe("Whether the user can execute the pause action"),
+              tokenAddComplianceModule: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenAddComplianceModule action"
+                ),
+              tokenApprove: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenApprove action"
+                ),
+              tokenForcedRecover: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenForcedRecover action"
+                ),
+              tokenFreezeAddress: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenFreezeAddress action"
+                ),
+              tokenRecoverERC20: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenRecoverERC20 action"
+                ),
+              tokenRecoverTokens: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenRecoverTokens action"
+                ),
+              tokenRedeem: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenRedeem action"
+                ),
+              tokenRemoveComplianceModule: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenRemoveComplianceModule action"
+                ),
+              tokenSetCap: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenSetCap action"
+                ),
+              tokenSetYieldSchedule: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the tokenSetYieldSchedule action"
+                ),
+              transfer: z
+                .boolean()
+                .describe("Whether the user can execute the transfer action"),
+              unpause: z
+                .boolean()
+                .describe("Whether the user can execute the unpause action"),
+            };
+            return actionsSchema;
+          })()
         )
         .describe("The actions on the token the user is allowed to execute"),
     })

@@ -134,7 +134,7 @@ export function useOnboardingSteps(
     const index = stepsWithTranslations.findIndex(
       (step) => step.step === currentStep
     );
-    return index >= 0 ? index : 0;
+    return Math.max(index, 0);
   }, [stepsWithTranslations, currentStep]);
 
   // Calculate progress
@@ -170,15 +170,14 @@ export function useOnboardingSteps(
 
   // Group steps by their groupId
   const groupedStepsByGroupId = useMemo(() => {
-    return stepsWithTranslations.reduce(
-      (acc, step, index) => {
-        const groupId = step.groupId;
-        acc[groupId] ??= [];
-        acc[groupId].push({ step, index });
-        return acc;
-      },
-      {} as Record<string, { step: OnboardingStepDefinition; index: number }[]>
-    );
+    return stepsWithTranslations.reduce<
+      Record<string, { step: OnboardingStepDefinition; index: number }[]>
+    >((acc, step, index) => {
+      const groupId = step.groupId;
+      acc[groupId] ??= [];
+      acc[groupId].push({ step, index });
+      return acc;
+    }, {});
   }, [stepsWithTranslations]);
 
   // Helper function to check if all steps in a group are completed

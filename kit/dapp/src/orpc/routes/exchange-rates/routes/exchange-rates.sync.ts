@@ -42,11 +42,11 @@ async function fetchExchangeRatesFromApi(
 
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch exchange rates: ${response.status} ${response.statusText}`
+      `Failed to fetch exchange rates: ${String(response.status)} ${response.statusText}`
     );
   }
 
-  const data = await response.json();
+  const data = (await response.json()) as unknown;
 
   // Validate the response with Zod schema
   const parsed = safeParse(exchangeRateApiResponseSchema, data);

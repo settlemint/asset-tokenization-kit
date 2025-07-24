@@ -58,7 +58,7 @@ export function WizardField<TFormData>({
     name: fieldDef.name as string,
     validators: fieldDef.schema
       ? {
-          onChange: ({ value }) => {
+          onChange: ({ value }: { value: unknown }) => {
             const result = fieldDef.schema?.safeParse(value);
             return result?.success
               ? undefined

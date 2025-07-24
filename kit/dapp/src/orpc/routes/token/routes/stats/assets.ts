@@ -243,38 +243,34 @@ function createAssetActivity(
   const totalTokens = tokenStats.length;
 
   // Build final result using pre-computed counts
-  return Array.from(assetTypeCounts.entries()).map(
-    ([assetType, tokenCount]) => {
-      // Calculate event share based on pre-computed counts
-      const eventShare = totalTokens > 0 ? tokenCount / totalTokens : 0;
-      const data = assetTypeData.get(assetType);
-      if (!data) {
-        throw new Error(`Asset type data not found for ${assetType}`);
-      }
-
-      return {
-        id: assetType,
-        assetType,
-        mintEventCount: Math.floor(eventTotals.totalMintEvents * eventShare),
-        burnEventCount: Math.floor(eventTotals.totalBurnEvents * eventShare),
-        transferEventCount: Math.floor(
-          eventTotals.totalTransferEvents * eventShare
-        ),
-        clawbackEventCount: Math.floor(
-          eventTotals.totalClawbackEvents * eventShare
-        ),
-        frozenEventCount: Math.floor(
-          eventTotals.totalFreezeEvents * eventShare
-        ),
-        unfrozenEventCount: Math.floor(
-          eventTotals.totalUnfreezeEvents * eventShare
-        ),
-        totalMinted: data.totalMinted.toString(),
-        totalBurned: data.totalBurned.toString(),
-        totalTransferred: data.totalTransferred.toString(),
-      };
+  return [...assetTypeCounts.entries()].map(([assetType, tokenCount]) => {
+    // Calculate event share based on pre-computed counts
+    const eventShare = totalTokens > 0 ? tokenCount / totalTokens : 0;
+    const data = assetTypeData.get(assetType);
+    if (!data) {
+      throw new Error(`Asset type data not found for ${assetType}`);
     }
-  );
+
+    return {
+      id: assetType,
+      assetType,
+      mintEventCount: Math.floor(eventTotals.totalMintEvents * eventShare),
+      burnEventCount: Math.floor(eventTotals.totalBurnEvents * eventShare),
+      transferEventCount: Math.floor(
+        eventTotals.totalTransferEvents * eventShare
+      ),
+      clawbackEventCount: Math.floor(
+        eventTotals.totalClawbackEvents * eventShare
+      ),
+      frozenEventCount: Math.floor(eventTotals.totalFreezeEvents * eventShare),
+      unfrozenEventCount: Math.floor(
+        eventTotals.totalUnfreezeEvents * eventShare
+      ),
+      totalMinted: data.totalMinted.toString(),
+      totalBurned: data.totalBurned.toString(),
+      totalTransferred: data.totalTransferred.toString(),
+    };
+  });
 }
 
 /**

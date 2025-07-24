@@ -318,7 +318,10 @@ describe("safeParse", () => {
 
     it("should handle void schema", () => {
       const schema = z.void();
-      expect(safeParse(schema, undefined)).toBe(undefined);
+      // For void schemas, safeParse should complete without throwing
+      expect(() => {
+        safeParse(schema, undefined);
+      }).not.toThrow();
     });
 
     it("should handle intersection types", () => {

@@ -54,7 +54,7 @@ export function WizardSearch({
       </div>
       {hasQuery && (
         <span className="text-xs text-muted-foreground whitespace-nowrap">
-          {resultCount} result{resultCount !== 1 ? "s" : ""}
+          {resultCount} result{resultCount === 1 ? "" : "s"}
         </span>
       )}
     </div>

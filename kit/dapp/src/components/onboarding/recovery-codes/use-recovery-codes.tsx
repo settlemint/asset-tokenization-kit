@@ -17,9 +17,9 @@ export function useRecoveryCodes(recoveryCodes: string[]) {
     const a = document.createElement("a");
     a.href = url;
     a.download = "recovery-codes.txt";
-    document.body.appendChild(a);
+    document.body.append(a);
     a.click();
-    document.body.removeChild(a);
+    a.remove();
     URL.revokeObjectURL(url);
     toast.success(t("wallet-security.recovery-codes.downloaded"));
   }, [recoveryCodes, t]);
