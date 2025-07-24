@@ -34,7 +34,7 @@ function RouteComponent() {
   const { t } = useTranslation(["onboarding"]);
   const { steps, currentStep } = Route.useRouteContext();
   const navigate = useNavigate();
-  const [defaultExpandedGroup, setDefaultExpandedGroup] = useState<string>("");
+  const [expandedGroup, setExpandedGroup] = useState<string>("");
 
   const {
     stepsWithTranslations,
@@ -47,19 +47,19 @@ function RouteComponent() {
     groupedStepsByGroupId,
   } = useOnboardingSteps(steps, currentStep);
 
-  // Set default expanded group
+  // Update expanded group when current step changes
   useEffect(() => {
     const currentStep = stepsWithTranslations[currentStepIndex];
     const currentGroupId = currentStep?.groupId;
 
     if (currentGroupId) {
-      setDefaultExpandedGroup(currentGroupId);
+      setExpandedGroup(currentGroupId);
     } else {
       // Find first group with default expanded or first group
       const defaultGroup =
         groups.find((group) => group.defaultExpanded) ?? groups[0];
       if (defaultGroup) {
-        setDefaultExpandedGroup(defaultGroup.id);
+        setExpandedGroup(defaultGroup.id);
       }
     }
   }, [groups, stepsWithTranslations, currentStepIndex]);
@@ -157,7 +157,8 @@ function RouteComponent() {
             collapsible
             className="w-full bg-transparent"
             style={{ background: "transparent", boxShadow: "none" }}
-            defaultValue={defaultExpandedGroup}
+            value={expandedGroup}
+            onValueChange={setExpandedGroup}
           >
             {groups.map((group) => {
               const groupSteps = groupedStepsByGroupId[group.id] ?? [];
