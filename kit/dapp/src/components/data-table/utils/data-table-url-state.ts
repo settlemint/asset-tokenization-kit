@@ -40,18 +40,18 @@ export function cleanEmptyValues(
   const cleaned: Record<string, unknown> = {};
 
   // Fields that are handled by flat params and should be skipped
-  const internalFields = [
+  const internalFields = new Set([
     "pagination",
     "sorting",
     "columnFilters",
     "globalFilter",
     "columnVisibility",
     "rowSelection",
-  ];
+  ]);
 
   for (const [key, value] of Object.entries(obj)) {
     // Skip internal data table state fields
-    if (internalFields.includes(key)) {
+    if (internalFields.has(key)) {
       continue;
     }
 
@@ -209,7 +209,7 @@ export function createDataTableSearchParams(options?: {
     // Separate filter parameters from other params
     for (const [key, value] of Object.entries(search)) {
       if (key.startsWith("filter_")) {
-        const filterKey = key.substring(7); // Remove 'filter_' prefix
+        const filterKey = key.slice(7); // Remove 'filter_' prefix
         filterParams[filterKey] = String(value);
       } else {
         baseParams[key] = value;
@@ -238,14 +238,12 @@ export function createDataTableSearchParams(options?: {
       })),
       globalFilter: parsed.search ?? "",
       columnVisibility: parsed.columns
-        ? parsed.columns
-            .split(",")
-            .reduce((acc, col) => ({ ...acc, [col]: true }), {})
+        ? Object.fromEntries(
+            parsed.columns.split(",").map((col) => [col, true])
+          )
         : {},
       rowSelection: parsed.selected
-        ? parsed.selected
-            .split(",")
-            .reduce((acc, id) => ({ ...acc, [id]: true }), {})
+        ? Object.fromEntries(parsed.selected.split(",").map((id) => [id, true]))
         : {},
     };
 

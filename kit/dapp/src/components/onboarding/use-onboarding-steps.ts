@@ -134,7 +134,7 @@ export function useOnboardingSteps(
     const index = stepsWithTranslations.findIndex(
       (step) => step.step === currentStep
     );
-    return index >= 0 ? index : 0;
+    return Math.max(index, 0);
   }, [stepsWithTranslations, currentStep]);
 
   // Calculate progress

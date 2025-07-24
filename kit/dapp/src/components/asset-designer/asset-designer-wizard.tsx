@@ -120,10 +120,10 @@ function AssetDesignerWizardComponent({
           const factoryTypeId = getFactoryTypeIdFromAssetType(assetType);
           const assetClass = getAssetClassFromFactoryTypeId(factoryTypeId);
 
-          if (!acc[assetClass]) {
-            acc[assetClass] = [assetType];
-          } else {
+          if (acc[assetClass]) {
             acc[assetClass].push(assetType);
+          } else {
+            acc[assetClass] = [assetType];
           }
         } catch (error) {
           logger.warn("Could not classify asset type", { assetType, error });

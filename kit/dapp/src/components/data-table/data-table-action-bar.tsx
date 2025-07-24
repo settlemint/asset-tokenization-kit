@@ -264,7 +264,9 @@ export function DataTableActionBar<TData>({
                         </div>
                       )}
                       <DropdownMenuGroup>
-                        {visibleGroupActions.map(renderActionButton)}
+                        {visibleGroupActions.map((action) =>
+                          renderActionButton(action)
+                        )}
                       </DropdownMenuGroup>
                       {group.separator &&
                         index < memoizedVisibleActions.length - 1 && (

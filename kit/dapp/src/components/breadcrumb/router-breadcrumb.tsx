@@ -112,16 +112,16 @@ function BreadcrumbItemWithAsyncTitle({
         <BreadcrumbPage>
           {title === "home" ? <Home className="h-3 w-3" /> : title}
         </BreadcrumbPage>
-      ) : !href ? (
-        <span className="text-muted-foreground text-xs">
-          {title === "home" ? <Home className="h-3 w-3" /> : title}
-        </span>
-      ) : (
+      ) : href ? (
         <BreadcrumbLink asChild className="text-xs">
           <Link to={href} aria-label={title === "home" ? t("home") : undefined}>
             {title === "home" ? <Home className="h-3 w-3" /> : title}
           </Link>
         </BreadcrumbLink>
+      ) : (
+        <span className="text-muted-foreground text-xs">
+          {title === "home" ? <Home className="h-3 w-3" /> : title}
+        </span>
       )}
     </BreadcrumbItem>
   );
@@ -257,8 +257,8 @@ export function RouterBreadcrumb({
           fallbackTitle = loaderData.token.name;
         } else {
           // Extract from route ID or path
-          const routePart =
-            match.pathname.split("/").filter(Boolean).pop() ?? "";
+          const pathSegments = match.pathname.split("/").filter(Boolean);
+          const routePart = pathSegments.at(-1) ?? "";
 
           // Handle ethereum addresses
           if (routePart.startsWith("0x") && routePart.length === 42) {

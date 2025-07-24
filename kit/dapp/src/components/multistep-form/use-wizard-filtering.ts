@@ -73,7 +73,7 @@ export function useWizardFiltering<TFormData = unknown>({
 
   const hasVisibleFields = useCallback(
     (group: FieldGroup<TFormData> | undefined | null) => {
-      return group?.fields.some(isFieldDefined);
+      return group?.fields.some((field) => isFieldDefined(field));
     },
     [isFieldDefined]
   );
@@ -88,7 +88,7 @@ export function useWizardFiltering<TFormData = unknown>({
 
       return fields
         .map((field) => matchFieldToQuery(field, searchQuery))
-        .filter(isFieldDefined);
+        .filter((field) => isFieldDefined(field));
     },
     [matchFieldToQuery, isFieldDefined]
   );
@@ -104,9 +104,9 @@ export function useWizardFiltering<TFormData = unknown>({
           ...group,
           fields: group.fields
             .map((field) => matchFieldToQuery(field, searchQuery))
-            .filter(isFieldDefined),
+            .filter((field) => isFieldDefined(field)),
         }))
-        .filter(hasVisibleFields);
+        .filter((group) => hasVisibleFields(group));
     },
     [matchFieldToQuery, isFieldDefined, hasVisibleFields]
   );

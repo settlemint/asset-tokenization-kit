@@ -33,7 +33,7 @@ describe("bigDecimal", () => {
       // dnum's format function may have different behavior for very large numbers
       const formatted = format(result, { digits: 30 });
       // Remove grouping separators and check the number part (precision may vary)
-      const cleaned = formatted.replace(/,/g, "");
+      const cleaned = formatted.replaceAll(",", "");
       expect(cleaned.startsWith("123456789012345678901234567890.")).toBe(true);
     });
 
@@ -41,7 +41,7 @@ describe("bigDecimal", () => {
       const result = validator.parse("1.23e+10");
       expect(Array.isArray(result)).toBe(true);
       // Remove grouping separators
-      expect(format(result).replace(/,/g, "")).toBe("12300000000");
+      expect(format(result).replaceAll(",", "")).toBe("12300000000");
     });
 
     it("should accept zero", () => {
@@ -116,7 +116,9 @@ describe("bigDecimal", () => {
 
       expect(format(add(num1, num2))).toBe("223.956");
       expect(format(subtract(num1, num2))).toBe("22.956");
-      expect(format(multiply(num1, num2)).replace(/,/g, "")).toBe("12407.328");
+      expect(format(multiply(num1, num2)).replaceAll(",", "")).toBe(
+        "12407.328"
+      );
       const divResult = format(divide(num1, num2), { digits: 6 });
       // dnum may format with different precision
       expect(divResult).toMatch(/^1\.228/);

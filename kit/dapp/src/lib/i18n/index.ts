@@ -115,8 +115,8 @@ const lazyLoadBackend = {
         ns as Namespace
       );
       callback(null, data);
-    } catch (err) {
-      callback(err as Error);
+    } catch (error) {
+      callback(error as Error);
     }
   },
 };
@@ -207,5 +207,6 @@ void i18n.init({
  * }
  * ```
  */
+
 // eslint-disable-next-line no-barrel-files/no-barrel-files
-export default i18n;
+export { default } from "i18next";

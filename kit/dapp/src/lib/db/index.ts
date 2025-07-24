@@ -46,11 +46,11 @@ export const migrateDatabase = async () => {
       migrationsFolder: "drizzle",
     });
     logger.info("Completed migrating the database");
-  } catch (err) {
-    const error = err as Error;
+  } catch (error_) {
+    const error = error_ as Error;
     logger.error(`Error migrating the database: ${error.message}`, error);
-    // Exit the process with a non-zero code to indicate failure, if migration fails the app will not function properly
-    process.exit(1);
+    // If migration fails the app will not function properly
+    throw new Error(`Database migration failed: ${error.message}`);
   }
 
   try {
@@ -60,8 +60,8 @@ export const migrateDatabase = async () => {
       excludeSchemas: ["drizzle"],
     });
     logger.info("Completed tracking all tables in Hasura");
-  } catch (err) {
-    const error = err as Error;
+  } catch (error_) {
+    const error = error_ as Error;
     // Tracking all tables in Hasura is not critical, so we can continue even if it fails
     logger.error(
       `Error tracking all tables in Hasura: ${error.message}`,
