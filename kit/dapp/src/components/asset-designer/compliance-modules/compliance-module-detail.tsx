@@ -10,6 +10,7 @@ import {
 } from "@/lib/zod/validators/compliance";
 import { useStore } from "@tanstack/react-store";
 import { useTranslation } from "react-i18next";
+import { zeroAddress, zeroHash } from "viem";
 import { CountryAllowlistModuleDetail } from "./country-allowlist-module-detail";
 
 export const ComplianceModuleDetail = withForm({
@@ -41,25 +42,6 @@ export const ComplianceModuleDetail = withForm({
       });
     };
 
-    const onChange = (
-      modulePair:
-        | ComplianceModulePair
-        | {
-            typeId: ComplianceTypeId;
-            disabled: true;
-          }
-    ) => {
-      if (isDisabledModule(modulePair)) {
-        removeModulePair(modulePair.typeId);
-        return;
-      }
-
-      setModulePair(modulePair);
-    };
-
-    const onEnable = () => {
-      setActiveTypeId(null);
-    };
     const onBack = () => {
       setActiveTypeId(null);
     };
@@ -73,18 +55,27 @@ export const ComplianceModuleDetail = withForm({
       ),
       [ComplianceTypeIdEnum.CountryAllowListComplianceModule]: (
         <CountryAllowlistModuleDetail
-          onBack={onBack}
-          modulePair={{
-            typeId: ComplianceTypeIdEnum.CountryAllowListComplianceModule,
-            params:
-              initialModulePairs?.find(
-                (modulePair) =>
-                  modulePair.typeId ===
-                  ComplianceTypeIdEnum.CountryAllowListComplianceModule
-              )?.params ?? [],
+          close={onBack}
+          values={
+            initialModulePairs?.find(
+              (modulePair) =>
+                modulePair.typeId ===
+                ComplianceTypeIdEnum.CountryAllowListComplianceModule
+            )?.values ?? []
+          }
+          onEnable={(values) => {
+            setModulePair({
+              typeId: ComplianceTypeIdEnum.CountryAllowListComplianceModule,
+              values,
+              module: zeroAddress,
+              params: zeroHash,
+            });
           }}
-          onChange={onChange}
-          onEnable={onEnable}
+          onDisable={() => {
+            removeModulePair(
+              ComplianceTypeIdEnum.CountryAllowListComplianceModule
+            );
+          }}
         />
       ),
       [ComplianceTypeIdEnum.CountryBlockListComplianceModule]: (
@@ -112,11 +103,3 @@ export const ComplianceModuleDetail = withForm({
     return <div>{t("messages.comingSoon")}</div>;
   },
 });
-
-const isDisabledModule = (
-  modulePair:
-    | ComplianceModulePair
-    | { typeId: ComplianceTypeId; disabled: true }
-): modulePair is { typeId: ComplianceTypeId; disabled: true } => {
-  return "disabled" in modulePair && modulePair.disabled;
-};
