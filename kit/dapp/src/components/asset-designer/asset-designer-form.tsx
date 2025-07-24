@@ -34,6 +34,7 @@ export const AssetDesignerForm = () => {
       });
       createToken({
         ...values.value,
+        initialModulePairs: [],
       });
     },
   });

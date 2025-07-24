@@ -12,6 +12,10 @@ import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
+import {
+  getAssetTypeFromFactoryTypeId,
+  type AssetFactoryTypeId,
+} from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -35,14 +39,14 @@ export const SelectAssetType = withForm({
     });
 
     const options = useMemo(() => {
-      // if (!systemDetails?.tokenFactories) return [];
+      if (!systemDetails?.tokenFactories) return [];
 
-      // const assetTypes = systemDetails.tokenFactories.map((factory) => {
-      //   const factoryTypeId = factory.typeId as AssetFactoryTypeId;
-      //   return getAssetTypeFromFactoryTypeId(factoryTypeId);
-      // });
+      const assetTypes = systemDetails.tokenFactories.map((factory) => {
+        const factoryTypeId = factory.typeId as AssetFactoryTypeId;
+        return getAssetTypeFromFactoryTypeId(factoryTypeId);
+      });
 
-      return (["bond", "deposit"] as const).map((type) => ({
+      return assetTypes.map((type) => ({
         value: type,
         label: t(`asset-types:${type}.name`),
         description: t(`asset-types:${type}.description`),
