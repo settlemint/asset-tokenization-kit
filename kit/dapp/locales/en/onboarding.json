@@ -26,6 +26,10 @@
     "identity": {
       "title": "Identity",
       "description": "Establish your on-chain identity"
+    },
+    "addons": {
+      "title": "Addons",
+      "description": "Enable optional system features"
     }
   },
   "steps": {

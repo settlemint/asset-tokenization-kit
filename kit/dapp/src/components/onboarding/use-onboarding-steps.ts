@@ -2,244 +2,102 @@ import {
   OnboardingStep,
   OnboardingStepGroup,
 } from "@/components/onboarding/state-machine";
-import { useCallback, useMemo } from "react";
+import type { StepOrGroup } from "@/components/stepper/types";
 import { useTranslation } from "react-i18next";
 
-interface OnboardingStepDefinition {
-  step: OnboardingStep;
-  groupId: OnboardingStepGroup;
-  titleTranslationKey?: string;
-  descriptionTranslationKey?: string;
-  current: boolean;
-  completed: boolean;
-  title: string;
-  description: string;
-}
-
-interface OnboardingGroup {
-  id: string;
-  title: string;
-  description: string;
-  collapsible: boolean;
-  defaultExpanded: boolean;
-}
-
 interface UseOnboardingStepsReturn {
-  stepsWithTranslations: OnboardingStepDefinition[];
-  groups: OnboardingGroup[];
-  currentStepIndex: number;
-  progress: number;
-  isGroupCompleted: (groupId: string) => boolean;
-  getStepStatus: (
-    step: OnboardingStepDefinition,
-    index: number
-  ) => "pending" | "active" | "completed" | "error";
-  canNavigateToStep: (stepIndex: number) => boolean;
-  groupedStepsByGroupId: Record<
-    string,
-    { step: OnboardingStepDefinition; index: number }[]
-  >;
+  stepsOrGroups: StepOrGroup<OnboardingStep, OnboardingStepGroup>[];
 }
 
-export function useOnboardingSteps(
-  steps: {
-    step: OnboardingStep;
-    groupId: OnboardingStepGroup;
-    current: boolean;
-    completed: boolean;
-  }[],
-  currentStep: OnboardingStep
-): UseOnboardingStepsReturn {
+export function useOnboardingSteps(): UseOnboardingStepsReturn {
   const { t } = useTranslation(["onboarding", "general"]);
 
-  // Step translation mappings
-  const stepTranslationMappings = useMemo<
-    Record<OnboardingStep, { title: string; description: string }>
-  >(
-    () => ({
-      [OnboardingStep.wallet]: {
-        title: t("steps.wallet.title"),
-        description: t("steps.wallet.description"),
-      },
-      [OnboardingStep.walletSecurity]: {
-        title: t("steps.wallet-security.title"),
-        description: t("steps.wallet-security.description"),
-      },
-      [OnboardingStep.walletRecoveryCodes]: {
-        title: t("steps.wallet-recovery-codes.title"),
-        description: t("steps.wallet-recovery-codes.description"),
-      },
-      [OnboardingStep.systemDeploy]: {
-        title: t("steps.system-deploy.title"),
-        description: t("steps.system-deploy.description"),
-      },
-      [OnboardingStep.systemSettings]: {
-        title: t("steps.system-settings.title"),
-        description: t("steps.system-settings.description"),
-      },
-      [OnboardingStep.systemAssets]: {
-        title: t("steps.system-assets.title"),
-        description: t("steps.system-assets.description"),
-      },
-      [OnboardingStep.systemAddons]: {
-        title: t("steps.system-addons.title"),
-        description: t("steps.system-addons.description"),
-      },
-      [OnboardingStep.identitySetup]: {
-        title: t("steps.identity-setup.title"),
-        description: t("steps.identity-setup.description"),
-      },
-      [OnboardingStep.identity]: {
-        title: t("steps.identity.title"),
-        description: t("steps.identity.description"),
-      },
-    }),
-    [t]
-  );
-
-  // Group translation mappings
-  const groupTranslationMappings = useMemo<
-    Record<OnboardingStepGroup, { title: string; description: string }>
-  >(
-    () => ({
-      [OnboardingStepGroup.wallet]: {
-        title: t("groups.wallet.title"),
-        description: t("groups.wallet.description"),
-      },
-      [OnboardingStepGroup.system]: {
-        title: t("groups.system.title"),
-        description: t("groups.system.description"),
-      },
-      [OnboardingStepGroup.identity]: {
-        title: t("groups.identity.title"),
-        description: t("groups.identity.description"),
-      },
-    }),
-    [t]
-  );
-
-  // Create steps with translations
-  const stepsWithTranslations = useMemo((): OnboardingStepDefinition[] => {
-    return steps.map(
-      (step): OnboardingStepDefinition => ({
-        ...step,
-        title: stepTranslationMappings[step.step].title,
-        description: stepTranslationMappings[step.step].description,
-      })
-    );
-  }, [steps, stepTranslationMappings]);
-
-  // Find current step index
-  const currentStepIndex = useMemo(() => {
-    const index = stepsWithTranslations.findIndex(
-      (step) => step.step === currentStep
-    );
-    return Math.max(index, 0);
-  }, [stepsWithTranslations, currentStep]);
-
-  // Calculate progress
-  const progress = useMemo(() => {
-    if (stepsWithTranslations.length === 0) {
-      return 0;
-    }
-    const currentProgress =
-      ((currentStepIndex + 1) / stepsWithTranslations.length) * 100;
-    return Math.round(currentProgress);
-  }, [currentStepIndex, stepsWithTranslations.length]);
-
-  // Create groups from steps
-  const groups = useMemo(() => {
-    return steps.reduce<OnboardingGroup[]>((acc, step) => {
-      const existingGroup = acc.find(
-        (group) => group.id === step.groupId.toString()
-      );
-      if (existingGroup) {
-        existingGroup.defaultExpanded = currentStep === step.step;
-      } else {
-        acc.push({
-          id: step.groupId,
-          title: groupTranslationMappings[step.groupId].title,
-          description: groupTranslationMappings[step.groupId].description,
-          collapsible: true,
-          defaultExpanded: currentStep === step.step,
-        });
-      }
-      return acc;
-    }, []);
-  }, [steps, groupTranslationMappings, currentStep]);
-
-  // Group steps by their groupId
-  const groupedStepsByGroupId = useMemo(() => {
-    return stepsWithTranslations.reduce<
-      Record<string, { step: OnboardingStepDefinition; index: number }[]>
-    >((acc, step, index) => {
-      const groupId = step.groupId;
-      acc[groupId] ??= [];
-      acc[groupId].push({ step, index });
-      return acc;
-    }, {});
-  }, [stepsWithTranslations]);
-
-  // Helper function to check if all steps in a group are completed
-  const isGroupCompleted = useCallback(
-    (groupId: string) => {
-      const groupSteps = stepsWithTranslations.filter(
-        (step) => String(step.groupId) === String(groupId)
-      );
-      return groupSteps.every(
-        (step) =>
-          step.completed ||
-          stepsWithTranslations.findIndex((s) => s.step === step.step) <
-            currentStepIndex
-      );
+  const stepsOrGroups = [
+    {
+      id: OnboardingStepGroup.wallet,
+      label: t("groups.wallet.title"),
+      description: t("groups.wallet.description"),
+      steps: [
+        {
+          id: OnboardingStep.wallet,
+          label: t("steps.wallet.title"),
+          description: t("steps.wallet.description"),
+          step: 1,
+        },
+        {
+          id: OnboardingStep.walletSecurity,
+          label: t("steps.wallet-security.title"),
+          description: t("steps.wallet-security.description"),
+          step: 2,
+        },
+        {
+          id: OnboardingStep.walletRecoveryCodes,
+          label: t("steps.wallet-recovery-codes.title"),
+          description: t("steps.wallet-recovery-codes.description"),
+          step: 3,
+        },
+      ],
     },
-    [stepsWithTranslations, currentStepIndex]
-  );
-
-  // Get step status
-  const getStepStatus = useCallback(
-    (
-      step: OnboardingStepDefinition,
-      index: number
-    ): "pending" | "active" | "completed" => {
-      if (step.completed || index < currentStepIndex) {
-        return "completed";
-      }
-      if (index === currentStepIndex) {
-        return "active";
-      }
-      return "pending";
+    {
+      id: OnboardingStepGroup.system,
+      label: t("groups.system.title"),
+      description: t("groups.system.description"),
+      steps: [
+        {
+          id: OnboardingStep.systemDeploy,
+          label: t("steps.system-deploy.title"),
+          description: t("steps.system-deploy.description"),
+          step: 4,
+        },
+        {
+          id: OnboardingStep.systemSettings,
+          label: t("steps.system-settings.title"),
+          description: t("steps.system-settings.description"),
+          step: 5,
+        },
+        {
+          id: OnboardingStep.systemAssets,
+          label: t("steps.system-assets.title"),
+          description: t("steps.system-assets.description"),
+          step: 6,
+        },
+      ],
     },
-    [currentStepIndex]
-  );
-
-  // Check if step is accessible
-  const canNavigateToStep = useCallback(
-    (stepIndex: number) => {
-      if (stepIndex < 0 || stepIndex >= stepsWithTranslations.length) {
-        return false;
-      }
-      if (stepIndex === currentStepIndex) {
-        return true;
-      }
-      // Allow navigation to previous steps or completed steps
-      const targetStep = stepsWithTranslations[stepIndex];
-      if (!targetStep) {
-        return false;
-      }
-      return stepIndex < currentStepIndex || targetStep.completed;
+    {
+      id: OnboardingStepGroup.addons,
+      label: t("groups.addons.title"),
+      description: t("groups.addons.description"),
+      steps: [
+        {
+          id: OnboardingStep.systemAddons,
+          label: t("steps.system-addons.title"),
+          description: t("steps.system-addons.description"),
+          step: 7,
+        },
+      ],
     },
-    [stepsWithTranslations, currentStepIndex]
-  );
+    {
+      id: OnboardingStepGroup.identity,
+      label: t("groups.identity.title"),
+      description: t("groups.identity.description"),
+      steps: [
+        {
+          id: OnboardingStep.identitySetup,
+          label: t("steps.identity-setup.title"),
+          description: t("steps.identity-setup.description"),
+          step: 8,
+        },
+        {
+          id: OnboardingStep.identity,
+          label: t("steps.identity.title"),
+          description: t("steps.identity.description"),
+          step: 9,
+        },
+      ],
+    },
+  ] as const satisfies StepOrGroup<OnboardingStep, OnboardingStepGroup>[];
 
   return {
-    stepsWithTranslations,
-    groups,
-    currentStepIndex,
-    progress,
-    isGroupCompleted,
-    getStepStatus,
-    canNavigateToStep,
-    groupedStepsByGroupId,
+    stepsOrGroups,
   };
 }
