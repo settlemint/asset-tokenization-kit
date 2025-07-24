@@ -16,7 +16,7 @@ describe("basisPoints", () => {
       expect(validator.parse(100)).toBe(100);
       expect(validator.parse(1000)).toBe(1000);
       expect(validator.parse(5000)).toBe(5000);
-      expect(validator.parse(10000)).toBe(10000);
+      expect(validator.parse(10_000)).toBe(10_000);
     });
 
     it("should reject negative values", () => {
@@ -29,10 +29,10 @@ describe("basisPoints", () => {
     });
 
     it("should reject values above 10000", () => {
-      expect(() => validator.parse(10001)).toThrow(
+      expect(() => validator.parse(10_001)).toThrow(
         "Basis points cannot exceed 10000 (100%)"
       );
-      expect(() => validator.parse(20000)).toThrow(
+      expect(() => validator.parse(20_000)).toThrow(
         "Basis points cannot exceed 10000 (100%)"
       );
     });
@@ -59,7 +59,7 @@ describe("basisPoints", () => {
     });
 
     it("should reject NaN and Infinity", () => {
-      expect(() => validator.parse(NaN)).toThrow();
+      expect(() => validator.parse(Number.NaN)).toThrow();
       expect(() => validator.parse(Infinity)).toThrow();
       expect(() => validator.parse(-Infinity)).toThrow();
     });
@@ -70,12 +70,12 @@ describe("basisPoints", () => {
       it("should return true for valid basis points", () => {
         expect(isBasisPoints(0)).toBe(true);
         expect(isBasisPoints(250)).toBe(true);
-        expect(isBasisPoints(10000)).toBe(true);
+        expect(isBasisPoints(10_000)).toBe(true);
       });
 
       it("should return false for invalid values", () => {
         expect(isBasisPoints(-1)).toBe(false);
-        expect(isBasisPoints(10001)).toBe(false);
+        expect(isBasisPoints(10_001)).toBe(false);
         expect(isBasisPoints(100.5)).toBe(false);
         expect(isBasisPoints("100")).toBe(false);
         expect(isBasisPoints(null)).toBe(false);
@@ -86,11 +86,11 @@ describe("basisPoints", () => {
       it("should return valid basis points", () => {
         expect(getBasisPoints(250)).toBe(250);
         expect(getBasisPoints(0)).toBe(0);
-        expect(getBasisPoints(10000)).toBe(10000);
+        expect(getBasisPoints(10_000)).toBe(10_000);
       });
 
       it("should throw for invalid values", () => {
-        expect(() => getBasisPoints(10001)).toThrow();
+        expect(() => getBasisPoints(10_001)).toThrow();
         expect(() => getBasisPoints(-1)).toThrow();
         expect(() => getBasisPoints(100.5)).toThrow();
       });
@@ -103,7 +103,7 @@ describe("basisPoints", () => {
         expect(basisPointsToDecimal(250)).toBe(0.025);
         expect(basisPointsToDecimal(1000)).toBe(0.1);
         expect(basisPointsToDecimal(5000)).toBe(0.5);
-        expect(basisPointsToDecimal(10000)).toBe(1);
+        expect(basisPointsToDecimal(10_000)).toBe(1);
       });
     });
 
@@ -114,7 +114,7 @@ describe("basisPoints", () => {
         expect(basisPointsToPercentage(250)).toBe(2.5);
         expect(basisPointsToPercentage(1000)).toBe(10);
         expect(basisPointsToPercentage(5000)).toBe(50);
-        expect(basisPointsToPercentage(10000)).toBe(100);
+        expect(basisPointsToPercentage(10_000)).toBe(100);
       });
     });
   });
@@ -124,7 +124,7 @@ describe("basisPoints", () => {
 
     it("should handle boundary values", () => {
       expect(validator.parse(0)).toBe(0);
-      expect(validator.parse(10000)).toBe(10000);
+      expect(validator.parse(10_000)).toBe(10_000);
     });
 
     it("should handle safeParse", () => {
@@ -134,7 +134,7 @@ describe("basisPoints", () => {
         expect(validResult.data).toBe(250);
       }
 
-      const invalidResult = validator.safeParse(10001);
+      const invalidResult = validator.safeParse(10_001);
       expect(invalidResult.success).toBe(false);
     });
   });

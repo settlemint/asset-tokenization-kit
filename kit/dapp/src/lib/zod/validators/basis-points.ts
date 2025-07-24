@@ -36,7 +36,7 @@ export const basisPoints = () => {
   return z
     .int("Basis points must be an integer")
     .min(0, "Basis points cannot be negative")
-    .max(10000, "Basis points cannot exceed 10000 (100%)")
+    .max(10_000, "Basis points cannot exceed 10000 (100%)")
     .describe("Basis points value between 0 and 10000 (0% to 100%)");
 };
 
@@ -99,7 +99,7 @@ export function getBasisPoints(value: unknown): BasisPoints {
  * ```
  */
 export function basisPointsToDecimal(bps: BasisPoints): number {
-  return bps / 10000;
+  return bps / 10_000;
 }
 
 /**

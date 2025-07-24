@@ -9,6 +9,7 @@ import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IAT
 import { ISMARTTopicSchemeRegistry } from "../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { ATKTopics } from "../../contracts/system/ATKTopics.sol";
 import { ERC734KeyTypes } from "../../contracts/onchainid/ERC734KeyTypes.sol";
+import { ERC735ClaimSchemes } from "../../contracts/onchainid/ERC735ClaimSchemes.sol";
 
 contract ClaimUtils is Test {
     address internal _platformAdmin;
@@ -140,7 +141,7 @@ contract ClaimUtils is Test {
 
         // 4. Client adds the claim to their identity (needs prank)
         vm.startPrank(clientWalletAddress_);
-        clientIdentity.addClaim(claimTopic, ERC734KeyTypes.ECDSA, issuerIdentityAddr_, signature, data, "");
+        clientIdentity.addClaim(claimTopic, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr_, signature, data, "");
         vm.stopPrank();
     }
 

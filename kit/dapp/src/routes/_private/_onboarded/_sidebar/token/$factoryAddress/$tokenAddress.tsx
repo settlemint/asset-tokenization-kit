@@ -42,12 +42,14 @@ export const Route = createFileRoute(
     const breadcrumb = [assetClassBreadcrumbs["asset-management"]];
 
     const assetClass = getAssetClassFromFactoryTypeId(factory.typeId);
-    breadcrumb.push(assetClassBreadcrumbs[assetClass], {
-      ...createBreadcrumbMetadata(factory.name),
-      href: `/token/${factoryAddress}`,
-    });
-
-    breadcrumb.push(createBreadcrumbMetadata(token.name));
+    breadcrumb.push(
+      assetClassBreadcrumbs[assetClass],
+      {
+        ...createBreadcrumbMetadata(factory.name),
+        href: `/token/${factoryAddress}`,
+      },
+      createBreadcrumbMetadata(token.name)
+    );
 
     return {
       token,

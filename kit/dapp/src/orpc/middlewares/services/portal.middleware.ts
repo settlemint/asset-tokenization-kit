@@ -165,12 +165,12 @@ function createValidatedPortalClient(
       const eventId =
         trackingOptions?.eventId ??
         `${operation
-          .replace(/([A-Z])/g, "-$1")
+          .replaceAll(/([A-Z])/g, "-$1")
           .toLowerCase()
           .replace(
             /^-/,
             ""
-          )}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+          )}-${String(Date.now())}-${Math.random().toString(36).slice(2, 9)}`;
 
       let result: TResult;
       try {

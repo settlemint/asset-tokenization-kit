@@ -1,6 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import { TokenSetYieldScheduleInputSchema } from "@/orpc/routes/token/routes/mutations/yield/token.set-yield-schedule.schema";
-import { TokenTransactionOutputSchema } from "@/orpc/routes/token/routes/mutations/common/token.transaction.schema";
+import { MutationOutputSchema as TokenTransactionOutputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { eventIterator } from "@orpc/server";
 
 export const tokenSetYieldScheduleContract = baseContract

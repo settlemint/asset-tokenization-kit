@@ -15,7 +15,7 @@ import { capitalCase } from "change-case";
  */
 export function formatEventName(eventName: string): string {
   // Remove leading and trailing underscores
-  const trimmed = eventName.replace(/^_+|_+$/g, "");
+  const trimmed = eventName.replaceAll(/^_+|_+$/g, "");
 
   // Convert to capital case (handles camelCase, PascalCase, snake_case, etc.)
   return capitalCase(trimmed);

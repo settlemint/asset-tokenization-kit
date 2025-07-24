@@ -114,7 +114,7 @@ export function formatValue(
 
   // Check if value is empty/null/undefined
   if (value === null || value === undefined || value === "") {
-    return emptyValue !== undefined ? emptyValue : "";
+    return emptyValue === undefined ? "" : emptyValue;
   }
 
   // If no type, return value as is
@@ -124,7 +124,7 @@ export function formatValue(
 
   // Auto-render based on type with intelligent defaults
   switch (type) {
-    case "address": {
+    case "address":
       try {
         const validAddress = getEthereumAddress(value);
         return (
@@ -145,7 +145,6 @@ export function formatValue(
           </span>
         );
       }
-    }
 
     case "badge": {
       // Determine variant based on column type or name
@@ -358,7 +357,6 @@ export function formatValue(
       return <span className="block tabular-nums">{formatted}</span>;
     }
 
-    case "text":
     default:
       return <span>{safeToString(value)}</span>;
   }

@@ -24,7 +24,9 @@ describe("secretCode", () => {
 
     it("should accept codes with special characters", () => {
       expect(validator.parse("!@#$%^&*()")).toBe("!@#$%^&*()");
-      expect(validator.parse("{}[]|\\:;\"'<>,.?/")).toBe("{}[]|\\:;\"'<>,.?/");
+      expect(validator.parse(String.raw`{}[]|\:;"'<>,.?/`)).toBe(
+        String.raw`{}[]|\:;"'<>,.?/`
+      );
       expect(validator.parse("emoji🔑code")).toBe("emoji🔑code");
     });
   });
@@ -50,7 +52,7 @@ describe("secretCode", () => {
     });
 
     it("should reject non-string types", () => {
-      expect(() => validator.parse(12345678)).toThrow();
+      expect(() => validator.parse(12_345_678)).toThrow();
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();

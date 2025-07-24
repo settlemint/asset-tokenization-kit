@@ -6,10 +6,12 @@ import { InterfaceIds } from "../../erc165/utils/interfaceids";
  */
 export class TokenExtension {
   static ACCESS_MANAGED: string = "ACCESS_MANAGED";
+  static BOND: string = "BOND";
   static BURNABLE: string = "BURNABLE";
   static CAPPED: string = "CAPPED";
   static COLLATERAL: string = "COLLATERAL";
   static CUSTODIAN: string = "CUSTODIAN";
+  static FUND: string = "FUND";
   static HISTORICAL_BALANCES: string = "HISTORICAL_BALANCES";
   static PAUSABLE: string = "PAUSABLE";
   static REDEEMABLE: string = "REDEEMABLE";
@@ -45,14 +47,10 @@ export function getTokenExtensions(
       extensions.push(TokenExtension.REDEEMABLE);
     } else if (interfaceId.equals(InterfaceIds.ISMARTYield)) {
       extensions.push(TokenExtension.YIELD);
-    } else if (
-      interfaceId.equals(InterfaceIds.IATKBond) ||
-      interfaceId.equals(InterfaceIds.IATKDeposit) ||
-      interfaceId.equals(InterfaceIds.IATKEquity) ||
-      interfaceId.equals(InterfaceIds.IATKFund) ||
-      interfaceId.equals(InterfaceIds.IATKStableCoin)
-    ) {
-      // Skipping, not an extension
+    } else if (interfaceId.equals(InterfaceIds.IATKBond)) {
+      extensions.push(TokenExtension.BOND);
+    } else if (interfaceId.equals(InterfaceIds.IATKFund)) {
+      extensions.push(TokenExtension.FUND);
     } else {
       log.warning("Unknown token extension interface: {}", [
         interfaceId.toHexString(),

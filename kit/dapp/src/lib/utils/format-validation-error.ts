@@ -84,7 +84,7 @@ export function formatValidationError(error: unknown): string {
     err.path ? `• ${err.path}: ${err.message}` : `• ${err.message}`
   );
 
-  return `Validation failed with ${errorCount} errors:\n${errorMessages.join("\n")}`;
+  return `Validation failed with ${String(errorCount)} errors:\n${errorMessages.join("\n")}`;
 }
 
 /**
