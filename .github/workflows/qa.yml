@@ -226,7 +226,7 @@ jobs:
 
           # Create a minimal Dockerfile for artifacts
           cat > Dockerfile.artifacts <<EOF
-          FROM scratch
+          FROM alpine:3.22.1
           COPY kit/contracts/.generated/portal/*.json /artifacts/contracts/portal/*.json
           COPY kit/contracts/.generated/genesis.json /artifacts/contracts/genesis.json
           EOF
