@@ -1,6 +1,6 @@
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
-import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
-import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
+import { OtpSetupModal } from "@/components/onboarding/wallet-security/otp-setup-modal";
+import { PinSetupModal } from "@/components/onboarding/wallet-security/pin-setup-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, CheckCircle, Star, X } from "lucide-react";
@@ -18,7 +18,7 @@ export function SecurityMethodSelector() {
       <div className="flex">
         <Button
           onClick={() => {
-            setSecurityMethod("pin");
+            setShowPinModal(true);
           }}
           variant="outline"
         >
@@ -28,7 +28,7 @@ export function SecurityMethodSelector() {
       <div className="flex">
         <Button
           onClick={() => {
-            setSecurityMethod("otp");
+            setShowOtpModal(true);
           }}
         >
           {t("wallet-security.method-selector.comparison.choose-otp")}
@@ -150,35 +150,13 @@ export function SecurityMethodSelector() {
                   {t("wallet-security.method-selector.otp.summary")}
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {t("wallet-security.method-selector.pin.summary")}
-              </p>
-            </div>
-
-            <div
-              className="flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 border-input bg-background hover:bg-muted/50"
-              onClick={() => {
-                setShowOtpModal(true);
-              }}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-primary" />
-                  <span className="font-medium text-foreground">
-                    {t("wallet-security.method-selector.otp.title")}
-                  </span>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t("wallet-security.method-selector.otp.summary")}
-              </p>
             </div>
           </div>
         </div>
-      </OnboardingStepLayout>
+      </div>
 
       <PinSetupModal open={showPinModal} onOpenChange={setShowPinModal} />
       <OtpSetupModal open={showOtpModal} onOpenChange={setShowOtpModal} />
-    </>
+    </OnboardingStepLayout>
   );
 }
