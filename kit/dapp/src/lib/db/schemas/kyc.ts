@@ -30,6 +30,8 @@ export const kycProfiles = pgTable(
 
     dob: date("dob", { mode: "date" }).notNull(),
 
+    country: text("country").notNull(),
+
     residencyStatus: residencyStatusEnum("residency_status").notNull(),
 
     nationalIdEncrypted: text("national_id_encrypted").notNull(),
@@ -44,6 +46,7 @@ export const kycProfiles = pgTable(
   },
   (table) => [
     uniqueIndex("kyc_user_id_idx").on(table.userId),
+    index("kyc_country_idx").on(table.country),
     index("kyc_first_name_idx").on(table.firstName),
     index("kyc_last_name_idx").on(table.lastName),
   ]

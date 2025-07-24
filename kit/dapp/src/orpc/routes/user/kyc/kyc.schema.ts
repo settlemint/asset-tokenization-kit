@@ -6,6 +6,11 @@ export const KycProfileSelectSchema = createSelectSchema(kycProfiles);
 export const KycProfileInsertSchema = createInsertSchema(kycProfiles, {
   firstName: (schema) => schema.min(1).max(64).trim(),
   lastName: (schema) => schema.min(1).max(64).trim(),
+  country: (schema) =>
+    schema
+      .length(2)
+      .toUpperCase()
+      .regex(/^[A-Z]{2}$/, "Must be a valid ISO 3166-1 alpha-2 country code"),
   dob: (schema) =>
     schema.max(
       new Date(Date.now() - 18 * 365.25 * 24 * 3600 * 1000),

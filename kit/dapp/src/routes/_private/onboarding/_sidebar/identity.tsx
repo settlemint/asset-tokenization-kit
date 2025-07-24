@@ -32,6 +32,9 @@ function RouteComponent() {
   const navigate = useNavigate();
   const { refreshUserState } = useOnboardingNavigation();
   const { data: session } = authClient.useSession();
+  // Only admins can register identity
+  // TODO: use system access control to check this, not role
+  const canRegisterIdentity = session?.user.role === "admin";
 
   // Verification dialog state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
@@ -74,8 +77,26 @@ function RouteComponent() {
   );
 
   const handleComplete = useCallback(async (values: KycFormValues) => {
-    setShowVerificationModal(true);
     setKycFormValues(values);
+    if (canRegisterIdentity) {
+      setShowVerificationModal(true);
+    } else {
+      if (!kycFormValues) {
+        throw new Error("KYC form values are not set");
+      }
+      toast.promise(
+        updateKyc({
+          ...values,
+          userId: session?.user.id ?? "",
+        }),
+        {
+          loading: t("identity.deploying-toast"),
+          success: t("identity.deployed-toast"),
+          error: (error: Error) =>
+            `${t("identity.failed-toast")}${error.message}`,
+        }
+      );
+    }
   }, []);
 
   const handleVerificationSubmit = useCallback(
@@ -83,18 +104,21 @@ function RouteComponent() {
       setVerificationError(null);
       setShowVerificationModal(false);
 
+      if (!kycFormValues) {
+        throw new Error("KYC form values are not set");
+      }
+
       toast.promise(
-        registerIdentity({
-          country: kycFormValues?.country ?? "",
-          verification,
-        }).then(() => {
-          if (!kycFormValues) {
-            throw new Error("KYC form values are not set");
+        updateKyc({
+          ...kycFormValues,
+          userId: session?.user.id ?? "",
+        }).then(async () => {
+          if (!registerIdentity) {
+            return Promise.resolve();
           }
-          const { country, ...input } = kycFormValues;
-          return updateKyc({
-            ...input,
-            userId: session?.user.id ?? "",
+          await registerIdentity({
+            country: kycFormValues?.country ?? "",
+            verification,
           });
         }),
         {

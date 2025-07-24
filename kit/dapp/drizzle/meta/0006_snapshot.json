@@ -1,5 +1,5 @@
 {
-  "id": "3b69c193-427d-4e49-8434-7a6d149af420",
+  "id": "7c971de7-62fc-431e-9c0e-e7f1285bc166",
   "prevId": "f211de40-1574-4a6f-9c21-0f1eb00ffe40",
   "version": "7",
   "dialect": "postgresql",
@@ -1008,6 +1008,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "country": {
+          "name": "country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "residency_status": {
           "name": "residency_status",
           "type": "residency_status",
@@ -1048,6 +1054,21 @@
             }
           ],
           "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "kyc_country_idx": {
+          "name": "kyc_country_idx",
+          "columns": [
+            {
+              "expression": "country",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
           "concurrently": false,
           "method": "btree",
           "with": {}

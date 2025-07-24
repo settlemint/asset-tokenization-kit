@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/use-app-form";
 import { authClient } from "@/lib/auth/auth.client";
-import { isoCountryCode } from "@/lib/zod/validators/iso-country-code";
 import { orpc } from "@/orpc/orpc-client";
 import {
   KycProfileUpsert,
@@ -11,26 +10,17 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-export type KycFormValues = KycProfileUpsert & {
-  country: string;
-};
+export type KycFormValues = KycProfileUpsert;
 
 interface KycFormProps {
   disabled?: boolean;
   onComplete: (values: KycFormValues) => void;
 }
 
-const kycFormSchema = KycProfileUpsertSchema.extend({
-  country: isoCountryCode,
-});
-
 export function KycForm({ onComplete, disabled }: KycFormProps) {
   const { t } = useTranslation(["components"]);
   const { data: session } = authClient.useSession();
 
-  const { data: account } = useQuery({
-    ...orpc.account.me.queryOptions(),
-  });
   const { data: kyc } = useQuery({
     ...orpc.user.kyc.read.queryOptions({
       input: {
@@ -45,10 +35,9 @@ export function KycForm({ onComplete, disabled }: KycFormProps) {
   const form = useAppForm({
     defaultValues: {
       ...kyc,
-      country: account?.country ?? "",
     } as KycFormValues,
     validators: {
-      onChange: kycFormSchema,
+      onChange: KycProfileUpsertSchema,
     },
     onSubmit: ({ value }) => {
       onComplete(value);
