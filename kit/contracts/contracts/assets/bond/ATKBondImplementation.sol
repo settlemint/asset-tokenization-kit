@@ -558,9 +558,8 @@ contract ATKBondImplementation is
 
     /// @notice Returns the yield basis per unit for a given address
     /// @dev Returns the face value of the bond. The address parameter is unused in this implementation.
-    /// @param holder The address to query yield basis for (unused in this implementation)
     /// @return The face value representing the yield basis per unit
-    function yieldBasisPerUnit(address holder) external view override returns (uint256) {
+    function yieldBasisPerUnit(address /* holder */ ) external view override returns (uint256) {
         return _faceValue;
     }
 
