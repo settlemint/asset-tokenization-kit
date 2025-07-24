@@ -1,6 +1,6 @@
 import {
   assetDesignerFormOptions,
-  isRequiredField,
+  AssetDesignerFormSchema,
 } from "@/components/asset-designer/shared-form";
 import {
   FormStep,
@@ -10,27 +10,24 @@ import {
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 
-const summaryFields: never[] = [];
-
 export const Summary = withForm({
   ...assetDesignerFormOptions,
   props: {
-    onStepSubmit: noop,
+    onSubmit: noop,
   },
-  render: function Render({ form, onStepSubmit }) {
+  render: function Render({ form, onSubmit }) {
+    const parsedValues = AssetDesignerFormSchema.safeParse(form.state.values);
+
     return (
       <FormStep>
         <FormStepContent>
-          <div>{JSON.stringify(form.state.values)}</div>
+          <div>{JSON.stringify(parsedValues)}</div>
+
+          <form.Errors />
         </FormStepContent>
 
         <FormStepSubmit>
-          <form.StepSubmitButton
-            label="Next"
-            onStepSubmit={onStepSubmit}
-            validate={summaryFields}
-            checkRequiredFn={isRequiredField}
-          />
+          <form.SubmitButton label="Submit" onSubmit={onSubmit} />
         </FormStepSubmit>
       </FormStep>
     );

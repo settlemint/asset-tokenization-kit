@@ -20,20 +20,21 @@ import type { JSX } from "react";
 
 export const AssetDesignerForm = () => {
   const steps = useAssetDesignerSteps();
+  const { mutate: createToken } = useStreamingMutation({
+    mutationOptions: orpc.token.create.mutationOptions(),
+    onSuccess: () => {
+      form.reset();
+    },
+  });
   const form = useAppForm({
     ...assetDesignerFormOptions,
     validators: {
       onChange: AssetDesignerFormSchema,
     },
-    onSubmit: (values) => {
-      const { mutate: createToken } = useStreamingMutation({
-        mutationOptions: orpc.token.create.mutationOptions(),
-        onSuccess: async () => {
-          form.reset();
-        },
-      });
+    onSubmit: async (values) => {
+      const parsedValues = AssetDesignerFormSchema.parse(values.value);
       createToken({
-        ...values.value,
+        ...parsedValues,
         initialModulePairs: [],
       });
     },
@@ -54,7 +55,14 @@ export const AssetDesignerForm = () => {
     complianceModules: (
       <ComplianceModules form={form} onStepSubmit={incrementStep} />
     ),
-    summary: <Summary form={form} onStepSubmit={incrementStep} />,
+    summary: (
+      <Summary
+        form={form}
+        onSubmit={async () => {
+          await form.handleSubmit();
+        }}
+      />
+    ),
   };
 
   return (
