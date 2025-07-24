@@ -5,7 +5,6 @@ import {
 import type { AssetDesignerFormInputData } from "@/components/asset-designer/shared-form";
 import { isRequiredField } from "@/components/asset-designer/shared-form";
 import {
-  FormStep,
   FormStepContent,
   FormStepSubmit,
 } from "@/components/form/multi-step/form-step";
@@ -29,7 +28,7 @@ export const BondBasics = withForm({
     const { t } = useTranslation(["asset-designer"]);
 
     return (
-      <FormStep>
+      <>
         <FormStepContent>
           <CommonFields form={form} />
           <form.AppField
@@ -77,7 +76,7 @@ export const BondBasics = withForm({
             checkRequiredFn={isRequiredField}
           />
         </FormStepSubmit>
-      </FormStep>
+      </>
     );
   },
 });

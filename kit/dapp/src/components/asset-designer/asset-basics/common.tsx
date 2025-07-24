@@ -4,7 +4,6 @@ import {
   isRequiredField,
 } from "@/components/asset-designer/shared-form";
 import {
-  FormStep,
   FormStepContent,
   FormStepSubmit,
 } from "@/components/form/multi-step/form-step";
@@ -77,7 +76,7 @@ export const CommonBasics = withForm({
   },
   render: function Render({ form, onStepSubmit }) {
     return (
-      <FormStep>
+      <>
         <FormStepContent>
           <CommonFields form={form} />
         </FormStepContent>
@@ -90,7 +89,7 @@ export const CommonBasics = withForm({
             checkRequiredFn={isRequiredField}
           />
         </FormStepSubmit>
-      </FormStep>
+      </>
     );
   },
 });

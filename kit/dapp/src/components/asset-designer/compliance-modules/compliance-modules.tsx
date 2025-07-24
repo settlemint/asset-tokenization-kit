@@ -6,6 +6,7 @@ import {
   FormStep,
   FormStepContent,
   FormStepDescription,
+  FormStepHeader,
   FormStepSubmit,
   FormStepSubtitle,
   FormStepTitle,
@@ -73,16 +74,23 @@ export const ComplianceModules = withForm({
 
     return (
       <FormStep>
-        <FormStepTitle>{t("compliance.title")}</FormStepTitle>
+        <FormStepHeader>
+          <FormStepTitle>{t("compliance.title")}</FormStepTitle>
+          <FormStepDescription>
+            {t("compliance.description")}
+          </FormStepDescription>
+        </FormStepHeader>
         <FormStepContent>
           {modules.configured.length > 0 && (
             <>
-              <FormStepSubtitle>
-                {t("compliance.configured.title")}
-              </FormStepSubtitle>
-              <FormStepDescription>
-                {t("compliance.configured.description")}
-              </FormStepDescription>
+              <FormStepHeader>
+                <FormStepSubtitle>
+                  {t("compliance.configured.title")}
+                </FormStepSubtitle>
+                <FormStepDescription>
+                  {t("compliance.configured.description")}
+                </FormStepDescription>
+              </FormStepHeader>
               <ComplianceModulesGrid
                 complianceTypeIds={modules.configured}
                 onModuleSelect={(typeId) => {
@@ -91,10 +99,14 @@ export const ComplianceModules = withForm({
               />
             </>
           )}
-          <FormStepSubtitle>{t("compliance.available.title")}</FormStepSubtitle>
-          <FormStepDescription>
-            {t("compliance.available.description")}
-          </FormStepDescription>
+          <FormStepHeader>
+            <FormStepSubtitle>
+              {t("compliance.available.title")}
+            </FormStepSubtitle>
+            <FormStepDescription>
+              {t("compliance.available.description")}
+            </FormStepDescription>
+          </FormStepHeader>
           <ComplianceModulesGrid
             complianceTypeIds={modules.available}
             onModuleSelect={(typeId) => {

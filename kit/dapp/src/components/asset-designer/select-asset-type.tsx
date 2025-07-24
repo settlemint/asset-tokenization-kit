@@ -6,7 +6,10 @@ import {
 import {
   FormStep,
   FormStepContent,
+  FormStepDescription,
+  FormStepHeader,
   FormStepSubmit,
+  FormStepTitle,
 } from "@/components/form/multi-step/form-step";
 import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
@@ -55,6 +58,15 @@ export const SelectAssetType = withForm({
 
     return (
       <FormStep>
+        <FormStepHeader>
+          <FormStepTitle>
+            {t("wizard.steps.selectAssetType.title")}
+          </FormStepTitle>
+          <FormStepDescription>
+            {t("wizard.steps.selectAssetType.description")}
+          </FormStepDescription>
+        </FormStepHeader>
+
         <FormStepContent>
           <form.AppField
             name="type"

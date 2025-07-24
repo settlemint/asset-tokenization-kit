@@ -5,7 +5,6 @@ import {
 import type { AssetDesignerFormInputData } from "@/components/asset-designer/shared-form";
 import { isRequiredField } from "@/components/asset-designer/shared-form";
 import {
-  FormStep,
   FormStepContent,
   FormStepSubmit,
 } from "@/components/form/multi-step/form-step";
@@ -27,7 +26,7 @@ export const FundBasics = withForm({
   render: function Render({ form, onStepSubmit }) {
     const { t } = useTranslation(["asset-designer"]);
     return (
-      <FormStep>
+      <>
         <FormStepContent>
           <CommonFields form={form} />
           <form.AppField
@@ -49,7 +48,7 @@ export const FundBasics = withForm({
             checkRequiredFn={isRequiredField}
           />
         </FormStepSubmit>
-      </FormStep>
+      </>
     );
   },
 });
