@@ -56,6 +56,7 @@ contract ATKLinearVestingStrategy is IATKLinearVestingStrategy {
     /// @notice Calculates the amount claimable based on linear vesting parameters.
     /// @dev Implements linear vesting with optional cliff period. No tokens are claimable before cliff.
     ///      After cliff, tokens vest linearly until the full vesting duration is reached.
+    ///      The first parameter (account) is unused but kept for interface compatibility.
     /// @param totalAmount The total allocation for the specific index being claimed.
     /// @param vestingStartTime The timestamp when vesting started for this allocation.
     /// @param claimedAmount The amount already claimed for this specific index.

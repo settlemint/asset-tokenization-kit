@@ -9,6 +9,7 @@ import { ISMARTFixedYieldSchedule } from "../ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../../ISMARTYield.sol";
 
 /// @title SMART Fixed Yield Schedule Contract
+/// @author SettleMint
 /// @notice This contract implements a fixed yield schedule for an associated SMART token (which must implement
 /// `ISMARTYield`).
 /// It allows token holders to accrue yield at a predetermined fixed `rate` over specified `interval`s between a
@@ -451,6 +452,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     /// @dev This is an immutable value set in the constructor. It defines the beginning of the yield accrual period.
     /// This function fulfills the `startDate()` requirement from the `ISMARTFixedYieldSchedule` interface (which itself
     /// inherits it from `ISMARTYieldSchedule`).
+    /// @return The Unix timestamp when the yield schedule starts.
     function startDate() external view override returns (uint256) {
         return _startDate;
     }
