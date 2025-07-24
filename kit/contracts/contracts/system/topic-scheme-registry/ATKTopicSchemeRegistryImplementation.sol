@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
@@ -12,6 +11,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 // Interface imports
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKTopicSchemeRegistry } from "./IATKTopicSchemeRegistry.sol";
+import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
@@ -24,10 +24,14 @@ contract ATKTopicSchemeRegistryImplementation is
     Initializable,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
     IATKTopicSchemeRegistry
 {
     // --- Storage Variables ---
+
+    /// @notice Reference to the centralized system access manager
+    /// @dev All role checks are delegated to this contract
+    IATKSystemAccessManager private _systemAccessManager;
+
     /// @notice Mapping from topic ID to topic scheme information
     /// @dev Maps topicId => TopicScheme struct containing id, signature, and existence flag
     mapping(uint256 topicId => TopicScheme scheme) private _topicSchemes;
@@ -42,6 +46,12 @@ contract ATKTopicSchemeRegistryImplementation is
     mapping(uint256 topicId => uint256 indexPlusOne) private _topicIdIndex;
 
     // --- Custom Errors ---
+
+    /// @notice Error thrown when attempting to perform actions without required system role
+    /// @param account The account that lacks the required role
+    /// @param neededRole The role that was required
+    error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
+
     /// @notice Error thrown when attempting to register a topic scheme with an empty name
     error EmptyName();
 
@@ -77,6 +87,24 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @notice Error thrown when attempting batch operations with empty arrays
     error EmptyArraysProvided();
 
+    // --- Events ---
+
+    /// @notice Emitted when the system access manager is set
+    /// @param sender The address that set the access manager
+    /// @param systemAccessManager The address of the new system access manager
+    event SystemAccessManagerSet(address indexed sender, address indexed systemAccessManager);
+
+    // --- Modifiers ---
+
+    /// @notice Restricts access to functions that require a specific system role
+    /// @param role The required role identifier
+    modifier onlySystemRole(bytes32 role) {
+        if (!_systemAccessManager.hasRole(role, _msgSender())) {
+            revert AccessControlUnauthorizedAccount(_msgSender(), role);
+        }
+        _;
+    }
+
     // --- Constructor ---
     /// @notice Constructor for the SMARTTopicSchemeRegistryImplementation
     /// @dev Initializes ERC2771Context with trusted forwarder and disables initializers for UUPS pattern
@@ -86,21 +114,31 @@ contract ATKTopicSchemeRegistryImplementation is
         _disableInitializers();
     }
 
-    // --- Initializer ---
+        // --- Initializer ---
     /// @notice Initializes the SMARTTopicSchemeRegistryImplementation contract
-    /// @dev Sets up access control and grants initial roles to the admin
-    /// @param initialAdmin The address that will receive admin and registrar roles
-    /// @param initialRegistrars The addresses that will receive registrar roles
-    function initialize(address initialAdmin, address[] memory initialRegistrars) public initializer {
+    /// @dev Sets up the system access manager reference - roles are managed centrally
+    /// @param systemAccessManager_ The address of the centralized system access manager
+    function initialize(address systemAccessManager_) public initializer {
         __ERC165_init_unchained();
-        __AccessControl_init_unchained();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
+        _systemAccessManager = IATKSystemAccessManager(systemAccessManager_);
+        emit SystemAccessManagerSet(_msgSender(), systemAccessManager_);
+    }
 
-        uint256 initialRegistrarsLength = initialRegistrars.length;
-        for (uint256 i = 0; i < initialRegistrarsLength; ++i) {
-            _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialRegistrars[i]);
-        }
+    // --- Access Control Functions ---
+
+    /// @notice Returns the address of the system access manager
+    /// @return The address of the system access manager contract
+    function systemAccessManager() external view returns (address) {
+        return address(_systemAccessManager);
+    }
+
+    /// @notice Checks if an account has a specific role in the system access manager
+    /// @param role The role identifier to check
+    /// @param account The account to check
+    /// @return True if the account has the role, false otherwise
+    function hasRole(bytes32 role, address account) external view returns (bool) {
+        return _systemAccessManager.hasRole(role, account);
     }
 
     // --- Topic Scheme Management Functions ---
@@ -112,7 +150,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE)
     {
         if (bytes(name).length == 0) revert EmptyName();
         if (bytes(signature).length == 0) revert EmptySignature();
@@ -139,7 +177,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE)
     {
         uint256 namesLength = names.length;
         uint256 signaturesLength = signatures.length;
@@ -203,7 +241,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE)
     {
         if (bytes(name).length == 0) revert EmptyName();
         if (bytes(newSignature).length == 0) revert EmptySignature();
@@ -224,7 +262,7 @@ contract ATKTopicSchemeRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTopicSchemeRegistry
-    function removeTopicScheme(string calldata name) external override onlyRole(ATKSystemRoles.REGISTRAR_ROLE) {
+    function removeTopicScheme(string calldata name) external override onlySystemRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE) {
         if (bytes(name).length == 0) revert EmptyName();
 
         // Generate topicId from name
@@ -320,7 +358,7 @@ contract ATKTopicSchemeRegistryImplementation is
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC165Upgradeable, AccessControlUpgradeable, IERC165)
+        override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
         return interfaceId == type(IATKTopicSchemeRegistry).interfaceId
@@ -332,7 +370,7 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @notice Returns the sender of the transaction, supporting meta-transactions
     /// @dev Overrides to support ERC2771 meta-transactions
     /// @return The address of the transaction sender
-    function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
+    function _msgSender() internal view override(ERC2771ContextUpgradeable) returns (address) {
         return ERC2771ContextUpgradeable._msgSender();
     }
 
@@ -342,7 +380,7 @@ contract ATKTopicSchemeRegistryImplementation is
     function _msgData()
         internal
         view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        override(ERC2771ContextUpgradeable)
         returns (bytes calldata)
     {
         return ERC2771ContextUpgradeable._msgData();
@@ -354,7 +392,7 @@ contract ATKTopicSchemeRegistryImplementation is
     function _contextSuffixLength()
         internal
         view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        override(ERC2771ContextUpgradeable)
         returns (uint256)
     {
         return ERC2771ContextUpgradeable._contextSuffixLength();

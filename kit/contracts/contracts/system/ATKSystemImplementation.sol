@@ -460,12 +460,19 @@ contract ATKSystemImplementation is
             new ATKTypedImplementationProxy(address(this), TRUSTED_ISSUERS_REGISTRY, trustedIssuersRegistryData)
         );
 
-        // Deploy the ATKTopicSchemeRegistryProxy, linking it to this ATKSystem and setting an initial admin.
-        address[] memory initialRegistrars = new address[](2);
-        initialRegistrars[0] = initialAdmin;
-        initialRegistrars[1] = address(this);
+        // Deploy the ATKSystemAccessManagerProxy first, as other contracts need to reference it.
+        address[] memory initialSystemAccessManagerAdmins = new address[](2);
+        initialSystemAccessManagerAdmins[0] = initialAdmin;
+        initialSystemAccessManagerAdmins[1] = address(this); // Grant the system contract admin role so it can grant other roles during bootstrap
+        bytes memory systemAccessManagerData = abi.encodeWithSelector(
+            ATKSystemAccessManagerImplementation.initialize.selector, initialSystemAccessManagerAdmins
+        );
+        address localSystemAccessManagerProxy =
+            address(new ATKTypedImplementationProxy(address(this), SYSTEM_ACCESS_MANAGER, systemAccessManagerData));
+
+        // Deploy the ATKTopicSchemeRegistryProxy, linking it to this ATKSystem and using the system access manager.
         bytes memory topicSchemeRegistryData =
-            abi.encodeWithSelector(IATKTopicSchemeRegistry.initialize.selector, initialAdmin, initialRegistrars);
+            abi.encodeWithSelector(IATKTopicSchemeRegistry.initialize.selector, localSystemAccessManagerProxy);
         address localTopicSchemeRegistryProxy =
             address(new ATKTypedImplementationProxy(address(this), TOPIC_SCHEME_REGISTRY, topicSchemeRegistryData));
 
@@ -494,15 +501,6 @@ contract ATKSystemImplementation is
         address localIdentityFactoryProxy =
             address(new ATKTypedImplementationProxy(address(this), IDENTITY_FACTORY, identityFactoryData));
 
-        // Deploy the ATKSystemAccessManagerProxy, linking it to this ATKSystem and setting an initial admin.
-        address[] memory initialSystemAccessManagerAdmins = new address[](1);
-        initialSystemAccessManagerAdmins[0] = initialAdmin;
-        bytes memory systemAccessManagerData = abi.encodeWithSelector(
-            ATKSystemAccessManagerImplementation.initialize.selector, initialSystemAccessManagerAdmins
-        );
-        address localSystemAccessManagerProxy =
-            address(new ATKTypedImplementationProxy(address(this), SYSTEM_ACCESS_MANAGER, systemAccessManagerData));
-
         // --- Effects (Update state variables for proxy addresses) ---
         // Now that all proxies are created, update the contract's state variables to store their addresses.
         _complianceProxy = localComplianceProxy;
@@ -523,6 +521,14 @@ contract ATKSystemImplementation is
         IATKIdentityRegistryStorage(localIdentityRegistryStorageProxy).bindIdentityRegistry(
             localIdentityRegistryProxy // Using the local variable, or _identityRegistryProxy which is now correctly
                 // set.
+        );
+
+        // Grant necessary roles to the system access manager for topic scheme management
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
+            ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, initialAdmin
+        );
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
+            ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, address(this)
         );
 
         // Register the topic schemes.

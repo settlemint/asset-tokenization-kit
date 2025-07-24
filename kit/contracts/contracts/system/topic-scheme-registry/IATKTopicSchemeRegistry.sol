@@ -11,5 +11,5 @@ import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSche
  *      for managing claim topic schemes within the ATK token ecosystem
  */
 interface IATKTopicSchemeRegistry is ISMARTTopicSchemeRegistry {
-    function initialize(address initialAdmin, address[] memory initialRegistrars) external;
+    function initialize(address systemAccessManager_) external;
 }

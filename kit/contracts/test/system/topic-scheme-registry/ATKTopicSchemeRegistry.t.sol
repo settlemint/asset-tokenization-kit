@@ -9,15 +9,16 @@ import { ATKTopicSchemeRegistryImplementation } from
     "../../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 
 contract ATKTopicSchemeRegistryTest is Test {
     SystemUtils public systemUtils;
     IdentityUtils public identityUtils;
     ISMARTTopicSchemeRegistry public topicSchemeRegistry;
+    IATKSystemAccessManager public systemAccessManager;
 
     address public admin = makeAddr("admin");
-    address public registrar = makeAddr("registrar");
+    address public claimPolicyManager = makeAddr("claimPolicyManager");
     address public user = makeAddr("user");
 
     // Baseline reference from setup
@@ -49,13 +50,16 @@ contract ATKTopicSchemeRegistryTest is Test {
         // Get the topic scheme registry from the system
         topicSchemeRegistry = ISMARTTopicSchemeRegistry(systemUtils.system().topicSchemeRegistry());
 
+        // Get the system access manager from the system
+        systemAccessManager = IATKSystemAccessManager(systemUtils.system().systemAccessManager());
+
         // Capture the initial state after system bootstrap (includes default topic schemes)
         initialTopicSchemeCount = topicSchemeRegistry.getTopicSchemeCount();
         initialTopicIds = topicSchemeRegistry.getAllTopicIds();
 
-        // Grant registrar role to test address
+        // Grant claim policy manager role through the system access manager
         vm.prank(admin);
-        IAccessControl(address(topicSchemeRegistry)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, registrar);
+        systemAccessManager.grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
     }
 
     function test_InitialState() public view {
@@ -73,9 +77,9 @@ contract ATKTopicSchemeRegistryTest is Test {
     function test_RegisterTopicScheme_Success() public {
         uint256 expectedTopicId = topicSchemeRegistry.getTopicId(TOPIC_NAME_1);
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, true);
-        emit TopicSchemeRegistered(registrar, expectedTopicId, TOPIC_NAME_1, SIGNATURE_1);
+        emit TopicSchemeRegistered(claimPolicyManager, expectedTopicId, TOPIC_NAME_1, SIGNATURE_1);
 
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
 
@@ -86,29 +90,29 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertEq(topicSchemeRegistry.getTopicSchemeCount(), initialTopicSchemeCount + 1);
     }
 
-    function test_RegisterTopicScheme_OnlyRegistrar() public {
+    function test_RegisterTopicScheme_OnlyClaimPolicyManager() public {
         vm.prank(user);
         vm.expectRevert();
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
     }
 
     function test_RegisterTopicScheme_EmptyName() public {
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(abi.encodeWithSignature("EmptyName()"));
         topicSchemeRegistry.registerTopicScheme("", SIGNATURE_1);
     }
 
     function test_RegisterTopicScheme_EmptySignature() public {
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(abi.encodeWithSignature("EmptySignature()"));
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, "");
     }
 
     function test_RegisterTopicScheme_AlreadyExists() public {
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(abi.encodeWithSignature("TopicSchemeAlreadyExists(string)", TOPIC_NAME_1));
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_2);
     }
@@ -130,9 +134,9 @@ contract ATKTopicSchemeRegistryTest is Test {
         expectedTopicIds[1] = topicSchemeRegistry.getTopicId(TOPIC_NAME_2);
         expectedTopicIds[2] = topicSchemeRegistry.getTopicId(TOPIC_NAME_3);
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectEmit(true, false, false, false);
-        emit TopicSchemesBatchRegistered(registrar, expectedTopicIds, names, signatures);
+        emit TopicSchemesBatchRegistered(claimPolicyManager, expectedTopicIds, names, signatures);
 
         topicSchemeRegistry.batchRegisterTopicSchemes(names, signatures);
 
@@ -152,7 +156,7 @@ contract ATKTopicSchemeRegistryTest is Test {
         string[] memory emptyNames = new string[](0);
         string[] memory emptySignatures = new string[](0);
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(abi.encodeWithSignature("EmptyArraysProvided()"));
         topicSchemeRegistry.batchRegisterTopicSchemes(emptyNames, emptySignatures);
     }
@@ -165,22 +169,22 @@ contract ATKTopicSchemeRegistryTest is Test {
         string[] memory signatures = new string[](1);
         signatures[0] = SIGNATURE_1;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(abi.encodeWithSignature("ArrayLengthMismatch(uint256,uint256)", 2, 1));
         topicSchemeRegistry.batchRegisterTopicSchemes(names, signatures);
     }
 
     function test_UpdateTopicScheme_Success() public {
         // First register a topic scheme
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
 
         uint256 topicId = topicSchemeRegistry.getTopicId(TOPIC_NAME_1);
 
         // Then update it
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, true);
-        emit TopicSchemeUpdated(registrar, topicId, TOPIC_NAME_1, SIGNATURE_1, UPDATED_SIGNATURE);
+        emit TopicSchemeUpdated(claimPolicyManager, topicId, TOPIC_NAME_1, SIGNATURE_1, UPDATED_SIGNATURE);
 
         topicSchemeRegistry.updateTopicScheme(TOPIC_NAME_1, UPDATED_SIGNATURE);
 
@@ -189,14 +193,14 @@ contract ATKTopicSchemeRegistryTest is Test {
     }
 
     function test_UpdateTopicScheme_DoesNotExist() public {
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(abi.encodeWithSignature("TopicSchemeDoesNotExistByName(string)", TOPIC_NAME_1));
         topicSchemeRegistry.updateTopicScheme(TOPIC_NAME_1, UPDATED_SIGNATURE);
     }
 
     function test_RemoveTopicScheme_Success() public {
         // First register a topic scheme
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
 
         uint256 topicId = topicSchemeRegistry.getTopicId(TOPIC_NAME_1);
@@ -206,9 +210,9 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertTrue(topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_1));
 
         // Then remove it
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, false);
-        emit TopicSchemeRemoved(registrar, topicId, TOPIC_NAME_1);
+        emit TopicSchemeRemoved(claimPolicyManager, topicId, TOPIC_NAME_1);
 
         topicSchemeRegistry.removeTopicScheme(TOPIC_NAME_1);
 
@@ -218,7 +222,7 @@ contract ATKTopicSchemeRegistryTest is Test {
     }
 
     function test_RemoveTopicScheme_DoesNotExist() public {
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(abi.encodeWithSignature("TopicSchemeDoesNotExistByName(string)", TOPIC_NAME_1));
         topicSchemeRegistry.removeTopicScheme(TOPIC_NAME_1);
     }
@@ -234,7 +238,7 @@ contract ATKTopicSchemeRegistryTest is Test {
 
     function test_GetAllTopicIds_MultipleSchemes() public {
         // Register multiple topic schemes
-        vm.startPrank(registrar);
+        vm.startPrank(claimPolicyManager);
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_2, SIGNATURE_2);
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_3, SIGNATURE_3);
@@ -267,19 +271,23 @@ contract ATKTopicSchemeRegistryTest is Test {
     function test_SupportsInterface() public view {
         assertTrue(topicSchemeRegistry.supportsInterface(type(ISMARTTopicSchemeRegistry).interfaceId));
         assertTrue(topicSchemeRegistry.supportsInterface(type(IERC165).interfaceId));
-        assertTrue(topicSchemeRegistry.supportsInterface(type(IAccessControl).interfaceId));
+        // No longer supports IAccessControl directly since it delegates to system access manager
         assertFalse(topicSchemeRegistry.supportsInterface(bytes4(0xffffffff)));
     }
 
-    function test_AccessControl() public view {
-        IAccessControl accessControl = IAccessControl(address(topicSchemeRegistry));
-        assertTrue(accessControl.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
-        assertTrue(accessControl.hasRole(ATKSystemRoles.REGISTRAR_ROLE, registrar));
-        assertFalse(accessControl.hasRole(ATKSystemRoles.REGISTRAR_ROLE, user));
+    function test_SystemAccessManagerIntegration() public view {
+        // Test that the topic scheme registry correctly references the system access manager
+        ATKTopicSchemeRegistryImplementation registry = ATKTopicSchemeRegistryImplementation(address(topicSchemeRegistry));
+        assertEq(registry.systemAccessManager(), address(systemAccessManager));
+
+        // Test hasRole delegation
+        assertTrue(registry.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(registry.hasRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
+        assertFalse(registry.hasRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, user));
     }
 
     function test_ComplexWorkflow() public {
-        vm.startPrank(registrar);
+        vm.startPrank(claimPolicyManager);
 
         // 1. Register multiple topic schemes
         topicSchemeRegistry.registerTopicScheme(TOPIC_NAME_1, SIGNATURE_1);
@@ -324,7 +332,7 @@ contract ATKTopicSchemeRegistryTest is Test {
         uint256 expectedTopicId = topicSchemeRegistry.getTopicId(name);
         uint256 countBefore = topicSchemeRegistry.getTopicSchemeCount();
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         topicSchemeRegistry.registerTopicScheme(name, signature);
 
         assertTrue(topicSchemeRegistry.hasTopicScheme(expectedTopicId));
