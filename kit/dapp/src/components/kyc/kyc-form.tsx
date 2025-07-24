@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/use-app-form";
 import { authClient } from "@/lib/auth/auth.client";
 import { isoCountryCode } from "@/lib/zod/validators/iso-country-code";
@@ -10,26 +11,20 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-type FormValues = KycProfileUpsert & {
+export type KycFormValues = KycProfileUpsert & {
   country: string;
 };
 
 interface KycFormProps {
-  onComplete: () => void;
+  disabled?: boolean;
+  onComplete: (values: KycFormValues) => void;
 }
-
-const KYC_FORM_FIELDS = [
-  "firstName",
-  "lastName",
-  "dob",
-  "residencyStatus",
-] as const;
 
 const kycFormSchema = KycProfileUpsertSchema.extend({
   country: isoCountryCode,
 });
 
-export function KycForm({ onComplete }: KycFormProps) {
+export function KycForm({ onComplete, disabled }: KycFormProps) {
   const { t } = useTranslation(["components"]);
   const { data: session } = authClient.useSession();
 
@@ -51,13 +46,12 @@ export function KycForm({ onComplete }: KycFormProps) {
     defaultValues: {
       ...kyc,
       country: account?.country ?? "",
-    } as FormValues,
+    } as KycFormValues,
     validators: {
       onChange: kycFormSchema,
     },
     onSubmit: ({ value }) => {
-      console.log(value);
-      onComplete();
+      onComplete(value);
     },
   });
 
@@ -84,59 +78,65 @@ export function KycForm({ onComplete }: KycFormProps) {
   );
 
   return (
-    <form.AppForm>
-      <form.AppField
-        name="firstName"
-        children={(field) => (
-          <field.TextField label={t("kycForm.firstName")} required={true} />
-        )}
-      />
-      <form.AppField
-        name="lastName"
-        children={(field) => (
-          <field.TextField label={t("kycForm.lastName")} required={true} />
-        )}
-      />
-      <form.AppField
-        name="dob"
-        children={(field) => (
-          <field.DateTimeField
-            label={t("kycForm.dob")}
-            required={true}
-            hideTime={true}
-          />
-        )}
-      />
-      <form.AppField
-        name="country"
-        children={(field) => (
-          <field.CountrySelectField
-            label={t("kycForm.country")}
-            required={true}
-          />
-        )}
-      />
-      <form.AppField
-        name="residencyStatus"
-        children={(field) => (
-          <field.SelectField
-            label={t("kycForm.residencyStatus")}
-            required={true}
-            options={residencyStatusOptions}
-          />
-        )}
-      />
-      <form.AppField
-        name="nationalId"
-        children={(field) => (
-          <field.TextField label={t("kycForm.nationalId")} required={true} />
-        )}
-      />
-      <form.StepSubmitButton
-        label={t("kycForm.submit")}
-        onStepSubmit={onComplete}
-        validate={KYC_FORM_FIELDS}
-      />
-    </form.AppForm>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        void form.handleSubmit();
+      }}
+      className="space-y-6"
+    >
+      <form.AppForm>
+        <form.AppField
+          name="firstName"
+          children={(field) => (
+            <field.TextField label={t("kycForm.firstName")} required={true} />
+          )}
+        />
+        <form.AppField
+          name="lastName"
+          children={(field) => (
+            <field.TextField label={t("kycForm.lastName")} required={true} />
+          )}
+        />
+        <form.AppField
+          name="dob"
+          children={(field) => (
+            <field.DateTimeField
+              label={t("kycForm.dob")}
+              required={true}
+              hideTime={true}
+            />
+          )}
+        />
+        <form.AppField
+          name="country"
+          children={(field) => (
+            <field.CountrySelectField
+              label={t("kycForm.country")}
+              required={true}
+            />
+          )}
+        />
+        <form.AppField
+          name="residencyStatus"
+          children={(field) => (
+            <field.SelectField
+              label={t("kycForm.residencyStatus")}
+              required={true}
+              options={residencyStatusOptions}
+            />
+          )}
+        />
+        <form.AppField
+          name="nationalId"
+          children={(field) => (
+            <field.TextField label={t("kycForm.nationalId")} />
+          )}
+        />
+        <Button type="submit" disabled={disabled}>
+          {t("kycForm.submit")}
+        </Button>
+      </form.AppForm>
+    </form>
   );
 }

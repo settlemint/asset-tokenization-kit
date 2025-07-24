@@ -6,7 +6,7 @@ import { VerificationDialog } from "@/components/verification-dialog/verificatio
 import { orpc } from "@/orpc/orpc-client";
 import { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -17,12 +17,6 @@ export function IdentityCreate() {
   const { t } = useTranslation(["onboarding", "common"]);
   const { refreshUserState } = useOnboardingNavigation();
   const queryClient = useQueryClient();
-
-  const { data: systemDetails } = useQuery({
-    ...orpc.system.read.queryOptions({
-      input: { id: "default" },
-    }),
-  });
 
   // Verification dialog state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
@@ -55,10 +49,6 @@ export function IdentityCreate() {
   // Handle verification code submission
   const handleVerificationSubmit = useCallback(
     (verification: UserVerification) => {
-      if (!systemDetails?.identityRegistry) {
-        return;
-      }
-
       setVerificationError(null);
       setShowVerificationModal(false);
 
@@ -74,13 +64,13 @@ export function IdentityCreate() {
         }
       );
     },
-    [createIdentity, t, systemDetails?.identityRegistry]
+    [createIdentity, t]
   );
 
   return (
     <OnboardingStepLayout
-      title={t("steps.identity-setup.title")}
-      description={t("steps.identity-setup.description")}
+      title={t("identity-setup.title")}
+      description={t("identity-setup.description")}
       actions={
         <Button
           onClick={() => setShowVerificationModal(true)}

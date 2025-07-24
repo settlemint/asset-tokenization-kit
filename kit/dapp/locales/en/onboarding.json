@@ -280,9 +280,9 @@
     }
   },
   "identity-setup": {
-    "title": "Setup ONCHAINID",
-    "description": "Create your on-chain identity",
-    "info": "Setting up your ONCHAINID creates a secure, decentralized identity that enables you to interact with digital assets while maintaining privacy and compliance.",
+    "title": "Creating your ONCHAINID",
+    "description": "Deploying your identity contract to the blockchain",
+    "info": "We're creating your ONCHAINID using the identity factory. This is a smart contract that will serve as your personal identity anchor on the blockchain.\n\nIt doesn't contain any personal information yet, that comes in the next steps, but it's now uniquely linked to your wallet and fully under your control.\n\nThis may take a few moments depending on network speed. Your wallet will be used to authorize the transaction.",
     "deploying-toast": "Creating ONCHAINID...",
     "deployed-toast": "ONCHAINID created successfully!",
     "failed-toast": "Failed to create ONCHAINID: ",
@@ -291,14 +291,19 @@
       "submitting": "Creating ONCHAINID..."
     },
     "confirm-title": "Confirm Identity Creation",
-    "confirm-description": "Please verify your identity to create your on-chain identity."
+    "confirm-description": "Please verify your identity to create your on-chain identity.",
+    "success-title": "ONCHAINID created successfully",
+    "success-message": "Your on-chain identity has been created. You can now register it and add your verified information or do it later from your dashboard.",
+    "address-title": "This is your ONCHAINID address"
   },
   "identity": {
     "title": "Add Personal Information",
     "description": "Required for identity registration and KYC verification",
     "intro": "To complete your identity and use the platform, we need some basic information. This helps us meet regulatory requirements (KYC/AML) and allows your identity to be registered on the blockchain.\n\nYou can skip this step for now, but registration won’t be possible until your country is provided.\n\nYour data is securely stored and used only for compliance purposes. You’ll be able to update or complete it later from the dashboard.",
-    "success-title": "ONCHAINID created successfully",
-    "success-message": "Your on-chain identity has been created. You can now register it and add your verified information or do it later from your dashboard.",
-    "address-title": "This is your ONCHAINID address"
+    "deploying-toast": "Registering identity...",
+    "deployed-toast": "Identity registered successfully!",
+    "failed-toast": "Failed to register identity: ",
+    "confirm-title": "Confirm Identity Creation",
+    "confirm-description": "Please verify your identity to create your on-chain identity."
   }
 }

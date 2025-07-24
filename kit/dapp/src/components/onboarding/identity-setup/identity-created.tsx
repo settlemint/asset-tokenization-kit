@@ -16,8 +16,8 @@ export function IdentityCreated() {
 
   return (
     <OnboardingStepLayout
-      title={t("onboarding:identity.success-title")}
-      description={t("onboarding:identity.success-message")}
+      title={t("onboarding:identity-setup.success-title")}
+      description={t("onboarding:identity-setup.success-message")}
       actions={
         <Button
           onClick={() =>
@@ -38,7 +38,7 @@ export function IdentityCreated() {
         </div>
         <div className="space-y-4">
           <h3 className="text-base font-medium text-foreground">
-            {t("onboarding:identity.address-title")}
+            {t("onboarding:identity-setup.address-title")}
           </h3>
           <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 space-y-3">
             <div className="flex items-center justify-center gap-2">
