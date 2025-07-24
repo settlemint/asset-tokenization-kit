@@ -55,6 +55,7 @@ import { IATKIdentityRegistryStorage } from "./identity-registry-storage/IATKIde
 import { IATKSystemAddonRegistry } from "./addons/IATKSystemAddonRegistry.sol";
 import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
 import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystemAccessManagerImplementation.sol";
+import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 /// @title ATKSystem Contract
 /// @author SettleMint Tokenization Services
@@ -454,33 +455,35 @@ contract ATKSystemImplementation is
         );
 
         // Deploy the ATKTrustedIssuersRegistryProxy, linking it to this ATKSystem and setting an initial admin.
+        address[] memory initialTrustedIssuersRegistrars = new address[](1);
+        initialTrustedIssuersRegistrars[0] = address(this);
         bytes memory trustedIssuersRegistryData =
-            abi.encodeWithSelector(IATKTrustedIssuersRegistry.initialize.selector, initialAdmin);
+            abi.encodeWithSelector(IATKTrustedIssuersRegistry.initialize.selector, initialAdmin, initialTrustedIssuersRegistrars);
         address localTrustedIssuersRegistryProxy = address(
             new ATKTypedImplementationProxy(address(this), TRUSTED_ISSUERS_REGISTRY, trustedIssuersRegistryData)
         );
 
         // Deploy the ATKTopicSchemeRegistryProxy, linking it to this ATKSystem and setting an initial admin.
-        address[] memory initialRegistrars = new address[](2);
-        initialRegistrars[0] = initialAdmin;
-        initialRegistrars[1] = address(this);
+        address[] memory initialTopicSchemeRegistrars = new address[](2);
+        initialTopicSchemeRegistrars[0] = initialAdmin;
+        initialTopicSchemeRegistrars[1] = address(this);
         bytes memory topicSchemeRegistryData =
-            abi.encodeWithSelector(IATKTopicSchemeRegistry.initialize.selector, initialAdmin, initialRegistrars);
+            abi.encodeWithSelector(IATKTopicSchemeRegistry.initialize.selector, initialAdmin, initialTopicSchemeRegistrars);
         address localTopicSchemeRegistryProxy =
             address(new ATKTypedImplementationProxy(address(this), TOPIC_SCHEME_REGISTRY, topicSchemeRegistryData));
 
         // Deploy the SMARTIdentityRegistryProxy. Its constructor requires the addresses of other newly created proxies
         // (storage and trusted issuers) and an initial admin.
         // Passing these as local variables is safe as they don't rely on this contract's state being prematurely read.
-        address[] memory initialRegistrarAdmins = new address[](3);
-        initialRegistrarAdmins[0] = initialAdmin;
-        initialRegistrarAdmins[1] = localTokenFactoryRegistryProxy;
-        initialRegistrarAdmins[2] = localAddonRegistryProxy;
+        address[] memory initialIdentityRegistryRegistrars = new address[](3);
+        initialIdentityRegistryRegistrars[0] = initialAdmin;
+        initialIdentityRegistryRegistrars[1] = localTokenFactoryRegistryProxy;
+        initialIdentityRegistryRegistrars[2] = localAddonRegistryProxy;
 
         bytes memory identityRegistryData = abi.encodeWithSelector(
             IATKIdentityRegistry.initialize.selector,
             initialAdmin,
-            initialRegistrarAdmins,
+            initialIdentityRegistryRegistrars,
             localIdentityRegistryStorageProxy,
             localTrustedIssuersRegistryProxy,
             localTopicSchemeRegistryProxy
@@ -528,6 +531,13 @@ contract ATKSystemImplementation is
         // Register the topic schemes.
         IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).batchRegisterTopicSchemes(
             ATKTopics.names(), ATKTopics.signatures()
+        );
+
+        // Register the trusted issuers.
+        uint256[] memory identityFactoryClaimTopics = new uint256[](1);
+        identityFactoryClaimTopics[0] = IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_CONTRACT_IDENTITY);
+        IATKTrustedIssuersRegistry(localTrustedIssuersRegistryProxy).addTrustedIssuer(
+            IClaimIssuer(_identityFactoryProxy), identityFactoryClaimTopics
         );
 
         // Register the identity verification module

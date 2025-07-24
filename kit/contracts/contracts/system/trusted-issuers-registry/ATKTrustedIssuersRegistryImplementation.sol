@@ -197,12 +197,17 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// The `initializer` modifier from `Initializable` ensures this function can only be executed once.
     /// @param initialAdmin The address that will receive the initial `DEFAULT_ADMIN_ROLE` and `REGISTRAR_ROLE`.
     /// This address will have full control over the registry's setup and initial population of trusted issuers.
-    function initialize(address initialAdmin) public initializer {
+    /// @param initialRegistrars The addresses that will receive the initial `REGISTRAR_ROLE`.
+    /// These addresses will have the ability to add and remove trusted issuers.
+    function initialize(address initialAdmin, address[] memory initialRegistrars) public initializer {
         __ERC165_init_unchained();
         __AccessControl_init_unchained();
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin); // Manually grant DEFAULT_ADMIN_ROLE
-        _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
+
+        for (uint256 i = 0; i < initialRegistrars.length; i++) {
+            _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialRegistrars[i]);
+        }
     }
 
     // --- Issuer Management Functions (REGISTRAR_ROLE required) ---

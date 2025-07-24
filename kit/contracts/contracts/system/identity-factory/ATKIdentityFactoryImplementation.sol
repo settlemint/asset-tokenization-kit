@@ -249,6 +249,7 @@ contract ATKIdentityFactoryImplementation is
         _contractIdentities[_contract] = identity;
         emit ContractIdentityCreated(_msgSender(), identity, _contract);
 
+
         return identity;
     }
 
