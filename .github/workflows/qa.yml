@@ -95,7 +95,7 @@ jobs:
       - name: Setup dependencies
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == true) ||
           github.event_name == 'pull_request_review'
         uses: ./.github/actions/setup-dependencies
         with:
