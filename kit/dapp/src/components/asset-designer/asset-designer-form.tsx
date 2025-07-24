@@ -9,6 +9,7 @@ import {
   useAssetDesignerSteps,
   type AssetDesignerStepsType,
 } from "@/components/asset-designer/steps";
+import { Summary } from "@/components/asset-designer/summary/summary";
 import { StepLayout } from "@/components/stepper/step-layout";
 import { getNextStep, getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -22,6 +23,7 @@ export const AssetDesignerForm = () => {
     validators: {
       onChange: AssetDesignerFormSchema,
     },
+    onSubmit: (values) => {},
   });
 
   const stepId = useStore(form.store, (state) => state.values.step);
@@ -39,7 +41,7 @@ export const AssetDesignerForm = () => {
     complianceModules: (
       <ComplianceModules form={form} onStepSubmit={incrementStep} />
     ),
-    summary: <div>Summary</div>,
+    summary: <Summary form={form} onStepSubmit={incrementStep} />,
   };
 
   return (
