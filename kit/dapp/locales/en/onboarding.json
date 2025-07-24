@@ -282,7 +282,8 @@
   "identity-setup": {
     "title": "Creating your ONCHAINID",
     "description": "Deploying your identity contract to the blockchain",
-    "info": "We're creating your ONCHAINID using the identity factory. This is a smart contract that will serve as your personal identity anchor on the blockchain.\n\nIt doesn't contain any personal information yet, that comes in the next steps, but it's now uniquely linked to your wallet and fully under your control.\n\nThis may take a few moments depending on network speed. Your wallet will be used to authorize the transaction.",
+    "info": "We're creating your ONCHAINID using the identity factory.",
+    "info-description": "This is a smart contract that will serve as your personal identity anchor on the blockchain.\n\nIt doesn't contain any personal information yet, that comes in the next steps, but it's now uniquely linked to your wallet and fully under your control.\n\nThis may take a few moments depending on network speed. Your wallet will be used to authorize the transaction.",
     "deploying-toast": "Creating ONCHAINID...",
     "deployed-toast": "ONCHAINID created successfully!",
     "failed-toast": "Failed to create ONCHAINID: ",

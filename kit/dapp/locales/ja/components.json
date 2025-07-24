@@ -1,0 +1,26 @@
+{
+  "verificationDialog": {
+    "authenticatorCode": "認証コード",
+    "pinCode": "PINコード",
+    "confirm": "確認",
+    "usePinInstead": "代わりにPINコードを使用",
+    "useAuthenticatorInstead": "代わりに認証アプリを使用",
+    "codeLengthError": "コードは6桁でなければなりません",
+    "cancel": "キャンセル"
+  },
+  "kycForm": {
+    "firstName": "名",
+    "lastName": "姓",
+    "dob": "生年月日",
+    "country": "居住国",
+    "residencyStatus": "居住ステータス",
+    "residencyStatusOptions": {
+      "resident": "単独居住者 - 上記の国にのみ居住し、法的/税務上の居住者です",
+      "dual_resident": "二重居住者 - 複数の国に法的/税務上の居住者です",
+      "non_resident": "非居住者 - 上記の国に居住していないか、居住者と見なされていません",
+      "unknown": "言いたくない"
+    },
+    "nationalId": "国民ID",
+    "submit": "保存して続行"
+  }
+}

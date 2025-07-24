@@ -73,7 +73,9 @@ export function IdentityCreate() {
       description={t("identity-setup.description")}
       actions={
         <Button
-          onClick={() => { setShowVerificationModal(true); }}
+          onClick={() => {
+            setShowVerificationModal(true);
+          }}
           disabled={isIdentityCreating}
         >
           {isIdentityCreating
@@ -82,7 +84,10 @@ export function IdentityCreate() {
         </Button>
       }
     >
-      <InfoAlert title={t("identity-setup.info")} />
+      <InfoAlert
+        title={t("identity-setup.info")}
+        description={t("identity-setup.info-description")}
+      />
 
       <VerificationDialog
         open={showVerificationModal}
