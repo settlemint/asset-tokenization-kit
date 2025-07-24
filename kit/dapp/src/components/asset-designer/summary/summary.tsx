@@ -21,7 +21,11 @@ export const Summary = withForm({
     return (
       <FormStep>
         <FormStepContent>
-          <div>{JSON.stringify(parsedValues)}</div>
+          <div>
+            {JSON.stringify(parsedValues, (_, value) =>
+              typeof value === "bigint" ? value.toString() : value
+            )}
+          </div>
 
           <form.Errors />
         </FormStepContent>

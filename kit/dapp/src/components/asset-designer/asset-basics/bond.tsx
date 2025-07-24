@@ -50,6 +50,24 @@ export const BondBasics = withForm({
               />
             )}
           />
+          <form.AppField
+            name="maturityDate"
+            children={(field) => (
+              <field.DateTimeField
+                label={t("form.fields.maturityDate.label")}
+                required={isRequiredField("maturityDate")}
+              />
+            )}
+          />
+          <form.AppField
+            name="underlyingAsset"
+            children={(field) => (
+              <field.TextField
+                label={t("form.fields.underlyingAsset.label")}
+                required={isRequiredField("underlyingAsset")}
+              />
+            )}
+          />
         </FormStepContent>
         <FormStepSubmit>
           <form.StepSubmitButton
