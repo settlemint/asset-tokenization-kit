@@ -13,6 +13,8 @@ import { Summary } from "@/components/asset-designer/summary/summary";
 import { StepLayout } from "@/components/stepper/step-layout";
 import { getNextStep, getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
+import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { orpc } from "@/orpc/orpc-client";
 import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
 
@@ -23,7 +25,17 @@ export const AssetDesignerForm = () => {
     validators: {
       onChange: AssetDesignerFormSchema,
     },
-    onSubmit: (values) => {},
+    onSubmit: (values) => {
+      const { mutate: createToken } = useStreamingMutation({
+        mutationOptions: orpc.token.create.mutationOptions(),
+        onSuccess: async () => {
+          form.reset();
+        },
+      });
+      createToken({
+        ...values.value,
+      });
+    },
   });
 
   const stepId = useStore(form.store, (state) => state.values.step);
