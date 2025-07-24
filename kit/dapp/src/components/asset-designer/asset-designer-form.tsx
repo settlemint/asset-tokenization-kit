@@ -31,7 +31,7 @@ export const AssetDesignerForm = () => {
     validators: {
       onChange: AssetDesignerFormSchema,
     },
-    onSubmit: async (values) => {
+    onSubmit: (values) => {
       const parsedValues = AssetDesignerFormSchema.parse(values.value);
       createToken({
         ...parsedValues,

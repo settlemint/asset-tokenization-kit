@@ -1,8 +1,6 @@
-// TODO: initialModulePairs can also be undefined, but the linting is saying it's always a non nullish value
-
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
-
 import { withForm } from "@/hooks/use-app-form";
+import { noop } from "@/lib/utils/noop";
 import {
   ComplianceTypeIdEnum,
   type ComplianceModulePair,
@@ -17,7 +15,9 @@ export const ComplianceModuleDetail = withForm({
   ...assetDesignerFormOptions,
   props: {
     activeTypeId: null as ComplianceTypeId | null,
-    setActiveTypeId: (_typeId: ComplianceTypeId | null) => {},
+    setActiveTypeId: (_typeId: ComplianceTypeId | null) => {
+      noop();
+    },
   },
   render: function Render({ form, activeTypeId, setActiveTypeId }) {
     const { t } = useTranslation("asset-designer");
