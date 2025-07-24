@@ -59,8 +59,8 @@ export const identityRegister = onboardedRouter.system.identityRegister
       { context }
     );
 
-    if (!systemDetails?.identityRegistry || !systemDetails?.identityFactory) {
-      const cause = new Error("Identity factory or registry not found");
+    if (!systemDetails?.identityRegistry) {
+      const cause = new Error("Identity registry not found");
       throw errors.INTERNAL_SERVER_ERROR({
         message: cause.message,
         cause,

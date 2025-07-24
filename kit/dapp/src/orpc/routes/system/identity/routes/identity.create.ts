@@ -7,7 +7,7 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import { read as readSystem } from "@/orpc/routes/system/routes/system.read";
-import { call } from "@orpc/server";
+import { call, ORPCError } from "@orpc/server";
 
 const IDENTITY_CREATE_MUTATION = portalGraphql(`
   mutation IdentityCreate(
@@ -45,7 +45,12 @@ export const identityCreate = onboardedRouter.system.identityCreate
         wallet: auth.user.wallet,
       },
       { context }
-    );
+    ).catch((error: unknown) => {
+      if (error instanceof ORPCError && error.status === 404) {
+        return null;
+      }
+      throw error;
+    });
 
     const systemDetails = await call(
       readSystem,
@@ -55,15 +60,15 @@ export const identityCreate = onboardedRouter.system.identityCreate
       { context }
     );
 
-    if (!systemDetails?.identityRegistry || !systemDetails?.identityFactory) {
-      const cause = new Error("Identity factory or registry not found");
+    if (!systemDetails?.identityFactory) {
+      const cause = new Error("Identity factory not found");
       throw errors.INTERNAL_SERVER_ERROR({
         message: cause.message,
         cause,
       });
     }
 
-    if (account.identity) {
+    if (account?.identity) {
       throw errors.CONFLICT({
         message: "Identity already exists",
       });
