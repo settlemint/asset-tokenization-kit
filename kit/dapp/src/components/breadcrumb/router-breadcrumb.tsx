@@ -18,6 +18,13 @@ interface BreadcrumbSegment {
   isCurrentPage?: boolean;
 }
 
+// Type for loader data that may contain breadcrumb info
+interface LoaderDataWithBreadcrumb {
+  breadcrumb?: BreadcrumbMetadata | BreadcrumbMetadata[];
+  factory?: { name: string };
+  token?: { name: string };
+}
+
 /**
  * Hook to handle async breadcrumb titles
  */
@@ -31,7 +38,7 @@ function useAsyncBreadcrumbTitle(
 
   // Create a stable key for the breadcrumb to track changes
   const breadcrumbKey = breadcrumbMeta
-    ? `${breadcrumbMeta.title}-${breadcrumbMeta.isI18nKey}-${breadcrumbMeta.i18nNamespace}`
+    ? `${breadcrumbMeta.title}-${String(breadcrumbMeta.isI18nKey ?? false)}-${breadcrumbMeta.i18nNamespace ?? ""}`
     : null;
 
   useEffect(() => {
@@ -70,8 +77,7 @@ function useAsyncBreadcrumbTitle(
     if (breadcrumbMeta.isI18nKey) {
       // Use the translation with dynamic key and namespace
       // The key might not exist in TypeScript's types, but i18next handles this gracefully
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return t(breadcrumbMeta.title as any, { ns: namespace });
+      return t(breadcrumbMeta.title, { ns: namespace });
     }
     return breadcrumbMeta.title;
   }
@@ -187,8 +193,9 @@ export function RouterBreadcrumb({
     for (let i = matches.length - 1; i >= 0; i--) {
       const match = matches[i];
       if (!match) continue;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const loaderData = match.loaderData as any;
+      const loaderData = match.loaderData as
+        | LoaderDataWithBreadcrumb
+        | undefined;
       if (loaderData?.breadcrumb && Array.isArray(loaderData.breadcrumb)) {
         breadcrumbsFromLoader = loaderData.breadcrumb;
         break;
@@ -224,11 +231,16 @@ export function RouterBreadcrumb({
           return false;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const loaderData = match.loaderData as any;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const context = match.context as any;
-        const breadcrumbMeta = loaderData?.breadcrumb ?? context?.breadcrumb;
+        const loaderData = match.loaderData as
+          | LoaderDataWithBreadcrumb
+          | undefined;
+        const context = match.context as
+          | { breadcrumb?: BreadcrumbMetadata }
+          | undefined;
+        const breadcrumbMeta =
+          (loaderData?.breadcrumb && !Array.isArray(loaderData.breadcrumb)
+            ? loaderData.breadcrumb
+            : undefined) ?? context?.breadcrumb;
 
         // Skip if marked as hidden
         if (breadcrumbMeta?.hidden) {
@@ -240,14 +252,18 @@ export function RouterBreadcrumb({
 
       visibleMatches.forEach((match, index) => {
         const isLast = index === visibleMatches.length - 1;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const loaderData = match.loaderData as any;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const context = match.context as any;
+        const loaderData = match.loaderData as
+          | LoaderDataWithBreadcrumb
+          | undefined;
+        const context = match.context as
+          | { breadcrumb?: BreadcrumbMetadata }
+          | undefined;
 
         // Extract breadcrumb metadata from various sources
         const breadcrumbMeta: BreadcrumbMetadata | undefined =
-          loaderData?.breadcrumb ?? context?.breadcrumb;
+          (loaderData?.breadcrumb && !Array.isArray(loaderData.breadcrumb)
+            ? loaderData.breadcrumb
+            : undefined) ?? context?.breadcrumb;
 
         // Determine fallback title
         let fallbackTitle = "";
