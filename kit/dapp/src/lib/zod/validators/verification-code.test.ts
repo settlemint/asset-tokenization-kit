@@ -78,7 +78,7 @@ describe("verificationCode", () => {
     });
 
     it("should reject non-string types", () => {
-      expect(() => validator.parse(12345678)).toThrow();
+      expect(() => validator.parse(12_345_678)).toThrow();
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();

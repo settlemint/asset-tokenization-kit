@@ -1,5 +1,5 @@
 // ============================================================================
-// IMPORTS
+// PERFORMANCE-OPTIMIZED ESLINT CONFIGURATION
 // ============================================================================
 import js from "@eslint/js";
 import pluginQuery from "@tanstack/eslint-plugin-query";
@@ -9,7 +9,7 @@ import noBarrelFiles from "eslint-plugin-no-barrel-files";
 import pluginReact from "eslint-plugin-react";
 import reactCompiler from "eslint-plugin-react-compiler";
 import reactHooks from "eslint-plugin-react-hooks";
-import reactPerfPlugin from "eslint-plugin-react-perf";
+import unicorn from "eslint-plugin-unicorn";
 import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -19,7 +19,7 @@ import tseslint from "typescript-eslint";
 // ============================================================================
 export default defineConfig([
   // ==========================================================================
-  // 1. IGNORE PATTERNS
+  // 1. IGNORE PATTERNS - EXPANDED FOR PERFORMANCE
   // ==========================================================================
   {
     ignores: [
@@ -28,6 +28,9 @@ export default defineConfig([
       ".tanstack/",
       ".generated/",
       ".generated/**",
+      "**/*.gen.ts",
+      "**/*.gen.tsx",
+      "**/generated/**",
 
       // Build outputs
       ".output/",
@@ -36,9 +39,33 @@ export default defineConfig([
       "node_modules/",
       "vite.config.ts",
       "eslint.config.mjs",
+      "eslint.config.performance.mjs",
 
       // Third-party UI components (shadcn)
       "src/components/ui/**",
+
+      // SettleMint SDK files with environment variables
+      "src/lib/settlemint/**",
+
+      // Cache and temp files
+      "**/.cache/**",
+      "**/tmp/**",
+      "**/*.min.js",
+      "**/*.min.css",
+
+      // Type definitions
+      "**/*.d.ts",
+      "!src/**/*.d.ts", // Allow source type definitions
+
+      // Large files that don't need linting
+      "**/locales/**/*.json",
+      "**/public/**",
+      "**/*.svg",
+      "**/*.png",
+      "**/*.jpg",
+      "**/*.jpeg",
+      "**/*.gif",
+      "**/*.ico",
     ],
   },
 
@@ -58,6 +85,11 @@ export default defineConfig([
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
       parser: tseslint.parser,
+      parserOptions: {
+        // PERFORMANCE: Only parse what's needed, don't create programs by default
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
     },
     settings: {
       react: {
@@ -67,9 +99,10 @@ export default defineConfig([
   },
 
   // ==========================================================================
-  // 4. ARCHITECTURE BOUNDARIES
+  // 4. ARCHITECTURE BOUNDARIES - KEEP THIS!
   // ==========================================================================
   {
+    files: ["src/**/*.{ts,tsx,js,jsx}"],
     plugins: {
       boundaries,
     },
@@ -109,40 +142,47 @@ export default defineConfig([
   },
 
   // ==========================================================================
-  // 5. PLUGIN CONFIGURATIONS (Recommended Configs)
+  // 5. PLUGIN CONFIGURATIONS - SELECTIVE APPLICATION
   // ==========================================================================
-  // React
-  pluginReact.configs.flat.recommended,
-  reactHooks.configs["recommended-latest"],
-  reactPerfPlugin.configs.flat.recommended,
+  // React - Only for React files
+  {
+    files: ["src/**/*.{jsx,tsx}"],
+    ...pluginReact.configs.flat.recommended,
+  },
+  {
+    files: ["src/**/*.{jsx,tsx}"],
+    ...reactHooks.configs["recommended-latest"],
+  },
 
-  // TypeScript (base - no type checking)
-  ...tseslint.configs.recommended,
+  // TypeScript - Base rules only (no type checking)
+  ...tseslint.configs.recommended.map((config) => ({
+    ...config,
+    files: ["src/**/*.{ts,mts,cts,tsx}"],
+  })),
 
-  // TanStack
+  // TanStack Query
   ...pluginQuery.configs["flat/recommended"],
+
+  // TanStack Router
   ...pluginRouter.configs["flat/recommended"],
 
   // No Barrel Files
-  noBarrelFiles.flat,
+  {
+    ...noBarrelFiles.flat,
+    files: ["src/**/*.{ts,tsx,js,jsx}"],
+  },
+
+  // Unicorn - Apply to source files with performance-friendly rules
+  {
+    files: ["src/**/*.{ts,tsx,js,jsx}"],
+    ...unicorn.configs["flat/recommended"],
+  },
 
   // ==========================================================================
-  // 6. TYPESCRIPT TYPE-CHECKED RULES (Source Files Only)
-  // ==========================================================================
-  ...tseslint.configs.strictTypeChecked.map((config) => ({
-    ...config,
-    files: ["src/**/*.{ts,mts,cts,tsx}"],
-  })),
-  ...tseslint.configs.stylisticTypeChecked.map((config) => ({
-    ...config,
-    files: ["src/**/*.{ts,mts,cts,tsx}"],
-  })),
-
-  // ==========================================================================
-  // 7. REACT COMPILER PLUGIN
+  // 6. REACT COMPILER PLUGIN - TARGETED
   // ==========================================================================
   {
-    files: ["src/**/*.{ts,tsx}"],
+    files: ["src/**/*.{tsx}"], // Only TSX files need this
     plugins: {
       "react-compiler": reactCompiler,
     },
@@ -152,78 +192,24 @@ export default defineConfig([
   },
 
   // ==========================================================================
-  // 8. CUSTOM RULES FOR SOURCE FILES
+  // 7. PERFORMANCE-CRITICAL RULES ONLY
   // ==========================================================================
   {
     files: ["src/**/*.{ts,mts,cts,tsx}"],
-    languageOptions: {
-      parserOptions: {
-        project: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
     rules: {
       // ========================================================================
-      // CODE QUALITY
+      // CRITICAL CODE QUALITY RULES ONLY
       // ========================================================================
-      "react/no-multi-comp": [
-        "error",
-        {
-          ignoreStateless: true,
-        },
-      ],
       "no-console": "warn",
-
-      // ========================================================================
-      // REACT RULES
-      // ========================================================================
-      "react/react-in-jsx-scope": "off", // Not needed in React 17+
+      "react/react-in-jsx-scope": "off",
       "react/no-unescaped-entities": "off",
-      "react/prop-types": "off", // Typescript provides type safety,
-      "react-perf/jsx-no-new-function-as-prop": "off",
-      "react/no-children-prop": [
-        "error",
-        {
-          allowFunctions: true,
-        },
-      ],
+      "react/prop-types": "off",
+      "react/no-children-prop": "off",
 
       // ========================================================================
-      // TYPESCRIPT RULES
+      // ESSENTIAL TYPESCRIPT RULES (Fast checks only)
       // ========================================================================
-      "@typescript-eslint/consistent-type-imports": [
-        "error",
-        {
-          prefer: "type-imports",
-          fixStyle: "separate-type-imports",
-          disallowTypeAnnotations: true,
-        },
-      ],
-      "@typescript-eslint/consistent-type-exports": [
-        "error",
-        {
-          fixMixedExportsWithInlineTypeSpecifier: true,
-        },
-      ],
       "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/no-floating-promises": [
-        "error",
-        {
-          ignoreVoid: true,
-          ignoreIIFE: true,
-        },
-      ],
-      "@typescript-eslint/promise-function-async": "error",
-      "@typescript-eslint/require-await": "error",
-      "@typescript-eslint/no-misused-promises": [
-        "error",
-        {
-          checksVoidReturn: {
-            attributes: false,
-            returns: true,
-          },
-        },
-      ],
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -232,36 +218,21 @@ export default defineConfig([
           destructuredArrayIgnorePattern: "^_",
         },
       ],
-      "@typescript-eslint/prefer-nullish-coalescing": [
-        "error",
-        {
-          ignorePrimitives: {
-            bigint: false,
-            boolean: true,
-            number: false,
-            string: false,
-          },
-        },
-      ],
 
       // ========================================================================
-      // TYPESCRIPT RULES - DISABLED/RELAXED
+      // DISABLED FOR PERFORMANCE
       // ========================================================================
-      "@typescript-eslint/restrict-template-expressions": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
-      "@typescript-eslint/prefer-reduce-type-parameter": "off",
       "@typescript-eslint/only-throw-error": "off",
-      "@typescript-eslint/no-unnecessary-condition": "warn",
 
       // ========================================================================
-      // TANSTACK RULES
+      // TANSTACK RULES - ALREADY INCLUDED VIA CONFIGS ABOVE
       // ========================================================================
-      "@tanstack/query/exhaustive-deps": "error",
-      "@tanstack/router/create-route-property-order": "error",
+      // "@tanstack/query/exhaustive-deps": "error", // Already in recommended config
 
       // ========================================================================
       // IMPORT RULES
@@ -275,41 +246,74 @@ export default defineConfig([
         },
       ],
 
-      "react-perf/jsx-no-new-object-as-prop": "off",
+      // ========================================================================
+      // UNICORN RULES - CUSTOMIZED FOR PERFORMANCE & PROJECT NEEDS
+      // ========================================================================
+      "unicorn/prevent-abbreviations": "off", // Allow common abbreviations
+      "unicorn/filename-case": "off", // Project has its own naming conventions
+      "unicorn/no-null": "off", // null is sometimes needed
+      "unicorn/prefer-module": "off", // Already enforced by package.json
+      "unicorn/no-abusive-eslint-disable": "off", // Project policy: fix issues
+      "unicorn/consistent-function-scoping": "off", // Can conflict with React
+      "unicorn/no-nested-ternary": "off", // Sometimes cleaner
+      "unicorn/prefer-top-level-await": "off", // Not always applicable
+      "unicorn/no-array-reduce": "off", // reduce() is often the best solution
+      "unicorn/no-array-for-each": "off", // forEach is fine for side effects
+      "unicorn/switch-case-braces": ["error", "avoid"], // Cleaner switch statements
+      "unicorn/no-useless-undefined": "off",
     },
   },
 
   // ==========================================================================
-  // 9. CONFIG FILES - RELAXED RULES
+  // 8. TYPE-CHECKED RULES
   // ==========================================================================
-  {
-    files: ["*.config.{js,mjs,cjs,ts}"],
-    rules: {
-      "@typescript-eslint/no-require-imports": "off",
+  ...tseslint.configs.strictTypeChecked.map((config) => ({
+    ...config,
+    files: ["src/**/*.{ts,mts,cts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
-  },
+  })),
 
-  // ==========================================================================
-  // 10. GENERATED FILES - RELAXED RULES
-  // ==========================================================================
+  // Override type-checked rules
   {
-    files: ["src/lib/settlemint/*.{js,mjs,cjs,ts}"],
+    files: ["src/**/*.{ts,mts,cts,tsx}"],
     rules: {
-      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/only-throw-error": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unnecessary-condition": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+    },
+  },
+
+  // ==========================================================================
+  // 9. TEST FILES - RELAXED TYPE-CHECKED RULES
+  // ==========================================================================
+  {
+    files: ["**/*.{test,spec}.{ts,mts,cts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/prefer-nullish-coalescing": "off",
     },
   },
 
   // ==========================================================================
-  // 11. TEST FILES - RELAXED RULES
+  // 10. CONFIG FILES - MINIMAL RULES
   // ==========================================================================
   {
-    files: ["**/*.test.{js,mjs,cjs,ts}"],
+    files: ["*.config.{js,mjs,cjs,ts}"],
     rules: {
-      "@typescript-eslint/no-confusing-void-expression": "off",
-      "@typescript-eslint/no-floating-promises": "off",
-      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
 ]);

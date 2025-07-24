@@ -8,12 +8,12 @@ describe("price", () => {
     it("should accept valid positive numbers", () => {
       const price1 = validator.parse(100.5);
       const price2 = validator.parse(0.01);
-      const price3 = validator.parse(999999.99);
+      const price3 = validator.parse(999_999.99);
       const price4 = validator.parse(1);
 
       expect(price1).toBe(100.5);
       expect(price2).toBe(0.01);
-      expect(price3).toBe(999999.99);
+      expect(price3).toBe(999_999.99);
       expect(price4).toBe(1);
     });
 
@@ -46,13 +46,13 @@ describe("price", () => {
     });
 
     it("should reject prices with more than 4 decimal places", () => {
-      expect(() => validator.parse(1.12345)).toThrow(
+      expect(() => validator.parse(1.123_45)).toThrow(
         "Price cannot have more than 4 decimal places"
       );
-      expect(() => validator.parse(0.00001)).toThrow(
+      expect(() => validator.parse(0.000_01)).toThrow(
         "Price cannot have more than 4 decimal places"
       );
-      expect(() => validator.parse(99.99999)).toThrow(
+      expect(() => validator.parse(99.999_99)).toThrow(
         "Price cannot have more than 4 decimal places"
       );
     });
@@ -60,7 +60,7 @@ describe("price", () => {
     it("should reject non-finite numbers", () => {
       expect(() => validator.parse(Infinity)).toThrow();
       expect(() => validator.parse(-Infinity)).toThrow();
-      expect(() => validator.parse(NaN)).toThrow();
+      expect(() => validator.parse(Number.NaN)).toThrow();
     });
 
     it("should reject non-numeric string types", () => {

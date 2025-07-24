@@ -1,0 +1,13 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "package": {
+      "cache": false,
+      "dependsOn": ["//#version", "^artifacts"]
+    },
+    "publish": {
+      "cache": false,
+      "dependsOn": ["package"]
+    }
+  }
+}

@@ -114,24 +114,23 @@ function AssetDesignerWizardComponent({
     if (availableAssetTypes.length === 0) return [];
 
     // Group asset types by their asset class
-    const groupedByClass = availableAssetTypes.reduce(
-      (acc, assetType) => {
-        try {
-          const factoryTypeId = getFactoryTypeIdFromAssetType(assetType);
-          const assetClass = getAssetClassFromFactoryTypeId(factoryTypeId);
+    const groupedByClass = availableAssetTypes.reduce<
+      Partial<Record<AssetClass, AssetType[]>>
+    >((acc, assetType) => {
+      try {
+        const factoryTypeId = getFactoryTypeIdFromAssetType(assetType);
+        const assetClass = getAssetClassFromFactoryTypeId(factoryTypeId);
 
-          if (!acc[assetClass]) {
-            acc[assetClass] = [assetType];
-          } else {
-            acc[assetClass].push(assetType);
-          }
-        } catch (error) {
-          logger.warn("Could not classify asset type", { assetType, error });
+        if (acc[assetClass]) {
+          acc[assetClass].push(assetType);
+        } else {
+          acc[assetClass] = [assetType];
         }
-        return acc;
-      },
-      {} as Partial<Record<AssetClass, AssetType[]>>
-    ) as Record<AssetClass, AssetType[]>;
+      } catch (error) {
+        logger.warn("Could not classify asset type", { assetType, error });
+      }
+      return acc;
+    }, {}) as Record<AssetClass, AssetType[]>;
 
     // Convert to array of groups with proper translation keys
     return Object.entries(groupedByClass).map(([assetClass, assetTypes]) => ({

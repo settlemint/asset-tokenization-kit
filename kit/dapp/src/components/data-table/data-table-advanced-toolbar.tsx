@@ -71,11 +71,13 @@ export function DataTableAdvancedToolbar<TData>({
   const { t } = useTranslation("data-table");
   const isMobile = useIsMobile();
   const [searchValue, setSearchValue] = useState(
-    table.getState().globalFilter ?? ""
+    String(table.getState().globalFilter ?? "")
   );
 
   const hasFilters = table.getState().columnFilters.length > 0;
-  const hasGlobalFilter = table.getState().globalFilter?.length > 0;
+  const hasGlobalFilter = Boolean(
+    (table.getState().globalFilter as string | undefined)?.length
+  );
 
   const handleSearchChange = useCallback(
     (value: string) => {

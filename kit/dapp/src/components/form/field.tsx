@@ -35,7 +35,14 @@ export function FieldErrors({ isTouched, errors }: AnyFieldMeta) {
   if (!isTouched) return null;
   if (errors.length === 0) return null;
   return (
-    <FormMessage>{errors.map((err) => err.message).join(", ")}</FormMessage>
+    <FormMessage>
+      {errors
+        .map((err) => {
+          const error = err as { message?: string };
+          return error.message ?? String(err);
+        })
+        .join(", ")}
+    </FormMessage>
   );
 }
 

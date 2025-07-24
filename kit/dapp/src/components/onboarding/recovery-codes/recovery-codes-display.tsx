@@ -46,7 +46,7 @@ export function RecoveryCodesDisplay({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {recoveryCodes.map((code, index) => (
           <RecoveryCodeItem
-            key={`${code}-${index}`}
+            key={`${code}-${String(index)}`}
             code={code}
             index={index}
           />

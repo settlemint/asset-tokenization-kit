@@ -110,24 +110,22 @@ export function PropertyFilterMultiOptionValueMenu<
     );
   }
 
-  const optionsCount: Record<ColumnOption["value"], number> = columnVals.reduce(
-    (acc, curr) => {
-      const value = columnMeta.options
-        ? columnMeta.options.find((opt) => opt.value === curr)?.value
-        : columnMeta.transformOptionFn
-          ? columnMeta.transformOptionFn(
-              curr as ElementType<NonNullable<TValue>>
-            ).value
-          : (curr as string);
+  const optionsCount: Record<ColumnOption["value"], number> = columnVals.reduce<
+    Record<string, number>
+  >((acc, curr) => {
+    const value = columnMeta.options
+      ? columnMeta.options.find((opt) => opt.value === curr)?.value
+      : columnMeta.transformOptionFn
+        ? columnMeta.transformOptionFn(curr as ElementType<NonNullable<TValue>>)
+            .value
+        : (curr as string);
 
-      if (value) {
-        acc[value] = (acc[value] ?? 0) + 1;
-      }
+    if (value) {
+      acc[value] = (acc[value] ?? 0) + 1;
+    }
 
-      return acc;
-    },
-    {} as Record<string, number>
-  );
+    return acc;
+  }, {});
 
   /**
    * Handles the selection/deselection of an option.

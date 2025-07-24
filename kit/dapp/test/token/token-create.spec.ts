@@ -39,7 +39,6 @@ describe("Token create", () => {
 
       let isDeployed = false;
       for await (const event of result) {
-        console.log("Create token event", event);
         if (event.status !== "confirmed") {
           continue;
         }
@@ -58,9 +57,7 @@ describe("Token create", () => {
       expect(tokens.length).toBeGreaterThan(0);
       expect(tokens.find((t) => t.name === tokenData.name)).toEqual({
         id: expect.any(String),
-        name: tokenData.name,
-        symbol: tokenData.symbol,
-        decimals: tokenData.decimals,
+        ...tokenData,
         pausable: {
           paused: true,
         },

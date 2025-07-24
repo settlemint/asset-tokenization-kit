@@ -110,7 +110,7 @@ function createAssetActivity(
   const totalTokens = tokenStats.length;
 
   // Distribute events proportionally across asset types
-  return Array.from(assetTypeCounts.entries())
+  return [...assetTypeCounts.entries()]
     .filter(([, count]) => count > 0) // Only include asset types with tokens
     .map(([assetType, tokenCount]) => {
       // Calculate event share based on token count proportion

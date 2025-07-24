@@ -43,15 +43,16 @@ export const apiBigInt = z.preprocess((value, ctx) => {
   }
 
   // Handle string preprocessing
-  if (typeof value === "string") {
-    // Reject multiple decimal points
-    if (value.includes(".") && value.split(".").length > 2) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Invalid BigInt format: multiple decimal points",
-      });
-      return z.NEVER;
-    }
+  if (
+    typeof value === "string" && // Reject multiple decimal points
+    value.includes(".") &&
+    value.split(".").length > 2
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Invalid BigInt format: multiple decimal points",
+    });
+    return z.NEVER;
   }
 
   // dnum accepts string, number, bigint, or [bigint, number] (Dnum type)
@@ -156,5 +157,5 @@ export const bigIntSerializer: StandardRPCCustomJsonSerializer = {
   type: 32,
   condition: (data) => typeof data === "bigint",
   serialize: (data: bigint) => data.toString(),
-  deserialize: (data: string) => BigInt(data),
+  deserialize: BigInt,
 };
