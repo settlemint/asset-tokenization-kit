@@ -33,7 +33,7 @@ function useAsyncBreadcrumbTitle(
   fallbackTitle: string
 ): string {
   const namespace = breadcrumbMeta?.i18nNamespace ?? "navigation";
-  const { t } = useTranslation([namespace]);
+  const { i18n } = useTranslation([namespace]);
   const [asyncTitle, setAsyncTitle] = useState<string | null>(null);
 
   // Create a stable key for the breadcrumb to track changes
@@ -75,10 +75,12 @@ function useAsyncBreadcrumbTitle(
   if (breadcrumbMeta?.title) {
     // Handle i18n keys
     if (breadcrumbMeta.isI18nKey) {
-      // Use the translation with dynamic key and namespace
-      // The key might not exist in TypeScript's types, but i18next handles this gracefully
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return t(breadcrumbMeta.title as any, { ns: namespace });
+      // Use the i18n instance directly for dynamic keys to avoid TypeScript issues
+      // i18next handles unknown keys gracefully by returning the key itself
+      // We need to bypass TypeScript's strict typing for dynamic translation keys
+      const key = `${namespace}:${breadcrumbMeta.title}`;
+      const translatedTitle = (i18n.t as (key: string) => string)(key);
+      return translatedTitle;
     }
     return breadcrumbMeta.title;
   }
