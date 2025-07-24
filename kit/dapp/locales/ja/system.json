@@ -29,5 +29,19 @@
       "allFailed": "アドオンの登録に失敗しました",
       "partialSuccess": "{{total}}のアドオンのうち{{successful}}が正常に登録されました"
     }
+  },
+  "identityCreate": {
+    "messages": {
+      "preparing": "アイデンティティの作成を準備中",
+      "success": "アイデンティティが正常に作成されました",
+      "failed": "アイデンティティの作成に失敗しました"
+    }
+  },
+  "identityRegister": {
+    "messages": {
+      "preparing": "アイデンティティの登録を準備中",
+      "success": "アイデンティティが正常に登録されました",
+      "failed": "アイデンティティの登録に失敗しました"
+    }
   }
 }

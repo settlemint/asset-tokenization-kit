@@ -29,5 +29,19 @@
       "allFailed": "Registrierung von Addons fehlgeschlagen",
       "partialSuccess": "{{successful}} von {{total}} Addons erfolgreich registriert"
     }
+  },
+  "identityCreate": {
+    "messages": {
+      "preparing": "Vorbereitung zur Erstellung der Identität",
+      "success": "Identität erfolgreich erstellt",
+      "failed": "Erstellung der Identität fehlgeschlagen"
+    }
+  },
+  "identityRegister": {
+    "messages": {
+      "preparing": "Vorbereitung zur Registrierung der Identität",
+      "success": "Identität erfolgreich registriert",
+      "failed": "Registrierung der Identität fehlgeschlagen"
+    }
   }
 }

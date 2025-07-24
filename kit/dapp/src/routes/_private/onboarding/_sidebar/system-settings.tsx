@@ -6,13 +6,13 @@ import {
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
+import { useAppForm } from "@/hooks/use-app-form";
 import {
   fiatCurrencyMetadata,
   type FiatCurrency,
 } from "@/lib/zod/validators/fiat-currency";
 import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -30,6 +30,13 @@ export const Route = createFileRoute(
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemSettings),
   component: RouteComponent,
 });
+
+const BASE_CURRENCY_OPTIONS = Object.entries(fiatCurrencyMetadata).map(
+  ([code, metadata]) => ({
+    label: `${metadata.name} (${code})`,
+    value: code,
+  })
+);
 
 function RouteComponent() {
   const { t } = useTranslation(["onboarding", "common"]);
@@ -78,7 +85,7 @@ function RouteComponent() {
       })
     );
 
-  const form = useForm({
+  const form = useAppForm({
     defaultValues: {
       baseCurrency: currentBaseCurrency ?? ("USD" as FiatCurrency),
     },
@@ -134,7 +141,7 @@ function RouteComponent() {
             <p className="text-sm">{t("system-settings.description.update")}</p>
           </div>
 
-          <form.Field
+          <form.AppField
             name="baseCurrency"
             validators={{
               onChange: ({ value }) => {
@@ -150,37 +157,13 @@ function RouteComponent() {
             }}
           >
             {(field) => (
-              <div className="space-y-2">
-                <label htmlFor="baseCurrency" className="text-sm font-medium">
-                  {t("system-settings.form.baseCurrency.label")}
-                </label>
-                <p className="text-sm text-muted-foreground">
-                  {t("system-settings.form.baseCurrency.description")}
-                </p>
-                <select
-                  id="baseCurrency"
-                  value={field.state.value}
-                  onChange={(e) => {
-                    field.handleChange(e.target.value as FiatCurrency);
-                  }}
-                  className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                >
-                  {Object.entries(fiatCurrencyMetadata).map(
-                    ([code, metadata]) => (
-                      <option key={code} value={code}>
-                        {metadata.name} ({code})
-                      </option>
-                    )
-                  )}
-                </select>
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive mt-2">
-                    {field.state.meta.errors[0]}
-                  </p>
-                )}
-              </div>
+              <field.SelectField
+                label={t("system-settings.form.baseCurrency.label")}
+                description={t("system-settings.form.baseCurrency.description")}
+                options={BASE_CURRENCY_OPTIONS}
+              />
             )}
-          </form.Field>
+          </form.AppField>
         </div>
       </div>
     </OnboardingStepLayout>
