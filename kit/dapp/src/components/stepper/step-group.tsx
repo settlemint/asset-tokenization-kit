@@ -25,9 +25,7 @@ export function StepGroupComponent<StepId, GroupId>({
   onStepSelect,
 }: StepGroupProps<StepId, GroupId>) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const hasActiveStep = group.steps.some(
-    (step) => step.step === currentStep.step
-  );
+  const hasActiveStep = group.steps.some((step) => step.id === currentStep.id);
   const groupCompleted = isGroupCompleted(group, currentStep);
 
   useEffect(() => {
@@ -43,7 +41,7 @@ export function StepGroupComponent<StepId, GroupId>({
   }, [groupCompleted]);
 
   return (
-    <div>
+    <div className="StepGroup">
       <button
         type="button"
         onClick={() => {
@@ -67,7 +65,7 @@ export function StepGroupComponent<StepId, GroupId>({
               {group.label}
             </h3>
             {groupCompleted && (
-              <Check className="w-4 h-4 text-sm-state-success" />
+              <Check className="w-4 h-4 text-sm-state-success-background" />
             )}
           </div>
           <ChevronDown

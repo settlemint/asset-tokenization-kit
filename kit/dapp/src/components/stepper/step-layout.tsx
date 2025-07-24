@@ -9,7 +9,6 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { Outlet } from "@tanstack/react-router";
 import { useMemo } from "react";
 import type { Step, StepOrGroup } from "./types";
 import {
@@ -25,10 +24,12 @@ export interface StepLayoutProps<StepId, GroupId> {
   currentStep: Step<StepId>;
   onStepSelect: (step: Step<StepId>) => void;
 
-  children: (props: {
-    currentStep: Step<StepId>;
-    nextStep: Step<StepId>;
-  }) => React.ReactNode;
+  children:
+    | React.ReactNode
+    | ((props: {
+        currentStep: Step<StepId>;
+        nextStep: Step<StepId>;
+      }) => React.ReactNode);
   navigationMode?: NavigationMode;
   className?: string;
   title: string;
@@ -77,19 +78,12 @@ export function StepLayout<StepId, GroupId>({
             );
           })}
         </div>
-
-        <div className="flex-1 min-w-0">
-          {children({
-            currentStep,
-            nextStep: getNextStep(allSteps, currentStep),
-          })}
-        </div>
       </div>
     );
   };
 
   return (
-    <div className="OnboardingSidebar flex flex-col h-full rounded-xl shadow-lg overflow-y-hidden">
+    <div className="StepLayout flex flex-col h-full rounded-xl shadow-lg overflow-y-hidden">
       <SidebarProvider>
         <Sidebar className="w-[360px] flex-shrink-0 transition-all duration-300 group-data-[side=left]:border-0">
           <div
@@ -137,7 +131,7 @@ export function StepLayout<StepId, GroupId>({
 
         {/* Main content area */}
         <div
-          className="OnboardingSidebar__main flex-1 flex flex-col transition-all duration-300 relative"
+          className="StepLayout__main flex-1 flex flex-col transition-all duration-300 relative"
           style={{ backgroundColor: "var(--sm-background-lightest)" }}
         >
           <div className="flex-1 p-8">
@@ -145,7 +139,12 @@ export function StepLayout<StepId, GroupId>({
               className="w-full overflow-y-auto"
               style={{ maxHeight: "calc(100% - 80px)" }}
             >
-              <Outlet />
+              {typeof children === "function"
+                ? children({
+                    currentStep,
+                    nextStep: getNextStep(allSteps, currentStep),
+                  })
+                : children}
             </div>
           </div>
         </div>

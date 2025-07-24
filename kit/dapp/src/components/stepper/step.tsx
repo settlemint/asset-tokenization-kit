@@ -25,7 +25,7 @@ export function StepComponent<StepId, GroupId>({
   onStepSelect,
   group,
 }: StepItemProps<StepId, GroupId>) {
-  const isCurrent = step.step === currentStep.step;
+  const isCurrent = step.id === currentStep.id;
   const isCompleted = isStepCompleted({ step, currentStep });
   const isAccessible =
     isCurrent || (isCompleted && navigation === "next-and-completed");
@@ -34,7 +34,7 @@ export function StepComponent<StepId, GroupId>({
     : isLastStep(allSteps, step);
 
   return (
-    <div key={step.step} className="flex items-stretch mb-0">
+    <div className="Step flex items-stretch mb-0 mt-2">
       {/* Dot column with line */}
       <div className="relative flex flex-col items-center w-12 pt-0">
         {/* The step dot */}
