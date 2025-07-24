@@ -6,10 +6,23 @@ type TokenInput = Parameters<OrpcClient["token"]["create"]>[0];
 
 export async function createToken(orpClient: OrpcClient, input: TokenInput) {
   const name = `${input.name} ${randomUUID()}`;
-  await orpClient.token.create({
+  const result = await orpClient.token.create({
     ...input,
     name,
   });
+  let isDeployed = false;
+  for await (const event of result) {
+    if (event.status !== "confirmed") {
+      continue;
+    }
+    if (event.result && event.tokenType) {
+      // First deploy
+      isDeployed = true;
+    }
+  }
+  if (!isDeployed) {
+    throw new Error("Token not deployed");
+  }
   return retryWhenFailed(
     async () => {
       const tokens = await orpClient.token.list({});
@@ -18,7 +31,7 @@ export async function createToken(orpClient: OrpcClient, input: TokenInput) {
           t.name === name && t.symbol === input.symbol && t.type === input.type
       );
       if (!token) {
-        throw new Error("Token not deployed");
+        throw new Error("Token not found");
       }
       return token;
     },

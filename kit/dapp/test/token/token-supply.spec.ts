@@ -85,7 +85,7 @@ describe("Token supply", () => {
     });
     await client.token.burn({
       contract: depositToken.id,
-      addresses: [admin.id],
+      addresses: [admin.wallet],
       amounts: ["1"],
       verification: {
         verificationCode: DEFAULT_PINCODE,
