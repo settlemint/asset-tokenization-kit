@@ -1,5 +1,3 @@
-// TODO: initialModulePairs can also be undefined, but the linting is saying it's always a non nullish value
-
 import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
 import { ComplianceModulesGrid } from "@/components/compliance/compliance-modules-grid";
 import {
@@ -119,7 +117,6 @@ export const ComplianceModules = withForm({
             label={t("form.buttons.next")}
             onStepSubmit={onStepSubmit}
             validate={empty}
-            checkRequiredFn={() => false}
           />
         </FormStepSubmit>
       </FormStep>

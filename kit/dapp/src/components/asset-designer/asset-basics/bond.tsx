@@ -70,7 +70,7 @@ export const BondBasics = withForm({
         </FormStepContent>
         <FormStepSubmit>
           <form.StepSubmitButton
-            label="Next"
+            label={t("form.buttons.next")}
             onStepSubmit={onStepSubmit}
             validate={bondFields}
             checkRequiredFn={isRequiredField}

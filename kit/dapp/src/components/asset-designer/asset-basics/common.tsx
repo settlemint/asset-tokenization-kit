@@ -75,6 +75,7 @@ export const CommonBasics = withForm({
     onStepSubmit: noop,
   },
   render: function Render({ form, onStepSubmit }) {
+    const { t } = useTranslation(["asset-designer"]);
     return (
       <>
         <FormStepContent>
@@ -83,7 +84,7 @@ export const CommonBasics = withForm({
 
         <FormStepSubmit>
           <form.StepSubmitButton
-            label="Next"
+            label={t("form.buttons.next")}
             onStepSubmit={onStepSubmit}
             validate={commonFields}
             checkRequiredFn={isRequiredField}
