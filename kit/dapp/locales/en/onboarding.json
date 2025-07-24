@@ -103,6 +103,7 @@
         "summary": "Maximum security"
       },
       "choose-one": "You can choose one. As OTP is more secure, it is the recommended option.",
+      "recommended": "Recommended",
       "comparison": {
         "feature": "Feature",
         "security-level": "Security level",

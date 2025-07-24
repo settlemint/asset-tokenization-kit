@@ -1,8 +1,9 @@
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
 import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, CheckCircle, X } from "lucide-react";
+import { AlertTriangle, CheckCircle, Star, X } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -51,7 +52,13 @@ export function SecurityMethodSelector() {
                 {t("wallet-security.method-selector.pin.title")}
               </div>
               <div className="col-span-3 p-4 font-medium text-foreground text-center">
-                {t("wallet-security.method-selector.otp.title")}
+                <div className="flex flex-col items-center gap-2">
+                  {t("wallet-security.method-selector.otp.title")}
+                  <Badge variant="default" className="flex items-center gap-1">
+                    <Star className="w-3 h-3" />
+                    {t("wallet-security.method-selector.recommended")}
+                  </Badge>
+                </div>
               </div>
             </div>
           </div>
