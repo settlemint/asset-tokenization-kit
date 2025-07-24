@@ -29,7 +29,7 @@ library ATKTopics {
     /// @notice Get all topic names for registry registration
     /// @return _names Array of topic names for batchRegisterTopicSchemes
     function names() internal pure returns (string[] memory _names) {
-        _names = new string[](6);
+        _names = new string[](7);
         _names[0] = TOPIC_KYC;
         _names[1] = TOPIC_AML;
         _names[2] = TOPIC_COLLATERAL;
@@ -42,7 +42,7 @@ library ATKTopics {
     /// @notice Get all topic signatures for registry registration
     /// @return _signatures Array of topic signatures for batchRegisterTopicSchemes
     function signatures() internal pure returns (string[] memory _signatures) {
-        _signatures = new string[](6);
+        _signatures = new string[](7);
         _signatures[0] = "string claim"; // kyc
         _signatures[1] = "string claim"; // aml
         _signatures[2] = "uint256 amount, uint256 expiryTimestamp"; // collateral

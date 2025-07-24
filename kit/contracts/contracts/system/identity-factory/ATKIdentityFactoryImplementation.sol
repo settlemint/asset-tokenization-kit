@@ -19,6 +19,9 @@ import { IContractWithIdentity } from "./IContractWithIdentity.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { ERC734KeyPurposes } from "../../onchainid/ERC734KeyPurposes.sol";
 import { ERC734KeyTypes } from "../../onchainid/ERC734KeyTypes.sol";
+import { ERC735ClaimSchemes } from "../../onchainid/ERC735ClaimSchemes.sol";
+import { IATKTopicSchemeRegistry } from "../topic-scheme-registry/IATKTopicSchemeRegistry.sol";
+import { ATKTopics } from "../ATKTopics.sol";
 
 // System imports
 import { InvalidSystemAddress } from "../ATKSystemErrors.sol"; // Assuming this is correctly placed
@@ -45,7 +48,8 @@ contract ATKIdentityFactoryImplementation is
     Initializable,
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
-    IATKIdentityFactory
+    IATKIdentityFactory,
+    IContractWithIdentity
 {
     // --- Constants ---
     /// @notice Prefix used in salt calculation for creating contract identities to ensure unique salt generation.
@@ -74,6 +78,10 @@ contract ATKIdentityFactoryImplementation is
     /// @notice Mapping from a contract's address to the address of its deployed identity proxy contract.
     /// @dev This allows for quick lookup of an existing identity for a given contract.
     mapping(address contractAddress => address identityProxy) private _contractIdentities;
+
+    /// @notice The address of the identity factory's own OnChain ID.
+    /// @dev This is set after bootstrap when the factory creates its own identity.
+    address private _onchainID;
 
     // --- Errors ---
     /// @notice Indicates that an operation was attempted with the zero address (address(0))
@@ -249,6 +257,10 @@ contract ATKIdentityFactoryImplementation is
         _contractIdentities[_contract] = identity;
         emit ContractIdentityCreated(_msgSender(), identity, _contract);
 
+        // Issue a CONTRACT_IDENTITY claim if the factory has its own identity
+        if (_onchainID != address(0)) {
+            _issueContractIdentityClaim(identity, _contract);
+        }
 
         return identity;
     }
@@ -536,6 +548,33 @@ contract ATKIdentityFactoryImplementation is
         return deployedAddress;
     }
 
+    /// @notice Issues a CONTRACT_IDENTITY claim to a newly created contract identity.
+    /// @dev This function is called after creating a contract identity to attest that it's a contract identity.
+    ///      The claim is issued by the identity factory through its own OnChain ID.
+    /// @param contractIdentity The address of the newly created contract identity.
+    /// @param contractAddress The address of the contract that owns this identity.
+    function _issueContractIdentityClaim(address contractIdentity, address contractAddress) private {
+        // Get the topic ID for CONTRACT_IDENTITY claims
+        IATKSystem system = IATKSystem(_system);
+        IATKTopicSchemeRegistry topicRegistry = IATKTopicSchemeRegistry(system.topicSchemeRegistry());
+        uint256 topicId = topicRegistry.getTopicId(ATKTopics.TOPIC_CONTRACT_IDENTITY);
+
+        // Encode the claim data according to the topic signature: "address contractAddress"
+        bytes memory claimData = abi.encode(contractAddress);
+
+        // Issue the claim through the factory's own identity
+        IATKContractIdentity factoryIdentity = IATKContractIdentity(_onchainID);
+        IIdentity targetIdentity = IIdentity(contractIdentity);
+
+        // The factory's identity issues the claim to the contract's identity
+        factoryIdentity.issueClaimTo(
+            targetIdentity,
+            topicId,
+            claimData,
+            "" // No URI needed for this claim
+        );
+    }
+
     // --- Context Overrides (ERC2771) ---
     /// @dev Overrides `_msgSender()` to support meta-transactions via ERC2771. If the call is relayed
     ///      by a trusted forwarder, this will return the original sender, not the forwarder.
@@ -572,6 +611,47 @@ contract ATKIdentityFactoryImplementation is
         override(ERC165Upgradeable, IERC165)
         returns (bool)
     {
-        return interfaceId == type(IATKIdentityFactory).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IATKIdentityFactory).interfaceId
+            || interfaceId == type(IContractWithIdentity).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    // --- IContractWithIdentity Implementation ---
+
+    /// @inheritdoc IContractWithIdentity
+    /// @notice Returns the address of the identity factory's own OnChain ID.
+    /// @dev This is set during bootstrap when the factory creates its own identity.
+    function onchainID() external view override returns (address) {
+        return _onchainID;
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    /// @notice Checks if the caller can add a claim to the identity contract.
+    /// @dev The identity factory allows the system admin to add claims.
+    function canAddClaim(address caller) external view override returns (bool) {
+        IATKSystem system = IATKSystem(_system);
+        return system.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, caller);
+    }
+
+    /// @inheritdoc IContractWithIdentity
+    /// @notice Checks if the caller can remove a claim from the identity contract.
+    /// @dev The identity factory allows the system admin to remove claims.
+    function canRemoveClaim(address caller) external view override returns (bool) {
+        IATKSystem system = IATKSystem(_system);
+        return system.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, caller);
+    }
+
+    /// @notice Sets the identity factory's own OnChain ID.
+    /// @dev This is called after the factory creates its own identity during bootstrap.
+    ///      Only callable by the system admin.
+    /// @param identityAddress The address of the identity factory's own identity contract.
+    function setOnchainID(address identityAddress) external {
+        IATKSystem system = IATKSystem(_system);
+        require(
+            system.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, _msgSender()),
+            "ATKIdentityFactory: Only admin can set onchainID"
+        );
+        require(_onchainID == address(0), "ATKIdentityFactory: OnchainID already set");
+        require(identityAddress != address(0), "ATKIdentityFactory: Invalid identity address");
+        _onchainID = identityAddress;
     }
 }

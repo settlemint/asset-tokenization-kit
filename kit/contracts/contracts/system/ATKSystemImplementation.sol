@@ -457,8 +457,9 @@ contract ATKSystemImplementation is
         // Deploy the ATKTrustedIssuersRegistryProxy, linking it to this ATKSystem and setting an initial admin.
         address[] memory initialTrustedIssuersRegistrars = new address[](1);
         initialTrustedIssuersRegistrars[0] = address(this);
-        bytes memory trustedIssuersRegistryData =
-            abi.encodeWithSelector(IATKTrustedIssuersRegistry.initialize.selector, initialAdmin, initialTrustedIssuersRegistrars);
+        bytes memory trustedIssuersRegistryData = abi.encodeWithSelector(
+            IATKTrustedIssuersRegistry.initialize.selector, initialAdmin, initialTrustedIssuersRegistrars
+        );
         address localTrustedIssuersRegistryProxy = address(
             new ATKTypedImplementationProxy(address(this), TRUSTED_ISSUERS_REGISTRY, trustedIssuersRegistryData)
         );
@@ -467,8 +468,9 @@ contract ATKSystemImplementation is
         address[] memory initialTopicSchemeRegistrars = new address[](2);
         initialTopicSchemeRegistrars[0] = initialAdmin;
         initialTopicSchemeRegistrars[1] = address(this);
-        bytes memory topicSchemeRegistryData =
-            abi.encodeWithSelector(IATKTopicSchemeRegistry.initialize.selector, initialAdmin, initialTopicSchemeRegistrars);
+        bytes memory topicSchemeRegistryData = abi.encodeWithSelector(
+            IATKTopicSchemeRegistry.initialize.selector, initialAdmin, initialTopicSchemeRegistrars
+        );
         address localTopicSchemeRegistryProxy =
             address(new ATKTypedImplementationProxy(address(this), TOPIC_SCHEME_REGISTRY, topicSchemeRegistryData));
 
@@ -533,11 +535,20 @@ contract ATKSystemImplementation is
             ATKTopics.names(), ATKTopics.signatures()
         );
 
-        // Register the trusted issuers.
+        // Create identity for the identity factory itself so it can be a trusted issuer
+        // This solves the chicken-and-egg problem of the factory needing an identity to issue claims
+        address identityFactoryIdentity =
+            IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(localIdentityFactoryProxy);
+
+        // Set the identity factory's own OnChainID
+        ATKIdentityFactoryImplementation(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
+
+        // Register the identity factory's identity (not the factory itself) as the trusted issuer
         uint256[] memory identityFactoryClaimTopics = new uint256[](1);
-        identityFactoryClaimTopics[0] = IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_CONTRACT_IDENTITY);
+        identityFactoryClaimTopics[0] =
+            IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_CONTRACT_IDENTITY);
         IATKTrustedIssuersRegistry(localTrustedIssuersRegistryProxy).addTrustedIssuer(
-            IClaimIssuer(_identityFactoryProxy), identityFactoryClaimTopics
+            IClaimIssuer(identityFactoryIdentity), identityFactoryClaimTopics
         );
 
         // Register the identity verification module

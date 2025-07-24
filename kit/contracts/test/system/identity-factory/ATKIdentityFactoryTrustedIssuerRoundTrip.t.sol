@@ -212,8 +212,9 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         // 3. The trusted issuers registry is registered as a ClaimAuthorizer on the user's identity
         // 4. The issuer identity is registered in the trusted issuers registry for this topic
         vm.prank(claimIssuer); // The wallet with claim signer key makes the call
-        bytes32 kycClaimId =
-            userIdentity.addClaim(kycTopicId, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr, kycSignature, kycData, "");
+        bytes32 kycClaimId = userIdentity.addClaim(
+            kycTopicId, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr, kycSignature, kycData, ""
+        );
 
         assertTrue(kycClaimId != bytes32(0), "KYC claim addition failed");
 
@@ -230,8 +231,9 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         );
 
         vm.prank(claimIssuer); // The wallet with claim signer key makes the call
-        bytes32 amlClaimId =
-            userIdentity.addClaim(amlTopicId, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr, amlSignature, amlData, "");
+        bytes32 amlClaimId = userIdentity.addClaim(
+            amlTopicId, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr, amlSignature, amlData, ""
+        );
 
         assertTrue(amlClaimId != bytes32(0), "AML claim addition failed");
 
@@ -550,18 +552,22 @@ contract ATKIdentityFactoryTrustedIssuerRoundTripTest is Test {
         );
 
         vm.prank(claimIssuer);
-        bytes32 kycClaimId =
-            contractIdentity.addClaim(kycTopicId, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr, kycSignature, kycData, "");
+        bytes32 kycClaimId = contractIdentity.addClaim(
+            kycTopicId, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr, kycSignature, kycData, ""
+        );
 
         assertTrue(kycClaimId != bytes32(0), "KYC claim addition to contract identity failed");
 
         // Test AML claim addition for contract identity
         vm.expectEmit(false, true, true, true);
-        emit ClaimAdded(bytes32(0), amlTopicId, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr, amlSignature, amlData, "");
+        emit ClaimAdded(
+            bytes32(0), amlTopicId, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr, amlSignature, amlData, ""
+        );
 
         vm.prank(claimIssuer);
-        bytes32 amlClaimId =
-            contractIdentity.addClaim(amlTopicId, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr, amlSignature, amlData, "");
+        bytes32 amlClaimId = contractIdentity.addClaim(
+            amlTopicId, ERC735ClaimSchemes.SCHEME_ECDSA, issuerIdentityAddr, amlSignature, amlData, ""
+        );
 
         assertTrue(amlClaimId != bytes32(0), "AML claim addition to contract identity failed");
 
