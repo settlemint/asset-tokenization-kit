@@ -1,5 +1,5 @@
 import { formatEther, type Abi, type Address } from "viem";
-import type { AbstractActor } from "../../entities/actors/abstract-actor";
+import type { Actor } from "../../entities/actor";
 import { atkDeployer } from "../../services/deployer";
 import { getPublicClient } from "../../utils/public-client";
 import { waitForEvent } from "../../utils/wait-for-event";
@@ -26,8 +26,8 @@ type FlowStruct = {
  * @returns The created XVP settlement contract address
  */
 export async function createXvpSettlement(
-  fromActor: AbstractActor,
-  toActor: AbstractActor,
+  fromActor: Actor,
+  toActor: Actor,
   fromAssetAddress: Address,
   toAssetAddress: Address,
   fromAmount: bigint,
@@ -126,7 +126,7 @@ export async function createXvpSettlement(
  */
 export async function approveAndExecuteXvpSettlement(
   settlementAddress: Address,
-  actor: AbstractActor,
+  actor: Actor,
   assetAddress: Address,
   amount: bigint
 ): Promise<void> {
@@ -192,7 +192,7 @@ export async function approveAndExecuteXvpSettlement(
  */
 export async function approveXvpSettlement(
   settlementAddress: Address,
-  actor: AbstractActor,
+  actor: Actor,
   assetAddress: Address,
   amount: bigint
 ): Promise<void> {

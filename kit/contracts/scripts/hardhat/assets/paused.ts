@@ -1,9 +1,9 @@
 import { atkDeployer } from "../services/deployer";
 
+import { owner } from "../constants/actors";
 import { Countries } from "../constants/countries";
 import { ATKRoles } from "../constants/roles";
 import { ATKTopic } from "../constants/topics";
-import { owner } from "../entities/actors/owner";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
 import { grantRoles } from "./actions/core/grant-roles";

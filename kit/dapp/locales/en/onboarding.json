@@ -231,7 +231,8 @@
     "toast": {
       "saving": "Saving platform settings...",
       "success": "Platform settings saved successfully!",
-      "error": "Failed to save platform settings: {{message}}"
+      "error": "Failed to save platform settings: {{message}}",
+      "exchangeRateSyncWarning": "Base currency saved, but exchange rates couldn't be synced. They will sync automatically later."
     },
     "buttons": {
       "saving": "Saving...",

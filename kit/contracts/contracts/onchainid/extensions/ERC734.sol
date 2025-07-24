@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { ERC734KeyPurposes } from "../ERC734KeyPurposes.sol";
 
 // Example: error MissingApprovalPermission(bytes32 key, uint256 requiredPurpose);
 
@@ -10,12 +11,6 @@ import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.s
 /// @dev Implementation of the IERC734 (Key Holder) standard.
 /// This contract manages keys with different purposes and allows for execution of operations based on key approvals.
 contract ERC734 is IERC734, ReentrancyGuard {
-    // --- Constants for Key Purposes ---
-    uint256 public constant MANAGEMENT_KEY_PURPOSE = 1;
-    uint256 public constant ACTION_KEY_PURPOSE = 2;
-    uint256 public constant CLAIM_SIGNER_KEY_PURPOSE = 3;
-    uint256 public constant ENCRYPTION_KEY_PURPOSE = 4; // Optional, but common
-
     // --- Custom Errors ---
     error KeyCannotBeZero();
     error KeyAlreadyHasThisPurpose(bytes32 key, uint256 purpose);
@@ -70,13 +65,13 @@ contract ERC734 is IERC734, ReentrancyGuard {
         // Directly set up the first management key using storage from ERC734
         // This mimics the behavior of OnchainID's __Identity_init
         _keys[keyHash].key = keyHash;
-        _keys[keyHash].purposes = [MANAGEMENT_KEY_PURPOSE]; // Initialize dynamic array with one element
+        _keys[keyHash].purposes = [ERC734KeyPurposes.MANAGEMENT_KEY]; // Initialize dynamic array with one element
         _keys[keyHash].keyType = 1; // Assuming KeyType 1 for ECDSA / standard Ethereum address key
 
-        _keysByPurpose[MANAGEMENT_KEY_PURPOSE].push(keyHash);
+        _keysByPurpose[ERC734KeyPurposes.MANAGEMENT_KEY].push(keyHash);
 
         // Emit event defined in ERC734/IERC734
-        emit KeyAdded(keyHash, MANAGEMENT_KEY_PURPOSE, 1);
+        emit KeyAdded(keyHash, ERC734KeyPurposes.MANAGEMENT_KEY, 1);
     }
 
     /// @dev See {IERC734-addKey}.
@@ -277,7 +272,7 @@ contract ERC734 is IERC734, ReentrancyGuard {
         uint256 purposesLength = k.purposes.length;
         for (uint256 i = 0; i < purposesLength; ++i) {
             uint256 purpose = k.purposes[i];
-            if (purpose == MANAGEMENT_KEY_PURPOSE || purpose == _purpose) {
+            if (purpose == ERC734KeyPurposes.MANAGEMENT_KEY || purpose == _purpose) {
                 return true;
             }
         }
