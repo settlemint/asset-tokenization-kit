@@ -98,10 +98,7 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
-    const tokenAddress =
-      typeof input === "object" && input !== null && "tokenAddress" in input
-        ? input.tokenAddress
-        : null;
+    const tokenAddress = getTokenAddress(input);
 
     if (!isEthereumAddress(tokenAddress)) {
       throw errors.INPUT_VALIDATION_FAILED({
@@ -206,3 +203,24 @@ export const tokenMiddleware = baseRouter.middleware(
     });
   }
 );
+
+/**
+ * Get the token address from the input.
+ * @param input - The input object.
+ * @returns The token address.
+ */
+function getTokenAddress(input: unknown) {
+  if (input === null || input === undefined) {
+    return null;
+  }
+  if (typeof input === "string") {
+    return input;
+  }
+  if (typeof input === "object" && "tokenAddress" in input) {
+    return input.tokenAddress;
+  }
+  if (typeof input === "object" && "contract" in input) {
+    return input.contract;
+  }
+  return null;
+}
