@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { Children, isValidElement } from "react";
 
 export function OnboardingStepLayout({
@@ -51,9 +52,10 @@ export function OnboardingStepLayout({
       </div>
       {actions && (
         <footer
-          className={`OnboardingStepLayout__footer absolute pl-16 bottom-8 right-8 max-w-3xl mt-6 w-full flex ${
+          className={cn(
+            "OnboardingStepLayout__footer absolute bottom-8 right-8 max-w-3xl mt-6 w-full flex",
             actionChildrenCount === 1 ? "justify-end" : "justify-between"
-          }`}
+          )}
         >
           {actions}
         </footer>

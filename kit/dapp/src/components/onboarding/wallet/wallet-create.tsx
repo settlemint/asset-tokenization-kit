@@ -34,7 +34,7 @@ export function CreateWallet() {
               void navigate({ to: "/onboarding" });
             }}
           >
-            Cancel
+            {t("general:cancel", { defaultValue: "Cancel" })}
           </Button>
           <Button
             onClick={() => {
