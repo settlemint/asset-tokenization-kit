@@ -19,19 +19,23 @@ interface SelectOption {
   label: string;
 }
 
+export interface SelectFieldProps {
+  label: string;
+  description?: string;
+  required?: boolean;
+  options?: SelectOption[];
+  placeholder?: string;
+  disabled?: boolean;
+}
+
 export function SelectField({
   label,
   description,
   required = false,
   options = [],
   placeholder,
-}: {
-  label: string;
-  description?: string;
-  required?: boolean;
-  options?: SelectOption[];
-  placeholder?: string;
-}) {
+  disabled = false,
+}: SelectFieldProps) {
   // The `Field` infers that it should have a `value` type of `string`
   const field = useFieldContext<string>();
 
@@ -44,6 +48,7 @@ export function SelectField({
         onValueChange={(value) => {
           field.handleChange(value);
         }}
+        disabled={disabled}
       >
         <SelectTrigger
           id={field.name}

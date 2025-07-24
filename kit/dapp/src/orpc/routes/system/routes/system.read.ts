@@ -34,6 +34,9 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
       identityRegistry {
         id
       }
+      identityFactory {
+        id
+      }
       trustedIssuersRegistry {
         id
       }
@@ -50,6 +53,11 @@ const SYSTEM_DETAILS_QUERY = theGraphGraphql(`
       }
       systemAddonRegistry {
         id
+        systemAddons {
+          id
+          name
+          typeId
+        }
       }
     }
   }
@@ -94,6 +102,11 @@ export const read = onboardedRouter.system.read
               id: z.string(),
             })
             .nullable(),
+          identityFactory: z
+            .object({
+              id: z.string(),
+            })
+            .nullable(),
           trustedIssuersRegistry: z
             .object({
               id: z.string(),
@@ -119,6 +132,13 @@ export const read = onboardedRouter.system.read
           systemAddonRegistry: z
             .object({
               id: z.string(),
+              systemAddons: z.array(
+                z.object({
+                  id: z.string(),
+                  name: z.string(),
+                  typeId: z.string(),
+                })
+              ),
             })
             .nullable(),
         })
@@ -165,6 +185,7 @@ export const read = onboardedRouter.system.read
       id: result.system.id as EthereumAddress,
       deployedInTransaction: result.system.deployedInTransaction,
       identityRegistry: result.system.identityRegistry?.id as EthereumAddress,
+      identityFactory: result.system.identityFactory?.id as EthereumAddress,
       trustedIssuersRegistry: result.system.trustedIssuersRegistry
         ?.id as EthereumAddress,
       compliance: result.system.compliance?.id as EthereumAddress,
@@ -177,6 +198,12 @@ export const read = onboardedRouter.system.read
           id: factory.id as EthereumAddress,
           name: factory.name,
           typeId: factory.typeId,
+        })) ?? [],
+      systemAddons:
+        result.system.systemAddonRegistry?.systemAddons.map((addon) => ({
+          id: addon.id as EthereumAddress,
+          name: addon.name,
+          typeId: addon.typeId,
         })) ?? [],
     };
 

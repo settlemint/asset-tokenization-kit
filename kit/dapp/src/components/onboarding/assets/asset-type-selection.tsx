@@ -11,6 +11,7 @@ import {
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import {
   type TokenType,
   TokenTypeEnum,
@@ -79,6 +80,9 @@ export function AssetTypeSelection() {
         onSuccess: async (result) => {
           for await (const event of result) {
             logger.info("token factory deployment event", event);
+            if (event.status === "failed") {
+              throw new Error(event.message);
+            }
           }
           // Refetch all relevant data
           await Promise.all([
@@ -89,7 +93,6 @@ export function AssetTypeSelection() {
               }).queryKey,
               refetchType: "all",
             }),
-            queryClient.refetchQueries({ queryKey: orpc.user.me.key() }),
           ]);
           await refreshUserState();
         },
@@ -98,7 +101,7 @@ export function AssetTypeSelection() {
 
   // Handle verification code submission
   const handleVerificationSubmit = useCallback(
-    (verificationCode: string, verificationType: "pincode" | "two-factor") => {
+    (verification: UserVerification) => {
       if (!pendingFactories || !systemDetails?.tokenFactoryRegistry) {
         return;
       }
@@ -108,10 +111,7 @@ export function AssetTypeSelection() {
 
       toast.promise(
         createFactories({
-          verification: {
-            verificationCode,
-            verificationType,
-          },
+          verification,
           contract: systemDetails.tokenFactoryRegistry,
           factories: pendingFactories,
         }),
@@ -124,22 +124,6 @@ export function AssetTypeSelection() {
       );
     },
     [pendingFactories, systemDetails?.tokenFactoryRegistry, createFactories, t]
-  );
-
-  // Handle PIN code submission
-  const handlePincodeSubmit = useCallback(
-    (pincode: string) => {
-      handleVerificationSubmit(pincode, "pincode");
-    },
-    [handleVerificationSubmit]
-  );
-
-  // Handle OTP submission
-  const handleOtpSubmit = useCallback(
-    (otp: string) => {
-      handleVerificationSubmit(otp, "two-factor");
-    },
-    [handleVerificationSubmit]
   );
 
   const availableAssets = TokenTypeEnum.options;
@@ -263,13 +247,7 @@ export function AssetTypeSelection() {
       <VerificationDialog
         open={showVerificationModal}
         onOpenChange={setShowVerificationModal}
-        onSubmit={({ pincode, otp }) => {
-          if (pincode) {
-            handlePincodeSubmit(pincode);
-          } else if (otp) {
-            handleOtpSubmit(otp);
-          }
-        }}
+        onSubmit={handleVerificationSubmit}
         title={t("assets.confirm-deployment-title")}
         description={t("assets.confirm-deployment-description")}
         errorMessage={verificationError}

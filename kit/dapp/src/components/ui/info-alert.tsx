@@ -25,10 +25,10 @@ export const InfoAlert = memo(({ title, description }: InfoAlertProps) => {
           </svg>
         </div>
         <div className="flex-1">
-          <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
+          <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1 whitespace-pre-wrap">
             {title}
           </h3>
-          <p className="text-sm text-blue-800 dark:text-blue-200">
+          <p className="text-sm text-blue-800 dark:text-blue-200 whitespace-pre-wrap">
             {description}
           </p>
         </div>

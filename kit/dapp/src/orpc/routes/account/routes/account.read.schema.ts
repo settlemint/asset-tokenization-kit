@@ -33,10 +33,15 @@ export const AccountSchema = z.object({
   country: isoCountryCode.optional(),
 
   /**
-   * User's identity claims.
-   * Each claim has a name and a set of key-value pairs representing the claim data.
+   * The identity of the account.
    */
-  claims: z.record(z.string(), z.record(z.string(), z.string())).optional(),
+  identity: ethereumAddress.optional(),
+
+  /**
+   * User's identity claims.
+   * Only returns the names of the claims
+   */
+  claims: z.array(z.string()).optional(),
 });
 
 // Define response schema for type-safe GraphQL validation
@@ -46,6 +51,18 @@ export const AccountResponseSchema = z.object({
   account: z
     .object({
       id: z.string(),
+      country: z.number().nullable().optional(),
+      identity: z
+        .object({
+          id: z.string(),
+          claims: z.array(
+            z.object({
+              name: z.string(),
+            })
+          ),
+        })
+        .nullable()
+        .optional(),
     })
     .nullable(),
 });
