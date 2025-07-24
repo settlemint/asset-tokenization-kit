@@ -1,15 +1,17 @@
 import { Children, isValidElement } from "react";
 
 export function OnboardingStepLayout({
-  title,
-  description,
-  actions,
-  children,
-}: {
+                                       title,
+                                       description,
+                                       actions,
+                                       children,
+                                       fullWidth = false,
+                                     }: {
   title: React.ReactNode;
   description: React.ReactNode;
   actions?: React.ReactNode;
   children: React.ReactNode;
+  fullWidth?: boolean;
 }) {
   // More robust way to detect multiple action items
   let actionChildrenCount = 0;
@@ -43,7 +45,9 @@ export function OnboardingStepLayout({
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl space-y-6 pr-2">{children}</div>
+        <div className={`${fullWidth ? "" : "max-w-3xl"} space-y-6 pr-2`}>
+          {children}
+        </div>
       </div>
       {actions && (
         <footer

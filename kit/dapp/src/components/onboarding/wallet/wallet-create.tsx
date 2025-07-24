@@ -65,18 +65,23 @@ export function CreateWallet() {
           </div>
 
           <div className="space-y-5">
-            <h4 className="text-base font-semibold text-foreground">
-              {t("wallet.what-your-wallet-enables")}
-            </h4>
+            <div className="space-y-3">
+              <h4 className="text-base font-semibold text-foreground">
+                {t("wallet.how-it-works")}
+              </h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {t("wallet.how-it-works-description")}
+              </p>
+            </div>
 
             <div className="space-y-4">
               <BulletPoint>
                 <div>
                   <h5 className="font-medium text-foreground mb-1">
-                    {t("wallet.asset-control")}
+                    {t("wallet.access-your-assets")}
                   </h5>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t("wallet.asset-control-description")}
+                    {t("wallet.access-your-assets-description")}
                   </p>
                 </div>
               </BulletPoint>
@@ -84,10 +89,10 @@ export function CreateWallet() {
               <BulletPoint>
                 <div>
                   <h5 className="font-medium text-foreground mb-1">
-                    {t("wallet.invest-in-digital-assets")}
+                    {t("wallet.authorize-transactions")}
                   </h5>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t("wallet.invest-in-digital-assets-description")}
+                    {t("wallet.authorize-transactions-description")}
                   </p>
                 </div>
               </BulletPoint>
@@ -95,10 +100,10 @@ export function CreateWallet() {
               <BulletPoint>
                 <div>
                   <h5 className="font-medium text-foreground mb-1">
-                    {t("wallet.manage-your-digital-assets")}
+                    {t("wallet.manage-on-chain-identity")}
                   </h5>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t("wallet.manage-your-digital-assets-description")}
+                    {t("wallet.manage-on-chain-identity-description")}
                   </p>
                 </div>
               </BulletPoint>
