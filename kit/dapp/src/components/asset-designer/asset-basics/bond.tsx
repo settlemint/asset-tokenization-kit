@@ -17,6 +17,8 @@ const bondFields: KeysOfUnion<AssetDesignerFormInputData>[] = [
   ...commonFields,
   "cap",
   "faceValue",
+  "maturityDate",
+  "underlyingAsset",
 ];
 
 export const BondBasics = withForm({
