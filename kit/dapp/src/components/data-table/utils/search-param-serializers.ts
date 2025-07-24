@@ -57,7 +57,7 @@ export function decodeObjectParam<T>(
   if (!param) return fallback;
 
   try {
-    const parsed = JSON.parse(param);
+    const parsed = JSON.parse(param) as T;
     return parsed ?? fallback;
   } catch {
     return fallback;
@@ -278,7 +278,7 @@ export function deserializeDataTableState(
       value !== null &&
       value !== ""
     ) {
-      const filterKey = key.substring(7); // Remove 'filter_' prefix
+      const filterKey = key.slice(7); // Remove 'filter_' prefix
       const stringValue = z.string().max(1000).safeParse(value);
       if (stringValue.success) {
         columnFilters.push({

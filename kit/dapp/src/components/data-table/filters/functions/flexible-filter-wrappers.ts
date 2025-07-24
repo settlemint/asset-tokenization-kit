@@ -39,7 +39,7 @@ export function flexibleNumberFilterFn<TData>(
   if (typeof filterValue === "string" || typeof filterValue === "number") {
     const numValue =
       typeof filterValue === "string" ? Number(filterValue) : filterValue;
-    if (isNaN(numValue)) return true; // If not a valid number, show all
+    if (Number.isNaN(numValue)) return true; // If not a valid number, show all
 
     return numberFilterFn(row, columnId, {
       operator: "is",

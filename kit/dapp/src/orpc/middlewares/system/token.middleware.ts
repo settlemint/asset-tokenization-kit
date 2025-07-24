@@ -122,18 +122,31 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
+    // Initialize with all roles set to false
+    const initialUserRoles: Record<AccessControlRoles, boolean> = {
+      admin: false,
+      registrar: false,
+      claimManager: false,
+      deployer: false,
+      storageModifier: false,
+      registryManager: false,
+      governance: false,
+      supplyManagement: false,
+      custodian: false,
+      emergency: false,
+      implementationManager: false,
+      bypassListManager: false,
+    };
+
     const userRoles = Object.entries(token.accessControl ?? {}).reduce<
       Record<AccessControlRoles, boolean>
-    >(
-      (acc, [role, accounts]) => {
-        const userHasRole = accounts.some(
-          (account) => account.id === auth.user.wallet
-        );
-        acc[role as AccessControlRoles] = userHasRole;
-        return acc;
-      },
-      {} as Record<AccessControlRoles, boolean>
-    );
+    >((acc, [role, accounts]) => {
+      const userHasRole = accounts.some(
+        (account) => account.id === auth.user.wallet
+      );
+      acc[role as AccessControlRoles] = userHasRole;
+      return acc;
+    }, initialUserRoles);
 
     const tokenContext = TokenSchema.parse({
       ...token,
@@ -149,17 +162,40 @@ export const tokenMiddleware = baseRouter.middleware(
         // We should do this in the subgraph, more fine grained so we can derive the reason here
         isAllowed: true,
         notAllowedReason: undefined,
-        actions: Object.entries(TOKEN_PERMISSIONS).reduce<
-          Record<keyof typeof TOKEN_PERMISSIONS, boolean>
-        >(
-          (acc, [action, requiredRoles]) => {
-            acc[action as keyof typeof TOKEN_PERMISSIONS] = requiredRoles.every(
-              (role) => userRoles[role]
-            );
-            return acc;
-          },
-          {} as Record<keyof typeof TOKEN_PERMISSIONS, boolean>
-        ),
+        actions: (() => {
+          // Initialize all actions as false
+          const initialActions: Record<
+            keyof typeof TOKEN_PERMISSIONS,
+            boolean
+          > = {
+            burn: false,
+            create: false,
+            mint: false,
+            pause: false,
+            tokenAddComplianceModule: false,
+            tokenApprove: false,
+            tokenForcedRecover: false,
+            tokenFreezeAddress: false,
+            tokenRecoverERC20: false,
+            tokenRecoverTokens: false,
+            tokenRedeem: false,
+            tokenRemoveComplianceModule: false,
+            tokenSetCap: false,
+            tokenSetYieldSchedule: false,
+            transfer: false,
+            unpause: false,
+          };
+
+          // Update based on user roles
+          Object.entries(TOKEN_PERMISSIONS).forEach(
+            ([action, requiredRoles]) => {
+              initialActions[action as keyof typeof TOKEN_PERMISSIONS] =
+                requiredRoles.every((role) => userRoles[role]);
+            }
+          );
+
+          return initialActions;
+        })(),
       },
     });
 

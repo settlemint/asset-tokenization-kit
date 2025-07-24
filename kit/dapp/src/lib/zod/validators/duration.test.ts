@@ -8,14 +8,14 @@ describe("duration", () => {
     it("should accept positive integers", () => {
       expect(validator.parse(1)).toBe(1);
       expect(validator.parse(1000)).toBe(1000);
-      expect(validator.parse(60000)).toBe(60000); // 1 minute
-      expect(validator.parse(3600000)).toBe(3600000); // 1 hour
+      expect(validator.parse(60_000)).toBe(60_000); // 1 minute
+      expect(validator.parse(3_600_000)).toBe(3_600_000); // 1 hour
     });
 
     it("should accept very large durations", () => {
-      expect(validator.parse(86400000)).toBe(86400000); // 1 day
-      expect(validator.parse(604800000)).toBe(604800000); // 1 week
-      expect(validator.parse(2592000000)).toBe(2592000000); // 30 days
+      expect(validator.parse(86_400_000)).toBe(86_400_000); // 1 day
+      expect(validator.parse(604_800_000)).toBe(604_800_000); // 1 week
+      expect(validator.parse(2_592_000_000)).toBe(2_592_000_000); // 30 days
     });
 
     it("should accept the smallest positive duration", () => {
@@ -59,7 +59,7 @@ describe("duration", () => {
     });
 
     it("should reject special numeric values", () => {
-      expect(() => validator.parse(NaN)).toThrow();
+      expect(() => validator.parse(Number.NaN)).toThrow();
       expect(() => validator.parse(Infinity)).toThrow();
       expect(() => validator.parse(-Infinity)).toThrow();
     });
@@ -96,9 +96,9 @@ describe("duration", () => {
 
   describe("type checking", () => {
     it("should return proper type", () => {
-      const result = validator.parse(60000);
+      const result = validator.parse(60_000);
       // Test that the type is correctly inferred
-      expect(result).toBe(60000);
+      expect(result).toBe(60_000);
     });
   });
 });

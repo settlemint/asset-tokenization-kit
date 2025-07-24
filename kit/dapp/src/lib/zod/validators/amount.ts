@@ -91,12 +91,14 @@ export const amount = ({
       return parsed;
     })
     .refine((value) => value >= minimum, {
-      message: `Amount must be at least ${minimum}`,
+      message: `Amount must be at least ${String(minimum)}`,
     })
     .refine((value) => value <= max, {
-      message: `Amount must not exceed ${max}`,
+      message: `Amount must not exceed ${String(max)}`,
     })
-    .describe(`A positive numerical amount between ${minimum} and ${max}`);
+    .describe(
+      `A positive numerical amount between ${String(minimum)} and ${String(max)}`
+    );
 };
 
 /**

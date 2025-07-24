@@ -60,7 +60,7 @@ describe("roleMap", () => {
     it("should accept all valid roles", () => {
       const map: Record<string, (typeof roleNames)[number]> = {};
       roleNames.forEach((role, index) => {
-        map[`address${index}`] = role;
+        map[`address${String(index)}`] = role;
       });
       expect(validator.parse(map)).toEqual(map);
     });

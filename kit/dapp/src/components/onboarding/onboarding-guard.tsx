@@ -20,7 +20,7 @@ export function OnboardingGuard({
     ...orpc.user.me.queryOptions(),
   });
 
-  const isOnboarded = Object.values(user.onboardingState).every((step) => step);
+  const isOnboarded = Object.values(user.onboardingState).every(Boolean);
   const redirectToOnboarding = require === "onboarded" && !isOnboarded;
   const redirectToHome = require === "not-onboarded" && isOnboarded;
 

@@ -66,14 +66,18 @@ export function createRouter() {
   });
 
   const persister = createAsyncStoragePersister({
-    storage: typeof window !== "undefined" ? window.localStorage : undefined,
+    storage:
+      globalThis.window === undefined ? undefined : globalThis.localStorage,
     key: "atk-query-cache",
     throttleTime: 1000,
     serialize: (data) => stringify(data),
     deserialize: async (data) => parse(data),
   });
 
-  if (typeof window !== "undefined" && process.env.NODE_ENV !== "development") {
+  if (
+    globalThis.window !== undefined &&
+    process.env.NODE_ENV !== "development"
+  ) {
     const buildId = process.env.BUILD_ID ?? new Date().toISOString();
     void persistQueryClient({
       queryClient,
@@ -88,7 +92,7 @@ export function createRouter() {
     });
   }
 
-  if (typeof window !== "undefined") {
+  if (globalThis.window !== undefined) {
     broadcastQueryClient({
       queryClient,
       broadcastChannel: "atk-query-sync",

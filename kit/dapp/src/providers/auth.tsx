@@ -103,14 +103,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
     ({ variant, message }: { variant?: string; message?: string }) => {
       if (!message) return;
 
-      if (variant === "success") {
-        toast.success(message);
-      } else if (variant === "error") {
-        toast.error(message);
-      } else if (variant === "warning") {
-        toast.warning(message);
-      } else {
-        toast.info(message);
+      switch (variant) {
+        case "success":
+          toast.success(message);
+
+          break;
+
+        case "error":
+          toast.error(message);
+
+          break;
+
+        case "warning":
+          toast.warning(message);
+
+          break;
+
+        default:
+          toast.info(message);
       }
     },
     []

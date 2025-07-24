@@ -74,8 +74,7 @@ interface TokenHoldersTableProps {
 export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const router = useRouter();
-  const routePath =
-    router.state.matches[router.state.matches.length - 1]?.pathname;
+  const routePath = router.state.matches.at(-1)?.pathname;
 
   const { data: holdersResponse } = useSuspenseQuery({
     ...orpc.token.holders.queryOptions({

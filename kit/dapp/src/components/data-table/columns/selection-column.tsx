@@ -37,7 +37,7 @@ export function createBasicSelectionColumn<TData>(): ColumnDef<TData> {
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={handleToggleRow}
-            aria-label={`Select row ${row.index + 1}`}
+            aria-label={`Select row ${String(row.index + 1)}`}
           />
         </div>
       );
@@ -104,7 +104,7 @@ export function createSelectionColumn<TData>(
           onCheckedChange={handleToggleAll}
           aria-label={
             ariaLabel ??
-            `Select all ${table.getRowModel().rows.length} rows${
+            `Select all ${String(table.getRowModel().rows.length)} rows${
               isSomeSelected && !isAllSelected ? " (some selected)" : ""
             }`
           }
@@ -126,7 +126,7 @@ export function createSelectionColumn<TData>(
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={handleToggleRow}
-            aria-label={`Select row ${row.index + 1} of ${table.getRowModel().rows.length}`}
+            aria-label={`Select row ${String(row.index + 1)} of ${String(table.getRowModel().rows.length)}`}
             className={className}
           />
         </div>

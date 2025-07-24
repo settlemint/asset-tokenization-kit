@@ -97,7 +97,7 @@ describe("isin", () => {
     });
 
     it("should reject non-string types", () => {
-      expect(() => validator.parse(123456789012)).toThrow();
+      expect(() => validator.parse(123_456_789_012)).toThrow();
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
@@ -110,13 +110,13 @@ describe("isin", () => {
       const result = validator.parse(validISIN);
 
       // First 2 chars are country code
-      expect(result.substring(0, 2)).toBe("US");
+      expect(result.slice(0, 2)).toBe("US");
 
       // Next 9 chars are alphanumeric identifier
-      expect(result.substring(2, 11)).toMatch(/^[A-Z0-9]{9}$/);
+      expect(result.slice(2, 11)).toMatch(/^[A-Z0-9]{9}$/);
 
       // Last char is numeric check digit
-      expect(result.substring(11, 12)).toMatch(/^[0-9]$/);
+      expect(result.slice(11, 12)).toMatch(/^[0-9]$/);
     });
   });
 

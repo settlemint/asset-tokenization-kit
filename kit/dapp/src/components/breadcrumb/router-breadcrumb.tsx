@@ -18,6 +18,13 @@ interface BreadcrumbSegment {
   isCurrentPage?: boolean;
 }
 
+// Type for loader data that may contain breadcrumb info
+interface LoaderDataWithBreadcrumb {
+  breadcrumb?: BreadcrumbMetadata | BreadcrumbMetadata[];
+  factory?: { name: string };
+  token?: { name: string };
+}
+
 /**
  * Hook to handle async breadcrumb titles
  */
@@ -26,12 +33,12 @@ function useAsyncBreadcrumbTitle(
   fallbackTitle: string
 ): string {
   const namespace = breadcrumbMeta?.i18nNamespace ?? "navigation";
-  const { t } = useTranslation([namespace]);
+  const { i18n } = useTranslation([namespace]);
   const [asyncTitle, setAsyncTitle] = useState<string | null>(null);
 
   // Create a stable key for the breadcrumb to track changes
   const breadcrumbKey = breadcrumbMeta
-    ? `${breadcrumbMeta.title}-${breadcrumbMeta.isI18nKey}-${breadcrumbMeta.i18nNamespace}`
+    ? `${breadcrumbMeta.title}-${String(breadcrumbMeta.isI18nKey ?? false)}-${breadcrumbMeta.i18nNamespace ?? ""}`
     : null;
 
   useEffect(() => {
@@ -68,10 +75,12 @@ function useAsyncBreadcrumbTitle(
   if (breadcrumbMeta?.title) {
     // Handle i18n keys
     if (breadcrumbMeta.isI18nKey) {
-      // Use the translation with dynamic key and namespace
-      // The key might not exist in TypeScript's types, but i18next handles this gracefully
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return t(breadcrumbMeta.title as any, { ns: namespace });
+      // Use the i18n instance directly for dynamic keys to avoid TypeScript issues
+      // i18next handles unknown keys gracefully by returning the key itself
+      // We need to bypass TypeScript's strict typing for dynamic translation keys
+      const key = `${namespace}:${breadcrumbMeta.title}`;
+      const translatedTitle = (i18n.t as (key: string) => string)(key);
+      return translatedTitle;
     }
     return breadcrumbMeta.title;
   }
@@ -112,16 +121,16 @@ function BreadcrumbItemWithAsyncTitle({
         <BreadcrumbPage>
           {title === "home" ? <Home className="h-3 w-3" /> : title}
         </BreadcrumbPage>
-      ) : !href ? (
-        <span className="text-muted-foreground text-xs">
-          {title === "home" ? <Home className="h-3 w-3" /> : title}
-        </span>
-      ) : (
+      ) : href ? (
         <BreadcrumbLink asChild className="text-xs">
           <Link to={href} aria-label={title === "home" ? t("home") : undefined}>
             {title === "home" ? <Home className="h-3 w-3" /> : title}
           </Link>
         </BreadcrumbLink>
+      ) : (
+        <span className="text-muted-foreground text-xs">
+          {title === "home" ? <Home className="h-3 w-3" /> : title}
+        </span>
       )}
     </BreadcrumbItem>
   );
@@ -157,6 +166,23 @@ interface BreadcrumbSegmentWithMetadata {
   metadata?: BreadcrumbMetadata;
 }
 
+/**
+ * Helper function to extract breadcrumb metadata from loader data and context
+ * @param loaderData - The loader data from the route match
+ * @param context - The context from the route match
+ * @returns The breadcrumb metadata if found, undefined otherwise
+ */
+function extractBreadcrumbMetadata(
+  loaderData: LoaderDataWithBreadcrumb | undefined,
+  context: { breadcrumb?: BreadcrumbMetadata } | undefined
+): BreadcrumbMetadata | undefined {
+  return (
+    (loaderData?.breadcrumb && !Array.isArray(loaderData.breadcrumb)
+      ? loaderData.breadcrumb
+      : undefined) ?? context?.breadcrumb
+  );
+}
+
 export function RouterBreadcrumb({
   customSegments,
 }: {
@@ -187,8 +213,9 @@ export function RouterBreadcrumb({
     for (let i = matches.length - 1; i >= 0; i--) {
       const match = matches[i];
       if (!match) continue;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const loaderData = match.loaderData as any;
+      const loaderData = match.loaderData as
+        | LoaderDataWithBreadcrumb
+        | undefined;
       if (loaderData?.breadcrumb && Array.isArray(loaderData.breadcrumb)) {
         breadcrumbsFromLoader = loaderData.breadcrumb;
         break;
@@ -224,11 +251,13 @@ export function RouterBreadcrumb({
           return false;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const loaderData = match.loaderData as any;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const context = match.context as any;
-        const breadcrumbMeta = loaderData?.breadcrumb ?? context?.breadcrumb;
+        const loaderData = match.loaderData as
+          | LoaderDataWithBreadcrumb
+          | undefined;
+        const context = match.context as
+          | { breadcrumb?: BreadcrumbMetadata }
+          | undefined;
+        const breadcrumbMeta = extractBreadcrumbMetadata(loaderData, context);
 
         // Skip if marked as hidden
         if (breadcrumbMeta?.hidden) {
@@ -240,14 +269,15 @@ export function RouterBreadcrumb({
 
       visibleMatches.forEach((match, index) => {
         const isLast = index === visibleMatches.length - 1;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const loaderData = match.loaderData as any;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const context = match.context as any;
+        const loaderData = match.loaderData as
+          | LoaderDataWithBreadcrumb
+          | undefined;
+        const context = match.context as
+          | { breadcrumb?: BreadcrumbMetadata }
+          | undefined;
 
         // Extract breadcrumb metadata from various sources
-        const breadcrumbMeta: BreadcrumbMetadata | undefined =
-          loaderData?.breadcrumb ?? context?.breadcrumb;
+        const breadcrumbMeta = extractBreadcrumbMetadata(loaderData, context);
 
         // Determine fallback title
         let fallbackTitle = "";
@@ -257,8 +287,8 @@ export function RouterBreadcrumb({
           fallbackTitle = loaderData.token.name;
         } else {
           // Extract from route ID or path
-          const routePart =
-            match.pathname.split("/").filter(Boolean).pop() ?? "";
+          const pathSegments = match.pathname.split("/").filter(Boolean);
+          const routePart = pathSegments.at(-1) ?? "";
 
           // Handle ethereum addresses
           if (routePart.startsWith("0x") && routePart.length === 42) {
