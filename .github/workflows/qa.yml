@@ -95,7 +95,7 @@ jobs:
       - name: Setup dependencies
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == true) ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
           github.event_name == 'pull_request_review'
         uses: ./.github/actions/setup-dependencies
         with:
@@ -116,7 +116,7 @@ jobs:
       - name: Login to Harbor
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == true)
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         uses: docker/login-action@v3
         with:
           registry: harbor.settlemint.com
@@ -126,7 +126,7 @@ jobs:
       - name: Connect to SettleMint
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == true)
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         uses: settlemint/settlemint-action@main
         with:
           instance: local
@@ -134,21 +134,21 @@ jobs:
       - name: Generate artifacts
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == true)
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         run: |
           bunx turbo run artifacts --concurrency=100%
 
       - name: Run the backend services
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == true)
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         run: |
           bun dev:up
 
       - name: Verify subgraph SystemFactory address
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == true)
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         run: |
           echo "Checking SystemFactory address in subgraph.yaml..."
           EXPECTED_ADDRESS="0x5e771e1417100000000000000000000000020088"
@@ -170,7 +170,7 @@ jobs:
         id: qa-tests
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == true)
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             echo "Running Turbo for PR"
