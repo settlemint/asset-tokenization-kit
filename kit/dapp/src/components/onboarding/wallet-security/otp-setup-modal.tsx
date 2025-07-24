@@ -127,7 +127,7 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
   }, [open, enableTwoFactor]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         {otpSetupError ? (
           <>

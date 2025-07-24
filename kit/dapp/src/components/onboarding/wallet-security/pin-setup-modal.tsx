@@ -80,7 +80,7 @@ export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("wallet-security.pincode.title")}</DialogTitle>
