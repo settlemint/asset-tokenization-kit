@@ -9,17 +9,19 @@
     "cancel": "Cancel"
   },
   "kycForm": {
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "dob": "Date of Birth",
-    "residencyStatus": "Residency Status",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "dob": "Date of birth",
+    "country": "Country of residence",
+    "residencyStatus": "Residency status",
+    "residencyStatusDescription": "Based on your country of residence {{country}}, you may be required to provide additional information.",
     "residencyStatusOptions": {
-      "resident": "I currently live in this country and am considered a legal/tax resident",
-      "non_resident": "I do not live in this country and am not considered a legal/tax resident",
-      "dual_resident": "I am considered a resident in more than one country",
-      "unknown": "I am not sure about my residency status or I prefer not to disclose it"
+      "resident": "Sole resident - I live in and am legally/tax resident only in the country above",
+      "dual_resident": "Dual resident - I am legally/tax resident in more than one country",
+      "non_resident": "Non-resident - I do not live in or am not considered a resident of the country above",
+      "unknown": "Prefer not to say"
     },
     "nationalId": "National ID",
-    "submit": "Save & Continue"
+    "submit": "Save and continue"
   }
 }

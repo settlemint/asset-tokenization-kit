@@ -29,10 +29,10 @@ function RouteComponent() {
 
   return (
     <OnboardingStepLayout
-      title={t("onboarding:steps.identity.title")}
-      description={t("onboarding:steps.identity.description")}
+      title={t("identity.title")}
+      description={t("identity.description")}
     >
-      <InfoAlert title={t("onboarding:identity.intro")} />
+      <InfoAlert title={t("identity.intro")} />
       <KycForm onComplete={handleComplete} />
     </OnboardingStepLayout>
   );

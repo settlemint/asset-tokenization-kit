@@ -1,33 +1,22 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { publicRouter } from "@/orpc/procedures/public.router";
 import { AccountResponseSchema } from "@/orpc/routes/account/routes/account.read.schema";
 import { numericToAlpha2 } from "i18n-iso-countries";
 
-/**
- * GraphQL query for retrieving SMART systems from TheGraph.
- *
- * This query fetches a paginated list of system contracts with support for:
- * - Offset-based pagination (skip/first)
- * - Configurable sort order (ascending/descending)
- * - Custom ordering by any system field
- *
- * Systems represent deployed SMART protocol instances that manage
- * tokenized assets and their associated compliance infrastructure.
- */
-export const READ_ACCOUNT_QUERY = theGraphGraphql(`
-query ReadAccountQuery($walletAddress: ID!) {
-  account(id: $walletAddress) {
-    id
-    country
-    identity {
+const READ_ACCOUNT_QUERY = theGraphGraphql(`
+  query ReadAccountQuery($walletAddress: ID!) {
+    account(id: $walletAddress) {
       id
-      claims {
-        name
+      country
+      identity {
+        id
+        claims {
+          name
+        }
       }
     }
   }
-}
 `);
 
 /**
@@ -36,7 +25,7 @@ query ReadAccountQuery($walletAddress: ID!) {
  * Retrieves the account information for the given wallet address.
  *
  */
-export const read = onboardedRouter.account.read
+export const read = publicRouter.account.read
   .use(theGraphMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { wallet } = input;

@@ -1,5 +1,9 @@
 import { useAppForm } from "@/hooks/use-app-form";
 import { authClient } from "@/lib/auth/auth.client";
+import {
+  getCountryName,
+  type SupportedLocale,
+} from "@/lib/zod/validators/iso-country-code";
 import { orpc } from "@/orpc/orpc-client";
 import {
   KycProfileUpsert,
@@ -25,7 +29,7 @@ const KYC_FORM_FIELDS = [
 const kycFormSchema = KycProfileUpsertSchema;
 
 export function KycForm({ onComplete }: KycFormProps) {
-  const { t } = useTranslation(["components"]);
+  const { t, i18n } = useTranslation(["components"]);
   const { data: session } = authClient.useSession();
 
   const { data: account } = useQuery({
@@ -103,8 +107,12 @@ export function KycForm({ onComplete }: KycFormProps) {
         name="residencyStatus"
         children={(field) => (
           <field.SelectField
-            label={t("kycForm.residencyStatus", {
-              country: account?.country ?? ".",
+            label={t("kycForm.residencyStatus")}
+            description={t("kycForm.residencyStatusDescription", {
+              country: getCountryName(
+                account?.country ?? "",
+                i18n.language as SupportedLocale
+              ),
             })}
             required={true}
             options={residencyStatusOptions}

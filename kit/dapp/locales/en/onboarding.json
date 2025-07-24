@@ -295,6 +295,8 @@
     "confirm-description": "Please verify your identity to create your on-chain identity."
   },
   "identity": {
-    "intro": "Identity verification ensures compliance with regulations and enables you to invest in digital assets."
+    "title": "Add Personal Information",
+    "description": "Required for identity registration and KYC verification",
+    "intro": "To complete your identity and use the platform, we need some basic information. This helps us meet regulatory requirements (KYC/AML) and allows your identity to be registered on the blockchain.\n\nYou can skip this step for now, but registration won’t be possible until your country is provided.\n\nYour data is securely stored and used only for compliance purposes. You’ll be able to update or complete it later from the dashboard."
   }
 }

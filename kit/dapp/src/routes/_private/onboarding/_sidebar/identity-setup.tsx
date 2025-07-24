@@ -41,7 +41,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { t } = useTranslation(["onboarding", "common"]);
-  const { refreshUserState } = useOnboardingNavigation();
+  const { completeStepAndNavigate } = useOnboardingNavigation();
   const queryClient = useQueryClient();
 
   const { data: account } = useSuspenseQuery({
@@ -76,14 +76,14 @@ function RouteComponent() {
               refetchType: "all",
             }),
           ]);
-          await refreshUserState();
+          await completeStepAndNavigate(OnboardingStep.identitySetup);
         },
       })
     );
 
   const form = useAppForm({
     defaultValues: {
-      country: account?.country ?? ".",
+      country: account?.country ?? "",
     },
     validators: {
       onSubmit: identitySetupFormSchema,

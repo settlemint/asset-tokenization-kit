@@ -1,5 +1,4 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
@@ -58,17 +57,9 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
   }
 `);
 
-const FIND_IDENTITY_FOR_TRANSACTION_QUERY = theGraphGraphql(`
-  query FindIdentityForTransaction($deployedInTransaction: Bytes!) {
-    identities(where: { deployedInTransaction: $deployedInTransaction }) {
-      id
-    }
-  }
-`);
-
 export const identityCreate = onboardedRouter.system.identityCreate
-  .use(portalMiddleware)
   .use(theGraphMiddleware)
+  .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
     const { verification, country } = input;
     const { auth, t } = context;

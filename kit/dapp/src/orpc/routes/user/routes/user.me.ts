@@ -89,7 +89,9 @@ export const me = authRouter.user.me
             wallet: authUser.wallet,
           },
           { context }
-        ),
+        ).catch(() => ({
+          identity: undefined,
+        })),
       ]);
 
     const { kyc } = userQueryResult ?? {};
