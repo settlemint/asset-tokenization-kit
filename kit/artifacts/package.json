@@ -1,0 +1,11 @@
+{
+  "name": "@settlemint/asset-tokenization-kit-artifacts",
+  "description": "Docker image containing ABIs and Genesis files for Asset Tokenization Kit",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "package": "echo 'Artifacts package task - ensuring dependencies are ready'",
+    "publish": "DOCKER_BUILD_TAG=$(jq -r .version ../../package.json); if [ -z \"$CI\" ]; then DOCKER_BUILD_TAG=\"$DOCKER_BUILD_TAG-dev.$(date +%s)\"; fi; docker buildx build .. --file=./Dockerfile --platform=linux/amd64,linux/arm64 --provenance true --sbom true -t ghcr.io/settlemint/asset-tokenization-kit-artifacts:$DOCKER_BUILD_TAG --push",
+    "test": "DOCKER_BUILD_TAG=$(jq -r .version ../../package.json)-test; docker buildx build .. --file=./Dockerfile --platform=linux/amd64 --tag asset-tokenization-kit-artifacts:$DOCKER_BUILD_TAG --load"
+  }
+}
