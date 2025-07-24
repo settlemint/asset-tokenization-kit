@@ -170,7 +170,7 @@ function createValidatedPortalClient(
           .replace(
             /^-/,
             ""
-          )}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+          )}-${String(Date.now())}-${Math.random().toString(36).slice(2, 9)}`;
 
       let result: TResult;
       try {

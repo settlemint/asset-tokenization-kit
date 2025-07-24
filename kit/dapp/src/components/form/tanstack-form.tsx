@@ -33,7 +33,10 @@ const useFieldContext = () => {
   const { id } = React.useContext(FormItemContext);
   const { name, store, ...fieldContext } = _useFieldContext();
 
-  const errors = useStore(store, (state) => state.meta.errors);
+  const errors = (useStore(store, (state) => state.meta.errors) ??
+    []) as Array<{
+    message?: string;
+  }>;
 
   return {
     id,
@@ -99,7 +102,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { errors, formMessageId } = useFieldContext();
   const body =
-    errors.length > 0 ? String(errors.at(0)?.message ?? "") : props.children;
+    errors.length > 0 ? String(errors[0]?.message ?? "") : props.children;
   if (!body) return null;
 
   return (

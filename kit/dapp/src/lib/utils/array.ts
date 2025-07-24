@@ -12,13 +12,13 @@
 export function getElementAtIndex<T>(elements: T[], index: number): T {
   if (index < 0 || index >= elements.length) {
     throw new Error(
-      `Invalid index ${index} for array of length ${elements.length}`
+      `Invalid index ${String(index)} for array of length ${String(elements.length)}`
     );
   }
   const element = elements[index];
   // This never happens, but we check for type safety
   if (element === undefined) {
-    throw new Error(`Element at index ${index} is undefined`);
+    throw new Error(`Element at index ${String(index)} is undefined`);
   }
   return element;
 }

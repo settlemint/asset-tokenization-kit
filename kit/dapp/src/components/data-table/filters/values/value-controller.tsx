@@ -504,7 +504,7 @@ export function PropertyFilterNumberValueDisplay<TData, TValue>({
     const maxValue =
       filter.values[1] === Number.POSITIVE_INFINITY ||
       (filter.values[1] ?? 0) >= cappedMax
-        ? `${cappedMax}+`
+        ? `${String(cappedMax)}+`
         : filter.values[1];
 
     return (

@@ -75,7 +75,7 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
       const newSet = new Set<string>();
 
       // Accordion behavior: if clicking on a different group, expand only that one
-      if (!prev.has(groupId)) {
+      if (prev.has(groupId)) {
         newSet.add(groupId);
       }
       // If clicking on the same group and it's expanded, keep it expanded (don't collapse current)
@@ -232,15 +232,14 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
     if (!groups) return null;
 
     // Group steps by their groupId
-    const groupedStepsByGroupId = steps.reduce(
-      (acc, step, index) => {
-        const groupId = step.groupId ?? "ungrouped";
-        acc[groupId] ??= [];
-        acc[groupId].push({ step, index });
-        return acc;
-      },
-      {} as Record<string, { step: StepDefinition; index: number }[]>
-    );
+    const groupedStepsByGroupId = steps.reduce<
+      Record<string, { step: StepDefinition; index: number }[]>
+    >((acc, step, index) => {
+      const groupId = step.groupId ?? "ungrouped";
+      acc[groupId] ??= [];
+      acc[groupId].push({ step, index });
+      return acc;
+    }, {});
 
     return (
       <div className="flex-1 overflow-y-auto">

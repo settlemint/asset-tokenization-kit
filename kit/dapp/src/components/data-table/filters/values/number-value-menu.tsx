@@ -84,7 +84,7 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
   const initialValues = () => {
     if (filter?.values) {
       return filter.values.map((val) =>
-        val >= cappedMax ? `${cappedMax}+` : val.toString()
+        val >= cappedMax ? `${String(cappedMax)}+` : val.toString()
       );
     }
     return [safeDatasetMin.toString()];
@@ -319,8 +319,8 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
                     </label>
                     <Input
                       type="number"
-                      value={inputValues[1] ?? `${cappedMax}+`}
-                      placeholder={`${cappedMax}+`}
+                      value={inputValues[1] ?? `${String(cappedMax)}+`}
+                      placeholder={`${String(cappedMax)}+`}
                       onChange={handleMaxInputChange}
                       max={cappedMax}
                     />

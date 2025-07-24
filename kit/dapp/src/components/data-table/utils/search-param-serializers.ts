@@ -57,7 +57,7 @@ export function decodeObjectParam<T>(
   if (!param) return fallback;
 
   try {
-    const parsed = JSON.parse(param);
+    const parsed = JSON.parse(param) as T;
     return parsed ?? fallback;
   } catch {
     return fallback;

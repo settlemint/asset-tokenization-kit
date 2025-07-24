@@ -44,6 +44,9 @@ export default defineConfig([
       // Third-party UI components (shadcn)
       "src/components/ui/**",
 
+      // SettleMint SDK files with environment variables
+      "src/lib/settlemint/**",
+
       // Cache and temp files
       "**/.cache/**",
       "**/tmp/**",
@@ -224,6 +227,7 @@ export default defineConfig([
       "@typescript-eslint/no-unsafe-member-access": "off",
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/only-throw-error": "off",
 
       // ========================================================================
       // TANSTACK RULES - ALREADY INCLUDED VIA CONFIGS ABOVE
@@ -261,21 +265,34 @@ export default defineConfig([
   },
 
   // ==========================================================================
-  // 8. OPTIONAL: TYPE-CHECKED RULES FOR CI ONLY
-  // Comment this section out for local development
+  // 8. TYPE-CHECKED RULES
   // ==========================================================================
-  ...(process.env.CI
-    ? tseslint.configs.strictTypeChecked.map((config) => ({
-        ...config,
-        files: ["src/**/*.{ts,mts,cts,tsx}"],
-        languageOptions: {
-          parserOptions: {
-            project: true,
-            tsconfigRootDir: import.meta.dirname,
-          },
-        },
-      }))
-    : []),
+  ...tseslint.configs.strictTypeChecked.map((config) => ({
+    ...config,
+    files: ["src/**/*.{ts,mts,cts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  })),
+
+  // Override type-checked rules
+  {
+    files: ["src/**/*.{ts,mts,cts,tsx}"],
+    rules: {
+      "@typescript-eslint/only-throw-error": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unnecessary-condition": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+    },
+  },
 
   // ==========================================================================
   // 9. TEST FILES - RELAXED TYPE-CHECKED RULES

@@ -189,7 +189,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
         "System context available, proceeding with addon registration"
       );
     } catch (error) {
-      logger.debug(`Could not fetch existing addons: ${error}`);
+      logger.debug(`Could not fetch existing addons: ${String(error)}`);
     }
 
     const results: SystemAddonCreateOutput["results"] = [];
@@ -312,7 +312,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
             try {
               return getImplementationAddress(addonConfig);
             } catch (error_) {
-              return `Error getting implementation: ${error_ instanceof Error ? error_.message : error_}`;
+              return `Error getting implementation: ${error_ instanceof Error ? error_.message : String(error_)}`;
             }
           })(),
           contract,

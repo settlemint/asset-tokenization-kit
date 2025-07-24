@@ -175,10 +175,15 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
     const logs = Array.isArray(receipt.logs) ? receipt.logs : [];
     let scheduleAddress: string | undefined = undefined;
     if (logs.length > 0) {
-      const lastLog = logs.at(-1);
+      const lastLog = logs.at(-1) as { address?: string } | undefined;
       logger.debug("Last log:", lastLog);
-      if (lastLog && typeof lastLog === "object" && "address" in lastLog) {
-        scheduleAddress = lastLog.address as string;
+      if (
+        lastLog &&
+        typeof lastLog === "object" &&
+        "address" in lastLog &&
+        typeof lastLog.address === "string"
+      ) {
+        scheduleAddress = lastLog.address;
       }
     }
     if (!scheduleAddress) {

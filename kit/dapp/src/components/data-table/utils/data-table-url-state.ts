@@ -138,11 +138,19 @@ export const dataTableSearchParamsSchema = z
               pageSize: data.pageSize ?? 10,
             }
           : undefined,
-      sorting: data.sorting ? JSON.parse(data.sorting) : [],
-      columnFilters: data.filters ? JSON.parse(data.filters) : [],
+      sorting: data.sorting
+        ? (JSON.parse(data.sorting) as Array<{ id: string; desc: boolean }>)
+        : [],
+      columnFilters: data.filters
+        ? (JSON.parse(data.filters) as Array<{ id: string; value: unknown }>)
+        : [],
       globalFilter: data.search ?? "",
-      columnVisibility: data.columns ? JSON.parse(data.columns) : {},
-      rowSelection: data.selected ? JSON.parse(data.selected) : {},
+      columnVisibility: data.columns
+        ? (JSON.parse(data.columns) as Record<string, boolean>)
+        : {},
+      rowSelection: data.selected
+        ? (JSON.parse(data.selected) as Record<string, boolean>)
+        : {},
     };
   });
 

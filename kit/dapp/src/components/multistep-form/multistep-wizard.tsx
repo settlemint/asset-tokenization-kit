@@ -259,7 +259,7 @@ export function MultiStepWizard<TFormData = Record<string, unknown>>({
     <WizardProvider value={contextValue}>
       <div
         className={cn("flex", className)}
-        style={{ height: `${dynamicHeight}px` }}
+        style={{ height: `${String(dynamicHeight)}px` }}
       >
         <div className="flex h-full w-full rounded-xl shadow-lg overflow-hidden">
           {/* Sidebar */}

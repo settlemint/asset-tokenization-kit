@@ -357,7 +357,6 @@ export function formatValue(
       return <span className="block tabular-nums">{formatted}</span>;
     }
 
-    case "text":
     default:
       return <span>{safeToString(value)}</span>;
   }

@@ -70,15 +70,12 @@ export function DataTableRowActions({
 
   const menuItemHandlers = useMemo(() => {
     if (!actions) return {};
-    return actions.reduce(
-      (acc, action) => {
-        acc[action.id] = () => {
-          handleMenuItemClick(action.id);
-        };
-        return acc;
-      },
-      {} as Record<string, () => void>
-    );
+    return actions.reduce<Record<string, () => void>>((acc, action) => {
+      acc[action.id] = () => {
+        handleMenuItemClick(action.id);
+      };
+      return acc;
+    }, {});
   }, [actions, handleMenuItemClick]);
 
   if (!actions && !detailUrl) {
