@@ -1,10 +1,14 @@
 import MultipleSelector from "@/components/ui/multiselect";
-import countries from "i18n-iso-countries";
+import countries, {
+  alpha2ToNumeric,
+  getAlpha2Code,
+  getName,
+} from "i18n-iso-countries";
 import { useTranslation } from "react-i18next";
 
 interface CountryMultiselectProps {
-  value?: string[];
-  onChange?: (value: string[]) => void;
+  value: string[]; // Numeric country codes
+  onChange: (value: { name: string; numeric: string }[]) => void;
 }
 
 export function CountryMultiselect({
@@ -20,22 +24,48 @@ export function CountryMultiselect({
     label: value,
   }));
 
+  const getCountryCode = (country: string) => {
+    const alpha2Code = getAlpha2Code(country, i18n.language);
+    if (!alpha2Code) {
+      throw new Error(`Alpha2 code for country ${country} not found`);
+    }
+
+    const numericCode = alpha2ToNumeric(alpha2Code);
+    if (!numericCode) {
+      throw new Error(`Numeric code for country ${country} not found`);
+    }
+    return numericCode;
+  };
+
   return (
     <MultipleSelector
       commandProps={{
         label: t("label"),
       }}
-      value={value?.map((country) => ({
-        value: country,
-        label: country,
-      }))}
+      value={value.map((code) => {
+        const name = getName(code, i18n.language);
+        if (!name) {
+          throw new Error(`Name for country ${code} not found`);
+        }
+        return {
+          value: name,
+          label: name,
+        };
+      })}
       onChange={(options) => {
-        onChange?.(options.map((option) => option.value));
+        onChange(
+          options.map((option) => ({
+            name: option.value,
+            numeric: getCountryCode(option.value),
+          }))
+        );
       }}
       defaultOptions={countriesOptions}
       placeholder={t("placeholder")}
       hidePlaceholderWhenSelected
-      emptyIndicator={<p className="text-center text-sm">{t("emptyIndicator")}</p>}
+      emptyIndicator={
+        <p className="text-center text-sm">{t("emptyIndicator")}</p>
+      }
     />
   );
 }

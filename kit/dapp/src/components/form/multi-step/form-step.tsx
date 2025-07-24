@@ -14,10 +14,18 @@ interface FormStepTitleProps {
 
 export function FormStepTitle({ children }: FormStepTitleProps) {
   return (
-    <h2 className="text-2xl font-semibold leading-none tracking-tight mb-2">
+    <h2 className="text-2xl font-semibold leading-none tracking-tight mb-6">
       {children}
     </h2>
   );
+}
+
+interface FormStepSubtitleProps {
+  children: ReactNode;
+}
+
+export function FormStepSubtitle({ children }: FormStepSubtitleProps) {
+  return <div className="text-sm font-medium leading-6 mb-1">{children}</div>;
 }
 
 interface FormStepDescriptionProps {

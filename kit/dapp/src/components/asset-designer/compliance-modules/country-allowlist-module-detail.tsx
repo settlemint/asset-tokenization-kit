@@ -1,24 +1,46 @@
 import { complianceModuleConfig } from "@/components/compliance/config";
 import { CountryMultiselect } from "@/components/country/country-multiselect";
 import { Button } from "@/components/ui/button";
-import { ComplianceTypeIdEnum } from "@/lib/zod/validators/compliance";
+import {
+  ComplianceModulePair,
+  ComplianceTypeIdEnum,
+  type CountryAllowListParams,
+} from "@/lib/zod/validators/compliance";
 import { ArrowLeftIcon } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface CountryAllowlistModuleDetailProps {
   onBack: () => void;
+  onChange: (
+    modulePair:
+      | {
+          typeId: typeof ComplianceTypeIdEnum.CountryAllowListComplianceModule;
+          params: CountryAllowListParams;
+        }
+      | {
+          typeId: typeof ComplianceTypeIdEnum.CountryAllowListComplianceModule;
+          disabled: true;
+        }
+  ) => void;
+  modulePair: ComplianceModulePair;
   onEnable: () => void;
 }
 
 export function CountryAllowlistModuleDetail({
   onBack,
+  onChange,
+  modulePair,
   onEnable,
 }: CountryAllowlistModuleDetailProps) {
-  const { t } = useTranslation("compliance-modules");
+  const { t } = useTranslation(["compliance-modules", "asset-designer"]);
   const config =
     complianceModuleConfig[
       ComplianceTypeIdEnum.CountryAllowListComplianceModule
     ];
+  const [countryCodes, setCountryCodes] = useState<CountryAllowListParams>(
+    modulePair.params
+  );
 
   return (
     <div className="flex flex-col h-full">
@@ -52,16 +74,45 @@ export function CountryAllowlistModuleDetail({
               {t("modules.countryAllowList.description")}
             </p>
           </div>
-          <CountryMultiselect />
+          <CountryMultiselect
+            value={modulePair.params}
+            onChange={(values) => {
+              setCountryCodes(values.map((value) => value.numeric));
+            }}
+          />
         </div>
       </div>
 
       {/* Footer with action buttons */}
-      <div className="flex items-center justify-end gap-3 pt-6">
+      <div className="flex items-center justify-between gap-3 pt-6">
         <Button variant="outline" onClick={onBack}>
           Back
         </Button>
-        <Button onClick={onEnable}>Enable</Button>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={() => {
+              onChange({
+                typeId: ComplianceTypeIdEnum.CountryAllowListComplianceModule,
+                disabled: true,
+              });
+              onBack();
+            }}
+          >
+            {t("asset-designer:form.buttons.disable")}
+          </Button>
+          <Button
+            onClick={() => {
+              onChange({
+                typeId: ComplianceTypeIdEnum.CountryAllowListComplianceModule,
+                params: countryCodes,
+              });
+              onEnable();
+            }}
+          >
+            {t("asset-designer:form.buttons.enable")}
+          </Button>
+        </div>
       </div>
     </div>
   );

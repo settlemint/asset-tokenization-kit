@@ -86,6 +86,24 @@ export const ComplianceTypeIdEnum = {
 export const complianceTypeId = () =>
   z.enum(complianceTypeIds).describe("Compliance module typeId identifier");
 
+export const countryAllowListParams = () =>
+  z.array(isoCountryCode).describe("Array of ISO country codes to allow");
+export const countryBlockListParams = () =>
+  z.array(isoCountryCode).describe("Array of ISO country codes to block");
+export const addressBlockListParams = () =>
+  z.array(ethereumAddress).describe("Array of Ethereum addresses to block");
+export const identityAllowListParams = () =>
+  z
+    .array(ethereumAddress)
+    .describe("Array of identity contract addresses to allow");
+export const identityBlockListParams = () =>
+  z
+    .array(ethereumAddress)
+    .describe("Array of identity contract addresses to block");
+
+export const smartIdentityVerificationParams = () =>
+  z.array(z.string()).describe("Empty array (no parameters required)");
+
 /**
  * Discriminated union schema for compliance module parameters.
  * Each compliance module type has specific parameter requirements.
@@ -116,47 +134,30 @@ export const complianceParams = () =>
       // Address-based compliance modules
       z.object({
         typeId: z.literal("AddressBlockListComplianceModule"),
-        params: z
-          .array(ethereumAddress)
-          .describe("Array of Ethereum addresses to block"),
+        params: addressBlockListParams(),
       }),
       // Country-based compliance modules
       z.object({
         typeId: z.literal("CountryAllowListComplianceModule"),
-        params: z
-          .array(isoCountryCode)
-          .describe("Array of ISO country codes to allow"),
+        params: countryAllowListParams(),
       }),
       z.object({
         typeId: z.literal("CountryBlockListComplianceModule"),
-        params: z
-          .array(isoCountryCode)
-          .describe("Array of ISO country codes to block"),
+        params: countryBlockListParams(),
       }),
       // Identity-based compliance modules (using addresses as identity references)
       z.object({
         typeId: z.literal("IdentityAllowListComplianceModule"),
-        params: z
-          .array(ethereumAddress)
-          .describe("Array of identity contract addresses to allow"),
+        params: identityAllowListParams(),
       }),
       z.object({
         typeId: z.literal("IdentityBlockListComplianceModule"),
-        params: z
-          .array(ethereumAddress)
-          .describe("Array of identity contract addresses to block"),
+        params: identityBlockListParams(),
       }),
       // SMART Identity Verification (no specific params needed)
       z.object({
         typeId: z.literal("SMARTIdentityVerificationComplianceModule"),
-        params: z
-          .array(z.string())
-          .length(
-            0,
-            "SMART Identity Verification module does not accept parameters"
-          )
-          .default([])
-          .describe("Empty array (no parameters required)"),
+        params: smartIdentityVerificationParams(),
       }),
     ])
     .describe("Compliance module configuration with type-specific parameters");
@@ -337,6 +338,30 @@ export type ComplianceTypeIdArray = z.infer<
  */
 export type ComplianceTypeIdSet = z.infer<
   ReturnType<typeof complianceTypeIdSet>
+>;
+
+export type CountryAllowListParams = z.infer<
+  ReturnType<typeof countryAllowListParams>
+>;
+
+export type CountryBlockListParams = z.infer<
+  ReturnType<typeof countryBlockListParams>
+>;
+
+export type AddressBlockListParams = z.infer<
+  ReturnType<typeof addressBlockListParams>
+>;
+
+export type IdentityAllowListParams = z.infer<
+  ReturnType<typeof identityAllowListParams>
+>;
+
+export type IdentityBlockListParams = z.infer<
+  ReturnType<typeof identityBlockListParams>
+>;
+
+export type SmartIdentityVerificationParams = z.infer<
+  ReturnType<typeof smartIdentityVerificationParams>
 >;
 
 /**

@@ -97,6 +97,7 @@
       "next": "Next",
       "back": "Back",
       "enable": "Enable",
+      "disable": "Disable",
       "cancel": "Cancel",
       "submit": "Submit"
     }
@@ -117,6 +118,14 @@
   },
   "compliance": {
     "title": "Compliance Modules",
-    "description": "Enable and configure compliance modules to control who can access your asset"
+    "description": "Enable and configure compliance modules to control who can access your asset",
+    "configured": {
+      "title": "Enabled Modules",
+      "description": "Compliance modules that have been enabled for your asset."
+    },
+    "available": {
+      "title": "Available Modules",
+      "description": "You can enable any of the following compliance modules to control who can access your asset."
+    }
   }
 }
