@@ -1,6 +1,6 @@
+import { owner } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
 import type { ATKTopic } from "../../../constants/topics";
-import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { topicManager } from "../../../services/topic-manager";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";

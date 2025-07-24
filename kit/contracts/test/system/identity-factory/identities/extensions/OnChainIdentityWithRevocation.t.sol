@@ -12,6 +12,8 @@ import { ERC734 } from "../../../../../contracts/onchainid/extensions/ERC734.sol
 import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
 import { ERC735 } from "../../../../../contracts/onchainid/extensions/ERC735.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
+import { ERC734KeyPurposes } from "../../../../../contracts/onchainid/ERC734KeyPurposes.sol";
+import { ERC734KeyTypes } from "../../../../../contracts/onchainid/ERC734KeyTypes.sol";
 
 // Concrete implementation for testing the abstract contract
 contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentityWithRevocation {
@@ -22,25 +24,32 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
     error AlreadyInitialized();
     error SenderLacksManagementKey();
     error SenderLacksActionKey();
-    error SenderLacksClaimSignerKey();
+
     // Errors for checks that might be redundant if ERC734.sol handles them robustly
     error ReplicatedExecutionIdDoesNotExist(uint256 executionId);
     error ReplicatedExecutionAlreadyPerformed(uint256 executionId);
 
     // --- Modifiers for Access Control ---
     modifier onlyManager() {
-        if (!(msg.sender == address(this) || keyHasPurpose(keccak256(abi.encode(msg.sender)), MANAGEMENT_KEY_PURPOSE)))
-        {
+        if (
+            !(
+                msg.sender == address(this)
+                    || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.MANAGEMENT_KEY)
+            )
+        ) {
             revert SenderLacksManagementKey();
         }
         _;
     }
 
-    modifier onlyClaimKey() {
+    modifier onlyActionKey() {
         if (
-            !(msg.sender == address(this) || keyHasPurpose(keccak256(abi.encode(msg.sender)), CLAIM_SIGNER_KEY_PURPOSE))
+            !(
+                msg.sender == address(this)
+                    || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.ACTION_KEY)
+            )
         ) {
-            revert SenderLacksClaimSignerKey();
+            revert SenderLacksActionKey();
         }
         _;
     }
@@ -108,11 +117,11 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
 
         bytes32 senderKeyHash = keccak256(abi.encode(msg.sender));
         if (executionToApprove.to == address(this)) {
-            if (!keyHasPurpose(senderKeyHash, MANAGEMENT_KEY_PURPOSE)) {
+            if (!keyHasPurpose(senderKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY)) {
                 revert SenderLacksManagementKey();
             }
         } else {
-            if (!keyHasPurpose(senderKeyHash, ACTION_KEY_PURPOSE)) {
+            if (!keyHasPurpose(senderKeyHash, ERC734KeyPurposes.ACTION_KEY)) {
                 revert SenderLacksActionKey();
             }
         }
@@ -138,9 +147,9 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
         bytes32 senderKeyHash = keccak256(abi.encode(msg.sender));
         bool autoApproved = false;
 
-        if (keyHasPurpose(senderKeyHash, MANAGEMENT_KEY_PURPOSE)) {
+        if (keyHasPurpose(senderKeyHash, ERC734KeyPurposes.MANAGEMENT_KEY)) {
             autoApproved = true;
-        } else if (_to != address(this) && keyHasPurpose(senderKeyHash, ACTION_KEY_PURPOSE)) {
+        } else if (_to != address(this) && keyHasPurpose(senderKeyHash, ERC734KeyPurposes.ACTION_KEY)) {
             autoApproved = true;
         }
 
@@ -179,7 +188,7 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
         public
         virtual
         override(ERC735, IERC735) // Overrides ERC735's implementation and fulfills IERC735
-        onlyClaimKey
+        onlyActionKey
         returns (bytes32 claimId)
     {
         return ERC735.addClaim(_topic, _scheme, _issuer, _signature, _data, _uri);
@@ -227,7 +236,7 @@ contract OnChainIdentityWithRevocationTest is Test {
 
         // The identity needs to have the signer's key registered for this.
         vm.prank(admin);
-        identity.addKey(keccak256(abi.encode(signer)), 3, 1); // 3 = CLAIM_SIGNER_KEY_PURPOSE
+        identity.addKey(keccak256(abi.encode(signer)), ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
 
         // Add the initial test claim
         (TEST_CLAIM_ID, testSignature) = _addTestClaim(testDataString);

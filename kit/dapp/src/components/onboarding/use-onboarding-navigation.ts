@@ -1,61 +1,65 @@
+import type { OnboardingStep } from "@/components/onboarding/state-machine";
 import {
-  OnboardingStep,
+  onboardingSteps,
   updateOnboardingStateMachine,
 } from "@/components/onboarding/state-machine";
+import { useSession } from "@/hooks/use-auth";
+import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
 import type { CurrentUser } from "@/orpc/routes/user/routes/user.me.schema";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { useStore } from "@tanstack/react-store";
 import { useCallback } from "react";
+import { zeroAddress } from "viem";
+
+const logger = createLogger();
 
 export function useOnboardingNavigation() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { refetch, data: session } = useSession();
+  const steps = useStore(onboardingSteps);
+
+  const refreshSession = useCallback(async () => {
+    await authClient.getSession({
+      query: {
+        disableCookieCache: true,
+      },
+    });
+    await refetch();
+  }, [refetch]);
 
   /**
    * Refreshes user data and updates the onboarding state machine
    */
   const refreshUserState = useCallback(async (): Promise<CurrentUser> => {
-    // Invalidate queries to mark as stale
-    await queryClient.invalidateQueries({
-      queryKey: orpc.user.me.key(),
-    });
+    try {
+      if (session?.user.wallet === zeroAddress) {
+        // Clear auth session cache (only for non-wallet users, all other operations automatically update the cookie)
+        await refreshSession();
+      }
+      try {
+        await queryClient.invalidateQueries({
+          queryKey: orpc.user.me.queryKey(),
+          refetchType: "all",
+        });
+      } catch (invalidateError) {
+        logger.error("Failed to invalidate queries", invalidateError);
+      }
+      const updatedUser = await queryClient.fetchQuery(
+        orpc.user.me.queryOptions()
+      );
 
-    // Fetch fresh user data
-    const updatedUser = await queryClient.fetchQuery(
-      orpc.user.me.queryOptions()
-    );
-
-    // Update the state machine with new data
-    updateOnboardingStateMachine({ user: updatedUser });
-
-    return updatedUser;
-  }, [queryClient]);
-
-  /**
-   * Navigate to a specific onboarding step
-   */
-  const navigateToStep = useCallback(
-    async (step: OnboardingStep, _subStep?: string) => {
-      await navigate({
-        to: `/onboarding/${step}` as const,
-      });
-    },
-    [navigate]
-  );
-
-  /**
-   * Navigate to a substep within the current step
-   */
-  const navigateToSubStep = useCallback(
-    async (step: OnboardingStep, subStep: string) => {
-      await navigate({
-        to: `/onboarding/${step}` as const,
-        search: () => ({ subStep }),
-      });
-    },
-    [navigate]
-  );
+      // Update the state machine with new data
+      updateOnboardingStateMachine({ user: updatedUser });
+      return updatedUser;
+    } catch (error) {
+      logger.error("Failed to refresh user state", error);
+      throw error;
+    }
+  }, [queryClient, refreshSession, session?.user.wallet]);
 
   /**
    * Complete current step and navigate to next appropriate step
@@ -63,65 +67,48 @@ export function useOnboardingNavigation() {
   const completeStepAndNavigate = useCallback(
     async (currentStep: OnboardingStep, nextStep?: OnboardingStep) => {
       // Refresh state to ensure we have latest data
-      const updatedUser = await refreshUserState();
+      await refreshUserState();
 
       // Determine next step if not provided
       if (!nextStep) {
-        switch (currentStep) {
-          case OnboardingStep.wallet:
-            nextStep = OnboardingStep.walletSecurity;
-            break;
-          case OnboardingStep.walletSecurity:
-            nextStep = OnboardingStep.walletRecoveryCodes;
-            break;
-          case OnboardingStep.walletRecoveryCodes:
-            nextStep = updatedUser.onboardingState.isAdmin
-              ? OnboardingStep.systemDeploy
-              : OnboardingStep.identity;
-            break;
-          case OnboardingStep.systemDeploy:
-            nextStep = OnboardingStep.systemSettings;
-            break;
-          case OnboardingStep.systemSettings:
-            nextStep = OnboardingStep.systemAssets;
-            break;
-          case OnboardingStep.systemAssets:
-            nextStep = OnboardingStep.systemAddons;
-            break;
-          case OnboardingStep.systemAddons:
-            nextStep = OnboardingStep.identity;
-            break;
-          case OnboardingStep.identity:
-            // Navigate to home - onboarding complete
-            await navigate({ to: "/" });
-            return;
-          default:
-            throw new Error(`Unknown step: ${currentStep}`);
+        const currentStepIndex = steps.findIndex(
+          (step) => step.step === currentStep
+        );
+        nextStep = steps[currentStepIndex + 1]?.step;
+        if (!nextStep) {
+          // Reached the last step, navigate to home page (onboarding complete)
+          await refreshSession(); // Refresh session to ensure we have latest data (eg kyc name)
+          await navigate({ to: "/" });
+          return;
         }
       }
 
-      await navigateToStep(nextStep);
+      if (currentStep === nextStep) {
+        return;
+      }
+
+      await navigate({
+        to: `/onboarding/${nextStep}` as const,
+      });
     },
-    [refreshUserState, navigate, navigateToStep]
+    [refreshUserState, refreshSession, navigate, steps]
   );
 
   /**
-   * Handle successful mutation completion
-   * Refreshes state and navigates to the completion substep
+   * Navigate directly to a specific onboarding step
    */
-  const handleMutationSuccess = useCallback(
-    async (step: OnboardingStep, subStep = "complete") => {
-      await refreshUserState();
-      await navigateToSubStep(step, subStep);
+  const navigateToStep = useCallback(
+    async (step: OnboardingStep) => {
+      await navigate({
+        to: `/onboarding/${step}` as const,
+      });
     },
-    [refreshUserState, navigateToSubStep]
+    [navigate]
   );
 
   return {
     refreshUserState,
-    navigateToStep,
-    navigateToSubStep,
     completeStepAndNavigate,
-    handleMutationSuccess,
+    navigateToStep,
   };
 }

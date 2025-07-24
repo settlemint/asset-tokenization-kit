@@ -1,0 +1,26 @@
+{
+  "verificationDialog": {
+    "authenticatorCode": "Authenticator-Code",
+    "pinCode": "PIN-Code",
+    "confirm": "Bestätigen",
+    "usePinInstead": "Stattdessen PIN-Code verwenden",
+    "useAuthenticatorInstead": "Stattdessen Authenticator-App verwenden",
+    "codeLengthError": "Der Code muss 6 Ziffern haben",
+    "cancel": "Abbrechen"
+  },
+  "kycForm": {
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "dob": "Geburtsdatum",
+    "country": "Wohnsitzland",
+    "residencyStatus": "Aufenthaltsstatus",
+    "residencyStatusOptions": {
+      "resident": "Alleiniger Wohnsitz - Ich lebe und bin nur im oben genannten Land rechtlich/steuerlich ansässig",
+      "dual_resident": "Doppelter Wohnsitz - Ich bin in mehr als einem Land rechtlich/steuerlich ansässig",
+      "non_resident": "Nicht ansässig - Ich lebe nicht im oben genannten Land oder werde dort nicht als ansässig betrachtet",
+      "unknown": "Möchte ich nicht sagen"
+    },
+    "nationalId": "Nationale ID",
+    "submit": "Speichern und fortfahren"
+  }
+}

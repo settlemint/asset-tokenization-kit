@@ -1,6 +1,5 @@
 [install]
 exact = true
-linker = "isolated"
 
 [console]
 depth = 5

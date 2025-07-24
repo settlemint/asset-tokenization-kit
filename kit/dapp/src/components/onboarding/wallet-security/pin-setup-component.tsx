@@ -1,62 +1,16 @@
 import { PincodeInput } from "@/components/form/inputs/pincode-input";
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
-import { useSession } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth/auth.client";
 import { pincode } from "@/lib/zod/validators/pincode";
-import { orpc } from "@/orpc/orpc-client";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { z } from "zod";
 
-const logger = createLogger({ level: "debug" });
-
-interface PinSetupComponentProps {
-  onSuccess: () => void;
-  onBack: () => void;
-}
-
-// Create a schema for the form with cross-field validation
-const pinFormSchema = z
-  .object({
-    pincode: pincode(),
-    confirmPincode: pincode(),
-  })
-  .refine((data) => data.pincode === data.confirmPincode, {
-    message: "PIN codes don't match",
-    path: ["confirmPincode"],
-  });
-
-export function PinSetupComponent({
-  onSuccess,
-  onBack,
-}: PinSetupComponentProps) {
-  const queryClient = useQueryClient();
-  const { refetch } = useSession();
-
-  const { mutateAsync: enablePincode, isPending } = useMutation({
-    mutationFn: async (pincode: string) =>
-      authClient.pincode.enable({
-        pincode,
-      }),
-    onSuccess: async () => {
-      await authClient.getSession({
-        query: {
-          disableCookieCache: true,
-        },
-      });
-      await refetch();
-      await queryClient.refetchQueries(orpc.user.me.queryOptions());
-      toast.success("PIN code set successfully");
-
-      onSuccess();
-    },
-    onError: (error: Error) => {
-      logger.error("enablePincode error:", error);
-      toast.error(error.message || "Failed to set PIN code");
-    },
-  });
+export function PinSetupComponent({ closeModal }: { closeModal: () => void }) {
+  const { refreshUserState } = useOnboardingNavigation();
+  const { t } = useTranslation(["onboarding", "common"]);
 
   const form = useForm({
     defaultValues: {
@@ -64,208 +18,150 @@ export function PinSetupComponent({
       confirmPincode: "",
     },
     validators: {
-      // Immediate field-level validation for better UX
       onChange: ({ value }) => {
-        // Validate individual fields first
-        const fieldErrors: { pincode?: string; confirmPincode?: string } = {};
+        const errors: Partial<Record<keyof typeof value, string>> = {};
 
-        // Validate pincode field
+        // Validate pincode
         if (value.pincode) {
           const pincodeResult = pincode().safeParse(value.pincode);
           if (!pincodeResult.success) {
-            fieldErrors.pincode = z.prettifyError(pincodeResult.error);
+            errors.pincode = t("wallet-security.pincode.invalid-pin-format");
           }
         }
 
-        // Validate confirmPincode field
+        // Validate confirmPincode
         if (value.confirmPincode) {
-          const confirmPincodeResult = pincode().safeParse(
-            value.confirmPincode
-          );
-          if (!confirmPincodeResult.success) {
-            fieldErrors.confirmPincode = z.prettifyError(
-              confirmPincodeResult.error
+          const confirmResult = pincode().safeParse(value.confirmPincode);
+          if (!confirmResult.success) {
+            errors.confirmPincode = t(
+              "wallet-security.pincode.invalid-pin-format"
             );
           }
         }
 
-        // Only validate matching if both fields are valid and have values
+        // Check match when both are complete
         if (
-          value.pincode &&
-          value.confirmPincode &&
-          !fieldErrors.pincode &&
-          !fieldErrors.confirmPincode
+          Object.keys(errors).length === 0 &&
+          value.pincode.length === value.confirmPincode.length &&
+          value.pincode !== value.confirmPincode
         ) {
-          const result = pinFormSchema.safeParse(value);
-          if (!result.success) {
-            // Find the error for confirmPincode field
-            const confirmPincodeError = result.error.issues.find(
-              (issue) => issue.path[0] === "confirmPincode"
-            );
-
-            if (confirmPincodeError) {
-              fieldErrors.confirmPincode = confirmPincodeError.message;
-            }
-          }
+          errors.confirmPincode = t(
+            "wallet-security.pincode.pin-codes-dont-match"
+          );
         }
 
-        return Object.keys(fieldErrors).length > 0
-          ? { fields: fieldErrors }
-          : undefined;
+        return Object.keys(errors).length > 0 ? { fields: errors } : undefined;
       },
     },
     onSubmit: async ({ value }) => {
-      try {
-        logger.debug("Submitting PIN code...", value);
-        const result = await enablePincode(value.pincode);
-        logger.debug("PIN code submitted successfully", result);
-      } catch (error) {
-        logger.error("Failed to submit PIN code:", error);
-      }
+      await authClient.pincode.enable({
+        pincode: value.pincode,
+      });
+      await refreshUserState();
+      toast.success(t("wallet-security.pincode.success"));
+      closeModal();
     },
   });
 
   return (
-    <div className="max-w-md mx-auto space-y-6">
-      <div className="text-center space-y-2">
-        <h3 className="text-lg font-semibold">Set up PIN Code</h3>
-        <p className="text-sm text-muted-foreground">
-          Create a 6-digit PIN code to secure your wallet transactions
-        </p>
-      </div>
-
-      <div>
+    <OnboardingStepLayout
+      title={t("wallet-security.pincode.title")}
+      description={t("wallet-security.pincode.description")}
+    >
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void form.handleSubmit();
+        }}
+        className="space-y-6"
+      >
         <form.Subscribe>
           {(state) => {
             const showConfirmField = state.values.pincode.length === 6;
-            const pinsMatch =
-              state.values.pincode === state.values.confirmPincode;
-            const bothPinsComplete =
+            const isValid =
               state.values.pincode.length === 6 &&
-              state.values.confirmPincode.length === 6;
-
-            // Check for field-specific errors only when the confirm field is shown
-            const hasFieldErrors =
-              showConfirmField &&
-              state.fieldMeta.confirmPincode.errors.length > 0;
-
-            const isFormValid =
-              bothPinsComplete && pinsMatch && !hasFieldErrors;
+              state.values.confirmPincode.length === 6 &&
+              state.values.pincode === state.values.confirmPincode &&
+              !state.errors.length;
 
             return (
               <div className="space-y-6">
                 <form.Field name="pincode">
                   {(field) => (
-                    <div className="space-y-4">
-                      <div className="text-center">
-                        <label className="text-sm font-medium">
-                          Enter PIN Code
-                        </label>
-                      </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium block text-center">
+                        {t("wallet-security.pincode.enter-pin")}
+                      </label>
                       <div className="flex justify-center">
                         <PincodeInput
                           value={field.state.value}
-                          onChange={(value) => {
-                            field.handleChange(value);
-                          }}
-                          disabled={isPending}
-                          aria-invalid={field.state.meta.errors.length > 0}
-                          aria-describedby={
-                            field.state.meta.errors.length > 0
-                              ? "pincode-error"
-                              : undefined
-                          }
+                          onChange={field.handleChange}
+                          autoFocus
                         />
                       </div>
                       {field.state.meta.errors.length > 0 && (
-                        <div
-                          id="pincode-error"
-                          className="text-sm text-destructive text-center"
-                        >
-                          {String(field.state.meta.errors[0])
-                            .split("\n")
-                            .map((line, idx) => (
-                              <div key={idx}>{line}</div>
-                            ))}
-                        </div>
+                        <p className="text-sm text-destructive text-center">
+                          {field.state.meta.errors[0]}
+                        </p>
                       )}
                     </div>
                   )}
                 </form.Field>
 
-                <form.Field name="confirmPincode">
-                  {(field) =>
-                    showConfirmField ? (
-                      <div className="space-y-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
-                        <div className="text-center">
-                          <label className="text-sm font-medium">
-                            Confirm PIN Code
-                          </label>
-                        </div>
+                {showConfirmField && (
+                  <form.Field name="confirmPincode">
+                    {(field) => (
+                      <div className="space-y-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
+                        <label className="text-sm font-medium block text-center">
+                          {t("wallet-security.pincode.confirm-pin")}
+                        </label>
                         <div className="flex justify-center">
                           <PincodeInput
                             value={field.state.value}
-                            onChange={(value) => {
-                              field.handleChange(value);
-                            }}
-                            disabled={isPending}
-                            aria-invalid={field.state.meta.errors.length > 0}
-                            aria-describedby={
-                              field.state.meta.errors.length > 0
-                                ? "confirm-pincode-error"
-                                : undefined
-                            }
+                            onChange={field.handleChange}
                           />
                         </div>
                         {field.state.meta.errors.length > 0 && (
-                          <div
-                            id="confirm-pincode-error"
-                            className="text-sm text-destructive text-center animate-in fade-in-0 duration-200"
-                          >
-                            {String(field.state.meta.errors[0])
-                              .split("\n")
-                              .map((line, idx) => (
-                                <div key={idx}>{line}</div>
-                              ))}
-                          </div>
+                          <p className="text-sm text-destructive text-center">
+                            {field.state.meta.errors[0]}
+                          </p>
                         )}
-                        {/* Success indicator when PINs match */}
                         {field.state.value.length === 6 &&
                           state.values.pincode === field.state.value &&
                           field.state.meta.errors.length === 0 && (
-                            <p className="text-sm text-green-600 text-center animate-in fade-in-0 duration-200">
-                              ✓ PIN codes match
+                            <p className="text-sm text-green-600 text-center">
+                              {t("wallet-security.pincode.pin-codes-match")}
                             </p>
                           )}
                       </div>
-                    ) : null
-                  }
-                </form.Field>
+                    )}
+                  </form.Field>
+                )}
 
                 <div className="flex gap-3 pt-4">
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={onBack}
+                    onClick={closeModal}
                     className="flex-1"
-                    disabled={isPending}
                   >
-                    Back
+                    {t("common:actions.cancel")}
                   </Button>
                   <Button
-                    type="button"
-                    disabled={!isFormValid || isPending || state.isSubmitting}
+                    type="submit"
+                    disabled={!isValid || state.isSubmitting}
                     className="flex-1"
-                    onClick={() => void form.handleSubmit()}
                   >
-                    {isPending ? "Setting up..." : "Set PIN Code"}
+                    {state.isSubmitting
+                      ? t("wallet-security.pincode.submitting")
+                      : t("wallet-security.pincode.set-pin")}
                   </Button>
                 </div>
               </div>
             );
           }}
         </form.Subscribe>
-      </div>
-    </div>
+      </form>
+    </OnboardingStepLayout>
   );
 }

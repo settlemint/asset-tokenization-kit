@@ -38,6 +38,7 @@ export function DateTimeField({
   minDate,
   maxDate,
   placeholder,
+  hideTime = false,
 }: {
   label: string;
   description?: string;
@@ -45,6 +46,7 @@ export function DateTimeField({
   minDate?: Date;
   maxDate?: Date;
   placeholder?: string;
+  hideTime?: boolean;
 }) {
   // The `Field` infers that it should have a `value` type of `Date`
   const field = useFieldContext<Date | undefined>();
@@ -139,19 +141,23 @@ export function DateTimeField({
           </PopoverContent>
         </Popover>
 
-        <Input
-          type="time"
-          step="60"
-          value={
-            selectedDate ? selectedDate.toTimeString().slice(0, 5) : defaultTime
-          }
-          onChange={handleTimeChange}
-          className={cn(
-            errorClassNames(field.state.meta),
-            "w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none",
-            !selectedDate && "text-muted-foreground"
-          )}
-        />
+        {!hideTime && (
+          <Input
+            type="time"
+            step="60"
+            value={
+              selectedDate
+                ? selectedDate.toTimeString().slice(0, 5)
+                : defaultTime
+            }
+            onChange={handleTimeChange}
+            className={cn(
+              errorClassNames(field.state.meta),
+              "w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none",
+              !selectedDate && "text-muted-foreground"
+            )}
+          />
+        )}
       </div>
       <FieldErrors {...field.state.meta} />
     </FieldLayout>

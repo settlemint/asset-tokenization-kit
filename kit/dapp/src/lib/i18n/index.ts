@@ -54,6 +54,7 @@ export const namespaces = [
   "compliance-modules",
   "common",
   "country-multiselect",
+  "components",
   "dashboard",
   "data-table",
   "deposits-table",

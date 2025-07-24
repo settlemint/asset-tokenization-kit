@@ -11,6 +11,8 @@ import { ERC734 } from "../../../../contracts/onchainid/extensions/ERC734.sol";
 import { IERC735 } from "@onchainid/contracts/interface/IERC735.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { ERC734KeyPurposes } from "../../../../contracts/onchainid/ERC734KeyPurposes.sol";
+import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
 
 contract IATKIdentityTest is Test {
     ATKIdentityImplementation public implementation;
@@ -22,12 +24,6 @@ contract IATKIdentityTest is Test {
     address public user2 = makeAddr("user2");
     address public claimer = makeAddr("claimer");
     address public forwarder = makeAddr("forwarder");
-
-    // Key purposes (from ERC734)
-    uint256 constant MANAGEMENT_KEY_PURPOSE = 1;
-    uint256 constant ACTION_KEY_PURPOSE = 2;
-    uint256 constant CLAIM_SIGNER_KEY_PURPOSE = 3;
-    uint256 constant ENCRYPTION_KEY_PURPOSE = 4;
 
     // Events from ERC734
     event KeyAdded(bytes32 indexed key, uint256 indexed purpose, uint256 indexed keyType);
@@ -61,7 +57,8 @@ contract IATKIdentityTest is Test {
         implementation = new ATKIdentityImplementation(forwarder);
 
         // Deploy proxy with initialization data
-        bytes memory initData = abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, user1);
+        bytes memory initData =
+            abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, user1, new address[](0));
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
         identity = IATKIdentity(address(proxy));
     }
@@ -69,13 +66,13 @@ contract IATKIdentityTest is Test {
     function test_InitializedIdentityHasCorrectKey() public view {
         // Identity should be initialized with user1 as management key
         bytes32 user1KeyHash = keccak256(abi.encode(user1));
-        assertTrue(identity.keyHasPurpose(user1KeyHash, MANAGEMENT_KEY_PURPOSE));
+        assertTrue(identity.keyHasPurpose(user1KeyHash, ERC734KeyPurposes.MANAGEMENT_KEY));
 
         // Verify key details
         (uint256[] memory purposes, uint256 keyType, bytes32 key) = identity.getKey(user1KeyHash);
         assertEq(key, user1KeyHash);
         assertEq(purposes.length, 1);
-        assertEq(purposes[0], MANAGEMENT_KEY_PURPOSE);
+        assertEq(purposes[0], ERC734KeyPurposes.MANAGEMENT_KEY);
         assertEq(keyType, 1);
     }
 
@@ -83,14 +80,15 @@ contract IATKIdentityTest is Test {
         // Use the implementation directly for this test
         vm.expectRevert(ERC734.InvalidInitialManagementKey.selector);
         new ERC1967Proxy(
-            address(implementation), abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, address(0))
+            address(implementation),
+            abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, address(0), new address[](0))
         );
     }
 
     function test_CannotInitializeTwice() public {
         // Identity is already initialized, so trying to initialize again should fail
         vm.expectRevert();
-        identity.initialize(admin);
+        identity.initialize(admin, new address[](0));
     }
 
     function test_AddKeySuccess() public {
@@ -98,11 +96,11 @@ contract IATKIdentityTest is Test {
 
         vm.prank(user1); // user1 has management key
         vm.expectEmit(true, true, true, false);
-        emit KeyAdded(user2KeyHash, ACTION_KEY_PURPOSE, 1);
+        emit KeyAdded(user2KeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
-        bool success = identity.addKey(user2KeyHash, ACTION_KEY_PURPOSE, 1);
+        bool success = identity.addKey(user2KeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
         assertTrue(success);
-        assertTrue(identity.keyHasPurpose(user2KeyHash, ACTION_KEY_PURPOSE));
+        assertTrue(identity.keyHasPurpose(user2KeyHash, ERC734KeyPurposes.ACTION_KEY));
     }
 
     function test_AddKeyRequiresManagementKey() public {
@@ -110,7 +108,7 @@ contract IATKIdentityTest is Test {
 
         vm.prank(user2); // user2 doesn't have management key
         vm.expectRevert(ATKIdentityImplementation.SenderLacksManagementKey.selector);
-        identity.addKey(user2KeyHash, ACTION_KEY_PURPOSE, 1);
+        identity.addKey(user2KeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
     }
 
     function test_RemoveKeySuccess() public {
@@ -118,33 +116,34 @@ contract IATKIdentityTest is Test {
 
         // Add key first
         vm.prank(user1);
-        identity.addKey(user2KeyHash, ACTION_KEY_PURPOSE, 1);
+        identity.addKey(user2KeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Remove key
         vm.prank(user1);
         vm.expectEmit(true, true, true, false);
-        emit KeyRemoved(user2KeyHash, ACTION_KEY_PURPOSE, 1);
+        emit KeyRemoved(user2KeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
-        bool success = identity.removeKey(user2KeyHash, ACTION_KEY_PURPOSE);
+        bool success = identity.removeKey(user2KeyHash, ERC734KeyPurposes.ACTION_KEY);
         assertTrue(success);
-        assertFalse(identity.keyHasPurpose(user2KeyHash, ACTION_KEY_PURPOSE));
+        assertFalse(identity.keyHasPurpose(user2KeyHash, ERC734KeyPurposes.ACTION_KEY));
     }
 
     function test_RemoveKeyRequiresManagementKey() public {
         bytes32 user2KeyHash = keccak256(abi.encode(user2));
 
         vm.prank(user1);
-        identity.addKey(user2KeyHash, ACTION_KEY_PURPOSE, 1);
+        identity.addKey(user2KeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         vm.prank(user2); // user2 doesn't have management key
         vm.expectRevert(ATKIdentityImplementation.SenderLacksManagementKey.selector);
-        identity.removeKey(user2KeyHash, ACTION_KEY_PURPOSE);
+        identity.removeKey(user2KeyHash, ERC734KeyPurposes.ACTION_KEY);
     }
 
     function test_ExecuteWithManagementKey() public {
         // Execute call to self (requires management key)
-        bytes memory data =
-            abi.encodeWithSelector(identity.addKey.selector, keccak256(abi.encode(user2)), ACTION_KEY_PURPOSE, 1);
+        bytes memory data = abi.encodeWithSelector(
+            identity.addKey.selector, keccak256(abi.encode(user2)), ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA
+        );
 
         // The execution will fail because auto-approval doesn't work correctly
         // (this.approve() makes msg.sender the contract itself)
@@ -163,14 +162,14 @@ contract IATKIdentityTest is Test {
         assertTrue(success);
 
         // After approval and execution, user2 should have the action key
-        assertTrue(identity.keyHasPurpose(keccak256(abi.encode(user2)), ACTION_KEY_PURPOSE));
+        assertTrue(identity.keyHasPurpose(keccak256(abi.encode(user2)), ERC734KeyPurposes.ACTION_KEY));
     }
 
     function test_ExecuteWithActionKey() public {
         // Add action key for user2
         bytes32 user2KeyHash = keccak256(abi.encode(user2));
         vm.prank(user1); // user1 has management key
-        identity.addKey(user2KeyHash, ACTION_KEY_PURPOSE, 1);
+        identity.addKey(user2KeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Execute call to external contract (requires action key)
         bytes memory data = "";
@@ -219,7 +218,7 @@ contract IATKIdentityTest is Test {
         // Add action key for user2
         bytes32 user2KeyHash = keccak256(abi.encode(user2));
         vm.prank(user1); // user1 has management key
-        identity.addKey(user2KeyHash, ACTION_KEY_PURPOSE, 1);
+        identity.addKey(user2KeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Create execution that requires approval
         bytes memory data = "";
@@ -237,8 +236,9 @@ contract IATKIdentityTest is Test {
 
     function test_ApproveRequiresCorrectKey() public {
         // Create execution to self
-        bytes memory data =
-            abi.encodeWithSelector(identity.addKey.selector, keccak256(abi.encode(user2)), ACTION_KEY_PURPOSE, 1);
+        bytes memory data = abi.encodeWithSelector(
+            identity.addKey.selector, keccak256(abi.encode(user2)), ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA
+        );
         vm.prank(admin); // admin has no keys
         uint256 executionId = identity.execute(address(identity), 0, data);
 
@@ -260,7 +260,7 @@ contract IATKIdentityTest is Test {
         // Add claim signer key
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add claim using the identity contract itself as the issuer (self-issued claim)
         uint256 topic = 1;
@@ -293,9 +293,9 @@ contract IATKIdentityTest is Test {
         assertEq(retUri, uri);
     }
 
-    function test_AddClaimRequiresClaimSignerKey() public {
-        vm.prank(user2); // user2 has no claim signer key
-        vm.expectRevert(ATKIdentityImplementation.SenderLacksClaimSignerKey.selector);
+    function test_AddClaimRequiresClaimActionKey() public {
+        vm.prank(user2); // user2 has no action key
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksActionKey.selector);
         identity.addClaim(1, 1, address(identity), "signature", "data", "uri");
     }
 
@@ -303,7 +303,7 @@ contract IATKIdentityTest is Test {
         // Add claim signer key
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add claim using the identity contract itself as the issuer
         vm.prank(claimer);
@@ -318,16 +318,16 @@ contract IATKIdentityTest is Test {
         assertTrue(success);
     }
 
-    function test_RemoveClaimRequiresClaimSignerKey() public {
+    function test_RemoveClaimRequiresActionKey() public {
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         vm.prank(claimer);
         bytes32 claimId = identity.addClaim(1, 1, address(identity), "signature", "data", "uri");
 
-        vm.prank(user2); // user2 has no claim signer key
-        vm.expectRevert(ATKIdentityImplementation.SenderLacksClaimSignerKey.selector);
+        vm.prank(user2); // user2 has no action key
+        vm.expectRevert(ATKIdentityImplementation.SenderLacksActionKey.selector);
         identity.removeClaim(claimId);
     }
 
@@ -335,7 +335,7 @@ contract IATKIdentityTest is Test {
         // Add claim signer key
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add claim using the identity contract itself as the issuer
         bytes memory signature = "signature";
@@ -357,7 +357,7 @@ contract IATKIdentityTest is Test {
         // Add claim signer key
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add claim using the identity contract itself as the issuer
         vm.prank(claimer);
@@ -393,11 +393,11 @@ contract IATKIdentityTest is Test {
         bytes32 adminKeyHash = keccak256(abi.encode(admin));
 
         vm.prank(user1); // user1 has management key
-        identity.addKey(user2KeyHash, ACTION_KEY_PURPOSE, 1);
+        identity.addKey(user2KeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
         vm.prank(user1);
-        identity.addKey(adminKeyHash, ACTION_KEY_PURPOSE, 1);
+        identity.addKey(adminKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
-        bytes32[] memory actionKeys = identity.getKeysByPurpose(ACTION_KEY_PURPOSE);
+        bytes32[] memory actionKeys = identity.getKeysByPurpose(ERC734KeyPurposes.ACTION_KEY);
         assertEq(actionKeys.length, 2);
         assertTrue(actionKeys[0] == user2KeyHash || actionKeys[1] == user2KeyHash);
         assertTrue(actionKeys[0] == adminKeyHash || actionKeys[1] == adminKeyHash);
@@ -408,21 +408,23 @@ contract IATKIdentityTest is Test {
 
         // Add key with multiple purposes
         vm.prank(user1); // user1 has management key
-        identity.addKey(user2KeyHash, ACTION_KEY_PURPOSE, 1);
+        identity.addKey(user2KeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
         vm.prank(user1);
-        identity.addKey(user2KeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        identity.addKey(user2KeyHash, ERC734KeyPurposes.CLAIM_SIGNER_KEY, ERC734KeyTypes.ECDSA);
 
         uint256[] memory purposes = identity.getKeyPurposes(user2KeyHash);
         assertEq(purposes.length, 2);
-        assertTrue(purposes[0] == ACTION_KEY_PURPOSE || purposes[1] == ACTION_KEY_PURPOSE);
-        assertTrue(purposes[0] == CLAIM_SIGNER_KEY_PURPOSE || purposes[1] == CLAIM_SIGNER_KEY_PURPOSE);
+        assertTrue(purposes[0] == ERC734KeyPurposes.ACTION_KEY || purposes[1] == ERC734KeyPurposes.ACTION_KEY);
+        assertTrue(
+            purposes[0] == ERC734KeyPurposes.CLAIM_SIGNER_KEY || purposes[1] == ERC734KeyPurposes.CLAIM_SIGNER_KEY
+        );
     }
 
     function test_ClaimsByTopic() public {
         // Add claim signer key
         bytes32 claimerKeyHash = keccak256(abi.encode(claimer));
         vm.prank(user1); // user1 has management key
-        identity.addKey(claimerKeyHash, CLAIM_SIGNER_KEY_PURPOSE, 1);
+        identity.addKey(claimerKeyHash, ERC734KeyPurposes.ACTION_KEY, ERC734KeyTypes.ECDSA);
 
         // Add multiple claims with same topic using the identity contract itself as the issuer
         vm.prank(claimer);
@@ -453,7 +455,7 @@ contract IATKIdentityTest is Test {
 
         // Add key
         vm.prank(user1); // user1 has management key
-        bool addSuccess = identity.addKey(keyHash, purpose, 1);
+        bool addSuccess = identity.addKey(keyHash, purpose, ERC734KeyTypes.ECDSA);
         assertTrue(addSuccess);
         assertTrue(identity.keyHasPurpose(keyHash, purpose));
 

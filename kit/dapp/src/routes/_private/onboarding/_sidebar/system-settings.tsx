@@ -1,20 +1,21 @@
-import { OnboardingStep } from "@/components/onboarding/state-machine";
-import { Button } from "@/components/ui/button";
-import {
-  fiatCurrencyMetadata,
-  type FiatCurrency,
-} from "@/lib/zod/validators/fiat-currency";
-import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
+import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
+import { Button } from "@/components/ui/button";
+import { useAppForm } from "@/hooks/use-app-form";
+import {
+  fiatCurrencyMetadata,
+  type FiatCurrency,
+} from "@/lib/zod/validators/fiat-currency";
 import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 const logger = createLogger();
@@ -25,14 +26,22 @@ const logger = createLogger();
 export const Route = createFileRoute(
   "/_private/onboarding/_sidebar/system-settings"
 )({
-  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.systemSettings),
   component: RouteComponent,
 });
 
+const BASE_CURRENCY_OPTIONS = Object.entries(fiatCurrencyMetadata).map(
+  ([code, metadata]) => ({
+    label: `${metadata.name} (${code})`,
+    value: code,
+  })
+);
+
 function RouteComponent() {
+  const { t } = useTranslation(["onboarding", "common"]);
   const queryClient = useQueryClient();
-  const { navigateToStep, completeStepAndNavigate } = useOnboardingNavigation();
+  const { completeStepAndNavigate } = useOnboardingNavigation();
 
   // Get current base currency setting
   const { data: currentBaseCurrency } = useQuery({
@@ -43,148 +52,120 @@ function RouteComponent() {
     throwOnError: false,
   });
 
+  const { mutateAsync: syncExchangeRates } = useMutation(
+    orpc.exchangeRates.sync.mutationOptions()
+  );
+
   // Mutation for updating base currency
-  const { mutateAsync: upsertSetting, isPending: isUpsertPending } =
-    useMutation({
-      ...orpc.settings.upsert.mutationOptions(),
-      onSuccess: async () => {
-        logger.debug("Settings mutation successful, refetching queries");
-        await queryClient.refetchQueries({
-          queryKey: orpc.settings.read.key({
-            input: { key: "BASE_CURRENCY" },
-          }),
-        });
+  const { mutateAsync: upsertSetting, isPending: isSettingUpdating } =
+    useMutation(
+      orpc.settings.upsert.mutationOptions({
+        onSuccess: async () => {
+          logger.debug("Settings mutation successful, refetching queries");
+          await queryClient.refetchQueries({
+            queryKey: orpc.settings.read.key({
+              input: { key: "BASE_CURRENCY" },
+            }),
+          });
 
-        toast.success("Platform settings saved successfully");
-      },
-      onError: (error) => {
-        logger.error("Settings mutation failed:", error);
-        toast.error("Failed to save platform settings");
-      },
-    });
+          // Sync exchange rates but don't let failures block navigation
+          try {
+            await syncExchangeRates({
+              force: true,
+            });
+            logger.debug("Exchange rates synced successfully");
+          } catch (error) {
+            logger.error("Failed to sync exchange rates:", error);
+            // Show a non-blocking warning toast
+            toast.warning(t("system-settings.toast.exchangeRateSyncWarning"));
+          }
 
-  const form = useForm({
+          await completeStepAndNavigate(OnboardingStep.systemSettings);
+        },
+      })
+    );
+
+  const form = useAppForm({
     defaultValues: {
-      baseCurrency: currentBaseCurrency
-        ? (currentBaseCurrency as FiatCurrency)
-        : ("USD" as FiatCurrency),
+      baseCurrency: currentBaseCurrency ?? ("USD" as FiatCurrency),
     },
   });
 
-  const handleSaveAndContinue = async () => {
+  const handleSaveAndContinue = () => {
     logger.debug("Save & Continue button clicked");
     logger.debug("Form state:", form.state);
     logger.debug("Form errors:", form.state.errors);
 
-    try {
-      const currentValue = form.state.values.baseCurrency;
-      logger.debug("Saving base currency:", currentValue);
+    const currentValue = form.state.values.baseCurrency;
+    logger.debug("Saving base currency:", currentValue);
 
-      await upsertSetting({
+    toast.promise(
+      upsertSetting({
         key: "BASE_CURRENCY",
-        value: currentValue,
-      });
-
-      logger.debug("Base currency saved successfully, navigating to next step");
-      await completeStepAndNavigate(OnboardingStep.systemSettings);
-    } catch (error) {
-      logger.error("Failed to save base currency:", error);
-      toast.error("Failed to save platform settings");
-    }
+        value: currentValue as FiatCurrency,
+      }),
+      {
+        loading: t("system-settings.toast.saving"),
+        success: t("system-settings.toast.success"),
+        error: (error: Error) =>
+          t("system-settings.toast.error", {
+            message: error.message,
+          }),
+      }
+    );
   };
 
-  const onPrevious = () => void navigateToStep(OnboardingStep.systemDeploy);
-
   return (
-    <div className="h-full flex flex-col">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold">Configure Platform Settings</h2>
-        <p className="text-sm text-muted-foreground pt-2">
-          Define how your platform behaves by default
-        </p>
-      </div>
-
+    <OnboardingStepLayout
+      title={t("system-settings.title")}
+      description={t("system-settings.subtitle")}
+      actions={
+        <Button
+          type="button"
+          onClick={() => {
+            handleSaveAndContinue();
+          }}
+          disabled={isSettingUpdating}
+          className="min-w-[120px]"
+        >
+          {isSettingUpdating
+            ? t("system-settings.buttons.saving")
+            : t("system-settings.buttons.saveAndContinue")}
+        </Button>
+      }
+    >
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-2xl space-y-6">
           <div className="space-y-4 mb-6">
-            <p className="text-sm">
-              Before you begin issuing assets, let's configure some basic
-              settings that determine how the platform behaves. These default
-              values help personalize the experience for you and your users.
-            </p>
-            <p className="text-sm">
-              You can update these preferences later in the platform settings.
-            </p>
+            <p className="text-sm">{t("system-settings.description.intro")}</p>
+            <p className="text-sm">{t("system-settings.description.update")}</p>
           </div>
 
-          <form.Field
+          <form.AppField
             name="baseCurrency"
             validators={{
               onChange: ({ value }) => {
                 logger.debug("Validating currency:", value);
                 if (!Object.keys(fiatCurrencyMetadata).includes(value)) {
                   logger.debug("Currency validation failed:", value);
-                  return "Invalid currency selection";
+                  return t(
+                    "system-settings.form.baseCurrency.validation.invalid"
+                  );
                 }
                 return undefined;
               },
             }}
           >
             {(field) => (
-              <div className="space-y-2">
-                <label htmlFor="baseCurrency" className="text-sm font-medium">
-                  Base Currency
-                </label>
-                <p className="text-sm text-muted-foreground">
-                  Choose the default currency for your platform
-                </p>
-                <select
-                  id="baseCurrency"
-                  value={field.state.value}
-                  onChange={(e) => {
-                    field.handleChange(e.target.value as FiatCurrency);
-                  }}
-                  className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
-                >
-                  {Object.entries(fiatCurrencyMetadata).map(
-                    ([code, metadata]) => (
-                      <option key={code} value={code}>
-                        {metadata.name} ({code})
-                      </option>
-                    )
-                  )}
-                </select>
-                {field.state.meta.errors.length > 0 && (
-                  <p className="text-sm text-destructive mt-2">
-                    {field.state.meta.errors[0]}
-                  </p>
-                )}
-              </div>
+              <field.SelectField
+                label={t("system-settings.form.baseCurrency.label")}
+                description={t("system-settings.form.baseCurrency.description")}
+                options={BASE_CURRENCY_OPTIONS}
+              />
             )}
-          </form.Field>
-
-          <div className="mt-8 pt-6 border-t border-border">
-            <div className="flex justify-between">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onPrevious}
-                disabled={isUpsertPending}
-              >
-                Previous
-              </Button>
-              <Button
-                type="button"
-                onClick={() => void handleSaveAndContinue()}
-                disabled={isUpsertPending}
-                className="min-w-[120px]"
-              >
-                {isUpsertPending ? "Saving..." : "Save & Continue"}
-              </Button>
-            </div>
-          </div>
+          </form.AppField>
         </div>
       </div>
-    </div>
+    </OnboardingStepLayout>
   );
 }

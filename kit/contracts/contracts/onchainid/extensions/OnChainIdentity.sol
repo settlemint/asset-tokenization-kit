@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import { ERC734KeyPurposes } from "../ERC734KeyPurposes.sol";
 
 /**
  * @title OnChainIdentity
@@ -47,7 +48,7 @@ abstract contract OnChainIdentity is IIdentity {
 
         // Does the trusted identifier have they key which signed the user's claim?
         //  && (isClaimRevoked(_claimId) == false)
-        if (keyHasPurpose(hashedAddr, 3)) {
+        if (keyHasPurpose(hashedAddr, ERC734KeyPurposes.CLAIM_SIGNER_KEY)) {
             return true;
         }
 

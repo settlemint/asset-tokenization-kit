@@ -18,6 +18,7 @@
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
+import type { Context } from "@/orpc/context/context";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
@@ -26,6 +27,7 @@ import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
+import { encodeFunctionData, getAddress } from "viem";
 import {
   type SystemAddonConfig,
   type SystemAddonCreateOutput,
@@ -83,10 +85,33 @@ const ADDON_TYPE_TO_IMPLEMENTATION_NAME = {
 /**
  * Generates initialization data for different addon types
  */
-function generateInitializationData(): string {
-  // For most addons, empty initialization data is sufficient
-  // The proxy will call initialize with default parameters
-  return "0x";
+function generateInitializationData(context: Context): string {
+  const systemAddress = getAddress(context.system?.address ?? "");
+  const initialAdmin = getAddress(context.auth?.user.wallet ?? "");
+  return encodeFunctionData({
+    abi: [
+      {
+        type: "function",
+        name: "initialize",
+        inputs: [
+          {
+            name: "systemAddress_",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "initialAdmin_",
+            type: "address",
+            internalType: "address",
+          },
+        ],
+        outputs: [],
+        stateMutability: "nonpayable",
+      },
+    ],
+    functionName: "initialize",
+    args: [systemAddress, initialAdmin],
+  });
 }
 
 /**
@@ -225,7 +250,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
       try {
         // Get implementation address and initialization data
         const implementationAddress = getImplementationAddress(addonConfig);
-        const initializationData = generateInitializationData();
+        const initializationData = generateInitializationData(context);
 
         // Log the implementation details for debugging
         logger.info(`Registering addon with details:`, {

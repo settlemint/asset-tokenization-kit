@@ -1,98 +1,163 @@
-import {
-  OnboardingStep,
-  onboardingStateMachine,
-  updateOnboardingStateMachine,
-} from "@/components/onboarding/state-machine";
-import { Button } from "@/components/ui/button";
+import type { KycFormValues } from "@/components/kyc/kyc-form";
+import { KycForm } from "@/components/kyc/kyc-form";
+import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import {
   createOnboardingBeforeLoad,
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
-import { ShieldCheck } from "lucide-react";
+import { InfoAlert } from "@/components/ui/info-alert";
+import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
+import { authClient } from "@/lib/auth/auth.client";
+import { orpc } from "@/orpc/orpc-client";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { zodValidator } from "@tanstack/zod-adapter";
+import { toast } from "sonner";
+
+const logger = createLogger();
 
 export const Route = createFileRoute("/_private/onboarding/_sidebar/identity")({
-  validateSearch: zodValidator(createOnboardingSearchSchema()),
+  validateSearch: createOnboardingSearchSchema(),
   beforeLoad: createOnboardingBeforeLoad(OnboardingStep.identity),
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const { t } = useTranslation(["onboarding", "common"]);
-  const navigate = useNavigate();
-  const { navigateToStep, refreshUserState } = useOnboardingNavigation();
+  const queryClient = useQueryClient();
+  const { completeStepAndNavigate } = useOnboardingNavigation();
+  const { data: session } = authClient.useSession();
+  // Only admins can register identity
+  // TODO: use system access control to check this, not role
+  const canRegisterIdentity = session?.user.role === "admin";
 
-  const handleComplete = async () => {
-    // Mark identity step as complete via proper state update
-    const updatedUser = await refreshUserState();
-    updateOnboardingStateMachine({
-      user: {
-        ...updatedUser,
-        onboardingState: {
-          ...updatedUser.onboardingState,
-          identity: true,
+  // Verification dialog state
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null
+  );
+  const [kycFormValues, setKycFormValues] = useState<KycFormValues | null>(
+    null
+  );
+
+  const { mutateAsync: registerIdentity, isPending: isRegisteringIdentity } =
+    useMutation(
+      orpc.system.identityRegister.mutationOptions({
+        onSuccess: async (result) => {
+          for await (const event of result) {
+            logger.info("identity registration event", event);
+            if (event.status === "failed") {
+              throw new Error(event.message);
+            }
+          }
+          // Refetch all relevant data
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: orpc.account.me.queryOptions().queryKey,
+              refetchType: "all",
+            }),
+          ]);
         },
+      })
+    );
+
+  const { mutateAsync: updateKyc, isPending: isUpdatingKyc } = useMutation(
+    orpc.user.kyc.upsert.mutationOptions({
+      onSuccess: async () => {
+        await completeStepAndNavigate(OnboardingStep.identity);
       },
-    });
+    })
+  );
 
-    // Navigate to home page (onboarding complete)
-    void navigate({ to: "/" });
-  };
+  const handleComplete = useCallback(
+    (values: KycFormValues) => {
+      setKycFormValues(values);
+      if (canRegisterIdentity) {
+        setShowVerificationModal(true);
+      } else {
+        toast.promise(
+          updateKyc({
+            ...values,
+            userId: session?.user.id ?? "",
+          }),
+          {
+            loading: t("identity.deploying-toast"),
+            success: t("identity.deployed-toast"),
+            error: (error: Error) =>
+              `${t("identity.failed-toast")}${error.message}`,
+          }
+        );
+      }
+    },
+    [canRegisterIdentity, session?.user.id, t, updateKyc]
+  );
 
-  const handleBack = () => {
-    // Navigate back to the previous step
-    const state = onboardingStateMachine.state;
-    const previousStep = state.isAdmin
-      ? OnboardingStep.systemAddons
-      : OnboardingStep.walletRecoveryCodes;
+  const handleVerificationSubmit = useCallback(
+    (verification: UserVerification) => {
+      setVerificationError(null);
+      setShowVerificationModal(false);
 
-    void navigateToStep(previousStep);
-  };
+      if (!kycFormValues) {
+        return;
+      }
+
+      toast.promise(
+        (async () => {
+          if (canRegisterIdentity) {
+            await registerIdentity({
+              country: kycFormValues.country,
+              verification,
+            });
+          }
+          return updateKyc({
+            ...kycFormValues,
+            userId: session?.user.id ?? "",
+          });
+        })(),
+        {
+          loading: t("identity.deploying-toast"),
+          success: t("identity.deployed-toast"),
+          error: (error: Error) =>
+            `${t("identity.failed-toast")}${error.message}`,
+        }
+      );
+    },
+    [
+      canRegisterIdentity,
+      kycFormValues,
+      registerIdentity,
+      session?.user.id,
+      t,
+      updateKyc,
+    ]
+  );
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <ShieldCheck className="w-8 h-8 text-primary" />
-          </div>
-          <h1 className="text-3xl font-bold">
-            {t("onboarding:steps.identity.title")}
-          </h1>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            {t("onboarding:steps.identity.description")}
-          </p>
-        </div>
-
-        {/* Content */}
-        <div className="space-y-6">
-          <div className="bg-muted/50 rounded-lg p-6 space-y-4">
-            <p className="text-sm">{t("onboarding:steps.identity.info")}</p>
-            <div className="bg-info/10 border border-info/20 rounded-md p-4">
-              <h3 className="text-sm text-info-foreground font-medium mb-1">
-                {t("onboarding:steps.identity.coming-soon")}
-              </h3>
-              <p className="text-sm text-info-foreground">
-                {t("onboarding:steps.identity.coming-soon-description")}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex justify-between pt-8">
-          <Button onClick={handleBack} variant="outline" className="w-40">
-            {t("common:previous")}
-          </Button>
-          <Button onClick={handleComplete} className="w-40">
-            {t("common:continue")}
-          </Button>
-        </div>
-      </div>
-    </div>
+    <OnboardingStepLayout
+      title={t("identity.title")}
+      description={t("identity.description")}
+    >
+      <InfoAlert
+        title={t("identity.title")}
+        description={t("identity.intro")}
+      />
+      <KycForm
+        onComplete={handleComplete}
+        disabled={isRegisteringIdentity || isUpdatingKyc}
+      />
+      <VerificationDialog
+        open={showVerificationModal}
+        onOpenChange={setShowVerificationModal}
+        onSubmit={handleVerificationSubmit}
+        title={t("identity.confirm-title")}
+        description={t("identity.confirm-description")}
+        errorMessage={verificationError}
+      />
+    </OnboardingStepLayout>
   );
 }

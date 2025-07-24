@@ -1,5 +1,5 @@
 import type { SessionUser } from "@/lib/auth";
-import { isOnboarded, validatePassword } from "@/lib/auth/plugins/utils";
+import { validatePassword } from "@/lib/auth/plugins/utils";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import type { BetterAuthPlugin } from "better-auth";
 import {
@@ -45,10 +45,6 @@ export const secretCodes = () => {
           method: "POST",
           body: z.object({
             password: z.string().describe("User password").optional(),
-            onboarding: z
-              .boolean()
-              .describe("Flag to indicate this is during onboarding flow")
-              .optional(),
           }),
           use: [sessionMiddleware],
           metadata: {
@@ -82,9 +78,9 @@ export const secretCodes = () => {
         },
         async (ctx) => {
           const user = ctx.context.session.user as SessionUser;
-          const { password, onboarding } = ctx.body;
-          // Skip password validation during onboarding flow
-          if (isOnboarded(user) && !onboarding) {
+          const { password } = ctx.body;
+          // Skip password validation if the user has not confirmed the secret codes yet
+          if (user.secretCodesConfirmed) {
             if (!password) {
               throw new APIError("BAD_REQUEST", {
                 message: "Password is required",
@@ -126,6 +122,53 @@ export const secretCodes = () => {
           };
           return ctx.json({
             secretCodes: parameters.secretCodes?.split(",") ?? [],
+          });
+        }
+      ),
+      confirmSecretCodes: createAuthEndpoint(
+        "/secret-codes/confirm",
+        {
+          method: "POST",
+          body: z.object({
+            stored: z
+              .boolean()
+              .describe("Whether the secret codes were stored"),
+          }),
+          use: [sessionMiddleware],
+          metadata: {
+            openapi: {
+              summary: "Confirm secret codes",
+              description: "Use this endpoint to confirm secret codes.",
+              responses: {
+                200: {
+                  description: "Successful response",
+                  content: {
+                    "application/json": {
+                      schema: {
+                        type: "object",
+                        properties: {
+                          success: {
+                            type: "boolean",
+                            description: "Secret codes confirmation received",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        async (ctx) => {
+          const { stored } = ctx.body;
+          if (stored) {
+            await updateSession(ctx, {
+              secretCodesConfirmed: true,
+            });
+          }
+          return ctx.json({
+            success: stored,
           });
         }
       ),

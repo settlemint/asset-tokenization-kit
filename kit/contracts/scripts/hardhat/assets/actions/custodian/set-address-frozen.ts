@@ -1,13 +1,13 @@
 import { ATKContracts } from "../../../constants/contracts";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
+import type { Actor } from "../../../entities/actor";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const setAddressFrozen = async (
   asset: Asset<any>,
-  custodian: AbstractActor,
-  address: AbstractActor,
+  custodian: Actor,
+  address: Actor,
   frozen: boolean
 ) => {
   console.log(
