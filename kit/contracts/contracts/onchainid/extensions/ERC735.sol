@@ -56,10 +56,9 @@ contract ERC735 is IERC735 {
 
         if (_issuer != address(this)) {
             if (_scheme == ERC735ClaimSchemes.SCHEME_ECDSA) {
-                require(
-                    IClaimIssuer(_issuer).isClaimValid(IIdentity(address(this)), _topic, _signature, _data),
-                    "Invalid ECDSA claim"
-                );
+                if (!IClaimIssuer(_issuer).isClaimValid(IIdentity(address(this)), _topic, _signature, _data)) {
+                    revert ClaimNotValidAccordingToIssuer(_issuer, _topic);
+                }
             } else if (_scheme == ERC735ClaimSchemes.SCHEME_CONTRACT) {
                 if (msg.sender != _issuer) {
                     revert UnauthorizedContractClaim(msg.sender, _issuer);
