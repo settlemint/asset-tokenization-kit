@@ -1,3 +1,4 @@
+import identityRouter from "@/orpc/routes/system/identity/identity.router";
 import { addonCreate } from "./routes/system.addonCreate";
 import { create } from "./routes/system.create";
 import { list } from "./routes/system.list";
@@ -24,6 +25,7 @@ const routes = {
   create,
   read,
   addonCreate,
+  ...identityRouter,
 };
 
 export default routes;

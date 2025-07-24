@@ -14,6 +14,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { orpc } from "@/orpc/orpc-client";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
@@ -25,7 +26,7 @@ interface VerificationDialogProps {
   title: string;
   description: string;
   errorMessage?: string | null;
-  onSubmit: (data: { pincode?: string; otp?: string }) => void;
+  onSubmit: (data: UserVerification) => void;
   onCancel?: () => void;
 }
 
@@ -72,7 +73,10 @@ export function VerificationDialog({
       onMount: onValidate,
     },
     onSubmit: ({ value }) => {
-      onSubmit(useOtp ? { otp: value.code } : { pincode: value.code });
+      onSubmit({
+        verificationCode: value.code,
+        verificationType: useOtp ? "two-factor" : "pincode",
+      });
       handleClose();
     },
   });

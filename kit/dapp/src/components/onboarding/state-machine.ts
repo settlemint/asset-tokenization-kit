@@ -4,6 +4,10 @@ import type {
 } from "@/orpc/routes/user/routes/user.me.schema";
 import { Derived, Store } from "@tanstack/react-store";
 
+interface OnboardingStateMachine extends OnboardingState {
+  isAdmin: boolean;
+}
+
 export enum OnboardingStep {
   wallet = "wallet",
   walletSecurity = "wallet-security",
@@ -22,7 +26,7 @@ export const enum OnboardingStepGroup {
   identity = "identity",
 }
 
-export const onboardingStateMachine = new Store<OnboardingState>({
+export const onboardingStateMachine = new Store<OnboardingStateMachine>({
   isAdmin: false,
   wallet: false,
   walletSecurity: false,
@@ -122,6 +126,7 @@ export function updateOnboardingStateMachine({ user }: { user: CurrentUser }) {
   onboardingStateMachine.setState((prev) => ({
     ...prev,
     ...onboardingState,
+    isAdmin: user.role === "admin",
   }));
 
   return {

@@ -7,12 +7,12 @@ dependencies:
   version: 16.0.22
 - name: redis
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 21.2.12
+  version: 21.2.13
 - name: reloader
   repository: https://stakater.github.io/stakater-charts
   version: 2.1.5
 - name: minio
   repository: https://charts.min.io/
   version: 5.4.0
-digest: sha256:60cd231ef400295f6046a7656e2c1a1c0ad36e03b99e7142f80e9fedc3951187
-generated: "2025-07-22T15:22:13.445344+03:00"
+digest: sha256:a809fbbdcc1fb41b7849c09c6de15c9c7256caa82ed3f0b817d4e9cfb948080f
+generated: "2025-07-24T04:59:05.255889495Z"

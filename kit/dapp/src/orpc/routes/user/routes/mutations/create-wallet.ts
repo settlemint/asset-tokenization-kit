@@ -3,11 +3,12 @@ import { user } from "@/lib/db/schema";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm/sql";
+import { zeroAddress } from "viem";
 
 export const createWallet = authRouter.user.createWallet
   .use(databaseMiddleware)
   .handler(async function ({ context: { auth, db, t }, errors }) {
-    if (auth.user.wallet !== "0x0000000000000000000000000000000000000000") {
+    if (auth.user.wallet !== zeroAddress) {
       throw errors.CONFLICT({
         message: "Wallet already created",
       });

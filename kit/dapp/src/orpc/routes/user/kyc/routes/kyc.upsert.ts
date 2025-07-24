@@ -20,10 +20,11 @@ export const upsert = authRouter.user.kyc.upsert
     }
 
     // Prepare values for upsert
-    const values: Record<string, unknown> = {
+    const values: typeof kycProfiles.$inferInsert = {
       ...profileData,
       userId,
       id: id ?? generateId(),
+      nationalIdEncrypted: "",
     };
 
     // Encrypt national ID if provided
@@ -41,13 +42,13 @@ export const upsert = authRouter.user.kyc.upsert
     const profile = await context.db.transaction(async (tx) => {
       const [result] = await tx
         .insert(kycProfiles)
-        .values(values as typeof kycProfiles.$inferInsert)
+        .values(values)
         .onConflictDoUpdate({
           target: kycProfiles.userId,
           set: {
             ...profileData,
             ...(nationalId && {
-              nationalIdEncrypted: values.nationalIdEncrypted as string,
+              nationalIdEncrypted: values.nationalIdEncrypted,
             }),
             updatedAt: sql`now()`,
           },

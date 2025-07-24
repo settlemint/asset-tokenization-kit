@@ -1,4 +1,5 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
+import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
 import {
   SystemAddonCreateOutputSchema,
   SystemAddonCreateSchema,
@@ -125,4 +126,5 @@ export const systemContract = {
   create,
   read,
   addonCreate,
+  ...identityContract,
 };

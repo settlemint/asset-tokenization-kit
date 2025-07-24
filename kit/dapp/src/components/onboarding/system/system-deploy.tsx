@@ -32,6 +32,9 @@ export function SystemDeploy() {
         onSuccess: async (result) => {
           for await (const event of result) {
             logger.info("system deployment event", event);
+            if (event.status === "failed") {
+              throw new Error(event.message);
+            }
             if (event.status === "confirmed") {
               await refreshUserState();
             }
@@ -89,25 +92,7 @@ export function SystemDeploy() {
         <VerificationDialog
           open={showVerificationModal}
           onOpenChange={setShowVerificationModal}
-          onSubmit={({ pincode, otp }) => {
-            // Determine which verification method was provided
-            let verificationCode: string;
-            let verificationType: "pincode" | "two-factor";
-
-            if (pincode !== undefined) {
-              verificationCode = pincode;
-              verificationType = "pincode";
-            } else if (otp !== undefined) {
-              verificationCode = otp;
-              verificationType = "two-factor";
-            } else {
-              throw new Error("No verification code provided");
-            }
-
-            if (!verificationCode) {
-              throw new Error("Verification code cannot be empty");
-            }
-
+          onSubmit={({ verificationCode, verificationType }) => {
             toast.promise(
               createSystem({
                 verification: {
