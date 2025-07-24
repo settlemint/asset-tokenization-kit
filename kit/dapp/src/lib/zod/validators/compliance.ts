@@ -103,7 +103,7 @@ export const identityBlockListValues = () =>
     .describe("Array of identity contract addresses to block");
 
 export const smartIdentityVerificationValues = () =>
-  z.array(z.string()).describe("Empty array (no parameters required)");
+  z.array(z.string()).max(0).describe("Empty array (no parameters required)");
 
 /**
  * Discriminated union schema for compliance module parameters.
