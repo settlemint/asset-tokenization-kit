@@ -3,7 +3,6 @@ import {
   createOnboardingSearchSchema,
 } from "@/components/onboarding/route-helpers";
 import type { OnboardingStep } from "@/components/onboarding/state-machine";
-import { StepIndicator } from "@/components/onboarding/step-indicator";
 import { useOnboardingSteps } from "@/components/onboarding/use-onboarding-steps";
 import {
   Accordion,
@@ -18,6 +17,15 @@ import {
   SidebarHeader,
   SidebarProvider,
 } from "@/components/ui/sidebar";
+import {
+  Timeline,
+  TimelineContent,
+  TimelineHeader,
+  TimelineIndicator,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineTitle,
+} from "@/components/ui/timeline";
 import { cn } from "@/lib/utils";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { Check } from "lucide-react";
@@ -71,81 +79,6 @@ function RouteComponent() {
     },
     [navigate]
   );
-
-  // Render individual step
-  const renderStep = (
-    step: ReturnType<typeof useOnboardingSteps>["stepsWithTranslations"][0],
-    index: number,
-    isLastInGroup = false
-  ) => {
-    const status = getStepStatus(step, index);
-    const isCurrent = index === currentStepIndex;
-    const isCompleted = status === "completed";
-    const isAccessible = canNavigateToStep(index);
-
-    return (
-      <div key={step.step} className="flex items-stretch mb-0">
-        {/* Dot column with line */}
-        <div className="relative flex flex-col items-center w-12 pt-0">
-          {/* The step dot */}
-          <StepIndicator isCompleted={isCompleted} isCurrent={isCurrent} />
-
-          {/* Connecting line (for all but last step) */}
-          {!isLastInGroup && (
-            <div
-              className={cn(
-                "w-0 border-l-2 border-dashed flex-grow transition-colors duration-300",
-                isCompleted ? "border-white/60" : "border-white/30"
-              )}
-            />
-          )}
-        </div>
-
-        {/* Content column */}
-        <div className="flex-1 flex items-center -mt-1 mb-4">
-          <button
-            type="button"
-            className={cn(
-              "flex flex-col w-full px-4 py-3 rounded-lg transition-all duration-200 text-left relative z-20 group",
-              isCurrent && "bg-white/10 backdrop-blur-sm",
-              !isAccessible && "cursor-not-allowed opacity-60",
-              isAccessible && "hover:bg-white/15",
-              isCompleted && !isCurrent && "cursor-pointer hover:bg-white/10"
-            )}
-            onClick={() => {
-              if (isAccessible) {
-                navigateToStep(step.step);
-              }
-            }}
-            disabled={!isAccessible}
-          >
-            <div className="flex items-center justify-between">
-              <span
-                className={cn(
-                  "text-sm transition-all duration-300",
-                  isCurrent
-                    ? "font-bold text-primary-foreground"
-                    : "font-medium text-primary-foreground/90"
-                )}
-              >
-                {step.title}
-              </span>
-            </div>
-            <p
-              className={cn(
-                "text-xs mt-1 transition-colors duration-300 leading-relaxed",
-                isCurrent
-                  ? "text-primary-foreground/90"
-                  : "text-primary-foreground/70"
-              )}
-            >
-              {step.description}
-            </p>
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   // Render grouped steps
   const renderGroupedSteps = () => {
@@ -209,11 +142,86 @@ function RouteComponent() {
                     </div>
                   </AccordionTrigger>
 
-                  <AccordionContent className="pl-6 bg-transparent">
-                    {groupSteps.map(({ step, index }, stepIndex) => {
-                      const isLastInGroup = stepIndex === groupSteps.length - 1;
-                      return renderStep(step, index, isLastInGroup);
-                    })}
+                  <AccordionContent className="pl-2 bg-transparent">
+                    <Timeline className="ml-4 space-y-3">
+                      {groupSteps.map(({ step, index }, stepIndex) => {
+                        const status = getStepStatus(step, index);
+                        const isCurrent = index === currentStepIndex;
+                        const isCompleted = status === "completed";
+                        const isAccessible = canNavigateToStep(index);
+                        const isLastInGroup =
+                          stepIndex === groupSteps.length - 1;
+
+                        return (
+                          <TimelineItem
+                            key={step.step}
+                            step={stepIndex + 1}
+                            className="pb-2"
+                          >
+                            <TimelineHeader className="items-start">
+                              {!isLastInGroup && (
+                                <TimelineSeparator className="top-[12px] left-[15px] h-[50px] w-0.5 bg-sm-graphics-primary/30" />
+                              )}
+                              <TimelineIndicator className="border-0 bg-transparent">
+                                <div className="-mt-[14px]">
+                                  {isCompleted ? (
+                                    <div className="flex h-4 w-4 items-center justify-center rounded-full bg-sm-graphics-secondary">
+                                      <Check className="h-3 w-3 text-white" />
+                                    </div>
+                                  ) : isCurrent ? (
+                                    <div className="h-4 w-4 rounded-full bg-sm-state-success-background animate-pulse" />
+                                  ) : (
+                                    <div className="h-4 w-4 rounded-full border-2 border-sm-graphics-primary" />
+                                  )}
+                                </div>
+                              </TimelineIndicator>
+                              <div className="flex-1">
+                                <button
+                                  type="button"
+                                  className={cn(
+                                    "w-full text-left px-4 py-3 rounded-lg transition-all duration-200 relative z-20",
+                                    isCurrent && "bg-white/10 backdrop-blur-sm",
+                                    !isAccessible &&
+                                      "cursor-not-allowed opacity-60",
+                                    isAccessible && "hover:bg-white/15",
+                                    isCompleted &&
+                                      !isCurrent &&
+                                      "cursor-pointer hover:bg-white/10"
+                                  )}
+                                  onClick={() => {
+                                    if (isAccessible) {
+                                      navigateToStep(step.step);
+                                    }
+                                  }}
+                                  disabled={!isAccessible}
+                                >
+                                  <TimelineTitle
+                                    className={cn(
+                                      "transition-all duration-300",
+                                      isCurrent
+                                        ? "font-bold text-primary-foreground"
+                                        : "font-medium text-primary-foreground/90"
+                                    )}
+                                  >
+                                    {step.title}
+                                  </TimelineTitle>
+                                  <TimelineContent
+                                    className={cn(
+                                      "mt-1 transition-colors duration-300 leading-relaxed",
+                                      isCurrent
+                                        ? "text-primary-foreground/90"
+                                        : "text-primary-foreground/70"
+                                    )}
+                                  >
+                                    {step.description}
+                                  </TimelineContent>
+                                </button>
+                              </div>
+                            </TimelineHeader>
+                          </TimelineItem>
+                        );
+                      })}
+                    </Timeline>
                   </AccordionContent>
                 </AccordionItem>
               );
@@ -224,14 +232,88 @@ function RouteComponent() {
           {groupedStepsByGroupId.ungrouped && (
             <div className="relative">
               <div className="pl-2">
-                {groupedStepsByGroupId.ungrouped.map(
-                  ({ step, index }, stepIndex) => {
-                    const isLastStep =
-                      stepIndex ===
-                      (groupedStepsByGroupId.ungrouped?.length ?? 0) - 1;
-                    return renderStep(step, index, isLastStep);
-                  }
-                )}
+                <Timeline className="ml-4 space-y-3">
+                  {groupedStepsByGroupId.ungrouped.map(
+                    ({ step, index }, stepIndex) => {
+                      const status = getStepStatus(step, index);
+                      const isCurrent = index === currentStepIndex;
+                      const isCompleted = status === "completed";
+                      const isAccessible = canNavigateToStep(index);
+                      const isLastStep =
+                        stepIndex ===
+                        (groupedStepsByGroupId.ungrouped?.length ?? 0) - 1;
+
+                      return (
+                        <TimelineItem
+                          key={step.step}
+                          step={stepIndex + 1}
+                          className="pb-2"
+                        >
+                          <TimelineHeader className="items-start">
+                            {!isLastStep && (
+                              <TimelineSeparator className="top-[12px] left-[15px] h-[50px] w-0.5 bg-sm-graphics-primary/30" />
+                            )}
+                            <TimelineIndicator className="border-0 bg-transparent">
+                              <div className="-mt-[14px]">
+                                {isCompleted ? (
+                                  <div className="flex h-4 w-4 items-center justify-center rounded-full bg-sm-graphics-secondary">
+                                    <Check className="h-3 w-3 text-white" />
+                                  </div>
+                                ) : isCurrent ? (
+                                  <div className="h-4 w-4 rounded-full bg-sm-state-success-background animate-pulse" />
+                                ) : (
+                                  <div className="h-4 w-4 rounded-full border-2 border-sm-graphics-primary" />
+                                )}
+                              </div>
+                            </TimelineIndicator>
+                            <div className="flex-1">
+                              <button
+                                type="button"
+                                className={cn(
+                                  "w-full text-left px-4 py-3 rounded-lg transition-all duration-200 relative z-20",
+                                  isCurrent && "bg-white/10 backdrop-blur-sm",
+                                  !isAccessible &&
+                                    "cursor-not-allowed opacity-60",
+                                  isAccessible && "hover:bg-white/15",
+                                  isCompleted &&
+                                    !isCurrent &&
+                                    "cursor-pointer hover:bg-white/10"
+                                )}
+                                onClick={() => {
+                                  if (isAccessible) {
+                                    navigateToStep(step.step);
+                                  }
+                                }}
+                                disabled={!isAccessible}
+                              >
+                                <TimelineTitle
+                                  className={cn(
+                                    "transition-all duration-300",
+                                    isCurrent
+                                      ? "font-bold text-primary-foreground"
+                                      : "font-medium text-primary-foreground/90"
+                                  )}
+                                >
+                                  {step.title}
+                                </TimelineTitle>
+                                <TimelineContent
+                                  className={cn(
+                                    "mt-1 transition-colors duration-300 leading-relaxed",
+                                    isCurrent
+                                      ? "text-primary-foreground/90"
+                                      : "text-primary-foreground/70"
+                                  )}
+                                >
+                                  {step.description}
+                                </TimelineContent>
+                              </button>
+                            </div>
+                          </TimelineHeader>
+                        </TimelineItem>
+                      );
+                    }
+                  )}
+                </Timeline>
               </div>
             </div>
           )}
