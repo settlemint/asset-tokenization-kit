@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.28;
 
-/**
- * @title ERC735ClaimSchemes
- * @author SettleMint
- * @notice Library defining claim schemes used in ERC-735 claim validation
- * @dev Constants representing different cryptographic schemes for claim verification
- */
+/// @title ERC735ClaimSchemes
+/// @author SettleMint
+/// @notice Library defining claim schemes used in ERC-735 claim validation
+/// @dev Constants representing different cryptographic schemes for claim verification
 library ERC735ClaimSchemes {
     /// @notice ECDSA scheme identifier for claims validated via ECDSA signatures
     uint256 internal constant SCHEME_ECDSA = 1;

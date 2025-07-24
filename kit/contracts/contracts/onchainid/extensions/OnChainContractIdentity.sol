@@ -6,15 +6,13 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IContractIdentity } from "../IContractIdentity.sol";
 import { ERC735ClaimSchemes } from "../ERC735ClaimSchemes.sol";
 
-/**
- * @title OnChainContractIdentity
- * @author SettleMint
- * @notice Abstract contract extension providing CONTRACT scheme functionality for contract identities
- * @dev This contract extends identity contracts with the ability to issue and validate
- *      CONTRACT scheme claims. Unlike ECDSA-based claims, CONTRACT scheme claims are
- *      validated by existence rather than cryptographic signatures, enabling smart
- *      contracts to act as claim issuers without managing private keys.
- */
+/// @title OnChainContractIdentity
+/// @author SettleMint
+/// @notice Abstract contract extension providing CONTRACT scheme functionality for contract identities
+/// @dev This contract extends identity contracts with the ability to issue and validate
+///      CONTRACT scheme claims. Unlike ECDSA-based claims, CONTRACT scheme claims are
+///      validated by existence rather than cryptographic signatures, enabling smart
+///      contracts to act as claim issuers without managing private keys.
 abstract contract OnChainContractIdentity is IContractIdentity {
     // --- Errors ---
 

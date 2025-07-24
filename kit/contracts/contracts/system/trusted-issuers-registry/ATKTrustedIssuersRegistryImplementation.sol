@@ -106,6 +106,14 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// have a valid contract address.
     error InvalidIssuerAddress();
 
+    /// @notice Error triggered if an attempt is made to initialize with a zero address for the admin role.
+    /// @dev The zero address is invalid for representing an admin. This ensures proper access control setup.
+    error InvalidAdminAddress();
+
+    /// @notice Error triggered if an attempt is made to grant registrar role to a zero address.
+    /// @dev The zero address is invalid for representing a registrar. This ensures all registrars have valid addresses.
+    error InvalidRegistrarAddress();
+
     /// @notice Error triggered if an attempt is made to add or update an issuer with an empty list of claim topics.
     /// @dev A trusted issuer must be associated with at least one claim topic they are authorized to issue claims for.
     /// This prevents registering issuers with no specified area of authority.
@@ -199,13 +207,19 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// This address will have full control over the registry's setup and initial population of trusted issuers.
     /// @param initialRegistrars The addresses that will receive the initial `REGISTRAR_ROLE`.
     /// These addresses will have the ability to add and remove trusted issuers.
+    /// @dev Reverts with:
+    ///      - `InvalidAdminAddress()` if `initialAdmin` is `address(0)`.
+    ///      - `InvalidRegistrarAddress()` if any address in `initialRegistrars` is `address(0)`.
     function initialize(address initialAdmin, address[] memory initialRegistrars) public initializer {
+        if (initialAdmin == address(0)) revert InvalidAdminAddress();
+
         __ERC165_init_unchained();
         __AccessControl_init_unchained();
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin); // Manually grant DEFAULT_ADMIN_ROLE
 
         for (uint256 i = 0; i < initialRegistrars.length; i++) {
+            if (initialRegistrars[i] == address(0)) revert InvalidRegistrarAddress();
             _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialRegistrars[i]);
         }
     }
