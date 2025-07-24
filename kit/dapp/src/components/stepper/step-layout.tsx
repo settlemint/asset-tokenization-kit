@@ -1,6 +1,3 @@
-import { cn } from "@/lib/utils";
-import { useMemo } from "react";
-
 import { StepComponent } from "@/components/stepper/step";
 import { StepGroupComponent } from "@/components/stepper/step-group";
 import type { NavigationMode } from "@/components/stepper/types";
@@ -11,7 +8,9 @@ import {
   SidebarHeader,
   SidebarProvider,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { Outlet } from "@tanstack/react-router";
+import { useMemo } from "react";
 import type { Step, StepOrGroup } from "./types";
 import {
   flattenSteps,
