@@ -16,8 +16,8 @@
       "description": "ウォレットとセキュリティ対策を設定します"
     },
     "system": {
-      "title": "システム",
-      "description": "システムを展開し、構成します"
+      "title": "SMARTシステムをデプロイ",
+      "description": "ブロックチェーンプラットフォームを設定する"
     },
     "identity": {
       "title": "アイデンティティ",
@@ -133,7 +133,23 @@
       "protected-description": "あなたの鍵、あなたの資産",
       "global": "グローバル",
       "global-description": "どこからでもアクセス可能"
-    }
+    },
+    "subtitle": "ブロックチェーンへのデジタルキー",
+    "intro": "ウォレットをあなたのデジタル資産とブロックチェーン上のアイデンティティを解放するマスターキーと考えてください。これは、あなたがトークンを所有していることを証明し、取引を承認するための安全な暗号コードのセットです。",
+    "what-your-wallet-enables": "ウォレットが可能にすること：",
+    "asset-control": "資産管理",
+    "asset-control-description": "アセットトークン化キットプラットフォーム上でトークン化された資産を表示、管理、対話します。ウォレットはあなたのデジタル資産に対する完全なコントロールを提供します。",
+    "invest-in-digital-assets": "デジタル資産に投資",
+    "invest-in-digital-assets-description": "株式、債券など、幅広いデジタル資産を探求し、投資します。",
+    "manage-your-digital-assets": "デジタル資産を管理",
+    "manage-your-digital-assets-description": "デジタル資産を簡単に管理し、購入、販売、転送できます。",
+    "submit": "ウォレットを作成",
+    "creating-wallet": "作成中...",
+    "wallet-created-successfully": "ウォレットが正常に作成されました！",
+    "failed-to-create-wallet": "ウォレットの作成に失敗しました。もう一度お試しください。",
+    "success-message": "おめでとうございます！あなたのWeb3ウォレットが正常に作成されました",
+    "wallet-address-title": "これがあなたのウォレットアドレスです",
+    "wallet-address-description": "あなたのウォレットアドレスはブロックチェーン上のユニークな識別子です。デジタル資産を送受信し、スマートコントラクトと対話するために使用されます。"
   },
   "system": {
     "title": "SMARTシステムを展開",
@@ -177,7 +193,31 @@
     "what-is-smart-system": "SMARTシステムとは何ですか？",
     "smart-system-description": "SMARTシステムは、SettleMintの包括的なブロックチェーンシステムで、組み込みのID管理と規制遵守を備えたコンプライアントな資産トークン化を可能にします。",
     "system-deployment": "システム展開",
-    "deployment-time-notice": "このプロセスは完了するまでに2〜3分かかる場合があります"
+    "deployment-time-notice": "このプロセスは完了するまでに2〜3分かかる場合があります",
+    "initialize-title": "システムを初期化する",
+    "initialize-subtitle": "プラットフォームの基盤を設定しようとしています",
+    "deployment-warning": "このアクションはブロックチェーンスマートコントラクトをデプロイし、元に戻すことはできません。デプロイされると、システムはブロックチェーン上で永久にアクティブになります。",
+    "what-gets-deployed": "デプロイされるもの：",
+    "core-system-contract": "• コアシステムスマートコントラクト",
+    "identity-registry": "• ユーザー検証のためのアイデンティティレジストリ",
+    "compliance-engine": "• 規制要件のためのコンプライアンスエンジン",
+    "trusted-issuers": "• 認可された当事者のための信頼できる発行者レジストリ",
+    "token-factory": "• 資産作成のためのトークンファクトリーレジストリ",
+    "deploying": "デプロイ中...",
+    "deploying-toast": "システムをデプロイ中...",
+    "deployed-toast": "システムが正常にデプロイされました！",
+    "failed-toast": "システムのデプロイに失敗しました：",
+    "confirm-deployment-title": "システムデプロイを確認",
+    "confirm-deployment-description": "ブロックチェーンシステムをデプロイするために、あなたのアイデンティティを確認してください。",
+    "view-deployment-details": "デプロイメントの詳細を表示",
+    "deployed-contracts": "デプロイされたコントラクトアドレス",
+    "system-contract": "システムコントラクト",
+    "identity-registry-label": "アイデンティティレジストリ",
+    "compliance-engine-label": "コンプライアンスエンジン",
+    "trusted-issuers-label": "信頼できる発行者レジストリ",
+    "token-factory-label": "トークンファクトリーレジストリ",
+    "deployment-details-title": "デプロイメントの詳細",
+    "deployment-details-description": "システム展開の詳細を表示"
   },
   "assets": {
     "title": "資産タイプを選択",
@@ -230,7 +270,13 @@
       "transaction-indexed": "工場が正常にインデックスされました",
       "stream-timeout": "取引追跡がタイムアウトしました",
       "indexing-timeout": "工場インデックス作成がタイムアウトしました"
-    }
+    },
+    "deploy-assets": "資産を展開する",
+    "deployed-label": "(展開済み)",
+    "deploying-toast": "資産ファクトリーを展開中...",
+    "validation-error": "少なくとも1つの資産タイプを選択してください",
+    "confirm-deployment-title": "資産展開を確認する",
+    "confirm-deployment-description": "資産ファクトリーを展開するために、あなたの身元を確認してください。"
   },
   "ui": {
     "next": "次",
@@ -240,5 +286,175 @@
     "error": "エラー",
     "step": "ステップ",
     "settlemint": "SettleMint"
+  },
+  "sidebar": {
+    "title": "設定を開始しましょう！",
+    "description": "ウォレットを設定し、このプラットフォームで使用するためにブロックチェーン上のあなたのアイデンティティを構成します。"
+  },
+  "wallet-security": {
+    "method-selector": {
+      "title": "ウォレットを保護する",
+      "description": "銀行カードが支払いを確認するためにPINを必要とするように、ウォレットも安全にアクションを承認するための保護が必要です。\n\n安全に保つために、PINコードで保護するか、追加の保護のためにワンタイムパスワード（OTP）を有効にできます。",
+      "pin": {
+        "title": "PINコード",
+        "description": "デバイスに入力してウォレットをすばやく解除するためのシンプルな6桁のコード。簡単で迅速です。",
+        "summary": "迅速かつ便利"
+      },
+      "otp": {
+        "title": "ワンタイムパスワード（OTP）",
+        "description": "あなたの電話の認証アプリによって生成される時間ベースのコード。ログインするたびにユニークなコードを要求することで、より強力なセキュリティを提供します。",
+        "summary": "最大のセキュリティ"
+      },
+      "choose-one": "どちらかを選択できます。OTPはより安全であるため、推奨されるオプションです。",
+      "success": "あなたのウォレットは現在保護されています！",
+      "success-description": "あなたのウォレットは現在保護されています！次のステップに進むことができます。"
+    },
+    "pincode": {
+      "title": "PINコードを設定する",
+      "description": "ウォレット取引を保護するための6桁のPINコードを作成します",
+      "enter-pin": "PINコードを入力",
+      "confirm-pin": "PINコードを確認",
+      "pin-codes-match": "✓ PINコードが一致しました",
+      "submitting": "設定中...",
+      "set-pin": "PINコードを設定",
+      "success": "PINコードが正常に設定されました",
+      "invalid-pin-format": "無効なPINコード形式",
+      "pin-codes-dont-match": "PINコードが一致しません"
+    },
+    "otp": {
+      "setup-initiated": "OTP設定が開始されました",
+      "setup-failed": "OTP設定データの取得に失敗しました",
+      "setup-error": "OTPの設定に失敗しました",
+      "verified-success": "OTPが正常に確認されました",
+      "invalid-code": "無効な確認コード",
+      "setup-failed-title": "設定に失敗しました",
+      "setup-failed-description": "OTP認証の設定に失敗しました。もう一度お試しください。",
+      "back": "戻る",
+      "try-again": "もう一度試す",
+      "setting-up": "OTPを設定中...",
+      "setting-up-description": "QRコードを生成中です。お待ちください。",
+      "setup-title": "認証アプリを設定する",
+      "setup-description": "このQRコードを認証アプリでスキャンしてください",
+      "qr-code-label": "QRコード",
+      "scan-with-app": "アプリでスキャン",
+      "manual-entry": "スキャンできませんか？手動で入力",
+      "manual-entry-key": "手動入力キー：",
+      "loading": "読み込み中...",
+      "enter-code": "アプリからの6桁のコードを入力",
+      "cancel": "キャンセル",
+      "verifying": "確認中...",
+      "verify-code": "コードを確認"
+    },
+    "recovery-codes": {
+      "title": "あなたの秘密のコード",
+      "description": "これらのコードを安全な場所に保存してください",
+      "description-2": "これらのコードは、PINを忘れたり、認証アプリへのアクセスを失った場合にウォレットを復元するために使用できます。",
+      "generated-success": "秘密のコードが正常に生成されました！",
+      "generated-error": "秘密のコードの生成に失敗しました",
+      "confirm-error": "秘密のコードの確認に失敗しました",
+      "confirm": "保存したことを確認",
+      "warning": "重要：これらのコードを安全に保管してください！他のセキュリティ手段を失った場合にアクセスを再取得する唯一の方法です。",
+      "copy-all": "すべてコピー",
+      "download": "ダウンロード",
+      "your-recovery-codes": "あなたの秘密のコード（{{count}}）",
+      "generating": "秘密のコードを生成中...",
+      "copied-to-clipboard": "秘密のコードがクリップボードにコピーされました！",
+      "downloaded": "秘密のコードがダウンロードされました！"
+    }
+  },
+  "system-settings": {
+    "title": "プラットフォーム設定を構成する",
+    "subtitle": "プラットフォームのデフォルトの動作を定義する",
+    "description": {
+      "intro": "資産を発行する前に、プラットフォームの動作を決定する基本設定を構成しましょう。これらのデフォルト値は、あなたとあなたのユーザーのために体験をパーソナライズするのに役立ちます。",
+      "update": "これらの設定は後でプラットフォーム設定で更新できます。"
+    },
+    "form": {
+      "baseCurrency": {
+        "label": "基本通貨",
+        "description": "プラットフォームのデフォルト通貨を選択する",
+        "validation": {
+          "invalid": "無効な通貨選択"
+        }
+      }
+    },
+    "toast": {
+      "saving": "プラットフォーム設定を保存中...",
+      "success": "プラットフォーム設定が正常に保存されました！",
+      "error": "プラットフォーム設定の保存に失敗しました: {{message}}",
+      "exchangeRateSyncWarning": "基本通貨は保存されましたが、為替レートは同期できませんでした。後で自動的に同期されます。"
+    },
+    "buttons": {
+      "saving": "保存中...",
+      "saveAndContinue": "保存して続行"
+    }
+  },
+  "system-addons": {
+    "addon-selection": {
+      "title": "アドオンを有効にする",
+      "description": "プラットフォームの追加機能や統合を有効にする",
+      "addon-types": {
+        "airdrops": {
+          "title": "エアドロップ",
+          "description": "プラットフォームのエアドロップ機能を有効にします。これにより、資産のエアドロップを作成できます。"
+        },
+        "yield": {
+          "title": "利回り",
+          "description": "プラットフォームの利回り機能を有効にします。これにより、債券やその他の固定収入商品などの利回りを生む資産を作成できます。"
+        },
+        "xvp": {
+          "title": "XvP",
+          "description": "プラットフォームのXvP（配達対支払い）機能を有効にします。これにより、ユーザーはデフォルトの配達対支払いメカニズムの代わりにXvPを使用してポジションを決済できます。"
+        }
+      },
+      "no-system": "システムが見つかりません。最初にシステムを展開してください。",
+      "deploying-toast": "アドオンを展開中...",
+      "deployed-toast": "アドオンが正常に展開されました！",
+      "failed-toast": "アドオンの展開に失敗しました: ",
+      "what-are-addons": "アドオンとは何ですか？",
+      "addons-description": "アドオンは、プラットフォームの追加機能や統合です。ここで有効または無効にできます。",
+      "validation": {
+        "invalid": "少なくとも1つのアドオンを選択してください"
+      },
+      "select-all-addons": "有効にする予定のすべてのアドオンを選択してください",
+      "available-addons": "利用可能なアドオン",
+      "deploy-addons": "アドオンを展開する",
+      "confirm-deployment-title": "アドオン展開を確認する",
+      "confirm-deployment-description": "アドオンを展開するために、あなたの身元を確認してください。"
+    },
+    "addon-deployment": {
+      "title": "アドオンが展開されました",
+      "description": "あなたのアドオンは使用可能です",
+      "addons-deployed-successfully": "アドオンが正常に展開されました",
+      "deployed-addons": "展開されたアドオン"
+    }
+  },
+  "identity-setup": {
+    "title": "あなたのONCHAINIDを作成中",
+    "description": "ブロックチェーンにあなたのアイデンティティ契約を展開中",
+    "info": "アイデンティティファクトリーを使用してあなたのONCHAINIDを作成しています。",
+    "info-description": "これは、ブロックチェーン上であなたの個人アイデンティティのアンカーとして機能するスマートコントラクトです。\n\nまだ個人情報は含まれていませんが、次のステップで提供されますが、現在はあなたのウォレットに一意にリンクされており、完全にあなたの管理下にあります。\n\nネットワークの速度に応じて、これには数分かかる場合があります。あなたのウォレットが取引を承認するために使用されます。",
+    "deploying-toast": "ONCHAINIDを作成中...",
+    "deployed-toast": "ONCHAINIDが正常に作成されました！",
+    "failed-toast": "ONCHAINIDの作成に失敗しました: ",
+    "form": {
+      "submit": "ONCHAINIDを作成する",
+      "submitting": "ONCHAINIDを作成中..."
+    },
+    "confirm-title": "アイデンティティ作成を確認する",
+    "confirm-description": "オンチェーンアイデンティティを作成するために、あなたの身元を確認してください。",
+    "success-title": "ONCHAINIDが正常に作成されました",
+    "success-message": "あなたのオンチェーンアイデンティティが作成されました。これを登録し、確認済みの情報を追加するか、後でダッシュボードから行うことができます。",
+    "address-title": "これがあなたのONCHAINIDアドレスです"
+  },
+  "identity": {
+    "title": "個人情報を追加する",
+    "description": "アイデンティティ登録とKYC確認に必要",
+    "intro": "アイデンティティを完成させ、プラットフォームを使用するために、いくつかの基本情報が必要です。これは、規制要件（KYC/AML）を満たすのに役立ち、あなたのアイデンティティをブロックチェーンに登録できるようにします。\n\n今はこのステップをスキップできますが、国が提供されるまで登録はできません。\n\nあなたのデータは安全に保存され、コンプライアンス目的のみに使用されます。後でダッシュボードから更新または完成させることができます。",
+    "deploying-toast": "アイデンティティを登録中...",
+    "deployed-toast": "アイデンティティが正常に登録されました！",
+    "failed-toast": "アイデンティティの登録に失敗しました: ",
+    "confirm-title": "アイデンティティ作成を確認する",
+    "confirm-description": "オンチェーンアイデンティティを作成するために、あなたの身元を確認してください。"
   }
 }

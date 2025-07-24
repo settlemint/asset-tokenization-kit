@@ -17,6 +17,8 @@ import { IATKIdentity } from "./identities/IATKIdentity.sol";
 import { IATKContractIdentity } from "./identities/IATKContractIdentity.sol";
 import { IContractWithIdentity } from "./IContractWithIdentity.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
+import { ERC734KeyPurposes } from "../../onchainid/ERC734KeyPurposes.sol";
+import { ERC734KeyTypes } from "../../onchainid/ERC734KeyTypes.sol";
 
 // System imports
 import { InvalidSystemAddress } from "../ATKSystemErrors.sol"; // Assuming this is correctly placed
@@ -171,7 +173,8 @@ contract ATKIdentityFactoryImplementation is
     /// @dev This function performs several steps:
     /// 1. Validates that `_wallet` is not the zero address and that an identity doesn't already exist for this wallet.
     /// 2. Calls `_createAndRegisterWalletIdentity` to handle the deterministic deployment of the `ATKIdentityProxy`.
-    ///    The `_wallet` itself is passed as the `_initialManager` to the proxy constructor.
+    ///    The `_wallet` itself is passed as the `_initialManager` to the proxy constructor, and claim authorization
+    ///    contracts (including the trusted issuers registry) are automatically registered during initialization.
     /// 3. Interacts with the newly deployed identity contract (as `IERC734`) to add any additional `_managementKeys`
     /// provided.
     ///    It ensures a management key is not the wallet itself (which is already a manager).
@@ -207,8 +210,7 @@ contract ATKIdentityFactoryImplementation is
             for (uint256 i = 0; i < managementKeysLength;) {
                 // Prevent adding the wallet's own key again if it was passed in _managementKeys
                 if (_managementKeys[i] == keccak256(abi.encodePacked(_wallet))) revert WalletInManagementKeys();
-                identityContract.addKey(_managementKeys[i], 1, 1); // Add key with ERC734 purpose 1 (MANAGEMENT_KEY) and
-                    // type 1 (ECDSA key/address).
+                identityContract.addKey(_managementKeys[i], ERC734KeyPurposes.MANAGEMENT_KEY, ERC734KeyTypes.ECDSA);
                 unchecked {
                     ++i;
                 }
@@ -225,7 +227,8 @@ contract ATKIdentityFactoryImplementation is
     /// @dev This function performs several steps:
     /// 1. Validates that `_contract` is not zero address and that an identity doesn't already exist for this contract.
     /// 2. Verifies the contract implements IContractWithIdentity interface.
-    /// 3. Calls `_createAndRegisterContractIdentity` to handle the deterministic deployment.
+    /// 3. Calls `_createAndRegisterContractIdentity` to handle the deterministic deployment. Claim authorization
+    ///    contracts (including the trusted issuers registry) are automatically registered during initialization.
     /// 4. Stores the mapping from the `_contract` address to the new `identity` contract address.
     /// 5. Emits `ContractIdentityCreated` event.
     /// @param _contract The address of the contract implementing IContractWithIdentity for which the identity is being
@@ -277,6 +280,8 @@ contract ATKIdentityFactoryImplementation is
     /// salt
     ///      and the `_initialManager` (which is part of the proxy's constructor arguments, affecting its creation code
     /// hash).
+    ///      The claim authorization contracts array (containing the trusted issuers registry) is retrieved from the
+    /// system for address calculation.
     ///      This allows prediction of the identity address before actual deployment.
     /// @param _walletAddress The investor wallet address for which to calculate the potential identity contract
     /// address.
@@ -465,34 +470,41 @@ contract ATKIdentityFactoryImplementation is
     }
 
     /// @notice Internal helper to get the creation bytecode and encoded constructor arguments for `ATKIdentityProxy`.
-    /// @dev The constructor of `ATKIdentityProxy` takes the `_system` address (from factory state) and
-    /// `_initialManager`.
+    /// @dev The constructor of `ATKIdentityProxy` takes the `_system` address (from factory state),
+    /// `_initialManager`, and an array of claim authorization contracts.
     /// @param _initialManager The address to be encoded as the initial manager argument.
     /// @return proxyBytecode The creation bytecode of `ATKIdentityProxy`.
-    /// @return constructorArgs The ABI-encoded constructor arguments (`_system`, `_initialManager`).
+    /// @return constructorArgs The ABI-encoded constructor arguments (`_system`, `_initialManager`,
+    /// `_claimAuthorizationContracts`).
     function _getWalletProxyAndConstructorArgs(address _initialManager)
         private
         view
         returns (bytes memory proxyBytecode, bytes memory constructorArgs)
     {
         proxyBytecode = type(ATKIdentityProxy).creationCode;
-        constructorArgs = abi.encode(_system, _initialManager);
+        address[] memory claimAuthorizationContracts = new address[](1);
+        claimAuthorizationContracts[0] = IATKSystem(_system).trustedIssuersRegistry();
+        constructorArgs = abi.encode(_system, _initialManager, claimAuthorizationContracts);
         // No explicit return needed due to named return variables
     }
 
     /// @notice Internal helper to get the creation bytecode and encoded constructor arguments for
     /// `ATKContractIdentityProxy`.
-    /// @dev The constructor of `ATKContractIdentityProxy` takes the `_system` address and the contract address.
+    /// @dev The constructor of `ATKContractIdentityProxy` takes the `_system` address, the contract address,
+    /// and an array of claim authorization contracts.
     /// @param _contractAddress The address of the contract that will own this identity
     /// @return proxyBytecode The creation bytecode of `ATKContractIdentityProxy`.
-    /// @return constructorArgs The ABI-encoded constructor arguments (`_system`, `_contractAddress`).
+    /// @return constructorArgs The ABI-encoded constructor arguments (`_system`, `_contractAddress`,
+    /// `_claimAuthorizationContracts`).
     function _getContractProxyAndConstructorArgs(address _contractAddress)
         private
         view
         returns (bytes memory proxyBytecode, bytes memory constructorArgs)
     {
         proxyBytecode = type(ATKContractIdentityProxy).creationCode;
-        constructorArgs = abi.encode(_system, _contractAddress);
+        address[] memory claimAuthorizationContracts = new address[](1);
+        claimAuthorizationContracts[0] = IATKSystem(_system).trustedIssuersRegistry();
+        constructorArgs = abi.encode(_system, _contractAddress, claimAuthorizationContracts);
         // No explicit return needed due to named return variables
     }
 

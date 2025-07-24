@@ -29,5 +29,19 @@
       "allFailed": "فشل في تسجيل أي إضافات",
       "partialSuccess": "{{successful}} من {{total}} الإضافات تم تسجيلها بنجاح"
     }
+  },
+  "identityCreate": {
+    "messages": {
+      "preparing": "التحضير لإنشاء الهوية",
+      "success": "تم إنشاء الهوية بنجاح",
+      "failed": "فشل في إنشاء الهوية"
+    }
+  },
+  "identityRegister": {
+    "messages": {
+      "preparing": "التحضير لتسجيل الهوية",
+      "success": "تم تسجيل الهوية بنجاح",
+      "failed": "فشل في تسجيل الهوية"
+    }
   }
 }

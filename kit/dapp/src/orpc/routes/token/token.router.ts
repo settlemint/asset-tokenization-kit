@@ -30,8 +30,10 @@ import { statsTransactionCount } from "@/orpc/routes/token/routes/stats/transact
 import { statsTransactionHistory } from "@/orpc/routes/token/routes/stats/transaction-history";
 import { statsTransactions } from "@/orpc/routes/token/routes/stats/transactions";
 import { statsValue } from "@/orpc/routes/token/routes/stats/value";
+import { actions } from "@/orpc/routes/token/routes/token.actions";
 
 const routes = {
+  actions,
   create,
   events,
   factoryCreate,

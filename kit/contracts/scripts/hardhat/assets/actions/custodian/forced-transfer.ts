@@ -1,5 +1,5 @@
 import { ATKContracts } from "../../../constants/contracts";
-import type { AbstractActor } from "../../../entities/actors/abstract-actor";
+import type { Actor } from "../../../entities/actor";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { formatBaseUnits } from "../../../utils/format-base-units";
@@ -8,9 +8,9 @@ import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const forcedTransfer = async (
   asset: Asset<any>,
-  custodian: AbstractActor,
-  from: AbstractActor | Asset<any>,
-  to: AbstractActor | Asset<any>,
+  custodian: Actor,
+  from: Actor | Asset<any>,
+  to: Actor | Asset<any>,
   amount: bigint
 ) => {
   console.log(`[Forced transfer] → Starting forced transfer...`);

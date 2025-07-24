@@ -11,5 +11,5 @@ maintainers:
     url: https://settlemint.com
 dependencies:
   - name: graph-node
-    version: 0.5.9
+    version: 0.6.0
     repository: http://graphops.github.io/launchpad-charts

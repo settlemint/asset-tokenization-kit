@@ -16,6 +16,7 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 // Interface imports
 import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
+import { IClaimAuthorizer } from "../../onchainid/extensions/IClaimAuthorizer.sol";
 
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
@@ -48,7 +49,8 @@ contract ATKTrustedIssuersRegistryImplementation is
     ERC165Upgradeable,
     ERC2771ContextUpgradeable,
     AccessControlUpgradeable,
-    IATKTrustedIssuersRegistry
+    IATKTrustedIssuersRegistry,
+    IClaimAuthorizer
 {
     // --- Storage Variables ---
     /// @notice Defines a structure to hold the details for a trusted claim issuer.
@@ -458,6 +460,19 @@ contract ATKTrustedIssuersRegistryImplementation is
         return _trustedIssuers[_issuer].exists;
     }
 
+    // --- IClaimAuthorization Implementation ---
+
+    /// @inheritdoc IClaimAuthorizer
+    /// @notice Checks if an issuer is authorized to add a claim for a specific topic
+    /// @dev This function checks if the issuer is registered as a trusted issuer and
+    ///      if they are authorized for the specific claim topic using the existing registry logic.
+    /// @param issuer The address of the issuer attempting to add the claim
+    /// @param topic The claim topic for which authorization is being checked
+    /// @return True if the issuer is trusted for this topic, false otherwise
+    function isAuthorizedToAddClaim(address issuer, uint256 topic) external view override returns (bool) {
+        return this.hasClaimTopic(issuer, topic);
+    }
+
     // --- Internal Helper Functions ---
 
     /// @dev Internal function to add an issuer to the lookup array for a specific claim topic (`_issuersByClaimTopic`)
@@ -612,7 +627,8 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// It checks for:
     /// 1.  `type(IERC3643TrustedIssuersRegistry).interfaceId`: Confirms adherence to the ERC-3643 standard for
     ///     trusted issuer registries.
-    /// 2.  Interfaces supported by parent contracts (e.g., `AccessControlUpgradeable`, `ERC165Upgradeable`)
+    /// 2.  `type(IClaimAuthorization).interfaceId`: Confirms implementation of claim authorization interface.
+    /// 3.  Interfaces supported by parent contracts (e.g., `AccessControlUpgradeable`, `ERC165Upgradeable`)
     ///     via `super.supportsInterface(interfaceId)`.
     /// Crucial for interoperability, allowing other components to verify compatibility.
     /// @param interfaceId The EIP-165 interface identifier (`bytes4`) to check.
@@ -626,6 +642,7 @@ contract ATKTrustedIssuersRegistryImplementation is
         returns (bool)
     {
         return interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
-            || interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId || super.supportsInterface(interfaceId);
+            || interfaceId == type(IERC3643TrustedIssuersRegistry).interfaceId
+            || interfaceId == type(IClaimAuthorizer).interfaceId || super.supportsInterface(interfaceId);
     }
 }

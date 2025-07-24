@@ -78,9 +78,9 @@ type SystemAddon @entity(immutable: false) {
   id: Bytes!
   deployedInTransaction: Bytes!
   accessControl: AccessControl!
+  systemAddonRegistry: SystemAddonRegistry!
   name: String!
   typeId: String!
-  system: System
   account: Account!
 }
 
@@ -89,7 +89,6 @@ type VaultFactory @entity(immutable: false) {
   deployedInTransaction: Bytes!
   accessControl: AccessControl!
   systemAddon: SystemAddon!
-  system: System!
   account: Account!
   vaults: [Vault!]! @derivedFrom(field: "factory")
 }
@@ -438,6 +437,7 @@ type SystemAddonRegistry @entity(immutable: false) {
   accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
+  systemAddons: [SystemAddon!]! @derivedFrom(field: "systemAddonRegistry")
 }
 
 # ==================================================

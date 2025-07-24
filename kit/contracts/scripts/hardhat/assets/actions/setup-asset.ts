@@ -1,7 +1,7 @@
+import { owner } from "../../constants/actors";
 import { Countries } from "../../constants/countries";
 import { ATKRoles } from "../../constants/roles";
 import { ATKTopic } from "../../constants/topics";
-import { owner } from "../../entities/actors/owner";
 import type { Asset } from "../../entities/asset";
 import { atkDeployer } from "../../services/deployer";
 import { getAnvilTimeMilliseconds } from "../../utils/anvil";

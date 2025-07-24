@@ -1,7 +1,7 @@
 import { Address } from "viem";
+import { owner } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
 import { ATKRoles } from "../../../constants/roles";
-import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { atkDeployer } from "../../../services/deployer";
 import { increaseAnvilTime } from "../../../utils/anvil";

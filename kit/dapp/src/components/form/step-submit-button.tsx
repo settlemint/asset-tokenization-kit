@@ -2,16 +2,16 @@ import { Button } from "@/components/ui/button";
 import { useFormContext } from "@/hooks/use-form-contexts";
 import type { AnyFormApi } from "@tanstack/react-form";
 
-export function StepSubmitButton<T extends string[]>({
+export function StepSubmitButton<T extends readonly string[]>({
   label,
   onStepSubmit,
   validate,
-  checkRequiredFn,
+  checkRequiredFn = () => false,
 }: {
   label: string;
   onStepSubmit: () => void;
   validate: T;
-  checkRequiredFn: (field: T[number]) => boolean;
+  checkRequiredFn?: (field: T[number]) => boolean;
 }) {
   const form = useFormContext();
 
@@ -31,7 +31,7 @@ export function StepSubmitButton<T extends string[]>({
   );
 }
 
-export function isStepSubmitDisabled<T extends string[]>(
+export function isStepSubmitDisabled<T extends readonly string[]>(
   fields: T,
   form: AnyFormApi,
   isRequiredField: (field: T[number]) => boolean

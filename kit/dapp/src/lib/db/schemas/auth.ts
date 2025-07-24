@@ -32,6 +32,9 @@ export const user = pgTable("user", {
   pincodeVerificationId: text("pincode_verification_id").unique(),
   twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
   twoFactorVerificationId: text("two_factor_verification_id").unique(),
+  secretCodesConfirmed: boolean("secret_codes_confirmed")
+    .notNull()
+    .default(false),
   secretCodeVerificationId: text("secret_code_verification_id").unique(),
 });
 

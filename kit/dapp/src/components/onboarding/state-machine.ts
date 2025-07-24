@@ -3,7 +3,10 @@ import type {
   OnboardingState,
 } from "@/orpc/routes/user/routes/user.me.schema";
 import { Derived, Store } from "@tanstack/react-store";
-import type { useTranslation } from "react-i18next";
+
+interface OnboardingStateMachine extends OnboardingState {
+  isAdmin: boolean;
+}
 
 export enum OnboardingStep {
   wallet = "wallet",
@@ -23,7 +26,7 @@ export const enum OnboardingStepGroup {
   identity = "identity",
 }
 
-export const onboardingStateMachine = new Store<OnboardingState>({
+export const onboardingStateMachine = new Store<OnboardingStateMachine>({
   isAdmin: false,
   wallet: false,
   walletSecurity: false,
@@ -36,17 +39,11 @@ export const onboardingStateMachine = new Store<OnboardingState>({
   identity: false,
 });
 
-type TranslationKey = Parameters<
-  ReturnType<typeof useTranslation<readonly ["onboarding"]>>["t"]
->[0];
-
 export const onboardingSteps = new Derived({
   fn: () => {
     const steps: {
       step: OnboardingStep;
       groupId: OnboardingStepGroup;
-      titleTranslationKey?: TranslationKey;
-      descriptionTranslationKey?: TranslationKey;
       current: boolean;
       completed: boolean;
     }[] = [
@@ -55,8 +52,6 @@ export const onboardingSteps = new Derived({
         groupId: OnboardingStepGroup.wallet,
         current: false,
         completed: onboardingStateMachine.state.wallet,
-        titleTranslationKey: "steps.wallet.title",
-        descriptionTranslationKey: "steps.wallet.description",
       },
       {
         step: OnboardingStep.walletSecurity,
@@ -131,6 +126,7 @@ export function updateOnboardingStateMachine({ user }: { user: CurrentUser }) {
   onboardingStateMachine.setState((prev) => ({
     ...prev,
     ...onboardingState,
+    isAdmin: user.role === "admin",
   }));
 
   return {

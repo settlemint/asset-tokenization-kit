@@ -1,6 +1,6 @@
 import { Address } from "viem";
+import { owner } from "../../../constants/actors";
 import { ATKContracts } from "../../../constants/contracts";
-import { owner } from "../../../entities/actors/owner";
 import { Asset } from "../../../entities/asset";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
 import { toBaseUnits } from "../../../utils/to-base-units";

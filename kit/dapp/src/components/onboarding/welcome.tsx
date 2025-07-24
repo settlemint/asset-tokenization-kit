@@ -1,3 +1,4 @@
+import { Logo } from "@/components/logo/logo";
 import { OnboardingStepGroup } from "@/components/onboarding/state-machine";
 import {
   Accordion,
@@ -15,9 +16,8 @@ import {
   TimelineSeparator,
   TimelineTitle,
 } from "@/components/ui/timeline";
-import { Logo } from "@/components/logo/logo";
 import { useNavigate } from "@tanstack/react-router";
-import { Check, HelpCircle, X } from "lucide-react";
+import { Check, HelpCircle } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalStorage } from "usehooks-ts";
@@ -63,15 +63,17 @@ export function Welcome({ steps }: WelcomeProps) {
           <Check className="h-3 w-3 text-white" />
         </div>
       );
-    } else if (hasCurrent) {
+    }
+
+    if (hasCurrent) {
       return (
         <div className="h-5 w-5 rounded-full bg-sm-state-success-background animate-pulse" />
       );
-    } else {
-      return (
-        <div className="h-5 w-5 rounded-full border-2 border-sm-graphics-primary" />
-      );
     }
+
+    return (
+      <div className="h-5 w-5 rounded-full border-2 border-sm-graphics-primary" />
+    );
   };
 
   const getGroupTitle = (groupId: OnboardingStepGroup) => {
@@ -115,7 +117,7 @@ export function Welcome({ steps }: WelcomeProps) {
   return (
     <div
       style={{ background: "var(--sm-wizard-sidebar-gradient)" }}
-      className="min-h-screen flex flex-col"
+      className="flex flex-col h-full rounded-xl shadow-lg"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-6 lg:px-12 xl:px-12">
@@ -130,16 +132,6 @@ export function Welcome({ steps }: WelcomeProps) {
             }}
           >
             <HelpCircle className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-primary-foreground hover:text-primary-foreground/80"
-            onClick={() => {
-              void navigate({ to: "/" });
-            }}
-          >
-            <X className="h-5 w-5" />
           </Button>
         </div>
       </div>

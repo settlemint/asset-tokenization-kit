@@ -1,13 +1,13 @@
 import { atkDeployer } from "../services/deployer";
 
-import { Countries } from "../constants/countries";
-import { ATKTopic } from "../constants/topics";
 import {
   frozenInvestor,
   investorA,
   investorB,
-} from "../entities/actors/investors";
-import { owner } from "../entities/actors/owner";
+  owner,
+} from "../constants/actors";
+import { Countries } from "../constants/countries";
+import { ATKTopic } from "../constants/topics";
 import { Asset } from "../entities/asset";
 import { topicManager } from "../services/topic-manager";
 import { getAnvilTimeMilliseconds, getAnvilTimeSeconds } from "../utils/anvil";

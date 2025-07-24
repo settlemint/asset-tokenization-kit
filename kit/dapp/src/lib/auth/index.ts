@@ -26,6 +26,7 @@ import { pincode } from "@/lib/auth/plugins/pincode-plugin";
 import { secretCodes } from "@/lib/auth/plugins/secret-codes-plugin";
 import { twoFactor } from "@/lib/auth/plugins/two-factor";
 import { isOnboarded } from "@/lib/auth/plugins/utils";
+import { kycProfiles } from "@/lib/db/schema";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { UserRole } from "@/lib/zod/validators/user-roles";
 import { serverOnly } from "@tanstack/react-start";
@@ -41,6 +42,7 @@ import { admin, apiKey, customSession } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
+import { zeroAddress } from "viem";
 import { db } from "../db";
 import * as authSchema from "../db/schemas/auth";
 import { env } from "../env";
@@ -182,6 +184,15 @@ const options = {
         unique: true,
         input: false,
       },
+      /**
+       * Whether the user has confirmed the secret codes.
+       */
+      secretCodesConfirmed: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
     },
   },
   /**
@@ -220,7 +231,7 @@ const options = {
               data: {
                 ...user,
                 role: firstUser ? "admin" : "investor",
-                wallet: "0x0000000000000000000000000000000000000000",
+                wallet: zeroAddress,
               },
             };
           } catch (error) {
@@ -336,7 +347,7 @@ const getAuthConfig = serverOnly(() => {
               return {
                 data: {
                   ...user,
-                  wallet: "0x0000000000000000000000000000000000000000",
+                  wallet: zeroAddress,
                   role: firstUser ? "investor" : "admin",
                 },
               };
@@ -357,9 +368,16 @@ const getAuthConfig = serverOnly(() => {
     plugins: [
       ...enhancedOptions.plugins,
       customSession(async ({ user, session }) => {
+        const kyc = await db.query.kycProfiles.findFirst({
+          where: eq(kycProfiles.userId, user.id),
+        });
         return Promise.resolve({
           user: {
             ...user,
+            name:
+              kyc?.firstName && kyc.lastName
+                ? `${kyc.firstName} ${kyc.lastName}`
+                : user.name,
             isOnboarded: isOnboarded(user as SessionUser),
           } as SessionUser,
           session,

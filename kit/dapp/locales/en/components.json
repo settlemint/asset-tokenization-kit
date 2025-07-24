@@ -1,0 +1,26 @@
+{
+  "verificationDialog": {
+    "authenticatorCode": "Authenticator Code",
+    "pinCode": "PIN Code",
+    "confirm": "Confirm",
+    "usePinInstead": "Use PIN Code instead",
+    "useAuthenticatorInstead": "Use Authenticator App instead",
+    "codeLengthError": "Code must be 6 digits",
+    "cancel": "Cancel"
+  },
+  "kycForm": {
+    "firstName": "First name",
+    "lastName": "Last name",
+    "dob": "Date of birth",
+    "country": "Country of residence",
+    "residencyStatus": "Residency status",
+    "residencyStatusOptions": {
+      "resident": "Sole resident - I live in and am legally/tax resident only in the country above",
+      "dual_resident": "Dual resident - I am legally/tax resident in more than one country",
+      "non_resident": "Non-resident - I do not live in or am not considered a resident of the country above",
+      "unknown": "Prefer not to say"
+    },
+    "nationalId": "National ID",
+    "submit": "Save and continue"
+  }
+}

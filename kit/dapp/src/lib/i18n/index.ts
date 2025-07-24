@@ -52,6 +52,7 @@ export const namespaces = [
   "auth",
   "blockchain",
   "common",
+  "components",
   "dashboard",
   "data-table",
   "deposits-table",
