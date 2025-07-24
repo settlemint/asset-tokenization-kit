@@ -9,12 +9,7 @@ import {
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-interface NationalitySelectFieldProps extends SelectFieldProps {}
-
-export function CountrySelectField({
-  label,
-  ...props
-}: NationalitySelectFieldProps) {
+export function CountrySelectField({ label, ...props }: SelectFieldProps) {
   const { i18n } = useTranslation();
   const options = useMemo(() => {
     const names = getCountries(i18n.language as SupportedLocale);

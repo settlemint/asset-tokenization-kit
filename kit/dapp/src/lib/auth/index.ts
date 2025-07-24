@@ -375,7 +375,7 @@ const getAuthConfig = serverOnly(() => {
           user: {
             ...user,
             name:
-              kyc?.firstName && kyc?.lastName
+              kyc?.firstName && kyc.lastName
                 ? `${kyc.firstName} ${kyc.lastName}`
                 : user.name,
             isOnboarded: isOnboarded(user as SessionUser),

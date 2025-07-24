@@ -1,4 +1,5 @@
-import { KycForm, KycFormValues } from "@/components/kyc/kyc-form";
+import type { KycFormValues } from "@/components/kyc/kyc-form";
+import { KycForm } from "@/components/kyc/kyc-form";
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import {
   createOnboardingBeforeLoad,
@@ -82,14 +83,11 @@ function RouteComponent() {
   );
 
   const handleComplete = useCallback(
-    async (values: KycFormValues) => {
+    (values: KycFormValues) => {
       setKycFormValues(values);
       if (canRegisterIdentity) {
         setShowVerificationModal(true);
       } else {
-        if (!values) {
-          return;
-        }
         toast.promise(
           updateKyc({
             ...values,
@@ -120,7 +118,7 @@ function RouteComponent() {
         (async () => {
           if (canRegisterIdentity) {
             await registerIdentity({
-              country: kycFormValues?.country ?? "",
+              country: kycFormValues.country,
               verification,
             });
           }
@@ -137,7 +135,14 @@ function RouteComponent() {
         }
       );
     },
-    [kycFormValues]
+    [
+      canRegisterIdentity,
+      kycFormValues,
+      registerIdentity,
+      session?.user.id,
+      t,
+      updateKyc,
+    ]
   );
 
   return (

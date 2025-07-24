@@ -59,7 +59,7 @@ export const identityRegister = onboardedRouter.system.identityRegister
       { context }
     );
 
-    if (!systemDetails?.identityRegistry) {
+    if (!systemDetails.identityRegistry) {
       const cause = new Error("Identity registry not found");
       throw errors.INTERNAL_SERVER_ERROR({
         message: cause.message,
@@ -67,7 +67,7 @@ export const identityRegister = onboardedRouter.system.identityRegister
       });
     }
 
-    if (!account?.identity) {
+    if (!account.identity) {
       throw errors.NOT_FOUND({
         message: "No identity found for the current user",
       });
@@ -87,10 +87,10 @@ export const identityRegister = onboardedRouter.system.identityRegister
     const transactionHash = yield* context.portalClient.mutate(
       IDENTITY_REGISTER_MUTATION,
       {
-        address: systemDetails?.identityRegistry,
+        address: systemDetails.identityRegistry,
         from: sender.wallet,
         country: Number(alpha2ToNumeric(country) ?? "0"),
-        identity: account?.identity,
+        identity: account.identity,
         ...challengeResponse,
       },
       identityRegisterMessages.errorMessage,

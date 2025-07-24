@@ -60,7 +60,7 @@ export const identityCreate = onboardedRouter.system.identityCreate
       { context }
     );
 
-    if (!systemDetails?.identityFactory) {
+    if (!systemDetails.identityFactory) {
       const cause = new Error("Identity factory not found");
       throw errors.INTERNAL_SERVER_ERROR({
         message: cause.message,
@@ -89,7 +89,7 @@ export const identityCreate = onboardedRouter.system.identityCreate
     const transactionHash = yield* context.portalClient.mutate(
       IDENTITY_CREATE_MUTATION,
       {
-        address: systemDetails?.identityFactory,
+        address: systemDetails.identityFactory,
         from: sender.wallet,
         ...challengeResponse,
       },
