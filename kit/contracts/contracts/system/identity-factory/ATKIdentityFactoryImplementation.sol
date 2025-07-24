@@ -628,17 +628,15 @@ contract ATKIdentityFactoryImplementation is
     /// @inheritdoc IContractWithIdentity
     /// @notice Checks if the caller can add a claim to the identity contract.
     /// @dev The identity factory allows the system admin to add claims.
-    function canAddClaim(address) external pure override returns (bool) {
-        // TODO
-        return false;
+    function canAddClaim(address caller) external view override returns (bool) {
+        return  caller == address(this) || caller == _system;
     }
 
     /// @inheritdoc IContractWithIdentity
     /// @notice Checks if the caller can remove a claim from the identity contract.
     /// @dev The identity factory allows the system admin to remove claims.
-    function canRemoveClaim(address) external pure override returns (bool) {
-        // TODO
-        return false;
+    function canRemoveClaim(address caller) external view override returns (bool) {
+        return caller == address(this) || caller == _system;
     }
 
     /// @notice Sets the identity factory's own OnChain ID and issues a self-claim.
