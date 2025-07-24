@@ -38,7 +38,7 @@ export function CountryAllowlistModuleDetail({
       {/* Main content */}
       <div className="flex-1">
         {/* Module header with icon and title */}
-        <div className="flex flex-col items-start mb-6">
+        <div className="flex flex-col items-start mb-6 space-y-6">
           <div className="flex items-center justify-center space-x-4 mb-4">
             <div>
               <config.icon className="w-5 h-5" />
