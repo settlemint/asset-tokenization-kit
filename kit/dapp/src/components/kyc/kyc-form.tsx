@@ -1,9 +1,6 @@
 import { useAppForm } from "@/hooks/use-app-form";
 import { authClient } from "@/lib/auth/auth.client";
-import {
-  getCountryName,
-  type SupportedLocale,
-} from "@/lib/zod/validators/iso-country-code";
+import { isoCountryCode } from "@/lib/zod/validators/iso-country-code";
 import { orpc } from "@/orpc/orpc-client";
 import {
   KycProfileUpsert,
@@ -13,7 +10,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-type FormValues = KycProfileUpsert;
+type FormValues = KycProfileUpsert & {
+  country: string;
+};
 
 interface KycFormProps {
   onComplete: () => void;
@@ -26,10 +25,12 @@ const KYC_FORM_FIELDS = [
   "residencyStatus",
 ] as const;
 
-const kycFormSchema = KycProfileUpsertSchema;
+const kycFormSchema = KycProfileUpsertSchema.extend({
+  country: isoCountryCode,
+});
 
 export function KycForm({ onComplete }: KycFormProps) {
-  const { t, i18n } = useTranslation(["components"]);
+  const { t } = useTranslation(["components"]);
   const { data: session } = authClient.useSession();
 
   const { data: account } = useQuery({
@@ -47,7 +48,10 @@ export function KycForm({ onComplete }: KycFormProps) {
   });
 
   const form = useAppForm({
-    defaultValues: kyc as FormValues,
+    defaultValues: {
+      ...kyc,
+      country: account?.country ?? "",
+    } as FormValues,
     validators: {
       onChange: kycFormSchema,
     },
@@ -104,16 +108,19 @@ export function KycForm({ onComplete }: KycFormProps) {
         )}
       />
       <form.AppField
+        name="country"
+        children={(field) => (
+          <field.CountrySelectField
+            label={t("kycForm.country")}
+            required={true}
+          />
+        )}
+      />
+      <form.AppField
         name="residencyStatus"
         children={(field) => (
           <field.SelectField
             label={t("kycForm.residencyStatus")}
-            description={t("kycForm.residencyStatusDescription", {
-              country: getCountryName(
-                account?.country ?? "",
-                i18n.language as SupportedLocale
-              ),
-            })}
             required={true}
             options={residencyStatusOptions}
           />

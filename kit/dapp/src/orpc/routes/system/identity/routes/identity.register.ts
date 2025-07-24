@@ -8,22 +8,26 @@ import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import { read as readSystem } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
+import { alpha2ToNumeric } from "i18n-iso-countries";
 
-const IDENTITY_CREATE_MUTATION = portalGraphql(`
-  mutation IdentityCreate(
+const IDENTITY_REGISTER_MUTATION = portalGraphql(`
+  mutation IdentityRegister(
     $verificationId: String
     $challengeResponse: String
     $address: String!
     $from: String!
+    $country: Int!
+    $identity: String!
   ) {
-    create: IATKIdentityFactoryCreateIdentity(
+    create: IATKIdentityRegistryRegisterIdentity(
       address: $address
       from: $from
       verificationId: $verificationId
       challengeResponse: $challengeResponse
       input: {
-        _managementKeys: []
-        _wallet: $from
+        _country: $country
+        _identity: $identity
+        _userAddress: $from
       }
     ) {
       transactionHash
@@ -31,11 +35,11 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
   }
 `);
 
-export const identityCreate = onboardedRouter.system.identityCreate
+export const identityRegister = onboardedRouter.system.identityRegister
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .handler(async function* ({ input, context, errors }) {
-    const { verification } = input;
+    const { verification, country } = input;
     const { auth, t } = context;
     const sender = auth.user;
 
@@ -63,17 +67,16 @@ export const identityCreate = onboardedRouter.system.identityCreate
       });
     }
 
-    if (account.identity) {
-      throw errors.CONFLICT({
-        message: "Identity already exists",
+    if (!account?.identity) {
+      throw errors.NOT_FOUND({
+        message: "No identity found for the current user",
       });
     }
 
-    // Generate messages using server-side translations
-    const identityCreateMessages = getMutationMessages(
+    const identityRegisterMessages = getMutationMessages(
       t,
       "system",
-      "identityCreate"
+      "identityRegister"
     );
 
     const challengeResponse = await handleChallenge(sender, {
@@ -82,16 +85,18 @@ export const identityCreate = onboardedRouter.system.identityCreate
     });
 
     const transactionHash = yield* context.portalClient.mutate(
-      IDENTITY_CREATE_MUTATION,
+      IDENTITY_REGISTER_MUTATION,
       {
-        address: systemDetails?.identityFactory,
+        address: systemDetails?.identityRegistry,
         from: sender.wallet,
+        country: Number(alpha2ToNumeric(country) ?? "0"),
+        identity: account?.identity,
         ...challengeResponse,
       },
-      identityCreateMessages.errorMessage,
+      identityRegisterMessages.errorMessage,
       {
-        waitingForMining: identityCreateMessages.pendingMessage,
-        transactionIndexed: identityCreateMessages.successMessage,
+        waitingForMining: identityRegisterMessages.pendingMessage,
+        transactionIndexed: identityRegisterMessages.successMessage,
       }
     );
 

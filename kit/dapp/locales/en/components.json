@@ -14,7 +14,6 @@
     "dob": "Date of birth",
     "country": "Country of residence",
     "residencyStatus": "Residency status",
-    "residencyStatusDescription": "Based on your country of residence {{country}}, you may be required to provide additional information.",
     "residencyStatusOptions": {
       "resident": "Sole resident - I live in and am legally/tax resident only in the country above",
       "dual_resident": "Dual resident - I am legally/tax resident in more than one country",

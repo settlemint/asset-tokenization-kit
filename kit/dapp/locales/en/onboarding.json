@@ -287,7 +287,6 @@
     "deployed-toast": "ONCHAINID created successfully!",
     "failed-toast": "Failed to create ONCHAINID: ",
     "form": {
-      "country": "Country of residence",
       "submit": "Create ONCHAINID",
       "submitting": "Creating ONCHAINID..."
     },
@@ -297,6 +296,9 @@
   "identity": {
     "title": "Add Personal Information",
     "description": "Required for identity registration and KYC verification",
-    "intro": "To complete your identity and use the platform, we need some basic information. This helps us meet regulatory requirements (KYC/AML) and allows your identity to be registered on the blockchain.\n\nYou can skip this step for now, but registration won’t be possible until your country is provided.\n\nYour data is securely stored and used only for compliance purposes. You’ll be able to update or complete it later from the dashboard."
+    "intro": "To complete your identity and use the platform, we need some basic information. This helps us meet regulatory requirements (KYC/AML) and allows your identity to be registered on the blockchain.\n\nYou can skip this step for now, but registration won’t be possible until your country is provided.\n\nYour data is securely stored and used only for compliance purposes. You’ll be able to update or complete it later from the dashboard.",
+    "success-title": "ONCHAINID created successfully",
+    "success-message": "Your on-chain identity has been created. You can now register it and add your verified information or do it later from your dashboard.",
+    "address-title": "This is your ONCHAINID address"
   }
 }
