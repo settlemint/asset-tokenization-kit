@@ -93,12 +93,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -250,12 +246,8 @@
           "name": "apikey_user_id_user_id_fk",
           "tableFrom": "apikey",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -343,12 +335,8 @@
           "name": "passkey_user_id_user_id_fk",
           "tableFrom": "passkey",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -424,12 +412,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -439,9 +423,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -577,30 +559,22 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         },
         "user_pincode_verification_id_unique": {
           "name": "user_pincode_verification_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "pincode_verification_id"
-          ]
+          "columns": ["pincode_verification_id"]
         },
         "user_two_factor_verification_id_unique": {
           "name": "user_two_factor_verification_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "two_factor_verification_id"
-          ]
+          "columns": ["two_factor_verification_id"]
         },
         "user_secret_code_verification_id_unique": {
           "name": "user_secret_code_verification_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "secret_code_verification_id"
-          ]
+          "columns": ["secret_code_verification_id"]
         }
       },
       "policies": {},
@@ -812,12 +786,8 @@
           "name": "fx_rates_base_code_currencies_code_fk",
           "tableFrom": "fx_rates",
           "tableTo": "currencies",
-          "columnsFrom": [
-            "base_code"
-          ],
-          "columnsTo": [
-            "code"
-          ],
+          "columnsFrom": ["base_code"],
+          "columnsTo": ["code"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
@@ -825,12 +795,8 @@
           "name": "fx_rates_quote_code_currencies_code_fk",
           "tableFrom": "fx_rates",
           "tableTo": "currencies",
-          "columnsFrom": [
-            "quote_code"
-          ],
-          "columnsTo": [
-            "code"
-          ],
+          "columnsFrom": ["quote_code"],
+          "columnsTo": ["code"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         }
@@ -838,12 +804,7 @@
       "compositePrimaryKeys": {
         "fx_rates_base_code_quote_code_provider_effective_at_pk": {
           "name": "fx_rates_base_code_quote_code_provider_effective_at_pk",
-          "columns": [
-            "base_code",
-            "quote_code",
-            "provider",
-            "effective_at"
-          ]
+          "columns": ["base_code", "quote_code", "provider", "effective_at"]
         }
       },
       "uniqueConstraints": {},
@@ -936,12 +897,8 @@
           "name": "fx_rates_latest_base_code_currencies_code_fk",
           "tableFrom": "fx_rates_latest",
           "tableTo": "currencies",
-          "columnsFrom": [
-            "base_code"
-          ],
-          "columnsTo": [
-            "code"
-          ],
+          "columnsFrom": ["base_code"],
+          "columnsTo": ["code"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
@@ -949,12 +906,8 @@
           "name": "fx_rates_latest_quote_code_currencies_code_fk",
           "tableFrom": "fx_rates_latest",
           "tableTo": "currencies",
-          "columnsFrom": [
-            "quote_code"
-          ],
-          "columnsTo": [
-            "code"
-          ],
+          "columnsFrom": ["quote_code"],
+          "columnsTo": ["code"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         }
@@ -962,11 +915,7 @@
       "compositePrimaryKeys": {
         "fx_rates_latest_base_code_quote_code_provider_pk": {
           "name": "fx_rates_latest_base_code_quote_code_provider_pk",
-          "columns": [
-            "base_code",
-            "quote_code",
-            "provider"
-          ]
+          "columns": ["base_code", "quote_code", "provider"]
         }
       },
       "uniqueConstraints": {},
@@ -1109,12 +1058,8 @@
           "name": "kyc_profiles_user_id_user_id_fk",
           "tableFrom": "kyc_profiles",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1162,12 +1107,7 @@
     "public.residency_status": {
       "name": "residency_status",
       "schema": "public",
-      "values": [
-        "resident",
-        "non_resident",
-        "dual_resident",
-        "unknown"
-      ]
+      "values": ["resident", "non_resident", "dual_resident", "unknown"]
     }
   },
   "schemas": {},
