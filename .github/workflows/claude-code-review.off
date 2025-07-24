@@ -1,0 +1,109 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Optional: Only run on specific file changes
+    # paths:
+    #   - "src/**/*.ts"
+    #   - "src/**/*.tsx"
+    #   - "src/**/*.js"
+    #   - "src/**/*.jsx"
+
+jobs:
+  claude-review:
+    # Optional: Filter by PR author
+    if: |
+      !(endsWith(github.event.pull_request.user.login, '[bot]') ||
+      github.event.pull_request.user.type == 'Bot')
+
+    runs-on: namespace-profile-atk
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+      security-events: write
+      actions: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: namespacelabs/nscloud-checkout-action@v7
+        with:
+          fetch-depth: ${{ github.event_name == 'push' && 2 || 0 }}
+
+      - name: Setup 1Password
+        uses: 1password/load-secrets-action/configure@v2
+        with:
+          service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Load all secrets
+        id: secrets
+        uses: 1password/load-secrets-action@v2
+        env:
+          SLACK_BOT_TOKEN: op://platform/slack-bot/SLACK_BOT_TOKEN
+          SLACK_CHANNEL_ID: op://platform/slack-bot/SLACK_CHANNEL_ID
+          HARBOR_USER: op://platform/harbor/username
+          HARBOR_PASS: op://platform/harbor/password
+          PAT_TOKEN: op://platform/github-commit-pat/credential
+          NPM_TOKEN: op://platform/npmjs/credential
+
+      # Setup dependencies for QA (skip for draft PRs)
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          npm_token: ${{ env.NPM_TOKEN }}
+
+      # Login to Docker registries (only when running QA)
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Harbor
+        uses: docker/login-action@v3
+        with:
+          registry: harbor.settlemint.com
+          username: ${{ env.HARBOR_USER }}
+          password: ${{ env.HARBOR_PASS }}
+
+      - name: Connect to SettleMint
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: local
+
+      - name: Generate artifacts
+        run: |
+          bunx turbo run artifacts --concurrency=100%
+
+      - name: Run the backend services
+        run: |
+          bun dev:up
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@beta
+        continue-on-error: true
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          model: "claude-opus-4-20250514"
+          direct_prompt: |
+            Please review this pull request and provide feedback. Use @.claude/commands/code-review.md
+          use_sticky_comment: true
+          allowed_tools: |
+            Bash(bun install)
+            Bash(bun run artifacts)
+            Bash(bun run format)
+            Bash(bun run compile)
+            Bash(bun run codegen)
+            Bash(bun run lint)
+            Bash(bun run test)
+            Bash(bun run typecheck)
+            Bash(bun run build)
+            Bash(bun run ci)
+            Bash(*)
+            Bash(gh *)

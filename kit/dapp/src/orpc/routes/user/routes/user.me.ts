@@ -12,9 +12,10 @@ import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
+import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { read as systemRead } from "@/orpc/routes/system/routes/system.read";
-import { call } from "@orpc/server";
+import { call, ORPCError } from "@orpc/server";
 import { eq } from "drizzle-orm";
 import { zeroAddress } from "viem";
 
@@ -52,41 +53,49 @@ export const me = authRouter.user.me
     const userId = authUser.id;
 
     // Fetch user and KYC profile in a single query with left join
-    const [[userQueryResult], systemAddress, baseCurrency] = await Promise.all([
-      context.db
-        .select({
-          user: userTable,
-          kyc: {
-            firstName: kycProfiles.firstName,
-            lastName: kycProfiles.lastName,
+    const [[userQueryResult], systemAddress, baseCurrency, account] =
+      await Promise.all([
+        context.db
+          .select({
+            user: userTable,
+            kyc: {
+              firstName: kycProfiles.firstName,
+              lastName: kycProfiles.lastName,
+            },
+          })
+          .from(userTable)
+          .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
+          .where(eq(userTable.id, userId))
+          .limit(1),
+        call(
+          settingsRead,
+          {
+            key: "SYSTEM_ADDRESS",
           },
-        })
-        .from(userTable)
-        .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
-        .where(eq(userTable.id, userId))
-        .limit(1),
-      call(
-        read,
-        {
-          key: "SYSTEM_ADDRESS",
-        },
-        {
-          context,
-        }
-      ),
-      call(
-        read,
-        {
-          key: "BASE_CURRENCY",
-        },
-        { context }
-      ),
-    ]);
+          {
+            context,
+          }
+        ),
+        call(
+          settingsRead,
+          {
+            key: "BASE_CURRENCY",
+          },
+          { context }
+        ),
+        call(readAccount, {}, { context }).catch((error: unknown) => {
+          if (error instanceof ORPCError && error.status === 404) {
+            return null;
+          }
+          throw error;
+        }),
+      ]);
 
     const { kyc } = userQueryResult ?? {};
 
-    // Check if system has token factories using existing ORPC route
+    // Check if system has token factories/addons using existing ORPC route
     let hasTokenFactories = false;
+    let hasSystemAddons = false;
     if (systemAddress) {
       try {
         const systemData = await call(
@@ -99,9 +108,11 @@ export const me = authRouter.user.me
           }
         );
         hasTokenFactories = systemData.tokenFactories.length > 0;
+        hasSystemAddons = systemData.systemAddons.length > 0;
       } catch {
-        // If system read fails, we assume no factories
+        // If system read fails, we assume no factories and addons
         hasTokenFactories = false;
+        hasSystemAddons = false;
       }
     }
 
@@ -123,7 +134,6 @@ export const me = authRouter.user.me
         ...(authUser.secretCodeVerificationId ? ["secret-code"] : []),
       ] as VerificationType[],
       onboardingState: {
-        isAdmin: authUser.role === "admin",
         wallet: authUser.wallet !== zeroAddress,
         walletSecurity:
           authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
@@ -131,8 +141,8 @@ export const me = authRouter.user.me
         system: !!systemAddress,
         systemSettings: !!baseCurrency,
         systemAssets: hasTokenFactories,
-        systemAddons: false, // TODO: Track when addons are configured
-        identitySetup: false, // TODO: Add logic to check if ONCHAINID is set up
+        systemAddons: hasSystemAddons,
+        identitySetup: !!account?.identity,
         identity: !!userQueryResult?.kyc,
       },
     };

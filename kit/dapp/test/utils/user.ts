@@ -1,3 +1,4 @@
+import { zeroAddress } from "viem";
 import { authClient } from "./auth-client";
 import { getOrpcClient } from "./orpc-client";
 
@@ -132,10 +133,7 @@ export async function setupUser(user: User) {
     const userWallet = sessionBeforeWallet.data?.user.wallet;
     console.log(`[setupUser] User ${user.email} wallet: ${userWallet}`);
 
-    if (
-      !userWallet ||
-      userWallet === "0x0000000000000000000000000000000000000000"
-    ) {
+    if (!userWallet || userWallet === zeroAddress) {
       console.log(
         `[setupUser] User ${user.email} needs a wallet, creating one...`
       );

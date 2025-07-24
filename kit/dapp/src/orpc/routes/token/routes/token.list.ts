@@ -87,7 +87,9 @@ export const list = authRouter.token.list
     // Build where clause, mapping searchByAddress to id
     const where: VariablesOf<typeof LIST_TOKEN_QUERY>["where"] = {};
     if (input.tokenFactory !== undefined) {
-      where.tokenFactory = input.tokenFactory;
+      where.tokenFactory_ = {
+        id: input.tokenFactory,
+      };
     }
     if (input.searchByAddress !== undefined) {
       where.id = input.searchByAddress.toLowerCase();

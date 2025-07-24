@@ -12,9 +12,9 @@ import {
   SystemAddonRegistered as SystemAddonRegisteredEvent,
 } from "../../generated/templates/SystemAddonRegistry/SystemAddonRegistry";
 import { fetchEvent } from "../event/fetch/event";
-import { fetchSystem } from "../system/fetch/system";
 import { getDecodedTypeId } from "../type-identifier/type-identifier";
 import { fetchSystemAddon } from "./fetch/system-addon";
+import { fetchSystemAddonRegistry } from "./fetch/system-addon-registry";
 
 export function handleAddonImplementationUpdated(
   event: AddonImplementationUpdatedEvent
@@ -75,6 +75,6 @@ export function handleSystemAddonRegistered(
     TimeBoundAirdropFactoryTemplate.create(event.params.proxyAddress);
   }
 
-  systemAddon.system = fetchSystem(event.address).id;
+  systemAddon.systemAddonRegistry = fetchSystemAddonRegistry(event.address).id;
   systemAddon.save();
 }

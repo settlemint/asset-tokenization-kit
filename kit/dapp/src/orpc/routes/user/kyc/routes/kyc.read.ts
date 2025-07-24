@@ -4,7 +4,6 @@ import { authRouter } from "@/orpc/procedures/auth.router";
 import { eq } from "drizzle-orm";
 
 export const read = authRouter.user.kyc.read
-  // .use(permissionsMiddleware({ user: ["list"] }))
   .use(databaseMiddleware)
   .handler(async ({ context, input, errors }) => {
     const { userId } = input;

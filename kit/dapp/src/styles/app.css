@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "@fontsource-variable/figtree";
 @import "@fontsource-variable/roboto-mono";
-@source "../../node_modules/@daveyplate/better-auth-ui";
+@source "../../../../node_modules/@daveyplate/better-auth-ui";
 
 @custom-variant dark (&:is(.dark *));
 

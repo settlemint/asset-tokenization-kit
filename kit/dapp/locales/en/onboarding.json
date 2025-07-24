@@ -63,10 +63,7 @@
     },
     "identity": {
       "title": "Verify Identity",
-      "description": "Complete KYC verification",
-      "info": "Identity verification ensures compliance with regulations and enables you to invest in digital assets.",
-      "coming-soon": "Coming Soon",
-      "coming-soon-description": "Identity verification is currently under development. In the meantime, we'll create your wallet so you can explore the platform."
+      "description": "Complete KYC verification"
     }
   },
   "wallet": {
@@ -260,8 +257,71 @@
     }
   },
   "system-addons": {
-    "title": "Enable Addons",
-    "subtitle": "Enable additional features and integrations for your platform",
-    "description": "Platform addons configuration will be implemented here."
+    "addon-selection": {
+      "title": "Enable Addons",
+      "description": "Enable additional features and integrations for your platform",
+      "addon-types": {
+        "airdrops": {
+          "title": "Airdrops",
+          "description": "Enable airdrop functionality for your platform. This allows you to create airdrops for your assets."
+        },
+        "yield": {
+          "title": "Yield",
+          "description": "Enable yield functionality for your platform. This allows you to create yield-bearing assets like bonds and other fixed income products."
+        },
+        "xvp": {
+          "title": "XvP",
+          "description": "Enable XvP (Delivery vs Payment) functionality for your platform. This allows users to settle their positions using XvP instead of the default delivery vs payment mechanism."
+        }
+      },
+      "no-system": "System not found. Please deploy the system first.",
+      "deploying-toast": "Deploying addons...",
+      "deployed-toast": "Addons deployed successfully!",
+      "failed-toast": "Failed to deploy addons: ",
+      "what-are-addons": "What are addons?",
+      "addons-description": "Addons are additional features and integrations for your platform. They can be enabled or disabled here.",
+      "validation": {
+        "invalid": "Select at least one addon"
+      },
+      "select-all-addons": "Select all the addons you plan to enable",
+      "available-addons": "Available Addons",
+      "deploy-addons": "Deploy Addons",
+      "confirm-deployment-title": "Confirm Addon Deployment",
+      "confirm-deployment-description": "Please verify your identity to deploy the addons."
+    },
+    "addon-deployment": {
+      "title": "Addons Deployed",
+      "description": "Your addons are ready for use",
+      "addons-deployed-successfully": "Addons Deployed Successfully",
+      "deployed-addons": "Deployed Addons"
+    }
+  },
+  "identity-setup": {
+    "title": "Creating your ONCHAINID",
+    "description": "Deploying your identity contract to the blockchain",
+    "info": "We're creating your ONCHAINID using the identity factory.",
+    "info-description": "This is a smart contract that will serve as your personal identity anchor on the blockchain.\n\nIt doesn't contain any personal information yet, that comes in the next steps, but it's now uniquely linked to your wallet and fully under your control.\n\nThis may take a few moments depending on network speed. Your wallet will be used to authorize the transaction.",
+    "deploying-toast": "Creating ONCHAINID...",
+    "deployed-toast": "ONCHAINID created successfully!",
+    "failed-toast": "Failed to create ONCHAINID: ",
+    "form": {
+      "submit": "Create ONCHAINID",
+      "submitting": "Creating ONCHAINID..."
+    },
+    "confirm-title": "Confirm Identity Creation",
+    "confirm-description": "Please verify your identity to create your on-chain identity.",
+    "success-title": "ONCHAINID created successfully",
+    "success-message": "Your on-chain identity has been created. You can now register it and add your verified information or do it later from your dashboard.",
+    "address-title": "This is your ONCHAINID address"
+  },
+  "identity": {
+    "title": "Add Personal Information",
+    "description": "Required for identity registration and KYC verification",
+    "intro": "To complete your identity and use the platform, we need some basic information. This helps us meet regulatory requirements (KYC/AML) and allows your identity to be registered on the blockchain.\n\nYou can skip this step for now, but registration won’t be possible until your country is provided.\n\nYour data is securely stored and used only for compliance purposes. You’ll be able to update or complete it later from the dashboard.",
+    "deploying-toast": "Registering identity...",
+    "deployed-toast": "Identity registered successfully!",
+    "failed-toast": "Failed to register identity: ",
+    "confirm-title": "Confirm Identity Creation",
+    "confirm-description": "Please verify your identity to create your on-chain identity."
   }
 }
