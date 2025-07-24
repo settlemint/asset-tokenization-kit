@@ -74,11 +74,12 @@ export function WizardSidebar({ className }: WizardSidebarProps) {
     setExpandedGroups((prev) => {
       const newSet = new Set<string>();
 
-      // Accordion behavior: if clicking on a different group, expand only that one
+      // Accordion behavior: if clicking on an expanded group, collapse it
       if (prev.has(groupId)) {
-        newSet.add(groupId);
+        // Remove the group from expanded set (collapse it)
+        // Note: newSet remains empty, so the group will be collapsed
       }
-      // If clicking on the same group and it's expanded, keep it expanded (don't collapse current)
+      // If clicking on a collapsed group, expand only that one
       else {
         newSet.add(groupId);
       }

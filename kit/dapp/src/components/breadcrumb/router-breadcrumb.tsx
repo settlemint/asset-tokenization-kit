@@ -166,6 +166,23 @@ interface BreadcrumbSegmentWithMetadata {
   metadata?: BreadcrumbMetadata;
 }
 
+/**
+ * Helper function to extract breadcrumb metadata from loader data and context
+ * @param loaderData - The loader data from the route match
+ * @param context - The context from the route match
+ * @returns The breadcrumb metadata if found, undefined otherwise
+ */
+function extractBreadcrumbMetadata(
+  loaderData: LoaderDataWithBreadcrumb | undefined,
+  context: { breadcrumb?: BreadcrumbMetadata } | undefined
+): BreadcrumbMetadata | undefined {
+  return (
+    (loaderData?.breadcrumb && !Array.isArray(loaderData.breadcrumb)
+      ? loaderData.breadcrumb
+      : undefined) ?? context?.breadcrumb
+  );
+}
+
 export function RouterBreadcrumb({
   customSegments,
 }: {
@@ -240,10 +257,7 @@ export function RouterBreadcrumb({
         const context = match.context as
           | { breadcrumb?: BreadcrumbMetadata }
           | undefined;
-        const breadcrumbMeta =
-          (loaderData?.breadcrumb && !Array.isArray(loaderData.breadcrumb)
-            ? loaderData.breadcrumb
-            : undefined) ?? context?.breadcrumb;
+        const breadcrumbMeta = extractBreadcrumbMetadata(loaderData, context);
 
         // Skip if marked as hidden
         if (breadcrumbMeta?.hidden) {
@@ -263,10 +277,7 @@ export function RouterBreadcrumb({
           | undefined;
 
         // Extract breadcrumb metadata from various sources
-        const breadcrumbMeta: BreadcrumbMetadata | undefined =
-          (loaderData?.breadcrumb && !Array.isArray(loaderData.breadcrumb)
-            ? loaderData.breadcrumb
-            : undefined) ?? context?.breadcrumb;
+        const breadcrumbMeta = extractBreadcrumbMetadata(loaderData, context);
 
         // Determine fallback title
         let fallbackTitle = "";
