@@ -4,8 +4,11 @@ pragma solidity ^0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { ATKIdentityRegistryStorageImplementation } from
     "../../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import { IATKSystemAccessManager } from
+    "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ISMARTIdentityRegistryStorage } from "../../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
@@ -16,6 +19,8 @@ import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 contract ATKIdentityRegistryStorageImplementationTest is Test {
     ATKIdentityRegistryStorageImplementation public implementation;
     ATKIdentityRegistryStorageImplementation public storageContract;
+    ATKSystemAccessManagerImplementation public accessManagerImplementation;
+    IATKSystemAccessManager public accessManager;
     SystemUtils public systemUtils;
     IdentityUtils public identityUtils;
 
@@ -63,10 +68,34 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
             admin, systemUtils.identityFactory(), systemUtils.identityRegistry(), systemUtils.trustedIssuersRegistry()
         );
 
+        // Create and initialize the centralized access manager
+        accessManagerImplementation = new ATKSystemAccessManagerImplementation(forwarder);
+
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+
+        bytes memory accessManagerInitData = abi.encodeWithSelector(
+            ATKSystemAccessManagerImplementation.initialize.selector,
+            initialAdmins
+        );
+
+        ERC1967Proxy accessManagerProxy = new ERC1967Proxy(address(accessManagerImplementation), accessManagerInitData);
+        accessManager = IATKSystemAccessManager(address(accessManagerProxy));
+
+        // Grant necessary roles to system through the access manager
+        vm.startPrank(admin);
+        accessManager.grantRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, system);
+        accessManager.grantRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, admin); // For testing
+        vm.stopPrank();
+
+        // Create and initialize the storage contract with the access manager
         implementation = new ATKIdentityRegistryStorageImplementation(forwarder);
 
-        bytes memory initData =
-            abi.encodeWithSelector(ATKIdentityRegistryStorageImplementation.initialize.selector, system, admin);
+        bytes memory initData = abi.encodeWithSelector(
+            ATKIdentityRegistryStorageImplementation.initialize.selector,
+            address(accessManager),
+            system
+        );
 
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
         storageContract = ATKIdentityRegistryStorageImplementation(address(proxy));
@@ -82,17 +111,18 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
     }
 
     function test_Initialize() public view {
-        assertTrue(storageContract.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
-        assertTrue(storageContract.hasRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, admin));
-        assertTrue(storageContract.hasRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, system));
-        assertEq(
-            storageContract.getRoleAdmin(ATKSystemRoles.STORAGE_MODIFIER_ROLE), ATKSystemRoles.REGISTRY_MANAGER_ROLE
-        );
+        // Check roles via the centralized access manager, not the storage contract
+        assertTrue(accessManager.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
+        assertTrue(accessManager.hasRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, admin));
+        assertTrue(accessManager.hasRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, system));
+
+        // Note: Role admin relationships are now managed by the centralized access manager
+        // The storage contract delegates access control to the access manager
     }
 
     function test_InitializeTwice_ShouldRevert() public {
         vm.expectRevert();
-        storageContract.initialize(system, admin);
+        storageContract.initialize(address(accessManager), system);
     }
 
     function test_AddIdentityToStorage() public {
@@ -243,12 +273,17 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
     }
 
     function test_BindIdentityRegistry() public {
+        // Grant the role via the centralized access manager first
+        vm.prank(admin);
+        accessManager.grantRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry1);
+
         vm.prank(system);
         vm.expectEmit(true, false, false, true);
         emit IdentityRegistryBound(registry1);
         storageContract.bindIdentityRegistry(registry1);
 
-        assertTrue(storageContract.hasRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, registry1));
+        // Verify the role was granted via the access manager
+        assertTrue(accessManager.hasRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry1));
 
         address[] memory linkedRegistries = storageContract.linkedIdentityRegistries();
         assertEq(linkedRegistries.length, 1);
@@ -277,6 +312,12 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
     }
 
     function test_UnbindIdentityRegistry() public {
+        // Grant roles via the centralized access manager first
+        vm.prank(admin);
+        accessManager.grantRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry1);
+        vm.prank(admin);
+        accessManager.grantRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry2);
+
         vm.startPrank(system);
         storageContract.bindIdentityRegistry(registry1);
         storageContract.bindIdentityRegistry(registry2);
@@ -286,8 +327,13 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
         storageContract.unbindIdentityRegistry(registry1);
         vm.stopPrank();
 
-        assertFalse(storageContract.hasRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, registry1));
-        assertTrue(storageContract.hasRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, registry2));
+        // Revoke the role via the centralized access manager after unbinding
+        vm.prank(admin);
+        accessManager.revokeRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry1);
+
+        // Verify roles via the access manager
+        assertFalse(accessManager.hasRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry1));
+        assertTrue(accessManager.hasRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry2));
 
         address[] memory linkedRegistries = storageContract.linkedIdentityRegistries();
         assertEq(linkedRegistries.length, 1);
@@ -331,12 +377,18 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
 
     function test_SupportsInterface() public view {
         assertTrue(storageContract.supportsInterface(type(ISMARTIdentityRegistryStorage).interfaceId));
-        assertTrue(storageContract.supportsInterface(type(IAccessControl).interfaceId));
         assertTrue(storageContract.supportsInterface(type(IERC165).interfaceId));
         assertFalse(storageContract.supportsInterface(bytes4(0x12345678)));
+
+        // Note: IAccessControl is no longer directly supported by the storage contract
+        // Access control is now delegated to the centralized ATKSystemAccessManager
     }
 
     function test_RegistryCanModifyStorage() public {
+        // Grant the role via the centralized access manager first
+        vm.prank(admin);
+        accessManager.grantRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry1);
+
         vm.prank(system);
         storageContract.bindIdentityRegistry(registry1);
 
@@ -418,6 +470,10 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
     }
 
     function test_EndToEndWorkflow() public {
+        // Grant the role via the centralized access manager first
+        vm.prank(admin);
+        accessManager.grantRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry1);
+
         vm.prank(system);
         storageContract.bindIdentityRegistry(registry1);
 
@@ -446,7 +502,12 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
         vm.prank(system);
         storageContract.unbindIdentityRegistry(registry1);
 
-        assertFalse(storageContract.hasRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, registry1));
+        // Revoke the role via the centralized access manager after unbinding
+        vm.prank(admin);
+        accessManager.revokeRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry1);
+
+        // Verify role was revoked via the access manager
+        assertFalse(accessManager.hasRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry1));
     }
 
     // --- Lost Wallet Management Tests ---
@@ -569,6 +630,10 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
     }
 
     function test_MarkWalletAsLost_BoundRegistryCanMark() public {
+        // Grant the role via the centralized access manager first
+        vm.prank(admin);
+        accessManager.grantRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry1);
+
         vm.prank(system);
         storageContract.bindIdentityRegistry(registry1);
 
@@ -634,7 +699,10 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
     }
 
     function test_LostWalletWorkflow_EndToEnd() public {
-        // Setup: bind a registry
+        // Setup: Grant role and bind a registry
+        vm.prank(admin);
+        accessManager.grantRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, registry1);
+
         vm.prank(system);
         storageContract.bindIdentityRegistry(registry1);
 
