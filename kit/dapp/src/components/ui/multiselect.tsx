@@ -232,8 +232,11 @@ const MultipleSelector = ({
           if (input.value === "" && selected.length > 0) {
             const lastSelectOption = selected[selected.length - 1];
             // If last item is fixed, we should not remove it.
-            if (!lastSelectOption.fixed) {
-              handleUnselect(selected[selected.length - 1]);
+            if (!lastSelectOption?.fixed) {
+              const last = selected[selected.length - 1];
+              if (last) {
+                handleUnselect(last);
+              }
             }
           }
         }
