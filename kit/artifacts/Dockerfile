@@ -12,8 +12,8 @@ COPY ../contracts/.generated/portal/ /artifacts/abis/
 # Copy genesis file
 COPY ../contracts/.generated/genesis.json /artifacts/genesis/
 
-# Set proper permissions
-RUN chmod -R 755 /artifacts
+# Set proper permissions: 755 for directories, 644 for files
+RUN find /artifacts -type d -exec chmod 755 {} + && find /artifacts -type f -exec chmod 644 {} +
 
 # Use a non-root user for security
 RUN addgroup -g 1001 artifacts && \
