@@ -51,7 +51,6 @@ export function getTokenExtensions(
       extensions.push(TokenExtension.BOND);
     } else if (interfaceId.equals(InterfaceIds.IATKFund)) {
       extensions.push(TokenExtension.FUND);
-    } else if (interfaceId.equals(InterfaceIds.IATKStableCoin)) {
     } else {
       log.warning("Unknown token extension interface: {}", [
         interfaceId.toHexString(),
