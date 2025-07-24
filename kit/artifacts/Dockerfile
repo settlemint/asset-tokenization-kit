@@ -2,10 +2,6 @@
 # Contains ABIs and Genesis files for deployment as init container
 FROM alpine:3.22.1
 
-# Install basic utilities for copying files
-RUN apk add --no-cache \
-    ca-certificates \
-    tzdata
 
 # Create directories for artifacts
 RUN mkdir -p /artifacts/abis /artifacts/genesis
