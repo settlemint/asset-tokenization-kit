@@ -77,7 +77,8 @@ function useAsyncBreadcrumbTitle(
     if (breadcrumbMeta.isI18nKey) {
       // Use the translation with dynamic key and namespace
       // The key might not exist in TypeScript's types, but i18next handles this gracefully
-      return t(breadcrumbMeta.title, { ns: namespace });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return t(breadcrumbMeta.title as any, { ns: namespace });
     }
     return breadcrumbMeta.title;
   }
