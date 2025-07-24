@@ -5,6 +5,12 @@ import {
 import type { OnboardingStep } from "@/components/onboarding/state-machine";
 import { StepIndicator } from "@/components/onboarding/step-indicator";
 import { useOnboardingSteps } from "@/components/onboarding/use-onboarding-steps";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import {
   Sidebar,
@@ -14,7 +20,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
-import { Check, ChevronDown } from "lucide-react";
+import { Check } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -28,7 +34,7 @@ function RouteComponent() {
   const { t } = useTranslation(["onboarding"]);
   const { steps, currentStep } = Route.useRouteContext();
   const navigate = useNavigate();
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [defaultExpandedGroup, setDefaultExpandedGroup] = useState<string>("");
 
   const {
     stepsWithTranslations,
@@ -41,46 +47,22 @@ function RouteComponent() {
     groupedStepsByGroupId,
   } = useOnboardingSteps(steps, currentStep);
 
-  // Initialize expanded groups
-  useEffect(() => {
-    const currentStep = stepsWithTranslations[currentStepIndex];
-    const currentGroupId = currentStep?.groupId;
-
-    const initialExpanded = new Set<string>();
-    groups.forEach((group) => {
-      if (
-        String(group.id) === String(currentGroupId) ||
-        group.defaultExpanded
-      ) {
-        initialExpanded.add(group.id);
-      }
-    });
-
-    setExpandedGroups(initialExpanded);
-  }, [groups, stepsWithTranslations, currentStepIndex]);
-
-  // Update expanded groups when current step changes
+  // Set default expanded group
   useEffect(() => {
     const currentStep = stepsWithTranslations[currentStepIndex];
     const currentGroupId = currentStep?.groupId;
 
     if (currentGroupId) {
-      setExpandedGroups(new Set([currentGroupId]));
-    }
-  }, [currentStepIndex, stepsWithTranslations, groups]);
-
-  // Toggle group expansion
-  const toggleGroupExpansion = useCallback((groupId: string) => {
-    setExpandedGroups((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(groupId)) {
-        newSet.delete(groupId);
-      } else {
-        newSet.add(groupId);
+      setDefaultExpandedGroup(currentGroupId);
+    } else {
+      // Find first group with default expanded or first group
+      const defaultGroup =
+        groups.find((group) => group.defaultExpanded) ?? groups[0];
+      if (defaultGroup) {
+        setDefaultExpandedGroup(defaultGroup.id);
       }
-      return newSet;
-    });
-  }, []);
+    }
+  }, [groups, stepsWithTranslations, currentStepIndex]);
 
   // Navigate to step
   const navigateToStep = useCallback(
@@ -170,82 +152,72 @@ function RouteComponent() {
     return (
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 pr-2">
-          {groups.map((group) => {
-            const groupSteps = groupedStepsByGroupId[group.id] ?? [];
-            if (groupSteps.length === 0) {
-              return null;
-            }
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full bg-transparent"
+            style={{ background: "transparent", boxShadow: "none" }}
+            defaultValue={defaultExpandedGroup}
+          >
+            {groups.map((group) => {
+              const groupSteps = groupedStepsByGroupId[group.id] ?? [];
+              if (groupSteps.length === 0) {
+                return null;
+              }
 
-            // Check if any step in this group is active
-            const hasActiveStep = groupSteps.some(
-              ({ index }) => index === currentStepIndex
-            );
+              // Check if any step in this group is active
+              const hasActiveStep = groupSteps.some(
+                ({ index }) => index === currentStepIndex
+              );
 
-            const groupCompleted = isGroupCompleted(group.id);
-            const isExpanded = expandedGroups.has(group.id);
+              const groupCompleted = isGroupCompleted(group.id);
 
-            return (
-              <div key={group.id} className="relative">
-                {/* Clickable Group Header */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    toggleGroupExpansion(group.id);
-                  }}
-                  className={cn(
-                    "w-full text-left mb-3 p-2 rounded-lg transition-all duration-200 hover:bg-white/10",
-                    hasActiveStep && "bg-white/5"
-                  )}
+              return (
+                <AccordionItem
+                  key={group.id}
+                  value={group.id}
+                  className="border-b-0 bg-transparent"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <h3
-                        className={cn(
-                          "text-base font-bold transition-all duration-300",
-                          hasActiveStep
-                            ? "text-primary-foreground"
-                            : "text-primary-foreground/70"
+                  <AccordionTrigger
+                    className={cn(
+                      "justify-start text-left mb-3 p-2 rounded-lg transition-all duration-200 hover:bg-white/10 hover:no-underline [&>svg]:hidden",
+                      hasActiveStep && "bg-white/5"
+                    )}
+                  >
+                    <div className="flex flex-col w-full text-left">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3
+                          className={cn(
+                            "text-base font-bold transition-all duration-300",
+                            hasActiveStep
+                              ? "text-primary-foreground"
+                              : "text-primary-foreground/70"
+                          )}
+                        >
+                          {group.title}
+                        </h3>
+                        {groupCompleted && (
+                          <Check className="w-4 h-4 text-sm-state-success" />
                         )}
-                      >
-                        {group.title}
-                      </h3>
-                      {groupCompleted && (
-                        <Check className="w-4 h-4 text-sm-state-success" />
+                      </div>
+                      {group.description && (
+                        <p className="text-xs text-primary-foreground/50">
+                          {group.description}
+                        </p>
                       )}
                     </div>
-                    <ChevronDown
-                      className={cn(
-                        "w-4 h-4 text-primary-foreground/60 transition-transform duration-200",
-                        isExpanded ? "rotate-180" : "rotate-0"
-                      )}
-                    />
-                  </div>
-                  {group.description && (
-                    <p className="text-xs text-primary-foreground/50 mt-1">
-                      {group.description}
-                    </p>
-                  )}
-                </button>
+                  </AccordionTrigger>
 
-                {/* Collapsible Group Steps */}
-                <div
-                  className={cn(
-                    "overflow-hidden transition-all duration-300 ease-in-out",
-                    isExpanded
-                      ? "max-h-[800px] opacity-100"
-                      : "max-h-0 opacity-0"
-                  )}
-                >
-                  <div className="pl-6">
+                  <AccordionContent className="pl-6 bg-transparent">
                     {groupSteps.map(({ step, index }, stepIndex) => {
                       const isLastInGroup = stepIndex === groupSteps.length - 1;
                       return renderStep(step, index, isLastInGroup);
                     })}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
 
           {/* Render ungrouped steps if any */}
           {groupedStepsByGroupId.ungrouped && (

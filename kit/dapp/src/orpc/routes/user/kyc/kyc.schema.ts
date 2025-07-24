@@ -6,7 +6,7 @@ export const KycProfileSelectSchema = createSelectSchema(kycProfiles);
 export const KycProfileInsertSchema = createInsertSchema(kycProfiles, {
   firstName: (schema) => schema.min(1).max(64).trim(),
   lastName: (schema) => schema.min(1).max(64).trim(),
-  nationality: (schema) =>
+  country: (schema) =>
     schema
       .length(2)
       .toUpperCase()

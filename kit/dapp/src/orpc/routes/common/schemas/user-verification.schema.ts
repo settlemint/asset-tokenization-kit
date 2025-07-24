@@ -16,3 +16,8 @@ export const UserVerificationSchema = z.object({
    */
   verificationType: verificationType.default("pincode"),
 });
+
+/**
+ * User verification type
+ */
+export type UserVerification = z.infer<typeof UserVerificationSchema>;
