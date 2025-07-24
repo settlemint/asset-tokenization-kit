@@ -1,4 +1,5 @@
 import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import { assetType } from "@/lib/zod/validators/asset-types";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { decimals } from "@/lib/zod/validators/decimals";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
@@ -56,6 +57,7 @@ const EXTENSIONS: TokenExtensions[] = [
  */
 export const RawTokenSchema = z.object({
   id: ethereumAddress.describe("The token contract address"),
+  type: assetType(),
   name: z.string().describe("The name of the token"),
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),
