@@ -8,6 +8,7 @@ export interface Step<StepId> {
 export interface StepGroup<StepId, GroupId> {
   id: GroupId;
   label: string;
+  description: string;
   steps: Step<StepId>[];
 }
 
