@@ -153,7 +153,7 @@ jobs:
           echo "Checking SystemFactory address in subgraph.yaml..."
           EXPECTED_ADDRESS="0x5e771e1417100000000000000000000000020088"
           ACTUAL_ADDRESS=$(yq '.dataSources[] | select(.name == "SystemFactory") | .source.address' kit/subgraph/subgraph.yaml)
-          
+
           if [ "$ACTUAL_ADDRESS" != "$EXPECTED_ADDRESS" ]; then
             echo "❌ ERROR: SystemFactory address mismatch!"
             echo "Expected: $EXPECTED_ADDRESS"
@@ -206,7 +206,7 @@ jobs:
         if: |
           github.event_name == 'push' ||
           (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
-        uses: namespace-actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: predeployed-output
           path: |
