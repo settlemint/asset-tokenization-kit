@@ -12,7 +12,6 @@ import { verificationType } from "@/lib/zod/validators/verification-type";
 import { z } from "zod";
 
 const onboardingStateSchema = z.object({
-  isAdmin: z.boolean().describe("Whether the user is an admin").default(false),
   wallet: z.boolean().describe("Whether the user has a wallet"),
   walletSecurity: z
     .boolean()

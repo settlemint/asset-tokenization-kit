@@ -69,6 +69,11 @@ function RouteComponent() {
   const { mutateAsync: updateKyc, isPending: isUpdatingKyc } = useMutation(
     orpc.user.kyc.upsert.mutationOptions({
       onSuccess: async () => {
+        await authClient.getSession({
+          query: {
+            disableCookieCache: true,
+          },
+        });
         await refreshUserState();
         //  Navigate to home page (onboarding complete)
         void navigate({ to: "/" });

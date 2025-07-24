@@ -137,7 +137,6 @@ export const me = authRouter.user.me
         ...(authUser.secretCodeVerificationId ? ["secret-code"] : []),
       ] as VerificationType[],
       onboardingState: {
-        isAdmin: authUser.role === "admin",
         wallet: authUser.wallet !== zeroAddress,
         walletSecurity:
           authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
