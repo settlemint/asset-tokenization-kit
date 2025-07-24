@@ -7,10 +7,10 @@ FROM alpine:3.22.1
 RUN mkdir -p /artifacts/abis /artifacts/genesis
 
 # Copy ABIs from the generated portal directory
-COPY ../contracts/.generated/portal/ /artifacts/abis/
+COPY contracts/.generated/portal/ /artifacts/abis/
 
 # Copy genesis file
-COPY ../contracts/.generated/genesis.json /artifacts/genesis/
+COPY contracts/.generated/genesis.json /artifacts/genesis/
 
 # Set proper permissions: 755 for directories, 644 for files
 RUN find /artifacts -type d -exec chmod 755 {} + && find /artifacts -type f -exec chmod 644 {} +
