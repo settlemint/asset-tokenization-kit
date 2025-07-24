@@ -87,6 +87,9 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @notice Error thrown when attempting batch operations with empty arrays
     error EmptyArraysProvided();
 
+    /// @notice Error thrown when trying to initialize with a zero address system access manager
+    error SystemAccessManagerCannotBeZeroAddress();
+
     // --- Events ---
 
     /// @notice Emitted when the system access manager is set
@@ -120,6 +123,10 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @param systemAccessManager_ The address of the centralized system access manager
     function initialize(address systemAccessManager_) public initializer {
         __ERC165_init_unchained();
+
+        if (systemAccessManager_ == address(0)) {
+            revert SystemAccessManagerCannotBeZeroAddress();
+        }
 
         _systemAccessManager = IATKSystemAccessManager(systemAccessManager_);
         emit SystemAccessManagerSet(_msgSender(), systemAccessManager_);
