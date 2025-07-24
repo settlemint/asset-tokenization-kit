@@ -1,60 +1,14 @@
-import { cn } from "@/lib/utils";
-import { type ComplianceTypeId } from "@/lib/zod/validators/compliance";
-import {
-  BanIcon,
-  CheckCircleIcon,
-  MapPinIcon,
-  ShieldCheckIcon,
-  ShieldIcon,
-  UserIcon,
-} from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { complianceModuleConfig } from "@/components/compliance/config";
 import {
   SelectableCard,
-  SelectableCardIcon,
   SelectableCardContent,
-  SelectableCardTitle,
   SelectableCardDescription,
-} from "@/components/selectable-card";
-
-interface ComplianceModuleConfig {
-  icon: React.ComponentType<{ className?: string }>;
-  titleKey: string;
-  descriptionKey: string;
-}
-
-const complianceModuleConfig = {
-  AddressBlockListComplianceModule: {
-    icon: BanIcon,
-    titleKey: "modules.addressBlockList.title",
-    descriptionKey: "modules.addressBlockList.shortDescription",
-  },
-  CountryAllowListComplianceModule: {
-    icon: CheckCircleIcon,
-    titleKey: "modules.countryAllowList.title",
-    descriptionKey: "modules.countryAllowList.shortDescription",
-  },
-  CountryBlockListComplianceModule: {
-    icon: MapPinIcon,
-    titleKey: "modules.countryBlockList.title",
-    descriptionKey: "modules.countryBlockList.shortDescription",
-  },
-  IdentityAllowListComplianceModule: {
-    icon: UserIcon,
-    titleKey: "modules.identityAllowList.title",
-    descriptionKey: "modules.identityAllowList.shortDescription",
-  },
-  IdentityBlockListComplianceModule: {
-    icon: ShieldIcon,
-    titleKey: "modules.identityBlockList.title",
-    descriptionKey: "modules.identityBlockList.shortDescription",
-  },
-  SMARTIdentityVerificationComplianceModule: {
-    icon: ShieldCheckIcon,
-    titleKey: "modules.smartIdentityVerification.title",
-    descriptionKey: "modules.smartIdentityVerification.shortDescription",
-  },
-} as const satisfies Record<ComplianceTypeId, ComplianceModuleConfig>;
+  SelectableCardIcon,
+  SelectableCardTitle,
+} from "@/components/selectable-card/selectable-card";
+import { cn } from "@/lib/utils";
+import { type ComplianceTypeId } from "@/lib/zod/validators/compliance";
+import { useTranslation } from "react-i18next";
 
 export interface ComplianceModulesGridProps {
   /** Array of compliance module type IDs to display */

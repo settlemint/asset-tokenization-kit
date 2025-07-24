@@ -57,7 +57,7 @@ export function SelectableCard({
  */
 export function SelectableCardIcon({ children }: { children: ReactNode }) {
   return (
-    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+    <div className="flex items-center justify-center">
       <div className="w-4 h-4">{children}</div>
     </div>
   );
