@@ -62,7 +62,7 @@ export function CountryAllowlistModuleDetail({
           <CountryMultiselect
             value={values}
             onChange={(values) => {
-              setCountryCodes(values.map((value) => value.numeric));
+              setCountryCodes(values.map((value) => value.alpha2Code));
             }}
           />
         </div>

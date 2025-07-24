@@ -7,8 +7,10 @@ import countries, {
 import { useTranslation } from "react-i18next";
 
 interface CountryMultiselectProps {
-  value: string[]; // Numeric country codes
-  onChange: (value: { name: string; numeric: string }[]) => void;
+  value: string[]; // ISO 3166-1 alpha-2 country codes
+  onChange: (
+    value: { name: string; numericCode: string; alpha2Code: string }[]
+  ) => void;
 }
 
 export function CountryMultiselect({
@@ -24,7 +26,7 @@ export function CountryMultiselect({
     label: value,
   }));
 
-  const getCountryCode = (country: string) => {
+  const getCountryCodes = (country: string) => {
     const alpha2Code = getAlpha2Code(country, i18n.language);
     if (!alpha2Code) {
       throw new Error(`Alpha2 code for country ${country} not found`);
@@ -34,7 +36,11 @@ export function CountryMultiselect({
     if (!numericCode) {
       throw new Error(`Numeric code for country ${country} not found`);
     }
-    return numericCode;
+
+    return {
+      numericCode,
+      alpha2Code,
+    };
   };
 
   return (
@@ -56,7 +62,7 @@ export function CountryMultiselect({
         onChange(
           options.map((option) => ({
             name: option.value,
-            numeric: getCountryCode(option.value),
+            ...getCountryCodes(option.value),
           }))
         );
       }}

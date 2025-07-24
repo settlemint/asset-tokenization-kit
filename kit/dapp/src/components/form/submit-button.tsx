@@ -14,12 +14,17 @@ export function SubmitButton({
     <form.Subscribe
       selector={(state) => ({
         isSubmitting: state.isSubmitting,
+        isValid: state.isValid,
       })}
     >
-      {({ isSubmitting }) => {
+      {({ isSubmitting, isValid }) => {
         return (
           <div>
-            <Button onClick={onSubmit} disabled={isSubmitting} type="submit">
+            <Button
+              onClick={onSubmit}
+              disabled={isSubmitting || !isValid}
+              type="submit"
+            >
               {isSubmitting ? "Submitting..." : label}
             </Button>
           </div>

@@ -1,7 +1,4 @@
-import {
-  assetDesignerFormOptions,
-  AssetDesignerFormSchema,
-} from "@/components/asset-designer/shared-form";
+import { assetDesignerFormOptions } from "@/components/asset-designer/shared-form";
 import {
   FormStep,
   FormStepContent,
@@ -21,7 +18,6 @@ export const Summary = withForm({
   },
   render: function Render({ form, onSubmit }) {
     const { t } = useTranslation("asset-designer");
-    const parsedValues = AssetDesignerFormSchema.safeParse(form.state.values);
 
     return (
       <FormStep>
@@ -33,7 +29,7 @@ export const Summary = withForm({
         </FormStepHeader>
         <FormStepContent>
           <div>
-            {JSON.stringify(parsedValues, (_, value) =>
+            {JSON.stringify(form.state.values, (_, value) =>
               typeof value === "bigint" ? value.toString() : value
             )}
           </div>
