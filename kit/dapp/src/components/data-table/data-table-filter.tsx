@@ -46,7 +46,7 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
   if (isMobile) {
     return (
       <div
-        key={`mobile-${filterCount}`}
+        key={`mobile-${String(filterCount)}`}
         className="flex w-full items-start justify-between gap-2"
       >
         <TableFilter table={table} />
@@ -59,7 +59,7 @@ export function DataTableFilter<TData>({ table }: { table: Table<TData> }) {
 
   return (
     <div
-      key={`desktop-${filterCount}`}
+      key={`desktop-${String(filterCount)}`}
       className="flex w-full items-start justify-between gap-2"
     >
       <TableFilter table={table} />

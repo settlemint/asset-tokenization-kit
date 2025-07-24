@@ -67,7 +67,7 @@ const getORPCClient = createIsomorphicFn()
   })
   .client((): RouterClient<typeof router> => {
     const link = new RPCLink({
-      url: `${window.location.origin}/api/rpc`,
+      url: `${globalThis.location.origin}/api/rpc`,
       // Pass the current language as a header for i18n middleware
       headers: () => ({
         "Accept-Language": i18n.language || "en",

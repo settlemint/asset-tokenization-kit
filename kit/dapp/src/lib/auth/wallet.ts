@@ -34,7 +34,7 @@ export async function createWallet(email: string) {
   const isLocal = env.SETTLEMINT_INSTANCE === "local";
   if (isLocal) {
     try {
-      const balanceInHex = toHex(1000000000000000000n);
+      const balanceInHex = toHex(1_000_000_000_000_000_000n);
       const client = createPublicClient({
         chain: anvil,
         transport: http("http://localhost:8545"),

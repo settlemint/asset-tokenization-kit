@@ -167,5 +167,5 @@ export const bigDecimalSerializer: StandardRPCCustomJsonSerializer = {
   type: 31,
   condition: (data) => isDnum(data),
   serialize: (data: Dnum) => format(data),
-  deserialize: (data) => from(data),
+  deserialize: (data) => from(data as string | number),
 };

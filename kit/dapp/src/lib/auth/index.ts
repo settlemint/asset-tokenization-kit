@@ -371,7 +371,7 @@ const getAuthConfig = serverOnly(() => {
         const kyc = await db.query.kycProfiles.findFirst({
           where: eq(kycProfiles.userId, user.id),
         });
-        return Promise.resolve({
+        return {
           user: {
             ...user,
             name:
@@ -381,7 +381,7 @@ const getAuthConfig = serverOnly(() => {
             isOnboarded: isOnboarded(user as SessionUser),
           } as SessionUser,
           session,
-        });
+        };
       }, enhancedOptions),
     ],
   });

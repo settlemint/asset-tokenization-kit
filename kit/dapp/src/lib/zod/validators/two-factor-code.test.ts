@@ -72,7 +72,7 @@ describe("twoFactorCode", () => {
     });
 
     it("should reject non-string types", () => {
-      expect(() => validator.parse(123456)).toThrow();
+      expect(() => validator.parse(123_456)).toThrow();
       expect(() => validator.parse(null)).toThrow();
       expect(() => validator.parse(undefined)).toThrow();
       expect(() => validator.parse({})).toThrow();
@@ -82,7 +82,7 @@ describe("twoFactorCode", () => {
   describe("edge cases", () => {
     it("should handle numeric string input only", () => {
       // Even though 123456 as number has 6 digits, we only accept strings
-      expect(() => validator.parse(123456)).toThrow();
+      expect(() => validator.parse(123_456)).toThrow();
 
       // String representation is valid
       expect(validator.parse("123456")).toBe("123456");

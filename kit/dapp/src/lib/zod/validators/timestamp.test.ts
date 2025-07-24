@@ -6,8 +6,8 @@ describe("timestamp", () => {
 
   // Fixed dates for testing
   const testDate = new Date("2023-04-01T12:00:00Z");
-  const testDateMs = 1680350400000; // Actual milliseconds for 2023-04-01T12:00:00Z
-  const testDateSec = 1680350400; // Seconds
+  const testDateMs = 1_680_350_400_000; // Actual milliseconds for 2023-04-01T12:00:00Z
+  const testDateSec = 1_680_350_400; // Seconds
 
   describe("Date object inputs", () => {
     it("should accept valid Date objects", () => {
@@ -74,14 +74,14 @@ describe("timestamp", () => {
 
     it("should handle very large millisecond timestamps", () => {
       // Use a timestamp that's large but < 10000000000000 to avoid microsecond detection
-      const year2286 = 9999999999999; // Just under the microsecond threshold
+      const year2286 = 9_999_999_999_999; // Just under the microsecond threshold
       const result = validator.parse(year2286);
       expect(result.getFullYear()).toBe(2286);
     });
 
     it("should handle microsecond timestamps", () => {
       // This will be treated as microseconds and result in an earlier date
-      const microsecondTimestamp = 1680350400000000; // Microseconds for our test date
+      const microsecondTimestamp = 1_680_350_400_000_000; // Microseconds for our test date
       const result = validator.parse(microsecondTimestamp);
       expect(result.getTime()).toBe(testDateMs);
     });
@@ -113,11 +113,11 @@ describe("timestamp", () => {
     it("should handle edge cases for numeric strings", () => {
       // 9 digits - likely seconds
       const result1 = validator.parse("168035400");
-      expect(result1.getTime()).toBe(168035400 * 1000);
+      expect(result1.getTime()).toBe(168_035_400 * 1000);
 
       // 11 digits - ambiguous, treat as milliseconds
       const result2 = validator.parse("16803540000");
-      expect(result2.getTime()).toBe(16803540000);
+      expect(result2.getTime()).toBe(16_803_540_000);
     });
 
     it("should handle negative numeric string timestamps", () => {
@@ -162,7 +162,7 @@ describe("timestamp", () => {
 
     it("should handle edge case where milliseconds value is passed directly", () => {
       // Test the specific branch for values >= 10000000000 and < 10000000000000
-      const year2001InMs = 10000000001; // Just over the threshold
+      const year2001InMs = 10_000_000_001; // Just over the threshold
       const result = validator.parse(year2001InMs);
       expect(result.getTime()).toBe(year2001InMs);
     });
@@ -172,7 +172,7 @@ describe("timestamp", () => {
       expect(() => validator.parse(-1)).toThrow("Timestamp cannot be negative");
 
       // Test date after year 9999 using a string to avoid microsecond conversion
-      const afterYear9999 = new Date(253402300800000);
+      const afterYear9999 = new Date(253_402_300_800_000);
       expect(() => validator.parse(afterYear9999)).toThrow(
         "Timestamp is out of valid range (must be between 1970 and 9999)"
       );
@@ -188,11 +188,11 @@ describe("timestamp", () => {
     });
 
     it("should handle safeParse", () => {
-      const result = validator.safeParse(1680350400000);
+      const result = validator.safeParse(1_680_350_400_000);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toBeInstanceOf(Date);
-        expect(result.data.getTime()).toBe(1680350400000);
+        expect(result.data.getTime()).toBe(1_680_350_400_000);
       }
     });
   });

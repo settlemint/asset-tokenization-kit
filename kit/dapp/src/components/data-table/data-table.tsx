@@ -346,7 +346,7 @@ function DataTableComponent<TData>({
    * @returns The rendered table body content
    */
   const renderTableBody = () => {
-    if (table.getRowModel().rows.length) {
+    if (table.getRowModel().rows.length > 0) {
       return table.getRowModel().rows.map((row) => {
         return (
           <TableRow

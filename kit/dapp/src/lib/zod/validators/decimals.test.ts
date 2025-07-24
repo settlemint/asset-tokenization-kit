@@ -70,7 +70,7 @@ describe("decimals", () => {
     });
 
     it("should reject special numeric values", () => {
-      expect(() => validator.parse(NaN)).toThrow();
+      expect(() => validator.parse(Number.NaN)).toThrow();
       expect(() => validator.parse(Infinity)).toThrow();
       expect(() => validator.parse(-Infinity)).toThrow();
     });
