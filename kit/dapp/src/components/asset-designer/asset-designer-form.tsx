@@ -17,8 +17,10 @@ import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
 import { orpc } from "@/orpc/orpc-client";
 import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
+import { useTranslation } from "react-i18next";
 
 export const AssetDesignerForm = () => {
+  const { t } = useTranslation(["asset-designer"]);
   const steps = useAssetDesignerSteps();
   const { mutate: createToken } = useStreamingMutation({
     mutationOptions: orpc.token.create.mutationOptions(),
@@ -68,6 +70,8 @@ export const AssetDesignerForm = () => {
   return (
     <form.AppForm>
       <StepLayout
+        title={t("wizard.title")}
+        description={t("wizard.description")}
         stepsOrGroups={steps}
         currentStep={currentStep}
         onStepSelect={(step) => {

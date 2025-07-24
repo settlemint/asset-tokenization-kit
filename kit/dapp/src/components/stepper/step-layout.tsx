@@ -32,6 +32,8 @@ export interface StepLayoutProps<StepId, GroupId> {
   }) => React.ReactNode;
   navigationMode?: NavigationMode;
   className?: string;
+  title: string;
+  description: string;
 }
 
 export function StepLayout<StepId, GroupId>({
@@ -41,6 +43,8 @@ export function StepLayout<StepId, GroupId>({
   children,
   className,
   navigationMode = "next-only",
+  title,
+  description,
 }: StepLayoutProps<StepId, GroupId>) {
   const allSteps = useMemo(() => flattenSteps(stepsOrGroups), [stepsOrGroups]);
 
@@ -102,10 +106,10 @@ export function StepLayout<StepId, GroupId>({
               {/* Title and Progress */}
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-primary-foreground mb-2">
-                  Sidebar title
+                  {title}
                 </h2>
                 <p className="text-sm text-primary-foreground/90 leading-relaxed mb-4">
-                  Sidebar description
+                  {description}
                 </p>
 
                 <div>

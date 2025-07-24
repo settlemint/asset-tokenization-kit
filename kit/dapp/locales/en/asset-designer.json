@@ -1,6 +1,7 @@
 {
   "wizard": {
-    "description": "Create a new token by selecting the token type and configuring its basic properties.",
+    "title": "Design your Asset",
+    "description": "Transform real-world value into secure, compliant blockchain assets. We'll guide you through each step to create your tokenized asset with built-in regulatory compliance and investor protection.",
     "steps": {
       "asset-type": {
         "title": "Select Token Type",
