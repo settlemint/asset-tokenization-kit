@@ -227,8 +227,8 @@ jobs:
           # Create a minimal Dockerfile for artifacts
           cat > Dockerfile.artifacts <<EOF
           FROM scratch
-          COPY kit/contracts/.generated /artifacts/contracts/.generated
-          COPY kit/subgraph/subgraph-output.txt /artifacts/subgraph/subgraph-output.txt || true
+          COPY kit/contracts/.generated/portal/*.json /artifacts/contracts/portal/*.json
+          COPY kit/contracts/.generated/genesis.json /artifacts/contracts/genesis.json
           EOF
 
           # Build and push artifact container
