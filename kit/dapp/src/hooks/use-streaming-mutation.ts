@@ -119,10 +119,10 @@ export function useStreamingMutation<
 
           switch (event.status) {
             case "pending":
-              if (!toastIdRef.current) {
-                toastIdRef.current = toast.loading(message || "Loading...");
-              } else {
+              if (toastIdRef.current) {
                 toast.loading(message, { id: toastIdRef.current });
+              } else {
+                toastIdRef.current = toast.loading(message || "Loading...");
               }
               break;
 
@@ -150,7 +150,7 @@ export function useStreamingMutation<
             case "failed":
               toast.error(message || "Failed", {
                 id: toastIdRef.current,
-                duration: 10000, // Longer duration for failed operations
+                duration: 10_000, // Longer duration for failed operations
                 description: "Check browser console for error details",
               });
               throw new Error(message || "Operation failed");
@@ -179,7 +179,7 @@ export function useStreamingMutation<
         // Show error with longer duration for debugging
         toast.error(errorMessage, {
           id: toastIdRef.current,
-          duration: 10000, // 10 seconds to allow time to read detailed errors
+          duration: 10_000, // 10 seconds to allow time to read detailed errors
           description: "Check browser console for full error details",
         });
 

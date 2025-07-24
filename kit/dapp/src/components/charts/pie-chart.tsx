@@ -87,7 +87,7 @@ export function PieChartComponent({
                 const color = config[itemKey]?.color;
                 return (
                   <Cell
-                    key={`cell-${index}`}
+                    key={`cell-${String(index)}`}
                     fill={color}
                     fillOpacity={0.5}
                     stroke={color}

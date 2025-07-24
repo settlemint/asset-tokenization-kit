@@ -193,7 +193,7 @@ function EventDetailsSheet({
                         } else if (
                           typeof value.value === "string" &&
                           value.value.trim() !== "" &&
-                          !isNaN(Number(value.value.trim()))
+                          !Number.isNaN(Number(value.value.trim()))
                         ) {
                           formattedValue = formatValue(value.value, {
                             type: "number",
@@ -245,8 +245,7 @@ export function TokenEventsTable({ token }: TokenEventsTableProps) {
   const [selectedEvent, setSelectedEvent] = useState<TokenEvent | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const router = useRouter();
-  const routePath =
-    router.state.matches[router.state.matches.length - 1]?.pathname;
+  const routePath = router.state.matches.at(-1)?.pathname;
 
   const { data: eventsResponse } = useSuspenseQuery({
     ...orpc.token.events.queryOptions({

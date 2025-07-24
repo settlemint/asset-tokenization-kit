@@ -152,7 +152,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
     } catch (error) {
       // If we can't fetch existing factories, proceed anyway
       // The contract will reject duplicates
-      logger.debug(`Could not fetch existing factories: ${error}`);
+      logger.debug(`Could not fetch existing factories: ${String(error)}`);
     }
 
     const results: FactoryCreateOutput["results"] = [];

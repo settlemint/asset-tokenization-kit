@@ -109,17 +109,16 @@ export function PropertyFilterOptionValueMenu<TData, TValue>({
     );
   }
 
-  const optionsCount: Record<ColumnOption["value"], number> = columnVals.reduce(
-    (acc, curr) => {
-      const { value } = columnMeta.transformOptionFn
-        ? columnMeta.transformOptionFn(curr as ElementType<NonNullable<TValue>>)
-        : { value: curr as string };
+  const optionsCount: Record<ColumnOption["value"], number> = columnVals.reduce<
+    Record<string, number>
+  >((acc, curr) => {
+    const { value } = columnMeta.transformOptionFn
+      ? columnMeta.transformOptionFn(curr as ElementType<NonNullable<TValue>>)
+      : { value: curr as string };
 
-      acc[value] = (acc[value] ?? 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
+    acc[value] = (acc[value] ?? 0) + 1;
+    return acc;
+  }, {});
 
   /**
    * Handles the selection of an option.

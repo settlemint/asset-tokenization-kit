@@ -12,7 +12,7 @@ describe("amount", () => {
     });
 
     it("should accept very small positive numbers", () => {
-      expect(validator.parse(0.000001)).toBe(0.000001);
+      expect(validator.parse(0.000_001)).toBe(0.000_001);
       expect(validator.parse(Number.EPSILON)).toBe(Number.EPSILON);
     });
 
@@ -42,7 +42,7 @@ describe("amount", () => {
     });
 
     it("should reject NaN", () => {
-      expect(() => validator.parse(NaN)).toThrow();
+      expect(() => validator.parse(Number.NaN)).toThrow();
     });
 
     it("should reject Infinity", () => {
@@ -69,7 +69,7 @@ describe("amount", () => {
       expect(() => validator.parse(1000.01)).toThrow(
         "Amount must not exceed 1000"
       );
-      expect(() => validator.parse(10000)).toThrow(
+      expect(() => validator.parse(10_000)).toThrow(
         "Amount must not exceed 1000"
       );
     });
@@ -92,7 +92,7 @@ describe("amount", () => {
 
     it("should accept any number of decimal places above minimum", () => {
       expect(validator.parse(10.999)).toBe(10.999);
-      expect(validator.parse(10.12345)).toBe(10.12345);
+      expect(validator.parse(10.123_45)).toBe(10.123_45);
     });
   });
 

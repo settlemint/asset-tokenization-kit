@@ -33,7 +33,10 @@ const useFieldContext = () => {
   const { id } = React.useContext(FormItemContext);
   const { name, store, ...fieldContext } = _useFieldContext();
 
-  const errors = useStore(store, (state) => state.meta.errors);
+  const errors = (useStore(store, (state) => state.meta.errors) ??
+    []) as Array<{
+    message?: string;
+  }>;
 
   return {
     id,
@@ -51,13 +54,14 @@ function FormLabel({
   className,
   ...props
 }: React.ComponentProps<typeof Label>) {
-  const { formItemId, errors } = useFieldContext();
-
+  const { formItemId, errors, getMeta } = useFieldContext();
+  const meta = getMeta();
+  const hasError = errors.length > 0 && meta.isTouched;
   return (
     <Label
       data-slot="form-label"
-      data-error={!!errors.length}
-      className={className}
+      data-error={hasError}
+      className={cn("data-[error=true]:text-destructive", className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -73,11 +77,11 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
       data-slot="form-control"
       id={formItemId}
       aria-describedby={
-        !errors.length
+        errors.length === 0
           ? formDescriptionId
           : `${formDescriptionId} ${formMessageId}`
       }
-      aria-invalid={!!errors.length}
+      aria-invalid={errors.length > 0}
       {...props}
     />
   );
@@ -97,12 +101,10 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 }
 
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
-  const { errors, formMessageId, getMeta } = useFieldContext();
-  const meta = getMeta();
-  const body = errors.length
-    ? String(errors.at(0)?.message ?? "")
-    : props.children;
-  if (!body || !meta.isTouched) return null;
+  const { errors, formMessageId } = useFieldContext();
+  const body =
+    errors.length > 0 ? String(errors[0]?.message ?? "") : props.children;
+  if (!body) return null;
 
   return (
     <p

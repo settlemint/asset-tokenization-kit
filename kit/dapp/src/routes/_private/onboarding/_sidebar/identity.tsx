@@ -56,12 +56,10 @@ function RouteComponent() {
             }
           }
           // Refetch all relevant data
-          await Promise.all([
-            queryClient.invalidateQueries({
-              queryKey: orpc.account.me.queryOptions().queryKey,
-              refetchType: "all",
-            }),
-          ]);
+          await queryClient.invalidateQueries({
+            queryKey: orpc.account.me.queryOptions().queryKey,
+            refetchType: "all",
+          });
         },
       })
     );

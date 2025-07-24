@@ -131,7 +131,7 @@ function getJazziconSeed(input: string): number {
   // For email/name, use MD5 hash approach
   const hash = MD5(input.toLowerCase()).toString();
   // Convert first 8 chars of hash to number
-  return parseInt(hash.slice(0, 8), 16);
+  return Number.parseInt(hash.slice(0, 8), 16);
 }
 
 const Web3AvatarComponent = memo(function Web3Avatar({

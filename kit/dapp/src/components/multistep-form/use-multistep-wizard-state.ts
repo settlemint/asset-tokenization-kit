@@ -60,7 +60,10 @@ export function useMultiStepWizardState({
           ? (wizardSearch.completed as string).split(",").filter(Boolean)
           : (defaultState.completedSteps ?? []),
         stepErrors: wizardSearch.errors
-          ? JSON.parse(wizardSearch.errors as string)
+          ? (JSON.parse(wizardSearch.errors as string) as Record<
+              string,
+              string
+            >)
           : (defaultState.stepErrors ?? {}),
       };
 

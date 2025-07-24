@@ -111,9 +111,7 @@ export function WizardStep({ className }: WizardStepProps) {
       // Mark step as complete and move to next
       markStepComplete(currentStep.id);
 
-      if (!isLastStep) {
-        nextStep();
-      } else {
+      if (isLastStep) {
         // Final submission - call the form's onSubmit handler directly
         if (form?.options?.onSubmit && form?.state?.values) {
           await form.options.onSubmit({
@@ -121,12 +119,14 @@ export function WizardStep({ className }: WizardStepProps) {
             formApi: form,
           });
         }
+      } else {
+        nextStep();
       }
     } catch (error) {
       const errorMessage = formatValidationError(error);
       markStepError(currentStep.id, errorMessage);
       toast.error(errorMessage, {
-        duration: 10000,
+        duration: 10_000,
         description: "Check browser console for details",
       });
       logger.error("Step validation failed", { error, stepId: currentStep.id });
