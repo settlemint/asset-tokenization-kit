@@ -25,7 +25,7 @@ export function OnboardingStepLayout({
         </div>
       </div>
       {actions && (
-        <footer className="OnboardingStepLayout__footer absolute bottom-8 right-8 max-w-3xl mt-6">
+        <footer className="OnboardingStepLayout__footer absolute bottom-8 left-8 right-8 mt-6">
           {actions}
         </footer>
       )}

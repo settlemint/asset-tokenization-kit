@@ -34,14 +34,39 @@ export function SecurityMethodSelector() {
     );
   }
 
+  const actions = (
+    <div className="flex justify-between items-center w-full">
+      <div className="flex">
+        <Button
+          onClick={() => {
+            setSecurityMethod("pin");
+          }}
+          variant="outline"
+        >
+          {t("wallet-security.method-selector.comparison.choose-pin")}
+        </Button>
+      </div>
+      <div className="flex">
+        <Button
+          onClick={() => {
+            setSecurityMethod("otp");
+          }}
+        >
+          {t("wallet-security.method-selector.comparison.choose-otp")}
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <OnboardingStepLayout
       title={t("wallet-security.method-selector.title")}
       description={t("wallet-security.method-selector.description")}
       fullWidth
+      actions={actions}
     >
-      <div className="space-y-6">
-        <div className="rounded-lg border w-full overflow-hidden">
+      <div className="flex flex-col h-full">
+        <div className="rounded-lg border w-full overflow-hidden flex flex-col flex-1">
           {/* Fixed Header */}
           <div className="border-b bg-muted/50">
             <div className="grid grid-cols-10 gap-0 w-full">
@@ -64,7 +89,7 @@ export function SecurityMethodSelector() {
           </div>
 
           {/* Scrollable Body */}
-          <div className="max-h-64 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto">
             <div className="divide-y">
               <div className="grid grid-cols-10 gap-0 w-full">
                 <div className="col-span-4 p-4 font-medium text-sm">
@@ -145,34 +170,6 @@ export function SecurityMethodSelector() {
                 <div className="col-span-3 p-4 text-center text-xs text-muted-foreground">
                   {t("wallet-security.method-selector.otp.summary")}
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Fixed Buttons */}
-          <div className="border-t bg-background">
-            <div className="grid grid-cols-10 gap-0 w-full">
-              <div className="col-span-4 p-4"></div>
-              <div className="col-span-3 p-4 text-center">
-                <Button
-                  onClick={() => {
-                    setSecurityMethod("pin");
-                  }}
-                  variant="outline"
-                  className="w-full"
-                >
-                  {t("wallet-security.method-selector.comparison.choose-pin")}
-                </Button>
-              </div>
-              <div className="col-span-3 p-4 text-center">
-                <Button
-                  onClick={() => {
-                    setSecurityMethod("otp");
-                  }}
-                  className="w-full"
-                >
-                  {t("wallet-security.method-selector.comparison.choose-otp")}
-                </Button>
               </div>
             </div>
           </div>
