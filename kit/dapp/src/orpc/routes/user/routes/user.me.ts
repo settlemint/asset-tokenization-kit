@@ -12,10 +12,10 @@ import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
+import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { read as systemRead } from "@/orpc/routes/system/routes/system.read";
-import { call } from "@orpc/server";
+import { call, ORPCError } from "@orpc/server";
 import { eq } from "drizzle-orm";
 import { zeroAddress } from "viem";
 
@@ -83,15 +83,12 @@ export const me = authRouter.user.me
           },
           { context }
         ),
-        call(
-          readAccount,
-          {
-            wallet: authUser.wallet,
-          },
-          { context }
-        ).catch(() => ({
-          identity: undefined,
-        })),
+        call(readAccount, {}, { context }).catch((error: unknown) => {
+          if (error instanceof ORPCError && error.status === 404) {
+            return null;
+          }
+          throw error;
+        }),
       ]);
 
     const { kyc } = userQueryResult ?? {};
@@ -145,7 +142,7 @@ export const me = authRouter.user.me
         systemSettings: !!baseCurrency,
         systemAssets: hasTokenFactories,
         systemAddons: hasSystemAddons,
-        identitySetup: !!account.identity,
+        identitySetup: !!account?.identity,
         identity: !!userQueryResult?.kyc,
       },
     };

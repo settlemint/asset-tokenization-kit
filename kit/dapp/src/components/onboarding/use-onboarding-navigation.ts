@@ -22,6 +22,15 @@ export function useOnboardingNavigation() {
   const { refetch, data: session } = useSession();
   const steps = useStore(onboardingSteps);
 
+  const refreshSession = useCallback(async () => {
+    await authClient.getSession({
+      query: {
+        disableCookieCache: true,
+      },
+    });
+    await refetch();
+  }, [refetch]);
+
   /**
    * Refreshes user data and updates the onboarding state machine
    */
@@ -29,12 +38,7 @@ export function useOnboardingNavigation() {
     try {
       if (session?.user.wallet === zeroAddress) {
         // Clear auth session cache (only for non-wallet users, all other operations automatically update the cookie)
-        await authClient.getSession({
-          query: {
-            disableCookieCache: true,
-          },
-        });
-        await refetch();
+        await refreshSession();
       }
       try {
         await queryClient.invalidateQueries({
@@ -55,7 +59,7 @@ export function useOnboardingNavigation() {
       logger.error("Failed to refresh user state", error);
       throw error;
     }
-  }, [queryClient, refetch, session?.user.wallet]);
+  }, [queryClient, refreshSession, session?.user.wallet]);
 
   /**
    * Complete current step and navigate to next appropriate step
@@ -72,7 +76,10 @@ export function useOnboardingNavigation() {
         );
         nextStep = steps[currentStepIndex + 1]?.step;
         if (!nextStep) {
-          throw new Error(`Unknown step: ${currentStep}`);
+          // Reached the last step, navigate to home page (onboarding complete)
+          await refreshSession(); // Refresh session to ensure we have latest data (eg kyc name)
+          await navigate({ to: "/" });
+          return;
         }
       }
 
@@ -84,7 +91,7 @@ export function useOnboardingNavigation() {
         to: `/onboarding/${nextStep}` as const,
       });
     },
-    [refreshUserState, navigate, steps]
+    [refreshUserState, refreshSession, navigate, steps]
   );
 
   /**

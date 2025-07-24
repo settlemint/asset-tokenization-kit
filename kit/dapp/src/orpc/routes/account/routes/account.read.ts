@@ -23,12 +23,28 @@ const READ_ACCOUNT_QUERY = theGraphGraphql(`
  * Account read route handler.
  *
  * Retrieves the account information for the given wallet address.
+ * Is used during onboarding so cannot use the onboarded router
  *
  */
 export const read = publicRouter.account.read
   .use(theGraphMiddleware)
   .handler(async ({ input, context, errors }) => {
     const { wallet } = input;
+
+    if (!context.auth) {
+      throw errors.UNAUTHORIZED();
+    }
+
+    // Check if user is accessing their own data or is an admin
+    if (
+      context.auth.user.wallet !== wallet &&
+      context.auth.user.role !== "admin"
+    ) {
+      throw errors.FORBIDDEN({
+        message:
+          "Access denied. You do not have permission to view this account.",
+      });
+    }
 
     // Execute TheGraph query with type-safe parameters
     // The Zod schema ensures type safety at both compile-time and runtime

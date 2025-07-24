@@ -43,21 +43,22 @@ export const identityRegister = onboardedRouter.system.identityRegister
     const { auth, t } = context;
     const sender = auth.user;
 
-    const account = await call(
-      readAccount,
-      {
-        wallet: auth.user.wallet,
-      },
-      { context }
-    );
-
-    const systemDetails = await call(
-      readSystem,
-      {
-        id: "default",
-      },
-      { context }
-    );
+    const [account, systemDetails] = await Promise.all([
+      call(
+        readAccount,
+        {
+          wallet: auth.user.wallet,
+        },
+        { context }
+      ),
+      call(
+        readSystem,
+        {
+          id: "default",
+        },
+        { context }
+      ),
+    ]);
 
     if (!systemDetails.identityRegistry) {
       const cause = new Error("Identity registry not found");

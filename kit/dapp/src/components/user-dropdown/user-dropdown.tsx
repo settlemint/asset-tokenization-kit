@@ -21,7 +21,6 @@ import { useCallback } from "react";
 export function UserDropdown({ user }: { user?: SessionUser }) {
   const navigate = useNavigate();
 
-  // Match the API logic: use firstName + lastName only if BOTH are present
   const displayName = user?.name;
 
   const handleSignOut = useCallback(async () => {

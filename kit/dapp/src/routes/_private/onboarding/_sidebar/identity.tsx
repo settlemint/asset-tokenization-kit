@@ -14,7 +14,7 @@ import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -30,8 +30,7 @@ export const Route = createFileRoute("/_private/onboarding/_sidebar/identity")({
 function RouteComponent() {
   const { t } = useTranslation(["onboarding", "common"]);
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  const { refreshUserState } = useOnboardingNavigation();
+  const { completeStepAndNavigate } = useOnboardingNavigation();
   const { data: session } = authClient.useSession();
   // Only admins can register identity
   // TODO: use system access control to check this, not role
@@ -70,14 +69,7 @@ function RouteComponent() {
   const { mutateAsync: updateKyc, isPending: isUpdatingKyc } = useMutation(
     orpc.user.kyc.upsert.mutationOptions({
       onSuccess: async () => {
-        await authClient.getSession({
-          query: {
-            disableCookieCache: true,
-          },
-        });
-        await refreshUserState();
-        //  Navigate to home page (onboarding complete)
-        void navigate({ to: "/" });
+        await completeStepAndNavigate(OnboardingStep.identity);
       },
     })
   );
@@ -150,7 +142,10 @@ function RouteComponent() {
       title={t("identity.title")}
       description={t("identity.description")}
     >
-      <InfoAlert title={t("identity.intro")} />
+      <InfoAlert
+        title={t("identity.title")}
+        description={t("identity.intro")}
+      />
       <KycForm
         onComplete={handleComplete}
         disabled={isRegisteringIdentity || isUpdatingKyc}

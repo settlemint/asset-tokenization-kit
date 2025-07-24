@@ -5,7 +5,7 @@ import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
+import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as readSystem } from "@/orpc/routes/system/routes/system.read";
 import { call, ORPCError } from "@orpc/server";
 
@@ -39,26 +39,21 @@ export const identityCreate = onboardedRouter.system.identityCreate
     const { auth, t } = context;
     const sender = auth.user;
 
-    const account = await call(
-      readAccount,
-      {
-        wallet: auth.user.wallet,
-      },
-      { context }
-    ).catch((error: unknown) => {
-      if (error instanceof ORPCError && error.status === 404) {
-        return null;
-      }
-      throw error;
-    });
-
-    const systemDetails = await call(
-      readSystem,
-      {
-        id: "default",
-      },
-      { context }
-    );
+    const [account, systemDetails] = await Promise.all([
+      call(readAccount, {}, { context }).catch((error: unknown) => {
+        if (error instanceof ORPCError && error.status === 404) {
+          return null;
+        }
+        throw error;
+      }),
+      call(
+        readSystem,
+        {
+          id: "default",
+        },
+        { context }
+      ),
+    ]);
 
     if (!systemDetails.identityFactory) {
       const cause = new Error("Identity factory not found");

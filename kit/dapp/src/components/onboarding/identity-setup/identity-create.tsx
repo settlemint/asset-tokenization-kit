@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { orpc } from "@/orpc/orpc-client";
-import { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
@@ -73,7 +73,7 @@ export function IdentityCreate() {
       description={t("identity-setup.description")}
       actions={
         <Button
-          onClick={() => setShowVerificationModal(true)}
+          onClick={() => { setShowVerificationModal(true); }}
           disabled={isIdentityCreating}
         >
           {isIdentityCreating

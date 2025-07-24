@@ -60,7 +60,7 @@ const SystemAddonSchema = z.object({
   /**
    * The addon contract address
    */
-  id: z.string(),
+  id: ethereumAddress,
 
   /**
    * The name of the addon

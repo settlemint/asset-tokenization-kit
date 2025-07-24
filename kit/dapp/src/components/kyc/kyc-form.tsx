@@ -2,10 +2,8 @@ import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/use-app-form";
 import { authClient } from "@/lib/auth/auth.client";
 import { orpc } from "@/orpc/orpc-client";
-import {
-  KycProfileUpsert,
-  KycProfileUpsertSchema,
-} from "@/orpc/routes/user/kyc/kyc.schema";
+import type { KycProfileUpsert } from "@/orpc/routes/user/kyc/kyc.schema";
+import { KycProfileUpsertSchema } from "@/orpc/routes/user/kyc/kyc.schema";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -27,6 +25,7 @@ export function KycForm({ onComplete, disabled }: KycFormProps) {
         userId: session?.user.id ?? "",
       },
       enabled: !!session?.user.id,
+      // If it fails, the account is not yet created, so we don't want to retry
       retry: false,
       throwOnError: false,
     }),
