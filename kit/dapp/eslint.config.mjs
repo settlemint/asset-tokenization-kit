@@ -278,7 +278,20 @@ export default defineConfig([
     : []),
 
   // ==========================================================================
-  // 9. CONFIG FILES - MINIMAL RULES
+  // 9. TEST FILES - RELAXED TYPE-CHECKED RULES
+  // ==========================================================================
+  {
+    files: ["**/*.{test,spec}.{ts,mts,cts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+    },
+  },
+
+  // ==========================================================================
+  // 10. CONFIG FILES - MINIMAL RULES
   // ==========================================================================
   {
     files: ["*.config.{js,mjs,cjs,ts}"],

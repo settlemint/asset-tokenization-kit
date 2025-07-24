@@ -358,7 +358,6 @@ export function formatValue(
     }
 
     case "text":
-      return <span>{safeToString(value)}</span>;
     default:
       return <span>{safeToString(value)}</span>;
   }
