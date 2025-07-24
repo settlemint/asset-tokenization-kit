@@ -15,9 +15,7 @@ export async function createToken(orpClient: OrpcClient, input: TokenInput) {
       const tokens = await orpClient.token.list({});
       const token = tokens.find(
         (t) =>
-          t.name === input.name &&
-          t.symbol === input.symbol &&
-          t.type === input.type
+          t.name === name && t.symbol === input.symbol && t.type === input.type
       );
       if (!token) {
         throw new Error("Token not deployed");
