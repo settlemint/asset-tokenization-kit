@@ -270,7 +270,7 @@ function RouteComponent() {
   return (
     <div className="OnboardingSidebar flex flex-col h-full rounded-xl shadow-lg overflow-y-hidden">
       <SidebarProvider>
-        <Sidebar className="w-[320px] flex-shrink-0 transition-all duration-300 group-data-[side=left]:border-0">
+        <Sidebar className="w-[360px] flex-shrink-0 transition-all duration-300 group-data-[side=left]:border-0">
           <div
             className="w-full overflow-y-auto h-full"
             style={{

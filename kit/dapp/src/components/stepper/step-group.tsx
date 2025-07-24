@@ -81,12 +81,13 @@ export function StepGroupComponent<StepId, GroupId>({
 
                   return (
                     <div key={step.step} className="relative">
-                      <StepComponent<StepId>
+                      <StepComponent<StepId, GroupId>
                         step={step}
                         currentStep={currentStep}
                         allSteps={allSteps}
                         navigation={navigation}
                         onStepSelect={onStepSelect}
+                        group={group}
                       />
 
                       {!isLastInGroup && (

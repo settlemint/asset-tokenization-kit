@@ -201,7 +201,7 @@ export function useOnboardingSteps(
     (
       step: OnboardingStepDefinition,
       index: number
-    ): "pending" | "active" | "completed" | "error" => {
+    ): "pending" | "active" | "completed" => {
       if (step.completed || index < currentStepIndex) {
         return "completed";
       }
