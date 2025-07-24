@@ -540,16 +540,17 @@ contract ATKSystemImplementation is
         address identityFactoryIdentity =
             IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(localIdentityFactoryProxy);
 
-        // Set the identity factory's own OnChainID
-        IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
-
-        // Register the identity factory's identity (not the factory itself) as the trusted issuer
+        // Register the identity factory's identity (not the factory itself) as the trusted issuer FIRST
+        // This must happen before setOnchainID because setOnchainID triggers _issueContractIdentityClaim
         uint256[] memory identityFactoryClaimTopics = new uint256[](1);
         identityFactoryClaimTopics[0] =
             IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_CONTRACT_IDENTITY);
         IATKTrustedIssuersRegistry(localTrustedIssuersRegistryProxy).addTrustedIssuer(
             IClaimIssuer(identityFactoryIdentity), identityFactoryClaimTopics
         );
+
+        // Set the identity factory's own OnChainID (this will now successfully issue claims)
+        IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
 
         // Register the identity verification module
         if (_identityVerificationModule != address(0)) {

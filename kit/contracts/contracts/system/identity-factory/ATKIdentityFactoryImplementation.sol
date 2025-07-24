@@ -628,7 +628,7 @@ contract ATKIdentityFactoryImplementation is
     /// @inheritdoc IContractWithIdentity
     /// @notice Checks if the caller can add a claim to the identity contract.
     /// @dev The identity factory allows the system admin to add claims.
-    function canAddClaim(address ) external pure override returns (bool) {
+    function canAddClaim(address) external pure override returns (bool) {
         // TODO
         return false;
     }
@@ -636,7 +636,7 @@ contract ATKIdentityFactoryImplementation is
     /// @inheritdoc IContractWithIdentity
     /// @notice Checks if the caller can remove a claim from the identity contract.
     /// @dev The identity factory allows the system admin to remove claims.
-    function canRemoveClaim(address ) external pure override returns (bool) {
+    function canRemoveClaim(address) external pure override returns (bool) {
         // TODO
         return false;
     }
