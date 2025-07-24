@@ -3,7 +3,7 @@ export function intersection<T>(a: T[], b: T[]): T[] {
 }
 
 export function uniq<T>(a: T[]): T[] {
-  return Array.from(new Set(a));
+  return [...new Set(a)];
 }
 
 export function take<T>(a: T[], n: number): T[] {

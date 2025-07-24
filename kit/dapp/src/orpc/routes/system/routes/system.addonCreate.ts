@@ -311,8 +311,8 @@ export const addonCreate = onboardedRouter.system.addonCreate
           implementationAddress: (() => {
             try {
               return getImplementationAddress(addonConfig);
-            } catch (e) {
-              return `Error getting implementation: ${e instanceof Error ? e.message : e}`;
+            } catch (error_) {
+              return `Error getting implementation: ${error_ instanceof Error ? error_.message : error_}`;
             }
           })(),
           contract,

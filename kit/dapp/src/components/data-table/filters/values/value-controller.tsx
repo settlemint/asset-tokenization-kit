@@ -488,7 +488,7 @@ export function PropertyFilterNumberValueDisplay<TData, TValue>({
   columnMeta,
 }: PropertyFilterValueDisplayProps<TData, TValue>) {
   const maxFromMeta = columnMeta.max;
-  const cappedMax = maxFromMeta ?? 2147483647;
+  const cappedMax = maxFromMeta ?? 2_147_483_647;
 
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"number", TData>)

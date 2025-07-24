@@ -27,8 +27,8 @@ function validateIsinChecksum(isin: string): boolean {
     } else if (char >= "A" && char <= "Z") {
       // A=10, B=11, ..., Z=35
       expandedString += (
-        char.charCodeAt(0) -
-        "A".charCodeAt(0) +
+        char.codePointAt(0)! -
+        "A".codePointAt(0)! +
         10
       ).toString();
     } else {

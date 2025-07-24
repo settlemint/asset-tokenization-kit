@@ -10,7 +10,7 @@ export function isColumnOption(value: unknown): value is ColumnOption {
 }
 
 export function isColumnOptionArray(value: unknown): value is ColumnOption[] {
-  return Array.isArray(value) && value.every(isColumnOption);
+  return Array.isArray(value) && value.every((item) => isColumnOption(item));
 }
 
 export function isStringArray(value: unknown): value is string[] {

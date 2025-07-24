@@ -160,8 +160,8 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
           cause: new Error(`Transaction failed with status: ${receipt.status}`),
         });
       }
-    } catch (err) {
-      const error = err as Error;
+    } catch (error_) {
+      const error = error_ as Error;
       throw errors.INTERNAL_SERVER_ERROR({
         message: errorMessage,
         cause: error.message,
@@ -175,7 +175,7 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
     const logs = Array.isArray(receipt.logs) ? receipt.logs : [];
     let scheduleAddress: string | undefined = undefined;
     if (logs.length > 0) {
-      const lastLog = logs[logs.length - 1];
+      const lastLog = logs.at(-1);
       logger.debug("Last log:", lastLog);
       if (lastLog && typeof lastLog === "object" && "address" in lastLog) {
         scheduleAddress = lastLog.address as string;

@@ -114,12 +114,8 @@ export function PropertyFilterNumberValueMenu<TData, TValue>({
       tabValue === "single"
         ? [sortedValues[0] ?? 0]
         : [
-            (sortedValues[0] ?? 0) >= cappedMax
-              ? cappedMax
-              : (sortedValues[0] ?? 0),
-            (sortedValues[1] ?? 0) >= cappedMax
-              ? cappedMax
-              : (sortedValues[1] ?? 0),
+            Math.min(sortedValues[0] ?? 0, cappedMax),
+            Math.min(sortedValues[1] ?? 0, cappedMax),
           ];
 
     const filterValue = {
