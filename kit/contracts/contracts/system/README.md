@@ -118,12 +118,14 @@ The central coordinator that manages all protocol components:
    - Manages KYC/AML claims for natural persons
    - Used for investor verification and compliance
 
-2. **Contract Identity** (`ATKTokenIdentityImplementation`)
+2. **Contract Identity** (`ATKContractIdentityImplementation`)
    - For smart contracts and protocols
    - Allows contracts to have their own identity and claims
    - Essential for token contracts, protocols, or other smart contracts that
      need identity verification
    - Enables contract-to-contract compliance checks
+   - Contract identities can issue claims directly to other identities using
+     the `issueClaimTo` method
 
 #### Identity Storage (`identity-registry-storage/`)
 
@@ -154,12 +156,173 @@ The central coordinator that manages all protocol components:
 - **Purpose**: Manages entities that can issue identity claims
 - **Features**: Issuer validation, topic-specific trust
 - **Implementation**: `ATKTrustedIssuersRegistryImplementation`
+- **Capability**: Trusted issuers can directly add claims to identities through
+  the claim authorization system, which validates their permissions
 
 #### Topic Scheme Registry (`topic-scheme-registry/`)
 
 - **Purpose**: Defines available claim topics for verification
 - **Features**: Topic validation, scheme management
 - **Implementation**: `ATKTopicSchemeRegistryImplementation`
+
+### Claim Authorization System
+
+#### Overview
+
+The ATK System includes a sophisticated claim issuance system that enables
+both contract identities and trusted issuers to add claims to identities
+through different mechanisms, maintaining security and trust.
+
+#### Key Components
+
+1. **Contract Identity Claims**: Contract identities can issue claims directly
+   to other identities using the `issueClaimTo` method
+2. **Trusted Issuer Authorization**: Claim authorizers control which trusted
+   issuers can add claims to specific identities
+3. **Bootstrap Claim Issuance**: System automatically issues initial claims
+   during bootstrap (e.g., CONTRACT_IDENTITY claims)
+
+#### How It Works
+
+##### 1. Two Claim Issuance Mechanisms
+
+**A. Contract Identity Direct Issuance**
+
+Contract identities can issue claims directly to other identities:
+
+```solidity
+// Contract identity issuing a claim
+IATKContractIdentity contractIdentity = IATKContractIdentity(contractOnchainID);
+IIdentity targetIdentity = IIdentity(userIdentity);
+
+contractIdentity.issueClaimTo(
+    targetIdentity,
+    topicId,
+    abi.encode(claimData),
+    "https://proof-uri.com"
+);
+```
+
+**B. Trusted Issuer Authorization via Claim Authorizers**
+
+Claim authorizers control which trusted issuers can add claims to identities.
+Contracts implementing `IContractWithIdentity` can authorize claim operations:
+
+```solidity
+interface IContractWithIdentity {
+    function onchainID() external view returns (address);
+    function canAddClaim(address caller) external view returns (bool);
+    function canRemoveClaim(address caller) external view returns (bool);
+}
+```
+
+##### 2. Bootstrap Claim Issuance
+
+During system bootstrap, the Identity Factory automatically:
+
+1. **Creates its own identity**: The factory gets a contract identity
+2. **Registers as trusted issuer**: Factory identity is registered for
+   CONTRACT_IDENTITY claims
+3. **Issues self-claim**: Factory issues a CONTRACT_IDENTITY claim to itself
+4. **Issues claims to new contracts**: When creating contract identities, the
+   factory automatically issues CONTRACT_IDENTITY claims
+
+```mermaid
+sequenceDiagram
+    participant System as ATK System
+    participant Factory as Identity Factory
+    participant TIR as Trusted Issuers Registry
+    participant FactoryID as Factory Identity
+    
+    System->>Factory: bootstrap()
+    Factory->>FactoryID: createContractIdentity(factory)
+    System->>TIR: addTrustedIssuer(factoryIdentity, [CONTRACT_IDENTITY])
+    Note over System,TIR: IMPORTANT: Must register as trusted issuer FIRST
+    System->>Factory: setOnchainID(factoryIdentity)
+    Note over Factory,FactoryID: setOnchainID triggers automatic claim issuance
+    Factory->>FactoryID: issueClaim(CONTRACT_IDENTITY, factoryAddress)
+    
+    Note over Factory,FactoryID: Factory can now issue CONTRACT_IDENTITY claims
+```
+
+##### 3. Trusted Issuer Claim Addition via Authorization
+
+Trusted issuers add claims directly to identity contracts. The identity
+validates the issuer's authorization by checking with registered claim
+authorizers (like the trusted issuers registry):
+
+```solidity
+// Example: Trusted issuer adding a claim directly to an identity
+// The identity will check with its registered authorizers (including TrustedIssuersRegistry)
+IIdentity targetIdentity = IIdentity(userIdentityAddress);
+
+targetIdentity.addClaim(
+    kycTopicId,                    // uint256 topic
+    ERC735ClaimSchemes.ECDSA,      // uint256 scheme
+    issuerAddress,                 // address issuer
+    signature,                     // bytes signature
+    abi.encode(kycData),          // bytes data
+    "https://kyc-provider.com/proof" // string uri
+);
+
+// The identity automatically checks:
+// 1. Is the issuer registered in TrustedIssuersRegistry?
+// 2. Is the issuer authorized for this claim topic?
+// 3. If yes, the claim is added; if no, the transaction reverts
+```
+
+##### 4. Automatic CONTRACT_IDENTITY Claims
+
+When the Identity Factory creates a new contract identity:
+
+1. **Creates the identity**: Deploys proxy pointing to contract identity
+   implementation
+2. **Checks factory authorization**: Verifies factory has onchainID set
+3. **Issues claim automatically**: Factory uses `issueClaimTo` to add a
+   CONTRACT_IDENTITY claim containing the contract address
+4. **Emits event**: Logs the contract identity creation with claim
+
+#### Security Model
+
+##### Authorization Hierarchy
+
+1. **System Level**: ATK System can manage all components
+2. **Factory Level**: Identity Factory can issue CONTRACT_IDENTITY claims
+   directly using `issueClaimTo`
+3. **Trusted Issuer Level**: Registered trusted issuers can add claims through
+   the authorization system (validated by claim authorizers)
+4. **Contract Level**: Contract identities can issue claims directly to other
+   identities using `issueClaimTo`
+
+##### Trust Chain
+
+```mermaid
+graph TD
+    System[ATK System] -->|registers| TIR[Trusted Issuers Registry]
+    TIR -->|validates via authorizers| Issuer[Trusted Issuer]
+    Issuer -->|adds authorized claims to| UserID[User Identity]
+    
+    Factory[Identity Factory] -->|issueClaimTo| ContractClaim[CONTRACT_IDENTITY Claims]
+    ContractID[Contract Identity] -->|issueClaimTo| UserID
+    ContractID -->|issueClaimTo| OtherContract[Other Contract Identity]
+    
+    System -->|bootstraps| Factory
+    Authorizer[Claim Authorizer] -->|validates| TIR
+    
+    style System fill:#f9f,stroke:#333,stroke-width:4px
+    style TIR fill:#9ff,stroke:#333,stroke-width:2px
+    style Factory fill:#9f9,stroke:#333,stroke-width:2px
+    style ContractID fill:#ff9,stroke:#333,stroke-width:2px
+```
+
+#### Benefits
+
+1. **Automated Compliance**: Claims can be issued automatically based on
+   contract logic
+2. **Reduced Manual Work**: No need for manual claim issuance processes
+3. **Trust Preservation**: Only authorized entities can issue claims
+4. **Audit Trail**: All claim operations are logged and traceable
+5. **Scalability**: System can handle high-volume claim issuance
 
 ### Access Management
 

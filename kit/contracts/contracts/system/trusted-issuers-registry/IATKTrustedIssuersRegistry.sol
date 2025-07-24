@@ -11,5 +11,10 @@ import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/I
  *      This registry maintains a list of trusted entities that can issue claims for identity verification.
  */
 interface IATKTrustedIssuersRegistry is IERC3643TrustedIssuersRegistry {
-    function initialize(address initialAdmin) external;
+    /// @notice Initializes the registry with an initial admin and registrars.
+    /// @param initialAdmin The address that will receive the initial `DEFAULT_ADMIN_ROLE`.
+    /// This address will have full control over the registry's setup and initial population of trusted issuers.
+    /// @param initialRegistrars The addresses that will receive the initial `REGISTRAR_ROLE`.
+    /// These addresses will have the ability to add and remove trusted issuers.
+    function initialize(address initialAdmin, address[] memory initialRegistrars) external;
 }

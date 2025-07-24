@@ -60,9 +60,11 @@ contract ClaimAuthorizationSystemTest is Test {
 
         // Deploy trusted address(mockIssuer)s registry
         trustedIssuersRegistryLogic = new ATKTrustedIssuersRegistryImplementation(address(0));
+        address[] memory initialRegistrars = new address[](1);
+        initialRegistrars[0] = admin;
         trustedIssuersRegistryProxy = new ERC1967Proxy(
             address(trustedIssuersRegistryLogic),
-            abi.encodeWithSelector(trustedIssuersRegistryLogic.initialize.selector, admin)
+            abi.encodeWithSelector(trustedIssuersRegistryLogic.initialize.selector, admin, initialRegistrars)
         );
         trustedIssuersRegistry = ATKTrustedIssuersRegistryImplementation(address(trustedIssuersRegistryProxy));
 

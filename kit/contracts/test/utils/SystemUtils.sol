@@ -4,11 +4,13 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { MockedComplianceModule } from "./mocks/MockedComplianceModule.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // System
 import { ATKSystemFactory } from "../../contracts/system/ATKSystemFactory.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
 import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 
 // Implementations
 import { ATKIdentityRegistryStorageImplementation } from
@@ -168,6 +170,9 @@ contract SystemUtils is Test {
         vm.label(address(countryAllowListComplianceModule), "Country Allow List Compliance Module");
         countryBlockListComplianceModule = new CountryBlockListComplianceModule(forwarder);
         vm.label(address(countryBlockListComplianceModule), "Country Block List Compliance Module");
+
+        // --- Grant roles ---
+        IAccessControl(address(trustedIssuersRegistry)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, platformAdmin);
 
         vm.stopPrank();
     }
