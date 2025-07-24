@@ -55,6 +55,31 @@ function RouteComponent() {
     groupedStepsByGroupId,
   } = useOnboardingSteps(steps, currentStep);
 
+  // Calculate dynamic line height based on step content
+  const calculateLineHeight = (description: string) => {
+    const titleHeight = 20; // Height of title text
+    const descriptionLineHeight = 18; // Height per line of description with line-height
+    const buttonPadding = 20; // py-3 = 12px top + 12px bottom
+    const itemSpacing = 8; // Space between timeline items
+    const containerWidth = 200; // Conservative estimate of text container width
+    const avgCharWidth = 6.5; // Conservative character width estimate
+
+    // Calculate description lines more conservatively
+    const charsPerLine = Math.floor(containerWidth / avgCharWidth);
+    const estimatedLines = Math.ceil(description.length / charsPerLine);
+    const descriptionLines = Math.max(1, estimatedLines);
+
+    // Total height: title + description + padding + spacing
+    const totalHeight =
+      titleHeight +
+      descriptionLines * descriptionLineHeight +
+      buttonPadding +
+      itemSpacing;
+
+    // Reduce buffer to stop at dot border instead of going through
+    return totalHeight + 15;
+  };
+
   // Update expanded group when current step changes
   useEffect(() => {
     const currentStep = stepsWithTranslations[currentStepIndex];
@@ -151,6 +176,9 @@ function RouteComponent() {
                         const isAccessible = canNavigateToStep(index);
                         const isLastInGroup =
                           stepIndex === groupSteps.length - 1;
+                        const dynamicHeight = calculateLineHeight(
+                          step.description
+                        );
 
                         return (
                           <TimelineItem
@@ -160,10 +188,13 @@ function RouteComponent() {
                           >
                             <TimelineHeader className="items-start">
                               {!isLastInGroup && (
-                                <TimelineSeparator className="top-[12px] left-[15px] h-[50px] w-0.5 bg-sm-graphics-primary/30" />
+                                <TimelineSeparator
+                                  className="top-[26px] left-[15px] w-0.5 bg-sm-graphics-primary/30"
+                                  style={{ height: `${dynamicHeight}px` }}
+                                />
                               )}
                               <TimelineIndicator className="border-0 bg-transparent">
-                                <div className="-mt-[14px]">
+                                <div className="mt-2">
                                   {isCompleted ? (
                                     <div className="flex h-4 w-4 items-center justify-center rounded-full bg-sm-graphics-secondary">
                                       <Check className="h-3 w-3 text-white" />
@@ -242,6 +273,9 @@ function RouteComponent() {
                       const isLastStep =
                         stepIndex ===
                         (groupedStepsByGroupId.ungrouped?.length ?? 0) - 1;
+                      const dynamicHeight = calculateLineHeight(
+                        step.description
+                      );
 
                       return (
                         <TimelineItem
@@ -251,10 +285,13 @@ function RouteComponent() {
                         >
                           <TimelineHeader className="items-start">
                             {!isLastStep && (
-                              <TimelineSeparator className="top-[12px] left-[15px] h-[50px] w-0.5 bg-sm-graphics-primary/30" />
+                              <TimelineSeparator
+                                className="top-[26px] left-[15px] w-0.5 bg-sm-graphics-primary/30"
+                                style={{ height: `${dynamicHeight}px` }}
+                              />
                             )}
                             <TimelineIndicator className="border-0 bg-transparent">
-                              <div className="-mt-[14px]">
+                              <div className="mt-2">
                                 {isCompleted ? (
                                   <div className="flex h-4 w-4 items-center justify-center rounded-full bg-sm-graphics-secondary">
                                     <Check className="h-3 w-3 text-white" />

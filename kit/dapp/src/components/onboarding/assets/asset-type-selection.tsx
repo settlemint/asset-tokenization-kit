@@ -1,6 +1,7 @@
 import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
 import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
@@ -18,6 +19,7 @@ import {
 } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -29,10 +31,11 @@ interface AssetSelectionFormValues {
 const logger = createLogger();
 
 export function AssetTypeSelection() {
-  const { refreshUserState } = useOnboardingNavigation();
+  const { refreshUserState, completeStepAndNavigate } =
+    useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common", "tokens"]);
   const queryClient = useQueryClient();
-
+  const navigate = useNavigate();
   // Verification dialog state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(
@@ -139,10 +142,35 @@ export function AssetTypeSelection() {
     [systemDetails?.tokenFactories]
   );
 
+  const onNext = useCallback(async () => {
+    try {
+      await completeStepAndNavigate(OnboardingStep.systemAssets);
+    } catch (error) {
+      logger.error("Navigation error:", error);
+      toast.error("Failed to navigate to next step");
+    }
+  }, [completeStepAndNavigate]);
+
   return (
     <OnboardingStepLayout
       title={t("assets.select-asset-types")}
       description={t("assets.choose-asset-types")}
+      actions={
+        <>
+          <Button
+            variant="outline"
+            onClick={() => {
+              void navigate({ to: "/onboarding" });
+            }}
+          >
+            Cancel
+          </Button>
+
+          <Button type="button" onClick={onNext} disabled={isFactoriesCreating}>
+            Deploy Assets
+          </Button>
+        </>
+      }
     >
       <div className="max-w-2xl space-y-6">
         <InfoAlert
@@ -231,14 +259,6 @@ export function AssetTypeSelection() {
                   </>
                 )}
               </form.Field>
-            </div>
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-border">
-            <div className="flex justify-between">
-              <Button type="submit" disabled={isFactoriesCreating}>
-                {t("assets.deploy-assets")}
-              </Button>
             </div>
           </div>
         </form>
