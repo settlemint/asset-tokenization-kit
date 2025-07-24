@@ -268,18 +268,16 @@ function RouteComponent() {
   };
 
   return (
-    <div className="flex flex-col h-full rounded-xl shadow-lg overflow-hidden">
+    <div className="OnboardingSidebar flex flex-col h-full rounded-xl shadow-lg overflow-y-hidden">
       <SidebarProvider>
         <Sidebar className="w-[320px] flex-shrink-0 transition-all duration-300 group-data-[side=left]:border-0">
           <div
-            className="w-full overflow-y-auto"
+            className="w-full overflow-y-auto h-full"
             style={{
               background: "var(--sm-wizard-sidebar-gradient)",
               backgroundSize: "cover",
               backgroundPosition: "top",
               backgroundRepeat: "no-repeat",
-              maxHeight: "calc(100% - 200px)",
-              height: "calc(100% - 200px)",
             }}
           >
             <SidebarHeader className="p-6 pb-0">
@@ -307,7 +305,7 @@ function RouteComponent() {
               </div>
             </SidebarHeader>
 
-            <SidebarContent className="px-8 ">
+            <SidebarContent className="px-8 relative">
               {renderGroupedSteps()}
             </SidebarContent>
           </div>
@@ -315,13 +313,13 @@ function RouteComponent() {
 
         {/* Main content area */}
         <div
-          className="flex-1 flex flex-col transition-all duration-300 relative"
+          className="OnboardingSidebar__main flex-1 flex flex-col transition-all duration-300 relative"
           style={{ backgroundColor: "var(--sm-background-lightest)" }}
         >
           <div className="flex-1 p-8">
             <div
               className="w-full overflow-y-auto"
-              style={{ maxHeight: "calc(100% - 200px)" }}
+              style={{ maxHeight: "calc(100% - 80px)" }}
             >
               <Outlet />
             </div>
