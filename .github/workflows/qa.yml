@@ -106,7 +106,7 @@ jobs:
       - name: Login to GitHub Container Registry
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == true)
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -205,8 +205,8 @@ jobs:
       - name: Store predeployed output
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == true)
-        uses: actions/upload-artifact@v4
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        uses: namespace-actions/upload-artifact@v1
         with:
           name: predeployed-output
           path: |
@@ -215,6 +215,29 @@ jobs:
             kit/contracts/.generated/genesis-allocations.json
             kit/subgraph/subgraph-output.txt
             kit/subgraph/.generated/subgraph-env
+
+      # Test container registry upload for draft PRs
+      - name: Upload artifacts to Container Registry (Draft PR Test)
+        if: |
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.draft == true
+        run: |
+          echo "Testing artifact upload to container registry for draft PR..."
+
+          # Create a minimal Dockerfile for artifacts
+          cat > Dockerfile.artifacts <<EOF
+          FROM scratch
+          COPY kit/contracts/.generated /artifacts/contracts/.generated
+          COPY kit/subgraph/subgraph-output.txt /artifacts/subgraph/subgraph-output.txt || true
+          COPY kit/subgraph/.generated/subgraph-env /artifacts/subgraph/subgraph-env || true
+          EOF
+
+          # Build and push artifact container
+          docker build -f Dockerfile.artifacts -t ghcr.io/${{ github.repository }}/artifacts:draft-${{ github.event.pull_request.number }}-${{ github.sha }} .
+          docker push ghcr.io/${{ github.repository }}/artifacts:draft-${{ github.event.pull_request.number }}-${{ github.sha }}
+
+          echo "✅ Artifacts pushed to: ghcr.io/${{ github.repository }}/artifacts:draft-${{ github.event.pull_request.number }}-${{ github.sha }}"
+          echo "To pull: docker pull ghcr.io/${{ github.repository }}/artifacts:draft-${{ github.event.pull_request.number }}-${{ github.sha }}"
 
       # Label QA results (PR only)
       - name: Label QA build status
