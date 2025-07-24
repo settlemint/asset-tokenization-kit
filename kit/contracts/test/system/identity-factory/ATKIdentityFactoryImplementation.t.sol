@@ -313,23 +313,23 @@ contract ATKIdentityFactoryImplementationTest is Test {
         // Check that the claim exists on the contract identity
         IERC735 identityContract = IERC735(contractIdentity);
         bytes32[] memory claimIds = identityContract.getClaimIdsByTopic(contractIdentityTopicId);
-        
+
         assertTrue(claimIds.length > 0, "Should have at least one CONTRACT_IDENTITY claim");
 
         // Get the specific claim
         (
             uint256 topic,
-            uint256 scheme,
+            ,
             address issuer,
-            bytes memory signature,
+            ,
             bytes memory data,
-            string memory uri
+
         ) = identityContract.getClaim(claimIds[0]);
 
         // Verify claim details
         assertEq(topic, contractIdentityTopicId, "Claim should have CONTRACT_IDENTITY topic");
         assertEq(issuer, factoryOnchainID, "Claim should be issued by factory's onchainID");
-        
+
         // Decode and verify claim data (should contain the contract address)
         address decodedContractAddress = abi.decode(data, (address));
         assertEq(decodedContractAddress, address(token), "Claim data should contain the contract address");
@@ -401,7 +401,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
         // Create both identities
         vm.prank(admin);
         address identity1 = factory.createContractIdentity(address(token1));
-        
+
         vm.prank(admin);
         address identity2 = factory.createContractIdentity(address(token2));
 
@@ -431,17 +431,17 @@ contract ATKIdentityFactoryImplementationTest is Test {
         assertTrue(decodedAddress1 != decodedAddress2, "Claims should contain different addresses");
     }
 
-    function testFactoryOnchainIDIsSetAndValid() public {
+    function testFactoryOnchainIDIsSetAndValid() public view {
         // The factory should have its onchainID set after bootstrap
         address factoryOnchainID = IContractWithIdentity(address(factory)).onchainID();
         assertTrue(factoryOnchainID != address(0), "Factory onchainID should be set");
 
         // The onchainID should be a valid identity contract
-        assertTrue(IERC165(factoryOnchainID).supportsInterface(type(IIdentity).interfaceId), 
+        assertTrue(IERC165(factoryOnchainID).supportsInterface(type(IIdentity).interfaceId),
                   "Factory onchainID should be a valid identity contract");
     }
 
-    function testFactoryIdentityIssuesClaimsAsTrustedIssuer() public {
+    function testFactoryIdentityIssuesClaimsAsTrustedIssuer() public view {
         // Get the factory's identity
         address factoryOnchainID = IContractWithIdentity(address(factory)).onchainID();
         require(factoryOnchainID != address(0), "Factory should have onchainID");
@@ -461,7 +461,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
         assertTrue(canIssueContractIdentity, "Factory identity should be able to issue CONTRACT_IDENTITY claims");
     }
 
-    function testFactoryIdentityReceivesSelfIssuedContractClaim() public {
+    function testFactoryIdentityReceivesSelfIssuedContractClaim() public view {
         // The factory should have issued a CONTRACT_IDENTITY claim to itself during bootstrap
         address factoryOnchainID = IContractWithIdentity(address(factory)).onchainID();
         require(factoryOnchainID != address(0), "Factory should have onchainID");
@@ -471,17 +471,17 @@ contract ATKIdentityFactoryImplementationTest is Test {
         // Check that the factory's identity has a CONTRACT_IDENTITY claim
         IERC735 factoryIdentityContract = IERC735(factoryOnchainID);
         bytes32[] memory claimIds = factoryIdentityContract.getClaimIdsByTopic(contractIdentityTopicId);
-        
+
         assertTrue(claimIds.length > 0, "Factory identity should have CONTRACT_IDENTITY claim");
 
         // Get the claim details
         (
             uint256 topic,
-            uint256 scheme,
+            ,
             address issuer,
-            bytes memory signature,
+            ,
             bytes memory data,
-            string memory uri
+
         ) = factoryIdentityContract.getClaim(claimIds[0]);
 
         // Verify it's a self-issued claim

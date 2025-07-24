@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
+import { IContractIdentity } from "../IContractIdentity.sol";
 import { ERC735ClaimSchemes } from "../ERC735ClaimSchemes.sol";
 
 /**
@@ -14,7 +15,7 @@ import { ERC735ClaimSchemes } from "../ERC735ClaimSchemes.sol";
  *      validated by existence rather than cryptographic signatures, enabling smart
  *      contracts to act as claim issuers without managing private keys.
  */
-abstract contract OnChainContractIdentity is IClaimIssuer {
+abstract contract OnChainContractIdentity is IContractIdentity {
     // --- Errors ---
 
     /// @dev Error thrown when the associated contract is not set

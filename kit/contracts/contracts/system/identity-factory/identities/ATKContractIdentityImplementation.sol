@@ -12,6 +12,7 @@ import { ERC735 } from "../../../onchainid/extensions/ERC735.sol";
 import { ClaimAuthorizationExtension } from "../../../onchainid/extensions/ClaimAuthorizationExtension.sol";
 import { OnChainContractIdentity } from "../../../onchainid/extensions/OnChainContractIdentity.sol";
 import { ERC735ClaimSchemes } from "../../../onchainid/ERC735ClaimSchemes.sol";
+import { IContractIdentity } from "../../../onchainid/IContractIdentity.sol";
 
 /// @title ATK Contract Identity Implementation Contract
 /// @author SettleMint Tokenization Services
@@ -259,37 +260,6 @@ contract ATKContractIdentityImplementation is
         return _contractAddress;
     }
 
-    /// @inheritdoc IATKContractIdentity
-    function issueClaimTo(
-        IIdentity subject,
-        uint256 topic,
-        bytes memory data,
-        string memory uri
-    )
-        external
-        virtual
-        override(IATKContractIdentity, OnChainContractIdentity)
-        returns (bytes32 claimId)
-    {
-        address associatedContract = getAssociatedContract();
-        if (associatedContract == address(0)) {
-            revert OnChainContractIdentity.AssociatedContractNotSet();
-        }
-
-        if (msg.sender != associatedContract) {
-            revert OnChainContractIdentity.UnauthorizedContractOperation(msg.sender);
-        }
-
-        return subject.addClaim(
-            topic,
-            ERC735ClaimSchemes.SCHEME_CONTRACT,
-            address(this),
-            "", // Empty signature for contract scheme
-            data,
-            uri
-        );
-    }
-
     // --- ERC165 Support ---
 
     /// @notice Checks if the contract supports a given interface ID.
@@ -297,6 +267,7 @@ contract ATKContractIdentityImplementation is
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable) returns (bool) {
         return interfaceId == type(IATKContractIdentity).interfaceId || interfaceId == type(IERC735).interfaceId
             || interfaceId == type(IIdentity).interfaceId || interfaceId == type(IClaimIssuer).interfaceId
+            || interfaceId == type(IContractIdentity).interfaceId
             || super.supportsInterface(interfaceId);
     }
 }
