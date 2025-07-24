@@ -62,7 +62,7 @@ export function __multiOptionFilterFn<TData>(
     case "exclude":
       return intersection(values, filterValues).length === 0;
     case "exclude if any of":
-      return !(intersection(values, filterValues).length > 0);
+      return intersection(values, filterValues).length === 0;
     case "include all of":
       return intersection(values, filterValues).length === filterValues.length;
     case "exclude if all":

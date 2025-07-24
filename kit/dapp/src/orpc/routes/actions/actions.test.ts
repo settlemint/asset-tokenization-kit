@@ -103,7 +103,7 @@ describe("Actions Schemas", () => {
       id: "action-123",
       name: "Test Action",
       target: "0x1234567890123456789012345678901234567890",
-      activeAt: BigInt(1700000100),
+      activeAt: BigInt(1_700_000_100),
       status: "ACTIVE" as const,
       executedAt: null,
       executedBy: null,
@@ -118,7 +118,7 @@ describe("Actions Schemas", () => {
       expect(result.id).toBe("action-123");
       expect(result.name).toBe("Test Action");
       expect(result.status).toBe("ACTIVE");
-      expect(result.activeAt).toBe(BigInt(1700000100));
+      expect(result.activeAt).toBe(BigInt(1_700_000_100));
     });
 
     it("should handle null optional fields", () => {
@@ -247,7 +247,7 @@ describe("Actions Schemas", () => {
       id: "action-123",
       name: "Test Action",
       target: "0x1234567890123456789012345678901234567890",
-      activeAt: BigInt(1700000100),
+      activeAt: BigInt(1_700_000_100),
       status: "ACTIVE" as const,
       executedAt: null,
       executedBy: null,
@@ -325,7 +325,7 @@ describe("Actions Schemas", () => {
         id: longString,
         name: longString,
         target: "0x1234567890123456789012345678901234567890",
-        activeAt: BigInt(1700000100),
+        activeAt: BigInt(1_700_000_100),
         status: "PENDING" as const,
         executedAt: null,
         executedBy: null,

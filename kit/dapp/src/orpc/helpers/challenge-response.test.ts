@@ -25,7 +25,7 @@ import { handleChallenge } from "./challenge-response";
 
 // Mock the external dependencies
 mock.module("@settlemint/sdk-portal", () => ({
-  handleWalletVerificationChallenge: mock(async () =>
+  handleWalletVerificationChallenge: mock(() =>
     Promise.resolve({
       challengeResponse: "mocked-response",
       verificationId: "mocked-verification-id",

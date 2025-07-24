@@ -283,11 +283,11 @@ export const create = onboardedRouter.system.create
 
     // Always yield the final message with the system ID
     // If bootstrap failed, we still return the system ID but with a warning
-    const finalMessage = !bootstrapSucceeded
-      ? t("system:create.messages.createdBootstrapFailed", {
+    const finalMessage = bootstrapSucceeded
+      ? t("system:create.messages.success")
+      : t("system:create.messages.createdBootstrapFailed", {
           systemAddress: system.id,
-        })
-      : t("system:create.messages.success");
+        });
 
     yield {
       status: "confirmed" as const,

@@ -24,6 +24,16 @@
     },
     "test:integration": {
       "dependsOn": ["codegen"]
+    },
+    "lint": {
+      "inputs": [
+        "src/**/*.{js,jsx,ts,tsx}",
+        ".eslintrc*",
+        "eslint.config.*",
+        "package.json",
+        "tsconfig.json"
+      ],
+      "outputs": [".eslintcache"]
     }
   }
 }

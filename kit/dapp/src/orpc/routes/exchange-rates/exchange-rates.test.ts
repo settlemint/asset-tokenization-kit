@@ -84,9 +84,9 @@ describe("Exchange Rates Schemas", () => {
         provider: "er-api.com",
         documentation: "https://www.exchangerate-api.com",
         terms_of_use: "https://www.exchangerate-api.com/terms",
-        time_last_update_unix: 1735776000,
+        time_last_update_unix: 1_735_776_000,
         time_last_update_utc: "Thu, 02 Jan 2025 00:00:00 +0000",
-        time_next_update_unix: 1735862400,
+        time_next_update_unix: 1_735_862_400,
         time_next_update_utc: "Fri, 03 Jan 2025 00:00:00 +0000",
         time_eol_unix: 0,
         base_code: "USD",
@@ -263,20 +263,20 @@ describe("Exchange Rates Schemas", () => {
       const input = {
         baseCurrency: "USD",
         quoteCurrency: "EUR",
-        rate: 0.12345678901234,
+        rate: 0.123_456_789_012_34,
       };
       const result = safeParse(ExchangeRatesUpdateSchema, input);
-      expect(result.rate).toBe(0.12345678901234);
+      expect(result.rate).toBe(0.123_456_789_012_34);
     });
 
     it("should handle very large rates", () => {
       const input = {
         baseCurrency: "USD",
         quoteCurrency: "JPY",
-        rate: 150.123456789,
+        rate: 150.123_456_789,
       };
       const result = safeParse(ExchangeRatesUpdateSchema, input);
-      expect(result.rate).toBe(150.123456789);
+      expect(result.rate).toBe(150.123_456_789);
     });
 
     it("should reject negative rates", () => {

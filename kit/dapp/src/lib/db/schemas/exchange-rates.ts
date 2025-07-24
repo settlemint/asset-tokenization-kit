@@ -196,8 +196,8 @@ export const fxRateDataSchema = z.object({
         return false;
 
       // Ensure the number is positive (not zero)
-      const num = parseFloat(trimmed);
-      return num > 0 && isFinite(num);
+      const num = Number.parseFloat(trimmed);
+      return num > 0 && Number.isFinite(num);
     },
     {
       message: "Rate must be a positive decimal number",
@@ -231,8 +231,8 @@ export const fxRateLatestDataSchema = z.object({
         return false;
 
       // Ensure the number is positive (not zero)
-      const num = parseFloat(trimmed);
-      return num > 0 && isFinite(num);
+      const num = Number.parseFloat(trimmed);
+      return num > 0 && Number.isFinite(num);
     },
     {
       message: "Rate must be a positive decimal number",

@@ -1,11 +1,14 @@
 import type { KeysOfUnion } from "@/lib/utils/union";
 import { z } from "zod";
-export const isRequiredFieldForZodObject = <TSchema extends z.ZodObject>(
+export const isRequiredFieldForZodObject = <
+  TSchema extends z.ZodObject<z.ZodRawShape>,
+>(
   schema: TSchema,
   field: keyof z.infer<TSchema>
 ): boolean => {
-  const fieldSchema = schema.shape[field as string];
-  if (!fieldSchema) {
+  const shape = schema.shape;
+  const fieldSchema = shape[field as string];
+  if (!fieldSchema || !(fieldSchema instanceof z.ZodType)) {
     return false;
   }
   const isOptional = fieldSchema.safeParse(undefined).success;
