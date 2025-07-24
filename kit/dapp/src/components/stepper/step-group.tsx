@@ -4,9 +4,8 @@ import type {
   Step,
   StepGroup,
 } from "@/components/stepper/types";
-import { CollapsibleChevron } from "@/components/ui/collapsible-chevron";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { isGroupCompleted } from "./utils";
 
@@ -25,83 +24,89 @@ export function StepGroupComponent<StepId, GroupId>({
   navigation,
   onStepSelect,
 }: StepGroupProps<StepId, GroupId>) {
-  const [open, setOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const hasActiveStep = group.steps.some(
     (step) => step.step === currentStep.step
   );
-  const isCompleted = isGroupCompleted(group, currentStep);
+  const groupCompleted = isGroupCompleted(group, currentStep);
 
   useEffect(() => {
     if (hasActiveStep) {
-      setOpen(true);
+      setIsExpanded(true);
     }
   }, [hasActiveStep]);
 
   useEffect(() => {
-    if (isCompleted) {
-      setOpen(false);
+    if (groupCompleted) {
+      setIsExpanded(false);
     }
-  }, [isCompleted]);
+  }, [groupCompleted]);
 
   return (
-    <CollapsibleChevron
-      open={open}
-      onOpenChange={setOpen}
-      className={cn(
-        hasActiveStep && "bg-primary/5 border border-primary/20 rounded-lg"
-      )}
-      trigger={() => (
-        <div className="flex items-center space-x-3">
-          <span
+    <div>
+      <button
+        type="button"
+        onClick={() => {
+          setIsExpanded(!isExpanded);
+        }}
+        className={cn(
+          "w-full text-left mb-3 p-2 rounded-lg transition-all duration-200 hover:bg-white/10",
+          hasActiveStep && "bg-white/5"
+        )}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h3
+              className={cn(
+                "text-base font-bold transition-all duration-300",
+                hasActiveStep
+                  ? "text-primary-foreground"
+                  : "text-primary-foreground/70"
+              )}
+            >
+              {group.label}
+            </h3>
+            {groupCompleted && (
+              <Check className="w-4 h-4 text-sm-state-success" />
+            )}
+          </div>
+          <ChevronDown
             className={cn(
-              "font-semibold text-sm",
-              hasActiveStep ? "text-primary" : "text-foreground"
+              "w-4 h-4 text-primary-foreground/60 transition-transform duration-200",
+              isExpanded ? "rotate-180" : "rotate-0"
             )}
-          >
-            {group.label}
-          </span>
-          <span className="text-sm text-muted-foreground">
-            {group.description}
-          </span>
-          {isCompleted && (
-            <div className="flex items-center justify-center w-5 h-5 bg-primary rounded-full">
-              <Check className="w-3 h-3 text-primary-foreground" />
-            </div>
-          )}
+          />
         </div>
-      )}
-    >
-      {(open) => {
-        return (
-          <>
-            {open && (
-              <div className="pl-6 space-y-1">
-                {group.steps.map((step, index) => {
-                  const isLastInGroup = index === group.steps.length - 1;
+        {group.description && (
+          <p className="text-xs text-primary-foreground/50 mt-1">
+            {group.description}
+          </p>
+        )}
+      </button>
 
-                  return (
-                    <div key={step.step} className="relative">
-                      <StepComponent<StepId, GroupId>
-                        step={step}
-                        currentStep={currentStep}
-                        allSteps={allSteps}
-                        navigation={navigation}
-                        onStepSelect={onStepSelect}
-                        group={group}
-                      />
-
-                      {!isLastInGroup && (
-                        <div className="absolute left-6 top-16 w-px h-4 bg-border" />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            {!open && <></>}
-          </>
-        );
-      }}
-    </CollapsibleChevron>
+      {/* Collapsible Group Steps */}
+      <div
+        className={cn(
+          "overflow-hidden transition-all duration-300 ease-in-out",
+          isExpanded ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0"
+        )}
+      >
+        <div className="pl-6">
+          {group.steps.map((step) => {
+            return (
+              <StepComponent<StepId, GroupId>
+                step={step}
+                currentStep={currentStep}
+                allSteps={allSteps}
+                navigation={navigation}
+                onStepSelect={onStepSelect}
+                group={group}
+                key={step.step}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 }
