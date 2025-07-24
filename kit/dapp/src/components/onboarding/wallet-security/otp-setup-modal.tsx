@@ -39,15 +39,23 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
         onboarding: true,
       }),
     onSuccess: async (data) => {
-      await refreshUserState();
+      try {
+        await refreshUserState();
 
-      // Extract OTP URI from response
-      if (data.data?.totpURI) {
-        setOtpUri(data.data.totpURI);
-        toast.success(t("wallet-security.otp.setup-initiated"));
-      } else {
+        // Extract OTP URI from response
+        if (data.data?.totpURI) {
+          setOtpUri(data.data.totpURI);
+          toast.success(t("wallet-security.otp.setup-initiated"));
+        } else {
+          setOtpSetupError(true);
+          toast.error(t("wallet-security.otp.setup-failed"));
+        }
+      } catch (error: unknown) {
         setOtpSetupError(true);
-        toast.error(t("wallet-security.otp.setup-failed"));
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : t("wallet-security.otp.setup-failed");
+        toast.error(errorMessage);
       }
     },
     onError: (error: Error) => {
@@ -62,9 +70,16 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
         code,
       }),
     onSuccess: async () => {
-      await refreshUserState();
-      toast.success(t("wallet-security.otp.verified-success"));
-      onOpenChange(false);
+      try {
+        await refreshUserState();
+        toast.success(t("wallet-security.otp.verified-success"));
+        onOpenChange(false);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : t("wallet-security.otp.refresh-failed");
+        toast.error(errorMessage);
+      }
     },
     onError: (error: Error) => {
       toast.error(error.message || t("wallet-security.otp.invalid-code"));

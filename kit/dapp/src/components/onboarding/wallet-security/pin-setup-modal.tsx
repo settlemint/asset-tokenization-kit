@@ -11,6 +11,7 @@ import {
 import { authClient } from "@/lib/auth/auth.client";
 import { pincode } from "@/lib/zod/validators/pincode";
 import { useForm } from "@tanstack/react-form";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -65,19 +66,26 @@ export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {
       },
     },
     onSubmit: async ({ value }) => {
-      await authClient.pincode.enable({
-        pincode: value.pincode,
-      });
-      await refreshUserState();
-      toast.success(t("wallet-security.pincode.success"));
-      onOpenChange(false);
+      try {
+        await authClient.pincode.enable({
+          pincode: value.pincode,
+        });
+        await refreshUserState();
+        toast.success(t("wallet-security.pincode.success"));
+        onOpenChange(false);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : t("wallet-security.pincode.setup-failed");
+        toast.error(errorMessage);
+      }
     },
   });
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     form.reset();
     onOpenChange(false);
-  };
+  }, [form, onOpenChange]);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>

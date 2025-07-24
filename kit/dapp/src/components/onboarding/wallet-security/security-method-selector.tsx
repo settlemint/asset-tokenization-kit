@@ -20,7 +20,15 @@ export function SecurityMethodSelector() {
           onClick={() => {
             setShowPinModal(true);
           }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setShowPinModal(true);
+            }
+          }}
           variant="outline"
+          tabIndex={0}
+          aria-label={t("wallet-security.method-selector.comparison.choose-pin")}
         >
           {t("wallet-security.method-selector.comparison.choose-pin")}
         </Button>
@@ -30,6 +38,14 @@ export function SecurityMethodSelector() {
           onClick={() => {
             setShowOtpModal(true);
           }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setShowOtpModal(true);
+            }
+          }}
+          tabIndex={0}
+          aria-label={t("wallet-security.method-selector.comparison.choose-otp")}
         >
           {t("wallet-security.method-selector.comparison.choose-otp")}
         </Button>
@@ -92,10 +108,10 @@ export function SecurityMethodSelector() {
                   {t("wallet-security.method-selector.comparison.ease-of-use")}
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mx-auto" />
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <AlertTriangle className="w-4 h-4 text-yellow-500 mx-auto" />
+                  <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mx-auto" />
                 </div>
               </div>
               <div className="grid grid-cols-10 gap-0 w-full">
@@ -120,10 +136,10 @@ export function SecurityMethodSelector() {
                   )}
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <X className="w-4 h-4 text-red-500 mx-auto" />
+                  <X className="w-4 h-4 text-red-600 dark:text-red-400 mx-auto" />
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mx-auto" />
                 </div>
               </div>
               <div className="grid grid-cols-10 gap-0 w-full">
@@ -133,10 +149,10 @@ export function SecurityMethodSelector() {
                   )}
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mx-auto" />
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mx-auto" />
                 </div>
               </div>
               <div className="grid grid-cols-10 gap-0 w-full">
