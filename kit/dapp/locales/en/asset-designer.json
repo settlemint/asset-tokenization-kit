@@ -111,7 +111,8 @@
     "loading": "Loading available asset types...",
     "loading-description": "Please wait while we fetch the available token factories.",
     "no-asset-types": "No Asset Types Available",
-    "no-asset-types-description": "No token factories have been deployed yet. Please deploy token factories first before creating tokens."
+    "no-asset-types-description": "No token factories have been deployed yet. Please deploy token factories first before creating tokens.",
+    "comingSoon": "Coming soon!"
   },
   "validation": {
     "type-required": "Please select an asset type"

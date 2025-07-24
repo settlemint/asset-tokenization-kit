@@ -70,7 +70,7 @@ export function CountryAllowlistModuleDetail({
             </h2>
           </div>
           <div>
-            <p className="text-muted-foreground text-base leading-relaxed">
+            <p className="text-muted-foreground text-sm leading-relaxed">
               {t("modules.countryAllowList.description")}
             </p>
           </div>

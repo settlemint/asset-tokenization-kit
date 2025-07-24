@@ -11,18 +11,16 @@ import {
   FormStepTitle,
 } from "@/components/form/multi-step/form-step";
 
+import { ComplianceModuleDetail } from "@/components/asset-designer/compliance-modules/compliance-module-detail";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import {
-  ComplianceTypeIdEnum,
   complianceTypeIds,
-  type ComplianceModulePair,
   type ComplianceTypeId,
 } from "@/lib/zod/validators/compliance";
 import { useStore } from "@tanstack/react-store";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CountryAllowlistModuleDetail } from "./country-allowlist-module-detail";
 
 const validate: never[] = [];
 
@@ -36,97 +34,19 @@ export const ComplianceModules = withForm({
     const [activeTypeId, setActiveTypeId] = useState<ComplianceTypeId | null>(
       null
     );
-
     const initialModulePairs = useStore(
       form.store,
       (state) => state.values.initialModulePairs
     );
 
-    const setModulePair = (modulePair: ComplianceModulePair) => {
-      const modulePairsWithoutType = initialModulePairs?.filter(
-        (pair) => pair.typeId !== modulePair.typeId
-      );
-      form.setFieldValue("initialModulePairs", () => {
-        return [...(modulePairsWithoutType ?? []), modulePair];
-      });
-    };
-
-    const removeModulePair = (typeId: ComplianceTypeId) => {
-      form.setFieldValue("initialModulePairs", () => {
-        return initialModulePairs?.filter((pair) => pair.typeId !== typeId);
-      });
-    };
-
-    const isDisabledModule = (
-      modulePair:
-        | ComplianceModulePair
-        | { typeId: ComplianceTypeId; disabled: true }
-    ): modulePair is { typeId: ComplianceTypeId; disabled: true } => {
-      return "disabled" in modulePair && modulePair.disabled;
-    };
-
-    const onChange = (
-      modulePair:
-        | ComplianceModulePair
-        | {
-            typeId: ComplianceTypeId;
-            disabled: true;
-          }
-    ) => {
-      if (isDisabledModule(modulePair)) {
-        removeModulePair(modulePair.typeId);
-        return;
-      }
-
-      setModulePair(modulePair);
-    };
-
-    const onEnable = () => {
-      setActiveTypeId(null);
-    };
-    const onBack = () => {
-      setActiveTypeId(null);
-    };
-
-    const complianceDetailComponents: Record<
-      ComplianceTypeId,
-      React.ReactNode
-    > = {
-      [ComplianceTypeIdEnum.AddressBlockListComplianceModule]: (
-        <div>Address Block List</div>
-      ),
-      [ComplianceTypeIdEnum.CountryAllowListComplianceModule]: (
-        <CountryAllowlistModuleDetail
-          onBack={onBack}
-          modulePair={{
-            typeId: ComplianceTypeIdEnum.CountryAllowListComplianceModule,
-            params:
-              initialModulePairs?.find(
-                (modulePair) =>
-                  modulePair.typeId ===
-                  ComplianceTypeIdEnum.CountryAllowListComplianceModule
-              )?.params ?? [],
-          }}
-          onChange={onChange}
-          onEnable={onEnable}
-        />
-      ),
-      [ComplianceTypeIdEnum.CountryBlockListComplianceModule]: (
-        <div>Country Block List</div>
-      ),
-      [ComplianceTypeIdEnum.IdentityAllowListComplianceModule]: (
-        <div>Identity Allow List</div>
-      ),
-      [ComplianceTypeIdEnum.IdentityBlockListComplianceModule]: (
-        <div>Identity Block List</div>
-      ),
-      [ComplianceTypeIdEnum.SMARTIdentityVerificationComplianceModule]: (
-        <div>SMART Identity Verification</div>
-      ),
-    };
-
     if (activeTypeId) {
-      return <>{complianceDetailComponents[activeTypeId]}</>;
+      return (
+        <ComplianceModuleDetail
+          activeTypeId={activeTypeId}
+          setActiveTypeId={setActiveTypeId}
+          form={form}
+        />
+      );
     }
 
     const isModuleEnabled = (typeId: ComplianceTypeId) => {
