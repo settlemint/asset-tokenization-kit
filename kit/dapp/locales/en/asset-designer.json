@@ -18,6 +18,10 @@
         "title": "Asset Basics",
         "description": "Enter the basic details of the asset"
       },
+      "complianceModules": {
+        "title": "Compliance Modules",
+        "description": "Enable and configure compliance modules to control who can access your asset."
+      },
       "summary": {
         "title": "Summary",
         "description": "Review the details of the asset"
@@ -88,6 +92,14 @@
     "actions": {
       "create": "Create {{type}}",
       "creating": "Creating..."
+    },
+    "buttons": {
+      "next": "Next",
+      "back": "Back",
+      "enable": "Enable",
+      "disable": "Disable",
+      "cancel": "Cancel",
+      "submit": "Submit"
     }
   },
   "messages": {
@@ -99,9 +111,22 @@
     "loading": "Loading available asset types...",
     "loading-description": "Please wait while we fetch the available token factories.",
     "no-asset-types": "No Asset Types Available",
-    "no-asset-types-description": "No token factories have been deployed yet. Please deploy token factories first before creating tokens."
+    "no-asset-types-description": "No token factories have been deployed yet. Please deploy token factories first before creating tokens.",
+    "comingSoon": "Coming soon!"
   },
   "validation": {
     "type-required": "Please select an asset type"
+  },
+  "compliance": {
+    "title": "Compliance Modules",
+    "description": "Enable and configure compliance modules to control who can access your asset",
+    "configured": {
+      "title": "Enabled Modules",
+      "description": "Compliance modules that have been enabled for your asset."
+    },
+    "available": {
+      "title": "Available Modules",
+      "description": "You can enable any of the following compliance modules to control who can access your asset."
+    }
   }
 }
