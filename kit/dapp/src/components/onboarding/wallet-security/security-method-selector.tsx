@@ -1,6 +1,6 @@
 import { BulletPoint } from "@/components/onboarding/bullet-point";
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
-import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
+import { OtpSetupModal } from "@/components/onboarding/wallet-security/otp-setup-modal";
 import { PinSetupModal } from "@/components/onboarding/wallet-security/pin-setup-modal";
 import { Lock, Shield } from "lucide-react";
 import { useState } from "react";
@@ -9,21 +9,8 @@ import { useTranslation } from "react-i18next";
 export function SecurityMethodSelector() {
   const { t } = useTranslation(["onboarding"]);
 
-  const [securityMethod, setSecurityMethod] = useState<
-    "pin" | "otp" | undefined
-  >(undefined);
   const [showPinModal, setShowPinModal] = useState(false);
-
-  // Keep the old behavior for OTP for now
-  if (securityMethod === "otp") {
-    return (
-      <OtpSetupComponent
-        closeModal={() => {
-          setSecurityMethod(undefined);
-        }}
-      />
-    );
-  }
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   return (
     <>
@@ -83,7 +70,7 @@ export function SecurityMethodSelector() {
             <div
               className="flex-1 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 border-input bg-background hover:bg-muted/50"
               onClick={() => {
-                setSecurityMethod("otp");
+                setShowOtpModal(true);
               }}
             >
               <div className="flex items-center justify-between mb-2">
@@ -103,6 +90,7 @@ export function SecurityMethodSelector() {
       </OnboardingStepLayout>
 
       <PinSetupModal open={showPinModal} onOpenChange={setShowPinModal} />
+      <OtpSetupModal open={showOtpModal} onOpenChange={setShowOtpModal} />
     </>
   );
 }
