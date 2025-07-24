@@ -76,28 +76,31 @@ function RouteComponent() {
     })
   );
 
-  const handleComplete = useCallback(async (values: KycFormValues) => {
-    setKycFormValues(values);
-    if (canRegisterIdentity) {
-      setShowVerificationModal(true);
-    } else {
-      if (!kycFormValues) {
-        throw new Error("KYC form values are not set");
-      }
-      toast.promise(
-        updateKyc({
-          ...values,
-          userId: session?.user.id ?? "",
-        }),
-        {
-          loading: t("identity.deploying-toast"),
-          success: t("identity.deployed-toast"),
-          error: (error: Error) =>
-            `${t("identity.failed-toast")}${error.message}`,
+  const handleComplete = useCallback(
+    async (values: KycFormValues) => {
+      setKycFormValues(values);
+      if (canRegisterIdentity) {
+        setShowVerificationModal(true);
+      } else {
+        if (!values) {
+          return;
         }
-      );
-    }
-  }, []);
+        toast.promise(
+          updateKyc({
+            ...values,
+            userId: session?.user.id ?? "",
+          }),
+          {
+            loading: t("identity.deploying-toast"),
+            success: t("identity.deployed-toast"),
+            error: (error: Error) =>
+              `${t("identity.failed-toast")}${error.message}`,
+          }
+        );
+      }
+    },
+    [canRegisterIdentity, session?.user.id, t, updateKyc]
+  );
 
   const handleVerificationSubmit = useCallback(
     (verification: UserVerification) => {
@@ -105,22 +108,22 @@ function RouteComponent() {
       setShowVerificationModal(false);
 
       if (!kycFormValues) {
-        throw new Error("KYC form values are not set");
+        return;
       }
 
       toast.promise(
-        updateKyc({
-          ...kycFormValues,
-          userId: session?.user.id ?? "",
-        }).then(async () => {
-          if (!registerIdentity) {
-            return Promise.resolve();
+        (async () => {
+          if (canRegisterIdentity) {
+            await registerIdentity({
+              country: kycFormValues?.country ?? "",
+              verification,
+            });
           }
-          await registerIdentity({
-            country: kycFormValues?.country ?? "",
-            verification,
+          return updateKyc({
+            ...kycFormValues,
+            userId: session?.user.id ?? "",
           });
-        }),
+        })(),
         {
           loading: t("identity.deploying-toast"),
           success: t("identity.deployed-toast"),

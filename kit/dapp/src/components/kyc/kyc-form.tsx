@@ -119,12 +119,23 @@ export function KycForm({ onComplete, disabled }: KycFormProps) {
         <form.AppField
           name="nationalId"
           children={(field) => (
-            <field.TextField label={t("kycForm.nationalId")} />
+            <field.TextField label={t("kycForm.nationalId")} required={true} />
           )}
         />
-        <Button type="submit" disabled={disabled}>
-          {t("kycForm.submit")}
-        </Button>
+        <form.Subscribe>
+          {({ errors, isDirty }) => {
+            return (
+              <Button
+                type="submit"
+                disabled={
+                  disabled || !isDirty || Object.keys(errors).length > 0
+                }
+              >
+                {t("kycForm.submit")}
+              </Button>
+            );
+          }}
+        </form.Subscribe>
       </form.AppForm>
     </form>
   );
