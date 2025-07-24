@@ -229,7 +229,6 @@ jobs:
           FROM scratch
           COPY kit/contracts/.generated /artifacts/contracts/.generated
           COPY kit/subgraph/subgraph-output.txt /artifacts/subgraph/subgraph-output.txt || true
-          COPY kit/subgraph/.generated/subgraph-env /artifacts/subgraph/subgraph-env || true
           EOF
 
           # Build and push artifact container
