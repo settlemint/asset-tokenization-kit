@@ -103,4 +103,10 @@ interface IATKIdentityFactory is IERC165 {
         external
         view
         returns (address predictedAddress);
+
+    /// @notice Sets the identity factory's own OnChain ID and issues a self-claim.
+    /// @dev This is called during bootstrap by the system contract only. After setting the identity,
+    ///      it issues a CONTRACT_IDENTITY claim to itself to attest that the factory is a contract identity.
+    /// @param identityAddress The address of the identity factory's own identity contract.
+    function setOnchainID(address identityAddress) external;
 }

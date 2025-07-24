@@ -22,6 +22,7 @@ import { ERC734KeyTypes } from "../../onchainid/ERC734KeyTypes.sol";
 import { ERC735ClaimSchemes } from "../../onchainid/ERC735ClaimSchemes.sol";
 import { IATKTopicSchemeRegistry } from "../topic-scheme-registry/IATKTopicSchemeRegistry.sol";
 import { ATKTopics } from "../ATKTopics.sol";
+import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 // System imports
 import { InvalidSystemAddress } from "../ATKSystemErrors.sol"; // Assuming this is correctly placed
@@ -627,17 +628,17 @@ contract ATKIdentityFactoryImplementation is
     /// @inheritdoc IContractWithIdentity
     /// @notice Checks if the caller can add a claim to the identity contract.
     /// @dev The identity factory allows the system admin to add claims.
-    function canAddClaim(address caller) external view override returns (bool) {
-        IATKSystem system = IATKSystem(_system);
-        return system.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, caller);
+    function canAddClaim(address ) external pure override returns (bool) {
+        // TODO
+        return false;
     }
 
     /// @inheritdoc IContractWithIdentity
     /// @notice Checks if the caller can remove a claim from the identity contract.
     /// @dev The identity factory allows the system admin to remove claims.
-    function canRemoveClaim(address caller) external view override returns (bool) {
-        IATKSystem system = IATKSystem(_system);
-        return system.hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, caller);
+    function canRemoveClaim(address ) external pure override returns (bool) {
+        // TODO
+        return false;
     }
 
     /// @notice Sets the identity factory's own OnChain ID and issues a self-claim.

@@ -541,7 +541,7 @@ contract ATKSystemImplementation is
             IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(localIdentityFactoryProxy);
 
         // Set the identity factory's own OnChainID
-        ATKIdentityFactoryImplementation(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
+        IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
 
         // Register the identity factory's identity (not the factory itself) as the trusted issuer
         uint256[] memory identityFactoryClaimTopics = new uint256[](1);
