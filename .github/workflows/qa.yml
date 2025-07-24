@@ -141,14 +141,14 @@ jobs:
       - name: Run the backend services
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == true)
         run: |
           bun dev:up
 
       - name: Verify subgraph SystemFactory address
         if: |
           github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == true)
         run: |
           echo "Checking SystemFactory address in subgraph.yaml..."
           EXPECTED_ADDRESS="0x5e771e1417100000000000000000000000020088"
