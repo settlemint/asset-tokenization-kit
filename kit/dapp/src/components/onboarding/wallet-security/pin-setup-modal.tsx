@@ -14,15 +14,15 @@ import { useForm } from "@tanstack/react-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-interface PinSetupComponentProps {
+interface PinSetupModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function PinSetupComponent({
+export function PinSetupModal({
   open,
   onOpenChange,
-}: PinSetupComponentProps) {
+}: PinSetupModalProps) {
   const { refreshUserState } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common"]);
 

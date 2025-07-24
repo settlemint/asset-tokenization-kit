@@ -1,7 +1,7 @@
 import { BulletPoint } from "@/components/onboarding/bullet-point";
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
 import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
-import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
+import { PinSetupModal } from "@/components/onboarding/wallet-security/pin-setup-modal";
 import { Lock, Shield } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -102,7 +102,7 @@ export function SecurityMethodSelector() {
         </div>
       </OnboardingStepLayout>
 
-      <PinSetupComponent open={showPinModal} onOpenChange={setShowPinModal} />
+      <PinSetupModal open={showPinModal} onOpenChange={setShowPinModal} />
     </>
   );
 }
