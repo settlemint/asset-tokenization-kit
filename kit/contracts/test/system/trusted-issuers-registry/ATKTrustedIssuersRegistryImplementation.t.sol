@@ -55,7 +55,9 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         implementation = new ATKTrustedIssuersRegistryImplementation(forwarder);
 
         // Deploy proxy with initialization data
-        bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, admin);
+        address[] memory initialRegistrars = new address[](1);
+        initialRegistrars[0] = admin;
+        bytes memory initData = abi.encodeWithSelector(implementation.initialize.selector, admin, initialRegistrars);
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
         registry = IERC3643TrustedIssuersRegistry(address(proxy));
 
