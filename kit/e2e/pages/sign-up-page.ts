@@ -16,18 +16,12 @@ export class SignUpPage extends BasePage {
     await this.page.getByRole("textbox", { name: "Email" }).fill(email);
 
     await this.page
-      .getByRole("textbox", { name: "Password", exact: true })
+      .getByLabel("Password", { exact: true })
       .click({ force: true });
-    await this.page
-      .getByRole("textbox", { name: "Password", exact: true })
-      .fill(password);
+    await this.page.getByLabel("Password", { exact: true }).fill(password);
 
-    await this.page
-      .getByRole("textbox", { name: "Confirm Password" })
-      .click({ force: true });
-    await this.page
-      .getByRole("textbox", { name: "Confirm Password" })
-      .fill(password);
+    await this.page.getByLabel("Confirm Password").click({ force: true });
+    await this.page.getByLabel("Confirm Password").fill(password);
 
     await this.page.waitForTimeout(1000);
   }

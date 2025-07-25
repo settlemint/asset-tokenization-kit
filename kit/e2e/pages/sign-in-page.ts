@@ -15,7 +15,7 @@ export class SignInPage {
     await emailField.clear();
     await emailField.pressSequentially(email, { delay: 50 });
 
-    const passwordField = this.page.getByRole("textbox", { name: "Password" });
+    const passwordField = this.page.getByLabel("Password");
     await passwordField.click();
     await passwordField.focus();
     await passwordField.clear();
@@ -29,7 +29,7 @@ export class SignInPage {
   async clearForm(): Promise<void> {
     const emailField = this.page.getByRole("textbox", { name: "Email" });
     await emailField.fill("");
-    const passwordField = this.page.getByRole("textbox", { name: "Password" });
+    const passwordField = this.page.getByLabel("Password");
     await passwordField.fill("");
   }
 
@@ -85,10 +85,5 @@ export class SignInPage {
         `Sign-in failed: Expected to be on dashboard but got ${currentUrl}`
       );
     }
-  }
-
-  async signOut(): Promise<void> {
-    await this.page.goto("http://localhost:3000/auth/sign-out");
-    await this.page.waitForTimeout(1000);
   }
 }
