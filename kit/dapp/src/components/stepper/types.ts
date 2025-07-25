@@ -1,13 +1,14 @@
 export interface Step<StepId> {
-  step: number;
   id: StepId;
   label: string;
   description: string;
+  step: number;
 }
 
 export interface StepGroup<StepId, GroupId> {
   id: GroupId;
   label: string;
+  description: string;
   steps: Step<StepId>[];
 }
 

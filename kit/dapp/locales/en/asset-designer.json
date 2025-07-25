@@ -1,6 +1,7 @@
 {
   "wizard": {
-    "description": "Create a new token by selecting the token type and configuring its basic properties.",
+    "title": "Design your Asset",
+    "description": "We'll guide you through each step to create your tokenized asset with built-in regulatory compliance and investor protection.",
     "steps": {
       "asset-type": {
         "title": "Select Token Type",
@@ -11,20 +12,24 @@
         "description": "Configure the basic properties of your token"
       },
       "selectAssetType": {
-        "title": "Select Asset Type",
-        "description": "Select the type of asset you want to create"
+        "title": "Choose your Asset Type",
+        "description": "Select the type of real-world asset you want to tokenize on the blockchain"
       },
       "assetBasics": {
-        "title": "Asset Basics",
-        "description": "Enter the basic details of the asset"
+        "title": "Define your Asset",
+        "description": "Set the fundamental properties and details that define your asset"
+      },
+      "complianceModules": {
+        "title": "Configure Compliance",
+        "description": "Set up compliance modules to ensure your asset meets legal requirements"
       },
       "complianceModules": {
         "title": "Compliance Modules",
         "description": "Enable and configure compliance modules to control who can access your asset."
       },
       "summary": {
-        "title": "Summary",
-        "description": "Review the details of the asset"
+        "title": "Review & Deploy",
+        "description": "Confirm and deploy your compliant digital asset to the blockchain"
       }
     }
   },

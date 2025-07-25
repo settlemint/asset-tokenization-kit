@@ -1,11 +1,12 @@
+import { cn } from "@/lib/utils";
 import { type PropsWithChildren } from "react";
 
 export function FormStep({ children }: PropsWithChildren) {
-  return <div className="flex flex-col h-full space-y-6">{children}</div>;
+  return <div className="FormStep">{children}</div>;
 }
 
 export function FormStepTitle({ children }: PropsWithChildren) {
-  return <h2 className="text-2xl font-semibold tracking-tight">{children}</h2>;
+  return <h2 className="text-xl font-semibold">{children}</h2>;
 }
 
 export function FormStepSubtitle({ children }: PropsWithChildren) {
@@ -13,17 +14,43 @@ export function FormStepSubtitle({ children }: PropsWithChildren) {
 }
 
 export function FormStepDescription({ children }: PropsWithChildren) {
-  return <p className="text-sm text-muted-foreground">{children}</p>;
+  return <p className="text-sm text-muted-foreground pt-2">{children}</p>;
 }
 
-export function FormStepContent({ children }: PropsWithChildren) {
-  return <div className="flex-1 space-y-6">{children}</div>;
+export function FormStepContent({
+  children,
+  fullWidth = false,
+}: {
+  children: React.ReactNode;
+  fullWidth?: boolean;
+}) {
+  return (
+    <div className="flex-1 overflow-y-auto">
+      <div className={cn("space-y-6 pr-2", !fullWidth && "max-w-3xl")}>
+        {children}
+      </div>
+    </div>
+  );
 }
 
-export function FormStepSubmit({ children }: PropsWithChildren) {
-  return <div className="flex justify-end">{children}</div>;
+export function FormStepSubmit({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <footer className={cn("bottom-8 left-8 right-8 mt-6", className)}>
+      {children}
+    </footer>
+  );
 }
 
 export function FormStepHeader({ children }: PropsWithChildren) {
-  return <div className="flex flex-col gap-1">{children}</div>;
+  return (
+    <div className="flex flex-col">
+      <div className="mb-6">{children}</div>
+    </div>
+  );
 }
