@@ -26,11 +26,7 @@ export function OnboardingStepLayout({
         <FormStepSubtitle>{description}</FormStepSubtitle>
       </FormStepHeader>
       <FormStepContent fullWidth={fullWidth}>{children}</FormStepContent>
-      {actions && (
-        <FormStepSubmit className="OnboardingStepLayout__footer absolute">
-          {actions}
-        </FormStepSubmit>
-      )}
+      {actions && <FormStepSubmit>{actions}</FormStepSubmit>}
     </>
   );
 }

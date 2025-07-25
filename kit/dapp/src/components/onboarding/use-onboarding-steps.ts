@@ -61,13 +61,6 @@ export function useOnboardingSteps(): UseOnboardingStepsReturn {
           description: t("steps.system-assets.description"),
           step: 6,
         },
-      ],
-    },
-    {
-      id: OnboardingStepGroup.addons,
-      label: t("groups.addons.title"),
-      description: t("groups.addons.description"),
-      steps: [
         {
           id: OnboardingStep.systemAddons,
           label: t("steps.system-addons.title"),

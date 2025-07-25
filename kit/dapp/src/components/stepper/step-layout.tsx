@@ -137,7 +137,7 @@ export function StepLayout<StepId, GroupId>({
           <div className="flex-1 p-8">
             <div
               className="w-full overflow-y-auto"
-              style={{ maxHeight: "calc(100% - 80px)" }}
+              style={{ maxHeight: "calc(100% - 200px)" }}
             >
               {typeof children === "function"
                 ? children({

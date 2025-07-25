@@ -24,7 +24,6 @@ export const enum OnboardingStepGroup {
   wallet = "wallet",
   system = "system",
   identity = "identity",
-  addons = "addons",
 }
 
 export const onboardingStateMachine = new Store<OnboardingStateMachine>({
