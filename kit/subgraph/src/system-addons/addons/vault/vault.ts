@@ -78,7 +78,7 @@ export function handleExecuteTransaction(event: ExecuteTransaction): void {
   );
   transaction.executed = true;
   transaction.executedAt = event.block.timestamp;
-  transaction.executedBy = event.params.signer;
+  transaction.executedBy = event.params.executor;
   transaction.save();
 }
 
@@ -99,14 +99,14 @@ export function handleSignaturesProvided(event: SignaturesProvided): void {
   );
 
   // Update the confirmation count on the transaction
-  transaction.confirmationsCount = BigInt.fromI32(event.params.signers.length);
+  transaction.confirmationsCount = event.params.signatureCount;
 
   // Create confirmation records for each signer
-  for (let i = 0; i < event.params.signers.length; i++) {
+  for (let i = 0; i < event.params.signerAddresses.length; i++) {
     const confirmation = fetchVaultTransactionConfirmation(
       event.address,
       event.params.txIndex,
-      event.params.signers[i]
+      event.params.signerAddresses[i]
     );
     confirmation.confirmed = true;
     confirmation.confirmedAt = event.block.timestamp;

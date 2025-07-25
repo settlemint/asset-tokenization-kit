@@ -1,4 +1,4 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
+import { Address, Bytes, BigInt } from "@graphprotocol/graph-ts";
 import { VaultSigner } from "../../../../../generated/schema";
 import { fetchAccount } from "../../../../account/fetch/account";
 
