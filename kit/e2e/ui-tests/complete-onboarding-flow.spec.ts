@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { OnboardingPage } from "../pages/onboarding-page";
 import { onboardingTestData } from "../test-data/user-data";
 
-test.setTimeout(600_000); // 10 minutes per test
+test.setTimeout(600_000);
 
 test.describe.serial("Complete Onboarding Flow", () => {
   let onboardingPage: OnboardingPage;
@@ -13,7 +13,7 @@ test.describe.serial("Complete Onboarding Flow", () => {
 
   test.beforeEach(async ({ page }) => {
     onboardingPage = new OnboardingPage(page);
-    await page.goto("http://localhost:3000/");
+    await page.goto("/");
     await page.waitForLoadState("networkidle");
     await onboardingPage.waitForReactHydration();
   });

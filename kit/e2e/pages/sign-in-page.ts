@@ -4,7 +4,7 @@ export class SignInPage {
   constructor(private page: Page) {}
 
   async goto(): Promise<void> {
-    await this.page.goto("http://localhost:3000/auth/sign-in");
+    await this.page.goto("/auth/sign-in");
     await this.page.waitForLoadState("domcontentloaded");
   }
 

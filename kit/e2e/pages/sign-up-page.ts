@@ -3,7 +3,7 @@ import { BasePage } from "./base-page";
 
 export class SignUpPage extends BasePage {
   async goto() {
-    await this.page.goto("http://localhost:3000/auth/sign-up");
+    await this.page.goto("/auth/sign-up");
   }
 
   async fillSignUpForm(email: string, password: string): Promise<void> {
