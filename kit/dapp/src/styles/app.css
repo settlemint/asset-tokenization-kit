@@ -427,14 +427,14 @@
     @apply opacity-100;
   }
 
-  .OnboardingSidebar [data-slot="sidebar-wrapper"] {
+  .StepLayout [data-slot="sidebar-wrapper"] {
     min-height: initial;
     height: 100%;
   }
 
-  .OnboardingSidebar [data-slot="sidebar-container"],
-  .OnboardingSidebar [data-slot="sidebar"],
-  .OnboardingSidebar [data-slot="sidebar-inner"] {
+  .StepLayout [data-slot="sidebar-container"],
+  .StepLayout [data-slot="sidebar"],
+  .StepLayout [data-slot="sidebar-inner"] {
     height: 100%;
   }
 }

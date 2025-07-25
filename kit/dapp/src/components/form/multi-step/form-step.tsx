@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { type PropsWithChildren } from "react";
+import { type PropsWithChildren, Children, isValidElement } from "react";
 
 export function FormStep({ children }: PropsWithChildren) {
   return <div className="FormStep">{children}</div>;
@@ -40,8 +40,35 @@ export function FormStepSubmit({
   children: React.ReactNode;
   className?: string;
 }) {
+  let actionChildrenCount = 0;
+
+  if (children) {
+    const actionsArray = Children.toArray(children);
+
+    if (actionsArray.length === 1 && isValidElement(actionsArray[0])) {
+      // Check if the single element has children (like a fragment or div with multiple buttons)
+      const singleElement = actionsArray[0] as React.ReactElement<{
+        children?: React.ReactNode;
+      }>;
+
+      if (singleElement.props.children) {
+        const nestedChildren = Children.toArray(singleElement.props.children);
+        actionChildrenCount = nestedChildren.length;
+      } else {
+        actionChildrenCount = 1;
+      }
+    } else {
+      actionChildrenCount = actionsArray.length;
+    }
+  }
+
   return (
-    <footer className={cn("bottom-8 left-8 right-8 mt-6", className)}>
+    <footer
+      className={cn(
+        "OnboardingStepLayout__footer absolute bottom-8 right-8 max-w-3xl pl-16  mt-6 w-full flex",
+        actionChildrenCount === 1 ? "justify-end" : "justify-between"
+      )}
+    >
       {children}
     </footer>
   );

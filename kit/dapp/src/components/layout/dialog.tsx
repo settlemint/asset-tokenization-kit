@@ -16,7 +16,7 @@ export function DialogLayout({ children }: DialogLayoutProps) {
   const { t } = useTranslation(["general"]);
 
   return (
-    <div className="DialogLayout flex flex-col h-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
+    <div className="DialogLayout flex flex-col min-h-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
       <div className="flex-shrink-0 flex justify-between items-center p-8">
         <div className="flex w-full items-center gap-3">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
@@ -37,8 +37,8 @@ export function DialogLayout({ children }: DialogLayoutProps) {
         </div>
       </div>
 
-      <div className="DialogLayout__card flex flex-col justify-center items-center xl:h-[calc(100vh-200px)] px-16">
-        <Card className="p-0 gap-0 h-full lg:max-h-[82vh] 2xl:w-[82vw]">
+      <div className="DialogLayout__card flex flex-col justify-center items-center h-full px-6 lg:px-16 overflow-y-hidden">
+        <Card className="p-0 gap-0 h-full lg:h-[82vh] 2xl:w-[82vw]">
           <CardContent className="p-0 m-0 h-full ">{children}</CardContent>
         </Card>
       </div>
