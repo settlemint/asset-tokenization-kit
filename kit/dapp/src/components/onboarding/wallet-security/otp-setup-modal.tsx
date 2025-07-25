@@ -52,9 +52,10 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
         }
       } catch (error: unknown) {
         setOtpSetupError(true);
-        const errorMessage = error instanceof Error 
-          ? error.message 
-          : t("wallet-security.otp.setup-failed");
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : t("wallet-security.otp.setup-failed");
         toast.error(errorMessage);
       }
     },
@@ -73,11 +74,12 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
       try {
         await refreshUserState();
         toast.success(t("wallet-security.otp.verified-success"));
-        onOpenChange(false);
+        handleClose();
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error 
-          ? error.message 
-          : t("wallet-security.otp.refresh-failed");
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : t("wallet-security.otp.refresh-failed");
         toast.error(errorMessage);
       }
     },

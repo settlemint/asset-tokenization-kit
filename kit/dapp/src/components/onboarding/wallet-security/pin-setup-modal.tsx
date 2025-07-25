@@ -72,11 +72,12 @@ export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {
         });
         await refreshUserState();
         toast.success(t("wallet-security.pincode.success"));
-        onOpenChange(false);
+        handleClose();
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error 
-          ? error.message 
-          : t("wallet-security.pincode.setup-failed");
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : t("wallet-security.pincode.setup-failed");
         toast.error(errorMessage);
       }
     },
