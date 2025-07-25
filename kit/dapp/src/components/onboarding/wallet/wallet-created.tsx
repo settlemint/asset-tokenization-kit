@@ -13,6 +13,12 @@ export function WalletCreated() {
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
   const { completeStepAndNavigate } = useOnboardingNavigation();
 
+  // At this point in the onboarding flow, the user should always have a wallet
+  // If they don't, something went wrong in the wallet creation process
+  if (!user.wallet || user.wallet === zeroAddress) {
+    throw new Error("User wallet not found after wallet creation step");
+  }
+
   return (
     <OnboardingStepLayout
       title={t("onboarding:wallet.created-title")}
@@ -32,7 +38,7 @@ export function WalletCreated() {
         <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-center gap-2">
             <Web3Address
-              address={user.wallet ?? zeroAddress}
+              address={user.wallet}
               showPrettyName={false}
               showFullAddress
               copyToClipboard
