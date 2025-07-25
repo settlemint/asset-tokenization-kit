@@ -68,4 +68,8 @@ interface IATKTokenFactoryRegistry is IAccessControl, IERC165 {
     /// @param initialAdmin The address that will be granted the admin role
     /// @param systemAddress The address of the ATK system contract
     function initialize(address initialAdmin, address systemAddress) external;
+
+    /// @notice Sets the system access manager for centralized role checking
+    /// @param systemAccessManager The address of the system access manager
+    function setSystemAccessManager(address systemAccessManager) external;
 }

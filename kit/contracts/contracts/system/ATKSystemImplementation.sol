@@ -568,6 +568,14 @@ contract ATKSystemImplementation is
         // Set the identity factory's own OnChainID (this will now successfully issue claims)
         IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
 
+        // Connect the token factory registry to the system access manager for centralized role checking
+        IATKTokenFactoryRegistry(localTokenFactoryRegistryProxy).setSystemAccessManager(localSystemAccessManagerProxy);
+
+        // Grant necessary roles for token factory registration to the initial admin
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
+            ATKSystemRoles.REGISTRAR_ROLE, initialAdmin
+        );
+
         // Register the identity verification module
         if (_identityVerificationModule != address(0)) {
             _checkInterface(_identityVerificationModule, _COMPLIANCE_MODULE_ID);
