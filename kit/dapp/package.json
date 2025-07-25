@@ -29,7 +29,7 @@
     "route:gen": "tsr generate"
   },
   "devDependencies": {
-    "@eslint/js": "9.31.0",
+    "@eslint/js": "9.32.0",
     "@tanstack/eslint-plugin-query": "5.81.2",
     "@tanstack/eslint-plugin-router": "1.129.7",
     "@types/bun": "1.2.19",
@@ -41,7 +41,7 @@
     "contracts": "workspace:*",
     "dotenv": "17.2.1",
     "drizzle-kit": "0.31.4",
-    "eslint": "9.31.0",
+    "eslint": "9.32.0",
     "eslint-plugin-boundaries": "5.0.1",
     "eslint-plugin-no-barrel-files": "1.2.2",
     "eslint-plugin-react": "7.37.5",
