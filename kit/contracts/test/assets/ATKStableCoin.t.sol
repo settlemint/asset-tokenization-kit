@@ -71,7 +71,7 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
         _setUpIdentity(spender, "Spender");
 
         stableCoin =
-            _createStableCoin("StableCoin", "STBL", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0));
+            _createStableCoin("StableCoin", "STBL", DECIMALS, new SMARTComplianceModuleParamPair[](0));
         vm.label(address(stableCoin), "StableCoin");
     }
 
@@ -79,7 +79,6 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        uint256[] memory requiredClaimTopics,
         SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
         internal
@@ -141,7 +140,6 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
                 string.concat("StableCoin ", Strings.toString(decimalValues[i])),
                 string.concat("STBL", Strings.toString(decimalValues[i])),
                 decimalValues[i],
-                new uint256[](0),
                 new SMARTComplianceModuleParamPair[](0)
             );
             assertEq(newToken.decimals(), decimalValues[i]);

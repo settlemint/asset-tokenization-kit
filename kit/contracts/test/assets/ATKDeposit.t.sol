@@ -66,7 +66,7 @@ contract ATKDepositTest is AbstractATKAssetTest {
         _setUpIdentity(user2, "User2");
         _setUpIdentity(spender, "Spender");
 
-        deposit = _createDeposit("Deposit", "DEP", DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0));
+        deposit = _createDeposit("Deposit", "DEP", DECIMALS, new SMARTComplianceModuleParamPair[](0));
         vm.label(address(deposit), "Deposit");
     }
 
@@ -74,7 +74,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
         string memory name,
         string memory symbol,
         uint8 decimals,
-        uint256[] memory requiredClaimTopics,
         SMARTComplianceModuleParamPair[] memory initialModulePairs
     )
         internal
@@ -135,7 +134,6 @@ contract ATKDepositTest is AbstractATKAssetTest {
                 string.concat("Deposit ", Strings.toString(decimalValues[i])),
                 string.concat("DEP_", Strings.toString(decimalValues[i])),
                 decimalValues[i],
-                new uint256[](0),
                 new SMARTComplianceModuleParamPair[](0)
             );
             assertEq(newToken.decimals(), decimalValues[i]);

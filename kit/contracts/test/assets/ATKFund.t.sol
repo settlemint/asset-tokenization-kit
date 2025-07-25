@@ -70,7 +70,7 @@ contract ATKFundTest is AbstractATKAssetTest {
         _setUpIdentity(investor2, "Investor 2");
 
         fund = _createFundAndMint(
-            NAME, SYMBOL, DECIMALS, MANAGEMENT_FEE_BPS, new uint256[](0), new SMARTComplianceModuleParamPair[](0)
+            NAME, SYMBOL, DECIMALS, MANAGEMENT_FEE_BPS, new SMARTComplianceModuleParamPair[](0)
         );
         vm.label(address(fund), "Fund");
     }
@@ -80,7 +80,6 @@ contract ATKFundTest is AbstractATKAssetTest {
         string memory symbol_,
         uint8 decimals_,
         uint16 managementFeeBps_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         internal
