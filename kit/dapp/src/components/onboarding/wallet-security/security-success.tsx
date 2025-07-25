@@ -2,12 +2,20 @@ import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-la
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Shield } from "lucide-react";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 export function SecuritySuccess() {
   const { t } = useTranslation(["onboarding", "general"]);
   const { completeStepAndNavigate } = useOnboardingNavigation();
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
+
+  // Determine which security method was set up
+  const hasOtp = user.verificationTypes.includes("two-factor");
+  const securityMethod = hasOtp
+    ? t("wallet-security.method-selector.security-methods.one-time-password")
+    : t("wallet-security.method-selector.security-methods.pin-code");
 
   return (
     <OnboardingStepLayout
@@ -21,20 +29,15 @@ export function SecuritySuccess() {
             }
             className="flex-1"
           >
-            {t("general:continue")}
+            {t("wallet-security.method-selector.generate-backup-codes")}
           </Button>
         </div>
       }
     >
-      <div className="flex justify-center">
-        <div className="relative m-4">
-          <div className="w-20 h-20 bg-sm-state-success/10 rounded-full flex items-center justify-center">
-            <Shield className="w-10 h-10 text-sm-state-success" />
-          </div>
-          <div className="absolute -top-1 -right-1">
-            <CheckCircle className="w-8 h-8 text-sm-state-success bg-background rounded-full" />
-          </div>
-        </div>
+      <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+        {t("wallet-security.method-selector.success-content", {
+          method: securityMethod,
+        })}
       </div>
     </OnboardingStepLayout>
   );
