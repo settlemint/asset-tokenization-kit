@@ -4,11 +4,13 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { MockedComplianceModule } from "./mocks/MockedComplianceModule.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // System
 import { ATKSystemFactory } from "../../contracts/system/ATKSystemFactory.sol";
 import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
 import { ATKSystemImplementation } from "../../contracts/system/ATKSystemImplementation.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
 
 // Implementations
 import { ATKIdentityRegistryStorageImplementation } from
@@ -197,6 +199,11 @@ contract SystemUtils is Test {
         // Token factories and addon factories need to add addresses to compliance bypass lists
         IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, address(tokenFactoryRegistry));
         IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, address(systemAddonRegistry));
+
+        // Grant additional roles needed for trusted issuers registry operations
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, platformAdmin);
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, platformAdmin);
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.IDENTITY_MANAGER_ROLE, platformAdmin);
 
         vm.stopPrank();
     }
