@@ -4,7 +4,6 @@ pragma solidity ^0.8.28;
 import { OnChainIdentity } from "./OnChainIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 /// @title OnChainIdentityWithRevocation
 /// @author SettleMint
@@ -13,19 +12,36 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 ///      It implements both OnChainIdentity and IClaimIssuer interfaces, providing a complete
 ///      claim management system with revocation support.
 abstract contract OnChainIdentityWithRevocation is OnChainIdentity, IClaimIssuer {
-    // Mapping to track revoked claims by their signature hash
+    /// @notice Mapping to track revoked claims by their signature hash
+    /// @dev Maps from the keccak256 hash of a claim signature to a boolean indicating if it's revoked
     mapping(bytes32 => bool) public revokedClaims;
 
     // --- Errors ---
     error ClaimAlreadyRevoked(bytes32 signatureHash);
 
     // -- Abstract Functions ---
+    /// @notice Retrieves a claim by its ID
+    /// @param _claimId The ID of the claim to retrieve
+    /// @return topic The topic of the claim
+    /// @return scheme The signature scheme used
+    /// @return issuer The address of the claim issuer
+    /// @return signature The signature of the claim
+    /// @return data The data of the claim
+    /// @return uri The URI of the claim
     function getClaim(bytes32 _claimId)
         public
         view
         virtual
-        returns (uint256, uint256, address, bytes memory, bytes memory, string memory);
+        returns (
+            uint256 topic,
+            uint256 scheme,
+            address issuer,
+            bytes memory signature,
+            bytes memory data,
+            string memory uri
+        );
 
+    /// @notice Validates a claim and checks if it has been revoked
     /// @dev Checks if a claim is valid by first checking the parent implementation and then verifying it's not revoked
     /// @param _identity the identity contract related to the claim
     /// @param claimTopic the claim topic of the claim
@@ -53,13 +69,15 @@ abstract contract OnChainIdentityWithRevocation is OnChainIdentity, IClaimIssuer
         return !isClaimRevoked(sig);
     }
 
+    /// @notice Checks if a claim is revoked
     /// @dev Checks if a claim is revoked
     /// @param _sig The signature of the claim to check
-    /// @return true if the claim is revoked, false otherwise
+    /// @return True if the claim is revoked, false otherwise
     function isClaimRevoked(bytes memory _sig) public view virtual override(IClaimIssuer) returns (bool) {
         return revokedClaims[keccak256(_sig)];
     }
 
+    /// @notice Revokes a claim by its signature
     /// @dev Revokes a claim by its signature
     /// @param signature The signature of the claim to revoke
     function _revokeClaimBySignature(bytes memory signature) internal virtual {
@@ -71,9 +89,11 @@ abstract contract OnChainIdentityWithRevocation is OnChainIdentity, IClaimIssuer
         emit ClaimRevoked(signature);
     }
 
+    /// @notice Revokes a claim by its ID
     /// @dev Revokes a claim by its ID
     /// @param _claimId The ID of the claim to revoke
     /// @param _identity The identity contract related to the claim
+    /// @return True if the claim was successfully revoked
     function _revokeClaim(bytes32 _claimId, address _identity) internal virtual returns (bool) {
         uint256 foundClaimTopic;
         uint256 scheme;

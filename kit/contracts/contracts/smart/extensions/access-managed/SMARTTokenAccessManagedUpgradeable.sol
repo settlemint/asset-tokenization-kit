@@ -7,6 +7,7 @@ import { SMARTExtensionUpgradeable } from "../common/SMARTExtensionUpgradeable.s
 import { ISMARTTokenAccessManaged } from "./ISMARTTokenAccessManaged.sol";
 
 /// @title Abstract Contract for Upgradeable Access-Managed SMART Tokens
+/// @author SettleMint
 /// @notice This contract serves as a base for SMART token contracts that are designed to be
 ///         upgradeable (using a proxy pattern) and need to integrate with a centralized
 ///         `SMARTTokenAccessManager`. It provides the foundational functionality to link
@@ -28,9 +29,9 @@ abstract contract SMARTTokenAccessManagedUpgradeable is
     SMARTExtensionUpgradeable,
     _SMARTTokenAccessManagedLogic
 {
-    /// @dev Register the `ISMARTTokenAccessManaged` interface ID for ERC165. This allows factories to check if the
-    /// contract
-    /// supports the `ISMARTTokenAccessManaged` interface based on the upgradeable implementation.
+    /// @notice Register the `ISMARTTokenAccessManaged` interface ID for ERC165.
+    /// @dev This allows factories to check if the contract supports the `ISMARTTokenAccessManaged` interface based on
+    /// the upgradeable implementation.
     constructor() {
         _registerInterface(type(ISMARTTokenAccessManaged).interfaceId);
     }

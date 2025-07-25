@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title IATKTokenFactory Interface
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This interface defines the functions for a factory contract responsible for creating ATK tokens.
 /// @dev This interface extends IERC165 for interface detection support.
 interface IATKTokenFactory is IERC165 {
@@ -29,6 +29,7 @@ interface IATKTokenFactory is IERC165 {
 
     // -- Events --
     /// @notice Emitted when the token implementation address is updated.
+    /// @param sender The address that updated the implementation.
     /// @param oldImplementation The address of the old token implementation.
     /// @param newImplementation The address of the new token implementation.
     event TokenImplementationUpdated(
@@ -72,7 +73,8 @@ interface IATKTokenFactory is IERC165 {
     /// @return tokenImplementation The address of the token implementation contract.
     function tokenImplementation() external view returns (address);
 
-    /// @notice Returns the address of the token implementation contract.
-    /// @return tokenImplementation The address of the token implementation contract.
+    /// @notice Checks if the provided address is a valid token implementation.
+    /// @param tokenImplementation_ The address to check for validity.
+    /// @return True if the address is a valid token implementation, false otherwise.
     function isValidTokenImplementation(address tokenImplementation_) external view returns (bool);
 }

@@ -49,9 +49,9 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
     AirdropUtils.TestUserData public testUserData;
 
     // Events
-    event VestingInitialized(address indexed account, uint256 totalAmount, uint256 index);
+    event VestingInitialized(address indexed account, uint256 indexed totalAmount, uint256 indexed index);
     event VestingStrategyUpdated(address indexed oldStrategy, address indexed newStrategy);
-    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 indexed amount);
 
     function setUp() public {
         owner = makeAddr("owner");

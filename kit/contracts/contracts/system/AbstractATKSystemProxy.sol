@@ -9,7 +9,7 @@ import { IATKSystem } from "./IATKSystem.sol";
 import { InvalidSystemAddress, ETHTransfersNotAllowed, InitializationWithZeroAddress } from "./ATKSystemErrors.sol";
 
 /// @title Abstract Base Proxy for ATK System Components
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Provides common functionality for proxy contracts that interact with an IATKSystem contract
 ///         to determine their implementation address and handle initialization.
 /// @dev Child contracts must:

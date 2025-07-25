@@ -11,7 +11,7 @@ import { IATKTimeBoundAirdrop } from "./IATKTimeBoundAirdrop.sol";
 import { IATKAirdrop } from "../IATKAirdrop.sol";
 
 /// @title ATK Time-Bound Airdrop Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Implementation of a time-bound airdrop contract where claims are restricted to a specific time window
 /// in the ATK Protocol.
 /// @dev This contract implements a time-restricted claim system where:
@@ -48,6 +48,7 @@ contract ATKTimeBoundAirdropImplementation is IATKTimeBoundAirdrop, ATKAirdrop, 
     // --- Events ---
 
     /// @custom:oz-upgrades-unsafe-allow constructor
+    /// @notice Initializes the implementation contract and disables initialization.
     /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ATKAirdrop(forwarder_) {
         _disableInitializers();
@@ -63,7 +64,7 @@ contract ATKTimeBoundAirdropImplementation is IATKTimeBoundAirdrop, ATKAirdrop, 
     /// @param startTime_ The timestamp when claims can begin.
     /// @param endTime_ The timestamp when claims end.
     function initialize(
-        string memory name_,
+        string calldata name_,
         address token_,
         bytes32 root_,
         address owner_,
@@ -75,7 +76,7 @@ contract ATKTimeBoundAirdropImplementation is IATKTimeBoundAirdrop, ATKAirdrop, 
     {
         // Validate time window
         if (startTime_ < block.timestamp) revert InvalidStartTime();
-        if (endTime_ <= startTime_) revert InvalidEndTime();
+        if (endTime_ < startTime_ + 1) revert InvalidEndTime();
 
         // Deploy amount claim tracker for this contract
         address claimTracker_ = address(new ATKAmountClaimTracker(address(this)));
@@ -106,7 +107,7 @@ contract ATKTimeBoundAirdropImplementation is IATKTimeBoundAirdrop, ATKAirdrop, 
     /// @notice Checks if the airdrop is currently active (within the time window).
     /// @return active True if the current time is within the claim window.
     function isActive() external view returns (bool active) {
-        return block.timestamp >= _startTime && block.timestamp <= _endTime;
+        return block.timestamp > _startTime - 1 && block.timestamp < _endTime + 1;
     }
 
     /// @notice Returns the time remaining until the airdrop starts (if not started) or ends (if active).
@@ -114,7 +115,7 @@ contract ATKTimeBoundAirdropImplementation is IATKTimeBoundAirdrop, ATKAirdrop, 
     function getTimeRemaining() external view returns (uint256 timeRemaining) {
         if (block.timestamp < _startTime) {
             return _startTime - block.timestamp;
-        } else if (block.timestamp <= _endTime) {
+        } else if (block.timestamp < _endTime + 1) {
             return _endTime - block.timestamp;
         } else {
             return 0;

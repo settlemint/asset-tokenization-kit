@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { _SMARTTokenAccessManagedLogic } from "./internal/_SMARTTokenAccessManagedLogic.sol";
 import { SMARTExtension } from "../common/SMARTExtension.sol";
 
 /// @title Abstract Contract for Access-Managed SMART Tokens (Non-Upgradeable)
+/// @author SettleMint
 /// @notice This contract serves as a base for SMART token contracts that need to integrate
 ///         with a centralized `SMARTTokenAccessManager`. It provides the foundational
 ///         functionality to link a token to its access manager.

@@ -58,7 +58,7 @@ import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystem
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 /// @title ATKSystem Contract
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This is the main contract for managing the ATK Protocol system components, their implementations (logic
 /// contracts),
 /// and their proxies. It acts as a central registry and control point for the entire protocol.

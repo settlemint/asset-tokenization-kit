@@ -249,11 +249,10 @@ contract IATKIdentityTest is Test {
     }
 
     function test_ApproveNonexistentExecution() public {
+        // Test approving a non-existent execution ID
         vm.prank(user1); // user1 has management key
-        vm.expectRevert(
-            abi.encodeWithSelector(ATKIdentityImplementation.ReplicatedExecutionIdDoesNotExist.selector, 999)
-        );
-        identity.approve(999, true);
+        vm.expectRevert(abi.encodeWithSelector(ATKIdentityImplementation.ReplicatedExecutionIdDoesNotExist.selector, 0));
+        identity.approve(0, true);
     }
 
     function test_AddClaimSuccess() public {

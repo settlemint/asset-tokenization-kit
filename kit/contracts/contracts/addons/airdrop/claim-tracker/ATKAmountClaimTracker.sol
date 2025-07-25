@@ -6,7 +6,7 @@ import { IATKClaimTracker } from "./IATKClaimTracker.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title ATK Amount Claim Tracker
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Implementation of partial claim tracking using amount mappings for ATK airdrop contracts.
 /// @dev This contract implements claim tracking for airdrops where users can claim portions of their
 ///      allocation over time. It tracks the cumulative amount claimed for each index without performing
@@ -33,7 +33,7 @@ contract ATKAmountClaimTracker is IATKClaimTracker, Ownable {
     /// @param totalAmount The total amount allocated for this index.
     /// @return claimed True if the index has been fully claimed, false otherwise.
     function isClaimed(uint256 index, uint256 totalAmount) external view override returns (bool claimed) {
-        return _claimedAmounts[index] >= totalAmount;
+        return !(totalAmount > _claimedAmounts[index]);
     }
 
     /// @notice Gets the amount already claimed for a specific index.
@@ -68,6 +68,7 @@ contract ATKAmountClaimTracker is IATKClaimTracker, Ownable {
         override
         returns (bool isValid)
     {
-        return _claimedAmounts[index] + claimAmount <= totalAmount;
+        uint256 totalClaimed = _claimedAmounts[index] + claimAmount;
+        return totalAmount > totalClaimed || totalAmount == totalClaimed;
     }
 }

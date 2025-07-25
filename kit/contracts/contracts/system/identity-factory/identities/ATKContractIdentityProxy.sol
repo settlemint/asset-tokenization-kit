@@ -8,7 +8,7 @@ import { IATKContractIdentity } from "./IATKContractIdentity.sol";
 import { AbstractATKSystemProxy } from "../../AbstractATKSystemProxy.sol";
 
 /// @title ATK Contract Identity Proxy Contract
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract serves as an upgradeable proxy for an on-chain identity bound to any contract
 ///         that implements IContractWithIdentity (tokens, vaults, etc.)
 /// @dev This proxy contract adheres to EIP-1967 for upgradeability. It holds the contract identity's storage
@@ -44,6 +44,7 @@ contract ATKContractIdentityProxy is AbstractATKSystemProxy {
         _performInitializationDelegatecall(implementation, data);
     }
 
+    /// @notice Gets the specific implementation address for the contract identity proxy
     /// @dev Retrieves the implementation address for the Contract Identity module from the `IATKSystem` contract.
     /// @dev Reverts with `IdentityImplementationNotSet` if the implementation address is zero.
     /// @param system The `IATKSystem` contract instance.

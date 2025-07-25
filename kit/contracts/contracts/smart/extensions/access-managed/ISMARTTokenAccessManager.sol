@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 /// @title Interface for the SMART Token Access Control Manager
+/// @author SettleMint
 /// @notice This interface defines the essential functions that a dedicated Access Control Manager
 ///         contract must implement for the SMART token ecosystem. SMART token contracts
 ///         that are "access managed" will delegate their authorization checks to a contract

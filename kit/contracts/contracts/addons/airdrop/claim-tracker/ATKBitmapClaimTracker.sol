@@ -6,7 +6,7 @@ import { IATKClaimTracker } from "./IATKClaimTracker.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title ATK Bitmap Claim Tracker
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Implementation of binary claim tracking using bitmaps for ATK airdrop contracts.
 /// @dev This contract implements claim tracking for airdrops where users can only claim their full
 ///      allocation in a single transaction (all-or-nothing claims). It uses a bitmap for gas-efficient
@@ -30,18 +30,11 @@ contract ATKBitmapClaimTracker is IATKClaimTracker, Ownable {
 
     /// @notice Checks if a claim has been fully claimed for a specific index.
     /// @dev For bitmap tracking, once claimed, the full amount is always claimed.
-    ///      The totalAmount parameter is kept for interface compatibility but not used in logic.
+    ///      The second parameter is kept for interface compatibility but not used in logic.
     /// @param index The index to check in the Merkle tree.
     /// @return claimed True if the index has been claimed, false otherwise.
-    function isClaimed(
-        uint256 index,
-        uint256 /* totalAmount - unused */
-    )
-        external
-        view
-        override
-        returns (bool claimed)
-    {
+    // solhint-disable-next-line use-natspec
+    function isClaimed(uint256 index, uint256) external view override returns (bool claimed) {
         return _isClaimedBitmap(index);
     }
 
@@ -66,18 +59,11 @@ contract ATKBitmapClaimTracker is IATKClaimTracker, Ownable {
 
     /// @notice Checks if a new claim amount is valid for a specific index.
     /// @dev For bitmap tracking, only valid if the index hasn't been claimed yet.
+    ///      The second and third parameters are kept for interface compatibility but not used in logic.
     /// @param index The index to check.
     /// @return isValid True if the index hasn't been claimed yet, false otherwise.
-    function isClaimAmountValid(
-        uint256 index,
-        uint256, /* claimAmount - unused */
-        uint256 /* totalAmount - unused */
-    )
-        external
-        view
-        override
-        returns (bool isValid)
-    {
+    // solhint-disable-next-line use-natspec
+    function isClaimAmountValid(uint256 index, uint256, uint256) external view override returns (bool isValid) {
         return !_isClaimedBitmap(index);
     }
 

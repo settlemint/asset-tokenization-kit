@@ -477,7 +477,9 @@ contract ATKEquityImplementation is
     // These ensure that logic from multiple inherited extensions (SMART, SMARTCustodian, etc.) is called correctly.
 
     /// @notice Hook called before minting tokens
-    /// @dev Executes validation logic from multiple extensions before minting
+    /// @dev Executes validation logic from multiple extensions before minting:
+    ///      1. SMARTCustodianUpgradeable: Checks if recipient is frozen
+    ///      2. SMARTUpgradeable: Performs compliance and identity checks
     /// @param to The address that will receive the minted tokens
     /// @param amount The amount of tokens to mint
     /// @inheritdoc SMARTHooks
@@ -493,7 +495,9 @@ contract ATKEquityImplementation is
     }
 
     /// @notice Hook called before transferring tokens
-    /// @dev Executes validation logic from multiple extensions before transfer
+    /// @dev Executes validation logic from multiple extensions before transfer:
+    ///      1. SMARTCustodianUpgradeable: Checks frozen status and partial freezes
+    ///      2. SMARTUpgradeable: Performs compliance and identity verification
     /// @param from The address sending the tokens
     /// @param to The address receiving the tokens
     /// @param amount The amount of tokens to transfer
@@ -511,7 +515,8 @@ contract ATKEquityImplementation is
     }
 
     /// @notice Hook called before burning tokens
-    /// @dev Executes validation logic from multiple extensions before burning
+    /// @dev Executes validation logic from multiple extensions before burning:
+    ///      SMARTCustodianUpgradeable: Validates frozen status and partial freezes
     /// @param from The address from which tokens will be burned
     /// @param amount The amount of tokens to burn
     /// @inheritdoc SMARTHooks
@@ -527,7 +532,8 @@ contract ATKEquityImplementation is
     }
 
     /// @notice Hook called before redeeming tokens
-    /// @dev Executes validation logic from multiple extensions before redemption
+    /// @dev Executes validation logic from multiple extensions before redemption:
+    ///      SMARTCustodianUpgradeable: Validates frozen status and partial freezes
     /// @param owner The address that owns the tokens to be redeemed
     /// @param amount The amount of tokens to redeem
     /// @inheritdoc SMARTHooks
@@ -543,7 +549,8 @@ contract ATKEquityImplementation is
     }
 
     /// @notice Hook called after minting tokens
-    /// @dev Executes post-mint logic from multiple extensions
+    /// @dev Executes post-mint logic from multiple extensions:
+    ///      SMARTUpgradeable: May emit events or update internal accounting
     /// @param to The address that received the minted tokens
     /// @param amount The amount of tokens minted
     /// @inheritdoc SMARTHooks
@@ -552,7 +559,8 @@ contract ATKEquityImplementation is
     }
 
     /// @notice Hook called after transferring tokens
-    /// @dev Executes post-transfer logic from multiple extensions
+    /// @dev Executes post-transfer logic from multiple extensions:
+    ///      SMARTUpgradeable: May emit events or update internal accounting
     /// @param from The address that sent the tokens
     /// @param to The address that received the tokens
     /// @param amount The amount of tokens transferred
@@ -570,7 +578,8 @@ contract ATKEquityImplementation is
     }
 
     /// @notice Hook called after burning tokens
-    /// @dev Executes post-burn logic from multiple extensions
+    /// @dev Executes post-burn logic from multiple extensions:
+    ///      SMARTUpgradeable: May emit events or update internal accounting
     /// @param from The address from which tokens were burned
     /// @param amount The amount of tokens burned
     /// @inheritdoc SMARTHooks
@@ -579,7 +588,8 @@ contract ATKEquityImplementation is
     }
 
     /// @notice Hook called after recovering tokens from a lost wallet
-    /// @dev Executes post-recovery logic from multiple extensions
+    /// @dev Executes post-recovery logic from multiple extensions:
+    ///      SMARTCustodianUpgradeable: May emit events or update recovery state
     /// @param lostWallet The address of the wallet that lost access
     /// @param newWallet The address of the new wallet that received the tokens
     /// @inheritdoc SMARTHooks

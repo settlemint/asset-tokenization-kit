@@ -34,7 +34,14 @@ contract ATKVestingAirdropFactoryImplementation is
     AbstractATKSystemAddonFactoryImplementation,
     IATKVestingAirdropFactory
 {
-    bytes32 public constant override typeId = keccak256("ATKVestingAirdropFactory");
+    /// @notice Unique type identifier for this factory contract.
+    bytes32 public constant TYPE_ID = keccak256("ATKVestingAirdropFactory");
+
+    /// @notice Returns the unique type identifier for this factory.
+    /// @return The type identifier as a bytes32 hash.
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice Address of the current `ATKVestingAirdrop` logic contract (implementation).
     address public atkVestingAirdropImplementation;
@@ -43,6 +50,8 @@ contract ATKVestingAirdropFactoryImplementation is
     /// airdrop proxy contracts created by this factory.
     IATKVestingAirdrop[] private allAirdrops;
 
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
+    /// @param forwarder The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) { }
 
@@ -99,7 +108,7 @@ contract ATKVestingAirdropFactoryImplementation is
     /// @param initializationDeadline The timestamp after which no new vesting can be initialized.
     /// @return airdropProxyAddress The address of the newly created `ATKVestingAirdropProxy` contract.
     function create(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,
@@ -149,7 +158,7 @@ contract ATKVestingAirdropFactoryImplementation is
     /// @param initializationDeadline The timestamp after which no new vesting can be initialized.
     /// @return predictedAddress The predicted address of the vesting airdrop proxy.
     function predictVestingAirdropAddress(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,

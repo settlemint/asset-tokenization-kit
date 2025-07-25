@@ -34,7 +34,14 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     AbstractATKSystemAddonFactoryImplementation,
     IATKTimeBoundAirdropFactory
 {
-    bytes32 public constant override typeId = keccak256("ATKTimeBoundAirdropFactory");
+    /// @notice Unique type identifier for this factory contract.
+    bytes32 public constant TYPE_ID = keccak256("ATKTimeBoundAirdropFactory");
+
+    /// @notice Returns the unique type identifier for this factory.
+    /// @return The type identifier as a bytes32 hash.
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice Address of the current `ATKTimeBoundAirdrop` logic contract (implementation).
     address public override atkTimeBoundAirdropImplementation;
@@ -101,7 +108,7 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     /// @param endTime The timestamp when claims end.
     /// @return airdropProxyAddress The address of the newly created `ATKTimeBoundAirdropProxy` contract.
     function create(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,
@@ -148,7 +155,7 @@ contract ATKTimeBoundAirdropFactoryImplementation is
     /// @param endTime The timestamp when claims end.
     /// @return predictedAddress The predicted address of the time-bound airdrop proxy.
     function predictTimeBoundAirdropAddress(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,

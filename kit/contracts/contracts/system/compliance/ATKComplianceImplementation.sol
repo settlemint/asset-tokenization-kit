@@ -6,7 +6,6 @@ import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/I
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
 // Interface imports
@@ -18,7 +17,7 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 /// @title ATK Compliance Contract Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract is the upgradeable logic implementation for the main compliance functionality within the ATK
 /// Protocol.
 /// @dev It acts as a central orchestrator for compliance checks related to ATK tokens (which implement the `IATK`
@@ -29,7 +28,7 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 /// For example, before a transfer, it checks `canTransfer` on all modules. After a transfer, it calls `transferred`.
 /// This contract is designed to be used behind a proxy (like `SMARTComplianceProxy`) to allow its logic to be upgraded.
 /// It supports meta-transactions via `ERC2771ContextUpgradeable` allowing a trusted forwarder to pay for gas fees.
-/// It also implements `ERC165Upgradeable` for interface detection.
+/// It supports interface detection through AccessControlUpgradeable.
 /// Additionally, it implements a bypass list functionality that allows certain addresses (mainly contracts) to bypass
 /// compliance checks when they are the sender or receiver of a transfer.
 contract ATKComplianceImplementation is
@@ -70,7 +69,7 @@ contract ATKComplianceImplementation is
     /// @param initialBypassListManagerAdmins The addresses of the initial bypass list manager admins.
     function initialize(
         address initialAdmin,
-        address[] memory initialBypassListManagerAdmins
+        address[] calldata initialBypassListManagerAdmins
     )
         public
         virtual
@@ -83,7 +82,7 @@ contract ATKComplianceImplementation is
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
 
-        for (uint256 i = 0; i < initialBypassListManagerAdmins.length; i++) {
+        for (uint256 i = 0; i < initialBypassListManagerAdmins.length; ++i) {
             _grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, initialBypassListManagerAdmins[i]);
             _grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ADMIN_ROLE, initialBypassListManagerAdmins[i]);
         }
@@ -410,6 +409,9 @@ contract ATKComplianceImplementation is
         return ERC2771ContextUpgradeable._msgData();
     }
 
+    /// @notice Returns the context suffix length for meta-transactions
+    /// @dev Required for ERC2771Context implementation
+    /// @return The length of the context suffix
     function _contextSuffixLength()
         internal
         view

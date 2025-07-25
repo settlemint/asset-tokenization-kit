@@ -7,13 +7,24 @@ import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/m
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 
-import { ISMART } from "../../smart/interface/ISMART.sol";
 import { ATKTokenSaleProxy } from "./ATKTokenSaleProxy.sol";
 
 /// @title ATKTokenSaleFactory
+/// @author SettleMint
 /// @notice Factory contract for deploying new token sale contracts in the ATK ecosystem
 /// @dev This contract simplifies the process of creating compliant token sales
 contract ATKTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC2771ContextUpgradeable {
+    // --- Custom Errors ---
+    error InvalidImplementation();
+    error InvalidTokenAddress();
+    error InvalidAdminAddress();
+    error SaleStartMustBeInFuture();
+    error SaleDurationMustBePositive();
+    error HardCapMustBePositive();
+    error BasePriceMustBePositive();
+    error FailedToGrantDefaultAdminRole();
+    error FailedToGrantSaleAdminRole();
+    error FailedToGrantFundsManagerRole();
     // --- Constants ---
 
     /// @notice Role for deploying new token sales
@@ -43,6 +54,8 @@ contract ATKTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC2771
     /// @notice The address of the trusted forwarder for ERC2771
     address private immutable _forwarder;
 
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
+    /// @dev Sets the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder The address of the forwarder contract for ERC2771
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
@@ -55,7 +68,7 @@ contract ATKTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC2771
     function initialize(address implementation_) external initializer {
         __AccessControl_init();
 
-        if (implementation_ == address(0)) revert("Invalid implementation");
+        if (implementation_ == address(0)) revert InvalidImplementation();
 
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _grantRole(DEPLOYER_ROLE, _msgSender());
@@ -66,7 +79,7 @@ contract ATKTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC2771
     /// @notice Updates the implementation address
     /// @param newImplementation The address of the new implementation
     function updateImplementation(address newImplementation) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (newImplementation == address(0)) revert("Invalid implementation");
+        if (newImplementation == address(0)) revert InvalidImplementation();
 
         address oldImplementation = implementation;
         implementation = newImplementation;
@@ -97,12 +110,12 @@ contract ATKTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC2771
         returns (address saleAddress)
     {
         // Validate input parameters
-        if (tokenAddress == address(0)) revert("Invalid token address");
-        if (saleAdmin == address(0)) revert("Invalid admin address");
-        if (saleStart < block.timestamp) revert("Sale start must be in the future");
-        if (saleDuration == 0) revert("Sale duration must be positive");
-        if (hardCap == 0) revert("Hard cap must be positive");
-        if (basePrice == 0) revert("Base price must be positive");
+        if (tokenAddress == address(0)) revert InvalidTokenAddress();
+        if (saleAdmin == address(0)) revert InvalidAdminAddress();
+        if (saleStart < block.timestamp) revert SaleStartMustBeInFuture();
+        if (saleDuration == 0) revert SaleDurationMustBePositive();
+        if (hardCap == 0) revert HardCapMustBePositive();
+        if (basePrice == 0) revert BasePriceMustBePositive();
 
         // Create initialization data for the proxy
         bytes memory initData = abi.encodeWithSignature(
@@ -135,17 +148,17 @@ contract ATKTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC2771
         // Grant DEFAULT_ADMIN_ROLE
         bytes32 defaultAdminRole = 0x0000000000000000000000000000000000000000000000000000000000000000;
         (bool success0,) = saleAddress.call(abi.encodeWithSelector(grantRoleSig, defaultAdminRole, saleAdmin));
-        require(success0, "Failed to grant DEFAULT_ADMIN_ROLE");
+        if (!success0) revert FailedToGrantDefaultAdminRole();
 
         // Grant SALE_ADMIN_ROLE
         bytes32 saleAdminRole = keccak256("SALE_ADMIN_ROLE");
         (bool success1,) = saleAddress.call(abi.encodeWithSelector(grantRoleSig, saleAdminRole, saleAdmin));
-        require(success1, "Failed to grant SALE_ADMIN_ROLE");
+        if (!success1) revert FailedToGrantSaleAdminRole();
 
         // Grant FUNDS_MANAGER_ROLE
         bytes32 fundsManagerRole = keccak256("FUNDS_MANAGER_ROLE");
         (bool success2,) = saleAddress.call(abi.encodeWithSelector(grantRoleSig, fundsManagerRole, saleAdmin));
-        require(success2, "Failed to grant FUNDS_MANAGER_ROLE");
+        if (!success2) revert FailedToGrantFundsManagerRole();
 
         // Only after all role grants succeed, mark as managed
         isTokenSale[saleAddress] = true;
@@ -161,7 +174,9 @@ contract ATKTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC2771
         return _forwarder;
     }
 
+    /// @notice Returns the context suffix length for ERC2771 compatibility
     /// @dev Required override for ERC2771ContextUpgradeable
+    /// @return The length of the context suffix for meta-transactions
     function _contextSuffixLength()
         internal
         view
@@ -172,12 +187,16 @@ contract ATKTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC2771
         return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 
+    /// @notice Returns the sender of the transaction, supporting ERC2771 meta-transactions
     /// @dev Required override for ERC2771ContextUpgradeable
+    /// @return The address of the transaction sender
     function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
         return ERC2771ContextUpgradeable._msgSender();
     }
 
+    /// @notice Returns the calldata of the transaction, supporting ERC2771 meta-transactions
     /// @dev Required override for ERC2771ContextUpgradeable
+    /// @return The calldata of the transaction
     function _msgData()
         internal
         view

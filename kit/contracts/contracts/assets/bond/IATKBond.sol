@@ -32,8 +32,16 @@ interface IATKBond is
     ISMARTCapped,
     ISMARTYield
 {
+    /// @notice Struct to hold bond-specific initialization parameters
+    /// @dev Used to avoid stack too deep errors in the initialize function
+    struct BondInitParams {
+        uint256 maturityDate;
+        uint256 faceValue;
+        address underlyingAsset;
+    }
     // --- Custom Errors ---
     /// @notice Error an action is attempted on a bond that has already matured.
+
     error BondAlreadyMatured();
     /// @notice Error an action is attempted that requires the bond to be matured, but it is not.
     error BondNotYetMatured();
@@ -63,16 +71,16 @@ interface IATKBond is
     /// @param holder The address redeeming the bonds
     /// @param bondAmount The amount of bonds redeemed
     /// @param underlyingAmount The amount of underlying assets received
-    event BondRedeemed(address indexed sender, address indexed holder, uint256 bondAmount, uint256 underlyingAmount);
+    event BondRedeemed(
+        address indexed sender, address indexed holder, uint256 indexed bondAmount, uint256 underlyingAmount
+    );
 
     /// @notice Initializes the SMART Bond contract.
     /// @param name_ The name of the bond.
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals for the bond tokens.
     /// @param cap_ The maximum total supply of the bond tokens.
-    /// @param maturityDate_ The Unix timestamp representing the bond's maturity date.
-    /// @param faceValue_ The face value of each bond token in the underlying asset's base units.
-    /// @param underlyingAsset_ The address of the ERC20 token used as the underlying asset for the bond.
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param identityRegistry_ The address of the identity registry contract.
     /// @param compliance_ The address of the compliance contract.
@@ -82,9 +90,7 @@ interface IATKBond is
         string memory symbol_,
         uint8 decimals_,
         uint256 cap_,
-        uint256 maturityDate_,
-        uint256 faceValue_,
-        address underlyingAsset_,
+        BondInitParams memory bondParams,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         address identityRegistry_,
         address compliance_,
