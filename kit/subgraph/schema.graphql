@@ -106,6 +106,9 @@ type Vault @entity(immutable: false) {
   balance: BigDecimal!
   balanceExact: BigInt!
   deployedInTransaction: Bytes!
+  weightedSignaturesEnabled: Boolean!
+  signerWeights: [VaultSigner!]! @derivedFrom(field: "vault")
+  onchainId: Account
 }
 
 type VaultTransaction @entity(immutable: false) {
@@ -154,6 +157,14 @@ type VaultContractCall @entity(immutable: false) {
   target: Account!
   calldata: Bytes!
   returnData: Bytes
+}
+
+type VaultSigner @entity(immutable: false) {
+  id: Bytes! # vault-signer composite key
+  vault: Vault!
+  signer: Account!
+  weight: BigInt!
+  deployedInTransaction: Bytes!
 }
 
 type Compliance @entity(immutable: false) {

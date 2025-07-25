@@ -2,7 +2,9 @@
 pragma solidity ^0.8.28;
 
 /// @title Interface for SMART Token Collateral Verification
-/// @notice This interface defines the external functions for a SMART token extension that verifies
+/// @author SettleMint
+/// @notice This interface defines the external functions for a SMART token extension that
+/// verifies
 ///         collateral claims before allowing certain operations (typically minting).
 ///         The collateral is represented by a specific ERC-735 claim on an OnchainID identity contract.
 ///         In Solidity, an interface outlines *what* functions a contract offers publicly but not *how* they work.

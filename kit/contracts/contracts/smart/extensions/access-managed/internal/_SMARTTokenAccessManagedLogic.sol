@@ -6,6 +6,7 @@ import { ISMARTTokenAccessManager } from "../ISMARTTokenAccessManager.sol";
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 
 /// @title Internal Logic for SMART Token Access Management Extension
+/// @author SettleMint
 /// @notice This abstract contract encapsulates the core shared logic for managing access
 ///         control in SMART tokens. It handles the storage of the access manager's address
 ///         and provides internal functions for role checks and initialization.
@@ -71,7 +72,7 @@ abstract contract _SMARTTokenAccessManagedLogic is _SMARTExtension, ISMARTTokenA
     ///      The `virtual` keyword means that this function can be overridden by inheriting contracts.
     /// @param role The `bytes32` identifier of the role to check.
     /// @param account The address of the account whose roles are being checked.
-    /// @return `true` if the account has the role, `false` otherwise.
+    /// @return hasRole_ `true` if the account has the role, `false` otherwise.
     function hasRole(bytes32 role, address account) external view virtual override returns (bool) {
         return _hasRole(role, account);
     }
@@ -81,7 +82,7 @@ abstract contract _SMARTTokenAccessManagedLogic is _SMARTExtension, ISMARTTokenA
     ///      Being `internal`, it can only be called from within this contract or derived contracts.
     /// @param role The `bytes32` identifier of the role.
     /// @param account The address of the account.
-    /// @return `true` if the account possesses the role, `false` otherwise.
+    /// @return hasRole_ `true` if the account possesses the role, `false` otherwise.
     function _hasRole(bytes32 role, address account) internal view returns (bool) {
         return ISMARTTokenAccessManager(_accessManager).hasRole(role, account);
     }

@@ -67,7 +67,10 @@
     "extract-env": "bun run tools/extract-env.ts",
     "db:studio": "turbo run db:studio"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@types/js-yaml": "4.0.9",
+    "js-yaml": "4.1.0"
+  },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
     "@settlemint/sdk-cli": "2.5.2",

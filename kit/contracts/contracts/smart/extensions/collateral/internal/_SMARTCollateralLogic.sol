@@ -9,7 +9,9 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { ISMARTCollateral } from "../ISMARTCollateral.sol";
 
 /// @title Internal Logic for SMART Collateral Extension
-/// @notice This abstract contract encapsulates the core, shared logic for verifying a global collateral
+/// @author SettleMint
+/// @notice This abstract contract encapsulates the core, shared logic for verifying a global
+/// collateral
 ///         claim on the token contract's own OnchainID identity before allowing token minting.
 ///         It is not meant for direct deployment but serves as a base for both standard (`SMARTCollateral`)
 ///         and upgradeable (`SMARTCollateralUpgradeable`) collateral extensions.
@@ -163,7 +165,7 @@ abstract contract _SMARTCollateralLogic is _SMARTExtension, ISMARTCollateral {
         (amount, expiry) = abi.decode(data, (uint256, uint256));
 
         // Check if the claim has already expired.
-        if (expiry <= block.timestamp) {
+        if (expiry < block.timestamp || expiry == block.timestamp) {
             return (false, 0, 0); // Claim expired.
         }
 

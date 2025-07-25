@@ -3,15 +3,15 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { Context } from "@openzeppelin/contracts/utils/Context.sol"; // Though Context itself isn't directly used, ERC20
-    // imports it.
 
 // Base contract imports
 import { _SMARTExtension } from "./_SMARTExtension.sol";
 import { SMARTContext } from "./SMARTContext.sol";
 
 /// @title Standard (Non-Upgradeable) SMART Token Extension Base
-/// @notice This abstract contract serves as a foundational base for all standard (non-upgradeable)
+/// @author SettleMint
+/// @notice This abstract contract serves as a foundational base for all standard
+/// (non-upgradeable)
 ///         SMART token extensions. It combines common SMART functionalities with a standard ERC20 token.
 /// @dev It inherits from `_SMARTExtension` (which provides common SMART logic like interface registration
 ///      and hook definitions via `SMARTHooks`) and OpenZeppelin's `ERC20.sol` (the standard ERC20 token

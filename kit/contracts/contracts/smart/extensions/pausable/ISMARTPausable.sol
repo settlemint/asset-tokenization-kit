@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 /// @title Interface for SMART Pausable Extension
+/// @author SettleMint
 /// @notice Defines the external functions for a pausable SMART token.
 /// @dev This interface outlines the standard functions for pausing, unpausing, and checking the paused
 ///      state of a contract. Implementations of this interface are expected to restrict the `pause` and

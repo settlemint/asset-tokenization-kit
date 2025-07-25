@@ -10,10 +10,10 @@ import { ATKAmountClaimTracker } from "../claim-tracker/ATKAmountClaimTracker.so
 import { IATKVestingStrategy } from "./IATKVestingStrategy.sol";
 import { IATKVestingAirdrop } from "./IATKVestingAirdrop.sol";
 import { IATKAirdrop } from "../IATKAirdrop.sol";
-import { InvalidInputArrayLengths, InvalidMerkleProof, BatchSizeExceedsLimit } from "../ATKAirdropErrors.sol";
+import { InvalidInputArrayLengths, InvalidMerkleProof } from "../ATKAirdropErrors.sol";
 
 /// @title ATK Vesting Airdrop Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Implementation of a vesting airdrop contract that uses pluggable claim strategies in the ATK Protocol.
 /// @dev This contract implements a two-phase vesting airdrop process:
 ///      1. `initializeVesting` or `batchInitializeVesting`: User proves their allocation and starts the vesting clock.
@@ -44,7 +44,7 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
     /// @param account The address that initialized the vesting.
     /// @param totalAmount The total amount allocated for this index.
     /// @param index The index of the claim in the Merkle tree.
-    event VestingInitialized(address indexed account, uint256 totalAmount, uint256 index);
+    event VestingInitialized(address indexed account, uint256 indexed totalAmount, uint256 indexed index);
 
     /// @notice Emitted when vesting is initialized for multiple claim indices in a batch.
     /// @param account The address that initialized the vesting.
@@ -58,6 +58,8 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
     event VestingStrategyUpdated(address indexed oldStrategy, address indexed newStrategy);
 
     // --- Constructor ---
+    /// @notice Constructor that prevents initialization of the implementation contract
+    /// @dev Uses the OpenZeppelin pattern to prevent the implementation from being initialized
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ATKAirdrop(forwarder_) {
@@ -75,7 +77,7 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
     /// @param vestingStrategy_ The address of the vesting strategy contract for vesting calculations.
     /// @param initializationDeadline_ The timestamp after which no new vesting can be initialized.
     function initialize(
-        string memory name_,
+        string calldata name_,
         address token_,
         bytes32 root_,
         address owner_,
@@ -86,7 +88,7 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
         initializer
     {
         if (vestingStrategy_ == address(0)) revert InvalidVestingStrategyAddress();
-        if (initializationDeadline_ <= block.timestamp) revert InvalidInitializationDeadline();
+        if (initializationDeadline_ < block.timestamp + 1) revert InvalidInitializationDeadline();
 
         // Verify the vesting strategy supports multiple claims (required for vesting)
         try IATKVestingStrategy(vestingStrategy_).supportsMultipleClaims() returns (bool supportsMultiple) {
@@ -203,7 +205,7 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
 
         if (currentTimestamp > _initializationDeadline) revert InitializationDeadlinePassed();
 
-        for (uint256 i = 0; i < indices.length; i++) {
+        for (uint256 i = 0; i < indices.length; ++i) {
             uint256 index = indices[i];
             uint256 totalAmount = totalAmounts[i];
 
@@ -274,7 +276,7 @@ contract ATKVestingAirdropImplementation is IATKVestingAirdrop, ATKAirdrop, Reen
         address sender = _msgSender();
         uint256[] memory claimableAmounts = new uint256[](indices.length);
 
-        for (uint256 i = 0; i < indices.length; i++) {
+        for (uint256 i = 0; i < indices.length; ++i) {
             uint256 index = indices[i];
             if (_initializationTimestamp[index] == 0) revert VestingNotInitialized();
 

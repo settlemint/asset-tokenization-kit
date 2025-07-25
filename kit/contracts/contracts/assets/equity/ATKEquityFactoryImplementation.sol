@@ -11,15 +11,21 @@ import { IATKEquity } from "./IATKEquity.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKEquityFactory } from "./IATKEquityFactory.sol";
-import { IATKSystem } from "../../system/IATKSystem.sol";
-import { IATKIdentityFactory } from "../../system/identity-factory/IATKIdentityFactory.sol";
 // Local imports
 import { ATKEquityProxy } from "./ATKEquityProxy.sol";
 
 /// @title Implementation of the ATK Equity Factory
+/// @author SettleMint
 /// @notice This contract is responsible for creating instances of ATK Equity tokens.
 contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFactoryImplementation {
-    bytes32 public constant override typeId = keccak256("ATKEquityFactory");
+    /// @notice Unique identifier for the ATK Equity Factory type
+    bytes32 public constant TYPE_ID = keccak256("ATKEquityFactory");
+
+    /// @notice Returns the type identifier for this factory
+    /// @return The bytes32 identifier for the ATK Equity Factory
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice Constructor for the ATKEquityFactoryImplementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions.
@@ -34,11 +40,11 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedEquityAddress The address of the newly deployed equity token contract.
     function createEquity(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        uint256[] calldata requiredClaimTopics_,
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
         uint16 countryCode_
     )
         external
@@ -103,11 +109,11 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
     /// @param initialModulePairs_ The initial compliance module pairs for the equity.
     /// @return predictedAddress The predicted address of the equity contract.
     function predictEquityAddress(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        uint256[] calldata requiredClaimTopics_,
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_
     )
         external
         view
@@ -135,6 +141,9 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
 
     // --- ERC165 Overrides ---
 
+    /// @notice Checks if this contract implements a specific interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the contract implements the interface, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view

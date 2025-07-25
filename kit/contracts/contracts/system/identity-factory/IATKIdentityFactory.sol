@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title IATKIdentityFactory Interface
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This interface defines the functions for a factory contract responsible for creating and managing
 ///         on-chain identities for both user wallets and token contracts within the ATK Protocol.
 /// @dev These identities are typically based on standards like ERC725 (OnchainID) and are deployed as proxy contracts
@@ -31,6 +31,9 @@ interface IATKIdentityFactory is IERC165 {
     /// @param description Human-readable description of the contract (for indexing/UX)
     event ContractIdentityRegistered(address indexed sender, address indexed contractAddress, string description);
 
+    /// @notice Initializes the identity factory
+    /// @dev Sets up the system address for the factory
+    /// @param systemAddress The address of the ATK system contract
     function initialize(address systemAddress) external;
 
     // --- State-Changing Functions ---

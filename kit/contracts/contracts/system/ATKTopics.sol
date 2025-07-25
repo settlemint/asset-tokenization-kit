@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 /// @title ATK  Topic Management
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Central registry for all claim topics and their schemes used in the ATK protocol
 library ATKTopics {
     /// @notice Topic identifier for Know Your Customer (KYC) verification claims

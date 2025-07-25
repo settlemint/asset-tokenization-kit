@@ -8,7 +8,9 @@ import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 import { ISMARTPausable } from "../ISMARTPausable.sol";
 
 /// @title Internal Core Logic for SMART Pausable Extension
-/// @notice This abstract contract encapsulates the shared state (`_paused`), core logic for pause/unpause
+/// @author SettleMint
+/// @notice This abstract contract encapsulates the shared state (`_paused`), core logic for
+/// pause/unpause
 ///         operations, event emissions, and modifiers (`whenNotPaused`, `whenPaused`) related to pausable
 ///         functionality.
 /// @dev It is designed to be inherited by both standard (`SMARTPausable.sol`) and upgradeable
