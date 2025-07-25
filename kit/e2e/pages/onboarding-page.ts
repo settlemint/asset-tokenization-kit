@@ -550,64 +550,18 @@ export class OnboardingPage extends BasePage {
       await pinInput.clear();
       await pinInput.fill(pin);
       await this.page.waitForTimeout(300);
-      const pinValue = await pinInput.inputValue();
 
       const confirmButton = this.page.getByRole("button", { name: "Confirm" });
-      const confirmButtonCount = await this.page
-        .locator("button")
-        .filter({ hasText: "Confirm" })
-        .count();
-      let confirmButtonExists = false;
-      let confirmButtonEnabled = false;
-      let confirmButtonText = "";
-      try {
-        confirmButtonExists = await confirmButton.isVisible();
-        confirmButtonEnabled = await confirmButton.isEnabled();
-        confirmButtonText = await confirmButton.innerText();
-      } catch (e) {}
-      if (!confirmButtonExists || !confirmButtonEnabled) {
-      }
-
       await expect(confirmButton).toBeEnabled({ timeout: 5000 });
       await confirmButton.click();
 
       await this.page.waitForTimeout(500);
-
-      const dialog = this.page.getByRole("dialog");
-      const isDialogVisible = await dialog.isVisible().catch(() => false);
-      if (isDialogVisible) {
-      }
-
-      const toast = this.page.locator("div[data-sonner-toast]");
-      if (await toast.isVisible().catch(() => false)) {
-      }
-      const errorMsg = this.page.locator(
-        '[data-slot="form-error"], .text-destructive, .text-red-500'
-      );
-      if (await errorMsg.isVisible().catch(() => false)) {
-      }
 
       await this.page
         .getByRole("dialog")
         .waitFor({ state: "detached", timeout: 10000 });
       await this.waitForReactStateSettle();
     });
-  }
-
-  async verifyToastNotificationWithRetry(
-    message: string,
-    loadingMessage?: string
-  ): Promise<void> {
-    if (loadingMessage) {
-      await this.page
-        .locator(`div[data-sonner-toast]:has-text("${loadingMessage}")`)
-        .waitFor({ state: "detached", timeout: 10000 });
-    }
-    try {
-      await expect(
-        this.page.locator(`div[data-sonner-toast]:has-text("${message}")`)
-      ).toBeAttached({ timeout: 2000 });
-    } catch {}
   }
 
   async completeWalletSteps(pin: string): Promise<void> {

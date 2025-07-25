@@ -40,15 +40,10 @@ export class SignInPage {
   }
 
   async expectAuthenticationError(): Promise<void> {
-    await this.page.waitForTimeout(2000);
-    const pageContent = await this.page.textContent("body");
-    const hasError =
-      pageContent?.includes("Email is required") ||
-      pageContent?.includes("invalid") ||
-      pageContent?.includes("error") ||
-      pageContent?.includes("password") ||
-      false;
-    expect(hasError).toBe(true);
+    const errorLocator = this.page.locator(
+      '[data-slot="form-error"], .text-destructive, .text-red-500'
+    );
+    await expect(errorLocator).toBeVisible({ timeout: 5000 });
   }
 
   async expectSuccessfulSignIn(): Promise<void> {
