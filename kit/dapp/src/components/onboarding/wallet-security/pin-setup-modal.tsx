@@ -112,7 +112,7 @@ export function PinSetupModal({ open, onOpenChange }: PinSetupModalProps) {
                 state.values.pincode.length === 6 &&
                 state.values.confirmPincode.length === 6 &&
                 state.values.pincode === state.values.confirmPincode &&
-                !state.errors.length;
+                state.errors.length === 0;
 
               return (
                 <div className="space-y-6">
