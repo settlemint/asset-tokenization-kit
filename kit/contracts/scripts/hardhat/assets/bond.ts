@@ -60,9 +60,11 @@ export const createBond = async (depositToken: Asset<any>) => {
     bond.symbol,
     bond.decimals,
     cap,
-    BigInt(anvilTimeSeconds + 365 * 24 * 60 * 60), // 1 year
-    faceValue,
-    depositToken.address!,
+    {
+      maturityDate: BigInt(anvilTimeSeconds + 365 * 24 * 60 * 60), // 1 year
+      faceValue: faceValue,
+      underlyingAsset: depositToken.address!,
+    },
     [topicManager.getTopicId(ATKTopic.kyc)],
     [
       ...getDefaultComplianceModules(),
