@@ -1,5 +1,5 @@
+import { TabBadge } from "@/components/assets/tab-badge";
 import type { TabItemProps } from "@/components/tab-navigation/tab-navigation";
-import { TabBadge } from "@/components/tokens/tab-badge";
 import {
   hasAllowlist,
   hasBlocklist,
@@ -11,27 +11,27 @@ import type { AssetType } from "@/lib/zod/validators/asset-types";
 import { useTranslation } from "react-i18next";
 import type { Address } from "viem";
 
-interface TokenTabConfigurationParams {
+interface AssetTabConfigurationParams {
   factoryAddress: Address;
-  tokenAddress: Address;
+  assetAddress: Address;
   assetType: AssetType;
 }
 
 /**
- * Generates the tab configuration for a token based on its asset type and features
+ * Generates the tab configuration for an asset based on its asset type and features
  */
-export async function getTokenTabConfiguration({
+export async function getAssetTabConfiguration({
   factoryAddress,
-  tokenAddress,
+  assetAddress,
   assetType,
-}: TokenTabConfigurationParams): Promise<TabItemProps[]> {
-  const baseUrl = `/token/${factoryAddress}/${tokenAddress}`;
+}: AssetTabConfigurationParams): Promise<TabItemProps[]> {
+  const baseUrl = `/token/${factoryAddress}/${assetAddress}`;
   const { t } = useTranslation(["tokens", "assets", "common"]);
 
   // Check if MICA is enabled for this asset
   let isMicaEnabled = false;
   try {
-    isMicaEnabled = await isMicaEnabledForAsset(assetType, tokenAddress);
+    isMicaEnabled = await isMicaEnabledForAsset(assetType, assetAddress);
   } catch (error) {
     console.error("Failed to check MICA status:", error);
   }
@@ -46,7 +46,7 @@ export async function getTokenTabConfiguration({
         <>
           {t("tokens:tabs.holders")}
           <TabBadge
-            address={tokenAddress}
+            address={assetAddress}
             assetType={assetType}
             badgeType="holders"
           />
@@ -70,7 +70,7 @@ export async function getTokenTabConfiguration({
       <>
         {t("tokens:tabs.events")}
         <TabBadge
-          address={tokenAddress}
+          address={assetAddress}
           assetType={assetType}
           badgeType="events"
         />
@@ -85,7 +85,7 @@ export async function getTokenTabConfiguration({
       <>
         {t("tokens:tabs.actions")}
         <TabBadge
-          address={tokenAddress}
+          address={assetAddress}
           assetType={assetType}
           badgeType="actions"
         />
@@ -107,7 +107,7 @@ export async function getTokenTabConfiguration({
         <>
           {t("tokens:tabs.allowlist")}
           <TabBadge
-            address={tokenAddress}
+            address={assetAddress}
             assetType={assetType}
             badgeType="allowlist"
           />
@@ -124,7 +124,7 @@ export async function getTokenTabConfiguration({
         <>
           {t("tokens:tabs.blocklist")}
           <TabBadge
-            address={tokenAddress}
+            address={assetAddress}
             assetType={assetType}
             badgeType="blocklist"
           />
@@ -141,7 +141,7 @@ export async function getTokenTabConfiguration({
         <>
           {t("tokens:tabs.underlyingAssets")}
           <TabBadge
-            address={tokenAddress}
+            address={assetAddress}
             assetType={assetType}
             badgeType="underlying-assets"
           />

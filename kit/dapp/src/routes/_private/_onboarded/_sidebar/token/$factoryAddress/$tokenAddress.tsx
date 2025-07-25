@@ -1,3 +1,4 @@
+import { AssetStatusBadge } from "@/components/assets/asset-status-badge";
 import {
   assetClassBreadcrumbs,
   createBreadcrumbMetadata,
@@ -6,9 +7,7 @@ import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { ManageAssetDropdown } from "@/components/manage-dropdown/asset";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
-import { AssetStatusBadge } from "@/components/assets/asset-status-badge";
 import { seo } from "@/config/metadata";
-import { getAssetTabConfiguration } from "@/lib/assets/tab-configuration";
 import {
   AssetType,
   getAssetClassFromFactoryTypeId,
@@ -17,6 +16,7 @@ import {
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Suspense } from "react";
+import { getAssetTabConfiguration } from "./$tokenAddress/tab-configuration";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress"
