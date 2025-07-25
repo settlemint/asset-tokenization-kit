@@ -63,6 +63,7 @@ contract ATKXvPSettlementProxy is Proxy {
         _performInitializationDelegatecall(implementationAddress, initData);
     }
 
+    /// @notice Internal function to retrieve the IATKXvPSettlementFactory contract instance from the stored address
     /// @dev Internal function to retrieve the IATKXvPSettlementFactory contract instance from the stored
     /// address.
     /// @return An IATKXvPSettlementFactory instance.
@@ -70,6 +71,7 @@ contract ATKXvPSettlementProxy is Proxy {
         return IATKXvPSettlementFactory(StorageSlot.getAddressSlot(_ATK_XVP_SETTLEMENT_FACTORY_ADDRESS_SLOT).value);
     }
 
+    /// @notice Fetches the implementation address from the factory
     /// @dev Fetches the implementation address from the factory.
     /// @return The address of the XvP settlement implementation.
     function _getImplementationAddressFromFactory() internal view returns (address) {
@@ -82,6 +84,7 @@ contract ATKXvPSettlementProxy is Proxy {
         return implementation;
     }
 
+    /// @notice Performs the delegatecall to initialize the implementation contract
     /// @dev Performs the delegatecall to initialize the implementation contract.
     /// @param implementationAddress_ The non-zero address of the logic contract to `delegatecall` to.
     /// @param initializeData_ The ABI-encoded data for the `initialize` function call.
@@ -102,6 +105,7 @@ contract ATKXvPSettlementProxy is Proxy {
         }
     }
 
+    /// @notice Overrides `Proxy._implementation()` to retrieve the implementation address from the factory
     /// @dev Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms.
     /// It retrieves the implementation address from the configured factory.
     /// @return The address of the current logic/implementation contract for XvP settlements.
