@@ -68,10 +68,10 @@ contract ATKTokenSaleTest is Test {
         address indexed buyer, address indexed paymentCurrency, uint256 paymentAmount, uint256 tokenAmount
     );
     event TokensWithdrawn(address indexed buyer, uint256 amount);
-    event SaleStatusUpdated(uint8 newStatus);
+    event SaleStatusUpdated(uint8 indexed newStatus);
     event SaleParametersUpdated(address indexed operator);
     event FundsWithdrawn(address indexed recipient, address indexed currency, uint256 amount);
-    event PaymentCurrencyAdded(address indexed currency, uint256 priceRatio);
+    event PaymentCurrencyAdded(address indexed currency, uint256 indexed priceRatio);
     event PaymentCurrencyRemoved(address indexed currency);
 
     function setUp() public {

@@ -40,9 +40,9 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
     AirdropUtils.TestUserData public testUserData;
 
     // Events
-    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 indexed amount);
     event AirdropBatchTokensTransferred(address[] recipients, uint256[] indices, uint256[] amounts);
-    event DistributionCapUpdated(uint256 oldCap, uint256 newCap);
+    event DistributionCapUpdated(uint256 indexed oldCap, uint256 indexed newCap);
 
     function setUp() public {
         owner = makeAddr("owner");

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.19;
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
 
 import "forge-std/Test.sol";
 import "../../../contracts/system/identity-factory/IATKIdentityFactory.sol";
@@ -317,14 +317,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
         assertTrue(claimIds.length > 0, "Should have at least one CONTRACT_IDENTITY claim");
 
         // Get the specific claim
-        (
-            uint256 topic,
-            ,
-            address issuer,
-            ,
-            bytes memory data,
-
-        ) = identityContract.getClaim(claimIds[0]);
+        (uint256 topic,, address issuer,, bytes memory data,) = identityContract.getClaim(claimIds[0]);
 
         // Verify claim details
         assertEq(topic, contractIdentityTopicId, "Claim should have CONTRACT_IDENTITY topic");
@@ -362,7 +355,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
         bytes32[] memory claimIds = identityContract.getClaimIdsByTopic(contractIdentityTopicId);
         require(claimIds.length > 0, "Should have CONTRACT_IDENTITY claim");
 
-        (, , , , bytes memory data, ) = identityContract.getClaim(claimIds[0]);
+        (,,,, bytes memory data,) = identityContract.getClaim(claimIds[0]);
 
         // The claim data should be ABI encoded with the contract address
         // according to the topic signature: "address contractAddress"
@@ -419,8 +412,8 @@ contract ATKIdentityFactoryImplementationTest is Test {
         assertTrue(claimIds2.length > 0, "Token2 identity should have CONTRACT_IDENTITY claim");
 
         // Get claim data
-        (, , , , bytes memory data1, ) = identityContract1.getClaim(claimIds1[0]);
-        (, , , , bytes memory data2, ) = identityContract2.getClaim(claimIds2[0]);
+        (,,,, bytes memory data1,) = identityContract1.getClaim(claimIds1[0]);
+        (,,,, bytes memory data2,) = identityContract2.getClaim(claimIds2[0]);
 
         // Decode and verify each claim contains the correct contract address
         address decodedAddress1 = abi.decode(data1, (address));
@@ -437,8 +430,10 @@ contract ATKIdentityFactoryImplementationTest is Test {
         assertTrue(factoryOnchainID != address(0), "Factory onchainID should be set");
 
         // The onchainID should be a valid identity contract
-        assertTrue(IERC165(factoryOnchainID).supportsInterface(type(IIdentity).interfaceId),
-                  "Factory onchainID should be a valid identity contract");
+        assertTrue(
+            IERC165(factoryOnchainID).supportsInterface(type(IIdentity).interfaceId),
+            "Factory onchainID should be a valid identity contract"
+        );
     }
 
     function testFactoryIdentityIssuesClaimsAsTrustedIssuer() public view {
@@ -448,16 +443,12 @@ contract ATKIdentityFactoryImplementationTest is Test {
 
         // Verify the factory's identity is registered as a trusted issuer for CONTRACT_IDENTITY claims
         uint256 contractIdentityTopicId = systemUtils.getTopicId(ATKTopics.TOPIC_CONTRACT_IDENTITY);
-        bool isTrustedIssuer = systemUtils.trustedIssuersRegistry().isTrustedIssuer(
-            factoryOnchainID
-        );
+        bool isTrustedIssuer = systemUtils.trustedIssuersRegistry().isTrustedIssuer(factoryOnchainID);
         assertTrue(isTrustedIssuer, "Factory identity should be registered as trusted issuer");
 
         // Check if it can issue CONTRACT_IDENTITY claims specifically
-        bool canIssueContractIdentity = systemUtils.trustedIssuersRegistry().hasClaimTopic(
-            factoryOnchainID,
-            contractIdentityTopicId
-        );
+        bool canIssueContractIdentity =
+            systemUtils.trustedIssuersRegistry().hasClaimTopic(factoryOnchainID, contractIdentityTopicId);
         assertTrue(canIssueContractIdentity, "Factory identity should be able to issue CONTRACT_IDENTITY claims");
     }
 
@@ -475,14 +466,7 @@ contract ATKIdentityFactoryImplementationTest is Test {
         assertTrue(claimIds.length > 0, "Factory identity should have CONTRACT_IDENTITY claim");
 
         // Get the claim details
-        (
-            uint256 topic,
-            ,
-            address issuer,
-            ,
-            bytes memory data,
-
-        ) = factoryIdentityContract.getClaim(claimIds[0]);
+        (uint256 topic,, address issuer,, bytes memory data,) = factoryIdentityContract.getClaim(claimIds[0]);
 
         // Verify it's a self-issued claim
         assertEq(topic, contractIdentityTopicId, "Should be CONTRACT_IDENTITY claim");
