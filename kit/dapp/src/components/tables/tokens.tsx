@@ -9,6 +9,7 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -57,7 +58,7 @@ const INITIAL_SORTING = [
  */
 interface TokensTableProps {
   /** The address of the token factory contract */
-  factoryAddress: string;
+  factoryAddress: EthereumAddress;
 }
 
 /**
