@@ -22,9 +22,6 @@ export const Summary = withForm({
     const { t } = useTranslation("asset-designer");
     const [showVerificationModal, setShowVerificationModal] = useState(false);
 
-    const renderVerificationModal = () => {
-      setShowVerificationModal(true);
-    };
     return (
       <FormStep>
         <FormStepHeader>
@@ -46,7 +43,9 @@ export const Summary = withForm({
         <FormStepSubmit>
           <form.SubmitButton
             label="Submit"
-            onSubmit={renderVerificationModal}
+            onSubmit={() => {
+              setShowVerificationModal(true);
+            }}
           />
           <VerificationDialog
             open={showVerificationModal}
@@ -57,7 +56,9 @@ export const Summary = withForm({
                 verificationType,
               });
               await form.validate("change");
-              onSubmit();
+              if (form.state.isValid) {
+                onSubmit();
+              }
             }}
             title={t("verification.confirm-title")}
             description={t("verification.confirm-description")}
