@@ -6,7 +6,9 @@ const ATKOnboardingSystemModule = buildModule(
   (m) => {
     const { systemFactory } = m.useModule(ATKModule);
 
-    const createSystem = m.call(systemFactory, "createSystem");
+    const createSystem = m.call(systemFactory, "createSystem", [], {
+      from: m.getAccount(0),
+    });
     const systemAddress = m.readEventArgument(
       createSystem,
       "ATKSystemCreated",
@@ -17,7 +19,9 @@ const ATKOnboardingSystemModule = buildModule(
       id: "system",
     });
 
-    const bootstrap = m.call(system, "bootstrap");
+    const bootstrap = m.call(system, "bootstrap", [], {
+      from: m.getAccount(0),
+    });
 
     const complianceAddress = m.readEventArgument(
       bootstrap,
