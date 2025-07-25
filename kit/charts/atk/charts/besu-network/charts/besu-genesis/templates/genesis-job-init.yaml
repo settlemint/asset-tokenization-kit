@@ -129,10 +129,10 @@ spec:
               function safeWriteGenesisConfigmap {
                 FOLDER_PATH=$1
                 echo "Storing genesis file in PVC..."
-                
+
                 # Copy genesis file directly to the mounted PVC
                 cp "$FOLDER_PATH/besu/genesis.json" /genesis-pvc/genesis.json
-                
+
                 echo "Genesis file stored in PVC successfully"
               }
 
