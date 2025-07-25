@@ -7,7 +7,7 @@ global:
   # -- Global StorageClass for Persistent Volume(s)
   storageClass: ""
 
-# -- String to fully override the fullname template
+# -- String to fully override common.names.fullname
 fullnameOverride: "erpc"
 
 # -- Labels to add to all deployed objects
@@ -414,4 +414,4 @@ config:
         - matchDomain: "*"
           serveProject: "settlemint"
           serveArchitecture: "evm"
-          serveChain: "53771311147"
+          serveChain: "1337"
