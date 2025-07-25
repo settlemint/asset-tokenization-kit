@@ -1,46 +1,14 @@
-import { LanguageSwitcher } from "@/components/language/language-switcher";
-import { Logo } from "@/components/logo/logo";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Card, CardContent } from "@/components/ui/card";
+import { DialogLayout } from "@/components/layout/dialog";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_private/onboarding")({
   component: OnboardingLayout,
 });
 
 function OnboardingLayout() {
-  const { t } = useTranslation(["onboarding", "general"]);
-
   return (
-    <div className="flex flex-col h-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
-      <div className="flex-shrink-0 flex justify-between items-center p-8">
-        <div className="flex w-full items-center gap-3">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
-            <Logo variant="icon" forcedColorMode="dark" />
-          </div>
-          <div className="flex flex-col text-foreground leading-none">
-            <span className="font-bold text-lg text-primary-foreground">
-              {t("general:appName")}
-            </span>
-            <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-sm leading-snug text-primary-foreground dark:text-foreground">
-              {t("general:appDescription")}
-            </span>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <LanguageSwitcher />
-          <ThemeToggle />
-        </div>
-      </div>
-
-      <div className="flex flex-col justify-center items-center xl:h-[calc(100vh-200px)] px-16 lg:px-[5vw] 2xl:px-[16vw]">
-        <Card className="p-0 gap-0 h-full lg:max-h-[82vh]">
-          <CardContent className="p-0 m-0 h-full">
-            <Outlet />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <DialogLayout>
+      <Outlet />
+    </DialogLayout>
   );
 }

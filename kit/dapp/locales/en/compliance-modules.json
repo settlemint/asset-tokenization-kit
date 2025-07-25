@@ -1,0 +1,34 @@
+{
+  "modules": {
+    "addressBlockList": {
+      "title": "Address Block List",
+      "shortDescription": "Block specific wallet addresses from participating",
+      "description": "Block specific wallet addresses from accessing your asset. Useful for preventing known bad actors or sanctioned addresses from participating."
+    },
+    "countryAllowList": {
+      "title": "Country Allow List",
+      "shortDescription": "Allow only specific countries to participate",
+      "description": "Only allow investors from specific countries to access your asset. Ideal for region-specific compliance requirements and regulatory restrictions."
+    },
+    "countryBlockList": {
+      "title": "Country Block List",
+      "shortDescription": "Block specific countries from participating",
+      "description": "Block investors from specific countries or jurisdictions. Essential for complying with sanctions and avoiding restricted markets."
+    },
+    "identityAllowList": {
+      "title": "Identity Allow List",
+      "shortDescription": "Allow only pre-approved verified identities",
+      "description": "Only allow verified identities from your approved list to access the asset. Perfect for exclusive offerings and private placements."
+    },
+    "identityBlockList": {
+      "title": "Identity Block List",
+      "shortDescription": "Block specific verified identities from access",
+      "description": "Block specific verified identities from accessing your asset. Useful for removing problematic investors while maintaining compliance."
+    },
+    "smartIdentityVerification": {
+      "title": "SMART Identity Verification",
+      "shortDescription": "Require SMART protocol identity verification",
+      "description": "Require SMART protocol identity verification for all investors. Provides comprehensive KYC/AML compliance through decentralized identity verification."
+    }
+  }
+}

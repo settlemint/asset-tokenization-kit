@@ -3,6 +3,14 @@ import {
   isRequiredField,
   type AssetDesignerFormInputData,
 } from "@/components/asset-designer/shared-form";
+import {
+  FormStep,
+  FormStepContent,
+  FormStepDescription,
+  FormStepHeader,
+  FormStepSubmit,
+  FormStepTitle,
+} from "@/components/form/multi-step/form-step";
 import { withForm } from "@/hooks/use-app-form";
 import { useSettings } from "@/hooks/use-settings";
 import { noop } from "@/lib/utils/noop";
@@ -49,25 +57,38 @@ export const SelectAssetType = withForm({
     }, [systemDetails, t]);
 
     return (
-      <>
-        <form.AppField
-          name="type"
-          children={(field) => (
-            <field.RadioField
-              label={t("wizard.steps.asset-type.title")}
-              options={options}
-              variant="card"
-            />
-          )}
-        />
+      <FormStep>
+        <FormStepHeader>
+          <FormStepTitle>
+            {t("wizard.steps.selectAssetType.title")}
+          </FormStepTitle>
+          <FormStepDescription>
+            {t("wizard.steps.selectAssetType.description")}
+          </FormStepDescription>
+        </FormStepHeader>
 
-        <form.StepSubmitButton
-          label="Next"
-          onStepSubmit={onStepSubmit}
-          validate={assetTypeFields}
-          checkRequiredFn={isRequiredField}
-        />
-      </>
+        <FormStepContent>
+          <form.AppField
+            name="type"
+            children={(field) => (
+              <field.RadioField
+                label={t("wizard.steps.asset-type.title")}
+                options={options}
+                variant="card"
+              />
+            )}
+          />
+        </FormStepContent>
+
+        <FormStepSubmit>
+          <form.StepSubmitButton
+            label={t("form.buttons.next")}
+            onStepSubmit={onStepSubmit}
+            validate={assetTypeFields}
+            checkRequiredFn={isRequiredField}
+          />
+        </FormStepSubmit>
+      </FormStep>
     );
   },
 });
