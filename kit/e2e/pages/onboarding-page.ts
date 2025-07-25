@@ -194,27 +194,10 @@ export class OnboardingPage extends BasePage {
 
     await this.enterPinVerification(pin);
 
-    let deployed = false;
-    try {
-      await expect(
-        this.page.getByText("System deployed successfully!")
-      ).toBeAttached({ timeout: 120000 });
-      deployed = true;
-    } catch {
-      try {
-        await expect(
-          this.page.getByRole("heading", { name: "Deployment Details" })
-        ).toBeAttached({ timeout: 10000 });
-        deployed = true;
-      } catch {}
-    }
-    if (!deployed) {
-      throw new Error("System deployment did not complete successfully.");
-    }
-
     await expect(
       this.page.getByRole("heading", { name: "Deployment Details" })
     ).toBeAttached({ timeout: 120000 });
+
     const continueButton = this.page.getByRole("button", { name: "Continue" });
     await expect(continueButton).toBeVisible({ timeout: 120000 });
     await expect(continueButton).toBeEnabled({ timeout: 120000 });

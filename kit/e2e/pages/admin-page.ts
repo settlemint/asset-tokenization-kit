@@ -1030,15 +1030,4 @@ export class AdminPage extends BasePage {
       }
     }
   }
-
-  async verifyDeploymentSuccess() {
-    const successText = this.page.getByText("System deployed successfully!");
-    const detailsHeading = this.page.getByRole("heading", {
-      name: "Deployment Details",
-    });
-
-    await expect(successText.or(detailsHeading)).toBeAttached({
-      timeout: 120000,
-    });
-  }
 }
