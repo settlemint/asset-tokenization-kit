@@ -40,10 +40,6 @@
 
 Kubernetes: `>=1.21.0-0`
 
-| Repository | Name | Version |
-|------------|------|---------|
-| oci://registry-1.docker.io/bitnamicharts | common | 2.31.3 |
-
 ## Prerequisites
 
 - Kubernetes 1.19+
@@ -87,12 +83,12 @@ The command removes all the Kubernetes components associated with the chart and 
 | autoscaling.minReplicas | int | `1` | Minimum number of eRPC replicas |
 | commonAnnotations | object | `{}` | Annotations to add to all deployed objects |
 | commonLabels | object | `{}` | Labels to add to all deployed objects |
-| config | object | `{"logLevel":"info","projects":[{"id":"settlemint","upstreams":[{"endpoint":"http://besu-node-rpc-1:8545"}]}],"server":{"aliasing":{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"53771311147","serveProject":"settlemint"}]}}}` | eRPC configuration |
+| config | object | `{"logLevel":"info","projects":[{"id":"settlemint","upstreams":[{"endpoint":"http://besu-node-rpc-1:8545"}]}],"server":{"aliasing":{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"1337","serveProject":"settlemint"}]}}}` | eRPC configuration |
 | config.logLevel | string | `"info"` | Log level for eRPC |
 | config.projects | list | `[{"id":"settlemint","upstreams":[{"endpoint":"http://besu-node-rpc-1:8545"}]}]` | Array of project configurations |
-| config.server | object | `{"aliasing":{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"53771311147","serveProject":"settlemint"}]}}` | Server configuration |
-| config.server.aliasing | object | `{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"53771311147","serveProject":"settlemint"}]}` | Aliasing configuration |
-| config.server.aliasing.rules | list | `[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"53771311147","serveProject":"settlemint"}]` | Array of aliasing rules |
+| config.server | object | `{"aliasing":{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"1337","serveProject":"settlemint"}]}}` | Server configuration |
+| config.server.aliasing | object | `{"rules":[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"1337","serveProject":"settlemint"}]}` | Aliasing configuration |
+| config.server.aliasing.rules | list | `[{"matchDomain":"*","serveArchitecture":"evm","serveChain":"1337","serveProject":"settlemint"}]` | Array of aliasing rules |
 | containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"enabled":false,"readOnlyRootFilesystem":false,"runAsGroup":1001,"runAsNonRoot":true,"runAsUser":1001,"seccompProfile":{"type":"RuntimeDefault"}}` | Container Security Context configuration |
 | containerSecurityContext.allowPrivilegeEscalation | bool | `false` | Set container's Security Context allowPrivilegeEscalation |
 | containerSecurityContext.capabilities | object | `{"drop":["ALL"]}` | Linux capabilities configuration |
