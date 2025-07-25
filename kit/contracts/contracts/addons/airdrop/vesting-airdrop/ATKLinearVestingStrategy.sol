@@ -5,23 +5,24 @@ pragma solidity ^0.8.28;
 import { IATKLinearVestingStrategy } from "./IATKLinearVestingStrategy.sol";
 
 /// @title ATK Linear Vesting Strategy
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Implementation of a linear vesting calculation strategy for ATK airdrop contracts.
 /// @dev This contract implements stateless linear vesting calculations with configurable duration and cliff.
 ///      The vesting parameters (duration, cliff) are set at deployment and cannot be changed.
 ///      It holds no state about users; all user-specific data is passed in during calculations.
 contract ATKLinearVestingStrategy is IATKLinearVestingStrategy {
-    bytes32 public constant override typeId = keccak256("ATKLinearVestingStrategy");
+    /// @notice Type identifier for this vesting strategy contract
+    bytes32 public constant TYPE_ID = keccak256("ATKLinearVestingStrategy");
 
     // --- Storage Variables ---
 
     /// @notice The total duration of the vesting period in seconds.
     /// @dev Set once at construction and immutable thereafter.
-    uint256 public immutable _vestingDuration;
+    uint256 public immutable VESTING_DURATION;
 
     /// @notice The cliff duration before any tokens can be claimed, in seconds.
-    /// @dev Set once at construction and immutable thereafter. Must be <= _vestingDuration.
-    uint256 public immutable _cliffDuration;
+    /// @dev Set once at construction and immutable thereafter. Must be <= VESTING_DURATION.
+    uint256 public immutable CLIFF_DURATION;
 
     // --- Constructor ---
 
@@ -33,8 +34,8 @@ contract ATKLinearVestingStrategy is IATKLinearVestingStrategy {
         if (vestingDuration_ == 0) revert InvalidVestingDuration();
         if (cliffDuration_ > vestingDuration_) revert CliffExceedsVestingDuration();
 
-        _vestingDuration = vestingDuration_;
-        _cliffDuration = cliffDuration_;
+        VESTING_DURATION = vestingDuration_;
+        CLIFF_DURATION = cliffDuration_;
     }
 
     // --- View Functions ---
@@ -42,13 +43,13 @@ contract ATKLinearVestingStrategy is IATKLinearVestingStrategy {
     /// @notice Returns the total vesting duration.
     /// @return The vesting duration in seconds.
     function vestingDuration() external view returns (uint256) {
-        return _vestingDuration;
+        return VESTING_DURATION;
     }
 
     /// @notice Returns the cliff duration.
     /// @return The cliff duration in seconds.
     function cliffDuration() external view returns (uint256) {
-        return _cliffDuration;
+        return CLIFF_DURATION;
     }
 
     // --- External Functions ---
@@ -61,6 +62,7 @@ contract ATKLinearVestingStrategy is IATKLinearVestingStrategy {
     /// @param vestingStartTime The timestamp when vesting started for this allocation.
     /// @param claimedAmount The amount already claimed for this specific index.
     /// @return claimableAmount The amount that can be claimed now.
+    // solhint-disable-next-line use-natspec
     function calculateClaimableAmount(
         address, /* account - unused */
         uint256 totalAmount,
@@ -76,19 +78,19 @@ contract ATKLinearVestingStrategy is IATKLinearVestingStrategy {
         uint256 timeElapsed = block.timestamp - vestingStartTime;
 
         // Nothing vested before cliff period ends
-        if (timeElapsed < _cliffDuration) {
+        if (timeElapsed < CLIFF_DURATION) {
             return 0;
         }
 
         // Calculate vested amount for this specific index's allocation
         uint256 vestedAmountForIndex;
-        if (timeElapsed >= _vestingDuration) {
+        if (timeElapsed > VESTING_DURATION - 1) {
             // All tokens for this index are fully vested
             vestedAmountForIndex = totalAmount;
         } else {
             // Linear vesting calculation for this index
-            // Safe division: _vestingDuration is checked > 0 in constructor
-            vestedAmountForIndex = (totalAmount * timeElapsed) / _vestingDuration;
+            // Safe division: VESTING_DURATION is checked > 0 in constructor
+            vestedAmountForIndex = (totalAmount * timeElapsed) / VESTING_DURATION;
         }
 
         // Ensure vested amount doesn't exceed the index's total amount due to potential rounding
@@ -107,5 +109,11 @@ contract ATKLinearVestingStrategy is IATKLinearVestingStrategy {
     /// @return supportsMultiple Always true for linear vesting strategy.
     function supportsMultipleClaims() external pure override returns (bool supportsMultiple) {
         return true;
+    }
+
+    /// @notice Returns the unique type identifier for this contract.
+    /// @return The unique type identifier as a bytes32 hash
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
     }
 }

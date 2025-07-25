@@ -72,6 +72,7 @@ contract ATKVestingAirdropProxy is Proxy {
         _performInitializationDelegatecall(implementationAddress, initData);
     }
 
+    /// @notice Internal function to retrieve the IATKVestingAirdropFactory contract instance from the stored address.
     /// @dev Internal function to retrieve the IATKVestingAirdropFactory contract instance from the stored
     /// address.
     /// @return An IATKVestingAirdropFactory instance.
@@ -79,6 +80,7 @@ contract ATKVestingAirdropProxy is Proxy {
         return IATKVestingAirdropFactory(StorageSlot.getAddressSlot(_ATK_VESTING_AIRDROP_FACTORY_ADDRESS_SLOT).value);
     }
 
+    /// @notice Fetches the implementation address from the factory.
     /// @dev Fetches the implementation address from the factory.
     /// @return The address of the vesting airdrop implementation.
     function _getImplementationAddressFromFactory() internal view returns (address) {
@@ -95,6 +97,7 @@ contract ATKVestingAirdropProxy is Proxy {
         return implementation;
     }
 
+    /// @notice Performs the delegatecall to initialize the implementation contract.
     /// @dev Performs the delegatecall to initialize the implementation contract.
     /// @param implementationAddress_ The non-zero address of the logic contract to `delegatecall` to.
     /// @param initializeData_ The ABI-encoded data for the `initialize` function call.
@@ -115,6 +118,7 @@ contract ATKVestingAirdropProxy is Proxy {
         }
     }
 
+    /// @notice Returns the address of the current implementation contract.
     /// @dev Overrides `Proxy._implementation()`. This is used by OpenZeppelin's proxy mechanisms.
     /// It retrieves the implementation address from the configured factory.
     /// @return The address of the current logic/implementation contract for vesting airdrops.
