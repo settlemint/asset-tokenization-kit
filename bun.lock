@@ -17,10 +17,6 @@
         "yaml": "2.8.0",
       },
     },
-    "kit/artifacts": {
-      "name": "@settlemint/asset-tokenization-kit-artifacts",
-      "version": "2.0.0",
-    },
     "kit/charts": {
       "name": "charts",
       "version": "2.0.0",
@@ -1170,8 +1166,6 @@
     "@sentry/types": ["@sentry/types@5.30.0", "", {}, "sha512-R8xOqlSTZ+htqrfteCWU5Nk0CDN5ApUTvrlvBuiH1DyP6czDZ4ktbZB0hAgBlVcK0U+qpD3ag3Tqqpa5Q67rPw=="],
 
     "@sentry/utils": ["@sentry/utils@5.30.0", "", { "dependencies": { "@sentry/types": "5.30.0", "tslib": "^1.9.3" } }, "sha512-zaYmoH0NWWtvnJjC9/CBseXMtKHm/tm40sz3YfJRxeQjyzRqNQPgivpd9R/oDJCYj999mzdW382p/qi2ypjLww=="],
-
-    "@settlemint/asset-tokenization-kit-artifacts": ["@settlemint/asset-tokenization-kit-artifacts@workspace:kit/artifacts"],
 
     "@settlemint/sdk-blockscout": ["@settlemint/sdk-blockscout@2.5.2", "", { "dependencies": { "@settlemint/sdk-utils": "2.5.2", "gql.tada": "^1", "graphql-request": "^7", "zod": "^4" } }, "sha512-tG87kDNAiRDyndod6qgvzzBA5+JptGsuEVWTRuWtZlePG8vTJ5Vj25ChRX1nuMo2xPkqjhzddTbzVCpjHdETMg=="],
 
