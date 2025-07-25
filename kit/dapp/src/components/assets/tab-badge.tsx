@@ -1,7 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { Suspense } from "react";
 import type { Address } from "viem";
+
+const logger = createLogger();
 
 interface TabBadgeProps {
   address: Address;
@@ -9,7 +12,7 @@ interface TabBadgeProps {
   badgeType:
     | "holders"
     | "events"
-    | "actions" 
+    | "actions"
     | "allowlist"
     | "blocklist"
     | "underlying-assets";
@@ -31,9 +34,9 @@ export function TabBadgeSpinner() {
 }
 
 /**
- * Async component that loads and displays badge counts for asset tabs
+ * Component that loads and displays badge counts for asset tabs
  */
-async function TabBadgeLoader({
+function TabBadgeLoader({
   address: _address,
   assetType: _assetType,
   badgeType,
@@ -68,7 +71,7 @@ async function TabBadgeLoader({
         break;
     }
   } catch (error) {
-    console.error(`Failed to load badge count for ${badgeType}:`, error);
+    logger.error(`Failed to load badge count for ${badgeType}:`, error);
     return null;
   }
 

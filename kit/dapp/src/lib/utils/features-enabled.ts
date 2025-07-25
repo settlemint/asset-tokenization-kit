@@ -35,10 +35,10 @@ export const hasFreeze = (_assetType: AssetType): boolean => true;
  * @param assetAddress The address of the asset to check
  * @returns True if MICA is available and enabled for this asset
  */
-export const isMicaEnabledForAsset = async (
+export const isMicaEnabledForAsset = (
   assetType: AssetType,
   _assetAddress: Address
-): Promise<boolean> => {
+): boolean => {
   // MICA is only available for stablecoins
   const isAvailable = assetType === "stablecoin";
   if (!isAvailable) {
@@ -53,7 +53,7 @@ export const isMicaEnabledForAsset = async (
 
   // TODO: Implement regulation enabled check when available
   // return await isRegulationEnabled(assetAddress, "mica");
-  
+
   // For now, return false until the infrastructure is implemented
   return false;
 };

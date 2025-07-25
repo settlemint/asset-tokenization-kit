@@ -6,7 +6,10 @@ import {
   isMicaEnabledForAsset,
 } from "@/lib/utils/features-enabled";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import type { Address } from "viem";
+
+const logger = createLogger();
 
 interface AssetTabConfigurationParams {
   factoryAddress: Address;
@@ -16,26 +19,42 @@ interface AssetTabConfigurationParams {
 
 interface TabConfig {
   href: string;
-  tabKey: 'tokenInformation' | 'holders' | 'events' | 'actions' | 'permissions' | 'allowlist' | 'blocklist' | 'underlyingAssets' | 'yield' | 'mica';
-  badgeType?: "holders" | "events" | "actions" | "allowlist" | "blocklist" | "underlying-assets";
+  tabKey:
+    | "tokenInformation"
+    | "holders"
+    | "events"
+    | "actions"
+    | "permissions"
+    | "allowlist"
+    | "blocklist"
+    | "underlyingAssets"
+    | "yield"
+    | "mica";
+  badgeType?:
+    | "holders"
+    | "events"
+    | "actions"
+    | "allowlist"
+    | "blocklist"
+    | "underlying-assets";
 }
 
 /**
  * Generates the tab configuration for an asset based on its asset type and features
  */
-export async function getAssetTabConfiguration({
+export function getAssetTabConfiguration({
   factoryAddress,
   assetAddress,
   assetType,
-}: AssetTabConfigurationParams): Promise<TabConfig[]> {
+}: AssetTabConfigurationParams): TabConfig[] {
   const baseUrl = `/token/${factoryAddress}/${assetAddress}`;
 
   // Check if MICA is enabled for this asset
   let isMicaEnabled = false;
   try {
-    isMicaEnabled = await isMicaEnabledForAsset(assetType, assetAddress);
+    isMicaEnabled = isMicaEnabledForAsset(assetType, assetAddress);
   } catch (error) {
-    console.error("Failed to check MICA status:", error);
+    logger.error("Failed to check MICA status:", error);
   }
 
   const tabs: TabConfig[] = [
@@ -59,24 +78,22 @@ export async function getAssetTabConfiguration({
   }
 
   // Add events tab
-  tabs.push({
-    tabKey: "events",
-    href: `${baseUrl}/events`,
-    badgeType: "events",
-  });
-
-  // Add actions tab
-  tabs.push({
-    tabKey: "actions",
-    href: `${baseUrl}/actions`,
-    badgeType: "actions",
-  });
-
-  // Add permissions tab
-  tabs.push({
-    tabKey: "permissions",
-    href: `${baseUrl}/permissions`,
-  });
+  tabs.push(
+    {
+      tabKey: "events",
+      href: `${baseUrl}/events`,
+      badgeType: "events",
+    },
+    {
+      tabKey: "actions",
+      href: `${baseUrl}/actions`,
+      badgeType: "actions",
+    },
+    {
+      tabKey: "permissions",
+      href: `${baseUrl}/permissions`,
+    }
+  );
 
   // Add allowlist tab for deposits
   if (hasAllowlist(assetType)) {
