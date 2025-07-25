@@ -15,17 +15,23 @@ export function SecuritySuccess() {
   // Determine which security method was set up using the enum
   const hasOtp = user.verificationTypes.includes(VerificationType.twoFactor);
   const hasPincode = user.verificationTypes.includes(VerificationType.pincode);
-  
+
   // Handle unexpected states - default to pincode if neither is set
   let securityMethod: string;
   if (hasOtp) {
-    securityMethod = t("wallet-security.method-selector.security-methods.one-time-password");
+    securityMethod = t(
+      "wallet-security.method-selector.security-methods.one-time-password"
+    );
   } else if (hasPincode) {
-    securityMethod = t("wallet-security.method-selector.security-methods.pin-code");
+    securityMethod = t(
+      "wallet-security.method-selector.security-methods.pin-code"
+    );
   } else {
     // This should not happen in normal flow, but handle it gracefully
     // Default to pincode as it's the most common method
-    securityMethod = t("wallet-security.method-selector.security-methods.pin-code");
+    securityMethod = t(
+      "wallet-security.method-selector.security-methods.pin-code"
+    );
   }
 
   return (

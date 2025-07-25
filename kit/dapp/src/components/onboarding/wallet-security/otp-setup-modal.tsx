@@ -169,19 +169,7 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
               </Button>
             </div>
           </>
-        ) : !otpUri ? (
-          <>
-            <DialogHeader>
-              <DialogTitle>{t("wallet-security.otp.setting-up")}</DialogTitle>
-              <DialogDescription>
-                {t("wallet-security.otp.setting-up-description")}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex justify-center py-8">
-              <div className="animate-spin h-8 w-8 border-b-2 border-primary rounded-full" />
-            </div>
-          </>
-        ) : (
+        ) : otpUri ? (
           <>
             <DialogHeader>
               <DialogTitle>{t("wallet-security.otp.setup-title")}</DialogTitle>
@@ -290,6 +278,18 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                 </Button>
               </div>
             </form>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle>{t("wallet-security.otp.setting-up")}</DialogTitle>
+              <DialogDescription>
+                {t("wallet-security.otp.setting-up-description")}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-center py-8">
+              <div className="animate-spin h-8 w-8 border-b-2 border-primary rounded-full" />
+            </div>
           </>
         )}
       </DialogContent>
