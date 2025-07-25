@@ -23,10 +23,6 @@
         "title": "Configure Compliance",
         "description": "Set up compliance modules to ensure your asset meets legal requirements"
       },
-      "complianceModules": {
-        "title": "Compliance Modules",
-        "description": "Enable and configure compliance modules to control who can access your asset."
-      },
       "summary": {
         "title": "Review & Deploy",
         "description": "Confirm and deploy your compliant digital asset to the blockchain"
