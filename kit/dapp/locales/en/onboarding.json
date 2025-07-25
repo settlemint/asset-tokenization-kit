@@ -26,6 +26,10 @@
     "identity": {
       "title": "Identity",
       "description": "Establish your on-chain identity"
+    },
+    "addons": {
+      "title": "Addons",
+      "description": "Enable optional system features"
     }
   },
   "steps": {
@@ -74,7 +78,7 @@
     "access-your-assets": "Access your assets",
     "access-your-assets-description": "It's how you view, manage, and interact with the tokenized assets you'll acquire on Asset Tokenization Kit. Your tokens technically live on the blockchain, and your wallet gives you the sole power to control them.",
     "authorize-transactions": "Authorize transactions",
-    "authorize-transactions-description": "Every important action you take – from buying or selling tokens to registering your ONCHAINID – requires your wallet to digitally 'sign' (authorize) the transaction. This signature confirms it's genuinely you, without revealing your private key.",
+    "authorize-transactions-description": "Every important action you take - from buying or selling tokens to registering your ONCHAINID - requires your wallet to digitally 'sign' (authorize) the transaction. This signature confirms it's genuinely you, without revealing your private key.",
     "manage-on-chain-identity": "Manage your on-chain identity",
     "manage-on-chain-identity-description": "Your wallet is also the foundation for your unique ONCHAINID, linking your verified identity securely to your blockchain activities.",
     "submit": "Create my wallet",
@@ -134,7 +138,8 @@
       "set-pin": "Set PIN Code",
       "success": "PIN code set successfully",
       "invalid-pin-format": "Invalid PIN code format",
-      "pin-codes-dont-match": "PIN codes don't match"
+      "pin-codes-dont-match": "PIN codes don't match",
+      "setup-failed": "Failed to set up PIN code"
     },
     "otp": {
       "setup-initiated": "OTP setup initiated",
@@ -158,7 +163,8 @@
       "enter-code": "Enter the 6-digit code from your app",
       "cancel": "Cancel",
       "verifying": "Verifying...",
-      "verify-code": "Verify Code"
+      "verify-code": "Verify Code",
+      "refresh-failed": "Failed to refresh user state"
     },
     "recovery-codes": {
       "title": "Your secret codes",

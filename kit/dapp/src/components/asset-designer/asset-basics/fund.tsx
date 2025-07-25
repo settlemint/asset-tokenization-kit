@@ -4,6 +4,10 @@ import {
 } from "@/components/asset-designer/asset-basics/common";
 import type { AssetDesignerFormInputData } from "@/components/asset-designer/shared-form";
 import { isRequiredField } from "@/components/asset-designer/shared-form";
+import {
+  FormStepContent,
+  FormStepSubmit,
+} from "@/components/form/multi-step/form-step";
 import { withForm } from "@/hooks/use-app-form";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
@@ -23,24 +27,27 @@ export const FundBasics = withForm({
     const { t } = useTranslation(["asset-designer"]);
     return (
       <>
-        <CommonFields form={form} />
-        <form.AppField
-          name="managementFeeBps"
-          children={(field) => (
-            <field.NumberField
-              label={t("form.fields.managementFeeBps.label")}
-              postfix="bps"
-              required={isRequiredField("managementFeeBps")}
-            />
-          )}
-        />
-
-        <form.StepSubmitButton
-          label="Next"
-          onStepSubmit={onStepSubmit}
-          validate={fundFields}
-          checkRequiredFn={isRequiredField}
-        />
+        <FormStepContent>
+          <CommonFields form={form} />
+          <form.AppField
+            name="managementFeeBps"
+            children={(field) => (
+              <field.NumberField
+                label={t("form.fields.managementFeeBps.label")}
+                postfix="bps"
+                required={isRequiredField("managementFeeBps")}
+              />
+            )}
+          />
+        </FormStepContent>
+        <FormStepSubmit>
+          <form.StepSubmitButton
+            label={t("form.buttons.next")}
+            onStepSubmit={onStepSubmit}
+            validate={fundFields}
+            checkRequiredFn={isRequiredField}
+          />
+        </FormStepSubmit>
       </>
     );
   },
