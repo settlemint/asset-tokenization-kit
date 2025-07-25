@@ -17,7 +17,7 @@ import { IATKTopicSchemeRegistry } from "./IATKTopicSchemeRegistry.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 /// @title ATK Topic Scheme Registry Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Implementation for managing topic schemes with their signatures for data encoding/decoding
 /// @dev This contract manages the registration and lifecycle of topic schemes used for claim data structures
 contract ATKTopicSchemeRegistryImplementation is
@@ -91,7 +91,7 @@ contract ATKTopicSchemeRegistryImplementation is
     /// @dev Sets up access control and grants initial roles to the admin
     /// @param initialAdmin The address that will receive admin and registrar roles
     /// @param initialRegistrars The addresses that will receive registrar roles
-    function initialize(address initialAdmin, address[] memory initialRegistrars) public initializer {
+    function initialize(address initialAdmin, address[] calldata initialRegistrars) public initializer {
         __ERC165_init_unchained();
         __AccessControl_init_unchained();
 
@@ -181,7 +181,7 @@ contract ATKTopicSchemeRegistryImplementation is
 
             // Add to enumeration array
             topicIds_.push(topicId);
-            currentArrayLength++;
+            ++currentArrayLength;
             topicIdIndex_[topicId] = currentArrayLength; // Use cached length instead of reading from storage
 
             // Emit individual event for each registration

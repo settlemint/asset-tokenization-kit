@@ -4,16 +4,14 @@ pragma solidity ^0.8.28;
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-// ContextUpgradeable is imported by ERC20Upgradeable, so direct import might be redundant but harmless.
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
-// Context is imported for the SMARTContext override signature, not directly used for its functions here.
-import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 
 // Base contract imports
 import { _SMARTExtension } from "./_SMARTExtension.sol";
 import { SMARTContext } from "./SMARTContext.sol";
 /// @title Upgradeable SMART Token Extension Base
-/// @notice This abstract contract serves as a foundational base for all upgradeable SMART token extensions.
+/// @author SettleMint
+/// @notice This abstract contract serves as a foundational base for all upgradeable SMART token
+/// extensions.
 ///         It combines common SMART functionalities with an upgradeable ERC20 token framework.
 ///         'Upgradeable' means the contract's logic can be changed after deployment via a proxy pattern,
 ///         without changing the contract's address.

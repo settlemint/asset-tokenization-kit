@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 /// @title IATKSystemFactory
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Interface for the ATKSystemFactory contract that deploys new instances of the ATKSystem contract.
 /// @dev This interface defines all public functions, events, and state variables for the ATKSystemFactory.
 /// It supports meta-transactions through ERC2771Context and tracks all deployed ATKSystem instances.

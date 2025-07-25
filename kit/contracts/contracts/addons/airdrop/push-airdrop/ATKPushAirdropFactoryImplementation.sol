@@ -33,7 +33,9 @@ import { ATKSystemRoles } from "../../../system/ATKSystemRoles.sol";
 contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImplementation, IATKPushAirdropFactory {
     /// @notice Type identifier for the factory
     /// @return The keccak256 hash of "ATKPushAirdropFactory"
-    bytes32 public constant override typeId = keccak256("ATKPushAirdropFactory");
+    function typeId() external pure override returns (bytes32) {
+        return keccak256("ATKPushAirdropFactory");
+    }
 
     /// @notice Address of the current `ATKPushAirdrop` logic contract (implementation).
     address public override atkPushAirdropImplementation;
@@ -42,8 +44,7 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     /// airdrop proxy contracts created by this factory.
     IATKPushAirdrop[] private allAirdrops;
 
-    /// @notice Constructor to initialize the factory
-    /// @dev Prevents implementation contract initialization
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
     /// @param forwarder The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) { }
@@ -100,7 +101,7 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     /// @param distributionCap The maximum tokens that can be distributed (0 for no cap).
     /// @return airdropProxyAddress The address of the newly created `ATKPushAirdropProxy` contract.
     function create(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,
@@ -145,7 +146,7 @@ contract ATKPushAirdropFactoryImplementation is AbstractATKSystemAddonFactoryImp
     /// @param distributionCap The maximum tokens that can be distributed.
     /// @return predictedAddress The predicted address of the push airdrop proxy.
     function predictPushAirdropAddress(
-        string memory name,
+        string calldata name,
         address token,
         bytes32 root,
         address owner,

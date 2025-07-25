@@ -7,7 +7,7 @@ import { IERC734 } from "@onchainid/contracts/interface/IERC734.sol";
 import { ERC734KeyPurposes } from "../ERC734KeyPurposes.sol";
 
 /// @title ClaimAuthorizationExtension
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Extension for managing claim authorization contracts in identities
 /// @dev This extension allows identities to register multiple authorization contracts
 ///      that implement IClaimAuthorization. When adding claims, the identity will query

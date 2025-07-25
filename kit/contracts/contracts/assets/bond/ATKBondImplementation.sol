@@ -30,7 +30,6 @@ import { SMARTHooks } from "../../smart/extensions/common/SMARTHooks.sol";
 // Feature extensions
 import { SMARTPausableUpgradeable } from "../../smart/extensions/pausable/SMARTPausableUpgradeable.sol";
 import { SMARTBurnableUpgradeable } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
-import { _SMARTBurnableLogic } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
 import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMARTCustodianUpgradeable.sol";
 import { SMARTRedeemableUpgradeable } from "../../smart/extensions/redeemable/SMARTRedeemableUpgradeable.sol";
 import { SMARTHistoricalBalancesUpgradeable } from
@@ -98,22 +97,18 @@ contract ATKBondImplementation is
     /// @param symbol_ The symbol of the token.
     /// @param decimals_ The number of decimals the token uses.
     /// @param cap_ Token cap
-    /// @param maturityDate_ Bond maturity date
-    /// @param faceValue_ Bond face value
-    /// @param underlyingAsset_ Underlying asset contract address
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset)
     /// @param initialModulePairs_ Initial compliance module configurations.
     /// @param identityRegistry_ The address of the Identity Registry contract.
     /// @param compliance_ The address of the main compliance contract.
     /// @param accessManager_ The address of the access manager contract.
     function initialize(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
         uint256 cap_,
-        uint256 maturityDate_,
-        uint256 faceValue_,
-        address underlyingAsset_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        IATKBond.BondInitParams calldata bondParams,
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
         address identityRegistry_,
         address compliance_,
         address accessManager_
@@ -122,12 +117,12 @@ contract ATKBondImplementation is
         override
         initializer
     {
-        if (maturityDate_ <= block.timestamp) revert BondInvalidMaturityDate();
-        if (faceValue_ == 0) revert InvalidFaceValue();
-        if (underlyingAsset_ == address(0)) revert InvalidUnderlyingAsset();
+        if (bondParams.maturityDate < block.timestamp + 1) revert BondInvalidMaturityDate();
+        if (bondParams.faceValue == 0) revert InvalidFaceValue();
+        if (bondParams.underlyingAsset == address(0)) revert InvalidUnderlyingAsset();
 
         // Verify the underlying asset contract exists by attempting to call a view function
-        try IERC20(underlyingAsset_).totalSupply() returns (uint256) {
+        try IERC20(bondParams.underlyingAsset).totalSupply() returns (uint256) {
             // Contract exists and implements IERC20
         } catch {
             revert InvalidUnderlyingAsset();
@@ -147,9 +142,9 @@ contract ATKBondImplementation is
         _registerInterface(type(IATKBond).interfaceId);
         _registerInterface(type(IContractWithIdentity).interfaceId);
 
-        _maturityDate = maturityDate_;
-        _faceValue = faceValue_;
-        _underlyingAsset = IERC20(underlyingAsset_);
+        _maturityDate = bondParams.maturityDate;
+        _faceValue = bondParams.faceValue;
+        _underlyingAsset = IERC20(bondParams.underlyingAsset);
     }
 
     // --- View Functions ---
@@ -559,6 +554,7 @@ contract ATKBondImplementation is
     /// @notice Returns the yield basis per unit for a given address
     /// @dev Returns the face value of the bond. The address parameter is unused in this implementation.
     /// @return The face value representing the yield basis per unit
+    // solhint-disable-next-line use-natspec
     function yieldBasisPerUnit(address /* holder */ ) external view override returns (uint256) {
         return _faceValue;
     }
@@ -623,6 +619,9 @@ contract ATKBondImplementation is
     // These ensure that logic from multiple inherited extensions (SMART, SMARTCustodian, etc.) is called correctly.
 
     /// @inheritdoc SMARTHooks
+    /// @notice Hook that is called before minting tokens
+    /// @param to The address that will receive the minted tokens
+    /// @param amount The amount of tokens to be minted
     function _beforeMint(
         address to,
         uint256 amount
@@ -635,6 +634,10 @@ contract ATKBondImplementation is
     }
 
     /// @inheritdoc SMARTHooks
+    /// @notice Hook that is called before transferring tokens
+    /// @param from The address transferring the tokens
+    /// @param to The address that will receive the tokens
+    /// @param amount The amount of tokens to be transferred
     function _beforeTransfer(
         address from,
         address to,
@@ -654,6 +657,9 @@ contract ATKBondImplementation is
     }
 
     /// @inheritdoc SMARTHooks
+    /// @notice Hook that is called before burning tokens
+    /// @param from The address whose tokens will be burned
+    /// @param amount The amount of tokens to be burned
     function _beforeBurn(
         address from,
         uint256 amount
@@ -666,6 +672,9 @@ contract ATKBondImplementation is
     }
 
     /// @inheritdoc SMARTHooks
+    /// @notice Hook that is called before redeeming tokens
+    /// @param owner The address redeeming the tokens
+    /// @param amount The amount of tokens to be redeemed
     function _beforeRedeem(
         address owner,
         uint256 amount
@@ -675,12 +684,15 @@ contract ATKBondImplementation is
         override(SMARTCustodianUpgradeable, SMARTHooks)
     {
         if (!isMatured) revert BondNotYetMatured();
-        if (amount <= 0) revert InvalidRedemptionAmount();
+        if (amount == 0) revert InvalidRedemptionAmount();
 
         super._beforeRedeem(owner, amount);
     }
 
     /// @inheritdoc SMARTHooks
+    /// @notice Hook that is called after minting tokens
+    /// @param to The address that received the minted tokens
+    /// @param amount The amount of tokens that were minted
     function _afterMint(
         address to,
         uint256 amount
@@ -693,6 +705,10 @@ contract ATKBondImplementation is
     }
 
     /// @inheritdoc SMARTHooks
+    /// @notice Hook that is called after transferring tokens
+    /// @param from The address that transferred the tokens
+    /// @param to The address that received the tokens
+    /// @param amount The amount of tokens that were transferred
     function _afterTransfer(
         address from,
         address to,
@@ -706,6 +722,9 @@ contract ATKBondImplementation is
     }
 
     /// @inheritdoc SMARTHooks
+    /// @notice Hook that is called after burning tokens
+    /// @param from The address whose tokens were burned
+    /// @param amount The amount of tokens that were burned
     function _afterBurn(
         address from,
         uint256 amount
@@ -718,6 +737,9 @@ contract ATKBondImplementation is
     }
 
     /// @inheritdoc SMARTHooks
+    /// @notice Hook that is called after recovering tokens from a lost wallet
+    /// @param lostWallet The address of the wallet from which tokens were recovered
+    /// @param newWallet The address of the wallet that received the recovered tokens
     function _afterRecoverTokens(
         address lostWallet,
         address newWallet

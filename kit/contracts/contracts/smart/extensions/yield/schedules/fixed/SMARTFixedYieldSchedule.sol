@@ -1,15 +1,11 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
-import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-
-import { ISMARTFixedYieldSchedule } from "./ISMARTFixedYieldSchedule.sol";
 import { SMARTFixedYieldScheduleLogic } from "./internal/SMARTFixedYieldScheduleLogic.sol";
 
+/// @title SMART Fixed Yield Schedule Contract (Non-Upgradeable)
+/// @author SettleMint
+/// @notice This abstract contract provides a fixed yield schedule implementation for SMART tokens
 abstract contract SMARTFixedYieldSchedule is SMARTFixedYieldScheduleLogic {
     /// @notice Constructor to deploy a new `SMARTFixedYieldSchedule` contract.
     /// @dev If not a logic contract, initializes all parameters. Otherwise, defers to `initialize()`.

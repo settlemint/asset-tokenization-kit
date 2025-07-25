@@ -8,6 +8,8 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol"; // Req
 import { ERC735ClaimSchemes } from "../ERC735ClaimSchemes.sol";
 
 /// @title ERC735 Claim Holder Standard Implementation
+/// @author SettleMint
+/// @notice This contract implements the ERC735 standard for managing claims on identities
 /// @dev Implementation of the IERC735 (Claim Holder) standard.
 /// This contract manages claims issued by different entities.
 contract ERC735 is IERC735 {
@@ -30,6 +32,7 @@ contract ERC735 is IERC735 {
     error UnsupportedClaimScheme(uint256 scheme);
     error UnauthorizedContractClaim(address caller, address issuer);
 
+    /// @notice Adds or updates a claim on the identity
     /// @dev See {IERC735-addClaim}.
     /// Adds or updates a claim. Emits {ClaimAdded} or {ClaimChanged}.
     /// The `_signature` is `keccak256(abi.encode(address(this), _topic, _data))` signed by the `issuer`.
@@ -37,6 +40,13 @@ contract ERC735 is IERC735 {
     /// Requirements:
     /// - If `issuer` is not this contract, the claim must be verifiable via `IClaimIssuer(issuer).isClaimValid(...)`.
     /// - This function should typically be restricted (e.g., by a claim key in the inheriting contract).
+    /// @param _topic The topic of the claim
+    /// @param _scheme The signature scheme used (e.g., ECDSA or CONTRACT)
+    /// @param _issuer The address of the claim issuer
+    /// @param _signature The signature of the claim
+    /// @param _data The data of the claim
+    /// @param _uri The URI of the claim (e.g., IPFS hash)
+    /// @return claimRequestId The ID of the created or updated claim
     function addClaim(
         uint256 _topic,
         uint256 _scheme,
@@ -86,6 +96,7 @@ contract ERC735 is IERC735 {
         return claimId;
     }
 
+    /// @notice Removes a claim from the identity
     /// @dev See {IERC735-removeClaim}.
     /// Removes a claim by its ID. Emits {ClaimRemoved}.
     /// Claim ID is `keccak256(abi.encode(issuer_address, topic))`.
@@ -94,6 +105,8 @@ contract ERC735 is IERC735 {
     /// - This function should typically be restricted (e.g., by a claim key or management key in the inheriting
     /// contract,
     ///   or only allow issuer or self to remove).
+    /// @param _claimId The ID of the claim to remove
+    /// @return success True if the claim was successfully removed
     function removeClaim(bytes32 _claimId) public virtual override returns (bool success) {
         if (_claims[_claimId].issuer == address(0)) {
             revert ClaimDoesNotExist(_claimId);
@@ -103,9 +116,9 @@ contract ERC735 is IERC735 {
         uint256 claimIndex = 0;
         uint256 arrayLength = _claimsByTopic[_topic].length;
         while (_claimsByTopic[_topic][claimIndex] != _claimId) {
-            claimIndex++;
+            ++claimIndex;
 
-            if (claimIndex >= arrayLength) {
+            if (claimIndex == arrayLength) {
                 break;
             }
         }
@@ -128,9 +141,17 @@ contract ERC735 is IERC735 {
         return true;
     }
 
+    /// @notice Retrieves a claim by its ID
     /// @dev See {IERC735-getClaim}.
     /// Retrieves a claim by its ID.
     /// Claim ID is `keccak256(abi.encode(issuer_address, topic))`.
+    /// @param _claimId The ID of the claim to retrieve
+    /// @return topic The topic of the claim
+    /// @return scheme The signature scheme used
+    /// @return issuer The address of the claim issuer
+    /// @return signature The signature of the claim
+    /// @return data The data of the claim
+    /// @return uri The URI of the claim
     function getClaim(bytes32 _claimId)
         public
         view
@@ -159,8 +180,11 @@ contract ERC735 is IERC735 {
         );
     }
 
+    /// @notice Returns all claim IDs for a specific topic
     /// @dev See {IERC735-getClaimIdsByTopic}.
     /// Returns an array of claim IDs associated with a specific topic.
+    /// @param _topic The topic to query claims for
+    /// @return claimIds Array of claim IDs associated with the topic
     function getClaimIdsByTopic(uint256 _topic) external view virtual override returns (bytes32[] memory claimIds) {
         return _claimsByTopic[_topic];
     }

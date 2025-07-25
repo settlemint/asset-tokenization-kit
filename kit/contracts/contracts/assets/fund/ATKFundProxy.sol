@@ -5,11 +5,9 @@ import { ATKAssetProxy } from "../ATKAssetProxy.sol";
 import { IATKFund } from "./IATKFund.sol";
 
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
-
-import { TokenImplementationNotSet } from "../../system/ATKSystemErrors.sol";
 
 /// @title Proxy contract for ATK Funds, using ATKAssetProxy.
+/// @author SettleMint
 /// @notice This contract serves as a proxy, allowing for upgradeability of the underlying fund logic.
 /// It retrieves the implementation address from the IATKTokenFactory contract via ATKAssetProxy.
 contract ATKFundProxy is ATKAssetProxy {

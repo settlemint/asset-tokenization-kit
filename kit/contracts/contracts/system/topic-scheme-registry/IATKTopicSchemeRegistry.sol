@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
 
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 
@@ -11,5 +11,8 @@ import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSche
  *      for managing claim topic schemes within the ATK token ecosystem
  */
 interface IATKTopicSchemeRegistry is ISMARTTopicSchemeRegistry {
-    function initialize(address initialAdmin, address[] memory initialRegistrars) external;
+    /// @notice Initializes the ATK Topic Scheme Registry contract
+    /// @param initialAdmin The address that will be granted the DEFAULT_ADMIN_ROLE
+    /// @param initialRegistrars Array of addresses that will be granted the REGISTRAR_ROLE
+    function initialize(address initialAdmin, address[] calldata initialRegistrars) external;
 }

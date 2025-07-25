@@ -14,7 +14,7 @@ import {
 } from "../system/ATKSystemErrors.sol";
 
 /// @title Abstract Base Proxy for ATK Assets
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Provides common functionality for asset proxy contracts that interact with an IATKTokenFactory
 ///         to determine their implementation address and handle initialization.
 /// @dev Child contracts must:

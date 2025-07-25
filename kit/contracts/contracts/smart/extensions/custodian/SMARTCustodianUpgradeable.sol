@@ -3,7 +3,6 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
 // Base contract imports
 import { SMARTExtensionUpgradeable } from "../common/SMARTExtensionUpgradeable.sol";
@@ -16,7 +15,9 @@ import { ISMARTCustodian } from "./ISMARTCustodian.sol";
 // Error imports
 
 /// @title Upgradeable SMART Custodian Extension
-/// @notice This abstract contract provides the upgradeable (UUPS proxy pattern) implementation of custodian
+/// @author SettleMint
+/// @notice This abstract contract provides the upgradeable (UUPS proxy pattern) implementation of
+/// custodian
 ///         features (like freezing, forced transfers, recovery) for a SMART token.
 /// @dev It integrates the core logic from `_SMARTCustodianLogic` with an `ERC20Upgradeable` token.
 ///      This contract is 'abstract' because the final, deployable (and upgradeable) token contract must:
@@ -40,7 +41,8 @@ abstract contract SMARTCustodianUpgradeable is Initializable, SMARTExtensionUpgr
     // In the final contract's `initialize` function, ensure `__SMARTCustodian_init()` is called after other
     // essential initializers like `__ERC20_init`, `__Ownable_init` (or `__AccessControl_init`), and `__SMART_init`.
 
-    /// @dev Register the `ISMARTCustodian` interface ID for ERC165. This allows factories to check if the contract
+    /// @notice Register the interface ID for ERC165.
+    /// @dev This allows factories to check if the contract
     /// supports the `ISMARTCustodian` interface based on the upgradeable implementation.
     constructor() {
         _registerInterface(type(ISMARTCustodian).interfaceId);
@@ -93,36 +95,51 @@ abstract contract SMARTCustodianUpgradeable is Initializable, SMARTExtensionUpgr
     // version.
 
     /// @inheritdoc SMARTHooks
-    /// @dev Overrides `_beforeMint` for upgradeable custodian checks (e.g., recipient not frozen).
+    /// @notice Overrides `_beforeMint` for upgradeable custodian checks (e.g., recipient not frozen).
+    /// @dev Calls `__custodian_beforeMintLogic` to prevent minting to a frozen address.
+    /// @param to The address that will receive the minted tokens.
+    /// @param amount The amount of tokens to be minted.
     function _beforeMint(address to, uint256 amount) internal virtual override(SMARTHooks) {
         __custodian_beforeMintLogic(to);
         super._beforeMint(to, amount); // Maintain hook chain.
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Overrides `_beforeTransfer` for upgradeable custodian checks (frozen accounts, unfrozen balance).
+    /// @notice Overrides `_beforeTransfer` for upgradeable custodian checks (frozen accounts, unfrozen balance).
+    /// @dev Calls `__custodian_beforeTransferLogic` to verify sender and recipient status.
+    /// @param from The address sending the tokens.
+    /// @param to The address receiving the tokens.
+    /// @param amount The amount of tokens being transferred.
     function _beforeTransfer(address from, address to, uint256 amount) internal virtual override(SMARTHooks) {
         __custodian_beforeTransferLogic(from, to, amount);
         super._beforeTransfer(from, to, amount); // Maintain hook chain.
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Overrides `_beforeBurn` for upgradeable custodian logic (e.g., admin burn consuming frozen tokens).
+    /// @notice Overrides `_beforeBurn` for upgradeable custodian logic (e.g., admin burn consuming frozen tokens).
+    /// @dev Calls `__custodian_beforeBurnLogic` for custodian-specific burn processing.
+    /// @param from The address from which tokens will be burned.
+    /// @param amount The amount of tokens to be burned.
     function _beforeBurn(address from, uint256 amount) internal virtual override(SMARTHooks) {
         __custodian_beforeBurnLogic(from, amount);
         super._beforeBurn(from, amount); // Maintain hook chain.
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Overrides `_beforeRedeem` for upgradeable custodian checks (user redeem, frozen status, balance).
+    /// @notice Overrides `_beforeRedeem` for upgradeable custodian checks (user redeem, frozen status, balance).
+    /// @dev Calls `__custodian_beforeRedeemLogic` to verify the redeemer's status.
+    /// @param from The address redeeming the tokens.
+    /// @param amount The amount of tokens to be redeemed.
     function _beforeRedeem(address from, uint256 amount) internal virtual override(SMARTHooks) {
         __custodian_beforeRedeemLogic(from, amount);
         super._beforeRedeem(from, amount); // Maintain hook chain.
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Overrides the `_afterRecoverTokens` hook to add custodian-specific logic.
-    ///      Calls `__custodian_afterRecoverTokensLogic` to check if the new wallet is frozen.
+    /// @notice Overrides the `_afterRecoverTokens` hook to add custodian-specific logic.
+    /// @dev Calls `__custodian_afterRecoverTokensLogic` to check if the new wallet is frozen.
+    /// @param lostWallet The address of the wallet that has lost access to its tokens.
+    /// @param newWallet The address of the wallet that will receive the recovered tokens.
     function _afterRecoverTokens(address lostWallet, address newWallet) internal virtual override(SMARTHooks) {
         __custodian_afterRecoverTokensLogic(lostWallet, newWallet); // Custodian logic for recover tokens.
         super._afterRecoverTokens(lostWallet, newWallet); // Continue with other hooks.

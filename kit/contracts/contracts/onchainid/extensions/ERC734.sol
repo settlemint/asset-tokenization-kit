@@ -8,6 +8,8 @@ import { ERC734KeyPurposes } from "../ERC734KeyPurposes.sol";
 // Example: error MissingApprovalPermission(bytes32 key, uint256 requiredPurpose);
 
 /// @title ERC734 Key Holder Standard Implementation
+/// @author SettleMint
+/// @notice This contract implements the ERC734 standard for managing cryptographic keys with different purposes
 /// @dev Implementation of the IERC734 (Key Holder) standard.
 /// This contract manages keys with different purposes and allows for execution of operations based on key approvals.
 contract ERC734 is IERC734, ReentrancyGuard {
@@ -30,10 +32,10 @@ contract ERC734 is IERC734, ReentrancyGuard {
 
     struct Execution {
         address to;
-        uint256 value;
-        bytes data;
         bool approved;
         bool executed;
+        uint256 value;
+        bytes data;
     }
 
     mapping(bytes32 => Key) internal _keys;
@@ -42,6 +44,9 @@ contract ERC734 is IERC734, ReentrancyGuard {
     uint256 internal _executionNonce;
     bool internal _initialized = false;
 
+    /// @notice Initializes the ERC734 contract with an initial management key
+    /// @param initialManagementKey The address to be set as the initial management key
+    /// @param _isLibrary Flag indicating if this is deployed as a library (skips initialization)
     constructor(address initialManagementKey, bool _isLibrary) {
         if (!_isLibrary) {
             __ERC734_init(initialManagementKey);
@@ -50,10 +55,14 @@ contract ERC734 is IERC734, ReentrancyGuard {
         }
     }
 
+    /// @notice Initializes the contract with a management key
+    /// @param initialManagementKey The address to be set as the initial management key
     function initialize(address initialManagementKey) external virtual {
         __ERC734_init(initialManagementKey);
     }
 
+    /// @notice Internal initialization function for ERC734
+    /// @param initialManagementKey The address to be set as the initial management key
     function __ERC734_init(address initialManagementKey) internal {
         if (_initialized && !_isConstructor()) revert InitialKeyAlreadySetup();
         if (initialManagementKey == address(0)) revert InvalidInitialManagementKey();
@@ -74,11 +83,16 @@ contract ERC734 is IERC734, ReentrancyGuard {
         emit KeyAdded(keyHash, ERC734KeyPurposes.MANAGEMENT_KEY, 1);
     }
 
+    /// @notice Adds a key to the identity with a specific purpose
     /// @dev See {IERC734-addKey}.
     /// Adds a _key to the identity. The _purpose specifies the purpose of the key.
     /// Emits a {KeyAdded} event.
     /// Requirements:
     /// - This function should typically be restricted (e.g., by an owner or management key in the inheriting contract).
+    /// @param _key The key identifier to add
+    /// @param _purpose The purpose for the key (e.g., MANAGEMENT_KEY, ACTION_KEY, CLAIM_SIGNER_KEY)
+    /// @param _keyType The type of key (e.g., 1 for ECDSA)
+    /// @return success True if the key was successfully added
     function addKey(bytes32 _key, uint256 _purpose, uint256 _keyType) public virtual override returns (bool success) {
         if (_key == 0) revert KeyCannotBeZero();
 
@@ -103,6 +117,7 @@ contract ERC734 is IERC734, ReentrancyGuard {
         return true;
     }
 
+    /// @notice Approves or disapproves an execution request
     /// @dev See {IERC734-approve}.
     /// Approves an execution.
     /// Emits an {Approved} event. If approval leads to execution, {Executed} or {ExecutionFailed} is emitted.
@@ -110,7 +125,11 @@ contract ERC734 is IERC734, ReentrancyGuard {
     /// - `_id` must correspond to an existing, non-executed execution request.
     /// - The caller must have the appropriate permissions to approve (typically checked in the inheriting contract or
     /// via keyHasPurpose).
+    /// @param _id The ID of the execution request
+    /// @param _approve True to approve, false to disapprove
+    /// @return success True if the approval was processed successfully
     function approve(uint256 _id, bool _approve) public virtual override nonReentrant returns (bool success) {
+        // solhint-disable-next-line gas-strict-inequalities
         if (_id >= _executionNonce) revert ExecutionIdDoesNotExist({ executionId: _id });
         Execution storage execution = _executions[_id];
         if (execution.executed) revert ExecutionAlreadyPerformed({ executionId: _id });
@@ -144,12 +163,16 @@ contract ERC734 is IERC734, ReentrancyGuard {
         return true; // Successfully processed the approve call (approved or disapproved)
     }
 
+    /// @notice Removes a specific purpose from a key
     /// @dev See {IERC734-removeKey}.
     /// Removes a _purpose from a _key. If it's the last purpose, the key is removed entirely.
     /// Emits a {KeyRemoved} event.
     /// Requirements:
     /// - This function should typically be restricted (e.g., by an owner or management key in the inheriting contract).
     /// - The _key must exist and have the specified _purpose.
+    /// @param _key The key identifier to remove the purpose from
+    /// @param _purpose The purpose to remove from the key
+    /// @return success True if the key purpose was successfully removed
     function removeKey(bytes32 _key, uint256 _purpose) public virtual override returns (bool success) {
         if (_keys[_key].key != _key) revert KeyDoesNotExist({ key: _key });
 
@@ -196,6 +219,7 @@ contract ERC734 is IERC734, ReentrancyGuard {
         return true;
     }
 
+    /// @notice Creates an execution request
     /// @dev See {IERC734-execute}.
     /// Initiates an execution. If the caller has appropriate keys, it might be auto-approved.
     /// Emits an {ExecutionRequested} event. If auto-approved and executed, also emits {Executed} or {ExecutionFailed}.
@@ -203,6 +227,10 @@ contract ERC734 is IERC734, ReentrancyGuard {
     /// The actual approval logic based on `msg.sender`'s keys (e.g., MANAGEMENT or ACTION) is usually handled
     /// in the `approve` function or by an overriding `execute` in the inheriting Identity contract.
     /// This base implementation creates the request.
+    /// @param _to The address to execute the call to
+    /// @param _value The amount of ETH to send
+    /// @param _data The data payload for the call
+    /// @return executionId The ID of the created execution request
     function execute(
         address _to,
         uint256 _value,
@@ -222,7 +250,7 @@ contract ERC734 is IERC734, ReentrancyGuard {
         _executions[executionId].data = _data;
         _executions[executionId].approved = false; // Default to not approved
         _executions[executionId].executed = false;
-        _executionNonce++;
+        ++_executionNonce;
 
         emit ExecutionRequested(executionId, _to, _value, _data);
 
@@ -237,8 +265,13 @@ contract ERC734 is IERC734, ReentrancyGuard {
         return executionId;
     }
 
+    /// @notice Retrieves information about a key
     /// @dev See {IERC734-getKey}.
     /// Returns the purposes, key type, and the key itself for a given `_key` hash.
+    /// @param _key The key identifier to query
+    /// @return purposes Array of purposes associated with the key
+    /// @return keyType The type of the key
+    /// @return key The key identifier itself
     function getKey(bytes32 _key)
         external
         view
@@ -249,20 +282,30 @@ contract ERC734 is IERC734, ReentrancyGuard {
         return (_keys[_key].purposes, _keys[_key].keyType, _keys[_key].key);
     }
 
+    /// @notice Returns all purposes associated with a key
     /// @dev See {IERC734-getKeyPurposes}.
     /// Returns the list of purposes associated with a `_key`.
+    /// @param _key The key identifier to query
+    /// @return purposes Array of purposes associated with the key
     function getKeyPurposes(bytes32 _key) external view virtual override returns (uint256[] memory purposes) {
         return _keys[_key].purposes;
     }
 
+    /// @notice Returns all keys that have a specific purpose
     /// @dev See {IERC734-getKeysByPurpose}.
     /// Returns an array of key hashes that have the given `_purpose`.
+    /// @param _purpose The purpose to query keys for
+    /// @return keys Array of key identifiers that have the specified purpose
     function getKeysByPurpose(uint256 _purpose) external view virtual override returns (bytes32[] memory keys) {
         return _keysByPurpose[_purpose];
     }
 
+    /// @notice Checks if a key has a specific purpose
     /// @dev See {IERC734-keyHasPurpose}.
     /// Returns `true` if a `_key` is present and has the given `_purpose`.
+    /// @param _key The key identifier to check
+    /// @param _purpose The purpose to check for
+    /// @return exists True if the key has the specified purpose
     function keyHasPurpose(bytes32 _key, uint256 _purpose) public view virtual override returns (bool exists) {
         Key storage k = _keys[_key];
         if (k.key == 0) {
@@ -279,9 +322,9 @@ contract ERC734 is IERC734, ReentrancyGuard {
         return false;
     }
 
+    /// @notice Checks if the current context is within a constructor
     /// @dev Computes if the context in which the function is called is a constructor or not.
-    ///
-    /// @return true if the context is a constructor.
+    /// @return True if the context is a constructor
     function _isConstructor() private view returns (bool) {
         address self = address(this);
         uint256 cs;

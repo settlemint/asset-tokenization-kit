@@ -2,6 +2,8 @@ import { Address } from "@graphprotocol/graph-ts";
 import {
   AirdropBatchTokensTransferred,
   AirdropTokensTransferred,
+  TokensWithdrawn,
+  OwnershipTransferred,
 } from "../../../../generated/templates/PushAirdrop/PushAirdrop";
 import { fetchEvent } from "../../../event/fetch/event";
 import { setBigNumber } from "../../../utils/bignumber";
@@ -86,4 +88,12 @@ export function handleAirdropBatchTokensTransferred(
     );
     airdropAllocation.save();
   }
+}
+
+export function handleTokensWithdrawn(event: TokensWithdrawn): void {
+  fetchEvent(event, "TokensWithdrawn");
+}
+
+export function handleOwnershipTransferred(event: OwnershipTransferred): void {
+  fetchEvent(event, "OwnershipTransferred");
 }

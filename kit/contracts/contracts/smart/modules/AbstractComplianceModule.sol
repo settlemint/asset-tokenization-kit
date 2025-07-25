@@ -12,7 +12,7 @@ import { ERC2771Context } from "@openzeppelin/contracts/metatx/ERC2771Context.so
 import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol";
 
 /// @title Abstract Base for ATK Compliance Modules
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This abstract contract serves as a foundational building block for creating custom ATK compliance modules.
 /// @dev It implements the `IATKComplianceModule` interface and integrates OpenZeppelin's `AccessControl` for managing
 /// permissions within the module itself.
@@ -35,6 +35,7 @@ abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISM
     /// and revoke other roles.
     /// This allows the deployer to manage permissions for their specific compliance module instance (e.g., who can
     /// update settings if the module has any).
+    /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
     constructor(address _trustedForwarder) ERC2771Context(_trustedForwarder) {
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     }
@@ -181,7 +182,8 @@ abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISM
     /// the return value of this function) correctly refers to the original user who signed the transaction,
     /// rather than the forwarder contract that relayed it.
     /// If not a meta-transaction, it behaves like the standard `msg.sender`.
-    /// @return The address of the original transaction sender (user) or the direct caller.
+    /// @notice Returns the sender of the transaction, accounting for meta transactions
+    /// @return The address of the original transaction sender (user) or the direct caller
     function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
         return super._msgSender(); // Calls the ERC2771Context implementation.
     }
@@ -190,7 +192,8 @@ abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISM
     /// Similar to `_msgSender()`, this ensures that `msg.data` (and the return value of this function)
     /// refers to the original call data from the user in a meta-transaction context.
     /// If not a meta-transaction, it behaves like the standard `msg.data`.
-    /// @return The original call data of the transaction.
+    /// @notice Returns the call data of the transaction, accounting for meta transactions
+    /// @return The original call data of the transaction
     function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
         return super._msgData(); // Calls the ERC2771Context implementation.
     }
@@ -199,7 +202,8 @@ abstract contract AbstractComplianceModule is ERC2771Context, AccessControl, ISM
     /// This function is part of the ERC2771 meta-transaction standard. It indicates the length of the suffix
     /// appended to the call data by a forwarder, which typically contains the original sender's address.
     /// The base `ERC2771Context` implementation handles this correctly.
-    /// @return The length of the context suffix in the call data for meta-transactions.
+    /// @notice Returns the length of the context suffix for meta transactions
+    /// @return The length of the context suffix in the call data for meta-transactions
     function _contextSuffixLength() internal view override(Context, ERC2771Context) returns (uint256) {
         return super._contextSuffixLength();
     }

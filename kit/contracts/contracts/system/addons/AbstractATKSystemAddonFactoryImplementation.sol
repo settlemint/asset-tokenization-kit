@@ -22,6 +22,7 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 /// @title Abstract Factory for Creating ATK System Addon Proxies
+/// @author SettleMint
 /// @notice This abstract contract provides common functionality for system addon factory implementations.
 /// It manages implementation contracts and provides CREATE2 address prediction capabilities.
 /// @dev Key features of this abstract factory:
@@ -55,6 +56,8 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
     /// @param contractAddress The address of the addon contract
     event ContractIdentityRegistered(address indexed factory, address indexed contractAddress);
 
+    /// @notice Constructor that disables initializers and sets the trusted forwarder
+    /// @param forwarder The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
         _disableInitializers();
@@ -168,6 +171,7 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
         return super.supportsInterface(interfaceId);
     }
 
+    /// @notice Returns the address of the current message sender
     /// @dev Overridden from `Context` and `ERC2771Context` to correctly identify the transaction sender,
     /// accounting for meta-transactions if a trusted forwarder is used.
     /// @return The actual sender of the transaction (`msg.sender` or the relayed sender).
@@ -175,6 +179,7 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
         return super._msgSender();
     }
 
+    /// @notice Returns the calldata of the current transaction
     /// @dev Overridden from `Context` and `ERC2771Context` to correctly retrieve the transaction data,
     /// accounting for meta-transactions.
     /// @return The actual transaction data (`msg.data` or the relayed data).
@@ -187,6 +192,7 @@ abstract contract AbstractATKSystemAddonFactoryImplementation is
         return super._msgData();
     }
 
+    /// @notice Returns the length of the context suffix for meta-transactions
     /// @dev Overridden from `ERC2771Context` to define the length of the suffix appended to `msg.data` for relayed
     /// calls.
     /// @return The length of the context suffix (typically 20 bytes for the sender's address).

@@ -114,22 +114,16 @@ contract ATKSystemAddonRegistryTest is Test {
         // Manual check of event
         bytes32 eventSignature = IATKSystemAddonRegistry.SystemAddonRegistered.selector;
         assertEq(logs[2].topics[0], eventSignature);
-        assertEq(logs[2].topics.length, 2); // 1 indexed topic
+        assertEq(logs[2].topics.length, 4); // 3 indexed topics
         assertEq(address(uint160(uint256(logs[2].topics[1]))), admin);
+        assertEq(address(uint160(uint256(logs[2].topics[2]))), proxyAddress);
+        assertEq(address(uint160(uint256(logs[2].topics[3]))), address(mockAddonWithoutTypeId));
 
-        (
-            string memory name,
-            bytes32 typeId,
-            address emittedProxy,
-            address implementation,
-            bytes memory data,
-            uint256 timestamp
-        ) = abi.decode(logs[2].data, (string, bytes32, address, address, bytes, uint256));
+        (string memory name, bytes32 typeId, bytes memory data, uint256 timestamp) =
+            abi.decode(logs[2].data, (string, bytes32, bytes, uint256));
 
         assertEq(name, addonName);
         assertEq(typeId, bytes32(0));
-        assertEq(emittedProxy, proxyAddress);
-        assertEq(implementation, address(mockAddonWithoutTypeId));
         assertEq(data, initData);
         assertTrue(timestamp > 0);
 

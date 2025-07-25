@@ -12,7 +12,6 @@ import { IATKStableCoinFactory } from "./IATKStableCoinFactory.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
 import { IATKSystem } from "../../system/IATKSystem.sol";
-import { IATKIdentityFactory } from "../../system/identity-factory/IATKIdentityFactory.sol";
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
@@ -23,9 +22,17 @@ import { ATKTopics } from "../../system/ATKTopics.sol";
 import { ATKStableCoinProxy } from "./ATKStableCoinProxy.sol";
 
 /// @title Implementation of the ATK Stable Coin Factory
+/// @author SettleMint
 /// @notice This contract is responsible for creating instances of ATK Stable Coins.
 contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractATKTokenFactoryImplementation {
-    bytes32 public constant override typeId = keccak256("ATKStableCoinFactory");
+    /// @notice Type identifier for this factory contract
+    bytes32 public constant TYPE_ID = keccak256("ATKStableCoinFactory");
+
+    /// @notice Returns the type identifier for this factory contract
+    /// @return The TYPE_ID constant value
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice The collateral claim topic ID.
     uint256 internal _collateralClaimTopicId;
@@ -66,11 +73,11 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedStableCoinAddress The address of the newly deployed stable coin contract.
     function createStableCoin(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        uint256[] calldata requiredClaimTopics_,
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
         uint16 countryCode_
     )
         external
@@ -135,11 +142,11 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
     /// @param initialModulePairs_ The initial compliance module pairs for the stable coin.
     /// @return predictedAddress The predicted address of the stable coin contract.
     function predictStableCoinAddress(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        uint256[] calldata requiredClaimTopics_,
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_
     )
         external
         view
@@ -168,6 +175,9 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
 
     // --- ERC165 Overrides ---
 
+    /// @notice Checks if the contract supports a given interface
+    /// @param interfaceId The interface identifier, as specified in ERC-165
+    /// @return True if the contract supports the interface, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view
