@@ -257,8 +257,13 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// Falls back to AccessControl if system access manager is not set
     /// @param roles Array of roles, where the caller must have at least one
     modifier onlySystemRoles(bytes32[] memory roles) {
-        require(address(_systemAccessManager) != address(0), "ATKTrustedIssuers: system access manager not set");
-        require(_systemAccessManager.hasAnyRole(roles, _msgSender()), "ATKTrustedIssuers: unauthorized access");
+        if (address(_systemAccessManager) != address(0)) {
+            // Use centralized access manager when available
+            require(_systemAccessManager.hasAnyRole(roles, _msgSender()), "ATKTrustedIssuers: unauthorized access");
+        } else {
+            // Fall back to traditional AccessControl during bootstrap
+            require(hasRole(ATKSystemRoles.REGISTRAR_ROLE, _msgSender()), "ATKTrustedIssuers: missing registrar role");
+        }
         _;
     }
 

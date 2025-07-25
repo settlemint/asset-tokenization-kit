@@ -139,11 +139,16 @@ contract SystemUtils is Test {
         );
         vm.label(address(systemFactory), "System Factory");
 
-        vm.startPrank(platformAdmin); // Use admin for initialization and binding
+                vm.startPrank(platformAdmin); // Use admin for initialization and binding
         // --- During onboarding ---
         system = IATKSystem(systemFactory.createSystem());
         vm.label(address(system), "System");
         system.bootstrap();
+
+        // Configure system access manager on system contracts AFTER bootstrap
+        // The platformAdmin has DEFAULT_ADMIN_ROLE on these contracts after bootstrap
+        ATKTrustedIssuersRegistryImplementation(address(system.trustedIssuersRegistry())).setSystemAccessManager(address(system.systemAccessManager()));
+        ATKComplianceImplementation(address(system.compliance())).setSystemAccessManager(address(system.systemAccessManager()));
 
         compliance = ISMARTCompliance(system.compliance());
         vm.label(address(compliance), "Compliance");
@@ -173,13 +178,8 @@ contract SystemUtils is Test {
         countryBlockListComplianceModule = new CountryBlockListComplianceModule(forwarder);
         vm.label(address(countryBlockListComplianceModule), "Country Block List Compliance Module");
 
-        // Configure system access manager on system contracts
-        ATKTrustedIssuersRegistryImplementation(address(trustedIssuersRegistry)).setSystemAccessManager(address(system.systemAccessManager()));
-        ATKComplianceImplementation(address(compliance)).setSystemAccessManager(address(system.systemAccessManager()));
-
-        // Note: ATKTopicSchemeRegistryImplementation and ATKIdentityRegistryStorageImplementation
-        // get their system access manager set during initialization in the bootstrap process,
-        // so they don't need setSystemAccessManager calls here
+        // Note: System access manager configuration is now handled in the bootstrap process
+        // for all system contracts (ATKTrustedIssuersRegistry, ATKCompliance, ATKTopicSchemeRegistry, ATKIdentityRegistryStorage)
 
         // Grant necessary roles to platformAdmin in the system access manager
         // These roles are needed for the asset tests to work properly
