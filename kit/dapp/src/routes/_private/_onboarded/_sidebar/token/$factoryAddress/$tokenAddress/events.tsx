@@ -54,9 +54,9 @@ export const Route = createFileRoute(
  * @returns Data table component for token events
  */
 function RouteComponent() {
-  const { token } = useLoaderData({
+  const { asset } = useLoaderData({
     from: "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress",
   });
 
-  return <TokenEventsTable token={token} />;
+  return <TokenEventsTable token={asset} />;
 }
