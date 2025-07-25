@@ -17,6 +17,10 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
+/// @dev Custom errors for ATKCompliance
+error SystemAccessManagerNotSet();
+error UnauthorizedAccess();
+
 /// @title ATK Compliance Contract Implementation
 /// @author SettleMint
 /// @notice This contract is the upgradeable logic implementation for the main compliance functionality within the ATK
@@ -55,8 +59,8 @@ contract ATKComplianceImplementation is
     /// Falls back to AccessControl if system access manager is not set
     /// @param roles Array of roles, where the caller must have at least one
     modifier onlySystemRoles(bytes32[] memory roles) {
-        require(address(_systemAccessManager) != address(0), "ATKCompliance: system access manager not set");
-        require(_systemAccessManager.hasAnyRole(roles, _msgSender()), "ATKCompliance: unauthorized access");
+        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
+        if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) revert UnauthorizedAccess();
         _;
     }
 

@@ -48,7 +48,7 @@ contract ATKSystemAccessManagerImplementation is
     /// @param account The account to check
     /// @return True if the account has at least one of the roles, false otherwise
     function _hasAnyRole(bytes32[] memory roles, address account) internal view returns (bool) {
-        for (uint256 i = 0; i < roles.length; i++) {
+        for (uint256 i = 0; i < roles.length; ++i) {
             if (hasRole(roles[i], account)) {
                 return true;
             }
@@ -99,6 +99,10 @@ contract ATKSystemAccessManagerImplementation is
         return super.hasRole(role, account);
     }
 
+    /// @notice Checks if an account has any of the specified roles
+    /// @param roles Array of role identifiers to check
+    /// @param account The address to check roles for
+    /// @return True if the account has at least one of the specified roles, false otherwise
     function hasAnyRole(bytes32[] calldata roles, address account) external view override returns (bool) {
         return _hasAnyRole(roles, account);
     }

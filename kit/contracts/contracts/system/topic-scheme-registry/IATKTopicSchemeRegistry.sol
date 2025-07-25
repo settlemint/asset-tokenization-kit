@@ -11,5 +11,7 @@ import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSche
  *      for managing claim topic schemes within the ATK token ecosystem
  */
 interface IATKTopicSchemeRegistry is ISMARTTopicSchemeRegistry {
+    /// @notice Initializes the topic scheme registry with system access manager
+    /// @param systemAccessManager_ The address of the system access manager for role-based permissions
     function initialize(address systemAccessManager_) external;
 }

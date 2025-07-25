@@ -264,6 +264,10 @@ contract ATKIdentityRegistryStorageImplementation is
         // Note: Role grants are now handled by the centralized access manager
         // The system should already have the SYSTEM_MANAGER_ROLE granted through the access manager
         // Individual registries will be granted IDENTITY_REGISTRY_MODULE_ROLE when bound via bindIdentityRegistry
+
+        // The system parameter is kept for interface compatibility but not actively used
+        // as role management is now centralized through the access manager
+        (system); // Acknowledge parameter to avoid unused variable warning
     }
 
     // --- Storage Modification Functions (IDENTITY_REGISTRY_MODULE_ROLE required) ---

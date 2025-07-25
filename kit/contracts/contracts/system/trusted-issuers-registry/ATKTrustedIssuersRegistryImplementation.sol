@@ -22,6 +22,10 @@ import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManag
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
+/// @dev Custom errors for ATKTrustedIssuersRegistry
+error UnauthorizedAccess();
+error MissingRegistrarRole();
+
 /// @title ATK Trusted Issuers Registry Implementation
 /// @author SettleMint
 /// @notice This contract is the upgradeable logic for managing a registry of trusted claim issuers and the specific
@@ -259,10 +263,10 @@ contract ATKTrustedIssuersRegistryImplementation is
     modifier onlySystemRoles(bytes32[] memory roles) {
         if (address(_systemAccessManager) != address(0)) {
             // Use centralized access manager when available
-            require(_systemAccessManager.hasAnyRole(roles, _msgSender()), "ATKTrustedIssuers: unauthorized access");
+            if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) revert UnauthorizedAccess();
         } else {
             // Fall back to traditional AccessControl during bootstrap
-            require(hasRole(ATKSystemRoles.REGISTRAR_ROLE, _msgSender()), "ATKTrustedIssuers: missing registrar role");
+            if (!hasRole(ATKSystemRoles.REGISTRAR_ROLE, _msgSender())) revert MissingRegistrarRole();
         }
         _;
     }
