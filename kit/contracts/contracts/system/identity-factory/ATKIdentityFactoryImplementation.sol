@@ -629,7 +629,7 @@ contract ATKIdentityFactoryImplementation is
     /// @notice Checks if the caller can add a claim to the identity contract.
     /// @dev The identity factory allows the system admin to add claims.
     function canAddClaim(address caller) external view override returns (bool) {
-        return  caller == address(this) || caller == _system;
+        return caller == address(this) || caller == _system;
     }
 
     /// @inheritdoc IContractWithIdentity

@@ -37,5 +37,4 @@ interface IATKContractIdentity is IContractIdentity {
     /// @param authorizationContract The address to check
     /// @return True if registered, false otherwise
     function isClaimAuthorizationContractRegistered(address authorizationContract) external view returns (bool);
-
 }

@@ -21,14 +21,16 @@ export function SecurityMethodSelector() {
             setShowPinModal(true);
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
               setShowPinModal(true);
             }
           }}
           variant="outline"
           tabIndex={0}
-          aria-label={t("wallet-security.method-selector.comparison.choose-pin")}
+          aria-label={t(
+            "wallet-security.method-selector.comparison.choose-pin"
+          )}
         >
           {t("wallet-security.method-selector.comparison.choose-pin")}
         </Button>
@@ -39,13 +41,15 @@ export function SecurityMethodSelector() {
             setShowOtpModal(true);
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
               setShowOtpModal(true);
             }
           }}
           tabIndex={0}
-          aria-label={t("wallet-security.method-selector.comparison.choose-otp")}
+          aria-label={t(
+            "wallet-security.method-selector.comparison.choose-otp"
+          )}
         >
           {t("wallet-security.method-selector.comparison.choose-otp")}
         </Button>
