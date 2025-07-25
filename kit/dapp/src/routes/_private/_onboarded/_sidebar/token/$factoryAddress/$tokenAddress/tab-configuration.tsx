@@ -1,5 +1,3 @@
-import { TabBadge } from "@/components/assets/tab-badge";
-import type { TabItemProps } from "@/components/tab-navigation/tab-navigation";
 import {
   hasAllowlist,
   hasBlocklist,
@@ -8,13 +6,18 @@ import {
   isMicaEnabledForAsset,
 } from "@/lib/utils/features-enabled";
 import type { AssetType } from "@/lib/zod/validators/asset-types";
-import { useTranslation } from "react-i18next";
 import type { Address } from "viem";
 
 interface AssetTabConfigurationParams {
   factoryAddress: Address;
   assetAddress: Address;
   assetType: AssetType;
+}
+
+interface TabConfig {
+  href: string;
+  tabKey: 'tokenInformation' | 'holders' | 'events' | 'actions' | 'permissions' | 'allowlist' | 'blocklist' | 'underlyingAssets' | 'yield' | 'mica';
+  badgeType?: "holders" | "events" | "actions" | "allowlist" | "blocklist" | "underlying-assets";
 }
 
 /**
@@ -24,9 +27,8 @@ export async function getAssetTabConfiguration({
   factoryAddress,
   assetAddress,
   assetType,
-}: AssetTabConfigurationParams): Promise<TabItemProps[]> {
+}: AssetTabConfigurationParams): Promise<TabConfig[]> {
   const baseUrl = `/token/${factoryAddress}/${assetAddress}`;
-  const { t } = useTranslation(["tokens", "assets", "common"]);
 
   // Check if MICA is enabled for this asset
   let isMicaEnabled = false;
@@ -36,125 +38,77 @@ export async function getAssetTabConfiguration({
     console.error("Failed to check MICA status:", error);
   }
 
-  const tabs: TabItemProps[] = [
+  const tabs: TabConfig[] = [
     {
-      name: t("tokens:tabs.tokenInformation"),
+      tabKey: "tokenInformation",
       href: baseUrl,
     },
     {
-      name: (
-        <>
-          {t("tokens:tabs.holders")}
-          <TabBadge
-            address={assetAddress}
-            assetType={assetType}
-            badgeType="holders"
-          />
-        </>
-      ),
+      tabKey: "holders",
       href: `${baseUrl}/holders`,
+      badgeType: "holders",
     },
   ];
 
   // Add yield tab for bonds
   if (hasYield(assetType)) {
     tabs.push({
-      name: t("tokens:tabs.yield"),
+      tabKey: "yield",
       href: `${baseUrl}/yield`,
     });
   }
 
   // Add events tab
   tabs.push({
-    name: (
-      <>
-        {t("tokens:tabs.events")}
-        <TabBadge
-          address={assetAddress}
-          assetType={assetType}
-          badgeType="events"
-        />
-      </>
-    ),
+    tabKey: "events",
     href: `${baseUrl}/events`,
+    badgeType: "events",
   });
 
   // Add actions tab
   tabs.push({
-    name: (
-      <>
-        {t("tokens:tabs.actions")}
-        <TabBadge
-          address={assetAddress}
-          assetType={assetType}
-          badgeType="actions"
-        />
-      </>
-    ),
+    tabKey: "actions",
     href: `${baseUrl}/actions`,
+    badgeType: "actions",
   });
 
   // Add permissions tab
   tabs.push({
-    name: t("tokens:tabs.permissions"),
+    tabKey: "permissions",
     href: `${baseUrl}/permissions`,
   });
 
   // Add allowlist tab for deposits
   if (hasAllowlist(assetType)) {
     tabs.push({
-      name: (
-        <>
-          {t("tokens:tabs.allowlist")}
-          <TabBadge
-            address={assetAddress}
-            assetType={assetType}
-            badgeType="allowlist"
-          />
-        </>
-      ),
+      tabKey: "allowlist",
       href: `${baseUrl}/allowlist`,
+      badgeType: "allowlist",
     });
   }
 
   // Add blocklist tab for non-deposit assets
   if (hasBlocklist(assetType)) {
     tabs.push({
-      name: (
-        <>
-          {t("tokens:tabs.blocklist")}
-          <TabBadge
-            address={assetAddress}
-            assetType={assetType}
-            badgeType="blocklist"
-          />
-        </>
-      ),
+      tabKey: "blocklist",
       href: `${baseUrl}/blocklist`,
+      badgeType: "blocklist",
     });
   }
 
   // Add underlying assets tab for bonds and funds
   if (hasUnderlyingAssets(assetType)) {
     tabs.push({
-      name: (
-        <>
-          {t("tokens:tabs.underlyingAssets")}
-          <TabBadge
-            address={assetAddress}
-            assetType={assetType}
-            badgeType="underlying-assets"
-          />
-        </>
-      ),
+      tabKey: "underlyingAssets",
       href: `${baseUrl}/underlying-assets`,
+      badgeType: "underlying-assets",
     });
   }
 
   // Add MICA regulation tab if enabled
   if (isMicaEnabled) {
     tabs.push({
-      name: t("tokens:tabs.mica"),
+      tabKey: "mica",
       href: `${baseUrl}/regulations/mica`,
     });
   }
