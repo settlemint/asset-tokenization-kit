@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -6,14 +7,14 @@ metadata:
   labels:
     {{- include "besu-genesis.labels" . | nindent 4 }}
   annotations:
-    "helm.sh/hook": "pre-install"
-    "helm.sh/hook-weight": "-16"  # Must be created before genesis job
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-20"
 spec:
   accessModes:
     - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.storage.size | default "1Gi" }}
   {{- if .Values.storage.storageClassName }}
   storageClassName: {{ .Values.storage.storageClassName }}
   {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.size | default "1Gi" }}

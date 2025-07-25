@@ -18,7 +18,9 @@ import { SMARTHooks } from "../common/SMARTHooks.sol";
 import { _SMARTLogic } from "./internal/_SMARTLogic.sol";
 
 /// @title Standard (Non-Upgradeable) SMART Token Implementation
-/// @notice This abstract contract provides a concrete, non-upgradeable implementation of a SMART token.
+/// @author SettleMint
+/// @notice This abstract contract provides a concrete, non-upgradeable implementation of a SMART
+/// token.
 ///         It combines standard ERC20 functionality with the core SMART features like identity verification
 ///         and compliance checks, managed through the `_SMARTLogic` base contract.
 /// @dev This contract is 'abstract' because it expects an accompanying authorization contract
@@ -176,6 +178,8 @@ abstract contract SMART is SMARTExtension, _SMARTLogic, ERC165 {
     ///         and compliance checks for the mint operation.
     ///      2. Calls `super._beforeMint(to, amount)` to ensure any other extensions inheriting `SMARTHooks`
     ///         also get their `_beforeMint` logic executed. This maintains the hook chain.
+    /// @param to The address that will receive the minted tokens.
+    /// @param amount The amount of tokens to be minted.
     function _beforeMint(address to, uint256 amount) internal virtual override(SMARTHooks) {
         __smart_beforeMintLogic(to, amount); // Perform core SMART pre-mint checks
         super._beforeMint(to, amount); // Ensure parent/other extension hooks are called
@@ -186,6 +190,8 @@ abstract contract SMART is SMARTExtension, _SMARTLogic, ERC165 {
     /// @dev Called by `__smart_afterUpdateLogic` after a mint has occurred.
     ///      1. Calls `__smart_afterMintLogic` (from `_SMARTLogic`) to notify compliance systems.
     ///      2. Calls `super._afterMint(to, amount)` for other extensions.
+    /// @param to The address that received the minted tokens.
+    /// @param amount The amount of tokens that were minted.
     function _afterMint(address to, uint256 amount) internal virtual override(SMARTHooks) {
         __smart_afterMintLogic(to, amount); // Perform core SMART post-mint notifications
         super._afterMint(to, amount); // Ensure parent/other extension hooks are called
@@ -196,6 +202,9 @@ abstract contract SMART is SMARTExtension, _SMARTLogic, ERC165 {
     /// @dev Called by `__smart_beforeUpdateLogic` for regular transfers.
     ///      1. Calls `__smart_beforeTransferLogic` (from `_SMARTLogic`) for identity/compliance checks.
     ///      2. Calls `super._beforeTransfer(from, to, amount)` for other extensions.
+    /// @param from The address sending the tokens.
+    /// @param to The address receiving the tokens.
+    /// @param amount The amount of tokens being transferred.
     function _beforeTransfer(address from, address to, uint256 amount) internal virtual override(SMARTHooks) {
         __smart_beforeTransferLogic(from, to, amount); // Perform core SMART pre-transfer checks
         super._beforeTransfer(from, to, amount); // Ensure parent/other extension hooks are called
@@ -207,6 +216,9 @@ abstract contract SMART is SMARTExtension, _SMARTLogic, ERC165 {
     ///      1. Calls `__smart_afterTransferLogic` (from `_SMARTLogic`) to emit `TransferCompleted` and notify
     /// compliance.
     ///      2. Calls `super._afterTransfer(from, to, amount)` for other extensions.
+    /// @param from The address that sent the tokens.
+    /// @param to The address that received the tokens.
+    /// @param amount The amount of tokens that were transferred.
     function _afterTransfer(address from, address to, uint256 amount) internal virtual override(SMARTHooks) {
         __smart_afterTransferLogic(from, to, amount); // Perform core SMART post-transfer notifications
         super._afterTransfer(from, to, amount); // Ensure parent/other extension hooks are called
@@ -217,6 +229,8 @@ abstract contract SMART is SMARTExtension, _SMARTLogic, ERC165 {
     /// @dev Called by `__smart_afterUpdateLogic` after a burn operation.
     ///      1. Calls `__smart_afterBurnLogic` (from `_SMARTLogic`) to notify compliance systems.
     ///      2. Calls `super._afterBurn(from, amount)` for other extensions.
+    /// @param from The address from which tokens were burned.
+    /// @param amount The amount of tokens that were burned.
     ///      Note: `_beforeBurn` is also a hook in `SMARTHooks` but might be overridden by a specific "Burnable"
     /// extension if pre-burn checks are needed beyond what `_beforeTransfer` (to address(0)) covers.
     function _afterBurn(address from, uint256 amount) internal virtual override(SMARTHooks) {

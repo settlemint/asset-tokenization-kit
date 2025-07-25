@@ -18,6 +18,7 @@ import { _SMARTYieldLogic } from "./internal/_SMARTYieldLogic.sol";
 import { ISMARTYield } from "./ISMARTYield.sol";
 
 /// @title Upgradeable SMART Yield Extension
+/// @author SettleMint
 /// @notice This contract provides an upgradeable implementation for the SMART Yield extension.
 /// It allows a token to have an associated yield schedule. Being "upgradeable" means its logic
 /// can be updated after deployment via a proxy pattern.
@@ -41,7 +42,8 @@ abstract contract SMARTYieldUpgradeable is
     SMARTExtensionUpgradeable,
     _SMARTYieldLogic
 {
-    /// @dev Register the `ISMARTYield` interface ID for ERC165. This allows factories to check if the
+    /// @notice Register the interface ID for ERC165.
+    /// @dev This allows factories to check if the
     /// contract
     /// supports the `ISMARTYield` interface based on the upgradeable implementation.
     constructor() {

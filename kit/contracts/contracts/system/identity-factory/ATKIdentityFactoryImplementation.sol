@@ -4,7 +4,6 @@ pragma solidity ^0.8.28;
 // OpenZeppelin imports
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -16,10 +15,8 @@ import { IATKIdentityFactory } from "./IATKIdentityFactory.sol";
 import { IATKIdentity } from "./identities/IATKIdentity.sol";
 import { IATKContractIdentity } from "./identities/IATKContractIdentity.sol";
 import { IContractWithIdentity } from "./IContractWithIdentity.sol";
-import { ISMART } from "../../smart/interface/ISMART.sol";
 import { ERC734KeyPurposes } from "../../onchainid/ERC734KeyPurposes.sol";
 import { ERC734KeyTypes } from "../../onchainid/ERC734KeyTypes.sol";
-import { ERC735ClaimSchemes } from "../../onchainid/ERC735ClaimSchemes.sol";
 import { IATKTopicSchemeRegistry } from "../topic-scheme-registry/IATKTopicSchemeRegistry.sol";
 import { ATKTopics } from "../ATKTopics.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
@@ -27,14 +24,13 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 // System imports
 import { InvalidSystemAddress } from "../ATKSystemErrors.sol"; // Assuming this is correctly placed
 import { IATKSystem } from "../IATKSystem.sol";
-import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 // Implementation imports
 import { ATKIdentityProxy } from "./identities/ATKIdentityProxy.sol";
 import { ATKContractIdentityProxy } from "./identities/ATKContractIdentityProxy.sol";
 
 /// @title ATK Identity Factory Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract is the upgradeable logic implementation for creating and managing on-chain identities
 ///         for both user wallets and contracts within the ATK Protocol.
 /// @dev It leverages OpenZeppelin's `Create2` library to deploy identity proxy contracts (`ATKIdentityProxy` for
@@ -52,9 +48,14 @@ contract ATKIdentityFactoryImplementation is
     IATKIdentityFactory,
     IContractWithIdentity
 {
+    // Custom errors
+    error OnlySystemCanSetOnchainID();
+    error OnchainIDAlreadySet();
+    error InvalidIdentityAddress();
     // --- Constants ---
     /// @notice Prefix used in salt calculation for creating contract identities to ensure unique salt generation.
     /// @dev For example, salt might be `keccak256(abi.encodePacked("Contract", <contractAddressHex>))`.
+
     string public constant CONTRACT_SALT_PREFIX = "Contract";
     /// @notice Prefix used in salt calculation for creating wallet identities to ensure unique salt generation.
     /// @dev For example, salt might be `keccak256(abi.encodePacked("OID", <walletAddressHex>))` (OID stands for
@@ -161,14 +162,18 @@ contract ATKIdentityFactoryImplementation is
         _system = systemAddress;
     }
 
+    /// @notice Validates that a contract implements the IATKIdentity interface
     /// @dev Helper function to validate identity implementation interface
+    /// @param identityImpl The address of the implementation to validate
     function _validateIdentityImplementation(address identityImpl) private view {
         if (!IERC165(identityImpl).supportsInterface(type(IATKIdentity).interfaceId)) {
             revert InvalidIdentityImplementation();
         }
     }
 
+    /// @notice Validates that a contract implements the IATKContractIdentity interface
     /// @dev Helper function to validate contract identity implementation interface
+    /// @param contractIdentityImpl The address of the implementation to validate
     function _validateContractIdentityImplementation(address contractIdentityImpl) private view {
         if (!IERC165(contractIdentityImpl).supportsInterface(type(IATKContractIdentity).interfaceId)) {
             revert InvalidContractIdentityImplementation();
@@ -577,21 +582,27 @@ contract ATKIdentityFactoryImplementation is
     }
 
     // --- Context Overrides (ERC2771) ---
+    /// @notice Returns the address of the current message sender
     /// @dev Overrides `_msgSender()` to support meta-transactions via ERC2771. If the call is relayed
     ///      by a trusted forwarder, this will return the original sender, not the forwarder.
     ///      Otherwise, it returns `msg.sender` as usual.
+    /// @return The address of the message sender, accounting for meta-transactions
     function _msgSender() internal view virtual override(ERC2771ContextUpgradeable) returns (address) {
         return ERC2771ContextUpgradeable._msgSender();
     }
 
+    /// @notice Returns the calldata of the current transaction
     /// @dev Overrides `_msgData()` to support meta-transactions via ERC2771. If the call is relayed,
     ///      this returns the original call data. Otherwise, it returns `msg.data`.
+    /// @return The calldata, accounting for meta-transactions
     function _msgData() internal view virtual override(ERC2771ContextUpgradeable) returns (bytes calldata) {
         return ERC2771ContextUpgradeable._msgData();
     }
 
+    /// @notice Returns the length of the context suffix for meta-transactions
     /// @dev Internal function related to ERC2771 context, indicating the length of the suffix
     ///      appended to calldata by a trusted forwarder (usually the sender's address).
+    /// @return The length of the context suffix
     function _contextSuffixLength() internal view virtual override(ERC2771ContextUpgradeable) returns (uint256) {
         return ERC2771ContextUpgradeable._contextSuffixLength();
     }
@@ -629,7 +640,7 @@ contract ATKIdentityFactoryImplementation is
     /// @notice Checks if the caller can add a claim to the identity contract.
     /// @dev The identity factory allows the system admin to add claims.
     function canAddClaim(address caller) external view override returns (bool) {
-        return  caller == address(this) || caller == _system;
+        return caller == address(this) || caller == _system;
     }
 
     /// @inheritdoc IContractWithIdentity
@@ -644,9 +655,9 @@ contract ATKIdentityFactoryImplementation is
     ///      it issues a CONTRACT_IDENTITY claim to itself to attest that the factory is a contract identity.
     /// @param identityAddress The address of the identity factory's own identity contract.
     function setOnchainID(address identityAddress) external {
-        require(_msgSender() == _system, "ATKIdentityFactory: Only system can set onchainID");
-        require(_onchainID == address(0), "ATKIdentityFactory: OnchainID already set");
-        require(identityAddress != address(0), "ATKIdentityFactory: Invalid identity address");
+        if (_msgSender() != _system) revert OnlySystemCanSetOnchainID();
+        if (_onchainID != address(0)) revert OnchainIDAlreadySet();
+        if (identityAddress == address(0)) revert InvalidIdentityAddress();
         _onchainID = identityAddress;
 
         // Issue a CONTRACT_IDENTITY claim to the factory's own identity

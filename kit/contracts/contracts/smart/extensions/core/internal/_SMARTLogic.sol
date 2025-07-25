@@ -10,10 +10,11 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 
 /// @title Internal Core Logic for SMART Tokens
-/// @notice This abstract contract serves as the central repository for shared state, core business logic,
+/// @author SettleMint
+/// @notice This abstract contract serves as the central repository for shared state, core
+/// business logic,
 ///         event emissions, and authorization hook placeholders for all SMART token implementations.
 ///         It's designed to be inherited by both standard (`SMART.sol`) and upgradeable (`SMARTUpgradeable.sol`)
 ///         concrete token contracts, ensuring consistent behavior across different token types.
@@ -161,6 +162,8 @@ abstract contract _SMARTLogic is _SMARTExtension {
     ///      It first checks if the lost wallet is a valid address and not the contract itself.
     ///      Then, it checks if the lost wallet has any tokens to recover.
     ///      It then checks if the new wallet is a valid address.
+    /// @param lostWallet The address of the wallet that has lost access to its tokens.
+    /// @param newWallet The address of the wallet that will receive the recovered tokens.
     function _smart_recoverTokens(address lostWallet, address newWallet) internal {
         if (lostWallet == address(0)) revert ZeroAddressNotAllowed();
         if (lostWallet == address(this)) revert CannotRecoverSelf();

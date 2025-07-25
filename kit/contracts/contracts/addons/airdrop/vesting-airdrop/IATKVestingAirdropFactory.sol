@@ -22,9 +22,9 @@ interface IATKVestingAirdropFactory {
     event ATKVestingAirdropCreated(
         address indexed airdrop,
         string name,
-        address token,
+        address indexed token,
         bytes32 root,
-        address owner,
+        address indexed owner,
         address vestingStrategy,
         uint256 initializationDeadline,
         address creator
@@ -41,6 +41,7 @@ interface IATKVestingAirdropFactory {
     /// @dev This function is expected to be available on the factory contract.
     /// It's typically created automatically if the factory has a public state variable
     /// named `atkVestingAirdropImplementation`.
+    /// @return The address of the ATKVestingAirdrop implementation contract
     function atkVestingAirdropImplementation() external view returns (address);
 
     /// @notice Creates a new ATKVestingAirdrop proxy contract.

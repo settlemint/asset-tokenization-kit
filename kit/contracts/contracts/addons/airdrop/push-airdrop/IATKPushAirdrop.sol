@@ -5,7 +5,7 @@ pragma solidity ^0.8.28;
 import { IATKAirdrop } from "../IATKAirdrop.sol";
 
 /// @title IATKPushAirdrop
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Interface for push airdrop contracts in the ATK Protocol.
 /// @dev Defines the functions specific to push airdrops where only admins can distribute tokens.
 interface IATKPushAirdrop is IATKAirdrop {

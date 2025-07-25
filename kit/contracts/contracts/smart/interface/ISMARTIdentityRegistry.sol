@@ -233,7 +233,7 @@ interface ISMARTIdentityRegistry is IERC165 {
      * @notice Checks if a given investor wallet address is currently registered in this Identity Registry.
      * @dev This is a view function and does not consume gas beyond the read operation cost.
      * @param _userAddress The wallet address to query.
-     * @return `true` if the address is registered, `false` otherwise.
+     * @return True if the address is registered, false otherwise
      */
     function contains(address _userAddress) external view returns (bool);
 
@@ -247,7 +247,7 @@ interface ISMARTIdentityRegistry is IERC165 {
      *      This function typically interacts with both the `IIdentity` contract and the `TrustedIssuersRegistry`.
      * @param _userAddress The investor's wallet address to verify.
      * @param requiredClaimTopics An array of claim topic IDs (e.g., KYC, accreditation) that the identity must possess.
-     * @return `true` if the investor's identity holds all required valid claims, `false` otherwise.
+     * @return True if the investor's identity holds all required valid claims, false otherwise
      */
     function isVerified(address _userAddress, uint256[] memory requiredClaimTopics) external view returns (bool);
 

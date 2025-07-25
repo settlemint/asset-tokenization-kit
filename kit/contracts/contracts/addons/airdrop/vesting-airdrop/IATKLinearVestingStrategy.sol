@@ -5,7 +5,7 @@ pragma solidity ^0.8.28;
 import { IATKVestingStrategy } from "./IATKVestingStrategy.sol";
 
 /// @title IATKLinearVestingStrategy
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Interface for a linear vesting strategy contract.
 /// @dev Extends the base vesting strategy with functions specific to linear vesting.
 interface IATKLinearVestingStrategy is IATKVestingStrategy {

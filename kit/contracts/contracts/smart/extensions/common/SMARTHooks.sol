@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 /// @title Abstract Contract for SMART Token Operation Hooks
+/// @author SettleMint
 /// @notice This abstract contract defines a set of standardized `internal virtual` hook functions
 ///         that can be triggered at various points in a SMART token's lifecycle (e.g., before a mint,
 ///         after a transfer). Extensions can override these hooks to inject custom logic.

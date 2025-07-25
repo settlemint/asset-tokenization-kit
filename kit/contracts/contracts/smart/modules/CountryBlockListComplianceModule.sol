@@ -8,7 +8,7 @@ import { AbstractCountryComplianceModule } from "./AbstractCountryComplianceModu
 import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"; // Needed for @inheritdoc
 
 /// @title Country Block-List Compliance Module
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This compliance module restricts token transfers *to* users if their registered country is on a prohibited
 /// list (block-list).
 /// @dev It inherits from `AbstractCountryComplianceModule` and implements a country-based block-list logic.
@@ -34,7 +34,15 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 ///                   `abi.encode(uint16[] memory additionalBlockedCountries)`. These are countries blocked *in
 /// addition* to the global list for a specific token.
 contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
-    bytes32 public constant override typeId = keccak256("CountryBlockListComplianceModule");
+    /// @notice Unique type identifier for this compliance module
+    bytes32 public constant TYPE_ID = keccak256("CountryBlockListComplianceModule");
+
+    /// @notice Returns a unique identifier for the type of this contract.
+    /// @dev This identifier is used to distinguish this compliance module type from others in the system.
+    /// @return The unique type identifier for the CountryBlockListComplianceModule.
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     // --- Events ---
     /// @notice Emitted when one or more countries are added to or removed from this module instance's global
@@ -48,6 +56,7 @@ contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
     /// @notice Constructor for the `CountryBlockListComplianceModule`.
     /// @dev When a contract inheriting from `CountryBlockListComplianceModule` is deployed, this constructor is called.
     /// It calls the constructor of `AbstractCountryComplianceModule` with the `_trustedForwarder` address.
+    /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
     constructor(address _trustedForwarder) AbstractCountryComplianceModule(_trustedForwarder) { }
 
     // --- Global Block List Management (Manager Role Only) ---
@@ -84,7 +93,7 @@ contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
 
     /// @notice Checks if a specific country code is present in this module instance's global block-list.
     /// @param _country The country code (ISO 3166-1 numeric) to check.
-    /// @return `true` if the `_country` is part of the global block-list for this module instance, `false` otherwise.
+    /// @return True if the country is part of the global block-list for this module instance, false otherwise
     function isGloballyBlocked(uint16 _country) public view virtual returns (bool) {
         return _isCountryInGlobalList(_country);
     }

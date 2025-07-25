@@ -24,7 +24,7 @@ interface IATKAirdrop {
     /// @param recipient The address that received the tokens.
     /// @param index The allocation index from the Merkle tree.
     /// @param amount The amount transferred.
-    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 indexed amount);
 
     /// @notice Emitted when multiple token allocations are transferred in one transaction.
     /// @dev Handles both batch claims by a single user and batch distributions to many.
@@ -36,7 +36,7 @@ interface IATKAirdrop {
     /// @notice Emitted when the contract owner withdraws unclaimed tokens.
     /// @param to The address receiving the withdrawn tokens.
     /// @param amount The amount of tokens withdrawn.
-    event TokensWithdrawn(address indexed to, uint256 amount);
+    event TokensWithdrawn(address indexed to, uint256 indexed amount);
 
     // --- View Functions ---
 

@@ -28,7 +28,13 @@ import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
 /// configured.
 contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplementation, IATKVaultFactory {
     /// @notice Type identifier for the ATKVaultFactory
-    bytes32 public constant override typeId = keccak256("ATKVaultFactory");
+    bytes32 public constant TYPE_ID = keccak256("ATKVaultFactory");
+
+    /// @notice Returns the type identifier for this factory
+    /// @return The TYPE_ID constant representing the factory type
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice An array that stores references (addresses) to all vault
     /// contracts created by this factory.
@@ -93,7 +99,7 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     /// @param country Country code for compliance purposes
     /// @return contractAddress Address of the newly created vault
     function createVault(
-        address[] memory signers,
+        address[] calldata signers,
         uint256 required,
         address initialOwner,
         bytes32 salt,
@@ -144,7 +150,7 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
     /// @param salt Salt value for deterministic address generation
     /// @return predictedAddress The predicted address of the vault
     function predictVaultAddress(
-        address[] memory signers,
+        address[] calldata signers,
         uint256 required,
         address initialOwner,
         bytes32 salt

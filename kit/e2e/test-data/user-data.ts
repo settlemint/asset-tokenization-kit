@@ -80,3 +80,155 @@ export const adminApiUser: SignUpData = {
   pincodeName: pincodeName,
   pincode: pincode,
 } as const;
+
+export const signInTestData = {
+  wrongPassword: "WrongPassword123!",
+  invalidEmails: [
+    "not-an-email",
+    "invalid-email",
+    "missing@domain",
+    "@missing-local.com",
+    "spaces in@email.com",
+    "double..dots@email.com",
+  ],
+} as const;
+
+export const onboardingTestData = {
+  // Generate unique data for each test run
+  email: `admin-onboarding-${Date.now()}-${Math.random().toString(36).substring(7)}@settlemint.com`,
+  password: "TestPassword123!",
+  pinCode: "987654",
+  wrongPinCode: "654321",
+
+  kycData: {
+    firstName: "John",
+    lastName: "Doe",
+    dateOfBirth: {
+      year: "1990",
+      month: "Jan",
+      day: "15",
+      formatted: "January 15th, 1990",
+    },
+    countryOfResidence: "United States of America",
+    residencyStatus:
+      "Sole resident - I live in and am legally/tax resident only in the country above",
+    nationalId: "123-45-6789",
+  },
+
+  assetTypes: {
+    bonds: "Bonds",
+    equities: "Equities",
+    funds: "Funds",
+    stablecoins: "Stablecoins",
+    deposits: "Deposits",
+  },
+
+  addons: {
+    airdrops: "Airdrops",
+    yield: "Yield",
+    xvp: "XvP",
+  },
+
+  expectedSteps: {
+    admin: 9,
+    regularUser: 5,
+  },
+
+  stepGroups: {
+    wallet: {
+      title: "Wallet",
+      description: "Set up your wallet and security measures",
+      steps: [
+        { title: "Your Wallet", description: "View your blockchain wallet" },
+        {
+          title: "Secure your Wallet",
+          description: "Set up protection for your wallet",
+        },
+        {
+          title: "Recovery Codes",
+          description: "Generate backup recovery codes",
+        },
+      ],
+    },
+    system: {
+      title: "Deploy SMART System",
+      description: "Set up your blockchain platform",
+      steps: [
+        {
+          title: "Deploy System",
+          description: "Initialize the core smart contracts",
+        },
+        {
+          title: "Configure System",
+          description: "Set up system parameters and settings",
+        },
+        {
+          title: "Select Asset Types",
+          description: "Choose supported asset types",
+        },
+        {
+          title: "System Add-ons",
+          description: "Enable optional system features",
+        },
+      ],
+    },
+    identity: {
+      title: "Identity",
+      description: "Establish your on-chain identity",
+      steps: [
+        {
+          title: "Setup ONCHAINID",
+          description: "Create your on-chain identity",
+        },
+        { title: "Verify Identity", description: "Complete KYC verification" },
+      ],
+    },
+  },
+
+  notifications: {
+    walletCreated: "Wallet created successfully!",
+    pinSetSuccess: "PIN code set successfully",
+    secretCodesGenerated: "Secret codes generated successfully!",
+    systemDeployed: "System deployed successfully!",
+    platformSettingsSaved: "Platform settings saved successfully!",
+    identityRegistered: "Identity registered successfully!",
+  },
+
+  walletSteps: ["Your Wallet", "Secure your Wallet", "Recovery Codes"],
+  systemSteps: [
+    "Deploy System",
+    "Configure System",
+    "Select Asset Types",
+    "System Add-ons",
+  ],
+  identitySteps: ["Setup ONCHAINID", "Verify Identity"],
+} as const;
+
+export const signUpTestData = {
+  generateTestUser: (type: "regular" | "admin" = "regular") => ({
+    email: `test-${type}-${Date.now()}@settlemint.com`,
+    password: "TestPassword123!",
+    pincode: "123456",
+    name: `Test ${type} User ${Date.now()}`,
+  }),
+  onboardingSteps: {
+    regular: [
+      "wallet",
+      "wallet-security",
+      "wallet-recovery-codes",
+      "identity-setup",
+      "identity",
+    ],
+    admin: [
+      "wallet",
+      "wallet-security",
+      "wallet-recovery-codes",
+      "system-deploy",
+      "system-settings",
+      "system-assets",
+      "system-addons",
+      "identity-setup",
+      "identity",
+    ],
+  },
+} as const;

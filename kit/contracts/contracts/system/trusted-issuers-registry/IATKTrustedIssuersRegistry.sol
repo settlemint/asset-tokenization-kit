@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
 
 import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 
@@ -16,5 +16,5 @@ interface IATKTrustedIssuersRegistry is IERC3643TrustedIssuersRegistry {
     /// This address will have full control over the registry's setup and initial population of trusted issuers.
     /// @param initialRegistrars The addresses that will receive the initial `REGISTRAR_ROLE`.
     /// These addresses will have the ability to add and remove trusted issuers.
-    function initialize(address initialAdmin, address[] memory initialRegistrars) external;
+    function initialize(address initialAdmin, address[] calldata initialRegistrars) external;
 }

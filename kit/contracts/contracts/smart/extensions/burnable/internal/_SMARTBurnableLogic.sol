@@ -5,7 +5,9 @@ import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 import { ISMARTBurnable } from "../ISMARTBurnable.sol";
 
 /// @title Internal Logic for SMART Burnable Extension
-/// @notice This abstract contract encapsulates the core, shared logic for token burning operations
+/// @author SettleMint
+/// @notice This abstract contract encapsulates the core, shared logic for token burning
+/// operations
 ///         within the SMART framework. It is not meant to be deployed directly but serves as a base
 ///         for both standard (`SMARTBurnable`) and upgradeable (`SMARTBurnableUpgradeable`) burnable extensions.
 ///         It defines the common structure for burn functions and an event, while delegating the actual

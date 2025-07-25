@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-
 /// @title Abstract Contract for SMART Sender Context
+/// @author SettleMint
 /// @notice This abstract contract defines a common interface for retrieving the effective sender
 ///         of a transaction within the SMART token ecosystem. It helps abstract away complexities
 ///         related to meta-transactions (where `msg.sender` might be a forwarder contract rather

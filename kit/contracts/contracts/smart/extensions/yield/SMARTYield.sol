@@ -12,7 +12,9 @@ import { SMARTHooks } from "../common/SMARTHooks.sol";
 import { _SMARTYieldLogic } from "./internal/_SMARTYieldLogic.sol";
 
 /// @title Standard SMART Yield Extension (Non-Upgradeable)
-/// @notice This contract provides a standard, non-upgradeable implementation for the SMART Yield extension.
+/// @author SettleMint
+/// @notice This contract provides a standard, non-upgradeable implementation for the SMART Yield
+/// extension.
 /// It allows a token to have an associated yield schedule, dictating how yield is accrued and potentially paid out.
 /// @dev This is an `abstract` contract, meaning it is not meant to be deployed directly but rather inherited by a
 /// final, concrete token contract.

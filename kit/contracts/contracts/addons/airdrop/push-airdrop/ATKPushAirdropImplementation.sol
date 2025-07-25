@@ -9,10 +9,10 @@ import { ATKAirdrop } from "../ATKAirdrop.sol";
 import { ATKBitmapClaimTracker } from "../claim-tracker/ATKBitmapClaimTracker.sol";
 import { IATKPushAirdrop } from "./IATKPushAirdrop.sol";
 import { IATKAirdrop } from "../IATKAirdrop.sol";
-import { InvalidInputArrayLengths, InvalidMerkleProof, BatchSizeExceedsLimit } from "../ATKAirdropErrors.sol";
+import { InvalidInputArrayLengths, InvalidMerkleProof } from "../ATKAirdropErrors.sol";
 
 /// @title ATK Push Airdrop Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Implementation of a push airdrop contract where only the admin can distribute tokens to recipients in the
 /// ATK Protocol.
 /// @dev This contract implements an admin-controlled distribution system where:
@@ -42,8 +42,10 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     /// @notice Emitted when the distribution cap is updated.
     /// @param oldCap The previous distribution cap.
     /// @param newCap The new distribution cap.
-    event DistributionCapUpdated(uint256 oldCap, uint256 newCap);
+    event DistributionCapUpdated(uint256 indexed oldCap, uint256 indexed newCap);
 
+    /// @notice Constructor that prevents initialization of the implementation contract.
+    /// @dev Uses the OpenZeppelin pattern to prevent the implementation from being initialized.
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ATKAirdrop(forwarder_) {
@@ -59,7 +61,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     /// @param owner_ The initial owner of the contract (admin who can distribute tokens).
     /// @param distributionCap_ The maximum tokens that can be distributed (0 for no cap).
     function initialize(
-        string memory name_,
+        string calldata name_,
         address token_,
         bytes32 root_,
         address owner_,
@@ -182,7 +184,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
         uint256 distributedCount = 0;
 
         // Perform cheap validations and calculate total
-        for (uint256 i = 0; i < indices.length; i++) {
+        for (uint256 i = 0; i < indices.length; ++i) {
             uint256 index = indices[i];
             address recipient = recipients[i];
             uint256 amount = amounts[i];
@@ -196,7 +198,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
 
             // Add to batch total and count
             batchTotal += amount;
-            distributedCount++;
+            ++distributedCount;
         }
 
         // Check distribution cap early to avoid wasting gas
@@ -205,7 +207,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
         }
 
         // Verify Merkle proofs and perform actual distributions
-        for (uint256 i = 0; i < indices.length; i++) {
+        for (uint256 i = 0; i < indices.length; ++i) {
             uint256 index = indices[i];
             address recipient = recipients[i];
             uint256 amount = amounts[i];
@@ -232,6 +234,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     /// @dev Overrides the abstract claim function from ATKAirdrop to prevent user-initiated claims.
     ///      In push airdrops, only the admin can distribute tokens.
     ///      All parameters are unused as this function always reverts.
+    // solhint-disable-next-line use-natspec
     function claim(
         uint256, /* index - unused */
         uint256, /* totalAmount - unused */
@@ -248,6 +251,7 @@ contract ATKPushAirdropImplementation is IATKPushAirdrop, ATKAirdrop, Reentrancy
     /// @dev Overrides the abstract batchClaim function from ATKAirdrop to prevent user-initiated claims.
     ///      In push airdrops, only the admin can distribute tokens.
     ///      All parameters are unused as this function always reverts.
+    // solhint-disable-next-line use-natspec
     function batchClaim(
         uint256[] calldata, /* indices - unused */
         uint256[] calldata, /* totalAmounts - unused */

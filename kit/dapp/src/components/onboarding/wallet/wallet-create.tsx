@@ -4,12 +4,14 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/orpc-client";
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export function CreateWallet() {
-  const { t } = useTranslation(["onboarding"]);
+  const { t } = useTranslation(["onboarding", "general"]);
   const { refreshUserState } = useOnboardingNavigation();
+  const navigate = useNavigate();
 
   const { mutateAsync: createWallet, isPending: isWalletCreating } =
     useMutation(
@@ -25,21 +27,33 @@ export function CreateWallet() {
       title={t("steps.wallet.title")}
       description={t("wallet.subtitle")}
       actions={
-        <Button
-          onClick={() => {
-            toast.promise(createWallet({}), {
-              loading: t("wallet.creating-wallet"),
-              success: t("wallet.wallet-created-successfully"),
-              error: (error: Error) =>
-                t("wallet.failed-to-create-wallet", {
-                  error: error.message,
-                }),
-            });
-          }}
-          disabled={isWalletCreating}
-        >
-          {isWalletCreating ? t("wallet.creating-wallet") : t("wallet.submit")}
-        </Button>
+        <>
+          <Button
+            variant="outline"
+            onClick={() => {
+              void navigate({ to: "/onboarding" });
+            }}
+          >
+            {t("general:cancel", { defaultValue: "Cancel" })}
+          </Button>
+          <Button
+            onClick={() => {
+              toast.promise(createWallet({}), {
+                loading: t("wallet.creating-wallet"),
+                success: t("wallet.wallet-created-successfully"),
+                error: (error: Error) =>
+                  t("wallet.failed-to-create-wallet", {
+                    error: error.message,
+                  }),
+              });
+            }}
+            disabled={isWalletCreating}
+          >
+            {isWalletCreating
+              ? t("wallet.creating-wallet")
+              : t("wallet.submit")}
+          </Button>
+        </>
       }
     >
       <div className="space-y-8">

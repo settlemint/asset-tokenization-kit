@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.28;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -62,7 +61,7 @@ contract ATKXvPSettlementImplementation is
     modifier onlyOpen() {
         if (_executed) revert XvPSettlementAlreadyExecuted();
         if (_cancelled) revert XvPSettlementAlreadyCancelled();
-        if (block.timestamp >= _cutoffDate) revert XvPSettlementExpired();
+        if (block.timestamp > _cutoffDate - 1) revert XvPSettlementExpired();
         _;
     }
 
@@ -75,7 +74,7 @@ contract ATKXvPSettlementImplementation is
     /// @notice Modifier to check if the sender is involved in a settlement
     modifier onlyInvolvedSender() {
         bool involved = false;
-        for (uint256 i = 0; i < _flows.length; i++) {
+        for (uint256 i = 0; i < _flows.length; ++i) {
             if (_flows[i].from == _msgSender()) {
                 involved = true;
                 break;
@@ -85,6 +84,8 @@ contract ATKXvPSettlementImplementation is
         _;
     }
 
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
+    /// @param forwarder The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
         _disableInitializers();
@@ -97,10 +98,10 @@ contract ATKXvPSettlementImplementation is
     /// @param settlementAutoExecute Whether to auto-execute after all approvals
     /// @param settlementFlows Array of token flows for this settlement
     function initialize(
-        string memory settlementName,
+        string calldata settlementName,
         uint256 settlementCutoffDate,
         bool settlementAutoExecute,
-        Flow[] memory settlementFlows
+        Flow[] calldata settlementFlows
     )
         external
         initializer
@@ -114,7 +115,7 @@ contract ATKXvPSettlementImplementation is
         _createdAt = block.timestamp;
         if (settlementFlows.length == 0) revert EmptyFlows();
 
-        for (uint256 i = 0; i < settlementFlows.length; i++) {
+        for (uint256 i = 0; i < settlementFlows.length; ++i) {
             Flow memory flow = settlementFlows[i];
             if (flow.asset == address(0)) revert InvalidToken();
             if (flow.from == address(0)) revert ZeroAddress();
@@ -185,7 +186,7 @@ contract ATKXvPSettlementImplementation is
         if (_approvals[_msgSender()]) revert SenderAlreadyApprovedSettlement();
 
         uint256 flowsLength = _flows.length;
-        for (uint256 i = 0; i < flowsLength; i++) {
+        for (uint256 i = 0; i < flowsLength; ++i) {
             Flow storage flow = _flows[i];
             if (flow.from == _msgSender()) {
                 uint256 currentAllowance = IERC20(flow.asset).allowance(_msgSender(), address(this));
@@ -218,7 +219,7 @@ contract ATKXvPSettlementImplementation is
     function _executeSettlement() private returns (bool) {
         if (!isFullyApproved()) revert XvPSettlementNotApproved();
 
-        for (uint256 i = 0; i < _flows.length; i++) {
+        for (uint256 i = 0; i < _flows.length; ++i) {
             Flow storage flow = _flows[i];
             IERC20(flow.asset).safeTransferFrom(flow.from, flow.to, flow.amount);
         }
@@ -255,7 +256,7 @@ contract ATKXvPSettlementImplementation is
     /// @return approved True if all parties have approved
     function isFullyApproved() public view returns (bool) {
         // Check all unique "from" addresses for approval
-        for (uint256 i = 0; i < _flows.length; i++) {
+        for (uint256 i = 0; i < _flows.length; ++i) {
             address from = _flows[i].from;
             if (!_approvals[from]) {
                 return false;

@@ -2,7 +2,9 @@
 pragma solidity ^0.8.28;
 
 /// @title Interface for the SMART Redeemable Extension
-/// @notice This interface defines the functions that a SMART Redeemable token extension must implement.
+/// @author SettleMint
+/// @notice This interface defines the functions that a SMART Redeemable token extension must
+/// implement.
 /// It allows token holders to redeem (burn) their own tokens, effectively reducing the total supply.
 /// @dev This interface is intended to be implemented by contracts that provide redeemable token functionality.
 /// The functions defined here are external, meaning they can be called from outside the contract.
@@ -19,7 +21,7 @@ interface ISMARTRedeemable {
     /// @param amount The quantity of tokens that were redeemed and thus burned. This is the amount by which the
     /// sender's
     /// balance and the total supply decreased.
-    event Redeemed(address indexed sender, uint256 amount);
+    event Redeemed(address indexed sender, uint256 indexed amount);
 
     // -- State-Changing Functions --
 

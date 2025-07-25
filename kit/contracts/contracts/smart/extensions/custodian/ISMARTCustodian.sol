@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 /// @title Interface for SMART Custodian Extension
+/// @author SettleMint
 /// @notice Defines the external functions exposed by a SMART Custodian extension.
 /// @dev This interface outlines the capabilities for managing token custody, including freezing assets,
 ///      performing forced transfers, and recovering assets from lost wallets. Implementations of this
@@ -57,13 +58,13 @@ interface ISMARTCustodian {
     /// @param sender The address that initiated the partial freeze operation. `indexed`.
     /// @param user The address for which a specific amount of tokens was frozen. `indexed`.
     /// @param amount The quantity of tokens that were specifically frozen.
-    event TokensFrozen(address indexed sender, address indexed user, uint256 amount);
+    event TokensFrozen(address indexed sender, address indexed user, uint256 indexed amount);
 
     /// @notice Emitted when a specific amount of previously partially frozen tokens is unfrozen for an address.
     /// @param sender The address that initiated the partial unfreeze operation. `indexed`.
     /// @param user The address for which a specific amount of tokens was unfrozen. `indexed`.
     /// @param amount The quantity of tokens that were unfrozen from the partial freeze.
-    event TokensUnfrozen(address indexed sender, address indexed user, uint256 amount);
+    event TokensUnfrozen(address indexed sender, address indexed user, uint256 indexed amount);
 
     /// @notice Emitted when a forced transfer of tokens is executed by a custodian.
     /// @param sender The address of the custodian who initiated the forced transfer. `indexed`.

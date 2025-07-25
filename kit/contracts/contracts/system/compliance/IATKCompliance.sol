@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { ISMARTCompliance } from "../../smart/interface/ISMARTCompliance.sol";
 
 /// @title ATK Compliance Bypass List Interface
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Interface for managing the compliance bypass list functionality.
 /// @dev This interface defines the standard functions for managing addresses that bypass compliance checks.
 interface IATKCompliance is ISMARTCompliance {
@@ -27,7 +27,11 @@ interface IATKCompliance is ISMARTCompliance {
     error AddressAlreadyOnBypassList(address account);
 
     // --- Functions ---
-    function initialize(address initialAdmin, address[] memory initialBypassListManagers) external;
+    /// @notice Initializes the compliance contract
+    /// @dev Sets up the initial admin and bypass list managers
+    /// @param initialAdmin The address that will have initial admin privileges
+    /// @param initialBypassListManagers Array of addresses that will have bypass list manager privileges
+    function initialize(address initialAdmin, address[] calldata initialBypassListManagers) external;
 
     // --- Functions ---
     /// @notice Adds an address to the compliance bypass list.

@@ -26,7 +26,7 @@ import {
 } from "./ATKAirdropErrors.sol";
 
 /// @title ATK Airdrop (Abstract)
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Abstract base contract for reusable Merkle-based airdrop distributions in the ATK Protocol.
 ///         This contract provides the core logic for Merkle proof-based airdrop claims, including:
 ///         - Flexible claim tracking using pluggable strategies
@@ -302,7 +302,7 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
         totalTransferred = 0;
         address[] memory recipients = new address[](indices.length);
 
-        for (uint256 i = 0; i < indices.length; i++) {
+        for (uint256 i = 0; i < indices.length; ++i) {
             uint256 index = indices[i];
             uint256 claimAmount = claimAmounts[i];
             uint256 totalAmount = totalAmounts[i];
