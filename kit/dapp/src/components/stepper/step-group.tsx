@@ -65,7 +65,7 @@ export function StepGroupComponent<StepId, GroupId>({
               {group.label}
             </h3>
             {groupCompleted && (
-              <Check className="w-4 h-4 text-sm-state-success-background" />
+              <Check className="w-4 h-4 text-primary-foreground/60" />
             )}
           </div>
           <ChevronDown
