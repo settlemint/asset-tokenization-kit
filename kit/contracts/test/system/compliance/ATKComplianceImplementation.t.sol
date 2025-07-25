@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { console2 } from "forge-std/console2.sol";
 
-import { ATKComplianceImplementation } from "../../../contracts/system/compliance/ATKComplianceImplementation.sol";
+import { ATKComplianceImplementation, UnauthorizedAccess } from "../../../contracts/system/compliance/ATKComplianceImplementation.sol";
 import { ISMARTCompliance } from "../../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { IATKCompliance } from "../../../contracts/system/compliance/IATKCompliance.sol";
@@ -370,7 +370,7 @@ contract ATKComplianceImplementationTest is Test {
 
     function testAddToBypassListAsUnauthorized() public {
         vm.prank(unauthorizedUser);
-        vm.expectRevert("ATKCompliance: unauthorized access");
+        vm.expectRevert(abi.encodeWithSelector(UnauthorizedAccess.selector));
         IATKCompliance(address(compliance)).addToBypassList(charlie);
     }
 
@@ -405,7 +405,7 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).addToBypassList(charlie);
 
         vm.prank(unauthorizedUser);
-        vm.expectRevert("ATKCompliance: unauthorized access");
+        vm.expectRevert(abi.encodeWithSelector(UnauthorizedAccess.selector));
         IATKCompliance(address(compliance)).removeFromBypassList(charlie);
     }
 
