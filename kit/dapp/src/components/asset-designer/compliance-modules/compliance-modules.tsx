@@ -54,7 +54,10 @@ export const ComplianceModules = withForm({
       return includedModules.includes(typeId);
     };
 
-    const modules = complianceTypeIds.reduce(
+    const modules = complianceTypeIds.reduce<{
+      configured: ComplianceTypeId[];
+      available: ComplianceTypeId[];
+    }>(
       (acc, typeId) => {
         const isEnabled = isModuleEnabled(typeId);
         if (isEnabled) {
@@ -64,10 +67,7 @@ export const ComplianceModules = withForm({
         }
         return acc;
       },
-      { configured: [], available: [] } as {
-        configured: ComplianceTypeId[];
-        available: ComplianceTypeId[];
-      }
+      { configured: [], available: [] }
     );
 
     return (

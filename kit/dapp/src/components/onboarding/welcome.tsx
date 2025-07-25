@@ -45,6 +45,7 @@ export function Welcome({ steps }: WelcomeProps) {
     [OnboardingStepGroup.wallet]: [],
     [OnboardingStepGroup.system]: [],
     [OnboardingStepGroup.identity]: [],
+    [OnboardingStepGroup.addons]: [],
   };
 
   for (const step of steps) {
@@ -86,6 +87,10 @@ export function Welcome({ steps }: WelcomeProps) {
         return t("onboarding:groups.identity.title", {
           defaultValue: "Identity",
         });
+      case OnboardingStepGroup.addons:
+        return t("onboarding:groups.addons.title", {
+          defaultValue: "Addons",
+        });
       default:
         return groupId;
     }
@@ -104,6 +109,10 @@ export function Welcome({ steps }: WelcomeProps) {
       case OnboardingStepGroup.identity:
         return t("onboarding:groups.identity.description", {
           defaultValue: "Establish your on-chain identity",
+        });
+      case OnboardingStepGroup.addons:
+        return t("onboarding:groups.addons.description", {
+          defaultValue: "Install and configure your addons",
         });
       default:
         return "";
