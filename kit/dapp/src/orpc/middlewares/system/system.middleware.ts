@@ -7,12 +7,13 @@ import {
 } from "@/lib/zod/validators/ethereum-address";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { SystemAddonType } from "@/orpc/routes/system/addon/routes/addon.create.schema";
 import { call } from "@orpc/server";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 
-const TOKEN_FACTORIES_QUERY = theGraphGraphql(
+const SYSTEM_QUERY = theGraphGraphql(
   `
-  query GetTokenFactories($systemAddress: ID!) {
+  query GetSystem($systemAddress: ID!) {
     system(id: $systemAddress) {
       tokenFactoryRegistry {
         tokenFactories {
@@ -22,6 +23,13 @@ const TOKEN_FACTORIES_QUERY = theGraphGraphql(
           accessControl {
             ...AccessControlFragment
           }
+        }
+      }
+      systemAddonRegistry {
+        systemAddons(orderBy: name) {
+          id
+          typeId
+          name
         }
       }
     }
@@ -34,9 +42,7 @@ const TOKEN_FACTORIES_QUERY = theGraphGraphql(
  * Interface for the access control of a token factory.
  */
 export type SystemAccessControl = NonNullable<
-  NonNullable<
-    ResultOf<typeof TOKEN_FACTORIES_QUERY>["system"]
-  >["tokenFactoryRegistry"]
+  NonNullable<ResultOf<typeof SYSTEM_QUERY>["system"]>["tokenFactoryRegistry"]
 >["tokenFactories"][number]["accessControl"];
 
 /**
@@ -50,6 +56,18 @@ export interface TokenFactory {
   typeId: AssetFactoryTypeId;
   address: EthereumAddress;
   accessControl: SystemAccessControl;
+}
+
+/**
+ * Interface for a system addon.
+ * @param id - The id of the system addon.
+ * @param typeId - The type of the system addon.
+ * @param name - The name of the system addon.
+ */
+export interface SystemAddon {
+  address: EthereumAddress;
+  typeId: SystemAddonType;
+  name: string;
 }
 
 /**
@@ -78,7 +96,7 @@ export const systemMiddleware = baseRouter.middleware(
     if (!systemAddress) {
       throw errors.SYSTEM_NOT_CREATED();
     }
-    const tokenFactories = await getTokenFactories(
+    const { tokenFactories, systemAddons } = await getSystem(
       getEthereumAddress(systemAddress)
     );
 
@@ -87,29 +105,40 @@ export const systemMiddleware = baseRouter.middleware(
         system: {
           address: getEthereumAddress(systemAddress),
           tokenFactories,
+          addons: systemAddons,
         },
       },
     });
   }
 );
 
-const getTokenFactories = async (
+const getSystem = async (
   systemAddress: EthereumAddress
-): Promise<TokenFactory[]> => {
+): Promise<{
+  tokenFactories: TokenFactory[];
+  systemAddons: SystemAddon[];
+}> => {
   const { system } = await theGraphClient.request({
-    document: TOKEN_FACTORIES_QUERY,
+    document: SYSTEM_QUERY,
     variables: {
       systemAddress,
     },
   });
-  return (
-    system?.tokenFactoryRegistry?.tokenFactories.map(
-      ({ id, name, typeId, accessControl }) => ({
-        name,
-        typeId: typeId as AssetFactoryTypeId,
+  return {
+    tokenFactories:
+      system?.tokenFactoryRegistry?.tokenFactories.map(
+        ({ id, name, typeId, accessControl }) => ({
+          name,
+          typeId: typeId as AssetFactoryTypeId,
+          address: getEthereumAddress(id),
+          accessControl,
+        })
+      ) ?? [],
+    systemAddons:
+      system?.systemAddonRegistry?.systemAddons.map(({ id, typeId, name }) => ({
         address: getEthereumAddress(id),
-        accessControl,
-      })
-    ) ?? []
-  );
+        typeId: typeId as SystemAddonType,
+        name,
+      })) ?? [],
+  };
 };

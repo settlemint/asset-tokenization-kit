@@ -32,7 +32,7 @@ import {
   type SystemAddonConfig,
   type SystemAddonCreateOutput,
   getDefaultAddonImplementations,
-} from "./system.addonCreate.schema";
+} from "./addon.create.schema";
 
 const logger = createLogger();
 
@@ -167,7 +167,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
   .handler(async function* ({ input, context }) {
     const { contract, addons, verification } = input;
     const sender = context.auth.user;
-    const { t } = context;
+    const { t, system } = context;
 
     // Normalize to array
     const addonList = Array.isArray(addons) ? addons : [addons];
@@ -181,16 +181,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
     };
 
     // Query existing system addons to check for duplicates
-    const existingAddonNames = new Set<string>();
-    try {
-      // Note: We would need to add systemAddons to the system middleware
-      // For now, we'll proceed without duplicate checking and let the contract handle it
-      logger.debug(
-        "System context available, proceeding with addon registration"
-      );
-    } catch (error) {
-      logger.debug(`Could not fetch existing addons: ${String(error)}`);
-    }
+    const existingAddonNames = system?.addons.map((addon) => addon.name) ?? [];
 
     const results: SystemAddonCreateOutput["results"] = [];
 
@@ -229,7 +220,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
       };
 
       // Check if addon already exists (if we had that data)
-      if (existingAddonNames.has(name.toLowerCase())) {
+      if (existingAddonNames.some((existingName) => existingName === name)) {
         yield {
           status: "completed" as const,
           message: t("system:addons.messages.alreadyExists", { name }),

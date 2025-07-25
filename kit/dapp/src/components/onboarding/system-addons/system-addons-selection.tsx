@@ -12,7 +12,7 @@ import type { UserVerification } from "@/orpc/routes/common/schemas/user-verific
 import {
   type SystemAddonType,
   SystemAddonTypeEnum,
-} from "@/orpc/routes/system/routes/system.addonCreate.schema";
+} from "@/orpc/routes/system/addon/routes/addon.create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";

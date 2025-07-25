@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MutationInputSchemaWithContract } from "../../common/schemas/mutation.schema";
+import { MutationInputSchemaWithContract } from "../../../common/schemas/mutation.schema";
 
 /**
  * Supported system addon types enum
