@@ -129,6 +129,7 @@ contract ERC734 is IERC734, ReentrancyGuard {
     /// @param _approve True to approve, false to disapprove
     /// @return success True if the approval was processed successfully
     function approve(uint256 _id, bool _approve) public virtual override nonReentrant returns (bool success) {
+        // solhint-disable-next-line gas-strict-inequalities
         if (_id >= _executionNonce) revert ExecutionIdDoesNotExist({ executionId: _id });
         Execution storage execution = _executions[_id];
         if (execution.executed) revert ExecutionAlreadyPerformed({ executionId: _id });

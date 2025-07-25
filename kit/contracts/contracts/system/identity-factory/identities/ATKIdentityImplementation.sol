@@ -200,6 +200,7 @@ contract ATKIdentityImplementation is
     ///      Requires ACTION_KEY if the execution targets an external contract.
     function approve(uint256 _id, bool _toApprove) public virtual override(ERC734, IERC734) returns (bool success) {
         Execution storage executionToApprove = _executions[_id];
+        // solhint-disable-next-line gas-strict-inequalities
         if (_id >= _executionNonce) revert ReplicatedExecutionIdDoesNotExist({ executionId: _id });
         if (executionToApprove.executed) revert ReplicatedExecutionAlreadyPerformed({ executionId: _id });
 
