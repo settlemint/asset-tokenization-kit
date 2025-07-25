@@ -52,7 +52,7 @@ event CountryUpdated(address indexed _investorAddress, uint16 indexed _country);
 
 /**
  * @title IERC3643IdentityRegistry
- * @author SettleMint
+ * @author Tokeny
  * @notice Interface for ERC-3643 compliant Identity Registry managing investor identities
  * @dev This interface defines the standard for managing on-chain identities in security token ecosystems.
  *      It handles the registration, verification, and management of investor identities, ensuring

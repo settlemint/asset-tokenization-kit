@@ -15,7 +15,7 @@ event TokenUnbound(address indexed _token);
 
 /**
  * @title IERC3643Compliance
- * @author SettleMint
+ * @author Tokeny
  * @notice Interface for ERC-3643 compliant Compliance contract managing transfer restrictions
  * @dev This interface defines the standard for compliance contracts that enforce transfer rules
  *      for security tokens. It manages compliance modules that implement various regulatory

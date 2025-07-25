@@ -70,7 +70,7 @@ event Paused(address indexed _userAddress);
 event Unpaused(address indexed _userAddress);
 
 /// @title ERC-3643 Security Token Standard Interface
-/// @author ONCHAINID
+/// @author Tokeny
 /// @notice Interface for ERC-3643 compliant security tokens
 /// @dev Extends ERC20 standards with identity registry and compliance features
 interface IERC3643 is IERC20, IERC20Metadata {

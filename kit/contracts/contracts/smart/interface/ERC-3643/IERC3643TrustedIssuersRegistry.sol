@@ -26,7 +26,7 @@ event TrustedIssuerRemoved(IClaimIssuer indexed _trustedIssuer);
 event ClaimTopicsUpdated(IClaimIssuer indexed _trustedIssuer, uint256[] _claimTopics);
 
 /// @title IERC3643TrustedIssuersRegistry Interface
-/// @author ONCHAINID
+/// @author Tokeny
 /// @notice Interface for ERC-3643 compliant Trusted Issuers Registry managing authorized claim issuers
 /// @dev This interface extends IERC165 for interface detection support and defines the standard
 ///      for managing trusted claim issuers and their allowed claim topics in the identity ecosystem.

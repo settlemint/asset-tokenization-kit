@@ -43,7 +43,7 @@ event IdentityRegistryBound(address indexed _identityRegistry);
 event IdentityRegistryUnbound(address indexed _identityRegistry);
 
 /// @title IERC3643IdentityRegistryStorage Interface
-/// @author ONCHAINID
+/// @author Tokeny
 /// @notice Interface for ERC-3643 compliant Identity Registry Storage managing identity data persistence
 /// @dev This interface extends IERC165 for interface detection support and defines the standard
 ///      for storing and managing investor identity data across multiple identity registries.
