@@ -608,8 +608,10 @@ export class OnboardingPage extends BasePage {
     await expect(
       this.page.getByRole("heading", { name: userName })
     ).toBeVisible({ timeout: 120000 });
+    const designAssetLink = this.page.locator('a[href="/asset-designer"]');
+    await expect(designAssetLink).toBeVisible({ timeout: 120000 });
     await expect(
-      this.page.getByRole("button", { name: "Create New Asset" })
+      designAssetLink.getByRole("button", { name: "Design Asset" })
     ).toBeVisible({ timeout: 120000 });
   }
 
