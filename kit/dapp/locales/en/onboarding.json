@@ -81,9 +81,14 @@
     "creating-wallet": "Creating...",
     "wallet-created-successfully": "Wallet created successfully!",
     "failed-to-create-wallet": "Failed to create wallet. Please try again.",
+    "created-title": "Your Wallet",
     "success-message": "Congratulations! Your Web3 wallet has been successfully created",
     "wallet-address-title": "This is your wallet address",
-    "wallet-address-description": "Your wallet address is your unique identifier on the blockchain. It's used to send and receive digital assets, and to interact with smart contracts."
+    "wallet-address-description": "Your wallet address is your unique identifier on the blockchain. It's used to send and receive digital assets, and to interact with smart contracts.",
+    "address-explanation": "This address is something you can safely share with others for them to send assets (like tokens or cryptocurrencies) directly to your wallet. While all transactions to and from this address are publicly recorded on the blockchain, your personal identity remains private. Think of it like an email address or a bank account number.",
+    "security-importance": "Because your wallet controls access to your valuable digital assets and identity, it's important to keep it safe from unauthorized access and ensure you can recover it if needed.",
+    "security-next-steps": "To protect you, next you'll set up a PIN, enable one-time passwords (OTP), and create backup codes — simple security steps that keep your wallet secure and recoverable.",
+    "secure-wallet-button": "Secure my wallet"
   },
   "wallet-security": {
     "method-selector": {
