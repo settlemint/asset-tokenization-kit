@@ -9,6 +9,7 @@ import { SMARTHooks } from "../common/SMARTHooks.sol";
 import { _SMARTCappedLogic } from "./internal/_SMARTCappedLogic.sol";
 
 /// @title Standard (Non-Upgradeable) SMART Capped Token Extension
+/// @author SettleMint
 /// @notice This contract adds a maximum total supply (a "cap") to a standard, non-upgradeable
 ///         SMART token. Once the total supply reaches this cap, no more tokens can be minted.
 ///         'Non-upgradeable' means the contract's code cannot be changed after deployment.

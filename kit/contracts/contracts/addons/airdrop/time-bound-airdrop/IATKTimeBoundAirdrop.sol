@@ -5,7 +5,7 @@ pragma solidity ^0.8.28;
 import { IATKAirdrop } from "../IATKAirdrop.sol";
 
 /// @title IATKTimeBoundAirdrop
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Interface for time-bound airdrop contracts in the ATK Protocol.
 /// @dev Defines the functions specific to time-bound airdrops where claims are restricted to a specific time window.
 interface IATKTimeBoundAirdrop is IATKAirdrop {

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 /// @title Interface for SMART Token Burning Operations
+/// @author SettleMint
 /// @notice This interface defines the functions that a contract must implement to allow
 ///         for the burning (destruction) of SMART tokens. Adhering to this interface
 ///         ensures that other contracts or systems can interact with any burnable SMART token
@@ -20,7 +21,7 @@ interface ISMARTBurnable {
     /// @param from The address from which the tokens were actually burned. This is the account whose token balance was
     /// reduced.
     /// @param amount The quantity of tokens that were burned (destroyed).
-    event BurnCompleted(address indexed sender, address indexed from, uint256 amount);
+    event BurnCompleted(address indexed sender, address indexed from, uint256 indexed amount);
 
     /// @notice Burns (destroys) a specific amount of tokens from a given user's address.
     /// @dev This function is intended for an authorized operator (like an admin or a special role)

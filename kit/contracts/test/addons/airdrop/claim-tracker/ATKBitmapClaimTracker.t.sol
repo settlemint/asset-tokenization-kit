@@ -20,7 +20,7 @@ contract ATKBitmapClaimTrackerTest is Test {
     uint256 public constant CLAIM_AMOUNT = 100 ether;
 
     // Events
-    event ClaimRecorded(uint256 indexed index, uint256 claimedAmount, uint256 totalAmount);
+    event ClaimRecorded(uint256 indexed index, uint256 indexed claimedAmount, uint256 indexed totalAmount);
 
     function setUp() public {
         owner = makeAddr("owner");

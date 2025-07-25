@@ -3,7 +3,7 @@
 pragma solidity ^0.8.28;
 
 /// @title IATKClaimTracker
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Interface for claim tracking strategies in ATK airdrop contracts.
 /// @dev This interface allows for different claim tracking implementations (e.g., bitmap, storage-based).
 ///      Implementations should handle partial and full claims efficiently.
@@ -14,7 +14,7 @@ interface IATKClaimTracker {
     /// @param index The index of the claim in the Merkle tree.
     /// @param claimedAmount The amount claimed.
     /// @param totalAmount The total amount allocated for this index.
-    event ClaimRecorded(uint256 indexed index, uint256 claimedAmount, uint256 totalAmount);
+    event ClaimRecorded(uint256 indexed index, uint256 indexed claimedAmount, uint256 indexed totalAmount);
 
     /// @notice Checks if a claim has been fully claimed for a specific index.
     /// @param index The index to check in the Merkle tree.

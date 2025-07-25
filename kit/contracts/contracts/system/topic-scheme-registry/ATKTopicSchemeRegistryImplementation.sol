@@ -17,7 +17,7 @@ import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManag
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 /// @title ATK Topic Scheme Registry Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Implementation for managing topic schemes with their signatures for data encoding/decoding
 /// @dev This contract manages the registration and lifecycle of topic schemes used for claim data structures
 contract ATKTopicSchemeRegistryImplementation is
@@ -226,7 +226,7 @@ contract ATKTopicSchemeRegistryImplementation is
 
             // Add to enumeration array
             topicIds_.push(topicId);
-            currentArrayLength++;
+            ++currentArrayLength;
             topicIdIndex_[topicId] = currentArrayLength; // Use cached length instead of reading from storage
 
             // Emit individual event for each registration

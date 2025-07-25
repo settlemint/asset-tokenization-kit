@@ -23,7 +23,7 @@ import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManag
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 /// @title ATK Trusted Issuers Registry Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract is the upgradeable logic for managing a registry of trusted claim issuers and the specific
 /// claim topics they are authorized to issue claims for. It is compliant with the `IERC3643TrustedIssuersRegistry`
 /// interface, a standard for tokenization platforms.
@@ -67,8 +67,8 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// registry. `true` if active, `false` if removed or not yet added.
     struct TrustedIssuer {
         address issuer;
-        uint256[] claimTopics;
         bool exists;
+        uint256[] claimTopics;
     }
 
     /// @notice Primary mapping that stores `TrustedIssuer` details, keyed by the issuer's contract address.
@@ -215,7 +215,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     /// @dev Reverts with:
     ///      - `InvalidAdminAddress()` if `initialAdmin` is `address(0)`.
     ///      - `InvalidRegistrarAddress()` if any address in `initialRegistrars` is `address(0)`.
-    function initialize(address initialAdmin, address[] memory initialRegistrars) public initializer {
+    function initialize(address initialAdmin, address[] calldata initialRegistrars) public initializer {
         if (initialAdmin == address(0)) revert InvalidAdminAddress();
 
         __ERC165_init_unchained();
@@ -223,7 +223,7 @@ contract ATKTrustedIssuersRegistryImplementation is
 
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin); // Manually grant DEFAULT_ADMIN_ROLE
 
-        for (uint256 i = 0; i < initialRegistrars.length; i++) {
+        for (uint256 i = 0; i < initialRegistrars.length; ++i) {
             if (initialRegistrars[i] == address(0)) revert InvalidRegistrarAddress();
             _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialRegistrars[i]);
         }
@@ -315,7 +315,7 @@ contract ATKTrustedIssuersRegistryImplementation is
         if (_trustedIssuers[issuerAddress].exists) revert IssuerAlreadyExists(issuerAddress);
 
         // Store issuer details
-        _trustedIssuers[issuerAddress] = TrustedIssuer(issuerAddress, _claimTopics, true);
+        _trustedIssuers[issuerAddress] = TrustedIssuer(issuerAddress, true, _claimTopics);
         _issuerAddresses.push(issuerAddress);
 
         // Add issuer to the lookup mapping for each specified claim topic
@@ -549,14 +549,15 @@ contract ATKTrustedIssuersRegistryImplementation is
 
     // --- Internal Helper Functions ---
 
+    /// @notice Adds an issuer to the list of issuers for a specific claim topic
     /// @dev Internal function to add an issuer to the lookup array for a specific claim topic (`_issuersByClaimTopic`)
     /// and update the corresponding index in `_claimTopicIssuerIndex`.
-    /// @param claimTopic The `uint256` claim topic to associate the issuer with.
-    /// @param issuerAddress The address of the issuer to add to the topic's list.
-    /// @dev This function appends the `issuerAddress` to the `_issuersByClaimTopic[claimTopic]` array.
+    /// This function appends the `issuerAddress` to the `_issuersByClaimTopic[claimTopic]` array.
     /// It then stores the new length of this array (which is `index + 1` for 0-based indexing) in
     /// `_claimTopicIssuerIndex[claimTopic][issuerAddress]`. This stored value (index+1) is used for quick
     /// existence checks and for efficient removal using swap-and-pop.
+    /// @param claimTopic The claim topic ID to add the issuer to
+    /// @param issuerAddress The address of the issuer to add to the topic's list
     function _addIssuerToClaimTopic(uint256 claimTopic, address issuerAddress) internal {
         address[] storage issuers = _issuersByClaimTopic[claimTopic];
         // Store index+1. `issuers.length` before push is the 0-based index where it will be inserted.
@@ -565,12 +566,11 @@ contract ATKTrustedIssuersRegistryImplementation is
         issuers.push(issuerAddress);
     }
 
+    /// @notice Removes an issuer from the list of issuers for a specific claim topic
     /// @dev Internal function to remove an issuer from the lookup array for a specific claim topic
     /// (`_issuersByClaimTopic[claimTopic]`) using the efficient swap-and-pop technique. It also cleans up the
     /// `_claimTopicIssuerIndex` mapping.
-    /// @param claimTopic The `uint256` claim topic from which to remove the issuer.
-    /// @param issuerAddress The address of the issuer to remove from the topic's list.
-    /// @dev Steps:
+    /// Steps:
     /// 1.  Retrieves the stored index (plus one) of `issuerAddress` for the given `claimTopic` from
     ///     `_claimTopicIssuerIndex`. If this index is 0, it means the issuer is not in the list for this topic,
     ///     and the function reverts with `IssuerNotFoundInTopicList`.
@@ -586,6 +586,8 @@ contract ATKTrustedIssuersRegistryImplementation is
     ///     `issuerAddress` if it was last, or the duplicate of `lastIssuer` that was moved).
     /// This ensures O(1) removal complexity.
     /// Reverts with `IssuerNotFoundInTopicList` if the issuer is not found in the specified topic's list initially.
+    /// @param claimTopic The claim topic ID to remove the issuer from
+    /// @param issuerAddress The address of the issuer to remove from the topic's list
     function _removeIssuerFromClaimTopic(uint256 claimTopic, address issuerAddress) internal {
         uint256 indexToRemovePlusOne = _claimTopicIssuerIndex[claimTopic][issuerAddress];
         // Revert if index is 0 (meaning issuer was not found for this specific topic in the index mapping)
@@ -608,22 +610,23 @@ contract ATKTrustedIssuersRegistryImplementation is
         issuers.pop();
     }
 
+    /// @notice Removes an address from a storage array using swap-and-pop technique
     /// @dev Internal function to remove an address from a dynamic array of addresses (`address[] storage list`)
     /// using the swap-and-pop technique. This is a more generic version used for lists like `_issuerAddresses`
     /// where a separate index mapping (like `_claimTopicIssuerIndex`) is not maintained for each element's position.
-    /// @param list The storage array from which to remove the address.
-    /// @param addrToRemove The address to be removed from the `list`.
     /// @dev This function iterates through the `list` to find `addrToRemove`.
-    /// - Once found at index `i`:
+    /// Once found at index `i`:
     ///   - It replaces `list[i]` with the last element in the `list`.
     ///   - It then removes the last element from the `list` using `pop()`.
     ///   - The function then returns, having removed the first occurrence of `addrToRemove`.
-    /// - If `addrToRemove` is not found after iterating through the entire list, it reverts with
-    ///   `AddressNotFoundInList`. This situation implies a potential inconsistency if the caller expected the address
-    ///   to be present (e.g., if `_trustedIssuers[addrToRemove].exists` was true).
-    /// @dev Assumes the address is present and aims to remove only its first occurrence if there were duplicates
+    /// If `addrToRemove` is not found after iterating through the entire list, it reverts with
+    /// `AddressNotFoundInList`. This situation implies a potential inconsistency if the caller expected the address
+    /// to be present (e.g., if `_trustedIssuers[addrToRemove].exists` was true).
+    /// Assumes the address is present and aims to remove only its first occurrence if there were duplicates
     /// (though `_issuerAddresses` should ideally not have duplicates).
     /// Reverts with `AddressNotFoundInList(addrToRemove)` if the address is not found in the list.
+    /// @param list The storage array to remove the address from
+    /// @param addrToRemove The address to remove from the list
     function _removeAddressFromList(address[] storage list, address addrToRemove) internal {
         uint256 listLength = list.length;
         for (uint256 i = 0; i < listLength;) {

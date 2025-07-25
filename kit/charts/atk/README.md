@@ -160,6 +160,10 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | erpc.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | erpc.podLabels."app.kubernetes.io/component" | string | `"erpc"` |  |
 | erpc.resources | object | `{}` |  |
+| global.artifacts.image.pullPolicy | string | `"IfNotPresent"` |  |
+| global.artifacts.image.registry | string | `"ghcr.io"` |  |
+| global.artifacts.image.repository | string | `"settlemint/asset-tokenization-kit-artifacts"` |  |
+| global.artifacts.image.tag | string | `"2.0.0-main252a9e416"` |  |
 | global.ingressNamespace | string | `"ingress-nginx"` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |

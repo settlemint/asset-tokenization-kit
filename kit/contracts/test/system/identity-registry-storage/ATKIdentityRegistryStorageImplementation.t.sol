@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { ATKIdentityRegistryStorageImplementation } from
@@ -44,7 +44,7 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
     event IdentityStored(address indexed investorAddress, IIdentity indexed identity);
     event IdentityUnstored(address indexed investorAddress, IIdentity indexed identity);
     event IdentityModified(IIdentity indexed oldIdentity, IIdentity indexed newIdentity);
-    event CountryModified(address indexed _identityWallet, uint16 _country);
+    event CountryModified(address indexed _identityWallet, uint16 indexed _country);
     event IdentityRegistryBound(address indexed identityRegistry);
     event IdentityRegistryUnbound(address indexed identityRegistry);
     event IdentityWalletMarkedAsLost(

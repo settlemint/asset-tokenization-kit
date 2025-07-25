@@ -8,7 +8,9 @@ import { SMARTHooks } from "../common/SMARTHooks.sol";
 import { _SMARTCollateralLogic } from "./internal/_SMARTCollateralLogic.sol";
 
 /// @title Standard (Non-Upgradeable) SMART Collateral Extension
-/// @notice This contract adds a collateral verification requirement to a standard, non-upgradeable
+/// @author SettleMint
+/// @notice This contract adds a collateral verification requirement to a standard,
+/// non-upgradeable
 ///         SMART token. Before new tokens can be minted, this extension checks for a valid
 ///         collateral claim on the token contract's own OnchainID identity.
 ///         'Non-upgradeable' means the contract's code is fixed after deployment.
@@ -33,6 +35,8 @@ abstract contract SMARTCollateral is SMARTExtension, _SMARTCollateralLogic {
         __SMARTCollateral_init_unchained(collateralProofTopic_);
     }
 
+    /// @notice Returns the total supply of tokens for collateral calculations.
+    /// @return The total supply of tokens.
     /// @inheritdoc _SMARTCollateralLogic
     function __collateral_totalSupply() internal view virtual override returns (uint256) {
         return totalSupply();

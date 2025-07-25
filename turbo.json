@@ -15,7 +15,15 @@
       "dependsOn": ["ci:base", "format"]
     },
     "ci:base": {
-      "dependsOn": ["compile", "codegen", "lint", "test", "typecheck", "build"]
+      "dependsOn": [
+        "compile",
+        "codegen",
+        "lint",
+        "test",
+        "typecheck",
+        "build",
+        "artifacts"
+      ]
     },
     "ci:gha": {
       "dependsOn": ["ci:base", "test:integration"]
@@ -46,7 +54,11 @@
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package"]
+      "dependsOn": ["package", "artifacts"]
+    },
+    "publish:docker": {
+      "cache": false,
+      "dependsOn": ["artifacts"]
     },
     "dependencies": {},
     "format": {},

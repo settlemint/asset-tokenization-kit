@@ -1,13 +1,8 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
-pragma solidity ^0.8.27;
+pragma solidity ^0.8.28;
 
 import { ATKXvPSettlementImplementation } from "./ATKXvPSettlementImplementation.sol";
 import { IATKXvPSettlement } from "./IATKXvPSettlement.sol";
-import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { IATKXvPSettlementFactory } from "./IATKXvPSettlementFactory.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
@@ -15,8 +10,6 @@ import { AbstractATKSystemAddonFactoryImplementation } from
     "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKXvPSettlementProxy } from "./ATKXvPSettlementProxy.sol";
 import { ATKSystemRoles } from "../../system/ATKSystemRoles.sol";
-import { IATKSystem } from "../../system/IATKSystem.sol";
-import { IATKCompliance } from "../../system/compliance/IATKCompliance.sol";
 
 /// @title ATKXvPSettlementFactoryImplementation - A factory contract for creating XvPSettlement contracts
 /// @author SettleMint
@@ -29,8 +22,14 @@ contract ATKXvPSettlementFactoryImplementation is
     AbstractATKSystemAddonFactoryImplementation,
     IATKXvPSettlementFactory
 {
-    bytes32 public constant override(IATKXvPSettlementFactory, IWithTypeIdentifier) typeId =
-        keccak256("ATKXvPSettlementFactory");
+    /// @notice Type identifier for this factory contract
+    bytes32 public constant TYPE_ID = keccak256("ATKXvPSettlementFactory");
+
+    /// @notice Returns the type identifier for this factory
+    /// @return The bytes32 type identifier
+    function typeId() external pure override(IATKXvPSettlementFactory, IWithTypeIdentifier) returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice Custom errors for the XvPSettlementFactory contract
     /// @dev These errors provide more gas-efficient and descriptive error handling
@@ -53,6 +52,8 @@ contract ATKXvPSettlementFactoryImplementation is
     /// @param newImplementation The address of the new implementation
     event ImplementationUpdated(address indexed oldImplementation, address indexed newImplementation);
 
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
+    /// @param forwarder The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address forwarder) AbstractATKSystemAddonFactoryImplementation(forwarder) {
         _disableInitializers();
@@ -104,8 +105,8 @@ contract ATKXvPSettlementFactoryImplementation is
     /// @param autoExecute If true, settlement executes automatically when all approvals are received
     /// @return contractAddress The address of the newly created settlement contract
     function create(
-        string memory name,
-        IATKXvPSettlement.Flow[] memory flows,
+        string calldata name,
+        IATKXvPSettlement.Flow[] calldata flows,
         uint256 cutoffDate,
         bool autoExecute
     )
@@ -113,7 +114,7 @@ contract ATKXvPSettlementFactoryImplementation is
         onlyRole(ATKSystemRoles.DEPLOYER_ROLE)
         returns (address contractAddress)
     {
-        if (cutoffDate <= block.timestamp) revert InvalidCutoffDate();
+        if (cutoffDate < block.timestamp + 1) revert InvalidCutoffDate();
         if (flows.length == 0) revert EmptyFlows();
 
         bytes memory saltInputData = abi.encode(address(this), name, flows, cutoffDate, autoExecute, _msgSender());
@@ -164,7 +165,7 @@ contract ATKXvPSettlementFactoryImplementation is
     /// @param settlement The address to check
     /// @return True if the address was created by this factory, false otherwise
     function isAddressDeployed(address settlement) public view returns (bool) {
-        for (uint256 i = 0; i < allSettlements.length; i++) {
+        for (uint256 i = 0; i < allSettlements.length; ++i) {
             if (address(allSettlements[i]) == settlement) {
                 return true;
             }
@@ -173,6 +174,7 @@ contract ATKXvPSettlementFactoryImplementation is
     }
 
     /// @notice Returns the total number of settlements created by this factory
+    /// @return The total number of settlements created
     function allSettlementsLength() external view returns (uint256) {
         return allSettlements.length;
     }

@@ -2,7 +2,6 @@
 pragma solidity ^0.8.28;
 
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IContractIdentity } from "../IContractIdentity.sol";
 import { ERC735ClaimSchemes } from "../ERC735ClaimSchemes.sol";
 
@@ -37,6 +36,7 @@ abstract contract OnChainContractIdentity is IContractIdentity {
     /// @param topic The claim topic to validate
     /// @param data The claim data to validate
     /// @return True if the claim exists with matching parameters, false otherwise
+    // solhint-disable-next-line use-natspec
     function isClaimValid(
         IIdentity subject,
         uint256 topic,
@@ -80,8 +80,8 @@ abstract contract OnChainContractIdentity is IContractIdentity {
     function issueClaimTo(
         IIdentity subject,
         uint256 topic,
-        bytes memory data,
-        string memory uri
+        bytes calldata data,
+        string calldata uri
     )
         external
         virtual
@@ -109,21 +109,27 @@ abstract contract OnChainContractIdentity is IContractIdentity {
     // --- IClaimIssuer Stub Implementations ---
 
     /// @notice Revokes a claim (not implemented for contract identities)
-    /// @dev Contract identities manage claims through existence, not revocation lists
+    /// @dev Contract identities manage claims through existence, not revocation lists.
+    ///      The parameters are unnamed as they are not used in this implementation.
     /// @return Always returns false as revocation is not supported
+    // solhint-disable-next-line use-natspec
     function revokeClaim(bytes32, address) external pure virtual override returns (bool) {
         return false;
     }
 
     /// @notice Revokes a claim by signature (not implemented for contract identities)
-    /// @dev Contract identities don't use signature-based revocation
+    /// @dev Contract identities don't use signature-based revocation.
+    ///      The parameter is unnamed as it is not used in this implementation.
+    // solhint-disable-next-line use-natspec
     function revokeClaimBySignature(bytes calldata) external pure virtual override {
         // No-op: contract identities don't support signature-based revocation
     }
 
     /// @notice Checks if a claim is revoked (always returns false for contract identities)
-    /// @dev Contract identities manage claims through existence, not revocation
+    /// @dev Contract identities manage claims through existence, not revocation.
+    ///      The parameter is unnamed as it is not used in this implementation.
     /// @return Always returns false as claims are not revoked, only removed
+    // solhint-disable-next-line use-natspec
     function isClaimRevoked(bytes calldata) external pure virtual override returns (bool) {
         return false;
     }

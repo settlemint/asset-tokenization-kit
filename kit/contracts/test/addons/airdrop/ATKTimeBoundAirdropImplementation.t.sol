@@ -44,7 +44,7 @@ contract ATKTimeBoundAirdropTest is AbstractATKAssetTest {
     AirdropUtils.TestUserData public testUserData;
 
     // Events
-    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 amount);
+    event AirdropTokensTransferred(address indexed recipient, uint256 indexed index, uint256 indexed amount);
     event AirdropBatchTokensTransferred(address[] recipients, uint256[] indices, uint256[] amounts);
 
     function setUp() public {

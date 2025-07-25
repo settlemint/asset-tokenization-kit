@@ -184,6 +184,78 @@ The project integrates with:
   - Generate documentation and code snippets
   - Assist with complex research tasks
 
+## Sub-Agent Usage
+
+Claude Code includes specialized sub-agents that MUST BE USED PROACTIVELY for specific tasks:
+
+### 🏗️ implementation
+**USE PROACTIVELY**: When users request features, changes, or improvements
+- Handles complete implementation lifecycle from planning to code
+- Adapts planning depth based on task complexity
+- Ensures production-ready code with tests and documentation
+- Learns from successful patterns in your codebase
+
+### 🔍 code-reviewer
+**USE PROACTIVELY**: After writing ANY code, before commits, or when reviewing changes
+- Performs comprehensive security, performance, and quality analysis
+- Catches bugs, vulnerabilities, and suggests improvements
+- Delivers Linus-style brutal honesty with actionable fixes
+
+### 🐛 code-debugger
+**USE WHEN**: Errors occur, tests fail, or code behaves unexpectedly
+- Systematically diagnoses issues using multi-agent orchestration
+- Handles runtime errors, performance issues, race conditions
+- Generates detailed debug reports with root cause analysis
+
+### 📦 pr-commit-manager
+**USE PROACTIVELY**: When code is ready to commit or manage PRs
+- Creates atomic commits with semantic messages
+- Manages entire PR lifecycle from creation to merge
+- Monitors CI/CD pipelines and handles review feedback
+
+### 🧪 test-runner
+**USE PROACTIVELY**: After implementing features, before commits, or when CI fails
+- Orchestrates comprehensive test execution
+- Auto-fixes lint, format, and type errors
+- Ensures 100% quality gate compliance
+
+### Slash Commands
+The project includes custom slash commands that utilize these agents:
+- `/code-review` - Invokes code-reviewer agent (with Gemini-CLI integration)
+- `/test` - Invokes test-runner agent  
+- `/pr` - Invokes pr-commit-manager agent
+- `/debug` - Invokes code-debugger agent for systematic debugging
+
+Note: The implementation agent is invoked automatically when you request features or changes, no slash command needed.
+
+### Agent Features
+
+#### Gemini-CLI Integration
+The code-reviewer agent uses Gemini-CLI for enhanced code analysis:
+- Detects hidden bugs and edge cases
+- Suggests performance optimizations
+- Identifies security vulnerabilities
+- Provides architectural improvements
+
+#### Extended Timeouts
+Agents handle long-running operations:
+- Forge compilation: 5-minute timeout support
+- Large test suites: Adaptive timeout management
+- Complex builds: Patient execution
+
+#### Self-Learning Capabilities
+Agents learn from your codebase and improve over time:
+- **Pattern Recognition**: Identifies recurring issues and solutions
+- **Team Preferences**: Learns your specific conventions
+- **User Control**: All learnings require explicit approval
+- **Knowledge Storage**: Learnings saved in `.claude/learnings/`
+
+To approve a learning:
+1. Agent proposes a pattern it discovered
+2. You review and approve/reject
+3. Approved patterns enhance future agent performance
+4. Periodically consolidated into CLAUDE.md
+
 ## Coding Standards & AI Instructions
 
 CRITICAL: Write code as if the person maintaining it is a violent psychopath who

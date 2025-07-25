@@ -12,6 +12,11 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
  *      the ATK ecosystem.
  */
 interface IATKIdentity is IIdentity {
+    /// @notice Initializes the ATK Identity contract
+    /// @dev Sets up the initial management key and registers claim authorization contracts
+    /// @param initialManagementKey The address to be set as the initial management key
+    /// @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
+    /// authorizers
     function initialize(address initialManagementKey, address[] calldata claimAuthorizationContracts) external;
 
     /// @notice Registers a claim authorization contract

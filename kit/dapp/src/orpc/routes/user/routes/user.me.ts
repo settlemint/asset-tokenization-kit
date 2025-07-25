@@ -132,7 +132,9 @@ export const me = authRouter.user.me
       verificationTypes: [
         ...(authUser.pincodeEnabled ? [VerificationTypeEnum.pincode] : []),
         ...(authUser.twoFactorEnabled ? [VerificationTypeEnum.twoFactor] : []),
-        ...(authUser.secretCodeVerificationId ? [VerificationTypeEnum.secretCode] : []),
+        ...(authUser.secretCodeVerificationId
+          ? [VerificationTypeEnum.secretCode]
+          : []),
       ] as VerificationType[],
       onboardingState: {
         wallet: authUser.wallet !== zeroAddress,

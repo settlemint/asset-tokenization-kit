@@ -26,7 +26,7 @@ import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManag
 // exist.
 
 /// @title ATK Identity Registry Storage Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract is the core logic for storing and managing identity-related data for the ATK Protocol.
 /// It acts as a persistent data layer for `ATKIdentityRegistry` contracts, which handle the business logic of
 /// identity registration and verification. This separation allows the storage logic to be upgraded independently.

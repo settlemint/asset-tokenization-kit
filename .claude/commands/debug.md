@@ -1,8 +1,33 @@
 # /debug
 
-_Executes systematic debugging protocol using multi-agent orchestration to
-identify root causes and implement solutions when facing complex technical
-challenges_
+Systematically debug complex issues using the specialized code-debugger agent.
+
+## Execution
+
+Invoke the code-debugger agent using:
+
+```javascript
+Task({
+  description: "Debug issue",
+  subagent_type: "code-debugger",
+  prompt: `Debug the following issue: ${userProblemDescription}
+    
+    Apply systematic debugging protocol:
+    - Gather all diagnostic data (logs, traces, environment)
+    - Generate and test hypotheses  
+    - Use binary search and isolation techniques
+    - Profile performance if needed
+    - Apply learned debugging patterns
+    - Generate comprehensive debug report with root cause
+    
+    For complex issues, deploy multiple sub-agents in parallel.
+    Document the solution for future reference.`
+})
+```
+
+## Legacy Manual Protocol
+
+_The detailed manual debugging protocol below is preserved for reference but the code-debugger agent should be used instead._
 
 ## Role: Senior Debugging Engineer
 

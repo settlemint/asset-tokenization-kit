@@ -5,11 +5,9 @@ import { ATKAssetProxy } from "../ATKAssetProxy.sol";
 import { IATKStableCoin } from "./IATKStableCoin.sol";
 
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
-
-import { TokenImplementationNotSet } from "../../system/ATKSystemErrors.sol";
 
 /// @title Proxy contract for ATK Stable Coins, using ATKAssetProxy.
+/// @author SettleMint
 /// @notice This contract serves as a proxy, allowing for upgradeability of the underlying stable coin logic.
 /// It retrieves the implementation address from the IATKTokenFactory contract via ATKAssetProxy.
 contract ATKStableCoinProxy is ATKAssetProxy {

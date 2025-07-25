@@ -19,7 +19,9 @@ import { SMARTExtension } from "../common/SMARTExtension.sol"; // Provides commo
 import { _SMARTPausableLogic } from "./internal/_SMARTPausableLogic.sol"; // Contains core pausable state and modifiers.
 
 /// @title Standard (Non-Upgradeable) SMART Pausable Extension
-/// @notice This abstract contract provides the non-upgradeable implementation of pausable functionality
+/// @author SettleMint
+/// @notice This abstract contract provides the non-upgradeable implementation of pausable
+/// functionality
 ///         for a SMART token. It allows core token operations (transfers, mints, burns) to be halted.
 /// @dev It integrates the pausable logic from `_SMARTPausableLogic` (which includes the `_paused` state
 ///      variable and `whenNotPaused` modifier) with a standard `ERC20` token.
