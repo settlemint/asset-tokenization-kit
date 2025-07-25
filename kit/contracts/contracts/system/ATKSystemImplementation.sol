@@ -576,6 +576,12 @@ contract ATKSystemImplementation is
             ATKSystemRoles.REGISTRAR_ROLE, initialAdmin
         );
 
+        // Ensure the initial admin has DEFAULT_ADMIN_ROLE on the system access manager
+        // This is needed for registerTokenFactory to grant roles to new factory proxies
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
+            DEFAULT_ADMIN_ROLE, initialAdmin
+        );
+
         // Register the identity verification module
         if (_identityVerificationModule != address(0)) {
             _checkInterface(_identityVerificationModule, _COMPLIANCE_MODULE_ID);
