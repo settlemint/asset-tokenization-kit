@@ -240,8 +240,6 @@ interface ISMARTIdentityRegistry is IERC165 {
      */
     function contains(address _userAddress) external view returns (bool);
 
-
-
     /**
      * @notice Checks if a registered investor's wallet address is considered 'verified' using logical expressions.
      * @dev Verification is determined by evaluating a postfix (Reverse Polish Notation) expression that can combine

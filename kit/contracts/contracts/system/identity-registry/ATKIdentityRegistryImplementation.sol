@@ -493,7 +493,6 @@ contract ATKIdentityRegistryImplementation is
         }
     }
 
-
     /// @inheritdoc ISMARTIdentityRegistry
     /// @notice Checks if a registered investor's wallet address is considered 'verified' using logical expressions.
     /// @dev This function evaluates a postfix (Reverse Polish Notation) expression using a stack-based algorithm.
@@ -656,7 +655,7 @@ contract ATKIdentityRegistryImplementation is
         // Check each claim against the list of trusted issuers
         for (uint256 i = 0; i < claimIds.length;) {
             // Get claim details
-            (uint256 foundClaimTopic, , address issuer, bytes memory sig, bytes memory data,) =
+            (uint256 foundClaimTopic,, address issuer, bytes memory sig, bytes memory data,) =
                 identityToVerify.getClaim(claimIds[i]);
 
             // Verify the claim topic matches (should always be true due to getClaimIdsByTopic)

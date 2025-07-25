@@ -31,7 +31,6 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
     /// @param symbol_ The symbol of the fund.
     /// @param decimals_ The number of decimals for the fund tokens.
     /// @param managementFeeBps_ The management fee in basis points.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the fund.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedFundAddress The address of the newly deployed fund contract.
@@ -40,7 +39,6 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
         string memory symbol_,
         uint8 decimals_,
         uint16 managementFeeBps_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         uint16 countryCode_
     )
@@ -59,7 +57,7 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
             symbol_,
             decimals_,
             managementFeeBps_,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -85,7 +83,6 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
             name_,
             symbol_,
             decimals_,
-            requiredClaimTopics_,
             managementFeeBps_,
             countryCode_
         );
@@ -105,7 +102,6 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
     /// @param symbol_ The symbol of the fund.
     /// @param decimals_ The decimals of the fund.
     /// @param managementFeeBps_ The management fee in basis points for the fund.
-    /// @param requiredClaimTopics_ The required claim topics for the fund.
     /// @param initialModulePairs_ The initial compliance module pairs for the fund.
     /// @return predictedAddress The predicted address of the fund contract.
     function predictFundAddress(
@@ -113,7 +109,6 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
         string memory symbol_,
         uint8 decimals_,
         uint16 managementFeeBps_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         external
@@ -130,7 +125,7 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
             symbol_,
             decimals_,
             managementFeeBps_,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_

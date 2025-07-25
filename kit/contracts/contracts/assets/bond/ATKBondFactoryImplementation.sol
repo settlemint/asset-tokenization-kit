@@ -35,7 +35,6 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
     /// @param maturityDate_ The Unix timestamp representing the bond's maturity date.
     /// @param faceValue_ The face value of each bond token in the underlying asset's base units.
     /// @param underlyingAsset_ The address of the ERC20 token used as the underlying asset for the bond.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the bond.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedBondAddress The address of the newly deployed bond contract.
@@ -47,7 +46,6 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         uint256 maturityDate_,
         uint256 faceValue_,
         address underlyingAsset_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         uint16 countryCode_
     )
@@ -69,7 +67,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
             maturityDate_,
             faceValue_,
             underlyingAsset_,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -96,7 +94,6 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
             name_,
             symbol_,
             decimals_,
-            requiredClaimTopics_,
             cap_,
             maturityDate_,
             faceValue_,
@@ -122,7 +119,6 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
     /// @param maturityDate_ The maturity date of the bond.
     /// @param faceValue_ The face value of the bond.
     /// @param underlyingAsset_ The underlying asset of the bond.
-    /// @param requiredClaimTopics_ The required claim topics for the bond.
     /// @param initialModulePairs_ The initial compliance module pairs for the bond.
     /// @return predictedAddress The predicted address of the bond contract.
     function predictBondAddress(
@@ -133,7 +129,6 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         uint256 maturityDate_,
         uint256 faceValue_,
         address underlyingAsset_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         external
@@ -153,7 +148,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
             maturityDate_,
             faceValue_,
             underlyingAsset_,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_

@@ -18,7 +18,6 @@ import {
     ContractIdentityImplementationNotSet,
     TokenAccessManagerImplementationNotSet,
     IndexOutOfBounds,
-    IdentityVerificationModuleNotSet,
     TokenFactoryRegistryImplementationNotSet,
     AddonRegistryImplementationNotSet,
     ComplianceModuleRegistryImplementationNotSet,

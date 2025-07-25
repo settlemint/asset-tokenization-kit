@@ -19,7 +19,6 @@ interface IATKEquityFactory is IATKTokenFactory {
     /// @param name The name of the equity.
     /// @param symbol The symbol of the equity.
     /// @param decimals The number of decimals for the equity tokens.
-    /// @param requiredClaimTopics The claim topics required for interacting with the equity.
     /// @param countryCode The ISO 3166-1 numeric country code for jurisdiction
     event EquityCreated(
         address indexed sender,
@@ -28,7 +27,6 @@ interface IATKEquityFactory is IATKTokenFactory {
         string name,
         string symbol,
         uint8 decimals,
-        uint256[] requiredClaimTopics,
         uint16 countryCode
     );
 
@@ -36,7 +34,6 @@ interface IATKEquityFactory is IATKTokenFactory {
     /// @param name_ The name of the equity token.
     /// @param symbol_ The symbol of the equity token.
     /// @param decimals_ The number of decimals for the equity token.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the equity token.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedEquityAddress The address of the newly deployed equity token contract.
@@ -44,7 +41,6 @@ interface IATKEquityFactory is IATKTokenFactory {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         uint16 countryCode_
     )
@@ -55,14 +51,12 @@ interface IATKEquityFactory is IATKTokenFactory {
     /// @param name_ The name of the equity token.
     /// @param symbol_ The symbol of the equity token.
     /// @param decimals_ The number of decimals for the equity token.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the equity token.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @return predictedAddress The predicted address of the equity token contract.
     function predictEquityAddress(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         external

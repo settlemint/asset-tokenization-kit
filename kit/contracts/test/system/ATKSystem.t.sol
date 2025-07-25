@@ -31,7 +31,6 @@ import { IATKCompliance } from "../../contracts/system/compliance/IATKCompliance
 // Import system errors
 import {
     SystemAlreadyBootstrapped,
-    IdentityVerificationModuleNotSet,
     ComplianceImplementationNotSet,
     IdentityRegistryImplementationNotSet,
     InvalidImplementationInterface

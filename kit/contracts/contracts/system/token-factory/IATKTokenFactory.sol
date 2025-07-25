@@ -24,8 +24,6 @@ interface IATKTokenFactory is IERC165 {
     error AccessManagerAlreadyDeployed(address predictedAddress);
     /// @notice Error when a token identity address mismatch is detected.
     error TokenIdentityAddressMismatch(address deployedTokenIdentityAddress, address tokenIdentityAddress);
-    /// @notice Error when the provided identity verification module address is the zero address.
-    error InvalidIdentityVerificationModuleAddress();
 
     // -- Events --
     /// @notice Emitted when the token implementation address is updated.
@@ -59,14 +57,7 @@ interface IATKTokenFactory is IERC165 {
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The address of the token implementation contract.
     /// @param initialAdmin The address of the initial admin for the token registry.
-    /// @param identityVerificationModule The address of the identity verification module.
-    function initialize(
-        address systemAddress,
-        address tokenImplementation_,
-        address initialAdmin,
-        address identityVerificationModule
-    )
-        external;
+    function initialize(address systemAddress, address tokenImplementation_, address initialAdmin) external;
 
     /// @notice Returns the address of the token implementation contract.
     /// @return tokenImplementation The address of the token implementation contract.

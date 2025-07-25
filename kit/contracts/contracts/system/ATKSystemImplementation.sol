@@ -145,7 +145,6 @@ contract ATKSystemImplementation is
     /// @dev Stores the address of the identity factory module's proxy contract.
     address private _identityFactoryProxy;
 
-
     /// @dev Flag to indicate if the system has been bootstrapped.
     bool private _bootstrapped;
 
@@ -538,7 +537,6 @@ contract ATKSystemImplementation is
         // Set the identity factory's own OnChainID (this will now successfully issue claims)
         IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
 
-
         // Mark the system as bootstrapped
         _bootstrapped = true;
 
@@ -848,8 +846,6 @@ contract ATKSystemImplementation is
     function systemAccessManager() public view returns (address) {
         return _systemAccessManagerProxy;
     }
-
-
 
     // --- Governance Functions ---
 
