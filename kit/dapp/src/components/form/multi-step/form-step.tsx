@@ -35,7 +35,6 @@ export function FormStepContent({
 
 export function FormStepSubmit({
   children,
-  className,
 }: {
   children: React.ReactNode;
   className?: string;
