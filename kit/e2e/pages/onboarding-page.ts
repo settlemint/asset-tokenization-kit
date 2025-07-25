@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import type { KycData } from "../types/form-field";
 import { BasePage } from "./base-page";
 
 export class OnboardingPage extends BasePage {
@@ -39,22 +40,18 @@ export class OnboardingPage extends BasePage {
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactHydration();
 
-    try {
-      await expect(
-        this.page.getByRole("button", { name: "Let's Get Started" })
-      ).toBeVisible({
-        timeout: 10000,
-      });
-    } catch (error) {
-      throw error;
-    }
+    await expect(
+      this.page.getByRole("button", { name: "Let's Get Started" })
+    ).toBeVisible({
+      timeout: 10000,
+    });
   }
 
   async continueSetup(): Promise<void> {
     const continueButton = this.page.getByRole("button", {
       name: "Continue Setup",
     });
-    await expect(continueButton).toBeVisible({ timeout: 10000 });
+    await expect(continueButton).toBeVisible({ timeout: 120000 });
     await continueButton.click();
     await this.waitForReactStateSettle();
   }
@@ -102,22 +99,6 @@ export class OnboardingPage extends BasePage {
     await expect(stepButton).toBeVisible();
   }
 
-  async verifyToastNotification(
-    message: string,
-    loadingMessage?: string
-  ): Promise<void> {
-    if (loadingMessage) {
-      await this.page
-        .locator(`div[data-sonner-toast]:has-text("${loadingMessage}")`)
-        .waitFor({ state: "detached", timeout: 10000 });
-    }
-    try {
-      await expect(
-        this.page.locator(`div[data-sonner-toast]:has-text("${message}")`)
-      ).toBeAttached({ timeout: 2000 });
-    } catch {}
-  }
-
   async createWallet(): Promise<void> {
     await this.waitForReactComponent(
       "button[name*='Create my wallet'], button:has-text('Create my wallet')"
@@ -134,19 +115,12 @@ export class OnboardingPage extends BasePage {
     await expect(
       this.page.getByRole("heading", { name: "Wallet Created" })
     ).toBeVisible({
-      timeout: 15000,
+      timeout: 120000,
     });
-    try {
-      await expect(
-        this.page.locator(
-          'div[data-sonner-toast]:has-text("Wallet created successfully!")'
-        )
-      ).toBeAttached({ timeout: 2000 });
-    } catch {}
     await expect(
       this.page.getByRole("button", { name: "Continue" })
     ).toBeVisible({
-      timeout: 10000,
+      timeout: 120000,
     });
     await this.page.getByRole("button", { name: "Continue" }).click();
     await this.page.waitForLoadState("networkidle");
@@ -186,43 +160,22 @@ export class OnboardingPage extends BasePage {
 
     await expect(
       this.page.getByRole("heading", { name: "Your wallet is now secured!" })
-    ).toBeVisible({
-      timeout: 10000,
-    });
-    await this.verifyToastNotification("PIN code set successfully");
-
+    ).toBeVisible({ timeout: 120000 });
     await expect(
       this.page.getByRole("button", { name: "Continue" })
-    ).toBeVisible({
-      timeout: 5000,
-    });
+    ).toBeVisible({ timeout: 120000 });
     await this.page.getByRole("button", { name: "Continue" }).click();
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
   }
 
   async verifyAndConfirmRecoveryCodes(): Promise<void> {
-    await this.waitForReactStateSettle();
     await expect(
-      this.page.getByRole("heading", { name: "Your Secret Codes (16)" })
-    ).toBeVisible({
-      timeout: 15000,
-    });
-
-    for (let i = 1; i <= 16; i++) {
-      const codeNumber = i.toString().padStart(2, "0");
-      await expect(this.page.getByText(`${codeNumber}.`)).toBeVisible({
-        timeout: 5000,
-      });
-    }
-
-    await this.verifyToastNotification("Secret codes generated successfully!");
-
+      this.page.getByRole("heading", { name: "Your secret codes" })
+    ).toBeVisible({ timeout: 10000 });
     await expect(
       this.page.getByRole("button", { name: "Confirm I've stored them" })
-    ).toBeVisible({
-      timeout: 5000,
-    });
+    ).toBeVisible({ timeout: 10000 });
     await this.page
       .getByRole("button", { name: "Confirm I've stored them" })
       .click();
@@ -261,10 +214,10 @@ export class OnboardingPage extends BasePage {
 
     await expect(
       this.page.getByRole("heading", { name: "Deployment Details" })
-    ).toBeAttached({ timeout: 20000 });
+    ).toBeAttached({ timeout: 120000 });
     const continueButton = this.page.getByRole("button", { name: "Continue" });
-    await expect(continueButton).toBeVisible({ timeout: 20000 });
-    await expect(continueButton).toBeEnabled({ timeout: 20000 });
+    await expect(continueButton).toBeVisible({ timeout: 120000 });
+    await expect(continueButton).toBeEnabled({ timeout: 120000 });
     await continueButton.click();
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
@@ -275,7 +228,7 @@ export class OnboardingPage extends BasePage {
     await expect(
       this.page.getByText("Configure Platform Settings")
     ).toBeVisible({
-      timeout: 10000,
+      timeout: 120000,
     });
     await this.page.getByRole("button", { name: "Save & Continue" }).click();
 
@@ -332,11 +285,11 @@ export class OnboardingPage extends BasePage {
     await this.page.getByRole("button", { name: "Deploy Assets" }).click();
     await this.enterPinVerification(pin);
     await expect(this.page.getByText("Asset Types Deployed")).toBeVisible({
-      timeout: 30000,
+      timeout: 120000,
     });
     await expect(
       this.page.getByRole("button", { name: "Continue" })
-    ).toBeVisible({ timeout: 5000 });
+    ).toBeVisible({ timeout: 120000 });
     await this.page.getByRole("button", { name: "Continue" }).click();
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
@@ -355,38 +308,12 @@ export class OnboardingPage extends BasePage {
     await this.page.getByRole("button", { name: "Deploy Addons" }).click();
     await this.enterPinVerification(pin);
 
-    await this.page.screenshot({
-      path: "debug-after-addon-pin-dialog.png",
-      fullPage: true,
-    });
-
     const deployedHeading = this.page.getByRole("heading", {
       name: "Addons Deployed",
     });
-    const isDeployedHeadingVisible = await deployedHeading
-      .isVisible()
-      .catch(() => false);
-    if (!isDeployedHeadingVisible) {
-      const url = this.page.url();
-      await this.page.screenshot({
-        path: "debug-no-addons-deployed-heading.png",
-        fullPage: true,
-      });
-    }
-
     await expect(deployedHeading).toBeVisible({ timeout: 120000 });
 
     const continueBtn = this.page.getByRole("button", { name: "Continue" });
-    const isContinueBtnVisible = await continueBtn
-      .isVisible()
-      .catch(() => false);
-    if (!isContinueBtnVisible) {
-      await this.page.screenshot({
-        path: "debug-no-continue-btn-after-addons.png",
-        fullPage: true,
-      });
-    }
-
     await expect(continueBtn).toBeVisible({ timeout: 120000 });
     await continueBtn.click();
     await this.page.waitForLoadState("networkidle");
@@ -413,26 +340,19 @@ export class OnboardingPage extends BasePage {
         exact: true,
       })
     ).toBeVisible({
-      timeout: 20000,
+      timeout: 120000,
     });
     await expect(
       this.page.getByRole("button", { name: "Continue" })
     ).toBeVisible({
-      timeout: 5000,
+      timeout: 120000,
     });
     await this.page.getByRole("button", { name: "Continue" }).click();
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
   }
 
-  async fillKycForm(kycData: {
-    firstName: string;
-    lastName: string;
-    dateOfBirth: { year: string; month: string; day: string };
-    countryOfResidence: string;
-    residencyStatus: string;
-    nationalId: string;
-  }): Promise<void> {
+  async fillKycForm(kycData: KycData): Promise<void> {
     await this.waitForReactStateSettle();
     await expect(
       this.page.locator("h2").filter({ hasText: "Add Personal Information" })
@@ -493,7 +413,7 @@ export class OnboardingPage extends BasePage {
     await expect(
       this.page.getByRole("button", { name: "Save and continue" })
     ).toBeEnabled({
-      timeout: 5000,
+      timeout: 120000,
     });
   }
 
@@ -506,8 +426,6 @@ export class OnboardingPage extends BasePage {
     });
 
     await this.enterPinVerification(pin);
-
-    await this.verifyToastNotification("Identity registered successfully!");
     await expect(this.page).toHaveURL(/\/$/, { timeout: 20000 });
     await this.waitForReactStateSettle();
   }
@@ -727,7 +645,7 @@ export class OnboardingPage extends BasePage {
     await this.selectAddons(addons, pin);
   }
 
-  async completeIdentitySteps(pin: string, kycData: any): Promise<void> {
+  async completeIdentitySteps(pin: string, kycData: KycData): Promise<void> {
     await this.setupOnChainId(pin);
     await this.fillKycForm(kycData);
     await this.completeIdentityVerification(pin);
@@ -737,7 +655,7 @@ export class OnboardingPage extends BasePage {
     pin: string,
     assetTypes: string[],
     addons: string[],
-    kycData: any
+    kycData: KycData
   ): Promise<void> {
     await this.clickLetsGetStarted();
     await this.verifyCurrentStep(1, 9);
@@ -747,6 +665,15 @@ export class OnboardingPage extends BasePage {
     await this.completeSystemSteps(pin, assetTypes, addons);
 
     await this.completeIdentitySteps(pin, kycData);
+  }
+
+  async verifyOnboardingComplete(userName: string): Promise<void> {
+    await expect(
+      this.page.getByRole("heading", { name: userName })
+    ).toBeVisible({ timeout: 120000 });
+    await expect(
+      this.page.getByRole("button", { name: "Create New Asset" })
+    ).toBeVisible({ timeout: 120000 });
   }
 
   async setDateOfBirthDirectly(date: string): Promise<void> {

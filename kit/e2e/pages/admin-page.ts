@@ -364,7 +364,7 @@ export class AdminPage extends BasePage {
           const supplyCell = row.locator(
             `td:nth-child(${columnIndices.supplyColumnIndex})`
           );
-          const supplyText = (await supplyCell.textContent()) || "";
+          const supplyText = (await supplyCell.textContent()) ?? "";
 
           if (supplyText.includes("NaN") || supplyText.trim() === "NaN") {
             throw new Error(
@@ -412,7 +412,6 @@ export class AdminPage extends BasePage {
         (error.message.includes("VALIDATION_ERROR") ||
           error.message.includes("but total supply"))
       ) {
-        console.error(error.message);
         throw error;
       }
       return { found: false, matchedSupply: false };
@@ -456,54 +455,19 @@ export class AdminPage extends BasePage {
     await expect
       .poll(
         async () => {
-          try {
-            const searchSuccessful = await this.searchForAsset(
-              searchInput,
-              options.name
-            );
-            if (!searchSuccessful) {
-              return false;
-            }
+          const searchSuccessful = await this.searchForAsset(
+            searchInput,
+            options.name
+          );
+          if (!searchSuccessful) {
+            return false;
+          }
 
-            const rows = this.page.locator("tbody tr");
-            const count = await rows.count();
+          const rows = this.page.locator("tbody tr");
+          const count = await rows.count();
 
-            if (count === 0) {
-              console.log(
-                "No rows found in table, checking if we need to refresh"
-              );
-
-              const result = await this.handleNoRows(
-                currentSearchAttempts,
-                maxSearchAttempts,
-                currentRefreshCount,
-                maxRefreshes,
-                { sidebarAssetTypes: options.sidebarAssetTypes }
-              );
-
-              currentSearchAttempts = result.updatedSearchAttempts;
-              currentRefreshCount = result.updatedRefreshCount;
-
-              return false;
-            }
-
-            for (let i = 0; i < count; i++) {
-              const row = rows.nth(i);
-              const result = await this.checkAssetInRow(
-                row,
-                options.name,
-                columnIndices,
-                options.totalSupply
-              );
-
-              if (result.found) {
-                return true;
-              }
-            }
-
-            console.log(`Asset ${options.name} not found in ${count} rows`);
-
-            const result = await this.handleAssetNotFound(
+          if (count === 0) {
+            const result = await this.handleNoRows(
               currentSearchAttempts,
               maxSearchAttempts,
               currentRefreshCount,
@@ -515,18 +479,34 @@ export class AdminPage extends BasePage {
             currentRefreshCount = result.updatedRefreshCount;
 
             return false;
-          } catch (error) {
-            if (
-              error instanceof Error &&
-              (error.message.includes("VALIDATION_ERROR") ||
-                error.message.includes("but total supply"))
-            ) {
-              throw error;
-            }
-
-            console.log(`Error during search: ${error}`);
-            return false;
           }
+
+          for (let i = 0; i < count; i++) {
+            const row = rows.nth(i);
+            const result = await this.checkAssetInRow(
+              row,
+              options.name,
+              columnIndices,
+              options.totalSupply
+            );
+
+            if (result.found) {
+              return true;
+            }
+          }
+
+          const result = await this.handleAssetNotFound(
+            currentSearchAttempts,
+            maxSearchAttempts,
+            currentRefreshCount,
+            maxRefreshes,
+            { sidebarAssetTypes: options.sidebarAssetTypes }
+          );
+
+          currentSearchAttempts = result.updatedSearchAttempts;
+          currentRefreshCount = result.updatedRefreshCount;
+
+          return false;
         },
         {
           message: `Waiting for asset ${options.name} to appear in the table with${options.totalSupply ? ` total supply ${options.totalSupply}` : ""}`,
@@ -596,9 +576,6 @@ export class AdminPage extends BasePage {
     const updatedSearchAttempts = searchAttempts + 1;
 
     if (updatedSearchAttempts < maxSearchAttempts) {
-      console.error(
-        `Asset not found, search attempt ${updatedSearchAttempts}/${maxSearchAttempts}...`
-      );
       await this.page.waitForTimeout(1000);
       return {
         continueSearch: false,
@@ -1052,5 +1029,16 @@ export class AdminPage extends BasePage {
         await locator.waitFor({ state: "visible" });
       }
     }
+  }
+
+  async verifyDeploymentSuccess() {
+    const successText = this.page.getByText("System deployed successfully!");
+    const detailsHeading = this.page.getByRole("heading", {
+      name: "Deployment Details",
+    });
+
+    await expect(successText.or(detailsHeading)).toBeAttached({
+      timeout: 120000,
+    });
   }
 }

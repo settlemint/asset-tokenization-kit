@@ -61,8 +61,9 @@ export async function updateUserRole(
 ): Promise<void> {
   const client = await createDbClient();
   try {
-    await client.query('DELETE FROM "user" WHERE wallet = $1', [
-      "0x0000000000000000000000000000000000000000",
+    await client.query('UPDATE "user" SET role = $1 WHERE email = $2', [
+      role,
+      email,
     ]);
   } catch (error) {
     throw new Error(

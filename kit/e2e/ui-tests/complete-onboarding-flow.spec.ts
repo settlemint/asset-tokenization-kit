@@ -54,6 +54,9 @@ test.describe.serial("Complete Onboarding Flow", () => {
       });
     }
     await onboardingPage.completeIdentityVerification(testData.pinCode);
+    await onboardingPage.verifyOnboardingComplete(
+      `${testData.kycData.firstName} ${testData.kycData.lastName}`
+    );
     await expect(page.getByText(/onboardingFinished": true/)).toBeVisible({
       timeout: 20000,
     });
