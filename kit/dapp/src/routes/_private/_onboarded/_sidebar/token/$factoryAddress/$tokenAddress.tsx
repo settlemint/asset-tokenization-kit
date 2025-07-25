@@ -4,11 +4,11 @@ import {
 } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { ManageDropdown } from "@/components/manage-dropdown/token";
+import { ManageAssetDropdown } from "@/components/manage-dropdown/asset";
 import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
-import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
+import { AssetStatusBadge } from "@/components/assets/asset-status-badge";
 import { seo } from "@/config/metadata";
-import { getTokenTabConfiguration } from "@/lib/tokens/tab-configuration";
+import { getAssetTabConfiguration } from "@/lib/assets/tab-configuration";
 import {
   AssetType,
   getAssetClassFromFactoryTypeId,
@@ -25,7 +25,7 @@ export const Route = createFileRoute(
     context: { queryClient, orpc },
     params: { tokenAddress, factoryAddress },
   }) => {
-    const [token, factory] = await Promise.all([
+    const [asset, factory] = await Promise.all([
       queryClient.fetchQuery(
         orpc.token.read.queryOptions({
           input: { tokenAddress },
@@ -48,11 +48,11 @@ export const Route = createFileRoute(
         ...createBreadcrumbMetadata(factory.name),
         href: `/token/${factoryAddress}`,
       },
-      createBreadcrumbMetadata(token.name)
+      createBreadcrumbMetadata(asset.name)
     );
 
     return {
-      token,
+      asset,
       factory,
       breadcrumb,
     };
@@ -62,20 +62,20 @@ export const Route = createFileRoute(
    * Uses the factory name and asset type description for metadata
    */
   head: ({ loaderData }) => {
-    if (loaderData?.token) {
+    if (loaderData?.asset) {
       const keywords = [
-        loaderData.token.name,
-        loaderData.token.symbol,
-        "tokenization",
-        "token",
+        loaderData.asset.name,
+        loaderData.asset.symbol,
+        "asset tokenization",
+        "digital asset",
       ];
 
-      let title = loaderData.token.name;
+      let title = loaderData.asset.name;
 
       const assetType = getAssetTypeFromFactoryTypeId(
         loaderData.factory.typeId
       );
-      title = `${loaderData.token.name} - ${loaderData.factory.name}`;
+      title = `${loaderData.asset.name} - ${loaderData.factory.name}`;
       keywords.push(assetType, loaderData.factory.name);
 
       return {
@@ -94,7 +94,7 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { token, factory } = Route.useLoaderData();
+  const { asset, factory } = Route.useLoaderData();
   const { factoryAddress, tokenAddress } = Route.useParams();
 
   // Get asset type from factory
@@ -106,17 +106,17 @@ function RouteComponent() {
         <RouterBreadcrumb />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold tracking-tight">{token.name}</h1>
-            <TokenStatusBadge paused={token.pausable.paused} />
+            <h1 className="text-3xl font-bold tracking-tight">{asset.name}</h1>
+            <AssetStatusBadge paused={asset.pausable.paused} />
           </div>
-          <ManageDropdown token={token} />
+          <ManageAssetDropdown asset={asset} />
         </div>
       </div>
 
       <Suspense fallback={<TabNavigationSkeleton />}>
         <AsyncTabNavigation
           factoryAddress={factoryAddress as EthereumAddress}
-          tokenAddress={tokenAddress as EthereumAddress}
+          assetAddress={tokenAddress as EthereumAddress}
           assetType={assetType}
         />
       </Suspense>
@@ -146,16 +146,16 @@ function TabNavigationSkeleton() {
  */
 async function AsyncTabNavigation({
   factoryAddress,
-  tokenAddress,
+  assetAddress,
   assetType,
 }: {
   factoryAddress: EthereumAddress;
-  tokenAddress: EthereumAddress;
+  assetAddress: EthereumAddress;
   assetType: AssetType;
 }) {
-  const tabs = await getTokenTabConfiguration({
+  const tabs = await getAssetTabConfiguration({
     factoryAddress,
-    tokenAddress,
+    assetAddress,
     assetType,
   });
 

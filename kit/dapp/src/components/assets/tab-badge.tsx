@@ -31,7 +31,7 @@ export function TabBadgeSpinner() {
 }
 
 /**
- * Async component that loads and displays badge counts for tabs
+ * Async component that loads and displays badge counts for asset tabs
  */
 async function TabBadgeLoader({
   address: _address,

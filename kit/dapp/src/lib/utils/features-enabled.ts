@@ -27,7 +27,7 @@ export const hasYield = (assetType: AssetType): boolean => assetType === "bond";
 /**
  * Checks if an asset type supports freeze functionality
  */
-export const hasFreeze = (assetType: AssetType): boolean => true;
+export const hasFreeze = (_assetType: AssetType): boolean => true;
 
 /**
  * Check if MICA regulation is available and enabled for an asset type
@@ -37,7 +37,7 @@ export const hasFreeze = (assetType: AssetType): boolean => true;
  */
 export const isMicaEnabledForAsset = async (
   assetType: AssetType,
-  assetAddress: Address
+  _assetAddress: Address
 ): Promise<boolean> => {
   // MICA is only available for stablecoins
   const isAvailable = assetType === "stablecoin";
