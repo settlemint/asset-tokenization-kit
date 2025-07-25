@@ -1,18 +1,20 @@
 import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import {
-  ConfirmTransaction,
   Deposit,
   ExecuteTransaction,
   RequirementChanged,
-  RevokeConfirmation,
-  SubmitContractCallTransaction,
-  SubmitERC20TransferTransaction,
-  SubmitTransaction,
-  TransactionExecutionFailed,
+  SubmitTransactionWithSignatures,
+  WeightedSignaturesToggled,
+  SignerWeightUpdated,
+  SignaturesProvided,
+  OnchainIdSet,
 } from "../../../../generated/templates/Vault/Vault";
 import { fetchEvent } from "../../../event/fetch/event";
 import { fetchVault } from "./fetch/vault";
 import { fetchVaultTransaction } from "./fetch/vault-transaction";
+import { fetchVaultSigner } from "./fetch/vault-signer";
+import { fetchVaultTransactionConfirmation } from "./fetch/vault-transaction-confirmation";
+import { fetchAccount } from "../../../account/fetch/account";
 
 export function handleDeposit(event: Deposit): void {
   fetchEvent(event, "Deposit");
@@ -25,8 +27,10 @@ export function handleDeposit(event: Deposit): void {
   vault.save();
 }
 
-export function handleSubmitTransaction(event: SubmitTransaction): void {
-  fetchEvent(event, "SubmitTransaction");
+export function handleSubmitTransactionWithSignatures(
+  event: SubmitTransactionWithSignatures
+): void {
+  fetchEvent(event, "SubmitTransactionWithSignatures");
 
   const transaction = fetchVaultTransaction(
     event.address,
@@ -39,90 +43,30 @@ export function handleSubmitTransaction(event: SubmitTransaction): void {
   transaction.valueExact = event.params.value;
   transaction.data = event.params.data;
   transaction.comment = event.params.comment;
-  transaction.submittedBy = event.params.signer;
+  transaction.submittedBy = event.params.submitter;
   transaction.submittedAt = event.block.timestamp;
+  transaction.confirmationsRequired = event.params.requiredSignatures;
   transaction.deployedInTransaction = event.transaction.hash;
   transaction.save();
 }
 
-export function handleSubmitERC20TransferTransaction(
-  event: SubmitERC20TransferTransaction
+export function handleWeightedSignaturesToggled(
+  event: WeightedSignaturesToggled
 ): void {
-  fetchEvent(event, "SubmitERC20TransferTransaction");
+  fetchEvent(event, "WeightedSignaturesToggled");
 
-  const transaction = fetchVaultTransaction(
-    event.address,
-    event.params.txIndex
-  );
-  transaction.to = event.params.to;
-  transaction.comment = event.params.comment;
-  transaction.submittedBy = event.params.signer;
-  transaction.submittedAt = event.block.timestamp;
-  transaction.deployedInTransaction = event.transaction.hash;
-
-  // Create ERC20Transfer entity
-  // TODO: Implement ERC20Transfer entity creation
-
-  transaction.save();
+  const vault = fetchVault(event.address);
+  vault.weightedSignaturesEnabled = event.params.enabled;
+  vault.save();
 }
 
-export function handleSubmitContractCallTransaction(
-  event: SubmitContractCallTransaction
-): void {
-  fetchEvent(event, "SubmitContractCallTransaction");
+export function handleSignerWeightUpdated(event: SignerWeightUpdated): void {
+  fetchEvent(event, "SignerWeightUpdated");
 
-  const transaction = fetchVaultTransaction(
-    event.address,
-    event.params.txIndex
-  );
-  transaction.to = event.params.target;
-  transaction.value = BigDecimal.fromString(event.params.value.toString()).div(
-    BigDecimal.fromString("1000000000000000000")
-  );
-  transaction.valueExact = event.params.value;
-  // Combine selector and abiEncodedArguments for the data field
-  transaction.data = event.params.selector.concat(
-    event.params.abiEncodedArguments
-  );
-  transaction.comment = event.params.comment;
-  transaction.submittedBy = event.params.signer;
-  transaction.submittedAt = event.block.timestamp;
-  transaction.deployedInTransaction = event.transaction.hash;
-
-  // Create ContractCall entity
-  // TODO: Implement ContractCall entity creation
-
-  transaction.save();
-}
-
-export function handleConfirmTransaction(event: ConfirmTransaction): void {
-  fetchEvent(event, "ConfirmTransaction");
-
-  const transaction = fetchVaultTransaction(
-    event.address,
-    event.params.txIndex
-  );
-  transaction.confirmationsCount = transaction.confirmationsCount.plus(
-    BigInt.fromI32(1)
-  );
-  transaction.save();
-
-  // TODO: Create or update VaultTransactionConfirmation entity
-}
-
-export function handleRevokeConfirmation(event: RevokeConfirmation): void {
-  fetchEvent(event, "RevokeConfirmation");
-
-  const transaction = fetchVaultTransaction(
-    event.address,
-    event.params.txIndex
-  );
-  transaction.confirmationsCount = transaction.confirmationsCount.minus(
-    BigInt.fromI32(1)
-  );
-  transaction.save();
-
-  // TODO: Update VaultTransactionConfirmation entity
+  const vaultSigner = fetchVaultSigner(event.address, event.params.signer);
+  vaultSigner.weight = event.params.weight;
+  vaultSigner.deployedInTransaction = event.transaction.hash;
+  vaultSigner.save();
 }
 
 export function handleExecuteTransaction(event: ExecuteTransaction): void {
@@ -146,16 +90,37 @@ export function handleRequirementChanged(event: RequirementChanged): void {
   vault.save();
 }
 
-export function handleTransactionExecutionFailed(
-  event: TransactionExecutionFailed
-): void {
-  fetchEvent(event, "TransactionExecutionFailed");
+export function handleSignaturesProvided(event: SignaturesProvided): void {
+  fetchEvent(event, "SignaturesProvided");
 
-  // Log the failed execution - transaction entity already exists
   const transaction = fetchVaultTransaction(
     event.address,
     event.params.txIndex
   );
-  transaction.executed = false; // Ensure it's marked as not executed
+
+  // Update the confirmation count on the transaction
+  transaction.confirmationsCount = BigInt.fromI32(event.params.signers.length);
+
+  // Create confirmation records for each signer
+  for (let i = 0; i < event.params.signers.length; i++) {
+    const confirmation = fetchVaultTransactionConfirmation(
+      event.address,
+      event.params.txIndex,
+      event.params.signers[i]
+    );
+    confirmation.confirmed = true;
+    confirmation.confirmedAt = event.block.timestamp;
+    confirmation.deployedInTransaction = event.transaction.hash;
+    confirmation.save();
+  }
+
   transaction.save();
+}
+
+export function handleOnchainIdSet(event: OnchainIdSet): void {
+  fetchEvent(event, "OnchainIdSet");
+
+  const vault = fetchVault(event.address);
+  vault.onchainId = fetchAccount(event.params.onchainId).id;
+  vault.save();
 }
