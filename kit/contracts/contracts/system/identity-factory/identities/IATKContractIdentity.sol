@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
+import { IContractIdentity } from "../../../onchainid/IContractIdentity.sol";
 
 /// @title Interface for ATK Contract Identity
 /// @author SettleMint Tokenization Services
@@ -9,7 +10,7 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 /// @dev This interface replaces IATKTokenIdentity with a more generic solution that works for any contract
 ///      (tokens, vaults, etc.) that implements IContractWithIdentity. Permission checks are delegated
 ///      to the contract itself via canAddClaim/canRemoveClaim.
-interface IATKContractIdentity is IIdentity {
+interface IATKContractIdentity is IContractIdentity {
     /// @notice Initializes the contract identity with its owner contract address
     /// @param contractAddr The address of the contract that owns this identity
     /// @param claimAuthorizationContracts Array of addresses implementing IClaimAuthorizer to register as claim
@@ -36,4 +37,5 @@ interface IATKContractIdentity is IIdentity {
     /// @param authorizationContract The address to check
     /// @return True if registered, false otherwise
     function isClaimAuthorizationContractRegistered(address authorizationContract) external view returns (bool);
+
 }

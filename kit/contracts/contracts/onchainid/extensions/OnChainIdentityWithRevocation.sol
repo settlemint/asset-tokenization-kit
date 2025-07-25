@@ -6,14 +6,12 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
-/**
- * @title OnChainIdentityWithRevocation
- * @author SettleMint
- * @notice Abstract contract extending OnChainIdentity with claim revocation capabilities
- * @dev This contract adds the ability to revoke claims to the base OnChainIdentity functionality.
- *      It implements both OnChainIdentity and IClaimIssuer interfaces, providing a complete
- *      claim management system with revocation support.
- */
+/// @title OnChainIdentityWithRevocation
+/// @author SettleMint
+/// @notice Abstract contract extending OnChainIdentity with claim revocation capabilities
+/// @dev This contract adds the ability to revoke claims to the base OnChainIdentity functionality.
+///      It implements both OnChainIdentity and IClaimIssuer interfaces, providing a complete
+///      claim management system with revocation support.
 abstract contract OnChainIdentityWithRevocation is OnChainIdentity, IClaimIssuer {
     // Mapping to track revoked claims by their signature hash
     mapping(bytes32 => bool) public revokedClaims;

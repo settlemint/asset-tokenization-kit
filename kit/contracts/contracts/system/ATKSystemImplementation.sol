@@ -55,6 +55,7 @@ import { IATKIdentityRegistryStorage } from "./identity-registry-storage/IATKIde
 import { IATKSystemAddonRegistry } from "./addons/IATKSystemAddonRegistry.sol";
 import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
 import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystemAccessManagerImplementation.sol";
+import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 /// @title ATKSystem Contract
 /// @author SettleMint Tokenization Services
@@ -464,8 +465,11 @@ contract ATKSystemImplementation is
         );
 
         // Deploy the ATKTrustedIssuersRegistryProxy, linking it to this ATKSystem and setting an initial admin.
-        bytes memory trustedIssuersRegistryData =
-            abi.encodeWithSelector(IATKTrustedIssuersRegistry.initialize.selector, initialAdmin);
+        address[] memory initialTrustedIssuersRegistrars = new address[](1);
+        initialTrustedIssuersRegistrars[0] = address(this);
+        bytes memory trustedIssuersRegistryData = abi.encodeWithSelector(
+            IATKTrustedIssuersRegistry.initialize.selector, initialAdmin, initialTrustedIssuersRegistrars
+        );
         address localTrustedIssuersRegistryProxy = address(
             new ATKTypedImplementationProxy(address(this), TRUSTED_ISSUERS_REGISTRY, trustedIssuersRegistryData)
         );
@@ -479,15 +483,15 @@ contract ATKSystemImplementation is
         // Deploy the SMARTIdentityRegistryProxy. Its constructor requires the addresses of other newly created proxies
         // (storage and trusted issuers) and an initial admin.
         // Passing these as local variables is safe as they don't rely on this contract's state being prematurely read.
-        address[] memory initialRegistrarAdmins = new address[](3);
-        initialRegistrarAdmins[0] = initialAdmin;
-        initialRegistrarAdmins[1] = localTokenFactoryRegistryProxy;
-        initialRegistrarAdmins[2] = localAddonRegistryProxy;
+        address[] memory initialIdentityRegistryRegistrars = new address[](3);
+        initialIdentityRegistryRegistrars[0] = initialAdmin;
+        initialIdentityRegistryRegistrars[1] = localTokenFactoryRegistryProxy;
+        initialIdentityRegistryRegistrars[2] = localAddonRegistryProxy;
 
         bytes memory identityRegistryData = abi.encodeWithSelector(
             IATKIdentityRegistry.initialize.selector,
             initialAdmin,
-            initialRegistrarAdmins,
+            initialIdentityRegistryRegistrars,
             localIdentityRegistryStorageProxy,
             localTrustedIssuersRegistryProxy,
             localTopicSchemeRegistryProxy
@@ -544,6 +548,23 @@ contract ATKSystemImplementation is
         IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).batchRegisterTopicSchemes(
             ATKTopics.names(), ATKTopics.signatures()
         );
+
+        // Create identity for the identity factory itself so it can be a trusted issuer
+        // This solves the chicken-and-egg problem of the factory needing an identity to issue claims
+        address identityFactoryIdentity =
+            IATKIdentityFactory(localIdentityFactoryProxy).createContractIdentity(localIdentityFactoryProxy);
+
+        // Register the identity factory's identity (not the factory itself) as the trusted issuer FIRST
+        // This must happen before setOnchainID because setOnchainID triggers _issueContractIdentityClaim
+        uint256[] memory identityFactoryClaimTopics = new uint256[](1);
+        identityFactoryClaimTopics[0] =
+            IATKTopicSchemeRegistry(localTopicSchemeRegistryProxy).getTopicId(ATKTopics.TOPIC_CONTRACT_IDENTITY);
+        IATKTrustedIssuersRegistry(localTrustedIssuersRegistryProxy).addTrustedIssuer(
+            IClaimIssuer(identityFactoryIdentity), identityFactoryClaimTopics
+        );
+
+        // Set the identity factory's own OnChainID (this will now successfully issue claims)
+        IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
 
         // Register the identity verification module
         if (_identityVerificationModule != address(0)) {
