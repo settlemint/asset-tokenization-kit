@@ -93,8 +93,7 @@ contract ATKTokenFactoryRegistryImplementation is
             IATKTokenFactory.initialize.selector,
             _system,
             _tokenImplementation,
-            _msgSender(),
-            _system.identityVerificationModule()
+            _msgSender()
         );
         address _tokenFactoryProxy =
             address(new ATKTypedImplementationProxy(address(this), factoryTypeHash, tokenFactoryData));

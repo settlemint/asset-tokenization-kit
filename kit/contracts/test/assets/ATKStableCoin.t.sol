@@ -87,7 +87,7 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
     {
         vm.startPrank(owner);
         address stableCoinAddress = stableCoinFactory.createStableCoin(
-            name, symbol, decimals, requiredClaimTopics, initialModulePairs, TestConstants.COUNTRY_CODE_US
+            name, symbol, decimals, initialModulePairs, TestConstants.COUNTRY_CODE_US
         );
 
         result = IATKStableCoin(stableCoinAddress);
@@ -156,7 +156,6 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
             "StableCoin 19",
             "STBL19",
             19,
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             TestConstants.COUNTRY_CODE_US
         );

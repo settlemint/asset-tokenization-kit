@@ -14,6 +14,7 @@ import { Math } from "@openzeppelin/contracts/utils/math/Math.sol";
 
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
+import { ExpressionNode } from "../../smart/interface/structs/ExpressionNode.sol";
 import { IATKTokenSale } from "./IATKTokenSale.sol";
 
 /// @title ATKTokenSale
@@ -466,8 +467,8 @@ contract ATKTokenSale is
 
         // Check if the buyer is verified in the identity registry
         // For token sales, we typically require basic KYC verification
-        uint256[] memory requiredTopics = new uint256[](0); // Empty array means basic verification
-        return registry.isVerified(buyer, requiredTopics);
+        ExpressionNode[] memory expression = new ExpressionNode[](0); // Empty array means basic verification
+        return registry.isVerified(buyer, expression);
     }
 
     /// @notice Calculates the amount of tokens for a given payment amount

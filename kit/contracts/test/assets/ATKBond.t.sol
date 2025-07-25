@@ -157,7 +157,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             maturityDate_,
             faceValue_,
             underlyingAsset_,
-            requiredClaimTopics_,
             initialModulePairs_,
             TestConstants.COUNTRY_CODE_US
         );
@@ -230,7 +229,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             TestConstants.COUNTRY_CODE_US
         );

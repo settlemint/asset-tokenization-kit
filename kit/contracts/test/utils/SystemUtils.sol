@@ -128,7 +128,6 @@ contract SystemUtils is Test {
             address(identityImpl),
             address(contractIdentityImpl),
             address(accessManagerImpl),
-            address(identityVerificationModule),
             address(tokenFactoryRegistryImpl),
             address(complianceModuleRegistryImpl),
             address(systemAddonRegistryImpl),

@@ -92,7 +92,6 @@ contract ATKFundTest is AbstractATKAssetTest {
             symbol_,
             decimals_,
             managementFeeBps_,
-            requiredClaimTopics_,
             initialModulePairs_,
             TestConstants.COUNTRY_CODE_US
         );

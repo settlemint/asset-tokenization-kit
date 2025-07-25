@@ -91,7 +91,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
     {
         vm.startPrank(owner);
         address equityAddress = equityFactory.createEquity(
-            name_, symbol_, decimals_, requiredClaimTopics_, initialModulePairs_, TestConstants.COUNTRY_CODE_US
+            name_, symbol_, decimals_, initialModulePairs_, TestConstants.COUNTRY_CODE_US
         );
 
         result = IATKEquity(equityAddress);

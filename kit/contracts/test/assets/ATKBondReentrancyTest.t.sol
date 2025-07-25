@@ -170,7 +170,6 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
             maturityDate,
             faceValue,
             address(maliciousToken),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             TestConstants.COUNTRY_CODE_US
         );
@@ -491,7 +490,6 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
             maturityDate,
             faceValue,
             address(normalToken),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             TestConstants.COUNTRY_CODE_US
         );

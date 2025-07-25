@@ -11,6 +11,8 @@ import "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IERC3643TrustedIssuersRegistry } from
     "../../../contracts/smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
+import { ExpressionNode, ExpressionType } from "../../../contracts/smart/interface/structs/ExpressionNode.sol";
+import { ClaimExpressionUtils } from "../../utils/ClaimExpressionUtils.sol";
 
 contract ATKIdentityRegistryImplementationTest is Test {
     SystemUtils public systemUtils;
@@ -272,7 +274,7 @@ contract ATKIdentityRegistryImplementationTest is Test {
     }
 
     function testIsVerifiedReturnsFalseForUnregistered() public view {
-        assertFalse(identityRegistry.isVerified(user1, claimTopics));
+        assertFalse(identityRegistry.isVerified(user1, _topicsToExpressionNodes(claimTopics)));
     }
 
     function testIsVerifiedReturnsTrueForEmptyClaimTopics() public {
@@ -281,7 +283,7 @@ contract ATKIdentityRegistryImplementationTest is Test {
 
         uint256[] memory emptyTopics = new uint256[](0);
         // Verification should pass when no claims are required
-        assertTrue(identityRegistry.isVerified(user1, emptyTopics));
+        assertTrue(identityRegistry.isVerified(user1, _topicsToExpressionNodes(emptyTopics)));
     }
 
     function testIsVerifiedWithClaimTopics() public {
@@ -295,7 +297,7 @@ contract ATKIdentityRegistryImplementationTest is Test {
 
         // Should return false since we haven't set up proper claims for verification
         // TODO: Add comprehensive claim verification tests with proper claim setup
-        assertFalse(identityRegistry.isVerified(user1, testClaimTopics));
+        assertFalse(identityRegistry.isVerified(user1, _topicsToExpressionNodes(testClaimTopics)));
     }
 
     function testIsVerifiedReturnsFalseForLostWallet() public {
@@ -305,7 +307,7 @@ contract ATKIdentityRegistryImplementationTest is Test {
 
         // Initially should be able to verify (with empty claim topics)
         uint256[] memory emptyTopics = new uint256[](0);
-        assertTrue(identityRegistry.isVerified(user1, emptyTopics));
+        assertTrue(identityRegistry.isVerified(user1, _topicsToExpressionNodes(emptyTopics)));
 
         address newWallet = makeAddr("newWallet");
         address newIdentityAddr = identityUtils.createIdentity(newWallet);
@@ -315,10 +317,10 @@ contract ATKIdentityRegistryImplementationTest is Test {
         identityRegistry.recoverIdentity(user1, newWallet, newIdentityAddr);
 
         // Lost wallet should not be verified anymore
-        assertFalse(identityRegistry.isVerified(user1, emptyTopics));
+        assertFalse(identityRegistry.isVerified(user1, _topicsToExpressionNodes(emptyTopics)));
 
         // New wallet should be verified
-        assertTrue(identityRegistry.isVerified(newWallet, emptyTopics));
+        assertTrue(identityRegistry.isVerified(newWallet, _topicsToExpressionNodes(emptyTopics)));
     }
 
     function testInvestorCountryRevertsIfNotRegistered() public {
@@ -604,5 +606,15 @@ contract ATKIdentityRegistryImplementationTest is Test {
         // Verify recovery link is established instead of checking lost wallets array
         assertEq(identityRegistry.getRecoveredWallet(user1), newWallet);
         assertTrue(identityRegistry.isWalletLost(user1));
+    }
+
+    /**
+     * @notice Converts an array of claim topic IDs to an array of ExpressionNode structs
+     * @dev Each topic ID is converted to a TOPIC node type
+     * @param topics Array of topic IDs to convert
+     * @return Array of ExpressionNode structs
+     */
+    function _topicsToExpressionNodes(uint256[] memory topics) internal pure returns (ExpressionNode[] memory) {
+        return ClaimExpressionUtils.topicsToExpressionNodes(topics);
     }
 }
