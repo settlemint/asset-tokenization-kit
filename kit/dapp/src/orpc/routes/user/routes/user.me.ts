@@ -10,6 +10,7 @@
 
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
+import { VerificationType as VerificationTypeEnum } from "@/lib/zod/validators/verification-type";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
@@ -129,9 +130,9 @@ export const me = authRouter.user.me
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
       verificationTypes: [
-        ...(authUser.pincodeEnabled ? ["pincode"] : []),
-        ...(authUser.twoFactorEnabled ? ["two-factor"] : []),
-        ...(authUser.secretCodeVerificationId ? ["secret-code"] : []),
+        ...(authUser.pincodeEnabled ? [VerificationTypeEnum.pincode] : []),
+        ...(authUser.twoFactorEnabled ? [VerificationTypeEnum.twoFactor] : []),
+        ...(authUser.secretCodeVerificationId ? [VerificationTypeEnum.secretCode] : []),
       ] as VerificationType[],
       onboardingState: {
         wallet: authUser.wallet !== zeroAddress,

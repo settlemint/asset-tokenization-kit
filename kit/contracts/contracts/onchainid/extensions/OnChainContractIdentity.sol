@@ -60,7 +60,8 @@ abstract contract OnChainContractIdentity is IContractIdentity {
             string memory /* uri - not used */
         ) {
             return (
-                storedTopic == topic && storedIssuer == address(this) && scheme == ERC735ClaimSchemes.SCHEME_CONTRACT && keccak256(storedData) == keccak256(data)
+                storedTopic == topic && storedIssuer == address(this) && scheme == ERC735ClaimSchemes.SCHEME_CONTRACT
+                    && keccak256(storedData) == keccak256(data)
             );
         } catch {
             return false;
