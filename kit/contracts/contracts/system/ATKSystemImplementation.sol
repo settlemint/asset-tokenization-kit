@@ -55,9 +55,6 @@ import { IATKIdentityRegistryStorage } from "./identity-registry-storage/IATKIde
 import { IATKSystemAddonRegistry } from "./addons/IATKSystemAddonRegistry.sol";
 import { IATKSystemAccessManager } from "./access-manager/IATKSystemAccessManager.sol";
 import { ATKSystemAccessManagerImplementation } from "./access-manager/ATKSystemAccessManagerImplementation.sol";
-import { ATKTrustedIssuersRegistryImplementation } from "./trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
-import { ATKComplianceImplementation } from "./compliance/ATKComplianceImplementation.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 /// @title ATKSystem Contract
