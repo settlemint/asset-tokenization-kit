@@ -36,7 +36,7 @@ export const VerificationType = {
   twoFactor: "two-factor",
   pincode: "pincode",
   secretCode: "secret-code",
-} as const satisfies Record<string, typeof verificationTypes[number]>;
+} as const satisfies Record<string, (typeof verificationTypes)[number]>;
 
 /**
  * Creates a Zod schema that validates verification types.
