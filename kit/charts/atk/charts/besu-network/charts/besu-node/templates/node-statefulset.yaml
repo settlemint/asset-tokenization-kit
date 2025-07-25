@@ -44,35 +44,30 @@ spec:
 {{- end }}
       {{- include "atk.imagePullSecrets" . | nindent 6 }}
       initContainers:
-      # Genesis file retrieval via HTTP server
-      - name: genesis-init
-        image: "{{ .Values.initContainers.curl.image.registry }}/{{ .Values.initContainers.curl.image.repository }}:{{ .Values.initContainers.curl.image.tag }}"
-        imagePullPolicy: {{ .Values.initContainers.curl.image.pullPolicy }}
+      # Wait for genesis file to be available in PVC
+      - name: wait-for-genesis
+        image: "{{ .Values.initContainers.busybox.image.registry }}/{{ .Values.initContainers.busybox.image.repository }}:{{ .Values.initContainers.busybox.image.tag }}"
+        imagePullPolicy: {{ .Values.initContainers.busybox.image.pullPolicy }}
         command:
           - /bin/sh
           - -c
           - |
             set -e
-
-            OUTPUT_FILE="/shared/genesis.json"
-            GENESIS_URL="http://besu-genesis-server.{{ .Release.Namespace }}.svc.cluster.local/genesis.json"
-
-            echo "Retrieving genesis file from HTTP server..."
-
-            # Retrieve genesis file via HTTP server
-            for i in $(seq 1 30); do
-              if curl -f -s --connect-timeout 10 "$GENESIS_URL" > "$OUTPUT_FILE" 2>/dev/null; then
-                echo "Genesis file retrieved successfully"
-                ls -la "$OUTPUT_FILE"
-                exit 0
-              fi
-              echo "Attempt $i/30 failed, waiting 10s..."
-              sleep 10
+            echo "Waiting for genesis file in PVC..."
+            
+            # Wait for the genesis.json file to exist
+            while [ ! -f /genesis-pvc/genesis.json ]; do
+              echo "Genesis file not found, waiting..."
+              sleep 5
             done
-
-            echo "ERROR: Failed to retrieve genesis file from HTTP server"
-            exit 1
+            
+            echo "Genesis file found! Copying to shared volume..."
+            cp /genesis-pvc/genesis.json /shared/genesis.json
+            ls -la /shared/
         volumeMounts:
+          - name: genesis-pvc
+            mountPath: /genesis-pvc
+            readOnly: true
           - name: shared-genesis
             mountPath: /shared
         securityContext:
@@ -293,6 +288,9 @@ spec:
           initialDelaySeconds: 180
           periodSeconds: 60
       volumes:
+      - name: genesis-pvc
+        persistentVolumeClaim:
+          claimName: besu-genesis-pvc
       - name: shared-genesis
         emptyDir: {}
       - name: static-nodes

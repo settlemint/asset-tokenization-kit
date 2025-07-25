@@ -117,7 +117,7 @@ export function Welcome({ steps }: WelcomeProps) {
   return (
     <div
       style={{ background: "var(--sm-wizard-sidebar-gradient)" }}
-      className="flex flex-col h-full rounded-xl shadow-lg"
+      className="Welcome flex flex-col h-full rounded-xl shadow-lg"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-6 lg:px-12 xl:px-12">
@@ -136,9 +136,9 @@ export function Welcome({ steps }: WelcomeProps) {
         </div>
       </div>
 
-      {/* Content */}
+      {/* Left column: Welcome text */}
       <div className="flex-1 overflow-auto">
-        <div className="mx-auto max-w-6xl p-6 lg:p-12 xl:p-12 pt-0 lg:pt-6 xl:pt-6">
+        <div className="mx-auto p-6 lg:p-12 xl:p-12 pt-0 lg:pt-6 xl:pt-6">
           {/* Two column layout for all screen sizes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 xl:gap-12 items-start">
             {/* Left column: Welcome text and overview */}

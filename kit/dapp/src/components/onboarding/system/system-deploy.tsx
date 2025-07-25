@@ -5,6 +5,7 @@ import { VerificationDialog } from "@/components/verification-dialog/verificatio
 import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,7 +16,7 @@ const logger = createLogger();
 export function SystemDeploy() {
   const { t } = useTranslation(["onboarding"]);
   const { refreshUserState } = useOnboardingNavigation();
-
+  const navigate = useNavigate();
   // Modal state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
@@ -48,15 +49,24 @@ export function SystemDeploy() {
       title={t("system.initialize-title")}
       description={t("system.initialize-subtitle")}
       actions={
-        <Button
-          onClick={() => {
-            setShowVerificationModal(true);
-          }}
-          disabled={isCreatingSystem}
-          className="flex-1"
-        >
-          {isCreatingSystem ? t("system.deploying") : t("system.deploy")}
-        </Button>
+        <>
+          <Button
+            variant="outline"
+            onClick={() => {
+              void navigate({ to: "/onboarding" });
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              setShowVerificationModal(true);
+            }}
+            disabled={isCreatingSystem}
+          >
+            {isCreatingSystem ? t("system.deploying") : t("system.deploy")}
+          </Button>
+        </>
       }
     >
       <>

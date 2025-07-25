@@ -96,7 +96,6 @@ redis:
   fullnameOverride: redis
   commonLabels:
     kots.io/app-slug: settlemint-atk
-
     app.kubernetes.io/managed-by: helm
   auth:
     password: "atk"

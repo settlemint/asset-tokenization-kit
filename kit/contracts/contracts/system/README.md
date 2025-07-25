@@ -124,8 +124,8 @@ The central coordinator that manages all protocol components:
    - Essential for token contracts, protocols, or other smart contracts that
      need identity verification
    - Enables contract-to-contract compliance checks
-   - Contract identities can issue claims directly to other identities using
-     the `issueClaimTo` method
+   - Contract identities can issue claims directly to other identities using the
+     `issueClaimTo` method
 
 #### Identity Storage (`identity-registry-storage/`)
 
@@ -169,9 +169,9 @@ The central coordinator that manages all protocol components:
 
 #### Overview
 
-The ATK System includes a sophisticated claim issuance system that enables
-both contract identities and trusted issuers to add claims to identities
-through different mechanisms, maintaining security and trust.
+The ATK System includes a sophisticated claim issuance system that enables both
+contract identities and trusted issuers to add claims to identities through
+different mechanisms, maintaining security and trust.
 
 #### Key Components
 
@@ -233,7 +233,7 @@ sequenceDiagram
     participant Factory as Identity Factory
     participant TIR as Trusted Issuers Registry
     participant FactoryID as Factory Identity
-    
+
     System->>Factory: bootstrap()
     Factory->>FactoryID: createContractIdentity(factory)
     System->>TIR: addTrustedIssuer(factoryIdentity, [CONTRACT_IDENTITY])
@@ -241,7 +241,7 @@ sequenceDiagram
     System->>Factory: setOnchainID(factoryIdentity)
     Note over Factory,FactoryID: setOnchainID triggers automatic claim issuance
     Factory->>FactoryID: issueClaim(CONTRACT_IDENTITY, factoryAddress)
-    
+
     Note over Factory,FactoryID: Factory can now issue CONTRACT_IDENTITY claims
 ```
 
@@ -301,14 +301,14 @@ graph TD
     System[ATK System] -->|registers| TIR[Trusted Issuers Registry]
     TIR -->|validates via authorizers| Issuer[Trusted Issuer]
     Issuer -->|adds authorized claims to| UserID[User Identity]
-    
+
     Factory[Identity Factory] -->|issueClaimTo| ContractClaim[CONTRACT_IDENTITY Claims]
     ContractID[Contract Identity] -->|issueClaimTo| UserID
     ContractID -->|issueClaimTo| OtherContract[Other Contract Identity]
-    
+
     System -->|bootstraps| Factory
     Authorizer[Claim Authorizer] -->|validates| TIR
-    
+
     style System fill:#f9f,stroke:#333,stroke-width:4px
     style TIR fill:#9ff,stroke:#333,stroke-width:2px
     style Factory fill:#9f9,stroke:#333,stroke-width:2px

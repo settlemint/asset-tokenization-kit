@@ -267,7 +267,6 @@ contract ATKContractIdentityImplementation is
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable) returns (bool) {
         return interfaceId == type(IATKContractIdentity).interfaceId || interfaceId == type(IERC735).interfaceId
             || interfaceId == type(IIdentity).interfaceId || interfaceId == type(IClaimIssuer).interfaceId
-            || interfaceId == type(IContractIdentity).interfaceId
-            || super.supportsInterface(interfaceId);
+            || interfaceId == type(IContractIdentity).interfaceId || super.supportsInterface(interfaceId);
     }
 }
