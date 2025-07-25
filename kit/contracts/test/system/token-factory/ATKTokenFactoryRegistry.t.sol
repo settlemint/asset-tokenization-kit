@@ -107,8 +107,8 @@ contract ATKTokenFactoryRegistryTest is Test {
 
         // check roles granted
         assertTrue(
-            IAccessControl(address(systemUtils.compliance())).hasRole(
-                ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, proxyAddress
+            IAccessControl(address(systemUtils.system().systemAccessManager())).hasRole(
+                ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, proxyAddress
             )
         );
     }

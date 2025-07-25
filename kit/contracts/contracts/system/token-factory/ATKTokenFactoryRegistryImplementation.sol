@@ -101,8 +101,9 @@ contract ATKTokenFactoryRegistryImplementation is
 
         tokenFactoryProxiesByType[factoryTypeHash] = _tokenFactoryProxy;
 
-        IAccessControl(address(_system.compliance())).grantRole(
-            ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, _tokenFactoryProxy
+        // Grant compliance management role through the system access manager instead of directly on compliance
+        IAccessControl(address(_system.systemAccessManager())).grantRole(
+            ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, _tokenFactoryProxy
         );
 
         // Grant permission to register contract identities in the identity registry

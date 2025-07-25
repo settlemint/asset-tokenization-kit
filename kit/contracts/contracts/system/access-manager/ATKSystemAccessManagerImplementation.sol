@@ -15,7 +15,7 @@ contract ATKSystemAccessManagerImplementation is
     ERC2771ContextUpgradeable,
     IATKSystemAccessManager
 {
-    error NoInitialAdmins();
+        error NoInitialAdmins();
 
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
         _disableInitializers();
@@ -33,6 +33,46 @@ contract ATKSystemAccessManagerImplementation is
         }
     }
 
+    // --- Internal Role Checking Functions ---
+
+    /// @notice Internal function to check if an account has any of the specified roles
+    /// @param roles Array of role identifiers to check
+    /// @param account The account to check
+    /// @return True if the account has at least one of the roles, false otherwise
+    function _hasAnyRole(bytes32[] memory roles, address account) internal view returns (bool) {
+        for (uint256 i = 0; i < roles.length; i++) {
+            if (hasRole(roles[i], account)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // --- Access Control Modifiers ---
+
+    /// @notice Modifier that checks if the caller has any of the specified roles
+    /// @dev This implements the pattern mentioned in the ticket: onlyRoles(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// @param roles Array of roles, where the caller must have at least one
+    modifier onlyRoles(bytes32[] memory roles) {
+        if (!_hasAnyRole(roles, _msgSender())) {
+            // Use OpenZeppelin's standard AccessControl error
+            revert AccessControlUnauthorizedAccount(_msgSender(), roles.length > 0 ? roles[0] : bytes32(0));
+        }
+        _;
+    }
+
+    /// @notice Modifier that checks if the caller has a specific single role
+    /// @dev For backward compatibility with existing contracts
+    /// @param role The role to check
+    modifier onlySystemRole(bytes32 role) {
+        if (!hasRole(role, _msgSender())) {
+            revert AccessControlUnauthorizedAccount(_msgSender(), role);
+        }
+        _;
+    }
+
+    // --- Role Checking Functions ---
+
     function hasRole(
         bytes32 role,
         address account
@@ -44,6 +84,12 @@ contract ATKSystemAccessManagerImplementation is
     {
         return super.hasRole(role, account);
     }
+
+    function hasAnyRole(bytes32[] calldata roles, address account) external view override returns (bool) {
+        return _hasAnyRole(roles, account);
+    }
+
+    // --- Role Management Functions ---
 
     function grantRole(
         bytes32 role,
@@ -121,6 +167,8 @@ contract ATKSystemAccessManagerImplementation is
             }
         }
     }
+
+    // --- Meta-transaction Support ---
 
     function _msgSender()
         internal

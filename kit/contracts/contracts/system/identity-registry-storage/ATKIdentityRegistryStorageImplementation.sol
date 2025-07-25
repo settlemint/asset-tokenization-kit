@@ -69,6 +69,29 @@ contract ATKIdentityRegistryStorageImplementation is
         _;
     }
 
+    /// @notice Modifier that checks if the caller has any of the specified roles
+    /// @dev This implements the new centralized access pattern: onlyRoles(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// @param roles Array of roles, where the caller must have at least one
+    modifier onlyRoles(bytes32[] memory roles) {
+        if (!_accessManager.hasAnyRole(roles, _msgSender())) {
+            // Show the first role in the error for clarity
+            revert UnauthorizedAccess(_msgSender(), roles.length > 0 ? roles[0] : bytes32(0));
+        }
+        _;
+    }
+
+    // --- Internal Helper Functions ---
+
+    /// @notice Returns the roles that can perform identity management operations
+    /// @dev Implements the pattern from the ticket: MANAGER_ROLE + [SYSTEM_ROLES]
+    /// @return roles Array of roles that can manage identity registries
+    function _getIdentityManagementRoles() internal pure returns (bytes32[] memory roles) {
+        roles = new bytes32[](3);
+        roles[0] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;        // Primary manager role
+        roles[1] = ATKSystemRoles.IDENTITY_MANAGER_ROLE;      // Identity-specific manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;         // System module role
+    }
+
     // --- Storage Variables ---
     /// @notice Defines a structure to hold the comprehensive information for a registered identity.
     /// An `Identity` struct links a user's wallet address to their on-chain identity representation, country, and
@@ -426,7 +449,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @dev Reverts with:
     ///      - `InvalidIdentityRegistryAddress()` if `_identityRegistry` is `address(0)`.
     ///      - `IdentityRegistryAlreadyBound(_identityRegistry)` if the registry is already bound.
-    function bindIdentityRegistry(address _identityRegistry) external onlyRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE) {
+    function bindIdentityRegistry(address _identityRegistry) external onlyRoles(_getIdentityManagementRoles()) {
         if (_identityRegistry == address(0)) revert InvalidIdentityRegistryAddress();
         if (_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryAlreadyBound(_identityRegistry);
 
@@ -457,7 +480,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @dev Reverts with `IdentityRegistryNotBound(_identityRegistry)` if the registry is not currently bound.
     function unbindIdentityRegistry(address _identityRegistry)
         external
-        onlyRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE)
+        onlyRoles(_getIdentityManagementRoles())
     {
         if (!_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryNotBound(_identityRegistry);
 

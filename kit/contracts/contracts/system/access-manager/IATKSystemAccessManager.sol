@@ -24,6 +24,15 @@ interface IATKSystemAccessManager is IAccessControl {
     /// @return A boolean value: `true` if the `account` has the specified `role`, `false` otherwise.
     function hasRole(bytes32 role, address account) external view returns (bool);
 
+    /// @notice Checks if a given account possesses any of the specified roles.
+    /// @dev This function is used to check if an account has at least one role from a list of roles.
+    ///      This enables the onlyRoles modifier pattern where a function can be accessed by
+    ///      accounts with a MANAGER_ROLE or any of the SYSTEM_ROLES.
+    /// @param roles Array of role identifiers to check
+    /// @param account The blockchain address of the account whose roles are being queried.
+    /// @return A boolean value: `true` if the `account` has at least one of the specified `roles`, `false` otherwise.
+    function hasAnyRole(bytes32[] calldata roles, address account) external view returns (bool);
+
     /// @notice Grants `role` to each address in `accounts`.
     /// @param role The role identifier to grant.
     /// @param accounts The addresses that will receive the role.
