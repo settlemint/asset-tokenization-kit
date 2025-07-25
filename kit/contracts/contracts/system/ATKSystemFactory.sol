@@ -14,7 +14,6 @@ import {
     TokenAccessManagerImplementationNotSet,
     IndexOutOfBounds,
     TopicSchemeRegistryImplementationNotSet,
-    IdentityVerificationModuleNotSet,
     ComplianceModuleRegistryImplementationNotSet,
     AddonRegistryImplementationNotSet,
     TokenFactoryRegistryImplementationNotSet,
@@ -81,10 +80,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// @dev This same forwarder address will also be passed to each new `ATKSystem` instance created by this factory,
     /// enabling them to support meta-transactions as well.
     address public immutable factoryForwarder;
-    /// @notice The default contract address for the identity verification module's logic.
-    /// @dev This address will be passed to newly created `ATKSystem` instances as the initial identity verification
-    /// module implementation.
-    address public immutable defaultIdentityVerificationModule;
     /// @notice The default contract address for the compliance module registry module's logic.
     /// @dev This address will be passed to newly created `ATKSystem` instances as the initial compliance module
     /// registry implementation.
@@ -130,8 +125,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     /// (template).
     /// @param tokenAccessManagerImplementation_ The default address for the token access manager contract's logic
     /// (template).
-    /// @param identityVerificationModule_ The default address for the identity verification module's
-    /// logic contract.
     /// @param tokenFactoryRegistryImplementation_ The default address for the token factory registry module's logic
     /// contract.
     /// @param complianceModuleRegistryImplementation_ The default address for the compliance module registry module's
@@ -151,7 +144,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         address identityImplementation_,
         address contractIdentityImplementation_,
         address tokenAccessManagerImplementation_,
-        address identityVerificationModule_,
         address tokenFactoryRegistryImplementation_,
         address complianceModuleRegistryImplementation_,
         address addonRegistryImplementation_,
@@ -172,7 +164,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         if (identityImplementation_ == address(0)) revert IdentityImplementationNotSet();
         if (contractIdentityImplementation_ == address(0)) revert ContractIdentityImplementationNotSet();
         if (tokenAccessManagerImplementation_ == address(0)) revert TokenAccessManagerImplementationNotSet();
-        if (identityVerificationModule_ == address(0)) revert IdentityVerificationModuleNotSet();
         if (tokenFactoryRegistryImplementation_ == address(0)) revert TokenFactoryRegistryImplementationNotSet();
         if (complianceModuleRegistryImplementation_ == address(0)) {
             revert ComplianceModuleRegistryImplementationNotSet();
@@ -191,7 +182,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         defaultIdentityImplementation = identityImplementation_;
         defaultContractIdentityImplementation = contractIdentityImplementation_;
         defaultTokenAccessManagerImplementation = tokenAccessManagerImplementation_;
-        defaultIdentityVerificationModule = identityVerificationModule_;
         defaultTokenFactoryRegistryImplementation = tokenFactoryRegistryImplementation_;
         defaultComplianceModuleRegistryImplementation = complianceModuleRegistryImplementation_;
         defaultAddonRegistryImplementation = addonRegistryImplementation_;
@@ -231,7 +221,6 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
             defaultIdentityImplementation,
             defaultContractIdentityImplementation,
             defaultTokenAccessManagerImplementation,
-            defaultIdentityVerificationModule,
             defaultTokenFactoryRegistryImplementation,
             defaultComplianceModuleRegistryImplementation,
             defaultAddonRegistryImplementation,
