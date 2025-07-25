@@ -499,6 +499,7 @@ contract ATKIdentityRegistryImplementation is
     /// @dev This function evaluates a postfix (Reverse Polish Notation) expression using a stack-based algorithm.
     ///      The expression can combine claim topics using AND, OR, and NOT operations for flexible compliance rules.
     ///      Each TOPIC node is verified using the same logic as the array-based isVerified function.
+    ///      Includes local caching to avoid redundant verification of the same topics within a single expression.
     /// @param _userAddress The investor's wallet address to verify.
     /// @param expression An array of ExpressionNode structs representing a postfix expression.
     /// @return True if the investor's identity satisfies the logical expression, false otherwise.
@@ -521,6 +522,12 @@ contract ATKIdentityRegistryImplementation is
             return false;
         }
 
+        // Local cache for topic verification results within this function call
+        // Using parallel arrays since local mappings are not allowed in Solidity
+        uint256[] memory cachedTopics = new uint256[](expression.length);
+        bool[] memory cachedResults = new bool[](expression.length);
+        uint256 cacheSize = 0;
+
         // Stack for evaluation - maximum size needed is expression length
         bool[] memory stack = new bool[](expression.length);
         uint256 stackIndex = 0;
@@ -530,8 +537,30 @@ contract ATKIdentityRegistryImplementation is
             ExpressionNode memory node = expression[i];
 
             if (node.nodeType == ExpressionType.TOPIC) {
-                // Verify the claim topic using existing logic
-                bool hasClaim = _verifyClaimTopic(_userAddress, node.value);
+                bool hasClaim;
+
+                // Check if we've already verified this topic
+                bool topicFoundInCache = false;
+                for (uint256 j = 0; j < cacheSize;) {
+                    if (cachedTopics[j] == node.value) {
+                        hasClaim = cachedResults[j];
+                        topicFoundInCache = true;
+                        break;
+                    }
+                    unchecked {
+                        ++j;
+                    }
+                }
+
+                if (!topicFoundInCache) {
+                    // Verify the claim topic using existing logic and cache the result
+                    hasClaim = _verifyClaimTopic(_userAddress, node.value);
+                    cachedTopics[cacheSize] = node.value;
+                    cachedResults[cacheSize] = hasClaim;
+                    unchecked {
+                        ++cacheSize;
+                    }
+                }
 
                 // Push result onto stack
                 if (stackIndex >= stack.length) {
