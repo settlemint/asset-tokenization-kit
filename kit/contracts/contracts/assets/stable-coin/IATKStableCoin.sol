@@ -12,6 +12,7 @@ import { ISMARTBurnable } from "../../smart/extensions/burnable/ISMARTBurnable.s
 import { ISMARTCollateral } from "../../smart/extensions/collateral/ISMARTCollateral.sol";
 
 /// @title Interface for a ATK Stable Coin
+/// @author SettleMint
 /// @notice Defines the core functionality and extensions for a ATK Stable Coin.
 interface IATKStableCoin is
     ISMART,

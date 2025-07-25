@@ -5,6 +5,7 @@ import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.so
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 /// @title Interface for the ATK Stable Coin Factory
+/// @author SettleMint
 /// @notice Defines the functions for creating and predicting addresses of ATK Stable Coin instances.
 interface IATKStableCoinFactory is IATKTokenFactory {
     /// @notice Emitted when a new stable coin is created.

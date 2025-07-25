@@ -450,6 +450,13 @@ contract ATKDepositImplementation is
     // --- Hooks (Overrides for Chaining) ---
     // These ensure that logic from multiple inherited extensions (SMART, SMARTCustodian, etc.) is called correctly.
 
+    /// @notice Hook that is called before tokens are minted
+    /// @dev This hook chains validation logic from multiple extensions:
+    ///      1. SMARTCollateralUpgradeable: Validates collateral requirements
+    ///      2. SMARTCustodianUpgradeable: Checks if recipient is frozen
+    ///      3. SMARTUpgradeable: Performs compliance and identity checks
+    /// @param to The address that will receive the minted tokens
+    /// @param amount The amount of tokens to be minted
     /// @inheritdoc SMARTHooks
     function _beforeMint(
         address to,
@@ -462,6 +469,13 @@ contract ATKDepositImplementation is
         super._beforeMint(to, amount);
     }
 
+    /// @notice Hook that is called before tokens are transferred
+    /// @dev This hook chains validation logic from multiple extensions:
+    ///      1. SMARTCustodianUpgradeable: Checks frozen status and partial freezes
+    ///      2. SMARTUpgradeable: Performs compliance and identity verification
+    /// @param from The address tokens are transferred from
+    /// @param to The address tokens are transferred to
+    /// @param amount The amount of tokens being transferred
     /// @inheritdoc SMARTHooks
     function _beforeTransfer(
         address from,
@@ -475,6 +489,11 @@ contract ATKDepositImplementation is
         super._beforeTransfer(from, to, amount);
     }
 
+    /// @notice Hook that is called before tokens are burned
+    /// @dev This hook chains validation logic from multiple extensions:
+    ///      SMARTCustodianUpgradeable: Validates frozen status and partial freezes
+    /// @param from The address tokens are burned from
+    /// @param amount The amount of tokens to be burned
     /// @inheritdoc SMARTHooks
     function _beforeBurn(
         address from,
@@ -487,6 +506,11 @@ contract ATKDepositImplementation is
         super._beforeBurn(from, amount);
     }
 
+    /// @notice Hook that is called before tokens are redeemed
+    /// @dev This hook chains validation logic from multiple extensions:
+    ///      SMARTCustodianUpgradeable: Validates frozen status and partial freezes
+    /// @param owner The address that owns the tokens being redeemed
+    /// @param amount The amount of tokens to be redeemed
     /// @inheritdoc SMARTHooks
     function _beforeRedeem(
         address owner,
@@ -499,11 +523,22 @@ contract ATKDepositImplementation is
         super._beforeRedeem(owner, amount);
     }
 
+    /// @notice Hook that is called after tokens are minted
+    /// @dev This hook executes post-mint logic from SMARTUpgradeable which may emit events
+    ///      or update internal accounting after successful minting
+    /// @param to The address that received the minted tokens
+    /// @param amount The amount of tokens that were minted
     /// @inheritdoc SMARTHooks
     function _afterMint(address to, uint256 amount) internal virtual override(SMARTUpgradeable, SMARTHooks) {
         super._afterMint(to, amount);
     }
 
+    /// @notice Hook that is called after tokens are transferred
+    /// @dev This hook executes post-transfer logic from SMARTUpgradeable which may emit events
+    ///      or update internal accounting after successful transfer
+    /// @param from The address tokens were transferred from
+    /// @param to The address tokens were transferred to
+    /// @param amount The amount of tokens that were transferred
     /// @inheritdoc SMARTHooks
     function _afterTransfer(
         address from,
@@ -517,11 +552,21 @@ contract ATKDepositImplementation is
         super._afterTransfer(from, to, amount);
     }
 
+    /// @notice Hook that is called after tokens are burned
+    /// @dev This hook executes post-burn logic from SMARTUpgradeable which may emit events
+    ///      or update internal accounting after successful burning
+    /// @param from The address tokens were burned from
+    /// @param amount The amount of tokens that were burned
     /// @inheritdoc SMARTHooks
     function _afterBurn(address from, uint256 amount) internal virtual override(SMARTUpgradeable, SMARTHooks) {
         super._afterBurn(from, amount);
     }
 
+    /// @notice Hook that is called after tokens are recovered from a lost wallet
+    /// @dev This hook executes post-recovery logic from SMARTCustodianUpgradeable which may
+    ///      emit events or update internal state after successful token recovery
+    /// @param lostWallet The address of the wallet that lost access
+    /// @param newWallet The address that received the recovered tokens
     /// @inheritdoc SMARTHooks
     function _afterRecoverTokens(
         address lostWallet,
