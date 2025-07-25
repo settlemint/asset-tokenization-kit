@@ -1018,7 +1018,7 @@ export class AdminPage extends BasePage {
       );
     }
 
-    await this.page.waitForURL(/.*\\/assets\\/.*\\/0x[a-fA-F0-9]{40}/);
+    await this.page.waitForURL(/.*\/assets\/.*\/0x[a-fA-F0-9]{40}/);
   }
 
   public getTableBodyLocator(): Locator {

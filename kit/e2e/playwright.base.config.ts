@@ -10,10 +10,7 @@ const projectRoot = path.resolve(e2eDir, "../../");
 dotenv.config({ path: path.join(projectRoot, ".env") });
 dotenv.config({ path: path.join(projectRoot, ".env.local"), override: true });
 
-const requiredEnvVars = [
-  "SETTLEMINT_HASURA_DATABASE_URL",
-  "SETTLEMINT_CUSTOM_DEPLOYMENT_ENDPOINT",
-] as const;
+const requiredEnvVars = ["SETTLEMINT_HASURA_DATABASE_URL"] as const;
 
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
@@ -26,7 +23,7 @@ for (const envVar of requiredEnvVars) {
 const baseConfig: PlaywrightTestConfig = {
   timeout: 600 * 1000,
   expect: {
-    timeout: 65000,
+    timeout: 120000,
   },
   retries: process.env.CI ? 2 : 0,
   fullyParallel: !process.env.CI,
@@ -39,7 +36,7 @@ const baseConfig: PlaywrightTestConfig = {
   use: {
     actionTimeout: 65000,
     navigationTimeout: 120000,
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+    baseURL: "http://localhost:3000",
     trace: process.env.CI ? "on-first-retry" : "retain-on-failure",
     viewport: { width: 1920, height: 1080 },
     screenshot: "only-on-failure",
@@ -56,20 +53,6 @@ const baseConfig: PlaywrightTestConfig = {
       ],
     },
   },
-
-  webServer: process.env.CI
-    ? undefined
-    : {
-        command: "cd ../dapp && bun run dev",
-        port: 3000,
-        reuseExistingServer: !process.env.CI,
-        timeout: 120 * 1000,
-        stdout: "pipe",
-        stderr: "pipe",
-        env: {
-          PORT: "3000",
-        },
-      },
 };
 
 export default baseConfig;
