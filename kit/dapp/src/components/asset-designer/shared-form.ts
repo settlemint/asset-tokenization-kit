@@ -17,8 +17,8 @@ export const assetDesignerFormOptions = formOptions({
   defaultValues: {
     step: "selectAssetType",
     verification: {
+      verificationCode: "",
       verificationType: "pincode",
-      verificationCode: "111111",
     },
   } as AssetDesignerFormInputData,
 });

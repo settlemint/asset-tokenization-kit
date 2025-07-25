@@ -129,5 +129,9 @@
       "title": "Available Modules",
       "description": "You can enable any of the following compliance modules to control who can access your asset."
     }
+  },
+  "verification": {
+    "confirm-title": "Confirm asset creation",
+    "confirm-description": "Please verify your identity to create your digital asset."
   }
 }
