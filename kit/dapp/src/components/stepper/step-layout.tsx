@@ -135,7 +135,7 @@ export function StepLayout<StepId, GroupId>({
           style={{ backgroundColor: "var(--sm-background-lightest)" }}
         >
           <div className="p-8">
-            <div className="w-full overflow-y-auto">
+            <div className="w-full overflow-y-auto h-[80%]">
               {typeof children === "function"
                 ? children({
                     currentStep,
