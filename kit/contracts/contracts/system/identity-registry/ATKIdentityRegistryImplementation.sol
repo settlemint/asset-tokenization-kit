@@ -23,6 +23,9 @@ import { IERC3643TrustedIssuersRegistry } from "./../../smart/interface/ERC-3643
 import { ISMARTTopicSchemeRegistry } from "../../smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKIdentityRegistry } from "./IATKIdentityRegistry.sol";
 
+// Struct imports
+import { ExpressionNode, ExpressionType } from "../../smart/interface/structs/ExpressionNode.sol";
+
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
@@ -99,6 +102,18 @@ contract ATKIdentityRegistryImplementation is
     /// @notice Error triggered if an operation is attempted on a wallet that is already marked as lost.
     /// @param wallet The wallet address that is already marked as lost.
     error WalletAlreadyMarkedAsLost(address wallet);
+
+    // --- Expression Evaluation Errors ---
+    /// @notice Error triggered when expression evaluation causes stack overflow.
+    error ExpressionStackOverflow();
+    /// @notice Error triggered when NOT operation doesn't have required operand on stack.
+    error NotOperationRequiresOneOperand();
+    /// @notice Error triggered when AND/OR operations don't have required operands on stack.
+    error AndOrOperationsRequireTwoOperands();
+    /// @notice Error triggered when an unknown ExpressionType is encountered.
+    error UnknownExpressionType();
+    /// @notice Error triggered when expression evaluation results in invalid stack state.
+    error InvalidExpressionStackResult();
 
     // --- Events ---
     // Events are defined in the IATKIdentityRegistry interface and are inherited.
@@ -478,136 +493,149 @@ contract ATKIdentityRegistryImplementation is
         }
     }
 
+
     /// @inheritdoc ISMARTIdentityRegistry
-    /// @notice Checks if a registered user's identity is verified for a given set of required claim topics.
-    /// @dev An identity is considered verified if:
-    /// 1. The `_userAddress` is registered in the system (checked via `this.contains()`).
-    /// 2. For *each* `requiredClaimTopics` (that is not zero):
-    ///    a. The topic is registered in the topic scheme registry.
-    ///    b. The identity contract (`IIdentity`) associated with `_userAddress` has a claim for that topic.
-    ///    c. The issuer of that claim is one of the trusted issuers for that specific topic, as defined in the
-    /// `_trustedIssuersRegistry`.
-    ///    d. The claim is considered valid by the issuer (checked by calling `issuer.isClaimValid()`).
-    /// If `requiredClaimTopics` is an empty array, the function returns `true` (no specific claims are required for
-    /// verification).
-    /// If any required claim topic is 0, it's skipped. This allows for optional or placeholder topics.
-    /// The function iterates through each required claim topic and then through the trusted issuers for that topic,
-    /// attempting to find a valid claim. If a valid claim is found for a topic, it moves to the next topic.
-    /// If any required topic does not have a corresponding valid claim from a trusted issuer, the function returns
-    /// `false`.
-    /// @param _userAddress The user's blockchain address whose verification status is being checked.
-    /// @param requiredClaimTopics An array of `uint256` values, where each value is a claim topic ID (e.g., KYC, AML).
-    /// These are the topics for which the identity must hold valid claims.
-    /// @return `true` if the identity is registered and all non-zero `requiredClaimTopics` are satisfied by valid
-    /// claims from trusted issuers,
-    /// `false` otherwise.
+    /// @notice Checks if a registered investor's wallet address is considered 'verified' using logical expressions.
+    /// @dev This function evaluates a postfix (Reverse Polish Notation) expression using a stack-based algorithm.
+    ///      The expression can combine claim topics using AND, OR, and NOT operations for flexible compliance rules.
+    ///      Each TOPIC node is verified using the same logic as the array-based isVerified function.
+    /// @param _userAddress The investor's wallet address to verify.
+    /// @param expression An array of ExpressionNode structs representing a postfix expression.
+    /// @return True if the investor's identity satisfies the logical expression, false otherwise.
     function isVerified(
         address _userAddress,
-        uint256[] calldata requiredClaimTopics
+        ExpressionNode[] calldata expression
     )
         external
         view
         override
         returns (bool)
     {
-        // Check if the wallet is globally marked as lost first.
-        if (_identityStorage.isWalletMarkedAsLost(_userAddress)) {
+        // Early checks similar to the array-based version
+        if (!this.contains(_userAddress)) {
             return false;
         }
 
-        // First, check if the user address is even registered.
-        // Note: `this.contains()` itself relies on `_identityStorage.storedIdentity`
-        // and handles try-catch. If wallet is lost, above check catches it.
-        // If not registered (and not lost), `this.contains` will return false.
-        if (!this.contains(_userAddress)) return false;
+        // Empty expression is considered false (no requirements specified)
+        if (expression.length == 0) {
+            return false;
+        }
 
-        // If there are no required claim topics, the identity is considered verified by default.
-        // (Assuming it passed the contains() and not-lost checks)
-        if (requiredClaimTopics.length == 0) return true;
+        // Stack for evaluation - maximum size needed is expression length
+        bool[] memory stack = new bool[](expression.length);
+        uint256 stackIndex = 0;
 
-        // Cache state variables as local variables to avoid repeated reads in loops
-        ISMARTTopicSchemeRegistry topicSchemeRegistry_ = _topicSchemeRegistry;
-        IERC3643TrustedIssuersRegistry trustedIssuersRegistry = _trustedIssuersRegistry;
+        // Process each node in the postfix expression
+        for (uint256 i = 0; i < expression.length;) {
+            ExpressionNode memory node = expression[i];
 
-        // Retrieve the user's identity contract from storage.
-        IIdentity identityToVerify = _identityStorage.storedIdentity(_userAddress);
-        uint256 requiredClaimTopicsLength = requiredClaimTopics.length;
+            if (node.nodeType == ExpressionType.TOPIC) {
+                // Verify the claim topic using existing logic
+                bool hasClaim = _verifyClaimTopic(_userAddress, node.value);
 
-        // Iterate over each required claim topic.
-        for (uint256 i = 0; i < requiredClaimTopicsLength;) {
-            uint256 currentTopic = requiredClaimTopics[i];
-            // Skip topic if it's 0 (can be used as a placeholder or optional topic).
-            if (currentTopic == 0) {
+                // Push result onto stack
+                if (stackIndex >= stack.length) {
+                    revert ExpressionStackOverflow();
+                }
+                stack[stackIndex] = hasClaim;
                 unchecked {
-                    ++i;
+                    ++stackIndex;
                 }
-                continue;
-            }
-
-            // Check if the topic is registered in the topic scheme registry
-            if (!topicSchemeRegistry_.hasTopicScheme(currentTopic)) {
-                return false; // Topic is not registered, verification fails
-            }
-
-            bool topicVerified = false; // Flag to track if the current topic is satisfied.
-
-            // Get the list of trusted issuers for the current claim topic.
-            IClaimIssuer[] memory relevantIssuers = trustedIssuersRegistry.getTrustedIssuersForClaimTopic(currentTopic);
-            uint256 relevantIssuersLength = relevantIssuers.length;
-
-            // Iterate over each trusted issuer for this topic.
-            for (uint256 j = 0; j < relevantIssuersLength;) {
-                IClaimIssuer relevantIssuer = relevantIssuers[j];
-                // Calculate the unique claim ID based on the issuer and topic.
-                // This is a standard way to identify a specific claim type from a specific issuer.
-                bytes32 claimId = keccak256(abi.encode(address(relevantIssuer), currentTopic));
-
-                // Try to get the claim from the user's identity contract.
-                try identityToVerify.getClaim(claimId) returns (
-                    uint256 topic, // The topic of the claim (should match currentTopic)
-                    uint256, // schema (unused in this check)
-                    address issuer, // The address of the issuer of this claim (should match relevantIssuer)
-                    bytes memory signature, // The signature proving the claim's authenticity
-                    bytes memory data, // The data associated with the claim
-                    string memory // uri (unused in this check)
-                ) {
-                    // Check if the claim's issuer and topic match the expected ones.
-                    if (issuer == address(relevantIssuer) && topic == currentTopic) {
-                        // Now, ask the issuer if this specific claim is currently valid.
-                        try relevantIssuer.isClaimValid(identityToVerify, topic, signature, data) returns (bool isValid)
-                        {
-                            if (isValid) {
-                                topicVerified = true; // Mark topic as verified
-                                break; // Exit inner loop (issuers) as a valid claim for this topic is found
-                            }
-                        } catch {
-                            // `isClaimValid` reverted or returned false. Continue to the next issuer.
-                            // This catch block handles reverts from `isClaimValid`.
-                        }
-                    }
-                } catch {
-                    // `getClaim` reverted (e.g., claim doesn't exist). Continue to the next issuer.
-                    // This catch block handles reverts from `getClaim`.
+            } else if (node.nodeType == ExpressionType.NOT) {
+                // NOT requires one operand
+                if (stackIndex < 1) {
+                    revert NotOperationRequiresOneOperand();
                 }
-                // If topicVerified became true, the inner loop breaks. Otherwise, increment j.
-                if (topicVerified) break; // ensure we break out if verified.
                 unchecked {
-                    ++j;
+                    --stackIndex;
                 }
+                stack[stackIndex] = !stack[stackIndex];
+                unchecked {
+                    ++stackIndex;
+                }
+            } else if (node.nodeType == ExpressionType.AND || node.nodeType == ExpressionType.OR) {
+                // AND/OR require two operands
+                if (stackIndex < 2) {
+                    revert AndOrOperationsRequireTwoOperands();
+                }
+
+                // Pop two operands
+                unchecked {
+                    --stackIndex;
+                }
+                bool operandB = stack[stackIndex];
+                unchecked {
+                    --stackIndex;
+                }
+                bool operandA = stack[stackIndex];
+
+                // Perform operation and push result
+                bool result = (node.nodeType == ExpressionType.AND) ? (operandA && operandB) : (operandA || operandB);
+                stack[stackIndex] = result;
+                unchecked {
+                    ++stackIndex;
+                }
+            } else {
+                revert UnknownExpressionType();
             }
 
-            // If, after checking all relevant issuers, the current topic is still not verified,
-            // then the overall `isVerified` check fails.
-            if (!topicVerified) {
-                return false;
-            }
             unchecked {
                 ++i;
             }
         }
 
-        // If all required (non-zero) claim topics have been successfully verified, return true.
-        return true;
+        // Valid expression should leave exactly one value on stack
+        if (stackIndex != 1) {
+            revert InvalidExpressionStackResult();
+        }
+
+        return stack[0];
+    }
+
+    /// @dev Internal helper function to verify a single claim topic for a user.
+    ///      This encapsulates the claim verification logic used in both isVerified implementations.
+    /// @param _userAddress The user's address to verify claims for.
+    /// @param claimTopic The claim topic ID to verify.
+    /// @return True if the user has a valid claim for the topic from a trusted issuer.
+    function _verifyClaimTopic(address _userAddress, uint256 claimTopic) internal view returns (bool) {
+        // Skip zero topics (invalid)
+        if (claimTopic == 0) {
+            return false;
+        }
+
+        // Verify the topic is registered in the topic scheme registry
+        if (!_topicSchemeRegistry.hasTopicScheme(claimTopic)) {
+            return false;
+        }
+
+        // Get the identity contract for the user
+        IIdentity identityToVerify = _identityStorage.storedIdentity(_userAddress);
+
+        // Get trusted issuers for this topic
+        IClaimIssuer[] memory trustedIssuers = _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(claimTopic);
+
+        // Check if the identity has a valid claim for this topic from any trusted issuer
+        for (uint256 j = 0; j < trustedIssuers.length;) {
+            IClaimIssuer relevantIssuer = trustedIssuers[j];
+
+            // Get the claim from the identity
+            (uint256 foundClaimTopic, , , bytes memory sig, bytes memory data,) =
+                identityToVerify.getClaim(keccak256(abi.encode(address(relevantIssuer), claimTopic)));
+
+            // Verify the claim exists and matches the expected topic
+            if (foundClaimTopic == claimTopic) {
+                // Verify the claim is valid with the issuer
+                if (relevantIssuer.isClaimValid(identityToVerify, claimTopic, sig, data)) {
+                    return true; // Found valid claim from trusted issuer
+                }
+            }
+
+            unchecked {
+                ++j;
+            }
+        }
+
+        return false; // No valid claim found
     }
 
     /// @inheritdoc ISMARTIdentityRegistry
