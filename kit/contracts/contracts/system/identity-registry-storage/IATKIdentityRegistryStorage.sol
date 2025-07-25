@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
 
 import { ISMARTIdentityRegistryStorage } from "../../smart/interface/ISMARTIdentityRegistryStorage.sol";
 
@@ -11,5 +11,9 @@ import { ISMARTIdentityRegistryStorage } from "../../smart/interface/ISMARTIdent
  *      This contract stores the mapping between addresses and their associated identity contracts.
  */
 interface IATKIdentityRegistryStorage is ISMARTIdentityRegistryStorage {
+    /// @notice Initializes the identity registry storage
+    /// @dev Sets up the system address and initial admin for the registry
+    /// @param systemAddress The address of the ATK system contract
+    /// @param initialAdmin The address that will have initial admin privileges
     function initialize(address systemAddress, address initialAdmin) external;
 }

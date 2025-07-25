@@ -23,6 +23,7 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
+/// @author SettleMint
 /// @notice This contract provides functionality for registering tokens and checking their registration status,
 /// managed by roles defined in AccessControl. It also supports deploying proxy contracts using CREATE2.
 /// @dev Inherits from AccessControl and ERC2771Context for role management and meta-transaction support.
@@ -174,7 +175,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
     {
         result = new SMARTComplianceModuleParamPair[](modulePairs.length + 1);
         result[0] = _identityVerificationModulePair(requiredClaimTopics);
-        for (uint256 i = 0; i < modulePairs.length; i++) {
+        for (uint256 i = 0; i < modulePairs.length; ++i) {
             result[i + 1] = modulePairs[i];
         }
         return result;
@@ -305,7 +306,9 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param tokenSaltInputData The ABI encoded data to be used for salt calculation for the token.
     /// @param accessManager The address of the access manager.
     /// @param description Human-readable description of the contract for indexing.
+    /// @param country The country code for the contract identity.
     /// @return deployedAddress The address of the newly deployed proxy contract.
+    /// @return deployedTokenIdentityAddress The address of the deployed contract identity.
     function _deployToken(
         bytes memory proxyCreationCode,
         bytes memory encodedConstructorArgs,
@@ -390,6 +393,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param contractAddress The address of the deployed contract (proxy).
     /// @param description Human-readable description of the contract.
     /// @param country The numeric country code (ISO 3166-1 alpha-2 standard) representing the contract's jurisdiction.
+    /// @return The address of the deployed contract identity.
     function _deployContractIdentity(
         address contractAddress,
         string memory description,
@@ -415,6 +419,9 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
     // --- ERC165 Overrides ---
 
+    /// @notice Checks if the contract supports a specific interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view
@@ -427,14 +434,18 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
     // --- ERC2771Context Overrides ---
 
+    /// @notice Returns the address of the current message sender
     /// @dev Overrides the default implementation of _msgSender() to return the actual sender
     ///      instead of the forwarder address when using ERC2771 context.
+    /// @return The address of the message sender
     function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
         return super._msgSender();
     }
 
+    /// @notice Returns the calldata of the current message
     /// @dev Overrides the default implementation of _msgData() to return the actual calldata
     ///      instead of the forwarder calldata when using ERC2771 context.
+    /// @return The calldata of the message
     function _msgData()
         internal
         view
@@ -444,8 +455,10 @@ abstract contract AbstractATKTokenFactoryImplementation is
         return super._msgData();
     }
 
+    /// @notice Returns the length of the context suffix in the calldata
     /// @dev Overrides the default implementation of _contextSuffixLength() to return the actual suffix length
     ///      instead of the forwarder suffix length when using ERC2771 context.
+    /// @return The length of the context suffix
     function _contextSuffixLength()
         internal
         view

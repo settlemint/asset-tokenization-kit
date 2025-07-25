@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 /// @title Interface for the ATK System Access Manager
+/// @author SettleMint
 /// @notice This interface defines the essential functions that a dedicated Access Control Manager
 ///         contract must implement for the ATK system. The ATK system is a collection of contracts
 ///         that work together to manage the system.

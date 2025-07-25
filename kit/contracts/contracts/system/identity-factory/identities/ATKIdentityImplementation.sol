@@ -18,7 +18,7 @@ import { ClaimAuthorizationExtension } from "../../../onchainid/extensions/Claim
 import { ERC734KeyPurposes } from "../../../onchainid/ERC734KeyPurposes.sol";
 
 /// @title ATK Identity Implementation Contract (Logic for Wallet Identities)
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract provides the upgradeable logic for standard on-chain identities associated with user wallets
 ///         within the ATK Protocol. It implements `IIdentity` using local `ERC734` and `ERC735` extensions.
 /// @dev This contract is intended to be deployed once and then used as the logic implementation target for multiple
@@ -85,6 +85,7 @@ contract ATKIdentityImplementation is
     /// @notice Constructor for the `ATKIdentityImplementation`.
     /// @dev Initializes ERC2771 context with the provided forwarder.
     ///      The main identity initialization (setting the first management key) is done via `initializeATKIdentity`.
+    /// @param forwarder The address of the trusted forwarder for meta-transactions.
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) ERC734(address(0), true) {
         _disableInitializers();
     }
@@ -127,14 +128,18 @@ contract ATKIdentityImplementation is
     }
 
     // --- OnchainIdentityWithRevocation Functions ---
+    /// @notice Revokes a claim by its signature
     /// @dev Revokes a claim by its signature
     /// @param signature The signature of the claim to revoke
     function revokeClaimBySignature(bytes calldata signature) external virtual override onlyManager {
         _revokeClaimBySignature(signature);
     }
 
+    /// @notice Revokes a claim by its ID
     /// @dev Revokes a claim by its ID
     /// @param _claimId The ID of the claim to revoke
+    /// @param _identity The address of the identity (not used in this implementation)
+    /// @return success True if the claim was successfully revoked
     function revokeClaim(bytes32 _claimId, address _identity) external virtual override onlyManager returns (bool) {
         return _revokeClaim(_claimId, _identity);
     }
@@ -195,7 +200,7 @@ contract ATKIdentityImplementation is
     ///      Requires ACTION_KEY if the execution targets an external contract.
     function approve(uint256 _id, bool _toApprove) public virtual override(ERC734, IERC734) returns (bool success) {
         Execution storage executionToApprove = _executions[_id];
-        if (_id >= _executionNonce) revert ReplicatedExecutionIdDoesNotExist({ executionId: _id });
+        if (_id > _executionNonce - 1) revert ReplicatedExecutionIdDoesNotExist({ executionId: _id });
         if (executionToApprove.executed) revert ReplicatedExecutionAlreadyPerformed({ executionId: _id });
 
         bytes32 senderKeyHash = keccak256(abi.encode(_msgSender()));
@@ -243,6 +248,10 @@ contract ATKIdentityImplementation is
         return executionId;
     }
 
+    /// @notice Checks if a key has a specific purpose
+    /// @param _key The key to check
+    /// @param _purpose The purpose to check for
+    /// @return exists True if the key has the specified purpose, false otherwise
     function keyHasPurpose(
         bytes32 _key,
         uint256 _purpose
@@ -300,6 +309,15 @@ contract ATKIdentityImplementation is
         return ERC735.removeClaim(_claimId);
     }
 
+    /// @notice Retrieves a claim by its ID
+    /// @dev Retrieves a claim by its ID from the claims storage
+    /// @param _claimId The ID of the claim to retrieve
+    /// @return topic The claim's topic
+    /// @return scheme The claim's scheme
+    /// @return issuer The claim's issuer address
+    /// @return signature The claim's signature
+    /// @return data The claim's data
+    /// @return uri The claim's URI
     function getClaim(bytes32 _claimId)
         public
         view
