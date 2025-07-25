@@ -18,7 +18,7 @@ export const assetDesignerFormOptions = formOptions({
     step: "selectAssetType",
     verification: {
       verificationCode: "",
-      verificationType: "pincode",
+      verificationType: "two-factor",
     },
   } as AssetDesignerFormInputData,
 });
