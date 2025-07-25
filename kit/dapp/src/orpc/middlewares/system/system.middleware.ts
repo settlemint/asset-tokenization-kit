@@ -8,6 +8,7 @@ import {
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
 import { SystemAddonType } from "@/orpc/routes/system/addon/routes/addon.create.schema";
+import type { SystemComplianceModuleType } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
 import { call } from "@orpc/server";
 import type { ResultOf } from "@settlemint/sdk-thegraph";
 
@@ -26,7 +27,14 @@ const SYSTEM_QUERY = theGraphGraphql(
         }
       }
       systemAddonRegistry {
-        systemAddons(orderBy: name) {
+        systemAddons {
+          id
+          typeId
+          name
+        }
+      }
+      complianceModuleRegistry {
+        complianceModules {
           id
           typeId
           name
@@ -71,6 +79,18 @@ export interface SystemAddon {
 }
 
 /**
+ * Interface for a compliance module.
+ * @param id - The id of the compliance module.
+ * @param typeId - The type of the compliance module.
+ * @param name - The name of the compliance module.
+ */
+export interface SystemComplianceModule {
+  address: EthereumAddress;
+  typeId: SystemComplianceModuleType;
+  name: string;
+}
+
+/**
  * Middleware to inject the system context into the request context.
  * @returns The middleware function.
  */
@@ -96,7 +116,7 @@ export const systemMiddleware = baseRouter.middleware(
     if (!systemAddress) {
       throw errors.SYSTEM_NOT_CREATED();
     }
-    const { tokenFactories, systemAddons } = await getSystem(
+    const { tokenFactories, systemAddons, complianceModules } = await getSystem(
       getEthereumAddress(systemAddress)
     );
 
@@ -106,6 +126,7 @@ export const systemMiddleware = baseRouter.middleware(
           address: getEthereumAddress(systemAddress),
           tokenFactories,
           addons: systemAddons,
+          complianceModules,
         },
       },
     });
@@ -117,6 +138,7 @@ const getSystem = async (
 ): Promise<{
   tokenFactories: TokenFactory[];
   systemAddons: SystemAddon[];
+  complianceModules: SystemComplianceModule[];
 }> => {
   const { system } = await theGraphClient.request({
     document: SYSTEM_QUERY,
@@ -140,5 +162,13 @@ const getSystem = async (
         typeId: typeId as SystemAddonType,
         name,
       })) ?? [],
+    complianceModules:
+      system?.complianceModuleRegistry?.complianceModules.map(
+        ({ id, typeId, name }) => ({
+          address: getEthereumAddress(id),
+          typeId: typeId as SystemComplianceModuleType,
+          name,
+        })
+      ) ?? [],
   };
 };

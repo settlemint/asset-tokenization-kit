@@ -1,5 +1,6 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { addonContract } from "@/orpc/routes/system/addon/addon.contract";
+import { complianceModuleContract } from "@/orpc/routes/system/compliance-module/compliance-module.contract";
 import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
 import {
   SystemCreateOutputSchema,
@@ -101,4 +102,5 @@ export const systemContract = {
   read,
   ...addonContract,
   ...identityContract,
+  ...complianceModuleContract,
 };

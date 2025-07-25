@@ -6,6 +6,7 @@ import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.m
 import type { ValidatedTheGraphClient } from "@/orpc/middlewares/services/the-graph.middleware";
 import type {
   SystemAddon,
+  SystemComplianceModule,
   TokenFactory,
 } from "@/orpc/middlewares/system/system.middleware";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -134,6 +135,7 @@ export interface Context {
     address: Address;
     tokenFactories: TokenFactory[];
     addons: SystemAddon[];
+    complianceModules: SystemComplianceModule[];
   };
 
   /**
