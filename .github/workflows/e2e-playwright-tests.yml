@@ -1,7 +1,7 @@
 name: Playwright Tests
 on:
-  # schedule:
-  #   - cron: "0 0 * * 1-5" # runs every night Sun-Fri at 2AM (time difference with GHA! + 1hr)
+  schedule:
+    - cron: "0 0 * * 1-5" # runs every night Sun-Fri at 2AM (time difference with GHA! + 1hr)
   pull_request:
     types: [labeled]
   workflow_dispatch:
@@ -73,10 +73,14 @@ jobs:
           bun addresses
         working-directory: kit/dapp
 
+      - name: Reset dev environment (clean start)
+        run: bun run dev:reset
+        working-directory: kit/dapp
+
       - name: Start dev server
         run: |
           echo "Starting dev server..."
-          nohup bun dev --port 3000 --hostname 0.0.0.0 > server.log 2>&1 &
+          nohup bun run dev > server.log 2>&1 &
           echo "SERVER_PID=$!" >> $GITHUB_ENV
           echo "Waiting 30 seconds for Next.js to initialize all routes..."
           sleep 30
@@ -136,16 +140,16 @@ jobs:
         env:
           CI: true
 
-      - name: Send Slack notification
-        if: ${{ !cancelled() }}
-        uses: slackapi/slack-github-action@v2.1.1
-        with:
-          webhook: ${{ env.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "text": "${{ (steps.playwright-api.outcome == 'success' && steps.playwright-ui.outcome == 'success') && ':white_check_mark: Asset Tokenization E2E Tests Passed (API & UI)' || ':x: Asset Tokenization E2E Tests Failed (API or UI)' }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
-            }
+      # - name: Send Slack notification
+      #   if: ${{ !cancelled() }}
+      #   uses: slackapi/slack-github-action@v2.1.1
+      #   with:
+      #     webhook: ${{ env.SLACK_WEBHOOK_URL }}
+      #     webhook-type: incoming-webhook
+      #     payload: |
+      #       {
+      #         "text": "${{ (steps.playwright-api.outcome == 'success' && steps.playwright-ui.outcome == 'success') && ':white_check_mark: Asset Tokenization E2E Tests Passed (API & UI)' || ':x: Asset Tokenization E2E Tests Failed (API or UI)' }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
+      #       }
 
       - name: Stop dev server
         if: always()
