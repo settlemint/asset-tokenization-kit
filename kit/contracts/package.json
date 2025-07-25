@@ -16,6 +16,7 @@
     "format:prettier": "prettier --experimental-cli --write .",
     "clean:deployments": "rm -Rf ignition/deployments/atk-local",
     "publish": "bun run clean:deployments && settlemint scs hardhat script local --script scripts/hardhat/main.ts",
+    "publish:docker": "DOCKER_BUILD_TAG=$(jq -r .version ../../package.json); if [ -z \"$CI\" ]; then DOCKER_BUILD_TAG=\"$DOCKER_BUILD_TAG-dev.$(date +%s)\"; fi; docker buildx build . --file=./Dockerfile --platform=linux/amd64,linux/arm64 --provenance true --sbom true -t ghcr.io/settlemint/asset-tokenization-kit-artifacts:$DOCKER_BUILD_TAG --push",
     "abi-output": "bash tools/abi-output.sh",
     "test": "settlemint scs foundry test -vvv",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
