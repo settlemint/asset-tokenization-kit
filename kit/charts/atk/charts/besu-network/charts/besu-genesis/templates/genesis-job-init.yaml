@@ -53,7 +53,7 @@ spec:
             - -c
             - |
               echo "Copying genesis files from artifacts container..."
-              cp -r /artifacts/genesis/* /shared-artifacts/
+              cp -a /artifacts/genesis/. /shared-artifacts/
               echo "Genesis files copied successfully"
               ls -la /shared-artifacts/
           volumeMounts:
