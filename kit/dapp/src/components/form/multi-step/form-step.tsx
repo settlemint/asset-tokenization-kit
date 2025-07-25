@@ -26,7 +26,7 @@ export function FormStepContent({
 }) {
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className={`${fullWidth ? "" : "max-w-3xl"} space-y-6 pr-2`}>
+      <div className={cn("space-y-6 pr-2", !fullWidth && "max-w-3xl")}>
         {children}
       </div>
     </div>
