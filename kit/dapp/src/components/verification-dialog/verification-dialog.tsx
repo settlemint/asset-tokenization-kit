@@ -44,7 +44,7 @@ export function VerificationDialog({
   const hasPincode = user.verificationTypes.includes("pincode");
   const hasTwoFactor = user.verificationTypes.includes("two-factor");
 
-  const [useOtp, setUseOtp] = useState(!hasPincode && hasTwoFactor);
+  const [useOtp, setUseOtp] = useState(hasTwoFactor);
 
   const codeSchema = useMemo(
     () =>

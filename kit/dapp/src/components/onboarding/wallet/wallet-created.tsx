@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { CircleCheckBigIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { zeroAddress } from "viem";
 
@@ -14,43 +13,42 @@ export function WalletCreated() {
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
   const { completeStepAndNavigate } = useOnboardingNavigation();
 
+  // At this point in the onboarding flow, the user should always have a wallet
+  // If they don't, something went wrong in the wallet creation process
+  if (!user.wallet || user.wallet === zeroAddress) {
+    throw new Error("User wallet not found after wallet creation step");
+  }
+
   return (
     <OnboardingStepLayout
-      title={t("onboarding:wallet.success-title", {
-        defaultValue: t("onboarding:wallet.wallet-created-title", {
-          defaultValue: "Wallet Created",
-        }),
-      })}
+      title={t("onboarding:wallet.created-title")}
       description={t("onboarding:wallet.success-message")}
       actions={
         <Button
           onClick={() => void completeStepAndNavigate(OnboardingStep.wallet)}
         >
-          {t("common:continue")}
+          {t("onboarding:wallet.secure-wallet-button")}
         </Button>
       }
     >
       <div className="space-y-6">
-        <div className="text-center space-y-4">
-          <div className="flex justify-center">
-            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
-              <CircleCheckBigIcon className="w-8 h-8 text-green-600 dark:text-green-400" />
-            </div>
+        <h2 className="text-lg font-semibold text-foreground">
+          {t("onboarding:wallet.wallet-address-title")}
+        </h2>
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 space-y-3">
+          <div className="flex items-center justify-center gap-2">
+            <Web3Address
+              address={user.wallet}
+              showPrettyName={false}
+              showFullAddress
+              copyToClipboard
+            />
           </div>
         </div>
-        <div className="space-y-4">
-          <h3 className="text-base font-medium text-foreground">
-            {t("onboarding:wallet.wallet-address-title")}
-          </h3>
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 space-y-3">
-            <div className="flex items-center justify-center gap-2">
-              <Web3Address
-                address={user.wallet ?? zeroAddress}
-                showPrettyName={false}
-                showFullAddress
-              />
-            </div>
-          </div>
+        <div className="space-y-4 text-sm text-muted-foreground">
+          <p>{t("onboarding:wallet.address-explanation")}</p>
+          <p>{t("onboarding:wallet.security-importance")}</p>
+          <p>{t("onboarding:wallet.security-next-steps")}</p>
         </div>
       </div>
     </OnboardingStepLayout>

@@ -414,4 +414,4 @@ config:
         - matchDomain: "*"
           serveProject: "settlemint"
           serveArchitecture: "evm"
-          serveChain: "53771311147"
+          serveChain: "1337"

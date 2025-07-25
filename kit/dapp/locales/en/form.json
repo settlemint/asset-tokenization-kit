@@ -1,4 +1,5 @@
 {
   "valid-email": "Please enter a valid email address",
-  "letters-only": "Only letters are allowed"
+  "letters-only": "Only letters are allowed",
+  "noCountryFound": "No country found."
 }

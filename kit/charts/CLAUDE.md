@@ -29,7 +29,6 @@ kit/charts/
 │   │   └── txsigner/          # Transaction signing service
 │   └── templates/             # Helm templates for umbrella chart
 ├── tools/                     # Deployment utilities
-│   ├── copy-artifacts.ts      # Copy contract artifacts to charts
 │   ├── extract-env.ts         # Extract env vars from deployment
 │   ├── values-orbstack.yaml   # Local development values
 │   └── values-orbstack.1p.yaml # Template for 1Password injection
@@ -115,7 +114,6 @@ kit/charts/
 ```bash
 # Prerequisites
 bun run helm:secrets          # Inject secrets from 1Password
-bun run artifacts             # Copy contract artifacts
 bun run helm:subgraph        # Update subgraph hash
 
 # Deploy
@@ -203,9 +201,10 @@ persistence:
 ```bash
 # After contract changes
 cd ../contracts && bun run compile
-cd ../charts && bun run artifacts
-bun run helm:subgraph
+cd ../charts && bun run helm:subgraph
 ```
+
+**Note**: Contract artifacts (ABIs and genesis files) are now packaged in the `ghcr.io/settlemint/asset-tokenization-kit-artifacts` Docker image and automatically deployed via init containers. No manual copying is required.
 
 ### Configure Domains
 
@@ -262,8 +261,8 @@ portal:
    - Check DNS resolution
 
 2. **Contract artifacts missing**
-   - Run `bun run artifacts` from charts directory
-   - Ensure contracts are compiled first
+   - Ensure the artifacts Docker image is available and properly tagged
+   - Check that the image tag in `global.artifacts.image.tag` matches the built artifacts
 
 3. **Database connection issues**
    - Verify PostgreSQL is ready
