@@ -9,10 +9,10 @@ global:
   # -- Global labels to add to all objects
   labels: {}
 
-# -- String to fully override common.names.fullname
+# -- String to fully override the fullname template
 fullnameOverride: "portal"
 
-# -- String to partially override common.names.fullname template (will maintain the release name)
+# -- String to partially override the fullname template (will maintain the release name)
 nameOverride: ""
 
 # -- Labels to add to all deployed objects

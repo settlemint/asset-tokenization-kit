@@ -7,7 +7,7 @@ global:
   # -- Global StorageClass for Persistent Volume(s)
   storageClass: ""
 
-# -- String to fully override common.names.fullname
+# -- String to fully override the fullname template
 fullnameOverride: "txsigner"
 
 # -- Labels to add to all deployed objects
