@@ -623,6 +623,7 @@ contract ATKIdentityRegistryImplementation is
 
     /// @dev Internal helper function to verify a single claim topic for a user.
     ///      This encapsulates the claim verification logic used in both isVerified implementations.
+    ///      Optimized to use getClaimIdsByTopic for efficient claim retrieval.
     /// @param _userAddress The user's address to verify claims for.
     /// @param claimTopic The claim topic ID to verify.
     /// @return True if the user has a valid claim for the topic from a trusted issuer.
@@ -640,31 +641,47 @@ contract ATKIdentityRegistryImplementation is
         // Get the identity contract for the user
         IIdentity identityToVerify = _identityStorage.storedIdentity(_userAddress);
 
+        // Get all claim IDs for this topic at once (more efficient than per-issuer lookups)
+        bytes32[] memory claimIds = identityToVerify.getClaimIdsByTopic(claimTopic);
+        if (claimIds.length == 0) {
+            return false; // No claims for this topic
+        }
+
         // Get trusted issuers for this topic
         IClaimIssuer[] memory trustedIssuers = _trustedIssuersRegistry.getTrustedIssuersForClaimTopic(claimTopic);
+        if (trustedIssuers.length == 0) {
+            return false; // No trusted issuers for this topic
+        }
 
-        // Check if the identity has a valid claim for this topic from any trusted issuer
-        for (uint256 j = 0; j < trustedIssuers.length;) {
-            IClaimIssuer relevantIssuer = trustedIssuers[j];
+        // Check each claim against the list of trusted issuers
+        for (uint256 i = 0; i < claimIds.length;) {
+            // Get claim details
+            (uint256 foundClaimTopic, , address issuer, bytes memory sig, bytes memory data,) =
+                identityToVerify.getClaim(claimIds[i]);
 
-            // Get the claim from the identity
-            (uint256 foundClaimTopic, , , bytes memory sig, bytes memory data,) =
-                identityToVerify.getClaim(keccak256(abi.encode(address(relevantIssuer), claimTopic)));
-
-            // Verify the claim exists and matches the expected topic
+            // Verify the claim topic matches (should always be true due to getClaimIdsByTopic)
             if (foundClaimTopic == claimTopic) {
-                // Verify the claim is valid with the issuer
-                if (relevantIssuer.isClaimValid(identityToVerify, claimTopic, sig, data)) {
-                    return true; // Found valid claim from trusted issuer
+                // Check if the issuer is trusted for this topic
+                for (uint256 j = 0; j < trustedIssuers.length;) {
+                    if (address(trustedIssuers[j]) == issuer) {
+                        // Verify the claim is valid with the trusted issuer
+                        if (trustedIssuers[j].isClaimValid(identityToVerify, claimTopic, sig, data)) {
+                            return true; // Found valid claim from trusted issuer
+                        }
+                        break; // Found the issuer, no need to check others for this claim
+                    }
+                    unchecked {
+                        ++j;
+                    }
                 }
             }
 
             unchecked {
-                ++j;
+                ++i;
             }
         }
 
-        return false; // No valid claim found
+        return false; // No valid claim found from trusted issuers
     }
 
     /// @inheritdoc ISMARTIdentityRegistry
