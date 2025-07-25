@@ -266,31 +266,30 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                   )}
                 </form.Field>
               </div>
-            </form>
 
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
-                className="flex-1"
-                disabled={isVerifyingOtp}
-              >
-                {t("wallet-security.otp.cancel")}
-              </Button>
-              <Button
-                type="submit"
-                onClick={() => void form.handleSubmit()}
-                disabled={
-                  isVerifyingOtp || form.state.values.otpCode.length !== 6
-                }
-                className="flex-1"
-              >
-                {isVerifyingOtp
-                  ? t("wallet-security.otp.verifying")
-                  : t("wallet-security.otp.verify-code")}
-              </Button>
-            </div>
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleClose}
+                  className="flex-1"
+                  disabled={isVerifyingOtp}
+                >
+                  {t("wallet-security.otp.cancel")}
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={
+                    isVerifyingOtp || form.state.values.otpCode.length !== 6
+                  }
+                  className="flex-1"
+                >
+                  {isVerifyingOtp
+                    ? t("wallet-security.otp.verifying")
+                    : t("wallet-security.otp.verify-code")}
+                </Button>
+              </div>
+            </form>
           </>
         )}
       </DialogContent>
