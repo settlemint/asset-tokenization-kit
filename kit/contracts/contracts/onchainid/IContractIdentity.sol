@@ -22,5 +22,7 @@ interface IContractIdentity is IClaimIssuer {
         uint256 topic,
         bytes memory data,
         string memory uri
-    ) external returns (bytes32 claimId);
+    )
+        external
+        returns (bytes32 claimId);
 }

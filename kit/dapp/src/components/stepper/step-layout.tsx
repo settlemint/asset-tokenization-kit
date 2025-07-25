@@ -123,7 +123,7 @@ export function StepLayout<StepId, GroupId>({
               </div>
             </SidebarHeader>
 
-            <SidebarContent className="px-8 relative">
+            <SidebarContent className="px-8 relative overflow-y-auto">
               {renderGroupedSteps()}
             </SidebarContent>
           </div>
