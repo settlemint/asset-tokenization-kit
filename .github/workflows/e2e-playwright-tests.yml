@@ -47,6 +47,11 @@ jobs:
           node-version-file: .nvmrc
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install Foundry
+        run: |
+          curl -L https://foundry.paradigm.xyz | bash
+          ~/.foundry/bin/foundryup
+
       - name: Install dependencies
         run: bun install
         working-directory: kit/e2e
