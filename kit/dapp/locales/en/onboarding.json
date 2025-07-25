@@ -92,7 +92,14 @@
     "address-explanation": "This address is something you can safely share with others for them to send assets (like tokens or cryptocurrencies) directly to your wallet. While all transactions to and from this address are publicly recorded on the blockchain, your personal identity remains private. Think of it like an email address or a bank account number.",
     "security-importance": "Because your wallet controls access to your valuable digital assets and identity, it's important to keep it safe from unauthorized access and ensure you can recover it if needed.",
     "security-next-steps": "To protect you, next you'll set up a PIN, enable one-time passwords (OTP), and create backup codes — simple security steps that keep your wallet secure and recoverable.",
-    "secure-wallet-button": "Secure my wallet"
+    "secure-wallet-button": "Secure my wallet",
+    "what-your-wallet-enables": "What your wallet enables:",
+    "asset-control": "Asset Control",
+    "asset-control-description": "View, manage, and interact with tokenized assets on the Asset Tokenization Kit platform. Your wallet gives you complete control over your digital assets.",
+    "invest-in-digital-assets": "Invest in Digital Assets",
+    "invest-in-digital-assets-description": "Explore and invest in a wide range of digital assets, including equities, bonds, and more.",
+    "manage-your-digital-assets": "Manage your Digital Assets",
+    "manage-your-digital-assets-description": "Easily manage your digital assets, including buying, selling, and transferring."
   },
   "wallet-security": {
     "method-selector": {

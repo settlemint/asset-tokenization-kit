@@ -12,7 +12,13 @@ import {
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
+
+const routeParamsSchema = z.object({
+  factoryAddress: ethereumAddress,
+});
 
 /**
  * Route configuration for the token factory details page
@@ -40,6 +46,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/token/$factoryAddress/"
 )({
+  parseParams: (params) => routeParamsSchema.parse(params),
   /**
    * Validates search parameters for data table state
    * Enables URL-based persistence of table filters, sorting, and pagination
