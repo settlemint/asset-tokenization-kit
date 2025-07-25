@@ -200,7 +200,7 @@ contract ATKIdentityImplementation is
     ///      Requires ACTION_KEY if the execution targets an external contract.
     function approve(uint256 _id, bool _toApprove) public virtual override(ERC734, IERC734) returns (bool success) {
         Execution storage executionToApprove = _executions[_id];
-        if (_id > _executionNonce - 1) revert ReplicatedExecutionIdDoesNotExist({ executionId: _id });
+        if (_id >= _executionNonce) revert ReplicatedExecutionIdDoesNotExist({ executionId: _id });
         if (executionToApprove.executed) revert ReplicatedExecutionAlreadyPerformed({ executionId: _id });
 
         bytes32 senderKeyHash = keccak256(abi.encode(_msgSender()));

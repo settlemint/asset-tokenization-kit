@@ -10,15 +10,7 @@ import { ISMART } from "../interface/ISMART.sol";
 /// @notice This module is used to verify the identity of an investor.
 /// @dev This module is used to verify the identity of an investor.
 contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
-    /// @notice Unique type identifier for this compliance module
-    bytes32 public constant TYPE_ID = keccak256("SMARTIdentityVerificationComplianceModule");
-
-    /// @notice Returns a unique identifier for the type of this contract.
-    /// @dev This identifier is used to distinguish this compliance module type from others in the system.
-    /// @return The unique type identifier for the SMARTIdentityVerificationComplianceModule.
-    function typeId() external pure override returns (bytes32) {
-        return TYPE_ID;
-    }
+    bytes32 public constant override typeId = keccak256("SMARTIdentityVerificationComplianceModule");
 
     /// @notice Reverted when a token operation (like transfer or mint) is attempted, but the recipient
     ///         (or potentially sender, depending on the operation) does not meet the required identity verification
