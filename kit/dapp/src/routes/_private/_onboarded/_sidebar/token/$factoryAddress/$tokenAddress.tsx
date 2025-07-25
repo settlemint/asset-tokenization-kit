@@ -5,18 +5,18 @@ import {
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { ManageDropdown } from "@/components/manage-dropdown/token";
-import {
-  TabNavigation,
-  type TabItemProps,
-} from "@/components/tab-navigation/tab-navigation";
+import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { seo } from "@/config/metadata";
+import { getTokenTabConfiguration } from "@/lib/tokens/tab-configuration";
 import {
+  AssetType,
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { Suspense } from "react";
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress"
@@ -94,24 +94,11 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { token } = Route.useLoaderData();
-  const { t } = useTranslation(["tokens", "assets", "common"]);
+  const { token, factory } = Route.useLoaderData();
   const { factoryAddress, tokenAddress } = Route.useParams();
 
-  const tabs = [
-    {
-      href: `/token/${factoryAddress}/${tokenAddress}`,
-      name: t("tokens:details.tokenInformation"),
-    },
-    {
-      href: `/token/${factoryAddress}/${tokenAddress}/holders`,
-      name: t("tokens:details.holders"),
-    },
-    {
-      href: `/token/${factoryAddress}/${tokenAddress}/events`,
-      name: t("tokens:details.events"),
-    },
-  ] as TabItemProps[];
+  // Get asset type from factory
+  const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
 
   return (
     <div className="space-y-6 p-6">
@@ -126,9 +113,51 @@ function RouteComponent() {
         </div>
       </div>
 
-      <TabNavigation items={tabs} />
+      <Suspense fallback={<TabNavigationSkeleton />}>
+        <AsyncTabNavigation
+          factoryAddress={factoryAddress as EthereumAddress}
+          tokenAddress={tokenAddress as EthereumAddress}
+          assetType={assetType}
+        />
+      </Suspense>
 
       <Outlet />
     </div>
   );
+}
+
+/**
+ * Skeleton loader for tab navigation
+ */
+function TabNavigationSkeleton() {
+  return (
+    <div className="border-b">
+      <div className="flex space-x-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-10 w-24 animate-pulse rounded bg-muted" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Async component that loads and renders tab navigation with dynamic configuration
+ */
+async function AsyncTabNavigation({
+  factoryAddress,
+  tokenAddress,
+  assetType,
+}: {
+  factoryAddress: EthereumAddress;
+  tokenAddress: EthereumAddress;
+  assetType: AssetType;
+}) {
+  const tabs = await getTokenTabConfiguration({
+    factoryAddress,
+    tokenAddress,
+    assetType,
+  });
+
+  return <TabNavigation items={tabs} />;
 }
