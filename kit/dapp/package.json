@@ -39,7 +39,7 @@
     "@vitejs/plugin-react": "4.7.0",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "contracts": "workspace:*",
-    "dotenv": "17.2.0",
+    "dotenv": "17.2.1",
     "drizzle-kit": "0.31.4",
     "eslint": "9.31.0",
     "eslint-plugin-boundaries": "5.0.1",
