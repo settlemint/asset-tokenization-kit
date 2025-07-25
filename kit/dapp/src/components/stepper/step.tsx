@@ -1,12 +1,21 @@
-import { StepIndicator } from "@/components/onboarding/step-indicator";
 import type {
   NavigationMode,
   Step,
   StepGroup,
 } from "@/components/stepper/types";
-import { isLastStepInGroup } from "@/components/stepper/utils";
+import { isLastStepInGroup, isStepCompleted } from "@/components/stepper/utils";
+import {
+  Timeline,
+  TimelineContent,
+  TimelineHeader,
+  TimelineIndicator,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineTitle,
+} from "@/components/ui/timeline";
 import { cn } from "@/lib/utils";
-import { isLastStep, isStepCompleted } from "./utils";
+import { Check } from "lucide-react";
+import { isLastStep } from "./utils";
 
 export interface StepItemProps<StepId, GroupId> {
   step: Step<StepId>;
@@ -25,6 +34,7 @@ export function StepComponent<StepId, GroupId>({
   onStepSelect,
   group,
 }: StepItemProps<StepId, GroupId>) {
+  const stepIndex = allSteps.findIndex((s) => s.id === step.id);
   const isCurrent = step.id === currentStep.id;
   const isCompleted = isStepCompleted({ step, currentStep });
   const isAccessible =
@@ -33,66 +43,80 @@ export function StepComponent<StepId, GroupId>({
     ? isLastStepInGroup(group, step)
     : isLastStep(allSteps, step);
 
+  // Helper function to calculate dynamic height for timeline separators
+  const calculateLineHeight = (description?: string) => {
+    if (!description) return 60;
+    const baseHeight = 60;
+    const extraHeight = Math.min(description.length / 50, 3) * 20;
+    return baseHeight + extraHeight;
+  };
+
+  const dynamicHeight = calculateLineHeight(step.description);
+
   return (
-    <div className="Step flex items-stretch mb-0 mt-2">
-      {/* Dot column with line */}
-      <div className="relative flex flex-col items-center w-12 pt-0">
-        {/* The step dot */}
-        <StepIndicator isCompleted={isCompleted} isCurrent={isCurrent} />
-
-        {/* Connecting line (for all but last step) */}
-        {!isLast && (
-          <div
-            className={cn(
-              "w-0 border-l-2 border-dashed flex-grow transition-colors duration-300",
-              isCompleted ? "border-white/60" : "border-white/30"
-            )}
-          />
-        )}
-      </div>
-
-      {/* Content column */}
-      <div className="flex-1 flex items-center -mt-1 mb-4">
-        <button
-          type="button"
-          className={cn(
-            "flex flex-col w-full px-4 py-3 rounded-lg transition-all duration-200 text-left relative z-20 group",
-            isCurrent && "bg-white/10 backdrop-blur-sm",
-            !isAccessible && "cursor-not-allowed opacity-60",
-            isAccessible && "hover:bg-white/15",
-            isCompleted && !isCurrent && "cursor-pointer hover:bg-white/10"
+    <Timeline className="space-y-3">
+      <TimelineItem step={stepIndex + 1} className="pb-2">
+        <TimelineHeader className="items-start">
+          {!isLast && (
+            <TimelineSeparator
+              className="top-[26px] left-[15px] w-0.5 bg-sm-graphics-primary/30"
+              style={{ height: `${dynamicHeight}px` }}
+            />
           )}
-          onClick={() => {
-            if (isAccessible) {
-              onStepSelect(step);
-            }
-          }}
-          disabled={!isAccessible}
-        >
-          <div className="flex items-center justify-between">
-            <span
-              className={cn(
-                "text-sm transition-all duration-300",
-                isCurrent
-                  ? "font-bold text-primary-foreground"
-                  : "font-medium text-primary-foreground/90"
+          <TimelineIndicator className="border-0 bg-transparent">
+            <div className="mt-2">
+              {isCompleted ? (
+                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-sm-graphics-secondary">
+                  <Check className="h-3 w-3 text-white" />
+                </div>
+              ) : isCurrent ? (
+                <div className="h-4 w-4 rounded-full bg-sm-state-success-background animate-pulse" />
+              ) : (
+                <div className="h-4 w-4 rounded-full border-2 border-sm-graphics-primary" />
               )}
+            </div>
+          </TimelineIndicator>
+          <div className="flex-1">
+            <button
+              type="button"
+              className={cn(
+                "w-full text-left px-4 py-3 rounded-lg transition-all duration-200 relative z-20",
+                isCurrent && "bg-white/10 backdrop-blur-sm",
+                !isAccessible && "cursor-not-allowed opacity-60",
+                isAccessible && "hover:bg-white/15",
+                isCompleted && !isCurrent && "cursor-pointer hover:bg-white/10"
+              )}
+              onClick={() => {
+                if (isAccessible) {
+                  onStepSelect(step);
+                }
+              }}
+              disabled={!isAccessible}
             >
-              {step.label}
-            </span>
+              <TimelineTitle
+                className={cn(
+                  "transition-all duration-300",
+                  isCurrent
+                    ? "font-bold text-primary-foreground"
+                    : "font-medium text-primary-foreground/90"
+                )}
+              >
+                {step.label}
+              </TimelineTitle>
+              <TimelineContent
+                className={cn(
+                  "mt-1 transition-colors duration-300 leading-relaxed",
+                  isCurrent
+                    ? "text-primary-foreground/90"
+                    : "text-primary-foreground/70"
+                )}
+              >
+                {step.description}
+              </TimelineContent>
+            </button>
           </div>
-          <p
-            className={cn(
-              "text-xs mt-1 transition-colors duration-300 leading-relaxed",
-              isCurrent
-                ? "text-primary-foreground/90"
-                : "text-primary-foreground/70"
-            )}
-          >
-            {step.description}
-          </p>
-        </button>
-      </div>
-    </div>
+        </TimelineHeader>
+      </TimelineItem>
+    </Timeline>
   );
 }
