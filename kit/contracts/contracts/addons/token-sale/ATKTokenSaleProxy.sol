@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 /// @title ATKTokenSaleProxy
+/// @author SettleMint
 /// @notice Proxy contract for ATKTokenSale implementations
 /// @dev This is a lightweight proxy that delegates calls to an implementation contract
 contract ATKTokenSaleProxy is TransparentUpgradeableProxy {
