@@ -5,6 +5,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { SMARTComplianceModuleParamPair } from "./structs/SMARTComplianceModuleParamPair.sol";
 
 /// @title ISMART Compliance Oracle Interface
+/// @author SettleMint
 /// @notice This interface defines the functions for a central compliance contract designed to work with SMART tokens.
 /// Its primary role is to determine the legality of token operations (transfers, mints, burns) by orchestrating checks
 /// across one or more registered compliance modules.

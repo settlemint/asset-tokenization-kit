@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-// Openzeppelin imports
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
 // Base contract imports
 import { SMARTExtension } from "../common/SMARTExtension.sol";
 import { SMARTHooks } from "../common/SMARTHooks.sol";
@@ -14,7 +11,9 @@ import { _SMARTCustodianLogic } from "./internal/_SMARTCustodianLogic.sol";
 // Error imports
 
 /// @title Standard (Non-Upgradeable) SMART Custodian Extension
-/// @notice This abstract contract provides the non-upgradeable implementation of custodian features
+/// @author SettleMint
+/// @notice This abstract contract provides the non-upgradeable implementation of custodian
+/// features
 ///         (like freezing, forced transfers, recovery) for a SMART token.
 /// @dev It integrates the core logic from `_SMARTCustodianLogic` with a standard ERC20 token.
 ///      This contract is 'abstract' because it expects the final, deployable token contract to:
@@ -86,8 +85,10 @@ abstract contract SMARTCustodian is SMARTExtension, _SMARTCustodianLogic {
     // and then `super.<hookName>(...)` to ensure the hook chain is preserved for other extensions.
 
     /// @inheritdoc SMARTHooks
-    /// @dev Overrides the `_beforeMint` hook to add custodian-specific checks.
-    ///      Specifically, it calls `__custodian_beforeMintLogic` to prevent minting to a frozen address.
+    /// @notice Overrides the `_beforeMint` hook to add custodian-specific checks.
+    /// @dev Specifically, it calls `__custodian_beforeMintLogic` to prevent minting to a frozen address.
+    /// @param to The address that will receive the minted tokens.
+    /// @param amount The amount of tokens to be minted.
     function _beforeMint(address to, uint256 amount) internal virtual override(SMARTHooks) {
         __custodian_beforeMintLogic(to); // Custodian check: e.g., is recipient frozen?
         super._beforeMint(to, amount); // Call the next hook in the chain (e.g., core SMART logic, other
@@ -95,35 +96,44 @@ abstract contract SMARTCustodian is SMARTExtension, _SMARTCustodianLogic {
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Overrides the `_beforeTransfer` hook to add custodian-specific checks.
-    ///      Calls `__custodian_beforeTransferLogic` to check if sender or recipient are frozen, and if
+    /// @notice Overrides the `_beforeTransfer` hook to add custodian-specific checks.
+    /// @dev Calls `__custodian_beforeTransferLogic` to check if sender or recipient are frozen, and if
     ///      the sender has sufficient *unfrozen* balance for standard transfers.
+    /// @param from The address sending the tokens.
+    /// @param to The address receiving the tokens.
+    /// @param amount The amount of tokens being transferred.
     function _beforeTransfer(address from, address to, uint256 amount) internal virtual override(SMARTHooks) {
         __custodian_beforeTransferLogic(from, to, amount); // Custodian checks for standard transfers.
         super._beforeTransfer(from, to, amount); // Continue with other hooks.
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Overrides the `_beforeBurn` hook to add custodian-specific logic.
-    ///      Calls `__custodian_beforeBurnLogic`, which might, for example, automatically unfreeze a portion
+    /// @notice Overrides the `_beforeBurn` hook to add custodian-specific logic.
+    /// @dev Calls `__custodian_beforeBurnLogic`, which might, for example, automatically unfreeze a portion
     ///      of tokens if an administrative burn needs to consume partially frozen tokens.
+    /// @param from The address from which tokens will be burned.
+    /// @param amount The amount of tokens to be burned.
     function _beforeBurn(address from, uint256 amount) internal virtual override(SMARTHooks) {
         __custodian_beforeBurnLogic(from, amount); // Custodian logic for burns.
         super._beforeBurn(from, amount); // Continue with other hooks.
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Overrides the `_beforeRedeem` hook (often user-initiated burns) for custodian checks.
-    ///      Calls `__custodian_beforeRedeemLogic` to check if the redeemer is frozen or has insufficient
+    /// @notice Overrides the `_beforeRedeem` hook (often user-initiated burns) for custodian checks.
+    /// @dev Calls `__custodian_beforeRedeemLogic` to check if the redeemer is frozen or has insufficient
     ///      unfrozen balance.
+    /// @param from The address redeeming the tokens.
+    /// @param amount The amount of tokens to be redeemed.
     function _beforeRedeem(address from, uint256 amount) internal virtual override(SMARTHooks) {
         __custodian_beforeRedeemLogic(from, amount); // Custodian checks for user-initiated redeems.
         super._beforeRedeem(from, amount); // Continue with other hooks.
     }
 
     /// @inheritdoc SMARTHooks
-    /// @dev Overrides the `_afterRecoverTokens` hook to add custodian-specific logic.
-    ///      Calls `__custodian_afterRecoverTokensLogic` to check if the new wallet is frozen.
+    /// @notice Overrides the `_afterRecoverTokens` hook to add custodian-specific logic.
+    /// @dev Calls `__custodian_afterRecoverTokensLogic` to check if the new wallet is frozen.
+    /// @param lostWallet The address of the wallet that has lost access to its tokens.
+    /// @param newWallet The address of the wallet that will receive the recovered tokens.
     function _afterRecoverTokens(address lostWallet, address newWallet) internal virtual override(SMARTHooks) {
         __custodian_afterRecoverTokensLogic(lostWallet, newWallet); // Custodian logic for recover tokens.
         super._afterRecoverTokens(lostWallet, newWallet); // Continue with other hooks.

@@ -36,13 +36,16 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     using SafeERC20 for IERC20;
 
     /// --- Abstract Functions ---
+    /// @notice Returns the address of the message sender
+    /// @return The address of the message sender
     function _msgSender() internal view virtual returns (address);
 
     /// --- State Variables ---
 
-    /// @notice The denominator used for rate calculations. `10_000` represents 100% (since rate is in basis points).
-    /// @dev For example, a `_rate` of 500 means 500 / 10,000 = 0.05 or 5%.
     // aderyn-fp-next-line(large-numeric-literal)
+    /// @notice The denominator used for rate calculations (10,000 basis points = 100%)
+    /// @dev `10_000` represents 100% (since rate is in basis points). For example, a `_rate` of 500 means 500 / 10,000
+    /// = 0.05 or 5%.
     uint256 public constant RATE_BASIS_POINTS = 10_000;
 
     /// @notice The SMART token contract (implementing `ISMARTYield`) for which this schedule distributes yield.
@@ -88,6 +91,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     /// @dev This helps in tracking the overall distribution progress and can be used with `totalUnclaimedYield`.
     uint256 private _totalClaimed;
 
+    /// @notice Internal function to initialize all mutable state and configuration
     /// @dev Internal function to initialize all mutable state and configuration.
     /// @param tokenAddress_ Address of the `ISMARTYield` token.
     /// @param startDate_ Start date of the yield schedule.
@@ -108,11 +112,11 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         if (tokenAddress_ == address(0)) revert InvalidToken();
         // For new schedules, start date must generally be in the future.
         // If this logic is used for re-initializing/modifying an existing schedule, this check might need adjustment.
-        if (startDate_ <= block.timestamp && (_startDate == 0)) {
+        if ((startDate_ < block.timestamp || startDate_ == block.timestamp) && (_startDate == 0)) {
             // Only check if not already set (e.g. during a modification)
             revert InvalidStartDate();
         }
-        if (endDate_ <= startDate_) revert InvalidEndDate();
+        if (endDate_ < startDate_ || endDate_ == startDate_) revert InvalidEndDate();
         if (rate_ == 0) revert InvalidRate();
         if (interval_ == 0) revert InvalidInterval();
 
@@ -161,7 +165,8 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     /// @inheritdoc ISMARTFixedYieldSchedule
     function currentPeriod() public view override returns (uint256) {
         if (block.timestamp < _startDate) return 0; // Schedule hasn't started.
-        if (block.timestamp >= _endDate) return _periodEndTimestamps.length; // Schedule has ended, return total number
+        if (block.timestamp > _endDate || block.timestamp == _endDate) return _periodEndTimestamps.length; // Schedule
+            // has ended, return total number
             // of periods.
         // Calculate current period number (1-indexed).
         return ((block.timestamp - _startDate) / _interval) + 1;
@@ -169,11 +174,12 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
 
     /// @inheritdoc ISMARTFixedYieldSchedule
     function lastCompletedPeriod() public view override returns (uint256) {
-        if (block.timestamp <= _startDate) return 0; // Schedule hasn't started or is exactly at start time, no periods
+        if (block.timestamp < _startDate || block.timestamp == _startDate) return 0; // Schedule hasn't started or is
+            // exactly at start time, no periods
             // completed.
 
         // If current time is at or after the schedule's end date, all periods are completed.
-        if (block.timestamp >= _endDate) {
+        if (block.timestamp > _endDate || block.timestamp == _endDate) {
             return _periodEndTimestamps.length;
         }
 
@@ -194,7 +200,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         }
 
         // If the schedule has already ended, there's no next period.
-        if (block.timestamp >= _endDate) {
+        if (block.timestamp > _endDate || block.timestamp == _endDate) {
             return 0;
         }
 
@@ -235,7 +241,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         uint256 basis = _token.yieldBasisPerUnit(address(0));
 
         // Iterate through each completed period to calculate the yield that should have been generated in that period.
-        for (uint256 period = 1; period <= lastPeriod; ++period) {
+        for (uint256 period = 1; period < lastPeriod || period == lastPeriod; ++period) {
             uint256 periodEndTimestamp = _periodEndTimestamps[period - 1]; // Get end time of the current iterated
                 // period.
             // Fetch the total supply of the token as it was at the end of this specific period.
@@ -250,7 +256,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         // The total unclaimed yield is the total accrued minus what has already been claimed by all users.
         // Ensure no underflow if `_totalClaimed` were to somehow exceed `totalYieldAccrued` (should not happen in
         // normal operation).
-        if (totalYieldAccrued <= _totalClaimed) {
+        if (totalYieldAccrued < _totalClaimed || totalYieldAccrued == _totalClaimed) {
             return 0;
         }
         return totalYieldAccrued - _totalClaimed;
@@ -260,7 +266,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
     /// @dev This calculation uses the current total supply. For a more precise estimate if supply changes rapidly,
     /// one might need a more complex projection. Assumes a generic basis from `_token.yieldBasisPerUnit(address(0))`.
     function totalYieldForNextPeriod() public view override returns (uint256) {
-        if (block.timestamp >= _endDate) return 0; // Schedule ended, no next period.
+        if (block.timestamp > _endDate || block.timestamp == _endDate) return 0; // Schedule ended, no next period.
 
         // Get the current total supply of the associated token.
         uint256 totalSupply = IERC20(address(_token)).totalSupply();
@@ -290,9 +296,9 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
 
         uint256 completePeriodAmount = 0;
         // Calculate yield for all fully completed periods that haven't been claimed by this holder.
-        if (fromPeriod <= lastCompleted) {
+        if (fromPeriod < lastCompleted || fromPeriod == lastCompleted) {
             // Check if there are any completed periods to sum up.
-            for (uint256 period = fromPeriod; period <= lastCompleted; ++period) {
+            for (uint256 period = fromPeriod; period < lastCompleted || period == lastCompleted; ++period) {
                 // Fetch the holder's balance as it was at the end of that specific period.
                 uint256 balance = _token.balanceOfAt(holder, _periodEndTimestamps[period - 1]);
                 if (balance > 0) {
@@ -335,6 +341,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         return calculateAccruedYield(_msgSender());
     }
 
+    /// @notice Internal implementation of yield claiming logic
     /// @dev Implementation of `claimYield` from `ISMARTFixedYieldSchedule`.
     function _claimYield() internal {
         uint256 lastPeriod = lastCompletedPeriod(); // Last period fully completed.
@@ -354,7 +361,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         uint256[] memory periodYields = new uint256[](lastPeriod - fromPeriod + 1);
 
         // Calculate yield for each unclaimed, completed period.
-        for (uint256 period = fromPeriod; period <= lastPeriod; ++period) {
+        for (uint256 period = fromPeriod; period < lastPeriod || period == lastPeriod; ++period) {
             // Fetch holder's balance at the end of the specific period.
             // aderyn-fp-next-line(reentrancy-state-change)
             uint256 balance = _token.balanceOfAt(sender, _periodEndTimestamps[period - 1]);
@@ -373,7 +380,7 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
             // If balance is 0 for a period, its corresponding entry in periodAmounts remains 0.
         }
 
-        if (totalAmountToClaim <= 0) revert NoYieldAvailable(); // No yield accrued in the
+        if (totalAmountToClaim == 0) revert NoYieldAvailable(); // No yield accrued in the
             // claimable periods.
 
         // State updates *before* external call (transfer).
@@ -401,7 +408,9 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         );
     }
 
-    /// @dev Implementation of `topUpUnderlyingAsset` from `ISMARTFixedYieldSchedule`.
+    /// @notice Implementation of `topUpUnderlyingAsset` from `ISMARTFixedYieldSchedule`
+    /// @dev Internal function to handle topping up the underlying asset
+    /// @param amount The amount of underlying asset to deposit
     function _topUpUnderlyingAsset(uint256 amount) internal {
         // Transfer `_underlyingAsset` from the caller to this contract.
         _underlyingAsset.safeTransferFrom(_msgSender(), address(this), amount);
@@ -409,7 +418,10 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         emit UnderlyingAssetTopUp(_msgSender(), amount);
     }
 
-    /// @dev Implementation of `withdrawUnderlyingAsset` from `ISMARTFixedYieldSchedule`.
+    /// @notice Implementation of `withdrawUnderlyingAsset` from `ISMARTFixedYieldSchedule`
+    /// @dev Internal function to handle withdrawing underlying asset
+    /// @param to The address to send the underlying asset to
+    /// @param underlyingAssetAmount The amount of underlying asset to withdraw
     function _withdrawUnderlyingAsset(address to, uint256 underlyingAssetAmount) internal {
         if (to == address(0)) revert InvalidUnderlyingAsset(); // Cannot withdraw to zero
             // address.
@@ -425,13 +437,15 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         emit UnderlyingAssetWithdrawn(to, underlyingAssetAmount);
     }
 
-    /// @dev Implementation of `withdrawAllUnderlyingAsset` from `ISMARTFixedYieldSchedule`.
+    /// @notice Implementation of `withdrawAllUnderlyingAsset` from `ISMARTFixedYieldSchedule`
+    /// @dev Internal function to handle withdrawing all underlying asset
+    /// @param to The address to send all underlying asset to
     function _withdrawAllUnderlyingAsset(address to) internal {
         if (to == address(0)) revert InvalidUnderlyingAsset(); // Cannot withdraw to zero
             // address.
 
         uint256 balance = _underlyingAsset.balanceOf(address(this));
-        if (balance <= 0) revert NoUnderlyingBalance(); // No funds to withdraw.
+        if (balance == 0) revert NoUnderlyingBalance(); // No funds to withdraw.
 
         _underlyingAsset.safeTransfer(to, balance);
 
@@ -472,6 +486,10 @@ abstract contract SMARTFixedYieldScheduleLogic is ISMARTFixedYieldSchedule {
         return _interval;
     }
 
+    /// @notice Checks if this contract supports a given interface
+    /// @dev Implementation of IERC165 interface detection
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165) returns (bool) {
         return interfaceId == type(ISMARTFixedYieldSchedule).interfaceId;
     }

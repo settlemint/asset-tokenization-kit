@@ -6,10 +6,11 @@ import { ISMARTHistoricalBalances } from "../ISMARTHistoricalBalances.sol";
 
 import { Checkpoints } from "@openzeppelin/contracts/utils/structs/Checkpoints.sol";
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import { Time } from "@openzeppelin/contracts/utils/types/Time.sol";
 
 /// @title Internal Core Logic for SMART Historical Balances Extension
-/// @notice This abstract contract provides the foundational mechanisms for tracking historical token balances
+/// @author SettleMint
+/// @notice This abstract contract provides the foundational mechanisms for tracking historical
+/// token balances
 ///         for individual accounts and the historical total supply of the token.
 /// @dev It utilizes OpenZeppelin's `Checkpoints.Trace208` library to store and retrieve historical data points.
 ///      The contract defines how checkpoints are created after mint, burn, and transfer operations via internal
@@ -64,13 +65,11 @@ abstract contract _SMARTHistoricalBalancesLogic is _SMARTExtension, ISMARTHistor
             // (highly unlikely for uint48).
     }
 
-    /// @notice Provides a EIP-5267 EIP-2771-compatible machine-readable description of the clock mechanism.
+    // solhint-disable-next-line func-name-mixedcase
+    /// @notice Provides a EIP-5267 EIP-2771-compatible machine-readable description of the clock mechanism
     /// @dev For this implementation, it indicates that the `clock()` function uses `block.timestamp`.
     ///      This helps off-chain tools and other contracts understand how time is measured for checkpoints.
-    ///      `solhint-disable-next-line func-name-mixedcase` is used to allow the uppercase `CLOCK_MODE` name
-    ///      which is a convention for such constants.
-    /// @return string memory A string literal "mode=timestamp".
-    // solhint-disable-next-line func-name-mixedcase
+    /// @return clockMode A string literal "mode=timestamp"
     function CLOCK_MODE() public view virtual returns (string memory) {
         return "mode=timestamp"; // Conforms to EIP-5267 recommendation
     }

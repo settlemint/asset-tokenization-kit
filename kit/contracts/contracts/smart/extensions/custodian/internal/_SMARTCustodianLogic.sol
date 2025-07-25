@@ -4,17 +4,15 @@ pragma solidity ^0.8.28;
 // OpenZeppelin imports
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
-// OnchainID imports
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
-
 // Interface imports
-import { ISMARTIdentityRegistry } from "../../../interface/ISMARTIdentityRegistry.sol";
 import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 
 import { ISMARTCustodian } from "../ISMARTCustodian.sol";
 
 /// @title Internal Core Logic for SMART Custodian Extension
-/// @notice This abstract contract encapsulates the shared state variables (for tracking frozen assets),
+/// @author SettleMint
+/// @notice This abstract contract encapsulates the shared state variables (for tracking frozen
+/// assets),
 ///         core business logic, event emissions, and placeholders for authorization hooks related to
 ///         custodian functionalities.
 /// @dev It is designed to be inherited by both standard (`SMARTCustodian.sol`) and upgradeable
