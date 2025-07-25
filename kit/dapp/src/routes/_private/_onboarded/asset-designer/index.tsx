@@ -1,4 +1,4 @@
-import { AssetDesignerWizard } from "@/components/asset-designer/asset-designer-wizard";
+import { AssetDesignerForm } from "@/components/asset-designer/asset-designer-form";
 import { DialogLayout } from "@/components/layout/dialog";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_private/_onboarded/asset-designer/")({
 function RouteComponent() {
   return (
     <DialogLayout>
-      <AssetDesignerWizard />
+      <AssetDesignerForm />
     </DialogLayout>
   );
 }
