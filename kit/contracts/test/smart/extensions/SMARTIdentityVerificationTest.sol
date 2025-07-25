@@ -11,6 +11,7 @@ import { ATKTopics } from "../../../contracts/system/ATKTopics.sol"; // Import A
 import { TestConstants } from "../../Constants.sol"; // Keep if used, e.g. INITIAL_MINT_AMOUNT
 import { SystemUtils } from "../../utils/SystemUtils.sol"; // Keep for systemUtils access
 import { AbstractSMARTTest } from "./AbstractSMARTTest.sol";
+import { ClaimExpressionUtils } from "../../utils/ClaimExpressionUtils.sol";
 
 abstract contract SMARTIdentityVerificationTest is AbstractSMARTTest {
     // Module-specific variables
@@ -112,7 +113,7 @@ abstract contract SMARTIdentityVerificationTest is AbstractSMARTTest {
 
         // Update parameters for the existing module to require no claims for this test
         vm.prank(tokenIssuer); // Assuming tokenIssuer has role to set parameters
-        token.setParametersForComplianceModule(address(verificationModule), abi.encode(emptyRequiredClaimTopics));
+        token.setParametersForComplianceModule(address(verificationModule), abi.encode(ClaimExpressionUtils.topicsToExpressionNodes(emptyRequiredClaimTopics)));
 
         // Store original parameters if we wanted to reset, but for isolated tests, this is fine.
         // bytes memory originalParams = abi.encode(requiredKYCAndAMLTopics);

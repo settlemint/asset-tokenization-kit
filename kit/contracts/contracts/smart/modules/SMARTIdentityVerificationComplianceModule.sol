@@ -77,7 +77,7 @@ contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
     /// @param expression The expression to validate
     function _validateExpressionStructure(ExpressionNode[] memory expression) internal pure {
         if (expression.length == 0) {
-            revert EmptyExpressionNotAllowed();
+            return;
         }
 
         int256 stackBalance = 0;

@@ -516,9 +516,9 @@ contract ATKIdentityRegistryImplementation is
             return false;
         }
 
-        // Empty expression is considered false (no requirements specified)
+        // Empty expression is considered true (no requirements specified)
         if (expression.length == 0) {
-            return false;
+            return true;
         }
 
         // Local cache for topic verification results within this function call

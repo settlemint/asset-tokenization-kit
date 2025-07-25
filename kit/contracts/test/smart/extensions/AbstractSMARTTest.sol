@@ -107,7 +107,7 @@ abstract contract AbstractSMARTTest is Test {
         modulePairs = new SMARTComplianceModuleParamPair[](2);
         modulePairs[0] = SMARTComplianceModuleParamPair({
             module: address(systemUtils.identityVerificationModule()),
-            params: abi.encode(requiredClaimTopics)
+            params: abi.encode(ClaimExpressionUtils.topicsToExpressionNodes(requiredClaimTopics))
         });
         modulePairs[1] =
             SMARTComplianceModuleParamPair({ module: address(mockComplianceModule), params: abi.encode("") });
