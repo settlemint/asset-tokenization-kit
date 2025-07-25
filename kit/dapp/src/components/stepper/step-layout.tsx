@@ -83,7 +83,7 @@ export function StepLayout<StepId, GroupId>({
   };
 
   return (
-    <div className="StepLayout h-full rounded-xl shadow-lg ">
+    <div className="StepLayout h-full rounded-xl shadow-lg overflow-hidden">
       <SidebarProvider>
         <Sidebar className="w-[360px] flex-shrink-0 transition-all duration-300 group-data-[side=left]:border-0">
           <div
@@ -134,8 +134,8 @@ export function StepLayout<StepId, GroupId>({
           className="StepLayout__main flex-1 flex flex-col transition-all duration-300 relative"
           style={{ backgroundColor: "var(--sm-background-lightest)" }}
         >
-          <div className="p-8">
-            <div className="w-full overflow-y-auto h-[80%]">
+          <div className="p-8 h-full">
+            <div className="w-full overflow-y-auto h-[calc(100%-4rem)]">
               {typeof children === "function"
                 ? children({
                     currentStep,
