@@ -15,11 +15,15 @@ import {
 } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/auth.client";
 import { twoFactorCode } from "@/lib/zod/validators/two-factor-code";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
+import QRCode from "qrcode";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+
+const logger = createLogger();
 
 interface OtpSetupModalProps {
   open: boolean;
@@ -31,6 +35,8 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
   const { refreshUserState } = useOnboardingNavigation();
   const [otpUri, setOtpUri] = useState<string | null>(null);
   const [otpSetupError, setOtpSetupError] = useState(false);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
+  const [otpSecret, setOtpSecret] = useState<string | null>(null);
 
   const { mutate: enableTwoFactor } = useMutation({
     mutationFn: async () =>
@@ -45,6 +51,21 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
         // Extract OTP URI from response
         if (data.data?.totpURI) {
           setOtpUri(data.data.totpURI);
+
+          // Generate QR code
+          try {
+            const dataUrl = await QRCode.toDataURL(data.data.totpURI);
+            setQrCodeDataUrl(dataUrl);
+
+            // Extract secret from URI for manual entry
+            const secretMatch = data.data.totpURI.match(/secret=([A-Z2-7]+)/);
+            if (secretMatch && secretMatch[1]) {
+              setOtpSecret(secretMatch[1]);
+            }
+          } catch (qrError) {
+            logger.error("Failed to generate QR code:", qrError);
+          }
+
           toast.success(t("wallet-security.otp.setup-initiated"));
         } else {
           setOtpSetupError(true);
@@ -115,6 +136,8 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
   const handleOtpRetry = useCallback(() => {
     setOtpSetupError(false);
     setOtpUri(null);
+    setQrCodeDataUrl(null);
+    setOtpSecret(null);
     form.reset();
     enableTwoFactor();
   }, [enableTwoFactor, form]);
@@ -123,6 +146,8 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
     form.reset();
     setOtpSetupError(false);
     setOtpUri(null);
+    setQrCodeDataUrl(null);
+    setOtpSecret(null);
     onOpenChange(false);
   }, [form, onOpenChange]);
 
@@ -185,11 +210,17 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                   <p className="text-xs text-muted-foreground">
                     {t("wallet-security.otp.qr-code-label")}
                   </p>
-                  <div className="h-32 w-32 mx-auto bg-muted-foreground/10 rounded flex items-center justify-center">
-                    <span className="text-xs text-muted-foreground">
-                      {t("wallet-security.otp.scan-with-app")}
-                    </span>
-                  </div>
+                  {qrCodeDataUrl ? (
+                    <img
+                      src={qrCodeDataUrl}
+                      alt={t("wallet-security.otp.qr-code-alt")}
+                      className="h-48 w-48 mx-auto"
+                    />
+                  ) : (
+                    <div className="h-48 w-48 mx-auto bg-muted-foreground/10 rounded flex items-center justify-center">
+                      <div className="animate-spin h-8 w-8 border-b-2 border-primary rounded-full" />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -202,8 +233,8 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                   <p className="text-xs text-muted-foreground mb-1">
                     {t("wallet-security.otp.manual-entry-key")}
                   </p>
-                  <code className="text-xs break-all">
-                    {otpUri || t("wallet-security.otp.loading")}
+                  <code className="text-xs break-all font-mono">
+                    {otpSecret || t("wallet-security.otp.loading")}
                   </code>
                 </div>
               </details>

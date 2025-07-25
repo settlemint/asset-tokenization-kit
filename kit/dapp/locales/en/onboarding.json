@@ -169,6 +169,7 @@
       "setup-title": "Set up Authenticator App",
       "setup-description": "Scan this QR code with your authenticator app",
       "qr-code-label": "QR Code",
+      "qr-code-alt": "QR code for OTP setup",
       "scan-with-app": "Scan with your app",
       "manual-entry": "Can't scan? Enter manually",
       "manual-entry-key": "Manual entry key:",
