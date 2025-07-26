@@ -131,11 +131,11 @@ export function StepLayout<StepId, GroupId>({
 
         {/* Main content area */}
         <div
-          className="StepLayout__main flex-1 flex flex-col transition-all duration-300 relative rounded-r-xl"
+          className="StepLayout__main flex-1 flex flex-col transition-all duration-300 relative rounded-r-xl overflow-hidden"
           style={{ backgroundColor: "var(--sm-background-lightest)" }}
         >
-          <div className="p-6 lg:p-12 xl:p-12">
-            <div className="w-full overflow-y-auto">
+          <div className="flex flex-col h-full p-6 lg:p-12 xl:p-12">
+            <div className="flex-1 overflow-y-auto">
               {typeof children === "function"
                 ? children({
                     currentStep,
