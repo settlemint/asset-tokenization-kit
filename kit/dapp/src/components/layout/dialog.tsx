@@ -36,8 +36,10 @@ export function DialogLayout({ children }: DialogLayoutProps) {
         </div>
       </div>
 
-      <div className="DialogLayout__card flex flex-col justify-center items-center h-full px-6 lg:px-16 overflow-y-hidden">
-        <div className="h-full lg:h-[82vh] 2xl:w-[82vw]">{children}</div>
+      <div className="DialogLayout__card flex flex-col justify-center items-center h-full overflow-y-hidden">
+        <div className="h-full lg:h-[82vh] w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-24 max-w-[1600px]">
+          {children}
+        </div>
       </div>
     </div>
   );

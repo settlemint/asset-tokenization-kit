@@ -496,3 +496,7 @@ bun install/run/test  # instead of npm/yarn/pnpm
 
 - Use sentence case wherever you can
 - Do not use dynamic translation keys as our scanner does not pick those up
+
+## Development Memories
+
+- Shadcn components are never the problem
