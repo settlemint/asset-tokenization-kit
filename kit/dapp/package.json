@@ -28,7 +28,7 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test:integration:bun": "bun --bun test ./test --preload ./test/scripts/setup.ts",
+    "test:integration": "vitest run --config vitest.config.integration.ts",
     "route:gen": "tsr generate"
   },
   "devDependencies": {

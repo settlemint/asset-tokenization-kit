@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { getOrpcClient } from "../utils/orpc-client";
 import { createToken } from "../utils/token";
 import {

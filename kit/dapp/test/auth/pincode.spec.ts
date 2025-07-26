@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "bun:test";
+import { beforeAll, describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
 import { authClient } from "../utils/auth-client";
 import { setupUser, signInWithUser } from "../utils/user";
