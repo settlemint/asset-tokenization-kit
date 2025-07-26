@@ -20,6 +20,7 @@ import {
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { TriangleAlert } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -98,6 +99,8 @@ export function AssetTypeSelection() {
             }),
           ]);
           await refreshUserState();
+          // Navigate to next step after successful deployment
+          await completeStepAndNavigate(OnboardingStep.systemAssets);
         },
       })
     );
@@ -122,7 +125,7 @@ export function AssetTypeSelection() {
           loading: t("assets.deploying-toast"),
           success: t("assets.deployed"),
           error: (error: Error) =>
-            `Failed to deploy asset factories: ${error.message}`,
+            `${t("assets.failed-toast")}${error.message}`,
         }
       );
     },
@@ -142,15 +145,6 @@ export function AssetTypeSelection() {
     [systemDetails?.tokenFactories]
   );
 
-  const onNext = useCallback(async () => {
-    try {
-      await completeStepAndNavigate(OnboardingStep.systemAssets);
-    } catch (error) {
-      logger.error("Navigation error:", error);
-      toast.error("Failed to navigate to next step");
-    }
-  }, [completeStepAndNavigate]);
-
   return (
     <OnboardingStepLayout
       title={t("assets.select-asset-types")}
@@ -163,16 +157,35 @@ export function AssetTypeSelection() {
               void navigate({ to: "/onboarding" });
             }}
           >
-            Cancel
+            {t("common:actions.cancel")}
           </Button>
 
-          <Button type="button" onClick={onNext} disabled={isFactoriesCreating}>
-            Deploy Assets
+          <Button
+            type="button"
+            onClick={() => {
+              void form.handleSubmit();
+            }}
+            disabled={
+              isFactoriesCreating || form.state.values.assets.length === 0
+            }
+          >
+            {isFactoriesCreating ? t("assets.deploying") : t("assets.deploy")}
           </Button>
         </>
       }
     >
       <div className="max-w-2xl space-y-6">
+        <div className="rounded-lg bg-sm-state-warning-background/50 border border-sm-state-warning-background p-4">
+          <div className="flex items-start gap-3">
+            <TriangleAlert className="h-5 w-5 text-sm-state-warning mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm text-sm-state-warning">
+                {t("assets.deployment-warning")}
+              </p>
+            </div>
+          </div>
+        </div>
+
         <InfoAlert
           title={t("assets.what-are-asset-factories")}
           description={t("assets.asset-factories-description")}
