@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { add, divide, format, from, multiply, subtract } from "dnum";
 import { bigDecimal } from "./bigdecimal";
 

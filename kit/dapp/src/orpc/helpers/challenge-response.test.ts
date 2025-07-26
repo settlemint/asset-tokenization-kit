@@ -20,12 +20,12 @@ import type { VerificationCode } from "@/lib/zod/validators/verification-code";
 import { verificationType } from "@/lib/zod/validators/verification-type";
 import { ORPCError } from "@orpc/server";
 import { handleWalletVerificationChallenge } from "@settlemint/sdk-portal";
-import { beforeEach, describe, expect, it, mock } from "bun:test";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { handleChallenge } from "./challenge-response";
 
 // Mock the external dependencies
-mock.module("@settlemint/sdk-portal", () => ({
-  handleWalletVerificationChallenge: mock(() =>
+vi.mock("@settlemint/sdk-portal", () => ({
+  handleWalletVerificationChallenge: vi.fn(() =>
     Promise.resolve({
       challengeResponse: "mocked-response",
       verificationId: "mocked-verification-id",
@@ -33,7 +33,7 @@ mock.module("@settlemint/sdk-portal", () => ({
   ),
 }));
 
-mock.module("@/lib/settlemint/portal", () => ({
+vi.mock("@/lib/settlemint/portal", () => ({
   portalClient: {},
   portalGraphql: {},
 }));
@@ -59,7 +59,7 @@ describe("challenge-response", () => {
   const mockCode = "123456" as VerificationCode;
 
   beforeEach(() => {
-    mock.restore();
+    vi.clearAllMocks();
   });
 
   describe("handleChallenge", () => {
@@ -68,9 +68,7 @@ describe("challenge-response", () => {
         challengeResponse: "success-response",
         verificationId: "verification-id",
       };
-      const mockedFunction = handleWalletVerificationChallenge as ReturnType<
-        typeof mock
-      >;
+      const mockedFunction = vi.mocked(handleWalletVerificationChallenge);
       mockedFunction.mockResolvedValueOnce(mockResponse);
 
       const verType = verificationType.parse("pincode");
@@ -95,9 +93,7 @@ describe("challenge-response", () => {
         challengeResponse: "success-response",
         verificationId: "verification-id",
       };
-      const mockedFunction = handleWalletVerificationChallenge as ReturnType<
-        typeof mock
-      >;
+      const mockedFunction = vi.mocked(handleWalletVerificationChallenge);
       mockedFunction.mockResolvedValueOnce(mockResponse);
 
       const verType = verificationType.parse("secret-code");
@@ -122,9 +118,7 @@ describe("challenge-response", () => {
         challengeResponse: "success-response",
         verificationId: "verification-id",
       };
-      const mockedFunction = handleWalletVerificationChallenge as ReturnType<
-        typeof mock
-      >;
+      const mockedFunction = vi.mocked(handleWalletVerificationChallenge);
       mockedFunction.mockResolvedValueOnce(mockResponse);
 
       const verType = verificationType.parse("two-factor");
@@ -152,7 +146,7 @@ describe("challenge-response", () => {
 
       const verType = verificationType.parse("pincode");
 
-      expect(
+      await expect(
         handleChallenge(userWithoutPincode, { code: mockCode, type: verType })
       ).rejects.toThrow(ORPCError);
 
@@ -177,14 +171,12 @@ describe("challenge-response", () => {
 
     it("should throw ORPCError when portal challenge handler fails", async () => {
       const portalError = new Error("Portal API error");
-      const mockedFunction = handleWalletVerificationChallenge as ReturnType<
-        typeof mock
-      >;
+      const mockedFunction = vi.mocked(handleWalletVerificationChallenge);
       mockedFunction.mockRejectedValueOnce(portalError);
 
       const verType = verificationType.parse("pincode");
 
-      expect(
+      await expect(
         handleChallenge(mockUser, { code: mockCode, type: verType })
       ).rejects.toThrow(ORPCError);
 
@@ -205,14 +197,12 @@ describe("challenge-response", () => {
     });
 
     it("should handle unknown errors gracefully", async () => {
-      const mockedFunction = handleWalletVerificationChallenge as ReturnType<
-        typeof mock
-      >;
+      const mockedFunction = vi.mocked(handleWalletVerificationChallenge);
       mockedFunction.mockRejectedValueOnce("Unknown error type");
 
       const verType = verificationType.parse("pincode");
 
-      expect(
+      await expect(
         handleChallenge(mockUser, { code: mockCode, type: verType })
       ).rejects.toThrow(ORPCError);
 

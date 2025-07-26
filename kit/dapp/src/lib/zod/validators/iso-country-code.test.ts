@@ -2,7 +2,7 @@
  * Tests for ISO 3166-1 Alpha-2 Country Code Validation
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import {
   getCountryName,

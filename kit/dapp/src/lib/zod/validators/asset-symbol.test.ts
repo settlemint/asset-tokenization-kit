@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { assetSymbol, type AssetSymbol } from "./asset-symbol";
 
 describe("assetSymbol", () => {

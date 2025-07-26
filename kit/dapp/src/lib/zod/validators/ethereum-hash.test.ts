@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { ethereumHash, getEthereumHash } from "./ethereum-hash";
 
 describe("Ethereum Hash Validation", () => {
