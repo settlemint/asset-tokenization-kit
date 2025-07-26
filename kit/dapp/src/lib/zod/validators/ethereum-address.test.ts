@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import * as viem from "viem";
+import { getAddress } from "viem";
 import { ethereumAddress, type EthereumAddress } from "./ethereum-address";
 
 describe("ethereumAddress", () => {
@@ -154,6 +154,15 @@ describe("ethereumAddress", () => {
       // Test that all uppercase addresses get properly checksummed
       const upperCaseAddress = "0x71c7656ec7ab88b098defb751b7401b5f6d8976f";
       const result = ethereumAddress.parse(upperCaseAddress);
+      expect(result).toBe(
+        "0x71C7656EC7ab88b098defB751B7401B5f6d8976F" as EthereumAddress
+      );
+    });
+
+    it("should handle already checksummed or lowercase addresses gracefully", () => {
+      // This test checks that lowercase and checksummed addresses are handled correctly
+      const lowercaseAddress = "0x71c7656ec7ab88b098defb751b7401b5f6d8976f";
+      const result = ethereumAddress.parse(lowercaseAddress);
       expect(result).toBe(
         "0x71C7656EC7ab88b098defB751B7401B5f6d8976F" as EthereumAddress
       );
