@@ -69,7 +69,8 @@
   },
   "dependencies": {
     "@types/js-yaml": "4.0.9",
-    "js-yaml": "4.1.0"
+    "js-yaml": "4.1.0",
+    "react-qr-code": "2.0.18"
   },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",

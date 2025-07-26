@@ -18,9 +18,9 @@ import { twoFactorCode } from "@/lib/zod/validators/two-factor-code";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import QRCode from "qrcode";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import QRCode from "react-qr-code";
 import { toast } from "sonner";
 
 const logger = createLogger();
@@ -35,7 +35,6 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
   const { refreshUserState } = useOnboardingNavigation();
   const [otpUri, setOtpUri] = useState<string | null>(null);
   const [otpSetupError, setOtpSetupError] = useState(false);
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
   const [otpSecret, setOtpSecret] = useState<string | null>(null);
 
   const { mutate: enableTwoFactor } = useMutation({
@@ -52,18 +51,10 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
         if (data.data?.totpURI) {
           setOtpUri(data.data.totpURI);
 
-          // Generate QR code
-          try {
-            const dataUrl = await QRCode.toDataURL(data.data.totpURI);
-            setQrCodeDataUrl(dataUrl);
-
-            // Extract secret from URI for manual entry
-            const secretMatch = data.data.totpURI.match(/secret=([A-Z2-7]+)/);
-            if (secretMatch && secretMatch[1]) {
-              setOtpSecret(secretMatch[1]);
-            }
-          } catch (qrError) {
-            logger.error("Failed to generate QR code:", qrError);
+          // Extract secret from URI for manual entry
+          const secretMatch = data.data.totpURI.match(/secret=([A-Z2-7]+)/);
+          if (secretMatch && secretMatch[1]) {
+            setOtpSecret(secretMatch[1]);
           }
 
           toast.success(t("wallet-security.otp.setup-initiated"));
@@ -136,7 +127,6 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
   const handleOtpRetry = useCallback(() => {
     setOtpSetupError(false);
     setOtpUri(null);
-    setQrCodeDataUrl(null);
     setOtpSecret(null);
     form.reset();
     enableTwoFactor();
@@ -146,7 +136,6 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
     form.reset();
     setOtpSetupError(false);
     setOtpUri(null);
-    setQrCodeDataUrl(null);
     setOtpSecret(null);
     onOpenChange(false);
   }, [form, onOpenChange]);
@@ -205,22 +194,22 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
 
             <div className="space-y-4">
               {/* QR Code Container */}
-              <div className="bg-white p-4 rounded-lg border-2 border-dashed border-muted-foreground/25 text-center">
+              <div className="bg-gradient-to-br from-[--sm-background-gradient-start] to-[--sm-background-gradient-end] p-4 rounded-lg border-2 border-dashed border-muted-foreground/25 text-center">
                 <div className="space-y-2">
                   <p className="text-xs text-muted-foreground">
                     {t("wallet-security.otp.qr-code-label")}
                   </p>
-                  {qrCodeDataUrl ? (
-                    <img
-                      src={qrCodeDataUrl}
-                      alt={t("wallet-security.otp.qr-code-alt")}
-                      className="h-48 w-48 mx-auto"
-                    />
-                  ) : (
-                    <div className="h-48 w-48 mx-auto bg-muted-foreground/10 rounded flex items-center justify-center">
-                      <div className="animate-spin h-8 w-8 border-b-2 border-primary rounded-full" />
+                  <div className="flex justify-center">
+                    <div className="p-2 rounded-md bg-[--sm-background-lightest] dark:bg-[--sm-background-darkest]">
+                      <QRCode
+                        value={otpUri || ""}
+                        size={192}
+                        bgColor="var(--sm-background-lightest)"
+                        fgColor="var(--sm-accent)"
+                        className="dark:[&_path:first-of-type]:fill-[--sm-background-darkest] dark:[&_path:last-of-type]:fill-[--sm-accent]"
+                      />
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
 
