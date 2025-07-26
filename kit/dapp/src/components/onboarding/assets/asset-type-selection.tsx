@@ -148,19 +148,27 @@ export function AssetTypeSelection() {
       title={t("assets.select-asset-types")}
       description={t("assets.choose-asset-types")}
       actions={
-        <>
-          <Button
-            type="button"
-            onClick={() => {
-              void form.handleSubmit();
-            }}
-            disabled={
-              isFactoriesCreating || form.state.values.assets.length === 0
-            }
-          >
-            {isFactoriesCreating ? t("assets.deploying") : t("assets.deploy")}
-          </Button>
-        </>
+        <div className="flex justify-end w-full">
+          <form.Subscribe>
+            {() => (
+              <Button
+                type="button"
+                onClick={() => {
+                  void form.handleSubmit();
+                }}
+                disabled={
+                  isFactoriesCreating ||
+                  !form.state.values.assets ||
+                  form.state.values.assets.length === 0
+                }
+              >
+                {isFactoriesCreating
+                  ? t("assets.deploying")
+                  : t("assets.deploy")}
+              </Button>
+            )}
+          </form.Subscribe>
+        </div>
       }
     >
       <div className="max-w-2xl space-y-6">
@@ -190,17 +198,7 @@ export function AssetTypeSelection() {
         >
           <div className="flex-1">
             <div className="space-y-6">
-              <form.Field
-                name="assets"
-                validators={{
-                  onChange: ({ value }) => {
-                    if (value.length === 0) {
-                      return t("assets.validation-error");
-                    }
-                    return undefined;
-                  },
-                }}
-              >
+              <form.Field name="assets">
                 {(field) => (
                   <>
                     <div className="space-y-4">
@@ -227,16 +225,16 @@ export function AssetTypeSelection() {
                             }
 
                             if (checked) {
-                              field.handleChange([
+                              const newValue = [
                                 ...field.state.value,
                                 assetType,
-                              ]);
+                              ];
+                              field.handleChange(newValue);
                             } else {
-                              field.handleChange(
-                                field.state.value.filter(
-                                  (value: string) => value !== assetType
-                                )
+                              const newValue = field.state.value.filter(
+                                (value: string) => value !== assetType
                               );
+                              field.handleChange(newValue);
                             }
                           };
 

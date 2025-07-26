@@ -181,15 +181,11 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                 {t("wallet-security.otp.setup-failed-description")}
               </DialogDescription>
             </DialogHeader>
-            <div className="flex gap-3 pt-4">
-              <Button
-                variant="outline"
-                onClick={handleClose}
-                className="flex-1"
-              >
+            <div className="flex justify-end gap-3 pt-4">
+              <Button variant="outline" onClick={handleClose}>
                 {t("wallet-security.otp.back")}
               </Button>
-              <Button onClick={handleOtpRetry} className="flex-1">
+              <Button onClick={handleOtpRetry}>
                 {t("wallet-security.otp.try-again")}
               </Button>
             </div>
@@ -296,12 +292,11 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                 </form.Field>
               </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex justify-end gap-3 pt-4">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleClose}
-                  className="flex-1"
                   disabled={isVerifyingOtp}
                 >
                   {t("wallet-security.otp.cancel")}
@@ -311,7 +306,6 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                   disabled={
                     isVerifyingOtp || form.state.values.otpCode.length !== 6
                   }
-                  className="flex-1"
                 >
                   {isVerifyingOtp
                     ? t("wallet-security.otp.verifying")
