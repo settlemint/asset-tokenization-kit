@@ -9,6 +9,7 @@
  */
 
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
+import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { VerificationType as VerificationTypeEnum } from "@/lib/zod/validators/verification-type";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
@@ -54,49 +55,63 @@ export const me = authRouter.user.me
     const userId = authUser.id;
 
     // Fetch user and KYC profile in a single query with left join
-    const [[userQueryResult], systemAddress, baseCurrency, account] =
-      await Promise.all([
-        context.db
-          .select({
-            user: userTable,
-            kyc: {
-              firstName: kycProfiles.firstName,
-              lastName: kycProfiles.lastName,
-            },
-          })
-          .from(userTable)
-          .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
-          .where(eq(userTable.id, userId))
-          .limit(1),
-        call(
-          settingsRead,
-          {
-            key: "SYSTEM_ADDRESS",
+    const [
+      [userQueryResult],
+      systemAddress,
+      baseCurrency,
+      systemAddonsSkipped,
+      account,
+    ] = await Promise.all([
+      context.db
+        .select({
+          user: userTable,
+          kyc: {
+            firstName: kycProfiles.firstName,
+            lastName: kycProfiles.lastName,
           },
-          {
-            context,
-          }
-        ),
-        call(
-          settingsRead,
-          {
-            key: "BASE_CURRENCY",
-          },
-          { context }
-        ),
-        call(readAccount, {}, { context }).catch((error: unknown) => {
-          if (error instanceof ORPCError && error.status === 404) {
-            return null;
-          }
-          throw error;
-        }),
-      ]);
+        })
+        .from(userTable)
+        .leftJoin(kycProfiles, eq(kycProfiles.userId, userTable.id))
+        .where(eq(userTable.id, userId))
+        .limit(1),
+      call(
+        settingsRead,
+        {
+          key: "SYSTEM_ADDRESS",
+        },
+        {
+          context,
+        }
+      ),
+      call(
+        settingsRead,
+        {
+          key: "BASE_CURRENCY",
+        },
+        { context }
+      ),
+      call(
+        settingsRead,
+        {
+          key: "SYSTEM_ADDONS_SKIPPED",
+        },
+        { context }
+      ).catch(() => "false"), // Default to false if not set
+      call(readAccount, {}, { context }).catch((error: unknown) => {
+        if (error instanceof ORPCError && error.status === 404) {
+          return null;
+        }
+        throw error;
+      }),
+    ]);
 
     const { kyc } = userQueryResult ?? {};
 
     // Check if system has token factories/addons using existing ORPC route
     let hasTokenFactories = false;
     let hasSystemAddons = false;
+    let hasBondFactory = false;
+    let hasYieldAddon = false;
     if (systemAddress) {
       try {
         const systemData = await call(
@@ -109,11 +124,32 @@ export const me = authRouter.user.me
           }
         );
         hasTokenFactories = systemData.tokenFactories.length > 0;
-        hasSystemAddons = systemData.systemAddons.length > 0;
+
+        // Check if bond factory is deployed
+        hasBondFactory = systemData.tokenFactories.some(
+          (factory) => factory.typeId === AssetFactoryTypeIdEnum.ATKBondFactory
+        );
+
+        // Check if yield addon is deployed
+        hasYieldAddon = systemData.systemAddons.some(
+          (addon) => addon.typeId === "ATKFixedYieldScheduleFactory"
+        );
+
+        // System addons are optional, except when bond factory exists - then yield addon is required
+        // If user has explicitly skipped, consider it complete unless bond factory requires yield
+        if (systemAddonsSkipped === "true") {
+          hasSystemAddons = hasBondFactory ? hasYieldAddon : true;
+        } else {
+          hasSystemAddons = hasBondFactory
+            ? hasYieldAddon
+            : systemData.systemAddons.length > 0;
+        }
       } catch {
         // If system read fails, we assume no factories and addons
         hasTokenFactories = false;
-        hasSystemAddons = false;
+        hasSystemAddons = true; // Default to true since addons are optional
+        hasBondFactory = false;
+        hasYieldAddon = false;
       }
     }
 

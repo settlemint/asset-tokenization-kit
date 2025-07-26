@@ -19,7 +19,6 @@ import {
 } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -36,7 +35,6 @@ export function AssetTypeSelection() {
     useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common", "tokens"]);
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   // Verification dialog state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(
@@ -151,15 +149,6 @@ export function AssetTypeSelection() {
       description={t("assets.choose-asset-types")}
       actions={
         <>
-          <Button
-            variant="outline"
-            onClick={() => {
-              void navigate({ to: "/onboarding" });
-            }}
-          >
-            {t("common:actions.cancel")}
-          </Button>
-
           <Button
             type="button"
             onClick={() => {

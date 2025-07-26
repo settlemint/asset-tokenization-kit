@@ -1,6 +1,7 @@
 {
   "actions": {
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "skip": "Skip"
   },
   "appDescription": "Deploy in minutes, customize easily",
   "appName": "Asset Tokenization Kit",
