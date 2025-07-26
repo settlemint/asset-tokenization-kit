@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { type PropsWithChildren, Children, isValidElement } from "react";
 
 export function FormStep({ children }: PropsWithChildren) {
-  return <div className="FormStep">{children}</div>;
+  return <div className="FormStep flex flex-col h-full">{children}</div>;
 }
 
 export function FormStepTitle({ children }: PropsWithChildren) {
@@ -25,8 +25,8 @@ export function FormStepContent({
   fullWidth?: boolean;
 }) {
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className={cn("space-y-6 pr-2", !fullWidth && "max-w-3xl")}>
+    <div className="flex-1 overflow-y-auto min-h-0">
+      <div className={cn("space-y-6 pr-2 pb-24", !fullWidth && "max-w-3xl")}>
         {children}
       </div>
     </div>
@@ -64,7 +64,7 @@ export function FormStepSubmit({
   return (
     <footer
       className={cn(
-        "OnboardingStepLayout__footer absolute bottom-8 max-w-3xl mt-6 w-full flex",
+        "OnboardingStepLayout__footer absolute bottom-0 left-0 right-0 px-6 lg:px-12 xl:px-12 py-8 flex bg-[var(--sm-background-lightest)]",
         actionChildrenCount === 1 ? "justify-end" : "justify-between"
       )}
     >
