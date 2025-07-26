@@ -1,0 +1,34 @@
+{
+  "modules": {
+    "addressBlockList": {
+      "description": "特定のウォレットアドレスがあなたの資産にアクセスするのをブロックします。既知の悪意のある行為者や制裁対象のアドレスが参加するのを防ぐのに役立ちます。",
+      "shortDescription": "特定のウォレットアドレスの参加をブロックします",
+      "title": "アドレスブロックリスト"
+    },
+    "countryAllowList": {
+      "description": "特定の国の投資家のみがあなたの資産にアクセスできるようにします。地域特有のコンプライアンス要件や規制制限に最適です。",
+      "shortDescription": "特定の国のみが参加を許可されます",
+      "title": "国許可リスト"
+    },
+    "countryBlockList": {
+      "description": "特定の国または管轄区域からの投資家をブロックします。制裁に準拠し、制限された市場を避けるために不可欠です。",
+      "shortDescription": "特定の国の参加をブロックします",
+      "title": "国ブロックリスト"
+    },
+    "identityAllowList": {
+      "description": "承認されたリストからの確認済みの身元のみが資産にアクセスできるようにします。独占的なオファリングやプライベートプレースメントに最適です。",
+      "shortDescription": "事前承認された確認済みの身元のみを許可します",
+      "title": "身元許可リスト"
+    },
+    "identityBlockList": {
+      "description": "特定の確認済みの身元があなたの資産にアクセスするのをブロックします。問題のある投資家を排除しながらコンプライアンスを維持するのに役立ちます。",
+      "shortDescription": "特定の確認済みの身元のアクセスをブロックします",
+      "title": "身元ブロックリスト"
+    },
+    "smartIdentityVerification": {
+      "description": "すべての投資家にSMARTプロトコルの身元確認を要求します。分散型の身元確認を通じて包括的なKYC/AMLコンプライアンスを提供します。",
+      "shortDescription": "SMARTプロトコルの身元確認を要求します",
+      "title": "SMART身元確認"
+    }
+  }
+}

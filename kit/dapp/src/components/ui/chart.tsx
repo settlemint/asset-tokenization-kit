@@ -1,3 +1,5 @@
+"use no memo";
+
 /**
  * Chart components built on top of Recharts with theme support.
  *

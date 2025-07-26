@@ -1,3 +1,5 @@
+"use no memo";
+
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react";

@@ -36,8 +36,10 @@ export function StepGroupComponent<StepId, GroupId>({
   navigation,
   onStepSelect,
 }: StepGroupProps<StepId, GroupId>) {
-  const [expandedGroup, setExpandedGroup] = useState<string | undefined>();
   const hasActiveStep = group.steps.some((step) => step.id === currentStep.id);
+  const [expandedGroup, setExpandedGroup] = useState<string | undefined>(
+    hasActiveStep ? String(group.id) : undefined
+  );
   const groupCompleted = isGroupCompleted(group, currentStep);
   const currentStepIndex = getCurrentStepIndex(allSteps, currentStep);
 
@@ -101,7 +103,7 @@ export function StepGroupComponent<StepId, GroupId>({
         collapsible
         className="w-full !bg-transparent"
         style={{ background: "transparent" }}
-        value={expandedGroup}
+        value={expandedGroup || ""}
         onValueChange={setExpandedGroup}
       >
         <AccordionItem

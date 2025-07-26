@@ -1,7 +1,6 @@
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Card, CardContent } from "@/components/ui/card";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -37,10 +36,10 @@ export function DialogLayout({ children }: DialogLayoutProps) {
         </div>
       </div>
 
-      <div className="DialogLayout__card flex flex-col justify-center items-center h-full px-6 lg:px-16 overflow-y-hidden">
-        <Card className="p-0 gap-0 h-full lg:h-[82vh] 2xl:w-[82vw]">
-          <CardContent className="p-0 m-0 h-full ">{children}</CardContent>
-        </Card>
+      <div className="DialogLayout__card flex flex-col justify-center items-center h-full overflow-y-hidden">
+        <div className="h-full lg:h-[82vh] w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-24 max-w-[1600px]">
+          {children}
+        </div>
       </div>
     </div>
   );

@@ -12,7 +12,9 @@ import { useTranslation } from "react-i18next";
 export function CountrySelectField({ label, ...props }: SelectFieldProps) {
   const { i18n } = useTranslation();
   const options = useMemo(() => {
-    const names = getCountries(i18n.language as SupportedLocale);
+    // Map locale codes like "en-US" to "en"
+    const baseLocale = i18n.language.split("-")[0] as SupportedLocale;
+    const names = getCountries(baseLocale);
     return Object.entries(names).map(([code, name]) => ({
       label: name,
       value: code,

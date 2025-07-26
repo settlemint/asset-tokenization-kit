@@ -64,7 +64,7 @@ export function FormStepSubmit({
   return (
     <footer
       className={cn(
-        "OnboardingStepLayout__footer absolute bottom-8 right-8 max-w-3xl pl-16  mt-6 w-full flex",
+        "OnboardingStepLayout__footer absolute bottom-8 max-w-3xl mt-6 w-full flex",
         actionChildrenCount === 1 ? "justify-end" : "justify-between"
       )}
     >

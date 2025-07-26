@@ -1,3 +1,5 @@
+"use no memo";
+
 import * as SwitchPrimitive from "@radix-ui/react-switch";
 import * as React from "react";
 

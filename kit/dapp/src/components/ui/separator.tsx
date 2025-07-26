@@ -1,3 +1,5 @@
+"use no memo";
+
 import * as SeparatorPrimitive from "@radix-ui/react-separator";
 import * as React from "react";
 

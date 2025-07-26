@@ -8,6 +8,7 @@ interface CheckboxCardProps {
   icon: LucideIcon;
   isChecked: boolean;
   isDisabled?: boolean;
+  isRequired?: boolean;
   disabledLabel?: string;
   onToggle: (checked: boolean) => void;
 }
@@ -30,12 +31,13 @@ export const CheckboxCard = memo(
     icon: Icon,
     isChecked,
     isDisabled = false,
+    isRequired = false,
     disabledLabel,
     onToggle,
   }: CheckboxCardProps) => {
     // Event handlers are automatically optimized by React Compiler - no manual memoization needed
     const handleItemClick = () => {
-      if (isDisabled) return;
+      if (isDisabled || isRequired) return;
       onToggle(!isChecked);
     };
 
@@ -44,7 +46,7 @@ export const CheckboxCard = memo(
     };
 
     const handleCheckboxChange = (checked: boolean) => {
-      if (isDisabled) return;
+      if (isDisabled || isRequired) return;
       onToggle(checked);
     };
 
@@ -53,7 +55,9 @@ export const CheckboxCard = memo(
         className={`flex flex-row items-start space-x-3 space-y-0 rounded-lg border p-4 transition-colors ${
           isDisabled
             ? "opacity-50 cursor-not-allowed bg-muted/50"
-            : "hover:bg-accent/50 cursor-pointer"
+            : isRequired
+              ? "cursor-not-allowed"
+              : "hover:bg-accent/50 cursor-pointer"
         }`}
         onClick={handleItemClick}
       >
@@ -61,7 +65,7 @@ export const CheckboxCard = memo(
           <Checkbox
             checked={isChecked}
             onCheckedChange={handleCheckboxChange}
-            disabled={isDisabled}
+            disabled={isDisabled || isRequired}
           />
         </CheckboxWrapper>
         <div className="flex-1 space-y-1 leading-none">
@@ -70,11 +74,11 @@ export const CheckboxCard = memo(
               className={`h-4 w-4 ${isDisabled ? "text-muted-foreground/50" : "text-muted-foreground"}`}
             />
             <label
-              className={`text-sm font-medium ${isDisabled ? "" : "cursor-pointer"}`}
+              className={`text-sm font-medium ${isDisabled || isRequired ? "" : "cursor-pointer"}`}
             >
               {title}
             </label>
-            {isDisabled && disabledLabel && (
+            {(isDisabled || isRequired) && disabledLabel && (
               <span className="text-xs text-muted-foreground">
                 {disabledLabel}
               </span>

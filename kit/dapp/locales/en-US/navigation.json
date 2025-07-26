@@ -1,0 +1,10 @@
+{
+  "asset": "Asset",
+  "assetClasses": "Asset classes",
+  "assetManagement": "Asset Management",
+  "cashEquivalent": "Cash equivalent",
+  "fixedIncome": "Fixed income",
+  "flexibleIncome": "Flexible income",
+  "home": "Home",
+  "statistics": "Statistics"
+}
