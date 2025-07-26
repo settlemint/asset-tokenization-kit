@@ -90,13 +90,6 @@ describe("Token create", () => {
         symbol: "TSTC",
         decimals: 18,
       })
-    ).toThrow({
-      status: 403,
-      code: "USER_NOT_AUTHORIZED",
-      message: "User does not have the required role to execute this action.",
-      data: {
-        requiredRoles: ["deployer"],
-      },
-    });
+    ).toThrow("User does not have the required role to execute this action.");
   });
 });

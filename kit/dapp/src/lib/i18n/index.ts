@@ -124,40 +124,6 @@ const lazyLoadBackend = {
 };
 
 /**
- * Initialize resources with only essential namespaces
- * Other namespaces will be loaded on demand
- */
-// Load essential namespaces synchronously for SSR
-// These imports are kept to ensure critical translations are available immediately
-import arCommonTranslations from "@/locales/ar-SA/common.json";
-import arGeneralTranslations from "@/locales/ar-SA/general.json";
-import deCommonTranslations from "@/locales/de-DE/common.json";
-import deGeneralTranslations from "@/locales/de-DE/general.json";
-import enCommonTranslations from "@/locales/en-US/common.json";
-import enGeneralTranslations from "@/locales/en-US/general.json";
-import jaCommonTranslations from "@/locales/ja-JP/common.json";
-import jaGeneralTranslations from "@/locales/ja-JP/general.json";
-
-const initialResources = {
-  "en-US": {
-    general: enGeneralTranslations,
-    common: enCommonTranslations,
-  },
-  "de-DE": {
-    general: deGeneralTranslations,
-    common: deCommonTranslations,
-  },
-  "ar-SA": {
-    general: arGeneralTranslations,
-    common: arCommonTranslations,
-  },
-  "ja-JP": {
-    general: jaGeneralTranslations,
-    common: jaCommonTranslations,
-  },
-};
-
-/**
  * Initialize i18next with React integration and configuration.
  *
  * Configuration options:
@@ -177,7 +143,6 @@ const initialResources = {
 i18n.use(lazyLoadBackend).use(initReactI18next);
 
 void i18n.init({
-  resources: initialResources,
   lng: fallbackLng,
   fallbackLng,
   defaultNS,
