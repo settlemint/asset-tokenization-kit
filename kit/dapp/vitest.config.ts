@@ -15,7 +15,9 @@ export default defineConfig({
         ],
       },
     }),
-    tsconfigPaths(),
+    tsconfigPaths({
+      root: __dirname,
+    }),
   ],
   test: {
     globals: true,
