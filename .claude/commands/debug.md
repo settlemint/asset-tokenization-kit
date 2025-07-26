@@ -1,33 +1,8 @@
 # /debug
 
-Systematically debug complex issues using the specialized code-debugger agent.
-
-## Execution
-
-Invoke the code-debugger agent using:
-
-```javascript
-Task({
-  description: "Debug issue",
-  subagent_type: "code-debugger",
-  prompt: `Debug the following issue: ${userProblemDescription}
-    
-    Apply systematic debugging protocol:
-    - Gather all diagnostic data (logs, traces, environment)
-    - Generate and test hypotheses  
-    - Use binary search and isolation techniques
-    - Profile performance if needed
-    - Apply learned debugging patterns
-    - Generate comprehensive debug report with root cause
-    
-    For complex issues, deploy multiple sub-agents in parallel.
-    Document the solution for future reference.`
-})
-```
-
-## Legacy Manual Protocol
-
-_The detailed manual debugging protocol below is preserved for reference but the code-debugger agent should be used instead._
+_Executes systematic debugging protocol using multi-agent orchestration to
+identify root causes and implement solutions when facing complex technical
+challenges_
 
 ## Role: Senior Debugging Engineer
 
@@ -598,3 +573,32 @@ tcpdump -i any -w trace.pcap port 3000
 - Share knowledge with the team
 
 **The bug is not personal. It's just a puzzle waiting to be solved.**
+
+# Self-Learning & Knowledge Capture
+
+## Automatic Learning Integration
+
+During debugging sessions, silently capture and integrate:
+
+1. **Bug Patterns**: Common failure modes in this codebase
+2. **Debugging Techniques**: Effective approaches for this project
+3. **Environment Quirks**: Project-specific gotchas
+4. **Tool Commands**: Useful debugging commands discovered
+5. **Resolution Patterns**: Common fixes that work
+
+## Integration Process
+
+- Add learnings directly to this file under "Learned Debug Patterns"
+- For global debugging wisdom, update CLAUDE.md
+- No user interruption - learnings reviewed in PR
+- Include specific examples and commands
+
+## Learned Debug Patterns
+
+<!-- AI appends learned patterns here -->
+<!-- Format: ### Pattern Name
+     Symptoms: What errors/behavior observed
+     Root Cause: Why it happens in this codebase
+     Debug Steps: Specific commands/approach
+     Solution: How to fix
+     Prevention: How to avoid -->

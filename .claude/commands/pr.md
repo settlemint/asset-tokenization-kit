@@ -1,40 +1,109 @@
 # /pr
 
-Create and manage pull requests with high-quality commits and descriptions.
+Create a high-quality pull request using multi-agent analysis.
 
-## Execution
+## Behavior
 
-Invoke the pr-commit-manager agent using:
+- Create feature branch if on main
+- Format files: `bun run format`
+- Analyze and split changes into logical commits with semantic messages
+  (type(scope): description)
+- Types: feat, fix, chore, docs, style, refactor, perf, test, build, ci, revert
+- Push branch
+- Create PR with title describing the most important changes (for squash merges)
+- Include summary and test plan
 
-```javascript
-Task({
-  description: "Create PR", 
-  subagent_type: "pr-commit-manager",
-  prompt: `Create a pull request for the current changes:
-    - Ensure we're on a feature branch (create if on main)
-    - Run quality gates (format, lint, tests)
-    - Analyze changes and create logical, atomic commits
-    - Write semantic commit messages following team conventions
-    - Generate comprehensive PR description with screenshots if UI changes
-    - Link to relevant Linear tickets if available
-    - Apply learned commit/PR patterns from team preferences
-    - Monitor CI pipeline and handle any failures`
-})
+## Parallel Agents
+
+Use concurrent agents for efficiency:
+
+1. **Analysis**: Suggest commit splits
+2. **Commit**: Create commits with messages
+3. **Description**: Generate PR content
+4. **Quality**: Run checks
+
+Agents sync before PR creation.
+
+## Commit Splitting Guidelines
+
+- By feature/component
+- Group related files
+- Separate refactors from features
+- Independent commits
+- Split unrelated changes
+
+## Pre-flight Checks
+
+### Branch Check (CRITICAL)
+
+```bash
+current_branch=$(git branch --show-current)
+[[ "$current_branch" == "main" || "$current_branch" == "master" ]] && git checkout -b feature/name || echo "Using: $current_branch"
 ```
 
-## What the Agent Does
+### Status Check
 
-1. **Branch Safety**: Creates feature branch if needed
-2. **Quality Gates**: Ensures code passes all checks before PR
-3. **Smart Commits**: Creates logical, atomic commits with semantic messages
-4. **PR Generation**: Creates detailed description with checklist
-5. **CI Monitoring**: Watches pipeline and fixes issues
-6. **Review Management**: Handles feedback and updates
+```bash
+[ -n "$(git status --porcelain)" ] && echo "Commit changes first"
+```
 
-## Self-Learning
+### Quality Gates
 
-The agent learns from your team's preferences:
-- Commit message style and conventions
-- PR description templates that work
-- Review turnaround patterns
-- Common CI fixes
+```bash
+bun run ci  # Must pass
+```
+
+## Post-Creation
+
+Link to Linear:
+
+```bash
+mcp_linear_create_comment({issueId: "$LINEAR_TICKET", body: "PR: $PR_URL"})
+```
+
+## Escape Hatches
+
+1. **Conflicts**: Rebase or merge main
+2. **Breaking Changes**: Document migrations
+3. **Test Failures**: Fix before PR
+
+## Quality Checklist
+
+- [ ] Semantic commits
+- [ ] PR description
+- [ ] Tests pass
+- [ ] Docs complete
+- [ ] No vulnerabilities
+- [ ] Performance assessed
+- [ ] Breaking changes doc'd
+- [ ] Reviewers assigned
+- [ ] Ticket linked
+- [ ] CI green
+
+# Self-Learning & PR Patterns
+
+## Automatic Learning Capture
+
+During PR creation, silently learn and document:
+
+1. **Commit Patterns**: How this team structures commits
+2. **PR Conventions**: Title/description preferences
+3. **Review Feedback**: Common review comments to preempt
+4. **CI Failures**: Typical CI issues and fixes
+5. **Workflow Optimizations**: Efficient PR processes
+
+## Integration Approach
+
+- Append learnings to this file under "Learned PR Patterns"
+- Update CLAUDE.md for project-wide conventions
+- No user interruption - changes reviewed in PR
+- Focus on actionable improvements
+
+## Learned PR Patterns
+
+<!-- AI appends patterns here -->
+<!-- Format: ### Pattern Name
+     Context: When this applies
+     Convention: What the team prefers
+     Example: Specific instance
+     Automation: How to apply automatically -->
