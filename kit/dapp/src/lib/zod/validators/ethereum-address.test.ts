@@ -1,5 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
-import { getAddress } from "viem";
+import { describe, expect, it } from "vitest";
 import { ethereumAddress, type EthereumAddress } from "./ethereum-address";
 
 describe("ethereumAddress", () => {

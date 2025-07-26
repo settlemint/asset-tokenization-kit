@@ -5,7 +5,7 @@
  * @module TokenActionsTests
  */
 import { safeParse } from "@/lib/zod";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { ActionsListSchema } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { z } from "zod";

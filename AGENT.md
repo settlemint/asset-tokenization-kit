@@ -416,7 +416,7 @@ standards.
   minimize re-renders. Enable structural sharing for URL state stability
 - **Imports**: No barrel files (index.ts exports); during refactors, if you
   encounter barrel files, remove them
-- **Testing**: Use `bun:test`, not vitest; tests are stored next to the
+- **Testing**: Use `vitest` for testing; tests are stored next to the
   route/component/file, not in a `__tests__` folder
 - **Components**: Keep files under 350 lines, split when needed
 - **Security**: Never commit secrets, validate all inputs

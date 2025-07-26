@@ -5,7 +5,7 @@
  * @module ExchangeRatesTests
  */
 import { safeParse } from "@/lib/zod";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { ExchangeRatesReadSchema } from "./routes/exchange-rates.read.schema";
 import { ExchangeRatesUpdateSchema } from "./routes/exchange-rates.update.schema";
 import { ExchangeRatesDeleteSchema } from "./routes/exchange-rates.delete.schema";
