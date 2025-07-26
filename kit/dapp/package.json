@@ -7,7 +7,6 @@
   "sideEffects": false,
   "scripts": {
     "translate": "languine translate",
-    "i18n:check": "i18n-check -s en-US --locales locales -f i18next --unused src/",
     "dev": "bun --bun vite dev",
     "typecheck": "tsc --noEmit",
     "watch": "tsc --noEmit --watch",
@@ -53,7 +52,6 @@
     "globals": "16.3.0",
     "gql.tada": "1.8.12",
     "happy-dom": "18.0.1",
-    "@lingual/i18n-check": "0.8.4",
     "languine": "3.1.4",
     "minimatch": "10.0.3",
     "typescript": "5.8.3",
