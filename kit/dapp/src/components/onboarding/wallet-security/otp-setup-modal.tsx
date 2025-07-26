@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/auth.client";
 import { twoFactorCode } from "@/lib/zod/validators/two-factor-code";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
@@ -26,6 +27,8 @@ interface OtpSetupModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+const logger = createLogger();
 
 export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
   const { t } = useTranslation("onboarding");
@@ -49,9 +52,20 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
           setOtpUri(data.data.totpURI);
 
           // Extract secret from URI for manual entry
-          const secretMatch = data.data.totpURI.match(/secret=([A-Z2-7]+)/);
-          if (secretMatch && secretMatch[1]) {
-            setOtpSecret(secretMatch[1]);
+          try {
+            const url = new URL(data.data.totpURI);
+            const secret = url.searchParams.get("secret");
+            if (secret) {
+              setOtpSecret(secret);
+            } else {
+              logger.error("OTP URI is missing the 'secret' parameter.", {
+                uri: data.data.totpURI,
+              });
+            }
+          } catch (error) {
+            logger.error("Failed to parse OTP URI for secret extraction.", {
+              error,
+            });
           }
 
           toast.success(t("wallet-security.otp.setup-initiated"));
