@@ -158,6 +158,7 @@
         "@tanstack/eslint-plugin-router": "1.129.7",
         "@testing-library/jest-dom": "6.6.4",
         "@testing-library/react": "16.3.0",
+        "@testing-library/user-event": "14.6.1",
         "@types/bun": "1.2.19",
         "@types/pg": "8.15.4",
         "@types/react": "19.1.8",
@@ -1334,6 +1335,8 @@
     "@testing-library/jest-dom": ["@testing-library/jest-dom@6.6.4", "", { "dependencies": { "@adobe/css-tools": "^4.4.0", "aria-query": "^5.0.0", "css.escape": "^1.5.1", "dom-accessibility-api": "^0.6.3", "lodash": "^4.17.21", "picocolors": "^1.1.1", "redent": "^3.0.0" } }, "sha512-xDXgLjVunjHqczScfkCJ9iyjdNOVHvvCdqHSSxwM9L0l/wHkTRum67SDc020uAlCoqktJplgO2AAQeLP1wgqDQ=="],
 
     "@testing-library/react": ["@testing-library/react@16.3.0", "", { "dependencies": { "@babel/runtime": "^7.12.5" }, "peerDependencies": { "@testing-library/dom": "^10.0.0", "@types/react": "^18.0.0 || ^19.0.0", "@types/react-dom": "^18.0.0 || ^19.0.0", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" }, "optionalPeers": ["@types/react", "@types/react-dom"] }, "sha512-kFSyxiEDwv1WLl2fgsq6pPBbw5aWKrsY2/noi1Id0TK0UParSF62oFQFGHXIyaG4pp2tEub/Zlel+fjjZILDsw=="],
+
+    "@testing-library/user-event": ["@testing-library/user-event@14.6.1", "", { "peerDependencies": { "@testing-library/dom": ">=7.21.4" } }, "sha512-vq7fv0rnt+QTXgPxr5Hjc210p6YKq2kmdziLgnsZGgLJ9e6VAShx1pACLuRjd/AS/sr7phAR58OIIpf0LlmQNw=="],
 
     "@trigger.dev/core": ["@trigger.dev/core@3.3.13", "", { "dependencies": { "@electric-sql/client": "1.0.0-beta.1", "@google-cloud/precise-date": "^4.0.0", "@jsonhero/path": "^1.0.21", "@opentelemetry/api": "1.9.0", "@opentelemetry/api-logs": "0.52.1", "@opentelemetry/exporter-logs-otlp-http": "0.52.1", "@opentelemetry/exporter-trace-otlp-http": "0.52.1", "@opentelemetry/instrumentation": "0.52.1", "@opentelemetry/resources": "1.25.1", "@opentelemetry/sdk-logs": "0.52.1", "@opentelemetry/sdk-node": "0.52.1", "@opentelemetry/sdk-trace-base": "1.25.1", "@opentelemetry/sdk-trace-node": "1.25.1", "@opentelemetry/semantic-conventions": "1.25.1", "dequal": "^2.0.3", "eventsource": "^3.0.5", "eventsource-parser": "^3.0.0", "execa": "^8.0.1", "humanize-duration": "^3.27.3", "jose": "^5.4.0", "nanoid": "^3.3.4", "socket.io-client": "4.7.5", "superjson": "^2.2.1", "zod": "3.23.8", "zod-error": "1.5.0", "zod-validation-error": "^1.5.0" } }, "sha512-3VU4YMS+RVCkfVXeUKSWlkVszgFK44tIknR9sHLYgetI714L3tgH47XBXJ3+/ZV5Y9Vvv6O6pRIuV7EEhzbexg=="],
 
