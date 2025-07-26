@@ -227,7 +227,7 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
 
     // Handle other ORPC errors
     if (error instanceof ORPCError) {
-      if (error.code !== "NOT_FOUND") {
+      if (error.code !== "NOT_FOUND" && error.code !== "UNAUTHORIZED") {
         // Log the error for debugging with full context
         logger.error("ORPC error", {
           code: error.code as string,
