@@ -73,6 +73,228 @@ Learning integration:
 - Apply patterns consistently across all mappings
 - Silent updates - no user interruption
 
+**Gemini-CLI Integration for Subgraph Development:**
+
+Leverage gemini-cli MCP for advanced subgraph analysis and optimization:
+
+1. **Schema Design Optimization**: Analyze and improve GraphQL schemas
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@schema.graphql analyze for query performance and suggest denormalization opportunities",
+     changeMode: true,
+     model: "gemini-2.5-pro"
+   })
+   ```
+
+2. **Event Handler Analysis**: Optimize AssemblyScript mappings
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@mappings/* analyze for performance bottlenecks and suggest AssemblyScript optimizations",
+     changeMode: true,
+     sandbox: true
+   })
+   ```
+
+3. **Domain Model Design**: Create intuitive entity structures
+   ```
+   mcp__gemini-cli__brainstorm({
+     prompt: "Design subgraph entities for DeFi protocol tracking swaps, liquidity, and user positions",
+     domain: "software",
+     constraints: "Must support efficient pagination, historical queries, and real-time updates",
+     methodology: "design-thinking"
+   })
+   ```
+
+4. **Query Pattern Analysis**: Learn from actual GraphQL usage
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@queries.log identify common query patterns and suggest schema optimizations",
+     changeMode: false
+   })
+   ```
+
+5. **AssemblyScript Pattern Generation**: Create efficient handlers
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "Generate AssemblyScript event handler for complex DeFi operations with proper type conversions",
+     changeMode: true,
+     model: "gemini-2.5-flash"
+   })
+   ```
+
+6. **Edge Case Detection**: Identify potential data issues
+   ```
+   mcp__gemini-cli__brainstorm({
+     prompt: "Generate edge cases for blockchain event handling: reorgs, failed txs, contract upgrades",
+     domain: "software",
+     ideaCount: 20,
+     includeAnalysis: true
+   })
+   ```
+
+7. **Performance Profiling**: Analyze indexing bottlenecks
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@subgraph.yaml analyze manifest for indexing performance and suggest optimizations",
+     changeMode: true
+   })
+   ```
+
+When to use Gemini-CLI for subgraphs:
+- Before designing new entity schemas
+- When optimizing slow queries or indexing
+- For generating efficient AssemblyScript patterns
+- To analyze existing schemas for improvements
+- When handling complex blockchain data transformations
+- For learning from query patterns and optimizing accordingly
+
+**Context7 for The Graph Documentation:**
+
+1. **The Graph Protocol**:
+   ```javascript
+   mcp__context7__resolve-library-id({
+     libraryName: "the-graph"
+   })
+   // Use for subgraph development
+   mcp__context7__get-library-docs({
+     context7CompatibleLibraryID: "/graphprotocol/graph-tooling",
+     topic: "assemblyscript mappings entities",
+     tokens: 8000
+   })
+   ```
+
+2. **AssemblyScript Patterns**:
+   ```javascript
+   mcp__context7__get-library-docs({
+     context7CompatibleLibraryID: "/AssemblyScript/assemblyscript",
+     topic: "memory management types",
+     tokens: 5000
+   })
+   ```
+
+**DeepWiki for Subgraph Examples:**
+
+1. **The Graph Examples**:
+   ```javascript
+   mcp__deepwiki__read_wiki_structure({
+     repoName: "graphprotocol/graph-protocol"
+   })
+   
+   mcp__deepwiki__ask_question({
+     repoName: "graphprotocol/graph-protocol",
+     question: "How to handle block reorganizations in subgraphs?"
+   })
+   ```
+
+2. **Popular Subgraph Implementations**:
+   ```javascript
+   mcp__deepwiki__read_wiki_contents({
+     repoName: "Uniswap/v3-subgraph"
+   })
+   ```
+
+**Grep for Subgraph Patterns:**
+
+1. **Entity Design Patterns**:
+   ```javascript
+   mcp__grep__searchGitHub({
+     query: "@entity.*@derivedFrom",
+     language: ["GraphQL"],
+     path: "schema.graphql",
+     useRegexp: true
+   })
+   ```
+
+2. **AssemblyScript Event Handlers**:
+   ```javascript
+   mcp__grep__searchGitHub({
+     query: "export function handle.*\\(event:",
+     language: ["TypeScript"],
+     path: "mappings",
+     useRegexp: true
+   })
+   ```
+
+3. **Performance Optimizations**:
+   ```javascript
+   mcp__grep__searchGitHub({
+     query: "store\\.get.*\\|\\|.*new",
+     language: ["TypeScript"],
+     repo: "subgraph",
+     useRegexp: true
+   })
+   ```
+
+**Sentry for Indexing Monitoring:**
+
+```javascript
+// Monitor subgraph indexing errors
+mcp__sentry__search_issues({
+  organizationSlug: "your-org",
+  naturalLanguageQuery: "subgraph indexing failed",
+  limit: 10
+})
+
+// Track query performance
+mcp__sentry__search_events({
+  organizationSlug: "your-org",
+  naturalLanguageQuery: "GraphQL query timeout subgraph",
+  limit: 15
+})
+```
+
+**Linear for Subgraph Tasks:**
+
+```javascript
+// Track subgraph development
+mcp__linear__list_issues({
+  organizationSlug: "your-org",
+  query: "subgraph schema entity",
+  teamId: "blockchain-team-id"
+})
+```
+
+Subgraph Development Workflow:
+1. Context7 for official Graph Protocol docs
+2. DeepWiki for popular subgraph architectures
+3. Grep for entity and mapping patterns
+4. Sentry for indexing error monitoring
+5. Linear for feature tracking
+
+**Chained Agent Workflow:**
+
+After implementing subgraph entities or mappings:
+
+1. **Invoke test-engineer agent**:
+   ```
+   Task: "Create comprehensive subgraph tests including:
+   - Unit tests for mapping handlers
+   - Entity creation and update scenarios
+   - Event processing with edge cases
+   - Relationship handling tests
+   - Mock contract calls and events
+   - Test data integrity and query results
+   Follow Graph Protocol testing patterns."
+   ```
+
+2. **Invoke codebase-documentation-architect agent**:
+   ```
+   Task: "Document the subgraph module with:
+   - Entity relationship diagrams (Mermaid ERD)
+   - Event processing flow documentation
+   - Query examples and common patterns
+   - Performance optimization notes
+   - Deployment and sync instructions
+   - GraphQL API usage examples
+   Create detailed README.md and CLAUDE.md updates."
+   ```
+
+3. **Documentation Awareness**:
+   - Review existing subgraph documentation
+   - Check for query pattern documentation
+   - Ensure AssemblyScript specifics are noted
+   - Include Graph Protocol best practices
+
 ## Learned Subgraph Patterns
 
 <!-- AI appends patterns here -->

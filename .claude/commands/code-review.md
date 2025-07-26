@@ -20,10 +20,57 @@ best practices that can be applied.
 Make sure to read the @CLAUDE.md file to understand the conventions of this
 repo.
 
+Check for proper documentation:
+- Verify README.md files exist for new modules
+- Ensure CLAUDE.md is updated with new patterns
+- Check that test coverage matches documentation claims
+- Validate examples in documentation work correctly
+
 # Review
 
 Next, ultrathink and write up a detailed code review in the Linus style. Use
 your judgement as to what is necessary, given the standards of this repo.
+
+## Gemini-CLI Enhanced Analysis
+
+Before writing your review, leverage gemini-cli for deeper insights:
+
+1. **Security Vulnerability Scan**: Use Gemini to detect hidden vulnerabilities
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@changed-files analyze for security vulnerabilities, race conditions, and edge cases",
+     changeMode: true,
+     model: "gemini-2.5-pro"
+   })
+   ```
+
+2. **Performance Analysis**: Identify optimization opportunities
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@changed-files analyze for performance bottlenecks, N+1 queries, and inefficient algorithms",
+     changeMode: true,
+     sandbox: true
+   })
+   ```
+
+3. **Best Practices Check**: Ensure code follows project standards
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@changed-files check against @CLAUDE.md standards and identify deviations",
+     changeMode: true
+   })
+   ```
+
+4. **Edge Case Generation**: Find potential failure scenarios
+   ```
+   mcp__gemini-cli__brainstorm({
+     prompt: "Generate edge cases and failure scenarios for the changes in this PR",
+     domain: "software",
+     constraints: "Focus on user input validation, async operations, and state management",
+     ideaCount: 15,
+     methodology: "lateral"
+   })
+   ```
 
 Do cover the following topics:
 

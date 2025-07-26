@@ -151,38 +151,166 @@ current_branch=$(git branch --show-current)
 
 ## MCP Server Integration
 
-The project integrates with:
+The project integrates with multiple MCP servers for enhanced development capabilities:
 
-- **Grep**: Search for code snippets on GitHub via Grep.app
-  - Use Grep to search GitHub for code snippets on how to use a library,
-    framework, or tool
-- **Context7**: Library documentation (React, Next.js, etc.)
-  - Working with external libraries/frameworks (React, FastAPI, Next.js, etc.)
-  - Need current documentation beyond training cutoff
-  - Implementing new integrations or features with third-party tools
-  - Troubleshooting library-specific issues
-- **DeepWiki**: GitHub repository documentation
-  - Need in-depth, structured documentation for open source projects
-  - Want to explore repository wikis, architecture, or usage patterns
-  - Require answers to specific questions about a GitHub repository
-- **Linear**: Issue tracking and project management
-  - Use Linear to manage the metadata of a Linear ticket if you have been
-    provided one. Do this when you start and during the lifecycle of your
-    work/pr so we can keep track of progress.
-  - When tackling a task, search linear for similar issues and add them to your
-    context. Also inspect linked github PR's for additional information.
-- **Sentry**: Error tracking and monitoring
-  - Monitor and triage application errors and exceptions
-  - Investigate root causes and error trends
-  - Link errors to code changes and releases
-- **Playwright**: Browser automation
-  - Use Playwright to automate browser interactions
-  - Test web application functionality
-  - Debug UI issues and performance bottlenecks
-- **Gemini**: AI agentic search
-  - Use Gemini to search the web and answer questions
-  - Generate documentation and code snippets
-  - Assist with complex research tasks
+### 1. **Gemini-CLI** - AI-Powered Code Analysis
+Primary use cases:
+- Code quality analysis with `changeMode: true` for structured edits
+- Architecture planning and design decisions  
+- Security vulnerability detection
+- Performance optimization suggestions
+- Test case generation with `brainstorm`
+- Pattern recognition across codebases
+
+Example workflow:
+```javascript
+// Analyze code for improvements
+mcp__gemini-cli__ask-gemini({
+  prompt: "@file.ts analyze for performance and security",
+  changeMode: true,
+  model: "gemini-2.5-pro"
+})
+
+// Generate ideas
+mcp__gemini-cli__brainstorm({
+  prompt: "Design patterns for authentication flow",
+  domain: "software",
+  ideaCount: 15
+})
+```
+
+### 2. **Context7** - Official Library Documentation
+Primary use cases:
+- Latest framework documentation (React, TanStack, Zod, etc.)
+- API references and migration guides
+- Best practices from official sources
+- Type definitions and interfaces
+
+Example workflow:
+```javascript
+// First resolve library ID
+mcp__context7__resolve-library-id({
+  libraryName: "tanstack-router"
+})
+// Then fetch docs
+mcp__context7__get-library-docs({
+  context7CompatibleLibraryID: "/tanstack/router",
+  topic: "loaders error-boundaries",
+  tokens: 8000
+})
+```
+
+### 3. **Grep** - Real-World Code Examples
+Primary use cases:
+- Find production implementations
+- Discover coding patterns
+- Learn from popular repositories
+- Validate best practices
+
+Example workflow:
+```javascript
+mcp__grep__searchGitHub({
+  query: "useForm.*validation.*TanStack",
+  language: ["TypeScript", "TSX"],
+  useRegexp: true
+})
+```
+
+### 4. **DeepWiki** - Repository Architecture & Documentation
+Primary use cases:
+- Understand project architecture
+- Deep dive into open source projects
+- Answer specific implementation questions
+- Explore design decisions
+
+Example workflow:
+```javascript
+mcp__deepwiki__ask_question({
+  repoName: "tanstack/router",
+  question: "How does file-based routing work internally?"
+})
+```
+
+### 5. **Linear** - Project Management
+Primary use cases:
+- Track feature development
+- Link PRs to issues
+- Update task status
+- Document progress
+
+Example workflow:
+```javascript
+// Find related issues
+mcp__linear__list_issues({
+  organizationSlug: "your-org",
+  query: "authentication bug"
+})
+// Update status
+mcp__linear__update_issue({
+  id: "ISSUE-123",
+  status: "in_progress"
+})
+```
+
+### 6. **Sentry** - Error Monitoring & Analysis
+Primary use cases:
+- Debug production errors
+- Analyze error patterns
+- Track performance issues
+- Monitor deployment health
+
+Example workflow:
+```javascript
+// Search for errors
+mcp__sentry__search_issues({
+  organizationSlug: "your-org",
+  naturalLanguageQuery: "timeout errors in API"
+})
+// AI analysis
+mcp__sentry__analyze_issue_with_seer({
+  issueId: "ERROR-456"
+})
+```
+
+### 7. **Playwright** - Browser Automation & E2E Testing
+Primary use cases:
+- Automated E2E testing
+- Visual regression testing
+- Debug UI issues
+- Test user workflows
+
+Example workflow:
+```javascript
+// Navigate and interact
+mcp__playwright__browser_navigate({ url: "http://localhost:5173" })
+mcp__playwright__browser_snapshot()
+mcp__playwright__browser_click({
+  element: "Submit button",
+  ref: "button[type='submit']"
+})
+```
+
+## MCP Best Practices
+
+### Documentation Research Flow
+1. **Context7** for official docs → **DeepWiki** for architecture → **Grep** for examples
+2. Always verify with latest documentation before implementing
+3. Cross-reference multiple sources for validation
+
+### Error Investigation Flow
+1. **Sentry** for error details → **Linear** for related issues → **Gemini** for analysis
+2. Use Seer AI for root cause analysis
+3. Track fixes in Linear with PR links
+
+### Code Quality Flow
+1. **Gemini** for initial analysis → **Grep** for patterns → **Context7** for best practices
+2. Use `changeMode: true` for actionable improvements
+3. Validate against production examples
+
+### Testing Strategy Flow
+1. **Gemini** for test generation → **Playwright** for E2E → **Sentry** for monitoring
+2. Generate edge cases with brainstorm
+3. Monitor test stability in production
 
 ## Sub-Agent Usage
 
@@ -223,6 +351,49 @@ fails
 - Auto-fixes lint, format, and type errors
 - Ensures 100% quality gate compliance
 
+### 📚 codebase-documentation-architect
+
+**USE PROACTIVELY**: After significant code changes or new features
+
+- Creates comprehensive README.md files for modules
+- Generates architecture diagrams with Mermaid
+- Maintains CLAUDE.md with AI-specific instructions
+- Documents patterns, conventions, and decisions
+
+### 🧪 test-engineer
+
+**USE PROACTIVELY**: After implementing any new functionality
+
+- Creates unit tests for React components (Vitest)
+- Develops Forge tests for smart contracts
+- Ensures comprehensive test coverage
+- Maintains test quality and performance
+
+### ✍️ content-translations-writer
+
+**USE WHEN**: Enhancing documentation or translating UI/content
+
+- Improves README files with user-friendly explanations
+- Adds clear overviews and getting started sections
+- Translates UI components to Arabic, German, and Japanese
+- Maintains translation consistency across namespaces
+- Creates culturally appropriate translations
+
+### 🚀 orpc-backend-expert
+
+**USE WHEN**: Working with ORPC framework in kit/dapp/src/orpc folder
+
+- Creates and optimizes ORPC API endpoints
+- Implements security measures and rate limiting
+- Ensures proper OpenAPI documentation generation
+- **IMPORTANT**: When modifying database schemas, always run migrations:
+  ```bash
+  bun run db:generate  # Generate migration files
+  bun run db:migrate  # Apply migrations
+  ```
+- **PR REQUIREMENT**: When creating a PR, squash all new migration files into a single migration to maintain clean migration history
+- Uses latest ORPC patterns and best practices
+
 ### Slash Commands
 
 The project includes custom slash commands that utilize these agents:
@@ -239,12 +410,14 @@ features or changes, no slash command needed.
 
 #### Gemini-CLI Integration
 
-The code-reviewer agent uses Gemini-CLI for enhanced code analysis:
+All agents use Gemini-CLI for enhanced capabilities:
 
 - Detects hidden bugs and edge cases
 - Suggests performance optimizations
 - Identifies security vulnerabilities
 - Provides architectural improvements
+- Generates comprehensive test cases
+- Creates documentation structures
 
 #### Extended Timeouts
 
@@ -269,6 +442,18 @@ To approve a learning:
 2. You review and approve/reject
 3. Approved patterns enhance future agent performance
 4. Periodically consolidated into CLAUDE.md
+
+#### Agent Chaining Workflow
+
+Agents work together in a coordinated workflow:
+
+1. **Implementation** (domain-specific agent) → Creates/modifies code
+2. **Testing** (test-engineer) → Ensures comprehensive test coverage
+3. **Documentation** (codebase-documentation-architect) → Creates technical README
+4. **Content** (content-translations-writer) → Enhances README with clear explanations
+5. **Review** (code-reviewer) → Final quality check
+
+This ensures every feature is properly tested and documented in comprehensive README files.
 
 ## Coding Standards & AI Instructions
 
@@ -450,12 +635,12 @@ standards.
   never pass around `t` from the translations hook, if you cannot get `t` into a
   function, you shouldn't use such a function
 - **Localization Guidelines**:
-  - The UI is in multiple languages. Always put translations of a component in
-    kit/dapp/locales/en/\*.json.
-  - Only english is required, the other translations should not be generated
-    automatically.
-  - If you see hardcoded translations in a component move them to a json
-    translation file
+  - The UI supports multiple languages: Arabic (ar), German (de), English (en), Japanese (ja)
+  - Always put English translations in kit/dapp/locales/en/*.json first
+  - Use the content-translations-writer agent to translate to other languages
+  - Never auto-generate translations without the specialized agent
+  - If you see hardcoded strings in a component, move them to translation files
+  - Maintain consistent terminology across all language files
 - **Directives**: Since we use Tanstack Start, we do not need `use client;`
 - **Linting**: Never use eslint-disable comments, fix the issues for real
 - **Forms**: Use TanStack Form exclusively for all forms. Do NOT use
@@ -496,6 +681,9 @@ bun install/run/test  # instead of npm/yarn/pnpm
 
 - Use sentence case wherever you can
 - Do not use dynamic translation keys as our scanner does not pick those up
+- When adding new UI components with text, always invoke content-translations-writer for translations
+- Translation files are in kit/dapp/locales/{ar,de,en,ja}/*.json
+- Each component should have its own translation namespace
 
 ## Development Memories
 
