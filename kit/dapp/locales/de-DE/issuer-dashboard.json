@@ -1,0 +1,49 @@
+{
+  "actions-heading": "Aktionen",
+  "asset-management": "Vermögensverwaltung",
+  "charts": {
+    "assetActivity": {
+      "description": "Die Anzahl der durchgeführten Aktionen in den verschiedenen Anlageklassen",
+      "title": "Vermögensaktivität"
+    },
+    "assetSupply": {
+      "description": "Die Verteilung der Vermögenswerte nach Anlageklasse",
+      "title": "Vermögensangebot"
+    },
+    "transactionHistory": {
+      "currentPeriod": "Aktuell",
+      "description": "Anzahl der Transaktionen pro Tag in der letzten Woche",
+      "title": "Transaktionshistorie"
+    },
+    "userGrowth": {
+      "currentPeriod": "Aktuell",
+      "description": "Anzahl der in der letzten Woche registrierten Benutzer",
+      "title": "Registrierte Benutzer"
+    }
+  },
+  "description": "Vermögensverwaltung",
+  "latest-events-heading": "Neueste Ereignisse",
+  "stats": {
+    "assets": "Vermögenswerte",
+    "assetsDescription": "{{bonds}} Anleihen | {{cryptocurrencies}} Kryptowährungen | {{equities}} Aktien | {{funds}} Fonds | {{stableCoins}} Stablecoins | {{deposits}} Einlagen",
+    "loading": "Statistiken werden geladen...",
+    "noAssets": "Keine Vermögenswerte gefunden",
+    "title": "Plattformstatistiken",
+    "totalValue": "Wert",
+    "totalValueDescription": "Gesamtwert aller Vermögenswerte",
+    "transactions": "Transaktionen",
+    "transactionsDescription": "{{count}} Transaktionen in den letzten {{days}} Tagen verarbeitet",
+    "transactionsDescription_one": "{{count}} Transaktion in den letzten {{days}} Tagen verarbeitet",
+    "transactionsDescription_other": "{{count}} Transaktionen in den letzten {{days}} Tagen verarbeitet",
+    "users": "Benutzer",
+    "usersDescription": "{{count}} Benutzer in den letzten {{days}} Tagen",
+    "usersDescription_one": "{{count}} Benutzer in den letzten {{days}} Tagen",
+    "usersDescription_other": "{{count}} Benutzer in den letzten {{days}} Tagen"
+  },
+  "stats-heading": "Statistiken",
+  "tables": {
+    "actions": "Ausstehende Aktionen",
+    "latestEvents": "Neueste Ereignisse"
+  },
+  "title": "Dashboard"
+}

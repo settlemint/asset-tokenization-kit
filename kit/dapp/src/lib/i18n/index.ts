@@ -33,13 +33,13 @@ export const defaultNS = "general";
 /**
  * Array of supported language codes.
  */
-export const supportedLanguages = ["en", "de", "ar", "ja"] as const;
+export const supportedLanguages = ["en-US", "de-DE", "ar-SA", "ja-JP"] as const;
 
 /**
  * Fallback language used when the requested language is not available
  * or when a specific translation key is missing in the current language.
  */
-export const fallbackLng = "en";
+export const fallbackLng = "en-US";
 
 /**
  * Available translation namespaces
@@ -129,29 +129,29 @@ const lazyLoadBackend = {
  */
 // Load essential namespaces synchronously for SSR
 // These imports are kept to ensure critical translations are available immediately
-import arCommonTranslations from "@/locales/ar/common.json";
-import arGeneralTranslations from "@/locales/ar/general.json";
-import deCommonTranslations from "@/locales/de/common.json";
-import deGeneralTranslations from "@/locales/de/general.json";
-import enCommonTranslations from "@/locales/en/common.json";
-import enGeneralTranslations from "@/locales/en/general.json";
-import jaCommonTranslations from "@/locales/ja/common.json";
-import jaGeneralTranslations from "@/locales/ja/general.json";
+import arCommonTranslations from "@/locales/ar-SA/common.json";
+import arGeneralTranslations from "@/locales/ar-SA/general.json";
+import deCommonTranslations from "@/locales/de-DE/common.json";
+import deGeneralTranslations from "@/locales/de-DE/general.json";
+import enCommonTranslations from "@/locales/en-US/common.json";
+import enGeneralTranslations from "@/locales/en-US/general.json";
+import jaCommonTranslations from "@/locales/ja-JP/common.json";
+import jaGeneralTranslations from "@/locales/ja-JP/general.json";
 
 const initialResources = {
-  en: {
+  "en-US": {
     general: enGeneralTranslations,
     common: enCommonTranslations,
   },
-  de: {
+  "de-DE": {
     general: deGeneralTranslations,
     common: deCommonTranslations,
   },
-  ar: {
+  "ar-SA": {
     general: arGeneralTranslations,
     common: arCommonTranslations,
   },
-  ja: {
+  "ja-JP": {
     general: jaGeneralTranslations,
     common: jaCommonTranslations,
   },

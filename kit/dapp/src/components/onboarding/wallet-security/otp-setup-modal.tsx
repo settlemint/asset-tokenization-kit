@@ -15,15 +15,12 @@ import {
 } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/auth.client";
 import { twoFactorCode } from "@/lib/zod/validators/two-factor-code";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
-
-const logger = createLogger();
 
 interface OtpSetupModalProps {
   open: boolean;
@@ -218,13 +215,23 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                 <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
                   {t("wallet-security.otp.manual-entry")}
                 </summary>
-                <div className="mt-2 p-3 bg-muted rounded-md">
-                  <p className="text-xs text-muted-foreground mb-1">
-                    {t("wallet-security.otp.manual-entry-key")}
-                  </p>
-                  <code className="text-xs break-all font-mono">
-                    {otpSecret || t("wallet-security.otp.loading")}
-                  </code>
+                <div className="mt-2 p-3 bg-muted rounded-md space-y-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {t("wallet-security.otp.manual-entry-url")}
+                    </p>
+                    <code className="text-xs break-all font-mono">
+                      {otpUri || t("wallet-security.otp.loading")}
+                    </code>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {t("wallet-security.otp.manual-entry-key")}
+                    </p>
+                    <code className="text-xs break-all font-mono">
+                      {otpSecret || t("wallet-security.otp.loading")}
+                    </code>
+                  </div>
                 </div>
               </details>
             </div>

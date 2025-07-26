@@ -1,0 +1,27 @@
+{
+  "actions": {
+    "cancel": "Cancel"
+  },
+  "appDescription": "Deploy in minutes, customize easily",
+  "appName": "Asset Tokenization Kit",
+  "complete": "Complete",
+  "continue": "Continue",
+  "deploying": "Deploying...",
+  "generating": "Generating...",
+  "next": "Next",
+  "previous": "Previous",
+  "transaction": {
+    "indexed": "Transaction confirmed and indexed",
+    "waitingForMining": "Waiting for transaction to be mined..."
+  },
+  "transactionHash": {
+    "copied": "Copied!",
+    "copyToClipboard": "Copy transaction hash"
+  },
+  "verification": {
+    "pincode": {
+      "description": "Enter your 6-digit verification code",
+      "label": "Verification Code"
+    }
+  }
+}

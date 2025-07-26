@@ -1,0 +1,44 @@
+{
+  "charts": {
+    "assetActivity": {
+      "description": "資産取引活動",
+      "title": "資産活動"
+    },
+    "assetSupply": {
+      "description": "時間経過に伴う資産の総供給量",
+      "title": "資産供給"
+    },
+    "transactionHistory": {
+      "description": "時間経過に伴う取引量",
+      "title": "取引履歴"
+    },
+    "userGrowth": {
+      "description": "時間経過に伴うユーザー数",
+      "title": "ユーザー成長"
+    }
+  },
+  "title": "統計",
+  "widgets": {
+    "assets": {
+      "empty": "まだ資産はありません",
+      "title": "総資産"
+    },
+    "common": {
+      "error": "データの読み込みエラー",
+      "loading": "読み込み中...",
+      "retry": "再試行"
+    },
+    "transactions": {
+      "description": "{{count}}件の取引が過去{{days}}日間に発生しました",
+      "title": "総取引数"
+    },
+    "users": {
+      "description": "{{count}}人のアクティブユーザーが過去{{days}}日間にいます",
+      "title": "アクティブユーザー"
+    },
+    "value": {
+      "description": "すべての資産の合計価値",
+      "title": "総価値"
+    }
+  }
+}
