@@ -1,4 +1,4 @@
-import { expect } from "bun:test";
+import { expect } from "vitest";
 import { OrpcClient } from "./orpc-client";
 import { DEFAULT_PINCODE } from "./user";
 
