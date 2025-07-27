@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 import { getOrpcClient } from "../utils/orpc-client";
 import { DEFAULT_ADMIN, DEFAULT_PINCODE, signInWithUser } from "../utils/user";
 
 describe("Token factory create", () => {
-  it("can create a token factory", async () => {
+  test("can create a token factory", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
     const system = await client.system.read({ id: "default" });

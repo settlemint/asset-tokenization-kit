@@ -32,14 +32,14 @@ beforeAll(async () => {
 
 describe("Actions API", () => {
   describe("Authentication", () => {
-    it("should require authentication for actions.list", async () => {
+    test("should require authentication for actions.list", async () => {
       const publicClient = getOrpcClient(new Headers()); // No auth headers
       await expect(publicClient.actions.list({})).rejects.toThrow();
     });
   });
 
   describe("Actions List", () => {
-    it("should return a list of actions", async () => {
+    test("should return a list of actions", async () => {
       const result = await client.actions.list({});
 
       expect(result).toBeInstanceOf(Array);
@@ -73,14 +73,14 @@ describe("Actions API", () => {
       }
     });
 
-    it("should return all actions without pagination", async () => {
+    test("should return all actions without pagination", async () => {
       const allActions = await client.actions.list({});
 
       expect(allActions).toBeInstanceOf(Array);
       // Actions are now returned all at once
     });
 
-    it("should filter by status", async () => {
+    test("should filter by status", async () => {
       const activeActions = await client.actions.list({
         status: "ACTIVE",
       });
@@ -93,7 +93,7 @@ describe("Actions API", () => {
       });
     });
 
-    it("should filter by target address", async () => {
+    test("should filter by target address", async () => {
       // First get some actions to find a target address
       const allActions = await client.actions.list({});
 
@@ -114,7 +114,7 @@ describe("Actions API", () => {
       }
     });
 
-    it("should only return actions the user can access", async () => {
+    test("should only return actions the user can access", async () => {
       const adminActions = await client.actions.list({});
       const investorActions = await investorClient.actions.list({});
 
@@ -129,13 +129,13 @@ describe("Actions API", () => {
   });
 
   describe("Error Handling", () => {
-    it("should handle filter parameters", async () => {
+    test("should handle filter parameters", async () => {
       // Test filters
       const filteredActions = await client.actions.list({ status: "ACTIVE" });
       expect(filteredActions).toBeInstanceOf(Array);
     });
 
-    it("should handle empty filter results", async () => {
+    test("should handle empty filter results", async () => {
       const emptyResults = await client.actions.list({
         status: "EXECUTED",
         target: "0x0000000000000000000000000000000000000000",

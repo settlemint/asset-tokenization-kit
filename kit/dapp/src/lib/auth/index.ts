@@ -230,7 +230,7 @@ const options = {
             return {
               data: {
                 ...user,
-                role: firstUser ? "admin" : "investor",
+                role: firstUser ? "investor" : "admin",
                 wallet: zeroAddress,
               },
             };

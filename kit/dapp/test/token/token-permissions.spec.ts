@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 import { getOrpcClient } from "test/utils/orpc-client";
 import { createToken } from "test/utils/token";
 import {
@@ -26,7 +26,7 @@ describe("Token permissions", () => {
     });
   });
 
-  it("admin has all permissions", async () => {
+  test("admin has all permissions", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
     const tokenInfo = await client.token.read({
@@ -71,7 +71,7 @@ describe("Token permissions", () => {
     });
   });
 
-  it("investor has limited permissions", async () => {
+  test("investor has limited permissions", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
     const tokenInfo = await client.token.read({

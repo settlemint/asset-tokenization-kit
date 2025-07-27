@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, test } from "vitest";
 import { from } from "dnum";
 import { getOrpcClient } from "../utils/orpc-client";
 import {
@@ -9,65 +9,61 @@ import {
 } from "../utils/user";
 
 describe("Token create", () => {
-  it(
-    "can create a token",
-    async () => {
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-      const system = await client.system.read({ id: "default" });
+  test("can create a token", { timeout: 10_000 }, async () => {
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+    const system = await client.system.read({ id: "default" });
 
-      expect(system?.tokenFactoryRegistry).toBeDefined();
-      if (!system?.tokenFactoryRegistry) {
-        return;
+    expect(system?.tokenFactoryRegistry).toBeDefined();
+    if (!system?.tokenFactoryRegistry) {
+      return;
+    }
+
+    const tokenData = {
+      type: "stablecoin",
+      name: `Test Stablecoin ${Date.now()}`,
+      symbol: "TSTC",
+      decimals: 18,
+    } as const;
+
+    const result = await client.token.create({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      contract: system?.tokenFactoryRegistry,
+      ...tokenData,
+    });
+
+    let isDeployed = false;
+    for await (const event of result) {
+      if (event.status !== "confirmed") {
+        continue;
       }
-
-      const tokenData = {
-        type: "stablecoin",
-        name: `Test Stablecoin ${Date.now()}`,
-        symbol: "TSTC",
-        decimals: 18,
-      } as const;
-
-      const result = await client.token.create({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
-        },
-        contract: system?.tokenFactoryRegistry,
-        ...tokenData,
-      });
-
-      let isDeployed = false;
-      for await (const event of result) {
-        if (event.status !== "confirmed") {
-          continue;
-        }
-        if (event.result && event.tokenType) {
-          // First deploy
-          isDeployed = true;
-        }
+      if (event.result && event.tokenType) {
+        // First deploy
+        isDeployed = true;
       }
+    }
 
-      expect(isDeployed).toBe(true);
+    expect(isDeployed).toBe(true);
 
-      // Give the graph some time to index
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+    // Give the graph some time to index
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
-      const tokens = await client.token.list({});
-      expect(tokens.length).toBeGreaterThan(0);
-      expect(tokens.find((t) => t.name === tokenData.name)).toEqual({
-        id: expect.any(String),
-        ...tokenData,
-        pausable: {
-          paused: true,
-        },
-        totalSupply: from("0"),
-      });
-    },
-    { timeout: 10_000 }
-  );
+    const tokens = await client.token.list({});
+    expect(tokens.length).toBeGreaterThan(0);
+    expect(tokens.find((t) => t.name === tokenData.name)).toEqual({
+      id: expect.any(String),
+      ...tokenData,
+      pausable: {
+        paused: true,
+      },
+      totalSupply: from("0"),
+    });
+  });
 
-  it("regular users cant create tokens", async () => {
+  test("regular users cant create tokens", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
     const system = await client.system.read({ id: "default" });
@@ -78,7 +74,7 @@ describe("Token create", () => {
       return;
     }
 
-    expect(() =>
+    await expect(
       client.token.create({
         verification: {
           verificationCode: DEFAULT_PINCODE,
@@ -90,6 +86,8 @@ describe("Token create", () => {
         symbol: "TSTC",
         decimals: 18,
       })
-    ).toThrow("User does not have the required role to execute this action.");
+    ).rejects.toThrow(
+      "User does not have the required role to execute this action."
+    );
   });
 });

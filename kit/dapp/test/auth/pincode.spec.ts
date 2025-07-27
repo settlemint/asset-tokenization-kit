@@ -14,7 +14,7 @@ describe("Pincode verification", () => {
     await setupUser(TEST_USER);
   });
 
-  it("can disable a pincode verification", async () => {
+  test("can disable a pincode verification", async () => {
     const headers = await signInWithUser(TEST_USER);
     const { data, error } = await authClient.pincode.disable(
       {
@@ -28,7 +28,7 @@ describe("Pincode verification", () => {
     expect(data?.success).toBe(true);
   });
 
-  it("can enable a pincode verification", async () => {
+  test("can enable a pincode verification", async () => {
     const headers = await signInWithUser(TEST_USER);
     const { data, error } = await authClient.pincode.enable(
       {
@@ -43,7 +43,7 @@ describe("Pincode verification", () => {
     expect(data?.success).toBe(true);
   });
 
-  it("can update a pincode verification", async () => {
+  test("can update a pincode verification", async () => {
     const headers = await signInWithUser(TEST_USER);
     const { data, error } = await authClient.pincode.update(
       {
@@ -58,7 +58,7 @@ describe("Pincode verification", () => {
     expect(data?.success).toBe(true);
   });
 
-  it("fails to update a pincode verification with the wrong password", async () => {
+  test("fails to update a pincode verification with the wrong password", async () => {
     const headers = await signInWithUser(TEST_USER);
     const { data, error } = await authClient.pincode.update(
       {
