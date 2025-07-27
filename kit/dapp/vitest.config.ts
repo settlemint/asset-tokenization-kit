@@ -1,42 +1,41 @@
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { defineConfig } from "vitest/config";
+import { defaultExclude, defineConfig } from "vitest/config";
 
 export default defineConfig({
-  plugins: [
-    react({
-      babel: {
-        plugins: [
-          [
-            "babel-plugin-react-compiler",
-            { runtimeModule: "react-compiler-runtime" },
-          ],
-        ],
-      },
-    }),
-    tsconfigPaths(),
-  ],
+  plugins: [react(), tsconfigPaths()],
   test: {
     globals: true,
     environment: "happy-dom",
     setupFiles: "./test/setup.ts",
     include: ["src/**/*.test.{ts,tsx}"],
-    exclude: ["node_modules", "dist", ".cache"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
       exclude: [
-        "node_modules/**",
-        "dist/**",
-        ".nitro/**",
-        "public/**",
-        "src/**/*.gen.ts",
-        "src/components/ui/**",
-        "src/**/*.test.{ts,tsx}",
-        "src/**/*.d.ts",
-        "*.config.*",
-        "test/**",
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/.nitro/**",
+        "**/public/**",
+        "**/src/**/*.gen.ts",
+        "**/src/components/ui/**",
+        "**/src/**/*.test.{ts,tsx}",
+        "**/src/**/*.d.ts",
+        "**/*.config.*",
+        "**/test/**",
+        "**/.output/**",
+        "**/.tanstack/**",
+        "**/.cache/**",
+        "**/.turbo/**",
+        "**/.vite/**",
+        "**/.vitest/**",
+        "**/.eslintrc.js",
+        "**/.prettierrc.js",
+        "**/*.d.ts",
+        "**/*.gen.ts",
+        "**/tools/**",
+        ...defaultExclude,
       ],
     },
   },
