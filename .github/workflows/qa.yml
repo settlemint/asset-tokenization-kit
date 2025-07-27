@@ -179,21 +179,11 @@ jobs:
             bun run ci:gha:main --concurrency=100%
           fi
 
-      - name: Generate coverage report for dapp
-        id: coverage-report
-        if: |
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.draft == false &&
-          steps.qa-tests.outcome == 'success'
-        run: |
-          cd kit/dapp
-          bun run test:coverage
-          
       - name: Coverage Report
         if: |
           github.event_name == 'pull_request' &&
           github.event.pull_request.draft == false &&
-          steps.coverage-report.outcome == 'success'
+          steps.qa-tests.outcome == 'success'
         uses: davelosert/vitest-coverage-report-action@v2
         with:
           name: 'dapp'
