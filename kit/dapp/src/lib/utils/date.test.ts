@@ -45,6 +45,14 @@ describe("formatDate", () => {
     expect(formatDate(testDate, options, "ja-JP")).toMatch(/2024年3月15日/);
   });
 
+  test("formats with date-fns locale for German", () => {
+    expect(formatDate(testDate, "d. MMMM yyyy", "de")).toBe("15. März 2024");
+  });
+
+  test("formats with date-fns locale for Japanese", () => {
+    expect(formatDate(testDate, "yyyy年M月d日", "ja")).toBe("2024年3月15日");
+  });
+
   test("returns Invalid Date for invalid inputs", () => {
     // date-fns throws on invalid dates, so we need to handle them differently
     expect(() => formatDate("invalid-date")).toThrow();
