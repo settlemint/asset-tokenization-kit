@@ -22,6 +22,42 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import "./types";
 
+// Import all en-US translations synchronously for SSR
+import enUSAccessibility from "@/locales/en-US/accessibility.json";
+import enUSAssetDesigner from "@/locales/en-US/asset-designer.json";
+import enUSAssetTypes from "@/locales/en-US/asset-types.json";
+import enUSAssets from "@/locales/en-US/assets.json";
+import enUSAuth from "@/locales/en-US/auth.json";
+import enUSBlockchain from "@/locales/en-US/blockchain.json";
+import enUSComplianceModules from "@/locales/en-US/compliance-modules.json";
+import enUSCommon from "@/locales/en-US/common.json";
+import enUSCountryMultiselect from "@/locales/en-US/country-multiselect.json";
+import enUSComponents from "@/locales/en-US/components.json";
+import enUSDashboard from "@/locales/en-US/dashboard.json";
+import enUSDataTable from "@/locales/en-US/data-table.json";
+import enUSDepositsTable from "@/locales/en-US/deposits-table.json";
+import enUSDetailGrid from "@/locales/en-US/detail-grid.json";
+import enUSErrors from "@/locales/en-US/errors.json";
+import enUSExchangeRates from "@/locales/en-US/exchange-rates.json";
+import enUSForm from "@/locales/en-US/form.json";
+import enUSFormats from "@/locales/en-US/formats.json";
+import enUSGeneral from "@/locales/en-US/general.json";
+import enUSIssuerDashboard from "@/locales/en-US/issuer-dashboard.json";
+import enUSLanguage from "@/locales/en-US/language.json";
+import enUSNavigation from "@/locales/en-US/navigation.json";
+import enUSOnboarding from "@/locales/en-US/onboarding.json";
+import enUSSeo from "@/locales/en-US/seo.json";
+import enUSSettings from "@/locales/en-US/settings.json";
+import enUSStats from "@/locales/en-US/stats.json";
+import enUSSystem from "@/locales/en-US/system.json";
+import enUSTheme from "@/locales/en-US/theme.json";
+import enUSToast from "@/locales/en-US/toast.json";
+import enUSTokenFactory from "@/locales/en-US/token-factory.json";
+import enUSTokens from "@/locales/en-US/tokens.json";
+import enUSUser from "@/locales/en-US/user.json";
+import enUSValidation from "@/locales/en-US/validation.json";
+import enUSWallet from "@/locales/en-US/wallet.json";
+
 const logger = createLogger();
 
 /**
@@ -90,42 +126,7 @@ type Namespace = (typeof namespaces)[number];
  */
 const translationModules = {
   "en-US": {
-    accessibility: () => import("@/locales/en-US/accessibility.json"),
-    "asset-designer": () => import("@/locales/en-US/asset-designer.json"),
-    "asset-types": () => import("@/locales/en-US/asset-types.json"),
-    assets: () => import("@/locales/en-US/assets.json"),
-    auth: () => import("@/locales/en-US/auth.json"),
-    blockchain: () => import("@/locales/en-US/blockchain.json"),
-    "compliance-modules": () =>
-      import("@/locales/en-US/compliance-modules.json"),
-    common: () => import("@/locales/en-US/common.json"),
-    "country-multiselect": () =>
-      import("@/locales/en-US/country-multiselect.json"),
-    components: () => import("@/locales/en-US/components.json"),
-    dashboard: () => import("@/locales/en-US/dashboard.json"),
-    "data-table": () => import("@/locales/en-US/data-table.json"),
-    "deposits-table": () => import("@/locales/en-US/deposits-table.json"),
-    "detail-grid": () => import("@/locales/en-US/detail-grid.json"),
-    errors: () => import("@/locales/en-US/errors.json"),
-    "exchange-rates": () => import("@/locales/en-US/exchange-rates.json"),
-    form: () => import("@/locales/en-US/form.json"),
-    formats: () => import("@/locales/en-US/formats.json"),
-    general: () => import("@/locales/en-US/general.json"),
-    "issuer-dashboard": () => import("@/locales/en-US/issuer-dashboard.json"),
-    language: () => import("@/locales/en-US/language.json"),
-    navigation: () => import("@/locales/en-US/navigation.json"),
-    onboarding: () => import("@/locales/en-US/onboarding.json"),
-    seo: () => import("@/locales/en-US/seo.json"),
-    settings: () => import("@/locales/en-US/settings.json"),
-    stats: () => import("@/locales/en-US/stats.json"),
-    system: () => import("@/locales/en-US/system.json"),
-    theme: () => import("@/locales/en-US/theme.json"),
-    toast: () => import("@/locales/en-US/toast.json"),
-    "token-factory": () => import("@/locales/en-US/token-factory.json"),
-    tokens: () => import("@/locales/en-US/tokens.json"),
-    user: () => import("@/locales/en-US/user.json"),
-    validation: () => import("@/locales/en-US/validation.json"),
-    wallet: () => import("@/locales/en-US/wallet.json"),
+    // Already loaded synchronously above
   },
   "de-DE": {
     accessibility: () => import("@/locales/de-DE/accessibility.json"),
@@ -249,6 +250,47 @@ const translationModules = {
  */
 async function loadResource(lng: SupportedLanguage, ns: Namespace) {
   try {
+    // For en-US, return the already imported resources
+    if (lng === "en-US") {
+      const enUSResources: Record<Namespace, unknown> = {
+        accessibility: enUSAccessibility,
+        "asset-designer": enUSAssetDesigner,
+        "asset-types": enUSAssetTypes,
+        assets: enUSAssets,
+        auth: enUSAuth,
+        blockchain: enUSBlockchain,
+        "compliance-modules": enUSComplianceModules,
+        common: enUSCommon,
+        "country-multiselect": enUSCountryMultiselect,
+        components: enUSComponents,
+        dashboard: enUSDashboard,
+        "data-table": enUSDataTable,
+        "deposits-table": enUSDepositsTable,
+        "detail-grid": enUSDetailGrid,
+        errors: enUSErrors,
+        "exchange-rates": enUSExchangeRates,
+        form: enUSForm,
+        formats: enUSFormats,
+        general: enUSGeneral,
+        "issuer-dashboard": enUSIssuerDashboard,
+        language: enUSLanguage,
+        navigation: enUSNavigation,
+        onboarding: enUSOnboarding,
+        seo: enUSSeo,
+        settings: enUSSettings,
+        stats: enUSStats,
+        system: enUSSystem,
+        theme: enUSTheme,
+        toast: enUSToast,
+        "token-factory": enUSTokenFactory,
+        tokens: enUSTokens,
+        user: enUSUser,
+        validation: enUSValidation,
+        wallet: enUSWallet,
+      };
+      return enUSResources[ns] || {};
+    }
+
     const languageModules = translationModules[lng];
     if (!languageModules) {
       logger.warn(`Language not found: ${lng}`);
@@ -262,7 +304,8 @@ async function loadResource(lng: SupportedLanguage, ns: Namespace) {
     }
 
     const module = await moduleLoader();
-    return module.default ?? module;
+    // Handle both default exports and direct exports
+    return module.default || module;
   } catch (error) {
     logger.warn(`Failed to load translation: ${lng}/${ns}`, error);
     return {};
@@ -313,49 +356,44 @@ const lazyLoadBackend = {
  */
 i18n.use(lazyLoadBackend).use(initReactI18next);
 
-// Import all en-US translations for SSR
-const enUSResources = {
-  accessibility: await import("@/locales/en-US/accessibility.json"),
-  "asset-designer": await import("@/locales/en-US/asset-designer.json"),
-  "asset-types": await import("@/locales/en-US/asset-types.json"),
-  assets: await import("@/locales/en-US/assets.json"),
-  auth: await import("@/locales/en-US/auth.json"),
-  blockchain: await import("@/locales/en-US/blockchain.json"),
-  "compliance-modules": await import("@/locales/en-US/compliance-modules.json"),
-  common: await import("@/locales/en-US/common.json"),
-  "country-multiselect": await import(
-    "@/locales/en-US/country-multiselect.json"
-  ),
-  components: await import("@/locales/en-US/components.json"),
-  dashboard: await import("@/locales/en-US/dashboard.json"),
-  "data-table": await import("@/locales/en-US/data-table.json"),
-  "deposits-table": await import("@/locales/en-US/deposits-table.json"),
-  "detail-grid": await import("@/locales/en-US/detail-grid.json"),
-  errors: await import("@/locales/en-US/errors.json"),
-  "exchange-rates": await import("@/locales/en-US/exchange-rates.json"),
-  form: await import("@/locales/en-US/form.json"),
-  formats: await import("@/locales/en-US/formats.json"),
-  general: await import("@/locales/en-US/general.json"),
-  "issuer-dashboard": await import("@/locales/en-US/issuer-dashboard.json"),
-  language: await import("@/locales/en-US/language.json"),
-  navigation: await import("@/locales/en-US/navigation.json"),
-  onboarding: await import("@/locales/en-US/onboarding.json"),
-  seo: await import("@/locales/en-US/seo.json"),
-  settings: await import("@/locales/en-US/settings.json"),
-  stats: await import("@/locales/en-US/stats.json"),
-  system: await import("@/locales/en-US/system.json"),
-  theme: await import("@/locales/en-US/theme.json"),
-  toast: await import("@/locales/en-US/toast.json"),
-  "token-factory": await import("@/locales/en-US/token-factory.json"),
-  tokens: await import("@/locales/en-US/tokens.json"),
-  user: await import("@/locales/en-US/user.json"),
-  validation: await import("@/locales/en-US/validation.json"),
-  wallet: await import("@/locales/en-US/wallet.json"),
-};
-
 void i18n.init({
   resources: {
-    "en-US": enUSResources,
+    "en-US": {
+      accessibility: enUSAccessibility,
+      "asset-designer": enUSAssetDesigner,
+      "asset-types": enUSAssetTypes,
+      assets: enUSAssets,
+      auth: enUSAuth,
+      blockchain: enUSBlockchain,
+      "compliance-modules": enUSComplianceModules,
+      common: enUSCommon,
+      "country-multiselect": enUSCountryMultiselect,
+      components: enUSComponents,
+      dashboard: enUSDashboard,
+      "data-table": enUSDataTable,
+      "deposits-table": enUSDepositsTable,
+      "detail-grid": enUSDetailGrid,
+      errors: enUSErrors,
+      "exchange-rates": enUSExchangeRates,
+      form: enUSForm,
+      formats: enUSFormats,
+      general: enUSGeneral,
+      "issuer-dashboard": enUSIssuerDashboard,
+      language: enUSLanguage,
+      navigation: enUSNavigation,
+      onboarding: enUSOnboarding,
+      seo: enUSSeo,
+      settings: enUSSettings,
+      stats: enUSStats,
+      system: enUSSystem,
+      theme: enUSTheme,
+      toast: enUSToast,
+      "token-factory": enUSTokenFactory,
+      tokens: enUSTokens,
+      user: enUSUser,
+      validation: enUSValidation,
+      wallet: enUSWallet,
+    },
   },
   lng: fallbackLng,
   fallbackLng,
