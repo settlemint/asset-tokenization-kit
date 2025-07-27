@@ -90,7 +90,7 @@ type Namespace = (typeof namespaces)[number];
  */
 async function loadResource(lng: SupportedLanguage, ns: Namespace) {
   try {
-    const module = await import(`../../../locales/${lng}/${ns}.json`);
+    const module = await import(`@/locales/${lng}/${ns}.json`);
     return module.default ?? module;
   } catch (error) {
     logger.warn(`Failed to load translation: ${lng}/${ns}`, error);
@@ -142,11 +142,54 @@ const lazyLoadBackend = {
  */
 i18n.use(lazyLoadBackend).use(initReactI18next);
 
+// Import all en-US translations for SSR
+const enUSResources = {
+  accessibility: await import("@/locales/en-US/accessibility.json"),
+  "asset-designer": await import("@/locales/en-US/asset-designer.json"),
+  "asset-types": await import("@/locales/en-US/asset-types.json"),
+  assets: await import("@/locales/en-US/assets.json"),
+  auth: await import("@/locales/en-US/auth.json"),
+  blockchain: await import("@/locales/en-US/blockchain.json"),
+  "compliance-modules": await import("@/locales/en-US/compliance-modules.json"),
+  common: await import("@/locales/en-US/common.json"),
+  "country-multiselect": await import(
+    "@/locales/en-US/country-multiselect.json"
+  ),
+  components: await import("@/locales/en-US/components.json"),
+  dashboard: await import("@/locales/en-US/dashboard.json"),
+  "data-table": await import("@/locales/en-US/data-table.json"),
+  "deposits-table": await import("@/locales/en-US/deposits-table.json"),
+  "detail-grid": await import("@/locales/en-US/detail-grid.json"),
+  errors: await import("@/locales/en-US/errors.json"),
+  "exchange-rates": await import("@/locales/en-US/exchange-rates.json"),
+  form: await import("@/locales/en-US/form.json"),
+  formats: await import("@/locales/en-US/formats.json"),
+  general: await import("@/locales/en-US/general.json"),
+  "issuer-dashboard": await import("@/locales/en-US/issuer-dashboard.json"),
+  language: await import("@/locales/en-US/language.json"),
+  navigation: await import("@/locales/en-US/navigation.json"),
+  onboarding: await import("@/locales/en-US/onboarding.json"),
+  seo: await import("@/locales/en-US/seo.json"),
+  settings: await import("@/locales/en-US/settings.json"),
+  stats: await import("@/locales/en-US/stats.json"),
+  system: await import("@/locales/en-US/system.json"),
+  theme: await import("@/locales/en-US/theme.json"),
+  toast: await import("@/locales/en-US/toast.json"),
+  "token-factory": await import("@/locales/en-US/token-factory.json"),
+  tokens: await import("@/locales/en-US/tokens.json"),
+  user: await import("@/locales/en-US/user.json"),
+  validation: await import("@/locales/en-US/validation.json"),
+  wallet: await import("@/locales/en-US/wallet.json"),
+};
+
 void i18n.init({
+  resources: {
+    "en-US": enUSResources,
+  },
   lng: fallbackLng,
   fallbackLng,
   defaultNS,
-  ns: [defaultNS, "common"], // Only load essential namespaces initially
+  ns: namespaces, // Load all namespaces initially for SSR
   supportedLngs: [...supportedLanguages],
   interpolation: {
     escapeValue: false, // React already escapes values
