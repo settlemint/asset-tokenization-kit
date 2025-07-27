@@ -1,5 +1,4 @@
 import { format as formatDateFns } from "date-fns";
-import { getDateLocale } from "./date-locale";
 
 /**
  * Format a date using the user's locale
@@ -17,8 +16,7 @@ export function formatDate(
 
   // If options is a string, use date-fns formatting
   if (typeof options === "string") {
-    const dateLocale = locale ? getDateLocale(locale) : undefined;
-    return formatDateFns(dateObj, options, { locale: dateLocale });
+    return formatDateFns(dateObj, options);
   }
 
   // Otherwise, use Intl.DateTimeFormat
@@ -35,22 +33,21 @@ export function formatDate(
 export function formatDateRange(
   start: Date | string | number,
   end: Date | string | number,
-  locale?: string
+  _locale?: string
 ): string {
   const startDate = typeof start === "object" ? start : new Date(start);
   const endDate = typeof end === "object" ? end : new Date(end);
-  const dateLocale = locale ? getDateLocale(locale) : undefined;
 
   const sameMonth = startDate.getMonth() === endDate.getMonth();
   const sameYear = startDate.getFullYear() === endDate.getFullYear();
 
   if (sameMonth && sameYear) {
-    return `${formatDateFns(startDate, "MMM d", { locale: dateLocale })} - ${formatDateFns(endDate, "d, yyyy", { locale: dateLocale })}`;
+    return `${formatDateFns(startDate, "MMM d")} - ${formatDateFns(endDate, "d, yyyy")}`;
   }
 
   if (sameYear) {
-    return `${formatDateFns(startDate, "MMM d", { locale: dateLocale })} - ${formatDateFns(endDate, "MMM d, yyyy", { locale: dateLocale })}`;
+    return `${formatDateFns(startDate, "MMM d")} - ${formatDateFns(endDate, "MMM d, yyyy")}`;
   }
 
-  return `${formatDateFns(startDate, "MMM d, yyyy", { locale: dateLocale })} - ${formatDateFns(endDate, "MMM d, yyyy", { locale: dateLocale })}`;
+  return `${formatDateFns(startDate, "MMM d, yyyy")} - ${formatDateFns(endDate, "MMM d, yyyy")}`;
 }
