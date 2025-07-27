@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { TabBadge } from "@/components/assets/tab-badge";
 import { useQuery } from "@tanstack/react-query";
-import { getAssetTabConfiguration } from "./$tokenAddress/tab-configuration";
+import { getAssetTabConfiguration } from "@/components/tab-navigation/asset-tab-configuration";
 
 const routeParamsSchema = z.object({
   factoryAddress: ethereumAddress,

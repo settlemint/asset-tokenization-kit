@@ -11,13 +11,13 @@ import type { Address } from "viem";
 
 const logger = createLogger();
 
-interface AssetTabConfigurationParams {
+export interface AssetTabConfigurationParams {
   factoryAddress: Address;
   assetAddress: Address;
   assetType: AssetType;
 }
 
-interface TabConfig {
+export interface TabConfig {
   href: string;
   tabKey:
     | "tokenInformation"
