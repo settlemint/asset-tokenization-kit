@@ -12,7 +12,7 @@
  * - XvP settlement tests in xvp.spec.ts
  */
 
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 import type { OrpcClient } from "../utils/orpc-client";
 import { getOrpcClient } from "../utils/orpc-client";
 import { signInWithUser, DEFAULT_ADMIN, DEFAULT_INVESTOR } from "../utils/user";
