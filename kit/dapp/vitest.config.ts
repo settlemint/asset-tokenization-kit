@@ -48,6 +48,7 @@ export default defineConfig({
         __dirname,
         "./test/sdk-portal-mocks.ts"
       ),
+      "better-auth": resolve(__dirname, "./test/better-auth-mocks.ts"),
     },
   },
 });
