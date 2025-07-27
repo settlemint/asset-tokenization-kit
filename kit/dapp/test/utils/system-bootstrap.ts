@@ -79,6 +79,6 @@ export async function bootstrapTokenFactories(orpClient: OrpcClient) {
     }
   }
 
-  expect(transactionHashes).toBeArrayOfSize(nonExistingFactories.length);
+  expect(transactionHashes.length).toBe(nonExistingFactories.length);
   console.log("Token factories created");
 }
