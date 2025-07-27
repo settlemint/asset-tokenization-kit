@@ -13,6 +13,7 @@ export const createPortalClient = vi.fn(() => ({
   client: {
     query: vi.fn(),
     mutation: vi.fn(),
+    request: vi.fn(),
   },
   graphql: vi.fn((query: unknown) => query),
 }));

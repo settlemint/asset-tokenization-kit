@@ -4,6 +4,7 @@ import { vi } from "vitest";
 export const portalClient = {
   query: vi.fn(),
   mutation: vi.fn(),
+  request: vi.fn(),
 };
 
 export const portalGraphql = vi.fn((query: unknown) => query);

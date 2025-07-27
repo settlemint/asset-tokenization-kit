@@ -9,7 +9,7 @@ import {
 } from "../utils/user";
 
 describe("Token create", () => {
-  test("can create a token", { timeout: 10_000 }, async () => {
+  test("can create a token", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
     const system = await client.system.read({ id: "default" });
