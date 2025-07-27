@@ -56,13 +56,10 @@ export const ethereumAddress = z
     message: "Invalid Ethereum address format or checksum",
   })
   .transform((value): Address => {
-    try {
-      return getAddress(value);
-    } catch {
-      // This should never happen since we've already validated with isAddress
-      // but we include this fallback for defensive programming
-      return value as Address;
-    }
+    // Since we've already validated with isAddress in the refine step,
+    // getAddress should always succeed. The transform directly returns
+    // the checksummed address.
+    return getAddress(value);
   });
 
 /**

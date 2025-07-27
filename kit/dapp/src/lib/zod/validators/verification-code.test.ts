@@ -1,5 +1,10 @@
-import { describe, expect, it } from "vitest";
-import { verificationCode } from "./verification-code";
+import { describe, expect, it, test } from "vitest";
+import {
+  verificationCode,
+  isVerificationCode,
+  getVerificationCode,
+  type VerificationCode,
+} from "./verification-code";
 
 describe("verificationCode", () => {
   const validator = verificationCode;
@@ -115,5 +120,180 @@ describe("verificationCode", () => {
         expect(result.data).toBe("X7K9P2M4");
       }
     });
+
+    it("should handle safeParse with invalid input", () => {
+      const result = validator.safeParse("invalid");
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        // The string "invalid" is 7 characters, so it fails length check first
+        expect(result.error.issues.length).toBeGreaterThanOrEqual(1);
+        const messages = result.error.issues.map((issue) => issue.message);
+        expect(messages).toContain(
+          "Verification code must be exactly 8 characters"
+        );
+      }
+    });
+  });
+
+  describe("edge cases", () => {
+    it("should reject strings with exactly 8 characters but invalid content", () => {
+      // 8 spaces
+      expect(() => validator.parse("        ")).toThrow(
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
+
+      // 8 special characters
+      expect(() => validator.parse("!@#$%^&*")).toThrow(
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
+
+      // Mixed valid and invalid characters
+      expect(() => validator.parse("ABC 1234")).toThrow(
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
+    });
+
+    it("should handle extreme inputs", () => {
+      // Very long string
+      const longString = "A".repeat(1000);
+      expect(() => validator.parse(longString)).toThrow(
+        "Verification code must be exactly 8 characters"
+      );
+
+      // Unicode characters
+      expect(() => validator.parse("ÀÁÂÃÄÅÆÇ")).toThrow(
+        "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
+      );
+
+      // Emoji
+      expect(() => validator.parse("😀😀😀😀😀😀😀😀")).toThrow();
+    });
+  });
+});
+
+describe("isVerificationCode", () => {
+  test("should return true for valid verification codes", () => {
+    expect(isVerificationCode("ABCD1234")).toBe(true);
+    expect(isVerificationCode("12345678")).toBe(true);
+    expect(isVerificationCode("AAAAAAAA")).toBe(true);
+    expect(isVerificationCode("Z9Y8X7W6")).toBe(true);
+  });
+
+  test("should return false for invalid verification codes", () => {
+    expect(isVerificationCode("ABCD123")).toBe(false);
+    expect(isVerificationCode("ABCD12345")).toBe(false);
+    expect(isVerificationCode("abcd1234")).toBe(false);
+    expect(isVerificationCode("ABCD-234")).toBe(false);
+    expect(isVerificationCode("ABCD 234")).toBe(false);
+    expect(isVerificationCode("")).toBe(false);
+    expect(isVerificationCode("        ")).toBe(false);
+  });
+
+  test("should return false for non-string types", () => {
+    expect(isVerificationCode(12_345_678)).toBe(false);
+    expect(isVerificationCode(null)).toBe(false);
+    expect(isVerificationCode(undefined)).toBe(false);
+    expect(isVerificationCode({})).toBe(false);
+    expect(isVerificationCode([])).toBe(false);
+    expect(isVerificationCode(true)).toBe(false);
+    expect(isVerificationCode(false)).toBe(false);
+    expect(isVerificationCode(Symbol("test"))).toBe(false);
+  });
+
+  test("should work as type guard", () => {
+    const value: unknown = "ABCD1234";
+    if (isVerificationCode(value)) {
+      // TypeScript should know value is VerificationCode here
+      const code: VerificationCode = value;
+      expect(code).toBe("ABCD1234");
+    } else {
+      throw new Error("Should have been valid");
+    }
+  });
+});
+
+describe("getVerificationCode", () => {
+  test("should return valid verification codes", () => {
+    expect(getVerificationCode("ABCD1234")).toBe("ABCD1234");
+    expect(getVerificationCode("12345678")).toBe("12345678");
+    expect(getVerificationCode("AAAAAAAA")).toBe("AAAAAAAA");
+    expect(getVerificationCode("Z9Y8X7W6")).toBe("Z9Y8X7W6");
+  });
+
+  test("should throw for invalid verification codes", () => {
+    expect(() => getVerificationCode("ABCD123")).toThrow(
+      "Verification code must be exactly 8 characters"
+    );
+    expect(() => getVerificationCode("ABCD12345")).toThrow(
+      "Verification code must be exactly 8 characters"
+    );
+    expect(() => getVerificationCode("")).toThrow(
+      "Verification code must be exactly 8 characters"
+    );
+  });
+
+  test("should throw for invalid characters", () => {
+    expect(() => getVerificationCode("abcd1234")).toThrow(
+      "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
+    );
+    expect(() => getVerificationCode("ABCD-234")).toThrow(
+      "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
+    );
+    expect(() => getVerificationCode("ABCD 234")).toThrow(
+      "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
+    );
+    expect(() => getVerificationCode("ABC@1234")).toThrow(
+      "Verification code must contain only uppercase letters (A-Z) and numbers (0-9)"
+    );
+  });
+
+  test("should throw for non-string types", () => {
+    expect(() => getVerificationCode(12_345_678)).toThrow();
+    expect(() => getVerificationCode(null)).toThrow();
+    expect(() => getVerificationCode(undefined)).toThrow();
+    expect(() => getVerificationCode({})).toThrow();
+    expect(() => getVerificationCode([])).toThrow();
+    expect(() => getVerificationCode(true)).toThrow();
+    expect(() => getVerificationCode(false)).toThrow();
+  });
+
+  test("should provide detailed error information", () => {
+    try {
+      getVerificationCode("abc");
+      throw new Error("Should have thrown");
+    } catch (error) {
+      expect(error).toBeDefined();
+      // Zod throws ZodError which has issues array
+      if (error && typeof error === "object" && "issues" in error) {
+        expect(error.issues).toBeDefined();
+      }
+    }
+  });
+
+  test("should return proper type", () => {
+    const result: VerificationCode = getVerificationCode("ABCD1234");
+    expect(result).toBe("ABCD1234");
+  });
+});
+
+describe("schema metadata", () => {
+  test("should have proper description", () => {
+    expect(verificationCode.description).toBe("Verification code");
+  });
+
+  test("should validate boundary cases", () => {
+    // All uppercase letters A-Z
+    expect(verificationCode.parse("ABCDEFGH")).toBe("ABCDEFGH");
+    expect(verificationCode.parse("IJKLMNOP")).toBe("IJKLMNOP");
+    expect(verificationCode.parse("QRSTUVWX")).toBe("QRSTUVWX");
+    expect(verificationCode.parse("YZABCDEF")).toBe("YZABCDEF");
+
+    // All digits 0-9
+    expect(verificationCode.parse("01234567")).toBe("01234567");
+    expect(verificationCode.parse("89012345")).toBe("89012345");
+
+    // Edge of valid range
+    expect(verificationCode.parse("A0A0A0A0")).toBe("A0A0A0A0");
+    expect(verificationCode.parse("Z9Z9Z9Z9")).toBe("Z9Z9Z9Z9");
   });
 });

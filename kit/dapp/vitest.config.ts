@@ -43,6 +43,11 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "./src"),
       "@settlemint/sdk-utils/logging": resolve(__dirname, "./test/mocks.ts"),
+      "@/lib/settlemint/portal": resolve(__dirname, "./test/portal-mocks.ts"),
+      "@settlemint/sdk-portal": resolve(
+        __dirname,
+        "./test/sdk-portal-mocks.ts"
+      ),
     },
   },
 });

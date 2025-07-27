@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { apiBigInt } from "./bigint";
+import { z } from "zod";
+import {
+  apiBigInt,
+  bigIntSerializer,
+  getApiBigInt,
+  isApiBigInt,
+} from "./bigint";
 
 describe("apiBigInt", () => {
   const validator = apiBigInt;
@@ -78,6 +84,17 @@ describe("apiBigInt", () => {
         55_000_000_000_000_000_000_000_000n
       );
     });
+
+    it("should handle dnum array format [bigint, number]", () => {
+      // dnum uses [bigint, number] format where the second number is the decimal exponent
+      // Note: dnum's floor() doesn't support negative exponents, so those fall through
+      expect(validator.parse([123n, 0])).toBe(123n); // 123 * 10^0 = 123
+      expect(validator.parse([-456n, 0])).toBe(-456n); // -456 * 10^0 = -456
+
+      // Arrays with negative exponents fail dnum processing and are rejected by z.coerce.bigint()
+      expect(() => validator.parse([456n, -1])).toThrow(); // dnum can't handle negative exponents
+      expect(() => validator.parse([123n, -2])).toThrow(); // dnum can't handle negative exponents
+    });
   });
 
   describe("invalid inputs", () => {
@@ -116,18 +133,39 @@ describe("apiBigInt", () => {
       expect(() => validator.parse(Number.NaN)).toThrow();
     });
 
+    it("should handle or reject invalid dnum array formats", () => {
+      // Arrays that don't match dnum format
+      expect(validator.parse([123])).toBe(123n); // Single element array coerces to bigint
+      expect(validator.parse([123n])).toBe(123n); // Single bigint element
+      expect(() => validator.parse([123n, "2"])).toThrow(); // Invalid format - not a valid dnum
+      expect(() => validator.parse(["123", 2])).toThrow(); // Invalid format - first element not bigint
+      expect(() => validator.parse([123n, 2, 3])).toThrow(); // Too many elements
+      expect(() => validator.parse([null, 2])).toThrow(); // First element null
+      expect(() => validator.parse([123n, null])).toThrow(); // Second element null
+
+      // Test dnum arrays with positive exponents that return 0
+      expect(validator.parse([123n, 3])).toBe(0n); // Positive exponent currently returns "0" -> 0n (seems like a dnum bug)
+    });
+
+    it("should handle other types by passing to z.coerce.bigint()", () => {
+      // Test types that fall through to z.coerce.bigint()
+      expect(validator.parse(true)).toBe(1n); // boolean true -> 1n
+      expect(validator.parse(false)).toBe(0n); // boolean false -> 0n
+
+      // Objects and functions should throw
+      const fn = () => {};
+      expect(() => validator.parse(fn)).toThrow();
+
+      // Symbol should throw
+      expect(() => validator.parse(Symbol("test"))).toThrow();
+    });
+
     it("should reject multiple decimal points", () => {
       // Our preprocess function now rejects multiple decimal points
       expect(() => validator.parse("123.456.789")).toThrow(
         "Invalid BigInt format: multiple decimal points"
       );
       expect(validator.safeParse("123.456.789").success).toBe(false);
-    });
-    it("should reject multiple decimal points", () => {
-      // Our preprocess function now rejects multiple decimal points
-      expect(() => validator.parse("123.456.789")).toThrow(
-        "Invalid BigInt format: multiple decimal points"
-      );
     });
   });
 
@@ -145,5 +183,76 @@ describe("apiBigInt", () => {
         expect(result.data).toBe(12_345n);
       }
     });
+  });
+});
+
+describe("isApiBigInt", () => {
+  it("should return true for valid bigint values", () => {
+    expect(isApiBigInt("123")).toBe(true);
+    expect(isApiBigInt(456)).toBe(true);
+    expect(isApiBigInt(789n)).toBe(true);
+    expect(isApiBigInt("1.23e10")).toBe(true);
+    expect(isApiBigInt([123n, 0])).toBe(true); // dnum array with 0 exponent works
+  });
+
+  it("should return false for invalid bigint values", () => {
+    expect(isApiBigInt("abc")).toBe(false);
+    expect(isApiBigInt(null)).toBe(false);
+    expect(isApiBigInt(undefined)).toBe(false);
+    expect(isApiBigInt({})).toBe(false);
+    expect(isApiBigInt(Number.NaN)).toBe(false);
+    expect(isApiBigInt(Infinity)).toBe(false);
+    expect(isApiBigInt("123.456.789")).toBe(false);
+  });
+});
+
+describe("getApiBigInt", () => {
+  it("should parse valid values", () => {
+    expect(getApiBigInt("123")).toBe(123n);
+    expect(getApiBigInt(456)).toBe(456n);
+    expect(getApiBigInt(789n)).toBe(789n);
+    expect(getApiBigInt("1e6")).toBe(1_000_000n);
+  });
+
+  it("should throw for invalid values", () => {
+    expect(() => getApiBigInt("abc")).toThrow(z.ZodError);
+    expect(() => getApiBigInt(null)).toThrow(z.ZodError);
+    expect(() => getApiBigInt(undefined)).toThrow(z.ZodError);
+    expect(() => getApiBigInt({})).toThrow(z.ZodError);
+  });
+});
+
+describe("bigIntSerializer", () => {
+  it("should have correct type number", () => {
+    expect(bigIntSerializer.type).toBe(32);
+  });
+
+  it("should correctly identify bigint values", () => {
+    expect(bigIntSerializer.condition(123n)).toBe(true);
+    expect(bigIntSerializer.condition(-456n)).toBe(true);
+    expect(bigIntSerializer.condition(0n)).toBe(true);
+
+    expect(bigIntSerializer.condition(123)).toBe(false);
+    expect(bigIntSerializer.condition("123")).toBe(false);
+    expect(bigIntSerializer.condition(null)).toBe(false);
+    expect(bigIntSerializer.condition(undefined)).toBe(false);
+  });
+
+  it("should serialize bigint to string", () => {
+    expect(bigIntSerializer.serialize(123n)).toBe("123");
+    expect(bigIntSerializer.serialize(-456n)).toBe("-456");
+    expect(bigIntSerializer.serialize(0n)).toBe("0");
+    expect(bigIntSerializer.serialize(999_999_999_999_999_999_999n)).toBe(
+      "999999999999999999999"
+    );
+  });
+
+  it("should deserialize string to bigint", () => {
+    expect(bigIntSerializer.deserialize("123")).toBe(123n);
+    expect(bigIntSerializer.deserialize("-456")).toBe(-456n);
+    expect(bigIntSerializer.deserialize("0")).toBe(0n);
+    expect(bigIntSerializer.deserialize("999999999999999999999")).toBe(
+      999_999_999_999_999_999_999n
+    );
   });
 });

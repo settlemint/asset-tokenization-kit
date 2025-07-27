@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { getUserRole, userRoleNames, userRoles } from "./user-roles";
+import {
+  getUserRole,
+  userRoleNames,
+  userRoles,
+  isUserRole,
+} from "./user-roles";
 
 describe("userRoles", () => {
   const validator = userRoles();
@@ -101,5 +106,40 @@ describe("getUserRole function", () => {
       expect(() => getUserRole("Admin")).toThrow();
       expect(() => getUserRole("USER")).toThrow();
     });
+  });
+});
+
+describe("isUserRole", () => {
+  it("should return true for valid user roles", () => {
+    expect(isUserRole("admin")).toBe(true);
+    expect(isUserRole("investor")).toBe(true);
+    expect(isUserRole("issuer")).toBe(true);
+  });
+
+  it("should return false for invalid user roles", () => {
+    expect(isUserRole("superadmin")).toBe(false);
+    expect(isUserRole("moderator")).toBe(false);
+    expect(isUserRole("guest")).toBe(false);
+    expect(isUserRole("")).toBe(false);
+    expect(isUserRole(null)).toBe(false);
+    expect(isUserRole(123)).toBe(false);
+    expect(isUserRole({})).toBe(false);
+    expect(isUserRole([])).toBe(false);
+    expect(isUserRole("Admin")).toBe(false);
+    expect(isUserRole("INVESTOR")).toBe(false);
+  });
+
+  it("should handle undefined by returning true (defaults to investor)", () => {
+    // The userRoles schema has a default value of "investor" for undefined
+    expect(isUserRole(undefined)).toBe(true);
+  });
+
+  it("should work as a type guard", () => {
+    const value: unknown = "admin";
+    if (isUserRole(value)) {
+      // TypeScript should recognize value as UserRole here
+      const validRole: "admin" | "investor" | "issuer" = value;
+      expect(validRole).toBe("admin");
+    }
   });
 });
