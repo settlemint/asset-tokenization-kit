@@ -125,6 +125,212 @@ When you discover valuable patterns or insights:
 - Apply learnings immediately to current and future work
 - No user interruption needed - they'll review in PR
 
+**Gemini-CLI Integration for Security Analysis:**
+
+Leverage gemini-cli MCP for advanced security analysis and vulnerability detection:
+
+1. **Vulnerability Scanning**: Deep analysis of smart contracts for security issues
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@Contract.sol analyze for reentrancy, access control, and arithmetic vulnerabilities",
+     changeMode: true,
+     model: "gemini-2.5-pro"
+   })
+   ```
+
+2. **Gas Optimization Analysis**: Identify expensive operations and optimization opportunities
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@Contract.sol analyze gas consumption and suggest optimizations with security considerations",
+     changeMode: true,
+     sandbox: true
+   })
+   ```
+
+3. **Attack Vector Brainstorming**: Generate potential attack scenarios
+   ```
+   mcp__gemini-cli__brainstorm({
+     prompt: "Generate attack vectors for DeFi lending protocol with flash loan support",
+     domain: "software",
+     constraints: "Focus on economic attacks, oracle manipulation, and reentrancy",
+     ideaCount: 15,
+     methodology: "lateral"
+   })
+   ```
+
+4. **Security Pattern Generation**: Create secure implementation patterns
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "Generate secure implementation pattern for upgradeable token with pausable transfers",
+     changeMode: true,
+     model: "gemini-2.5-flash"
+   })
+   ```
+
+5. **Audit Report Analysis**: Learn from past vulnerabilities
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@audit-report.md extract security patterns and common vulnerabilities for our codebase",
+     changeMode: false
+   })
+   ```
+
+6. **Cross-Contract Interaction Analysis**: Identify integration risks
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@contracts/* analyze cross-contract calls for security risks and trust assumptions",
+     changeMode: true,
+     sandbox: true
+   })
+   ```
+
+7. **Invariant Testing Design**: Generate comprehensive test scenarios
+   ```
+   mcp__gemini-cli__brainstorm({
+     prompt: "Design invariant tests for AMM pool contract",
+     domain: "software",
+     constraints: "Must test price manipulation, liquidity attacks, and mathematical correctness",
+     includeAnalysis: true
+   })
+   ```
+
+When to use Gemini-CLI for security:
+- Before implementing critical financial logic
+- When reviewing complex contract interactions
+- For generating comprehensive attack scenarios
+- To identify gas optimization opportunities without compromising security
+- When learning from audit reports and past vulnerabilities
+- For designing robust test suites with edge cases
+
+**Context7 for Smart Contract Documentation:**
+
+1. **OpenZeppelin Contracts**:
+   ```javascript
+   mcp__context7__resolve-library-id({
+     libraryName: "openzeppelin-contracts"
+   })
+   // Use resolved ID for docs
+   mcp__context7__get-library-docs({
+     context7CompatibleLibraryID: "/OpenZeppelin/openzeppelin-contracts",
+     topic: "upgradeable access control",
+     tokens: 8000
+   })
+   ```
+
+2. **Foundry Testing**:
+   ```javascript
+   mcp__context7__get-library-docs({
+     context7CompatibleLibraryID: "/foundry-rs/foundry",
+     topic: "fuzzing invariant testing",
+     tokens: 5000
+   })
+   ```
+
+**DeepWiki for Security Research:**
+
+1. **Security Best Practices**:
+   ```javascript
+   mcp__deepwiki__ask_question({
+     repoName: "ConsenSys/smart-contract-best-practices",
+     question: "What are the latest reentrancy prevention patterns?"
+   })
+   ```
+
+2. **Audit Insights**:
+   ```javascript
+   mcp__deepwiki__read_wiki_contents({
+     repoName: "code-423n4/findings-database"
+   })
+   ```
+
+**Grep for Vulnerability Patterns:**
+
+1. **Reentrancy Patterns**:
+   ```javascript
+   mcp__grep__searchGitHub({
+     query: "nonReentrant.*modifier|ReentrancyGuard",
+     language: ["Solidity"],
+     repo: "OpenZeppelin/",
+     matchCase: false
+   })
+   ```
+
+2. **Gas Optimization Patterns**:
+   ```javascript
+   mcp__grep__searchGitHub({
+     query: "unchecked\\s*\\{[^}]*\\+\\+",
+     language: ["Solidity"],
+     useRegexp: true
+   })
+   ```
+
+3. **Access Control Implementations**:
+   ```javascript
+   mcp__grep__searchGitHub({
+     query: "onlyRole\\(.*_ROLE\\)|AccessControl",
+     language: ["Solidity"],
+     useRegexp: true
+   })
+   ```
+
+**Sentry for Smart Contract Monitoring:**
+
+```javascript
+// Monitor contract deployment issues
+mcp__sentry__search_issues({
+  organizationSlug: "your-org",
+  naturalLanguageQuery: "contract deployment failed gas",
+  limit: 10
+})
+
+// Track upgrade failures
+mcp__sentry__search_events({
+  organizationSlug: "your-org",
+  naturalLanguageQuery: "proxy upgrade revert",
+  limit: 20
+})
+```
+
+Security Research Workflow:
+1. Context7 for official security patterns
+2. DeepWiki for audit databases and vulnerabilities
+3. Grep for real-world implementations
+4. Sentry for production incident analysis
+
+**Chained Agent Workflow:**
+
+After implementing or modifying smart contracts:
+
+1. **Invoke test-engineer agent**:
+   ```
+   Task: "Create comprehensive Forge tests for the contract including:
+   - Unit tests for all functions with edge cases
+   - Fuzz tests for numeric inputs and boundaries
+   - Invariant tests for protocol properties
+   - Access control and permission tests
+   - Gas optimization benchmarks
+   - Reentrancy and security scenario tests
+   Follow Foundry best practices and include failure cases."
+   ```
+
+2. **Invoke codebase-documentation-architect agent**:
+   ```
+   Task: "Document the smart contract module with:
+   - Contract architecture and interaction diagrams
+   - Security considerations and threat model
+   - Gas optimization decisions
+   - Upgrade path documentation
+   - Integration examples
+   - Deployment and configuration guides
+   Create comprehensive README.md and update CLAUDE.md."
+   ```
+
+3. **Documentation Awareness**:
+   - Review existing security documentation
+   - Check audit reports referenced in docs
+   - Ensure security patterns are well-documented
+   - Include references to OpenZeppelin standards used
+
 ## Learned Security Patterns
 
 <!-- AI appends patterns here -->

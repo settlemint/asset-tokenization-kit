@@ -2,12 +2,12 @@
  * Tests for debounce utility
  */
 
-import { describe, expect, it, mock } from "bun:test";
+import { describe, expect, it, vi } from "vitest";
 import { debounce, debounceLeading } from "./debounce";
 
 describe("debounce", () => {
   it("should debounce function calls", async () => {
-    const fn = mock();
+    const fn = vi.fn();
     const debouncedFn = debounce(fn, 100);
 
     debouncedFn("first");
@@ -23,7 +23,7 @@ describe("debounce", () => {
   });
 
   it("should cancel pending execution", async () => {
-    const fn = mock();
+    const fn = vi.fn();
     const debouncedFn = debounce(fn, 100);
 
     debouncedFn("test");
@@ -38,7 +38,7 @@ describe("debounce", () => {
   });
 
   it("should flush pending execution immediately", () => {
-    const fn = mock();
+    const fn = vi.fn();
     const debouncedFn = debounce(fn, 100);
 
     debouncedFn("test");
@@ -51,7 +51,7 @@ describe("debounce", () => {
   });
 
   it("should correctly report pending state", async () => {
-    const fn = mock();
+    const fn = vi.fn();
     const debouncedFn = debounce(fn, 100);
 
     expect(debouncedFn.pending()).toBe(false);
@@ -64,7 +64,7 @@ describe("debounce", () => {
   });
 
   it("should handle rapid successive calls", async () => {
-    const fn = mock();
+    const fn = vi.fn();
     const debouncedFn = debounce(fn, 50);
 
     // Rapid calls
@@ -85,7 +85,7 @@ describe("debounce", () => {
 
 describe("debounceLeading", () => {
   it("should execute immediately on first call", () => {
-    const fn = mock();
+    const fn = vi.fn();
     const debouncedFn = debounceLeading(fn, 100);
 
     debouncedFn("first");
@@ -94,7 +94,7 @@ describe("debounceLeading", () => {
   });
 
   it("should debounce subsequent calls", async () => {
-    const fn = mock();
+    const fn = vi.fn();
     const debouncedFn = debounceLeading(fn, 100);
 
     debouncedFn("first");
@@ -111,7 +111,7 @@ describe("debounceLeading", () => {
   });
 
   it("should allow new leading execution after delay", async () => {
-    const fn = mock();
+    const fn = vi.fn();
     const debouncedFn = debounceLeading(fn, 100);
 
     debouncedFn("first");
@@ -125,7 +125,7 @@ describe("debounceLeading", () => {
   });
 
   it("should handle cancel correctly", async () => {
-    const fn = mock();
+    const fn = vi.fn();
     const debouncedFn = debounceLeading(fn, 100);
 
     debouncedFn("first");
@@ -140,7 +140,7 @@ describe("debounceLeading", () => {
   });
 
   it("should handle flush correctly", () => {
-    const fn = mock();
+    const fn = vi.fn();
     const debouncedFn = debounceLeading(fn, 100);
 
     debouncedFn("first");

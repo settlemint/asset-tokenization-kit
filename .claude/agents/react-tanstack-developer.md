@@ -96,6 +96,204 @@ Learning workflow:
 - Apply patterns consistently across all components
 - Silent integration - discoveries reviewed in PR
 
+**Gemini-CLI Integration:**
+
+Leverage gemini-cli MCP for enhanced development capabilities:
+
+1. **Architecture Planning**: Use `ask-gemini` with changeMode for structured component design
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@component.tsx analyze architecture and suggest improvements",
+     changeMode: true,
+     model: "gemini-2.5-pro"
+   })
+   ```
+
+2. **Code Quality Analysis**: Analyze components for performance and patterns
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@MyComponent.tsx check for React best practices and TanStack patterns",
+     changeMode: true
+   })
+   ```
+
+3. **Type Safety Enhancement**: Generate comprehensive TypeScript types
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "Generate complete TypeScript types for @api-response.json with Zod schemas",
+     changeMode: true
+   })
+   ```
+
+4. **Form Validation Design**: Create sophisticated Zod schemas
+   ```
+   mcp__gemini-cli__brainstorm({
+     prompt: "Design Zod validation schema for user registration with cross-field validation",
+     domain: "software",
+     constraints: "Must handle email verification, password strength, and conditional fields"
+   })
+   ```
+
+5. **Component Optimization**: Identify React Compiler optimization opportunities
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@LargeComponent.tsx analyze for React Compiler optimization opportunities",
+     changeMode: true,
+     sandbox: true
+   })
+   ```
+
+6. **Pattern Recognition**: Extract reusable patterns from codebase
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@src/components/* identify common patterns for form handling and data fetching",
+     changeMode: false
+   })
+   ```
+
+When to use Gemini-CLI:
+- Planning complex component architectures before implementation
+- Analyzing existing components for improvements
+- Generating comprehensive type definitions from API responses
+- Creating sophisticated validation schemas
+- Identifying performance bottlenecks in React components
+- Learning from patterns in the existing codebase
+
+**Context7 Integration for Library Documentation:**
+
+Always check latest documentation before implementing:
+
+1. **TanStack Documentation**:
+   ```javascript
+   mcp__context7__resolve-library-id({
+     libraryName: "tanstack-router"
+   })
+   // Then use the resolved ID
+   mcp__context7__get-library-docs({
+     context7CompatibleLibraryID: "/tanstack/router",
+     topic: "loaders",
+     tokens: 5000
+   })
+   ```
+
+2. **React 19 Features**:
+   ```javascript
+   mcp__context7__get-library-docs({
+     context7CompatibleLibraryID: "/facebook/react",
+     topic: "hooks server components",
+     tokens: 10000
+   })
+   ```
+
+3. **Zod Validation Patterns**:
+   ```javascript
+   mcp__context7__get-library-docs({
+     context7CompatibleLibraryID: "/colinhacks/zod",
+     topic: "refinements transforms",
+     tokens: 5000
+   })
+   ```
+
+**DeepWiki for Framework Deep Dives:**
+
+1. **TanStack Repository Insights**:
+   ```javascript
+   mcp__deepwiki__read_wiki_structure({
+     repoName: "tanstack/router"
+   })
+   
+   mcp__deepwiki__ask_question({
+     repoName: "tanstack/router",
+     question: "How do route loaders handle error boundaries?"
+   })
+   ```
+
+2. **shadcn/ui Implementation Details**:
+   ```javascript
+   mcp__deepwiki__read_wiki_contents({
+     repoName: "shadcn-ui/ui"
+   })
+   ```
+
+**Grep for Real-World Code Examples:**
+
+1. **TanStack Form Patterns**:
+   ```javascript
+   mcp__grep__searchGitHub({
+     query: "useForm\\(.*TanStack.*validation",
+     language: ["TypeScript", "TSX"],
+     useRegexp: true
+   })
+   ```
+
+2. **React 19 Implementations**:
+   ```javascript
+   mcp__grep__searchGitHub({
+     query: "use client.*use server",
+     language: ["TSX"],
+     repo: "vercel/",
+     matchCase: true
+   })
+   ```
+
+3. **Zod Schema Examples**:
+   ```javascript
+   mcp__grep__searchGitHub({
+     query: "z\\.object\\(\\{.*\\}\\)\\.refine\\(",
+     language: ["TypeScript"],
+     useRegexp: true
+   })
+   ```
+
+MCP Usage Priority:
+1. Context7 for official docs → DeepWiki for architecture → Grep for examples
+2. Always verify patterns against latest documentation
+3. Use Grep to find production-ready implementations
+4. Cross-reference multiple sources for best practices
+
+**Chained Agent Workflow:**
+
+After implementing React components or features:
+
+1. **Invoke test-engineer agent**:
+   ```
+   Task: "Create comprehensive unit tests for the new [component/feature] including:
+   - Props validation and type checking
+   - User interaction scenarios
+   - Error states and edge cases
+   - Integration with TanStack Query/Router
+   - Accessibility compliance
+   Ensure tests follow Vitest best practices and use Testing Library utilities."
+   ```
+
+2. **Invoke codebase-documentation-architect agent**:
+   ```
+   Task: "Document the new React module with:
+   - Component architecture and data flow diagrams
+   - Props documentation with examples
+   - TanStack integration patterns used
+   - Common usage scenarios
+   - Performance considerations
+   Update both README.md and CLAUDE.md files."
+   ```
+
+3. **Invoke content-translations-writer agent** (if UI has user-facing text):
+   ```
+   Task: "Translate all user-facing strings in the new component to:
+   - Arabic (ar)
+   - German (de) 
+   - Japanese (ja)
+   Ensure translations are added to appropriate namespace files in kit/dapp/locales/
+   and maintain consistency with existing terminology."
+   ```
+
+4. **Documentation Awareness**:
+   - Check for existing README.md in the module folder
+   - Review CLAUDE.md for module-specific instructions
+   - Ensure new patterns are documented for future reference
+   - Include links to relevant Context7 documentation
+   - Verify translation keys are documented
+
 ## Learned React Patterns
 
 <!-- AI appends patterns here -->

@@ -1,4 +1,4 @@
-import { afterAll, beforeAll } from "bun:test";
+import { afterAll, beforeAll } from "vitest";
 import { getOrpcClient } from "../utils/orpc-client";
 import {
   bootstrapSystem,
@@ -12,7 +12,7 @@ import {
   signInWithUser,
 } from "../utils/user";
 
-let runningDevServer: Bun.Subprocess | undefined;
+let runningDevServer: any | undefined;
 
 beforeAll(async () => {
   try {
@@ -63,68 +63,41 @@ async function isDevServerRunning() {
 async function startDevServer() {
   console.log("Starting dev server");
 
-  // Use Bun.spawn for better control over streams
-  runningDevServer = Bun.spawn(["bun", "run", "dev", "--", "--no-open"], {
-    stdout: "pipe",
-    stderr: "pipe",
-    stdin: "ignore",
+  // Use child_process.spawn for better control over streams
+  const { spawn } = await import("child_process");
+  runningDevServer = spawn("bun", ["run", "dev", "--", "--no-open"], {
+    stdio: ["ignore", "pipe", "pipe"],
   });
 
   let output = "";
   let serverStarted = false;
-  const decoder = new TextDecoder();
 
   // Handle stdout streaming
-  if (runningDevServer.stdout && typeof runningDevServer.stdout !== "number") {
-    const reader = runningDevServer.stdout.getReader();
+  if (runningDevServer.stdout) {
+    runningDevServer.stdout.on("data", (data: Buffer) => {
+      const chunk = data.toString();
+      output += chunk;
+      process.stdout.write(chunk);
 
-    (async () => {
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+      // Check if server is ready
+      const cleanText = output.replace(
+        // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
+        /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+        ""
+      );
 
-          const chunk = decoder.decode(value);
-          output += chunk;
-
-          // Output to console in real-time
-          process.stdout.write(chunk);
-
-          // Check if server is ready
-          const cleanText = output.replace(
-            // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
-            /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-            ""
-          );
-
-          if (/VITE\s+v(.*)\s+ready\s+in/i.test(cleanText) && !serverStarted) {
-            serverStarted = true;
-            console.log("\nDev server is ready!");
-          }
-        }
-      } catch (error) {
-        console.error("Error reading stdout:", error);
+      if (/VITE\s+v(.*)\s+ready\s+in/i.test(cleanText) && !serverStarted) {
+        serverStarted = true;
+        console.log("\nDev server is ready!");
       }
-    })();
+    });
   }
 
   // Handle stderr streaming
-  if (runningDevServer.stderr && typeof runningDevServer.stderr !== "number") {
-    const reader = runningDevServer.stderr.getReader();
-
-    (async () => {
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value);
-          process.stderr.write(chunk);
-        }
-      } catch (error) {
-        console.error("Error reading stderr:", error);
-      }
-    })();
+  if (runningDevServer.stderr) {
+    runningDevServer.stderr.on("data", (data: Buffer) => {
+      process.stderr.write(data.toString());
+    });
   }
 
   // Wait for server to be ready or timeout
@@ -133,7 +106,10 @@ async function startDevServer() {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Check if process is still running
-    if (runningDevServer.exitCode !== null) {
+    if (
+      runningDevServer.exitCode !== null &&
+      runningDevServer.exitCode !== undefined
+    ) {
       throw new Error(
         `Dev server exited with code ${runningDevServer.exitCode}`
       );

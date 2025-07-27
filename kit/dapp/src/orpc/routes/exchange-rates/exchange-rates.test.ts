@@ -5,7 +5,7 @@
  * @module ExchangeRatesTests
  */
 import { safeParse } from "@/lib/zod";
-import { describe, expect, it, mock } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { ExchangeRatesReadSchema } from "./routes/exchange-rates.read.schema";
 import { ExchangeRatesUpdateSchema } from "./routes/exchange-rates.update.schema";
 import { ExchangeRatesDeleteSchema } from "./routes/exchange-rates.delete.schema";
@@ -18,15 +18,7 @@ import {
   currencyDataSchema,
 } from "@/lib/db/schemas/exchange-rates";
 
-// Mock the logger to avoid console output during tests
-mock.module("@settlemint/sdk-utils/logging", () => ({
-  createLogger: () => ({
-    error: mock(() => undefined),
-    warn: mock(() => undefined),
-    info: mock(() => undefined),
-    debug: mock(() => undefined),
-  }),
-}));
+// Logger is mocked via vitest.config.ts alias
 
 describe("Exchange Rates Schemas", () => {
   describe("Read Schema", () => {
