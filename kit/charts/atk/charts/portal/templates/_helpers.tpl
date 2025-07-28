@@ -355,7 +355,11 @@ servicePort: {{ $servicePort }}
 service:
   name: {{ $serviceName }}
   port:
+    {{- if kindIs "float64" $servicePort }}
+    number: {{ $servicePort }}
+    {{- else }}
     name: {{ $servicePort }}
+    {{- end }}
 {{- end -}}
 {{- end -}}
 
