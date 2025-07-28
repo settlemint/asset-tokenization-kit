@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: FSL-1.1-MIT
 pragma solidity ^0.8.28;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 
 /// @title IATKTokenSale Interface
+/// @author SettleMint
 /// @notice This interface defines the functions, events, and errors for an ATK token sale.
 /// @dev The token sale contract enables compliant sales of SMART tokens for various payment currencies,
 /// with flexible pricing mechanisms and regulatory controls.
@@ -56,6 +56,9 @@ interface IATKTokenSale {
     /// @notice Thrown when parameter ranges are invalid (e.g., min > max)
     error InvalidRange();
 
+    /// @notice Thrown when native currency transfer fails
+    error NativeCurrencyTransferFailed();
+
     // --- Events ---
 
     /// @notice Emitted when a buyer successfully purchases tokens
@@ -64,17 +67,17 @@ interface IATKTokenSale {
     /// @param paymentAmount The amount of payment currency spent
     /// @param tokenAmount The amount of tokens purchased
     event TokensPurchased(
-        address indexed buyer, address indexed paymentCurrency, uint256 paymentAmount, uint256 tokenAmount
+        address indexed buyer, address indexed paymentCurrency, uint256 indexed paymentAmount, uint256 tokenAmount
     );
 
     /// @notice Emitted when a buyer withdraws their vested tokens
     /// @param buyer The address of the buyer
     /// @param amount The amount of tokens withdrawn
-    event TokensWithdrawn(address indexed buyer, uint256 amount);
+    event TokensWithdrawn(address indexed buyer, uint256 indexed amount);
 
     /// @notice Emitted when the sale status is updated
     /// @param newStatus The new status of the sale
-    event SaleStatusUpdated(uint8 newStatus);
+    event SaleStatusUpdated(uint8 indexed newStatus);
 
     /// @notice Emitted when sale parameters are updated
     /// @param operator The address that updated the parameters
@@ -84,12 +87,12 @@ interface IATKTokenSale {
     /// @param recipient The address that received the funds
     /// @param currency The address of the currency withdrawn (address(0) for native currency)
     /// @param amount The amount withdrawn
-    event FundsWithdrawn(address indexed recipient, address indexed currency, uint256 amount);
+    event FundsWithdrawn(address indexed recipient, address indexed currency, uint256 indexed amount);
 
     /// @notice Emitted when a payment currency is added
     /// @param currency The address of the currency added
     /// @param priceRatio The price ratio for the currency
-    event PaymentCurrencyAdded(address indexed currency, uint256 priceRatio);
+    event PaymentCurrencyAdded(address indexed currency, uint256 indexed priceRatio);
 
     /// @notice Emitted when a payment currency is removed
     /// @param currency The address of the currency removed

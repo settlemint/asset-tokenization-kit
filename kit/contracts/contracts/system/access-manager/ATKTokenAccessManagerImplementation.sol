@@ -11,6 +11,7 @@ import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/ac
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 
 /// @title Centralized Access Control Manager for ATK Tokens (Upgradeable)
+/// @author SettleMint
 /// @notice This contract is a dedicated manager for handling roles and permissions across multiple
 ///         ATK token contracts. Instead of each token managing its own access control, they can
 ///         delegate these checks to an instance of this `ATKTokenAccessManager`.
@@ -53,7 +54,7 @@ contract ATKTokenAccessManagerImplementation is
         }
 
         // Grant standard admin role (can manage other roles) to the initial admin
-        for (uint256 i = 0; i < initialAdmins.length; i++) {
+        for (uint256 i = 0; i < initialAdmins.length; ++i) {
             _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins[i]);
         }
     }
@@ -69,7 +70,7 @@ contract ATKTokenAccessManagerImplementation is
     /// from `ATKTokenAccessManager`.
     /// @param role The `bytes32` identifier of the role to check.
     /// @param account The address of the account whose roles are being checked.
-    /// @return `true` if the account has the specified role, `false` otherwise.
+    /// @return hasIt true if the account has the specified role, false otherwise.
     function hasRole(
         bytes32 role,
         address account
@@ -211,7 +212,7 @@ contract ATKTokenAccessManagerImplementation is
     ///      or any interface supported by its parent `AccessControlUpgradeable` (which includes ERC165 itself
     ///      and `IAccessControl`).
     /// @param interfaceId The bytes4 identifier of the interface to check for support.
-    /// @return `true` if the contract supports the interface, `false` otherwise.
+    /// @return supported true if the contract supports the interface, false otherwise.
     function supportsInterface(bytes4 interfaceId)
         public
         view

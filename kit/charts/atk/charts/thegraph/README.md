@@ -14,7 +14,7 @@ A Helm chart for the blockscout components
 
 | Repository | Name | Version |
 |------------|------|---------|
-| http://graphops.github.io/launchpad-charts | graph-node | 0.6.0 |
+| http://graphops.github.io/launchpad-charts | graph-node | 0.6.2 |
 
 ## Values
 

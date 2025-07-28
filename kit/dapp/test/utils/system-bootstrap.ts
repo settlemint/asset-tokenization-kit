@@ -1,4 +1,4 @@
-import { expect } from "bun:test";
+import { expect } from "vitest";
 import { OrpcClient } from "./orpc-client";
 import { DEFAULT_PINCODE } from "./user";
 
@@ -79,6 +79,6 @@ export async function bootstrapTokenFactories(orpClient: OrpcClient) {
     }
   }
 
-  expect(transactionHashes).toBeArrayOfSize(nonExistingFactories.length);
+  expect(transactionHashes.length).toBe(nonExistingFactories.length);
   console.log("Token factories created");
 }

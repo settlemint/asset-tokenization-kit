@@ -1,0 +1,10 @@
+# Ignore generated files
+.generated/
+
+# Ignore temporary files created by interface ID calculation scripts
+contracts/temp_interface_calc.sol
+contracts/temp_single_calc.sol
+contracts/temp_script_output.txt
+
+# Ignore deprecated contracts (if any)
+node_modules/

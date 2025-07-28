@@ -1,0 +1,145 @@
+{
+  "charts": {
+    "assetDistribution": {
+      "description": "資産タイプ別内訳",
+      "empty": "表示する資産はありません",
+      "title": "資産分布"
+    },
+    "topAssets": {
+      "columns": {
+        "change": "24時間の変化",
+        "name": "資産",
+        "rank": "#",
+        "value": "価値",
+        "volume": "ボリューム"
+      },
+      "description": "リターン割合による資産",
+      "title": "最もパフォーマンスの良い資産"
+    },
+    "transactionVolume": {
+      "axes": {
+        "x": "日付",
+        "y": "取引"
+      },
+      "description": "日次取引数",
+      "title": "取引ボリューム"
+    },
+    "valueOverTime": {
+      "description": "時間経過に伴う総価値",
+      "periods": {
+        "all": "すべて",
+        "day": "24時間",
+        "month": "1ヶ月",
+        "quarter": "3ヶ月",
+        "week": "7日",
+        "year": "1年"
+      },
+      "title": "ポートフォリオの価値"
+    }
+  },
+  "empty": {
+    "action": "資産を作成",
+    "subtitle": "最初のトークン化された資産を作成することから始めましょう",
+    "title": "表示するデータはありません"
+  },
+  "errors": {
+    "loadFailed": "ダッシュボードデータの読み込みに失敗しました",
+    "retry": "再試行"
+  },
+  "export": {
+    "formats": {
+      "csv": "CSV",
+      "json": "JSON",
+      "pdf": "PDFレポート",
+      "xlsx": "Excel"
+    },
+    "sections": {
+      "all": "すべてのデータ",
+      "analytics": "分析レポート",
+      "assets": "資産のみ",
+      "transactions": "取引のみ"
+    },
+    "title": "データをエクスポート"
+  },
+  "filters": {
+    "apply": "フィルターを適用",
+    "assetType": "資産タイプ",
+    "dateRange": "日付範囲",
+    "reset": "リセット",
+    "status": "ステータス"
+  },
+  "loading": {
+    "activity": "アクティビティを読み込んでいます...",
+    "charts": "チャートを読み込んでいます...",
+    "stats": "統計を読み込んでいます..."
+  },
+  "quickActions": {
+    "createAsset": "新しい資産を作成",
+    "generateReport": "レポートを生成",
+    "title": "クイックアクション",
+    "transferTokens": "トークンを転送",
+    "viewPortfolio": "ポートフォリオを表示"
+  },
+  "stats": {
+    "activeUsers": {
+      "description": "過去30日間のユーザー",
+      "title": "アクティブユーザー",
+      "trend": "{{count}} 今週の新規"
+    },
+    "totalAssets": {
+      "description": "アクティブなトークン化資産",
+      "title": "総資産",
+      "trend": "{{percentage}}% 前月比"
+    },
+    "totalValue": {
+      "description": "すべての資産の合計価値",
+      "title": "ロックされた総価値",
+      "trend": "{{percentage}}% 前月比"
+    },
+    "transactions": {
+      "description": "処理された総取引数",
+      "title": "取引",
+      "trend": "{{count}} 今日"
+    }
+  },
+  "subtitle": "あなたのトークン化資産の概要",
+  "title": "ダッシュボード",
+  "welcome": {
+    "subtitle": "今日の資産の状況は以下の通りです",
+    "title": "お帰りなさい、{{name}}"
+  },
+  "widgets": {
+    "alerts": {
+      "dismiss": "閉じる",
+      "title": "アラート",
+      "types": {
+        "error": "エラー",
+        "info": "情報",
+        "success": "成功",
+        "warning": "警告"
+      },
+      "viewDetails": "詳細を表示"
+    },
+    "pendingActions": {
+      "empty": "保留中のアクションはありません",
+      "title": "保留中のアクション",
+      "types": {
+        "approval": "承認が必要",
+        "kyc": "KYC確認待ち",
+        "signature": "署名が必要"
+      }
+    },
+    "recentActivity": {
+      "empty": "最近のアクティビティはありません",
+      "title": "最近のアクティビティ",
+      "types": {
+        "approval": "{{user}} が {{spender}} を承認しました",
+        "burn": "{{amount}} {{token}} が焼却されました",
+        "deployment": "新しい {{type}} が展開されました",
+        "mint": "{{amount}} {{token}} が鋳造されました",
+        "transfer": "{{user}} が {{amount}} {{token}} を転送しました"
+      },
+      "viewAll": "すべてのアクティビティを表示"
+    }
+  }
+}

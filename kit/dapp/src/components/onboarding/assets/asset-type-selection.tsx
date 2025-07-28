@@ -1,6 +1,7 @@
 import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
 import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
+import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
@@ -18,6 +19,7 @@ import {
 } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { TriangleAlert } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -29,10 +31,10 @@ interface AssetSelectionFormValues {
 const logger = createLogger();
 
 export function AssetTypeSelection() {
-  const { refreshUserState } = useOnboardingNavigation();
+  const { refreshUserState, completeStepAndNavigate } =
+    useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common", "tokens"]);
   const queryClient = useQueryClient();
-
   // Verification dialog state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(
@@ -95,6 +97,8 @@ export function AssetTypeSelection() {
             }),
           ]);
           await refreshUserState();
+          // Navigate to next step after successful deployment
+          await completeStepAndNavigate(OnboardingStep.systemAssets);
         },
       })
     );
@@ -119,7 +123,7 @@ export function AssetTypeSelection() {
           loading: t("assets.deploying-toast"),
           success: t("assets.deployed"),
           error: (error: Error) =>
-            `Failed to deploy asset factories: ${error.message}`,
+            `${t("assets.failed-toast")}${error.message}`,
         }
       );
     },
@@ -143,8 +147,42 @@ export function AssetTypeSelection() {
     <OnboardingStepLayout
       title={t("assets.select-asset-types")}
       description={t("assets.choose-asset-types")}
+      actions={
+        <div className="flex justify-end w-full">
+          <form.Subscribe>
+            {() => (
+              <Button
+                type="button"
+                onClick={() => {
+                  void form.handleSubmit();
+                }}
+                disabled={
+                  isFactoriesCreating ||
+                  !form.state.values.assets ||
+                  form.state.values.assets.length === 0
+                }
+              >
+                {isFactoriesCreating
+                  ? t("assets.deploying")
+                  : t("assets.deploy")}
+              </Button>
+            )}
+          </form.Subscribe>
+        </div>
+      }
     >
       <div className="max-w-2xl space-y-6">
+        <div className="rounded-lg bg-sm-state-warning-background/50 border border-sm-state-warning-background p-4">
+          <div className="flex items-start gap-3">
+            <TriangleAlert className="h-5 w-5 text-sm-state-warning mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm text-sm-state-warning">
+                {t("assets.deployment-warning")}
+              </p>
+            </div>
+          </div>
+        </div>
+
         <InfoAlert
           title={t("assets.what-are-asset-factories")}
           description={t("assets.asset-factories-description")}
@@ -160,17 +198,7 @@ export function AssetTypeSelection() {
         >
           <div className="flex-1">
             <div className="space-y-6">
-              <form.Field
-                name="assets"
-                validators={{
-                  onChange: ({ value }) => {
-                    if (value.length === 0) {
-                      return t("assets.validation-error");
-                    }
-                    return undefined;
-                  },
-                }}
-              >
+              <form.Field name="assets">
                 {(field) => (
                   <>
                     <div className="space-y-4">
@@ -197,16 +225,16 @@ export function AssetTypeSelection() {
                             }
 
                             if (checked) {
-                              field.handleChange([
+                              const newValue = [
                                 ...field.state.value,
                                 assetType,
-                              ]);
+                              ];
+                              field.handleChange(newValue);
                             } else {
-                              field.handleChange(
-                                field.state.value.filter(
-                                  (value: string) => value !== assetType
-                                )
+                              const newValue = field.state.value.filter(
+                                (value: string) => value !== assetType
                               );
+                              field.handleChange(newValue);
                             }
                           };
 
@@ -231,14 +259,6 @@ export function AssetTypeSelection() {
                   </>
                 )}
               </form.Field>
-            </div>
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-border">
-            <div className="flex justify-between">
-              <Button type="submit" disabled={isFactoriesCreating}>
-                {t("assets.deploy-assets")}
-              </Button>
             </div>
           </div>
         </form>

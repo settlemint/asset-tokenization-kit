@@ -65,7 +65,7 @@ contract ATKFixedYieldScheduleUpgradeable is
         uint256 endDate_,
         uint256 rate_,
         uint256 interval_,
-        address[] memory initialAdmins_
+        address[] calldata initialAdmins_
     )
         external
         virtual
@@ -81,7 +81,7 @@ contract ATKFixedYieldScheduleUpgradeable is
         }
 
         // Grant the `DEFAULT_ADMIN_ROLE` to the `initialAdmins_`.
-        for (uint256 i = 0; i < initialAdmins_.length; i++) {
+        for (uint256 i = 0; i < initialAdmins_.length; ++i) {
             _grantRole(DEFAULT_ADMIN_ROLE, initialAdmins_[i]);
         }
     }

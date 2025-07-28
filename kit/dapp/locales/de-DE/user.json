@@ -1,0 +1,17 @@
+{
+  "actions": {
+    "createWallet": {
+      "success": "Die Brieftasche wurde erfolgreich erstellt"
+    }
+  },
+  "kyc": {
+    "actions": {
+      "delete": {
+        "success": "Das KYC-Profil wurde erfolgreich gelöscht"
+      },
+      "upsert": {
+        "success": "Das KYC-Profil wurde erfolgreich aktualisiert"
+      }
+    }
+  }
+}

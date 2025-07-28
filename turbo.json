@@ -10,12 +10,27 @@
     "GITHUB_SHA",
     "GIT_COMMIT"
   ],
+  "remoteCache": {
+    "enabled": true,
+    "signature": false,
+    "preflight": false,
+    "timeout": 30,
+    "uploadTimeout": 60
+  },
   "tasks": {
     "ci": {
       "dependsOn": ["ci:base", "format"]
     },
     "ci:base": {
-      "dependsOn": ["compile", "codegen", "lint", "test", "typecheck", "build"]
+      "dependsOn": [
+        "compile",
+        "codegen",
+        "lint",
+        "test",
+        "typecheck",
+        "build",
+        "artifacts"
+      ]
     },
     "ci:gha": {
       "dependsOn": ["ci:base", "test:integration"]
@@ -46,7 +61,11 @@
     },
     "publish": {
       "cache": false,
-      "dependsOn": ["package"]
+      "dependsOn": ["package", "artifacts"]
+    },
+    "publish:docker": {
+      "cache": false,
+      "dependsOn": ["artifacts"]
     },
     "dependencies": {},
     "format": {},

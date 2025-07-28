@@ -12,6 +12,14 @@ global:
     enabled: false
   # Namespace where ingress controller is deployed
   ingressNamespace: ingress-nginx
+  # Artifacts container configuration
+  artifacts:
+    # Image containing contract ABIs and genesis files
+    image:
+      registry: ghcr.io
+      repository: settlemint/asset-tokenization-kit-artifacts
+      tag: 2.0.0-main252a9e416
+      pullPolicy: IfNotPresent
 
 
 imagePullCredentials:

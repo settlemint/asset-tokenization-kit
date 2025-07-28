@@ -5,6 +5,7 @@ import { _SMARTExtension } from "../../common/_SMARTExtension.sol";
 import { ISMARTCapped } from "../ISMARTCapped.sol";
 
 /// @title Internal Logic for SMART Capped Token Extension
+/// @author SettleMint
 /// @notice This abstract contract provides the core, shared logic and storage for implementing
 ///         a maximum total supply (cap) on a SMART token. It is not intended for direct deployment
 ///         but serves as a base for `SMARTCapped.sol` (non-upgradeable) and

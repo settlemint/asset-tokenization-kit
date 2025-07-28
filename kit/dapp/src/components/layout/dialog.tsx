@@ -1,7 +1,6 @@
 import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { Logo } from "@/components/logo/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Card, CardContent } from "@/components/ui/card";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -16,7 +15,7 @@ export function DialogLayout({ children }: DialogLayoutProps) {
   const { t } = useTranslation(["general"]);
 
   return (
-    <div className="flex flex-col h-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
+    <div className="DialogLayout flex flex-col min-h-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
       <div className="flex-shrink-0 flex justify-between items-center p-8">
         <div className="flex w-full items-center gap-3">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
@@ -37,10 +36,10 @@ export function DialogLayout({ children }: DialogLayoutProps) {
         </div>
       </div>
 
-      <div className="flex flex-col justify-center items-center xl:h-[calc(100vh-200px)] px-16 lg:px-[5vw] 2xl:px-[16vw]">
-        <Card className="p-0 gap-0 h-full lg:max-h-[82vh]">
-          <CardContent className="p-0 m-0 h-full">{children}</CardContent>
-        </Card>
+      <div className="DialogLayout__card flex flex-col justify-center items-center flex-1 overflow-hidden">
+        <div className="h-[85vh] w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-24 max-w-[1600px] my-8">
+          {children}
+        </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { useAppForm } from "@/hooks/use-app-form";
+import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/orpc/routes/system/addon/routes/addon.create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -29,6 +31,7 @@ export function SystemAddonsSelection() {
   const { refreshUserState } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common"]);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Verification dialog state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
@@ -49,9 +52,18 @@ export function SystemAddonsSelection() {
     }),
   });
 
+  // Check if bond factory is deployed
+  const hasBondFactory = useMemo(
+    () =>
+      systemDetails?.tokenFactories.some(
+        (factory) => factory.typeId === AssetFactoryTypeIdEnum.ATKBondFactory
+      ) ?? false,
+    [systemDetails?.tokenFactories]
+  );
+
   const form = useAppForm({
     defaultValues: {
-      addons: [] as SystemAddonType[],
+      addons: hasBondFactory ? ["yield"] : ([] as SystemAddonType[]),
     },
     onSubmit: ({ value }: { value: SystemAddonsSelectionFormValues }) => {
       if (!systemDetails?.systemAddonRegistry) {
@@ -81,6 +93,11 @@ export function SystemAddonsSelection() {
               throw new Error(event.message);
             }
           }
+          // Reset the skip setting since user deployed addons
+          await updateSetting({
+            key: "SYSTEM_ADDONS_SKIPPED",
+            value: "false",
+          });
           // Refetch all relevant data
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: orpc.system.read.key() }),
@@ -95,6 +112,10 @@ export function SystemAddonsSelection() {
         },
       })
     );
+
+  const { mutateAsync: updateSetting } = useMutation(
+    orpc.settings.upsert.mutationOptions()
+  );
 
   // Handle verification code submission
   const handleVerificationSubmit = useCallback(
@@ -140,6 +161,39 @@ export function SystemAddonsSelection() {
     <OnboardingStepLayout
       title={t("system-addons.addon-selection.title")}
       description={t("system-addons.addon-selection.description")}
+      actions={
+        <>
+          {/* Only show Skip button if yield is not required */}
+          {!hasBondFactory && (
+            <Button
+              variant="outline"
+              onClick={async () => {
+                // Save that the user skipped system addons
+                await updateSetting({
+                  key: "SYSTEM_ADDONS_SKIPPED",
+                  value: "true",
+                });
+                await refreshUserState();
+                void navigate({ to: "/onboarding" });
+              }}
+            >
+              {t("common:actions.skip")}
+            </Button>
+          )}
+
+          <Button
+            type="button"
+            onClick={() => {
+              void form.handleSubmit();
+            }}
+            disabled={isAddonsCreating || form.state.values.addons.length === 0}
+          >
+            {isAddonsCreating
+              ? t("system-addons.addon-selection.deploying")
+              : t("system-addons.addon-selection.deploy-addons")}
+          </Button>
+        </>
+      }
     >
       <div className="max-w-2xl space-y-6">
         <InfoAlert
@@ -161,6 +215,11 @@ export function SystemAddonsSelection() {
                 name="addons"
                 validators={{
                   onChange: ({ value }) => {
+                    // Don't validate if bond factory requires yield and it's selected
+                    if (hasBondFactory && value.includes("yield")) {
+                      return undefined;
+                    }
+                    // Otherwise require at least one addon
                     if (value.length === 0) {
                       return t(
                         "system-addons.addon-selection.validation.invalid"
@@ -184,13 +243,19 @@ export function SystemAddonsSelection() {
                       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {availableAddons.map((addon) => {
                           const Icon = getAddonIcon(addon);
+                          const isYieldRequiredForBond =
+                            addon === "yield" && hasBondFactory;
+                          const isAlreadyDeployed = deployedAddons.has(addon);
                           const isDisabled =
-                            deployedAddons.has(addon) || isAddonsCreating;
+                            isAlreadyDeployed || isAddonsCreating;
+                          const isRequired = isYieldRequiredForBond;
                           const isChecked =
-                            field.state.value.includes(addon) || isDisabled;
+                            field.state.value.includes(addon) ||
+                            isDisabled ||
+                            isRequired;
 
                           const handleToggle = (checked: boolean) => {
-                            if (isDisabled) {
+                            if (isDisabled || isRequired) {
                               return;
                             }
 
@@ -212,6 +277,16 @@ export function SystemAddonsSelection() {
                               icon={Icon}
                               isChecked={isChecked}
                               isDisabled={isDisabled}
+                              isRequired={isRequired}
+                              disabledLabel={
+                                isRequired
+                                  ? t(
+                                      "system-addons.addon-selection.required-for-bonds"
+                                    )
+                                  : isAlreadyDeployed
+                                    ? t("assets.deployed-label")
+                                    : undefined
+                              }
                               onToggle={handleToggle}
                             />
                           );
@@ -226,14 +301,6 @@ export function SystemAddonsSelection() {
                   </>
                 )}
               </form.Field>
-            </div>
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-border">
-            <div className="flex justify-between">
-              <Button type="submit" disabled={isAddonsCreating}>
-                {t("system-addons.addon-selection.deploy-addons")}
-              </Button>
             </div>
           </div>
         </form>

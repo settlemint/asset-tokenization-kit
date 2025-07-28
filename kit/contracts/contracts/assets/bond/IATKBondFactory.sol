@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import { IATKTokenFactory } from "../../system/token-factory/IATKTokenFactory.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IATKBond } from "./IATKBond.sol";
 
 /// @title Interface for the ATK Bond Factory
 /// @author SettleMint
@@ -41,9 +42,7 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals for the bond tokens.
     /// @param cap_ The maximum total supply of the bond tokens.
-    /// @param maturityDate_ The Unix timestamp representing the bond's maturity date.
-    /// @param faceValue_ The face value of each bond token in the underlying asset's base units.
-    /// @param underlyingAsset_ The address of the ERC20 token used as the underlying asset for the bond.
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the bond.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
@@ -53,9 +52,7 @@ interface IATKBondFactory is IATKTokenFactory {
         string memory symbol_,
         uint8 decimals_,
         uint256 cap_,
-        uint256 maturityDate_,
-        uint256 faceValue_,
-        address underlyingAsset_,
+        IATKBond.BondInitParams memory bondParams,
         uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         uint16 countryCode_
@@ -68,9 +65,7 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param symbol_ The symbol of the bond.
     /// @param decimals_ The number of decimals for the bond tokens.
     /// @param cap_ The maximum total supply of the bond tokens.
-    /// @param maturityDate_ The Unix timestamp representing the bond's maturity date.
-    /// @param faceValue_ The face value of each bond token in the underlying asset's base units.
-    /// @param underlyingAsset_ The address of the ERC20 token used as the underlying asset for the bond.
+    /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
     /// @param requiredClaimTopics_ An array of claim topics required for interacting with the bond.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @return predictedAddress The predicted address of the bond contract.
@@ -79,9 +74,7 @@ interface IATKBondFactory is IATKTokenFactory {
         string memory symbol_,
         uint8 decimals_,
         uint256 cap_,
-        uint256 maturityDate_,
-        uint256 faceValue_,
-        address underlyingAsset_,
+        IATKBond.BondInitParams memory bondParams,
         uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )

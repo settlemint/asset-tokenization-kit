@@ -8,7 +8,7 @@ import { ZeroAddressNotAllowed } from "../ATKIdentityErrors.sol";
 import { IATKIdentity } from "./IATKIdentity.sol";
 
 /// @title ATK Identity Proxy Contract (for Wallet Identities)
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract serves as an upgradeable proxy for an individual on-chain identity associated with a user
 /// wallet.
 ///         It is based on the ERC725 (OnchainID) standard for identity and uses ERC734 for key management.
@@ -53,6 +53,7 @@ contract ATKIdentityProxy is AbstractATKSystemProxy {
         _performInitializationDelegatecall(implementation, data);
     }
 
+    /// @notice Gets the specific implementation address for the identity proxy
     /// @dev Retrieves the implementation address for the Identity module from the `IATKSystem` contract.
     /// @dev Reverts with `IdentityImplementationNotSet` if the implementation address is zero.
     /// @param system The `IATKSystem` contract instance.

@@ -11,11 +11,12 @@
     "codegen:types": "bun run tools/codegen-types.ts",
     "artifacts:genesis": "bun run tools/artifacts-genesis.ts",
     "artifacts:abi": "bun run tools/artifacts-abi.ts",
-    "lint": "solhint --config .solhint.json --noPoster --max-warnings 0 ./contracts/**/*.sol",
+    "lint": "solhint --config .solhint.json --max-warnings 0 --noPoster './contracts/**/!(temp_)*.sol'",
     "format:forge": "settlemint scs foundry format",
     "format:prettier": "prettier --experimental-cli --write .",
     "clean:deployments": "rm -Rf ignition/deployments/atk-local",
     "publish": "bun run clean:deployments && settlemint scs hardhat script local --script scripts/hardhat/main.ts",
+    "publish:docker": "DOCKER_BUILD_TAG=$(jq -r .version ../../package.json); if [ -z \"$CI\" ]; then DOCKER_BUILD_TAG=\"$DOCKER_BUILD_TAG-dev.$(date +%s)\"; fi; docker buildx build . --file=./Dockerfile --platform=linux/amd64,linux/arm64 --provenance true --sbom true -t ghcr.io/settlemint/asset-tokenization-kit-artifacts:$DOCKER_BUILD_TAG --push",
     "abi-output": "bash tools/abi-output.sh",
     "test": "settlemint scs foundry test -vvv",
     "deploy:remote": "settlemint scs hardhat deploy remote --deployment-id asset-tokenization"
@@ -23,7 +24,7 @@
   "dependencies": {
     "@nomicfoundation/hardhat-ignition": "0.15.13",
     "merkletreejs": "0.5.2",
-    "viem": "2.33.0"
+    "viem": "2.33.1"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-foundry": "1.2.0",

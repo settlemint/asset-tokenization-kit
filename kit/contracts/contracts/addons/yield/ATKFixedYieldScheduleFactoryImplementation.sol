@@ -9,7 +9,6 @@ import { IATKFixedYieldScheduleFactory } from "./IATKFixedYieldScheduleFactory.s
 import { ISMARTFixedYieldSchedule } from "../../smart/extensions/yield/schedules/fixed/ISMARTFixedYieldSchedule.sol";
 import { ISMARTYield } from "../../smart/extensions/yield/ISMARTYield.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { IWithTypeIdentifier } from "./../../smart/interface/IWithTypeIdentifier.sol";
 
 // Implementations
 import { AbstractATKSystemAddonFactoryImplementation } from
@@ -38,9 +37,14 @@ contract ATKFixedYieldScheduleFactoryImplementation is
     AbstractATKSystemAddonFactoryImplementation,
     IATKFixedYieldScheduleFactory
 {
-    /// @inheritdoc IWithTypeIdentifier
-    // solhint-disable-next-line const-name-snakecase
-    bytes32 public constant override typeId = keccak256("ATKFixedYieldScheduleFactory");
+    /// @notice The unique type identifier for this factory
+    bytes32 public constant TYPE_ID = keccak256("ATKFixedYieldScheduleFactory");
+
+    /// @notice Returns the unique type identifier for this factory
+    /// @return The type identifier as a bytes32 hash
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice Address of the current `ATKFixedYieldSchedule` logic contract (implementation).
     address public atkFixedYieldScheduleImplementation;

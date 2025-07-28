@@ -6,6 +6,7 @@ import { SMARTHooks } from "../common/SMARTHooks.sol";
 import { SMARTContext } from "../common/SMARTContext.sol";
 
 /// @title Base Contract for All SMART Token Extensions
+/// @author SettleMint
 /// @notice This abstract contract serves as the ultimate base for all SMART token extensions,
 ///         both standard and upgradeable. It provides fundamental shared functionalities like
 ///         interface registration for ERC165 support and inherits core SMART interfaces and hook definitions.
@@ -45,7 +46,7 @@ abstract contract _SMARTExtension is ISMART, SMARTContext, SMARTHooks {
     /// @param interfaceId The `bytes4` interface identifier to check.
     /// @return bool `true` if the interface is registered, `false` otherwise.
     function _isInterfaceRegistered(bytes4 interfaceId) internal view returns (bool) {
-        for (uint8 i = 0; i < _registeredInterfacesCount; i++) {
+        for (uint8 i = 0; i < _registeredInterfacesCount; ++i) {
             if (_registeredInterfaces[i] == interfaceId) {
                 return true;
             }
@@ -66,11 +67,11 @@ abstract contract _SMARTExtension is ISMART, SMARTContext, SMARTHooks {
     function _registerInterface(bytes4 interfaceId) internal {
         // Only register if not already registered to avoid duplicates
         if (!_isInterfaceRegistered(interfaceId)) {
-            if (_registeredInterfacesCount >= _registeredInterfaces.length) {
+            if (_registeredInterfacesCount == _registeredInterfaces.length) {
                 revert InterfaceRegistrationLimitReached();
             }
             _registeredInterfaces[_registeredInterfacesCount] = interfaceId;
-            _registeredInterfacesCount++;
+            ++_registeredInterfacesCount;
         }
     }
 
@@ -81,7 +82,7 @@ abstract contract _SMARTExtension is ISMART, SMARTContext, SMARTHooks {
     /// @return An array of `bytes4` interface identifiers that have been registered.
     function registeredInterfaces() external view returns (bytes4[] memory) {
         bytes4[] memory interfaces = new bytes4[](_registeredInterfacesCount);
-        for (uint256 i = 0; i < _registeredInterfacesCount; i++) {
+        for (uint256 i = 0; i < _registeredInterfacesCount; ++i) {
             interfaces[i] = _registeredInterfaces[i];
         }
         return interfaces;

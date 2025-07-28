@@ -179,6 +179,20 @@ jobs:
             bun run ci:gha:main --concurrency=100%
           fi
 
+      - name: Coverage Report
+        if: |
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.draft == false &&
+          steps.qa-tests.outcome == 'success'
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          name: 'dapp'
+          working-directory: './kit/dapp'
+          json-summary-path: './coverage/coverage-summary.json'
+          json-final-path: './coverage/coverage-final.json'
+          vite-config-path: './vitest.config.ts'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Docker compose logs on failure
         if: |
           failure() &&

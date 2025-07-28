@@ -16,6 +16,7 @@ export function fetchVault(address: Address): Vault {
     vault.balance = BigDecimal.fromString("0");
     vault.balanceExact = BigInt.fromI32(0);
     vault.deployedInTransaction = Bytes.empty();
+    vault.weightedSignaturesEnabled = false;
     vault.save();
   }
 

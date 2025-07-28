@@ -22,7 +22,7 @@ export function SidebarLogo() {
         >
           <Link to="/" className="flex items-center gap-2">
             <div className="flex aspect-square size-8 items-center justify-center">
-              <Logo variant="icon" />
+              <Logo variant="icon" forcedColorMode="dark" />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="font-bold text-lg text-primary-foreground">

@@ -227,19 +227,21 @@ export const errorMiddleware = baseRouter.middleware(async ({ next }) => {
 
     // Handle other ORPC errors
     if (error instanceof ORPCError) {
-      // Log the error for debugging with full context
-      logger.error("ORPC error", {
-        code: error.code as string,
-        status: error.status,
-        message:
-          error.message || `Request failed with status ${String(error.code)}`,
-        cause:
-          error.cause instanceof Error
-            ? error.cause.message
-            : String(error.cause),
-        stack: error.cause instanceof Error ? error.cause.stack : undefined,
-        data: error.data as unknown,
-      });
+      if (error.code !== "NOT_FOUND" && error.code !== "UNAUTHORIZED") {
+        // Log the error for debugging with full context
+        logger.error("ORPC error", {
+          code: error.code as string,
+          status: error.status,
+          message:
+            error.message || `Request failed with status ${String(error.code)}`,
+          cause:
+            error.cause instanceof Error
+              ? error.cause.message
+              : String(error.cause),
+          stack: error.cause instanceof Error ? error.cause.stack : undefined,
+          data: error.data as unknown,
+        });
+      }
 
       // Ensure the error has a meaningful message
       if (!error.message || error.message.trim() === "") {

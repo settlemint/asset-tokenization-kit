@@ -17,6 +17,7 @@ import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegi
 import { IATKTokenSale } from "./IATKTokenSale.sol";
 
 /// @title ATKTokenSale
+/// @author SettleMint
 /// @notice Implementation of the token sale module for SMART tokens in the ATK ecosystem
 /// @dev This contract handles the compliant sale of SMART tokens with various payment methods and compliance checks
 contract ATKTokenSale is
@@ -162,6 +163,8 @@ contract ATKTokenSale is
         _;
     }
 
+    /// @notice Constructor that disables initializers to prevent implementation contract initialization
+    /// @dev Sets the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder The address of the forwarder contract for ERC2771
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
@@ -362,7 +365,7 @@ contract ATKTokenSale is
             amount = address(this).balance;
             if (amount > 0) {
                 (bool success,) = recipient.call{ value: amount }("");
-                require(success, "Native currency transfer failed");
+                if (!success) revert NativeCurrencyTransferFailed();
             }
         } else {
             // Withdraw ERC20 tokens
@@ -428,7 +431,7 @@ contract ATKTokenSale is
             return 0;
         }
 
-        if (block.timestamp >= vesting.startTime + vesting.duration) {
+        if (block.timestamp > vesting.startTime + vesting.duration - 1) {
             // After vesting period ends, all tokens can be withdrawn
             return remaining;
         }
@@ -541,7 +544,9 @@ contract ATKTokenSale is
         emit TokensPurchased(buyer, currency, paymentAmount, tokenAmount);
     }
 
+    /// @notice Returns the context suffix length for ERC2771 compatibility
     /// @dev Required override for ERC2771ContextUpgradeable
+    /// @return The length of the context suffix for meta-transactions
     function _contextSuffixLength()
         internal
         view
@@ -552,12 +557,16 @@ contract ATKTokenSale is
         return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 
+    /// @notice Returns the sender of the transaction, supporting ERC2771 meta-transactions
     /// @dev Required override for ERC2771ContextUpgradeable
+    /// @return The address of the transaction sender
     function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
         return ERC2771ContextUpgradeable._msgSender();
     }
 
+    /// @notice Returns the calldata of the transaction, supporting ERC2771 meta-transactions
     /// @dev Required override for ERC2771ContextUpgradeable
+    /// @return The calldata of the transaction
     function _msgData()
         internal
         view

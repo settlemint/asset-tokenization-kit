@@ -6,7 +6,9 @@ import { ISMARTYield } from "../ISMARTYield.sol";
 import { ISMARTYieldSchedule } from "../schedules/ISMARTYieldSchedule.sol";
 
 /// @title Internal Logic for the SMART Yield Extension
-/// @notice This abstract contract provides the core, reusable logic for managing yield schedules associated with a
+/// @author SettleMint
+/// @notice This abstract contract provides the core, reusable logic for managing yield schedules
+/// associated with a
 /// SMART token.
 /// It handles setting a yield schedule and includes a hook for `_beforeMint` to potentially restrict minting once a
 /// schedule is active.
@@ -88,7 +90,10 @@ abstract contract _SMARTYieldLogic is _SMARTExtension, ISMARTYield {
             // Only proceed if a yield schedule is actually set.
             // Check if the yield schedule has already started.
             // This is done by calling the `startDate()` function on the external `yieldSchedule` contract.
-            if (ISMARTYieldSchedule(yieldSchedule).startDate() <= block.timestamp) {
+            if (
+                ISMARTYieldSchedule(yieldSchedule).startDate() < block.timestamp
+                    || ISMARTYieldSchedule(yieldSchedule).startDate() == block.timestamp
+            ) {
                 revert YieldScheduleActive(); // If the schedule has started, revert to prevent minting.
             }
         }

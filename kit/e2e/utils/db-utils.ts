@@ -6,6 +6,8 @@ import postgres from "pg";
 import { adminUser } from "../test-data/user-data";
 const { Client } = postgres;
 
+type UserRole = "admin" | "user";
+
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../../"
@@ -20,8 +22,6 @@ if (!databaseUrl) {
     "SETTLEMINT_HASURA_DATABASE_URL not found in environment variables"
   );
 }
-
-export type UserRole = "admin" | "user";
 
 interface DatabaseConfig extends ClientConfig {
   connectionString: string;
@@ -137,9 +137,7 @@ export async function ensureUserIsAdmin(
   }
 }
 
-export async function getUserPincodeStatusFromDB(
-  email: string
-): Promise<{
+export async function getUserPincodeStatusFromDB(email: string): Promise<{
   pincodeEnabled: boolean;
   pincodeVerificationId: string | null;
 } | null> {
@@ -188,5 +186,20 @@ export async function isPincodeEnabledInDB(email: string): Promise<boolean> {
       error instanceof Error ? error.message : String(error)
     );
     return false;
+  }
+}
+
+export async function cleanupZeroAddressUsers(): Promise<void> {
+  const client = await createDbClient();
+  try {
+    await client.query('DELETE FROM "user" WHERE wallet = $1', [
+      "0x0000000000000000000000000000000000000000",
+    ]);
+  } catch (error) {
+    throw new Error(
+      `Failed to cleanup zero address users: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
+  } finally {
+    await client.end();
   }
 }

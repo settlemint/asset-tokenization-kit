@@ -26,26 +26,31 @@ developers to:
 
 ### Available Extensions
 
-The actual files in the `onchainid/` directory provide building blocks for OnChainID implementations:
+The actual files in the `onchainid/` directory provide building blocks for
+OnChainID implementations:
 
 #### Core Constants
+
 - `ERC734KeyPurposes.sol` - Key purpose constants
-- `ERC734KeyTypes.sol` - Cryptographic key types  
+- `ERC734KeyTypes.sol` - Cryptographic key types
 - `ERC735ClaimSchemes.sol` - Signature scheme constants
 
 #### Interface Definitions
+
 - `IContractIdentity.sol` - Interface for contract identities
 
 #### Extension Implementations (in `extensions/` folder)
+
 - `OnChainIdentity.sol` - Standard user identity implementation
-- `OnChainContractIdentity.sol` - Contract identity implementation  
+- `OnChainContractIdentity.sol` - Contract identity implementation
 - `OnChainIdentityWithRevocation.sol` - Identity with revocation support
 - `ERC734.sol` - ERC-734 key management extension
 - `ERC735.sol` - ERC-735 claim management extension
 - `ClaimAuthorizationExtension.sol` - Claim authorization logic
 - `IClaimAuthorizer.sol` - Claim authorizer interface
 
-These files provide the building blocks for creating OnChainID-compliant identity systems with modular, extensible architecture.
+These files provide the building blocks for creating OnChainID-compliant
+identity systems with modular, extensible architecture.
 
 ### Claim Issuance Mechanisms
 
@@ -140,7 +145,7 @@ graph TB
         Constants[ERC734KeyPurposes<br/>ERC734KeyTypes<br/>ERC735ClaimSchemes]
         IContract[IContractIdentity.sol]
     end
-    
+
     subgraph "extensions/ Directory"
         OnchainID[OnChainIdentity.sol]
         ContractID[OnChainContractIdentity.sol]
@@ -156,7 +161,7 @@ graph TB
     RevocationID --> Constants
     ERC734 --> Constants
     ERC735 --> Constants
-    
+
     ContractID --> IContract
     ClaimAuth --> IClaimAuth
 
@@ -179,19 +184,19 @@ graph TB
 
 ### Available Extensions
 
-| Extension                           | Purpose                           | Status | Integration Points                         |
-| ----------------------------------- | --------------------------------- | ------ | ------------------------------------------ |
-| `OnChainIdentity`                   | Standard user identity            | Stable | Complete ERC-734/735 implementation       |
-| `OnChainContractIdentity`           | Contract identity with issueClaimTo | Stable | For smart contracts needing identity      |
-| `OnChainIdentityWithRevocation`     | Identity with claim revocation    | Stable | Enhanced identity with revocation support |
-| `ERC734`                           | ERC-734 key management extension  | Stable | Key management building block             |
-| `ERC735`                           | ERC-735 claim management extension | Stable | Claim management building block           |
-| `ERC734KeyPurposes`                | Key purpose constants             | Stable | Used by ERC734 extension                 |
-| `ERC734KeyTypes`                   | Cryptographic key types           | Stable | Used by ERC734 extension                 |
-| `ERC735ClaimSchemes`               | Signature schemes                 | Stable | Used by ERC735 extension                 |
-| `ClaimAuthorizationExtension`      | Programmatic claim control        | Stable | Extension for authorization logic         |
-| `IContractIdentity`                | Contract identity interface       | Stable | Interface definition                      |
-| `IClaimAuthorizer`                 | Claim authorizer interface        | Stable | Interface definition                      |
+| Extension                       | Purpose                             | Status | Integration Points                        |
+| ------------------------------- | ----------------------------------- | ------ | ----------------------------------------- |
+| `OnChainIdentity`               | Standard user identity              | Stable | Complete ERC-734/735 implementation       |
+| `OnChainContractIdentity`       | Contract identity with issueClaimTo | Stable | For smart contracts needing identity      |
+| `OnChainIdentityWithRevocation` | Identity with claim revocation      | Stable | Enhanced identity with revocation support |
+| `ERC734`                        | ERC-734 key management extension    | Stable | Key management building block             |
+| `ERC735`                        | ERC-735 claim management extension  | Stable | Claim management building block           |
+| `ERC734KeyPurposes`             | Key purpose constants               | Stable | Used by ERC734 extension                  |
+| `ERC734KeyTypes`                | Cryptographic key types             | Stable | Used by ERC734 extension                  |
+| `ERC735ClaimSchemes`            | Signature schemes                   | Stable | Used by ERC735 extension                  |
+| `ClaimAuthorizationExtension`   | Programmatic claim control          | Stable | Extension for authorization logic         |
+| `IContractIdentity`             | Contract identity interface         | Stable | Interface definition                      |
+| `IClaimAuthorizer`              | Claim authorizer interface          | Stable | Interface definition                      |
 
 ## 📁 Directory Structure
 
