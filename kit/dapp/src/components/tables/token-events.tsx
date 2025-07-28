@@ -247,13 +247,13 @@ export function TokenEventsTable({ token }: TokenEventsTableProps) {
   const router = useRouter();
   const routePath = router.state.matches.at(-1)?.pathname;
 
-  const { data: eventsResponse } = useSuspenseQuery({
-    ...orpc.token.events.queryOptions({
+  const { data: eventsResponse } = useSuspenseQuery(
+    orpc.token.events.queryOptions({
       input: {
         tokenAddress: token.id,
       },
-    }),
-  });
+    })
+  );
 
   // Extract events data
   const events = eventsResponse.events;

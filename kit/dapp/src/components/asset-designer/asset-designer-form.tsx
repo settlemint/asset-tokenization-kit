@@ -15,7 +15,6 @@ import { Summary } from "@/components/asset-designer/summary/summary";
 import { StepLayout } from "@/components/stepper/step-layout";
 import { getNextStep, getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
-import { waitForStream } from "@/lib/utils/stream";
 import {
   getFactoryTypeIdFromAssetType,
   type AssetType,
@@ -40,12 +39,7 @@ export const AssetDesignerForm = ({ factories }: AssetDesignerFormProps) => {
   const queryClient = useQueryClient();
   const { mutateAsync: createToken } = useMutation(
     orpc.token.create.mutationOptions({
-      mutationFn: async (values) => {
-        return await orpc.token.create.call(values);
-      },
-      onSuccess: async (result, variables) => {
-        await waitForStream(result, "token creation");
-
+      onSuccess: async (_result, variables) => {
         const tokenFactory = getFactoryAddressFromTypeId(
           factories,
           variables.type

@@ -19,8 +19,8 @@ export function KycForm({ onComplete, disabled }: KycFormProps) {
   const { t } = useTranslation(["components"]);
   const { data: session } = authClient.useSession();
 
-  const { data: kyc } = useQuery({
-    ...orpc.user.kyc.read.queryOptions({
+  const { data: kyc } = useQuery(
+    orpc.user.kyc.read.queryOptions({
       input: {
         userId: session?.user.id ?? "",
       },
@@ -28,8 +28,8 @@ export function KycForm({ onComplete, disabled }: KycFormProps) {
       // If it fails, the account is not yet created, so we don't want to retry
       retry: false,
       throwOnError: false,
-    }),
-  });
+    })
+  );
 
   const form = useAppForm({
     defaultValues: {

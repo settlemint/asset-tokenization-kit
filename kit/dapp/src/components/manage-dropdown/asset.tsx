@@ -6,37 +6,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  FieldDescription,
-  FieldErrors,
-  FieldLabel,
-  FieldLayout,
-} from "@/components/form/field";
-import { Input } from "@/components/ui/input";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { PauseUnpauseConfirmationSheet } from "@/components/manage-dropdown/pause-unpause-confirmation-sheet";
+import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { orpc } from "@/orpc/orpc-client";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, Loader2, Pause, Play } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { useForm } from "@tanstack/react-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ChevronDown, Pause, Play } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-
-/**
- * Verification form values for pause/unpause operations
- */
-interface VerificationFormValues {
-  verificationCode: string;
-  verificationType: "pincode";
-}
+import { toast } from "sonner";
 
 interface ManageAssetDropdownProps {
   asset: Token; // Keep Token type to maintain API compatibility
@@ -48,73 +27,78 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const [openAction, setOpenAction] = useState<"pause" | "unpause" | null>(
     null
   );
+  const [showConfirmationSheet, setShowConfirmationSheet] = useState(false);
+  const [showVerificationDialog, setShowVerificationDialog] = useState(false);
 
   const isPaused = asset.pausable.paused;
 
   // Pause mutation
-  const {
-    mutate: pauseAsset,
-    isPending: isPausing,
-    isTracking: isTrackingPause,
-  } = useStreamingMutation({
-    mutationOptions: orpc.token.pause.mutationOptions(),
-    onSuccess: async () => {
-      // Invalidate asset query to refresh the paused state
-      await queryClient.invalidateQueries({
-        queryKey: orpc.token.read.key({
-          input: { tokenAddress: asset.id },
-        }),
-      });
-      setOpenAction(null);
-      form.reset();
-    },
-  });
+  const { mutate: pauseAsset } = useMutation(
+    orpc.token.pause.mutationOptions({
+      onSuccess: async () => {
+        // Invalidate both single asset and list queries
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.read.key({
+              input: { tokenAddress: asset.id },
+            }),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.list.key(),
+          }),
+        ]);
+        setShowVerificationDialog(false);
+        setOpenAction(null);
+        toast.success(t("actions.pause.messages.success"));
+      },
+      onError: (error) => {
+        toast.error(t("actions.pause.messages.error"), {
+          description: error.message,
+        });
+      },
+    })
+  );
 
   // Unpause mutation
-  const {
-    mutate: unpauseAsset,
-    isPending: isUnpausing,
-    isTracking: isTrackingUnpause,
-  } = useStreamingMutation({
-    mutationOptions: orpc.token.unpause.mutationOptions(),
-    onSuccess: async () => {
-      // Invalidate asset query to refresh the paused state
-      await queryClient.invalidateQueries({
-        queryKey: orpc.token.read.key({
-          input: { tokenAddress: asset.id },
-        }),
-      });
-      setOpenAction(null);
-      form.reset();
-    },
-  });
-
-  const form = useForm({
-    defaultValues: {
-      verificationCode: "",
-      verificationType: "pincode" as const,
-    },
-    onSubmit: ({ value }: { value: VerificationFormValues }) => {
-      handleSubmit(value);
-    },
-  });
-
-  const handleSubmit = useCallback(
-    (values: VerificationFormValues) => {
-      if (openAction === "pause") {
-        pauseAsset({
-          contract: asset.id,
-          verification: values,
+  const { mutate: unpauseAsset } = useMutation(
+    orpc.token.unpause.mutationOptions({
+      onSuccess: async () => {
+        // Invalidate both single asset and list queries
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.read.key({
+              input: { tokenAddress: asset.id },
+            }),
+          }),
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.list.key(),
+          }),
+        ]);
+        setShowVerificationDialog(false);
+        setOpenAction(null);
+        toast.success(t("actions.unpause.messages.success"));
+      },
+      onError: (error) => {
+        toast.error(t("actions.unpause.messages.error"), {
+          description: error.message,
         });
-      } else if (openAction === "unpause") {
-        unpauseAsset({
-          contract: asset.id,
-          verification: values,
-        });
-      }
-    },
-    [openAction, pauseAsset, unpauseAsset, asset.id]
+      },
+    })
   );
+
+  const handleVerificationSubmit = (verification: UserVerification) => {
+    if (openAction === "pause") {
+      pauseAsset({
+        contract: asset.id,
+        verification,
+      });
+    } else if (openAction === "unpause") {
+      unpauseAsset({
+        contract: asset.id,
+        verification,
+      });
+    }
+  };
 
   const actions = useMemo(
     () => [
@@ -126,6 +110,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         icon: isPaused ? Play : Pause,
         onClick: () => {
           setOpenAction(isPaused ? "unpause" : "pause");
+          setShowConfirmationSheet(true);
         },
         disabled: false,
       },
@@ -133,27 +118,21 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     [isPaused, t]
   );
 
-  const isLoading = isPausing || isUnpausing;
-  const isTracking = isTrackingPause || isTrackingUnpause;
-
-  const handleOpenAutoFocus = useCallback((e: Event) => {
-    e.preventDefault();
-  }, []);
-
-  const handleSheetOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        setOpenAction(null);
-        form.reset();
-      }
-    },
-    [form]
-  );
-
-  const handleCancel = useCallback(() => {
+  const handleCancel = () => {
+    setShowVerificationDialog(false);
+    setShowConfirmationSheet(false);
     setOpenAction(null);
-    form.reset();
-  }, [form]);
+  };
+
+  const handleConfirmationProceed = () => {
+    setShowConfirmationSheet(false);
+    setShowVerificationDialog(true);
+  };
+
+  const handleConfirmationCancel = () => {
+    setShowConfirmationSheet(false);
+    setOpenAction(null);
+  };
 
   return (
     <>
@@ -187,98 +166,36 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Sheet open={openAction !== null} onOpenChange={handleSheetOpenChange}>
-        <SheetContent
-          className="min-w-[25rem]"
-          onOpenAutoFocus={handleOpenAutoFocus}
-        >
-          <SheetHeader>
-            <SheetTitle>
-              {openAction === "pause"
-                ? t("tokens:actions.pause.title")
-                : t("tokens:actions.unpause.title")}
-            </SheetTitle>
-            <SheetDescription>
-              {openAction === "pause"
-                ? t("tokens:actions.pause.description")
-                : t("tokens:actions.unpause.description")}
-            </SheetDescription>
-          </SheetHeader>
+      <PauseUnpauseConfirmationSheet
+        open={showConfirmationSheet}
+        onOpenChange={setShowConfirmationSheet}
+        asset={asset}
+        action={openAction || "pause"}
+        onProceed={handleConfirmationProceed}
+        onCancel={handleConfirmationCancel}
+      />
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              void form.handleSubmit();
-            }}
-            className="space-y-6 mt-6"
-          >
-            <form.Field
-              name="verificationCode"
-              validators={{
-                onChange: ({ value }) => {
-                  if (value.length < 6) {
-                    return "Verification code must be 6 digits";
-                  }
-                  return undefined;
-                },
-              }}
-            >
-              {(field) => (
-                <FieldLayout>
-                  <FieldLabel
-                    htmlFor="verificationCode"
-                    label={t("common:verification.pincode.label")}
-                  />
-                  <Input
-                    id="verificationCode"
-                    value={field.state.value}
-                    onChange={(e) => {
-                      field.handleChange(e.target.value);
-                    }}
-                    onBlur={field.handleBlur}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength={6}
-                    placeholder="123456"
-                    disabled={isLoading || isTracking}
-                  />
-                  <FieldDescription
-                    description={t("common:verification.pincode.description")}
-                  />
-                  <FieldErrors {...field.state.meta} />
-                </FieldLayout>
-              )}
-            </form.Field>
-
-            <SheetFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                disabled={isLoading || isTracking}
-              >
-                {t("common:actions.cancel")}
-              </Button>
-              <Button type="submit" disabled={isLoading || isTracking}>
-                {isLoading || isTracking ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    {openAction === "pause"
-                      ? t("tokens:actions.pause.submitting")
-                      : t("tokens:actions.unpause.submitting")}
-                  </>
-                ) : openAction === "pause" ? (
-                  t("tokens:actions.pause.submit")
-                ) : (
-                  t("tokens:actions.unpause.submit")
-                )}
-              </Button>
-            </SheetFooter>
-          </form>
-        </SheetContent>
-      </Sheet>
+      <VerificationDialog
+        open={showVerificationDialog}
+        onOpenChange={(open) => {
+          if (!open) {
+            setShowVerificationDialog(false);
+            setOpenAction(null);
+          }
+        }}
+        title={
+          openAction === "pause"
+            ? t("tokens:actions.pause.title")
+            : t("tokens:actions.unpause.title")
+        }
+        description={
+          openAction === "pause"
+            ? t("tokens:actions.pause.description")
+            : t("tokens:actions.unpause.description")
+        }
+        onSubmit={handleVerificationSubmit}
+        onCancel={handleCancel}
+      />
     </>
   );
 }

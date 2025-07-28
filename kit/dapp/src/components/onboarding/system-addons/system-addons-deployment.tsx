@@ -17,11 +17,11 @@ export function SystemAddonsDeployment() {
   const { completeStepAndNavigate } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common"]);
 
-  const { data: systemDetails } = useQuery({
-    ...orpc.system.read.queryOptions({
+  const { data: systemDetails } = useQuery(
+    orpc.system.read.queryOptions({
       input: { id: "default" },
-    }),
-  });
+    })
+  );
 
   // Stable reference for deployed addons
   const deployedAddons = systemDetails?.systemAddons ?? [];
