@@ -15,10 +15,12 @@ import {
 } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth/auth.client";
 import { twoFactorCode } from "@/lib/zod/validators/two-factor-code";
+import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import QRCode from "react-qr-code";
 import { toast } from "sonner";
 
 interface OtpSetupModalProps {
@@ -26,11 +28,14 @@ interface OtpSetupModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const logger = createLogger();
+
 export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
   const { t } = useTranslation("onboarding");
   const { refreshUserState } = useOnboardingNavigation();
   const [otpUri, setOtpUri] = useState<string | null>(null);
   const [otpSetupError, setOtpSetupError] = useState(false);
+  const [otpSecret, setOtpSecret] = useState<string | null>(null);
 
   const { mutate: enableTwoFactor } = useMutation({
     mutationFn: async () =>
@@ -45,6 +50,24 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
         // Extract OTP URI from response
         if (data.data?.totpURI) {
           setOtpUri(data.data.totpURI);
+
+          // Extract secret from URI for manual entry
+          try {
+            const url = new URL(data.data.totpURI);
+            const secret = url.searchParams.get("secret");
+            if (secret) {
+              setOtpSecret(secret);
+            } else {
+              logger.error("OTP URI is missing the 'secret' parameter.", {
+                uri: data.data.totpURI,
+              });
+            }
+          } catch (error) {
+            logger.error("Failed to parse OTP URI for secret extraction.", {
+              error,
+            });
+          }
+
           toast.success(t("wallet-security.otp.setup-initiated"));
         } else {
           setOtpSetupError(true);
@@ -115,6 +138,7 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
   const handleOtpRetry = useCallback(() => {
     setOtpSetupError(false);
     setOtpUri(null);
+    setOtpSecret(null);
     form.reset();
     enableTwoFactor();
   }, [enableTwoFactor, form]);
@@ -123,6 +147,7 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
     form.reset();
     setOtpSetupError(false);
     setOtpUri(null);
+    setOtpSecret(null);
     onOpenChange(false);
   }, [form, onOpenChange]);
 
@@ -156,15 +181,11 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                 {t("wallet-security.otp.setup-failed-description")}
               </DialogDescription>
             </DialogHeader>
-            <div className="flex gap-3 pt-4">
-              <Button
-                variant="outline"
-                onClick={handleClose}
-                className="flex-1"
-              >
+            <div className="flex justify-end gap-3 pt-4">
+              <Button variant="outline" onClick={handleClose}>
                 {t("wallet-security.otp.back")}
               </Button>
-              <Button onClick={handleOtpRetry} className="flex-1">
+              <Button onClick={handleOtpRetry}>
                 {t("wallet-security.otp.try-again")}
               </Button>
             </div>
@@ -180,15 +201,21 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
 
             <div className="space-y-4">
               {/* QR Code Container */}
-              <div className="bg-white p-4 rounded-lg border-2 border-dashed border-muted-foreground/25 text-center">
+              <div className="bg-gradient-to-br from-[--sm-background-gradient-start] to-[--sm-background-gradient-end] p-4 rounded-lg border-2 border-dashed border-muted-foreground/25 text-center">
                 <div className="space-y-2">
                   <p className="text-xs text-muted-foreground">
                     {t("wallet-security.otp.qr-code-label")}
                   </p>
-                  <div className="h-32 w-32 mx-auto bg-muted-foreground/10 rounded flex items-center justify-center">
-                    <span className="text-xs text-muted-foreground">
-                      {t("wallet-security.otp.scan-with-app")}
-                    </span>
+                  <div className="flex justify-center">
+                    <div className="p-2 rounded-md bg-[--sm-background-lightest] dark:bg-[--sm-background-darkest]">
+                      <QRCode
+                        value={otpUri || ""}
+                        size={192}
+                        bgColor="var(--sm-background-lightest)"
+                        fgColor="var(--sm-accent)"
+                        className="dark:[&_path:first-of-type]:fill-[--sm-background-darkest] dark:[&_path:last-of-type]:fill-[--sm-accent]"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -198,13 +225,23 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                 <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
                   {t("wallet-security.otp.manual-entry")}
                 </summary>
-                <div className="mt-2 p-3 bg-muted rounded-md">
-                  <p className="text-xs text-muted-foreground mb-1">
-                    {t("wallet-security.otp.manual-entry-key")}
-                  </p>
-                  <code className="text-xs break-all">
-                    {otpUri || t("wallet-security.otp.loading")}
-                  </code>
+                <div className="mt-2 p-3 bg-muted rounded-md space-y-3">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {t("wallet-security.otp.manual-entry-url")}
+                    </p>
+                    <code className="text-xs break-all font-mono">
+                      {otpUri || t("wallet-security.otp.loading")}
+                    </code>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {t("wallet-security.otp.manual-entry-key")}
+                    </p>
+                    <code className="text-xs break-all font-mono">
+                      {otpSecret || t("wallet-security.otp.loading")}
+                    </code>
+                  </div>
                 </div>
               </details>
             </div>
@@ -255,12 +292,11 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                 </form.Field>
               </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex justify-end gap-3 pt-4">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleClose}
-                  className="flex-1"
                   disabled={isVerifyingOtp}
                 >
                   {t("wallet-security.otp.cancel")}
@@ -270,7 +306,6 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
                   disabled={
                     isVerifyingOtp || form.state.values.otpCode.length !== 6
                   }
-                  className="flex-1"
                 >
                   {isVerifyingOtp
                     ? t("wallet-security.otp.verifying")

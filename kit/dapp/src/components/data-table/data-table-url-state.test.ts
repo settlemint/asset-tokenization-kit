@@ -5,7 +5,7 @@
  * These tests verify serialization, deserialization, and state synchronization.
  */
 
-import { test, expect } from "bun:test";
+import { test, expect } from "vitest";
 import {
   serializeDataTableState,
   deserializeDataTableState,

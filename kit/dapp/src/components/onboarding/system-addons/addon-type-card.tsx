@@ -9,7 +9,9 @@ interface AddonTypeCardProps {
   icon: LucideIcon;
   isChecked: boolean;
   isDisabled: boolean;
+  isRequired?: boolean;
   onToggle: (checked: boolean) => void;
+  disabledLabel?: string;
 }
 
 export const AddonTypeCard = memo(
@@ -18,7 +20,9 @@ export const AddonTypeCard = memo(
     icon,
     isChecked,
     isDisabled,
+    isRequired,
     onToggle,
+    disabledLabel,
   }: AddonTypeCardProps) => {
     const { t } = useTranslation(["onboarding"]);
 
@@ -33,7 +37,8 @@ export const AddonTypeCard = memo(
         icon={icon}
         isChecked={isChecked}
         isDisabled={isDisabled}
-        disabledLabel={isDisabled ? t("assets.deployed-label") : undefined}
+        isRequired={isRequired}
+        disabledLabel={disabledLabel}
         onToggle={onToggle}
       />
     );

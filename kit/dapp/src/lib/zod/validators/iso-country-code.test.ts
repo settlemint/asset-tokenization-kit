@@ -2,7 +2,7 @@
  * Tests for ISO 3166-1 Alpha-2 Country Code Validation
  */
 
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import {
   getCountryName,
@@ -224,6 +224,89 @@ describe("isoCountryCode validator", () => {
         code: "US",
         name: "United States of America",
       });
+    });
+  });
+
+  describe("getCountries", () => {
+    it("should return all countries in English by default", async () => {
+      const { getCountries } = await import("./iso-country-code");
+      const countries = getCountries();
+
+      // Should return an object with country codes as keys
+      expect(typeof countries).toBe("object");
+      expect(countries).toBeDefined();
+
+      // Should include common countries
+      expect(countries.US).toBe("United States of America");
+      expect(countries.GB).toBe("United Kingdom");
+      expect(countries.DE).toBe("Germany");
+      expect(countries.FR).toBe("France");
+      expect(countries.JP).toBe("Japan");
+
+      // Should have many countries (ISO 3166-1 has 249 countries)
+      expect(Object.keys(countries).length).toBeGreaterThan(200);
+    });
+
+    it("should return countries in different languages", async () => {
+      const { getCountries } = await import("./iso-country-code");
+
+      // German
+      const countriesDe = getCountries("de");
+      expect(countriesDe.US).toBe("Vereinigte Staaten von Amerika");
+      expect(countriesDe.DE).toBe("Deutschland");
+      expect(countriesDe.FR).toBe("Frankreich");
+
+      // Japanese
+      const countriesJa = getCountries("ja");
+      expect(countriesJa.US).toBe("アメリカ合衆国");
+      expect(countriesJa.JP).toBe("日本");
+
+      // Arabic
+      const countriesAr = getCountries("ar");
+      expect(countriesAr.US).toBe("الولايات المتحدة");
+      expect(countriesAr.SA).toBe("السعودية");
+    });
+
+    it("should return all supported locales with correct translations", async () => {
+      const { getCountries, SUPPORTED_LOCALES } = await import(
+        "./iso-country-code"
+      );
+
+      for (const locale of SUPPORTED_LOCALES) {
+        const countries = getCountries(locale);
+
+        // Should return an object
+        expect(typeof countries).toBe("object");
+        expect(countries).toBeDefined();
+
+        // Should have many countries
+        expect(Object.keys(countries).length).toBeGreaterThan(200);
+
+        // Should have translated names (not empty)
+        expect(countries.US).toBeTruthy();
+        expect(countries.FR).toBeTruthy();
+        expect(countries.DE).toBeTruthy();
+      }
+    });
+
+    it("should return consistent country codes across locales", async () => {
+      const { getCountries, SUPPORTED_LOCALES } = await import(
+        "./iso-country-code"
+      );
+
+      const englishCountries = getCountries("en");
+      const countryCodes = Object.keys(englishCountries);
+
+      // Check that all locales have the same country codes
+      for (const locale of SUPPORTED_LOCALES) {
+        if (locale !== "en") {
+          const localizedCountries = getCountries(locale);
+          const localizedCodes = Object.keys(localizedCountries);
+
+          // Should have the same country codes
+          expect(localizedCodes.sort()).toEqual(countryCodes.sort());
+        }
+      }
     });
   });
 });

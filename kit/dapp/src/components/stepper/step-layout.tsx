@@ -84,8 +84,8 @@ export function StepLayout<StepId, GroupId>({
 
   return (
     <div className="StepLayout h-full rounded-xl shadow-lg overflow-hidden">
-      <SidebarProvider>
-        <Sidebar className="w-[360px] flex-shrink-0 transition-all duration-300 group-data-[side=left]:border-0">
+      <SidebarProvider defaultOpen={true}>
+        <Sidebar className="w-[360px] flex-shrink-0 transition-all duration-300 group-data-[side=left]:border-0 rounded-l-xl overflow-hidden">
           <div
             className="w-full overflow-y-auto h-full"
             style={{

@@ -1,0 +1,92 @@
+{
+  "common": {
+    "required": "Wir benötigen diese Informationen, um fortzufahren",
+    "invalid": "Das sieht nicht ganz richtig aus – lass es uns noch einmal versuchen",
+    "tooShort": "Nur noch ein bisschen – verwende mindestens {{min}} Zeichen",
+    "tooLong": "Das ist ein bisschen lang – lass es uns unter {{max}} Zeichen halten",
+    "invalidFormat": "Etwas stimmt nicht mit dem Format – überprüfe es bitte noch einmal?"
+  },
+  "amount": {
+    "invalid": "Gib einen gültigen Betrag ein, um fortzufahren",
+    "mustBePositive": "Der Betrag muss größer als null sein – selbst ein kleiner Betrag zählt!",
+    "tooSmall": "Das liegt unter unserem Minimum von {{min}} – versuche es mit etwas mehr",
+    "tooLarge": "Whoa, das überschreitet unser Maximum von {{max}}",
+    "tooManyDecimals": "Lass uns bei {{decimals}} Dezimalstellen oder weniger bleiben",
+    "insufficientBalance": "Du benötigst ein bisschen mehr Guthaben für diese Transaktion"
+  },
+  "ethereum": {
+    "invalidAddress": "Hmm, das sieht nicht nach einer gültigen Ethereum-Adresse aus – überprüfe es bitte?",
+    "invalidHash": "Lass uns diesen Transaktions-Hash noch einmal überprüfen",
+    "checksumMismatch": "Die Adress-Prüfziffer stimmt nicht überein – überprüfe die Großschreibung",
+    "ensNotResolved": "Wir konnten diesen ENS-Namen nicht finden – ist er richtig geschrieben?"
+  },
+  "isin": {
+    "invalid": "Lass uns einen gültigen ISIN-Code eingeben, um dieses Asset zu identifizieren",
+    "wrongLength": "ISIN-Codes sind immer genau 12 Zeichen – nicht mehr, nicht weniger",
+    "invalidCountryCode": "Der Ländercode am Anfang wird nicht erkannt – überprüfe die ersten beiden Buchstaben",
+    "invalidChecksum": "Die Prüfziffer der ISIN stimmt nicht überein – überprüfe den gesamten Code"
+  },
+  "pin": {
+    "invalid": "Lass uns eine gültige PIN erstellen, um deine Wallet zu sichern",
+    "wrongLength": "Deine PIN sollte genau {{length}} Ziffern haben",
+    "sequential": "Aufeinanderfolgende Zahlen wie 123456 sind zu leicht zu erraten – mische sie!",
+    "repeated": "Das Wiederholen derselben Ziffer macht es zu vorhersehbar – versuche, Zahlen zu mischen",
+    "tooWeak": "Lass uns eine stärkere PIN wählen – deine Sicherheit ist uns wichtig"
+  },
+  "symbol": {
+    "invalid": "Lass uns ein gültiges Symbol für deinen Token erstellen",
+    "tooShort": "Symbole benötigen mindestens {{min}} Zeichen, um sinnvoll zu sein",
+    "tooLong": "Halte dein Symbol prägnant – {{max}} Zeichen oder weniger funktionieren am besten",
+    "invalidCharacters": "Bleibe bei Buchstaben und Zahlen für dein Symbol",
+    "reserved": "Dieses Symbol ist bereits vergeben – lass uns ein anderes versuchen"
+  },
+  "price": {
+    "invalid": "Lass uns einen gültigen Preis eingeben, um fortzufahren",
+    "mustBePositive": "Preise müssen größer als null sein – selbst Bruchteile funktionieren",
+    "tooVolatile": "Das ist ein ganz schöner Preissprung – es überschreitet unsere Sicherheitsgrenzen für die Marktstabilität"
+  },
+  "timestamp": {
+    "invalid": "Lass uns ein gültiges Datum und eine Uhrzeit auswählen",
+    "tooEarly": "Das ist zu weit zurück – wähle ein Datum nach {{min}}",
+    "tooLate": "Das ist zu weit in der Zukunft – wähle ein Datum vor {{max}}",
+    "inPast": "Wir benötigen ein zukünftiges Datum dafür – wann möchtest du es planen?",
+    "inFuture": "Wir benötigen hier ein vergangenes Datum – wann ist das passiert?"
+  },
+  "twoFactor": {
+    "invalid": "Dieser Code stimmt nicht überein – überprüfe deine Authenticator-App",
+    "expired": "Dieser Code ist abgelaufen – hole dir einen neuen aus deiner App",
+    "alreadyUsed": "Du hast diesen Code bereits verwendet – warte auf den nächsten"
+  },
+  "file": {
+    "tooLarge": "Diese Datei ist ein bisschen schwer – lass sie unter {{max}} halten",
+    "invalidType": "Wir können diesen Dateityp nicht verarbeiten. Kompatible Formate: {{types}}",
+    "uploadFailed": "Ups, etwas ist beim Hochladen schiefgegangen – sollen wir es noch einmal versuchen?"
+  },
+  "email": {
+    "invalid": "Lass uns eine gültige E-Mail-Adresse hinzufügen",
+    "alreadyExists": "Willkommen zurück! Sieht so aus, als hättest du bereits ein Konto mit dieser E-Mail",
+    "domainNotAllowed": "Es tut uns leid, wir können E-Mails von dieser Domain aus Sicherheitsgründen nicht akzeptieren"
+  },
+  "password": {
+    "tooWeak": "Lass uns dein Passwort stärken – deine Sicherheit ist wichtig",
+    "mustContainUppercase": "Füge mindestens einen Großbuchstaben (A-Z) hinzu",
+    "mustContainLowercase": "Füge mindestens einen Kleinbuchstaben (a-z) hinzu",
+    "mustContainNumber": "Mische mindestens eine Zahl (0-9) ein",
+    "mustContainSpecial": "Füge ein Sonderzeichen für zusätzliche Sicherheit hinzu (!@#$%^&*)",
+    "commonPassword": "Dieses Passwort ist zu häufig – lass uns etwas Einzigartiges für dich erstellen",
+    "previouslyUsed": "Du hast dieses Passwort bereits verwendet – Zeit für ein neues"
+  },
+  "token": {
+    "nameRequired": "Jeder Token benötigt einen Namen – wie sollen wir deinen nennen?",
+    "symbolRequired": "Dein Token benötigt ein Symbol – wie BTC oder ETH",
+    "decimalsInvalid": "Die Dezimalstellen sollten zwischen 0 und 18 liegen",
+    "supplyInvalid": "Lass uns einen gültigen Anfangsbestand für deinen Token eingeben",
+    "capExceeded": "Das überschreitet den maximalen Bestand – lass uns innerhalb der Obergrenze bleiben"
+  },
+  "transaction": {
+    "gasLimitTooLow": "Diese Transaktion benötigt ein bisschen mehr Gas, um abzuschließen",
+    "gasLimitTooHigh": "Dieses Gaslimit überschreitet das Erlaubte – lass es uns senken",
+    "nonceTooLow": "Die Transaktionsnonce ist zu niedrig – sie könnte bereits verwendet worden sein",
+    "insufficientGas": "Du benötigst mehr Gas, um diese Transaktion abzuschließen"
+  }
+}

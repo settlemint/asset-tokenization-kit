@@ -14,7 +14,7 @@ import { toast } from "sonner";
 const logger = createLogger();
 
 export function SystemDeploy() {
-  const { t } = useTranslation(["onboarding"]);
+  const { t } = useTranslation(["onboarding", "common"]);
   const { refreshUserState } = useOnboardingNavigation();
   const navigate = useNavigate();
   // Modal state
@@ -56,7 +56,7 @@ export function SystemDeploy() {
               void navigate({ to: "/onboarding" });
             }}
           >
-            Cancel
+            {t("common:actions.skip")}
           </Button>
           <Button
             onClick={() => {

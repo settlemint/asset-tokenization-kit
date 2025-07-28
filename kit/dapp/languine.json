@@ -1,8 +1,8 @@
 {
   "projectId": "prj_jdg37laq31m3gg4ti9jmwrkr",
   "locale": {
-    "source": "en",
-    "targets": ["de", "ja", "ar"]
+    "source": "en-US",
+    "targets": ["de-DE", "ja-JP", "ar-SA"]
   },
   "files": {
     "json": {

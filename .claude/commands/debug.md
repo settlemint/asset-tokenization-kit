@@ -1,33 +1,8 @@
 # /debug
 
-Systematically debug complex issues using the specialized code-debugger agent.
-
-## Execution
-
-Invoke the code-debugger agent using:
-
-```javascript
-Task({
-  description: "Debug issue",
-  subagent_type: "code-debugger",
-  prompt: `Debug the following issue: ${userProblemDescription}
-    
-    Apply systematic debugging protocol:
-    - Gather all diagnostic data (logs, traces, environment)
-    - Generate and test hypotheses  
-    - Use binary search and isolation techniques
-    - Profile performance if needed
-    - Apply learned debugging patterns
-    - Generate comprehensive debug report with root cause
-    
-    For complex issues, deploy multiple sub-agents in parallel.
-    Document the solution for future reference.`
-})
-```
-
-## Legacy Manual Protocol
-
-_The detailed manual debugging protocol below is preserved for reference but the code-debugger agent should be used instead._
+_Executes systematic debugging protocol using multi-agent orchestration to
+identify root causes and implement solutions when facing complex technical
+challenges_
 
 ## Role: Senior Debugging Engineer
 
@@ -54,6 +29,51 @@ Your debugging philosophy:
 
 User provided context: "$ARGUMENTS"
 
+## Step 0: Gather Context from Linear and Sentry
+
+### Linear Bug Tracking
+```javascript
+// Search for related bug reports
+mcp__linear__list_issues({
+  organizationSlug: "your-org",
+  query: "error message or symptom",
+  includeArchived: true,
+  limit: 10
+})
+
+// Check specific issue details
+mcp__linear__get_issue({
+  id: "BUG-123"
+})
+
+// Review comments for debugging insights
+mcp__linear__list_comments({
+  issueId: "BUG-123"
+})
+```
+
+### Sentry Error Analysis
+```javascript
+// Search for production errors
+mcp__sentry__search_issues({
+  organizationSlug: "your-org",
+  naturalLanguageQuery: "error message or stack trace fragment",
+  limit: 10
+})
+
+// Get detailed error information
+mcp__sentry__get_issue_details({
+  organizationSlug: "your-org",
+  issueId: "ERROR-456"
+})
+
+// Analyze with Seer AI
+mcp__sentry__analyze_issue_with_seer({
+  organizationSlug: "your-org",
+  issueId: "ERROR-456"
+})
+```
+
 ## Step 1: Analyze Problem Scope and Select Strategy
 
 **ultrathink** about the debugging challenge:
@@ -64,6 +84,18 @@ User provided context: "$ARGUMENTS"
 - Available diagnostic data
 - Time constraints
 - Previous debugging attempts
+
+### Gemini-CLI Enhanced Analysis:
+
+Before selecting strategy, use gemini-cli for initial assessment:
+
+```
+mcp__gemini-cli__ask-gemini({
+  prompt: "@error-logs analyze error patterns and suggest root causes",
+  changeMode: true,
+  model: "gemini-2.5-pro"
+})
+```
 
 ### Strategy Selection:
 
@@ -118,13 +150,19 @@ MANDATORY COLLECTION CHECKLIST:
 ☐ Environment configurations
 ☐ Reproduction steps
 
+Gemini-CLI Integration:
+- Use mcp__gemini-cli__ask-gemini to analyze collected logs for patterns
+- Use changeMode: true to get structured error analysis
+- Model: gemini-2.5-pro for complex log analysis
+
 Workflow:
 1. Examine error outputs with full stack traces
 2. Check application logs in apps/*/logs/
 3. Review system logs with journalctl or Console.app
-4. Gather environment info (node version, OS, deps)
-5. Document exact reproduction steps
-6. Return structured diagnostic report"
+4. Use Gemini to analyze logs: mcp__gemini-cli__ask-gemini({prompt: '@logs/* identify error patterns', changeMode: true})
+5. Gather environment info (node version, OS, deps)
+6. Document exact reproduction steps
+7. Return structured diagnostic report with Gemini insights"
 ```
 
 #### Agent 2: Hypothesis Generator
@@ -140,13 +178,19 @@ MANDATORY ANALYSIS CHECKLIST:
 ☐ Similar historical issues
 ☐ External dependencies
 
+Gemini-CLI Integration:
+- Use mcp__gemini-cli__brainstorm for generating hypotheses
+- Domain: 'software', methodology: 'lateral' for creative problem solving
+- Use mcp__gemini-cli__ask-gemini to analyze code changes
+
 Workflow:
 1. Analyze all collected diagnostic data
-2. Identify patterns and anomalies
-3. Generate 5-10 potential root causes
-4. Rank by probability and evidence
-5. Design specific tests for each hypothesis
-6. Return prioritized hypothesis list with validation plans"
+2. Use Gemini brainstorm: mcp__gemini-cli__brainstorm({prompt: 'Generate root cause hypotheses for [error]', domain: 'software', ideaCount: 15})
+3. Identify patterns and anomalies
+4. Generate 5-10 potential root causes
+5. Rank by probability and evidence
+6. Design specific tests for each hypothesis
+7. Return prioritized hypothesis list with validation plans"
 ```
 
 #### Agent 3: Test Designer & Executor
@@ -491,7 +535,80 @@ try {
 - Monitor resource pools in production
 - Error paths need equal testing attention
 
+### Documentation Updates
+
+- Update README.md with debugging insights
+- Add troubleshooting section if missing
+- Document error patterns in CLAUDE.md
+- Include fix in module documentation
+
 ````
+
+## Gemini-CLI Debug Enhancement Protocol
+
+Leverage gemini-cli throughout the debugging process for deeper insights:
+
+### 1. **Initial Error Analysis**
+```javascript
+mcp__gemini-cli__ask-gemini({
+  prompt: "@error.log analyze stack trace and identify root cause patterns",
+  changeMode: true,
+  model: "gemini-2.5-pro"
+})
+```
+
+### 2. **Code Path Analysis**
+```javascript
+mcp__gemini-cli__ask-gemini({
+  prompt: "@src/* trace execution path leading to error in line X",
+  changeMode: true,
+  sandbox: true
+})
+```
+
+### 3. **Race Condition Detection**
+```javascript
+mcp__gemini-cli__ask-gemini({
+  prompt: "@async-code.ts analyze for race conditions and timing issues",
+  changeMode: true
+})
+```
+
+### 4. **Memory Leak Analysis**
+```javascript
+mcp__gemini-cli__ask-gemini({
+  prompt: "@heap-snapshot.json identify memory leak patterns and retention paths",
+  changeMode: false
+})
+```
+
+### 5. **Performance Bottleneck Identification**
+```javascript
+mcp__gemini-cli__ask-gemini({
+  prompt: "@performance-profile.json analyze for bottlenecks and suggest optimizations",
+  changeMode: true
+})
+```
+
+### 6. **Test Case Generation**
+```javascript
+mcp__gemini-cli__brainstorm({
+  prompt: "Generate test cases to reproduce intermittent bug in authentication flow",
+  domain: "software",
+  constraints: "Focus on edge cases, timing, and concurrent operations",
+  ideaCount: 20,
+  includeAnalysis: true
+})
+```
+
+### 7. **Fix Validation**
+```javascript
+mcp__gemini-cli__ask-gemini({
+  prompt: "@proposed-fix.diff analyze for side effects and edge cases",
+  changeMode: true,
+  model: "gemini-2.5-pro"
+})
+```
 
 ## Escape Hatches
 
@@ -598,3 +715,32 @@ tcpdump -i any -w trace.pcap port 3000
 - Share knowledge with the team
 
 **The bug is not personal. It's just a puzzle waiting to be solved.**
+
+# Self-Learning & Knowledge Capture
+
+## Automatic Learning Integration
+
+During debugging sessions, silently capture and integrate:
+
+1. **Bug Patterns**: Common failure modes in this codebase
+2. **Debugging Techniques**: Effective approaches for this project
+3. **Environment Quirks**: Project-specific gotchas
+4. **Tool Commands**: Useful debugging commands discovered
+5. **Resolution Patterns**: Common fixes that work
+
+## Integration Process
+
+- Add learnings directly to this file under "Learned Debug Patterns"
+- For global debugging wisdom, update CLAUDE.md
+- No user interruption - learnings reviewed in PR
+- Include specific examples and commands
+
+## Learned Debug Patterns
+
+<!-- AI appends learned patterns here -->
+<!-- Format: ### Pattern Name
+     Symptoms: What errors/behavior observed
+     Root Cause: Why it happens in this codebase
+     Debug Steps: Specific commands/approach
+     Solution: How to fix
+     Prevention: How to avoid -->

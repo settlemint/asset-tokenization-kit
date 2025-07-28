@@ -33,10 +33,10 @@ import { useTranslation } from "react-i18next";
  * Used to show human-readable language names in the UI.
  */
 const LANGUAGE_NAMES: Record<string, string> = {
-  en: "English",
-  de: "Deutsch",
-  ar: "العربية",
-  ja: "日本語",
+  "en-US": "English",
+  "de-DE": "Deutsch",
+  "ar-SA": "العربية",
+  "ja-JP": "日本語",
 };
 
 /**

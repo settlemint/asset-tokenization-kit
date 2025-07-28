@@ -1,0 +1,173 @@
+{
+  "bond": {
+    "description": "Debt securities that pay fixed interest over a specified period",
+    "name": "Bond Tokens"
+  },
+  "categories": {
+    "cashEquivalent": {
+      "description": "Highly liquid investments that can be readily converted to known amounts of cash.",
+      "icon": "Wallet",
+      "name": "Cash Equivalent"
+    },
+    "fixedIncome": {
+      "description": "Assets that provide returns in the form of regular, fixed interest payments and the return of principal at maturity.",
+      "icon": "TrendingUp",
+      "name": "Fixed Income"
+    },
+    "flexibleIncome": {
+      "description": "Assets that generate variable returns based on market conditions and underlying performance.",
+      "icon": "Activity",
+      "name": "Flexible Income"
+    }
+  },
+  "deposit": {
+    "description": "Time-locked deposits that earn interest over a fixed period",
+    "name": "Deposit Tokens"
+  },
+  "equity": {
+    "description": "Ownership shares representing a claim on assets and earnings",
+    "name": "Equity Tokens"
+  },
+  "fields": {
+    "common": {
+      "decimals": "Decimal Places",
+      "description": "Description",
+      "issuanceDate": "Issuance Date",
+      "issuer": "Issuer",
+      "name": "Asset Name",
+      "status": "Status",
+      "symbol": "Symbol",
+      "totalSupply": "Total Supply"
+    },
+    "compliance": {
+      "accreditation": "Accreditation Required",
+      "holdingPeriod": "Minimum Holding Period",
+      "kyc": "KYC Required",
+      "maxInvestors": "Maximum Investors",
+      "transferRestrictions": "Transfer Restrictions"
+    }
+  },
+  "fund": {
+    "description": "Pooled investment vehicles that aggregate capital from multiple investors",
+    "name": "Fund Tokens"
+  },
+  "metadata": {
+    "liquidity": {
+      "high": "High Liquidity",
+      "illiquid": "Illiquid",
+      "low": "Low Liquidity",
+      "medium": "Medium Liquidity"
+    },
+    "riskLevel": {
+      "high": "High Risk",
+      "low": "Low Risk",
+      "medium": "Medium Risk",
+      "veryHigh": "Very High Risk"
+    }
+  },
+  "stablecoin": {
+    "description": "Digital currencies designed to maintain a stable value relative to a reference asset",
+    "name": "Stablecoins"
+  },
+  "status": {
+    "active": "Active",
+    "defaulted": "Defaulted",
+    "frozen": "Frozen",
+    "matured": "Matured",
+    "paused": "Paused",
+    "redeemed": "Redeemed"
+  },
+  "types": {
+    "bond": {
+      "actions": {
+        "issue": "Issue Bond",
+        "payInterest": "Pay Interest",
+        "redeem": "Redeem Bond",
+        "trade": "Trade Bond"
+      },
+      "category": "fixedIncome",
+      "description": "Debt securities that pay fixed interest over a specified period.",
+      "features": {
+        "coupon": "Coupon Rate",
+        "faceValue": "Face Value",
+        "maturity": "Maturity Date",
+        "rating": "Credit Rating",
+        "yield": "Yield to Maturity"
+      },
+      "name": "Bond",
+      "namePlural": "Bonds"
+    },
+    "deposit": {
+      "actions": {
+        "calculateInterest": "Calculate Interest",
+        "create": "Create Deposit",
+        "renew": "Renew Deposit",
+        "withdraw": "Withdraw"
+      },
+      "category": "cashEquivalent",
+      "description": "Time-locked deposits that earn interest over a fixed period.",
+      "features": {
+        "earlyWithdrawal": "Early Withdrawal Penalty",
+        "minAmount": "Minimum Amount",
+        "rate": "Interest Rate",
+        "term": "Deposit Term"
+      },
+      "name": "Deposit",
+      "namePlural": "Deposits"
+    },
+    "equity": {
+      "actions": {
+        "issue": "Issue Shares",
+        "payDividend": "Pay Dividend",
+        "transfer": "Transfer Ownership",
+        "vote": "Cast Vote"
+      },
+      "category": "flexibleIncome",
+      "description": "Ownership shares representing a claim on assets and earnings.",
+      "features": {
+        "class": "Share Class",
+        "dividends": "Dividend Payments",
+        "ownership": "Ownership Percentage",
+        "votingRights": "Voting Rights"
+      },
+      "name": "Equity",
+      "namePlural": "Equities"
+    },
+    "fund": {
+      "actions": {
+        "calculateNAV": "Calculate NAV",
+        "distribute": "Distribute Returns",
+        "redeem": "Redeem Shares",
+        "subscribe": "Subscribe"
+      },
+      "category": "flexibleIncome",
+      "description": "Pooled investment vehicles that aggregate capital from multiple investors.",
+      "features": {
+        "managementFee": "Management Fee",
+        "nav": "Net Asset Value",
+        "performanceFee": "Performance Fee",
+        "strategy": "Investment Strategy"
+      },
+      "name": "Fund",
+      "namePlural": "Funds"
+    },
+    "stablecoin": {
+      "actions": {
+        "audit": "Audit Reserves",
+        "burn": "Burn Tokens",
+        "mint": "Mint Tokens",
+        "rebalance": "Rebalance Reserves"
+      },
+      "category": "cashEquivalent",
+      "description": "Digital currencies designed to maintain a stable value relative to a reference asset.",
+      "features": {
+        "collateral": "Collateralization Ratio",
+        "mechanism": "Stability Mechanism",
+        "peg": "Pegged Asset",
+        "reserves": "Reserve Holdings"
+      },
+      "name": "Stablecoin",
+      "namePlural": "Stablecoins"
+    }
+  }
+}
