@@ -5,8 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { ExpressionNode, ExpressionType } from "../../contracts/smart/interface/structs/ExpressionNode.sol";
 
 library ClaimExpressionUtils {
-
-  /**
+    /**
      * @notice Converts an array of claim topic IDs to an array of ExpressionNode structs with AND relationships
      * @dev Creates a postfix expression where all topics are combined with left-associative AND operators
      *      For n topics, creates proper postfix: [TOPIC1, TOPIC2, AND, TOPIC3, AND, ..., TOPICn, AND]
@@ -25,10 +24,7 @@ library ClaimExpressionUtils {
         if (topics.length == 1) {
             // Single topic, no AND needed
             ExpressionNode[] memory singleTopicExpression = new ExpressionNode[](1);
-            singleTopicExpression[0] = ExpressionNode({
-                nodeType: ExpressionType.TOPIC,
-                value: topics[0]
-            });
+            singleTopicExpression[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topics[0] });
             return singleTopicExpression;
         }
 
@@ -37,31 +33,16 @@ library ClaimExpressionUtils {
         uint256 nodeIndex = 0;
 
         // Add first two topics
-        nodes[nodeIndex++] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topics[0]
-        });
-        nodes[nodeIndex++] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topics[1]
-        });
+        nodes[nodeIndex++] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topics[0] });
+        nodes[nodeIndex++] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topics[1] });
 
         // Add first AND
-        nodes[nodeIndex++] = ExpressionNode({
-            nodeType: ExpressionType.AND,
-            value: 0
-        });
+        nodes[nodeIndex++] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });
 
         // For remaining topics: add each topic followed by AND
         for (uint256 i = 2; i < topics.length; i++) {
-            nodes[nodeIndex++] = ExpressionNode({
-                nodeType: ExpressionType.TOPIC,
-                value: topics[i]
-            });
-            nodes[nodeIndex++] = ExpressionNode({
-                nodeType: ExpressionType.AND,
-                value: 0
-            });
+            nodes[nodeIndex++] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topics[i] });
+            nodes[nodeIndex++] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });
         }
 
         return nodes;

@@ -5,7 +5,7 @@ import { ATKTopic } from "../../constants/topics";
 import type { Asset } from "../../entities/asset";
 import { atkDeployer } from "../../services/deployer";
 import { getAnvilTimeMilliseconds } from "../../utils/anvil";
-import { expressionBuilder } from "../utils/expression-builder";
+import { expressionBuilder } from "../../utils/expression-builder";
 import { addCountryComplianceModule } from "./compliance/add-country-allow-list-compliance-module";
 import { removeComplianceModule } from "./compliance/remove-compliance-module";
 import { setCountryParametersForComplianceModule } from "./compliance/set-country-parameters-for-compliance-module";

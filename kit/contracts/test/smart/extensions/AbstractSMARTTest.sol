@@ -217,7 +217,6 @@ abstract contract AbstractSMARTTest is Test {
     //                      INITIALIZATION & BASIC TESTS
     // =====================================================================
 
-
     function _topicsToExpressionNodes(uint256[] memory topics) internal pure returns (ExpressionNode[] memory) {
         return ClaimExpressionUtils.topicsToExpressionNodes(topics);
     }

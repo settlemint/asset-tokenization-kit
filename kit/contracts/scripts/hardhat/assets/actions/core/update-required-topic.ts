@@ -3,12 +3,12 @@ import { ATKContracts } from "../../../constants/contracts";
 import type { Asset } from "../../../entities/asset";
 import { atkDeployer } from "../../../services/deployer";
 import { withDecodedRevertReason } from "../../../utils/decode-revert-reason";
-import { waitForSuccess } from "../../../utils/wait-for-success";
 import {
   encodeExpressionParams,
   ExpressionNode,
   expressionToString,
-} from "../../utils/expression-builder";
+} from "../../../utils/expression-builder";
+import { waitForSuccess } from "../../../utils/wait-for-success";
 
 export const updateRequiredTopics = async (
   asset: Asset<any>,

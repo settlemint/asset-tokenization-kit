@@ -173,15 +173,9 @@ contract SystemUtils is Test {
         IAccessControl(address(trustedIssuersRegistry)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, platformAdmin);
         IAccessControl(address(complianceModuleRegistry)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, platformAdmin);
 
-        complianceModuleRegistry.registerComplianceModule(
-            address(identityVerificationModule)
-        );
-        complianceModuleRegistry.registerComplianceModule(
-            address(countryAllowListComplianceModule)
-        );
-        complianceModuleRegistry.registerComplianceModule(
-            address(countryBlockListComplianceModule)
-        );
+        complianceModuleRegistry.registerComplianceModule(address(identityVerificationModule));
+        complianceModuleRegistry.registerComplianceModule(address(countryAllowListComplianceModule));
+        complianceModuleRegistry.registerComplianceModule(address(countryBlockListComplianceModule));
 
         vm.stopPrank();
     }

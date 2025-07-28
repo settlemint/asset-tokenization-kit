@@ -113,7 +113,10 @@ abstract contract SMARTIdentityVerificationTest is AbstractSMARTTest {
 
         // Update parameters for the existing module to require no claims for this test
         vm.prank(tokenIssuer); // Assuming tokenIssuer has role to set parameters
-        token.setParametersForComplianceModule(address(verificationModule), abi.encode(ClaimExpressionUtils.topicsToExpressionNodes(emptyRequiredClaimTopics)));
+        token.setParametersForComplianceModule(
+            address(verificationModule),
+            abi.encode(ClaimExpressionUtils.topicsToExpressionNodes(emptyRequiredClaimTopics))
+        );
 
         // Store original parameters if we wanted to reset, but for isolated tests, this is fine.
         // bytes memory originalParams = abi.encode(requiredKYCAndAMLTopics);

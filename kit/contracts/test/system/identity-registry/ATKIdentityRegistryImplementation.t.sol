@@ -118,8 +118,8 @@ contract ATKIdentityRegistryImplementationTest is Test {
         vm.label(claimIssuerIdentity, "Claim Issuer Identity");
 
         // Issue claims to create different verification scenarios
-        claimUtils.issueKYCClaim(userWithKYC);  // Only KYC
-        claimUtils.issueAMLClaim(userWithAML);  // Only AML
+        claimUtils.issueKYCClaim(userWithKYC); // Only KYC
+        claimUtils.issueAMLClaim(userWithAML); // Only AML
         claimUtils.issueKYCClaim(userWithBoth); // Both KYC and AML
         claimUtils.issueAMLClaim(userWithBoth);
         // userWithNone gets no claims
@@ -697,108 +697,62 @@ contract ATKIdentityRegistryImplementationTest is Test {
     /// @dev Helper function to create a single topic expression: [TOPIC]
     function _createSingleTopicExpression(uint256 topic) internal pure returns (ExpressionNode[] memory) {
         ExpressionNode[] memory nodes = new ExpressionNode[](1);
-        nodes[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topic
-        });
+        nodes[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topic });
         return nodes;
     }
 
     /// @dev Helper function to create A AND B expression: [TOPIC_A, TOPIC_B, AND]
     function _createAndExpression(uint256 topicA, uint256 topicB) internal pure returns (ExpressionNode[] memory) {
         ExpressionNode[] memory nodes = new ExpressionNode[](3);
-        nodes[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topicA
-        });
-        nodes[1] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topicB
-        });
-        nodes[2] = ExpressionNode({
-            nodeType: ExpressionType.AND,
-            value: 0
-        });
+        nodes[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topicA });
+        nodes[1] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topicB });
+        nodes[2] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });
         return nodes;
     }
 
     /// @dev Helper function to create A OR B expression: [TOPIC_A, TOPIC_B, OR]
     function _createOrExpression(uint256 topicA, uint256 topicB) internal pure returns (ExpressionNode[] memory) {
         ExpressionNode[] memory nodes = new ExpressionNode[](3);
-        nodes[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topicA
-        });
-        nodes[1] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topicB
-        });
-        nodes[2] = ExpressionNode({
-            nodeType: ExpressionType.OR,
-            value: 0
-        });
+        nodes[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topicA });
+        nodes[1] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topicB });
+        nodes[2] = ExpressionNode({ nodeType: ExpressionType.OR, value: 0 });
         return nodes;
     }
 
     /// @dev Helper function to create NOT A expression: [TOPIC_A, NOT]
     function _createNotExpression(uint256 topic) internal pure returns (ExpressionNode[] memory) {
         ExpressionNode[] memory nodes = new ExpressionNode[](2);
-        nodes[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topic
-        });
-        nodes[1] = ExpressionNode({
-            nodeType: ExpressionType.NOT,
-            value: 0
-        });
+        nodes[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topic });
+        nodes[1] = ExpressionNode({ nodeType: ExpressionType.NOT, value: 0 });
         return nodes;
     }
 
     /// @dev Helper function to create (A AND B) OR C expression: [TOPIC_A, TOPIC_B, AND, TOPIC_C, OR]
-    function _createComplexExpression1(uint256 topicA, uint256 topicB, uint256 topicC) internal pure returns (ExpressionNode[] memory) {
+    function _createComplexExpression1(
+        uint256 topicA,
+        uint256 topicB,
+        uint256 topicC
+    )
+        internal
+        pure
+        returns (ExpressionNode[] memory)
+    {
         ExpressionNode[] memory nodes = new ExpressionNode[](5);
-        nodes[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topicA
-        });
-        nodes[1] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topicB
-        });
-        nodes[2] = ExpressionNode({
-            nodeType: ExpressionType.AND,
-            value: 0
-        });
-        nodes[3] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topicC
-        });
-        nodes[4] = ExpressionNode({
-            nodeType: ExpressionType.OR,
-            value: 0
-        });
+        nodes[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topicA });
+        nodes[1] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topicB });
+        nodes[2] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });
+        nodes[3] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topicC });
+        nodes[4] = ExpressionNode({ nodeType: ExpressionType.OR, value: 0 });
         return nodes;
     }
 
     /// @dev Helper function to create A AND NOT B expression: [TOPIC_A, TOPIC_B, NOT, AND]
     function _createAndNotExpression(uint256 topicA, uint256 topicB) internal pure returns (ExpressionNode[] memory) {
         ExpressionNode[] memory nodes = new ExpressionNode[](4);
-        nodes[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topicA
-        });
-        nodes[1] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: topicB
-        });
-        nodes[2] = ExpressionNode({
-            nodeType: ExpressionType.NOT,
-            value: 0
-        });
-        nodes[3] = ExpressionNode({
-            nodeType: ExpressionType.AND,
-            value: 0
-        });
+        nodes[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topicA });
+        nodes[1] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: topicB });
+        nodes[2] = ExpressionNode({ nodeType: ExpressionType.NOT, value: 0 });
+        nodes[3] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });
         return nodes;
     }
 
@@ -928,26 +882,14 @@ contract ATKIdentityRegistryImplementationTest is Test {
     function testPostfixCachingWithRepeatedTopics() public view {
         // Create expression: KYC AND (KYC OR AML) - KYC appears twice
         ExpressionNode[] memory expression = new ExpressionNode[](5);
-        expression[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: kycTopicId
-        });
+        expression[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: kycTopicId });
         expression[1] = ExpressionNode({
             nodeType: ExpressionType.TOPIC,
-            value: kycTopicId  // Repeated topic for caching test
-        });
-        expression[2] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: amlTopicId
-        });
-        expression[3] = ExpressionNode({
-            nodeType: ExpressionType.OR,
-            value: 0
-        });
-        expression[4] = ExpressionNode({
-            nodeType: ExpressionType.AND,
-            value: 0
-        });
+            value: kycTopicId // Repeated topic for caching test
+         });
+        expression[2] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: amlTopicId });
+        expression[3] = ExpressionNode({ nodeType: ExpressionType.OR, value: 0 });
+        expression[4] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });
 
         // Users with KYC should pass (KYC AND (KYC OR AML) = KYC AND true = KYC)
         assertTrue(identityRegistry.isVerified(userWithKYC, expression));
@@ -972,10 +914,7 @@ contract ATKIdentityRegistryImplementationTest is Test {
         ExpressionNode[] memory expression = new ExpressionNode[](10);
         // Fill with only topics (no operators) - will overflow stack
         for (uint256 i = 0; i < 10; i++) {
-            expression[i] = ExpressionNode({
-                nodeType: ExpressionType.TOPIC,
-                value: kycTopicId
-            });
+            expression[i] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: kycTopicId });
         }
 
         vm.expectRevert(ATKIdentityRegistryImplementation.InvalidExpressionStackResult.selector);
@@ -985,10 +924,7 @@ contract ATKIdentityRegistryImplementationTest is Test {
     function testPostfixNotOperationRequiresOneOperand() public {
         // Create malformed expression: [NOT] - no operand
         ExpressionNode[] memory expression = new ExpressionNode[](1);
-        expression[0] = ExpressionNode({
-            nodeType: ExpressionType.NOT,
-            value: 0
-        });
+        expression[0] = ExpressionNode({ nodeType: ExpressionType.NOT, value: 0 });
 
         vm.expectRevert(ATKIdentityRegistryImplementation.NotOperationRequiresOneOperand.selector);
         identityRegistry.isVerified(userWithKYC, expression);
@@ -997,20 +933,14 @@ contract ATKIdentityRegistryImplementationTest is Test {
     function testPostfixAndOperationRequiresTwoOperands() public {
         // Create malformed expression: [TOPIC, AND] - only one operand
         ExpressionNode[] memory expression = new ExpressionNode[](2);
-        expression[0] = ExpressionNode({
-            nodeType: ExpressionType.TOPIC,
-            value: kycTopicId
-        });
-        expression[1] = ExpressionNode({
-            nodeType: ExpressionType.AND,
-            value: 0
-        });
+        expression[0] = ExpressionNode({ nodeType: ExpressionType.TOPIC, value: kycTopicId });
+        expression[1] = ExpressionNode({ nodeType: ExpressionType.AND, value: 0 });
 
         vm.expectRevert(ATKIdentityRegistryImplementation.AndOrOperationsRequireTwoOperands.selector);
         identityRegistry.isVerified(userWithKYC, expression);
     }
 
-    function testPostfixUnregisteredUserReturnsFalse() public  {
+    function testPostfixUnregisteredUserReturnsFalse() public {
         address unregisteredUser = makeAddr("unregistered");
         ExpressionNode[] memory expression = _createSingleTopicExpression(kycTopicId);
 
@@ -1019,7 +949,7 @@ contract ATKIdentityRegistryImplementationTest is Test {
     }
 
     function testPostfixInvalidTopicReturnsFalse() public view {
-        uint256 invalidTopic = 99999; // Non-existent topic
+        uint256 invalidTopic = 99_999; // Non-existent topic
         ExpressionNode[] memory expression = _createSingleTopicExpression(invalidTopic);
 
         // Invalid topic should return false even for users with valid claims

@@ -351,7 +351,6 @@ contract ATKSystemFactoryTest is Test {
         );
     }
 
-
     function test_ConstructorWithZeroComplianceModuleRegistryImplementation() public {
         vm.expectRevert(ComplianceModuleRegistryImplementationNotSet.selector);
         new ATKSystemFactory(

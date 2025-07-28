@@ -657,12 +657,8 @@ contract ATKSystemTest is Test {
 
     // --- Identity Verification Module Tests ---
 
-    // Note: IdentityVerificationModule tests removed as the functionality is now handled through compliance module registry
-
-
-
-
-
+    // Note: IdentityVerificationModule tests removed as the functionality is now handled through compliance module
+    // registry
 
     function test_SystemInitialization_AllComponentsConfigured() public {
         // Test that all components are properly configured in the bootstrapped system

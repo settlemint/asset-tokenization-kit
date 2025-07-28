@@ -153,13 +153,7 @@ contract ATKBondTest is AbstractATKAssetTest {
             underlyingAsset: underlyingAsset_
         });
         address bondAddress = bondFactory.createBond(
-            name_,
-            symbol_,
-            decimals_,
-            cap_,
-            bondParams,
-            initialModulePairs_,
-            TestConstants.COUNTRY_CODE_US
+            name_, symbol_, decimals_, cap_, bondParams, initialModulePairs_, TestConstants.COUNTRY_CODE_US
         );
 
         result = IATKBond(bondAddress);

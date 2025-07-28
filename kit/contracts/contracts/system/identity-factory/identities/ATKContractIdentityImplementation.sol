@@ -248,13 +248,7 @@ contract ATKContractIdentityImplementation is
     /// @return keyType Always reverts with UnsupportedKeyOperation
     /// @return key Always reverts with UnsupportedKeyOperation
     // solhint-disable-next-line use-natspec
-    function getKey(bytes32 /*_key*/ )
-        external
-        view
-        virtual
-        override
-        returns (uint256[] memory, uint256, bytes32)
-    {
+    function getKey(bytes32 /*_key*/ ) external view virtual override returns (uint256[] memory, uint256, bytes32) {
         revert UnsupportedKeyOperation();
     }
 
@@ -278,16 +272,7 @@ contract ATKContractIdentityImplementation is
     /// @dev Key operations are not supported in contract identities
     /// @return hasIt Always reverts with UnsupportedKeyOperation
     // solhint-disable-next-line use-natspec
-    function keyHasPurpose(
-        bytes32, /*_key*/
-        uint256 /*_purpose*/
-    )
-        external
-        view
-        virtual
-        override
-        returns (bool)
-    {
+    function keyHasPurpose(bytes32, /*_key*/ uint256 /*_purpose*/ ) external view virtual override returns (bool) {
         revert UnsupportedKeyOperation();
     }
 

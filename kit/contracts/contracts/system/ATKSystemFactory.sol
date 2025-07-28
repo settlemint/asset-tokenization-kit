@@ -323,6 +323,4 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
     function factoryForwarder() external view returns (address) {
         return FACTORY_FORWARDER;
     }
-
-
 }

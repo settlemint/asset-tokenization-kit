@@ -1,6 +1,6 @@
 import { encodeAbiParameters, parseAbiParameters } from "viem";
-import { ATKTopic } from "../../constants/topics";
-import { topicManager } from "../../services/topic-manager";
+import { ATKTopic } from "../constants/topics";
+import { topicManager } from "../services/topic-manager";
 
 /// @notice Enum matching ExpressionType from Solidity
 export enum ExpressionType {

@@ -69,9 +69,7 @@ contract ATKFundTest is AbstractATKAssetTest {
         _setUpIdentity(investor1, "Investor 1");
         _setUpIdentity(investor2, "Investor 2");
 
-        fund = _createFundAndMint(
-            NAME, SYMBOL, DECIMALS, MANAGEMENT_FEE_BPS, new SMARTComplianceModuleParamPair[](0)
-        );
+        fund = _createFundAndMint(NAME, SYMBOL, DECIMALS, MANAGEMENT_FEE_BPS, new SMARTComplianceModuleParamPair[](0));
         vm.label(address(fund), "Fund");
     }
 
@@ -87,12 +85,7 @@ contract ATKFundTest is AbstractATKAssetTest {
     {
         vm.startPrank(owner);
         address fundAddress = fundFactory.createFund(
-            name_,
-            symbol_,
-            decimals_,
-            managementFeeBps_,
-            initialModulePairs_,
-            TestConstants.COUNTRY_CODE_US
+            name_, symbol_, decimals_, managementFeeBps_, initialModulePairs_, TestConstants.COUNTRY_CODE_US
         );
 
         result = IATKFund(fundAddress);

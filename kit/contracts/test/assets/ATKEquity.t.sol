@@ -69,8 +69,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         _setUpIdentity(user2, "User 2");
         _setUpIdentity(spender, "Spender");
 
-        smartEquity =
-            _createEquityAndMint(NAME, SYMBOL, DECIMALS, new SMARTComplianceModuleParamPair[](0));
+        smartEquity = _createEquityAndMint(NAME, SYMBOL, DECIMALS, new SMARTComplianceModuleParamPair[](0));
         vm.label(address(smartEquity), "ATKEquity");
 
         // Fund test accounts
@@ -89,9 +88,8 @@ contract ATKEquityTest is AbstractATKAssetTest {
         returns (IATKEquity result)
     {
         vm.startPrank(owner);
-        address equityAddress = equityFactory.createEquity(
-            name_, symbol_, decimals_, initialModulePairs_, TestConstants.COUNTRY_CODE_US
-        );
+        address equityAddress =
+            equityFactory.createEquity(name_, symbol_, decimals_, initialModulePairs_, TestConstants.COUNTRY_CODE_US);
 
         result = IATKEquity(equityAddress);
 
