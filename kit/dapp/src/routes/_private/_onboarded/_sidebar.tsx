@@ -6,7 +6,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { UserDropdown } from "@/components/user-dropdown/user-dropdown";
-import { authClient } from "@/lib/auth/auth.client";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar")({
@@ -25,9 +24,6 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar")({
  *
  */
 function LayoutComponent() {
-  const { data: session } = authClient.useSession();
-  const user = session?.user;
-
   return (
     <SidebarProvider className="OnboardingSidebar">
       <AppSidebar className="group-data-[side=left]:border-0" />
@@ -41,7 +37,7 @@ function LayoutComponent() {
             />
           </div>
           <div className="flex items-center gap-2 px-4">
-            <UserDropdown user={user} />
+            <UserDropdown />
           </div>
         </header>
         <main className="flex min-h-[calc(100vh-90px)] flex-1 flex-col rounded-tl-xl px-8 py-4 bg-background">

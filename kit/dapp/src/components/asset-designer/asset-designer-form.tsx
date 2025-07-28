@@ -1,3 +1,5 @@
+"use client";
+
 import { AssetBasics } from "@/components/asset-designer/asset-basics/asset";
 import { ComplianceModules } from "@/components/asset-designer/compliance-modules/compliance-modules";
 import { SelectAssetType } from "@/components/asset-designer/select-asset-type";
