@@ -27,7 +27,11 @@
     "title": "Wählen Sie Vermögensarten aus",
     "validation-error": "Wählen Sie mindestens eine Vermögensart aus",
     "what-are-asset-factories": "Was sind Asset-Fabriken?",
-    "your-asset-factories-ready": "Ihre Asset-Fabriken sind bereit zur Tokenisierung"
+    "your-asset-factories-ready": "Ihre Asset-Fabriken sind bereit zur Tokenisierung",
+    "deploy": "Vermögensfabriken bereitstellen",
+    "deploying": "Wird bereitgestellt...",
+    "deployment-warning": "Diese Aktion wird Smart Contract-Fabriken auf die Blockchain bereitstellen. Einmal bereitgestellt, können sie nicht entfernt, aber ungenutzt bleiben.",
+    "failed-toast": "Bereitstellung der Vermögensfabriken fehlgeschlagen: "
   },
   "groups": {
     "addons": {
@@ -181,7 +185,9 @@
       "validation": {
         "invalid": "Wählen Sie mindestens ein Add-on aus"
       },
-      "what-are-addons": "Was sind Add-ons?"
+      "what-are-addons": "Was sind Add-ons?",
+      "deploying": "Wird bereitgestellt...",
+      "required-for-bonds": "Erforderlich für Anleihen"
     }
   },
   "system-settings": {
@@ -224,7 +230,7 @@
     "failed-to-create-wallet": "Wallet konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
     "how-it-works": "So funktioniert es (wie eine spezielle Bankkarte):",
     "how-it-works-description": "Wie eine Bankkarte mit einer PIN ermöglicht Ihnen der private Schlüssel Ihres Wallets:",
-    "intro": "Ihr Wallet ist mehr als nur ein Speicher – es ist Ihr Hauptschlüssel zur Blockchain. Dieser einzigartige kryptografische Schlüssel beweist, dass Sie Ihre Tokens besitzen und ermöglicht es Ihnen, jede Transaktion zu autorisieren.",
+    "intro": "Ihre Wallet ist mehr als nur ein Speicher — sie ist Ihr Hauptschlüssel zur Blockchain. Dieser einzigartige kryptografische Schlüssel beweist, dass Sie Ihre Token besitzen, und ermöglicht es Ihnen, jede Transaktion zu autorisieren.",
     "invest-in-digital-assets": "In digitale Vermögenswerte investieren",
     "invest-in-digital-assets-description": "Zugriff auf tokenisierte Aktien, Anleihen, Fonds und andere digitale Vermögenswerte von verifizierten Emittenten.",
     "manage-on-chain-identity": "Verwalten Sie Ihre On-Chain-Identität",

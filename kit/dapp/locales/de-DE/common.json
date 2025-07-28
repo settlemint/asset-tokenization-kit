@@ -1,6 +1,7 @@
 {
   "actions": {
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "skip": "Überspringen"
   },
   "appDescription": "In Minuten bereitstellen, einfach anpassen",
   "appName": "Asset-Tokenisierungs-Kit",
