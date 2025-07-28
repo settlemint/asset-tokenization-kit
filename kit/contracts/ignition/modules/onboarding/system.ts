@@ -212,6 +212,21 @@ const ATKOnboardingSystemModule = buildModule(
       }
     );
 
+    // Grant REGISTRAR_ROLE to m.getAccount(0) on the system access manager
+    // This is required to call registerTokenFactory
+    const grantRegistrarRoleToDeployer = m.call(
+      systemAccessManager,
+      "grantRole",
+      [
+        "0x2cf38baf8b867d91cfcccc0e8d7a429365579f0eb969ff29c0621b271cdeeb64", // REGISTRAR_ROLE
+        m.getAccount(0),
+      ],
+      {
+        from: m.getAccount(0),
+        id: "grantRegistrarRoleToDeployer",
+      }
+    );
+
     // Set the system access manager on contracts that need it
     // This is required for contracts that use onlySystemRoles modifier
     const setComplianceSystemAccessManager = m.call(

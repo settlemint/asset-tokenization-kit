@@ -24,6 +24,10 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
   if (!finalResult) {
     throw new Error("Failed to bootstrap system");
   }
+
+  // No need to grant permissions anymore as it's already done in the Ignition module
+  console.log("✓ Permissions already granted during system bootstrap");
+
   return finalResult;
 }
 
