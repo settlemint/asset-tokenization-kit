@@ -15,45 +15,8 @@ export function SecurityMethodSelector() {
 
   const actions = (
     <div className="flex justify-between items-center w-full">
-      <div className="flex">
-        <Button
-          onClick={() => {
-            setShowPinModal(true);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              setShowPinModal(true);
-            }
-          }}
-          variant="outline"
-          tabIndex={0}
-          aria-label={t(
-            "wallet-security.method-selector.comparison.choose-pin"
-          )}
-        >
-          {t("wallet-security.method-selector.comparison.choose-pin")}
-        </Button>
-      </div>
-      <div className="flex">
-        <Button
-          onClick={() => {
-            setShowOtpModal(true);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              setShowOtpModal(true);
-            }
-          }}
-          tabIndex={0}
-          aria-label={t(
-            "wallet-security.method-selector.comparison.choose-otp"
-          )}
-        >
-          {t("wallet-security.method-selector.comparison.choose-otp")}
-        </Button>
-      </div>
+      <div className="flex"></div>
+      <div className="flex"></div>
     </div>
   );
 
@@ -78,10 +41,6 @@ export function SecurityMethodSelector() {
               <div className="col-span-3 p-4 font-medium text-foreground text-center">
                 <div className="flex flex-col items-center gap-2">
                   {t("wallet-security.method-selector.otp.title")}
-                  <Badge variant="default" className="flex items-center gap-1">
-                    <Star className="w-3 h-3" />
-                    {t("wallet-security.method-selector.recommended")}
-                  </Badge>
                 </div>
               </div>
             </div>
@@ -168,6 +127,52 @@ export function SecurityMethodSelector() {
                 </div>
                 <div className="col-span-3 p-4 text-center text-xs text-muted-foreground">
                   {t("wallet-security.method-selector.otp.summary")}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-10 gap-0 w-full">
+                <div className="col-span-4 p-4 font-medium text-sm" />
+                <div className="col-span-3 p-4 text-center text-xs text-muted-foreground">
+                  <Button
+                    onClick={() => {
+                      setShowPinModal(true);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setShowPinModal(true);
+                      }
+                    }}
+                    tabIndex={0}
+                    aria-label={t(
+                      "wallet-security.method-selector.comparison.choose-pin"
+                    )}
+                  >
+                    {t("wallet-security.method-selector.comparison.choose-pin")}
+                  </Button>
+                </div>
+                <div className="col-span-3 p-4 text-center text-xs text-muted-foreground">
+                  <Button
+                    onClick={() => {
+                      setShowOtpModal(true);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setShowOtpModal(true);
+                      }
+                    }}
+                    tabIndex={0}
+                    aria-label={t(
+                      "wallet-security.method-selector.comparison.choose-otp"
+                    )}
+                  >
+                    {t("wallet-security.method-selector.comparison.choose-otp")}
+                  </Button>
+                  <Badge variant="default" className="flex items-center gap-1">
+                    <Star className="w-3 h-3" />
+                    {t("wallet-security.method-selector.recommended")}
+                  </Badge>
                 </div>
               </div>
             </div>
