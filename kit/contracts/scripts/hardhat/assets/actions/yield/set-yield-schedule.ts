@@ -37,15 +37,44 @@ export const setYieldSchedule = async (
   });
 
   // Grant GOVERNANCE_ROLE to owner so they can call setYieldSchedule
-  const grantRoleHash = await withDecodedRevertReason(() =>
+  const grantGovRoleHash = await withDecodedRevertReason(() =>
     accessManagerContract.write.grantRole([
       ATKRoles.governanceRole,
       owner.address,
     ])
   );
-  await waitForSuccess(grantRoleHash);
+  await waitForSuccess(grantGovRoleHash);
   console.log(
     `[Set yield schedule] ✓ Granted GOVERNANCE_ROLE to ${owner.address}`
+  );
+
+  // Get the system address for granting DEPLOYER_ROLE to owner
+  const systemAddress = atkDeployer.getContractAddress("system");
+  const systemContract = owner.getContractInstance({
+    address: systemAddress,
+    abi: ATKContracts.system,
+  });
+
+  // Get the system access manager address from the system contract
+  const systemAccessManagerAddress =
+    await systemContract.read.systemAccessManager();
+
+  // Get the system access manager contract
+  const systemAccessManagerContract = owner.getContractInstance({
+    address: systemAccessManagerAddress,
+    abi: ATKContracts.accessManager,
+  });
+
+  // Grant DEPLOYER_ROLE to owner so they can call fixedYieldScheduleFactory.create
+  const grantDeployerRoleHash = await withDecodedRevertReason(() =>
+    systemAccessManagerContract.write.grantRole([
+      ATKRoles.deployerRole,
+      owner.address,
+    ])
+  );
+  await waitForSuccess(grantDeployerRoleHash);
+  console.log(
+    `[Set yield schedule] ✓ Granted DEPLOYER_ROLE to ${owner.address}`
   );
 
   const factoryAddress = atkDeployer.getContractAddress(
