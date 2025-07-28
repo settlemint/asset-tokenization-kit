@@ -10,21 +10,21 @@ Before creating PR, gather Linear context:
 // 1. Find my active issues
 mcp__linear__list_my_issues({
   limit: 10,
-  orderBy: "updatedAt"
-})
+  orderBy: "updatedAt",
+});
 
 // 2. Check issue details and linked PRs
 mcp__linear__get_issue({
-  id: "ISSUE-123"
-})
+  id: "ISSUE-123",
+});
 
 // 3. Review similar completed issues
 mcp__linear__list_issues({
   organizationSlug: "your-org",
   stateId: "done-state-id",
   query: "similar feature keywords",
-  limit: 5
-})
+  limit: 5,
+});
 ```
 
 ## Behavior
@@ -54,29 +54,39 @@ Agents sync before PR creation.
 Leverage gemini-cli for intelligent PR creation:
 
 1. **Change Analysis & Commit Strategy**:
+
    ```javascript
-   mcp__gemini-cli__ask-gemini({
-     prompt: "@git-diff analyze changes and suggest logical commit splits with semantic messages",
-     changeMode: true,
-     model: "gemini-2.5-pro"
-   })
+   mcp__gemini -
+     cli__ask -
+     gemini({
+       prompt:
+         "@git-diff analyze changes and suggest logical commit splits with semantic messages",
+       changeMode: true,
+       model: "gemini-2.5-pro",
+     });
    ```
 
 2. **PR Description Generation**:
+
    ```javascript
-   mcp__gemini-cli__ask-gemini({
-     prompt: "@commits generate comprehensive PR description with summary, changes, and test plan",
-     changeMode: true
-   })
+   mcp__gemini -
+     cli__ask -
+     gemini({
+       prompt:
+         "@commits generate comprehensive PR description with summary, changes, and test plan",
+       changeMode: true,
+     });
    ```
 
 3. **Breaking Change Detection**:
    ```javascript
-   mcp__gemini-cli__ask-gemini({
-     prompt: "@changes identify breaking changes and suggest migration guide",
-     changeMode: true,
-     sandbox: true
-   })
+   mcp__gemini -
+     cli__ask -
+     gemini({
+       prompt: "@changes identify breaking changes and suggest migration guide",
+       changeMode: true,
+       sandbox: true,
+     });
    ```
 
 ## Commit Splitting Guidelines
@@ -111,8 +121,10 @@ bun run ci  # Must pass
 ### Database Migration Handling
 
 **IMPORTANT**: If PR includes database schema changes:
+
 1. Check for multiple migration files in `kit/dapp/src/lib/db/migrations/`
-2. Squash all new migrations into a single migration file to maintain clean history
+2. Squash all new migrations into a single migration file to maintain clean
+   history
 3. Ensure migration is properly tested with:
    ```bash
    bun run db:migrate  # Apply migrations
@@ -126,36 +138,39 @@ bun run ci  # Must pass
 Comprehensive Linear integration for PR tracking:
 
 1. **Find Related Issues**:
+
    ```javascript
    mcp__linear__list_issues({
      organizationSlug: "your-org",
      query: "feature name or bug description",
-     limit: 10
-   })
+     limit: 10,
+   });
    ```
 
 2. **Link PR to Issue**:
+
    ```javascript
    mcp__linear__create_comment({
      issueId: "ISSUE-123",
-     body: "🚀 PR Created: [#PR-NUMBER](PR_URL)\n\n**Changes:**\n- Feature implementation\n- Tests added\n- Documentation updated"
-   })
+     body: "🚀 PR Created: [#PR-NUMBER](PR_URL)\n\n**Changes:**\n- Feature implementation\n- Tests added\n- Documentation updated",
+   });
    ```
 
 3. **Update Issue Status**:
+
    ```javascript
    mcp__linear__update_issue({
      id: "ISSUE-123",
-     stateId: "in-review-state-id"
-   })
+     stateId: "in-review-state-id",
+   });
    ```
 
 4. **Create PR Checklist**:
    ```javascript
    mcp__linear__create_comment({
      issueId: "ISSUE-123",
-     body: "## PR Checklist\n- [ ] Code review passed\n- [ ] Tests green\n- [ ] Documentation updated\n- [ ] Breaking changes documented"
-   })
+     body: "## PR Checklist\n- [ ] Code review passed\n- [ ] Tests green\n- [ ] Documentation updated\n- [ ] Breaking changes documented",
+   });
    ```
 
 ## Escape Hatches
@@ -204,67 +219,95 @@ During PR creation, silently learn and document:
 Advanced PR capabilities with gemini-cli:
 
 ### 1. **Commit Message Optimization**
+
 ```javascript
-mcp__gemini-cli__ask-gemini({
-  prompt: "Generate semantic commit message for @staged-changes following conventional commits",
-  changeMode: true,
-  model: "gemini-2.5-flash"
-})
+mcp__gemini -
+  cli__ask -
+  gemini({
+    prompt:
+      "Generate semantic commit message for @staged-changes following conventional commits",
+    changeMode: true,
+    model: "gemini-2.5-pro",
+  });
 ```
 
 ### 2. **PR Review Prediction**
+
 ```javascript
-mcp__gemini-cli__brainstorm({
-  prompt: "Predict potential review comments for this PR based on changes",
-  domain: "software",
-  constraints: "Focus on security, performance, and code quality issues",
-  ideaCount: 10,
-  includeAnalysis: true
-})
+mcp__gemini -
+  cli__brainstorm({
+    prompt: "Predict potential review comments for this PR based on changes",
+    domain: "software",
+    constraints: "Focus on security, performance, and code quality issues",
+    ideaCount: 10,
+    includeAnalysis: true,
+  });
 ```
 
 ### 3. **Test Plan Generation**
+
 ```javascript
-mcp__gemini-cli__ask-gemini({
-  prompt: "@pr-changes generate comprehensive test plan with manual and automated steps",
-  changeMode: true
-})
+mcp__gemini -
+  cli__ask -
+  gemini({
+    prompt:
+      "@pr-changes generate comprehensive test plan with manual and automated steps",
+    changeMode: true,
+  });
 ```
 
 ### 4. **Documentation Updates**
+
 ```javascript
-mcp__gemini-cli__ask-gemini({
-  prompt: "@code-changes identify required documentation updates and generate content",
-  changeMode: true
-})
+mcp__gemini -
+  cli__ask -
+  gemini({
+    prompt:
+      "@code-changes identify required documentation updates and generate content",
+    changeMode: true,
+  });
 
 // Check for documentation created by agents
-mcp__gemini-cli__ask-gemini({
-  prompt: "@README.md @CLAUDE.md verify documentation is complete and accurate",
-  changeMode: false
-})
+mcp__gemini -
+  cli__ask -
+  gemini({
+    prompt:
+      "@README.md @CLAUDE.md verify documentation is complete and accurate",
+    changeMode: false,
+  });
 
 // Verify README files are comprehensive
-mcp__gemini-cli__ask-gemini({
-  prompt: "@*/README.md check for clear overview, examples, and getting started sections",
-  changeMode: false
-})
+mcp__gemini -
+  cli__ask -
+  gemini({
+    prompt:
+      "@*/README.md check for clear overview, examples, and getting started sections",
+    changeMode: false,
+  });
 ```
 
 ### 5. **Dependency Impact Analysis**
+
 ```javascript
-mcp__gemini-cli__ask-gemini({
-  prompt: "@package.json analyze dependency changes for security and compatibility",
-  changeMode: false
-})
+mcp__gemini -
+  cli__ask -
+  gemini({
+    prompt:
+      "@package.json analyze dependency changes for security and compatibility",
+    changeMode: false,
+  });
 ```
 
 ### 6. **PR Title Optimization**
+
 ```javascript
-mcp__gemini-cli__ask-gemini({
-  prompt: "@commits generate concise PR title that captures main value proposition",
-  changeMode: false
-})
+mcp__gemini -
+  cli__ask -
+  gemini({
+    prompt:
+      "@commits generate concise PR title that captures main value proposition",
+    changeMode: false,
+  });
 ```
 
 ## Learned PR Patterns

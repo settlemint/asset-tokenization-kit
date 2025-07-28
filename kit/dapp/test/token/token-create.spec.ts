@@ -60,31 +60,17 @@ describe("Token create", () => {
       // Give the graph some time to index
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
-      const tokens = await client.token.list({});
-      expect(tokens.length).toBeGreaterThan(0);
-      expect(tokens.find((t) => t.name === tokenData.name)).toEqual({
-        id: expect.any(String),
-        ...tokenData,
-        pausable: {
-          paused: true,
-        },
-        totalSupply: from("0"),
-      });
-    } catch (error: unknown) {
-      if (
-        error instanceof Error &&
-        (error.toString().includes("AccessControlUnauthorizedAccount") ||
-          error.toString().includes("Token factory context not set"))
-      ) {
-        console.log(
-          "Skipping test due to access control error in system access manager integration"
-        );
-        // Mark test as passed
-        expect(true).toBe(true);
-      } else {
-        throw error;
-      }
-    }
+    const tokens = await client.token.list({});
+    expect(tokens.length).toBeGreaterThan(0);
+    expect(tokens.find((t) => t.name === tokenData.name)).toEqual({
+      id: expect.any(String),
+      createdAt: expect.any(Date),
+      ...tokenData,
+      pausable: {
+        paused: true,
+      },
+      totalSupply: from("0"),
+    });
   });
 
   test("regular users cant create tokens", async () => {
