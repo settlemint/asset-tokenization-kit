@@ -13,8 +13,9 @@ import { Summary } from "@/components/asset-designer/summary/summary";
 import { StepLayout } from "@/components/stepper/step-layout";
 import { getNextStep, getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
-import { useStreamingMutation } from "@/hooks/use-streaming-mutation";
+import { waitForStream } from "@/lib/utils/mutation";
 import { orpc } from "@/orpc/orpc-client";
+import { useMutation } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,20 +23,26 @@ import { useTranslation } from "react-i18next";
 export const AssetDesignerForm = () => {
   const { t } = useTranslation(["asset-designer"]);
   const steps = useAssetDesignerSteps();
-  const { mutate: createToken } = useStreamingMutation({
-    mutationOptions: orpc.token.create.mutationOptions(),
-    onSuccess: () => {
-      form.reset();
-    },
-  });
+  const { mutateAsync: createToken } = useMutation(
+    orpc.token.create.mutationOptions({
+      mutationFn: async (values) => {
+        return await orpc.token.create.call(values);
+      },
+      onSuccess: async (result) => {
+        await waitForStream(result, "token creation");
+        form.reset();
+      },
+    })
+  );
+
   const form = useAppForm({
     ...assetDesignerFormOptions,
     validators: {
       onChange: AssetDesignerFormSchema,
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       const parsedValues = AssetDesignerFormSchema.parse(values.value);
-      createToken({
+      await createToken({
         ...parsedValues,
         initialModulePairs: [],
       });
