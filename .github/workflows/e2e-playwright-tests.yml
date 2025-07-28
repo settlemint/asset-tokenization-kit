@@ -46,19 +46,12 @@ jobs:
           NPM_TOKEN: op://platform/npmjs/credential
 
       - name: Setup dependencies
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
-          github.event_name == 'pull_request_review'
         uses: ./.github/actions/setup-dependencies
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           npm_token: ${{ env.NPM_TOKEN }}
 
       - name: Login to GitHub Container Registry
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -66,9 +59,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to Harbor
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         uses: docker/login-action@v3
         with:
           registry: harbor.settlemint.com
@@ -76,19 +66,12 @@ jobs:
           password: ${{ env.HARBOR_PASS }}
 
       - name: Connect to SettleMint
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         uses: settlemint/settlemint-action@main
         with:
           instance: local
 
-      - name: Generate artifacts
-        if: |
-          github.event_name == 'push' ||
-          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
-        run: |
-          bunx turbo run artifacts --concurrency=100%
+      - name: Generate all artifacts
+        run: bunx turbo run artifacts --concurrency=100%
 
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps chromium
