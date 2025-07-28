@@ -329,7 +329,7 @@
       "title": "Set up a PIN code"
     },
     "recovery-codes": {
-      "confirm": "Confirm I've stored them",
+      "confirm": "Finish wallet setup",
       "confirm-error": "Failed to confirm secret codes",
       "copied-to-clipboard": "Secret codes copied to clipboard!",
       "copy-all": "Copy all",
