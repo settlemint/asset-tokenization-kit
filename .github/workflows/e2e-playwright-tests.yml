@@ -31,62 +31,68 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Configure 1Password
+      - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
         with:
           service-account-token: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
-      - name: Load secrets
+      - name: Load all secrets
         uses: 1password/load-secrets-action@v2
         env:
           SLACK_WEBHOOK_URL: op://platform/slack-webhooks/e2e-report
+          PAT_TOKEN: op://platform/github-commit-pat/credential
+          HARBOR_USER: op://platform/harbor/username
+          HARBOR_PASS: op://platform/harbor/password
+          NPM_TOKEN: op://platform/npmjs/credential
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
+      - name: Setup dependencies
+        if: |
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ||
+          github.event_name == 'pull_request_review'
+        uses: ./.github/actions/setup-dependencies
         with:
-          node-version-file: .nvmrc
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          npm_token: ${{ env.NPM_TOKEN }}
 
-      - name: Install Foundry
+      - name: Login to GitHub Container Registry
+        if: |
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Harbor
+        if: |
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        uses: docker/login-action@v3
+        with:
+          registry: harbor.settlemint.com
+          username: ${{ env.HARBOR_USER }}
+          password: ${{ env.HARBOR_PASS }}
+
+      - name: Connect to SettleMint
+        if: |
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+        uses: settlemint/settlemint-action@main
+        with:
+          instance: local
+
+      - name: Generate artifacts
+        if: |
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
         run: |
-          curl -L https://foundry.paradigm.xyz | bash
-          ~/.foundry/bin/foundryup
-          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies
-        run: bun install
-        working-directory: kit/e2e
-
-      - name: Generate all artifacts
-        run: bun run artifacts
-        working-directory: .
-
-      - name: Check Docker version
-        run: |
-          docker --version
-          docker compose version
+          bunx turbo run artifacts --concurrency=100%
 
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps chromium
         working-directory: kit/e2e
-
-      # - name: Connect to SettleMint
-      #   uses: settlemint/settlemint-action@main
-      #   with:
-      #     instance: ${{ secrets.SETTLEMINT_INSTANCE }}
-      #     access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
-      #     dotEnvFile: ${{ secrets.ENV_FILE }}
-      #     dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
-
-      - name: Install dapp dependencies
-        run: bun install
-        working-directory: kit/dapp
-
-      # - name: Generate SettleMint code and addresses
-      #   run: |
-      #     bun codegen:settlemint
-      #     bun addresses
-      #   working-directory: kit/dapp
 
       - name: Reset dev environment (clean start)
         run: bun run dev:reset
@@ -161,17 +167,6 @@ jobs:
         env:
           CI: true
 
-      # - name: Send Slack notification
-      #   if: ${{ !cancelled() }}
-      #   uses: slackapi/slack-github-action@v2.1.1
-      #   with:
-      #     webhook: ${{ env.SLACK_WEBHOOK_URL }}
-      #     webhook-type: incoming-webhook
-      #     payload: |
-      #       {
-      #         "text": "${{ (steps.playwright-api.outcome == 'success' && steps.playwright-ui.outcome == 'success') && ':white_check_mark: Asset Tokenization E2E Tests Passed (API & UI)' || ':x: Asset Tokenization E2E Tests Failed (API or UI)' }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
-      #       }
-
       - name: Stop dev server
         if: always()
         run: kill ${{ env.SERVER_PID }} || true
@@ -187,4 +182,22 @@ jobs:
             kit/e2e/test-results/
             kit/dapp/server.log
           retention-days: 1
+
+      - name: Docker compose logs on failure
+        if: failure()
+        run: |
+          echo "CI tests failed - collecting docker compose logs for debugging"
+          echo "============================================"
+          echo "Docker compose service status:"
+          echo "============================================"
+          docker compose -p atk ps
+          echo ""
+          echo "============================================"
+          echo "Docker compose logs:"
+          echo "============================================"
+          for service in $(docker compose -p atk ps --services); do
+            echo ""
+            echo "--- Logs for service: $service ---"
+            docker compose -p atk logs "$service" || true
+          done
 
