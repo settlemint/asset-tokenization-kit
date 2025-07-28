@@ -5,6 +5,7 @@ import { ATKTopic } from "../../constants/topics";
 import type { Asset } from "../../entities/asset";
 import { atkDeployer } from "../../services/deployer";
 import { getAnvilTimeMilliseconds } from "../../utils/anvil";
+import { expressionBuilder } from "../utils/expression-builder";
 import { addCountryComplianceModule } from "./compliance/add-country-allow-list-compliance-module";
 import { removeComplianceModule } from "./compliance/remove-compliance-module";
 import { setCountryParametersForComplianceModule } from "./compliance/set-country-parameters-for-compliance-module";
@@ -36,7 +37,10 @@ export const setupAsset = async (
   await grantRoles(asset, owner, [ATKRoles.governanceRole]);
 
   // set extra topic
-  await updateRequiredTopics(asset, [ATKTopic.kyc, ATKTopic.aml]);
+  await updateRequiredTopics(
+    asset,
+    expressionBuilder().topic(ATKTopic.kyc).and(ATKTopic.aml).build()
+  );
 
   // add country allow list compliance module
   await addCountryComplianceModule(asset, "countryAllowListModule", [
