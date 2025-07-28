@@ -23,6 +23,7 @@ import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockch
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import {
@@ -88,7 +89,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
   .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: ["registrar"],
+      requiredRoles: TOKEN_FACTORY_PERMISSIONS.create,
       getAccessControl: ({ context }) => {
         const systemData = context.system;
         return systemData?.tokenFactoryRegistry?.accessControl;
