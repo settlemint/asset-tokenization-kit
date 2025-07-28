@@ -51,6 +51,9 @@ claude mcp add gemini-cli -- npx -y gemini-mcp-tool -s user
 
 # Grep
 claude mcp add --transport http grep https://mcp.grep.app -s user
+
+# OpenZeppelin Solidity Contracts - Smart contract generation
+claude mcp add -t http OpenZeppelinSolidityContracts https://mcp.openzeppelin.com/contracts/solidity/mcp -s user
 ```
 
 ## Usage

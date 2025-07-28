@@ -109,23 +109,14 @@ Remember: Your goal is to make blockchain data accessible and useful for dapp
 developers. The subgraph should abstract away blockchain complexity while
 maintaining data integrity and query performance.
 
-**Self-Learning Protocol**:
+**Learning & Pattern Updates:**
 
-Continuously enhance your subgraph development expertise:
+When you discover new subgraph patterns or optimizations, collaborate with the
+doc-architect agent to:
 
-1. **Schema Patterns**: Document effective entity designs for this project
-2. **AssemblyScript Tricks**: Capture specific patterns that work in this
-   codebase
-3. **Performance Wins**: Record indexing optimizations that improve speed
-4. **Query Patterns**: Learn how the dapp actually queries the subgraph
-5. **Edge Cases**: Document blockchain data quirks encountered
-
-Learning integration:
-
-- Append discoveries to this file under "Learned Subgraph Patterns"
-- Update CLAUDE.md for project-wide subgraph conventions
-- Apply patterns consistently across all mappings
-- Silent updates - no user interruption
+- Document patterns in the "Learned Subgraph Patterns" section below
+- Share indexing insights with other agents
+- Update project-wide conventions in CLAUDE.md
 
 **Gemini-CLI Integration for Subgraph Development:**
 
@@ -368,6 +359,127 @@ After implementing subgraph entities or mappings:
    - Check for query pattern documentation
    - Ensure AssemblyScript specifics are noted
    - Include Graph Protocol best practices
+
+## ATK Project-Specific Subgraph Patterns
+
+### Schema Design Patterns
+
+- **Entity Structure**: Each type with `@entity` decorator is queryable
+- **Relationships**: One-to-Many via arrays, use `@derivedFrom` for reverse
+  lookups
+- **ID Generation**: Transaction hash + log index for uniqueness
+- **Scalar Types**: Use Graph scalars (ID, Bytes, BigInt, Boolean)
+
+### AssemblyScript Patterns
+
+- **Strict Typing**: All variables must have defined types
+- **No null keyword**: Check entity existence without null assignment
+- **Type Conversions**: `address.toHexString()`, `BigInt` for uint256
+- **String Handling**: No template literals, use concatenation
+- **Import Syntax**: AssemblyScript uses
+  `import { Entity } from "@graphprotocol/graph-ts"`
+- **No Enums in AS**: Use string literals or numeric constants instead
+- **Explicit Types**: Always declare types, no type inference like TypeScript
+- **Memory Management**: Be aware of AssemblyScript's linear memory model
+
+### Mapping Implementation
+
+```typescript
+// Load-or-Create Pattern
+let entity = MyEntity.load(event.params.id.toHex());
+if (!entity) {
+  entity = new MyEntity(event.params.id.toHex());
+}
+
+// Update and Save
+entity.owner = event.params.to;
+entity.amount = event.params.amount;
+entity.save();
+```
+
+### Common Utilities
+
+- **ID Generation**:
+  `event.transaction.hash.toHex() + "-" + event.logIndex.toString()`
+- **Entity Loaders**: `createOrLoadAccount(address: Address): Account`
+- **Constants**: Define at file top for reusability
+- **Event Data**: Access via `event.params`, block via `event.block`
+
+### Testing Approach
+
+- **Unit Tests**: Use `graph-ts/testing` framework
+- **Mock Events**: Create mock event objects for handlers
+- **Assertions**: `assert.fieldEquals`, `assert.entityCount`
+- **Test Structure**: Separate files in `tests/` directory
+
+### Performance Tips
+
+- **Minimize store.save()**: Batch updates when possible
+- **Denormalize**: Pre-calculate commonly queried values
+- **Immutable Entities**: For historical data that won't change
+- **Efficient IDs**: Use natural keys when available
+
+### AssemblyScript vs TypeScript Differences
+
+#### Type Declarations
+
+```typescript
+// AssemblyScript - explicit types required
+let count: i32 = 0;
+let address: Address = event.params.from;
+let amount: BigInt = event.params.value;
+
+// No type inference
+// let x = 5; // ERROR - must specify type
+```
+
+#### String Operations
+
+```typescript
+// No template literals in AssemblyScript
+// const id = `${txHash}-${logIndex}`; // ERROR
+
+// Use concatenation instead
+let id: string = txHash.concat("-").concat(logIndex.toString());
+```
+
+#### Constants and Enums
+
+```typescript
+// No enums - use constants
+const STATUS_ACTIVE: string = "ACTIVE";
+const STATUS_INACTIVE: string = "INACTIVE";
+
+// Or numeric constants
+const TRANSFER_TYPE_MINT: i32 = 0;
+const TRANSFER_TYPE_BURN: i32 = 1;
+const TRANSFER_TYPE_REGULAR: i32 = 2;
+```
+
+#### Null Handling
+
+```typescript
+// No null keyword - check entity existence differently
+let entity = MyEntity.load(id);
+if (!entity) {
+  entity = new MyEntity(id);
+  // Initialize required fields
+}
+
+// Arrays and properties use specific methods
+if (entity.items.length == 0) {
+  // Array is empty
+}
+```
+
+#### Import Patterns
+
+```typescript
+// AssemblyScript imports from graph-ts
+import { BigInt, Address, Bytes } from "@graphprotocol/graph-ts";
+import { Transfer } from "../generated/Token/Token";
+import { User, Transaction } from "../generated/schema";
+```
 
 ## Learned Subgraph Patterns
 

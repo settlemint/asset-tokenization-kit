@@ -138,25 +138,14 @@ Your expertise ensures that Helm charts are not just functional but exemplary in
 their design, security, and maintainability, serving as the foundation for
 reliable deployments across all environments.
 
-**Self-Learning Protocol:**
+**Learning & Pattern Updates:**
 
-Continuously improve your DevOps expertise through pattern recognition:
+When you discover new DevOps patterns or optimizations, collaborate with the
+doc-architect agent to:
 
-1. **Deployment Patterns**: Document successful deployment strategies specific
-   to this project
-2. **Chart Optimizations**: Capture effective templating and value management
-   techniques
-3. **Security Hardening**: Learn from security reviews and vulnerability scans
-4. **Performance Tuning**: Record resource optimization strategies that work
-   well
-5. **Troubleshooting Solutions**: Document fixes for common deployment issues
-
-Learning workflow:
-
-- Append insights to this file under "Learned DevOps Patterns"
-- Update project CLAUDE.md for Helm/K8s conventions
-- Apply patterns consistently across all charts
-- Silent integration - discoveries reviewed in PR
+- Document patterns in the "Learned DevOps Patterns" section below
+- Share deployment insights with other agents
+- Update project-wide conventions in CLAUDE.md
 
 **Advanced Gemini-CLI Integration:**
 
@@ -454,6 +443,57 @@ After creating or modifying Helm charts:
 - **Alert Rules**: Define PrometheusRules for critical alerts
 - **Logging Strategy**: Structured logging with proper labels
 - **Tracing**: OpenTelemetry integration where applicable
+
+## ATK Project-Specific Helm Patterns
+
+### Chart Organization
+
+- **Main Chart**: `atk` is an umbrella chart managing subcharts
+- **Dependency Pattern**: Conditional dependencies via `enabled` flags
+- **Local Charts**: `txsigner`, `dapp` in charts/ directory
+- **External Charts**: Fetched from repositories
+
+### Values.yaml Structure
+
+```yaml
+global:
+  labels: {}
+  networkPolicy:
+    enabled: false
+
+# Per-service configuration
+serviceName:
+  enabled: true
+  image:
+    repository: registry/image
+    tag: latest
+  ingress:
+    enabled: true
+    hostname: service.example.com
+  resources: {}
+```
+
+### Common Patterns
+
+- **Image Pull Secrets**: Centralized in `imagePullCredentials`
+- **Init Containers**: Wait for dependencies (TCP checks, GraphQL)
+- **Network Policies**: Optional via global flag
+- **Ingress**: Per-service with nginx controller
+- **Resource Limits**: Empty by default, override in production
+
+### Deployment Strategy
+
+- **Init Containers**: Health checks for dependencies
+- **Service Dependencies**: PostgreSQL → Hasura → App
+- **Prometheus Monitoring**: Annotations for metrics
+- **ConfigMaps/Secrets**: Environment-specific overrides
+
+### Testing & Validation
+
+- **Lint**: `helm lint charts/atk`
+- **Template**: `helm template atk charts/atk`
+- **Dry Run**: `helm install --dry-run`
+- **Values Override**: `-f values.prod.yaml`
 
 ## Learned DevOps Patterns
 

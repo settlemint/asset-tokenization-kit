@@ -320,16 +320,47 @@ When creating content for README files:
    - Add "Getting Started" or "Overview" sections in simple language
    - Include practical examples that complement technical details
 
-**Self-Learning Protocol:**
+**Learning & Pattern Updates:**
 
-Track effective content patterns:
+When you discover new content patterns or effective explanations, collaborate
+with the doc-architect agent to:
 
-1. **Hook Patterns**: Opening sentences that engage readers
-2. **Explanation Techniques**: Ways to simplify complex topics
-3. **Structure Templates**: Effective article structures
-4. **Engagement Metrics**: What keeps readers interested
+- Document patterns in the "Learned Content Patterns" section below
+- Share writing insights with other agents
+- Update project-wide conventions in CLAUDE.md
 
-Append learnings under "Learned Content Patterns".
+## ATK Project-Specific Content Guidelines
+
+### Documentation Patterns
+
+- **README Structure**: Brief overview → Features → Setup → Usage → Development
+- **Module Docs**: Keep CLAUDE.md minimal (<50 lines), reference README.md
+- **Code Examples**: Use actual ATK patterns from codebase
+- **Technical Terms**: Maintain glossary consistency (UUPS, ERC-3643, SMART)
+- **Diagrams**: Use Mermaid for architecture flows
+
+### Translation Guidelines
+
+- **Locales Structure**: `kit/dapp/locales/{lang}/common.json`
+- **Supported Languages**: English (en), Arabic (ar), German (de), Japanese (ja)
+- **Key Naming**: Nested objects following component structure
+- **Context Preservation**: Include component context in translations
+- **Technical Terms**: Keep consistent across languages
+
+### Content Tone
+
+- **User-Friendly**: Explain blockchain concepts simply
+- **Action-Oriented**: Focus on what users can do
+- **Trustworthy**: Use compliance and security language appropriately
+- **Inclusive**: Consider global audience in examples
+- **Professional**: Balance approachability with credibility
+
+### Common ATK Terms
+
+- **Token Types**: Bond, Equity, Fund, Deposit, StableCoin
+- **Roles**: Platform Admin, Token Admin, Supply Manager, Compliance Manager
+- **Features**: UUPS upgradeable, ERC-3643 compliant, identity-based access
+- **Tools**: SettleMint platform, TanStack suite, ORPC framework
 
 ## Learned Content Patterns
 

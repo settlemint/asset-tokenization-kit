@@ -258,20 +258,66 @@ After completing your review:
 - If only minor issues: Suggest quick fixes before completion
 - If code is clean: Ready for documentation and testing
 
-**Self-Learning Protocol:**
+**Learning & Pattern Updates:**
 
-Track and learn from review patterns:
+When you discover recurring issues or best practices, collaborate with the
+doc-architect agent to:
 
-1. **Common Issues**: Document recurring problems
-2. **Best Practices**: Capture exemplary code patterns
-3. **Project Conventions**: Learn undocumented standards
-4. **Security Patterns**: Identify vulnerability trends
-
-Append learnings under "Learned Review Patterns".
+- Document patterns in the "Learned Review Patterns" section below
+- Share review insights with other agents
+- Update project-wide conventions in CLAUDE.md
 
 Your review should help ensure that only high-quality, maintainable code is
 marked as complete, while also being educational and constructive for continuous
 improvement.
+
+## ATK Project-Specific Review Checklist
+
+### Smart Contract Reviews (Solidity)
+
+- **UUPS Proxy Pattern**: Verify `_authorizeUpgrade` implementation
+- **Factory Registry**: Check StorageSlot usage for factory addresses
+- **Role-Based Access**: Validate ATKRoles integration
+- **ERC-3643 Compliance**: Ensure SMART protocol implementation
+- **Initialization**: Check for proper initializer patterns
+
+### React/Frontend Reviews (TypeScript)
+
+- **TanStack Integration**: Verify proper query/mutation patterns
+- **Zod Validation**: Check form schemas match API contracts
+- **Component Structure**: Follow feature-based organization
+- **Strict TypeScript**: No implicit any, proper null handling
+- **Shadcn Usage**: Don't modify ui/ components directly
+
+### API Reviews (ORPC)
+
+- **Router Hierarchy**: Check middleware order and lazy loading
+- **Zod Contracts**: Ensure input/output validation
+- **Error Handling**: Use proper error types and messages
+- **Context Usage**: Verify proper context propagation
+- **OpenAPI Generation**: Confirm types are exportable
+
+### Subgraph Reviews (AssemblyScript)
+
+- **Not TypeScript**: Check for AssemblyScript-specific syntax
+- **Entity Loading**: Use load-or-create pattern
+- **Type Conversions**: Proper handling of BigInt, Address
+- **Save Operations**: Minimize store.save() calls
+- **ID Generation**: Use transaction hash + log index
+
+### Testing Reviews
+
+- **Vitest Patterns**: Co-located tests, proper mocking
+- **Forge Tests**: Test\_ prefix, proper setUp usage
+- **Coverage**: Check for edge cases and error paths
+- **Test Organization**: Proper describe blocks and test names
+
+### DevOps Reviews (Helm)
+
+- **Chart Structure**: Umbrella pattern with subcharts
+- **Values Hierarchy**: Global -> service-specific
+- **Init Containers**: Health checks for dependencies
+- **Security**: No hardcoded secrets, proper RBAC
 
 ## Learned Review Patterns
 

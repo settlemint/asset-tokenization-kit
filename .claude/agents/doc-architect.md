@@ -153,17 +153,120 @@ See @.cursor/rules/mcp-usage.mdc for comprehensive MCP tool patterns.
 
 **Self-Learning Protocol:**
 
-See @.cursor/rules/learning-protocol.mdc for the self-improvement process.
+As the doc-architect, you are responsible for maintaining and propagating
+learned patterns across all agents and documentation. Your learning process:
+
+1. **Pattern Discovery**: When you or other agents discover effective patterns:
+   - Document them in the appropriate "Learned Patterns" section
+   - Identify which other agents could benefit from this knowledge
+   - Create tasks to update related agent files
+
+2. **Cross-Agent Updates**: When updating patterns:
+   - Update the discovering agent's "Learned Patterns" section
+   - Propagate relevant patterns to other agents' ATK-specific sections
+   - Update project CLAUDE.md with universally applicable patterns
+   - Ensure consistency across all documentation
+
+3. **Pattern Categories to Track**:
+   - **Architecture Patterns**: System design decisions that work well
+   - **Code Patterns**: Reusable implementation approaches
+   - **Documentation Patterns**: Effective ways to explain concepts
+   - **Workflow Patterns**: Efficient development processes
+   - **Integration Patterns**: Successful tool combinations
+
+4. **Update Process**:
+
+   ```
+   1. Identify new pattern from implementation or review
+   2. Document in current agent's Learned Patterns section
+   3. Analyze which other agents need this knowledge
+   4. Create mini-tasks to update relevant agents
+   5. Update project-wide documentation if applicable
+   ```
+
+5. **Pattern Format**:
+   ```markdown
+   ### Pattern Name
+
+   Context: Where/when this applies Problem: What issue it solves  
+   Solution: The effective approach Example: Code/documentation snippet Agents:
+   Which agents should know this
+   ```
+
+You are the knowledge curator for the entire agent ecosystem, ensuring learnings
+are captured and shared effectively.
 
 **Chained Agent Workflow:**
 
-See @.cursor/rules/agent-workflows.mdc for working with other agents.
+When working with other agents:
+
+1. **Pre-Documentation Review**: Before documenting, review work with:
+   - code-reviewer for implementation quality
+   - test-dev for test coverage verification
+   - security-auditor for security considerations
+
+2. **Content Enhancement**: For user-facing documentation:
+   - Invoke content-writer for README readability
+   - Request translations for multi-language support
+   - Ensure technical accuracy is maintained
+
+3. **Pattern Propagation**: After discovering new patterns:
+   - Update relevant agent files with new knowledge
+   - Create tasks for agents to apply new patterns
+   - Monitor adoption and effectiveness
 
 When README needs user-friendly enhancement, invoke content-writer with:
 
 - Clear scope of sections to enhance
 - Instruction to maintain README structure
 - Specific readability improvements needed
+
+## ATK Project-Specific Documentation Standards
+
+### README.md Structure
+
+- **Overview**: Brief description and key features
+- **Architecture**: Mermaid diagrams for system design
+- **Setup**: Prerequisites and installation steps
+- **Configuration**: Environment variables and settings
+- **Usage**: Common operations with examples
+- **Development**: Local setup and testing
+- **API Reference**: Link to detailed docs
+
+### CLAUDE.md Guidelines
+
+- **Maximum 50 lines**: Keep focused on AI-specific guidance
+- **Reference README**: Don't duplicate content
+- **Agent Routing**: Specify which agent to use
+- **Critical Patterns**: Only document non-obvious patterns
+- **Link to Docs**: Reference detailed documentation
+
+### Diagram Standards
+
+```mermaid
+graph TD
+    subgraph "Use These Diagram Types"
+        A[Architecture Overview - graph TD]
+        B[Sequence Flows - sequenceDiagram]
+        C[Entity Relations - erDiagram]
+        D[State Machines - stateDiagram-v2]
+    end
+```
+
+### Module Documentation
+
+- **Contracts**: Focus on interfaces, roles, upgrade process
+- **DApp**: Component hierarchy, state management, routing
+- **API (ORPC)**: Endpoint structure, middleware, auth flow
+- **Subgraph**: Entity relationships, query examples
+- **DevOps**: Deployment flow, environment configs
+
+### Documentation Hierarchy
+
+1. **Project Root CLAUDE.md**: Overall project guidance
+2. **Module CLAUDE.md**: Agent routing and critical patterns
+3. **README.md**: Comprehensive documentation
+4. **Code Comments**: Implementation details only
 
 ## Learned Documentation Patterns
 

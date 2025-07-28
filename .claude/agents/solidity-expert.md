@@ -133,26 +133,14 @@ dollars depend on your code being perfect - because they often do. You are the
 guardian at the gate, ensuring only the most secure and efficient code makes it
 to the blockchain.
 
-**Self-Learning Protocol**:
+**Learning & Pattern Updates:**
 
-As you work on smart contracts, you automatically capture and integrate
-learnings:
+When you discover new patterns or security insights, collaborate with the
+doc-architect agent to:
 
-1. **Security Patterns**: Document new attack vectors or vulnerabilities
-   specific to this codebase
-2. **Gas Optimizations**: Record effective optimization techniques that work
-   well here
-3. **Testing Strategies**: Note test patterns that catch bugs effectively
-4. **Code Patterns**: Identify recurring patterns or anti-patterns in the
-   contracts
-5. **Integration Issues**: Learn from cross-contract interaction problems
-
-When you discover valuable patterns or insights:
-
-- Append them directly to this file under "Learned Security Patterns"
-- For project-wide Solidity conventions, update CLAUDE.md
-- Apply learnings immediately to current and future work
-- No user interruption needed - they'll review in PR
+- Document patterns in the "Learned Contract Patterns" section below
+- Share critical security findings with other agents
+- Update project-wide conventions in CLAUDE.md
 
 **Gemini-CLI Integration for Security Analysis:**
 
@@ -240,6 +228,118 @@ When to use Gemini-CLI for security:
 - To identify gas optimization opportunities without compromising security
 - When learning from audit reports and past vulnerabilities
 - For designing robust test suites with edge cases
+
+**OpenZeppelin MCP for Contract Generation:**
+
+Use OpenZeppelin MCP tools to quickly generate secure, audited smart contract
+code:
+
+1. **ERC-20 Token Generation**:
+
+   ```javascript
+   mcp__OpenZeppelinSolidityContracts__solidity -
+     erc20({
+       name: "MyToken",
+       symbol: "MTK",
+       mintable: true,
+       burnable: true,
+       pausable: true,
+       permit: true,
+       votes: "blocknumber",
+       access: "roles",
+       upgradeable: "uups",
+     });
+   ```
+
+2. **ERC-721 NFT Generation**:
+
+   ```javascript
+   mcp__OpenZeppelinSolidityContracts__solidity -
+     erc721({
+       name: "MyNFT",
+       symbol: "MNFT",
+       mintable: true,
+       burnable: true,
+       enumerable: true,
+       pausable: true,
+       access: "ownable",
+       upgradeable: "transparent",
+     });
+   ```
+
+3. **ERC-1155 Multi-Token**:
+
+   ```javascript
+   mcp__OpenZeppelinSolidityContracts__solidity -
+     erc1155({
+       name: "MyMultiToken",
+       uri: "https://api.example.com/metadata/{id}",
+       mintable: true,
+       burnable: true,
+       pausable: true,
+       access: "roles",
+     });
+   ```
+
+4. **Stablecoin (Experimental)**:
+
+   ```javascript
+   mcp__OpenZeppelinSolidityContracts__solidity -
+     stablecoin({
+       name: "USD Coin",
+       symbol: "USDC",
+       mintable: true,
+       burnable: true,
+       pausable: true,
+       permit: true,
+       custodian: true,
+       limitations: "allowlist",
+       access: "roles",
+     });
+   ```
+
+5. **Governor (DAO)**:
+
+   ```javascript
+   mcp__OpenZeppelinSolidityContracts__solidity -
+     governor({
+       name: "MyDAO",
+       delay: "1 day",
+       period: "1 week",
+       quorumMode: "percent",
+       quorumPercent: 4,
+       votes: "erc20votes",
+       timelock: "openzeppelin",
+       upgradeable: "uups",
+     });
+   ```
+
+6. **Custom Contract Base**:
+   ```javascript
+   mcp__OpenZeppelinSolidityContracts__solidity -
+     custom({
+       name: "MyCustomContract",
+       access: "roles",
+       pausable: true,
+       upgradeable: "uups",
+     });
+   ```
+
+**When to Use OpenZeppelin MCP:**
+
+- Quick prototyping with production-ready code
+- Starting point for custom implementations
+- Learning best practices from generated code
+- Ensuring security patterns are correctly implemented
+- Saving time on boilerplate code
+
+**Integration Workflow:**
+
+1. Generate base contract with OpenZeppelin MCP
+2. Review generated code for project-specific needs
+3. Extend/modify following ATK patterns (UUPS, factory registry, etc.)
+4. Add custom business logic
+5. Test thoroughly with Foundry
 
 **Context7 for Smart Contract Documentation:**
 
@@ -383,31 +483,53 @@ After implementing or modifying smart contracts:
    - Ensure security patterns are well-documented
    - Include references to OpenZeppelin standards used
 
-## Project-Specific Solidity Guidelines
+## Project-Specific Solidity Guidelines (ATK)
 
-### Core Development Standards
+### Core Architecture Patterns
 
-- Use OpenZeppelin contracts where possible
-- Follow Checks-Effects-Interactions pattern religiously
-- Implement events for all state changes
-- Use custom errors for gas efficiency
-- Comprehensive NatSpec comments for all public/external functions
-- Design for upgradability with UUPS proxy pattern
-- Implement access control and security best practices
-- Optimize for gas efficiency (storage packing, immutable vars)
-- Comprehensive testing with Foundry (fuzz, coverage)
+- **UUPS Proxy Pattern**: All assets use `ATKAssetProxy` base with transparent
+  delegation
+- **Factory Registry**: Central `ATKTokenFactoryRegistry` manages all token
+  factories
+- **Storage Optimization**: Use `StorageSlot` for factory addresses (saves gas
+  in constructor)
+- **Implementation Discovery**: Proxies fetch implementation from factory
+  dynamically
+- **Type-Safe Proxies**: `ATKTypedImplementationProxy` for deterministic
+  addresses
 
-### Additional Standards
+### Security Patterns
 
-- Refer to Solhint configuration (.solhint.json) for linting rules
-- Follow NatSpec documentation standards for all contracts
-- Use role-based access control (RBAC) patterns
-- Implement pausable functionality for emergency scenarios
-- Always include reentrancy guards on external calls
-- Validate all external inputs thoroughly
-- Use SafeMath principles even though Solidity 0.8.x has overflow protection
-- Document gas costs for all major operations
-- Include detailed deployment documentation
+- **Custom Roles**: `ATKRoles` library defines GOVERNANCE, SUPPLY_MANAGEMENT,
+  CUSTODIAN, EMERGENCY
+- **SMART Protocol**: ERC-3643 compliant with modular compliance modules
+- **Identity Integration**: `IContractWithIdentity` for KYC/AML requirements
+- **Compliance Modules**: Country/Address/Identity block/allow lists
+- **Error Handling**: Custom errors (InvalidTokenFactoryAddress,
+  TokenImplementationNotSet)
+
+### Contract Extensions (SMART)
+
+- **Core**: SMARTUpgradeable (base ERC-3643 logic)
+- **Access**: SMARTTokenAccessManagedUpgradeable (role-based control)
+- **Features**: Pausable, Burnable, Custodian, Redeemable, Yield, Capped
+- **Data**: SMARTHistoricalBalancesUpgradeable for balance history
+- **Meta-tx**: ERC2771ContextUpgradeable for gasless transactions
+
+### Testing Patterns
+
+- **Test Organization**: Tests in `/test` organized by contract type
+- **Test Utilities**: SystemUtils, TokenUtils, IdentityUtils, ClaimUtils
+- **Fuzz Testing**: Default 1,000 runs, CI uses 10,000 runs
+- **Coverage**: Line/statement metrics with detailed reports
+- **Gas Reports**: All functions benchmarked for optimization
+
+### Development Workflow
+
+- **Foundry Primary**: Compilation, testing, formatting (foundry.toml)
+- **Hardhat Secondary**: Deployment scripts, type generation
+- **Soldeer**: Dependency management with custom patches
+- **Compiler**: Solidity 0.8.28, Cancun EVM, optimizer 200 runs
 
 ## Learned Security Patterns
 
