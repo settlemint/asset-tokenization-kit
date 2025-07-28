@@ -1,0 +1,62 @@
+import { portalGraphql } from "@/lib/settlemint/portal";
+import { AssetTypeEnum } from "@/lib/zod/validators/asset-types";
+import {
+  PredictAddressOutputSchema,
+  type PredictAddressInput,
+  type PredictAddressOutput,
+} from "@/orpc/routes/token/routes/factory/factory.predict-address.schema";
+import z from "zod";
+import type { PredictHandlerContext } from "./handler-map";
+
+const PREDICT_STABLECOIN_ADDRESS_QUERY = portalGraphql(`
+  query PredictStableCoinAddress(
+    $address: String!
+    $symbol: String!
+    $name: String!
+    $decimals: Int!
+    $initialModulePairs: [ATKStableCoinFactoryImplementationATKStableCoinFactoryImplementationPredictStableCoinAddressInitialModulePairsInput!]!
+    $requiredClaimTopics: [String!]!
+  ) {
+    ATKStableCoinFactoryImplementation(address: $address) {
+      predictStableCoinAddress(
+        symbol_: $symbol
+        name_: $name
+        decimals_: $decimals
+        initialModulePairs_: $initialModulePairs
+        requiredClaimTopics_: $requiredClaimTopics
+      ) {
+        predictedAddress
+      }
+    }
+  }
+`);
+
+export const stablecoinPredictHandler = async (
+  input: PredictAddressInput,
+  context: PredictHandlerContext
+): Promise<PredictAddressOutput> => {
+  if (input.type !== AssetTypeEnum.stablecoin) {
+    throw new Error("Invalid token type");
+  }
+
+  const result = await context.portalClient.query(
+    PREDICT_STABLECOIN_ADDRESS_QUERY,
+    {
+      address: context.factoryAddress,
+      ...input,
+      initialModulePairs: [],
+    },
+    z.object({
+      ATKStableCoinFactoryImplementation: z.object({
+        predictStableCoinAddress: PredictAddressOutputSchema,
+      }),
+    }),
+    "Failed to predict stablecoin address"
+  );
+
+  return {
+    predictedAddress:
+      result.ATKStableCoinFactoryImplementation.predictStableCoinAddress
+        .predictedAddress,
+  };
+};
