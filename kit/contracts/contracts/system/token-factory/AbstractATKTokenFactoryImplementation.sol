@@ -79,7 +79,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
         }
         if (
             tokenImplementation_ == address(0)
-                && IERC165(tokenImplementation_).supportsInterface(type(ISMART).interfaceId)
+                || !IERC165(tokenImplementation_).supportsInterface(type(ISMART).interfaceId)
         ) {
             revert InvalidImplementationAddress();
         }
