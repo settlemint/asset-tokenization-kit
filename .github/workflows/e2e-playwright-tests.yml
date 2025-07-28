@@ -57,13 +57,9 @@ jobs:
         run: bun install
         working-directory: kit/e2e
 
-      - name: Generate contract genesis artifacts
-        run: bun run artifacts:genesis
-        working-directory: kit/contracts
-
-      - name: Generate contract ABI artifacts
-        run: bun run artifacts:abi
-        working-directory: kit/contracts
+      - name: Generate all artifacts
+        run: bun run artifacts
+        working-directory: .
 
       - name: Check Docker version
         run: |
