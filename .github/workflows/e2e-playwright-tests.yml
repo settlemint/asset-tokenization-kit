@@ -61,13 +61,13 @@ jobs:
         run: bunx playwright install --with-deps chromium
         working-directory: kit/e2e
 
-      - name: Connect to SettleMint
-        uses: settlemint/settlemint-action@main
-        with:
-          instance: ${{ secrets.SETTLEMINT_INSTANCE }}
-          access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
-          dotEnvFile: ${{ secrets.ENV_FILE }}
-          dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
+      # - name: Connect to SettleMint
+      #   uses: settlemint/settlemint-action@main
+      #   with:
+      #     instance: ${{ secrets.SETTLEMINT_INSTANCE }}
+      #     access-token: ${{ secrets.SETTLEMINT_PERSONAL_ACCESS_TOKEN }}
+      #     dotEnvFile: ${{ secrets.ENV_FILE }}
+      #     dotEnvLocalFile: ${{ secrets.ENV_FILE_LOCAL }}
 
       - name: Install dapp dependencies
         run: bun install
