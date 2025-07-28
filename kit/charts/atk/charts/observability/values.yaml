@@ -686,7 +686,7 @@ grafana:
         - name: PostgreSQL
           type: postgres
           uid: postgres
-          url: postgresql-pgpool:5432
+          url: postgresql:5432
           access: proxy
           isDefault: false
           database: thegraph

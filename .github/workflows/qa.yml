@@ -179,11 +179,29 @@ jobs:
             bun run ci:gha:main --concurrency=100%
           fi
 
-      - name: Coverage Report
+      - name: Check for dapp changes
+        id: check-dapp-changes
         if: |
           github.event_name == 'pull_request' &&
           github.event.pull_request.draft == false &&
           steps.qa-tests.outcome == 'success'
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          if git diff --name-only "origin/${BASE_REF}...HEAD" | grep -q "^kit/dapp/"; then
+            echo "has_dapp_changes=true" >> $GITHUB_OUTPUT
+            echo "✅ Dapp changes detected - coverage report will be generated"
+          else
+            echo "has_dapp_changes=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No dapp changes detected - skipping coverage report"
+          fi
+
+      - name: Coverage Report
+        if: |
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.draft == false &&
+          steps.qa-tests.outcome == 'success' &&
+          steps.check-dapp-changes.outputs.has_dapp_changes == 'true'
         uses: davelosert/vitest-coverage-report-action@v2
         with:
           name: 'dapp'

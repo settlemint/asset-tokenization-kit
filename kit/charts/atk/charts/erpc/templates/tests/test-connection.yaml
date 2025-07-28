@@ -1,60 +1,25 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "common.names.fullname" . }}-test-connection"
-  namespace: {{ include "common.names.namespace" . | quote }}
-  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  name: "{{ include "erpc.fullname" . }}-test"
+  labels:
+    {{- include "erpc.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
-    {{- if .Values.commonAnnotations }}
-    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
-    {{- end }}
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
-  containers:
-    - name: json-rpc-test
-      image: "{{ .Values.tests.image.registry }}/{{ .Values.tests.image.repository }}:{{ .Values.tests.image.tag }}"
-      imagePullPolicy: {{ .Values.tests.image.pullPolicy }}
-      command:
-        - /bin/sh
-        - -c
-        - |
-          set -e
-          echo "Testing eRPC JSON-RPC endpoint..."
-
-          # Test health check endpoint
-          echo "1. Testing health check endpoint..."
-          wget -O- -q "http://{{ include "common.names.fullname" . }}:{{ .Values.service.port }}/healthcheck" || exit 1
-          echo "Health check passed!"
-
-          # Test JSON-RPC eth_blockNumber request
-          echo "2. Testing JSON-RPC eth_blockNumber..."
-          RESPONSE=$(wget -qO- --post-data='{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
-            --header='Content-Type: application/json' \
-            "http://{{ include "common.names.fullname" . }}:{{ .Values.service.port }}/{{ if .Values.config.projects }}{{ (index .Values.config.projects 0).id }}{{ else }}53771311147{{ end }}")
-
-          echo "Response: $RESPONSE"
-
-          # Basic validation of JSON-RPC response
-          if echo "$RESPONSE" | grep -q '"jsonrpc":"2.0"'; then
-            echo "✓ Valid JSON-RPC response format"
-          else
-            echo "✗ Invalid JSON-RPC response format"
-            exit 1
-          fi
-
-          if echo "$RESPONSE" | grep -q '"id":1'; then
-            echo "✓ Response ID matches request"
-          else
-            echo "✗ Response ID does not match"
-            exit 1
-          fi
-
-          if echo "$RESPONSE" | grep -q '"result":"0x'; then
-            echo "✓ Block number returned in hex format"
-          else
-            echo "✗ No valid block number in response"
-            exit 1
-          fi
-
-          echo "All tests passed successfully!"
   restartPolicy: Never
+  containers:
+    - name: wget
+      image: {{ include "common.images.image" (dict "imageRoot" .Values.tests.image "global" .Values.global) }}
+      command: ['wget']
+      args: ['{{ include "erpc.fullname" . }}:{{ .Values.service.port }}']
+  {{- with .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}

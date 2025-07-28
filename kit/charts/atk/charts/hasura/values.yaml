@@ -23,9 +23,9 @@ graphql-engine:
     adminSecret: "atk"
     redisUrl: "redis://default:atk@redis:6379"
     rateLimitRedisUrl: "redis://default:atk@redis:6379"
-    metadataDbUrl: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
+    metadataDbUrl: "postgresql://hasura:atk@postgresql:5432/hasura"
     extraSecrets:
-      DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
+      DEFAULT_DB_URL: "postgresql://hasura:atk@postgresql:5432/hasura"
   extraEnvs:
     - name: HASURA_GRAPHQL_PG_CONNECTIONS
       value: "10"
@@ -58,8 +58,8 @@ graphql-engine:
 
           # Function to test PostgreSQL connection
           test_postgres() {
-            pg_isready -h postgresql-pgpool -p 5432 -U hasura && \
-            psql -h postgresql-pgpool -p 5432 -U hasura -d hasura -c "SELECT 1;" > /dev/null 2>&1
+            pg_isready -h postgresql -p 5432 -U hasura && \
+            psql -h postgresql -p 5432 -U hasura -d hasura -c "SELECT 1;" > /dev/null 2>&1
           }
 
           # Wait with exponential backoff
