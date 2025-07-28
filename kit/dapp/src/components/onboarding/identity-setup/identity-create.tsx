@@ -3,15 +3,13 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
+import { waitForStream } from "@/lib/utils/stream";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-const logger = createLogger();
 
 export function IdentityCreate() {
   const { t } = useTranslation(["onboarding", "common"]);
@@ -28,12 +26,8 @@ export function IdentityCreate() {
     useMutation(
       orpc.system.identityCreate.mutationOptions({
         onSuccess: async (result) => {
-          for await (const event of result) {
-            logger.info("identity creation event", event);
-            if (event.status === "failed") {
-              throw new Error(event.message);
-            }
-          }
+          await waitForStream(result, "identity creation");
+
           // Refetch all relevant data
           await queryClient.invalidateQueries({
             queryKey: orpc.account.me.queryOptions().queryKey,

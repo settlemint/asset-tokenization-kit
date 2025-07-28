@@ -12,15 +12,10 @@ import {
   FormStepTitle,
 } from "@/components/form/multi-step/form-step";
 import { withForm } from "@/hooks/use-app-form";
-import { useSettings } from "@/hooks/use-settings";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
-import {
-  getAssetTypeFromFactoryTypeId,
-  type AssetFactoryTypeId,
-} from "@/lib/zod/validators/asset-types";
-import { orpc } from "@/orpc/orpc-client";
-import { useQuery } from "@tanstack/react-query";
+import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
+import type { FactoryList } from "@/orpc/routes/token/routes/factory/factory.list.schema";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -30,23 +25,16 @@ export const SelectAssetType = withForm({
   ...assetDesignerFormOptions,
   props: {
     onStepSubmit: noop,
+    factories: [] as FactoryList,
   },
-  render: function Render({ form, onStepSubmit }) {
+  render: function Render({ form, onStepSubmit, factories }) {
     const { t } = useTranslation(["asset-designer", "asset-types"]);
-    const [systemAddress] = useSettings("SYSTEM_ADDRESS");
-    const { data: systemDetails } = useQuery({
-      ...orpc.system.read.queryOptions({
-        input: { id: systemAddress ?? "" },
-      }),
-      enabled: Boolean(systemAddress),
-    });
 
     const options = useMemo(() => {
-      if (!systemDetails?.tokenFactories) return [];
+      if (!factories) return [];
 
-      const assetTypes = systemDetails.tokenFactories.map((factory) => {
-        const factoryTypeId = factory.typeId as AssetFactoryTypeId;
-        return getAssetTypeFromFactoryTypeId(factoryTypeId);
+      const assetTypes = factories.map((factory) => {
+        return getAssetTypeFromFactoryTypeId(factory.typeId);
       });
 
       return assetTypes.map((type) => ({
@@ -54,7 +42,7 @@ export const SelectAssetType = withForm({
         label: t(`asset-types:${type}.name`),
         description: t(`asset-types:${type}.description`),
       }));
-    }, [systemDetails, t]);
+    }, [factories, t]);
 
     return (
       <FormStep>
