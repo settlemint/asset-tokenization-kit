@@ -163,15 +163,3 @@ networkPolicy:
   # -- Additional allowed namespace selectors
   allowedNamespaceSelectors: []
 
-# ServiceMonitor configuration for Prometheus
-serviceMonitor:
-  # -- Enable ServiceMonitor
-  enabled: false
-  # -- ServiceMonitor labels
-  labels: {}
-  # -- ServiceMonitor annotations
-  annotations: {}
-  # -- Interval at which metrics should be scraped
-  interval: 30s
-  # -- Timeout after which the scrape is ended
-  scrapeTimeout: 10s
