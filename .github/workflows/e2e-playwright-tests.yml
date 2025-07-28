@@ -137,6 +137,11 @@ jobs:
           echo "Dev server is ready at http://localhost:3000!"
         working-directory: .
 
+      - name: Tail dapp server log (debug)
+        run: tail -n 1000 -f server.log &
+        working-directory: kit/dapp
+        continue-on-error: true
+
       - name: Run API Playwright tests
         id: playwright-api
         run:
