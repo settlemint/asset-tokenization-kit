@@ -16,7 +16,7 @@ const list = baseContract
     successDescription: "List of KYC profiles",
     tags: ["user", "kyc"],
   })
-  .input(z.object({ ...UserIdSchema.shape, ...KycProfileListSchema.shape }))
+  .input(KycProfileListSchema)
   .output(KycProfileListOutputSchema);
 
 const read = baseContract

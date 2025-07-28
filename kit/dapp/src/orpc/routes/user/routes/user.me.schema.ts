@@ -57,11 +57,11 @@ export const UserSchema = z.object({
   email: z.email(),
 
   /**
-   * User's role in the system.
+   * User's role for offchain access control.
    * Determines access permissions and onboarding flow.
    * - admin: First user, can perform platform onboarding
-   * - issuer: Can issue assets
-   * - user: Standard user (investors)
+   * - issuer: Can see all users data
+   * - investor: Standard user
    */
   role: userRoles().default("investor"),
 
@@ -70,11 +70,6 @@ export const UserSchema = z.object({
    * Used for blockchain transactions and ownership verification.
    */
   wallet: ethereumAddress.nullable().describe("User's Ethereum wallet address"),
-
-  /**
-   * Whether the user has completed the onboarding process.
-   */
-  isOnboarded: z.boolean(),
 
   /**
    * User's first name from KYC profile.

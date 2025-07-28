@@ -20,11 +20,12 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { SystemAddonCreateSchema } from "@/orpc/routes/system/routes/system.addonCreate.schema";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { encodeFunctionData, getAddress } from "viem";
@@ -160,7 +161,14 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system not bootstrapped or transaction fails
  */
 export const addonCreate = onboardedRouter.system.addonCreate
-  .use(permissionsMiddleware({ system: ["create"] }))
+  .use(
+    blockchainPermissionsMiddleware<typeof SystemAddonCreateSchema>({
+      requiredRoles: ["deployer"],
+      getAccessControl: ({ context }) => {
+        return context.system?.systemAddonRegistry?.accessControl;
+      },
+    })
+  )
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .use(systemMiddleware)

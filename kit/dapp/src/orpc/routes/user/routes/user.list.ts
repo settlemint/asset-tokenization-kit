@@ -1,8 +1,7 @@
-import { isOnboarded } from "@/lib/auth/plugins/utils";
 import { kycProfiles, user } from "@/lib/db/schema";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { getUserRole } from "@/lib/zod/validators/user-roles";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
@@ -50,7 +49,9 @@ import { asc, desc, eq, type AnyColumn } from "drizzle-orm";
  * - User roles are transformed from internal codes to display names
  */
 export const list = authRouter.user.list
-  .use(permissionsMiddleware({ user: ["list"] }))
+  .use(
+    offChainPermissionsMiddleware({ requiredPermissions: { user: ["list"] } })
+  )
   .use(databaseMiddleware)
   .handler(async ({ context, input }) => {
     const { limit, offset, orderDirection, orderBy, searchByAddress } = input;
@@ -98,7 +99,6 @@ export const list = authRouter.user.list
         email: user.email,
         role: getUserRole(user.role),
         wallet: user.wallet,
-        isOnboarded: isOnboarded({ ...user, wallet: user.wallet }),
         firstName: kyc?.firstName,
         lastName: kyc?.lastName,
       } as User;

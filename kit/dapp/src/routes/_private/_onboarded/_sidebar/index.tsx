@@ -74,7 +74,6 @@ function Home() {
             {JSON.stringify(
               {
                 wallet: user.wallet,
-                onboardingFinished: user.isOnboarded,
                 userId: user.id,
                 systemAddress: systemAddress,
               },

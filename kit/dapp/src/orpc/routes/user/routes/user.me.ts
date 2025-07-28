@@ -162,7 +162,6 @@ export const me = authRouter.user.me
       email: authUser.email,
       role: authUser.role,
       wallet: authUser.wallet,
-      isOnboarded: authUser.isOnboarded,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
       verificationTypes: [

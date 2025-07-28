@@ -19,7 +19,6 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
@@ -119,7 +118,7 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  * ```
  */
 export const factoryCreate = onboardedRouter.token.factoryCreate
-  .use(permissionsMiddleware({ system: ["create"] }))
+
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .use(systemMiddleware)

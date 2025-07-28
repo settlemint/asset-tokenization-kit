@@ -1,4 +1,4 @@
-import type { AccessControlRoles } from "@/lib/fragments/the-graph/access-control-fragment";
+import { accessControlRoles } from "@/lib/zod/validators/access-control-roles";
 import { assetType } from "@/lib/zod/validators/asset-types";
 import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { decimals } from "@/lib/zod/validators/decimals";
@@ -122,56 +122,7 @@ export const RawTokenSchema = z.object({
     .describe("The fund of the token"),
   userPermissions: z
     .object({
-      roles: z
-        .object(
-          (() => {
-            const rolesSchema: Record<
-              AccessControlRoles,
-              z.ZodType<boolean>
-            > = {
-              admin: z
-                .boolean()
-                .describe("Whether the user has the admin role"),
-              registrar: z
-                .boolean()
-                .describe("Whether the user has the registrar role"),
-              claimManager: z
-                .boolean()
-                .describe("Whether the user has the claimManager role"),
-              deployer: z
-                .boolean()
-                .describe("Whether the user has the deployer role"),
-              storageModifier: z
-                .boolean()
-                .describe("Whether the user has the storageModifier role"),
-              registryManager: z
-                .boolean()
-                .describe("Whether the user has the registryManager role"),
-              governance: z
-                .boolean()
-                .describe("Whether the user has the governance role"),
-              supplyManagement: z
-                .boolean()
-                .describe("Whether the user has the supplyManagement role"),
-              custodian: z
-                .boolean()
-                .describe("Whether the user has the custodian role"),
-              emergency: z
-                .boolean()
-                .describe("Whether the user has the emergency role"),
-              implementationManager: z
-                .boolean()
-                .describe(
-                  "Whether the user has the implementationManager role"
-                ),
-              bypassListManager: z
-                .boolean()
-                .describe("Whether the user has the bypassListManager role"),
-            };
-            return rolesSchema;
-          })()
-        )
-        .describe("The roles of the user for the token"),
+      roles: accessControlRoles.describe("The roles of the user for the token"),
       isCompliant: z
         .boolean()
         .describe(
