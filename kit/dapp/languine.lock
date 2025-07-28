@@ -79,6 +79,7 @@ files:
     images.userAvatar: 40513126d5cd9ebc013b40e93251e6c7
     images.assetImage: 9b82002bbd6b6625e2cdd0ff4f82ed39
   locales/en-US/asset-designer.json:
+    sidebar.button-title: aaafe0ea551fc6b5888b36c5ffc9961a
     compliance.available.description: c143b7de210e3407dcf7cc8cfcb6cb42
     compliance.available.title: 906430cebf53e2d1149d6c35fa1a8acb
     compliance.configured.description: 567b40f7f1d7214d82f8657a2c5daaf7
@@ -768,6 +769,7 @@ files:
     transactions.tracking.waitingForMining: 836fac42d51f640bb9596eeec6193b2c
   locales/en-US/common.json:
     actions.cancel: ea4788705e6873b424c65e91c2846b19
+    actions.skip: 72ef2b9b6965d078e3c7f95487a82d1c
     appDescription: b54fe0114e381c5d1d50a3035367ce51
     appName: beb51bc2edd12e47a6c974bea2d6b018
     complete: ae94f80b3ce82062a5dd7815daa04f9d
@@ -1297,12 +1299,19 @@ files:
   locales/en-US/navigation.json:
     asset: 26e9054be7f40079575582b7ad3f7363
     assetClasses: 271fab37e99d8c9308dd8d269376263d
-    assetManagement: 1e1a97e508b3d959b9fc916092948c35
+    assetManagement: 177512b9add0b40c38dad61838bf7d79
     cashEquivalent: 5ccbdb5f84a65180a53769ed94e1f03f
     fixedIncome: 45bd247841852898e26bf47031492853
     flexibleIncome: 496bf96707ef73e18c04fe7ecd452a8b
-    home: 8cf04a9734132302f96da8e113e80ce5
+    home: 2938c7f7e560ed972f8a4f68e80ff834
     statistics: c33e404a441c6ba9648f88af3c68a1ca
+    addons: b3f252777a69b110667756babe83a98f
+    assetDesigner: 2f17fb2184c4dbf6b7272486c1e70b57
+    addonDesigner: ea3a6fba9d296b9837c53938acc6b491
+    addonCategories.distribution: f0bac093bb884df2891d32385d053788
+    addonCategories.exchange: 992374d8e2e24f17bebc50a6e57becd6
+    addonCategories.custody: 2d82833085dc62736862926cb1284b22
+    addonCategories.income: 1f08d08fd864b99cbeebd88b9a0784a7
   locales/en-US/onboarding.json:
     assets.asset-factories-deployed-successfully: 422ae968b691ccdab681891825961151
     assets.asset-factories-description: 7db30c4a80e9cf613bf9ba5b2dc42b71
@@ -1311,12 +1320,16 @@ files:
     assets.choose-asset-types: 1e7045eebb490d8c807bb0dd2c498d35
     assets.confirm-deployment-description: ac614f0f218524079b512ae68d2f7d12
     assets.confirm-deployment-title: fe59f75ee12048f2de4567e8358f335b
+    assets.deploy: ee13675e8f2cc23d69ad38390beefe21
     assets.deploy-assets: ec2030e4765ba01fdbfaa18e689da2e8
     assets.deployed: 422ae968b691ccdab681891825961151
     assets.deployed-factories: a941ec474512546ea2b41a7b2faf12be
     assets.deployed-label: c618135ffa9bb30bbbf8ad72085cafbd
+    assets.deploying: a51242b36009886a35d79b2c94644fb3
     assets.deploying-toast: de88bfdc00ad47c72c2de7461d99c084
+    assets.deployment-warning: 6a7b986dadf85ed14c08b4414be61495
     assets.description: d87ac1a58f23916d54656000fd902c86
+    assets.failed-toast: 0217b7b3e8ceaafbb815a9fc5ed0fe43
     assets.descriptions.bond: 9eeac4a36524e0bfaa6a585152803c46
     assets.descriptions.deposit: 7743e579d85431998cd86c740561b9cb
     assets.descriptions.equity: 3b7cb1c2e7008febc1715b8b974b21df
@@ -1421,10 +1434,12 @@ files:
     system-addons.addon-selection.confirm-deployment-title: 49e31f63486340a7d07d44e8c1181df2
     system-addons.addon-selection.deploy-addons: 9c449bca75ffa187a62af927d2b428d6
     system-addons.addon-selection.deployed-toast: b9dc265aadf545dc1ddb114044d50da9
+    system-addons.addon-selection.deploying: a51242b36009886a35d79b2c94644fb3
     system-addons.addon-selection.deploying-toast: 5b9cb82cb6c6307fdfb2029c8e14bccf
     system-addons.addon-selection.description: 8c96bb7e95f854df64c3f5086f5deec0
     system-addons.addon-selection.failed-toast: ffc5a5dbf981e3d4bc7e8c3a2df57bbe
     system-addons.addon-selection.no-system: 27f9d7982b4c6e3045e9641216cd728f
+    system-addons.addon-selection.required-for-bonds: 4251971f1ba0d3f2c40e2c2903f60385
     system-addons.addon-selection.select-all-addons: ac6b5a672f9b6f0042afd506ef44b763
     system-addons.addon-selection.title: 30cfe17b95d1491aad5ffef6a7e5ca60
     system-addons.addon-selection.validation.invalid: 09d73221785caf0675fbd9b0e2e491d5
@@ -1454,7 +1469,7 @@ files:
     wallet.failed-to-create-wallet: 24cf78b0fbb6043397717b4822b84a3c
     wallet.how-it-works: cbd831dfc094b539daafa4e8cbaf2582
     wallet.how-it-works-description: 9194264f184ab4a8e0832ac291f1f905
-    wallet.intro: d1a14f644b128c28d2251d17a3ac1af6
+    wallet.intro: 422f70d3de4d386bf6b4184f5a261c08
     wallet.invest-in-digital-assets: 91513792aba021007e83c9f7fe092984
     wallet.invest-in-digital-assets-description: 63496695ee14b2d78f2bfc94443f0a22
     wallet.manage-on-chain-identity: 84af9ced7ff7622236df293fb13f2502

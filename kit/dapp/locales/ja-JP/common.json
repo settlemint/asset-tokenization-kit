@@ -1,6 +1,7 @@
 {
   "actions": {
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "skip": "スキップ"
   },
   "appDescription": "数分でデプロイし、簡単にカスタマイズ",
   "appName": "資産トークン化キット",
