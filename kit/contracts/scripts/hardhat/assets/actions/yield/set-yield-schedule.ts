@@ -65,7 +65,7 @@ export const setYieldSchedule = async (
     abi: ATKContracts.accessManager,
   });
 
-  // Grant DEPLOYER_ROLE to owner so they can call fixedYieldScheduleFactory.create
+  // Grant DEPLOYER_ROLE to owner on both system access manager and directly on the fixed yield schedule factory
   const grantDeployerRoleHash = await withDecodedRevertReason(() =>
     systemAccessManagerContract.write.grantRole([
       ATKRoles.deployerRole,
@@ -74,16 +74,30 @@ export const setYieldSchedule = async (
   );
   await waitForSuccess(grantDeployerRoleHash);
   console.log(
-    `[Set yield schedule] ✓ Granted DEPLOYER_ROLE to ${owner.address}`
+    `[Set yield schedule] ✓ Granted DEPLOYER_ROLE to ${owner.address} on system access manager`
   );
 
+  // Also grant DEPLOYER_ROLE directly on the fixed yield schedule factory
+  // This is required because the factory may check its own roles
   const factoryAddress = atkDeployer.getContractAddress(
     "fixedYieldScheduleFactory"
   );
   const factoryContract = owner.getContractInstance({
     address: factoryAddress,
-    abi: ATKContracts.fixedYieldScheduleFactory,
+    abi: ATKContracts.fixedYieldScheduleFactory, // Need both AccessControl and Factory interface
   });
+
+  const grantFactoryDeployerRoleHash = await withDecodedRevertReason(() =>
+    factoryContract.write.grantRole([ATKRoles.deployerRole, owner.address])
+  );
+  await waitForSuccess(grantFactoryDeployerRoleHash);
+  console.log(
+    `[Set yield schedule] ✓ Granted DEPLOYER_ROLE to ${owner.address} directly on factory`
+  );
+
+  // Use the factory to create a yield schedule
+  // No need to redeclare these variables - reuse from above
+  // const factoryAddress is already defined above
 
   const createYieldScheduleTransactionHash = await withDecodedRevertReason(() =>
     factoryContract.write.create([
