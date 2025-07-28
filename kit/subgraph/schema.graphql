@@ -355,8 +355,6 @@ type Token @entity(immutable: false) {
   fund: TokenFund
   # Claims
   basePriceClaim: IdentityClaim
-  # The identity verification claim topics that are required for accounts to own tokens of this type
-  requiredClaimTopics: [TopicScheme!]!
   # Compliance
   tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
   # Stats
