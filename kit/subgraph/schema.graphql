@@ -42,25 +42,62 @@ type EventValue @entity(immutable: true) {
 
 type AccessControl @entity(immutable: false) {
   id: Bytes!
+  # Role for the default admin that can grant and revoke other roles
   admin: [Account!]!
-  registrar: [Account!]!
-  registrarAdmin: [Account!]!
-  claimManager: [Account!]!
-  deployer: [Account!]!
-  storageModifier: [Account!]!
-  registryManager: [Account!]!
-  governance: [Account!]!
-  supplyManagement: [Account!]!
-  custodian: [Account!]!
-  emergency: [Account!]!
-  implementationManager: [Account!]!
+  # Role identifier for addresses that can audit the system
+  auditor: [Account!]!
+  # Role identifier for addresses that can manage the addon module
+  addonModule: [Account!]!
+  # Role identifier for addresses that can manage the addon registry module
+  addonRegistryModule: [Account!]!
+  # Role identifier for addresses that can manage the compliance bypass list
   bypassListManager: [Account!]!
+  # Role identifier for addresses that can manage the compliance bypass list
   bypassListManagerAdmin: [Account!]!
+  # Role for managing claims
+  claimManager: [Account!]!
+  # Role for custodial operations including freezing accounts, forced transfers, and recovery
+  custodian: [Account!]!
+  # Role for deploying new tokens / token sales
+  deployer: [Account!]!
+  # Role for emergency operations including pausing the contract and ERC20 recovery
+  emergency: [Account!]!
+  # Role for withdrawing funds from the sale
+  fundsManager: [Account!]!
+  # Role identifier for managing the global address list
+  globalListManager: [Account!]!
+  # Role for managing token governance, verification, and compliance
+  governance: [Account!]!
+  # Role for managing the implementation of the system
+  implementationManager: [Account!]!
+  # Role identifier for addresses that can manage the identity registry module
+  identityRegistryModule: [Account!]!
+  # Role for managing registration operations
+  registrar: [Account!]!
+  # Role for managing registrar role assignments
+  registrarAdmin: [Account!]!
+  # Role that grants permission to manage the list of bound identity registry contracts
+  registryManager: [Account!]!
+  # Role for managing the token sale parameters and operations
+  saleAdmin: [Account!]!
+  # Role identifier for signers who can submit and confirm transactions
+  signer: [Account!]!
+  # Role that grants permission to modify the data stored in this contract
+  storageModifier: [Account!]!
+  # Role for managing token supply operations
+  supplyManagement: [Account!]!
+  # Role identifier for addresses that can manage the system modules
+  systemModule: [Account!]!
+  # Role identifier for addresses that can manage the token factory module
+  tokenFactoryModule: [Account!]!
+  # Role identifier for addresses that can manage the token factory registry module
+  tokenFactoryRegistryModule: [Account!]!
 }
 
 type System @entity(immutable: false) {
   id: Bytes!
   deployedInTransaction: Bytes!
+  # Access control for the system
   accessControl: AccessControl!
   account: Account
   compliance: Compliance
@@ -77,6 +114,7 @@ type System @entity(immutable: false) {
 type SystemAddon @entity(immutable: false) {
   id: Bytes!
   deployedInTransaction: Bytes!
+  # Access control for the system addon
   accessControl: AccessControl!
   systemAddonRegistry: SystemAddonRegistry!
   name: String!
@@ -87,6 +125,7 @@ type SystemAddon @entity(immutable: false) {
 type VaultFactory @entity(immutable: false) {
   id: Bytes!
   deployedInTransaction: Bytes!
+  # Access control for the vault factory
   accessControl: AccessControl!
   systemAddon: SystemAddon!
   account: Account!
@@ -99,6 +138,7 @@ type Vault @entity(immutable: false) {
   createdBy: Account!
   factory: VaultFactory!
   account: Account!
+  # Access control for the vault
   accessControl: AccessControl!
   required: BigInt!
   signers: [Account!]!
@@ -178,6 +218,7 @@ type Compliance @entity(immutable: false) {
 
 type IdentityRegistryStorage @entity(immutable: false) {
   id: Bytes!
+  # Access control for the identity registry storage
   accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
@@ -185,13 +226,13 @@ type IdentityRegistryStorage @entity(immutable: false) {
 
 type IdentityFactory @entity(immutable: false) {
   id: Bytes!
-  accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
 }
 
 type IdentityRegistry @entity(immutable: false) {
   id: Bytes!
+  # Access control for the identity registry
   accessControl: AccessControl!
   account: Account!
   identities: [Identity!]! @derivedFrom(field: "registry")
@@ -203,6 +244,7 @@ type IdentityRegistry @entity(immutable: false) {
 
 type TrustedIssuersRegistry @entity(immutable: false) {
   id: Bytes!
+  # Access control for the trusted issuers registry
   accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
@@ -210,6 +252,7 @@ type TrustedIssuersRegistry @entity(immutable: false) {
 
 type TopicSchemeRegistry @entity(immutable: false) {
   id: Bytes!
+  # Access control for the topic scheme registry
   accessControl: AccessControl!
   account: Account!
   schemes: [TopicScheme!]! @derivedFrom(field: "registry")
@@ -259,6 +302,7 @@ type IdentityClaimValue @entity(immutable: false) {
 
 type ComplianceModuleRegistry @entity(immutable: false) {
   id: Bytes!
+  # Access control for the compliance module registry
   accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
@@ -268,6 +312,7 @@ type ComplianceModuleRegistry @entity(immutable: false) {
 
 type ComplianceModule @entity(immutable: false) {
   id: Bytes!
+  # Access control for the compliance module
   accessControl: AccessControl!
   name: String!
   typeId: String!
@@ -300,6 +345,7 @@ enum TokenExtension {
 type TokenFactoryRegistry @entity(immutable: false) {
   id: Bytes!
   system: System!
+  # Access control for the token factory registry
   accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
@@ -308,6 +354,7 @@ type TokenFactoryRegistry @entity(immutable: false) {
 
 type TokenFactory @entity(immutable: false) {
   id: Bytes!
+  # Access control for the token factory
   accessControl: AccessControl!
   name: String!
   typeId: String!
@@ -331,6 +378,7 @@ type Token @entity(immutable: false) {
   createdBy: Account!
   deployedInTransaction: Bytes!
   account: Account!
+  # Access control for the token
   accessControl: AccessControl
   balances: [TokenBalance!]! @derivedFrom(field: "token")
   type: String!
@@ -445,6 +493,7 @@ type TokenFund @entity(immutable: false) {
 
 type SystemAddonRegistry @entity(immutable: false) {
   id: Bytes!
+  # Access control for the system addon registry
   accessControl: AccessControl!
   account: Account!
   deployedInTransaction: Bytes!
