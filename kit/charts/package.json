@@ -23,7 +23,7 @@
     "helm:extract-env": "bun run tools/extract-env.ts",
     "helm:connect": "cd ../../ && bunx settlemint connect -a",
     "helm:subgraph": "yq eval '.graph-node.graphNodeDefaults.env.SUBGRAPH = \"kit:'$(cat ../subgraph/.generated/subgraph-hash.txt | tr -d '\\n')'\"' -i atk/charts/thegraph/values.yaml",
-    "docs": "helm-docs --chart-search-root=. --skip-version-footer"
+    "docs": "echo 'No docs for charts'"
   },
   "dependencies": {},
   "devDependencies": {
