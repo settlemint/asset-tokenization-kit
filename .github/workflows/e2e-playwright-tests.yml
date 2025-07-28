@@ -65,6 +65,11 @@ jobs:
         run: bun run artifacts:abi
         working-directory: kit/contracts
 
+      - name: Check Docker version
+        run: |
+          docker --version
+          docker compose version
+
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps chromium
         working-directory: kit/e2e
@@ -89,7 +94,7 @@ jobs:
 
       - name: Reset dev environment (clean start)
         run: bun run dev:reset
-        working-directory: kit/dapp
+        working-directory: .
 
       - name: Start dev server
         run: |
@@ -134,7 +139,7 @@ jobs:
           fi
 
           echo "Dev server is ready at http://localhost:3000!"
-        working-directory: kit/dapp
+        working-directory: .
 
       - name: Run API Playwright tests
         id: playwright-api
@@ -181,7 +186,3 @@ jobs:
             kit/dapp/server.log
           retention-days: 1
 
-      - name: Check Docker version
-        run: |
-          docker --version
-          docker compose version
