@@ -8,13 +8,11 @@ import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { useAppForm } from "@/hooks/use-app-form";
 import { waitForStream } from "@/lib/utils/mutation";
+import { addonTypes, type AddonType } from "@/lib/zod/validators/addon-types";
 import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import {
-  type SystemAddonType,
-  SystemAddonTypeEnum,
-} from "@/orpc/routes/system/routes/system.addonCreate.schema";
+import { type SystemAddonType } from "@/orpc/routes/system/routes/system.addonCreate.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
@@ -22,7 +20,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 interface SystemAddonsSelectionFormValues {
-  addons: SystemAddonType[];
+  addons: AddonType[];
 }
 
 export function SystemAddonsSelection() {
@@ -138,7 +136,7 @@ export function SystemAddonsSelection() {
     [pendingAddons, createAddons, t, systemDetails?.systemAddonRegistry]
   );
 
-  const availableAddons = SystemAddonTypeEnum.options;
+  const availableAddons = addonTypes;
 
   // Create a set of already deployed addons for easy lookup
   const deployedAddons = useMemo(

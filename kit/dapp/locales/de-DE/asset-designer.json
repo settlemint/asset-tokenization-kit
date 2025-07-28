@@ -133,5 +133,8 @@
       }
     },
     "title": "Gestalten Sie Ihr Asset"
+  },
+  "sidebar": {
+    "button-title": "Asset-Designer"
   }
 }

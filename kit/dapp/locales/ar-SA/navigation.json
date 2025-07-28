@@ -5,6 +5,15 @@
   "cashEquivalent": "ما يعادل النقد",
   "fixedIncome": "دخل ثابت",
   "flexibleIncome": "دخل مرن",
-  "home": "الرئيسية",
-  "statistics": "الإحصائيات"
+  "home": "لوحة التحكم",
+  "statistics": "الإحصائيات",
+  "addons": "الإضافات",
+  "assetDesigner": "مصمم الأصول",
+  "addonDesigner": "مصمم الإضافات",
+  "addonCategories": {
+    "distribution": "التوزيع",
+    "exchange": "التبادل",
+    "custody": "الحفظ",
+    "income": "الدخل"
+  }
 }

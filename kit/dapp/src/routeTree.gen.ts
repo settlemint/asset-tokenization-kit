@@ -30,7 +30,10 @@ import { Route as PrivateOnboardingSidebarSystemAssetsRouteImport } from './rout
 import { Route as PrivateOnboardingSidebarSystemAddonsRouteImport } from './routes/_private/onboarding/_sidebar/system-addons'
 import { Route as PrivateOnboardingSidebarIdentitySetupRouteImport } from './routes/_private/onboarding/_sidebar/identity-setup'
 import { Route as PrivateOnboardingSidebarIdentityRouteImport } from './routes/_private/onboarding/_sidebar/identity'
+import { Route as PrivateOnboardedSidebarAddonDesignerRouteImport } from './routes/_private/_onboarded/_sidebar/addon-designer'
+import { Route as PrivateOnboardedSidebarAddonIndexRouteImport } from './routes/_private/_onboarded/_sidebar/addon/index'
 import { Route as PrivateOnboardedSidebarTokenStatsRouteImport } from './routes/_private/_onboarded/_sidebar/token/stats'
+import { Route as PrivateOnboardedSidebarAddonAddonAddressRouteImport } from './routes/_private/_onboarded/_sidebar/addon/$addonAddress'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/index'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/index'
@@ -145,10 +148,28 @@ const PrivateOnboardingSidebarIdentityRoute =
     path: '/identity',
     getParentRoute: () => PrivateOnboardingSidebarRoute,
   } as any)
+const PrivateOnboardedSidebarAddonDesignerRoute =
+  PrivateOnboardedSidebarAddonDesignerRouteImport.update({
+    id: '/addon-designer',
+    path: '/addon-designer',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarAddonIndexRoute =
+  PrivateOnboardedSidebarAddonIndexRouteImport.update({
+    id: '/addon/',
+    path: '/addon/',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
 const PrivateOnboardedSidebarTokenStatsRoute =
   PrivateOnboardedSidebarTokenStatsRouteImport.update({
     id: '/token/stats',
     path: '/token/stats',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarAddonAddonAddressRoute =
+  PrivateOnboardedSidebarAddonAddonAddressRouteImport.update({
+    id: '/addon/$addonAddress',
+    path: '/addon/$addonAddress',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
 const PrivateOnboardedSidebarTokenFactoryAddressIndexRoute =
@@ -211,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof PrivateOnboardingSidebarRouteWithChildren
   '/auth/$pathname': typeof AuthPathnameRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
+  '/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
   '/onboarding/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/onboarding/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
@@ -222,7 +244,9 @@ export interface FileRoutesByFullPath {
   '/onboarding/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
+  '/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
+  '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
   '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
@@ -233,6 +257,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/auth/$pathname': typeof AuthPathnameRoute
   '/onboarding': typeof PrivateOnboardingIndexRoute
+  '/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
   '/onboarding/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/onboarding/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
@@ -244,7 +269,9 @@ export interface FileRoutesByTo {
   '/onboarding/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/': typeof PrivateOnboardedSidebarIndexRoute
   '/asset-designer': typeof PrivateOnboardedAssetDesignerIndexRoute
+  '/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
+  '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
   '/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
   '/token/$factoryAddress/$tokenAddress/holders': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressHoldersRoute
@@ -260,6 +287,7 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar': typeof PrivateOnboardedSidebarRouteWithChildren
   '/_private/onboarding/_sidebar': typeof PrivateOnboardingSidebarRouteWithChildren
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
+  '/_private/_onboarded/_sidebar/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/_private/onboarding/_sidebar/identity': typeof PrivateOnboardingSidebarIdentityRoute
   '/_private/onboarding/_sidebar/identity-setup': typeof PrivateOnboardingSidebarIdentitySetupRoute
   '/_private/onboarding/_sidebar/system-addons': typeof PrivateOnboardingSidebarSystemAddonsRoute
@@ -271,7 +299,9 @@ export interface FileRoutesById {
   '/_private/onboarding/_sidebar/wallet-security': typeof PrivateOnboardingSidebarWalletSecurityRoute
   '/_private/_onboarded/_sidebar/': typeof PrivateOnboardedSidebarIndexRoute
   '/_private/_onboarded/asset-designer/': typeof PrivateOnboardedAssetDesignerIndexRoute
+  '/_private/_onboarded/_sidebar/addon/$addonAddress': typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   '/_private/_onboarded/_sidebar/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
+  '/_private/_onboarded/_sidebar/addon/': typeof PrivateOnboardedSidebarAddonIndexRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/_private/_onboarded/_sidebar/token/$factoryAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressEventsRoute
@@ -285,6 +315,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/auth/$pathname'
     | '/onboarding/'
+    | '/addon-designer'
     | '/onboarding/identity'
     | '/onboarding/identity-setup'
     | '/onboarding/system-addons'
@@ -296,7 +327,9 @@ export interface FileRouteTypes {
     | '/onboarding/wallet-security'
     | '/'
     | '/asset-designer'
+    | '/addon/$addonAddress'
     | '/token/stats'
+    | '/addon'
     | '/token/$factoryAddress/$tokenAddress'
     | '/token/$factoryAddress'
     | '/token/$factoryAddress/$tokenAddress/events'
@@ -307,6 +340,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/auth/$pathname'
     | '/onboarding'
+    | '/addon-designer'
     | '/onboarding/identity'
     | '/onboarding/identity-setup'
     | '/onboarding/system-addons'
@@ -318,7 +352,9 @@ export interface FileRouteTypes {
     | '/onboarding/wallet-security'
     | '/'
     | '/asset-designer'
+    | '/addon/$addonAddress'
     | '/token/stats'
+    | '/addon'
     | '/token/$factoryAddress'
     | '/token/$factoryAddress/$tokenAddress/events'
     | '/token/$factoryAddress/$tokenAddress/holders'
@@ -333,6 +369,7 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar'
     | '/_private/onboarding/_sidebar'
     | '/_private/onboarding/'
+    | '/_private/_onboarded/_sidebar/addon-designer'
     | '/_private/onboarding/_sidebar/identity'
     | '/_private/onboarding/_sidebar/identity-setup'
     | '/_private/onboarding/_sidebar/system-addons'
@@ -344,7 +381,9 @@ export interface FileRouteTypes {
     | '/_private/onboarding/_sidebar/wallet-security'
     | '/_private/_onboarded/_sidebar/'
     | '/_private/_onboarded/asset-designer/'
+    | '/_private/_onboarded/_sidebar/addon/$addonAddress'
     | '/_private/_onboarded/_sidebar/token/stats'
+    | '/_private/_onboarded/_sidebar/addon/'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events'
@@ -521,11 +560,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardingSidebarIdentityRouteImport
       parentRoute: typeof PrivateOnboardingSidebarRoute
     }
+    '/_private/_onboarded/_sidebar/addon-designer': {
+      id: '/_private/_onboarded/_sidebar/addon-designer'
+      path: '/addon-designer'
+      fullPath: '/addon-designer'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAddonDesignerRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/addon/': {
+      id: '/_private/_onboarded/_sidebar/addon/'
+      path: '/addon'
+      fullPath: '/addon'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAddonIndexRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
     '/_private/_onboarded/_sidebar/token/stats': {
       id: '/_private/_onboarded/_sidebar/token/stats'
       path: '/token/stats'
       fullPath: '/token/stats'
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenStatsRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/addon/$addonAddress': {
+      id: '/_private/_onboarded/_sidebar/addon/$addonAddress'
+      path: '/addon/$addonAddress'
+      fullPath: '/addon/$addonAddress'
+      preLoaderRoute: typeof PrivateOnboardedSidebarAddonAddonAddressRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
     '/_private/_onboarded/_sidebar/token/$factoryAddress/': {
@@ -613,17 +673,26 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren =
   )
 
 interface PrivateOnboardedSidebarRouteChildren {
+  PrivateOnboardedSidebarAddonDesignerRoute: typeof PrivateOnboardedSidebarAddonDesignerRoute
   PrivateOnboardedSidebarIndexRoute: typeof PrivateOnboardedSidebarIndexRoute
+  PrivateOnboardedSidebarAddonAddonAddressRoute: typeof PrivateOnboardedSidebarAddonAddonAddressRoute
   PrivateOnboardedSidebarTokenStatsRoute: typeof PrivateOnboardedSidebarTokenStatsRoute
+  PrivateOnboardedSidebarAddonIndexRoute: typeof PrivateOnboardedSidebarAddonIndexRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   PrivateOnboardedSidebarTokenFactoryAddressIndexRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
 }
 
 const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren =
   {
+    PrivateOnboardedSidebarAddonDesignerRoute:
+      PrivateOnboardedSidebarAddonDesignerRoute,
     PrivateOnboardedSidebarIndexRoute: PrivateOnboardedSidebarIndexRoute,
+    PrivateOnboardedSidebarAddonAddonAddressRoute:
+      PrivateOnboardedSidebarAddonAddonAddressRoute,
     PrivateOnboardedSidebarTokenStatsRoute:
       PrivateOnboardedSidebarTokenStatsRoute,
+    PrivateOnboardedSidebarAddonIndexRoute:
+      PrivateOnboardedSidebarAddonIndexRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute:
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren,
     PrivateOnboardedSidebarTokenFactoryAddressIndexRoute:

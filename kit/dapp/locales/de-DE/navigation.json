@@ -5,6 +5,15 @@
   "cashEquivalent": "Bargleichwert",
   "fixedIncome": "Festverzinslich",
   "flexibleIncome": "Flexibles Einkommen",
-  "home": "Startseite",
-  "statistics": "Statistiken"
+  "home": "Dashboard",
+  "statistics": "Statistiken",
+  "addons": "Zusatzmodule",
+  "assetDesigner": "Vermögensdesigner",
+  "addonDesigner": "Zusatzmodul-Designer",
+  "addonCategories": {
+    "distribution": "Verteilung",
+    "exchange": "Austausch",
+    "custody": "Treuhand",
+    "income": "Einkommen"
+  }
 }

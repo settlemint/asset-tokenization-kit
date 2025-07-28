@@ -29,5 +29,8 @@ dependencies:
 - name: dapp
   repository: file://./charts/dapp
   version: 0.1.0
-digest: sha256:35c4904fdc371e1e0c6dca5c18c524d97ecd8304c34c51ab589cec3c43630097
-generated: "2025-04-21T17:16:50.644333+03:00"
+- name: redis
+  repository: file://./charts/redis
+  version: 0.1.0
+digest: sha256:b2e37cfc01933d417a4fd34c795d1b2645a359bbd0d3d64c8c3b6c38e4fa5eda
+generated: "2025-07-28T13:31:08.035029+03:00"
