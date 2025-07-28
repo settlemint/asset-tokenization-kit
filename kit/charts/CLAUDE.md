@@ -386,6 +386,17 @@ kubectl get ingress -n atk
 
 ## Helm Chart Development
 
+### Important: Subchart Template Architecture
+
+**Note**: The ATK charts use an umbrella chart pattern where common helper templates are defined in the parent `atk` chart at `/atk/templates/_common-helpers.tpl`. Subcharts reference these helpers, which means:
+
+1. **Subcharts cannot be rendered independently** - They must be deployed through the umbrella chart
+2. **This is by design** - It ensures consistency and reduces duplication
+3. **For testing individual charts** - Always use the umbrella chart with specific subchart enabled:
+   ```bash
+   helm template atk ./atk --set portal.enabled=true,global.enabled=false
+   ```
+
 ### Adding New Sub-charts
 
 1. Create chart structure:

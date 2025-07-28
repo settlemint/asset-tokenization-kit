@@ -84,7 +84,11 @@ Return the target Kubernetes version - Generic version
 Usage: {{ include "atk.common.capabilities.kubeVersion" . }}
 */}}
 {{- define "atk.common.capabilities.kubeVersion" -}}
-{{- .Values.global.kubeVersion | default .Values.kubeVersion | default .Capabilities.KubeVersion.Version -}}
+{{- if .Values.global -}}
+  {{- .Values.global.kubeVersion | default .Values.kubeVersion | default .Capabilities.KubeVersion.Version -}}
+{{- else -}}
+  {{- .Values.kubeVersion | default .Capabilities.KubeVersion.Version -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -137,7 +141,12 @@ Usage: {{ include "atk.common.imagePullSecrets" . }}
 */}}
 {{- define "atk.common.imagePullSecrets" -}}
 {{- $defaultSecrets := list "image-pull-secret-docker" "image-pull-secret-ghcr" "image-pull-secret-harbor" -}}
-{{- $secrets := .Values.global.imagePullSecrets | default $defaultSecrets -}}
+{{- $secrets := $defaultSecrets -}}
+{{- if .Values.global -}}
+  {{- if .Values.global.imagePullSecrets -}}
+    {{- $secrets = .Values.global.imagePullSecrets -}}
+  {{- end -}}
+{{- end -}}
 imagePullSecrets:
 {{- range $secrets }}
   - name: {{ . }}
