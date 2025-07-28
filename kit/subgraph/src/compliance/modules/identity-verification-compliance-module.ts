@@ -23,73 +23,78 @@ export function decodeExpressionParams(
     return;
   }
 
-  try {
-    // Skip the first 32 bytes (offset to array)
-    let offset = 32;
+  // Check minimum data length for array offset and length
+  if (data.length < 64) {
+    return;
+  }
 
-    // Get array length
-    const lenBytes = Bytes.fromUint8Array(data.subarray(offset, offset + 32));
-    const lenVal = ethereum.decode("uint256", lenBytes);
+  // Skip the first 32 bytes (offset to array)
+  let offset = 32;
 
-    if (lenVal === null) {
-      return;
+  // Get array length
+  const lenBytes = Bytes.fromUint8Array(data.subarray(offset, offset + 32));
+  const lenVal = ethereum.decode("uint256", lenBytes);
+
+  if (lenVal === null) {
+    return;
+  }
+
+  const arrayLength = lenVal.toBigInt().toI32();
+  offset += 32;
+
+  // Check if we have enough data for all elements
+  const requiredLength = offset + arrayLength * 64; // Each element needs 64 bytes (32 for type + 32 for value)
+  if (data.length < requiredLength) {
+    return;
+  }
+
+  // Decode each expression node
+  for (let i = 0; i < arrayLength; i++) {
+    // Each expression node is a tuple (uint8 nodeType, uint256 value)
+    const nodeTypeBytes = Bytes.fromUint8Array(
+      data.subarray(offset, offset + 32)
+    );
+    const nodeTypeVal = ethereum.decode("uint8", nodeTypeBytes);
+
+    if (nodeTypeVal === null) {
+      continue;
     }
 
-    const arrayLength = lenVal.toBigInt().toI32();
+    const nodeType = nodeTypeVal.toI32();
     offset += 32;
 
-    // Decode each expression node
-    for (let i = 0; i < arrayLength; i++) {
-      // Each expression node is a tuple (uint8 nodeType, uint256 value)
-      const nodeTypeBytes = Bytes.fromUint8Array(
-        data.subarray(offset, offset + 32)
-      );
-      const nodeTypeVal = ethereum.decode("uint8", nodeTypeBytes);
+    const valueBytes = Bytes.fromUint8Array(data.subarray(offset, offset + 32));
+    const valueVal = ethereum.decode("uint256", valueBytes);
 
-      if (nodeTypeVal === null) {
-        continue;
-      }
-
-      const nodeType = nodeTypeVal.toI32();
-      offset += 32;
-
-      const valueBytes = Bytes.fromUint8Array(
-        data.subarray(offset, offset + 32)
-      );
-      const valueVal = ethereum.decode("uint256", valueBytes);
-
-      if (valueVal === null) {
-        continue;
-      }
-
-      const value = valueVal.toBigInt();
-      offset += 32;
-
-      // Create ExpressionNode entity
-      const nodeId = tokenComplianceModule.id.concat(Bytes.fromI32(i));
-
-      const expressionNode = new ExpressionNode(nodeId);
-      expressionNode.complianceModule = tokenComplianceModule.id;
-      expressionNode.index = i;
-
-      // Set node type and link to TopicScheme for TOPIC nodes
-      if (nodeType === 0) {
-        expressionNode.nodeType = "TOPIC";
-        // For TOPIC nodes, link to TopicScheme
-        const topicScheme = fetchTopicScheme(value);
-        expressionNode.topicScheme = topicScheme.id;
-      } else if (nodeType === 1) {
-        expressionNode.nodeType = "AND";
-      } else if (nodeType === 2) {
-        expressionNode.nodeType = "OR";
-      } else if (nodeType === 3) {
-        expressionNode.nodeType = "NOT";
-      }
-
-      expressionNode.save();
+    if (valueVal === null) {
+      continue;
     }
-  } catch (error) {
-    // Silently fail if decoding fails
+
+    const value = valueVal.toBigInt();
+    offset += 32;
+
+    // Create ExpressionNode entity
+    const nodeId = tokenComplianceModule.id.concat(Bytes.fromI32(i));
+
+    const expressionNode = new ExpressionNode(nodeId);
+    expressionNode.complianceModule = tokenComplianceModule.id;
+    expressionNode.index = i;
+
+    // Set node type and link to TopicScheme for TOPIC nodes
+    if (nodeType === 0) {
+      expressionNode.nodeType = "TOPIC";
+      // For TOPIC nodes, link to TopicScheme
+      const topicScheme = fetchTopicScheme(value);
+      expressionNode.topicScheme = topicScheme.id;
+    } else if (nodeType === 1) {
+      expressionNode.nodeType = "AND";
+    } else if (nodeType === 2) {
+      expressionNode.nodeType = "OR";
+    } else if (nodeType === 3) {
+      expressionNode.nodeType = "NOT";
+    }
+
+    expressionNode.save();
   }
 }
 
