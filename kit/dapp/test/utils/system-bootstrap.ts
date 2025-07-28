@@ -98,7 +98,7 @@ export async function bootstrapTokenFactories(orpClient: OrpcClient) {
         "Continuing tests despite potential token factory registration failures"
       );
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.log("Error during token factory registration:", error);
     console.log(
       "This may be expected during system access manager integration"

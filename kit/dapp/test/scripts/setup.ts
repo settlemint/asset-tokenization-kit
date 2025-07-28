@@ -30,11 +30,12 @@ beforeAll(async () => {
     await bootstrapSystem(orpClient);
     console.log("Bootstrapping token factories");
     await bootstrapTokenFactories(orpClient);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to setup test environment", error);
     // Don't exit with error code in CI environment for system access manager integration
     if (
       process.env.CI === "true" &&
+      error instanceof Error &&
       error.toString().includes("AccessControlUnauthorizedAccount")
     ) {
       console.log(
