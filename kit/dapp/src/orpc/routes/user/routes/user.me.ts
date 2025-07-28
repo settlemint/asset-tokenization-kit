@@ -10,13 +10,14 @@
 
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { VerificationType as VerificationTypeEnum } from "@/lib/zod/validators/verification-type";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
-import { read as systemRead } from "@/orpc/routes/system/routes/system.read";
 import { call, ORPCError } from "@orpc/server";
 import { eq } from "drizzle-orm";
 import { zeroAddress } from "viem";
@@ -107,51 +108,10 @@ export const me = authRouter.user.me
 
     const { kyc } = userQueryResult ?? {};
 
-    // Check if system has token factories/addons using existing ORPC route
-    let hasTokenFactories = false;
-    let hasSystemAddons = false;
-    let hasBondFactory = false;
-    let hasYieldAddon = false;
-    if (systemAddress) {
-      try {
-        const systemData = await call(
-          systemRead,
-          {
-            id: systemAddress,
-          },
-          {
-            context,
-          }
-        );
-        hasTokenFactories = systemData.tokenFactories.length > 0;
-
-        // Check if bond factory is deployed
-        hasBondFactory = systemData.tokenFactories.some(
-          (factory) => factory.typeId === AssetFactoryTypeIdEnum.ATKBondFactory
-        );
-
-        // Check if yield addon is deployed
-        hasYieldAddon = systemData.systemAddons.some(
-          (addon) => addon.typeId === "ATKFixedYieldScheduleFactory"
-        );
-
-        // System addons are optional, except when bond factory exists - then yield addon is required
-        // If user has explicitly skipped, consider it complete unless bond factory requires yield
-        if (systemAddonsSkipped === "true") {
-          hasSystemAddons = hasBondFactory ? hasYieldAddon : true;
-        } else {
-          hasSystemAddons = hasBondFactory
-            ? hasYieldAddon
-            : systemData.systemAddons.length > 0;
-        }
-      } catch {
-        // If system read fails, we assume no factories and addons
-        hasTokenFactories = false;
-        hasSystemAddons = true; // Default to true since addons are optional
-        hasBondFactory = false;
-        hasYieldAddon = false;
-      }
-    }
+    const systemOnboardingState = await getSystemOnboardingState(
+      systemAddress,
+      systemAddonsSkipped
+    );
 
     return {
       id: authUser.id,
@@ -176,12 +136,63 @@ export const me = authRouter.user.me
         walletSecurity:
           authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
         walletRecoveryCodes: authUser.secretCodesConfirmed ?? false,
-        system: !!systemAddress,
+        ...systemOnboardingState,
         systemSettings: !!baseCurrency,
-        systemAssets: hasTokenFactories,
-        systemAddons: hasSystemAddons,
         identitySetup: !!account?.identity,
         identity: !!userQueryResult?.kyc,
       },
     };
   });
+
+async function getSystemOnboardingState(
+  systemAddress: string | null,
+  systemAddonsSkipped: string | null
+) {
+  const systemOnboardingState = {
+    system: false,
+    systemAssets: false,
+    systemAddons: false,
+  };
+  if (!systemAddress) {
+    return systemOnboardingState;
+  }
+  try {
+    const systemData = await getSystemContext(
+      getEthereumAddress(systemAddress)
+    );
+    if (!systemData) {
+      return systemOnboardingState;
+    }
+    systemOnboardingState.systemAssets = systemData.tokenFactories.length > 0;
+
+    // Check if bond factory is deployed
+    const hasBondFactory = systemData.tokenFactories.some(
+      (factory) => factory.typeId === AssetFactoryTypeIdEnum.ATKBondFactory
+    );
+
+    // Check if yield addon is deployed
+    const hasYieldAddon = systemData.systemAddons.some(
+      (addon) => addon.typeId === "ATKFixedYieldScheduleFactory"
+    );
+
+    // System addons are optional, except when bond factory exists - then yield addon is required
+    // If user has explicitly skipped, consider it complete unless bond factory requires yield
+    if (systemAddonsSkipped === "true") {
+      systemOnboardingState.systemAddons = hasBondFactory
+        ? hasYieldAddon
+        : true;
+    } else {
+      systemOnboardingState.systemAddons = hasBondFactory
+        ? hasYieldAddon
+        : systemData.systemAddons.length > 0;
+    }
+  } catch {
+    // If system read fails, we assume no factories and addons
+    return {
+      system: false,
+      systemAssets: false,
+      systemAddons: false,
+    };
+  }
+  return systemOnboardingState;
+}

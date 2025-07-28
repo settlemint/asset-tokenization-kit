@@ -11,11 +11,14 @@ import {
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
 import { call } from "@orpc/server";
+import type { Hex } from "viem";
 
 const SYSTEM_QUERY = theGraphGraphql(
   `
   query GetSystem($systemAddress: ID!) {
     system(id: $systemAddress) {
+      id
+      deployedInTransaction
       accessControl {
         ...AccessControlFragment
       }
@@ -38,6 +41,9 @@ const SYSTEM_QUERY = theGraphGraphql(
         accessControl {
           ...AccessControlFragment
         }
+      }
+      identityFactory {
+        id
       }
       identityRegistryStorage {
         id
@@ -68,6 +74,14 @@ const SYSTEM_QUERY = theGraphGraphql(
         accessControl {
           ...AccessControlFragment
         }
+        systemAddons {
+          id
+          name
+          typeId
+          accessControl {
+            ...AccessControlFragment
+          }
+        }
       }
     }
   }
@@ -77,11 +91,11 @@ const SYSTEM_QUERY = theGraphGraphql(
 
 /**
  * Interface for a system component.
- * @param address - The address of the system component.
+ * @param id - The address of the system component.
  * @param accessControl - The access control of the system component.
  */
 interface SystemComponent {
-  address: EthereumAddress;
+  id: EthereumAddress;
   accessControl: AccessControl;
 }
 
@@ -97,6 +111,18 @@ interface TokenFactory extends SystemComponent {
 }
 
 /**
+ * Interface for a system addon.
+ * @param name - The name of the system addon.
+ * @param typeId - The type of the system addon.
+ * @param address - The address of the system addon.
+ * @param accessControl - The access control of the system addon.
+ */
+export interface SystemAddon extends SystemComponent {
+  name: string;
+  typeId: string;
+}
+
+/**
  * Interface for the system context.
  * @param address - The address of the system.
  * @param accessControl - The access control of the system.
@@ -104,15 +130,18 @@ interface TokenFactory extends SystemComponent {
  */
 export interface SystemContext {
   address: EthereumAddress;
+  deployedInTransaction: Hex;
   accessControl: AccessControl;
+  complianceModuleRegistry: SystemComponent | null;
+  identityFactory: Pick<SystemComponent, "id"> | null;
+  identityRegistry: SystemComponent | null;
+  identityRegistryStorage: SystemComponent | null;
+  systemAddonRegistry: SystemComponent | null;
+  systemAddons: SystemAddon[];
   tokenFactories: TokenFactory[];
-  tokenFactoryRegistry?: SystemComponent;
-  complianceModuleRegistry?: SystemComponent;
-  identityRegistryStorage?: SystemComponent;
-  identityRegistry?: SystemComponent;
-  trustedIssuersRegistry?: SystemComponent;
-  topicSchemeRegistry?: SystemComponent;
-  systemAddonRegistry?: SystemComponent;
+  tokenFactoryRegistry: SystemComponent | null;
+  topicSchemeRegistry: SystemComponent | null;
+  trustedIssuersRegistry: SystemComponent | null;
 }
 
 /**
@@ -160,7 +189,7 @@ export const systemMiddleware = baseRouter.middleware(
   }
 );
 
-const getSystemContext = async (
+export const getSystemContext = async (
   systemAddress: EthereumAddress
 ): Promise<SystemContext | null> => {
   const { system } = await theGraphClient.request({
@@ -177,55 +206,71 @@ const getSystemContext = async (
       ({ id, name, typeId, accessControl }) => ({
         name,
         typeId: typeId as AssetFactoryTypeId,
-        address: getEthereumAddress(id),
+        id: getEthereumAddress(id),
+        accessControl,
+      })
+    ) ?? [];
+  const systemAddons =
+    system.systemAddonRegistry?.systemAddons.map(
+      ({ id, name, typeId, accessControl }): SystemAddon => ({
+        name,
+        typeId,
+        id: getEthereumAddress(id),
         accessControl,
       })
     ) ?? [];
   return {
     address: systemAddress,
+    deployedInTransaction: system.deployedInTransaction as Hex,
     accessControl: system?.accessControl,
     tokenFactories,
+    systemAddons,
+    identityFactory: system.identityFactory
+      ? {
+          id: getEthereumAddress(system.identityFactory?.id),
+        }
+      : null,
     tokenFactoryRegistry: system.tokenFactoryRegistry
       ? {
-          address: getEthereumAddress(system.tokenFactoryRegistry?.id),
+          id: getEthereumAddress(system.tokenFactoryRegistry?.id),
           accessControl: system?.tokenFactoryRegistry?.accessControl,
         }
-      : undefined,
+      : null,
     complianceModuleRegistry: system.complianceModuleRegistry
       ? {
-          address: getEthereumAddress(system.complianceModuleRegistry?.id),
+          id: getEthereumAddress(system.complianceModuleRegistry?.id),
           accessControl: system?.complianceModuleRegistry?.accessControl,
         }
-      : undefined,
+      : null,
     identityRegistryStorage: system.identityRegistryStorage
       ? {
-          address: getEthereumAddress(system.identityRegistryStorage?.id),
+          id: getEthereumAddress(system.identityRegistryStorage?.id),
           accessControl: system?.identityRegistryStorage?.accessControl,
         }
-      : undefined,
+      : null,
     identityRegistry: system.identityRegistry
       ? {
-          address: getEthereumAddress(system.identityRegistry?.id),
+          id: getEthereumAddress(system.identityRegistry?.id),
           accessControl: system?.identityRegistry?.accessControl,
         }
-      : undefined,
+      : null,
     trustedIssuersRegistry: system.trustedIssuersRegistry
       ? {
-          address: getEthereumAddress(system.trustedIssuersRegistry?.id),
+          id: getEthereumAddress(system.trustedIssuersRegistry?.id),
           accessControl: system?.trustedIssuersRegistry?.accessControl,
         }
-      : undefined,
+      : null,
     topicSchemeRegistry: system.topicSchemeRegistry
       ? {
-          address: getEthereumAddress(system.topicSchemeRegistry?.id),
+          id: getEthereumAddress(system.topicSchemeRegistry?.id),
           accessControl: system?.topicSchemeRegistry?.accessControl,
         }
-      : undefined,
+      : null,
     systemAddonRegistry: system.systemAddonRegistry
       ? {
-          address: getEthereumAddress(system.systemAddonRegistry?.id),
+          id: getEthereumAddress(system.systemAddonRegistry?.id),
           accessControl: system?.systemAddonRegistry?.accessControl,
         }
-      : undefined,
+      : null,
   };
 };

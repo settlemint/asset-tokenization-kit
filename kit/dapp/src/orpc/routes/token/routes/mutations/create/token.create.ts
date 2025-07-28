@@ -47,7 +47,7 @@ export const create = onboardedRouter.token.create
 
     yield* handler(input, {
       mutationVariables: {
-        address: tokenFactory.address,
+        address: tokenFactory.id,
         from: context.auth.user.wallet,
         ...challengeResponse,
       },
