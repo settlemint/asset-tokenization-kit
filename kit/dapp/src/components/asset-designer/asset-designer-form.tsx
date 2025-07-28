@@ -16,10 +16,14 @@ import { StepLayout } from "@/components/stepper/step-layout";
 import { getNextStep, getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
 import { waitForStream } from "@/lib/utils/mutation";
-import { getFactoryTypeIdFromAssetType } from "@/lib/zod/validators/asset-types";
+import {
+  getFactoryTypeIdFromAssetType,
+  type AssetType,
+} from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import { FactoryList } from "@/orpc/routes/token/routes/factory/factory.list.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
@@ -32,6 +36,7 @@ interface AssetDesignerFormProps {
 export const AssetDesignerForm = ({ factories }: AssetDesignerFormProps) => {
   const { t } = useTranslation(["asset-designer"]);
   const steps = useAssetDesignerSteps();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { mutateAsync: createToken } = useMutation(
     orpc.token.create.mutationOptions({
@@ -41,9 +46,10 @@ export const AssetDesignerForm = ({ factories }: AssetDesignerFormProps) => {
       onSuccess: async (result, variables) => {
         await waitForStream(result, "token creation");
 
-        const assetType = variables.type;
-        const factoryTypeId = getFactoryTypeIdFromAssetType(assetType);
-        const factory = factories.find((f) => f.typeId === factoryTypeId);
+        const tokenFactory = getFactoryAddressFromTypeId(
+          factories,
+          variables.type
+        );
 
         await Promise.all([
           // Invalidate factory list queries
@@ -52,10 +58,9 @@ export const AssetDesignerForm = ({ factories }: AssetDesignerFormProps) => {
               input: { hasTokens: true },
             }).queryKey,
           }),
-          // Invalidate specific factory token list
           queryClient.invalidateQueries({
             queryKey: orpc.token.list.queryOptions({
-              input: { tokenFactory: factory?.id },
+              input: { tokenFactory },
             }).queryKey,
           }),
         ]);
@@ -68,25 +73,24 @@ export const AssetDesignerForm = ({ factories }: AssetDesignerFormProps) => {
     validators: {
       onChange: AssetDesignerFormSchema,
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       const parsedValues = AssetDesignerFormSchema.parse(values.value);
-
-      toast.promise(
-        createToken({
-          ...parsedValues,
-          initialModulePairs: [],
-        }),
-        {
-          loading: t("messages.creating", {
-            type: parsedValues.type,
-          }),
-          success: t("messages.created", {
-            type: parsedValues.type,
-          }),
-          error: (error: Error) =>
-            `${t("messages.creation-failed", { type: parsedValues.type })}: ${error.message}`,
-        }
+      const factoryAddress = getFactoryAddressFromTypeId(
+        factories,
+        parsedValues.type
       );
+
+      toast.promise(createToken(parsedValues), {
+        loading: t("messages.creating", { type: parsedValues.type }),
+        success: t("messages.created", { type: parsedValues.type }),
+        error: (error: Error) =>
+          `${t("messages.creation-failed", { type: parsedValues.type })}: ${error.message}`,
+      });
+
+      await navigate({
+        to: "/token/$factoryAddress",
+        params: { factoryAddress },
+      });
 
       form.reset();
     },
@@ -140,3 +144,16 @@ export const AssetDesignerForm = ({ factories }: AssetDesignerFormProps) => {
     </form.AppForm>
   );
 };
+
+function getFactoryAddressFromTypeId(
+  factories: FactoryList,
+  assetType: AssetType
+) {
+  const factoryTypeId = getFactoryTypeIdFromAssetType(assetType);
+  const factory = factories.find((f) => f.typeId === factoryTypeId);
+
+  if (!factory) {
+    throw new Error(`Factory with typeId ${factoryTypeId} not found`);
+  }
+  return factory.id;
+}
