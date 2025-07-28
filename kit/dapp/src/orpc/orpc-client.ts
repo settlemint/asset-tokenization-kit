@@ -108,7 +108,7 @@ const getORPCClient = createIsomorphicFn()
  * });
  * ```
  */
-export const client: ContractRouterClient<typeof contract> = getORPCClient();
+export const client = getORPCClient() as ContractRouterClient<typeof contract>;
 
 /**
  * TanStack Query utilities for the ORPC client.

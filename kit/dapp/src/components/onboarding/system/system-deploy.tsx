@@ -2,7 +2,7 @@ import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-la
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
-import { waitForStream } from "@/lib/utils/mutation";
+import { waitForStream } from "@/lib/utils/stream";
 import { orpc } from "@/orpc/orpc-client";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";

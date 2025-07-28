@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { useAppForm } from "@/hooks/use-app-form";
-import { waitForStream } from "@/lib/utils/mutation";
+import { waitForStream } from "@/lib/utils/stream";
 import {
   type AssetFactoryTypeId,
   getAssetTypeFromFactoryTypeId,

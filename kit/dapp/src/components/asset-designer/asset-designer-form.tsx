@@ -15,7 +15,7 @@ import { Summary } from "@/components/asset-designer/summary/summary";
 import { StepLayout } from "@/components/stepper/step-layout";
 import { getNextStep, getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
-import { waitForStream } from "@/lib/utils/mutation";
+import { waitForStream } from "@/lib/utils/stream";
 import {
   getFactoryTypeIdFromAssetType,
   type AssetType,

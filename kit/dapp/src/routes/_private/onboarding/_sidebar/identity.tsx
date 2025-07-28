@@ -10,7 +10,7 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { authClient } from "@/lib/auth/auth.client";
-import { waitForStream } from "@/lib/utils/mutation";
+import { waitForStream } from "@/lib/utils/stream";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
