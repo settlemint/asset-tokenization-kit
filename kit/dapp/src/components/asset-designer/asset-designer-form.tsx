@@ -23,6 +23,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 interface AssetDesignerFormProps {
   factories: FactoryList;
@@ -67,12 +68,25 @@ export const AssetDesignerForm = ({ factories }: AssetDesignerFormProps) => {
     validators: {
       onChange: AssetDesignerFormSchema,
     },
-    onSubmit: async (values) => {
+    onSubmit: (values) => {
       const parsedValues = AssetDesignerFormSchema.parse(values.value);
-      await createToken({
-        ...parsedValues,
-        initialModulePairs: [],
-      });
+
+      toast.promise(
+        createToken({
+          ...parsedValues,
+          initialModulePairs: [],
+        }),
+        {
+          loading: t("messages.creating", {
+            type: parsedValues.type,
+          }),
+          success: t("messages.created", {
+            type: parsedValues.type,
+          }),
+          error: (error: Error) =>
+            `${t("messages.creation-failed", { type: parsedValues.type })}: ${error.message}`,
+        }
+      );
 
       form.reset();
     },
