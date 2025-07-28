@@ -138,6 +138,76 @@ const ATKOnboardingSystemModule = buildModule(
       { id: "systemAddonRegistry" }
     );
 
+    // Get the system access manager address from the bootstrap event
+    const systemAccessManagerAddress = m.readEventArgument(
+      bootstrap,
+      "Bootstrapped",
+      "systemAccessManagerProxy",
+      { id: "systemAccessManagerAddress" }
+    );
+
+    const systemAccessManager = m.contractAt(
+      "IATKSystemAccessManager",
+      systemAccessManagerAddress,
+      { id: "systemAccessManager" }
+    );
+
+    // Grant necessary roles to system registries in the system access manager
+    // The registries need admin permissions to grant roles to the factories they create
+    const grantTokenFactoryRegistryAdminRole = m.call(
+      systemAccessManager,
+      "grantRole",
+      [
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        tokenFactoryRegistryAddress,
+      ], // DEFAULT_ADMIN_ROLE
+      {
+        from: m.getAccount(0),
+        id: "grantTokenFactoryRegistryAdminRole",
+      }
+    );
+
+    const grantSystemAddonRegistryAdminRole = m.call(
+      systemAccessManager,
+      "grantRole",
+      [
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        systemAddonRegistryAddress,
+      ], // DEFAULT_ADMIN_ROLE
+      {
+        from: m.getAccount(0),
+        id: "grantSystemAddonRegistryAdminRole",
+      }
+    );
+
+    // Grant SYSTEM_MODULE_ROLE to system registries so factories they create can access compliance
+    // Token factories and addon factories need to add addresses to compliance bypass lists
+    const grantTokenFactoryRegistrySystemModuleRole = m.call(
+      systemAccessManager,
+      "grantRole",
+      [
+        "0xa6d0d666130ddda8d0a25bfc08c75c789806b23845f9cce674dfc4a9e8d0e45c",
+        tokenFactoryRegistryAddress,
+      ], // SYSTEM_MODULE_ROLE
+      {
+        from: m.getAccount(0),
+        id: "grantTokenFactoryRegistrySystemModuleRole",
+      }
+    );
+
+    const grantSystemAddonRegistrySystemModuleRole = m.call(
+      systemAccessManager,
+      "grantRole",
+      [
+        "0xa6d0d666130ddda8d0a25bfc08c75c789806b23845f9cce674dfc4a9e8d0e45c",
+        systemAddonRegistryAddress,
+      ], // SYSTEM_MODULE_ROLE
+      {
+        from: m.getAccount(0),
+        id: "grantSystemAddonRegistrySystemModuleRole",
+      }
+    );
+
     return {
       system,
       compliance,
