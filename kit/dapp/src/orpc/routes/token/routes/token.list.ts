@@ -32,6 +32,7 @@ const LIST_TOKEN_QUERY = theGraphGraphql(`
       ) {
         id
         type
+        createdAt
         name
         symbol
         decimals
