@@ -28,7 +28,7 @@ export const setYieldSchedule = async (
   });
 
   // Get the access manager address from the token contract
-  const accessManagerAddress = await tokenContract.read.getAccessManager();
+  const accessManagerAddress = await tokenContract.read.accessManager();
 
   // Get the access manager contract
   const accessManagerContract = owner.getContractInstance({
