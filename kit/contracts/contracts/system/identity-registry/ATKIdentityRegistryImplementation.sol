@@ -509,6 +509,11 @@ contract ATKIdentityRegistryImplementation is
         override
         returns (bool)
     {
+        // Check if the wallet is globally marked as lost first.
+        if (_identityStorage.isWalletMarkedAsLost(_userAddress)) {
+            return false;
+        }
+
         // Early checks similar to the array-based version
         if (!this.contains(_userAddress)) {
             return false;
