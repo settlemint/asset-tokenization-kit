@@ -30,8 +30,8 @@ graph-node:
 
             # Function to test PostgreSQL connection
             test_postgres() {
-              pg_isready -h postgresql-pgpool -p 5432 -U thegraph && \
-              psql -h postgresql-pgpool -p 5432 -U thegraph -d thegraph -c "SELECT 1;" > /dev/null 2>&1
+              pg_isready -h postgresql -p 5432 -U thegraph && \
+              psql -h postgresql -p 5432 -U thegraph -d thegraph -c "SELECT 1;" > /dev/null 2>&1
             }
 
             # Wait with exponential backoff
@@ -70,7 +70,7 @@ graph-node:
     # -- Environment variable defaults for all Graph Node groups
     env:
       # -- Hostname of the primary shard PostgreSQL server
-      PRIMARY_SUBGRAPH_DATA_PGHOST: postgresql-pgpool
+      PRIMARY_SUBGRAPH_DATA_PGHOST: postgresql
       # -- Port for the primary shard PostgreSQL server
       PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
       # -- Name of the primary shard database to use
