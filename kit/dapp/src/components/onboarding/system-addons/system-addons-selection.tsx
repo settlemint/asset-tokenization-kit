@@ -11,6 +11,7 @@ import { addonTypes, type AddonType } from "@/lib/zod/validators/addon-types";
 import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
+import type { SystemAddonType } from "@/orpc/routes/system/routes/system.addonCreate.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
