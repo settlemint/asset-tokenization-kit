@@ -63,10 +63,6 @@ export function NavAsset() {
     })
   );
 
-  // if (!groupedFactories.hasFactories) {
-  //   return null;
-  // }
-
   // Check if any factory route is active
   const isAnyFactoryActive = (factoryIds: string[]) => {
     return matches.some((match) => {

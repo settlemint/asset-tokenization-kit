@@ -3,9 +3,8 @@ import { z } from "zod";
 import { MutationInputSchemaWithContract } from "../../common/schemas/mutation.schema";
 
 /**
- * Re-export addon type from validators for backward compatibility
+ * Type alias for clarity in system context
  */
-export const SystemAddonTypeEnum = addonType();
 export type SystemAddonType = AddonType;
 
 /**

@@ -1,4 +1,5 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
+import { getFactoryTypeIdsFromAddonType } from "@/lib/zod/validators/addon-types";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
@@ -94,7 +95,8 @@ export const addonsList = authRouter.addons.list
     const where: Record<string, unknown> = {};
 
     if (input.typeId !== undefined) {
-      where.typeId = input.typeId;
+      // Map AddonType to corresponding AddonFactoryTypeIds
+      where.typeId_in = getFactoryTypeIdsFromAddonType(input.typeId);
     }
 
     if (input.account !== undefined) {

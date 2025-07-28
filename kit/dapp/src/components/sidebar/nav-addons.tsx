@@ -18,12 +18,12 @@ import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatches, useNavigate } from "@tanstack/react-router";
 import {
-  Truck,
-  PlusIcon,
   ArrowLeftRight,
-  Vault,
   Banknote,
   ChevronRight,
+  PlusIcon,
+  Truck,
+  Vault,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -65,10 +65,6 @@ export function NavAddons() {
       }),
     })
   );
-
-  // if (!groupedAddons.hasAddons) {
-  //   return null;
-  // }
 
   // Check if any addon in a category is active
   const isAnyCategoryAddonActive = (addonIds: string[]) => {
