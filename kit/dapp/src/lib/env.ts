@@ -19,7 +19,7 @@ import { z } from "zod";
  * // Direct usage (recommended)
  * import { env } from '@/lib/config/env';
  * console.log(env.SETTLEMINT_HASURA_ADMIN_SECRET);
- 
+
  * ```
  * @see https://env.t3.gg/docs/introduction
  * @module
@@ -47,7 +47,7 @@ export const env = createEnv({
      * Priority: NEXT_PUBLIC_APP_URL > BETTER_AUTH_URL > NEXTAUTH_URL > localhost
      */
     APP_URL: z
-      .string()
+      .url()
       .default(
         process.env.VITE_APP_URL ??
           process.env.BETTER_AUTH_URL ??
@@ -63,21 +63,6 @@ export const env = createEnv({
     SETTLEMINT_HASURA_ADMIN_SECRET: z
       .string()
       .nonempty("SETTLEMINT_HASURA_ADMIN_SECRET is required"),
-
-    /**
-     * Resend API key for email services.
-     * Optional - if not provided, email functionality will be disabled.
-     */
-    RESEND_API_KEY: z.string().optional(),
-
-    /**
-     * OAuth provider credentials.
-     * Configure these to enable social login functionality.
-     */
-    GOOGLE_CLIENT_ID: z.string().optional(),
-    GOOGLE_CLIENT_SECRET: z.string().optional(),
-    GITHUB_CLIENT_ID: z.string().optional(),
-    GITHUB_CLIENT_SECRET: z.string().optional(),
 
     /**
      * HD wallet private key identifier.
