@@ -34,6 +34,7 @@ export const createPushAirdrop = async (
     pushAirdrop.token.address,
     pushAirdrop.root,
     pushAirdrop.owner,
+    pushAirdrop.distributionCap, // Add the missing distributionCap parameter
   ]);
 
   await pushAirdrop.waitUntilDeployed(transactionHash);
