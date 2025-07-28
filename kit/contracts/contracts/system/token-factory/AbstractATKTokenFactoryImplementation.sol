@@ -18,9 +18,6 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 import { ATKRoles } from "../../assets/ATKRoles.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
-import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
-import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { ExpressionNode } from "../../smart/interface/structs/ExpressionNode.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control

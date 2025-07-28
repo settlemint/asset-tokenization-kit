@@ -82,6 +82,7 @@ contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
         _validateExpressionStructure(expression);
     }
 
+    /// @notice Validates that an expression has a proper structure for postfix evaluation
     /// @dev Validates that an expression has a proper structure for postfix evaluation
     /// @param expression The expression to validate
     function _validateExpressionStructure(ExpressionNode[] memory expression) internal pure {
@@ -91,12 +92,12 @@ contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
 
         int256 stackBalance = 0;
 
-        for (uint256 i = 0; i < expression.length; i++) {
+        for (uint256 i = 0; i < expression.length; ++i) {
             ExpressionNode memory node = expression[i];
 
             if (node.nodeType == ExpressionType.TOPIC) {
                 // TOPIC nodes add one item to the stack
-                stackBalance += 1;
+                ++stackBalance;
                 // Validate that topic ID is not zero
                 if (node.value == 0) {
                     revert InvalidTopicIdZeroNotAllowed();
@@ -112,7 +113,7 @@ contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
                 if (stackBalance < 2) {
                     revert AndOrOperationRequiresTwoOperands();
                 }
-                stackBalance -= 1; // Two operands consumed, one result produced
+                --stackBalance; // Two operands consumed, one result produced
             } else {
                 revert UnknownExpressionType();
             }

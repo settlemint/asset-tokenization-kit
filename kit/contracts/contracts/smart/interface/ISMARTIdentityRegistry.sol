@@ -13,7 +13,7 @@ import { IERC3643TrustedIssuersRegistry } from "./ERC-3643/IERC3643TrustedIssuer
 import { ISMARTTopicSchemeRegistry } from "./ISMARTTopicSchemeRegistry.sol";
 
 // Struct imports
-import { ExpressionNode, ExpressionType } from "./structs/ExpressionNode.sol";
+import { ExpressionNode } from "./structs/ExpressionNode.sol";
 
 /// @title ISMARTIdentityRegistry Interface
 /// @author SettleMint
@@ -249,7 +249,7 @@ interface ISMARTIdentityRegistry is IERC165 {
      *      logic as the array-based isVerified function.
      * @param _userAddress The investor's wallet address to verify.
      * @param expression An array of ExpressionNode structs representing a postfix expression for claim verification.
-     * @return `true` if the investor's identity satisfies the logical expression, `false` otherwise.
+     * @return True if the investor's identity satisfies the logical expression, false otherwise
      */
     function isVerified(address _userAddress, ExpressionNode[] memory expression) external view returns (bool);
 

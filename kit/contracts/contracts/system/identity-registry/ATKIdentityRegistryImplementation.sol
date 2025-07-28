@@ -560,7 +560,7 @@ contract ATKIdentityRegistryImplementation is
                 }
 
                 // Push result onto stack
-                if (stackIndex >= stack.length) {
+                if (stackIndex > stack.length - 1) {
                     revert ExpressionStackOverflow();
                 }
                 stack[stackIndex] = hasClaim;
@@ -618,6 +618,7 @@ contract ATKIdentityRegistryImplementation is
         return stack[0];
     }
 
+    /// @notice Internal helper function to verify a single claim topic for a user.
     /// @dev Internal helper function to verify a single claim topic for a user.
     ///      This encapsulates the claim verification logic used in both isVerified implementations.
     ///      Optimized to use getClaimIdsByTopic for efficient claim retrieval.
