@@ -151,8 +151,9 @@ export function SecurityMethodSelector() {
                     {t("wallet-security.method-selector.comparison.choose-pin")}
                   </Button>
                 </div>
-                <div className="col-span-3 p-4 text-center text-xs text-muted-foreground">
+                <div className="col-span-3 p-4 text-center text-xs text-muted-foreground flex flex-col gap-4">
                   <Button
+                    className="self-center"
                     onClick={() => {
                       setShowOtpModal(true);
                     }}
@@ -169,8 +170,11 @@ export function SecurityMethodSelector() {
                   >
                     {t("wallet-security.method-selector.comparison.choose-otp")}
                   </Button>
-                  <Badge variant="default" className="flex items-center gap-1">
-                    <Star className="w-3 h-3" />
+                  <Badge
+                    variant="default"
+                    className="flex items-center gap-1 self-center text-[0.65rem]"
+                  >
+                    <Star className="w-3 h-3 " />
                     {t("wallet-security.method-selector.recommended")}
                   </Badge>
                 </div>
