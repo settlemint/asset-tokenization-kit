@@ -5,6 +5,15 @@
   "cashEquivalent": "現金等価物",
   "fixedIncome": "固定収入",
   "flexibleIncome": "柔軟収入",
-  "home": "ホーム",
-  "statistics": "統計"
+  "home": "ダッシュボード",
+  "statistics": "統計",
+  "addons": "アドオン",
+  "assetDesigner": "資産デザイナー",
+  "addonDesigner": "アドオンデザイナー",
+  "addonCategories": {
+    "distribution": "配布",
+    "exchange": "交換",
+    "custody": "保管",
+    "income": "収入"
+  }
 }

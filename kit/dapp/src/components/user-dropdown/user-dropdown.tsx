@@ -12,14 +12,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Web3Avatar } from "@/components/web3/web3-avatar";
-import type { SessionUser } from "@/lib/auth";
 import { authClient } from "@/lib/auth/auth.client";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { BadgeCheck, ChevronsUpDown, LogOut, Sparkles } from "lucide-react";
 import { useCallback } from "react";
 
-export function UserDropdown({ user }: { user?: SessionUser }) {
+export function UserDropdown() {
   const navigate = useNavigate();
+
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
   const displayName = user?.name;
 

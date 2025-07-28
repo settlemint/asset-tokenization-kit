@@ -44,7 +44,7 @@ interface Web3AvatarProps extends VariantProps<typeof web3AvatarVariants> {
   /** Display name for alt text */
   name?: string;
   /** Ethereum address for Jazzicon generation */
-  address?: string;
+  address?: string | null;
   /** Avatar size preset */
   size?: AvatarSize;
   /** Avatar shape */
