@@ -15,6 +15,9 @@ import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManag
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
+/// @notice Error thrown when attempting to perform actions without required authorization
+error UnauthorizedAccess();
+
 /// @title ATK Topic Scheme Registry Implementation
 /// @author SettleMint
 /// @notice Implementation for managing topic schemes with their signatures for data encoding/decoding
@@ -45,11 +48,6 @@ contract ATKTopicSchemeRegistryImplementation is
     mapping(uint256 topicId => uint256 indexPlusOne) private _topicIdIndex;
 
     // --- Custom Errors ---
-
-    /// @notice Error thrown when attempting to perform actions without required system role
-    /// @param account The account that lacks the required role
-    /// @param neededRole The role that was required
-    error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
 
     /// @notice Error thrown when attempting to register a topic scheme with an empty name
     error EmptyName();
@@ -91,18 +89,21 @@ contract ATKTopicSchemeRegistryImplementation is
 
     // --- Events ---
 
-    /// @notice Emitted when the system access manager is set
-    /// @param sender The address that set the access manager
-    /// @param systemAccessManager The address of the new system access manager
-    event SystemAccessManagerSet(address indexed sender, address indexed systemAccessManager);
+    // Event declarations moved to the interface IATKTopicSchemeRegistry
 
     // --- Modifiers ---
 
-    /// @notice Restricts access to functions that require a specific system role
-    /// @param role The required role identifier
-    modifier onlySystemRole(bytes32 role) {
-        if (!_systemAccessManager.hasRole(role, _msgSender())) {
-            revert AccessControlUnauthorizedAccount(_msgSender(), role);
+    /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
+    /// @dev This implements the new centralized access pattern: onlySystemRoles(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// @param roles Array of roles, where the caller must have at least one
+    modifier onlySystemRoles(bytes32[] memory roles) {
+        if (address(_systemAccessManager) != address(0)) {
+            if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) {
+                revert UnauthorizedAccess();
+            }
+        } else {
+            // If system access manager is not set, revert since we need centralized access control
+            revert UnauthorizedAccess();
         }
         _;
     }
@@ -116,7 +117,7 @@ contract ATKTopicSchemeRegistryImplementation is
         _disableInitializers();
     }
 
-        // --- Initializer ---
+    // --- Initializer ---
     /// @notice Initializes the SMARTTopicSchemeRegistryImplementation contract
     /// @dev Sets up the system access manager reference - roles are managed centrally
     /// @param systemAccessManager_ The address of the centralized system access manager
@@ -133,9 +134,27 @@ contract ATKTopicSchemeRegistryImplementation is
 
     // --- Access Control Functions ---
 
+    /// @notice Sets or updates the system access manager
+    /// @dev Only callable by the current system access manager's DEFAULT_ADMIN_ROLE
+    /// @param systemAccessManager_ The new system access manager address
+    function setSystemAccessManager(address systemAccessManager_) external {
+        // Only allow current access manager's admin role to change the access manager
+        if (address(_systemAccessManager) != address(0)) {
+            if (!_systemAccessManager.hasRole(0x00, _msgSender())) { // DEFAULT_ADMIN_ROLE = 0x00
+                revert UnauthorizedAccess();
+            }
+        } else {
+            // If there's no access manager set, we can't verify permission, so revert
+            revert UnauthorizedAccess();
+        }
+
+        _systemAccessManager = IATKSystemAccessManager(systemAccessManager_);
+        emit SystemAccessManagerSet(_msgSender(), systemAccessManager_);
+    }
+
     /// @notice Returns the address of the system access manager
     /// @return The address of the system access manager contract
-    function systemAccessManager() external view returns (address) {
+    function getSystemAccessManager() external view returns (address) {
         return address(_systemAccessManager);
     }
 
@@ -147,6 +166,18 @@ contract ATKTopicSchemeRegistryImplementation is
         return _systemAccessManager.hasRole(role, account);
     }
 
+    // --- Internal Helper Functions ---
+
+    /// @notice Returns the roles that can perform claim policy management operations
+    /// @dev Implements the pattern from the ticket: MANAGER_ROLE + [SYSTEM_ROLES]
+    /// @return roles Array of roles that can manage topic schemes
+    function _getClaimPolicyManagementRoles() internal pure returns (bytes32[] memory roles) {
+        roles = new bytes32[](3);
+        roles[0] = ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE;  // Primary claim policy manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;        // System manager has access to all
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;         // System module role
+    }
+
     // --- Topic Scheme Management Functions ---
 
     /// @inheritdoc ISMARTTopicSchemeRegistry
@@ -156,7 +187,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlySystemRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         if (bytes(name).length == 0) revert EmptyName();
         if (bytes(signature).length == 0) revert EmptySignature();
@@ -183,7 +214,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlySystemRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         uint256 namesLength = names.length;
         uint256 signaturesLength = signatures.length;
@@ -247,7 +278,7 @@ contract ATKTopicSchemeRegistryImplementation is
     )
         external
         override
-        onlySystemRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         if (bytes(name).length == 0) revert EmptyName();
         if (bytes(newSignature).length == 0) revert EmptySignature();
@@ -268,7 +299,7 @@ contract ATKTopicSchemeRegistryImplementation is
     }
 
     /// @inheritdoc ISMARTTopicSchemeRegistry
-    function removeTopicScheme(string calldata name) external override onlySystemRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE) {
+    function removeTopicScheme(string calldata name) external override onlySystemRoles(_getClaimPolicyManagementRoles()) {
         if (bytes(name).length == 0) revert EmptyName();
 
         // Generate topicId from name
