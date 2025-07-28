@@ -13,6 +13,7 @@ enum ExpressionType {
     /// @notice Logical OR operation - requires at least one operand to be true
     OR,
     /// @notice Logical NOT operation - inverts the truth value of the operand
+    /// @notice Might not be very relevant, because people manage their own identity, so they can remove claims
     NOT
 }
 
