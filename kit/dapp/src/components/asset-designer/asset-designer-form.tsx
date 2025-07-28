@@ -14,23 +14,48 @@ import { StepLayout } from "@/components/stepper/step-layout";
 import { getNextStep, getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
 import { waitForStream } from "@/lib/utils/mutation";
+import { getFactoryTypeIdFromAssetType } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
-import { useMutation } from "@tanstack/react-query";
+import { FactoryList } from "@/orpc/routes/token/routes/factory/factory.list.schema";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
 
-export const AssetDesignerForm = () => {
+interface AssetDesignerFormProps {
+  factories: FactoryList;
+}
+
+export const AssetDesignerForm = ({ factories }: AssetDesignerFormProps) => {
   const { t } = useTranslation(["asset-designer"]);
   const steps = useAssetDesignerSteps();
+  const queryClient = useQueryClient();
   const { mutateAsync: createToken } = useMutation(
     orpc.token.create.mutationOptions({
       mutationFn: async (values) => {
         return await orpc.token.create.call(values);
       },
-      onSuccess: async (result) => {
+      onSuccess: async (result, variables) => {
         await waitForStream(result, "token creation");
-        form.reset();
+
+        const assetType = variables.type;
+        const factoryTypeId = getFactoryTypeIdFromAssetType(assetType);
+        const factory = factories.find((f) => f.typeId === factoryTypeId);
+
+        await Promise.all([
+          // Invalidate factory list queries
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.factoryList.queryOptions({
+              input: { hasTokens: true },
+            }).queryKey,
+          }),
+          // Invalidate specific factory token list
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.list.queryOptions({
+              input: { tokenFactory: factory?.id },
+            }).queryKey,
+          }),
+        ]);
       },
     })
   );
@@ -46,6 +71,8 @@ export const AssetDesignerForm = () => {
         ...parsedValues,
         initialModulePairs: [],
       });
+
+      form.reset();
     },
   });
 
