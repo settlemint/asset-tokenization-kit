@@ -10,7 +10,7 @@ export const createTimeBoundAirdrop = async (
   asset: Asset<any>,
   merkleTree: AirdropMerkleTree
 ) => {
-  console.log("\n=== Creating time-bound airdrop... ===\n");
+  console.log("\n=== Creating timebound airdrop... ===\n");
 
   // Grant necessary permissions to the timebound airdrop factory
   await grantAirdropFactoryPermissions("timeBoundAirdropFactory");
@@ -22,7 +22,7 @@ export const createTimeBoundAirdrop = async (
   const endTime = BigInt(anvilTimeSeconds + 60 * 24 * 60 * 60); // 60 days in the future
 
   const timeBoundAirdrop = new TimeBoundAirdrop(
-    "Test Time-Bound Airdrop",
+    "Test TimeBound Airdrop",
     asset,
     merkleTree.getRoot(),
     owner.address,
