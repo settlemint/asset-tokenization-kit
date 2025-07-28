@@ -27,8 +27,8 @@ export const setYieldSchedule = async (
     abi: ATKContracts.ismartYield,
   });
 
-  // Get the access manager address from the token contract
-  const accessManagerAddress = await tokenContract.read.accessManager();
+  // Get the access manager address from the asset object
+  const accessManagerAddress = asset.accessManager;
 
   // Get the access manager contract
   const accessManagerContract = owner.getContractInstance({
