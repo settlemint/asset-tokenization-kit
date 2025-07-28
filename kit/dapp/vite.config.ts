@@ -39,9 +39,9 @@ export default defineConfig({
       customViteReactPlugin: true,
     }),
     react({
-      // babel: {
-      //   plugins: [["babel-plugin-react-compiler", {}]],
-      // },
+      babel: {
+        plugins: [["babel-plugin-react-compiler", {}]],
+      },
     }),
     analyzer({
       enabled: process.env.ANALYZE === "true",
