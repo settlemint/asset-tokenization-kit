@@ -208,6 +208,48 @@ const ATKOnboardingSystemModule = buildModule(
       }
     );
 
+    // Set the system access manager on contracts that need it
+    // This is required for contracts that use onlySystemRoles modifier
+    const setComplianceSystemAccessManager = m.call(
+      compliance,
+      "setSystemAccessManager",
+      [systemAccessManagerAddress],
+      {
+        from: m.getAccount(0),
+        id: "setComplianceSystemAccessManager",
+      }
+    );
+
+    const setTrustedIssuersRegistrySystemAccessManager = m.call(
+      trustedIssuersRegistry,
+      "setSystemAccessManager",
+      [systemAccessManagerAddress],
+      {
+        from: m.getAccount(0),
+        id: "setTrustedIssuersRegistrySystemAccessManager",
+      }
+    );
+
+    const setTopicSchemeRegistrySystemAccessManager = m.call(
+      topicSchemeRegistry,
+      "setSystemAccessManager",
+      [systemAccessManagerAddress],
+      {
+        from: m.getAccount(0),
+        id: "setTopicSchemeRegistrySystemAccessManager",
+      }
+    );
+
+    const setIdentityRegistryStorageSystemAccessManager = m.call(
+      identityRegistryStorage,
+      "setSystemAccessManager",
+      [systemAccessManagerAddress],
+      {
+        from: m.getAccount(0),
+        id: "setIdentityRegistryStorageSystemAccessManager",
+      }
+    );
+
     return {
       system,
       compliance,
