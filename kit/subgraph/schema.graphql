@@ -383,6 +383,22 @@ type TokenComplianceModule @entity(immutable: false) {
   encodedParams: Bytes!
   addresses: [Bytes!]
   countries: [Int!]
+  expression: [ExpressionNode!] @derivedFrom(field: "complianceModule")
+}
+
+type ExpressionNode @entity(immutable: true) {
+  id: Bytes!
+  complianceModule: TokenComplianceModule!
+  nodeType: ExpressionNodeType!
+  index: Int!
+  topicScheme: TopicScheme
+}
+
+enum ExpressionNodeType {
+  TOPIC
+  AND
+  OR
+  NOT
 }
 
 # ==================================================
