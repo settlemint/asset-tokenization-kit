@@ -134,8 +134,8 @@ export function StepLayout<StepId, GroupId>({
           className="StepLayout__main flex-1 flex flex-col transition-all duration-300 relative"
           style={{ backgroundColor: "var(--sm-background-lightest)" }}
         >
-          <div className="p-8 h-full">
-            <div className="w-full overflow-y-auto h-[calc(100%-4rem)]">
+          <div className="p-8 h-full flex">
+            <div className="w-full overflow-y-auto">
               {typeof children === "function"
                 ? children({
                     currentStep,
