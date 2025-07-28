@@ -234,26 +234,6 @@ const ATKOnboardingSystemModule = buildModule(
       }
     );
 
-    const setTopicSchemeRegistrySystemAccessManager = m.call(
-      topicSchemeRegistry,
-      "setSystemAccessManager",
-      [systemAccessManagerAddress],
-      {
-        from: m.getAccount(0),
-        id: "setTopicSchemeRegistrySystemAccessManager",
-      }
-    );
-
-    const setIdentityRegistryStorageSystemAccessManager = m.call(
-      identityRegistryStorage,
-      "setSystemAccessManager",
-      [systemAccessManagerAddress],
-      {
-        from: m.getAccount(0),
-        id: "setIdentityRegistryStorageSystemAccessManager",
-      }
-    );
-
     return {
       system,
       compliance,
