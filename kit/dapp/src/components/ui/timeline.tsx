@@ -1,3 +1,5 @@
+"use no memo";
+
 import * as React from "react";
 import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";

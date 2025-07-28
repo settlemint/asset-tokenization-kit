@@ -1,0 +1,359 @@
+{
+  "assets": {
+    "asset-factories-deployed-successfully": "Asset factories deployed successfully",
+    "asset-factories-description": "Asset factories are smart contracts that enable you to create and manage different types of tokenized assets. Each factory handles a specific asset class with tailored features and compliance requirements.",
+    "asset-types-deployed": "Asset types deployed",
+    "available-asset-types": "Available asset types",
+    "choose-asset-types": "Choose the types of assets you want to tokenize on your platform",
+    "confirm-deployment-description": "Please verify your identity to deploy the asset factories.",
+    "confirm-deployment-title": "Confirm asset deployment",
+    "deploy": "Deploy asset factories",
+    "deploy-assets": "Deploy assets",
+    "deployed": "Asset factories deployed successfully",
+    "deployed-factories": "Deployed factories",
+    "deployed-label": "(Deployed)",
+    "deploying": "Deploying...",
+    "deploying-toast": "Deploying asset factories...",
+    "deployment-warning": "This action will deploy smart contract factories to the blockchain. Once deployed, they cannot be removed but can remain unused.",
+    "description": "Choose which digital asset types to enable on your platform",
+    "failed-toast": "Failed to deploy asset factories: ",
+    "descriptions": {
+      "bond": "Tokenized debt securities with fixed income features",
+      "deposit": "Tokenized bank deposits and certificates",
+      "equity": "Digital shares representing ownership in companies",
+      "fund": "Investment fund tokens for pooled investments",
+      "stablecoin": "Price-stable digital currencies"
+    },
+    "info": "Select the types of digital assets your platform will support. You can add more asset types later.",
+    "no-system": "System not found. Please deploy the system first.",
+    "select-all-asset-types": "Select all the asset types you plan to tokenize",
+    "select-asset-types": "Select asset types",
+    "title": "Select asset types",
+    "validation-error": "Select at least one asset type",
+    "what-are-asset-factories": "What are asset factories?",
+    "your-asset-factories-ready": "Your asset factories are ready for tokenization"
+  },
+  "groups": {
+    "addons": {
+      "description": "Enable optional platform features",
+      "title": "Add-ons"
+    },
+    "identity": {
+      "description": "Create your verified blockchain identity",
+      "title": "Identity"
+    },
+    "system": {
+      "description": "Initialize your tokenization infrastructure",
+      "title": "Deploy smart contracts"
+    },
+    "wallet": {
+      "description": "Create your digital wallet and add security",
+      "title": "Wallet"
+    }
+  },
+  "identity": {
+    "confirm-description": "Please verify your identity to create your on-chain identity.",
+    "confirm-title": "Confirm identity creation",
+    "deployed-toast": "Identity registered successfully!",
+    "deploying-toast": "Registering identity...",
+    "description": "Required for identity registration and KYC verification",
+    "failed-toast": "Failed to register identity: ",
+    "intro": "Complete your identity verification to unlock full platform access. This ensures compliance with financial regulations (KYC/AML).\n\nYou can skip this for now, but you'll need to provide at least your country of residence to register your identity.\n\nYour data is encrypted and used only for regulatory compliance.",
+    "title": "Add personal information"
+  },
+  "identity-setup": {
+    "address-title": "This is your ONCHAINID address",
+    "confirm-description": "Please verify your identity to create your on-chain identity.",
+    "confirm-title": "Confirm identity creation",
+    "deployed-toast": "ONCHAINID created successfully!",
+    "deploying-toast": "Creating ONCHAINID...",
+    "description": "Deploying your identity contract to the blockchain",
+    "failed-toast": "Failed to create ONCHAINID: ",
+    "form": {
+      "submit": "Create ONCHAINID",
+      "submitting": "Creating ONCHAINID..."
+    },
+    "info": "We're creating your ONCHAINID using the identity factory.",
+    "info-description": "This creates your identity smart contract on the blockchain—a secure container for your verified credentials.\n\nNo personal data is stored yet. That comes next. For now, we're establishing your unique identity address that only you control.\n\nThis typically takes 10-30 seconds.",
+    "success-message": "Your blockchain identity is ready. Next, you can add your verified information to complete KYC compliance.",
+    "success-title": "ONCHAINID created successfully",
+    "title": "Creating your ONCHAINID"
+  },
+  "sidebar": {
+    "description": "Follow these simple steps to unlock the power of tokenization — from wallet creation to platform deployment.",
+    "title": "Your setup progress"
+  },
+  "steps": {
+    "identity": {
+      "description": "Add personal info for compliance",
+      "title": "Verify identity"
+    },
+    "identity-setup": {
+      "description": "Deploy your unique identity contract",
+      "title": "Create blockchain identity"
+    },
+    "system-addons": {
+      "description": "Enable optional platform features",
+      "title": "System add-ons"
+    },
+    "system-assets": {
+      "description": "Enable bonds, equity, funds, and more",
+      "title": "Select asset types"
+    },
+    "system-deploy": {
+      "description": "Initialize the core smart contracts",
+      "title": "Deploy system"
+    },
+    "system-settings": {
+      "description": "Set up system parameters and settings",
+      "title": "Configure system"
+    },
+    "wallet": {
+      "description": "View your blockchain wallet",
+      "title": "Your wallet"
+    },
+    "wallet-recovery-codes": {
+      "description": "Save backup codes for emergency access",
+      "title": "Recovery codes"
+    },
+    "wallet-security": {
+      "description": "Add PIN or OTP authentication",
+      "title": "Secure your wallet"
+    }
+  },
+  "system": {
+    "compliance-engine": "• Compliance Engine for regulatory requirements",
+    "compliance-engine-label": "Compliance engine",
+    "confirm-deployment-description": "Please verify your identity to deploy the blockchain system.",
+    "confirm-deployment-title": "Confirm system deployment",
+    "core-system-contract": "• Core system smart contract",
+    "deploy": "Deploy system",
+    "deployed-contracts": "Deployed contract addresses",
+    "deployed-toast": "System deployed successfully!",
+    "deploying": "Deploying...",
+    "deploying-toast": "Deploying system...",
+    "deployment-details-description": "View the details of the system deployment",
+    "deployment-details-title": "Deployment details",
+    "deployment-warning": "This action will deploy blockchain smart contracts and cannot be undone. Once deployed, the system will be permanently active on the blockchain.",
+    "failed-toast": "Failed to deploy system: ",
+    "identity-registry": "• Identity Registry for user verification",
+    "identity-registry-label": "Identity registry",
+    "initialize-subtitle": "You're about to set up the foundation of the platform",
+    "initialize-title": "Initialize the system",
+    "system-contract": "System contract",
+    "token-factory": "• Token Factory Registry for asset creation",
+    "token-factory-label": "Token factory registry",
+    "trusted-issuers": "• Trusted Issuers Registry for authorized parties",
+    "trusted-issuers-label": "Trusted issuers registry",
+    "view-deployment-details": "View deployment details",
+    "what-gets-deployed": "What gets deployed:"
+  },
+  "system-addons": {
+    "addon-deployment": {
+      "addons-deployed-successfully": "Add-ons deployed successfully",
+      "deployed-addons": "Deployed add-ons",
+      "description": "Your addons are ready for use",
+      "title": "Add-ons deployed"
+    },
+    "addon-selection": {
+      "addon-types": {
+        "airdrops": {
+          "description": "Enable airdrop functionality for your platform. This allows you to create airdrops for your assets.",
+          "title": "Airdrops"
+        },
+        "xvp": {
+          "description": "Enable XvP (Delivery vs Payment) functionality for your platform. This allows users to settle their positions using XvP instead of the default delivery vs payment mechanism.",
+          "title": "XvP"
+        },
+        "yield": {
+          "description": "Enable yield functionality for your platform. This allows you to create yield-bearing assets like bonds and other fixed income products.",
+          "title": "Yield"
+        }
+      },
+      "addons-description": "Addons are additional features and integrations for your platform. They can be enabled or disabled here.",
+      "available-addons": "Available add-ons",
+      "confirm-deployment-description": "Please verify your identity to deploy the addons.",
+      "confirm-deployment-title": "Confirm add-on deployment",
+      "deploy-addons": "Deploy add-ons",
+      "deployed-toast": "Addons deployed successfully!",
+      "deploying": "Deploying...",
+      "deploying-toast": "Deploying addons...",
+      "description": "Enable additional features and integrations for your platform",
+      "failed-toast": "Failed to deploy addons: ",
+      "no-system": "System not found. Please deploy the system first.",
+      "required-for-bonds": "Required for bonds",
+      "select-all-addons": "Select all the addons you plan to enable",
+      "title": "Enable add-ons",
+      "validation": {
+        "invalid": "Select at least one addon"
+      },
+      "what-are-addons": "What are addons?"
+    }
+  },
+  "system-settings": {
+    "buttons": {
+      "saveAndContinue": "Save & continue",
+      "saving": "Saving..."
+    },
+    "description": {
+      "intro": "Before you begin issuing assets, let's configure some basic settings that determine how the platform behaves. These default values help personalize the experience for you and your users.",
+      "update": "You can update these preferences later in the platform settings."
+    },
+    "form": {
+      "baseCurrency": {
+        "description": "Choose the default currency for your platform",
+        "label": "Base Currency",
+        "validation": {
+          "invalid": "Invalid currency selection"
+        }
+      }
+    },
+    "subtitle": "Set your platform's default preferences",
+    "title": "Configure platform settings",
+    "toast": {
+      "error": "Failed to save platform settings: {{message}}",
+      "exchangeRateSyncWarning": "Base currency saved, but exchange rates couldn't be synced. They will sync automatically later.",
+      "saving": "Saving platform settings...",
+      "success": "Platform settings saved successfully!"
+    }
+  },
+  "wallet": {
+    "access-your-assets": "Access your assets",
+    "access-your-assets-description": "View, manage, and trade your tokenized assets. While tokens live on the blockchain, only your wallet can control them.",
+    "address-explanation": "Share this address freely—it's like an email address for receiving tokens. Transactions are public, but your identity stays private.",
+    "asset-control": "Asset control",
+    "asset-control-description": "Full control over your tokenized assets—view balances, track performance, and manage your portfolio.",
+    "authorize-transactions": "Authorize transactions",
+    "authorize-transactions-description": "Every action—buying, selling, or transferring tokens—needs your digital signature. This proves it's you without exposing your private key.",
+    "created-title": "Your wallet",
+    "creating-wallet": "Creating...",
+    "failed-to-create-wallet": "Failed to create wallet. Please try again.",
+    "how-it-works": "How it works (like a special bank card):",
+    "how-it-works-description": "Like a bank card with a PIN, your wallet's private key lets you:",
+    "intro": "Your wallet is more than storage — it's your master key to the blockchain. This unique cryptographic key proves you own your tokens and lets you authorize every transaction.",
+    "invest-in-digital-assets": "Invest in digital assets",
+    "invest-in-digital-assets-description": "Access tokenized equities, bonds, funds, and other digital assets from verified issuers.",
+    "manage-on-chain-identity": "Manage your on-chain identity",
+    "manage-on-chain-identity-description": "Your wallet anchors your verified identity on-chain, linking who you are to what you own.",
+    "manage-your-digital-assets": "Manage your digital assets",
+    "manage-your-digital-assets-description": "Buy, sell, transfer, and track all your digital assets in one secure platform.",
+    "secure-wallet-button": "Secure my wallet",
+    "security-importance": "Your wallet controls valuable assets. Let's secure it properly.",
+    "security-next-steps": "Next, you'll add authentication and save backup codes—simple steps that protect your assets and ensure you never lose access.",
+    "submit": "Create my wallet",
+    "subtitle": "Your digital key to the blockchain",
+    "success-message": "Congratulations! Your Web3 wallet has been successfully created",
+    "wallet-address-description": "Your unique blockchain identifier for receiving assets and interacting with smart contracts.",
+    "wallet-address-title": "This is your wallet address",
+    "wallet-created-successfully": "Wallet created successfully!",
+    "what-your-wallet-enables": "What your wallet enables:"
+  },
+  "wallet-security": {
+    "method-selector": {
+      "choose-one": "Choose the option that fits your security needs. OTP is recommended for maximum protection.",
+      "comparison": {
+        "choose-otp": "Choose OTP",
+        "choose-pin": "Choose PIN",
+        "description": "Description",
+        "ease-of-use": "Ease of use",
+        "feature": "Feature",
+        "offline-access": "Offline access",
+        "requires-phone-app": "Requires phone app",
+        "security-good": "Good",
+        "security-level": "Security level",
+        "security-maximum": "Maximum",
+        "setup-time": "Setup time",
+        "setup-time-otp": "2-3 minutes",
+        "setup-time-pin": "1 minute"
+      },
+      "description": "Like your bank card needs a PIN, your wallet needs protection too.\n\nChoose between a quick PIN code or stronger one-time passwords (OTP) from an authenticator app.",
+      "generate-backup-codes": "Generate your backup codes",
+      "otp": {
+        "description": "Uses an app like Google Authenticator to generate a new code every 30 seconds. Maximum security for your assets.",
+        "summary": "Maximum security",
+        "title": "One-time password (OTP)"
+      },
+      "pin": {
+        "description": "A 6-digit code you'll enter to authorize transactions. Quick and convenient for daily use.",
+        "summary": "Fast and convenient",
+        "title": "PIN code"
+      },
+      "recommended": "Recommended",
+      "security-methods": {
+        "one-time-password": "one-time password",
+        "pin-code": "PIN code"
+      },
+      "success": "Great! Your security method is set.",
+      "success-content": "You've successfully set up your {{method}}. This adds an important layer of protection to your wallet and keeps your assets safer from unauthorized access.\n\nTo complete your wallet security, the final step is to generate backup codes. These are secret recovery keys that allow you to regain access if you ever lose your PIN or authentication method.\n\nMake sure to save these backup codes somewhere safe and private — they are your last line of defense.",
+      "success-description": "One more step to fully secure your wallet.",
+      "title": "Secure your wallet"
+    },
+    "otp": {
+      "back": "Back",
+      "cancel": "Cancel",
+      "enter-code": "Enter the 6-digit code from your app",
+      "invalid-code": "Invalid verification code",
+      "loading": "Loading...",
+      "manual-entry": "Can't scan? Enter manually",
+      "manual-entry-key": "Secret key only:",
+      "manual-entry-url": "Full authenticator URL:",
+      "qr-code-alt": "QR code for OTP setup",
+      "qr-code-label": "QR Code",
+      "refresh-failed": "Failed to refresh user state",
+      "scan-with-app": "Scan with your app",
+      "setting-up": "Setting up OTP...",
+      "setting-up-description": "Please wait while we generate your QR code.",
+      "setup-description": "Scan this QR code with your authenticator app",
+      "setup-error": "Failed to setup OTP",
+      "setup-failed": "Failed to get OTP setup data",
+      "setup-failed-description": "Failed to setup OTP authentication. Please try again.",
+      "setup-failed-title": "Setup failed",
+      "setup-initiated": "OTP setup initiated",
+      "setup-title": "Set up authenticator app",
+      "try-again": "Try again",
+      "verified-success": "OTP verified successfully",
+      "verify-code": "Verify code",
+      "verifying": "Verifying..."
+    },
+    "pincode": {
+      "confirm-pin": "Confirm PIN code",
+      "description": "Create a 6-digit PIN code to secure your wallet transactions",
+      "enter-pin": "Enter PIN code",
+      "invalid-pin-format": "Invalid PIN code format",
+      "pin-codes-dont-match": "PIN codes don't match",
+      "pin-codes-match": "✓ PIN codes match",
+      "set-pin": "Set PIN code",
+      "setup-failed": "Failed to set up PIN code",
+      "submitting": "Setting up...",
+      "success": "PIN code set successfully",
+      "title": "Set up a PIN code"
+    },
+    "recovery-codes": {
+      "confirm": "Confirm I've stored them",
+      "confirm-error": "Failed to confirm secret codes",
+      "copied-to-clipboard": "Secret codes copied to clipboard!",
+      "copy-all": "Copy all",
+      "description": "Save these codes somewhere safe",
+      "description-2": "These codes can be used to recover your wallet if you forget your pin or lose access to your authenticator app.",
+      "download": "Download",
+      "downloaded": "Secret codes downloaded!",
+      "generated-error": "Failed to generate secret codes",
+      "generated-success": "Secret codes generated successfully!",
+      "generating": "Generating your secret codes...",
+      "title": "Your secret codes",
+      "warning": "Important: Keep these codes safe! They're your only way to regain access if you lose other security methods.",
+      "your-recovery-codes": "Your secret codes ({{count}})"
+    }
+  },
+  "welcome": {
+    "complete-journey": "Ready to complete your platform setup?",
+    "continue-setup": "Continue setup",
+    "description": "Transform real-world assets into secure digital tokens — all compliant, transparent, and completely under your control.",
+    "get-started": "Get started",
+    "setup-description-new": "In just 5 minutes, we'll help you set up everything you need to start tokenizing assets. Create your secure wallet, establish your blockchain identity, and configure your platform — it's easier than setting up a bank account, but far more powerful.",
+    "setup-description-returning": "Just a few more steps to unlock your platform's full potential. We'll secure your digital wallet, establish your blockchain identity, and configure your platform — then you'll be ready to tokenize assets and transform how value is created and exchanged.",
+    "setup-overview": "Your journey ahead",
+    "title": "Welcome to your digital asset platform",
+    "welcome-back": "Welcome back!"
+  }
+}

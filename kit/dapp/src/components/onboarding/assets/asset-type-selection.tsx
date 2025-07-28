@@ -19,7 +19,7 @@ import {
 } from "@/orpc/routes/token/routes/factory/factory.create.schema";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { TriangleAlert } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -35,7 +35,6 @@ export function AssetTypeSelection() {
     useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common", "tokens"]);
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   // Verification dialog state
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(
@@ -98,6 +97,8 @@ export function AssetTypeSelection() {
             }),
           ]);
           await refreshUserState();
+          // Navigate to next step after successful deployment
+          await completeStepAndNavigate(OnboardingStep.systemAssets);
         },
       })
     );
@@ -122,7 +123,7 @@ export function AssetTypeSelection() {
           loading: t("assets.deploying-toast"),
           success: t("assets.deployed"),
           error: (error: Error) =>
-            `Failed to deploy asset factories: ${error.message}`,
+            `${t("assets.failed-toast")}${error.message}`,
         }
       );
     },
@@ -142,37 +143,46 @@ export function AssetTypeSelection() {
     [systemDetails?.tokenFactories]
   );
 
-  const onNext = useCallback(async () => {
-    try {
-      await completeStepAndNavigate(OnboardingStep.systemAssets);
-    } catch (error) {
-      logger.error("Navigation error:", error);
-      toast.error("Failed to navigate to next step");
-    }
-  }, [completeStepAndNavigate]);
-
   return (
     <OnboardingStepLayout
       title={t("assets.select-asset-types")}
       description={t("assets.choose-asset-types")}
       actions={
-        <>
-          <Button
-            variant="outline"
-            onClick={() => {
-              void navigate({ to: "/onboarding" });
-            }}
-          >
-            Cancel
-          </Button>
-
-          <Button type="button" onClick={onNext} disabled={isFactoriesCreating}>
-            Deploy Assets
-          </Button>
-        </>
+        <div className="flex justify-end w-full">
+          <form.Subscribe>
+            {() => (
+              <Button
+                type="button"
+                onClick={() => {
+                  void form.handleSubmit();
+                }}
+                disabled={
+                  isFactoriesCreating ||
+                  !form.state.values.assets ||
+                  form.state.values.assets.length === 0
+                }
+              >
+                {isFactoriesCreating
+                  ? t("assets.deploying")
+                  : t("assets.deploy")}
+              </Button>
+            )}
+          </form.Subscribe>
+        </div>
       }
     >
       <div className="max-w-2xl space-y-6">
+        <div className="rounded-lg bg-sm-state-warning-background/50 border border-sm-state-warning-background p-4">
+          <div className="flex items-start gap-3">
+            <TriangleAlert className="h-5 w-5 text-sm-state-warning mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-sm text-sm-state-warning">
+                {t("assets.deployment-warning")}
+              </p>
+            </div>
+          </div>
+        </div>
+
         <InfoAlert
           title={t("assets.what-are-asset-factories")}
           description={t("assets.asset-factories-description")}
@@ -188,17 +198,7 @@ export function AssetTypeSelection() {
         >
           <div className="flex-1">
             <div className="space-y-6">
-              <form.Field
-                name="assets"
-                validators={{
-                  onChange: ({ value }) => {
-                    if (value.length === 0) {
-                      return t("assets.validation-error");
-                    }
-                    return undefined;
-                  },
-                }}
-              >
+              <form.Field name="assets">
                 {(field) => (
                   <>
                     <div className="space-y-4">
@@ -225,16 +225,16 @@ export function AssetTypeSelection() {
                             }
 
                             if (checked) {
-                              field.handleChange([
+                              const newValue = [
                                 ...field.state.value,
                                 assetType,
-                              ]);
+                              ];
+                              field.handleChange(newValue);
                             } else {
-                              field.handleChange(
-                                field.state.value.filter(
-                                  (value: string) => value !== assetType
-                                )
+                              const newValue = field.state.value.filter(
+                                (value: string) => value !== assetType
                               );
+                              field.handleChange(newValue);
                             }
                           };
 

@@ -1,5 +1,10 @@
-import { describe, expect, it } from "bun:test";
-import { verificationType, verificationTypes } from "./verification-type";
+import { describe, expect, it } from "vitest";
+import {
+  verificationType,
+  verificationTypes,
+  isVerificationType,
+  getVerificationType,
+} from "./verification-type";
 
 describe("verificationType", () => {
   const validator = verificationType;
@@ -91,5 +96,86 @@ describe("verificationType", () => {
         expect(result.data).toBe("pincode");
       }
     });
+  });
+});
+
+describe("isVerificationType", () => {
+  it("should return true for valid verification types", () => {
+    expect(isVerificationType("two-factor")).toBe(true);
+    expect(isVerificationType("pincode")).toBe(true);
+    expect(isVerificationType("secret-code")).toBe(true);
+  });
+
+  it("should return false for invalid verification types", () => {
+    expect(isVerificationType("email")).toBe(false);
+    expect(isVerificationType("phone")).toBe(false);
+    expect(isVerificationType("identity")).toBe(false);
+    expect(isVerificationType("sms")).toBe(false);
+    expect(isVerificationType("otp")).toBe(false);
+    expect(isVerificationType("biometric")).toBe(false);
+    expect(isVerificationType("")).toBe(false);
+    expect(isVerificationType(null)).toBe(false);
+    expect(isVerificationType(undefined)).toBe(false);
+    expect(isVerificationType(123)).toBe(false);
+    expect(isVerificationType({})).toBe(false);
+    expect(isVerificationType([])).toBe(false);
+    expect(isVerificationType("Two-Factor")).toBe(false);
+    expect(isVerificationType("PINCODE")).toBe(false);
+  });
+
+  it("should work as a type guard", () => {
+    const value: unknown = "two-factor";
+    if (isVerificationType(value)) {
+      // TypeScript should recognize value as VerificationType here
+      const validType: "two-factor" | "pincode" | "secret-code" = value;
+      expect(validType).toBe("two-factor");
+    }
+  });
+});
+
+describe("getVerificationType", () => {
+  it("should return valid verification types", () => {
+    expect(getVerificationType("two-factor")).toBe("two-factor");
+    expect(getVerificationType("pincode")).toBe("pincode");
+    expect(getVerificationType("secret-code")).toBe("secret-code");
+  });
+
+  it("should throw for invalid verification types", () => {
+    expect(() => getVerificationType("email")).toThrow();
+    expect(() => getVerificationType("phone")).toThrow();
+    expect(() => getVerificationType("identity")).toThrow();
+    expect(() => getVerificationType("sms")).toThrow();
+    expect(() => getVerificationType("otp")).toThrow();
+    expect(() => getVerificationType("biometric")).toThrow();
+    expect(() => getVerificationType("")).toThrow();
+    expect(() => getVerificationType(null)).toThrow();
+    expect(() => getVerificationType(undefined)).toThrow();
+    expect(() => getVerificationType(123)).toThrow();
+    expect(() => getVerificationType({})).toThrow();
+    expect(() => getVerificationType([])).toThrow();
+  });
+
+  it("should throw for case variations", () => {
+    expect(() => getVerificationType("Two-Factor")).toThrow();
+    expect(() => getVerificationType("PINCODE")).toThrow();
+    expect(() => getVerificationType("Secret-Code")).toThrow();
+  });
+
+  it("should be useful in functions requiring VerificationType", () => {
+    const setupVerification = (method: unknown) => {
+      const validatedMethod = getVerificationType(method);
+      const messages = {
+        "two-factor": "Two-factor authentication enabled",
+        pincode: "PIN code verification enabled",
+        "secret-code": "Secret code verification enabled",
+      };
+      return messages[validatedMethod];
+    };
+
+    expect(setupVerification("two-factor")).toBe(
+      "Two-factor authentication enabled"
+    );
+    expect(setupVerification("pincode")).toBe("PIN code verification enabled");
+    expect(() => setupVerification("invalid")).toThrow();
   });
 });

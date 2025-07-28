@@ -13,14 +13,17 @@ import {
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
-import { ethereumAddress, type EthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import {
+  ethereumAddress,
+  type EthereumAddress,
+} from "@/lib/zod/validators/ethereum-address";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { TabBadge } from "@/components/assets/tab-badge";
 import { useQuery } from "@tanstack/react-query";
-import { getAssetTabConfiguration } from "./$tokenAddress/tab-configuration";
+import { getAssetTabConfiguration } from "@/components/tab-navigation/asset-tab-configuration";
 
 const routeParamsSchema = z.object({
   factoryAddress: ethereumAddress,
@@ -162,21 +165,27 @@ function AsyncTabNavigation({
   assetType: AssetType;
 }) {
   const { t } = useTranslation(["tokens", "assets", "common"]);
-  
+
   // Use React Query to handle the async operation
   const { data: tabConfigs } = useQuery({
-    queryKey: ['asset-tab-configuration', factoryAddress, assetAddress, assetType],
-    queryFn: () => getAssetTabConfiguration({
+    queryKey: [
+      "asset-tab-configuration",
       factoryAddress,
       assetAddress,
       assetType,
-    }),
+    ],
+    queryFn: () =>
+      getAssetTabConfiguration({
+        factoryAddress,
+        assetAddress,
+        assetType,
+      }),
   });
 
   // Transform tab configurations to TabItemProps with translations and badges
   const tabs = useMemo(() => {
     if (!tabConfigs) return [];
-    
+
     return tabConfigs.map((config) => ({
       href: config.href,
       name: config.badgeType ? (
@@ -188,7 +197,9 @@ function AsyncTabNavigation({
             badgeType={config.badgeType}
           />
         </>
-      ) : t(`tokens:tabs.${config.tabKey}`),
+      ) : (
+        t(`tokens:tabs.${config.tabKey}`)
+      ),
     }));
   }, [tabConfigs, t, assetAddress, assetType]);
 

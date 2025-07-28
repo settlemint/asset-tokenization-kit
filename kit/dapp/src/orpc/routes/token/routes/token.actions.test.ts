@@ -5,20 +5,12 @@
  * @module TokenActionsTests
  */
 import { safeParse } from "@/lib/zod";
-import { describe, expect, it, mock } from "bun:test";
+import { describe, expect, it } from "vitest";
 import { ActionsListSchema } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { z } from "zod";
 
-// Mock the logger to avoid console output during tests
-mock.module("@settlemint/sdk-utils/logging", () => ({
-  createLogger: () => ({
-    error: mock(() => undefined),
-    warn: mock(() => undefined),
-    info: mock(() => undefined),
-    debug: mock(() => undefined),
-  }),
-}));
+// Logger is mocked via vitest.config.ts alias
 
 // Define the TokenActionsInputSchema for testing (matches the contract implementation)
 const TokenActionsInputSchema = z

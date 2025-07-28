@@ -56,10 +56,16 @@ function RouteComponent() {
             }
           }
           // Refetch all relevant data
-          await queryClient.invalidateQueries({
-            queryKey: orpc.account.me.queryOptions().queryKey,
-            refetchType: "all",
-          });
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: orpc.account.me.queryOptions().queryKey,
+              refetchType: "all",
+            }),
+            queryClient.invalidateQueries({
+              queryKey: orpc.user.me.queryOptions().queryKey,
+              refetchType: "all",
+            }),
+          ]);
         },
       })
     );
@@ -67,6 +73,11 @@ function RouteComponent() {
   const { mutateAsync: updateKyc, isPending: isUpdatingKyc } = useMutation(
     orpc.user.kyc.upsert.mutationOptions({
       onSuccess: async () => {
+        // Invalidate user data to update sidebar and dropdown
+        await queryClient.invalidateQueries({
+          queryKey: orpc.user.me.queryOptions().queryKey,
+          refetchType: "all",
+        });
         await completeStepAndNavigate(OnboardingStep.identity);
       },
     })

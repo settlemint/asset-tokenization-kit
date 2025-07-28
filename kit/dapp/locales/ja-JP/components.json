@@ -1,0 +1,26 @@
+{
+  "kycForm": {
+    "country": "居住国",
+    "dob": "生年月日",
+    "firstName": "名",
+    "lastName": "姓",
+    "nationalId": "国民ID",
+    "residencyStatus": "居住状況",
+    "residencyStatusOptions": {
+      "dual_resident": "二重居住者 - 私は複数の国において法的/税務上の居住者です",
+      "non_resident": "非居住者 - 私は上記の国に住んでいないか、居住者とは見なされていません",
+      "resident": "単独居住者 - 私は上記の国にのみ住んでおり、法的/税務上の居住者です",
+      "unknown": "言いたくない"
+    },
+    "submit": "保存して続行"
+  },
+  "verificationDialog": {
+    "authenticatorCode": "認証コード",
+    "cancel": "キャンセル",
+    "codeLengthError": "コードは6桁でなければなりません",
+    "confirm": "確認",
+    "pinCode": "PINコード",
+    "useAuthenticatorInstead": "代わりに認証アプリを使用",
+    "usePinInstead": "代わりにPINコードを使用"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "modules": {
+    "addressBlockList": {
+      "description": "Blockieren Sie bestimmte Wallet-Adressen, um auf Ihr Vermögen zuzugreifen. Nützlich, um bekannte schlechte Akteure oder sanktionierte Adressen von der Teilnahme abzuhalten.",
+      "shortDescription": "Blockieren Sie bestimmte Wallet-Adressen von der Teilnahme",
+      "title": "Adressblockliste"
+    },
+    "countryAllowList": {
+      "description": "Erlauben Sie nur Investoren aus bestimmten Ländern, auf Ihr Vermögen zuzugreifen. Ideal für länderspezifische Compliance-Anforderungen und regulatorische Einschränkungen.",
+      "shortDescription": "Erlauben Sie nur bestimmten Ländern die Teilnahme",
+      "title": "Länderzulassungsliste"
+    },
+    "countryBlockList": {
+      "description": "Blockieren Sie Investoren aus bestimmten Ländern oder Jurisdiktionen. Essentiell für die Einhaltung von Sanktionen und um eingeschränkte Märkte zu vermeiden.",
+      "shortDescription": "Blockieren Sie bestimmte Länder von der Teilnahme",
+      "title": "Länderblockliste"
+    },
+    "identityAllowList": {
+      "description": "Erlauben Sie nur verifizierte Identitäten aus Ihrer genehmigten Liste, auf das Vermögen zuzugreifen. Perfekt für exklusive Angebote und private Platzierungen.",
+      "shortDescription": "Erlauben Sie nur vorab genehmigte verifizierte Identitäten",
+      "title": "Identitätszulassungsliste"
+    },
+    "identityBlockList": {
+      "description": "Blockieren Sie bestimmte verifizierte Identitäten vom Zugriff auf Ihr Vermögen. Nützlich, um problematische Investoren zu entfernen und gleichzeitig die Compliance aufrechtzuerhalten.",
+      "shortDescription": "Blockieren Sie bestimmte verifizierte Identitäten vom Zugriff",
+      "title": "Identitätsblockliste"
+    },
+    "smartIdentityVerification": {
+      "description": "Erfordern Sie die Identitätsverifizierung gemäß dem SMART-Protokoll für alle Investoren. Bietet umfassende KYC/AML-Compliance durch dezentrale Identitätsverifizierung.",
+      "shortDescription": "Erfordern Sie die Identitätsverifizierung gemäß dem SMART-Protokoll",
+      "title": "SMART-Identitätsverifizierung"
+    }
+  }
+}
