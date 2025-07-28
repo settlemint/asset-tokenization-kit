@@ -20,13 +20,16 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import {
+  portalMiddleware,
+  TransactionEventEmitted,
+} from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import {
-  SystemComplianceModuleConfig,
   getDefaultComplianceModuleImplementations,
+  SystemComplianceModuleConfig,
   type SystemComplianceModuleCreateOutput,
 } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
 import type { VariablesOf } from "@settlemint/sdk-portal";
@@ -101,7 +104,11 @@ export const complianceModuleCreate =
     .handler(async function* ({
       input,
       context,
-    }): AsyncGenerator<SystemComplianceModuleCreateOutput, void, unknown> {
+    }): AsyncGenerator<
+      SystemComplianceModuleCreateOutput | TransactionEventEmitted,
+      void,
+      void
+    > {
       const { contract, complianceModules, verification } = input;
       const sender = context.auth.user;
       const { t, system } = context;
