@@ -30,9 +30,13 @@ const ATKOnboardingSystemModule = buildModule(
       { id: "complianceAddress" }
     );
 
-    const compliance = m.contractAt("ISMARTCompliance", complianceAddress, {
-      id: "compliance",
-    });
+    const compliance = m.contractAt(
+      "ATKComplianceImplementation",
+      complianceAddress,
+      {
+        id: "compliance",
+      }
+    );
 
     const identityRegistryAddress = m.readEventArgument(
       bootstrap,
@@ -55,7 +59,7 @@ const ATKOnboardingSystemModule = buildModule(
     );
 
     const identityRegistryStorage = m.contractAt(
-      "IERC3643IdentityRegistryStorage", // TODO this will change with next PR
+      "ATKIdentityRegistryStorageImplementation",
       identityRegistryStorageAddress,
       { id: "identityRegistryStorage" }
     );
@@ -68,7 +72,7 @@ const ATKOnboardingSystemModule = buildModule(
     );
 
     const trustedIssuersRegistry = m.contractAt(
-      "IERC3643TrustedIssuersRegistry",
+      "ATKTrustedIssuersRegistryImplementation",
       trustedIssuersRegistryAddress,
       { id: "trustedIssuersRegistry" }
     );
@@ -81,7 +85,7 @@ const ATKOnboardingSystemModule = buildModule(
     );
 
     const topicSchemeRegistry = m.contractAt(
-      "ISMARTTopicSchemeRegistry",
+      "ATKTopicSchemeRegistryImplementation",
       topicSchemeRegistryAddress,
       { id: "topicSchemeRegistry" }
     );
