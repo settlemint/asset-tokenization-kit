@@ -346,6 +346,7 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
         // Grant the factory the GOVERNANCE_ROLE to allow it to upgrade the onchain ID
         ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.GOVERNANCE_ROLE, address(this));
+        ISMARTTokenAccessManager(accessManager).grantRole(ATKRoles.DEFAULT_ADMIN_ROLE, address(this));
 
         // Set the onchain ID on the token contract
         ISMART(deployedAddress).setOnchainID(deployedTokenIdentityAddress);
