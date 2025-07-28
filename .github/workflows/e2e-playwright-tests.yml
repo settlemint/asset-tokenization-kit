@@ -57,6 +57,10 @@ jobs:
         run: bun install
         working-directory: kit/e2e
 
+      - name: Generate artifacts
+        run: bun run artifacts
+        working-directory: kit/e2e
+
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps chromium
         working-directory: kit/e2e
@@ -73,11 +77,11 @@ jobs:
         run: bun install
         working-directory: kit/dapp
 
-      - name: Generate SettleMint code and addresses
-        run: |
-          bun codegen:settlemint
-          bun addresses
-        working-directory: kit/dapp
+      # - name: Generate SettleMint code and addresses
+      #   run: |
+      #     bun codegen:settlemint
+      #     bun addresses
+      #   working-directory: kit/dapp
 
       - name: Reset dev environment (clean start)
         run: bun run dev:reset
