@@ -98,6 +98,30 @@ export const setYieldSchedule = async (
     `[Set yield schedule] ✓ Granted DEPLOYER_ROLE to ${owner.address} directly on factory`
   );
 
+  // Also grant SYSTEM_MODULE_ROLE to the factory - this is needed for the factory to access compliance
+  const grantSystemModuleRoleHash = await withDecodedRevertReason(() =>
+    systemAccessManagerContract.write.grantRole([
+      "0xa6d0d666130ddda8d0a25bfc08c75c789806b23845f9cce674dfc4a9e8d0e45c", // SYSTEM_MODULE_ROLE
+      factoryAddress,
+    ])
+  );
+  await waitForSuccess(grantSystemModuleRoleHash);
+  console.log(
+    `[Set yield schedule] ✓ Granted SYSTEM_MODULE_ROLE to factory on system access manager`
+  );
+
+  // Also grant DEFAULT_ADMIN_ROLE to the factory - this allows it to manage its own roles
+  const grantDefaultAdminRoleHash = await withDecodedRevertReason(() =>
+    systemAccessManagerContract.write.grantRole([
+      "0x0000000000000000000000000000000000000000000000000000000000000000", // DEFAULT_ADMIN_ROLE
+      factoryAddress,
+    ])
+  );
+  await waitForSuccess(grantDefaultAdminRoleHash);
+  console.log(
+    `[Set yield schedule] ✓ Granted DEFAULT_ADMIN_ROLE to factory on system access manager`
+  );
+
   // Now create a different contract instance with the factory ABI for creating the yield schedule
   const factoryContract = owner.getContractInstance({
     address: factoryAddress,
