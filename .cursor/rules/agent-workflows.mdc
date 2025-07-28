@@ -1,0 +1,112 @@
+---
+description: Common workflows and chaining patterns for specialized agents
+alwaysApply: false
+---
+
+# Agent Workflows
+
+Common workflows and chaining patterns for specialized agents.
+
+## Agent Chaining
+
+Agents work together in coordinated workflows:
+
+1. **Implementation** → Domain agent creates/modifies code
+2. **Testing** → test-dev ensures comprehensive coverage
+3. **Documentation** → doc-architect creates technical README
+4. **Content** → content-writer enhances readability
+
+## Working with Other Agents
+
+### Requesting Documentation Enhancement
+
+When invoking content-writer from doc-architect:
+
+```
+Task: "Enhance the README.md with user-friendly sections:
+- Add clear 'Overview' section explaining the module's purpose
+- Create 'Getting Started' guide with simple steps
+- Include practical examples with explanations
+- Write troubleshooting tips in plain language
+Keep content within the README structure."
+```
+
+### Requesting Translation
+
+When invoking content-writer for translations:
+
+```
+Task: "Translate the following UI components to [languages]:
+- Component: [component-name]
+- Namespaces: [namespace-list]
+- Languages: Arabic (ar), German (de), Japanese (ja)
+Maintain consistency with existing translations."
+```
+
+### Requesting Tests
+
+When invoking test-dev after implementation:
+
+```
+Task: "Create comprehensive tests for [feature]:
+- Unit tests for all public methods
+- Integration tests for API endpoints
+- Edge case coverage
+- Error scenario testing
+Follow existing test patterns in the codebase."
+```
+
+## Extended Timeout Handling
+
+For long-running operations:
+
+1. **Forge Compilation**: 5-minute timeout support
+2. **Large Test Suites**: Adaptive timeout management
+3. **Complex Builds**: Patient execution
+4. **Batch Operations**: Progress tracking
+
+## Parallel Agent Execution
+
+When multiple files need similar updates:
+
+```javascript
+// Launch parallel agents
+Task({
+  description: "Update multiple components",
+  prompt: "Update error handling in all API endpoints",
+  subagent_type: "orpc-expert",
+});
+
+Task({
+  description: "Update tests for components",
+  prompt: "Create tests for updated error handling",
+  subagent_type: "test-dev",
+});
+```
+
+## Context Preservation
+
+Between agent invocations:
+
+1. Pass specific file paths and changes made
+2. Reference Linear ticket IDs for continuity
+3. Include git commit hashes when relevant
+4. Specify which patterns to follow
+
+## Error Recovery
+
+When agents encounter issues:
+
+1. Check for missing dependencies
+2. Verify file paths and permissions
+3. Ensure Docker services are running
+4. Review recent changes for conflicts
+5. Use Sentry for production error analysis
+
+## Best Practices
+
+1. **One Task Per Agent**: Keep agent tasks focused
+2. **Clear Instructions**: Provide specific, actionable tasks
+3. **Context Passing**: Include relevant background
+4. **Progress Tracking**: Use Linear for task management
+5. **Quality Gates**: Run CI before marking complete
