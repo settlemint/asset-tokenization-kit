@@ -81,29 +81,6 @@ postgresql-ha:
       service.beta.kubernetes.io/azure-load-balancer-disable-tcp-reset: "true"
       service.beta.kubernetes.io/azure-load-balancer-tcp-idle-timeout: "30"
 
-# https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
-redis:
-  enabled: true
-  global:
-    security:
-      allowInsecureImages: true
-    imagePullSecrets:
-      - image-pull-secret-docker
-      - image-pull-secret-ghcr
-      - image-pull-secret-harbor
-  image:
-    registry: docker.io
-  fullnameOverride: redis
-  commonLabels:
-    kots.io/app-slug: settlemint-atk
-    app.kubernetes.io/managed-by: helm
-  auth:
-    password: "atk"
-  master:
-    resourcesPreset: "none"
-  replica:
-    replicaCount: 1
-    resourcesPreset: "none"
 
 # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
 ingress-nginx:

@@ -36,7 +36,7 @@
       "dependsOn": ["ci:base", "test:integration"]
     },
     "ci:gha:main": {
-      "dependsOn": ["publish", "ci:gha"]
+      "dependsOn": ["publish", "publish:docker", "ci:gha"]
     },
     "//#version": {
       "cache": false,
