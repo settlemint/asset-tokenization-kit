@@ -84,15 +84,7 @@ Return the target Kubernetes version - Generic version
 Usage: {{ include "atk.common.capabilities.kubeVersion" . }}
 */}}
 {{- define "atk.common.capabilities.kubeVersion" -}}
-{{- if .Values.global }}
-    {{- if .Values.global.kubeVersion }}
-    {{- .Values.global.kubeVersion -}}
-    {{- else }}
-    {{- default .Capabilities.KubeVersion.Version .Values.kubeVersion -}}
-    {{- end -}}
-{{- else }}
-{{- default .Capabilities.KubeVersion.Version .Values.kubeVersion -}}
-{{- end -}}
+{{- .Values.global.kubeVersion | default .Values.kubeVersion | default .Capabilities.KubeVersion.Version -}}
 {{- end -}}
 
 {{/*
@@ -144,23 +136,11 @@ Common image pull secrets for all deployments/statefulsets
 Usage: {{ include "atk.common.imagePullSecrets" . }}
 */}}
 {{- define "atk.common.imagePullSecrets" -}}
-{{- if .Values.global }}
-{{- if .Values.global.imagePullSecrets }}
+{{- $defaultSecrets := list "image-pull-secret-docker" "image-pull-secret-ghcr" "image-pull-secret-harbor" -}}
+{{- $secrets := .Values.global.imagePullSecrets | default $defaultSecrets -}}
 imagePullSecrets:
-{{- range .Values.global.imagePullSecrets }}
+{{- range $secrets }}
   - name: {{ . }}
-{{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
-{{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
 {{- end }}
 {{- end }}
 
@@ -218,13 +198,7 @@ Template values render for compatibility with common templates
 Usage: {{ include "common.tplvalues.render" (dict "value" .Values.someValue "context" $) }}
 */}}
 {{- define "common.tplvalues.render" -}}
-{{- $context := .context | default . -}}
-{{- $value := .value -}}
-{{- if typeIs "string" $value }}
-  {{- tpl $value $context }}
-{{- else }}
-  {{- tpl ($value | toYaml) $context }}
-{{- end }}
+{{ include "atk.common.tplvalues.render" . }}
 {{- end -}}
 
 {{/*
@@ -406,8 +380,8 @@ Rolling tag warning - compatibility
 Usage: {{ include "common.warnings.rollingTag" .Values.image }}
 */}}
 {{- define "common.warnings.rollingTag" -}}
-{{- if and .registry .repository .tag }}
-{{- if and (contains "latest" .tag) (not .registry) }}
+{{- if and .repository .tag }}
+{{- if contains "latest" .tag }}
 
 WARNING: Rolling tag detected ({{ .repository }}:{{ .tag }}), please note that it is strongly recommended to avoid using rolling tags in a production environment.
 +info https://docs.bitnami.com/containers/how-to/understand-rolling-tags-containers/
@@ -457,11 +431,7 @@ Return true if ingress supports ingressClassName field - compatibility
 Usage: {{ include "common.ingress.supportsIngressClassname" . }}
 */}}
 {{- define "common.ingress.supportsIngressClassname" -}}
-{{- if semverCompare "<1.18-0" (include "atk.common.capabilities.kubeVersion" .) -}}
-{{- print "false" -}}
-{{- else -}}
-{{- print "true" -}}
-{{- end -}}
+{{ include "atk.common.ingress.supportsIngressClassname" . }}
 {{- end -}}
 
 {{/*
@@ -469,9 +439,5 @@ Return true if ingress supports pathType field - compatibility
 Usage: {{ include "common.ingress.supportsPathType" . }}
 */}}
 {{- define "common.ingress.supportsPathType" -}}
-{{- if semverCompare "<1.18-0" (include "atk.common.capabilities.kubeVersion" .) -}}
-{{- print "false" -}}
-{{- else -}}
-{{- print "true" -}}
-{{- end -}}
+{{ include "atk.common.ingress.supportsPathType" . }}
 {{- end -}}

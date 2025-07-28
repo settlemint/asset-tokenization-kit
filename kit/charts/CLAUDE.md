@@ -47,7 +47,7 @@ kit/charts/
 
 #### Blockchain (`besu-network`)
 - **Components**: Genesis configuration, validator nodes, RPC nodes
-- **Configuration**: 
+- **Configuration**:
   - Validators: 1-4 nodes (configurable)
   - RPC nodes: 1-2 nodes (configurable)
   - Genesis includes pre-deployed contracts
@@ -131,7 +131,7 @@ bun run helm:extract-env      # Generate .env files
    global:
      networkPolicy:
        enabled: true
-   
+
    dapp:
      replicaCount: 3
      resources:
@@ -206,6 +206,41 @@ cd ../charts && bun run helm:subgraph
 
 **Note**: Contract artifacts (ABIs and genesis files) are now packaged in the `ghcr.io/settlemint/asset-tokenization-kit-artifacts` Docker image and automatically deployed via init containers. No manual copying is required.
 
+### 🚨 Critical: Test All Chart Changes
+
+**IMPORTANT**: Every time you modify any Helm chart file, you MUST test the deployment to OrbStack cluster to ensure it works correctly.
+
+```bash
+# 1. Test template rendering first
+helm template test-chart ./atk --debug --dry-run | head -50
+
+# 2. Then deploy to OrbStack
+bun run helm:check-context  # Verify orbstack context
+bun run helm:secrets        # Inject secrets from 1Password
+bun run helm               # Deploy/upgrade to OrbStack
+
+# 3. Verify deployment succeeded
+kubectl get pods -n atk
+kubectl get svc -n atk
+kubectl get ingress -n atk
+```
+
+**Why this is critical**:
+- Template syntax errors only show up during actual deployment
+- Helper functions might work in isolation but fail in complex templates
+- Resource dependencies and networking need real cluster testing
+- Bitnami compatibility requires validation with real sub-charts
+
+**Testing Checklist for Chart Changes**:
+- [ ] `helm template` renders without errors
+- [ ] All pods start successfully (`kubectl get pods -n atk`)
+- [ ] Services are accessible (`kubectl get svc -n atk`)
+- [ ] Ingress routes work (`kubectl get ingress -n atk`)
+- [ ] Labels and selectors are correct
+- [ ] Common helpers generate expected output
+
+This testing requirement should be added to all chart development workflows.
+
 ### Configure Domains
 
 ```yaml
@@ -214,7 +249,7 @@ dapp:
   ingress:
     hosts:
       - host: app.example.com
-        
+
 erpc:
   ingress:
     hostname: rpc.example.com
