@@ -29,7 +29,6 @@ import { tokenListContract } from "@/orpc/routes/token/routes/token.list.contrac
 import { tokenReadContract } from "@/orpc/routes/token/routes/token.read.contract";
 
 // Stats contracts
-import { factoryPredictAddressContract } from "@/orpc/routes/token/routes/factory/factory.predict-address.contract";
 import { tokenStatsActivityByAssetContract } from "@/orpc/routes/token/routes/stats/activity-by-asset.contract";
 import { tokenStatsAssetCountContract } from "@/orpc/routes/token/routes/stats/asset-count.contract";
 import { tokenStatsAssetsContract } from "@/orpc/routes/token/routes/stats/assets.contract";
@@ -66,7 +65,6 @@ export const tokenContract = {
   factoryCreate: factoryCreateContract,
   factoryList: factoryListContract,
   factoryRead: factoryReadContract,
-  factoryPredictAddress: factoryPredictAddressContract,
 
   // Mutations
   ...tokenContractMutations,

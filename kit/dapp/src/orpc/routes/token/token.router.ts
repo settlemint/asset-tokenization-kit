@@ -1,6 +1,5 @@
 import { factoryCreate } from "@/orpc/routes/token/routes/factory/factory.create";
 import { factoryList } from "@/orpc/routes/token/routes/factory/factory.list";
-import { factoryPredictAddress } from "@/orpc/routes/token/routes/factory/factory.predict-address";
 import { factoryRead } from "@/orpc/routes/token/routes/factory/factory.read";
 import { create } from "@/orpc/routes/token/routes/mutations/create/token.create";
 import { pause } from "@/orpc/routes/token/routes/mutations/pause/token.pause";
@@ -39,7 +38,6 @@ const routes = {
   events,
   factoryCreate,
   factoryList,
-  factoryPredictAddress,
   factoryRead,
   holders,
   list,
