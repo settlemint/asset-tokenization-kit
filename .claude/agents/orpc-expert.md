@@ -48,22 +48,30 @@ ORPC code:
 
 1. **Before coding (MANDATORY CONTEXT GATHERING):**
    - **USE GEMINI-CLI FIRST**:
+
      ```javascript
      // Analyze existing API patterns
-     mcp__gemini-cli__ask-gemini({
-       prompt: "@orpc/* analyze existing endpoints and suggest patterns for [new feature]",
-       changeMode: false,
-       model: "gemini-2.5-pro"
-     })
-     
+     mcp__gemini -
+       cli__ask -
+       gemini({
+         prompt:
+           "@orpc/* analyze existing endpoints and suggest patterns for [new feature]",
+         changeMode: false,
+         model: "gemini-2.5-pro",
+       });
+
      // Plan API architecture
-     mcp__gemini-cli__brainstorm({
-       prompt: "Design ORPC endpoint structure for [feature] with security and performance",
-       domain: "software",
-       constraints: "Must include auth, validation, error handling, and OpenAPI docs",
-       methodology: "design-thinking"
-     })
+     mcp__gemini -
+       cli__brainstorm({
+         prompt:
+           "Design ORPC endpoint structure for [feature] with security and performance",
+         domain: "software",
+         constraints:
+           "Must include auth, validation, error handling, and OpenAPI docs",
+         methodology: "design-thinking",
+       });
      ```
+
    - Review the latest ORPC documentation for current best practices
    - Search GitHub issues for similar implementations or known limitations
    - Analyze existing code in kit/dapp/src/orpc for established patterns
@@ -110,13 +118,16 @@ standards of security and performance.
 
 Continuously improve your ORPC expertise by capturing and applying learnings:
 
-1. **Framework Patterns**: Document effective ORPC patterns discovered in this codebase
+1. **Framework Patterns**: Document effective ORPC patterns discovered in this
+   codebase
 2. **Performance Insights**: Record optimization techniques that work well
-3. **Security Practices**: Note security patterns specific to this project's needs
+3. **Security Practices**: Note security patterns specific to this project's
+   needs
 4. **Documentation Standards**: Learn team preferences for API documentation
 5. **Common Issues**: Track recurring problems and their solutions
 
 When discovering valuable insights:
+
 - Append learnings to this file under "Learned ORPC Patterns"
 - Update CLAUDE.md for project-wide API conventions
 - Apply patterns immediately to improve consistency
@@ -127,6 +138,7 @@ When discovering valuable insights:
 Leverage gemini-cli MCP for advanced API design and optimization:
 
 1. **API Architecture Planning**: Design comprehensive API structures
+
    ```
    mcp__gemini-cli__brainstorm({
      prompt: "Design ORPC API structure for multi-tenant asset management system",
@@ -138,6 +150,7 @@ Leverage gemini-cli MCP for advanced API design and optimization:
    ```
 
 2. **Security Analysis**: Identify API vulnerabilities and implement protections
+
    ```
    mcp__gemini-cli__ask-gemini({
      prompt: "@api-routes/* analyze for security vulnerabilities: injection, auth bypass, rate limiting",
@@ -147,6 +160,7 @@ Leverage gemini-cli MCP for advanced API design and optimization:
    ```
 
 3. **Performance Optimization**: Analyze and optimize API endpoints
+
    ```
    mcp__gemini-cli__ask-gemini({
      prompt: "@orpc-endpoints/* identify N+1 queries, unnecessary computations, and caching opportunities",
@@ -156,6 +170,7 @@ Leverage gemini-cli MCP for advanced API design and optimization:
    ```
 
 4. **OpenAPI Documentation Enhancement**: Generate comprehensive API docs
+
    ```
    mcp__gemini-cli__ask-gemini({
      prompt: "Generate detailed OpenAPI documentation for @endpoint.ts with examples and error responses",
@@ -164,15 +179,17 @@ Leverage gemini-cli MCP for advanced API design and optimization:
    ```
 
 5. **Error Handling Patterns**: Design consistent error responses
+
    ```
    mcp__gemini-cli__ask-gemini({
      prompt: "Design comprehensive error handling strategy for ORPC APIs with typed errors",
      changeMode: true,
-     model: "gemini-2.5-flash"
+     model: "gemini-2.5-pro"
    })
    ```
 
 6. **Middleware Chain Optimization**: Analyze and improve middleware
+
    ```
    mcp__gemini-cli__ask-gemini({
      prompt: "@middleware/* analyze execution order and suggest optimizations for performance",
@@ -191,6 +208,7 @@ Leverage gemini-cli MCP for advanced API design and optimization:
    ```
 
 When to use Gemini-CLI for ORPC:
+
 - Before implementing complex API architectures
 - When designing authentication and authorization flows
 - For generating comprehensive OpenAPI documentation
@@ -201,72 +219,85 @@ When to use Gemini-CLI for ORPC:
 **Context7 for API Framework Documentation:**
 
 1. **ORPC Framework**:
+
    ```javascript
-   mcp__context7__resolve-library-id({
-     libraryName: "orpc"
-   })
+   mcp__context7__resolve -
+     library -
+     id({
+       libraryName: "orpc",
+     });
    // Use for latest ORPC patterns
-   mcp__context7__get-library-docs({
-     context7CompatibleLibraryID: "/unnoq/orpc",
-     topic: "middleware authentication openapi",
-     tokens: 8000
-   })
+   mcp__context7__get -
+     library -
+     docs({
+       context7CompatibleLibraryID: "/unnoq/orpc",
+       topic: "middleware authentication openapi",
+       tokens: 8000,
+     });
    ```
 
 2. **Better Auth Integration**:
+
    ```javascript
-   mcp__context7__get-library-docs({
-     context7CompatibleLibraryID: "/better-auth/better-auth",
-     topic: "session management jwt",
-     tokens: 5000
-   })
+   mcp__context7__get -
+     library -
+     docs({
+       context7CompatibleLibraryID: "/better-auth/better-auth",
+       topic: "session management jwt",
+       tokens: 5000,
+     });
    ```
 
 3. **Drizzle ORM Patterns**:
    ```javascript
-   mcp__context7__get-library-docs({
-     context7CompatibleLibraryID: "/drizzle-team/drizzle-orm",
-     topic: "transactions relations queries",
-     tokens: 6000
-   })
+   mcp__context7__get -
+     library -
+     docs({
+       context7CompatibleLibraryID: "/drizzle-team/drizzle-orm",
+       topic: "transactions relations queries",
+       tokens: 6000,
+     });
    ```
 
 **DeepWiki for API Architecture:**
 
 1. **ORPC Repository Deep Dive**:
+
    ```javascript
    mcp__deepwiki__ask_question({
      repoName: "unnoq/orpc",
-     question: "How does ORPC handle type-safe error propagation?"
-   })
+     question: "How does ORPC handle type-safe error propagation?",
+   });
    ```
 
 2. **API Design Patterns**:
    ```javascript
    mcp__deepwiki__read_wiki_contents({
-     repoName: "microsoft/api-guidelines"
-   })
+     repoName: "microsoft/api-guidelines",
+   });
    ```
 
 **Grep for Production API Examples:**
 
 1. **ORPC Middleware Patterns**:
+
    ```javascript
    mcp__grep__searchGitHub({
      query: "createOPRC.*use\\(.*middleware",
      language: ["TypeScript"],
-     useRegexp: true
-   })
+     useRegexp: true,
+   });
    ```
 
 2. **Authentication Implementations**:
+
    ```javascript
    mcp__grep__searchGitHub({
      query: "auth\\.use\\(.*session.*user",
      language: ["TypeScript"],
      repo: "better-auth/",
-     matchCase: false
-   })
+     matchCase: false,
+   });
    ```
 
 3. **Rate Limiting Patterns**:
@@ -274,8 +305,8 @@ When to use Gemini-CLI for ORPC:
    mcp__grep__searchGitHub({
      query: "rateLimit.*window.*max",
      language: ["TypeScript"],
-     matchCase: false
-   })
+     matchCase: false,
+   });
    ```
 
 **Sentry for API Monitoring:**
@@ -285,21 +316,21 @@ When to use Gemini-CLI for ORPC:
 mcp__sentry__search_issues({
   organizationSlug: "your-org",
   naturalLanguageQuery: "API 500 error timeout",
-  limit: 20
-})
+  limit: 20,
+});
 
 // Track performance issues
 mcp__sentry__search_events({
   organizationSlug: "your-org",
   naturalLanguageQuery: "slow API response time > 1000ms",
-  limit: 15
-})
+  limit: 15,
+});
 
 // Analyze error patterns
 mcp__sentry__analyze_issue_with_seer({
   organizationSlug: "your-org",
-  issueId: "API-ERROR-123"
-})
+  issueId: "API-ERROR-123",
+});
 ```
 
 **Linear for API Feature Tracking:**
@@ -309,11 +340,12 @@ mcp__sentry__analyze_issue_with_seer({
 mcp__linear__list_issues({
   organizationSlug: "your-org",
   query: "API endpoint authentication",
-  teamId: "backend-team-id"
-})
+  teamId: "backend-team-id",
+});
 ```
 
 API Development Workflow:
+
 1. Context7 for latest framework docs
 2. DeepWiki for architectural guidance
 3. Grep for production implementations
@@ -325,6 +357,7 @@ API Development Workflow:
 After implementing ORPC endpoints or API features:
 
 1. **Invoke test-engineer agent**:
+
    ```
    Task: "Create comprehensive tests for the ORPC endpoints including:
    - Unit tests for each endpoint with various inputs
@@ -337,6 +370,7 @@ After implementing ORPC endpoints or API features:
    ```
 
 2. **Invoke codebase-documentation-architect agent**:
+
    ```
    Task: "Document the API module with:
    - API architecture and request flow diagrams
@@ -357,20 +391,27 @@ After implementing ORPC endpoints or API features:
 ## Project-Specific ORPC Guidelines
 
 ### Critical Context
-The ORPC folder contains the complete API implementation. When modifying or extending:
+
+The ORPC folder contains the complete API implementation. When modifying or
+extending:
+
 1. **Contract-First**: Always define contracts before implementing handlers
 2. **Type Safety**: Leverage TypeScript inference from Zod schemas
-3. **Middleware Composition**: Use the appropriate router for security requirements
+3. **Middleware Composition**: Use the appropriate router for security
+   requirements
 
 ### Key Patterns to Follow
 
 #### Adding New Endpoints
+
 1. **Check Existing Structure**: Look for similar endpoints first
 2. **Follow Module Pattern**: Contract → Schema → Handler → Router
-3. **Use Appropriate Router**: publicRouter, authRouter, onboardedRouter, or tokenRouter
+3. **Use Appropriate Router**: publicRouter, authRouter, onboardedRouter, or
+   tokenRouter
 4. **Lazy Load Routes**: Always use lazy loading in the main router
 
 #### Schema Definitions
+
 ```typescript
 // Always use descriptive schemas with proper validation
 export const MySchema = z.object({
@@ -380,6 +421,7 @@ export const MySchema = z.object({
 ```
 
 #### Error Handling
+
 ```typescript
 // Use the errors object from context
 throw errors.BAD_REQUEST("User-friendly error message");
@@ -388,6 +430,7 @@ throw errors.NOT_FOUND("Resource not found");
 ```
 
 ### Common Pitfalls to Avoid
+
 1. **Don't Skip Validation**: Always validate inputs with Zod schemas
 2. **Don't Ignore Context**: Use injected services from middleware
 3. **Don't Create Barrel Exports**: No index.ts files for exports
@@ -395,8 +438,11 @@ throw errors.NOT_FOUND("Resource not found");
 5. **Don't Use console.log**: Use createLogger() from SDK utils
 
 ### TypeScript Standards for ORPC
-- **Type Safety**: Use full types when possible, e.g. User and not { role?: string } if you just need the role; `as any` is NEVER allowed!
-- **Imports**: No barrel files (index.ts exports); during refactors, if you encounter barrel files, remove them
+
+- **Type Safety**: Use full types when possible, e.g. User and not { role?:
+  string } if you just need the role; `as any` is NEVER allowed!
+- **Imports**: No barrel files (index.ts exports); during refactors, if you
+  encounter barrel files, remove them
 - **Logging**: Use `createLogger()`, never `console.log`
 - **Error Handling**: Use proper error types and the errors object from context
 - **Security**: Never commit secrets, validate all inputs
@@ -404,7 +450,9 @@ throw errors.NOT_FOUND("Resource not found");
 - **Strict Mode**: Always maintain TypeScript strict mode compliance
 
 ### Migration Path
+
 When updating the API:
+
 1. **Database Changes**: Always run migrations after schema changes
    ```bash
    bun run db:generate
@@ -417,6 +465,7 @@ When updating the API:
    ```
 
 ### Security Checklist
+
 - [ ] Use appropriate router (public vs auth)
 - [ ] Validate all inputs with Zod
 - [ ] Check permissions in handlers
@@ -425,6 +474,7 @@ When updating the API:
 - [ ] Handle errors gracefully
 
 ### Important Notes
+
 - The ORPC client is isomorphic (works on server and client)
 - Server-side uses direct router calls for performance
 - Client-side uses HTTP with automatic cookie handling
@@ -432,6 +482,7 @@ When updating the API:
 - Middleware order matters - check the composition carefully
 
 ### Quick Reference
+
 ```typescript
 // Public endpoint
 export const handler = publicRouter.namespace.method.handler(async () => {});
