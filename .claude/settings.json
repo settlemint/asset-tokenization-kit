@@ -3,11 +3,11 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Write|Edit|MultiEdit",
+        "matcher": "Edit|MultiEdit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "bun run format"
+            "command": "jq -r '.tool_input.file_path' | { read file_path; bunx prettier --write \"$file_path\" --ignore-unknown; }"
           }
         ]
       }

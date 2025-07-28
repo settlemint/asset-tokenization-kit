@@ -18,7 +18,7 @@ global:
     image:
       registry: ghcr.io
       repository: settlemint/asset-tokenization-kit-artifacts
-      tag: 2.0.0-main252a9e416
+      tag: 2.0.0
       pullPolicy: IfNotPresent
 
 
@@ -60,32 +60,6 @@ imagePullCredentials:
       password: ''
       # -- The email to access the registry
       email: ''
-
-# Redis configuration
-redis:
-  enabled: true
-  fullnameOverride: redis
-  commonLabels:
-    kots.io/app-slug: settlemint-atk
-    app.kubernetes.io/managed-by: helm
-  image:
-    pullSecrets:
-      - name: image-pull-secret-docker
-      - name: image-pull-secret-ghcr
-      - name: image-pull-secret-harbor
-  auth:
-    enabled: true
-    password: "atk"
-  persistence:
-    enabled: true
-    size: 1Gi
-  resources:
-    requests:
-      memory: "128Mi"
-      cpu: "100m"
-    limits:
-      memory: "256Mi"
-      cpu: "200m"
 
 besu-network:
   enabled: true
@@ -222,8 +196,8 @@ blockscout:
         args:
           - -c
           - |  # Using YAML multiline string for clarity
-            echo "Waiting for postgresql-pgpool:5432..."
-            while ! nc -z postgresql-pgpool 5432; do
+            echo "Waiting for postgresql:5432..."
+            while ! nc -z postgresql 5432; do
               sleep 2;
             done;
             echo "PostgreSQL is ready!"
@@ -347,24 +321,6 @@ portal:
 support:
   enabled: true
 
-  # https://github.com/bitnami/charts/blob/main/bitnami/postgresql-ha/values.yaml
-  postgresql-ha:
-    postgresql:
-      pullSecrets:
-        - image-pull-secret-docker
-        - image-pull-secret-ghcr
-        - image-pull-secret-harbor
-      resources: {}
-      replicaCount: 1
-    pgpool:
-      pullSecrets:
-        - image-pull-secret-docker
-        - image-pull-secret-ghcr
-        - image-pull-secret-harbor
-      resources: {}
-      replicaCount: 1
-
-
   # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   ingress-nginx:
     replicaCount: 1
@@ -389,6 +345,32 @@ support:
       path: /
       hosts:
         - minio.k8s.orb.local
+
+  # Redis configuration
+  redis:
+    enabled: true
+    fullnameOverride: redis
+    commonLabels:
+      kots.io/app-slug: settlemint-atk
+      app.kubernetes.io/managed-by: helm
+    image:
+      pullSecrets:
+        - name: image-pull-secret-docker
+        - name: image-pull-secret-ghcr
+        - name: image-pull-secret-harbor
+    auth:
+      enabled: true
+      password: "atk"
+    persistence:
+      enabled: true
+      size: 1Gi
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
 
 observability:
   enabled: true
@@ -492,7 +474,7 @@ txsigner:
   config:
     mnemonic: "gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"
     derivationPath: "m/44'/60'/0'/0/0"
-  postgresql: postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable
+  postgresql: postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable
   replicaCount: 1
   resources: {}
 
@@ -517,7 +499,7 @@ dapp:
     OTEL_EXPORTER_OTLP_PROTOCOL: "http"
     SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "http://blockscout-frontend-svc/"
     SETTLEMINT_HASURA_ADMIN_SECRET: "atk"
-    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql-pgpool:5432/hasura"
+    SETTLEMINT_HASURA_DATABASE_URL: "postgresql://hasura:atk@postgresql:5432/hasura"
     SETTLEMINT_HASURA_ENDPOINT: "http://hasura:8080/v1/graphql"
     SETTLEMINT_HD_PRIVATE_KEY: "atk-hd-private-key"
     SETTLEMINT_INSTANCE: "standalone"
@@ -531,7 +513,7 @@ dapp:
       dependencies:
         # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
         - name: postgres
-          endpoint: "postgresql-pgpool:5432"
+          endpoint: "postgresql:5432"
         - name: hasura
           endpoint: "hasura:8080"
         - name: portal

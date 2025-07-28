@@ -42,7 +42,3 @@ dependencies:
     version: "*"
     repository: file://./charts/dapp
     condition: dapp.enabled
-  - name: redis
-    version: "*"
-    repository: file://./charts/redis
-    condition: redis.enabled
