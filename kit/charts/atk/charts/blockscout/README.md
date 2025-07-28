@@ -52,7 +52,7 @@ A Helm chart for the blockscout components
 | blockscout-stack.blockscout.env.SUPPORTED_CHAINS | string | `"{}"` |  |
 | blockscout-stack.blockscout.env.TXS_STATS_ENABLED | string | `"true"` |  |
 | blockscout-stack.blockscout.env.WEBAPP_URL | string | `"https://explorer.k8s.orb.local"` |  |
-| blockscout-stack.blockscout.envFromSecret.DATABASE_URL | string | `"postgresql://blockscout:atk@postgresql-pgpool:5432/blockscout?sslmode=disable"` |  |
+| blockscout-stack.blockscout.envFromSecret.DATABASE_URL | string | `"postgresql://blockscout:atk@postgresql:5432/blockscout?sslmode=disable"` |  |
 | blockscout-stack.blockscout.envFromSecret.ETHEREUM_JSONRPC_HTTP_URL | string | `"http://erpc:4000"` |  |
 | blockscout-stack.blockscout.envFromSecret.ETHEREUM_JSONRPC_TRACE_URL | string | `"http://erpc:4000"` |  |
 | blockscout-stack.blockscout.envFromSecret.SECRET_KEY_BASE | string | `"atk"` |  |
