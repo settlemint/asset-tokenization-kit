@@ -14,7 +14,7 @@ const PREDICT_STABLECOIN_ADDRESS_QUERY = portalGraphql(`
     $symbol: String!
     $name: String!
     $decimals: Int!
-    $initialModulePairs: [ATKStableCoinFactoryImplementationATKStableCoinFactoryImplementationPredictStableCoinAddressInitialModulePairsInput!]!
+    $initialModulePairs: [ATKStableCoinFactoryImplementationPredictStableCoinAddressInitialModulePairsInput!]!
     $requiredClaimTopics: [String!]!
   ) {
     ATKStableCoinFactoryImplementation(address: $address) {
@@ -44,7 +44,6 @@ export const stablecoinPredictHandler = async (
     {
       address: context.factoryAddress,
       ...input,
-      initialModulePairs: [],
     },
     z.object({
       ATKStableCoinFactoryImplementation: z.object({
@@ -54,9 +53,5 @@ export const stablecoinPredictHandler = async (
     "Failed to predict stablecoin address"
   );
 
-  return {
-    predictedAddress:
-      result.ATKStableCoinFactoryImplementation.predictStableCoinAddress
-        .predictedAddress,
-  };
+  return result.ATKStableCoinFactoryImplementation.predictStableCoinAddress;
 };

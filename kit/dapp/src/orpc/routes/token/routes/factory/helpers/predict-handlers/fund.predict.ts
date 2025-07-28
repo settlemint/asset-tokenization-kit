@@ -14,7 +14,7 @@ const PREDICT_FUND_ADDRESS_QUERY = portalGraphql(`
     $symbol: String!
     $name: String!
     $decimals: Int!
-    $initialModulePairs: [ATKFundFactoryImplementationATKFundFactoryImplementationPredictFundAddressInitialModulePairsInput!]!
+    $initialModulePairs: [ATKFundFactoryImplementationPredictFundAddressInitialModulePairsInput!]!
     $requiredClaimTopics: [String!]!
     $managementFeeBps: Int!
   ) {
@@ -46,7 +46,6 @@ export const fundPredictHandler = async (
     {
       address: context.factoryAddress,
       ...input,
-      initialModulePairs: [],
     },
     z.object({
       ATKFundFactoryImplementation: z.object({
@@ -56,8 +55,5 @@ export const fundPredictHandler = async (
     "Failed to predict fund address"
   );
 
-  return {
-    predictedAddress:
-      result.ATKFundFactoryImplementation.predictFundAddress.predictedAddress,
-  };
+  return result.ATKFundFactoryImplementation.predictFundAddress;
 };

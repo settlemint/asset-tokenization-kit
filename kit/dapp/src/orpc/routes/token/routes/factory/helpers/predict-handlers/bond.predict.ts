@@ -14,7 +14,7 @@ const PREDICT_BOND_ADDRESS_QUERY = portalGraphql(`
     $symbol: String!
     $name: String!
     $decimals: Int!
-    $initialModulePairs: [ATKBondFactoryImplementationATKBondFactoryImplementationPredictBondAddressInitialModulePairsInput!]!
+    $initialModulePairs: [ATKBondFactoryImplementationPredictBondAddressInitialModulePairsInput!]!
     $requiredClaimTopics: [String!]!
     $cap: String!
     $faceValue: String!
@@ -54,7 +54,6 @@ export const bondPredictHandler = async (
     {
       address: context.factoryAddress,
       ...input,
-      initialModulePairs: [],
       faceValue: input.faceValue.toString(),
       cap: input.cap.toString(),
     },
@@ -66,8 +65,5 @@ export const bondPredictHandler = async (
     "Failed to predict bond address"
   );
 
-  return {
-    predictedAddress:
-      result.ATKBondFactoryImplementation.predictBondAddress.predictedAddress,
-  };
+  return result.ATKBondFactoryImplementation.predictBondAddress;
 };

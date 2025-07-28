@@ -14,7 +14,7 @@ const PREDICT_DEPOSIT_ADDRESS_QUERY = portalGraphql(`
     $symbol: String!
     $name: String!
     $decimals: Int!
-    $initialModulePairs: [ATKDepositFactoryImplementationATKDepositFactoryImplementationPredictDepositAddressInitialModulePairsInput!]!
+    $initialModulePairs: [ATKDepositFactoryImplementationPredictDepositAddressInitialModulePairsInput!]!
     $requiredClaimTopics: [String!]!
   ) {
     ATKDepositFactoryImplementation(address: $address) {
@@ -44,7 +44,6 @@ export const depositPredictHandler = async (
     {
       address: context.factoryAddress,
       ...input,
-      initialModulePairs: [],
     },
     z.object({
       ATKDepositFactoryImplementation: z.object({
@@ -54,9 +53,5 @@ export const depositPredictHandler = async (
     "Failed to predict deposit address"
   );
 
-  return {
-    predictedAddress:
-      result.ATKDepositFactoryImplementation.predictDepositAddress
-        .predictedAddress,
-  };
+  return result.ATKDepositFactoryImplementation.predictDepositAddress;
 };

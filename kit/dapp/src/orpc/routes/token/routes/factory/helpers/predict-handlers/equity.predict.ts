@@ -14,7 +14,7 @@ const PREDICT_EQUITY_ADDRESS_QUERY = portalGraphql(`
     $symbol: String!
     $name: String!
     $decimals: Int!
-    $initialModulePairs: [ATKEquityFactoryImplementationATKEquityFactoryImplementationPredictEquityAddressInitialModulePairsInput!]!
+    $initialModulePairs: [ATKEquityFactoryImplementationPredictEquityAddressInitialModulePairsInput!]!
     $requiredClaimTopics: [String!]!
   ) {
     ATKEquityFactoryImplementation(address: $address) {
@@ -44,7 +44,6 @@ export const equityPredictHandler = async (
     {
       address: context.factoryAddress,
       ...input,
-      initialModulePairs: [],
     },
     z.object({
       ATKEquityFactoryImplementation: z.object({
@@ -54,9 +53,5 @@ export const equityPredictHandler = async (
     "Failed to predict equity address"
   );
 
-  return {
-    predictedAddress:
-      result.ATKEquityFactoryImplementation.predictEquityAddress
-        .predictedAddress,
-  };
+  return result.ATKEquityFactoryImplementation.predictEquityAddress;
 };
