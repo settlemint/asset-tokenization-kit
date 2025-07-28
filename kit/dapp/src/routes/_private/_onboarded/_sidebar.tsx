@@ -11,12 +11,19 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 export const Route = createFileRoute("/_private/_onboarded/_sidebar")({
   component: LayoutComponent,
   beforeLoad: async ({ context: { queryClient, orpc } }) => {
-    // Ensure factory list is loaded for the sidebar navigation
-    await queryClient.ensureQueryData(
-      orpc.token.factoryList.queryOptions({
-        input: { hasTokens: true },
-      })
-    );
+    // Ensure both factory and addon lists are loaded for the sidebar navigation
+    await Promise.all([
+      queryClient.ensureQueryData(
+        orpc.token.factoryList.queryOptions({
+          input: {},
+        })
+      ),
+      queryClient.ensureQueryData(
+        orpc.addons.list.queryOptions({
+          input: {},
+        })
+      ),
+    ]);
   },
 });
 

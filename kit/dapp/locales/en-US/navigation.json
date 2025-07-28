@@ -9,5 +9,11 @@
   "statistics": "Statistics",
   "addons": "Addons",
   "assetDesigner": "Asset designer",
-  "addonDesigner": "Addon designer"
+  "addonDesigner": "Addon designer",
+  "addonCategories": {
+    "distribution": "Distribution",
+    "exchange": "Exchange",
+    "custody": "Custody",
+    "income": "Income"
+  }
 }

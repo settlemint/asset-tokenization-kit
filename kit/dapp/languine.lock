@@ -1299,12 +1299,19 @@ files:
   locales/en-US/navigation.json:
     asset: 26e9054be7f40079575582b7ad3f7363
     assetClasses: 271fab37e99d8c9308dd8d269376263d
-    assetManagement: 1e1a97e508b3d959b9fc916092948c35
+    assetManagement: 177512b9add0b40c38dad61838bf7d79
     cashEquivalent: 5ccbdb5f84a65180a53769ed94e1f03f
     fixedIncome: 45bd247841852898e26bf47031492853
     flexibleIncome: 496bf96707ef73e18c04fe7ecd452a8b
-    home: 8cf04a9734132302f96da8e113e80ce5
+    home: 2938c7f7e560ed972f8a4f68e80ff834
     statistics: c33e404a441c6ba9648f88af3c68a1ca
+    addons: b3f252777a69b110667756babe83a98f
+    assetDesigner: 2f17fb2184c4dbf6b7272486c1e70b57
+    addonDesigner: ea3a6fba9d296b9837c53938acc6b491
+    addonCategories.distribution: f0bac093bb884df2891d32385d053788
+    addonCategories.exchange: 992374d8e2e24f17bebc50a6e57becd6
+    addonCategories.custody: 2d82833085dc62736862926cb1284b22
+    addonCategories.income: 1f08d08fd864b99cbeebd88b9a0784a7
   locales/en-US/onboarding.json:
     assets.asset-factories-deployed-successfully: 422ae968b691ccdab681891825961151
     assets.asset-factories-description: 7db30c4a80e9cf613bf9ba5b2dc42b71

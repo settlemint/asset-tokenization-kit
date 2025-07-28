@@ -84,22 +84,22 @@ export function NavAddons() {
 
   const addonCategories = [
     {
-      name: "Distribution",
+      name: t("addonCategories.distribution"),
       icon: Truck,
       addons: groupedAddons.distribution,
     },
     {
-      name: "Exchange",
+      name: t("addonCategories.exchange"),
       icon: ArrowLeftRight,
       addons: groupedAddons.exchange,
     },
     {
-      name: "Custody",
+      name: t("addonCategories.custody"),
       icon: Vault,
       addons: groupedAddons.custody,
     },
     {
-      name: "Income",
+      name: t("addonCategories.income"),
       icon: Banknote,
       addons: groupedAddons.income,
     },
