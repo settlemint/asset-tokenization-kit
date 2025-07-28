@@ -28,7 +28,14 @@ import { ATKDepositProxy } from "./ATKDepositProxy.sol";
 ///      for compliance and identity verification. It inherits from AbstractATKTokenFactoryImplementation
 ///      for common factory functionality.
 contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKTokenFactoryImplementation {
-    bytes32 public constant override typeId = keccak256("ATKDepositFactory");
+    /// @notice The unique identifier for this factory type.
+    bytes32 public constant TYPE_ID = keccak256("ATKDepositFactory");
+
+    /// @notice Returns the unique type identifier for this factory.
+    /// @return The keccak256 hash of "ATKDepositFactory".
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice The collateral claim topic ID.
     uint256 internal _collateralClaimTopicId;
@@ -67,10 +74,10 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     /// jurisdiction.
     /// @return deployedDepositAddress The address of the newly deployed deposit token contract.
     function createDeposit(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
         uint16 countryCode_
     )
         external
@@ -135,10 +142,10 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     /// @param initialModulePairs_ The initial compliance module pairs for the token.
     /// @return predictedAddress The predicted address of the token contract.
     function predictDepositAddress(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_
     )
         external
         view

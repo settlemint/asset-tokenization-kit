@@ -1,6 +1,6 @@
 import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-layout";
-import { OtpSetupComponent } from "@/components/onboarding/wallet-security/otp-setup-component";
-import { PinSetupComponent } from "@/components/onboarding/wallet-security/pin-setup-component";
+import { OtpSetupModal } from "@/components/onboarding/wallet-security/otp-setup-modal";
+import { PinSetupModal } from "@/components/onboarding/wallet-security/pin-setup-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, CheckCircle, Star, X } from "lucide-react";
@@ -10,38 +10,27 @@ import { useTranslation } from "react-i18next";
 export function SecurityMethodSelector() {
   const { t } = useTranslation(["onboarding"]);
 
-  const [securityMethod, setSecurityMethod] = useState<
-    "pin" | "otp" | undefined
-  >(undefined);
-
-  if (securityMethod === "pin") {
-    return (
-      <PinSetupComponent
-        closeModal={() => {
-          setSecurityMethod(undefined);
-        }}
-      />
-    );
-  }
-
-  if (securityMethod === "otp") {
-    return (
-      <OtpSetupComponent
-        closeModal={() => {
-          setSecurityMethod(undefined);
-        }}
-      />
-    );
-  }
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   const actions = (
     <div className="flex justify-between items-center w-full">
       <div className="flex">
         <Button
           onClick={() => {
-            setSecurityMethod("pin");
+            setShowPinModal(true);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setShowPinModal(true);
+            }
           }}
           variant="outline"
+          tabIndex={0}
+          aria-label={t(
+            "wallet-security.method-selector.comparison.choose-pin"
+          )}
         >
           {t("wallet-security.method-selector.comparison.choose-pin")}
         </Button>
@@ -49,8 +38,18 @@ export function SecurityMethodSelector() {
       <div className="flex">
         <Button
           onClick={() => {
-            setSecurityMethod("otp");
+            setShowOtpModal(true);
           }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setShowOtpModal(true);
+            }
+          }}
+          tabIndex={0}
+          aria-label={t(
+            "wallet-security.method-selector.comparison.choose-otp"
+          )}
         >
           {t("wallet-security.method-selector.comparison.choose-otp")}
         </Button>
@@ -113,10 +112,10 @@ export function SecurityMethodSelector() {
                   {t("wallet-security.method-selector.comparison.ease-of-use")}
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mx-auto" />
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <AlertTriangle className="w-4 h-4 text-yellow-500 mx-auto" />
+                  <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mx-auto" />
                 </div>
               </div>
               <div className="grid grid-cols-10 gap-0 w-full">
@@ -141,10 +140,10 @@ export function SecurityMethodSelector() {
                   )}
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <X className="w-4 h-4 text-red-500 mx-auto" />
+                  <X className="w-4 h-4 text-red-600 dark:text-red-400 mx-auto" />
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mx-auto" />
                 </div>
               </div>
               <div className="grid grid-cols-10 gap-0 w-full">
@@ -154,10 +153,10 @@ export function SecurityMethodSelector() {
                   )}
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mx-auto" />
                 </div>
                 <div className="col-span-3 p-4 text-center text-sm">
-                  <CheckCircle className="w-4 h-4 text-green-500 mx-auto" />
+                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 mx-auto" />
                 </div>
               </div>
               <div className="grid grid-cols-10 gap-0 w-full">
@@ -175,6 +174,9 @@ export function SecurityMethodSelector() {
           </div>
         </div>
       </div>
+
+      <PinSetupModal open={showPinModal} onOpenChange={setShowPinModal} />
+      <OtpSetupModal open={showOtpModal} onOpenChange={setShowOtpModal} />
     </OnboardingStepLayout>
   );
 }

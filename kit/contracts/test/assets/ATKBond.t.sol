@@ -149,14 +149,17 @@ contract ATKBondTest is AbstractATKAssetTest {
         returns (IATKBond result)
     {
         vm.startPrank(owner);
+        IATKBond.BondInitParams memory bondParams = IATKBond.BondInitParams({
+            maturityDate: maturityDate_,
+            faceValue: faceValue_,
+            underlyingAsset: underlyingAsset_
+        });
         address bondAddress = bondFactory.createBond(
             name_,
             symbol_,
             decimals_,
             cap_,
-            maturityDate_,
-            faceValue_,
-            underlyingAsset_,
+            bondParams,
             initialModulePairs_,
             TestConstants.COUNTRY_CODE_US
         );
@@ -221,14 +224,17 @@ contract ATKBondTest is AbstractATKAssetTest {
         vm.startPrank(owner);
 
         vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidDecimals.selector, 19));
+        IATKBond.BondInitParams memory bondParams = IATKBond.BondInitParams({
+            maturityDate: maturityDate,
+            faceValue: faceValue,
+            underlyingAsset: address(underlyingAsset)
+        });
         bondFactory.createBond(
             "Test Bond 19",
             "TBOND19",
             19,
             CAP,
-            maturityDate,
-            faceValue,
-            address(underlyingAsset),
+            bondParams,
             new SMARTComplianceModuleParamPair[](0),
             TestConstants.COUNTRY_CODE_US
         );

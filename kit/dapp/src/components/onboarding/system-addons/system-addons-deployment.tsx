@@ -6,7 +6,7 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -26,14 +26,28 @@ export function SystemAddonsDeployment() {
   // Stable reference for deployed addons
   const deployedAddons = systemDetails?.systemAddons ?? [];
 
+  const queryClient = useQueryClient();
+
   const onNext = useCallback(async () => {
     try {
+      // Invalidate system data to update any components that depend on system addons
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: orpc.system.read.queryOptions({ input: { id: "default" } })
+            .queryKey,
+          refetchType: "all",
+        }),
+        queryClient.invalidateQueries({
+          queryKey: orpc.user.me.queryOptions().queryKey,
+          refetchType: "all",
+        }),
+      ]);
       await completeStepAndNavigate(OnboardingStep.systemAddons);
     } catch (error) {
       logger.error("Navigation error:", error);
       toast.error("Failed to navigate to next step");
     }
-  }, [completeStepAndNavigate]);
+  }, [completeStepAndNavigate, queryClient]);
 
   return (
     <OnboardingStepLayout

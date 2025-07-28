@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title IATKSystem Interface
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This interface outlines the essential functions for interacting with the ATK Protocol's central system
 /// contract.
 /// @dev The ATK System contract serves as the main hub and discovery point for various modules and features within

@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title IClaimAuthorizer
+/// @author SettleMint
 /// @notice Interface for contracts that can authorize claim additions to identities
 /// @dev This interface enables modular and secure control over who can add claims to an identity.
 ///      When a contract attempts to add a claim to an identity, the identity contract will query

@@ -15,7 +15,9 @@ import { _SMARTRedeemableLogic } from "./internal/_SMARTRedeemableLogic.sol";
 import { ISMARTRedeemable } from "./ISMARTRedeemable.sol";
 
 /// @title Upgradeable SMART Redeemable Extension
-/// @notice This contract provides an upgradeable implementation for the redeemable token functionality.
+/// @author SettleMint
+/// @notice This contract provides an upgradeable implementation for the redeemable token
+/// functionality.
 /// It allows token holders to redeem (burn) their own tokens. Being "upgradeable" means its logic
 /// can be updated after deployment through a proxy pattern (e.g., UUPS or Transparent Upgradeable Proxy).
 /// @dev This is an `abstract` contract, intended to be inherited by a final, concrete upgradeable token contract.
@@ -43,7 +45,8 @@ abstract contract SMARTRedeemableUpgradeable is
     // and the core `SMARTUpgradeable.sol` logic contract. Its main `initialize` function should call
     // `__SMARTRedeemable_init()`.
 
-    /// @dev Register the `ISMARTRedeemable` interface ID for ERC165. This allows factories to check if the
+    /// @notice Register the interface ID for ERC165.
+    /// @dev This allows factories to check if the
     /// contract
     /// supports the `ISMARTRedeemable` interface based on the upgradeable implementation.
     constructor() {

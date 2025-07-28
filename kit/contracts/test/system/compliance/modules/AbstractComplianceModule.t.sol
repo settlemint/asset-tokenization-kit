@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
 import { AbstractComplianceModule } from "../../../../contracts/smart/modules/AbstractComplianceModule.sol";

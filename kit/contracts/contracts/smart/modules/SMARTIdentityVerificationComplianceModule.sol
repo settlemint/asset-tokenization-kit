@@ -7,10 +7,11 @@ import { ISMART } from "../interface/ISMART.sol";
 import { ExpressionNode, ExpressionType } from "../interface/structs/ExpressionNode.sol";
 
 /// @title Identity Verification Module
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This module is used to verify the identity of an investor.
 /// @dev This module is used to verify the identity of an investor.
 contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
+    // solhint-disable-next-line const-name-snakecase, use-natspec
     bytes32 public constant override typeId = keccak256("SMARTIdentityVerificationComplianceModule");
 
     /// @notice Reverted when a token operation (like transfer or mint) is attempted, but the recipient
@@ -42,10 +43,16 @@ contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
     // --- Constructor ---
     /// @notice Constructor for the `IdentityVerificationModule`.
     /// @dev When a contract inheriting from `IdentityVerificationModule` is deployed, this constructor is called.
+    /// @param trustedForwarder_ Address of the trusted forwarder for meta transactions
     constructor(address trustedForwarder_) AbstractComplianceModule(trustedForwarder_) { }
 
     // --- Functions ---
 
+    /// @notice Checks if a transfer is compliant based on the receiver's identity verification status
+    /// @param token The token contract address
+    /// @param _to The receiver address whose identity verification is being checked
+    /// @param _params Encoded array of required claim topics that the receiver must have
+    // solhint-disable-next-line use-natspec
     function canTransfer(
         address token,
         address, /* _from - unused */
@@ -68,6 +75,8 @@ contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
 
     // --- Parameter Validation --- (Standard for Country Modules)
 
+    /// @notice Validates that the provided parameters are properly formatted
+    /// @param _params The parameters to validate, expected to be ABI-encoded uint256 array
     function validateParameters(bytes calldata _params) public view virtual override {
         ExpressionNode[] memory expression = abi.decode(_params, (ExpressionNode[]));
         _validateExpressionStructure(expression);

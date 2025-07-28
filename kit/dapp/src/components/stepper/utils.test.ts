@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it } from "vitest";
 import {
   getLastStep,
   getNextStep,
@@ -47,6 +47,7 @@ describe("stepper utils", () => {
   const group = {
     id: "group1",
     label: "Group 1",
+    description: "Group 1 description",
     steps: [stepD, stepE],
   };
 
@@ -164,6 +165,7 @@ describe("stepper utils", () => {
       const group = {
         id: "group1",
         label: "Group 1",
+        description: "Group 1 description",
         steps: [stepA],
       };
       const currentStep = stepB;
@@ -175,6 +177,7 @@ describe("stepper utils", () => {
       const group = {
         id: "group1",
         label: "Group 1",
+        description: "Group 1 description",
         steps: [stepA, stepB, stepC],
       };
       const currentStep = stepD;

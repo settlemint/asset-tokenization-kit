@@ -162,14 +162,18 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
     function _createBondWithMaliciousToken() internal returns (IATKBond result) {
         vm.startPrank(owner);
+        IATKBond.BondInitParams memory bondParams = IATKBond.BondInitParams({
+            maturityDate: maturityDate,
+            faceValue: faceValue,
+            underlyingAsset: address(maliciousToken)
+        });
+
         address bondAddress = bondFactory.createBond(
             "Test Bond",
             "TBOND",
             DECIMALS,
             CAP,
-            maturityDate,
-            faceValue,
-            address(maliciousToken),
+            bondParams,
             new SMARTComplianceModuleParamPair[](0),
             TestConstants.COUNTRY_CODE_US
         );
@@ -482,14 +486,18 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
 
         // Create a new bond with normal token
         vm.startPrank(owner);
+        IATKBond.BondInitParams memory normalBondParams = IATKBond.BondInitParams({
+            maturityDate: maturityDate,
+            faceValue: faceValue,
+            underlyingAsset: address(normalToken)
+        });
+
         address normalBondAddress = bondFactory.createBond(
             "Normal Bond",
             "NBOND",
             DECIMALS,
             CAP,
-            maturityDate,
-            faceValue,
-            address(normalToken),
+            normalBondParams,
             new SMARTComplianceModuleParamPair[](0),
             TestConstants.COUNTRY_CODE_US
         );

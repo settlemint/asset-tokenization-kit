@@ -13,7 +13,7 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 import { AbstractComplianceModule } from "./AbstractComplianceModule.sol";
 
 /// @title Abstract Base for Country-Specific Compliance Modules
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This abstract contract extends `AbstractComplianceModule` to provide common functionalities
 /// specifically for compliance modules that base their rules on investor country codes (ISO 3166-1 numeric).
 /// @dev Key features and conventions introduced by this module:
@@ -44,10 +44,11 @@ abstract contract AbstractCountryComplianceModule is AbstractComplianceModule {
     /// The role is `keccak256("GLOBAL_LIST_MANAGER_ROLE")`.
     bytes32 public constant GLOBAL_LIST_MANAGER_ROLE = keccak256("GLOBAL_LIST_MANAGER_ROLE");
 
+    /// @notice Emitted when a country is added to or removed from the global list
     /// @dev Emitted when a country is added to or removed from the global list.
     /// @param country The country code being updated.
     /// @param inList True if the country was added, false if it was removed.
-    event GlobalCountryListChange(uint16 indexed country, bool inList);
+    event GlobalCountryListChange(uint16 indexed country, bool indexed inList);
 
     // --- State Variables for Enumerable Country List Management ---
     /// @notice Stores the global country list for this specific module instance (meaning depends on concrete
@@ -82,6 +83,7 @@ abstract contract AbstractCountryComplianceModule is AbstractComplianceModule {
     /// instance.
     /// This allows the deployer to initially manage both general module settings (via `DEFAULT_ADMIN_ROLE`) and any
     /// global country lists the module might implement.
+    /// @param _trustedForwarder Address of the trusted forwarder for meta transactions
     constructor(address _trustedForwarder) AbstractComplianceModule(_trustedForwarder) {
         _grantRole(GLOBAL_LIST_MANAGER_ROLE, _msgSender());
     }

@@ -1,3 +1,6 @@
+"use client";
+"use no memo";
+
 import { Slot } from "@radix-ui/react-slot";
 import * as React from "react";
 
@@ -54,12 +57,13 @@ function FormLabel({
   className,
   ...props
 }: React.ComponentProps<typeof Label>) {
-  const { formItemId, errors } = useFieldContext();
-
+  const { formItemId, errors, getMeta } = useFieldContext();
+  const meta = getMeta();
+  const hasError = errors.length > 0 && meta.isTouched;
   return (
     <Label
       data-slot="form-label"
-      data-error={errors.length > 0}
+      data-error={hasError}
       className={cn("data-[error=true]:text-destructive", className)}
       htmlFor={formItemId}
       {...props}

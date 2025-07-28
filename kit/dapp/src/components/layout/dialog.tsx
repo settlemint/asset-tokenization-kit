@@ -15,31 +15,31 @@ export function DialogLayout({ children }: DialogLayoutProps) {
   const { t } = useTranslation(["general"]);
 
   return (
-    <div className="min-h-screen w-full bg-center bg-cover bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')]">
-      {/* Logo positioned in top-left - matching auth pages */}
-      <div className="absolute top-8 left-8 flex flex-col items-end gap-0">
+    <div className="DialogLayout flex flex-col min-h-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
+      <div className="flex-shrink-0 flex justify-between items-center p-8">
         <div className="flex w-full items-center gap-3">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
             <Logo variant="icon" forcedColorMode="dark" />
           </div>
           <div className="flex flex-col text-foreground leading-none">
             <span className="font-bold text-lg text-primary-foreground">
-              SettleMint
+              {t("general:appName")}
             </span>
             <span className="-mt-1 overflow-hidden truncate text-ellipsis text-md text-sm leading-snug text-primary-foreground dark:text-foreground">
               {t("general:appDescription")}
             </span>
           </div>
         </div>
+        <div className="flex gap-2">
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
       </div>
-      {/* Language and theme toggles positioned in top-right - matching auth pages */}
-      <div className="absolute top-8 right-8 flex gap-2">
-        <LanguageSwitcher />
-        <ThemeToggle />
-      </div>
-      {/* Centered content area with step wizard */}
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="w-full max-w-6xl px-4">{children}</div>
+
+      <div className="DialogLayout__card flex flex-col justify-center items-center flex-1 overflow-hidden">
+        <div className="h-[85vh] w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-24 max-w-[1600px] my-8">
+          {children}
+        </div>
       </div>
     </div>
   );

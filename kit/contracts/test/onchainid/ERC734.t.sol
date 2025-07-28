@@ -324,6 +324,11 @@ contract ERC734Test is Test {
     }
 
     function test_Approve_NonexistentExecution() public {
+        // First create an execution so _executionNonce > 0
+        bytes memory data = abi.encodeWithSelector(TargetContract.setValue.selector, 42);
+        erc734.execute(address(target), 0, data);
+
+        // Now try to approve a non-existent execution
         vm.expectRevert(abi.encodeWithSelector(ERC734.ExecutionIdDoesNotExist.selector, 999));
         erc734.approve(999, true);
     }

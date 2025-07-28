@@ -1,4 +1,3 @@
-import { Logo } from "@/components/logo/logo";
 import { OnboardingStepGroup } from "@/components/onboarding/state-machine";
 import {
   Accordion,
@@ -16,11 +15,12 @@ import {
   TimelineSeparator,
   TimelineTitle,
 } from "@/components/ui/timeline";
+import { orpc } from "@/orpc/orpc-client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { Check, HelpCircle } from "lucide-react";
+import { Check } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocalStorage } from "usehooks-ts";
 
 interface WelcomeProps {
   steps: {
@@ -33,8 +33,11 @@ interface WelcomeProps {
 
 export function Welcome({ steps }: WelcomeProps) {
   const { t } = useTranslation(["onboarding", "general"]);
-  const [isReturningUser] = useLocalStorage("isReturningUser", false);
+  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
   const navigate = useNavigate();
+
+  // A user is a returning user if any of the onboarding state values is true
+  const isReturningUser = Object.values(user.onboardingState).includes(true);
 
   const handleGetStarted = useCallback(() => {
     void navigate({ to: "/onboarding/wallet" });
@@ -117,28 +120,11 @@ export function Welcome({ steps }: WelcomeProps) {
   return (
     <div
       style={{ background: "var(--sm-wizard-sidebar-gradient)" }}
-      className="flex flex-col h-full rounded-xl shadow-lg"
+      className="Welcome flex flex-col h-full rounded-xl shadow-lg"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 lg:px-12 xl:px-12">
-        <Logo variant="horizontal" className="h-8" forcedColorMode="dark" />
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-primary-foreground hover:text-primary-foreground/80"
-            onClick={() => {
-              // TODO: Implement help functionality
-            }}
-          >
-            <HelpCircle className="h-5 w-5" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Content */}
+      {/* Left column: Welcome text */}
       <div className="flex-1 overflow-auto">
-        <div className="mx-auto max-w-6xl p-6 lg:p-12 xl:p-12 pt-0 lg:pt-6 xl:pt-6">
+        <div className="mx-auto p-6 lg:p-12 xl:p-12 pt-0 lg:pt-6 xl:pt-6">
           {/* Two column layout for all screen sizes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 xl:gap-12 items-start">
             {/* Left column: Welcome text and overview */}

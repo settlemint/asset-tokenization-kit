@@ -158,14 +158,14 @@ templates:
           handler: handleComplianceModuleRemoved
         - event: IdentityRegistryAdded(indexed address,indexed address)
           handler: handleIdentityRegistryAdded
-        - event: MintCompleted(indexed address,indexed address,uint256)
+        - event: MintCompleted(indexed address,indexed address,indexed uint256)
           handler: handleMintCompleted
         - event: ModuleParametersUpdated(indexed address,indexed address,bytes)
           handler: handleModuleParametersUpdated
         - event: TransferCompleted(indexed address,indexed address,indexed
             address,uint256)
           handler: handleTransferCompleted
-        - event: UpdatedTokenInformation(indexed address,uint8,indexed address)
+        - event: UpdatedTokenInformation(indexed address,indexed uint8,indexed address)
           handler: handleUpdatedTokenInformation
       file: ./src/token/token.ts
   - kind: ethereum
@@ -205,7 +205,7 @@ templates:
         - name: Burnable
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/burnable/ISMARTBurnable.sol/ISMARTBurnable.json
       eventHandlers:
-        - event: BurnCompleted(indexed address,indexed address,uint256)
+        - event: BurnCompleted(indexed address,indexed address,indexed uint256)
           handler: handleBurnCompleted
       file: ./src/token-extensions/burnable/burnable.ts
   - kind: ethereum
@@ -346,9 +346,9 @@ templates:
           handler: handleAddressFrozen
         - event: RecoverySuccess(indexed address,indexed address,indexed address,address)
           handler: handleRecoverySuccess
-        - event: TokensFrozen(indexed address,indexed address,uint256)
+        - event: TokensFrozen(indexed address,indexed address,indexed uint256)
           handler: handleTokensFrozen
-        - event: TokensUnfrozen(indexed address,indexed address,uint256)
+        - event: TokensUnfrozen(indexed address,indexed address,indexed uint256)
           handler: handleTokensUnfrozen
       file: ./src/token-extensions/custodian/custodian.ts
   - kind: ethereum
@@ -366,7 +366,7 @@ templates:
         - name: Capped
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/capped/ISMARTCapped.sol/ISMARTCapped.json
       eventHandlers:
-        - event: CapSet(indexed address,uint256)
+        - event: CapSet(indexed address,indexed uint256)
           handler: handleCapSet
       file: ./src/token-extensions/capped/capped.ts
   - kind: ethereum
@@ -385,7 +385,8 @@ templates:
         - name: Yield
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/yield/ISMARTYield.sol/ISMARTYield.json
       eventHandlers:
-        - event: CheckpointUpdated(indexed address,indexed address,uint256,uint256)
+        - event: CheckpointUpdated(indexed address,indexed address,indexed
+            uint256,uint256)
           handler: handleCheckpointUpdated
         - event: YieldScheduleSet(indexed address,indexed address)
           handler: handleYieldScheduleSet
@@ -410,9 +411,9 @@ templates:
       eventHandlers:
         - event: FixedYieldScheduleSet(uint256,uint256,uint256,uint256,uint256[],address,uint256)
           handler: handleFixedYieldScheduleSet
-        - event: UnderlyingAssetTopUp(indexed address,uint256)
+        - event: UnderlyingAssetTopUp(indexed address,indexed uint256)
           handler: handleUnderlyingAssetTopUp
-        - event: UnderlyingAssetWithdrawn(indexed address,uint256)
+        - event: UnderlyingAssetWithdrawn(indexed address,indexed uint256)
           handler: handleUnderlyingAssetWithdrawn
         - event: YieldClaimed(indexed
             address,uint256,uint256,uint256,uint256[],uint256[],uint256,uint256)
@@ -433,7 +434,7 @@ templates:
         - name: Redeemable
           file: ../contracts/.generated/artifacts/contracts/smart/extensions/redeemable/ISMARTRedeemable.sol/ISMARTRedeemable.json
       eventHandlers:
-        - event: Redeemed(indexed address,uint256)
+        - event: Redeemed(indexed address,indexed uint256)
           handler: handleRedeemed
       file: ./src/token-extensions/redeemable/redeemable.ts
   - kind: ethereum
@@ -454,7 +455,7 @@ templates:
       eventHandlers:
         - event: BondMatured(indexed uint256)
           handler: handleBondMatured
-        - event: BondRedeemed(indexed address,indexed address,uint256,uint256)
+        - event: BondRedeemed(indexed address,indexed address,indexed uint256,uint256)
           handler: handleBondRedeemed
       file: ./src/token-assets/bond/bond.ts
   - kind: ethereum
@@ -531,7 +532,7 @@ templates:
         - name: Fund
           file: ../contracts/.generated/artifacts/contracts/assets/fund/IATKFund.sol/IATKFund.json
       eventHandlers:
-        - event: ManagementFeeCollected(indexed address,uint256,uint256)
+        - event: ManagementFeeCollected(indexed address,indexed uint256,indexed uint256)
           handler: handleManagementFeeCollected
       file: ./src/token-assets/fund/fund.ts
   - kind: ethereum
@@ -630,27 +631,23 @@ templates:
         - name: Vault
           file: ../contracts/.generated/artifacts/contracts/addons/vault/ATKVault.sol/ATKVault.json
       eventHandlers:
-        - event: Deposit(indexed address,uint256,uint256)
+        - event: Deposit(indexed address,indexed uint256,indexed uint256)
           handler: handleDeposit
-        - event: SubmitTransaction(indexed address,indexed uint256,indexed
-            address,uint256,bytes,string)
-          handler: handleSubmitTransaction
-        - event: SubmitERC20TransferTransaction(indexed address,indexed uint256,indexed
-            address,address,uint256,string)
-          handler: handleSubmitERC20TransferTransaction
-        - event: SubmitContractCallTransaction(indexed address,indexed uint256,indexed
-            address,uint256,bytes4,bytes,string)
-          handler: handleSubmitContractCallTransaction
-        - event: ConfirmTransaction(indexed address,indexed uint256)
-          handler: handleConfirmTransaction
-        - event: RevokeConfirmation(indexed address,indexed uint256)
-          handler: handleRevokeConfirmation
+        - event: SubmitTransactionWithSignatures(indexed address,indexed uint256,indexed
+            address,uint256,bytes,string,uint256)
+          handler: handleSubmitTransactionWithSignatures
         - event: ExecuteTransaction(indexed address,indexed uint256)
           handler: handleExecuteTransaction
-        - event: RequirementChanged(indexed address,uint256)
+        - event: RequirementChanged(indexed address,indexed uint256)
           handler: handleRequirementChanged
-        - event: TransactionExecutionFailed(indexed uint256,address,bytes)
-          handler: handleTransactionExecutionFailed
+        - event: WeightedSignaturesToggled(indexed bool)
+          handler: handleWeightedSignaturesToggled
+        - event: SignerWeightUpdated(indexed address,indexed uint256)
+          handler: handleSignerWeightUpdated
+        - event: SignaturesProvided(indexed address,indexed uint256,address[],uint256)
+          handler: handleSignaturesProvided
+        - event: OnchainIdSet(indexed address)
+          handler: handleOnchainIdSet
       file: ./src/system-addons/addons/vault/vault.ts
   - kind: ethereum
     name: GenericERC165
@@ -735,13 +732,13 @@ templates:
         - name: Airdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
       eventHandlers:
-        - event: AirdropTokensTransferred(indexed address,indexed uint256,uint256)
+        - event: AirdropTokensTransferred(indexed address,indexed uint256,indexed uint256)
           handler: handleAirdropTokensTransferred
         - event: AirdropBatchTokensTransferred(address[],uint256[],uint256[])
           handler: handleAirdropBatchTokensTransferred
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
-        - event: TokensWithdrawn(indexed address,uint256)
+        - event: TokensWithdrawn(indexed address,indexed uint256)
           handler: handleTokensWithdrawn
       file: ./src/system-addons/addons/airdrop/airdrop.ts
   - kind: ethereum
@@ -785,7 +782,7 @@ templates:
         - name: PushAirdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/push-airdrop/ATKPushAirdropImplementation.sol/ATKPushAirdropImplementation.json
       eventHandlers:
-        - event: DistributionCapUpdated(uint256,uint256)
+        - event: DistributionCapUpdated(indexed uint256,indexed uint256)
           handler: handleDistributionCapUpdated
       file: ./src/system-addons/addons/airdrop/push-airdrop.ts
   - kind: ethereum
@@ -811,8 +808,8 @@ templates:
         - name: Airdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
       eventHandlers:
-        - event: ATKVestingAirdropCreated(indexed
-            address,string,address,bytes32,address,address,uint256,address)
+        - event: ATKVestingAirdropCreated(indexed address,string,indexed
+            address,bytes32,indexed address,address,uint256,address)
           handler: handleATKVestingAirdropCreated
       file: ./src/system-addons/addons/airdrop/vesting-airdrop-factory.ts
   - kind: ethereum
@@ -838,7 +835,7 @@ templates:
         - name: Airdrop
           file: ../contracts/.generated/artifacts/contracts/addons/airdrop/ATKAirdrop.sol/ATKAirdrop.json
       eventHandlers:
-        - event: VestingInitialized(indexed address,uint256,uint256)
+        - event: VestingInitialized(indexed address,indexed uint256,indexed uint256)
           handler: handleVestingInitialized
         - event: BatchVestingInitialized(indexed address,uint256[],uint256[])
           handler: handleBatchVestingInitialized
@@ -911,8 +908,8 @@ templates:
         - event: AddonImplementationUpdated(indexed address,indexed bytes32,indexed
             address)
           handler: handleAddonImplementationUpdated
-        - event: SystemAddonRegistered(indexed
-            address,string,bytes32,address,address,bytes,uint256)
+        - event: SystemAddonRegistered(indexed address,string,bytes32,indexed
+            address,indexed address,bytes,uint256)
           handler: handleSystemAddonRegistered
       file: ./src/system-addons/system-addon-registry.ts
   - kind: ethereum
@@ -931,7 +928,7 @@ templates:
         - name: ComplianceModuleRegistry
           file: ../contracts/.generated/artifacts/contracts/system/compliance/IATKComplianceModuleRegistry.sol/IATKComplianceModuleRegistry.json
       eventHandlers:
-        - event: ComplianceModuleRegistered(indexed address,string,bytes32,indexed
+        - event: ComplianceModuleRegistered(indexed address,string,indexed bytes32,indexed
             address,uint256)
           handler: handleComplianceModuleRegistered
       file: ./src/compliance/compliance-module-registry.ts
@@ -951,7 +948,7 @@ templates:
         - name: AbstractAddressListComplianceModule
           file: ../contracts/.generated/artifacts/contracts/smart/modules/AbstractAddressListComplianceModule.sol/AbstractAddressListComplianceModule.json
       eventHandlers:
-        - event: GlobalAddressListChange(indexed address,bool)
+        - event: GlobalAddressListChange(indexed address,indexed bool)
           handler: handleGlobalAddressListChange
       file: ./src/compliance/modules/address-list-compliance-module.ts
   - kind: ethereum
@@ -970,6 +967,6 @@ templates:
         - name: AbstractCountryComplianceModule
           file: ../contracts/.generated/artifacts/contracts/smart/modules/AbstractCountryComplianceModule.sol/AbstractCountryComplianceModule.json
       eventHandlers:
-        - event: GlobalCountryListChange(indexed uint16,bool)
+        - event: GlobalCountryListChange(indexed uint16,indexed bool)
           handler: handleGlobalCountryListChange
       file: ./src/compliance/modules/country-list-compliance-module.ts

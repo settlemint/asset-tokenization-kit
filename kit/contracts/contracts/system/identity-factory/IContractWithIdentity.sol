@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /// @title IContractWithIdentity
+/// @author SettleMint
 /// @notice Interface for contracts that have an associated ONCHAINID and can manage claims
 /// @dev This interface enables any contract (Token, Vault, etc.) to expose its ONCHAINID
 ///      and standardizes how permission checks for claim management are performed.

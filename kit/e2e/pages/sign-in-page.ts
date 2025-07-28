@@ -1,160 +1,89 @@
-import { expect } from "@playwright/test";
-import type { UserRole } from "../test-data/user-data";
-import { getUserRole, updateUserRole } from "../utils/db-utils";
-import { BasePage } from "./base-page";
-import { Pages } from "./pages";
-export class SignInPage extends BasePage {
-  async goto() {
-    await this.page.goto("/auth/signin");
+import { expect, type Page } from "@playwright/test";
+
+export class SignInPage {
+  constructor(private page: Page) {}
+
+  async goto(): Promise<void> {
+    await this.page.goto("/auth/sign-in");
+    await this.page.waitForLoadState("domcontentloaded");
   }
 
-  async signIn(options: {
-    email: string;
-    password: string;
-    name: string;
-    pincode: string;
-    rememberMe?: boolean;
-  }) {
-    const pages = Pages(this.page);
+  async fillSignInForm(email: string, password: string): Promise<void> {
+    const emailField = this.page.getByRole("textbox", { name: "Email" });
+    await emailField.click();
+    await emailField.focus();
+    await emailField.clear();
+    await emailField.pressSequentially(email, { delay: 50 });
 
-    const emailInput = this.page.locator('input[type="email"][name="email"]');
-    const passwordInput = this.page.locator(
-      'input[type="password"][name="password"]'
+    const passwordField = this.page.getByLabel("Password");
+    await passwordField.click();
+    await passwordField.focus();
+    await passwordField.clear();
+    await passwordField.pressSequentially(password, { delay: 50 });
+  }
+
+  async submitSignInForm(): Promise<void> {
+    await this.page.getByRole("button", { name: "Login" }).click();
+  }
+
+  async clearForm(): Promise<void> {
+    const emailField = this.page.getByRole("textbox", { name: "Email" });
+    await emailField.fill("");
+    const passwordField = this.page.getByLabel("Password");
+    await passwordField.fill("");
+  }
+
+  async expectToStayOnSignInPage(): Promise<void> {
+    expect(this.page.url()).toContain("/auth/sign-in");
+    const loginButton = this.page.getByRole("button", { name: "Login" });
+    await expect(loginButton).toBeVisible();
+  }
+
+  async expectAuthenticationError(): Promise<void> {
+    const errorLocator = this.page.locator(
+      '[data-slot="form-error"], .text-destructive, .text-red-500'
     );
+    await expect(errorLocator).toBeVisible({ timeout: 5000 });
+  }
 
-    await emailInput.clear();
-    await passwordInput.clear();
+  async expectSuccessfulSignIn(): Promise<void> {
+    const authErrorToast = this.page.locator(
+      'div[data-sonner-toast][data-type="error"]'
+    );
+    const authErrorVisible = await authErrorToast.isVisible({ timeout: 3000 });
 
-    let retries = 0;
-    const maxRetries = 3;
-
-    while (retries < maxRetries) {
-      await emailInput.click({ force: true });
-      await emailInput.focus();
-      await emailInput.fill("");
-      await emailInput.fill(options.email);
-
-      const value = await emailInput.inputValue();
-      if (value === options.email) {
-        break;
-      }
-      retries++;
-
-      if (retries === maxRetries) {
-        await emailInput.evaluate((el, email) => {
-          (el as HTMLInputElement).value = email;
-          el.dispatchEvent(new Event("input", { bubbles: true }));
-          el.dispatchEvent(new Event("change", { bubbles: true }));
-        }, options.email);
-      }
+    if (authErrorVisible) {
+      const authErrorText = await authErrorToast.textContent();
+      throw new Error(
+        `Sign-in failed: Authentication error detected - ${authErrorText}`
+      );
     }
-
-    await expect(async () => {
-      const inputValue = await emailInput.inputValue();
-      expect(inputValue).toBe(options.email);
-    }).toPass({ timeout: 20000 });
-
-    await passwordInput.click({ force: true });
-    await passwordInput.focus();
-    await passwordInput.fill("");
-    await passwordInput.fill(options.password);
-
-    await expect(async () => {
-      const inputValue = await passwordInput.inputValue();
-      expect(inputValue.length).toBeGreaterThan(0);
-    }).toPass({ timeout: 20000 });
-
-    if (options.rememberMe) {
-      const rememberMeCheckbox = this.page.locator('button[role="checkbox"]');
-      await rememberMeCheckbox.click();
-
-      await expect(rememberMeCheckbox).toHaveAttribute("data-state", "checked");
-    }
-
-    const loginButton = this.page
-      .locator('button[type="submit"]')
-      .filter({ hasText: "Login" });
-    await loginButton.waitFor({ state: "visible" });
-    await loginButton.click();
 
     try {
-      await this.page.waitForURL(
-        (url) =>
-          url.pathname.includes("/portfolio") ||
-          url.pathname.includes("/assets"),
-        { timeout: 15000 }
+      await expect(this.page).toHaveURL(/dashboard/, { timeout: 15000 });
+    } catch (urlError) {
+      const currentUrl = this.page.url();
+      const isStillOnSignIn = currentUrl.includes("/auth/sign-in");
+
+      if (isStillOnSignIn) {
+        const errorMessages = await this.page
+          .locator('div[role="alert"], .error-message, [data-testid="error"]')
+          .allTextContents();
+
+        if (errorMessages.length > 0) {
+          throw new Error(
+            `Sign-in failed: Found error messages - ${errorMessages.join(", ")}`
+          );
+        }
+
+        throw new Error(
+          "Sign-in failed: Still on sign-in page without clear error message"
+        );
+      }
+
+      throw new Error(
+        `Sign-in failed: Expected to be on dashboard but got ${currentUrl}`
       );
-    } catch (error) {
-      console.log("Navigation failed:", error);
-
-      const errorMessages = await this.page
-        .locator(".text-destructive")
-        .allTextContents();
-      if (errorMessages.length > 0) {
-        console.log("Validation errors found:", errorMessages);
-      }
     }
-
-    await pages.signUpPage.secureWallet({ pincode: options.pincode });
-    await expect(
-      this.page.locator("div.grid span.truncate.font-semibold", {
-        hasText: options.name,
-      })
-    ).toBeVisible();
-  }
-
-  async signInWithRole(options: {
-    email: string;
-    password: string;
-    name: string;
-    pincodeName?: string;
-    pincode?: string;
-    role?: string;
-    rememberMe?: boolean;
-  }) {
-    const existingRole = await getUserRole(options.email);
-
-    if (!existingRole) {
-      const pages = Pages(this.page);
-      await pages.signUpPage.goto();
-      const signUpOptions = {
-        ...options,
-        pincodeName: options.pincodeName ?? "Test Pincode",
-        pincode: options.pincode ?? "123456",
-      };
-      await pages.signUpPage.signUp(signUpOptions);
-      if (options.role) {
-        await updateUserRole(options.email, options.role as UserRole);
-      }
-    }
-
-    await this.goto();
-    await this.signIn({
-      ...options,
-      pincode: options.pincode ?? "123456",
-      rememberMe: options.rememberMe,
-    });
-  }
-
-  async signInAsAdmin(options: {
-    email: string;
-    password: string;
-    name: string;
-    pincodeName?: string;
-    pincode?: string;
-    rememberMe?: boolean;
-  }) {
-    await this.signInWithRole({ ...options, role: "admin" });
-  }
-
-  async signInAsUser(options: {
-    email: string;
-    password: string;
-    name: string;
-    pincodeName?: string;
-    pincode?: string;
-    rememberMe?: boolean;
-  }) {
-    await this.signInWithRole(options);
   }
 }

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.19;
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
 
 import "forge-std/Test.sol";
 import "../../../contracts/system/token-factory/AbstractATKTokenFactoryImplementation.sol";

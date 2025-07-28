@@ -236,7 +236,7 @@ interface ISMARTIdentityRegistry is IERC165 {
      * @notice Checks if a given investor wallet address is currently registered in this Identity Registry.
      * @dev This is a view function and does not consume gas beyond the read operation cost.
      * @param _userAddress The wallet address to query.
-     * @return `true` if the address is registered, `false` otherwise.
+     * @return True if the address is registered, false otherwise
      */
     function contains(address _userAddress) external view returns (bool);
 

@@ -16,6 +16,10 @@ export type AssetDesignerFormInputData = z.input<
 export const assetDesignerFormOptions = formOptions({
   defaultValues: {
     step: "selectAssetType",
+    verification: {
+      verificationCode: "",
+      verificationType: "two-factor",
+    },
   } as AssetDesignerFormInputData,
 });
 

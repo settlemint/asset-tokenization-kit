@@ -11,11 +11,10 @@ import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/m
 import { ERC735 } from "../../../onchainid/extensions/ERC735.sol";
 import { ClaimAuthorizationExtension } from "../../../onchainid/extensions/ClaimAuthorizationExtension.sol";
 import { OnChainContractIdentity } from "../../../onchainid/extensions/OnChainContractIdentity.sol";
-import { ERC735ClaimSchemes } from "../../../onchainid/ERC735ClaimSchemes.sol";
 import { IContractIdentity } from "../../../onchainid/IContractIdentity.sol";
 
 /// @title ATK Contract Identity Implementation Contract
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract provides the upgradeable logic for on-chain identities associated with contracts
 ///         that implement IContractWithIdentity within the ATK Protocol.
 /// @dev This replaces the previous ATKTokenIdentity with a more generic solution that works for any contract
@@ -192,7 +191,10 @@ contract ATKContractIdentityImplementation is
 
     // --- ERC734 (Key Holder) Functions - Disabled ---
 
+    /// @notice Adds a key with a specific purpose and type
     /// @dev Key operations are not supported in contract identities
+    /// @return Always reverts with UnsupportedKeyOperation
+    // solhint-disable-next-line use-natspec
     function addKey(
         bytes32, /*_key*/
         uint256, /*_purpose*/
@@ -206,17 +208,26 @@ contract ATKContractIdentityImplementation is
         revert UnsupportedKeyOperation();
     }
 
+    /// @notice Removes a key with a specific purpose
     /// @dev Key operations are not supported in contract identities
+    /// @return Always reverts with UnsupportedKeyOperation
+    // solhint-disable-next-line use-natspec
     function removeKey(bytes32, /*_key*/ uint256 /*_purpose*/ ) public virtual override returns (bool) {
         revert UnsupportedKeyOperation();
     }
 
+    /// @notice Approves an execution
     /// @dev Execution operations are not supported in contract identities
+    /// @return Always reverts with UnsupportedExecutionOperation
+    // solhint-disable-next-line use-natspec
     function approve(uint256, /*_id*/ bool /*_toApprove*/ ) public virtual override returns (bool) {
         revert UnsupportedExecutionOperation();
     }
 
+    /// @notice Executes a transaction
     /// @dev Execution operations are not supported in contract identities
+    /// @return Always reverts with UnsupportedExecutionOperation
+    // solhint-disable-next-line use-natspec
     function execute(
         address, /*_to*/
         uint256, /*_value*/
@@ -231,23 +242,52 @@ contract ATKContractIdentityImplementation is
         revert UnsupportedExecutionOperation();
     }
 
+    /// @notice Gets information about a key
     /// @dev Key operations are not supported in contract identities
-    function getKey(bytes32 /*_key*/ ) external view virtual override returns (uint256[] memory, uint256, bytes32) {
+    /// @return purposes Always reverts with UnsupportedKeyOperation
+    /// @return keyType Always reverts with UnsupportedKeyOperation
+    /// @return key Always reverts with UnsupportedKeyOperation
+    // solhint-disable-next-line use-natspec
+    function getKey(bytes32 /*_key*/ )
+        external
+        view
+        virtual
+        override
+        returns (uint256[] memory purposes, uint256 keyType, bytes32 key)
+    {
         revert UnsupportedKeyOperation();
     }
 
+    /// @notice Gets the purposes of a key
     /// @dev Key operations are not supported in contract identities
-    function getKeyPurposes(bytes32 /*_key*/ ) external view virtual override returns (uint256[] memory) {
+    /// @return purposes Always reverts with UnsupportedKeyOperation
+    // solhint-disable-next-line use-natspec
+    function getKeyPurposes(bytes32 /*_key*/ ) external view virtual override returns (uint256[] memory purposes) {
         revert UnsupportedKeyOperation();
     }
 
+    /// @notice Gets all keys with a specific purpose
     /// @dev Key operations are not supported in contract identities
-    function getKeysByPurpose(uint256 /*_purpose*/ ) external view virtual override returns (bytes32[] memory) {
+    /// @return keys Always reverts with UnsupportedKeyOperation
+    // solhint-disable-next-line use-natspec
+    function getKeysByPurpose(uint256 /*_purpose*/ ) external view virtual override returns (bytes32[] memory keys) {
         revert UnsupportedKeyOperation();
     }
 
+    /// @notice Checks if a key has a specific purpose
     /// @dev Key operations are not supported in contract identities
-    function keyHasPurpose(bytes32, /*_key*/ uint256 /*_purpose*/ ) external view virtual override returns (bool) {
+    /// @return hasIt Always reverts with UnsupportedKeyOperation
+    // solhint-disable-next-line use-natspec
+    function keyHasPurpose(
+        bytes32, /*_key*/
+        uint256 /*_purpose*/
+    )
+        external
+        view
+        virtual
+        override
+        returns (bool hasIt)
+    {
         revert UnsupportedKeyOperation();
     }
 
@@ -264,6 +304,8 @@ contract ATKContractIdentityImplementation is
 
     /// @notice Checks if the contract supports a given interface ID.
     /// @dev Declares support for IATKContractIdentity, IERC735, IIdentity, IClaimIssuer, and IERC165.
+    /// @param interfaceId The interface ID to check
+    /// @return True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable) returns (bool) {
         return interfaceId == type(IATKContractIdentity).interfaceId || interfaceId == type(IERC735).interfaceId
             || interfaceId == type(IIdentity).interfaceId || interfaceId == type(IClaimIssuer).interfaceId

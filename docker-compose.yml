@@ -11,7 +11,7 @@ volumes:
     driver: local
 services:
   anvil:
-    image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.5
+    image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.6
     container_name: atk-anvil
     restart: unless-stopped
     environment:
@@ -176,7 +176,7 @@ services:
     volumes:
       - atk-redis:/data
   hasura:
-    image: hasura/graphql-engine:v2.48.1
+    image: hasura/graphql-engine:v2.48.3
     container_name: atk-hasura
     restart: unless-stopped
     depends_on:

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.28;
 
 /// @title Interface for SMART Token Access Management
+/// @author SettleMint
 /// @notice This interface defines the functions that a contract must implement
 ///         to be considered compatible with the SMART token access management system.
 ///         In Solidity, an interface is like a contract blueprint. It specifies

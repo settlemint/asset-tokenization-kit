@@ -7,7 +7,7 @@ import { ATKTokenAccessManagerImplementation } from "./ATKTokenAccessManagerImpl
 import { TokenAccessManagerImplementationNotSet } from "../ATKSystemErrors.sol";
 
 /// @title ATK Token Access Manager Proxy Contract
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract acts as an upgradeable proxy for the `ATKTokenAccessManagerImplementation`.
 /// @dev It follows the EIP-1967 standard for upgradeable proxies. This means that this contract (the proxy)
 ///      holds the storage and the public address that users interact with, while the logic (code execution)
@@ -38,6 +38,7 @@ contract ATKTokenAccessManagerProxy is AbstractATKSystemProxy {
         _performInitializationDelegatecall(implementation, data);
     }
 
+    /// @notice Gets the specific implementation address for the token access manager proxy
     /// @dev Retrieves the implementation address for the Token Access Manager module from the `IATKSystem` contract.
     /// @dev Reverts with `TokenAccessManagerImplementationNotSet` if the implementation address is zero.
     /// @param system The `IATKSystem` contract instance.

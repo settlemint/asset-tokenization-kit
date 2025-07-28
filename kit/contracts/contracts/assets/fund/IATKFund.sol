@@ -21,7 +21,7 @@ interface IATKFund is ISMART, ISMARTTokenAccessManaged, ISMARTCustodian, ISMARTP
     /// @param sender The address that collected the management fees
     /// @param amount The amount of tokens minted as management fees
     /// @param timestamp The timestamp when the fees were collected
-    event ManagementFeeCollected(address indexed sender, uint256 amount, uint256 timestamp);
+    event ManagementFeeCollected(address indexed sender, uint256 indexed amount, uint256 indexed timestamp);
 
     /// @notice Initializes the ATK Fund contract.
     /// @param name_ The name of the fund.

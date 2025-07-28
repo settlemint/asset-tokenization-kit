@@ -50,6 +50,7 @@ contract ATKStableCoinImplementation is
     SMARTBurnableUpgradeable,
     ERC2771ContextUpgradeable
 {
+    /// @notice Constructor that prevents initialization of the implementation contract
     /// @custom:oz-upgrades-unsafe-allow constructor
     /// @param forwarder_ The address of the forwarder contract.
     constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
@@ -449,6 +450,13 @@ contract ATKStableCoinImplementation is
     // --- Hooks (Overrides for Chaining) ---
     // These ensure that logic from multiple inherited extensions (SMART, SMARTCustodian, etc.) is called correctly.
 
+    /// @notice Hook that is called before tokens are minted
+    /// @dev This hook chains validation logic from multiple extensions:
+    ///      1. SMARTCollateralUpgradeable: Validates collateral requirements
+    ///      2. SMARTCustodianUpgradeable: Checks if recipient is frozen
+    ///      3. SMARTUpgradeable: Performs compliance and identity checks
+    /// @param to The address that will receive the minted tokens
+    /// @param amount The amount of tokens to be minted
     /// @inheritdoc SMARTHooks
     function _beforeMint(
         address to,
@@ -461,6 +469,13 @@ contract ATKStableCoinImplementation is
         super._beforeMint(to, amount);
     }
 
+    /// @notice Hook that is called before tokens are transferred
+    /// @dev This hook chains validation logic from multiple extensions:
+    ///      1. SMARTCustodianUpgradeable: Checks frozen status and partial freezes
+    ///      2. SMARTUpgradeable: Performs compliance and identity verification
+    /// @param from The address tokens are transferred from
+    /// @param to The address tokens are transferred to
+    /// @param amount The amount of tokens being transferred
     /// @inheritdoc SMARTHooks
     function _beforeTransfer(
         address from,
@@ -474,6 +489,11 @@ contract ATKStableCoinImplementation is
         super._beforeTransfer(from, to, amount);
     }
 
+    /// @notice Hook that is called before tokens are burned
+    /// @dev This hook chains validation logic from multiple extensions:
+    ///      SMARTCustodianUpgradeable: Validates frozen status and partial freezes
+    /// @param from The address tokens are burned from
+    /// @param amount The amount of tokens to be burned
     /// @inheritdoc SMARTHooks
     function _beforeBurn(
         address from,
@@ -486,6 +506,11 @@ contract ATKStableCoinImplementation is
         super._beforeBurn(from, amount);
     }
 
+    /// @notice Hook that is called before tokens are redeemed
+    /// @dev This hook chains validation logic from multiple extensions:
+    ///      SMARTCustodianUpgradeable: Validates frozen status and partial freezes
+    /// @param owner The address that owns the tokens being redeemed
+    /// @param amount The amount of tokens to be redeemed
     /// @inheritdoc SMARTHooks
     function _beforeRedeem(
         address owner,
@@ -498,11 +523,22 @@ contract ATKStableCoinImplementation is
         super._beforeRedeem(owner, amount);
     }
 
+    /// @notice Hook that is called after tokens are minted
+    /// @dev This hook executes post-mint logic from SMARTUpgradeable which may emit events
+    ///      or update internal accounting after successful minting
+    /// @param to The address that received the minted tokens
+    /// @param amount The amount of tokens that were minted
     /// @inheritdoc SMARTHooks
     function _afterMint(address to, uint256 amount) internal virtual override(SMARTUpgradeable, SMARTHooks) {
         super._afterMint(to, amount);
     }
 
+    /// @notice Hook that is called after tokens are transferred
+    /// @dev This hook executes post-transfer logic from SMARTUpgradeable which may emit events
+    ///      or update internal accounting after successful transfer
+    /// @param from The address tokens were transferred from
+    /// @param to The address tokens were transferred to
+    /// @param amount The amount of tokens that were transferred
     /// @inheritdoc SMARTHooks
     function _afterTransfer(
         address from,
@@ -516,11 +552,21 @@ contract ATKStableCoinImplementation is
         super._afterTransfer(from, to, amount);
     }
 
+    /// @notice Hook that is called after tokens are burned
+    /// @dev This hook executes post-burn logic from SMARTUpgradeable which may emit events
+    ///      or update internal accounting after successful burning
+    /// @param from The address tokens were burned from
+    /// @param amount The amount of tokens that were burned
     /// @inheritdoc SMARTHooks
     function _afterBurn(address from, uint256 amount) internal virtual override(SMARTUpgradeable, SMARTHooks) {
         super._afterBurn(from, amount);
     }
 
+    /// @notice Hook that is called after tokens are recovered from a lost wallet
+    /// @dev This hook executes post-recovery logic from SMARTCustodianUpgradeable which may
+    ///      emit events or update internal state after successful token recovery
+    /// @param lostWallet The address of the wallet that lost access
+    /// @param newWallet The address that received the recovered tokens
     /// @inheritdoc SMARTHooks
     function _afterRecoverTokens(
         address lostWallet,
@@ -536,7 +582,11 @@ contract ATKStableCoinImplementation is
     // --- Internal Functions (Overrides) ---
 
     /**
+     * @notice Internal function to update token balances
      * @dev Overrides _update to ensure Pausable and Collateral checks are applied.
+     * @param from The address tokens are transferred from
+     * @param to The address tokens are transferred to
+     * @param value The amount of tokens being transferred
      */
     function _update(
         address from,
@@ -551,7 +601,9 @@ contract ATKStableCoinImplementation is
         super._update(from, to, value);
     }
 
+    /// @notice Returns the address of the message sender
     /// @dev Resolves msgSender across Context and SMARTPausable.
+    /// @return The address of the message sender
     function _msgSender()
         internal
         view
@@ -562,7 +614,9 @@ contract ATKStableCoinImplementation is
         return ERC2771ContextUpgradeable._msgSender();
     }
 
+    /// @notice Returns the message data
     /// @dev Resolves msgData across Context and ERC2771Context.
+    /// @return The message data
     function _msgData()
         internal
         view
@@ -573,7 +627,9 @@ contract ATKStableCoinImplementation is
         return ERC2771ContextUpgradeable._msgData();
     }
 
+    /// @notice Returns the length of the context suffix
     /// @dev Hook defining the length of the trusted forwarder address suffix in `msg.data`.
+    /// @return The length of the context suffix
     function _contextSuffixLength()
         internal
         view

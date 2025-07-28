@@ -1,31 +1,44 @@
+import { AssetStatusBadge } from "@/components/assets/asset-status-badge";
 import {
   assetClassBreadcrumbs,
   createBreadcrumbMetadata,
 } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { ManageDropdown } from "@/components/manage-dropdown/token";
-import {
-  TabNavigation,
-  type TabItemProps,
-} from "@/components/tab-navigation/tab-navigation";
-import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
+import { ManageAssetDropdown } from "@/components/manage-dropdown/asset";
+import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
 import { seo } from "@/config/metadata";
 import {
+  AssetType,
   getAssetClassFromFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
 } from "@/lib/zod/validators/asset-types";
+import {
+  ethereumAddress,
+  type EthereumAddress,
+} from "@/lib/zod/validators/ethereum-address";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { z } from "zod";
+import { TabBadge } from "@/components/assets/tab-badge";
+import { useQuery } from "@tanstack/react-query";
+import { getAssetTabConfiguration } from "@/components/tab-navigation/asset-tab-configuration";
+
+const routeParamsSchema = z.object({
+  factoryAddress: ethereumAddress,
+  tokenAddress: ethereumAddress,
+});
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress"
 )({
+  parseParams: (params) => routeParamsSchema.parse(params),
   loader: async ({
     context: { queryClient, orpc },
     params: { tokenAddress, factoryAddress },
   }) => {
-    const [token, factory] = await Promise.all([
+    const [asset, factory] = await Promise.all([
       queryClient.fetchQuery(
         orpc.token.read.queryOptions({
           input: { tokenAddress },
@@ -48,11 +61,11 @@ export const Route = createFileRoute(
         ...createBreadcrumbMetadata(factory.name),
         href: `/token/${factoryAddress}`,
       },
-      createBreadcrumbMetadata(token.name)
+      createBreadcrumbMetadata(asset.name)
     );
 
     return {
-      token,
+      asset,
       factory,
       breadcrumb,
     };
@@ -62,20 +75,20 @@ export const Route = createFileRoute(
    * Uses the factory name and asset type description for metadata
    */
   head: ({ loaderData }) => {
-    if (loaderData?.token) {
+    if (loaderData?.asset) {
       const keywords = [
-        loaderData.token.name,
-        loaderData.token.symbol,
-        "tokenization",
-        "token",
+        loaderData.asset.name,
+        loaderData.asset.symbol,
+        "asset tokenization",
+        "digital asset",
       ];
 
-      let title = loaderData.token.name;
+      let title = loaderData.asset.name;
 
       const assetType = getAssetTypeFromFactoryTypeId(
         loaderData.factory.typeId
       );
-      title = `${loaderData.token.name} - ${loaderData.factory.name}`;
+      title = `${loaderData.asset.name} - ${loaderData.factory.name}`;
       keywords.push(assetType, loaderData.factory.name);
 
       return {
@@ -94,24 +107,11 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const { token } = Route.useLoaderData();
-  const { t } = useTranslation(["tokens", "assets", "common"]);
+  const { asset, factory } = Route.useLoaderData();
   const { factoryAddress, tokenAddress } = Route.useParams();
 
-  const tabs = [
-    {
-      href: `/token/${factoryAddress}/${tokenAddress}`,
-      name: t("tokens:details.tokenInformation"),
-    },
-    {
-      href: `/token/${factoryAddress}/${tokenAddress}/holders`,
-      name: t("tokens:details.holders"),
-    },
-    {
-      href: `/token/${factoryAddress}/${tokenAddress}/events`,
-      name: t("tokens:details.events"),
-    },
-  ] as TabItemProps[];
+  // Get asset type from factory
+  const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
 
   return (
     <div className="space-y-6 p-6">
@@ -119,16 +119,93 @@ function RouteComponent() {
         <RouterBreadcrumb />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold tracking-tight">{token.name}</h1>
-            <TokenStatusBadge paused={token.pausable.paused} />
+            <h1 className="text-3xl font-bold tracking-tight">{asset.name}</h1>
+            <AssetStatusBadge paused={asset.pausable.paused} />
           </div>
-          <ManageDropdown token={token} />
+          <ManageAssetDropdown asset={asset} />
         </div>
       </div>
 
-      <TabNavigation items={tabs} />
+      <AsyncTabNavigation
+        factoryAddress={factoryAddress}
+        assetAddress={tokenAddress}
+        assetType={assetType}
+      />
 
       <Outlet />
     </div>
   );
+}
+
+/**
+ * Skeleton loader for tab navigation
+ */
+function TabNavigationSkeleton() {
+  return (
+    <div className="border-b">
+      <div className="flex space-x-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-10 w-24 animate-pulse rounded bg-muted" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Component that loads and renders tab navigation with dynamic configuration
+ */
+function AsyncTabNavigation({
+  factoryAddress,
+  assetAddress,
+  assetType,
+}: {
+  factoryAddress: EthereumAddress;
+  assetAddress: EthereumAddress;
+  assetType: AssetType;
+}) {
+  const { t } = useTranslation(["tokens", "assets", "common"]);
+
+  // Use React Query to handle the async operation
+  const { data: tabConfigs } = useQuery({
+    queryKey: [
+      "asset-tab-configuration",
+      factoryAddress,
+      assetAddress,
+      assetType,
+    ],
+    queryFn: () =>
+      getAssetTabConfiguration({
+        factoryAddress,
+        assetAddress,
+        assetType,
+      }),
+  });
+
+  // Transform tab configurations to TabItemProps with translations and badges
+  const tabs = useMemo(() => {
+    if (!tabConfigs) return [];
+
+    return tabConfigs.map((config) => ({
+      href: config.href,
+      name: config.badgeType ? (
+        <>
+          {t(`tokens:tabs.${config.tabKey}`)}
+          <TabBadge
+            address={assetAddress}
+            assetType={assetType}
+            badgeType={config.badgeType}
+          />
+        </>
+      ) : (
+        t(`tokens:tabs.${config.tabKey}`)
+      ),
+    }));
+  }, [tabConfigs, t, assetAddress, assetType]);
+
+  if (!tabConfigs) {
+    return <TabNavigationSkeleton />;
+  }
+
+  return <TabNavigation items={tabs} />;
 }

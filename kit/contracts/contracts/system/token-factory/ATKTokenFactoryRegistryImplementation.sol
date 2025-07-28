@@ -47,11 +47,16 @@ contract ATKTokenFactoryRegistryImplementation is
     mapping(bytes32 typeHash => address tokenFactoryProxyAddress) private tokenFactoryProxiesByType;
     bytes4 private constant _IATK_TOKEN_FACTORY_ID = type(IATKTokenFactory).interfaceId;
 
+    /// @notice Constructor that disables initializers and sets the trusted forwarder
+    /// @param trustedForwarder The address of the trusted forwarder for meta-transactions
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor(address trustedForwarder) ERC2771ContextUpgradeable(trustedForwarder) {
         _disableInitializers();
     }
 
+    /// @notice Initializes the token factory registry with initial admin and system address
+    /// @param initialAdmin The address to be granted admin roles
+    /// @param systemAddress The address of the ATK system contract
     function initialize(address initialAdmin, address systemAddress) public override initializer {
         __AccessControl_init();
         __ReentrancyGuard_init();
@@ -62,6 +67,12 @@ contract ATKTokenFactoryRegistryImplementation is
         _system = IATKSystem(systemAddress);
     }
 
+    /// @notice Registers a new token factory type in the registry
+    /// @param _name The name of the token factory type (e.g., "Bond", "Equity")
+    /// @param _factoryImplementation The implementation contract address for this factory type
+    /// @param _tokenImplementation The implementation contract address for tokens created by this factory
+    /// @return The address of the deployed factory proxy
+    /// @dev Creates an upgradeable proxy for the factory and grants necessary permissions
     function registerTokenFactory(
         string calldata _name,
         address _factoryImplementation,
@@ -121,6 +132,10 @@ contract ATKTokenFactoryRegistryImplementation is
         return _tokenFactoryProxy;
     }
 
+    /// @notice Updates the implementation address for an existing token factory type
+    /// @param factoryTypeHash The type hash of the factory to update
+    /// @param implementation_ The new implementation contract address
+    /// @dev Only callable by addresses with IMPLEMENTATION_MANAGER_ROLE
     function setTokenFactoryImplementation(
         bytes32 factoryTypeHash,
         address implementation_
@@ -137,14 +152,24 @@ contract ATKTokenFactoryRegistryImplementation is
         emit TokenFactoryImplementationUpdated(_msgSender(), factoryTypeHash, implementation_);
     }
 
+    /// @notice Returns the implementation address for a given factory type
+    /// @param factoryTypeHash The type hash of the factory
+    /// @return The implementation contract address
     function implementation(bytes32 factoryTypeHash) public view override returns (address) {
         return tokenFactoryImplementationsByType[factoryTypeHash];
     }
 
+    /// @notice Returns the proxy address for a given factory type
+    /// @param factoryTypeHash The type hash of the factory
+    /// @return The factory proxy contract address
     function tokenFactory(bytes32 factoryTypeHash) public view override returns (address) {
         return tokenFactoryProxiesByType[factoryTypeHash];
     }
 
+    /// @notice Checks if a contract implements the required interface
+    /// @param implAddress The address of the contract to check
+    /// @param interfaceId The interface ID to verify
+    /// @dev Reverts if the contract doesn't implement the interface
     function _checkInterface(address implAddress, bytes4 interfaceId) private view {
         if (implAddress == address(0)) return;
         try IERC165(implAddress).supportsInterface(interfaceId) returns (bool supported) {
@@ -156,6 +181,9 @@ contract ATKTokenFactoryRegistryImplementation is
         }
     }
 
+    /// @notice Checks if the contract supports a given interface
+    /// @param interfaceId The interface identifier to check
+    /// @return bool True if the interface is supported, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view
@@ -166,10 +194,16 @@ contract ATKTokenFactoryRegistryImplementation is
             || interfaceId == type(IATKTypedImplementationRegistry).interfaceId;
     }
 
+    /// @notice Returns the address of the current message sender
+    /// @return The address of the message sender, accounting for meta-transactions
+    /// @dev Overrides to use ERC2771 context for meta-transaction support
     function _msgSender() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (address) {
         return super._msgSender();
     }
 
+    /// @notice Returns the calldata of the current transaction
+    /// @return The calldata, accounting for meta-transactions
+    /// @dev Overrides to use ERC2771 context for meta-transaction support
     function _msgData()
         internal
         view
@@ -179,6 +213,9 @@ contract ATKTokenFactoryRegistryImplementation is
         return super._msgData();
     }
 
+    /// @notice Returns the length of the context suffix for meta-transactions
+    /// @return The length of the context suffix
+    /// @dev Overrides to use ERC2771 context for meta-transaction support
     function _contextSuffixLength()
         internal
         view
@@ -188,8 +225,10 @@ contract ATKTokenFactoryRegistryImplementation is
         return super._contextSuffixLength();
     }
 
-    /// @dev This function is used to get the registered interfaces of a token implementation.
-    /// It is used to avoid reverts when the token implementation is not a IERC165 contract.
+    /// @notice Safely retrieves the registered interfaces of a token implementation
+    /// @param _tokenImplementation The address of the token implementation to query
+    /// @return An array of interface IDs supported by the token, or empty array if not supported
+    /// @dev This function is used to avoid reverts when the token implementation is not a IERC165 contract.
     function _getRegisteredInterfacesSafely(address _tokenImplementation) private view returns (bytes4[] memory) {
         // Attempt to call supportsInterface on the _tokenImplementation.
         // The `try` block handles potential reverts if _tokenImplementation is not a contract,

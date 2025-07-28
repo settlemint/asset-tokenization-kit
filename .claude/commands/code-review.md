@@ -20,10 +20,57 @@ best practices that can be applied.
 Make sure to read the @CLAUDE.md file to understand the conventions of this
 repo.
 
+Check for proper documentation:
+- Verify README.md files exist for new modules
+- Ensure CLAUDE.md is updated with new patterns
+- Check that test coverage matches documentation claims
+- Validate examples in documentation work correctly
+
 # Review
 
 Next, ultrathink and write up a detailed code review in the Linus style. Use
 your judgement as to what is necessary, given the standards of this repo.
+
+## Gemini-CLI Enhanced Analysis
+
+Before writing your review, leverage gemini-cli for deeper insights:
+
+1. **Security Vulnerability Scan**: Use Gemini to detect hidden vulnerabilities
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@changed-files analyze for security vulnerabilities, race conditions, and edge cases",
+     changeMode: true,
+     model: "gemini-2.5-pro"
+   })
+   ```
+
+2. **Performance Analysis**: Identify optimization opportunities
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@changed-files analyze for performance bottlenecks, N+1 queries, and inefficient algorithms",
+     changeMode: true,
+     sandbox: true
+   })
+   ```
+
+3. **Best Practices Check**: Ensure code follows project standards
+   ```
+   mcp__gemini-cli__ask-gemini({
+     prompt: "@changed-files check against @CLAUDE.md standards and identify deviations",
+     changeMode: true
+   })
+   ```
+
+4. **Edge Case Generation**: Find potential failure scenarios
+   ```
+   mcp__gemini-cli__brainstorm({
+     prompt: "Generate edge cases and failure scenarios for the changes in this PR",
+     domain: "software",
+     constraints: "Focus on user input validation, async operations, and state management",
+     ideaCount: 15,
+     methodology: "lateral"
+   })
+   ```
 
 Do cover the following topics:
 
@@ -102,3 +149,31 @@ noise.
 When you are happy with your work, write up the review (be concise and brutally
 honest, but keep the profanity to a minimum). Do not implement anything on your
 own volition, it is as the users discretion
+
+# Self-Learning & Pattern Recognition
+
+During code reviews, automatically capture and integrate learnings:
+
+## Learning Integration Process
+
+1. **Pattern Detection**: Identify recurring issues, conventions, or project-specific patterns
+2. **Silent Documentation**: Add learnings directly to this file under "Learned Patterns" section
+3. **Global Patterns**: If a pattern applies project-wide, update CLAUDE.md instead
+4. **No User Interruption**: Integrate learnings silently - user will review in PR
+
+## Categories to Learn
+
+- Recurring code issues specific to this codebase
+- Team conventions not yet documented
+- Common security/performance anti-patterns
+- Project-specific best practices
+- Frequently missed edge cases
+
+## Learned Patterns
+
+<!-- AI will append learned patterns here automatically -->
+<!-- Format: ### Pattern Name
+     Context: Where this applies
+     Issue: What to look for
+     Fix: How to address it
+     Example: Code snippet if relevant -->

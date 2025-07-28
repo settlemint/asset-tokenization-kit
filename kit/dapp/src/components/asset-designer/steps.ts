@@ -5,6 +5,7 @@ import { z } from "zod";
 export const AssetDesignerSteps = [
   "selectAssetType",
   "assetBasics",
+  "complianceModules",
   "summary",
 ] as const;
 
@@ -49,6 +50,12 @@ export function useAssetDesignerSteps(): Step<AssetDesignerStepsType>[] {
     },
     {
       step: 3,
+      id: "complianceModules",
+      label: t("wizard.steps.complianceModules.title"),
+      description: t("wizard.steps.complianceModules.description"),
+    },
+    {
+      step: 4,
       id: "summary",
       label: t("wizard.steps.summary.title"),
       description: t("wizard.steps.summary.description"),

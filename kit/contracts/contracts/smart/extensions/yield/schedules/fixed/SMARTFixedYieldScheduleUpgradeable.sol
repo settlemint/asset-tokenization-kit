@@ -3,6 +3,9 @@ pragma solidity ^0.8.28;
 
 import { SMARTFixedYieldScheduleLogic } from "./internal/SMARTFixedYieldScheduleLogic.sol";
 
+/// @title SMART Fixed Yield Schedule Contract (Upgradeable)
+/// @author SettleMint
+/// @notice This abstract contract provides an upgradeable fixed yield schedule implementation for SMART tokens
 abstract contract SMARTFixedYieldScheduleUpgradeable is SMARTFixedYieldScheduleLogic {
     /// @notice Initializes the SMART Fixed Yield Schedule logic.
     /// @dev This function should be called by the implementing contract's initializer.

@@ -11,7 +11,9 @@ import { SMARTExtension } from "../common/SMARTExtension.sol";
 import { _SMARTRedeemableLogic } from "./internal/_SMARTRedeemableLogic.sol";
 
 /// @title Standard SMART Redeemable Extension (Non-Upgradeable)
-/// @notice This contract provides a standard, non-upgradeable implementation for the redeemable token functionality.
+/// @author SettleMint
+/// @notice This contract provides a standard, non-upgradeable implementation for the redeemable
+/// token functionality.
 /// It allows token holders to redeem (burn) their own tokens.
 /// @dev This is an `abstract` contract, meaning it's not meant to be deployed directly but rather inherited by a final,
 /// concrete token contract.

@@ -14,7 +14,9 @@ import { _SMARTBurnableLogic } from "./internal/_SMARTBurnableLogic.sol";
 import { ISMARTBurnable } from "./ISMARTBurnable.sol";
 
 /// @title Upgradeable SMART Burnable Extension
-/// @notice This contract provides the functionality to burn (destroy) tokens for a SMART token contract
+/// @author SettleMint
+/// @notice This contract provides the functionality to burn (destroy) tokens for a SMART token
+/// contract
 ///         that is designed to be upgradeable (e.g., using a proxy pattern).
 ///         'Upgradeable' contracts allow their logic to be updated after deployment without changing
 ///         the contract's address. This is useful for fixing bugs or adding new features.
@@ -29,9 +31,9 @@ import { ISMARTBurnable } from "./ISMARTBurnable.sol";
 ///      It cannot be deployed directly.
 
 abstract contract SMARTBurnableUpgradeable is Initializable, SMARTExtensionUpgradeable, _SMARTBurnableLogic {
-    /// @dev Register the `ISMARTBurnable` interface ID for ERC165. This allows factories to check if the
-    /// contract
-    /// supports the `ISMARTBurnable` interface based on the upgradeable implementation.
+    /// @notice Register the `ISMARTBurnable` interface ID for ERC165.
+    /// @dev This allows factories to check if the contract supports the `ISMARTBurnable` interface based on the
+    /// upgradeable implementation.
     constructor() {
         _registerInterface(type(ISMARTBurnable).interfaceId);
     }

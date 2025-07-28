@@ -7,7 +7,6 @@ import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/I
 import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
-import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // OnchainID imports
@@ -16,7 +15,6 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 
 // Interface imports
 import { ISMARTIdentityRegistry } from "../../smart/interface/ISMARTIdentityRegistry.sol";
-import { ISMART } from "../../smart/interface/ISMART.sol";
 
 import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { IERC3643TrustedIssuersRegistry } from "./../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
@@ -30,7 +28,7 @@ import { ExpressionNode, ExpressionType } from "../../smart/interface/structs/Ex
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
 /// @title ATK Identity Registry Implementation
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice This contract is the upgradeable logic for the ATK Identity Registry. It manages on-chain investor
 /// identities
 /// and their associated data, adhering to the ERC-3643 standard for tokenized assets.
@@ -186,7 +184,7 @@ contract ATKIdentityRegistryImplementation is
         _grantRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, initialAdmin);
         _grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin); // Platform Admin needs to register identities
 
-        for (uint256 i = 0; i < registrarAdmins.length; i++) {
+        for (uint256 i = 0; i < registrarAdmins.length; ++i) {
             _grantRole(ATKSystemRoles.REGISTRAR_ADMIN_ROLE, registrarAdmins[i]);
         }
 

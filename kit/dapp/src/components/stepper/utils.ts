@@ -51,6 +51,14 @@ export function getLastStep<StepId, Steps extends Step<StepId>[]>(
   return getElementAtIndex(sortedSteps, sortedSteps.length - 1);
 }
 
+export function isLastStep<StepId, Steps extends Step<StepId>[]>(
+  steps: Steps,
+  step: Steps[number]
+): boolean {
+  const lastStep = getLastStep(steps);
+  return step.step === lastStep.step;
+}
+
 export function isStepCompleted<StepId>({
   step,
   currentStep,
@@ -67,6 +75,14 @@ export function isGroupCompleted<StepId, GroupId>(
 ): boolean {
   const lastStepInGroup = getLastStep(group.steps);
   return isStepCompleted({ step: lastStepInGroup, currentStep });
+}
+
+export function isLastStepInGroup<StepId, GroupId>(
+  group: StepGroup<StepId, GroupId>,
+  step: Step<StepId>
+): boolean {
+  const lastStepInGroup = getLastStep(group.steps);
+  return step.step === lastStepInGroup.step;
 }
 
 export function isStepGroup<StepId, GroupId>(
@@ -90,4 +106,47 @@ export function flattenSteps<StepId, GroupId>(
     }
     return acc;
   }, []);
+}
+
+export function getCurrentStepIndex<StepId, Steps extends Step<StepId>[]>(
+  allSteps: Steps,
+  currentStep: Steps[number]
+): number {
+  return allSteps.findIndex((step) => step.id === currentStep.id);
+}
+
+export function getProgress<StepId, Steps extends Step<StepId>[]>(
+  allSteps: Steps,
+  currentStep: Steps[number]
+): number {
+  if (allSteps.length === 0) {
+    return 0;
+  }
+
+  const currentStepIndex = getCurrentStepIndex(allSteps, currentStep);
+  return Math.round(((currentStepIndex + 1) / allSteps.length) * 100);
+}
+
+// Constants for timeline height calculation
+const TIMELINE_HEIGHT_CONFIG = {
+  BASE_HEIGHT: 60,
+  CHARACTERS_PER_LINE: 50,
+  MAX_EXTRA_LINES: 3,
+  EXTRA_LINE_HEIGHT: 20,
+} as const;
+
+/**
+ * Calculates dynamic height for timeline separators based on description length.
+ * Uses a base height and adds extra height based on description length.
+ */
+export function calculateLineHeight(description?: string): number {
+  if (!description) return TIMELINE_HEIGHT_CONFIG.BASE_HEIGHT;
+
+  const extraHeight =
+    Math.min(
+      description.length / TIMELINE_HEIGHT_CONFIG.CHARACTERS_PER_LINE,
+      TIMELINE_HEIGHT_CONFIG.MAX_EXTRA_LINES
+    ) * TIMELINE_HEIGHT_CONFIG.EXTRA_LINE_HEIGHT;
+
+  return TIMELINE_HEIGHT_CONFIG.BASE_HEIGHT + extraHeight;
 }

@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.28;
 
-import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IContractIdentity } from "../../../onchainid/IContractIdentity.sol";
 
 /// @title Interface for ATK Contract Identity
-/// @author SettleMint Tokenization Services
+/// @author SettleMint
 /// @notice Interface for on-chain identities associated with contracts implementing IContractWithIdentity
 /// @dev This interface replaces IATKTokenIdentity with a more generic solution that works for any contract
 ///      (tokens, vaults, etc.) that implements IContractWithIdentity. Permission checks are delegated

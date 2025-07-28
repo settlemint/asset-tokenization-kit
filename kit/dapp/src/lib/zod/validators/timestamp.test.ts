@@ -1,5 +1,10 @@
-import { describe, expect, it } from "bun:test";
-import { timestamp } from "./timestamp";
+import { describe, expect, it } from "vitest";
+import {
+  timestamp,
+  isTimestamp,
+  getTimestamp,
+  timestampSerializer,
+} from "./timestamp";
 
 describe("timestamp", () => {
   const validator = timestamp();
@@ -195,5 +200,152 @@ describe("timestamp", () => {
         expect(result.data.getTime()).toBe(1_680_350_400_000);
       }
     });
+  });
+});
+
+describe("isTimestamp", () => {
+  it("should return true for valid timestamps", () => {
+    expect(isTimestamp(new Date())).toBe(true);
+    expect(isTimestamp("2023-04-01T12:00:00Z")).toBe(true);
+    expect(isTimestamp(1_680_350_400_000)).toBe(true);
+    expect(isTimestamp(1_680_350_400)).toBe(true);
+    expect(isTimestamp("1680350400000")).toBe(true);
+    expect(isTimestamp("1680350400")).toBe(true);
+    expect(isTimestamp("2023-04-01")).toBe(true);
+  });
+
+  it("should return false for invalid timestamps", () => {
+    expect(isTimestamp("not-a-date")).toBe(false);
+    expect(isTimestamp("2023-13-01")).toBe(false);
+    expect(isTimestamp(-1)).toBe(false);
+    expect(isTimestamp(null)).toBe(false);
+    expect(isTimestamp(undefined)).toBe(false);
+    expect(isTimestamp({})).toBe(false);
+    expect(isTimestamp([])).toBe(false);
+    expect(isTimestamp(true)).toBe(false);
+    expect(isTimestamp("123abc")).toBe(false);
+  });
+
+  it("should handle edge cases in the try-catch block", () => {
+    // This tests the catch block in isTimestamp by creating a scenario
+    // where safeParse might throw an unexpected error
+
+    // Create a proxy that throws when accessing certain properties
+    const throwingProxy = new Proxy(
+      {},
+      {
+        get() {
+          throw new Error("Unexpected error during parsing");
+        },
+      }
+    );
+
+    expect(isTimestamp(throwingProxy)).toBe(false);
+  });
+
+  it("should work as a type guard", () => {
+    const value: unknown = "2023-04-01T12:00:00Z";
+    if (isTimestamp(value)) {
+      // TypeScript should recognize this will parse to a Date
+      const date = getTimestamp(value);
+      expect(date).toBeInstanceOf(Date);
+    }
+  });
+});
+
+describe("getTimestamp", () => {
+  it("should return valid Date objects", () => {
+    const date1 = getTimestamp(new Date("2023-04-01"));
+    expect(date1).toBeInstanceOf(Date);
+    expect(date1.getFullYear()).toBe(2023);
+
+    const date2 = getTimestamp("2023-04-01T12:00:00Z");
+    expect(date2).toBeInstanceOf(Date);
+
+    const date3 = getTimestamp(1_680_350_400_000);
+    expect(date3).toBeInstanceOf(Date);
+
+    const date4 = getTimestamp("1680350400");
+    expect(date4).toBeInstanceOf(Date);
+  });
+
+  it("should throw for invalid timestamps", () => {
+    expect(() => getTimestamp("not-a-date")).toThrow(
+      "Invalid date string format"
+    );
+    expect(() => getTimestamp("2023-13-01")).toThrow(
+      "Invalid date string format"
+    );
+    expect(() => getTimestamp(-1)).toThrow("Timestamp cannot be negative");
+    expect(() => getTimestamp(null)).toThrow();
+    expect(() => getTimestamp(undefined)).toThrow();
+    expect(() => getTimestamp({})).toThrow();
+    expect(() => getTimestamp([])).toThrow();
+  });
+
+  it("should throw for timestamps out of valid range", () => {
+    const afterYear9999 = new Date(253_402_300_800_000);
+    expect(() => getTimestamp(afterYear9999)).toThrow(
+      "Timestamp is out of valid range"
+    );
+  });
+
+  it("should be useful in functions requiring Date type", () => {
+    const calculateAge = (birthdate: unknown) => {
+      const birth = getTimestamp(birthdate);
+      const now = new Date();
+      return Math.floor(
+        (now.getTime() - birth.getTime()) / (365.25 * 24 * 60 * 60 * 1000)
+      );
+    };
+
+    const birthdate = "1990-01-01";
+    const age = calculateAge(birthdate);
+    expect(age).toBeGreaterThan(30);
+  });
+});
+
+describe("timestampSerializer", () => {
+  it("should have the correct type identifier", () => {
+    expect(timestampSerializer.type).toBe(35);
+  });
+
+  it("should correctly identify Date objects", () => {
+    expect(timestampSerializer.condition(new Date())).toBe(true);
+    expect(timestampSerializer.condition("2023-04-01")).toBe(false);
+    expect(timestampSerializer.condition(1_680_350_400_000)).toBe(false);
+    expect(timestampSerializer.condition(null)).toBe(false);
+    expect(timestampSerializer.condition({})).toBe(false);
+  });
+
+  it("should serialize Date to ISO string", () => {
+    const date = new Date("2023-04-01T12:00:00Z");
+    const serialized = timestampSerializer.serialize(date);
+    expect(serialized).toBe("2023-04-01T12:00:00.000Z");
+    expect(typeof serialized).toBe("string");
+  });
+
+  it("should deserialize ISO string to Date", () => {
+    const isoString = "2023-04-01T12:00:00.000Z";
+    const deserialized = timestampSerializer.deserialize(isoString);
+    expect(deserialized).toBeInstanceOf(Date);
+    expect((deserialized as Date).toISOString()).toBe(isoString);
+  });
+
+  it("should handle round-trip serialization", () => {
+    const originalDate = new Date("2023-04-01T12:00:00Z");
+    const serialized = timestampSerializer.serialize(originalDate);
+    const deserialized = timestampSerializer.deserialize(serialized);
+    expect((deserialized as Date).getTime()).toBe(originalDate.getTime());
+    expect((deserialized as Date).toISOString()).toBe(
+      originalDate.toISOString()
+    );
+  });
+
+  it("should preserve timezone information in UTC", () => {
+    const date = new Date("2023-04-01T12:00:00+05:00"); // Date with timezone offset
+    const serialized = timestampSerializer.serialize(date);
+    expect(serialized).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+    expect((serialized as string).endsWith("Z")).toBe(true); // Should be in UTC
   });
 });

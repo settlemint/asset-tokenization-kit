@@ -11,16 +11,22 @@ import { IATKFund } from "./IATKFund.sol";
 import { IATKFundFactory } from "./IATKFundFactory.sol";
 import { ISMARTTokenAccessManager } from "../../smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
-import { IATKSystem } from "../../system/IATKSystem.sol";
-import { IATKIdentityFactory } from "../../system/identity-factory/IATKIdentityFactory.sol";
 
 // Local imports
 import { ATKFundProxy } from "./ATKFundProxy.sol";
 
 /// @title Implementation of the ATK Fund Factory
+/// @author SettleMint
 /// @notice This contract is responsible for creating instances of ATK Funds.
 contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactoryImplementation {
-    bytes32 public constant override typeId = keccak256("ATKFundFactory");
+    /// @notice Unique identifier for the ATK Fund Factory type
+    bytes32 public constant TYPE_ID = keccak256("ATKFundFactory");
+
+    /// @notice Returns the type identifier for this factory
+    /// @return The bytes32 identifier for the ATK Fund Factory
+    function typeId() external pure override returns (bytes32) {
+        return TYPE_ID;
+    }
 
     /// @notice Constructor for the ATKFundFactoryImplementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions.
@@ -35,11 +41,11 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedFundAddress The address of the newly deployed fund contract.
     function createFund(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
         uint16 managementFeeBps_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_,
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
         uint16 countryCode_
     )
         external
@@ -105,11 +111,11 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
     /// @param initialModulePairs_ The initial compliance module pairs for the fund.
     /// @return predictedAddress The predicted address of the fund contract.
     function predictFundAddress(
-        string memory name_,
-        string memory symbol_,
+        string calldata name_,
+        string calldata symbol_,
         uint8 decimals_,
         uint16 managementFeeBps_,
-        SMARTComplianceModuleParamPair[] memory initialModulePairs_
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_
     )
         external
         view
@@ -138,6 +144,9 @@ contract ATKFundFactoryImplementation is IATKFundFactory, AbstractATKTokenFactor
 
     // --- ERC165 Overrides ---
 
+    /// @notice Checks if this contract implements a specific interface
+    /// @param interfaceId The interface identifier to check
+    /// @return True if the contract implements the interface, false otherwise
     function supportsInterface(bytes4 interfaceId)
         public
         view

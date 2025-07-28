@@ -78,6 +78,26 @@ export function useOnboardingNavigation() {
         if (!nextStep) {
           // Reached the last step, navigate to home page (onboarding complete)
           await refreshSession(); // Refresh session to ensure we have latest data (eg kyc name)
+
+          // Invalidate queries to refresh sidebar and user data
+          await Promise.all([
+            // Invalidate factory list for sidebar
+            queryClient.invalidateQueries({
+              queryKey: orpc.token.factoryList.key(),
+              refetchType: "all",
+            }),
+            // Invalidate system data
+            queryClient.invalidateQueries({
+              queryKey: orpc.system.read.key(),
+              refetchType: "all",
+            }),
+            // Invalidate account data for identity
+            queryClient.invalidateQueries({
+              queryKey: orpc.account.me.key(),
+              refetchType: "all",
+            }),
+          ]);
+
           await navigate({ to: "/" });
           return;
         }

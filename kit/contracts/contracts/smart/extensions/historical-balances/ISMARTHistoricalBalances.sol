@@ -2,7 +2,9 @@
 pragma solidity ^0.8.28;
 
 /// @title Interface for SMART Historical Balances Extension
-/// @notice Defines the external functions for querying historical token balances and total supply.
+/// @author SettleMint
+/// @notice Defines the external functions for querying historical token balances and total
+/// supply.
 /// @dev This interface allows other contracts or off-chain applications to retrieve the balance of an account
 ///      or the total supply of the token at a specific past timepoint (e.g., block number).
 ///      A Solidity 'interface' is a contract blueprint that only declares function signatures without providing
@@ -31,7 +33,9 @@ interface ISMARTHistoricalBalances {
     ///                   the checkpoint.
     /// @param newBalance The balance (either of `account` or `totalSupply`) *after* the operation and at the
     ///                   time of this checkpoint.
-    event CheckpointUpdated(address indexed sender, address indexed account, uint256 oldBalance, uint256 newBalance);
+    event CheckpointUpdated(
+        address indexed sender, address indexed account, uint256 indexed oldBalance, uint256 newBalance
+    );
 
     /// @notice Returns the token balance of a specific `account` at a given `timepoint`.
     /// @dev The `timepoint` usually refers to a block number in the past. Implementations should revert

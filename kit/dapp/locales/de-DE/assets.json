@@ -1,0 +1,12 @@
+{
+  "Bonds_one": "Anleihe",
+  "Bonds_other": "Anleihen",
+  "Deposits_one": "Einlage",
+  "Deposits_other": "Einlagen",
+  "Equities_one": "Eigenkapital",
+  "Equities_other": "Eigenkapitalien",
+  "Funds_one": "Fonds",
+  "Funds_other": "Fonds",
+  "Stablecoins_one": "Stablecoin",
+  "Stablecoins_other": "Stablecoins"
+}

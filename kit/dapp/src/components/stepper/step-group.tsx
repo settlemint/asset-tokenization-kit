@@ -1,14 +1,25 @@
-import { StepComponent } from "@/components/stepper/step";
+import { StepItem } from "@/components/stepper/step-item";
 import type {
   NavigationMode,
   Step,
   StepGroup,
 } from "@/components/stepper/types";
-import { CollapsibleChevron } from "@/components/ui/collapsible-chevron";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Timeline } from "@/components/ui/timeline";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
-import { useEffect, useState } from "react";
-import { isGroupCompleted } from "./utils";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  calculateLineHeight,
+  getCurrentStepIndex,
+  isGroupCompleted,
+  isStepCompleted,
+} from "./utils";
 
 export interface StepGroupProps<StepId, GroupId> {
   group: StepGroup<StepId, GroupId>;
@@ -25,79 +36,140 @@ export function StepGroupComponent<StepId, GroupId>({
   navigation,
   onStepSelect,
 }: StepGroupProps<StepId, GroupId>) {
-  const [open, setOpen] = useState(false);
-  const hasActiveStep = group.steps.some(
-    (step) => step.step === currentStep.step
+  const hasActiveStep = group.steps.some((step) => step.id === currentStep.id);
+  const [expandedGroup, setExpandedGroup] = useState<string | undefined>(
+    hasActiveStep ? String(group.id) : undefined
   );
-  const isCompleted = isGroupCompleted(group, currentStep);
+  const groupCompleted = isGroupCompleted(group, currentStep);
+  const currentStepIndex = getCurrentStepIndex(allSteps, currentStep);
+
+  // Memoized helper function to get step status
+  const getStepStatus = useCallback(
+    (step: Step<StepId>, index: number) => {
+      if (index === currentStepIndex) return "current";
+      if (isStepCompleted({ step, currentStep })) return "completed";
+      return "pending";
+    },
+    [currentStepIndex, currentStep]
+  );
+
+  // Memoized helper function to check if we can navigate to a step
+  const canNavigateToStep = useCallback(
+    (index: number) => {
+      const isCurrent = index === currentStepIndex;
+      const isCompleted = index < currentStepIndex;
+      return isCurrent || (isCompleted && navigation === "next-and-completed");
+    },
+    [currentStepIndex, navigation]
+  );
+
+  // Memoized helper function to navigate to a step
+  const navigateToStep = useCallback(
+    (stepId: StepId) => {
+      const step = group.steps.find((s) => s.id === stepId);
+      if (step) {
+        onStepSelect(step);
+      }
+    },
+    [group.steps, onStepSelect]
+  );
 
   useEffect(() => {
     if (hasActiveStep) {
-      setOpen(true);
+      setExpandedGroup(String(group.id));
     }
-  }, [hasActiveStep]);
+  }, [hasActiveStep, group.id]);
 
   useEffect(() => {
-    if (isCompleted) {
-      setOpen(false);
+    if (groupCompleted) {
+      setExpandedGroup(undefined);
     }
-  }, [isCompleted]);
+  }, [groupCompleted]);
+
+  // Memoized computation of group steps with their indices
+  const groupSteps = useMemo(
+    () =>
+      group.steps.map((step) => ({
+        step,
+        index: allSteps.findIndex((s) => s.id === step.id),
+      })),
+    [group.steps, allSteps]
+  );
 
   return (
-    <CollapsibleChevron
-      open={open}
-      onOpenChange={setOpen}
-      className={cn(
-        hasActiveStep && "bg-primary/5 border border-primary/20 rounded-lg"
-      )}
-      trigger={() => (
-        <div className="flex items-center space-x-3">
-          <span
+    <div className="StepGroup">
+      <Accordion
+        type="single"
+        collapsible
+        className="w-full !bg-transparent"
+        style={{ background: "transparent" }}
+        value={expandedGroup || ""}
+        onValueChange={setExpandedGroup}
+      >
+        <AccordionItem
+          value={String(group.id)}
+          className="border-b-0 bg-transparent"
+        >
+          <AccordionTrigger
             className={cn(
-              "font-semibold text-sm",
-              hasActiveStep ? "text-primary" : "text-foreground"
+              "justify-start text-left mb-3 p-2 rounded-lg transition-all duration-200 hover:bg-white/10 hover:no-underline [&>svg]:hidden",
+              hasActiveStep && "bg-white/5"
             )}
           >
-            {group.label}
-          </span>
-          {isCompleted && (
-            <div className="flex items-center justify-center w-5 h-5 bg-primary rounded-full">
-              <Check className="w-3 h-3 text-primary-foreground" />
-            </div>
-          )}
-        </div>
-      )}
-    >
-      {(open) => {
-        return (
-          <>
-            {open && (
-              <div className="pl-6 space-y-1">
-                {group.steps.map((step, index) => {
-                  const isLastInGroup = index === group.steps.length - 1;
-
-                  return (
-                    <div key={step.step} className="relative">
-                      <StepComponent<StepId>
-                        step={step}
-                        currentStep={currentStep}
-                        allSteps={allSteps}
-                        navigation={navigation}
-                        onStepSelect={onStepSelect}
-                      />
-
-                      {!isLastInGroup && (
-                        <div className="absolute left-6 top-16 w-px h-4 bg-border" />
-                      )}
-                    </div>
-                  );
-                })}
+            <div className="flex flex-col w-full text-left">
+              <div className="flex items-center gap-2 mb-1">
+                <h3
+                  className={cn(
+                    "text-base font-bold transition-all duration-300",
+                    hasActiveStep
+                      ? "text-primary-foreground"
+                      : "text-primary-foreground/70"
+                  )}
+                >
+                  {group.label}
+                </h3>
+                {groupCompleted && (
+                  <Check className="w-4 h-4 text-sm-state-success" />
+                )}
               </div>
-            )}
-            {!open && <></>}
-          </>
-        );
-      }}
-    </CollapsibleChevron>
+              {group.description && (
+                <p className="text-xs text-primary-foreground/50">
+                  {group.description}
+                </p>
+              )}
+            </div>
+          </AccordionTrigger>
+
+          <AccordionContent className="pl-2 bg-transparent">
+            <Timeline className="ml-4 space-y-3">
+              {groupSteps.map(({ step, index }, stepIndex) => {
+                const status = getStepStatus(step, index);
+                const isCurrent = index === currentStepIndex;
+                const isCompleted = status === "completed";
+                const isAccessible = canNavigateToStep(index);
+                const isLastInGroup = stepIndex === groupSteps.length - 1;
+                const dynamicHeight = calculateLineHeight(step.description);
+
+                return (
+                  <StepItem
+                    key={String(step.id)}
+                    step={step}
+                    stepIndex={stepIndex}
+                    isCurrent={isCurrent}
+                    isCompleted={isCompleted}
+                    isAccessible={isAccessible}
+                    isLast={isLastInGroup}
+                    dynamicHeight={dynamicHeight}
+                    onStepSelect={(selectedStep) => {
+                      navigateToStep(selectedStep.id);
+                    }}
+                  />
+                );
+              })}
+            </Timeline>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
   );
 }
