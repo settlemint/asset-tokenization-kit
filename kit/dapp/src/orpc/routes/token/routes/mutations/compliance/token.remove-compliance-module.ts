@@ -29,42 +29,41 @@ const TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenRemoveComplianceModule =
-  tokenRouter.token.tokenRemoveComplianceModule
-    .use(
-      tokenPermissionMiddleware({
-        requiredRoles: TOKEN_PERMISSIONS.tokenRemoveComplianceModule,
-      })
-    )
-    .use(portalMiddleware)
-    .handler(async function* ({ input, context }) {
-      const { contract, verification, moduleAddress } = input;
-      const { auth, t } = context;
+export const removeComplianceModule = tokenRouter.token.removeComplianceModule
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.removeComplianceModule,
+    })
+  )
+  .use(portalMiddleware)
+  .handler(async function* ({ input, context }) {
+    const { contract, verification, moduleAddress } = input;
+    const { auth, t } = context;
 
-      // Generate messages using server-side translations
-      const { pendingMessage, successMessage, errorMessage } =
-        getMutationMessages(t, "tokens", "removeComplianceModule");
+    // Generate messages using server-side translations
+    const { pendingMessage, successMessage, errorMessage } =
+      getMutationMessages(t, "tokens", "removeComplianceModule");
 
-      const sender = auth.user;
-      const challengeResponse = await handleChallenge(sender, {
-        code: verification.verificationCode,
-        type: verification.verificationType,
-      });
-
-      const transactionHash = yield* context.portalClient.mutate(
-        TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION,
-        {
-          address: contract,
-          from: sender.wallet,
-          moduleAddress,
-          ...challengeResponse,
-        },
-        errorMessage,
-        {
-          waitingForMining: pendingMessage,
-          transactionIndexed: successMessage,
-        }
-      );
-
-      return getEthereumHash(transactionHash);
+    const sender = auth.user;
+    const challengeResponse = await handleChallenge(sender, {
+      code: verification.verificationCode,
+      type: verification.verificationType,
     });
+
+    const transactionHash = yield* context.portalClient.mutate(
+      TOKEN_REMOVE_COMPLIANCE_MODULE_MUTATION,
+      {
+        address: contract,
+        from: sender.wallet,
+        moduleAddress,
+        ...challengeResponse,
+      },
+      errorMessage,
+      {
+        waitingForMining: pendingMessage,
+        transactionIndexed: successMessage,
+      }
+    );
+
+    return getEthereumHash(transactionHash);
+  });

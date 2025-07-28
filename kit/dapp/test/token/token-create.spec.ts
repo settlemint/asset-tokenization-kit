@@ -1,5 +1,5 @@
-import { describe, expect, test } from "vitest";
 import { from } from "dnum";
+import { describe, expect, test } from "vitest";
 import { getOrpcClient } from "../utils/orpc-client";
 import {
   DEFAULT_ADMIN,
@@ -12,12 +12,6 @@ describe("Token create", () => {
   test("can create a token", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
-    const system = await client.system.read({ id: "default" });
-
-    expect(system?.tokenFactoryRegistry).toBeDefined();
-    if (!system?.tokenFactoryRegistry) {
-      return;
-    }
 
     const tokenData = {
       type: "stablecoin",
@@ -31,7 +25,6 @@ describe("Token create", () => {
         verificationCode: DEFAULT_PINCODE,
         verificationType: "pincode",
       },
-      contract: system?.tokenFactoryRegistry,
       ...tokenData,
     });
 
@@ -66,13 +59,6 @@ describe("Token create", () => {
   test("regular users cant create tokens", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
-    const system = await client.system.read({ id: "default" });
-
-    expect(system?.tokenFactoryRegistry).toBeDefined();
-    const tokenFactoryRegistry = system?.tokenFactoryRegistry;
-    if (!tokenFactoryRegistry) {
-      return;
-    }
 
     await expect(
       client.token.create({
@@ -80,7 +66,6 @@ describe("Token create", () => {
           verificationCode: DEFAULT_PINCODE,
           verificationType: "pincode",
         },
-        contract: tokenFactoryRegistry,
         type: "stablecoin",
         name: `Test Stablecoin Investor ${Date.now()}`,
         symbol: "TSTC",

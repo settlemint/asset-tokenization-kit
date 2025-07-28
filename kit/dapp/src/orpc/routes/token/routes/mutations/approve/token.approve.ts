@@ -31,11 +31,11 @@ const TOKEN_APPROVE_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenApprove = tokenRouter.token.tokenApprove
+export const approve = tokenRouter.token.approve
   .use(portalMiddleware)
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.tokenApprove,
+      requiredRoles: TOKEN_PERMISSIONS.approve,
     })
   )
   .handler(async function* ({ input, context }) {

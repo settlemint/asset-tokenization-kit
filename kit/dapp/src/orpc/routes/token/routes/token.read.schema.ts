@@ -156,52 +156,48 @@ export const RawTokenSchema = z.object({
               pause: z
                 .boolean()
                 .describe("Whether the user can execute the pause action"),
-              tokenAddComplianceModule: z
+              addComplianceModule: z
                 .boolean()
                 .describe(
-                  "Whether the user can execute the tokenAddComplianceModule action"
+                  "Whether the user can execute the addComplianceModule action"
                 ),
-              tokenApprove: z
+              approve: z
                 .boolean()
-                .describe(
-                  "Whether the user can execute the tokenApprove action"
-                ),
-              tokenForcedRecover: z
+                .describe("Whether the user can execute the approve action"),
+              forcedRecover: z
                 .boolean()
                 .describe(
                   "Whether the user can execute the tokenForcedRecover action"
                 ),
-              tokenFreezeAddress: z
+              freezeAddress: z
                 .boolean()
                 .describe(
                   "Whether the user can execute the tokenFreezeAddress action"
                 ),
-              tokenRecoverERC20: z
+              recoverERC20: z
                 .boolean()
                 .describe(
                   "Whether the user can execute the tokenRecoverERC20 action"
                 ),
-              tokenRecoverTokens: z
+              recoverTokens: z
                 .boolean()
                 .describe(
                   "Whether the user can execute the tokenRecoverTokens action"
                 ),
-              tokenRedeem: z
+              redeem: z
                 .boolean()
                 .describe(
                   "Whether the user can execute the tokenRedeem action"
                 ),
-              tokenRemoveComplianceModule: z
+              removeComplianceModule: z
                 .boolean()
                 .describe(
                   "Whether the user can execute the tokenRemoveComplianceModule action"
                 ),
-              tokenSetCap: z
+              setCap: z
                 .boolean()
-                .describe(
-                  "Whether the user can execute the tokenSetCap action"
-                ),
-              tokenSetYieldSchedule: z
+                .describe("Whether the user can execute the setCap action"),
+              setYieldSchedule: z
                 .boolean()
                 .describe(
                   "Whether the user can execute the tokenSetYieldSchedule action"

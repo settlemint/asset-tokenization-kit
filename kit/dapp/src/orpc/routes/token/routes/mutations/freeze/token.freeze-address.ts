@@ -31,11 +31,11 @@ const TOKEN_FREEZE_ADDRESS_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenFreezeAddress = tokenRouter.token.tokenFreezeAddress
+export const freezeAddress = tokenRouter.token.freezeAddress
   .use(portalMiddleware)
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.tokenFreezeAddress,
+      requiredRoles: TOKEN_PERMISSIONS.freezeAddress,
       requiredExtensions: ["CUSTODIAN"],
     })
   )

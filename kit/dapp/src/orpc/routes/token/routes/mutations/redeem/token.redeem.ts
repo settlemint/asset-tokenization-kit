@@ -47,10 +47,10 @@ const TOKEN_REDEEM_ALL_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenRedeem = tokenRouter.token.tokenRedeem
+export const redeem = tokenRouter.token.redeem
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.tokenRedeem,
+      requiredRoles: TOKEN_PERMISSIONS.redeem,
       requiredExtensions: ["REDEEMABLE"],
     })
   )

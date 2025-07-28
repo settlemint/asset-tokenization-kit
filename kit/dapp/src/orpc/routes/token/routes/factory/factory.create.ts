@@ -19,8 +19,8 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import type { VariablesOf } from "@settlemint/sdk-portal";
@@ -76,56 +76,37 @@ const CREATE_TOKEN_FACTORY_MUTATION = portalGraphql(`
  * @auth Required - User must be authenticated
  * @middleware portalMiddleware - Provides Portal GraphQL client with transaction tracking
  * @middleware theGraphMiddleware - Provides TheGraph client
- * @param input.contract - The token factory registry contract address
  * @param input.factories - Single factory or array of factories to create
  * @param input.messages - Optional custom messages for localization
  * @yields {FactoryCreationEvent} Progress events with status, message, and current factory info
  * @returns {AsyncGenerator} Generator that yields events and completes with creation summary
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system not bootstrapped or transaction fails
- * @example
- * ```typescript
- * // Create a single bond factory with progress tracking
- * for await (const event of client.tokens.factoryCreate({
- *   contract: "0x123...",
- *   factories: {
- *     type: "bond",
- *     name: "Corporate Bonds"
- *   }
- * })) {
- *   console.log(`${event.status}: ${event.message}`);
- *   if (event.currentFactory) {
- *     console.log(`Creating ${event.currentFactory.type}: ${event.currentFactory.name}`);
- *   }
- * }
- *
- * // Create multiple factories with batch progress
- * for await (const event of client.tokens.factoryCreate({
- *   contract: "0x123...",
- *   factories: [
- *     { type: "bond", name: "Corporate Bonds" },
- *     { type: "equity", name: "Common Stock" }
- *   ]
- * })) {
- *   if (event.progress) {
- *     console.log(`Progress: ${event.progress.current}/${event.progress.total}`);
- *   }
- *   if (event.status === "completed" && event.result) {
- *     const successful = event.result.filter(r => !r.error).length;
- *     console.log(`Created ${successful} factories`);
- *   }
- * }
- * ```
  */
 export const factoryCreate = onboardedRouter.token.factoryCreate
-
-  .use(theGraphMiddleware)
   .use(portalMiddleware)
   .use(systemMiddleware)
+  .use(
+    blockchainPermissionsMiddleware({
+      requiredRoles: ["registrar"],
+      getAccessControl: ({ context }) => {
+        const systemData = context.system;
+        return systemData?.tokenFactoryRegistry?.accessControl;
+      },
+    })
+  )
   .handler(async function* ({ input, context, errors }) {
-    const { contract, factories, verification } = input;
+    const { factories, verification } = input;
     const sender = context.auth.user;
-    const { t } = context;
+    const { t, system } = context;
+
+    if (!system.tokenFactoryRegistry) {
+      const cause = new Error("Token factory registry not found");
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: cause.message,
+        cause,
+      });
+    }
 
     // Normalize to array
     const factoryList = Array.isArray(factories) ? factories : [factories];
@@ -232,7 +213,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
       try {
         // Execute the factory creation transaction
         const variables: VariablesOf<typeof CREATE_TOKEN_FACTORY_MUTATION> = {
-          address: contract,
+          address: system.tokenFactoryRegistry?.id,
           from: sender.wallet,
           factoryImplementation: factoryImplementation,
           tokenImplementation: tokenImplementation,
