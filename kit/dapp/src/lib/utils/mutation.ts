@@ -3,8 +3,10 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 
 const logger = createLogger();
 
+type Stream = Pick<MutationOutput, "status" | "message">;
+
 export async function waitForStream(
-  result: AsyncIteratorObject<MutationOutput>,
+  result: AsyncIteratorObject<Stream>,
   eventName: string
 ) {
   for await (const event of result) {

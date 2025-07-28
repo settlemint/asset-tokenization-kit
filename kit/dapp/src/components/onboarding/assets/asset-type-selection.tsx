@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { useAppForm } from "@/hooks/use-app-form";
+import { waitForStream } from "@/lib/utils/mutation";
 import {
   type AssetFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
@@ -17,7 +18,6 @@ import {
   type TokenType,
   TokenTypeEnum,
 } from "@/orpc/routes/token/routes/factory/factory.create.schema";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { TriangleAlert } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -27,8 +27,6 @@ import { toast } from "sonner";
 interface AssetSelectionFormValues {
   assets: TokenType[];
 }
-
-const logger = createLogger();
 
 export function AssetTypeSelection() {
   const { refreshUserState, completeStepAndNavigate } =
@@ -80,13 +78,7 @@ export function AssetTypeSelection() {
     useMutation(
       orpc.token.factoryCreate.mutationOptions({
         onSuccess: async (result) => {
-          // TODO: update factory create schema to use mutation output schema?
-          for await (const event of result) {
-            logger.info("token factory deployment event", event);
-            if (event.status === "failed") {
-              throw new Error(event.message);
-            }
-          }
+          await waitForStream(result, "token factory deployment");
 
           // Refetch all relevant data
           await Promise.all([

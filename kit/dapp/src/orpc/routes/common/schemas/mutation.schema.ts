@@ -67,6 +67,7 @@ export const MutationOutputStatusSchema = z.enum([
   "pending",
   "confirmed",
   "failed",
+  "completed",
 ]);
 
 export type MutationOutputStatus = z.infer<typeof MutationOutputStatusSchema>;
