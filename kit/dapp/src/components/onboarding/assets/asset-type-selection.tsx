@@ -80,12 +80,14 @@ export function AssetTypeSelection() {
     useMutation(
       orpc.token.factoryCreate.mutationOptions({
         onSuccess: async (result) => {
+          // TODO: update factory create schema to use mutation output schema?
           for await (const event of result) {
             logger.info("token factory deployment event", event);
             if (event.status === "failed") {
               throw new Error(event.message);
             }
           }
+
           // Refetch all relevant data
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: orpc.system.read.key() }),

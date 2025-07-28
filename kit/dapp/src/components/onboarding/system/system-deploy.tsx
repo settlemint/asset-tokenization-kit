@@ -2,16 +2,14 @@ import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-la
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
+import { waitForStream } from "@/lib/utils/mutation";
 import { orpc } from "@/orpc/orpc-client";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-const logger = createLogger();
 
 export function SystemDeploy() {
   const { t } = useTranslation(["onboarding", "common"]);
@@ -31,15 +29,8 @@ export function SystemDeploy() {
           return result;
         },
         onSuccess: async (result) => {
-          for await (const event of result) {
-            logger.info("system deployment event", event);
-            if (event.status === "failed") {
-              throw new Error(event.message);
-            }
-            if (event.status === "confirmed") {
-              await refreshUserState();
-            }
-          }
+          await waitForStream(result, "system creation");
+          await refreshUserState();
         },
       })
     );

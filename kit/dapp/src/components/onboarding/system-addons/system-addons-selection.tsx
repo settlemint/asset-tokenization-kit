@@ -87,6 +87,7 @@ export function SystemAddonsSelection() {
     useMutation(
       orpc.system.addonCreate.mutationOptions({
         onSuccess: async (result) => {
+          // TODO: update factory create schema to use mutation output schema?
           for await (const event of result) {
             logger.info("system addon deployment event", event);
             if (event.status === "failed") {
