@@ -101,7 +101,11 @@ export const AssetDesignerForm = ({ factories }: AssetDesignerFormProps) => {
 
   const stepComponent: Record<AssetDesignerStepsType, JSX.Element> = {
     selectAssetType: (
-      <SelectAssetType form={form} onStepSubmit={incrementStep} />
+      <SelectAssetType
+        form={form}
+        onStepSubmit={incrementStep}
+        factories={factories}
+      />
     ),
     assetBasics: <AssetBasics form={form} onStepSubmit={incrementStep} />,
     complianceModules: (
