@@ -6,6 +6,8 @@ import "../../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import "../../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
 import "../../utils/SystemUtils.sol";
 import "../../utils/IdentityUtils.sol";
+import "../../utils/ClaimUtils.sol";
+import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
@@ -17,23 +19,51 @@ import { ClaimExpressionUtils } from "../../utils/ClaimExpressionUtils.sol";
 contract ATKIdentityRegistryImplementationTest is Test {
     SystemUtils public systemUtils;
     IdentityUtils public identityUtils;
+    ClaimUtils public claimUtils;
     ISMARTIdentityRegistry public identityRegistry;
     address public admin;
     address public user1;
     address public user2;
     address public unauthorizedUser;
 
+    // Additional test users for comprehensive expression testing
+    address public userWithKYC; // Has only KYC claim
+    address public userWithAML; // Has only AML claim
+    address public userWithBoth; // Has KYC and AML claims
+    address public userWithNone; // Has no claims
+    address public claimIssuer;
+
     IIdentity public identity1;
     IIdentity public identity2;
+    IIdentity public identityKYC;
+    IIdentity public identityAML;
+    IIdentity public identityBoth;
+    IIdentity public identityNone;
+
     uint16 public constant COUNTRY_US = 840;
     uint16 public constant COUNTRY_UK = 826;
     uint256[] public claimTopics;
+
+    // Topic IDs for testing
+    uint256 public kycTopicId;
+    uint256 public amlTopicId;
+    uint256 public collateralTopicId;
+
+    // Private key for claim issuer
+    uint256 internal claimIssuerPrivateKey = 0x12345;
 
     function setUp() public {
         admin = makeAddr("admin");
         user1 = makeAddr("user1");
         user2 = makeAddr("user2");
         unauthorizedUser = makeAddr("unauthorizedUser");
+
+        // Initialize additional test users for expression testing
+        userWithKYC = makeAddr("userWithKYC");
+        userWithAML = makeAddr("userWithAML");
+        userWithBoth = makeAddr("userWithBoth");
+        userWithNone = makeAddr("userWithNone");
+        claimIssuer = vm.addr(claimIssuerPrivateKey);
 
         systemUtils = new SystemUtils(admin);
         identityRegistry = systemUtils.identityRegistry();
@@ -42,15 +72,57 @@ contract ATKIdentityRegistryImplementationTest is Test {
             admin, systemUtils.identityFactory(), identityRegistry, systemUtils.trustedIssuersRegistry()
         );
 
+        claimUtils = new ClaimUtils(
+            admin,
+            claimIssuer,
+            claimIssuerPrivateKey,
+            identityRegistry,
+            systemUtils.identityFactory(),
+            systemUtils.topicSchemeRegistry()
+        );
+
+        // Get topic IDs
+        kycTopicId = systemUtils.getTopicId(ATKTopics.TOPIC_KYC);
+        amlTopicId = systemUtils.getTopicId(ATKTopics.TOPIC_AML);
+        collateralTopicId = systemUtils.getTopicId(ATKTopics.TOPIC_COLLATERAL);
+
         vm.startPrank(admin);
 
-        // Create test identities
+        // Create basic test identities
         address identity1Addr = identityUtils.createIdentity(user1);
         address identity2Addr = identityUtils.createIdentity(user2);
         identity1 = IIdentity(identity1Addr);
         identity2 = IIdentity(identity2Addr);
 
+        // Create comprehensive test identities for expression testing
+        address identityKYCAddr = identityUtils.createClientIdentity(userWithKYC, COUNTRY_US);
+        address identityAMLAddr = identityUtils.createClientIdentity(userWithAML, COUNTRY_US);
+        address identityBothAddr = identityUtils.createClientIdentity(userWithBoth, COUNTRY_US);
+        address identityNoneAddr = identityUtils.createClientIdentity(userWithNone, COUNTRY_US);
+
+        identityKYC = IIdentity(identityKYCAddr);
+        identityAML = IIdentity(identityAMLAddr);
+        identityBoth = IIdentity(identityBothAddr);
+        identityNone = IIdentity(identityNoneAddr);
+
         vm.stopPrank();
+
+        // Set up claim issuer with proper topics
+        uint256[] memory issuerTopics = new uint256[](3);
+        issuerTopics[0] = kycTopicId;
+        issuerTopics[1] = amlTopicId;
+        issuerTopics[2] = collateralTopicId;
+
+        vm.label(claimIssuer, "Claim Issuer");
+        address claimIssuerIdentity = identityUtils.createIssuerIdentity(claimIssuer, issuerTopics);
+        vm.label(claimIssuerIdentity, "Claim Issuer Identity");
+
+        // Issue claims to create different verification scenarios
+        claimUtils.issueKYCClaim(userWithKYC);  // Only KYC
+        claimUtils.issueAMLClaim(userWithAML);  // Only AML
+        claimUtils.issueKYCClaim(userWithBoth); // Both KYC and AML
+        claimUtils.issueAMLClaim(userWithBoth);
+        // userWithNone gets no claims
     }
 
     function testInitialState() public view {
@@ -616,5 +688,341 @@ contract ATKIdentityRegistryImplementationTest is Test {
      */
     function _topicsToExpressionNodes(uint256[] memory topics) internal pure returns (ExpressionNode[] memory) {
         return ClaimExpressionUtils.topicsToExpressionNodes(topics);
+    }
+
+    // =====================================================================
+    //                    POSTFIX EXPRESSION TESTS
+    // =====================================================================
+
+    /// @dev Helper function to create a single topic expression: [TOPIC]
+    function _createSingleTopicExpression(uint256 topic) internal pure returns (ExpressionNode[] memory) {
+        ExpressionNode[] memory nodes = new ExpressionNode[](1);
+        nodes[0] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: topic
+        });
+        return nodes;
+    }
+
+    /// @dev Helper function to create A AND B expression: [TOPIC_A, TOPIC_B, AND]
+    function _createAndExpression(uint256 topicA, uint256 topicB) internal pure returns (ExpressionNode[] memory) {
+        ExpressionNode[] memory nodes = new ExpressionNode[](3);
+        nodes[0] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: topicA
+        });
+        nodes[1] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: topicB
+        });
+        nodes[2] = ExpressionNode({
+            nodeType: ExpressionType.AND,
+            value: 0
+        });
+        return nodes;
+    }
+
+    /// @dev Helper function to create A OR B expression: [TOPIC_A, TOPIC_B, OR]
+    function _createOrExpression(uint256 topicA, uint256 topicB) internal pure returns (ExpressionNode[] memory) {
+        ExpressionNode[] memory nodes = new ExpressionNode[](3);
+        nodes[0] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: topicA
+        });
+        nodes[1] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: topicB
+        });
+        nodes[2] = ExpressionNode({
+            nodeType: ExpressionType.OR,
+            value: 0
+        });
+        return nodes;
+    }
+
+    /// @dev Helper function to create NOT A expression: [TOPIC_A, NOT]
+    function _createNotExpression(uint256 topic) internal pure returns (ExpressionNode[] memory) {
+        ExpressionNode[] memory nodes = new ExpressionNode[](2);
+        nodes[0] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: topic
+        });
+        nodes[1] = ExpressionNode({
+            nodeType: ExpressionType.NOT,
+            value: 0
+        });
+        return nodes;
+    }
+
+    /// @dev Helper function to create (A AND B) OR C expression: [TOPIC_A, TOPIC_B, AND, TOPIC_C, OR]
+    function _createComplexExpression1(uint256 topicA, uint256 topicB, uint256 topicC) internal pure returns (ExpressionNode[] memory) {
+        ExpressionNode[] memory nodes = new ExpressionNode[](5);
+        nodes[0] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: topicA
+        });
+        nodes[1] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: topicB
+        });
+        nodes[2] = ExpressionNode({
+            nodeType: ExpressionType.AND,
+            value: 0
+        });
+        nodes[3] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: topicC
+        });
+        nodes[4] = ExpressionNode({
+            nodeType: ExpressionType.OR,
+            value: 0
+        });
+        return nodes;
+    }
+
+    /// @dev Helper function to create A AND NOT B expression: [TOPIC_A, TOPIC_B, NOT, AND]
+    function _createAndNotExpression(uint256 topicA, uint256 topicB) internal pure returns (ExpressionNode[] memory) {
+        ExpressionNode[] memory nodes = new ExpressionNode[](4);
+        nodes[0] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: topicA
+        });
+        nodes[1] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: topicB
+        });
+        nodes[2] = ExpressionNode({
+            nodeType: ExpressionType.NOT,
+            value: 0
+        });
+        nodes[3] = ExpressionNode({
+            nodeType: ExpressionType.AND,
+            value: 0
+        });
+        return nodes;
+    }
+
+    // Test single topic expressions
+    function testPostfixSingleTopicKYC() public view {
+        ExpressionNode[] memory expression = _createSingleTopicExpression(kycTopicId);
+
+        // User with KYC should pass
+        assertTrue(identityRegistry.isVerified(userWithKYC, expression));
+
+        // User with only AML should fail
+        assertFalse(identityRegistry.isVerified(userWithAML, expression));
+
+        // User with both should pass
+        assertTrue(identityRegistry.isVerified(userWithBoth, expression));
+
+        // User with none should fail
+        assertFalse(identityRegistry.isVerified(userWithNone, expression));
+    }
+
+    function testPostfixSingleTopicAML() public view {
+        ExpressionNode[] memory expression = _createSingleTopicExpression(amlTopicId);
+
+        // User with AML should pass
+        assertTrue(identityRegistry.isVerified(userWithAML, expression));
+
+        // User with only KYC should fail
+        assertFalse(identityRegistry.isVerified(userWithKYC, expression));
+
+        // User with both should pass
+        assertTrue(identityRegistry.isVerified(userWithBoth, expression));
+
+        // User with none should fail
+        assertFalse(identityRegistry.isVerified(userWithNone, expression));
+    }
+
+    // Test AND expressions
+    function testPostfixKYCAndAML() public view {
+        ExpressionNode[] memory expression = _createAndExpression(kycTopicId, amlTopicId);
+
+        // Only user with both claims should pass
+        assertTrue(identityRegistry.isVerified(userWithBoth, expression));
+
+        // Users with only one claim should fail
+        assertFalse(identityRegistry.isVerified(userWithKYC, expression));
+        assertFalse(identityRegistry.isVerified(userWithAML, expression));
+
+        // User with no claims should fail
+        assertFalse(identityRegistry.isVerified(userWithNone, expression));
+    }
+
+    // Test OR expressions
+    function testPostfixKYCOrAML() public view {
+        ExpressionNode[] memory expression = _createOrExpression(kycTopicId, amlTopicId);
+
+        // Users with either claim should pass
+        assertTrue(identityRegistry.isVerified(userWithKYC, expression));
+        assertTrue(identityRegistry.isVerified(userWithAML, expression));
+        assertTrue(identityRegistry.isVerified(userWithBoth, expression));
+
+        // User with no claims should fail
+        assertFalse(identityRegistry.isVerified(userWithNone, expression));
+    }
+
+    // Test NOT expressions
+    function testPostfixNotKYC() public view {
+        ExpressionNode[] memory expression = _createNotExpression(kycTopicId);
+
+        // Users without KYC should pass
+        assertTrue(identityRegistry.isVerified(userWithAML, expression));
+        assertTrue(identityRegistry.isVerified(userWithNone, expression));
+
+        // Users with KYC should fail
+        assertFalse(identityRegistry.isVerified(userWithKYC, expression));
+        assertFalse(identityRegistry.isVerified(userWithBoth, expression));
+    }
+
+    // Test complex expressions: (KYC AND AML) OR COLLATERAL
+    function testPostfixComplexExpression() public view {
+        ExpressionNode[] memory expression = _createComplexExpression1(kycTopicId, amlTopicId, collateralTopicId);
+
+        // User with both KYC and AML should pass (first part of OR)
+        assertTrue(identityRegistry.isVerified(userWithBoth, expression));
+
+        // Users with only one claim should fail (since no one has collateral)
+        assertFalse(identityRegistry.isVerified(userWithKYC, expression));
+        assertFalse(identityRegistry.isVerified(userWithAML, expression));
+
+        // User with no claims should fail
+        assertFalse(identityRegistry.isVerified(userWithNone, expression));
+    }
+
+    // Test KYC AND NOT AML expression
+    function testPostfixKYCAndNotAML() public view {
+        ExpressionNode[] memory expression = _createAndNotExpression(kycTopicId, amlTopicId);
+
+        // User with only KYC should pass
+        assertTrue(identityRegistry.isVerified(userWithKYC, expression));
+
+        // User with both should fail (has AML)
+        assertFalse(identityRegistry.isVerified(userWithBoth, expression));
+
+        // User with only AML should fail (no KYC)
+        assertFalse(identityRegistry.isVerified(userWithAML, expression));
+
+        // User with none should fail (no KYC)
+        assertFalse(identityRegistry.isVerified(userWithNone, expression));
+    }
+
+    // Test three-way AND chain: KYC AND AML AND COLLATERAL
+    function testPostfixThreeWayAnd() public view {
+        uint256[] memory topics = new uint256[](3);
+        topics[0] = kycTopicId;
+        topics[1] = amlTopicId;
+        topics[2] = collateralTopicId;
+
+        ExpressionNode[] memory expression = _topicsToExpressionNodes(topics);
+
+        // No user has all three claims, so all should fail
+        assertFalse(identityRegistry.isVerified(userWithKYC, expression));
+        assertFalse(identityRegistry.isVerified(userWithAML, expression));
+        assertFalse(identityRegistry.isVerified(userWithBoth, expression));
+        assertFalse(identityRegistry.isVerified(userWithNone, expression));
+    }
+
+    // Test caching by using repeated topics in complex expression
+    function testPostfixCachingWithRepeatedTopics() public view {
+        // Create expression: KYC AND (KYC OR AML) - KYC appears twice
+        ExpressionNode[] memory expression = new ExpressionNode[](5);
+        expression[0] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: kycTopicId
+        });
+        expression[1] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: kycTopicId  // Repeated topic for caching test
+        });
+        expression[2] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: amlTopicId
+        });
+        expression[3] = ExpressionNode({
+            nodeType: ExpressionType.OR,
+            value: 0
+        });
+        expression[4] = ExpressionNode({
+            nodeType: ExpressionType.AND,
+            value: 0
+        });
+
+        // Users with KYC should pass (KYC AND (KYC OR AML) = KYC AND true = KYC)
+        assertTrue(identityRegistry.isVerified(userWithKYC, expression));
+        assertTrue(identityRegistry.isVerified(userWithBoth, expression));
+
+        // Users without KYC should fail
+        assertFalse(identityRegistry.isVerified(userWithAML, expression));
+        assertFalse(identityRegistry.isVerified(userWithNone, expression));
+    }
+
+    // Test error conditions
+    function testPostfixEmptyExpressionReturnsTrue() public view {
+        ExpressionNode[] memory emptyExpression = new ExpressionNode[](0);
+
+        // Empty expression should return true (no requirements)
+        assertTrue(identityRegistry.isVerified(userWithKYC, emptyExpression));
+        assertTrue(identityRegistry.isVerified(userWithNone, emptyExpression));
+    }
+
+    function testPostfixStackOverflowError() public {
+        // Create malformed expression that will cause stack overflow
+        ExpressionNode[] memory expression = new ExpressionNode[](10);
+        // Fill with only topics (no operators) - will overflow stack
+        for (uint256 i = 0; i < 10; i++) {
+            expression[i] = ExpressionNode({
+                nodeType: ExpressionType.TOPIC,
+                value: kycTopicId
+            });
+        }
+
+        vm.expectRevert(ATKIdentityRegistryImplementation.InvalidExpressionStackResult.selector);
+        identityRegistry.isVerified(userWithKYC, expression);
+    }
+
+    function testPostfixNotOperationRequiresOneOperand() public {
+        // Create malformed expression: [NOT] - no operand
+        ExpressionNode[] memory expression = new ExpressionNode[](1);
+        expression[0] = ExpressionNode({
+            nodeType: ExpressionType.NOT,
+            value: 0
+        });
+
+        vm.expectRevert(ATKIdentityRegistryImplementation.NotOperationRequiresOneOperand.selector);
+        identityRegistry.isVerified(userWithKYC, expression);
+    }
+
+    function testPostfixAndOperationRequiresTwoOperands() public {
+        // Create malformed expression: [TOPIC, AND] - only one operand
+        ExpressionNode[] memory expression = new ExpressionNode[](2);
+        expression[0] = ExpressionNode({
+            nodeType: ExpressionType.TOPIC,
+            value: kycTopicId
+        });
+        expression[1] = ExpressionNode({
+            nodeType: ExpressionType.AND,
+            value: 0
+        });
+
+        vm.expectRevert(ATKIdentityRegistryImplementation.AndOrOperationsRequireTwoOperands.selector);
+        identityRegistry.isVerified(userWithKYC, expression);
+    }
+
+    function testPostfixUnregisteredUserReturnsFalse() public  {
+        address unregisteredUser = makeAddr("unregistered");
+        ExpressionNode[] memory expression = _createSingleTopicExpression(kycTopicId);
+
+        // Unregistered user should always return false
+        assertFalse(identityRegistry.isVerified(unregisteredUser, expression));
+    }
+
+    function testPostfixInvalidTopicReturnsFalse() public view {
+        uint256 invalidTopic = 99999; // Non-existent topic
+        ExpressionNode[] memory expression = _createSingleTopicExpression(invalidTopic);
+
+        // Invalid topic should return false even for users with valid claims
+        assertFalse(identityRegistry.isVerified(userWithBoth, expression));
     }
 }

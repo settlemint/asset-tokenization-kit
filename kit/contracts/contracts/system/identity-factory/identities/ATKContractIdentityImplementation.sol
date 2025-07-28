@@ -253,7 +253,7 @@ contract ATKContractIdentityImplementation is
         view
         virtual
         override
-        returns (uint256[] memory purposes, uint256 keyType, bytes32 key)
+        returns (uint256[] memory, uint256, bytes32)
     {
         revert UnsupportedKeyOperation();
     }
@@ -262,7 +262,7 @@ contract ATKContractIdentityImplementation is
     /// @dev Key operations are not supported in contract identities
     /// @return purposes Always reverts with UnsupportedKeyOperation
     // solhint-disable-next-line use-natspec
-    function getKeyPurposes(bytes32 /*_key*/ ) external view virtual override returns (uint256[] memory purposes) {
+    function getKeyPurposes(bytes32 /*_key*/ ) external view virtual override returns (uint256[] memory) {
         revert UnsupportedKeyOperation();
     }
 
@@ -270,7 +270,7 @@ contract ATKContractIdentityImplementation is
     /// @dev Key operations are not supported in contract identities
     /// @return keys Always reverts with UnsupportedKeyOperation
     // solhint-disable-next-line use-natspec
-    function getKeysByPurpose(uint256 /*_purpose*/ ) external view virtual override returns (bytes32[] memory keys) {
+    function getKeysByPurpose(uint256 /*_purpose*/ ) external view virtual override returns (bytes32[] memory) {
         revert UnsupportedKeyOperation();
     }
 
@@ -286,7 +286,7 @@ contract ATKContractIdentityImplementation is
         view
         virtual
         override
-        returns (bool hasIt)
+        returns (bool)
     {
         revert UnsupportedKeyOperation();
     }

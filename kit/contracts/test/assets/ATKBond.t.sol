@@ -128,7 +128,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
         vm.label(address(bond), "Bond");
@@ -142,7 +141,6 @@ contract ATKBondTest is AbstractATKAssetTest {
         uint256 maturityDate_,
         uint256 faceValue_,
         address underlyingAsset_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         internal
@@ -213,7 +211,6 @@ contract ATKBondTest is AbstractATKAssetTest {
                 maturityDate,
                 faceValue,
                 address(underlyingAsset),
-                new uint256[](0),
                 new SMARTComplianceModuleParamPair[](0)
             );
             assertEq(newBond.decimals(), decimalValues[i]);
@@ -560,7 +557,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
 
@@ -613,7 +609,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
 
@@ -687,7 +682,6 @@ contract ATKBondTest is AbstractATKAssetTest {
             maturityDate,
             faceValue,
             address(underlyingAsset),
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0)
         );
 

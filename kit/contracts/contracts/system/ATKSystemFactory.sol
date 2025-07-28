@@ -324,9 +324,5 @@ contract ATKSystemFactory is IATKSystemFactory, ERC2771Context {
         return FACTORY_FORWARDER;
     }
 
-    /// @notice Returns the default identity verification module address
-    /// @return The address of the default identity verification module
-    function defaultIdentityVerificationModule() external view returns (address) {
-        return DEFAULT_IDENTITY_VERIFICATION_MODULE;
-    }
+
 }
