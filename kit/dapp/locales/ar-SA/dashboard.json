@@ -1,0 +1,145 @@
+{
+  "charts": {
+    "assetDistribution": {
+      "description": "تحليل حسب نوع الأصول",
+      "empty": "لا توجد أصول لعرضها",
+      "title": "توزيع الأصول"
+    },
+    "topAssets": {
+      "columns": {
+        "change": "التغيير خلال 24 ساعة",
+        "name": "الأصل",
+        "rank": "#",
+        "value": "القيمة",
+        "volume": "الحجم"
+      },
+      "description": "الأصول حسب نسبة العائد",
+      "title": "أفضل الأصول أداءً"
+    },
+    "transactionVolume": {
+      "axes": {
+        "x": "التاريخ",
+        "y": "المعاملات"
+      },
+      "description": "عدد المعاملات اليومية",
+      "title": "حجم المعاملات"
+    },
+    "valueOverTime": {
+      "description": "إجمالي القيمة على مر الزمن",
+      "periods": {
+        "all": "الكل",
+        "day": "24 ساعة",
+        "month": "1 شهر",
+        "quarter": "3 أشهر",
+        "week": "7 أيام",
+        "year": "1 سنة"
+      },
+      "title": "قيمة المحفظة"
+    }
+  },
+  "empty": {
+    "action": "إنشاء أصل",
+    "subtitle": "ابدأ بإنشاء أول أصل موحد لك",
+    "title": "لا توجد بيانات لعرضها"
+  },
+  "errors": {
+    "loadFailed": "فشل في تحميل بيانات لوحة التحكم",
+    "retry": "إعادة المحاولة"
+  },
+  "export": {
+    "formats": {
+      "csv": "CSV",
+      "json": "JSON",
+      "pdf": "تقرير PDF",
+      "xlsx": "Excel"
+    },
+    "sections": {
+      "all": "جميع البيانات",
+      "analytics": "تقرير التحليلات",
+      "assets": "الأصول فقط",
+      "transactions": "المعاملات فقط"
+    },
+    "title": "تصدير البيانات"
+  },
+  "filters": {
+    "apply": "تطبيق الفلاتر",
+    "assetType": "نوع الأصل",
+    "dateRange": "نطاق التاريخ",
+    "reset": "إعادة تعيين",
+    "status": "الحالة"
+  },
+  "loading": {
+    "activity": "جارٍ تحميل النشاط...",
+    "charts": "جارٍ تحميل الرسوم البيانية...",
+    "stats": "جارٍ تحميل الإحصائيات..."
+  },
+  "quickActions": {
+    "createAsset": "إنشاء أصل جديد",
+    "generateReport": "توليد تقرير",
+    "title": "إجراءات سريعة",
+    "transferTokens": "نقل الرموز",
+    "viewPortfolio": "عرض المحفظة"
+  },
+  "stats": {
+    "activeUsers": {
+      "description": "المستخدمون في آخر 30 يومًا",
+      "title": "المستخدمون النشطون",
+      "trend": "{{count}} جديد هذا الأسبوع"
+    },
+    "totalAssets": {
+      "description": "الأصول الموحدة النشطة",
+      "title": "إجمالي الأصول",
+      "trend": "{{percentage}}% من الشهر الماضي"
+    },
+    "totalValue": {
+      "description": "القيمة المجمعة لجميع الأصول",
+      "title": "إجمالي القيمة المقفلة",
+      "trend": "{{percentage}}% من الشهر الماضي"
+    },
+    "transactions": {
+      "description": "إجمالي المعاملات المعالجة",
+      "title": "المعاملات",
+      "trend": "{{count}} اليوم"
+    }
+  },
+  "subtitle": "نظرة عامة على أصولك الموحدة",
+  "title": "لوحة التحكم",
+  "welcome": {
+    "subtitle": "إليك ما يحدث مع أصولك اليوم",
+    "title": "مرحبًا بعودتك، {{name}}"
+  },
+  "widgets": {
+    "alerts": {
+      "dismiss": "تجاهل",
+      "title": "تنبيهات",
+      "types": {
+        "error": "خطأ",
+        "info": "معلومات",
+        "success": "نجاح",
+        "warning": "تحذير"
+      },
+      "viewDetails": "عرض التفاصيل"
+    },
+    "pendingActions": {
+      "empty": "لا توجد إجراءات معلقة",
+      "title": "الإجراءات المعلقة",
+      "types": {
+        "approval": "موافقة مطلوبة",
+        "kyc": "التحقق من الهوية KYC معلق",
+        "signature": "التوقيع مطلوب"
+      }
+    },
+    "recentActivity": {
+      "empty": "لا توجد نشاطات حديثة",
+      "title": "النشاطات الحديثة",
+      "types": {
+        "approval": "{{user}} وافق على {{spender}}",
+        "burn": "{{amount}} {{token}} تم حرقها",
+        "deployment": "تم نشر {{type}} جديدة",
+        "mint": "{{amount}} {{token}} تم سكها",
+        "transfer": "{{user}} نقل {{amount}} {{token}}"
+      },
+      "viewAll": "عرض جميع الأنشطة"
+    }
+  }
+}

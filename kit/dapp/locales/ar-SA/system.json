@@ -1,0 +1,47 @@
+{
+  "addons": {
+    "messages": {
+      "accessDenied": "تم رفض الوصول لـ {{name}}",
+      "allFailed": "فشل في تسجيل أي إضافات",
+      "allSuccess": "تم تسجيل جميع {{count}} الإضافات بنجاح",
+      "alreadyExists": "الإضافة {{name}} موجودة بالفعل",
+      "defaultError": "حدث خطأ أثناء تسجيل الإضافة",
+      "failed": "فشل في تسجيل {{name}}",
+      "invalidConfiguration": "تكوين غير صالح",
+      "invalidImplementation": "تنفيذ غير صالح مقدم",
+      "partialSuccess": "{{successful}} من {{total}} الإضافات تم تسجيلها بنجاح",
+      "preparing": "يتم التحضير لتسجيل الإضافات",
+      "progress": "يتم تسجيل {{current}} من {{total}} الإضافات",
+      "registered": "{{name}} تم تسجيلها بنجاح",
+      "registering": "يتم تسجيل {{name}}"
+    }
+  },
+  "create": {
+    "messages": {
+      "alreadyExists": "النظام موجود بالفعل",
+      "bootstrapFailed": "فشل في بدء النظام",
+      "bootstrapSuccess": "تم بدء النظام بنجاح",
+      "bootstrapping": "يتم بدء النظام",
+      "createdBootstrapFailed": "تم إنشاء النظام في {{systemAddress}} ولكن بدء التشغيل فشل. قد تكون هناك حاجة لتدخل يدوي.",
+      "creating": "يتم إنشاء النظام",
+      "creationFailed": "فشل في إنشاء النظام",
+      "queryingSystem": "يتم استعلام معلومات النظام",
+      "success": "تم إنشاء النظام بنجاح",
+      "systemNotFound": "لم يتم العثور على النظام بعد الإنشاء"
+    }
+  },
+  "identityCreate": {
+    "messages": {
+      "failed": "فشل في إنشاء الهوية",
+      "preparing": "يتم التحضير لإنشاء الهوية",
+      "success": "تم إنشاء الهوية بنجاح"
+    }
+  },
+  "identityRegister": {
+    "messages": {
+      "failed": "فشل في تسجيل الهوية",
+      "preparing": "يتم التحضير لتسجيل الهوية",
+      "success": "تم تسجيل الهوية بنجاح"
+    }
+  }
+}

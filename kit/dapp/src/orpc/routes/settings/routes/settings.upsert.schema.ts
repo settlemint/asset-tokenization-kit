@@ -25,6 +25,15 @@ const systemAddressSchema = z.object({
 });
 
 /**
+ * Schema for updating SYSTEM_ADDONS_SKIPPED setting.
+ * Must be "true" or "false" string.
+ */
+const systemAddonsSkippedSchema = z.object({
+  key: z.literal("SYSTEM_ADDONS_SKIPPED"),
+  value: z.enum(["true", "false"]),
+});
+
+/**
  * Schema for updating an existing setting.
  *
  * Validates the setting key and new value before update.
@@ -33,6 +42,7 @@ const systemAddressSchema = z.object({
 export const SettingsUpsertSchema = z.discriminatedUnion("key", [
   baseCurrencySchema,
   systemAddressSchema,
+  systemAddonsSkippedSchema,
 ]);
 
 /**

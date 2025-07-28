@@ -1,0 +1,145 @@
+{
+  "charts": {
+    "assetDistribution": {
+      "description": "Breakdown by asset type",
+      "empty": "No assets to display",
+      "title": "Asset Distribution"
+    },
+    "topAssets": {
+      "columns": {
+        "change": "24h Change",
+        "name": "Asset",
+        "rank": "#",
+        "value": "Value",
+        "volume": "Volume"
+      },
+      "description": "Assets by return percentage",
+      "title": "Top Performing Assets"
+    },
+    "transactionVolume": {
+      "axes": {
+        "x": "Date",
+        "y": "Transactions"
+      },
+      "description": "Daily transaction count",
+      "title": "Transaction Volume"
+    },
+    "valueOverTime": {
+      "description": "Total value over time",
+      "periods": {
+        "all": "ALL",
+        "day": "24H",
+        "month": "1M",
+        "quarter": "3M",
+        "week": "7D",
+        "year": "1Y"
+      },
+      "title": "Portfolio Value"
+    }
+  },
+  "empty": {
+    "action": "Create Asset",
+    "subtitle": "Start by creating your first tokenized asset",
+    "title": "No data to display"
+  },
+  "errors": {
+    "loadFailed": "Failed to load dashboard data",
+    "retry": "Retry"
+  },
+  "export": {
+    "formats": {
+      "csv": "CSV",
+      "json": "JSON",
+      "pdf": "PDF Report",
+      "xlsx": "Excel"
+    },
+    "sections": {
+      "all": "All Data",
+      "analytics": "Analytics Report",
+      "assets": "Assets Only",
+      "transactions": "Transactions Only"
+    },
+    "title": "Export Data"
+  },
+  "filters": {
+    "apply": "Apply Filters",
+    "assetType": "Asset Type",
+    "dateRange": "Date Range",
+    "reset": "Reset",
+    "status": "Status"
+  },
+  "loading": {
+    "activity": "Loading activity...",
+    "charts": "Loading charts...",
+    "stats": "Loading statistics..."
+  },
+  "quickActions": {
+    "createAsset": "Create New Asset",
+    "generateReport": "Generate Report",
+    "title": "Quick Actions",
+    "transferTokens": "Transfer Tokens",
+    "viewPortfolio": "View Portfolio"
+  },
+  "stats": {
+    "activeUsers": {
+      "description": "Users in the last 30 days",
+      "title": "Active Users",
+      "trend": "{{count}} new this week"
+    },
+    "totalAssets": {
+      "description": "Active tokenized assets",
+      "title": "Total Assets",
+      "trend": "{{percentage}}% from last month"
+    },
+    "totalValue": {
+      "description": "Combined value of all assets",
+      "title": "Total Value Locked",
+      "trend": "{{percentage}}% from last month"
+    },
+    "transactions": {
+      "description": "Total transactions processed",
+      "title": "Transactions",
+      "trend": "{{count}} today"
+    }
+  },
+  "subtitle": "Overview of your tokenized assets",
+  "title": "Dashboard",
+  "welcome": {
+    "subtitle": "Here's what's happening with your assets today",
+    "title": "Welcome back, {{name}}"
+  },
+  "widgets": {
+    "alerts": {
+      "dismiss": "Dismiss",
+      "title": "Alerts",
+      "types": {
+        "error": "Error",
+        "info": "Information",
+        "success": "Success",
+        "warning": "Warning"
+      },
+      "viewDetails": "View details"
+    },
+    "pendingActions": {
+      "empty": "No pending actions",
+      "title": "Pending Actions",
+      "types": {
+        "approval": "Approval needed",
+        "kyc": "KYC verification pending",
+        "signature": "Signature required"
+      }
+    },
+    "recentActivity": {
+      "empty": "No recent activity",
+      "title": "Recent Activity",
+      "types": {
+        "approval": "{{user}} approved {{spender}}",
+        "burn": "{{amount}} {{token}} burned",
+        "deployment": "New {{type}} deployed",
+        "mint": "{{amount}} {{token}} minted",
+        "transfer": "{{user}} transferred {{amount}} {{token}}"
+      },
+      "viewAll": "View all activity"
+    }
+  }
+}

@@ -5,7 +5,7 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -26,14 +26,23 @@ export function AssetDeployment() {
   // Stable reference for deployed factories
   const deployedFactories = systemDetails?.tokenFactories ?? [];
 
+  const queryClient = useQueryClient();
+
   const onNext = useCallback(async () => {
     try {
+      // Invalidate token factory list to update sidebar
+      await queryClient.invalidateQueries({
+        queryKey: orpc.token.factoryList.queryOptions({
+          input: { hasTokens: true },
+        }).queryKey,
+        refetchType: "all",
+      });
       await completeStepAndNavigate(OnboardingStep.systemAssets);
     } catch (error) {
       logger.error("Navigation error:", error);
       toast.error("Failed to navigate to next step");
     }
-  }, [completeStepAndNavigate]);
+  }, [completeStepAndNavigate, queryClient]);
 
   return (
     <OnboardingStepLayout

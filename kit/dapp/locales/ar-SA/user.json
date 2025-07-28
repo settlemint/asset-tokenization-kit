@@ -1,0 +1,17 @@
+{
+  "actions": {
+    "createWallet": {
+      "success": "تم إنشاء المحفظة بنجاح"
+    }
+  },
+  "kyc": {
+    "actions": {
+      "delete": {
+        "success": "تم حذف ملف KYC بنجاح"
+      },
+      "upsert": {
+        "success": "تم تحديث ملف KYC بنجاح"
+      }
+    }
+  }
+}

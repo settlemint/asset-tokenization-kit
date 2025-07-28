@@ -6,7 +6,7 @@
  * @module ActionsTests
  */
 import { safeParse } from "@/lib/zod";
-import { describe, expect, it, mock } from "bun:test";
+import { describe, expect, it } from "vitest";
 import {
   ActionSchema,
   ActionExecutorSchema,
@@ -17,15 +17,7 @@ import {
   ActionsListDataSchema,
 } from "./routes/actions.list.schema";
 
-// Mock the logger to avoid console output during tests
-mock.module("@settlemint/sdk-utils/logging", () => ({
-  createLogger: () => ({
-    error: mock(() => undefined),
-    warn: mock(() => undefined),
-    info: mock(() => undefined),
-    debug: mock(() => undefined),
-  }),
-}));
+// Logger is mocked via vitest.config.ts alias
 
 describe("Actions Schemas", () => {
   describe("ActionStatusSchema", () => {

@@ -1,0 +1,47 @@
+{
+  "addons": {
+    "messages": {
+      "accessDenied": "Zugriff verweigert für {{name}}",
+      "allFailed": "Registrierung von Addons fehlgeschlagen",
+      "allSuccess": "Alle {{count}} Addons erfolgreich registriert",
+      "alreadyExists": "Addon {{name}} existiert bereits",
+      "defaultError": "Ein Fehler ist bei der Registrierung des Addons aufgetreten",
+      "failed": "Registrierung von {{name}} fehlgeschlagen",
+      "invalidConfiguration": "Ungültige Konfiguration",
+      "invalidImplementation": "Ungültige Implementierung bereitgestellt",
+      "partialSuccess": "{{successful}} von {{total}} Addons erfolgreich registriert",
+      "preparing": "Vorbereitung zur Registrierung von Addons",
+      "progress": "Registriere {{current}} von {{total}} Addons",
+      "registered": "{{name}} erfolgreich registriert",
+      "registering": "Registriere {{name}}"
+    }
+  },
+  "create": {
+    "messages": {
+      "alreadyExists": "System existiert bereits",
+      "bootstrapFailed": "Bootstrap des Systems fehlgeschlagen",
+      "bootstrapSuccess": "System erfolgreich gebootstrapped",
+      "bootstrapping": "System wird gebootstrapped",
+      "createdBootstrapFailed": "System wurde unter {{systemAddress}} erstellt, aber der Bootstrap ist fehlgeschlagen. Manuelle Intervention könnte erforderlich sein.",
+      "creating": "System wird erstellt",
+      "creationFailed": "Erstellung des Systems fehlgeschlagen",
+      "queryingSystem": "Abfrage von Systeminformationen",
+      "success": "System erfolgreich erstellt",
+      "systemNotFound": "System nach der Erstellung nicht gefunden"
+    }
+  },
+  "identityCreate": {
+    "messages": {
+      "failed": "Erstellung der Identität fehlgeschlagen",
+      "preparing": "Vorbereitung zur Erstellung der Identität",
+      "success": "Identität erfolgreich erstellt"
+    }
+  },
+  "identityRegister": {
+    "messages": {
+      "failed": "Registrierung der Identität fehlgeschlagen",
+      "preparing": "Vorbereitung zur Registrierung der Identität",
+      "success": "Identität erfolgreich registriert"
+    }
+  }
+}

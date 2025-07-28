@@ -1,20 +1,12 @@
-import { describe, expect, it, mock } from "bun:test";
+import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import { safeParse } from "./index";
 
 process.env.CI = "true";
 
-// Mock the logger to avoid console output during tests
-mock.module("@settlemint/sdk-utils/logging", () => ({
-  createLogger: () => ({
-    error: mock(() => {
-      // do nothing
-    }),
-  }),
-}));
-
+// Logger is mocked via vitest.config.ts alias
 // Mock the redactSensitiveFields function
-mock.module("../redaction", () => ({
+vi.mock("../redaction", () => ({
   redactSensitiveFields: (value: unknown) => value,
 }));
 

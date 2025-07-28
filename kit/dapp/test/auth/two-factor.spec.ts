@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "bun:test";
+import { beforeAll, describe, expect, test } from "vitest";
 import { randomUUID } from "node:crypto";
 import { authClient } from "../utils/auth-client";
 import { setupUser, signInWithUser } from "../utils/user";
@@ -14,7 +14,7 @@ describe("Two factor verification", () => {
     await setupUser(TEST_USER);
   });
 
-  it("can enable two factor verification", async () => {
+  test("can enable two factor verification", async () => {
     const headers = await signInWithUser(TEST_USER);
     const { data, error } = await authClient.twoFactor.enable(
       {
@@ -29,7 +29,7 @@ describe("Two factor verification", () => {
     expect(data?.totpURI).toMatch(/^otpauth:\/\/totp/);
   });
 
-  it("can disable two factor verification", async () => {
+  test("can disable two factor verification", async () => {
     const headers = await signInWithUser(TEST_USER);
     const { data, error } = await authClient.twoFactor.disable(
       {

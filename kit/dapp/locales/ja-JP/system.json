@@ -1,0 +1,47 @@
+{
+  "addons": {
+    "messages": {
+      "accessDenied": "アクセスが拒否されました: {{name}}",
+      "allFailed": "アドオンの登録に失敗しました",
+      "allSuccess": "すべての {{count}} アドオンが正常に登録されました",
+      "alreadyExists": "アドオン {{name}} はすでに存在します",
+      "defaultError": "アドオンの登録中にエラーが発生しました",
+      "failed": "アドオン {{name}} の登録に失敗しました",
+      "invalidConfiguration": "無効な構成",
+      "invalidImplementation": "提供された実装が無効です",
+      "partialSuccess": "{{successful}} の {{total}} アドオンが正常に登録されました",
+      "preparing": "アドオンの登録を準備しています",
+      "progress": "{{total}} アドオンのうち {{current}} を登録しています",
+      "registered": "{{name}} が正常に登録されました",
+      "registering": "{{name}} を登録しています"
+    }
+  },
+  "create": {
+    "messages": {
+      "alreadyExists": "システムはすでに存在します",
+      "bootstrapFailed": "システムのブートストラップに失敗しました",
+      "bootstrapSuccess": "システムが正常にブートストラップされました",
+      "bootstrapping": "システムをブートストラップしています",
+      "createdBootstrapFailed": "システムは {{systemAddress}} に作成されましたが、ブートストラップに失敗しました。手動での介入が必要な場合があります。",
+      "creating": "システムを作成しています",
+      "creationFailed": "システムの作成に失敗しました",
+      "queryingSystem": "システム情報を照会しています",
+      "success": "システムが正常に作成されました",
+      "systemNotFound": "作成後にシステムが見つかりません"
+    }
+  },
+  "identityCreate": {
+    "messages": {
+      "failed": "アイデンティティの作成に失敗しました",
+      "preparing": "アイデンティティの作成を準備しています",
+      "success": "アイデンティティが正常に作成されました"
+    }
+  },
+  "identityRegister": {
+    "messages": {
+      "failed": "アイデンティティの登録に失敗しました",
+      "preparing": "アイデンティティの登録を準備しています",
+      "success": "アイデンティティが正常に登録されました"
+    }
+  }
+}
