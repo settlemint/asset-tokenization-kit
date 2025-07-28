@@ -10,16 +10,14 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { authClient } from "@/lib/auth/auth.client";
+import { waitForStream } from "@/lib/utils/stream";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
-const logger = createLogger();
 
 export const Route = createFileRoute("/_private/onboarding/_sidebar/identity")({
   validateSearch: createOnboardingSearchSchema(),
@@ -49,12 +47,8 @@ function RouteComponent() {
     useMutation(
       orpc.system.identityRegister.mutationOptions({
         onSuccess: async (result) => {
-          for await (const event of result) {
-            logger.info("identity registration event", event);
-            if (event.status === "failed") {
-              throw new Error(event.message);
-            }
-          }
+          await waitForStream(result, "identity registration");
+
           // Refetch all relevant data
           await Promise.all([
             queryClient.invalidateQueries({

@@ -41,7 +41,7 @@ A Helm chart for the ATK DApp frontend
 | initContainer.graphQLCheck.retryDelaySeconds | int | `20` |  |
 | initContainer.graphQLCheck.timeoutSeconds | int | `10` |  |
 | initContainer.graphQLCheck.url | string | `"http://graph-node-combined.atk.svc.cluster.local:8000/subgraphs/name/kit"` |  |
-| initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql-pgpool.atk.svc.cluster.local:5432"` |  |
+| initContainer.tcpCheck.dependencies[0].endpoint | string | `"postgresql.atk.svc.cluster.local:5432"` |  |
 | initContainer.tcpCheck.dependencies[0].name | string | `"postgres"` |  |
 | initContainer.tcpCheck.dependencies[1].endpoint | string | `"hasura.atk.svc.cluster.local:8080"` |  |
 | initContainer.tcpCheck.dependencies[1].name | string | `"hasura"` |  |

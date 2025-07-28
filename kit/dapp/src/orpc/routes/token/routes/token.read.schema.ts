@@ -58,6 +58,7 @@ const EXTENSIONS: TokenExtensions[] = [
 export const RawTokenSchema = z.object({
   id: ethereumAddress.describe("The token contract address"),
   type: assetType(),
+  createdAt: timestamp().describe("The timestamp of the token creation"),
   name: z.string().describe("The name of the token"),
   symbol: z.string().describe("The symbol of the token"),
   decimals: decimals(),

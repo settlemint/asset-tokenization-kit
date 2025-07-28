@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "redis.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "redis.labels" . | nindent 4 }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  redis.conf: |
+    # Redis configuration file
+    
+    # Network
+    bind 0.0.0.0
+    protected-mode yes
+    port {{ .Values.service.port }}
+    
+    # General
+    daemonize no
+    pidfile /var/run/redis_6379.pid
+    loglevel notice
+    logfile ""
+    databases 16
+    
+    # Memory management
+    {{- if .Values.config.maxmemory }}
+    maxmemory {{ .Values.config.maxmemory }}
+    {{- end }}
+    {{- if .Values.config.maxmemoryPolicy }}
+    maxmemory-policy {{ .Values.config.maxmemoryPolicy }}
+    {{- end }}
+    
+    # Persistence
+    {{- if .Values.config.save }}
+    save {{ .Values.config.save }}
+    {{- else }}
+    save ""
+    {{- end }}
+    stop-writes-on-bgsave-error yes
+    rdbcompression yes
+    rdbchecksum yes
+    dbfilename dump.rdb
+    dir /data
+    
+    # Append only mode
+    appendonly {{ .Values.config.appendonly }}
+    appendfilename "appendonly.aof"
+    appendfsync everysec
+    no-appendfsync-on-rewrite no
+    auto-aof-rewrite-percentage 100
+    auto-aof-rewrite-min-size 64mb
+    
+    # Slow log
+    slowlog-log-slower-than 10000
+    slowlog-max-len 128
+    
+    # Advanced config
+    hash-max-ziplist-entries 512
+    hash-max-ziplist-value 64
+    list-max-ziplist-size -2
+    list-compress-depth 0
+    set-max-intset-entries 512
+    zset-max-ziplist-entries 128
+    zset-max-ziplist-value 64
+    hll-sparse-max-bytes 3000
+    stream-node-max-bytes 4kb
+    stream-node-max-entries 100
+    activerehashing yes
+    
+    # Client output buffer limits
+    client-output-buffer-limit normal 0 0 0
+    client-output-buffer-limit replica 256mb 64mb 60
+    client-output-buffer-limit pubsub 32mb 8mb 60
+    
+    # Frequency
+    hz 10
+    
+    # AOF rewrite
+    aof-rewrite-incremental-fsync yes
+    
+    # LFU settings
+    lfu-log-factor 10
+    lfu-decay-time 1
