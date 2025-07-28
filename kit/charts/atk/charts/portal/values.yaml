@@ -455,7 +455,7 @@ config:
   # -- Redis configuration
   redis:
     # -- Redis host
-    host: "redis-master"
+    host: "redis"
     # -- Redis port
     port: 6379
     # -- Redis username

@@ -61,6 +61,32 @@ imagePullCredentials:
       # -- The email to access the registry
       email: ''
 
+# Redis configuration
+redis:
+  enabled: true
+  fullnameOverride: redis
+  commonLabels:
+    kots.io/app-slug: settlemint-atk
+    app.kubernetes.io/managed-by: helm
+  image:
+    pullSecrets:
+      - name: image-pull-secret-docker
+      - name: image-pull-secret-ghcr
+      - name: image-pull-secret-harbor
+  auth:
+    enabled: true
+    password: "atk"
+  persistence:
+    enabled: true
+    size: 1Gi
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
 besu-network:
   enabled: true
   besu-validator-1:
@@ -160,7 +186,7 @@ erpc:
           - id: redis-cache
             driver: redis  # Refer to "redis" driver docs below
             redis:
-              addr: redis-master.atk.svc.cluster.local:6379
+              addr: redis.atk.svc.cluster.local:6379
               password: "atk"
               db: 0
               connPoolSize: 128
@@ -338,17 +364,6 @@ support:
       resources: {}
       replicaCount: 1
 
-  # https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml
-  redis:
-    global:
-      imagePullSecrets:
-        - image-pull-secret-docker
-        - image-pull-secret-ghcr
-        - image-pull-secret-harbor
-    master:
-      resources: {}
-    replica:
-      resources: {}
 
   # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   ingress-nginx:
