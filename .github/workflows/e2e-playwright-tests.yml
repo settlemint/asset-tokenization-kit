@@ -84,7 +84,7 @@ jobs:
       - name: Start dev server
         run: |
           echo "Starting dev server..."
-          nohup bun run dev > server.log 2>&1 &
+          nohup bun run dev --port 3000 --hostname 0.0.0.0 > server.log 2>&1 &
           echo "SERVER_PID=$!" >> $GITHUB_ENV
           echo "Waiting 30 seconds for Next.js to initialize all routes..."
           sleep 30
