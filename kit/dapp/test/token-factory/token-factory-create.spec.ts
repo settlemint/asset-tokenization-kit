@@ -22,19 +22,15 @@ describe("Token factory create", () => {
       factories: [{ type: "equity", name: "Test Token" }],
     });
 
-    let isDeployed = false;
-    if (result.status === "completed") {
-      if (result.currentFactory) {
-        // It is alread deployed
-        isDeployed = true;
-      }
-      if (result.result?.[0]?.transactionHash) {
-        // First deploy
-        isDeployed = true;
-      }
-    }
+    // The factoryCreate method returns a FactoryCreateOutput with status and results
+    expect(result.status).toBe("completed");
+    expect(result.results).toBeDefined();
+    expect(result.results?.length).toBeGreaterThan(0);
 
-    expect(isDeployed).toBe(true);
+    // Check that at least one factory was successfully created
+    const successfulFactories =
+      result.results?.filter((r) => !r.error && r.transactionHash) ?? [];
+    expect(successfulFactories.length).toBeGreaterThan(0);
 
     const factories = await client.token.factoryList({});
     expect(factories.length).toBeGreaterThan(0);

@@ -10,12 +10,9 @@ export async function createToken(orpClient: OrpcClient, input: TokenInput) {
     ...input,
     name,
   });
-  let isDeployed = false;
-  if (result.id && result.type) {
-    // Token was successfully created
-    isDeployed = true;
-  }
-  if (!isDeployed) {
+
+  // The create method now returns the complete token object directly
+  if (!result || !result.id || !result.type) {
     throw new Error("Token not deployed");
   }
   return retryWhenFailed(

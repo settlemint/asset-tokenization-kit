@@ -35,13 +35,12 @@ describe("Token create", () => {
       ...tokenData,
     });
 
-    let isDeployed = false;
-    if (result.id && result.type) {
-      // Token was successfully created
-      isDeployed = true;
-    }
-
-    expect(isDeployed).toBe(true);
+    // The create method now returns the complete token object directly
+    expect(result).toBeDefined();
+    expect(result.id).toBeDefined();
+    expect(result.type).toBe(tokenData.type);
+    expect(result.name).toBe(tokenData.name);
+    expect(result.symbol).toBe(tokenData.symbol);
 
     // Give the graph some time to index
     await new Promise((resolve) => setTimeout(resolve, 3000));
