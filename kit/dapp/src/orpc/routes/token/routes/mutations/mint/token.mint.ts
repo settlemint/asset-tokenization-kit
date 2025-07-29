@@ -4,9 +4,10 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
-import { readTokenAfterMutation } from "@/orpc/helpers/post-mutation-read";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { call } from "@orpc/server";
 
 const TOKEN_SINGLE_MINT_MUTATION = portalGraphql(`
   mutation TokenMint(

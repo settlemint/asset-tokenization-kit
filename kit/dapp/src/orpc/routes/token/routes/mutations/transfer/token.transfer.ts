@@ -5,8 +5,8 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { read } from "@/orpc/routes/token/routes/token.read";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-import { read } from "../../token.read";
 import { call } from "@orpc/server";
 
 const TOKEN_TRANSFER_MUTATION = portalGraphql(`
