@@ -28,13 +28,6 @@ jobs:
       - name: Checkout repository
         uses: namespacelabs/nscloud-checkout-action@v7
 
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v5
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
       - name: Setup 1Password
         uses: 1password/load-secrets-action/configure@v2
         with:
@@ -82,8 +75,8 @@ jobs:
         working-directory: kit/e2e
 
       - name: Reset dev environment (clean start)
-        run: bun run dev:reset
-        working-directory: .
+        run: |
+          bun run dev:reset
 
       - name: Start dev server
         run: |
@@ -133,11 +126,22 @@ jobs:
           PORT: ${{ env.PORT }}
           HOST: ${{ env.HOST }}
 
-      - name: Tail dapp server log (debug)
-        if: always()
-        run: tail -n 1000 -f server.log &
-        working-directory: kit/dapp
-        continue-on-error: true
+      - name: Verify subgraph SystemFactory address
+        run: |
+            echo "Checking SystemFactory address in subgraph.yaml..."
+            EXPECTED_ADDRESS="0x5e771e1417100000000000000000000000020088"
+            ACTUAL_ADDRESS=$(yq '.dataSources[] | select(.name == "SystemFactory") | .source.address' kit/subgraph/subgraph.yaml)
+            if [ "$ACTUAL_ADDRESS" != "$EXPECTED_ADDRESS" ]; then
+              echo "❌ ERROR: SystemFactory address mismatch!"
+              echo "Expected: $EXPECTED_ADDRESS"
+              echo "Actual:   $ACTUAL_ADDRESS"
+              echo ""
+              echo "The subgraph.yaml file has an incorrect SystemFactory address."
+              echo "This needs to be fixed before running tests."
+              exit 1
+            else
+              echo "✅ SystemFactory address is correct: $ACTUAL_ADDRESS"
+            fi
 
       # - name: Run API Playwright tests
       #   id: playwright-api
