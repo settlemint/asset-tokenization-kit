@@ -165,24 +165,23 @@ export function getCountries(locale: SupportedLocale = "en") {
 }
 
 /**
- * Get all countries with their numeric codes for form dropdown options.
+ * Get all numeric country codes with their corresponding country names.
  * @param locale - The locale for the country names (default: "en")
  *                 Supported locales: "en", "ar", "de", "ja"
- * @returns Array of objects with label (country name) and value (numeric code as string)
+ * @returns Object with numeric codes as keys and country names as values
  * @example
  * ```typescript
  * getNumericCountries("en");
- * // [
- * //   { label: "United States of America", value: "840" },
- * //   { label: "United Kingdom", value: "826" },
- * //   ...
- * // ]
+ * // { "840": "United States of America", "826": "United Kingdom", ... }
  * ```
  */
 export function getNumericCountries(locale: SupportedLocale = "en") {
   const numericCodes = getNumericCodes();
-  return Object.entries(numericCodes).map(([numeric, alpha2]) => ({
-    label: getName(alpha2, locale) || alpha2,
-    value: numeric, // string for form compatibility
-  }));
+  const result: Record<string, string> = {};
+
+  for (const [numeric, alpha2] of Object.entries(numericCodes)) {
+    result[numeric] = getName(alpha2, locale) || alpha2;
+  }
+
+  return result;
 }
