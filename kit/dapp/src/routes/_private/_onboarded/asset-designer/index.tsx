@@ -4,7 +4,8 @@ import { ConfirmationModal } from "@/components/confirmation-modal";
 import { useGoBack } from "@/hooks/use-go-back";
 import { assetType } from "@/lib/zod/validators/asset-types";
 import { createFileRoute } from "@tanstack/react-router";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+
 import { z } from "zod";
 
 const searchSchema = z.object({
@@ -27,6 +28,7 @@ function RouteComponent() {
   const routeContext = Route.useRouteContext();
   const { type } = Route.useSearch();
   const { onBack } = useGoBack();
+  const { t } = useTranslation(["asset-designer"]);
 
   return (
     <div className="flex h-screen flex-col bg-background">

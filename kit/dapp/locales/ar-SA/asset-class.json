@@ -1,6 +1,7 @@
 {
   "whichAssetClass": "أي فئة من الأصول تريد تصميمها؟",
   "assetClassDifferences": "كل فئة أصول تقدم ملف مخاطر وعوائد مختلف.",
+  "includes": "يشمل",
   "categories": {
     "cashEquivalent": {
       "description": "استثمارات عالية السيولة يمكن تحويلها بسهولة إلى مبالغ نقدية معروفة.",

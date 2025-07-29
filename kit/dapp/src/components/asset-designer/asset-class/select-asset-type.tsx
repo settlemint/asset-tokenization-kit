@@ -50,8 +50,13 @@ export const SelectAssetType = withForm({
     const assetClass = useStore(form.store, (state) => state.values.assetClass);
 
     // Filter factories for the selected asset class
-    const selectedClassFactories = factories.filter(
-      (factory) => getAssetClassFromFactoryTypeId(factory.typeId) === assetClass
+    const selectedClassFactories = useMemo(
+      () =>
+        factories.filter(
+          (factory) =>
+            getAssetClassFromFactoryTypeId(factory.typeId) === assetClass
+        ),
+      [factories, assetClass]
     );
 
     const options = useMemo(

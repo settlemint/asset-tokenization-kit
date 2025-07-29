@@ -41,7 +41,7 @@ export const SelectAssetClass = withForm({
           footer: (
             <div className="space-y-2">
               <p className="text-xs font-medium text-muted-foreground">
-                Includes:
+                {t("asset-class:includes")}
               </p>
               <div className="flex flex-wrap gap-1">
                 {assetClass.factories.map((factoryType) => (

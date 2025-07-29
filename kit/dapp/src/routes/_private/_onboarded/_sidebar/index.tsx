@@ -14,11 +14,10 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
-import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/use-settings";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
   /**
@@ -95,9 +94,6 @@ function Home() {
           </div>
         )}
       </div>
-      <Link to="/asset-designer" className="mb-6 block">
-        <Button>Design Asset</Button>
-      </Link>
     </div>
   );
 }

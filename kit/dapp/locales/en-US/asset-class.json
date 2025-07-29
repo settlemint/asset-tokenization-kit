@@ -1,6 +1,7 @@
 {
   "whichAssetClass": "Which asset class do you want to design?",
   "assetClassDifferences": "Each asset class offers a different risk-return profile.",
+  "includes": "Includes",
   "categories": {
     "cashEquivalent": {
       "description": "Highly liquid investments that can be readily converted to known amounts of cash.",
