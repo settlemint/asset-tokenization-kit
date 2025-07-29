@@ -19,6 +19,10 @@ import {
   decodeCountryListParams,
   isCountryListComplianceModule,
 } from "../compliance/modules/country-list-compliance-module";
+import {
+  decodeExpressionParams,
+  isIdentityVerificationComplianceModule,
+} from "../compliance/modules/identity-verification-compliance-module";
 import { fetchEvent } from "../event/fetch/event";
 import { updateAccountStatsForBalanceChange } from "../stats/account-stats";
 import { updateSystemStatsForSupplyChange } from "../stats/system-stats";
@@ -49,14 +53,15 @@ export function handleComplianceModuleAdded(
 ): void {
   fetchEvent(event, "ComplianceModuleAdded");
 
+  const complianceModule = fetchComplianceModule(event.params._module);
   const tokenComplianceModule = fetchTokenComplianceModule(
     event.address,
     event.params._module
   );
 
-  const complianceModule = fetchComplianceModule(event.params._module);
   tokenComplianceModule.encodedParams = event.params._params;
 
+  // Handle different compliance module types
   if (
     isAddressListComplianceModule(getEncodedTypeId(complianceModule.typeId))
   ) {
@@ -70,6 +75,13 @@ export function handleComplianceModuleAdded(
     tokenComplianceModule.countries = decodeCountryListParams(
       event.params._params
     );
+  }
+  if (
+    isIdentityVerificationComplianceModule(
+      getEncodedTypeId(complianceModule.typeId)
+    )
+  ) {
+    decodeExpressionParams(event.params._params, tokenComplianceModule);
   }
 
   tokenComplianceModule.save();
@@ -151,6 +163,13 @@ export function handleModuleParametersUpdated(
     tokenComplianceModule.countries = decodeCountryListParams(
       event.params._params
     );
+  }
+  if (
+    isIdentityVerificationComplianceModule(
+      getEncodedTypeId(complianceModule.typeId)
+    )
+  ) {
+    decodeExpressionParams(event.params._params, tokenComplianceModule);
   }
 
   tokenComplianceModule.save();

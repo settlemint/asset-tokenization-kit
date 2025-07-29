@@ -46,9 +46,6 @@ const READ_TOKEN_QUERY = theGraphGraphql(
       fund {
         managementFeeBps
       }
-      requiredClaimTopics {
-        name
-      }
       collateral {
         collateral
         expiryTimestamp
@@ -148,12 +145,8 @@ export const tokenMiddleware = baseRouter.middleware(
 
     const tokenContext = TokenSchema.parse({
       ...token,
-      requiredClaimTopics: token.requiredClaimTopics.map(({ name }) => name),
       userPermissions: {
         roles: userRoles,
-        isCompliant: token.requiredClaimTopics.every(({ name }) =>
-          userClaimTopics.includes(name)
-        ),
         // TODO: implement logic which checks if the user is allowed to interact with the token
         // user is not allowed when in the block list or when it requires an allow list
         // Another reason could be that the user is a citizen of a blocked country

@@ -1,4 +1,3 @@
-import { beforeAll, describe, expect, test } from "vitest";
 import { getOrpcClient } from "test/utils/orpc-client";
 import { createToken } from "test/utils/token";
 import {
@@ -7,6 +6,7 @@ import {
   DEFAULT_PINCODE,
   signInWithUser,
 } from "test/utils/user";
+import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Token permissions", () => {
   let token: Awaited<ReturnType<typeof createToken>>;
@@ -48,7 +48,6 @@ describe("Token permissions", () => {
         supplyManagement: false,
         governance: false,
       },
-      isCompliant: true,
       isAllowed: true,
       actions: {
         burn: false,
@@ -92,7 +91,6 @@ describe("Token permissions", () => {
         supplyManagement: false,
         governance: false,
       },
-      isCompliant: true,
       isAllowed: true,
       actions: {
         burn: false,

@@ -80,10 +80,6 @@
     "description": "You need additional permissions for this action. Required roles: {{requiredRoles}}",
     "title": "Additional permissions needed"
   },
-  "userNotCompliant": {
-    "description": "Your identity needs additional verification for this token. Missing verifications: {{requiredClaimTopics}}",
-    "title": "Verification required"
-  },
   "validation": {
     "description": "Some of the information doesn't look right. Check the highlighted fields and try again.",
     "title": "Check your input"

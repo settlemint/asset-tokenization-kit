@@ -32,7 +32,6 @@ const CREATE_STABLECOIN_MUTATION = portalGraphql(`
     $name: String!
     $decimals: Int!
     $initialModulePairs: [ATKStableCoinFactoryImplementationATKStableCoinFactoryImplementationCreateStableCoinInitialModulePairsInput!]!
-    $requiredClaimTopics: [String!]!
     $verificationId: String
     $challengeResponse: String!
     $countryCode: Int!
@@ -45,7 +44,6 @@ const CREATE_STABLECOIN_MUTATION = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
         countryCode_: $countryCode
       }
       verificationId: $verificationId
