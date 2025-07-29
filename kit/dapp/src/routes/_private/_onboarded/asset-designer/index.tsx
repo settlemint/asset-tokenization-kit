@@ -1,6 +1,6 @@
 import { AssetDesignerForm } from "@/components/asset-designer/asset-designer-form";
 import { AssetTokenizationKitLogo } from "@/components/asset-tokenization-kit-logo";
-import { Button } from "@/components/ui/button";
+import { ConfirmationModal } from "@/components/confirmation-modal";
 import { useGoBack } from "@/hooks/use-go-back";
 import { assetType } from "@/lib/zod/validators/asset-types";
 import { createFileRoute } from "@tanstack/react-router";
@@ -33,9 +33,20 @@ function RouteComponent() {
       <header className="flex h-16 shrink-0 items-center border-b px-8">
         <AssetTokenizationKitLogo />
         <div className="flex-1" />
-        <Button variant="outline" onClick={onBack}>
-          {t("asset-designer:form.buttons.exit")}
-        </Button>
+        <ConfirmationModal
+          triggerLabel={t("asset-designer:form.buttons.leave")}
+          title={t("asset-designer:leave-confirmation.title")}
+          description={t("asset-designer:leave-confirmation.description")}
+          leftAction={{
+            label: t("asset-designer:leave-confirmation.leave"),
+            action: onBack,
+          }}
+          afterLeftAction="close"
+          rightAction={{
+            label: t("asset-designer:leave-confirmation.stay"),
+            action: "close",
+          }}
+        />
       </header>
       <main className="flex-1 overflow-hidden">
         <AssetDesignerForm factories={routeContext.factories} type={type} />
