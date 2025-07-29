@@ -403,8 +403,6 @@ type Token @entity(immutable: false) {
   fund: TokenFund
   # Claims
   basePriceClaim: IdentityClaim
-  # The identity verification claim topics that are required for accounts to own tokens of this type
-  requiredClaimTopics: [TopicScheme!]!
   # Compliance
   tokenComplianceModules: [TokenComplianceModule!]! @derivedFrom(field: "token")
   # Stats
@@ -433,6 +431,22 @@ type TokenComplianceModule @entity(immutable: false) {
   encodedParams: Bytes!
   addresses: [Bytes!]
   countries: [Int!]
+  expression: [ExpressionNode!] @derivedFrom(field: "complianceModule")
+}
+
+type ExpressionNode @entity(immutable: true) {
+  id: Bytes!
+  complianceModule: TokenComplianceModule!
+  nodeType: ExpressionNodeType!
+  index: Int!
+  topicScheme: TopicScheme
+}
+
+enum ExpressionNodeType {
+  TOPIC
+  AND
+  OR
+  NOT
 }
 
 # ==================================================

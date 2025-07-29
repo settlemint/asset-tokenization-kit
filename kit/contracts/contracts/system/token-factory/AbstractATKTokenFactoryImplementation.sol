@@ -18,8 +18,6 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 import { ATKRoles } from "../../assets/ATKRoles.sol";
 import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
-import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
-import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IWithTypeIdentifier } from "../../smart/interface/IWithTypeIdentifier.sol";
 
 /// @title ATKTokenFactory - Contract for managing token registries with role-based access control
@@ -56,10 +54,6 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @dev This address points to the contract that holds the core logic for token operations.
     address internal _tokenImplementation;
 
-    /// @notice Address of the identity verification module.
-    /// @dev This address points to the contract that holds the core logic for identity verification.
-    address internal _identityVerificationModule;
-
     /// @notice Constructor for the token factory implementation.
     /// @param forwarder The address of the trusted forwarder for meta-transactions (ERC2771).
     constructor(address forwarder) ERC2771ContextUpgradeable(forwarder) {
@@ -70,12 +64,10 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
     /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE.
-    /// @param identityVerificationModule The address of the identity verification module.
     function initialize(
         address systemAddress,
         address tokenImplementation_,
-        address initialAdmin,
-        address identityVerificationModule
+        address initialAdmin
     )
         public
         virtual
@@ -87,15 +79,9 @@ abstract contract AbstractATKTokenFactoryImplementation is
         }
         if (
             tokenImplementation_ == address(0)
-                && IERC165(tokenImplementation_).supportsInterface(type(ISMART).interfaceId)
+                || !IERC165(tokenImplementation_).supportsInterface(type(ISMART).interfaceId)
         ) {
             revert InvalidImplementationAddress();
-        }
-        if (
-            identityVerificationModule == address(0)
-                || !IERC165(identityVerificationModule).supportsInterface(type(ISMARTComplianceModule).interfaceId)
-        ) {
-            revert InvalidIdentityVerificationModuleAddress();
         }
         _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
         _grantRole(ATKSystemRoles.DEPLOYER_ROLE, initialAdmin);
@@ -103,7 +89,6 @@ abstract contract AbstractATKTokenFactoryImplementation is
 
         _tokenImplementation = tokenImplementation_;
         _systemAddress = systemAddress;
-        _identityVerificationModule = identityVerificationModule;
     }
 
     /// @inheritdoc IATKTokenFactory
@@ -145,40 +130,6 @@ abstract contract AbstractATKTokenFactoryImplementation is
     /// @return The compliance contract.
     function _compliance() internal view returns (ISMARTCompliance) {
         return ISMARTCompliance(IATKSystem(_systemAddress).compliance());
-    }
-
-    /// @notice Creates a pair for the identity verification module.
-    /// @param requiredClaimTopics The required claim topics.
-    /// @return The pair for the identity verification module.
-    function _identityVerificationModulePair(uint256[] memory requiredClaimTopics)
-        internal
-        view
-        returns (SMARTComplianceModuleParamPair memory)
-    {
-        return SMARTComplianceModuleParamPair({
-            module: _identityVerificationModule,
-            params: abi.encode(requiredClaimTopics)
-        });
-    }
-
-    /// @notice Adds the identity verification module pair to the module pairs.
-    /// @param modulePairs The module pairs.
-    /// @param requiredClaimTopics The required claim topics.
-    /// @return result The module pairs with the identity verification module pair added.
-    function _addIdentityVerificationModulePair(
-        SMARTComplianceModuleParamPair[] memory modulePairs,
-        uint256[] memory requiredClaimTopics
-    )
-        internal
-        view
-        returns (SMARTComplianceModuleParamPair[] memory result)
-    {
-        result = new SMARTComplianceModuleParamPair[](modulePairs.length + 1);
-        result[0] = _identityVerificationModulePair(requiredClaimTopics);
-        for (uint256 i = 0; i < modulePairs.length; ++i) {
-            result[i + 1] = modulePairs[i];
-        }
-        return result;
     }
 
     /// @notice Calculates the salt for CREATE2 deployment.

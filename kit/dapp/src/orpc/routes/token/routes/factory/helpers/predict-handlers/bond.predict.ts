@@ -15,7 +15,6 @@ const PREDICT_BOND_ADDRESS_QUERY = portalGraphql(`
     $name: String!
     $decimals: Int!
     $initialModulePairs: [ATKBondFactoryImplementationPredictBondAddressInitialModulePairsInput!]!
-    $requiredClaimTopics: [String!]!
     $cap: String!
     $faceValue: String!
     $maturityDate: String!
@@ -27,7 +26,6 @@ const PREDICT_BOND_ADDRESS_QUERY = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
         cap_: $cap
         bondParams: {
           faceValue: $faceValue

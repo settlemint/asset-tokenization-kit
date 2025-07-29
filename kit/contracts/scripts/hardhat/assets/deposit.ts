@@ -2,10 +2,8 @@ import { frozenInvestor, investorA, investorB } from "../constants/actors";
 
 import { owner } from "../constants/actors";
 import { Countries } from "../constants/countries";
-import { ATKTopic } from "../constants/topics";
 import { Asset } from "../entities/asset";
 import { atkDeployer } from "../services/deployer";
-import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
@@ -39,7 +37,6 @@ export const createDeposit = async () => {
     deposit.name,
     deposit.symbol,
     deposit.decimals,
-    [topicManager.getTopicId(ATKTopic.kyc)],
     [
       ...getDefaultComplianceModules(),
       {

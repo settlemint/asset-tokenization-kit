@@ -6,9 +6,9 @@ import { KeyType } from "../constants/key-types";
 import { ATKTopic } from "../constants/topics";
 import type { Actor } from "../entities/actor";
 import { atkDeployer } from "../services/deployer";
-import { topicManager } from "../services/topic-manager";
 import { encodeClaimData } from "../utils/claim-scheme-utils";
 import { withDecodedRevertReason } from "../utils/decode-revert-reason";
+import { expressionBuilder } from "../utils/expression-builder";
 import { waitForSuccess } from "../utils/wait-for-success";
 
 export const issueVerificationClaims = async (actor: Actor) => {
@@ -36,10 +36,7 @@ export const issueVerificationClaims = async (actor: Actor) => {
     .getIdentityRegistryContract()
     .read.isVerified([
       actor.address,
-      [
-        topicManager.getTopicId(ATKTopic.kyc),
-        topicManager.getTopicId(ATKTopic.aml),
-      ],
+      expressionBuilder().topic(ATKTopic.kyc).and(ATKTopic.aml).build(),
     ]);
 
   if (!isVerified) {

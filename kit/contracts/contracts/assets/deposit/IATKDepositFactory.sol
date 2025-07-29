@@ -15,7 +15,6 @@ interface IATKDepositFactory is IATKTokenFactory {
     /// @param name The name of the deposit.
     /// @param symbol The symbol of the deposit.
     /// @param decimals The number of decimals for the deposit tokens.
-    /// @param requiredClaimTopics The claim topics required for interacting with the deposit.
     /// @param countryCode The ISO 3166-1 numeric country code for jurisdiction
     event DepositCreated(
         address indexed sender,
@@ -24,7 +23,6 @@ interface IATKDepositFactory is IATKTokenFactory {
         string name,
         string symbol,
         uint8 decimals,
-        uint256[] requiredClaimTopics,
         uint16 countryCode
     );
 
@@ -32,7 +30,6 @@ interface IATKDepositFactory is IATKTokenFactory {
     /// @param name_ The name of the deposit token.
     /// @param symbol_ The symbol of the deposit token.
     /// @param decimals_ The number of decimals for the deposit token.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the deposit token.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedDepositAddress The address of the newly deployed deposit token contract.
@@ -40,7 +37,6 @@ interface IATKDepositFactory is IATKTokenFactory {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         uint16 countryCode_
     )
@@ -51,14 +47,12 @@ interface IATKDepositFactory is IATKTokenFactory {
     /// @param name_ The name of the deposit token.
     /// @param symbol_ The symbol of the deposit token.
     /// @param decimals_ The number of decimals for the deposit token.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the deposit token.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @return predictedAddress The predicted address of the deposit token contract.
     function predictDepositAddress(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         external

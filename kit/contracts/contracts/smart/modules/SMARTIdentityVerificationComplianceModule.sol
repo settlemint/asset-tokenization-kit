@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import { AbstractComplianceModule } from "./AbstractComplianceModule.sol";
 import { ISMARTIdentityRegistry } from "../interface/ISMARTIdentityRegistry.sol";
 import { ISMART } from "../interface/ISMART.sol";
+import { ExpressionNode, ExpressionType } from "../interface/structs/ExpressionNode.sol";
 
 /// @title Identity Verification Module
 /// @author SettleMint
@@ -20,6 +21,24 @@ contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
     /// `requiredClaimTopics`.
     ///      For example, a recipient might need to have specific claims (like KYC) issued by trusted parties.
     error RecipientNotVerified();
+
+    /// @notice Reverted when an empty expression array is provided
+    error EmptyExpressionNotAllowed();
+
+    /// @notice Reverted when a topic ID of zero is used in an expression
+    error InvalidTopicIdZeroNotAllowed();
+
+    /// @notice Reverted when a NOT operation is used without sufficient operands
+    error NotOperationRequiresOneOperand();
+
+    /// @notice Reverted when an AND/OR operation is used without sufficient operands
+    error AndOrOperationRequiresTwoOperands();
+
+    /// @notice Reverted when an unknown expression type is encountered
+    error UnknownExpressionType();
+
+    /// @notice Reverted when an expression doesn't evaluate to exactly one result
+    error InvalidExpressionMustEvaluateToOneResult();
 
     // --- Constructor ---
     /// @notice Constructor for the `IdentityVerificationModule`.
@@ -46,8 +65,10 @@ contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
         virtual
         override
     {
-        uint256[] memory requiredClaimTopics = _decodeParams(_params);
-        if (!ISMARTIdentityRegistry(ISMART(token).identityRegistry()).isVerified(_to, requiredClaimTopics)) {
+        ISMARTIdentityRegistry identityRegistry = ISMARTIdentityRegistry(ISMART(token).identityRegistry());
+        ExpressionNode[] memory expression = abi.decode(_params, (ExpressionNode[]));
+
+        if (!identityRegistry.isVerified(_to, expression)) {
             revert RecipientNotVerified();
         }
     }
@@ -57,17 +78,51 @@ contract SMARTIdentityVerificationComplianceModule is AbstractComplianceModule {
     /// @notice Validates that the provided parameters are properly formatted
     /// @param _params The parameters to validate, expected to be ABI-encoded uint256 array
     function validateParameters(bytes calldata _params) public view virtual override {
-        // Attempt to decode parameters as an array of uint16 (country codes).
-        // If _params is not correctly ABI-encoded as `uint16[]`, this abi.decode call will revert.
-        abi.decode(_params, (uint256[]));
-        // If decoding is successful, the format is considered valid by this abstract module.
+        ExpressionNode[] memory expression = abi.decode(_params, (ExpressionNode[]));
+        _validateExpressionStructure(expression);
     }
 
-    /// @notice Decodes the parameters into an array of required claim topics
-    /// @param _params The ABI-encoded parameters
-    /// @return requiredClaimTopics Array of claim topic IDs that are required for verification
-    function _decodeParams(bytes calldata _params) internal pure returns (uint256[] memory requiredClaimTopics) {
-        return abi.decode(_params, (uint256[]));
+    /// @notice Validates that an expression has a proper structure for postfix evaluation
+    /// @dev Validates that an expression has a proper structure for postfix evaluation
+    /// @param expression The expression to validate
+    function _validateExpressionStructure(ExpressionNode[] memory expression) internal pure {
+        if (expression.length == 0) {
+            return;
+        }
+
+        int256 stackBalance = 0;
+
+        for (uint256 i = 0; i < expression.length; ++i) {
+            ExpressionNode memory node = expression[i];
+
+            if (node.nodeType == ExpressionType.TOPIC) {
+                // TOPIC nodes add one item to the stack
+                ++stackBalance;
+                // Validate that topic ID is not zero
+                if (node.value == 0) {
+                    revert InvalidTopicIdZeroNotAllowed();
+                }
+            } else if (node.nodeType == ExpressionType.NOT) {
+                // NOT requires one operand and produces one result (no net change)
+                if (stackBalance < 1) {
+                    revert NotOperationRequiresOneOperand();
+                }
+                // Stack balance remains unchanged: -1 + 1 = 0
+            } else if (node.nodeType == ExpressionType.AND || node.nodeType == ExpressionType.OR) {
+                // AND/OR require two operands and produce one result (net -1)
+                if (stackBalance < 2) {
+                    revert AndOrOperationRequiresTwoOperands();
+                }
+                --stackBalance; // Two operands consumed, one result produced
+            } else {
+                revert UnknownExpressionType();
+            }
+        }
+
+        // Valid postfix expression should leave exactly one value on the stack
+        if (stackBalance != 1) {
+            revert InvalidExpressionMustEvaluateToOneResult();
+        }
     }
 
     /// @inheritdoc AbstractComplianceModule

@@ -13,8 +13,7 @@
  *   name: "USD Deposit Token",
  *   symbol: "USDD",
  *   decimals: 2,
- *   initialModulePairs: [],
- *   requiredClaimTopics: []
+ *   initialModulePairs: []
  * };
  *
  * // Predict bond token address
@@ -27,8 +26,7 @@
  *   faceValue: "1000",
  *   maturityDate: "2025-12-31",
  *   underlyingAsset: "0x...",
- *   initialModulePairs: [],
- *   requiredClaimTopics: []
+ *   initialModulePairs: []
  * };
  * ```
  */

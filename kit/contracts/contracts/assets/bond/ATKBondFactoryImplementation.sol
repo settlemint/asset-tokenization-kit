@@ -39,7 +39,6 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
     /// @param decimals_ The number of decimals for the bond tokens.
     /// @param cap_ The maximum total supply of the bond tokens.
     /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the bond.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedBondAddress The address of the newly deployed bond contract.
@@ -49,7 +48,6 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         uint8 decimals_,
         uint256 cap_,
         IATKBond.BondInitParams calldata bondParams,
-        uint256[] calldata requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
         uint16 countryCode_
     )
@@ -69,7 +67,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
             decimals_,
             cap_,
             bondParams,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -96,7 +94,6 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
             name_,
             symbol_,
             decimals_,
-            requiredClaimTopics_,
             cap_,
             bondParams.maturityDate,
             bondParams.faceValue,
@@ -120,7 +117,6 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
     /// @param decimals_ The decimals of the bond.
     /// @param cap_ The cap of the bond.
     /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
-    /// @param requiredClaimTopics_ The required claim topics for the bond.
     /// @param initialModulePairs_ The initial compliance module pairs for the bond.
     /// @return predictedAddress The predicted address of the bond contract.
     function predictBondAddress(
@@ -129,7 +125,6 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
         uint8 decimals_,
         uint256 cap_,
         IATKBond.BondInitParams calldata bondParams,
-        uint256[] calldata requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] calldata initialModulePairs_
     )
         external
@@ -147,7 +142,7 @@ contract ATKBondFactoryImplementation is IATKBondFactory, AbstractATKTokenFactor
             decimals_,
             cap_,
             bondParams,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_
