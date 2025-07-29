@@ -8,6 +8,14 @@
       "description": "إجمالي عرض الأصول على مر الزمن",
       "title": "عرض الأصول"
     },
+    "totalCollateral": {
+      "label": "إجمالي الضمان"
+    },
+    "totalSupply": {
+      "description": "التغييرات التاريخية في إجمالي العرض على مر الزمن",
+      "label": "إجمالي العرض",
+      "title": "تاريخ عرض الرموز"
+    },
     "transactionHistory": {
       "description": "حجم المعاملات على مر الزمن",
       "title": "تاريخ المعاملات"

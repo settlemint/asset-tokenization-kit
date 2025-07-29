@@ -8,6 +8,14 @@
       "description": "Gesamtangebot an Vermögenswerten über die Zeit",
       "title": "Vermögensangebot"
     },
+    "totalCollateral": {
+      "label": "Gesamtsicherheit"
+    },
+    "totalSupply": {
+      "description": "Historische Änderungen des Gesamtangebots über die Zeit",
+      "label": "Gesamtangebot",
+      "title": "Token-Angebotsverlauf"
+    },
     "transactionHistory": {
       "description": "Transaktionsvolumen über die Zeit",
       "title": "Transaktionshistorie"

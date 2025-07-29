@@ -8,6 +8,14 @@
       "description": "Total supply of assets over time",
       "title": "Asset supply"
     },
+    "totalCollateral": {
+      "label": "Total Collateral"
+    },
+    "totalSupply": {
+      "description": "Historical total supply changes over time",
+      "label": "Total Supply",
+      "title": "Token Supply History"
+    },
     "transactionHistory": {
       "description": "Transaction volume over time",
       "title": "Transaction history"

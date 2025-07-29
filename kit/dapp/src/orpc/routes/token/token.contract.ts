@@ -34,6 +34,7 @@ import { tokenStatsSystemAssetsContract } from "@/orpc/routes/token/routes/stats
 import { tokenStatsSystemValueContract } from "@/orpc/routes/token/routes/stats/system/value.contract";
 import { tokenStatsSystemTransactionCountContract } from "@/orpc/routes/token/routes/stats/system/transaction-count.contract";
 import { tokenStatsSystemTransactionHistoryContract } from "@/orpc/routes/token/routes/stats/system/transaction-history.contract";
+import { tokenStatsAssetTotalSupplyContract } from "@/orpc/routes/token/routes/stats/[assetId]/total-supply.contract";
 
 const tokenContractMutations = {
   create: tokenCreateContract,
@@ -78,4 +79,5 @@ export const tokenContract = {
   statsSystemAssets: tokenStatsSystemAssetsContract,
   statsSystemTransactionCount: tokenStatsSystemTransactionCountContract,
   statsSystemValue: tokenStatsSystemValueContract,
+  statsAssetTotalSupply: tokenStatsAssetTotalSupplyContract,
 };
