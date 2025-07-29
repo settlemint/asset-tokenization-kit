@@ -25,7 +25,8 @@
       "disable": "Disable",
       "enable": "Enable",
       "next": "Next",
-      "submit": "Submit"
+      "submit": "Submit",
+      "exit": "Exit"
     },
     "description": "Configure your {{type}} by providing the basic information below.",
     "fields": {

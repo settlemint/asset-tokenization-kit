@@ -15,7 +15,6 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import { useStore } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowLeftIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -84,14 +83,13 @@ export const SelectAssetType = withForm({
           />
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onBack}>
-            <ArrowLeftIcon className="h-4 w-4 mr-2" />
-            {t("asset-designer:form.buttons.back")}
+        <DialogFooter className="!flex !flex-row !justify-between">
+          <Button variant="ghost" onClick={onCancel}>
+            {t("asset-designer:form.buttons.cancel")}
           </Button>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={onCancel}>
-              {t("asset-designer:form.buttons.cancel")}
+            <Button variant="outline" onClick={onBack}>
+              {t("asset-designer:form.buttons.back")}
             </Button>
             <form.StepSubmitButton
               onStepSubmit={onStepSubmit}

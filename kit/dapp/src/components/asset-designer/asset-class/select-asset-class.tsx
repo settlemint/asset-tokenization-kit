@@ -80,8 +80,8 @@ export const SelectAssetClass = withForm({
           />
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onCancel}>
+        <DialogFooter className="!flex !flex-row !justify-between">
+          <Button variant="ghost" onClick={onCancel}>
             {t("asset-designer:form.buttons.cancel")}
           </Button>
 
