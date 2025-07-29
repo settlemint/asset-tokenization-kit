@@ -1,0 +1,60 @@
+{{/*
+Common port definitions to avoid duplication
+*/}}
+{{- define "graph-node.servicePorts" -}}
+- port: {{ .Values.service.ports.httpQuery }}
+  targetPort: http-query
+  protocol: TCP
+  name: http-query
+- port: {{ .Values.service.ports.httpQueryws }}
+  targetPort: http-queryws
+  protocol: TCP
+  name: http-queryws
+- port: {{ .Values.service.ports.httpAdmin }}
+  targetPort: http-admin
+  protocol: TCP
+  name: http-admin
+- port: {{ .Values.service.ports.httpStatus }}
+  targetPort: http-status
+  protocol: TCP
+  name: http-status
+- port: {{ .Values.service.ports.httpMetrics }}
+  targetPort: http-metrics
+  protocol: TCP
+  name: http-metrics
+{{- end }}
+
+{{/*
+Common selector labels to avoid duplication
+*/}}
+{{- define "graph-node.serviceSelector" -}}
+{{- include "graph-node.selectorLabels" . | nindent 4 }}
+app.kubernetes.io/component: combined
+{{- end }}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "graph-node.fullname" . }}-combined
+  labels:
+    {{- include "graph-node.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    {{- include "graph-node.servicePorts" . | nindent 2 }}
+  selector:
+    {{- include "graph-node.serviceSelector" . }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "graph-node.fullname" . }}-combined-headless
+  labels:
+    {{- include "graph-node.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    {{- include "graph-node.servicePorts" . | nindent 2 }}
+  selector:
+    {{- include "graph-node.serviceSelector" . }}

@@ -1,0 +1,196 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "graph-node.fullname" . }}-combined
+  labels:
+    {{- include "graph-node.labels" . | nindent 4 }}
+    app.kubernetes.io/component: combined
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ include "graph-node.fullname" . }}-combined-headless
+  selector:
+    matchLabels:
+      {{- include "graph-node.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: combined
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "graph-node.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: combined
+    spec:
+      {{- include "graph-node.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ include "graph-node.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      initContainers:
+        - name: combined-init
+          image: {{ include "graph-node.initContainerImage" . }}
+          imagePullPolicy: {{ .Values.initContainer.image.pullPolicy }}
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            {{- range $key, $val := .Values.env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+            {{- end }}
+            {{- range $key, $val := .Values.secretEnv }}
+            {{- if $val.key }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if $val.secretName }}{{ $val.secretName | quote }}{{ else }}{{ include "graph-node.pgSecretName" $ | quote }}{{ end }}
+                  key: {{ $val.key | quote }}
+            {{- end }}
+            {{- end }}
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              ulimit -n 65536
+              ulimit -a
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/graph-node
+              readOnly: true
+        {{- if .Values.postgresReadinessCheck.enabled }}
+        - name: wait-for-postgresql-ready
+          image: {{ .Values.postgresReadinessCheck.image }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Waiting for PostgreSQL to be ready..."
+
+              # Add random delay to prevent all nodes from connecting simultaneously
+              RANDOM_DELAY=$((RANDOM % {{ sub .Values.postgresReadinessCheck.randomDelayRange.max .Values.postgresReadinessCheck.randomDelayRange.min | add 1}} + {{ .Values.postgresReadinessCheck.randomDelayRange.min}}))
+              echo "Adding random delay of ${RANDOM_DELAY} seconds to stagger connections..."
+              sleep $RANDOM_DELAY
+
+              # Function to test PostgreSQL connection
+              test_postgres() {
+                pg_isready -h {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }} -p {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }} -U "$PGUSER" && \
+                psql -h {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }} -p {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }} -U "$PGUSER" -d {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGDATABASE }} -c "SELECT 1;" > /dev/null 2>&1
+              }
+
+              # Wait with exponential backoff
+              RETRY_COUNT=0
+              MAX_RETRIES={{ .Values.postgresReadinessCheck.maxRetries }}
+              WAIT_TIME={{ .Values.postgresReadinessCheck.initialWaitTime }}
+
+              while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                if test_postgres; then
+                  echo "PostgreSQL is ready!"
+                  exit 0
+                fi
+
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                echo "PostgreSQL not ready (attempt $RETRY_COUNT/$MAX_RETRIES). Waiting ${WAIT_TIME}s..."
+                sleep $WAIT_TIME
+
+                # Exponential backoff with max wait time
+                WAIT_TIME=$((WAIT_TIME * 2))
+                if [ $WAIT_TIME -gt {{ .Values.postgresReadinessCheck.maxWaitTime }} ]; then
+                  WAIT_TIME={{ .Values.postgresReadinessCheck.maxWaitTime }}
+                fi
+              done
+
+              echo "PostgreSQL failed to become ready after $MAX_RETRIES attempts"
+              exit 1
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "graph-node.pgSecretName" . }}
+                  key: {{ .Values.secretEnv.PRIMARY_SUBGRAPH_DATA_PGUSER.key }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "graph-node.pgSecretName" . }}
+                  key: {{ .Values.secretEnv.PRIMARY_SUBGRAPH_DATA_PGPASSWORD.key }}
+        {{- end }}
+        {{- with .Values.extraInitContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: graph-node
+          image: {{ include "graph-node.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              graph-node \
+                --config /etc/graph-node/config.toml \
+                --ipfs {{ .Values.env.IPFS }}
+          ports:
+            - name: http-query
+              containerPort: {{ .Values.service.ports.httpQuery }}
+              protocol: TCP
+            - name: http-queryws
+              containerPort: {{ .Values.service.ports.httpQueryws }}
+              protocol: TCP
+            - name: http-admin
+              containerPort: {{ .Values.service.ports.httpAdmin }}
+              protocol: TCP
+            - name: http-status
+              containerPort: {{ .Values.service.ports.httpStatus }}
+              protocol: TCP
+            - name: http-metrics
+              containerPort: {{ .Values.service.ports.httpMetrics }}
+              protocol: TCP
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            {{- range $key, $val := .Values.env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+            {{- end }}
+            {{- range $key, $val := .Values.secretEnv }}
+            {{- if $val.key }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if $val.secretName }}{{ $val.secretName | quote }}{{ else }}{{ include "graph-node.pgSecretName" $ | quote }}{{ end }}
+                  key: {{ $val.key | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/graph-node
+              readOnly: true
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        {{- with .Values.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "graph-node.fullname" . }}-config
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
