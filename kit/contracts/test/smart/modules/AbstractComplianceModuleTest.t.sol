@@ -46,7 +46,6 @@ abstract contract AbstractComplianceModuleTest is Test {
     // Token
     ISMART internal smartToken;
 
-    bytes32 internal constant GLOBAL_LIST_MANAGER_ROLE = keccak256("GLOBAL_LIST_MANAGER_ROLE");
 
     function setUp() public virtual {
         platformAdmin = makeAddr("platformAdmin");

@@ -106,7 +106,7 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
         override(IERC165)
         returns (bool)
     {
-        return interfaceId == type(ISMARTComplianceModule).interfaceId;
+        return interfaceId == type(ISMARTComplianceModule).interfaceId || interfaceId == type(IERC165).interfaceId;
     }
 
     // --- Abstract Functions (MUST be implemented by inheriting concrete compliance modules) ---
