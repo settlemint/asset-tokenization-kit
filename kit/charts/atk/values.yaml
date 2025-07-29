@@ -213,7 +213,7 @@ blockscout:
       ingress:
         hostname: explorer.k8s.orb.local
 
-thegraph:
+graph-node:
   enabled: true
   imagePullSecrets:
     - name: image-pull-secret-docker

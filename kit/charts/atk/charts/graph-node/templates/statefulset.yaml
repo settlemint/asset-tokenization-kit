@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "thegraph.fullname" . }}-combined
+  name: {{ include "graph-node.fullname" . }}-combined
   labels:
-    {{- include "thegraph.labels" . | nindent 4 }}
+    {{- include "graph-node.labels" . | nindent 4 }}
     app.kubernetes.io/component: combined
 spec:
   replicas: {{ .Values.replicaCount }}
-  serviceName: {{ include "thegraph.fullname" . }}-combined-headless
+  serviceName: {{ include "graph-node.fullname" . }}-combined-headless
   selector:
     matchLabels:
-      {{- include "thegraph.selectorLabels" . | nindent 6 }}
+      {{- include "graph-node.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: combined
   template:
     metadata:
@@ -19,17 +19,17 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "thegraph.selectorLabels" . | nindent 8 }}
+        {{- include "graph-node.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: combined
     spec:
-      {{- include "thegraph.imagePullSecrets" . | nindent 6 }}
-      serviceAccountName: {{ include "thegraph.serviceAccountName" . }}
+      {{- include "graph-node.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ include "graph-node.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       initContainers:
         - name: combined-init
-          image: {{ include "thegraph.initContainerImage" . }}
+          image: {{ include "graph-node.initContainerImage" . }}
           imagePullPolicy: {{ .Values.initContainer.image.pullPolicy }}
           env:
             - name: NODE_ID
@@ -119,7 +119,7 @@ spec:
         {{- end }}
       containers:
         - name: graph-node
-          image: {{ include "thegraph.image" . }}
+          image: {{ include "graph-node.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - sh
@@ -177,7 +177,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "thegraph.fullname" . }}-config
+            name: {{ include "graph-node.fullname" . }}-config
         {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

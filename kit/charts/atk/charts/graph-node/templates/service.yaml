@@ -1,7 +1,7 @@
 {{/*
 Common port definitions to avoid duplication
 */}}
-{{- define "thegraph.servicePorts" -}}
+{{- define "graph-node.servicePorts" -}}
 - port: {{ .Values.service.ports.httpQuery }}
   targetPort: http-query
   protocol: TCP
@@ -27,34 +27,34 @@ Common port definitions to avoid duplication
 {{/*
 Common selector labels to avoid duplication
 */}}
-{{- define "thegraph.serviceSelector" -}}
-{{- include "thegraph.selectorLabels" . | nindent 4 }}
+{{- define "graph-node.serviceSelector" -}}
+{{- include "graph-node.selectorLabels" . | nindent 4 }}
 app.kubernetes.io/component: combined
 {{- end }}
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "thegraph.fullname" . }}-combined
+  name: {{ include "graph-node.fullname" . }}-combined
   labels:
-    {{- include "thegraph.labels" . | nindent 4 }}
+    {{- include "graph-node.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
-    {{- include "thegraph.servicePorts" . | nindent 2 }}
+    {{- include "graph-node.servicePorts" . | nindent 2 }}
   selector:
-    {{- include "thegraph.serviceSelector" . }}
+    {{- include "graph-node.serviceSelector" . }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "thegraph.fullname" . }}-combined-headless
+  name: {{ include "graph-node.fullname" . }}-combined-headless
   labels:
-    {{- include "thegraph.labels" . | nindent 4 }}
+    {{- include "graph-node.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
   ports:
-    {{- include "thegraph.servicePorts" . | nindent 2 }}
+    {{- include "graph-node.servicePorts" . | nindent 2 }}
   selector:
-    {{- include "thegraph.serviceSelector" . }}
+    {{- include "graph-node.serviceSelector" . }}

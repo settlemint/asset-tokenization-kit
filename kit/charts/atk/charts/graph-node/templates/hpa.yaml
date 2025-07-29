@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "thegraph.fullname" . }}
+  name: {{ include "graph-node.fullname" . }}
   labels:
-    {{- include "thegraph.labels" . | nindent 4 }}
+    {{- include "graph-node.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: StatefulSet
-    name: {{ include "thegraph.fullname" . }}-combined
+    name: {{ include "graph-node.fullname" . }}-combined
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

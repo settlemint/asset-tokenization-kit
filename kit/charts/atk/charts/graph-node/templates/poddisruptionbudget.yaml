@@ -2,9 +2,9 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "thegraph.fullname" . }}
+  name: {{ include "graph-node.fullname" . }}
   labels:
-    {{- include "thegraph.labels" . | nindent 4 }}
+    {{- include "graph-node.labels" . | nindent 4 }}
 spec:
   {{- if .Values.podDisruptionBudget.minAvailable }}
   minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
@@ -14,6 +14,6 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "thegraph.selectorLabels" . | nindent 6 }}
+      {{- include "graph-node.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: combined
 {{- end }}

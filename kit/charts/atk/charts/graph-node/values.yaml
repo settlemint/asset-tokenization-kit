@@ -231,7 +231,7 @@ configTemplate: |
     {{- end }}
 
     # Chain configuration
-    {{- $patchedChains := dict "ingestor" (print (include "thegraph.fullname" $) "-combined-" 0) }}
+    {{- $patchedChains := dict "ingestor" (print (include "graph-node.fullname" $) "-combined-" 0) }}
     {{- range $chainName, $chainValues := $.Values.chains }}
     {{- if $chainValues.enabled }}
       {{- $_ := set $patchedChains $chainName (omit $chainValues "enabled") }}
@@ -246,7 +246,7 @@ configTemplate: |
     # DEFAULT RULE
     # There's no 'match' field, so any subgraph that hasn't matched above, matches this rule
     shards = ["primary"]
-    indexers = ["{{ include "thegraph.fullname" $ }}-combined-0"]
+    indexers = ["{{ include "graph-node.fullname" $ }}-combined-0"]
 
 # Network policies
 networkPolicy:

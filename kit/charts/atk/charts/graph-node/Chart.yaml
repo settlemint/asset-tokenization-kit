@@ -1,6 +1,6 @@
 apiVersion: v2
-name: thegraph
-description: A Helm chart for TheGraph Node
+name: graph-node
+description: A Helm chart for Graph Node
 type: application
 version: 0.0.1
 appVersion: "v0.39.1"

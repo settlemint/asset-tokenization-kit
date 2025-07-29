@@ -25,9 +25,9 @@ dependencies:
   - name: blockscout
     version: "*"
     condition: blockscout.enabled
-  - name: thegraph
+  - name: graph-node
     version: "*"
-    condition: thegraph.enabled
+    condition: graph-node.enabled
   - name: portal
     version: "*"
     condition: portal.enabled
