@@ -24,8 +24,11 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
   return response.id;
 }
 
-export async function bootstrapTokenFactories(orpClient: OrpcClient) {
-  const system = await orpClient.system.read({ id: "default" });
+export async function bootstrapTokenFactories(
+  orpClient: OrpcClient,
+  systemId = "default"
+) {
+  const system = await orpClient.system.read({ id: systemId });
   if (!system) {
     throw new Error("System not found");
   }
@@ -64,24 +67,27 @@ export async function bootstrapTokenFactories(orpClient: OrpcClient) {
       factories: nonExistingFactories,
     });
 
+    // The factoryCreate method returns a FactoryCreateOutput with status and results
+    if (result.status !== "completed") {
+      throw new Error(`Factory creation failed: ${result.message}`);
+    }
+
     const transactionHashes: string[] = [];
-    for await (const event of result) {
-      console.log(
-        `Token factory create event received: ${JSON.stringify(event, null, 2)}`
-      );
-      if (event.result) {
-        event.result.forEach((result) => {
-          if (result.transactionHash) {
-            transactionHashes.push(result.transactionHash);
-          }
-        });
-      }
+
+    if (result.results) {
+      result.results.forEach((r) => {
+        if (r.transactionHash) {
+          transactionHashes.push(r.transactionHash);
+        }
+      });
     }
 
     // Skip the strict assertion when running in the system access manager integration branch
     // This allows tests to continue running even if token factory registration fails
     if (process.env.CI !== "true") {
-      expect(transactionHashes.length).toBe(nonExistingFactories.length);
+      const successfulCreations =
+        result.results?.filter((r) => !r.error).length || 0;
+      expect(successfulCreations).toBe(nonExistingFactories.length);
       console.log("Token factories created");
     } else {
       console.log(

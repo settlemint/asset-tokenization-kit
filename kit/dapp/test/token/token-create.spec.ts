@@ -20,7 +20,9 @@ describe("Token create", () => {
 
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
-    const system = await client.system.read({ id: "default" });
+    const systems = await client.system.list({});
+    const systemId = systems[0]?.id || "default";
+    const system = await client.system.read({ id: systemId });
 
     expect(system?.tokenFactoryRegistry).toBeDefined();
     if (!system?.tokenFactoryRegistry) {
@@ -77,7 +79,9 @@ describe("Token create", () => {
 
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
-    const system = await client.system.read({ id: "default" });
+    const systems = await client.system.list({});
+    const systemId = systems[0]?.id || "default";
+    const system = await client.system.read({ id: systemId });
 
     expect(system?.tokenFactoryRegistry).toBeDefined();
     const tokenFactoryRegistry = system?.tokenFactoryRegistry;
