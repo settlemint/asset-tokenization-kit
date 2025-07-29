@@ -48,7 +48,7 @@ export const SelectAssetType = withForm({
               label: t(`asset-types:types.${assetType}.name`),
               description: t(`asset-types:types.${assetType}.description`),
             };
-          }),
+          }) ?? [],
       [assetClasses, assetClass, t]
     );
 
