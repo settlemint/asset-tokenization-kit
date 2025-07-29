@@ -147,7 +147,6 @@ export const tokenMiddleware = baseRouter.middleware(
       ...token,
       userPermissions: {
         roles: userRoles,
-        isCompliant: true, // TODO: do we need this? because this can only check partly if it's compliant. Unless it uses the compliance module
         // TODO: implement logic which checks if the user is allowed to interact with the token
         // user is not allowed when in the block list or when it requires an allow list
         // Another reason could be that the user is a citizen of a blocked country
