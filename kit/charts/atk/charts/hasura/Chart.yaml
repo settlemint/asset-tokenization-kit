@@ -11,5 +11,5 @@ maintainers:
     url: https://settlemint.com
 dependencies:
   - name: graphql-engine
-    version: 0.8.0
+    version: 0.9.0
     repository: https://hasura.github.io/helm-charts
