@@ -17,6 +17,5 @@ export const TokenBaseSchema = MutationInputSchema.extend({
   initialModulePairs: complianceModulePairArray().describe(
     "Initial compliance module pairs for the token"
   ),
-  requiredClaimTopics: z.array(z.string()).default([]),
   type: assetType(),
 });

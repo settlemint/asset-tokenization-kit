@@ -21,7 +21,6 @@ import {
     IdentityImplementationNotSet,
     IdentityRegistryImplementationNotSet,
     IdentityRegistryStorageImplementationNotSet,
-    IdentityVerificationModuleNotSet,
     InvalidImplementationInterface,
     SystemAccessManagerImplementationNotSet,
     SystemAlreadyBootstrapped,
@@ -146,9 +145,6 @@ contract ATKSystemImplementation is
     /// @dev Stores the address of the identity factory module's proxy contract.
     address private _identityFactoryProxy;
 
-    /// @dev Stores the address of the current identity verification module instance.
-    address private _identityVerificationModule;
-
     /// @dev Flag to indicate if the system has been bootstrapped.
     bool private _bootstrapped;
 
@@ -220,8 +216,6 @@ contract ATKSystemImplementation is
     /// IERC734/IIdentity compliant.
     /// @param tokenAccessManagerImplementation_ The initial address of the token access manager contract's logic. Must
     /// be ISMARTTokenAccessManager compliant.
-    /// @param identityVerificationModule_ The initial address of the identity verification module
-    /// contract's logic.
     /// @param tokenFactoryRegistryImplementation_ The initial address of the token factory registry module's logic
     /// contract.
     /// @param complianceModuleRegistryImplementation_ The initial address of the compliance module registry module's
@@ -240,7 +234,6 @@ contract ATKSystemImplementation is
         address identityImplementation_, // Expected to be IERC734/IIdentity compliant
         address contractIdentityImplementation_, // Expected to be IERC734/IIdentity compliant
         address tokenAccessManagerImplementation_, // Expected to be ISMARTTokenAccessManager compliant
-        address identityVerificationModule_,
         address tokenFactoryRegistryImplementation_,
         address complianceModuleRegistryImplementation_,
         address addonRegistryImplementation_,
@@ -321,12 +314,6 @@ contract ATKSystemImplementation is
         _implementations[CONTRACT_IDENTITY] = contractIdentityImplementation_;
         emit ContractIdentityImplementationUpdated(initialAdmin_, contractIdentityImplementation_);
 
-        // Validate and set the identity verification module implementation address.
-        if (identityVerificationModule_ == address(0)) {
-            revert IdentityVerificationModuleNotSet();
-        }
-        _identityVerificationModule = identityVerificationModule_;
-
         // Validate and set the compliance module registry implementation address.
         if (complianceModuleRegistryImplementation_ == address(0)) {
             revert ComplianceModuleRegistryImplementationNotSet();
@@ -398,7 +385,6 @@ contract ATKSystemImplementation is
         }
         if (_implementations[TOPIC_SCHEME_REGISTRY] == address(0)) revert TopicSchemeRegistryImplementationNotSet();
         if (_implementations[IDENTITY_FACTORY] == address(0)) revert IdentityFactoryImplementationNotSet();
-        if (_identityVerificationModule == address(0)) revert IdentityVerificationModuleNotSet();
         if (_implementations[COMPLIANCE_MODULE_REGISTRY] == address(0)) {
             revert ComplianceModuleRegistryImplementationNotSet();
         }
@@ -416,9 +402,8 @@ contract ATKSystemImplementation is
         // This avoids reading from state that is being modified in the same transaction before it's fully updated.
 
         // Deploy registries
-        address[] memory initialComplianceModuleAdmins = new address[](2);
+        address[] memory initialComplianceModuleAdmins = new address[](1);
         initialComplianceModuleAdmins[0] = initialAdmin;
-        initialComplianceModuleAdmins[1] = address(this); // so we can add the identity verification module
         bytes memory complianceModuleRegistryData =
             abi.encodeWithSelector(IATKComplianceModuleRegistry.initialize.selector, initialComplianceModuleAdmins);
         address localComplianceModuleRegistryProxy = address(
@@ -552,15 +537,6 @@ contract ATKSystemImplementation is
         // Set the identity factory's own OnChainID (this will now successfully issue claims)
         IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
 
-        // Register the identity verification module
-        if (_identityVerificationModule != address(0)) {
-            _checkInterface(_identityVerificationModule, _COMPLIANCE_MODULE_ID);
-
-            IATKComplianceModuleRegistry(localComplianceModuleRegistryProxy).registerComplianceModule(
-                _identityVerificationModule
-            );
-        }
-
         // Mark the system as bootstrapped
         _bootstrapped = true;
 
@@ -576,7 +552,6 @@ contract ATKSystemImplementation is
             _tokenFactoryRegistryProxy,
             _addonRegistryProxy,
             _complianceModuleRegistryProxy,
-            _identityVerificationModule,
             _systemAccessManagerProxy,
             _implementations[SYSTEM_ACCESS_MANAGER]
         );
@@ -870,14 +845,6 @@ contract ATKSystemImplementation is
     /// @return The address of the system access manager proxy contract.
     function systemAccessManager() public view returns (address) {
         return _systemAccessManagerProxy;
-    }
-
-    // --- Identity Verification Module ---
-
-    /// @notice Gets the address of the identity verification module's proxy contract.
-    /// @return The address of the identity verification module proxy contract.
-    function identityVerificationModule() public view returns (address) {
-        return _identityVerificationModule;
     }
 
     // --- Governance Functions ---

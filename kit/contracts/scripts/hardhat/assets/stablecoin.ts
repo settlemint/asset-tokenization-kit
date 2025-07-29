@@ -8,9 +8,7 @@ import {
 } from "../constants/actors";
 
 import { Countries } from "../constants/countries";
-import { ATKTopic } from "../constants/topics";
 import { Asset } from "../entities/asset";
-import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
@@ -38,7 +36,6 @@ export const createStableCoin = async () => {
     stableCoin.name,
     stableCoin.symbol,
     stableCoin.decimals,
-    [topicManager.getTopicId(ATKTopic.kyc)],
     getDefaultComplianceModules(),
     Countries.BE,
   ]);

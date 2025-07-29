@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-foundry": "1.2.0",
-    "@nomicfoundation/hardhat-toolbox-viem": "4.1.0",
+    "@nomicfoundation/hardhat-ignition-viem": "0.15.13",
     "@nomiclabs/hardhat-solhint": "4.1.0",
     "hardhat": "2.26.1",
     "solhint": "6.0.0",

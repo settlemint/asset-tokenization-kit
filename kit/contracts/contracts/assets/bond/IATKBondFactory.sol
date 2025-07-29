@@ -16,7 +16,6 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param name The name of the bond.
     /// @param symbol The symbol of the bond.
     /// @param decimals The number of decimals for the bond tokens.
-    /// @param requiredClaimTopics The claim topics required for interacting with the bond.
     /// @param cap The maximum total supply of the bond tokens.
     /// @param maturityDate The Unix timestamp representing the bond's maturity date.
     /// @param faceValue The face value of each bond token in the underlying asset's base units.
@@ -29,7 +28,6 @@ interface IATKBondFactory is IATKTokenFactory {
         string name,
         string symbol,
         uint8 decimals,
-        uint256[] requiredClaimTopics,
         uint256 cap,
         uint256 maturityDate,
         uint256 faceValue,
@@ -43,7 +41,6 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param decimals_ The number of decimals for the bond tokens.
     /// @param cap_ The maximum total supply of the bond tokens.
     /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the bond.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedBondAddress The address of the newly deployed bond contract.
@@ -53,7 +50,6 @@ interface IATKBondFactory is IATKTokenFactory {
         uint8 decimals_,
         uint256 cap_,
         IATKBond.BondInitParams memory bondParams,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_,
         uint16 countryCode_
     )
@@ -66,7 +62,6 @@ interface IATKBondFactory is IATKTokenFactory {
     /// @param decimals_ The number of decimals for the bond tokens.
     /// @param cap_ The maximum total supply of the bond tokens.
     /// @param bondParams Bond-specific parameters (maturityDate, faceValue, underlyingAsset).
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the bond.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @return predictedAddress The predicted address of the bond contract.
     function predictBondAddress(
@@ -75,7 +70,6 @@ interface IATKBondFactory is IATKTokenFactory {
         uint8 decimals_,
         uint256 cap_,
         IATKBond.BondInitParams memory bondParams,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         external

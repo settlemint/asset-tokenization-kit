@@ -26,7 +26,7 @@ import {
 contract MockTokenFactory is IATKTokenFactory, IWithTypeIdentifier {
     bytes32 public constant TYPE_ID = keccak256("MockTokenFactory");
 
-    function initialize(address, address, address, address) external override { }
+    function initialize(address, address, address) external override { }
 
     function isValidTokenImplementation(address tokenImplementation_) external pure override returns (bool) {
         return tokenImplementation_ != address(0);
@@ -52,7 +52,7 @@ contract MockTokenImplementation {
 
 // Mock for a token factory that returns false for isValidTokenImplementation
 contract MockInvalidTokenFactory is IATKTokenFactory {
-    function initialize(address, address, address, address) external override { }
+    function initialize(address, address, address) external override { }
 
     function isValidTokenImplementation(address) external pure override returns (bool) {
         return false;

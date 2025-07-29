@@ -358,7 +358,7 @@ abstract contract SMARTYieldIntegrationTest is SMARTYieldBaseTest {
         // Verify compliance is still enforced for yield claims
         // (This test verifies that yield functionality doesn't bypass existing compliance)
         assertTrue(
-            systemUtils.identityRegistry().isVerified(clientBE, requiredClaimTopics),
+            systemUtils.identityRegistry().isVerified(clientBE, _topicsToExpressionNodes(requiredClaimTopics)),
             "Client should be verified for yield claims"
         );
 
