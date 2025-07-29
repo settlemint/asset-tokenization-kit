@@ -14,18 +14,9 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { getAssetClassFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
-import { orpc } from "@/orpc/orpc-client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useAssetClass } from "@/hooks/use-asset-class";
 import { Link, useMatches } from "@tanstack/react-router";
-import {
-  BanknoteArrowUpIcon,
-  ChartLine,
-  ChevronRight,
-  CreditCardIcon,
-  PiggyBankIcon,
-  PlusIcon,
-} from "lucide-react";
+import { ChartLine, ChevronRight, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -42,28 +33,7 @@ export function NavAsset() {
   const matches = useMatches();
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Pre-group factories by asset class using select function
-  // This reduces re-renders when factory data changes in ways that don't affect grouping
-  const { data: groupedFactories } = useSuspenseQuery(
-    orpc.token.factoryList.queryOptions({
-      input: {},
-      select: (factories) => ({
-        hasFactories: factories.length > 0,
-        fixedIncome: factories.filter(
-          (factory) =>
-            getAssetClassFromFactoryTypeId(factory.typeId) === "fixedIncome"
-        ),
-        flexibleIncome: factories.filter(
-          (factory) =>
-            getAssetClassFromFactoryTypeId(factory.typeId) === "flexibleIncome"
-        ),
-        cashEquivalent: factories.filter(
-          (factory) =>
-            getAssetClassFromFactoryTypeId(factory.typeId) === "cashEquivalent"
-        ),
-      }),
-    })
-  );
+  const { assetClasses } = useAssetClass();
 
   // Check if any factory route is active
   const isAnyFactoryActive = (factoryIds: string[]) => {
@@ -82,24 +52,6 @@ export function NavAsset() {
       return params.factoryAddress === factoryId;
     });
   };
-
-  const assetClasses = [
-    {
-      name: t("fixedIncome"),
-      icon: PiggyBankIcon,
-      factories: groupedFactories.fixedIncome,
-    },
-    {
-      name: t("flexibleIncome"),
-      icon: BanknoteArrowUpIcon,
-      factories: groupedFactories.flexibleIncome,
-    },
-    {
-      name: t("cashEquivalent"),
-      icon: CreditCardIcon,
-      factories: groupedFactories.cashEquivalent,
-    },
-  ];
 
   return (
     <>
