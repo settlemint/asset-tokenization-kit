@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import { Test } from "forge-std/Test.sol";
 import { console2 } from "forge-std/console2.sol";
 
-import { ATKComplianceImplementation, UnauthorizedAccess } from "../../../contracts/system/compliance/ATKComplianceImplementation.sol";
+import { ATKComplianceImplementation } from "../../../contracts/system/compliance/ATKComplianceImplementation.sol";
 import { ISMARTCompliance } from "../../../contracts/smart/interface/ISMARTCompliance.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { IATKCompliance } from "../../../contracts/system/compliance/IATKCompliance.sol";
@@ -147,9 +147,6 @@ contract ATKComplianceImplementationTest is Test {
         vm.prank(admin);
         compliance.setSystemAccessManager(address(systemAccessManager));
 
-        // Grant global compliance manager role
-        vm.prank(admin);
-        compliance.grantRole(ATKSystemRoles.GLOBAL_COMPLIANCE_MANAGER_ROLE, globalComplianceManager);
 
         // Deploy mock token
         token = new MockATKToken(address(compliance));
@@ -378,7 +375,7 @@ contract ATKComplianceImplementationTest is Test {
 
     function testAddToBypassListAsUnauthorized() public {
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(UnauthorizedAccess.selector));
+        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
         IATKCompliance(address(compliance)).addToBypassList(charlie);
     }
 
@@ -413,7 +410,7 @@ contract ATKComplianceImplementationTest is Test {
         IATKCompliance(address(compliance)).addToBypassList(charlie);
 
         vm.prank(unauthorizedUser);
-        vm.expectRevert(abi.encodeWithSelector(UnauthorizedAccess.selector));
+        vm.expectRevert(abi.encodeWithSelector(IATKCompliance.UnauthorizedAccess.selector));
         IATKCompliance(address(compliance)).removeFromBypassList(charlie);
     }
 
@@ -625,9 +622,9 @@ contract ATKComplianceImplementationTest is Test {
     function testAddGlobalComplianceModuleAsManager() public {
         bytes memory params = abi.encode(uint256(500));
 
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         vm.expectEmit(true, true, true, true);
-        emit IATKCompliance.GlobalComplianceModuleAdded(address(validModule), params, globalComplianceManager);
+        emit IATKCompliance.GlobalComplianceModuleAdded(address(validModule), params, complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
         // Verify module was added
@@ -643,9 +640,7 @@ contract ATKComplianceImplementationTest is Test {
         vm.prank(unauthorizedUser);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector,
-                unauthorizedUser,
-                ATKSystemRoles.GLOBAL_COMPLIANCE_MANAGER_ROLE
+                IATKCompliance.UnauthorizedAccess.selector
             )
         );
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
@@ -654,7 +649,7 @@ contract ATKComplianceImplementationTest is Test {
     function testAddGlobalComplianceModuleZeroAddress() public {
         bytes memory params = abi.encode(uint256(500));
 
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         vm.expectRevert(ISMARTCompliance.ZeroAddressNotAllowed.selector);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(0), params);
     }
@@ -662,7 +657,7 @@ contract ATKComplianceImplementationTest is Test {
     function testAddGlobalComplianceModuleInvalidModule() public {
         bytes memory params = abi.encode(uint256(500));
 
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         vm.expectRevert(ISMARTCompliance.InvalidModule.selector);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(nonCompliantModule), params);
     }
@@ -671,7 +666,7 @@ contract ATKComplianceImplementationTest is Test {
         MockFailingModule invalidParamsModule = new MockFailingModule("Invalid params", false, true);
         bytes memory params = abi.encode(uint256(500));
 
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceModule.InvalidParameters.selector, "Invalid params"));
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(invalidParamsModule), params);
     }
@@ -679,10 +674,10 @@ contract ATKComplianceImplementationTest is Test {
     function testAddGlobalComplianceModuleAlreadyAdded() public {
         bytes memory params = abi.encode(uint256(500));
 
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         vm.expectRevert(abi.encodeWithSelector(IATKCompliance.GlobalModuleAlreadyAdded.selector, address(validModule)));
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
     }
@@ -691,13 +686,13 @@ contract ATKComplianceImplementationTest is Test {
         bytes memory params = abi.encode(uint256(500));
 
         // Add module first
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
         // Remove module
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         vm.expectEmit(true, true, true, true);
-        emit IATKCompliance.GlobalComplianceModuleRemoved(address(validModule), globalComplianceManager);
+        emit IATKCompliance.GlobalComplianceModuleRemoved(address(validModule), complianceManager);
         IATKCompliance(address(compliance)).removeGlobalComplianceModule(address(validModule));
 
         // Verify module was removed
@@ -709,22 +704,20 @@ contract ATKComplianceImplementationTest is Test {
         bytes memory params = abi.encode(uint256(500));
 
         // Add module first
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
         vm.prank(unauthorizedUser);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector,
-                unauthorizedUser,
-                ATKSystemRoles.GLOBAL_COMPLIANCE_MANAGER_ROLE
+                IATKCompliance.UnauthorizedAccess.selector
             )
         );
         IATKCompliance(address(compliance)).removeGlobalComplianceModule(address(validModule));
     }
 
     function testRemoveGlobalComplianceModuleNotFound() public {
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         vm.expectRevert(abi.encodeWithSelector(IATKCompliance.GlobalModuleNotFound.selector, address(validModule)));
         IATKCompliance(address(compliance)).removeGlobalComplianceModule(address(validModule));
     }
@@ -738,14 +731,14 @@ contract ATKComplianceImplementationTest is Test {
         bytes memory params2 = abi.encode(uint256(200));
         bytes memory params3 = abi.encode(uint256(300));
 
-        vm.startPrank(globalComplianceManager);
+        vm.startPrank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params1);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(module2), params2);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(module3), params3);
         vm.stopPrank();
 
         // Remove the middle module to test swap-and-pop logic
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).removeGlobalComplianceModule(address(module2));
 
         // Verify remaining modules
@@ -775,13 +768,13 @@ contract ATKComplianceImplementationTest is Test {
         bytes memory newParams = abi.encode(uint256(1000));
 
         // Add module first
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), initialParams);
 
         // Update parameters
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         vm.expectEmit(true, true, true, true);
-        emit IATKCompliance.GlobalComplianceModuleParametersUpdated(address(validModule), newParams, globalComplianceManager);
+        emit IATKCompliance.GlobalComplianceModuleParametersUpdated(address(validModule), newParams, complianceManager);
         IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(address(validModule), newParams);
 
         // Verify parameters were updated
@@ -795,15 +788,13 @@ contract ATKComplianceImplementationTest is Test {
         bytes memory newParams = abi.encode(uint256(1000));
 
         // Add module first
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), initialParams);
 
         vm.prank(unauthorizedUser);
         vm.expectRevert(
             abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector,
-                unauthorizedUser,
-                ATKSystemRoles.GLOBAL_COMPLIANCE_MANAGER_ROLE
+                IATKCompliance.UnauthorizedAccess.selector
             )
         );
         IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(address(validModule), newParams);
@@ -812,7 +803,7 @@ contract ATKComplianceImplementationTest is Test {
     function testSetParametersForGlobalComplianceModuleNotFound() public {
         bytes memory newParams = abi.encode(uint256(1000));
 
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         vm.expectRevert(abi.encodeWithSelector(IATKCompliance.GlobalModuleNotFound.selector, address(validModule)));
         IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(address(validModule), newParams);
     }
@@ -822,7 +813,7 @@ contract ATKComplianceImplementationTest is Test {
         bytes memory initialParams = abi.encode(uint256(500));
 
         // Add module first
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(invalidParamsModule), initialParams);
 
         // Try to update with invalid params
@@ -831,7 +822,7 @@ contract ATKComplianceImplementationTest is Test {
         // Change module to fail validation
         invalidParamsModule.setShouldRevertOnValidation(true);
 
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         vm.expectRevert(abi.encodeWithSelector(ISMARTComplianceModule.InvalidParameters.selector, "Invalid params"));
         IATKCompliance(address(compliance)).setParametersForGlobalComplianceModule(address(invalidParamsModule), invalidParams);
     }
@@ -847,7 +838,7 @@ contract ATKComplianceImplementationTest is Test {
         bytes memory params1 = abi.encode(uint256(100));
         bytes memory params2 = abi.encode(uint256(200));
 
-        vm.startPrank(globalComplianceManager);
+        vm.startPrank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params1);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(module2), params2);
         vm.stopPrank();
@@ -865,7 +856,7 @@ contract ATKComplianceImplementationTest is Test {
     function testCanTransferWithGlobalModulesOnly() public {
         // Add global module
         bytes memory params = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
         // Test canTransfer - should pass global module
@@ -875,7 +866,7 @@ contract ATKComplianceImplementationTest is Test {
     function testCanTransferWithGlobalModuleFails() public {
         // Add failing global module
         bytes memory params = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(failingModule), params);
 
         // Test canTransfer - should fail due to global module
@@ -892,7 +883,7 @@ contract ATKComplianceImplementationTest is Test {
         // Add global module
         MockedComplianceModule globalModule = new MockedComplianceModule();
         bytes memory globalParams = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModule), globalParams);
 
         // Test canTransfer - should pass both modules
@@ -905,7 +896,7 @@ contract ATKComplianceImplementationTest is Test {
 
         // Add global module (fails)
         bytes memory globalParams = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(failingModule), globalParams);
 
         // Test canTransfer - should fail due to global module
@@ -922,7 +913,7 @@ contract ATKComplianceImplementationTest is Test {
         // Add global module (passes)
         MockedComplianceModule globalModule = new MockedComplianceModule();
         bytes memory globalParams = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModule), globalParams);
 
         // Test canTransfer - should fail due to token module
@@ -937,7 +928,7 @@ contract ATKComplianceImplementationTest is Test {
         MockedComplianceModule globalModule2 = new MockedComplianceModule();
         MockedComplianceModule globalModule3 = new MockedComplianceModule();
 
-        vm.startPrank(globalComplianceManager);
+        vm.startPrank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), abi.encode(uint256(100)));
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModule2), abi.encode(uint256(200)));
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModule3), abi.encode(uint256(300)));
@@ -950,11 +941,11 @@ contract ATKComplianceImplementationTest is Test {
     function testCanTransferBypassListSkipsGlobalModules() public {
         // Add failing global module
         bytes memory params = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(failingModule), params);
 
         // Add receiver to bypass list
-        vm.prank(bypassListManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addToBypassList(bob);
 
         // Test canTransfer - should succeed because receiver is bypassed
@@ -970,7 +961,7 @@ contract ATKComplianceImplementationTest is Test {
         // Add global module
         MockedComplianceModule globalModule = new MockedComplianceModule();
         bytes memory globalParams = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModule), globalParams);
 
         // Call transferred
@@ -989,7 +980,7 @@ contract ATKComplianceImplementationTest is Test {
         // Add global module
         MockedComplianceModule globalModule = new MockedComplianceModule();
         bytes memory globalParams = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModule), globalParams);
 
         // Call created
@@ -1008,7 +999,7 @@ contract ATKComplianceImplementationTest is Test {
         // Add global module
         MockedComplianceModule globalModule = new MockedComplianceModule();
         bytes memory globalParams = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModule), globalParams);
 
         // Call destroyed
@@ -1024,7 +1015,7 @@ contract ATKComplianceImplementationTest is Test {
         // Add only global modules
         MockedComplianceModule globalModule = new MockedComplianceModule();
         bytes memory globalParams = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModule), globalParams);
 
         // Call lifecycle hooks
@@ -1050,7 +1041,7 @@ contract ATKComplianceImplementationTest is Test {
 
         // Add global module
         bytes memory globalParams = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModule), globalParams);
 
         // Call transferred to test execution order
@@ -1069,7 +1060,7 @@ contract ATKComplianceImplementationTest is Test {
         MockedComplianceModule[] memory globalModules = new MockedComplianceModule[](5);
         for (uint256 i = 0; i < 5; i++) {
             globalModules[i] = new MockedComplianceModule();
-            vm.prank(globalComplianceManager);
+            vm.prank(complianceManager);
             IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModules[i]), abi.encode(i * 100));
         }
 
@@ -1092,7 +1083,7 @@ contract ATKComplianceImplementationTest is Test {
         // Add global modules
         for (uint256 i = 0; i < 3; i++) {
             MockedComplianceModule globalModule = new MockedComplianceModule();
-            vm.prank(globalComplianceManager);
+            vm.prank(complianceManager);
             IATKCompliance(address(compliance)).addGlobalComplianceModule(address(globalModule), abi.encode(i * 100));
         }
 
@@ -1110,7 +1101,7 @@ contract ATKComplianceImplementationTest is Test {
     function testFuzzAddGlobalComplianceModule(uint256 paramValue) public {
         bytes memory params = abi.encode(paramValue);
 
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
         SMARTComplianceModuleParamPair[] memory globalModules = IATKCompliance(address(compliance)).getGlobalComplianceModules();
@@ -1124,7 +1115,7 @@ contract ATKComplianceImplementationTest is Test {
 
         // Add global module
         bytes memory params = abi.encode(uint256(500));
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
 
         // Should always pass with valid module
@@ -1145,7 +1136,7 @@ contract ATKComplianceImplementationTest is Test {
 
     // Helper function for fuzz testing
     function addGlobalModuleWithParams(bytes memory params) external {
-        vm.prank(globalComplianceManager);
+        vm.prank(complianceManager);
         IATKCompliance(address(compliance)).addGlobalComplianceModule(address(validModule), params);
     }
 }

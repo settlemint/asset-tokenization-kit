@@ -50,6 +50,12 @@ interface IATKCompliance is ISMARTCompliance {
     /// @notice Error thrown when trying to access a global compliance module that is not registered.
     error GlobalModuleNotFound(address module);
 
+    /// @notice Error thrown when the system access manager is not set.
+    error SystemAccessManagerNotSet();
+
+    /// @notice Error thrown when the caller is not authorized to perform the action.
+    error UnauthorizedAccess();
+
     // --- Functions ---
     /// @notice Initializes the compliance contract
     /// @dev Sets up the initial admin and bypass list managers

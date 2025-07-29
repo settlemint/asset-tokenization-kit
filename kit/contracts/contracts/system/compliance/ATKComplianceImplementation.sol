@@ -17,9 +17,7 @@ import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SM
 import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 
-/// @dev Custom errors for ATKCompliance
-error SystemAccessManagerNotSet();
-error UnauthorizedAccess();
+
 
 /// @title ATK Compliance Contract Implementation
 /// @author SettleMint
@@ -30,6 +28,7 @@ contract ATKComplianceImplementation is
     AccessControlUpgradeable,
     IATKCompliance
 {
+
     // --- Storage ---
     /// @notice Optional centralized access manager for enhanced role checking
     /// @dev If set, enables multi-role access patterns alongside existing AccessControl
@@ -52,26 +51,36 @@ contract ATKComplianceImplementation is
     // --- Access Control Modifiers ---
 
     /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
-    /// @dev This implements the new centralized access pattern: onlySystemRoles(MANAGER_ROLE, [SYSTEM_ROLES])
-    /// Falls back to AccessControl if system access manager is not set
-    /// @param roles Array of roles, where the caller must have at least one
-    modifier onlySystemRoles(bytes32[] memory roles) {
-        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
-        if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) revert UnauthorizedAccess();
+    modifier onlySystemAndComplianceManagerRoles() {
+        bytes32[] memory roles = new bytes32[](3);
+        roles[0] = ATKSystemRoles.COMPLIANCE_MANAGER_ROLE;       // Primary compliance manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;           // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;            // System module role
+
+        _onlySystemRoles(roles, _msgSender());
+        _;
+    }
+
+    /// @notice Modifier that checks if the caller has the compliance manager role
+    modifier onlyComplianceManagerRole() {
+        bytes32[] memory roles = new bytes32[](1);
+        roles[0] = ATKSystemRoles.COMPLIANCE_MANAGER_ROLE;
+
+        _onlySystemRoles(roles, _msgSender());
         _;
     }
 
     // --- Internal Helper Functions ---
 
-    /// @notice Returns the roles that can perform compliance management operations
-    /// @dev Implements the pattern from the ticket: MANAGER_ROLE + [SYSTEM_ROLES]
-    /// @return roles Array of roles that can manage compliance and bypass lists
-    function _getComplianceManagementRoles() internal pure returns (bytes32[] memory roles) {
-        roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.COMPLIANCE_MANAGER_ROLE;       // Primary compliance manager
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;           // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;            // System module role
+    /// @notice Internal helper function to check if the caller has any of the specified roles
+    /// @dev Falls back to AccessControl if system access manager is not set
+    /// @param roles Array of roles, where the caller must have at least one
+    /// @param sender The address of the caller
+    function _onlySystemRoles(bytes32[] memory roles, address sender) internal view {
+        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
+        if (!_systemAccessManager.hasAnyRole(roles, sender)) revert UnauthorizedAccess();
     }
+
 
     // --- Constructor ---
     constructor(address trustedForwarder) ERC2771ContextUpgradeable(trustedForwarder) {
@@ -127,7 +136,7 @@ contract ATKComplianceImplementation is
     /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE.
     /// Bypassed addresses can bypass compliance checks in canTransfer function.
     /// @param account The address to add to the bypass list
-    function addToBypassList(address account) external onlySystemRoles(_getComplianceManagementRoles()) {
+    function addToBypassList(address account) external onlySystemAndComplianceManagerRoles() {
         if (account == address(0)) revert ZeroAddressNotAllowed();
         if (_bypassedAddresses[account]) revert AddressAlreadyOnBypassList(account);
 
@@ -138,7 +147,7 @@ contract ATKComplianceImplementation is
     /// @notice Removes an address from the compliance bypass list
     /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE.
     /// @param account The address to remove from the bypass list
-    function removeFromBypassList(address account) external onlySystemRoles(_getComplianceManagementRoles()) {
+    function removeFromBypassList(address account) external onlySystemAndComplianceManagerRoles() {
         if (!_bypassedAddresses[account]) revert AddressNotOnBypassList(account);
 
         _bypassedAddresses[account] = false;
@@ -151,7 +160,7 @@ contract ATKComplianceImplementation is
     /// @param accounts Array of addresses to add to the bypass list
     function addMultipleToBypassList(address[] calldata accounts)
         external
-        onlySystemRoles(_getComplianceManagementRoles())
+        onlySystemAndComplianceManagerRoles()
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
@@ -173,7 +182,7 @@ contract ATKComplianceImplementation is
     /// @param accounts Array of addresses to remove from the bypass list
     function removeMultipleFromBypassList(address[] calldata accounts)
         external
-        onlySystemRoles(_getComplianceManagementRoles())
+        onlySystemAndComplianceManagerRoles()
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
@@ -197,7 +206,7 @@ contract ATKComplianceImplementation is
 
     function addGlobalComplianceModule(address module, bytes calldata params)
         external
-        onlyRole(ATKSystemRoles.GLOBAL_COMPLIANCE_MANAGER_ROLE)
+        onlyComplianceManagerRole()
     {
         // Validate module and parameters first
         _validateModuleAndParams(module, params);
@@ -217,7 +226,7 @@ contract ATKComplianceImplementation is
 
     function removeGlobalComplianceModule(address module)
         external
-        onlyRole(ATKSystemRoles.GLOBAL_COMPLIANCE_MANAGER_ROLE)
+        onlyComplianceManagerRole()
     {
         uint256 index = _globalModuleIndex[module]; // This is index + 1
         if (index == 0) {
@@ -243,7 +252,7 @@ contract ATKComplianceImplementation is
 
     function setParametersForGlobalComplianceModule(address module, bytes calldata params)
         external
-        onlyRole(ATKSystemRoles.GLOBAL_COMPLIANCE_MANAGER_ROLE)
+        onlyComplianceManagerRole()
     {
         if (_globalModuleIndex[module] == 0) {
             revert GlobalModuleNotFound(module);
