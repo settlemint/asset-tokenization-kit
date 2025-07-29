@@ -1,5 +1,5 @@
-import { describe, expect, test } from "vitest";
 import { from } from "dnum";
+import { describe, expect, test } from "vitest";
 import { getOrpcClient } from "../utils/orpc-client";
 import {
   DEFAULT_ADMIN,
@@ -55,6 +55,7 @@ describe("Token create", () => {
     expect(tokens.length).toBeGreaterThan(0);
     expect(tokens.find((t) => t.name === tokenData.name)).toEqual({
       id: expect.any(String),
+      createdAt: expect.any(Date),
       ...tokenData,
       pausable: {
         paused: true,

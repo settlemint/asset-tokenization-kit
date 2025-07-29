@@ -98,7 +98,7 @@ A Helm chart for the observability components
 | grafana.datasources."datasources.yaml".datasources[2].secureJsonData.password | string | `"atk"` |  |
 | grafana.datasources."datasources.yaml".datasources[2].type | string | `"postgres"` |  |
 | grafana.datasources."datasources.yaml".datasources[2].uid | string | `"postgres"` |  |
-| grafana.datasources."datasources.yaml".datasources[2].url | string | `"postgresql-pgpool:5432"` |  |
+| grafana.datasources."datasources.yaml".datasources[2].url | string | `"postgresql:5432"` |  |
 | grafana.datasources."datasources.yaml".datasources[2].user | string | `"thegraph"` |  |
 | grafana.enabled | bool | `true` |  |
 | grafana.fullnameOverride | string | `"grafana"` |  |
