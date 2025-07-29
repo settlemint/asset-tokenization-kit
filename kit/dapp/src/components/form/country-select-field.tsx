@@ -5,7 +5,7 @@ import {
 import {
   getCountries,
   getNumericCountries,
-  type SupportedLocale,
+  getSupportedLocales,
 } from "@/lib/zod/validators/iso-country-code";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,7 +22,8 @@ export function CountrySelectField({
   const { i18n } = useTranslation();
   const options = useMemo(() => {
     // Map locale codes like "en-US" to "en"
-    const baseLocale = i18n.language.split("-")[0] as SupportedLocale;
+    const lang = i18n.language.split("-")[0];
+    const baseLocale = getSupportedLocales().find((l) => l === lang) ?? "en";
 
     if (valueType === "numeric") {
       const numericCountries = getNumericCountries(baseLocale);

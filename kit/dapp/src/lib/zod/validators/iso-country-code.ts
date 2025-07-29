@@ -193,7 +193,7 @@ export function getNumericCountries(locale: SupportedLocale = "en") {
   const result: Record<string, string> = {};
 
   for (const [numeric, alpha2] of Object.entries(numericCodes)) {
-    result[numeric] = getName(alpha2, locale) || alpha2;
+    result[numeric] = getName(alpha2, locale) ?? alpha2;
   }
 
   return result;
