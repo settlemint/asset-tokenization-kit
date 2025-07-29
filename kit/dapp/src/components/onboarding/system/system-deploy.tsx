@@ -67,31 +67,29 @@ export function SystemDeploy() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-4 text-sm">
-                <p>{t("system.bootstrap-explanation")}</p>
-                <p>{t("system.admin-role-explanation")}</p>
-                <div>
-                  <p className="font-medium mb-3">
-                    {t("system.bootstrap-contracts-header")}
-                  </p>
-                  <ul className="space-y-3 text-sm">
-                    <li>
-                      <strong>{t("system.identity-registry-name")}</strong> –{" "}
-                      {t("system.identity-registry-description")}
-                    </li>
-                    <li>
-                      <strong>{t("system.compliance-engine-name")}</strong> –{" "}
-                      {t("system.compliance-engine-description")}
-                    </li>
-                    <li>
-                      <strong>{t("system.trusted-issuers-name")}</strong> –{" "}
-                      {t("system.trusted-issuers-description")}
-                    </li>
-                  </ul>
-                </div>
-                <p>{t("system.infrastructure-conclusion")}</p>
+            <div className="space-y-4 text-sm">
+              <p>{t("system.bootstrap-explanation")}</p>
+              <p>{t("system.admin-role-explanation")}</p>
+              <div>
+                <p className="font-medium mb-3">
+                  {t("system.bootstrap-contracts-header")}
+                </p>
+                <ul className="space-y-3 text-sm">
+                  <li>
+                    <strong>{t("system.identity-registry-name")}</strong> –{" "}
+                    {t("system.identity-registry-description")}
+                  </li>
+                  <li>
+                    <strong>{t("system.compliance-engine-name")}</strong> –{" "}
+                    {t("system.compliance-engine-description")}
+                  </li>
+                  <li>
+                    <strong>{t("system.trusted-issuers-name")}</strong> –{" "}
+                    {t("system.trusted-issuers-description")}
+                  </li>
+                </ul>
               </div>
+              <p>{t("system.infrastructure-conclusion")}</p>
             </div>
           </div>
         </div>
