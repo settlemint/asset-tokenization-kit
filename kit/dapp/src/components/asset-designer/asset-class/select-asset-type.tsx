@@ -33,7 +33,11 @@ export const SelectAssetType = withForm({
     onCancel: noop,
   },
   render: function Render({ form, onStepSubmit, onBack, onCancel }) {
-    const { t } = useTranslation(["asset-designer", "asset-types"]);
+    const { t } = useTranslation([
+      "asset-designer",
+      "asset-types",
+      "asset-class",
+    ]);
 
     // Get factories data
     const { data: factories } = useSuspenseQuery(
@@ -67,7 +71,11 @@ export const SelectAssetType = withForm({
       <>
         <DialogHeader className="text-center mt-10">
           <DialogTitle className="text-2xl text-center">
-            {t("asset-types:whichAssetType")}
+            {t("asset-types:whichAssetTypeForClass", {
+              assetClass: t(
+                `asset-class:categories.${assetClass}.name`
+              ).toLowerCase(),
+            })}
           </DialogTitle>
           <DialogDescription className="text-center">
             {t("asset-types:assetTypeDifferences")}

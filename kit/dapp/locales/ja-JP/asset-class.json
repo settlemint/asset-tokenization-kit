@@ -1,6 +1,6 @@
 {
   "whichAssetClass": "どの資産クラスを設計しますか？",
-  "assetClassDifference": "各資産クラスは異なるリスク・リターンプロファイルを提供します。",
+  "assetClassDifferences": "各資産クラスは異なるリスク・リターンプロファイルを提供します。",
   "categories": {
     "cashEquivalent": {
       "description": "既知の現金額に容易に変換できる高流動性投資。",

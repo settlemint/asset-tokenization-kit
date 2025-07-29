@@ -1,6 +1,6 @@
 {
   "whichAssetClass": "Welche Anlageklasse möchten Sie gestalten?",
-  "assetClassDifference": "Jede Anlageklasse bietet ein unterschiedliches Risiko-Rendite-Profil.",
+  "assetClassDifferences": "Jede Anlageklasse bietet ein unterschiedliches Risiko-Rendite-Profil.",
   "categories": {
     "cashEquivalent": {
       "description": "Hochliquide Anlagen, die leicht in bekannte Geldbeträge umgewandelt werden können.",
