@@ -21,7 +21,7 @@ describe("Token supply", () => {
       symbol: `DT`,
       decimals: 18,
       type: "deposit",
-      countryCode: "056", // Belgium numeric code for testing
+      countryCode: "056",
       verification: {
         verificationCode: DEFAULT_PINCODE,
         verificationType: "pincode",
