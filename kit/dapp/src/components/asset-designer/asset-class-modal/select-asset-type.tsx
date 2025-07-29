@@ -6,15 +6,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { withForm } from "@/hooks/use-app-form";
+import { useAssetClass } from "@/hooks/use-asset-class";
 import { noop } from "@/lib/utils/noop";
 import type { KeysOfUnion } from "@/lib/utils/union";
-import {
-  getAssetClassFromFactoryTypeId,
-  getAssetTypeFromFactoryTypeId,
-} from "@/lib/zod/validators/asset-types";
-import { orpc } from "@/orpc/orpc-client";
+import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { useStore } from "@tanstack/react-form";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -38,38 +34,22 @@ export const SelectAssetType = withForm({
       "asset-types",
       "asset-class",
     ]);
-
-    // Get factories data
-    const { data: factories } = useSuspenseQuery(
-      orpc.token.factoryList.queryOptions({
-        input: {},
-      })
-    );
-
-    // Get current form values
     const assetClass = useStore(form.store, (state) => state.values.assetClass);
-
-    // Filter factories for the selected asset class
-    const selectedClassFactories = useMemo(
-      () =>
-        factories.filter(
-          (factory) =>
-            getAssetClassFromFactoryTypeId(factory.typeId) === assetClass
-        ),
-      [factories, assetClass]
-    );
+    const { assetClasses } = useAssetClass();
 
     const options = useMemo(
       () =>
-        selectedClassFactories.map((factory) => {
-          const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
-          return {
-            value: assetType,
-            label: t(`asset-types:types.${assetType}.name`),
-            description: t(`asset-types:types.${assetType}.description`),
-          };
-        }),
-      [selectedClassFactories, t]
+        assetClasses
+          .find((ac) => ac.id === assetClass)
+          ?.factories.map((factory) => {
+            const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
+            return {
+              value: assetType,
+              label: t(`asset-types:types.${assetType}.name`),
+              description: t(`asset-types:types.${assetType}.description`),
+            };
+          }),
+      [assetClasses, assetClass, t]
     );
 
     return (

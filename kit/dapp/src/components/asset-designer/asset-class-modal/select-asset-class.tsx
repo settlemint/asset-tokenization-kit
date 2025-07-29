@@ -1,25 +1,16 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { withForm } from "@/hooks/use-app-form";
 import { useAssetClass } from "@/hooks/use-asset-class";
 import { noop } from "@/lib/utils/noop";
-import type { KeysOfUnion } from "@/lib/utils/union";
 import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  assetClassSelectionFormOptions,
-  isRequiredField,
-  type AssetClassSelectionInputData,
-} from "./shared-form";
-
-const validate: KeysOfUnion<AssetClassSelectionInputData>[] = ["assetClass"];
+import { assetClassSelectionFormOptions } from "./shared-form";
 
 export const SelectAssetClass = withForm({
   ...assetClassSelectionFormOptions,
@@ -27,7 +18,7 @@ export const SelectAssetClass = withForm({
     onStepSubmit: noop,
     onCancel: noop,
   },
-  render: function Render({ form, onStepSubmit, onCancel }) {
+  render: function Render({ form, onStepSubmit }) {
     const { t } = useTranslation([
       "asset-class",
       "asset-designer",
@@ -81,23 +72,16 @@ export const SelectAssetClass = withForm({
           <form.AppField
             name="assetClass"
             children={(field) => (
-              <field.RadioField options={options} variant="card" />
+              <field.RadioField
+                options={options}
+                variant="card"
+                onSelect={() => {
+                  onStepSubmit();
+                }}
+              />
             )}
           />
         </div>
-
-        <DialogFooter className="!flex !flex-row !justify-between">
-          <Button variant="ghost" onClick={onCancel}>
-            {t("asset-designer:form.buttons.cancel")}
-          </Button>
-
-          <form.StepSubmitButton
-            onStepSubmit={onStepSubmit}
-            validate={validate}
-            checkRequiredFn={isRequiredField}
-            label={t("asset-designer:form.buttons.next")}
-          />
-        </DialogFooter>
       </>
     );
   },

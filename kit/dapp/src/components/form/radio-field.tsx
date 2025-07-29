@@ -25,12 +25,14 @@ export function RadioField({
   required = false,
   options = [],
   variant = "default",
+  onSelect,
 }: {
   label?: string;
   description?: string;
   required?: boolean;
   options?: RadioOption[];
   variant?: "default" | "card";
+  onSelect?: (value: string) => void;
 }) {
   // The `Field` infers that it should have a `value` type of `string`
   const field = useFieldContext<string>();
@@ -48,6 +50,7 @@ export function RadioField({
       value={field.state.value}
       onValueChange={(value) => {
         field.handleChange(value);
+        onSelect?.(value);
       }}
       className={`grid ${getGridColumns()} gap-4`}
     >
@@ -92,6 +95,7 @@ export function RadioField({
       value={field.state.value}
       onValueChange={(value) => {
         field.handleChange(value);
+        onSelect?.(value);
       }}
     >
       {options.map((option) => (
