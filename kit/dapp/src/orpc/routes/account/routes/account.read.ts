@@ -6,7 +6,7 @@ import {
   AccountReadSchema,
   AccountResponseSchema,
 } from "@/orpc/routes/account/routes/account.read.schema";
-import { numericToAlpha2 } from "i18n-iso-countries";
+import countries from "i18n-iso-countries";
 
 const READ_ACCOUNT_QUERY = theGraphGraphql(`
   query ReadAccountQuery($walletAddress: ID!) {
@@ -65,7 +65,7 @@ export const read = publicRouter.account.read
     return {
       id: result.account.id,
       country: result.account.country
-        ? numericToAlpha2(result.account.country)
+        ? countries.numericToAlpha2(result.account.country)
         : undefined,
       identity: result.account.identity?.id,
       claims: result.account.identity?.claims.map((claim) => claim.name) ?? [],

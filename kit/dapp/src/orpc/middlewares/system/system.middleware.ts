@@ -10,6 +10,8 @@ import {
 } from "@/lib/zod/validators/ethereum-address";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { SystemAddonType } from "@/orpc/routes/system/addon/routes/addon.create.schema";
+import type { SystemComplianceModuleType } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
 import { call } from "@orpc/server";
 import type { Hex } from "viem";
 
@@ -40,6 +42,14 @@ const SYSTEM_QUERY = theGraphGraphql(
         id
         accessControl {
           ...AccessControlFragment
+        }
+        complianceModules {
+          id
+          typeId
+          name
+          accessControl {
+            ...AccessControlFragment
+          }
         }
       }
       identityFactory {
@@ -112,14 +122,24 @@ interface TokenFactory extends SystemComponent {
 
 /**
  * Interface for a system addon.
- * @param name - The name of the system addon.
+ * @param id - The id of the system addon.
  * @param typeId - The type of the system addon.
- * @param address - The address of the system addon.
- * @param accessControl - The access control of the system addon.
+ * @param name - The name of the system addon.
  */
 export interface SystemAddon extends SystemComponent {
   name: string;
-  typeId: string;
+  typeId: SystemAddonType;
+}
+
+/**
+ * Interface for a compliance module.
+ * @param id - The id of the compliance module.
+ * @param typeId - The type of the compliance module.
+ * @param name - The name of the compliance module.
+ */
+export interface SystemComplianceModule extends SystemComponent {
+  name: string;
+  typeId: SystemComplianceModuleType;
 }
 
 /**
@@ -133,6 +153,7 @@ export interface SystemContext {
   deployedInTransaction: Hex;
   accessControl: AccessControl;
   complianceModuleRegistry: SystemComponent | null;
+  complianceModules: SystemComplianceModule[];
   identityFactory: Pick<SystemComponent, "id"> | null;
   identityRegistry: SystemComponent | null;
   identityRegistryStorage: SystemComponent | null;
@@ -214,8 +235,17 @@ export const getSystemContext = async (
     system.systemAddonRegistry?.systemAddons.map(
       ({ id, name, typeId, accessControl }): SystemAddon => ({
         name,
-        typeId,
+        typeId: typeId as SystemAddonType,
         id: getEthereumAddress(id),
+        accessControl,
+      })
+    ) ?? [];
+  const complianceModules =
+    system.complianceModuleRegistry?.complianceModules.map(
+      ({ id, typeId, name, accessControl }) => ({
+        id: getEthereumAddress(id),
+        typeId: typeId as SystemComplianceModuleType,
+        name,
         accessControl,
       })
     ) ?? [];
@@ -225,6 +255,7 @@ export const getSystemContext = async (
     accessControl: system?.accessControl,
     tokenFactories,
     systemAddons,
+    complianceModules,
     identityFactory: system.identityFactory
       ? {
           id: getEthereumAddress(system.identityFactory?.id),

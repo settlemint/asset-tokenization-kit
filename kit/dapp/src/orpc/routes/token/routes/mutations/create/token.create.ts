@@ -7,7 +7,10 @@ import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
-import type { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
+import type {
+  TokenCreateOutput,
+  TokenCreateSchema,
+} from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
 function getTokenFactory(context: Context, type: AssetType) {
@@ -27,7 +30,11 @@ export const create = portalRouter.token.create
       },
     })
   )
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async function* ({
+    input,
+    context,
+    errors,
+  }): AsyncGenerator<TokenCreateOutput> {
     const tokenFactory = getTokenFactory(context, input.type);
     if (!tokenFactory) {
       throw errors.NOT_FOUND({

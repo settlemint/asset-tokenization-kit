@@ -8,7 +8,7 @@ import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middle
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import { call } from "@orpc/server";
-import { alpha2ToNumeric } from "i18n-iso-countries";
+import countries from "i18n-iso-countries";
 
 const IDENTITY_REGISTER_MUTATION = portalGraphql(`
   mutation IdentityRegister(
@@ -89,7 +89,7 @@ export const identityRegister = onboardedRouter.system.identityRegister
       {
         address: system.identityRegistry.id,
         from: sender.wallet,
-        country: Number(alpha2ToNumeric(country) ?? "0"),
+        country: Number(countries.alpha2ToNumeric(country) ?? "0"),
         identity: account.identity,
         ...challengeResponse,
       },

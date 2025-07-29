@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { useAppForm } from "@/hooks/use-app-form";
+import { waitForStream } from "@/lib/utils/stream";
 import { addonTypes, type AddonType } from "@/lib/zod/validators/addon-types";
 import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
-import type { SystemAddonType } from "@/orpc/routes/system/routes/system.addonCreate.schema";
-import { createLogger } from "@settlemint/sdk-utils/logging";
+import { type SystemAddonType } from "@/orpc/routes/system/addon/routes/addon.create.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
@@ -22,8 +22,6 @@ import { toast } from "sonner";
 interface SystemAddonsSelectionFormValues {
   addons: AddonType[];
 }
-
-const logger = createLogger();
 
 export function SystemAddonsSelection() {
   const { refreshUserState } = useOnboardingNavigation();
@@ -85,12 +83,8 @@ export function SystemAddonsSelection() {
     useMutation(
       orpc.system.addonCreate.mutationOptions({
         onSuccess: async (result) => {
-          for await (const event of result) {
-            logger.info("system addon deployment event", event);
-            if (event.status === "failed") {
-              throw new Error(event.message);
-            }
-          }
+          await waitForStream(result, "system addon deployment");
+
           // Reset the skip setting since user deployed addons
           await updateSetting({
             key: "SYSTEM_ADDONS_SKIPPED",

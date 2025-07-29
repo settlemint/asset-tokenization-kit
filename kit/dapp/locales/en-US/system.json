@@ -43,5 +43,15 @@
       "preparing": "Preparing to register identity",
       "success": "Identity registered successfully"
     }
+  },
+  "complianceModule": {
+    "messages": {
+      "preparing": "Preparing to register compliance module",
+      "success": "Compliance module registered successfully",
+      "failed": "Failed to register compliance module",
+      "progress": "Registering {{current}} of {{total}} compliance modules",
+      "registering": "Registering {{name}}",
+      "registered": "{{name}} registered successfully"
+    }
   }
 }

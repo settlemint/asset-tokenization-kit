@@ -78,7 +78,8 @@ export const read = onboardedRouter.system.read
       identityRegistry: systemContext.identityRegistry?.id ?? null,
       identityFactory: systemContext.identityFactory?.id ?? null,
       trustedIssuersRegistry: systemContext.trustedIssuersRegistry?.id ?? null,
-      compliance: systemContext.complianceModuleRegistry?.id ?? null,
+      complianceModuleRegistry:
+        systemContext.complianceModuleRegistry?.id ?? null,
       tokenFactoryRegistry: systemContext.tokenFactoryRegistry?.id ?? null,
       systemAddonRegistry: systemContext.systemAddonRegistry?.id ?? null,
       tokenFactories: systemContext.tokenFactories,

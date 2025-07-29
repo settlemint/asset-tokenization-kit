@@ -22,7 +22,7 @@ import type { Context } from "@/orpc/context/context";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
-import { SystemAddonCreateSchema } from "@/orpc/routes/system/routes/system.addonCreate.schema";
+import { SystemAddonCreateSchema } from "@/orpc/routes/system/addon/routes/addon.create.schema";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { encodeFunctionData, getAddress } from "viem";
@@ -30,7 +30,7 @@ import {
   type SystemAddonConfig,
   type SystemAddonCreateOutput,
   getDefaultAddonImplementations,
-} from "./system.addonCreate.schema";
+} from "./addon.create.schema";
 
 const logger = createLogger();
 
@@ -166,10 +166,13 @@ export const addonCreate = portalRouter.system.addonCreate
       },
     })
   )
-  .handler(async function* ({ input, context }) {
+  .handler(async function* ({
+    input,
+    context,
+  }): AsyncGenerator<SystemAddonCreateOutput, void, void> {
     const { contract, addons, verification } = input;
     const sender = context.auth.user;
-    const { t } = context;
+    const { t, system } = context;
 
     // Normalize to array
     const addonList = Array.isArray(addons) ? addons : [addons];
@@ -177,22 +180,14 @@ export const addonCreate = portalRouter.system.addonCreate
 
     // Yield initial loading message
     yield {
-      status: "pending" as const,
+      status: "pending",
       message: t("system:addons.messages.preparing"),
       progress: { current: 0, total: totalAddons },
     };
 
     // Query existing system addons to check for duplicates
-    const existingAddonNames = new Set<string>();
-    try {
-      // Note: We would need to add systemAddons to the system middleware
-      // For now, we'll proceed without duplicate checking and let the contract handle it
-      logger.debug(
-        "System context available, proceeding with addon registration"
-      );
-    } catch (error) {
-      logger.debug(`Could not fetch existing addons: ${String(error)}`);
-    }
+    const existingAddonNames =
+      system?.systemAddons.map((addon) => addon.name) ?? [];
 
     const results: SystemAddonCreateOutput["results"] = [];
 
@@ -219,7 +214,7 @@ export const addonCreate = portalRouter.system.addonCreate
 
       // Yield initial progress message for this addon
       yield {
-        status: "pending" as const,
+        status: "pending",
         message: t("system:addons.messages.progress", {
           current: progress.current,
           total: progress.total,
@@ -231,7 +226,7 @@ export const addonCreate = portalRouter.system.addonCreate
       };
 
       // Check if addon already exists (if we had that data)
-      if (existingAddonNames.has(name.toLowerCase())) {
+      if (existingAddonNames.includes(name)) {
         yield {
           status: "completed" as const,
           message: t("system:addons.messages.alreadyExists", { name }),
@@ -243,7 +238,7 @@ export const addonCreate = portalRouter.system.addonCreate
           type,
           name,
           transactionHash: "",
-          error: "Addon already exists",
+          error: t("system:addons.messages.alreadyExists", { name }),
         });
 
         continue; // Skip to next addon
@@ -349,7 +344,7 @@ export const addonCreate = portalRouter.system.addonCreate
         }
 
         yield {
-          status: "failed" as const,
+          status: "failed",
           message: t("system:addons.messages.failed", { name }),
           currentAddon: { type, name, error: specificErrorMessage },
           progress,
@@ -383,7 +378,7 @@ export const addonCreate = portalRouter.system.addonCreate
     }
 
     yield {
-      status: "completed" as const,
+      status: "completed",
       message: finalMessage,
       results,
       result: results, // Added for useStreamingMutation hook compatibility

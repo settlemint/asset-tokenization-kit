@@ -1,6 +1,6 @@
 import { addonType, type AddonType } from "@/lib/zod/validators/addon-types";
 import { z } from "zod";
-import { MutationInputSchemaWithContract } from "../../common/schemas/mutation.schema";
+import { MutationInputSchemaWithContract } from "../../../common/schemas/mutation.schema";
 
 /**
  * Type alias for clarity in system context

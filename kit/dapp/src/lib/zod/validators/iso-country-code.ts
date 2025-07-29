@@ -6,7 +6,7 @@
  * @module ISOCountryCodeValidation
  */
 
-import countries, { getNames } from "i18n-iso-countries";
+import countries from "i18n-iso-countries";
 import { z } from "zod";
 
 // Preload supported locales
@@ -125,5 +125,5 @@ export function getSupportedLocales(): SupportedLocale[] {
  * @returns Object with country codes as keys and country names as values
  */
 export function getCountries(locale: SupportedLocale = "en") {
-  return getNames(locale);
+  return countries.getNames(locale);
 }

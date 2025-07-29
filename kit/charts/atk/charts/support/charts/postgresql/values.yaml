@@ -1,0 +1,130 @@
+# Default values for postgresql chart
+# This is a YAML-formatted file.
+
+# Image configuration
+image:
+  registry: docker.io
+  repository: postgres
+  tag: "17.5-alpine"
+  pullPolicy: IfNotPresent
+
+# Image pull secrets
+imagePullSecrets:
+  - name: image-pull-secret-docker
+  - name: image-pull-secret-ghcr
+  - name: image-pull-secret-harbor
+
+# PostgreSQL configuration
+postgresql:
+  # Default superuser
+  username: postgres
+  password: atk
+  database: postgres
+
+# Resource configuration
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "1Gi"
+    cpu: "500m"
+
+# Persistence configuration
+persistence:
+  enabled: true
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 5432
+  targetPort: 5432
+
+# Security context
+podSecurityContext:
+  fsGroup: 999
+
+securityContext:
+  runAsUser: 999
+  runAsGroup: 999
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+
+# Node selector and affinity
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Init databases and users
+initdb:
+  scripts:
+    create_databases.sql: |
+      -- Create databases and users for all ATK services
+      CREATE DATABASE blockscout;
+      CREATE USER blockscout WITH PASSWORD 'atk' SUPERUSER;
+      GRANT ALL PRIVILEGES ON DATABASE blockscout TO blockscout;
+      \c blockscout;
+      GRANT ALL ON SCHEMA public TO blockscout;
+
+      \c postgres;
+      CREATE DATABASE thegraph WITH ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' TEMPLATE template0;
+      CREATE USER thegraph WITH PASSWORD 'atk' SUPERUSER;
+      GRANT ALL PRIVILEGES ON DATABASE thegraph TO thegraph;
+      \c thegraph;
+      GRANT ALL ON SCHEMA public TO thegraph;
+
+      \c postgres;
+      CREATE DATABASE hasura;
+      CREATE USER hasura WITH PASSWORD 'atk' SUPERUSER;
+      GRANT ALL PRIVILEGES ON DATABASE hasura TO hasura;
+      \c hasura;
+      GRANT ALL ON SCHEMA public TO hasura;
+
+      \c postgres;
+      CREATE DATABASE portal;
+      CREATE USER portal WITH PASSWORD 'atk' SUPERUSER;
+      GRANT ALL PRIVILEGES ON DATABASE portal TO portal;
+      \c portal;
+      GRANT ALL ON SCHEMA public TO portal;
+
+      \c postgres;
+      CREATE DATABASE txsigner;
+      CREATE USER txsigner WITH PASSWORD 'atk' SUPERUSER;
+      GRANT ALL PRIVILEGES ON DATABASE txsigner TO txsigner;
+      \c txsigner;
+      GRANT ALL ON SCHEMA public TO txsigner;
+
+# PostgreSQL configuration
+postgresql_conf:
+  max_connections: 1000
+  shared_buffers: 256MB
+  effective_cache_size: 1GB
+  maintenance_work_mem: 64MB
+  checkpoint_completion_target: 0.9
+  wal_buffers: 16MB
+  default_statistics_target: 100
+  random_page_cost: 1.1
+  effective_io_concurrency: 200
+  work_mem: 4MB
+  min_wal_size: 1GB
+  max_wal_size: 4GB
+
+# Common labels
+commonLabels:
+  kots.io/app-slug: settlemint-atk
+  app.kubernetes.io/managed-by: helm
+
+# Full name override
+fullnameOverride: postgresql

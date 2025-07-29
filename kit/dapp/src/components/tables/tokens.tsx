@@ -9,6 +9,7 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { ComponentErrorBoundary } from "@/components/error/component-error-boundary";
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
+import { formatDate } from "@/lib/utils/date";
 import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenList } from "@/orpc/routes/token/routes/token.list.schema";
@@ -43,12 +44,12 @@ const columnHelper = createColumnHelper<Token>();
 
 /**
  * Initial sorting configuration for the deposits table
- * Sorts tokens by name in ascending order by default
+ * Sorts tokens by creation date in descending order by default (most recent first)
  */
 const INITIAL_SORTING = [
   {
-    id: "name",
-    desc: false,
+    id: "createdAt",
+    desc: true,
   },
 ];
 
@@ -252,6 +253,17 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
             icon: PauseCircle,
           },
         }),
+        columnHelper.accessor("createdAt", {
+          header: t("columns.createdAt"),
+          cell: (cellProps) => {
+            const timestamp = cellProps.getValue();
+            return formatDate(timestamp);
+          },
+          meta: {
+            displayName: t("columns.createdAt"),
+            type: "date",
+          },
+        }),
         columnHelper.display({
           id: "actions",
           header: t("columns.actions"),
@@ -303,9 +315,10 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
           enableGlobalFilter: true,
           enableRowSelection: true,
           debounceMs: 300,
-          initialColumnVisibility: {
-            name: false,
-          },
+        }}
+        initialColumnVisibility={{
+          name: false,
+          createdAt: false,
         }}
         advancedToolbar={{
           enableGlobalSearch: false,
