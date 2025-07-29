@@ -103,9 +103,9 @@ export const SystemReadOutputSchema = z.object({
   trustedIssuersRegistry: ethereumAddress.nullable(),
 
   /**
-   * The compliance engine contract address
+   * The compliance module registry contract address
    */
-  compliance: ethereumAddress.nullable(),
+  complianceModuleRegistry: ethereumAddress.nullable(),
 
   /**
    * The token factory registry contract address
