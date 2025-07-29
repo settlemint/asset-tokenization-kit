@@ -1,4 +1,4 @@
-import { AssetClassModal as AssetClassModalComponent } from "@/components/asset-designer/asset-class/asset-class-modal";
+import { AssetClassModal as AssetClassModalComponent } from "@/components/asset-designer/asset-class-modal/asset-class-modal";
 import {
   Collapsible,
   CollapsibleContent,

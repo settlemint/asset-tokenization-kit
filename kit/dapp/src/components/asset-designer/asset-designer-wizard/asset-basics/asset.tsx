@@ -1,6 +1,6 @@
-import { BondBasics } from "@/components/asset-designer/asset-basics/bond";
-import { CommonBasics } from "@/components/asset-designer/asset-basics/common";
-import { FundBasics } from "@/components/asset-designer/asset-basics/fund";
+import { BondBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/bond";
+import { CommonBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/common";
+import { FundBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/fund";
 import { assetDesignerFormOptions } from "@/components/asset-designer/asset-designer-wizard/shared-form";
 import {
   FormStep,
