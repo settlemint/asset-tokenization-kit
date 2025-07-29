@@ -2,11 +2,12 @@ import { OnboardingStepLayout } from "@/components/onboarding/onboarding-step-la
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { authClient } from "@/lib/auth/auth.client";
 import { Route } from "@/routes/_private/onboarding/_sidebar/wallet-recovery-codes";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { Await } from "@tanstack/react-router";
-import { Suspense, useCallback, useEffect, useMemo } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { RecoveryCodesActions } from "./recovery-codes-actions";
@@ -68,6 +69,7 @@ function RecoveryCodesLoader() {
     <OnboardingStepLayout
       title={t("wallet-security.recovery-codes.title")}
       description={t("wallet-security.recovery-codes.description")}
+      fullWidth={true}
       actions={
         <Button disabled>{t("wallet-security.recovery-codes.confirm")}</Button>
       }
@@ -77,7 +79,7 @@ function RecoveryCodesLoader() {
       </p>
 
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl space-y-6">
+        <div className="w-full space-y-6">
           <RecoveryCodesSkeleton />
         </div>
       </div>
@@ -92,6 +94,7 @@ function RecoveryCodesError({ error }: { error: { message?: string } }) {
     <OnboardingStepLayout
       title={t("wallet-security.recovery-codes.title")}
       description={t("wallet-security.recovery-codes.description")}
+      fullWidth={true}
       actions={
         <Button
           onClick={() => {
@@ -128,6 +131,8 @@ function RecoveryCodesContent({
   onComplete,
 }: RecoveryCodesContentProps) {
   const { t } = useTranslation(["onboarding"]);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [hasPerformedAction, setHasPerformedAction] = useState(false);
 
   const recoveryCodes = useMemo(
     () => recoveryCodesData?.secretCodes ?? [],
@@ -148,6 +153,16 @@ function RecoveryCodesContent({
 
   const { handleCopyAll, handleDownload } = useRecoveryCodes(recoveryCodes);
 
+  const handleCopyAllWithTracking = useCallback(() => {
+    handleCopyAll();
+    setHasPerformedAction(true);
+  }, [handleCopyAll]);
+
+  const handleDownloadWithTracking = useCallback(() => {
+    handleDownload();
+    setHasPerformedAction(true);
+  }, [handleDownload]);
+
   // Show success toast when component mounts with codes
   useEffect(() => {
     if (recoveryCodes.length > 0) {
@@ -159,8 +174,12 @@ function RecoveryCodesContent({
     <OnboardingStepLayout
       title={t("wallet-security.recovery-codes.title")}
       description={t("wallet-security.recovery-codes.description")}
+      fullWidth={true}
       actions={
-        <Button onClick={onConfirm} disabled={recoveryCodes.length === 0}>
+        <Button
+          onClick={onConfirm}
+          disabled={recoveryCodes.length === 0 || !isConfirmed}
+        >
           {t("wallet-security.recovery-codes.confirm")}
         </Button>
       }
@@ -170,11 +189,11 @@ function RecoveryCodesContent({
       </p>
 
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl space-y-6">
+        <div className="w-full space-y-6">
           {recoveryCodes.length > 0 && (
             <RecoveryCodesActions
-              onCopyAll={handleCopyAll}
-              onDownload={handleDownload}
+              onCopyAll={handleCopyAllWithTracking}
+              onDownload={handleDownloadWithTracking}
             />
           )}
 
@@ -182,6 +201,28 @@ function RecoveryCodesContent({
             isGenerating={false}
             recoveryCodes={recoveryCodes}
           />
+
+          {recoveryCodes.length > 0 && (
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="recovery-codes-stored"
+                checked={isConfirmed}
+                disabled={!hasPerformedAction}
+                onCheckedChange={(checked) => {
+                  setIsConfirmed(checked === true);
+                }}
+              />
+              <label
+                htmlFor="recovery-codes-stored"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                {t(
+                  "wallet-security.recovery-codes.confirm-stored",
+                  "Confirm you stored your recovery keys in a safe place."
+                )}
+              </label>
+            </div>
+          )}
 
           {recoveryCodes.length > 0 && <RecoveryCodesWarning />}
         </div>
