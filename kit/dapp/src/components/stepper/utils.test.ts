@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   getLastStep,
   getNextStep,
+  getPreviousStep,
+  getPreviousStepId,
   getStepById,
   isGroupCompleted,
   isStepCompleted,
@@ -195,6 +197,94 @@ describe("stepper utils", () => {
     it("should return false for step", () => {
       const result = isStepGroup(stepA);
       expect(result).toBe(false);
+    });
+  });
+
+  describe("getPreviousStep", () => {
+    it("should return previous step for non-sequential steps", () => {
+      const steps = [stepA, stepB, stepC];
+      const currentStep = stepB;
+      const result = getPreviousStep(steps, currentStep);
+      expect(result).toEqual(stepA);
+    });
+
+    it("should handle unsorted input steps", () => {
+      const steps = [stepB, stepC, stepA];
+      const currentStep = stepB;
+      const result = getPreviousStep(steps, currentStep);
+      expect(result).toEqual(stepA);
+    });
+
+    it("should return same step for first step", () => {
+      const steps = [stepA, stepB, stepC];
+      const currentStep = stepA;
+      const result = getPreviousStep(steps, currentStep);
+      expect(result).toEqual(stepA);
+    });
+
+    it("should handle single step", () => {
+      const steps = [stepA];
+      const currentStep = stepA;
+      const result = getPreviousStep(steps, currentStep);
+      expect(result).toEqual(stepA);
+    });
+
+    it("should handle unordered array with non-sequential steps", () => {
+      const steps = [stepC, stepE, stepA, stepB];
+      const currentStep = stepE;
+      const result = getPreviousStep(steps, currentStep);
+      expect(result).toEqual(stepC);
+    });
+
+    it("should throw error for non-existent current step", () => {
+      const steps = [stepA, stepB];
+      const currentStep = stepC;
+
+      // @ts-expect-error - stepC is not a valid step
+      expect(() => getPreviousStep(steps, currentStep)).toThrow(
+        "Current step c not found in steps array"
+      );
+    });
+  });
+
+  describe("getPreviousStepId", () => {
+    it("should return previous step id for non-sequential steps", () => {
+      const steps = [stepA, stepB, stepC];
+      const result = getPreviousStepId(steps, "b");
+      expect(result).toBe("a");
+    });
+
+    it("should handle unsorted input steps", () => {
+      const steps = [stepB, stepC, stepA];
+      const result = getPreviousStepId(steps, "b");
+      expect(result).toBe("a");
+    });
+
+    it("should return same step id for first step", () => {
+      const steps = [stepA, stepB, stepC];
+      const result = getPreviousStepId(steps, "a");
+      expect(result).toBe("a");
+    });
+
+    it("should handle single step", () => {
+      const steps = [stepA];
+      const result = getPreviousStepId(steps, "a");
+      expect(result).toBe("a");
+    });
+
+    it("should handle unordered array with non-sequential steps", () => {
+      const steps = [stepC, stepE, stepA, stepB];
+      const result = getPreviousStepId(steps, "e");
+      expect(result).toBe("c");
+    });
+
+    it("should throw error for non-existent step id", () => {
+      const steps = [stepA, stepB];
+
+      // @ts-expect-error - 'c' is not a valid step id
+      expect(() => getPreviousStepId(steps, "c")).toThrow(
+        "Step with id c not found"
+      );
     });
   });
 });

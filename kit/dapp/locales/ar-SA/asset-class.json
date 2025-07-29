@@ -1,0 +1,53 @@
+{
+  "whichAssetClass": "أي فئة من الأصول تريد تصميمها؟",
+  "assetClassDifference": "كل فئة أصول تقدم ملف مخاطر وعوائد مختلف.",
+  "categories": {
+    "cashEquivalent": {
+      "description": "استثمارات عالية السيولة يمكن تحويلها بسهولة إلى مبالغ نقدية معروفة.",
+      "icon": "Wallet",
+      "name": "مكافئ النقد"
+    },
+    "fixedIncome": {
+      "description": "أصول توفر عوائد في شكل مدفوعات فوائد ثابتة ومنتظمة وإرجاع رأس المال عند الاستحقاق.",
+      "icon": "TrendingUp",
+      "name": "الدخل الثابت"
+    },
+    "flexibleIncome": {
+      "description": "أصول تولد عوائد متغيرة بناءً على ظروف السوق والأداء الأساسي.",
+      "icon": "Activity",
+      "name": "الدخل المرن"
+    }
+  },
+  "types": {
+    "bond": {
+      "name": "سند",
+      "namePlural": "سندات",
+      "description": "أوراق مالية للدين تدفع فوائد ثابتة على مدى فترة محددة.",
+      "category": "fixedIncome"
+    },
+    "deposit": {
+      "name": "ودائع",
+      "namePlural": "ودائع",
+      "description": "ودائع مقفلة زمنياً تكسب فوائد على مدى فترة ثابتة.",
+      "category": "cashEquivalent"
+    },
+    "equity": {
+      "name": "أسهم",
+      "namePlural": "أسهم",
+      "description": "أسهم ملكية تمثل مطالبة على الأصول والأرباح.",
+      "category": "flexibleIncome"
+    },
+    "fund": {
+      "name": "صندوق",
+      "namePlural": "صناديق",
+      "description": "أدوات استثمار مجمعة تجمع رأس المال من عدة مستثمرين.",
+      "category": "flexibleIncome"
+    },
+    "stablecoin": {
+      "name": "عملة مستقرة",
+      "namePlural": "عملات مستقرة",
+      "description": "عملات رقمية مصممة للحفاظ على قيمة مستقرة نسبة إلى أصل مرجعي.",
+      "category": "cashEquivalent"
+    }
+  }
+}

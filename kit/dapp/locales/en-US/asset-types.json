@@ -3,6 +3,8 @@
     "description": "Debt securities that pay fixed interest over a specified period",
     "name": "Bond Tokens"
   },
+  "whichAssetType": "Which asset type do you want to create?",
+  "assetTypeDifferences": "Each asset type has different payment structures, liquidity terms, and investor rights.",
   "categories": {
     "cashEquivalent": {
       "description": "Highly liquid investments that can be readily converted to known amounts of cash.",
