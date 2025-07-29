@@ -178,16 +178,19 @@ export const systemMiddleware = baseRouter.middleware(
         },
       });
     }
-    const systemAddress = await call(
-      read,
-      {
-        key: "SYSTEM_ADDRESS" as const,
-      },
-      {
-        context,
-      }
-    );
-
+    const systemAddressHeader = context.headers["x-system-address"];
+    const systemAddress =
+      typeof systemAddressHeader === "string"
+        ? systemAddressHeader
+        : await call(
+            read,
+            {
+              key: "SYSTEM_ADDRESS" as const,
+            },
+            {
+              context,
+            }
+          );
     if (!systemAddress) {
       throw errors.SYSTEM_NOT_CREATED();
     }
@@ -197,8 +200,7 @@ export const systemMiddleware = baseRouter.middleware(
 
     if (!systemContext) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message:
-          "System not found, check if the address stored in the settings is correct",
+        message: `System with address '${systemAddress}' not found`,
       });
     }
 

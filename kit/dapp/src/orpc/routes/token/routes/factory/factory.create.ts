@@ -17,6 +17,7 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
 
+import { isPortalError } from "@/lib/portal/portal-error-handling";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
@@ -92,7 +93,11 @@ export const factoryCreate = portalRouter.token.factoryCreate
       },
     })
   )
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async function* ({
+    input,
+    context,
+    errors,
+  }): AsyncGenerator<FactoryCreateOutput, void, void> {
     const { factories, verification } = input;
     const sender = context.auth.user;
     const { t, system } = context;
@@ -133,24 +138,6 @@ export const factoryCreate = portalRouter.token.factoryCreate
     }
 
     const results: FactoryCreateOutput["results"] = [];
-
-    /**
-     * Checks if an error contains a specific pattern
-     * @param error
-     * @param pattern
-     */
-    function containsErrorPattern(error: unknown, pattern: string): boolean {
-      if (error instanceof Error) {
-        return (
-          error.message.includes(pattern) ||
-          (error.stack?.includes(pattern) ?? false)
-        );
-      }
-      if (typeof error === "string") {
-        return error.includes(pattern);
-      }
-      return false;
-    }
 
     // Process each factory using a generator pattern for batch operations
     for (const [index, factory] of factoryList.entries()) {
@@ -275,21 +262,9 @@ export const factoryCreate = portalRouter.token.factoryCreate
         });
       } catch (error) {
         // Check for specific error types
-        let errorMessage = t("token-factory:messages.defaultError");
-        let errorDetail = t("token-factory:messages.defaultError");
-
-        if (error instanceof Error) {
-          errorDetail = error.message;
-          // Check for SystemNotBootstrapped error
-          if (containsErrorPattern(error, "SystemNotBootstrapped")) {
-            errorMessage = t("token-factory:messages.systemNotBootstrapped");
-            // For critical errors like system not bootstrapped, throw proper error
-            throw errors.INTERNAL_SERVER_ERROR({
-              message: errorMessage,
-              cause: new Error(errorDetail),
-            });
-          }
-        }
+        const errorMessage = isPortalError(error)
+          ? error.translate(t)
+          : t("token-factory:messages.defaultError");
 
         const errorResult = {
           status: "failed" as const,
@@ -297,7 +272,7 @@ export const factoryCreate = portalRouter.token.factoryCreate
           currentFactory: {
             type,
             name,
-            error: errorDetail,
+            error: errorMessage,
           },
           progress,
         };
@@ -307,7 +282,7 @@ export const factoryCreate = portalRouter.token.factoryCreate
         results.push({
           type,
           name,
-          error: errorDetail,
+          error: errorMessage,
         });
       }
     }

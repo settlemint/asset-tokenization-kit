@@ -1,14 +1,12 @@
 {
   "addons": {
     "messages": {
-      "accessDenied": "Access denied for {{name}}",
       "allFailed": "Failed to register any addons",
       "allSuccess": "All {{count}} addons registered successfully",
       "alreadyExists": "Addon {{name}} already exists",
       "defaultError": "An error occurred during addon registration",
       "failed": "Failed to register {{name}}",
-      "invalidConfiguration": "Invalid configuration",
-      "invalidImplementation": "Invalid implementation provided",
+      "invalidConfiguration": "No addon registry found for system {{systemAddress}}",
       "partialSuccess": "{{successful}} of {{total}} addons registered successfully",
       "preparing": "Preparing to register addons",
       "progress": "Registering {{current}} of {{total}} addons",

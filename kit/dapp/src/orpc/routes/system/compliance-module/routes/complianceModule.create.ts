@@ -17,6 +17,7 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
 
+import { isPortalError } from "@/lib/portal/portal-error-handling";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
@@ -136,22 +137,6 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
 
     const results: SystemComplianceModuleCreateOutput["results"] = [];
 
-    /**
-     * Checks if an error contains a specific pattern
-     */
-    function containsErrorPattern(error: unknown, pattern: string): boolean {
-      if (error instanceof Error) {
-        return (
-          error.message.includes(pattern) ||
-          (error.stack?.includes(pattern) ?? false)
-        );
-      }
-      if (typeof error === "string") {
-        return error.includes(pattern);
-      }
-      return false;
-    }
-
     // Process each compliance module using a generator pattern for batch operations
     for (const [index, moduleConfig] of moduleList.entries()) {
       const progress = { current: index + 1, total: totalModules };
@@ -236,60 +221,23 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
         });
       } catch (error) {
         // Handle any errors during compliance module registration
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : t("system:compliance.messages.defaultError");
-
-        // Enhanced error logging with more details
-        logger.error(`Compliance module registration failed for ${type}:`, {
-          error,
-          errorMessage,
-          errorStack: error instanceof Error ? error.stack : undefined,
-          moduleConfig,
-          sender: sender.wallet,
-          userWallet: sender.wallet,
-          moduleType: type,
-          contract,
-        });
-
-        // Check for specific error patterns to provide better user feedback
-        let specificErrorMessage = errorMessage;
-        if (containsErrorPattern(error, "ComplianceModuleAlreadyRegistered")) {
-          specificErrorMessage = t("system:compliance.messages.alreadyExists", {
-            name: type,
-          });
-        } else if (containsErrorPattern(error, "AccessControl")) {
-          specificErrorMessage = t("system:compliance.messages.accessDenied", {
-            contract: system.complianceModuleRegistry,
-          });
-        } else if (containsErrorPattern(error, "Unauthorized")) {
-          specificErrorMessage = t("system:compliance.messages.accessDenied", {
-            contract: system.complianceModuleRegistry,
-          });
-        } else if (containsErrorPattern(error, "implementation")) {
-          specificErrorMessage = t(
-            "system:compliance.messages.invalidImplementation"
-          );
-        } else if (containsErrorPattern(error, "invalid")) {
-          specificErrorMessage = t(
-            "system:compliance.messages.invalidConfiguration"
-          );
-        }
+        const errorMessage = isPortalError(error)
+          ? error.translate(t)
+          : t("system:compliance.messages.defaultError");
 
         yield {
           status: "failed",
           message: t("system:compliance.messages.failed", { name: type }),
           currentComplianceModule: {
             type,
-            error: specificErrorMessage,
+            error: errorMessage,
           },
           progress,
         };
 
         results.push({
           type,
-          error: specificErrorMessage,
+          error: errorMessage,
         });
       }
     }

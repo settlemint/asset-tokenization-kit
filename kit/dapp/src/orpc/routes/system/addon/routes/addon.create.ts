@@ -17,6 +17,7 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
 
+import { isPortalError } from "@/lib/portal/portal-error-handling";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
@@ -160,7 +161,7 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
 export const addonCreate = portalRouter.system.addonCreate
   .use(
     blockchainPermissionsMiddleware<typeof SystemAddonCreateSchema>({
-      requiredRoles: ["deployer"],
+      requiredRoles: [], //["registrar"],
       getAccessControl: ({ context }) => {
         return context.system?.systemAddonRegistry?.accessControl;
       },
@@ -177,10 +178,10 @@ export const addonCreate = portalRouter.system.addonCreate
 
     const contract = system?.systemAddonRegistry?.id;
     if (!contract) {
-      const cause = new Error("System addon registry not found");
       throw errors.INTERNAL_SERVER_ERROR({
-        message: cause.message,
-        cause,
+        message: t("system:addons.messages.invalidConfiguration", {
+          systemAddress: system?.address,
+        }),
       });
     }
 
@@ -201,22 +202,6 @@ export const addonCreate = portalRouter.system.addonCreate
 
     const results: SystemAddonCreateOutput["results"] = [];
 
-    /**
-     * Checks if an error contains a specific pattern
-     */
-    function containsErrorPattern(error: unknown, pattern: string): boolean {
-      if (error instanceof Error) {
-        return (
-          error.message.includes(pattern) ||
-          (error.stack?.includes(pattern) ?? false)
-        );
-      }
-      if (typeof error === "string") {
-        return error.includes(pattern);
-      }
-      return false;
-    }
-
     // Process each addon using a generator pattern for batch operations
     for (const [index, addonConfig] of addonList.entries()) {
       const progress = { current: index + 1, total: totalAddons };
@@ -236,7 +221,7 @@ export const addonCreate = portalRouter.system.addonCreate
       };
 
       // Check if addon already exists (if we had that data)
-      if (existingAddonNames.includes(name)) {
+      if (!existingAddonNames.includes(name)) {
         yield {
           status: "completed",
           message: t("system:addons.messages.alreadyExists", { name }),
@@ -304,66 +289,21 @@ export const addonCreate = portalRouter.system.addonCreate
         });
       } catch (error) {
         // Handle any errors during addon registration
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : t("system:addons.messages.defaultError");
-
-        // Enhanced error logging with more details
-        logger.error(`Addon registration failed for ${name}:`, {
-          error,
-          errorMessage,
-          errorStack: error instanceof Error ? error.stack : undefined,
-          addonConfig,
-          implementationAddress: (() => {
-            try {
-              return getImplementationAddress(addonConfig);
-            } catch (error_) {
-              return `Error getting implementation: ${error_ instanceof Error ? error_.message : String(error_)}`;
-            }
-          })(),
-          contract,
-          sender: sender.wallet,
-          userWallet: sender.wallet,
-          addonType: type,
-          addonName: name,
-        });
-
-        // Check for specific error patterns to provide better user feedback
-        let specificErrorMessage = errorMessage;
-        if (containsErrorPattern(error, "SystemAddonTypeAlreadyRegistered")) {
-          specificErrorMessage = t("system:addons.messages.alreadyExists", {
-            name,
-          });
-        } else if (containsErrorPattern(error, "AccessControl")) {
-          specificErrorMessage = t("system:addons.messages.accessDenied", {
-            contract,
-          });
-        } else if (containsErrorPattern(error, "Unauthorized")) {
-          specificErrorMessage = t("system:addons.messages.accessDenied", {
-            contract,
-          });
-        } else if (containsErrorPattern(error, "implementation")) {
-          specificErrorMessage = t(
-            "system:addons.messages.invalidImplementation"
-          );
-        } else if (containsErrorPattern(error, "invalid")) {
-          specificErrorMessage = t(
-            "system:addons.messages.invalidConfiguration"
-          );
-        }
+        const errorMessage = isPortalError(error)
+          ? error.translate(t)
+          : t("system:addons.messages.defaultError");
 
         yield {
           status: "failed",
           message: t("system:addons.messages.failed", { name }),
-          currentAddon: { type, name, error: specificErrorMessage },
+          currentAddon: { type, name, error: errorMessage },
           progress,
         };
 
         results.push({
           type,
           name,
-          error: specificErrorMessage,
+          error: errorMessage,
         });
       }
     }

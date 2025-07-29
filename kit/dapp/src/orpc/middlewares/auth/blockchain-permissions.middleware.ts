@@ -52,7 +52,7 @@ export const blockchainPermissionsMiddleware = <InputSchema extends z.ZodType>({
           .map(([role]) => role as keyof typeof accessControl)
       : [];
 
-    if (!userRoles.some((role) => requiredRoles.includes(role))) {
+    if (requiredRoles.some((role) => !userRoles.includes(role))) {
       throw errors.USER_NOT_AUTHORIZED({
         data: {
           requiredRoles,
