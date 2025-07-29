@@ -22,10 +22,10 @@ import { events } from "@/orpc/routes/token/routes/token.events";
 import { holders } from "@/orpc/routes/token/routes/token.holders";
 import { list } from "@/orpc/routes/token/routes/token.list";
 import { read } from "@/orpc/routes/token/routes/token.read";
-import { statsAssetCount } from "@/orpc/routes/token/routes/stats/asset-count";
-import { statsTotalValue } from "@/orpc/routes/token/routes/stats/total-value";
-import { statsTransactionCount } from "@/orpc/routes/token/routes/stats/transaction-count";
-import { statsTransactions } from "@/orpc/routes/token/routes/stats/transactions";
+import { statsSystemAssets } from "@/orpc/routes/token/routes/stats/system/assets";
+import { statsSystemValue } from "@/orpc/routes/token/routes/stats/system/value";
+import { statsSystemTransactionCount } from "@/orpc/routes/token/routes/stats/system/transaction-count";
+import { statsSystemTransactionHistory } from "@/orpc/routes/token/routes/stats/system/transaction-history";
 import { actions } from "@/orpc/routes/token/routes/token.actions";
 
 const routes = {
@@ -54,10 +54,10 @@ const routes = {
   tokenSetYieldSchedule,
   tokenAddComplianceModule,
   tokenRemoveComplianceModule,
-  statsAssetCount,
-  statsTotalValue,
-  statsTransactionCount,
-  statsTransactions,
+  statsSystemAssets,
+  statsSystemValue,
+  statsSystemTransactionCount,
+  statsSystemTransactionHistory,
 };
 
 export default routes;

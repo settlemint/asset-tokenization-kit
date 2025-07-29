@@ -27,7 +27,7 @@ export function AssetSupplyPieChart() {
   const {
     data: { chartData, activeChartConfig },
   } = useSuspenseQuery({
-    ...orpc.token.statsAssetCount.queryOptions({ input: {} }),
+    ...orpc.token.statsSystemAssets.queryOptions({ input: {} }),
     select: (metrics) => {
       // Convert asset breakdown to chart data format
       const data = Object.entries(metrics.assetBreakdown).map(

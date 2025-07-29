@@ -53,62 +53,63 @@ function sumEventCounts(eventStats: { eventsCount: number }[]): number {
 }
 
 /**
- * Transaction count route handler.
+ * System transaction count route handler.
  *
- * Fetches transaction count metrics specifically for the Transaction Stats Widget:
+ * Fetches system-wide transaction count metrics:
  * - Total number of transactions (all Transfer events)
  * - Number of recent transactions in the specified time range
  *
  * This endpoint is optimized for displaying transaction count summaries.
  *
  * Authentication: Required
- * Method: GET /token/stats/transaction-count
+ * Method: GET /token/stats/system/transaction-count
  *
  * @param input.timeRange - Number of days to look back for recent activity (default: 7)
- * @returns Promise<TransactionCountMetrics> - Transaction count metrics
+ * @returns Promise<SystemTransactionCountMetrics> - Transaction count metrics
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws INTERNAL_SERVER_ERROR - If TheGraph query fails
  *
  * @example
  * ```typescript
  * // Get transaction count for the last 14 days
- * const stats = await orpc.token.statsTransactionCount.query({ input: { timeRange: 14 } });
+ * const stats = await orpc.token.statsSystemTransactionCount.query({ input: { timeRange: 14 } });
  * console.log(`Total: ${stats.totalTransactions}, Recent: ${stats.recentTransactions}`);
  * ```
  */
-export const statsTransactionCount = authRouter.token.statsTransactionCount
-  .use(systemMiddleware)
-  .use(theGraphMiddleware)
-  .handler(async ({ context, input }) => {
-    // System context is guaranteed by systemMiddleware
+export const statsSystemTransactionCount =
+  authRouter.token.statsSystemTransactionCount
+    .use(systemMiddleware)
+    .use(theGraphMiddleware)
+    .handler(async ({ context, input }) => {
+      // System context is guaranteed by systemMiddleware
 
-    // timeRange is guaranteed to have a value from the schema default
-    const timeRange = input.timeRange;
+      // timeRange is guaranteed to have a value from the schema default
+      const timeRange = input.timeRange;
 
-    // Calculate the date range for queries
-    const since = new Date();
-    since.setDate(since.getDate() - timeRange);
-    const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
+      // Calculate the date range for queries
+      const since = new Date();
+      since.setDate(since.getDate() - timeRange);
+      const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
 
-    // Fetch transaction count data in a single query
-    const response = await context.theGraphClient.query(
-      TRANSACTION_COUNT_QUERY,
-      {
-        input: {
-          since: sinceTimestamp.toString(),
-        },
-        output: TransactionCountResponseSchema,
-        error: "Failed to fetch transaction count",
-      }
-    );
+      // Fetch transaction count data in a single query
+      const response = await context.theGraphClient.query(
+        TRANSACTION_COUNT_QUERY,
+        {
+          input: {
+            since: sinceTimestamp.toString(),
+          },
+          output: TransactionCountResponseSchema,
+          error: "Failed to fetch system transaction count",
+        }
+      );
 
-    // Calculate metrics
-    const totalTransactions = sumEventCounts(response.totalTransactions);
-    const recentTransactions = sumEventCounts(response.recentTransactions);
+      // Calculate metrics
+      const totalTransactions = sumEventCounts(response.totalTransactions);
+      const recentTransactions = sumEventCounts(response.recentTransactions);
 
-    return {
-      totalTransactions,
-      recentTransactions,
-      timeRangeDays: timeRange,
-    };
-  });
+      return {
+        totalTransactions,
+        recentTransactions,
+        timeRangeDays: timeRange,
+      };
+    });

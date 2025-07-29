@@ -28,7 +28,7 @@ export function ValueStatsWidget() {
 
   // Fetch just the total value metrics - more efficient than fetching all metrics
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsTotalValue.queryOptions({ input: {} })
+    orpc.token.statsSystemValue.queryOptions({ input: {} })
   );
 
   // Get the system's base currency from settings

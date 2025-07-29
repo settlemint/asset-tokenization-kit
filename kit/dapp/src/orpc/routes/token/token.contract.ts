@@ -30,10 +30,10 @@ import { tokenReadContract } from "@/orpc/routes/token/routes/token.read.contrac
 
 // Stats contracts
 import { factoryPredictAddressContract } from "@/orpc/routes/token/routes/factory/factory.predict-address.contract";
-import { tokenStatsAssetCountContract } from "@/orpc/routes/token/routes/stats/asset-count.contract";
-import { tokenStatsTotalValueContract } from "@/orpc/routes/token/routes/stats/total-value.contract";
-import { tokenStatsTransactionCountContract } from "@/orpc/routes/token/routes/stats/transaction-count.contract";
-import { tokenStatsTransactionsContract } from "@/orpc/routes/token/routes/stats/transactions.contract";
+import { tokenStatsSystemAssetsContract } from "@/orpc/routes/token/routes/stats/system/assets.contract";
+import { tokenStatsSystemValueContract } from "@/orpc/routes/token/routes/stats/system/value.contract";
+import { tokenStatsSystemTransactionCountContract } from "@/orpc/routes/token/routes/stats/system/transaction-count.contract";
+import { tokenStatsSystemTransactionHistoryContract } from "@/orpc/routes/token/routes/stats/system/transaction-history.contract";
 
 const tokenContractMutations = {
   create: tokenCreateContract,
@@ -74,8 +74,8 @@ export const tokenContract = {
   holders: tokenHoldersContract,
 
   // Stats
-  statsTransactions: tokenStatsTransactionsContract,
-  statsAssetCount: tokenStatsAssetCountContract,
-  statsTransactionCount: tokenStatsTransactionCountContract,
-  statsTotalValue: tokenStatsTotalValueContract,
+  statsSystemTransactionHistory: tokenStatsSystemTransactionHistoryContract,
+  statsSystemAssets: tokenStatsSystemAssetsContract,
+  statsSystemTransactionCount: tokenStatsSystemTransactionCountContract,
+  statsSystemValue: tokenStatsSystemValueContract,
 };

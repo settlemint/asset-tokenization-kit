@@ -37,7 +37,7 @@ export function AssetActivityBarChart() {
 
   // Fetch transaction data as activity proxy
   const { data: _metrics } = useSuspenseQuery(
-    orpc.token.statsTransactions.queryOptions({ input: {} })
+    orpc.token.statsSystemTransactionHistory.queryOptions({ input: {} })
   );
 
   // No asset-specific activity data available, return empty for empty state
