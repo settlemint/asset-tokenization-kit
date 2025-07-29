@@ -22,15 +22,10 @@ import { events } from "@/orpc/routes/token/routes/token.events";
 import { holders } from "@/orpc/routes/token/routes/token.holders";
 import { list } from "@/orpc/routes/token/routes/token.list";
 import { read } from "@/orpc/routes/token/routes/token.read";
-import { statsActivityByAsset } from "@/orpc/routes/token/routes/stats/activity-by-asset";
 import { statsAssetCount } from "@/orpc/routes/token/routes/stats/asset-count";
-import { statsAssets } from "@/orpc/routes/token/routes/stats/assets";
-import { statsSupplyDistribution } from "@/orpc/routes/token/routes/stats/supply-distribution";
 import { statsTotalValue } from "@/orpc/routes/token/routes/stats/total-value";
 import { statsTransactionCount } from "@/orpc/routes/token/routes/stats/transaction-count";
-import { statsTransactionHistory } from "@/orpc/routes/token/routes/stats/transaction-history";
 import { statsTransactions } from "@/orpc/routes/token/routes/stats/transactions";
-import { statsValue } from "@/orpc/routes/token/routes/stats/value";
 import { actions } from "@/orpc/routes/token/routes/token.actions";
 
 const routes = {
@@ -59,15 +54,10 @@ const routes = {
   tokenSetYieldSchedule,
   tokenAddComplianceModule,
   tokenRemoveComplianceModule,
-  statsActivityByAsset,
   statsAssetCount,
-  statsAssets,
-  statsSupplyDistribution,
   statsTotalValue,
   statsTransactionCount,
-  statsTransactionHistory,
   statsTransactions,
-  statsValue,
 };
 
 export default routes;
