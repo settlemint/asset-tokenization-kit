@@ -10,7 +10,6 @@ import {
 import { Countries } from "../constants/countries";
 import { ATKTopic } from "../constants/topics";
 import { Asset } from "../entities/asset";
-import { topicManager } from "../services/topic-manager";
 import { burn } from "./actions/burnable/burn";
 import { issueBasePriceClaim } from "./actions/core/issue-base-price-claim";
 import { mint } from "./actions/core/mint";
@@ -42,7 +41,6 @@ export const createFund = async () => {
     fund.symbol,
     fund.decimals,
     20,
-    [topicManager.getTopicId(ATKTopic.kyc)],
     getDefaultComplianceModules(),
     Countries.BE,
   ]);

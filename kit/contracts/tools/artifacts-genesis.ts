@@ -498,7 +498,6 @@ class ContractDeployer {
           CONTRACT_ADDRESSES.ATKIdentityImplementation,
           CONTRACT_ADDRESSES.ATKContractIdentityImplementation,
           CONTRACT_ADDRESSES.ATKTokenAccessManagerImplementation,
-          CONTRACT_ADDRESSES.SMARTIdentityVerificationComplianceModule,
           CONTRACT_ADDRESSES.ATKTokenFactoryRegistryImplementation,
           CONTRACT_ADDRESSES.ATKComplianceModuleRegistryImplementation,
           CONTRACT_ADDRESSES.ATKSystemAddonRegistryImplementation,

@@ -23,6 +23,7 @@ import {
   identityFactoryAbi,
   identityRegistryAbi,
   identityRegistryStorageAbi,
+  identityVerificationAbi,
   ismartAbi,
   ismartBurnableAbi,
   ismartCappedAbi,
@@ -89,6 +90,7 @@ export const ATKContracts = {
   addressBlockListModule: addressBlockListAbi,
   identityBlockListModule: identityBlockListAbi,
   identityAllowListModule: identityAllowListAbi,
+  identityVerificationModule: identityVerificationAbi,
   // addons
   fixedYieldScheduleFactory: fixedYieldScheduleFactoryAbi,
   fixedYieldSchedule: fixedYieldScheduleAbi,
