@@ -17,9 +17,14 @@ import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { IERC3643TrustedIssuersRegistry } from "../../smart/interface/ERC-3643/IERC3643TrustedIssuersRegistry.sol";
 import { IATKTrustedIssuersRegistry } from "./IATKTrustedIssuersRegistry.sol";
 import { IClaimAuthorizer } from "../../onchainid/extensions/IClaimAuthorizer.sol";
+import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 
 // Constants
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+
+/// @dev Custom errors for ATKTrustedIssuersRegistry
+error UnauthorizedAccess();
+error MissingRegistrarRole();
 
 /// @title ATK Trusted Issuers Registry Implementation
 /// @author SettleMint
@@ -53,6 +58,10 @@ contract ATKTrustedIssuersRegistryImplementation is
     IClaimAuthorizer
 {
     // --- Storage Variables ---
+    /// @notice Optional centralized access manager for enhanced role checking
+    /// @dev If set, enables multi-role access patterns alongside existing AccessControl
+    IATKSystemAccessManager private _systemAccessManager;
+
     /// @notice Defines a structure to hold the details for a trusted claim issuer.
     /// @param issuer The Ethereum address of the `IClaimIssuer` compliant contract. This contract is responsible for
     /// issuing claims (e.g., KYC, accreditation) about identities.
@@ -224,6 +233,56 @@ contract ATKTrustedIssuersRegistryImplementation is
         }
     }
 
+    // --- System Access Manager Functions ---
+
+    /// @notice Sets the system access manager for enhanced role checking
+    /// @dev Only callable by accounts with DEFAULT_ADMIN_ROLE. Setting to address(0) disables centralized access control
+    /// @param systemAccessManager The address of the ATK system access manager, or address(0) to disable
+    function setSystemAccessManager(address systemAccessManager) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _systemAccessManager = IATKSystemAccessManager(systemAccessManager);
+        emit SystemAccessManagerSet(_msgSender(), systemAccessManager);
+    }
+
+    /// @notice Returns the current system access manager address
+    /// @return The address of the system access manager, or address(0) if not set
+    function getSystemAccessManager() external view returns (address) {
+        return address(_systemAccessManager);
+    }
+
+    /// @notice Event emitted when the system access manager is updated
+    /// @param admin The address that updated the system access manager
+    /// @param systemAccessManager The new system access manager address
+    event SystemAccessManagerSet(address indexed admin, address indexed systemAccessManager);
+
+    // --- Access Control Modifiers ---
+
+    /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
+    /// @dev This implements the new centralized access pattern: onlySystemRoles(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// Falls back to AccessControl if system access manager is not set
+    /// @param roles Array of roles, where the caller must have at least one
+    modifier onlySystemRoles(bytes32[] memory roles) {
+        if (address(_systemAccessManager) != address(0)) {
+            // Use centralized access manager when available
+            if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) revert UnauthorizedAccess();
+        } else {
+            // Fall back to traditional AccessControl during bootstrap
+            if (!hasRole(ATKSystemRoles.REGISTRAR_ROLE, _msgSender())) revert MissingRegistrarRole();
+        }
+        _;
+    }
+
+    // --- Internal Helper Functions ---
+
+    /// @notice Returns the roles that can perform claim policy management operations
+    /// @dev Implements the pattern from the ticket: MANAGER_ROLE + [SYSTEM_ROLES]
+    /// @return roles Array of roles that can manage trusted issuers and claim policies
+    function _getClaimPolicyManagementRoles() internal pure returns (bytes32[] memory roles) {
+        roles = new bytes32[](3);
+        roles[0] = ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE;  // Primary claim policy manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;        // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;         // System module role
+    }
+
     // --- Issuer Management Functions (REGISTRAR_ROLE required) ---
 
     /// @inheritdoc IERC3643TrustedIssuersRegistry
@@ -252,7 +311,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         address issuerAddress = address(_trustedIssuer);
         if (issuerAddress == address(0)) revert InvalidIssuerAddress();
@@ -294,7 +353,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     function removeTrustedIssuer(IClaimIssuer _trustedIssuer)
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);
@@ -345,7 +404,7 @@ contract ATKTrustedIssuersRegistryImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.REGISTRAR_ROLE)
+        onlySystemRoles(_getClaimPolicyManagementRoles())
     {
         address issuerAddress = address(_trustedIssuer);
         if (!_trustedIssuers[issuerAddress].exists) revert IssuerDoesNotExist(issuerAddress);

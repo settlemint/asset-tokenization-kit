@@ -432,9 +432,19 @@ contract ATKSystemImplementation is
         address localComplianceProxy =
             address(new ATKTypedImplementationProxy(address(this), COMPLIANCE, complianceData));
 
-        // Deploy the ATKIdentityRegistryStorageProxy, linking it to this ATKSystem and setting an initial admin.
+        // Deploy the ATKSystemAccessManagerProxy first, as other contracts need to reference it.
+        address[] memory initialSystemAccessManagerAdmins = new address[](2);
+        initialSystemAccessManagerAdmins[0] = initialAdmin;
+        initialSystemAccessManagerAdmins[1] = address(this); // Grant the system contract admin role so it can grant other roles during bootstrap
+        bytes memory systemAccessManagerData = abi.encodeWithSelector(
+            ATKSystemAccessManagerImplementation.initialize.selector, initialSystemAccessManagerAdmins
+        );
+        address localSystemAccessManagerProxy =
+            address(new ATKTypedImplementationProxy(address(this), SYSTEM_ACCESS_MANAGER, systemAccessManagerData));
+
+        // Deploy the ATKIdentityRegistryStorageProxy, using the system access manager for centralized access control.
         bytes memory identityRegistryStorageData =
-            abi.encodeWithSelector(IATKIdentityRegistryStorage.initialize.selector, address(this), initialAdmin);
+            abi.encodeWithSelector(IATKIdentityRegistryStorage.initialize.selector, localSystemAccessManagerProxy, address(this));
         address localIdentityRegistryStorageProxy = address(
             new ATKTypedImplementationProxy(address(this), IDENTITY_REGISTRY_STORAGE, identityRegistryStorageData)
         );
@@ -449,13 +459,9 @@ contract ATKSystemImplementation is
             new ATKTypedImplementationProxy(address(this), TRUSTED_ISSUERS_REGISTRY, trustedIssuersRegistryData)
         );
 
-        // Deploy the ATKTopicSchemeRegistryProxy, linking it to this ATKSystem and setting an initial admin.
-        address[] memory initialTopicSchemeRegistrars = new address[](2);
-        initialTopicSchemeRegistrars[0] = initialAdmin;
-        initialTopicSchemeRegistrars[1] = address(this);
-        bytes memory topicSchemeRegistryData = abi.encodeWithSelector(
-            IATKTopicSchemeRegistry.initialize.selector, initialAdmin, initialTopicSchemeRegistrars
-        );
+        // Deploy the ATKTopicSchemeRegistryProxy, linking it to this ATKSystem and using the system access manager.
+        bytes memory topicSchemeRegistryData =
+            abi.encodeWithSelector(IATKTopicSchemeRegistry.initialize.selector, localSystemAccessManagerProxy);
         address localTopicSchemeRegistryProxy =
             address(new ATKTypedImplementationProxy(address(this), TOPIC_SCHEME_REGISTRY, topicSchemeRegistryData));
 
@@ -484,15 +490,6 @@ contract ATKSystemImplementation is
         address localIdentityFactoryProxy =
             address(new ATKTypedImplementationProxy(address(this), IDENTITY_FACTORY, identityFactoryData));
 
-        // Deploy the ATKSystemAccessManagerProxy, linking it to this ATKSystem and setting an initial admin.
-        address[] memory initialSystemAccessManagerAdmins = new address[](1);
-        initialSystemAccessManagerAdmins[0] = initialAdmin;
-        bytes memory systemAccessManagerData = abi.encodeWithSelector(
-            ATKSystemAccessManagerImplementation.initialize.selector, initialSystemAccessManagerAdmins
-        );
-        address localSystemAccessManagerProxy =
-            address(new ATKTypedImplementationProxy(address(this), SYSTEM_ACCESS_MANAGER, systemAccessManagerData));
-
         // --- Effects (Update state variables for proxy addresses) ---
         // Now that all proxies are created, update the contract's state variables to store their addresses.
         _complianceProxy = localComplianceProxy;
@@ -508,11 +505,30 @@ contract ATKSystemImplementation is
 
         // --- Interactions (Part 2: Call methods on newly created proxies to link them) ---
         // After all proxy state variables are set, perform any necessary interactions between the new proxies.
+
+        // Grant necessary roles for the identity system to work with centralized access control
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
+            ATKSystemRoles.SYSTEM_MANAGER_ROLE, address(this)
+        );
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
+            ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, localIdentityRegistryProxy
+        );
+
         // Here, we bind the IdentityRegistryProxy to its dedicated IdentityRegistryStorageProxy.
         // This tells the storage proxy which identity registry is allowed to manage it.
         IATKIdentityRegistryStorage(localIdentityRegistryStorageProxy).bindIdentityRegistry(
             localIdentityRegistryProxy // Using the local variable, or _identityRegistryProxy which is now correctly
                 // set.
+        );
+
+
+
+        // Grant necessary roles to the system access manager for topic scheme management
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
+            ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, initialAdmin
+        );
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
+            ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, address(this)
         );
 
         // Register the topic schemes.
@@ -536,6 +552,20 @@ contract ATKSystemImplementation is
 
         // Set the identity factory's own OnChainID (this will now successfully issue claims)
         IATKIdentityFactory(localIdentityFactoryProxy).setOnchainID(identityFactoryIdentity);
+
+        // Connect the token factory registry to the system access manager for centralized role checking
+        IATKTokenFactoryRegistry(localTokenFactoryRegistryProxy).setSystemAccessManager(localSystemAccessManagerProxy);
+
+        // Grant necessary roles for token factory registration to the initial admin
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
+            ATKSystemRoles.REGISTRAR_ROLE, initialAdmin
+        );
+
+        // Ensure the initial admin has DEFAULT_ADMIN_ROLE on the system access manager
+        // This is needed for registerTokenFactory to grant roles to new factory proxies
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
+            DEFAULT_ADMIN_ROLE, initialAdmin
+        );
 
         // Mark the system as bootstrapped
         _bootstrapped = true;

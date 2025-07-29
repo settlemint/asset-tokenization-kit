@@ -1,0 +1,297 @@
+# Default values for thegraph.
+# This is a YAML-formatted file.
+
+global:
+  labels: {}
+
+nameOverride: ""
+# -- Override the full resource name. Set to "graph-node" for backward compatibility
+# with existing ATK deployments that reference "graph-node-combined" service name
+fullnameOverride: "graph-node"
+
+image:
+  # -- Image for Graph Node
+  repository: graphprotocol/graph-node
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: "v0.39.1"
+
+initContainer:
+  # -- Image for init container kubectl
+  image:
+    repository: docker.io/kubesphere/kubectl
+    tag: v1.33.1
+    pullPolicy: IfNotPresent
+
+# -- Pull secrets required to fetch the Image
+imagePullSecrets: []
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+rbac:
+  # -- Specifies whether RBAC resources are to be created
+  create: false
+  # @default -- See `values.yaml`
+  rules: []
+    # Add RBAC rules here if graph-node requires specific Kubernetes API access
+    # Currently no special permissions are needed
+
+replicaCount: 1
+
+# -- Specify [resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits)
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  #   ephemeral-storage: 100Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  #   ephemeral-storage: 100Mi
+
+# -- Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+nodeSelector: {}
+
+# -- Specify [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
+tolerations: []
+
+# -- Pod-wide security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 101337
+  runAsGroup: 101337
+  fsGroup: 101337
+
+# -- Annotations for the `Pod`
+podAnnotations: {}
+
+# -- Environment variables
+env:
+  # -- Hostname of the primary shard PostgreSQL server
+  PRIMARY_SUBGRAPH_DATA_PGHOST: postgresql
+  # -- Port for the primary shard PostgreSQL server
+  PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
+  # -- Name of the primary shard database to use
+  PRIMARY_SUBGRAPH_DATA_PGDATABASE: "thegraph"
+  # -- The URL for your IPFS node
+  IPFS: "https://ipfs.console.settlemint.com"
+  # -- Node role
+  node_role: "combined"
+  EXPERIMENTAL_SUBGRAPH_VERSION_SWITCHING_MODE: 'synced'
+  GRAPH_ETH_CALL_GAS: '50000000'
+  GRAPH_GETH_ETH_CALL_ERRORS: 'out of gas'
+  GRAPH_KILL_IF_UNRESPONSIVE: 'true'
+  ETHEREUM_POLLING_INTERVAL: '1000'
+  GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH: 'true'
+  GRAPH_QUERY_CACHE_MAX_MEM: '3000'
+  GRAPH_QUERY_CACHE_BLOCKS: '6'
+  GRAPH_QUERY_CACHE_STALE_PERIOD: '1000'
+  GRAPH_LOG: 'info'
+  GRAPH_LOG_QUERY_TIMING: 'gql'
+  GRAPH_ALLOW_NON_DETERMINISTIC_IPFS: 'true'
+  GRAPH_PARALLEL_BLOCK_CONSTRAINTS: 'true'
+  GRAPH_ETHEREUM_CLEANUP_BLOCKS: 'true'
+  GRAPH_CHAIN_HEAD_WATCHER_TIMEOUT: '5'
+  GRAPH_LOAD_WINDOW_SIZE: '3600'
+  GRAPH_LOAD_BIN_SIZE: '10'
+  GRAPH_POSTPONE_ATTRIBUTE_INDEX_CREATION: 'true'
+  GRAPH_STORE_WRITE_BATCH_DURATION: '0'
+  GRAPH_STORE_WRITE_BATCH_SIZE: '0'
+  GRAPH_MAX_GAS_PER_HANDLER: '1_000_000_000_000_000'
+  GRAPH_MAX_SPEC_VERSION: '1.2.0'
+  SUBGRAPH: kit:QmbA53S3UUeoxdNQV9PGUDN7WAgFcHT6qU9FiH8QXXGv3z
+  GRAPH_ETHEREUM_REQUEST_RETRIES: '10'
+  GRAPH_ETHEREUM_BLOCK_BATCH_SIZE: '100'
+  GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE: '1000'
+  GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE: '100'
+  GRAPH_ENABLE_PROMETHEUS_METRICS: 'true'
+  GRAPH_PROMETHEUS_HOST: '0.0.0.0'
+  GRAPH_DISABLE_GRAFTS: 'false'
+  GRAPH_STATIC_FILTERS_THRESHOLD: '10000'
+  GRAPH_IPFS_TIMEOUT: '30'
+  GRAPH_ETHEREUM_BLOCK_INGESTOR_MAX_CONCURRENT_JSON_RPC_CALLS: '100'
+
+# -- Environment variables from secrets
+secretEnv:
+  PRIMARY_SUBGRAPH_DATA_PGUSER:
+    # -- Name of the secret that contains your PG username (uses graph-node.pgSecretName helper)
+    secretName: ""  # Dynamically set in templates using helper
+    # -- Name of the data key in the secret that contains your PG username
+    key: PGUSER
+  PRIMARY_SUBGRAPH_DATA_PGPASSWORD:
+    # -- Name of the secret that contains your PG password (uses graph-node.pgSecretName helper)
+    secretName: ""  # Dynamically set in templates using helper
+    # -- Name of the data key in the secret that contains your PG password
+    key: PGPASSWORD
+
+# -- Custom secret data for PostgreSQL credentials
+# Used for backward compatibility and default values
+customSecret:
+  # -- PostgreSQL username
+  PGUSER: thegraph
+  # -- PostgreSQL password
+  PGPASSWORD: atk
+
+service:
+  type: ClusterIP
+  ports:
+    # -- Service Port to expose Graph Node Query endpoint on
+    httpQuery: 8000
+    # -- Service Port to expose Graph Node Websocket Query endpoint on
+    httpQueryws: 8001
+    # -- Service Port to expose Graph Node Admin endpoint on
+    httpAdmin: 8020
+    # -- Service Port to expose Graph Node Status endpoint on
+    httpStatus: 8030
+    # -- Service Port to expose Graph Node Metrics endpoint on
+    httpMetrics: 8040
+
+ingress:
+  enabled: true
+  className: "atk-nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+  hosts:
+    - host: graph.k8s.orb.local
+      paths:
+        - path: /(.*)
+          pathType: ImplementationSpecific
+        - path: /ws/?(.*)
+          pathType: ImplementationSpecific
+        - path: /admin/?(.*)
+          pathType: ImplementationSpecific
+        - path: /indexer/?(.*)
+          pathType: ImplementationSpecific
+        - path: /graphman/?(.*)
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# -- Blockchain configuration for Graph Node
+chains:
+  # -- Ethereum Mainnet
+  settlemint:
+    # -- Enable this configuring graph-node with this chain
+    enabled: true
+    # -- The database shard to use for this chain
+    shard: primary
+    ## -- A list of JSON-RPC endpoints for this node (you should override this list with your own configuration)
+    provider:
+      - # -- Label for a JSON-RPC endpoint
+        label: erpc
+        details:
+          # -- Type of Provider: web3
+          type: web3
+          # -- URL for JSON-RPC endpoint
+          url: http://erpc:4000
+          # -- Data capabilities this node has
+          features: [archive, traces]
+
+# -- Store configuration for Graph Node
+store:
+  primary:
+    # -- Enable this store for Graph Node
+    enabled: true
+    # -- PostgreSQL connection string for primary shard
+    connection: "postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"
+
+# -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
+# @default -- See default template in [values.yaml](values.yaml)
+configTemplate: |
+    # Store configuration
+    [store]
+    {{- range $storeName, $storeValues := $.Values.store }}
+    {{- if $storeValues.enabled }}
+      [store.{{ $storeName }}]
+      connection = {{ required "You must specify a store connection string" $storeValues.connection | quote }}
+      pool_size = {{ default 10 $storeValues.poolSize }}
+      weight = {{ default 1 $storeValues.weight }}
+    {{- end }}
+    {{- end }}
+
+    # Chain configuration
+    {{- $patchedChains := dict "ingestor" (print (include "graph-node.fullname" $) "-combined-" 0) }}
+    {{- range $chainName, $chainValues := $.Values.chains }}
+    {{- if $chainValues.enabled }}
+      {{- $_ := set $patchedChains $chainName (omit $chainValues "enabled") }}
+    {{- end }}
+    {{- end }}
+    {{ toToml (dict "chains" $patchedChains) }}
+
+    # Deployment rule configuration
+    [deployment]
+    # Deployment rules match top to bottom
+    [[deployment.rule]]
+    # DEFAULT RULE
+    # There's no 'match' field, so any subgraph that hasn't matched above, matches this rule
+    shards = ["primary"]
+    indexers = ["{{ include "graph-node.fullname" $ }}-combined-0"]
+
+# Network policies
+networkPolicy:
+  enabled: false
+  ingress: []
+  egress: []
+
+# Autoscaling
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: false
+  # minAvailable: 1
+  # maxUnavailable: 1
+
+# PostgreSQL readiness check configuration
+postgresReadinessCheck:
+  # -- Enable PostgreSQL readiness check init container
+  enabled: true
+  # -- Docker image for PostgreSQL readiness check
+  image: docker.io/postgres:17.5
+  # -- Maximum number of connection retries
+  maxRetries: 30
+  # -- Initial wait time between retries (doubles with exponential backoff)
+  initialWaitTime: 2
+  # -- Maximum wait time between retries
+  maxWaitTime: 30
+  # -- Add random delay to prevent all nodes from connecting simultaneously
+  randomDelayRange:
+    min: 5
+    max: 30
+
+# Additional init containers
+extraInitContainers: []
+
+# Additional containers
+extraContainers: []
+
+# Additional volumes
+extraVolumes: []
+
+# Additional volume mounts
+extraVolumeMounts: []
+
+# Increasing the grace termination period prevents Kubernetes
+# from killing the node process prematurely. Premature shutdown
+# can lead to data integrity issues
+terminationGracePeriodSeconds: 60

@@ -12,7 +12,10 @@ const ATKOnboardingEquityModule = buildModule(
     const createEquityFactory = m.call(
       tokenFactoryRegistry,
       "registerTokenFactory",
-      ["equity", equityFactoryImplementation, equityImplementation]
+      ["equity", equityFactoryImplementation, equityImplementation],
+      {
+        from: m.getAccount(0),
+      }
     );
     const equityFactoryAddress = m.readEventArgument(
       createEquityFactory,
