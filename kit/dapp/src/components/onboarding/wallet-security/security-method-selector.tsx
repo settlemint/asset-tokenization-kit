@@ -13,19 +13,11 @@ export function SecurityMethodSelector() {
   const [showPinModal, setShowPinModal] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
 
-  const actions = (
-    <div className="flex justify-between items-center w-full">
-      <div className="flex"></div>
-      <div className="flex"></div>
-    </div>
-  );
-
   return (
     <OnboardingStepLayout
       title={t("wallet-security.method-selector.title")}
       description={t("wallet-security.method-selector.description")}
       fullWidth
-      actions={actions}
     >
       <div className="flex flex-col h-full">
         <div className="rounded-lg border w-full overflow-hidden flex flex-col flex-1">
