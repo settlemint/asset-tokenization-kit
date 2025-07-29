@@ -4,6 +4,7 @@ import { owner } from "../constants/actors";
 import { Countries } from "../constants/countries";
 import { Asset } from "../entities/asset";
 import { atkDeployer } from "../services/deployer";
+import { encodeAddressParams } from "../utils/encode-address-params";
 import { burn } from "./actions/burnable/burn";
 import { mint } from "./actions/core/mint";
 import { transfer } from "./actions/core/transfer";
@@ -13,7 +14,6 @@ import { setAddressFrozen } from "./actions/custodian/set-address-frozen";
 import { unfreezePartialTokens } from "./actions/custodian/unfreeze-partial-tokens";
 import { setupAsset } from "./actions/setup-asset";
 import { getDefaultComplianceModules } from "./utils/default-compliance-modules";
-import { encodeAddressParams } from "./utils/encode-address-params";
 
 export const createDeposit = async () => {
   console.log("\n=== Creating deposit... ===\n");

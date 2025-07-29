@@ -1,5 +1,6 @@
 import { Address } from "viem";
 import { atkDeployer } from "../services/deployer";
+import { encodeAddressParams } from "../utils/encode-address-params";
 import { waitForSuccess } from "../utils/wait-for-success";
 
 export const setGlobalBlockedIdentities = async (identities: Address[]) => {
@@ -10,11 +11,12 @@ export const setGlobalBlockedIdentities = async (identities: Address[]) => {
   const identityBlockListModule =
     atkDeployer.getIdentityBlockListModuleContract();
 
-  const transactionHash =
-    await identityBlockListModule.write.setGlobalBlockedIdentities([
-      identities,
-      true,
-    ]);
+  const compliance = atkDeployer.getComplianceContract();
+
+  const transactionHash = await compliance.write.addGlobalComplianceModule([
+    identityBlockListModule.address,
+    encodeAddressParams(identities),
+  ]);
 
   await waitForSuccess(transactionHash);
 
