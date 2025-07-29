@@ -164,7 +164,10 @@ export const addonCreate = onboardedRouter.system.addonCreate
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .use(systemMiddleware)
-  .handler(async function* ({ input, context }) {
+  .handler(async function* ({
+    input,
+    context,
+  }): AsyncGenerator<SystemAddonCreateOutput, void, void> {
     const { contract, addons, verification } = input;
     const sender = context.auth.user;
     const { t, system } = context;
@@ -175,7 +178,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
 
     // Yield initial loading message
     yield {
-      status: "pending" as const,
+      status: "pending",
       message: t("system:addons.messages.preparing"),
       progress: { current: 0, total: totalAddons },
     };
@@ -208,7 +211,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
 
       // Yield initial progress message for this addon
       yield {
-        status: "pending" as const,
+        status: "pending",
         message: t("system:addons.messages.progress", {
           current: progress.current,
           total: progress.total,
@@ -220,7 +223,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
       };
 
       // Check if addon already exists (if we had that data)
-      if (existingAddonNames.some((existingName) => existingName === name)) {
+      if (existingAddonNames.includes(name)) {
         yield {
           status: "completed" as const,
           message: t("system:addons.messages.alreadyExists", { name }),
@@ -232,7 +235,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
           type,
           name,
           transactionHash: "",
-          error: "Addon already exists",
+          error: t("system:addons.messages.alreadyExists", { name }),
         });
 
         continue; // Skip to next addon
@@ -338,7 +341,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
         }
 
         yield {
-          status: "failed" as const,
+          status: "failed",
           message: t("system:addons.messages.failed", { name }),
           currentAddon: { type, name, error: specificErrorMessage },
           progress,
@@ -372,7 +375,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
     }
 
     yield {
-      status: "completed" as const,
+      status: "completed",
       message: finalMessage,
       results,
       result: results, // Added for useStreamingMutation hook compatibility
