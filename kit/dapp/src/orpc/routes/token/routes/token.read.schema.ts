@@ -42,7 +42,6 @@ const EXTENSIONS: TokenExtensions[] = [
  * @property {number} decimals - Number of decimal places for the token (typically 18 for ERC20)
  * @property {Object} [userPermissions] - Optional permissions object for the current user
  * @property {Object} userPermissions.roles - Boolean flags for each role the user has
- * @property {boolean} userPermissions.isCompliant - Whether the user meets compliance requirements
  * @property {boolean} userPermissions.isAllowed - Whether the user can interact with the token
  * @remarks
  * - The userPermissions field is optional and will only be present when the
@@ -173,11 +172,6 @@ export const RawTokenSchema = z.object({
           })()
         )
         .describe("The roles of the user for the token"),
-      isCompliant: z
-        .boolean()
-        .describe(
-          "Whether the user has the required claim topics to interact with the token"
-        ),
       isAllowed: z
         .boolean()
         .describe("Whether the user is allowed to interact with the token"),
