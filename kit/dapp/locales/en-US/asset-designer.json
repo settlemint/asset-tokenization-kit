@@ -1,4 +1,7 @@
 {
+  "sidebar": {
+    "button-title": "Asset Designer"
+  },
   "compliance": {
     "available": {
       "description": "You can enable any of the following compliance modules to control who can access your asset.",

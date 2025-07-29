@@ -1,15 +1,11 @@
+import { addonType, type AddonType } from "@/lib/zod/validators/addon-types";
 import { z } from "zod";
 import { MutationInputSchemaWithContract } from "../../../common/schemas/mutation.schema";
 
 /**
- * Supported system addon types enum
+ * Type alias for clarity in system context
  */
-export const SystemAddonTypeEnum = z.enum(["airdrops", "yield", "xvp"]);
-
-/**
- * System addon type
- */
-export type SystemAddonType = z.infer<typeof SystemAddonTypeEnum>;
+export type SystemAddonType = AddonType;
 
 /**
  * Default implementation addresses for each addon type
@@ -38,7 +34,7 @@ export function getDefaultAddonImplementations(type: SystemAddonType) {
  * Individual addon configuration schema
  */
 const SystemAddonConfigSchema = z.object({
-  type: SystemAddonTypeEnum,
+  type: addonType(),
   name: z.string().min(1).max(50),
   // Optional implementation addresses for custom deployments
   implementations: z
@@ -57,7 +53,7 @@ export const SystemAddonCreateSchema = MutationInputSchemaWithContract.extend({
  * Schema for individual addon result in streaming output
  */
 const AddonResultSchema = z.object({
-  type: SystemAddonTypeEnum,
+  type: addonType(),
   name: z.string(),
   proxyAddress: z.string().optional(),
   transactionHash: z.string().optional(),

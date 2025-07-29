@@ -226,7 +226,7 @@ initContainer:
     dependencies:
       # Add internal Kubernetes service endpoints (service-name:port) for critical dependencies
       - name: postgres
-        endpoint: "postgresql-pgpool.atk.svc.cluster.local:5432"
+        endpoint: "postgresql.atk.svc.cluster.local:5432"
       - name: hasura
         endpoint: "hasura.atk.svc.cluster.local:8080"
       - name: portal
