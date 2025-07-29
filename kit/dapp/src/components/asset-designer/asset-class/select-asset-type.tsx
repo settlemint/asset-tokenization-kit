@@ -1,11 +1,5 @@
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -22,19 +16,13 @@ import { orpc } from "@/orpc/orpc-client";
 import { useStore } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeftIcon } from "lucide-react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   assetClassSelectionFormOptions,
+  isRequiredField,
   type AssetClassSelectionInputData,
 } from "./shared-form";
-
-const assetFactoryNames = {
-  ATKBondFactory: "Bond",
-  ATKEquityFactory: "Equity",
-  ATKFundFactory: "Fund",
-  ATKStableCoinFactory: "Stable Coin",
-  ATKDepositFactory: "Deposit",
-};
 
 const validate: KeysOfUnion<AssetClassSelectionInputData>[] = ["assetType"];
 
@@ -63,6 +51,19 @@ export const SelectAssetType = withForm({
       (factory) => getAssetClassFromFactoryTypeId(factory.typeId) === assetClass
     );
 
+    const options = useMemo(
+      () =>
+        selectedClassFactories.map((factory) => {
+          const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
+          return {
+            value: assetType,
+            label: getAssetTypeFromFactoryTypeId(factory.typeId),
+            description: t(`asset-types:types.${assetType}.description`),
+          };
+        }),
+      [selectedClassFactories, t]
+    );
+
     return (
       <>
         <DialogHeader className="text-center mt-10">
@@ -74,42 +75,13 @@ export const SelectAssetType = withForm({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-6 mb-10">
-          <form.Field name="assetType">
-            {(field) => (
-              <>
-                {selectedClassFactories.map((factory) => {
-                  const assetType = getAssetTypeFromFactoryTypeId(
-                    factory.typeId
-                  );
-                  const isSelected = field.state.value === assetType;
-
-                  return (
-                    <Card
-                      key={factory.typeId}
-                      className={`cursor-pointer transition-all min-w-0 flex flex-col h-full ${
-                        isSelected
-                          ? "ring-2 ring-primary border-primary"
-                          : "hover:border-primary/50"
-                      }`}
-                      onClick={() => {
-                        field.handleChange(assetType);
-                      }}
-                    >
-                      <CardHeader className="flex-1">
-                        <CardTitle className="text-lg">
-                          {assetFactoryNames[factory.typeId]}
-                        </CardTitle>
-                        <CardDescription className="text-sm">
-                          {t(`asset-types:types.${assetType}.description`)}
-                        </CardDescription>
-                      </CardHeader>
-                    </Card>
-                  );
-                })}
-              </>
+        <div className="mt-6 mb-10">
+          <form.AppField
+            name="assetType"
+            children={(field) => (
+              <field.RadioField options={options} variant="card" />
             )}
-          </form.Field>
+          />
         </div>
 
         <DialogFooter>
@@ -124,6 +96,7 @@ export const SelectAssetType = withForm({
             <form.StepSubmitButton
               onStepSubmit={onStepSubmit}
               validate={validate}
+              checkRequiredFn={isRequiredField}
               label={t("asset-designer:form.buttons.next")}
             />
           </div>

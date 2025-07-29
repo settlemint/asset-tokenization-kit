@@ -58,6 +58,7 @@ export function AssetClassModal({ open, onOpenChange }: AssetClassModalProps) {
 
   const handleClose = () => {
     form.reset();
+    onOpenChange(false);
   };
 
   const stepComponent: Record<AssetClassSelectionStepsType, JSX.Element> = {
@@ -71,7 +72,7 @@ export function AssetClassModal({ open, onOpenChange }: AssetClassModalProps) {
     assetType: (
       <SelectAssetType
         form={form}
-        onStepSubmit={incrementStep}
+        onStepSubmit={() => form.handleSubmit()}
         onBack={decrementStep}
         onCancel={handleClose}
       />
@@ -83,10 +84,7 @@ export function AssetClassModal({ open, onOpenChange }: AssetClassModalProps) {
       <Dialog
         open={open}
         onOpenChange={(open) => {
-          const closed = !open;
-          if (closed) {
-            handleClose();
-          }
+          form.reset();
           onOpenChange(open);
         }}
       >

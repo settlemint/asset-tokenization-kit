@@ -1,4 +1,6 @@
 import { AssetClassSelectionStepsSchema } from "@/components/asset-designer/asset-class/steps";
+import { isRequiredFieldForZodObject } from "@/lib/utils/schema-field";
+import { KeysOfUnion } from "@/lib/utils/union";
 import { assetClass, assetType } from "@/lib/zod/validators/asset-types";
 import { formOptions } from "@tanstack/react-form";
 import { z } from "zod";
@@ -18,3 +20,8 @@ export const assetClassSelectionFormOptions = formOptions({
     step: "assetClass",
   } as unknown as AssetClassSelectionInputData,
 });
+export const isRequiredField = (
+  field: KeysOfUnion<AssetClassSelectionInputData>
+) => {
+  return isRequiredFieldForZodObject(AssetClassSelectionSchema, field);
+};
