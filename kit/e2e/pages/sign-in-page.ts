@@ -40,10 +40,12 @@ export class SignInPage {
   }
 
   async expectAuthenticationError(): Promise<void> {
-    const errorLocator = this.page.locator(
-      '[data-slot="form-error"], .text-destructive, .text-red-500'
-    );
-    await expect(errorLocator).toBeVisible({ timeout: 5000 });
+    await expect(
+      this.page.locator('li[data-type="error"] div[data-title]')
+    ).toBeVisible();
+    await expect(
+      this.page.locator('li[data-type="error"] div[data-title]')
+    ).toHaveText("The email or password you entered is invalid.");
   }
 
   async expectSuccessfulSignIn(): Promise<void> {

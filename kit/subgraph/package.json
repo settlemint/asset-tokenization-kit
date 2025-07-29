@@ -10,8 +10,7 @@
     "compile": "mkdir -p .generated && (test -f .generated/subgraph-env || echo 'SUBGRAPH=kit:' > .generated/subgraph-env) && settlemint scs subgraph build --ipfs=https://ipfs.console.settlemint.com | tee /dev/tty | grep -o 'Qm[a-zA-Z0-9]*' | tail -1 | tee .generated/subgraph-hash.txt | xargs -I {} echo 'SUBGRAPH=kit:{}' > .generated/subgraph-env",
     "publish": "bun run tools/graph-deploy.ts --local",
     "publish:remote": "bun run tools/graph-deploy.ts --remote",
-    "test:integration": "bun test --preload ./test/scripts/setup.ts",
-    "artifacts": "bun run compile"
+    "test:integration": "bun test --preload ./test/scripts/setup.ts"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.97.1",

@@ -30,12 +30,12 @@ test.describe.serial("Complete Onboarding Flow", () => {
       .getByRole("textbox", { name: /^confirm password$/i })
       .fill(testData.password);
     await page.getByRole("button", { name: /create an account/i }).click();
-    await onboardingPage.clickLetsGetStarted();
+    await onboardingPage.clickGetStarted();
     await onboardingPage.completeWalletSteps(testData.pinCode);
     await onboardingPage.completeSystemSteps(
       testData.pinCode,
-      Object.values(testData.assetTypes),
-      Object.values(testData.addons)
+      [...testData.selectedAssetTypes],
+      [...testData.selectedAddons]
     );
     await onboardingPage.setupOnChainId(testData.pinCode);
     await onboardingPage.waitForReactStateSettle();

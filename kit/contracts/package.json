@@ -11,7 +11,6 @@
     "codegen:types": "bun run tools/codegen-types.ts",
     "artifacts:genesis": "bun run tools/artifacts-genesis.ts",
     "artifacts:abi": "bun run tools/artifacts-abi.ts",
-    "artifacts": "bun run artifacts:genesis && bun run artifacts:abi",
     "lint": "solhint --config .solhint.json --max-warnings 0 --noPoster './contracts/**/!(temp_)*.sol'",
     "format:forge": "settlemint scs foundry format",
     "format:prettier": "prettier --experimental-cli --write .",

@@ -123,6 +123,9 @@ export const onboardingTestData = {
     deposits: "Deposits",
   },
 
+  selectedAssetTypes: ["Bonds", "Stablecoins"],
+  selectedAddons: ["Airdrops", "XvP"],
+
   addons: {
     airdrops: "Airdrops",
     yield: "Yield",

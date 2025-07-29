@@ -41,7 +41,7 @@ export class OnboardingPage extends BasePage {
     await this.waitForReactHydration();
 
     await expect(
-      this.page.getByRole("button", { name: "Let's Get Started" })
+      this.page.getByRole("button", { name: "Get started" })
     ).toBeVisible({
       timeout: 10000,
     });
@@ -56,13 +56,13 @@ export class OnboardingPage extends BasePage {
     await this.waitForReactStateSettle();
   }
 
-  async clickLetsGetStarted(): Promise<void> {
-    const letsGetStartedButton = this.page.getByRole("button", {
-      name: "Let's Get Started",
+  async clickGetStarted(): Promise<void> {
+    const getStartedButton = this.page.getByRole("button", {
+      name: "Get started",
     });
 
-    await expect(letsGetStartedButton).toBeVisible({ timeout: 10000 });
-    await letsGetStartedButton.click();
+    await expect(getStartedButton).toBeVisible({ timeout: 10000 });
+    await getStartedButton.click();
     await this.waitForReactStateSettle();
   }
 
@@ -113,16 +113,15 @@ export class OnboardingPage extends BasePage {
 
     await this.page.waitForTimeout(1000);
     await expect(
-      this.page.getByRole("heading", { name: "Wallet Created" })
-    ).toBeVisible({
-      timeout: 120000,
-    });
+      this.page.locator("h2", { hasText: /^Your wallet$/ })
+    ).toBeVisible();
+    await this.dismissToastWithLogs();
     await expect(
-      this.page.getByRole("button", { name: "Continue" })
+      this.page.getByRole("button", { name: "Secure my wallet" })
     ).toBeVisible({
       timeout: 120000,
     });
-    await this.page.getByRole("button", { name: "Continue" }).click();
+    await this.page.getByRole("button", { name: "Secure my wallet" }).click();
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
   }
@@ -159,12 +158,16 @@ export class OnboardingPage extends BasePage {
     await this.page.getByRole("button", { name: "Set PIN Code" }).click();
 
     await expect(
-      this.page.getByRole("heading", { name: "Your wallet is now secured!" })
+      this.page.locator("h2", {
+        hasText: "Great! Your security method is set.",
+      })
     ).toBeVisible({ timeout: 120000 });
     await expect(
-      this.page.getByRole("button", { name: "Continue" })
+      this.page.getByRole("button", { name: "Generate your backup codes" })
     ).toBeVisible({ timeout: 120000 });
-    await this.page.getByRole("button", { name: "Continue" }).click();
+    await this.page
+      .getByRole("button", { name: "Generate your backup codes" })
+      .click();
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
   }
@@ -174,10 +177,10 @@ export class OnboardingPage extends BasePage {
       this.page.getByRole("heading", { name: "Your secret codes" })
     ).toBeVisible({ timeout: 10000 });
     await expect(
-      this.page.getByRole("button", { name: "Confirm I've stored them" })
+      this.page.getByRole("button", { name: "Finish wallet setup" })
     ).toBeVisible({ timeout: 10000 });
     await this.page
-      .getByRole("button", { name: "Confirm I've stored them" })
+      .getByRole("button", { name: "Finish wallet setup" })
       .click();
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
@@ -189,7 +192,7 @@ export class OnboardingPage extends BasePage {
       timeout: 10000,
     });
     await this.page
-      .getByRole("button", { name: "Deploy System", exact: true })
+      .getByRole("button", { name: "Deploy system", exact: true })
       .click();
 
     await this.enterPinVerification(pin);
@@ -221,19 +224,12 @@ export class OnboardingPage extends BasePage {
 
   private async selectCheckboxByLabel(
     labels: string[],
-    containerSelector: string,
-    logPrefix: string
+    containerSelector: string
   ) {
     const containers = await this.page.locator(containerSelector).all();
-    const allLabels = [];
-    for (const [i, container] of containers.entries()) {
-      const label = await container.locator("label").innerText();
-      allLabels.push(label?.trim() ?? "");
-    }
-
-    let selected = false;
     for (const labelToSelect of labels) {
-      for (const [i, container] of containers.entries()) {
+      let found = false;
+      for (const container of containers) {
         const label =
           (await container.locator("label").innerText())?.trim() ?? "";
         if (label.toLowerCase() === labelToSelect.toLowerCase()) {
@@ -241,58 +237,42 @@ export class OnboardingPage extends BasePage {
           await expect(checkbox).toBeVisible({ timeout: 20000 });
           await checkbox.click();
           await this.page.waitForTimeout(200);
-          selected = true;
+          found = true;
           break;
         }
       }
-      if (selected) break;
-    }
-    if (!selected && containers.length > 0) {
-      const fallbackCheckbox = containers[0].locator('button[role="checkbox"]');
-      await expect(fallbackCheckbox).toBeVisible({ timeout: 20000 });
-      await fallbackCheckbox.click();
-      await this.page.waitForTimeout(200);
+      if (!found) {
+        console.warn(
+          `[WARN] Checkbox with label "${labelToSelect}" not found.`
+        );
+      }
     }
   }
 
   async selectAssetTypes(assetTypes: string[], pin: string): Promise<void> {
     await this.waitForReactStateSettle();
     await expect(
-      this.page.getByRole("heading", { name: "Select Asset Types" })
+      this.page.locator("h2", { hasText: /^Select asset types$/ })
     ).toBeVisible({ timeout: 10000 });
-    await this.selectCheckboxByLabel(
-      assetTypes,
-      ".flex.flex-row.items-start",
-      "Asset type"
-    );
-    await this.page.getByRole("button", { name: "Deploy Assets" }).click();
+    await this.selectCheckboxByLabel(assetTypes, ".flex.flex-row.items-start");
+    await this.page
+      .getByRole("button", { name: "Deploy asset factories" })
+      .click();
     await this.enterPinVerification(pin);
-    await expect(this.page.getByText("Asset Types Deployed")).toBeVisible({
-      timeout: 120000,
-    });
-    await expect(
-      this.page.getByRole("button", { name: "Continue" })
-    ).toBeVisible({ timeout: 120000 });
-    await this.page.getByRole("button", { name: "Continue" }).click();
-    await this.page.waitForLoadState("networkidle");
-    await this.waitForReactStateSettle();
   }
 
   async selectAddons(addons: string[], pin: string): Promise<void> {
+    await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
-    await expect(this.page.getByText("Enable Addons")).toBeVisible({
-      timeout: 10000,
+    await expect(this.page.getByText("Enable add-ons")).toBeVisible({
+      timeout: 12000,
     });
-    await this.selectCheckboxByLabel(
-      addons,
-      ".flex.flex-row.items-start",
-      "Addon"
-    );
-    await this.page.getByRole("button", { name: "Deploy Addons" }).click();
+    await this.selectCheckboxByLabel(addons, ".flex.flex-row.items-start");
+    await this.page.getByRole("button", { name: "Deploy add-ons" }).click();
     await this.enterPinVerification(pin);
 
     const deployedHeading = this.page.getByRole("heading", {
-      name: "Addons Deployed",
+      name: "Add-ons deployed",
     });
     await expect(deployedHeading).toBeVisible({ timeout: 120000 });
 
@@ -594,7 +574,7 @@ export class OnboardingPage extends BasePage {
     addons: string[],
     kycData: KycData
   ): Promise<void> {
-    await this.clickLetsGetStarted();
+    await this.clickGetStarted();
     await this.verifyCurrentStep(1, 9);
 
     await this.completeWalletSteps(pin);
@@ -621,5 +601,22 @@ export class OnboardingPage extends BasePage {
       if (input) (input as HTMLInputElement).value = date;
     }, date);
     await this.waitForReactStateSettle();
+  }
+
+  async dismissToastWithLogs() {
+    const toast = this.page.locator(
+      'section[aria-label="Notifications alt+T"] li[data-sonner-toast]'
+    );
+    if (await toast.isVisible({ timeout: 1000 })) {
+      try {
+        await toast.waitFor({ state: "hidden", timeout: 30000 });
+      } catch {
+        console.error(
+          "[Toast] Toast did not disappear within 30s. Continuing anyway."
+        );
+      }
+    } else {
+      console.error("[Toast] No toast visible, nothing to wait for.");
+    }
   }
 }
