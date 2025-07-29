@@ -108,15 +108,15 @@ export function NavAsset() {
       <SidebarGroup>
         <SidebarGroupLabel>{t("assetManagement")}</SidebarGroupLabel>
         <SidebarMenu>
-          <SidebarMenuSubButton
-            className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground"
+          <SidebarMenuButton
+            className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground my-2"
             onClick={() => {
               setModalOpen(true);
             }}
           >
             <PlusIcon className="mr-1 h-4 w-4" />
             <span>{t("assetDesigner")}</span>
-          </SidebarMenuSubButton>
+          </SidebarMenuButton>
           {assetClasses
             .filter((assetClass) => assetClass.factories.length > 0)
             .map((assetClass) => {

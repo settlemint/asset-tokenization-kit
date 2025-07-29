@@ -100,7 +100,7 @@ export function AssetClassSelectionModal({
       icon: assetClassIcons.cashEquivalent,
       factories: groupedFactories.cashEquivalent,
     },
-  ];
+  ] as const;
 
   const handleNext = () => {
     if (selectedClass) {
@@ -114,17 +114,17 @@ export function AssetClassSelectionModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
-        <DialogHeader className="text-center">
+      <DialogContent className="sm:max-w-2xl md:max-w-4xl lg:max-w-6xl">
+        <DialogHeader className="text-center mt-10">
           <DialogTitle className="text-2xl text-center">
             Which asset class do you want to design?
           </DialogTitle>
           <DialogDescription className="text-center">
-            Select an asset class to continue to the Asset Designer
+            Each asset class offers a different risk-return profile.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 md:grid-cols-3 mt-6">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-6 mb-10">
           {assetClasses.map((assetClass) => {
             const Icon = assetClass.icon;
             const isSelected = selectedClass === assetClass.id;
@@ -132,7 +132,7 @@ export function AssetClassSelectionModal({
             return (
               <Card
                 key={assetClass.id}
-                className={`cursor-pointer transition-all ${
+                className={`cursor-pointer transition-all min-w-0 flex flex-col h-full ${
                   isSelected
                     ? "ring-2 ring-primary border-primary"
                     : "hover:border-primary/50"
@@ -141,7 +141,7 @@ export function AssetClassSelectionModal({
                   setSelectedClass(assetClass.id);
                 }}
               >
-                <CardHeader>
+                <CardHeader className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <Icon className="h-5 w-5 text-primary" />
                     <CardTitle className="text-lg">{assetClass.name}</CardTitle>
@@ -157,11 +157,7 @@ export function AssetClassSelectionModal({
                     </p>
                     <div className="flex flex-wrap gap-1">
                       {assetClass.factories.map((factoryType) => (
-                        <Badge
-                          key={factoryType.typeId}
-                          variant="secondary"
-                          className="text-xs"
-                        >
+                        <Badge key={factoryType.typeId} variant="outline">
                           {assetFactoryNames[factoryType.typeId]}
                         </Badge>
                       ))}
