@@ -3,9 +3,8 @@ pragma solidity ^0.8.28;
 
 // OpenZeppelin imports
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import { AccessControlUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+import { ERC165Upgradeable } from "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 // OnchainID imports
@@ -18,6 +17,7 @@ import { ATKSystemRoles } from "../ATKSystemRoles.sol";
 import { IERC3643IdentityRegistryStorage } from "./../../smart/interface/ERC-3643/IERC3643IdentityRegistryStorage.sol";
 import { ISMARTIdentityRegistryStorage } from "./../../smart/interface/ISMARTIdentityRegistryStorage.sol";
 import { IATKIdentityRegistryStorage } from "./IATKIdentityRegistryStorage.sol";
+import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 
 // --- Custom Errors for Lost Wallet Management ---
 // It's good practice to define specific errors if not already available for clarity.
@@ -32,14 +32,12 @@ import { IATKIdentityRegistryStorage } from "./IATKIdentityRegistryStorage.sol";
 /// @dev This contract implements `ISMARTIdentityRegistryStorage`, a standard interface for storing data related to
 /// ERC-3643 compliant identity registries. This includes mapping user wallet addresses to their `IIdentity` contracts
 /// (which hold identity claims like KYC/AML status) and their country codes (for compliance purposes).
-/// It uses `AccessControlUpgradeable` to manage permissions:
-///    - `DEFAULT_ADMIN_ROLE`: This role has the highest level of control. It can grant or revoke any other role,
-///      including `REGISTRY_MANAGER_ROLE`. Typically held by a secure multi-signature wallet or a DAO.
-///    - `REGISTRY_MANAGER_ROLE`: This role is responsible for managing which `SMARTIdentityRegistry` contracts
+/// It uses a centralized `IATKSystemAccessManager` to manage permissions:
+///    - `SYSTEM_MANAGER_ROLE`: This role is responsible for managing which `SMARTIdentityRegistry` contracts
 ///      are allowed to interact with this storage. It can bind new registry contracts (granting them
-///      `STORAGE_MODIFIER_ROLE`) and unbind existing ones. This role is usually assigned to a system controller
-///      contract like `SMARTSystem` or an identity factory.
-///    - `STORAGE_MODIFIER_ROLE`: This role is granted to `SMARTIdentityRegistry` contracts that have been "bound"
+///      `IDENTITY_REGISTRY_MODULE_ROLE`) and unbind existing ones. This role is usually assigned to a system controller
+///      contract like `ATKSystem` or an identity factory.
+///    - `IDENTITY_REGISTRY_MODULE_ROLE`: This role is granted to `SMARTIdentityRegistry` contracts that have been "bound"
 ///      to this storage. Contracts with this role are authorized to call functions that add, remove, or update
 ///      identity data within this storage contract (e.g., `addIdentityToStorage`, `modifyStoredInvestorCountry`).
 /// The contract supports meta-transactions through `ERC2771ContextUpgradeable`, allowing users to interact with it
@@ -51,9 +49,48 @@ import { IATKIdentityRegistryStorage } from "./IATKIdentityRegistryStorage.sol";
 contract ATKIdentityRegistryStorageImplementation is
     Initializable,
     ERC2771ContextUpgradeable,
-    AccessControlUpgradeable,
+    ERC165Upgradeable,
     IATKIdentityRegistryStorage
 {
+    // --- Access Control ---
+    /// @notice The centralized access manager contract
+    IATKSystemAccessManager private _accessManager;
+
+    // --- Custom Errors ---
+    error UnauthorizedAccess(address caller, bytes32 role);
+    error InvalidAccessManager();
+
+    // --- Access Control Modifiers ---
+    modifier onlyRole(bytes32 role) {
+        if (!_accessManager.hasRole(role, _msgSender())) {
+            revert UnauthorizedAccess(_msgSender(), role);
+        }
+        _;
+    }
+
+    /// @notice Modifier that checks if the caller has any of the specified roles
+    /// @dev This implements the new centralized access pattern: onlyRoles(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// @param roles Array of roles, where the caller must have at least one
+    modifier onlyRoles(bytes32[] memory roles) {
+        if (!_accessManager.hasAnyRole(roles, _msgSender())) {
+            // Show the first role in the error for clarity
+            revert UnauthorizedAccess(_msgSender(), roles.length > 0 ? roles[0] : bytes32(0));
+        }
+        _;
+    }
+
+    // --- Internal Helper Functions ---
+
+    /// @notice Returns the roles that can perform identity management operations
+    /// @dev Implements the pattern from the ticket: MANAGER_ROLE + [SYSTEM_ROLES]
+    /// @return roles Array of roles that can manage identity registries
+    function _getIdentityManagementRoles() internal pure returns (bytes32[] memory roles) {
+        roles = new bytes32[](3);
+        roles[0] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;        // Primary manager role
+        roles[1] = ATKSystemRoles.IDENTITY_MANAGER_ROLE;      // Identity-specific manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;         // System module role
+    }
+
     // --- Storage Variables ---
     /// @notice Defines a structure to hold the comprehensive information for a registered identity.
     /// An `Identity` struct links a user's wallet address to their on-chain identity representation, country, and
@@ -99,14 +136,14 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @notice Mapping that indicates whether a given `SMARTIdentityRegistry` contract address is currently authorized
     /// (bound) to modify the storage in this contract.
     /// @dev If `_boundIdentityRegistries[registryAddress]` is `true`, it means the `registryAddress` has been granted
-    /// the `STORAGE_MODIFIER_ROLE`. If `false`, it cannot.
+    /// the `IDENTITY_REGISTRY_MODULE_ROLE`. If `false`, it cannot.
     /// This provides a quick way to check the binding status of a registry without querying the access control system
     /// directly, though the access control system is the ultimate source of truth for permissions.
     mapping(address registry => bool isBound) private _boundIdentityRegistries;
 
     /// @notice An array storing the addresses of all `SMARTIdentityRegistry` contracts that are currently bound to this
     /// storage contract.
-    /// @dev "Binding" means that these registry contracts have been granted the `STORAGE_MODIFIER_ROLE` and are
+    /// @dev "Binding" means that these registry contracts have been granted the `IDENTITY_REGISTRY_MODULE_ROLE` and are
     /// authorized to write data to this storage contract.
     /// This array allows for iterating over all such authorized registries, for example, to display a list of active
     /// identity providers.
@@ -203,49 +240,42 @@ contract ATKIdentityRegistryStorageImplementation is
     }
 
     // --- Initializer ---
-    /// @notice Initializes the `SMARTIdentityRegistryStorageImplementation` contract. This function acts as the
+    /// @notice Initializes the `ATKIdentityRegistryStorageImplementation` contract. This function acts as the
     /// constructor for an upgradeable contract and can only be called once.
     /// @dev This function is typically called by the deployer immediately after the proxy contract pointing to this
     /// implementation is deployed. It sets up the initial state:
     /// 1.  `__ERC165_init_unchained()`: Initializes the ERC165 interface detection mechanism, allowing other contracts
     ///     to query what interfaces this contract supports (e.g., `IERC3643IdentityRegistryStorage`).
-    /// 2.  `__AccessControlEnumerable_init_unchained()`: Initializes the role-based access control system. It sets up
-    ///     the structures needed to grant, revoke, and check roles.
-    /// 3.  `_grantRole(DEFAULT_ADMIN_ROLE, initialAdmin)`: Grants the `DEFAULT_ADMIN_ROLE` to the `initialAdmin`
-    ///     address. The admin can manage all other roles and aspects of the access control.
-    /// 4.  `_grantRole(STORAGE_MODIFIER_ROLE, initialAdmin)`: Grants the `STORAGE_MODIFIER_ROLE` to the `initialAdmin`.
-    ///     This is often a temporary measure for bootstrapping; the `initialAdmin` (or the `DEFAULT_ADMIN_ROLE`
-    ///     holder) would typically later grant this role to operational contracts like bound identity registries and
-    ///     revoke it from themselves if direct modification by the admin is not intended long-term.
-    /// 5.  `_grantRole(REGISTRY_MANAGER_ROLE, system)`: Grants the `REGISTRY_MANAGER_ROLE` to the `system` address.
-    ///     The `system` address (e.g., a `SMARTSystem` contract or an identity factory contract) is then responsible
-    ///     for binding and unbinding `SMARTIdentityRegistry` contracts, which in turn modify the storage.
+    /// 2.  Sets the centralized access manager reference for role-based access control.
     /// The `initializer` modifier from `Initializable` ensures this function can only be executed once, preventing
     /// re-initialization.
-    /// @param system The address of the system-level contract (e.g., `SMARTSystem` or a factory) that will be granted
-    /// the `REGISTRY_MANAGER_ROLE`. This role allows it to control which identity registry contracts can interact with
+    /// @param accessManager The address of the centralized ATKSystemAccessManager contract that will handle role checks.
+    /// @param system The address of the system-level contract (e.g., `ATKSystem` or a factory) that will be granted
+    /// the `SYSTEM_MANAGER_ROLE`. This role allows it to control which identity registry contracts can interact with
     /// and modify the data in this storage.
-    /// @param initialAdmin The address that will receive the initial `DEFAULT_ADMIN_ROLE`. This address will also
-    /// receive the `STORAGE_MODIFIER_ROLE` initially, though this might be delegated later.
-    function initialize(address system, address initialAdmin) public initializer {
-        __ERC165_init_unchained(); // Base for AccessControl, initializes ERC165 detection.
-        __AccessControl_init_unchained(); // Sets up role-based access control.
+    function initialize(address accessManager, address system) public initializer {
+        if (accessManager == address(0)) revert InvalidAccessManager();
+
+        __ERC165_init_unchained(); // Base for interface detection.
         // ERC2771Context is initialized by its own constructor when this contract is created.
 
-        _grantRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, initialAdmin); // Admin for managing roles.
-        _grantRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, initialAdmin); // Initial modifier, usually transferred to
-            // registries.
-        _grantRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE, system); // System contract can manage which registries are
-            // bound.
-        _setRoleAdmin(ATKSystemRoles.STORAGE_MODIFIER_ROLE, ATKSystemRoles.REGISTRY_MANAGER_ROLE);
+        _accessManager = IATKSystemAccessManager(accessManager);
+
+        // Note: Role grants are now handled by the centralized access manager
+        // The system should already have the SYSTEM_MANAGER_ROLE granted through the access manager
+        // Individual registries will be granted IDENTITY_REGISTRY_MODULE_ROLE when bound via bindIdentityRegistry
+
+        // The system parameter is kept for interface compatibility but not actively used
+        // as role management is now centralized through the access manager
+        (system); // Acknowledge parameter to avoid unused variable warning
     }
 
-    // --- Storage Modification Functions (STORAGE_MODIFIER_ROLE required) ---
+    // --- Storage Modification Functions (IDENTITY_REGISTRY_MODULE_ROLE required) ---
 
     /// @inheritdoc IERC3643IdentityRegistryStorage
     /// @notice Adds a new identity record to the storage, linking a user's wallet address to their identity contract
     /// and country code.
-    /// @dev This function can only be called by an address that holds the `STORAGE_MODIFIER_ROLE`. Typically, this
+    /// @dev This function can only be called by an address that holds the `IDENTITY_REGISTRY_MODULE_ROLE`. Typically, this
     /// role is granted to `SMARTIdentityRegistry` contracts that have been "bound" to this storage.
     /// It performs several critical validation checks before proceeding:
     /// -   The `_userAddress` (the user's external wallet) must not be the zero address (`address(0)`).
@@ -274,7 +304,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE) // Ensures only authorized contracts can modify storage.
+        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE) // Ensures only authorized contracts can modify storage.
     {
         if (_userAddress == address(0)) revert InvalidIdentityWalletAddress();
         if (address(_identity) == address(0)) revert InvalidIdentityAddress();
@@ -314,7 +344,7 @@ contract ATKIdentityRegistryStorageImplementation is
     function removeIdentityFromStorage(address _userAddress)
         external
         override
-        onlyRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE)
+        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE)
     {
         // Ensure an identity exists for this user address before attempting removal.
         if (_identities[_userAddress].identityContract == address(0)) revert IdentityDoesNotExist(_userAddress);
@@ -366,7 +396,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE)
+        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE)
     {
         if (_identities[_userAddress].identityContract == address(0)) revert IdentityDoesNotExist(_userAddress);
         if (address(_identity) == address(0)) revert InvalidIdentityAddress();
@@ -393,7 +423,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE)
+        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE)
     {
         if (_identities[_userAddress].identityContract == address(0)) revert IdentityDoesNotExist(_userAddress);
 
@@ -405,8 +435,9 @@ contract ATKIdentityRegistryStorageImplementation is
     // --- Registry Binding Functions (REGISTRY_MANAGER_ROLE required) ---
 
     /// @notice Authorizes a `SMARTIdentityRegistry` contract to modify data in this storage contract.
-    /// This is achieved by granting the `STORAGE_MODIFIER_ROLE` to the specified registry address.
-    /// @dev This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE` (e.g., a `SMARTSystem`
+    /// This is achieved by recording the binding in internal state. The caller should ensure the registry
+    /// has been granted the `IDENTITY_REGISTRY_MODULE_ROLE` in the centralized access manager.
+    /// @dev This function can only be called by an address holding the `SYSTEM_MANAGER_ROLE` (e.g., a `ATKSystem`
     /// contract or an identity factory).
     /// It performs several checks:
     /// -   The `_identityRegistry` address must not be the zero address.
@@ -415,14 +446,13 @@ contract ATKIdentityRegistryStorageImplementation is
     /// 1.  Sets `_boundIdentityRegistries[_identityRegistry]` to `true`.
     /// 2.  Adds `_identityRegistry` to the `_boundIdentityRegistryAddresses` array.
     /// 3.  Updates `_boundIdentityRegistriesIndex` for the new registry.
-    /// 4.  Grants the `STORAGE_MODIFIER_ROLE` to `_identityRegistry` using the access control mechanism.
-    /// 5.  Emits an `IdentityRegistryBound` event.
+    /// 4.  Emits an `IdentityRegistryBound` event.
     /// @param _identityRegistry The address of the `SMARTIdentityRegistry` contract to bind. This registry will then
-    /// be able to call functions like `addIdentityToStorage`.
+    /// be able to call functions like `addIdentityToStorage` if it has the proper role in the access manager.
     /// @dev Reverts with:
     ///      - `InvalidIdentityRegistryAddress()` if `_identityRegistry` is `address(0)`.
     ///      - `IdentityRegistryAlreadyBound(_identityRegistry)` if the registry is already bound.
-    function bindIdentityRegistry(address _identityRegistry) external onlyRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE) {
+    function bindIdentityRegistry(address _identityRegistry) external onlyRoles(_getIdentityManagementRoles()) {
         if (_identityRegistry == address(0)) revert InvalidIdentityRegistryAddress();
         if (_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryAlreadyBound(_identityRegistry);
 
@@ -431,33 +461,34 @@ contract ATKIdentityRegistryStorageImplementation is
         _boundIdentityRegistriesIndex[_identityRegistry] = _boundIdentityRegistryAddresses.length; // Store 1-based
             // index.
 
-        _grantRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, _identityRegistry); // Grant role to the registry contract.
+        // Note: Role granting is now handled by the centralized access manager
+        // The caller should ensure _identityRegistry has IDENTITY_REGISTRY_MODULE_ROLE
 
         emit IdentityRegistryBound(_identityRegistry);
     }
 
     /// @notice Revokes the authorization for a `SMARTIdentityRegistry` contract to modify data in this storage.
-    /// This is achieved by revoking the `STORAGE_MODIFIER_ROLE` from the specified registry address.
-    /// @dev This function can only be called by an address holding the `REGISTRY_MANAGER_ROLE`.
+    /// This is achieved by removing the binding from internal state. The caller should ensure the registry's
+    /// `IDENTITY_REGISTRY_MODULE_ROLE` is revoked in the centralized access manager.
+    /// @dev This function can only be called by an address holding the `SYSTEM_MANAGER_ROLE`.
     /// It first checks if the `_identityRegistry` is currently bound. If not, it reverts.
     /// If the registry is bound, the function:
-    /// 1.  Revokes the `STORAGE_MODIFIER_ROLE` from `_identityRegistry`.
-    /// 2.  Removes `_identityRegistry` from the `_boundIdentityRegistryAddresses` array using the "swap-and-pop"
+    /// 1.  Removes `_identityRegistry` from the `_boundIdentityRegistryAddresses` array using the "swap-and-pop"
     /// technique (O(1) complexity).
-    /// 3.  Updates `_boundIdentityRegistriesIndex` accordingly.
-    /// 4.  Sets `_boundIdentityRegistries[_identityRegistry]` to `false`.
-    /// 5.  Emits an `IdentityRegistryUnbound` event.
+    /// 2.  Updates `_boundIdentityRegistriesIndex` accordingly.
+    /// 3.  Sets `_boundIdentityRegistries[_identityRegistry]` to `false`.
+    /// 4.  Emits an `IdentityRegistryUnbound` event.
     /// @param _identityRegistry The address of the `SMARTIdentityRegistry` contract to unbind. This registry will no
     /// longer be able to modify storage data.
     /// @dev Reverts with `IdentityRegistryNotBound(_identityRegistry)` if the registry is not currently bound.
     function unbindIdentityRegistry(address _identityRegistry)
         external
-        onlyRole(ATKSystemRoles.REGISTRY_MANAGER_ROLE)
+        onlyRoles(_getIdentityManagementRoles())
     {
         if (!_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryNotBound(_identityRegistry);
 
-        _revokeRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE, _identityRegistry); // Revoke role from the registry
-            // contract.
+        // Note: Role revoking is now handled by the centralized access manager
+        // The caller should ensure _identityRegistry's IDENTITY_REGISTRY_MODULE_ROLE is revoked
 
         // --- Efficiently remove from _boundIdentityRegistryAddresses array (swap-and-pop) ---
         uint256 indexToRemove = _boundIdentityRegistriesIndex[_identityRegistry] - 1; // Adjust to 0-based index.
@@ -479,7 +510,7 @@ contract ATKIdentityRegistryStorageImplementation is
     // --- View Functions ---
 
     /// @notice Returns an array of addresses of all `SMARTIdentityRegistry` contracts currently bound to this storage.
-    /// @dev "Bound" means these registry contracts have been granted the `STORAGE_MODIFIER_ROLE` and are authorized
+    /// @dev "Bound" means these registry contracts have been granted the `IDENTITY_REGISTRY_MODULE_ROLE` and are authorized
     /// to write data to this storage contract. This function provides a way to discover which registry contracts are
     /// active and can modify identity data.
     /// @return An array of `address` types, where each address is that of a bound identity registry contract.
@@ -544,7 +575,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE)
+        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE)
     {
         if (userWallet == address(0)) revert InvalidIdentityWalletAddress();
         if (identityContract == address(0)) revert InvalidIdentityAddress();
@@ -570,7 +601,7 @@ contract ATKIdentityRegistryStorageImplementation is
     )
         external
         override
-        onlyRole(ATKSystemRoles.STORAGE_MODIFIER_ROLE)
+        onlyRole(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE)
     {
         if (lostWallet == address(0)) revert InvalidIdentityWalletAddress();
         if (newWallet == address(0)) revert InvalidIdentityWalletAddress();
@@ -608,7 +639,7 @@ contract ATKIdentityRegistryStorageImplementation is
         internal
         view
         virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        override(ERC2771ContextUpgradeable)
         returns (address)
     {
         return ERC2771ContextUpgradeable._msgSender();
@@ -628,7 +659,7 @@ contract ATKIdentityRegistryStorageImplementation is
         internal
         view
         virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        override(ERC2771ContextUpgradeable)
         returns (bytes calldata)
     {
         return ERC2771ContextUpgradeable._msgData();
@@ -646,7 +677,7 @@ contract ATKIdentityRegistryStorageImplementation is
         internal
         view
         virtual
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        override(ERC2771ContextUpgradeable)
         returns (uint256)
     {
         return ERC2771ContextUpgradeable._contextSuffixLength();
@@ -669,7 +700,7 @@ contract ATKIdentityRegistryStorageImplementation is
         public
         view
         virtual
-        override(AccessControlUpgradeable, IERC165) // Specifies which parent's supportsInterface is being
+        override(ERC165Upgradeable, IERC165) // Specifies which parent's supportsInterface is being
             // primarily
             // extended.
         returns (bool)

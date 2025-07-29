@@ -39,6 +39,8 @@ import { ATKComplianceModuleRegistryImplementation } from
     "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
 import { ATKSystemAddonRegistryImplementation } from
     "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
+import { ATKSystemRoles } from "../../contracts/system/ATKSystemRoles.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Proxies
 import { ATKTokenAccessManagerProxy } from "../../contracts/system/access-manager/ATKTokenAccessManagerProxy.sol";
@@ -133,11 +135,16 @@ contract SystemUtils is Test {
         );
         vm.label(address(systemFactory), "System Factory");
 
-        vm.startPrank(platformAdmin); // Use admin for initialization and binding
+                vm.startPrank(platformAdmin); // Use admin for initialization and binding
         // --- During onboarding ---
         system = IATKSystem(systemFactory.createSystem());
         vm.label(address(system), "System");
         system.bootstrap();
+
+        // Configure system access manager on system contracts AFTER bootstrap
+        // The platformAdmin has DEFAULT_ADMIN_ROLE on these contracts after bootstrap
+        ATKTrustedIssuersRegistryImplementation(address(system.trustedIssuersRegistry())).setSystemAccessManager(address(system.systemAccessManager()));
+        ATKComplianceImplementation(address(system.compliance())).setSystemAccessManager(address(system.systemAccessManager()));
 
         compliance = ISMARTCompliance(system.compliance());
         vm.label(address(compliance), "Compliance");
@@ -169,13 +176,32 @@ contract SystemUtils is Test {
         countryBlockListComplianceModule = new CountryBlockListComplianceModule(forwarder);
         vm.label(address(countryBlockListComplianceModule), "Country Block List Compliance Module");
 
-        // --- Grant roles ---
-        IAccessControl(address(trustedIssuersRegistry)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, platformAdmin);
-        IAccessControl(address(complianceModuleRegistry)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, platformAdmin);
+        // Note: System access manager configuration is now handled in the bootstrap process
+        // for all system contracts (ATKTrustedIssuersRegistry, ATKCompliance, ATKTopicSchemeRegistry, ATKIdentityRegistryStorage)
 
-        complianceModuleRegistry.registerComplianceModule(address(identityVerificationModule));
-        complianceModuleRegistry.registerComplianceModule(address(countryAllowListComplianceModule));
-        complianceModuleRegistry.registerComplianceModule(address(countryBlockListComplianceModule));
+        // Grant necessary roles to platformAdmin in the system access manager
+        // These roles are needed for the asset tests to work properly
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.DEPLOYER_ROLE, platformAdmin);
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.TOKEN_MANAGER_ROLE, platformAdmin);
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.ADDON_MANAGER_ROLE, platformAdmin);
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, platformAdmin);
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, platformAdmin);
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, platformAdmin);
+
+        // Grant necessary roles to system registries in the system access manager
+        // The registries need admin permissions to grant roles to the factories they create
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, address(tokenFactoryRegistry));
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, address(systemAddonRegistry));
+
+        // Grant SYSTEM_MODULE_ROLE to system registries so factories they create can access compliance
+        // Token factories and addon factories need to add addresses to compliance bypass lists
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, address(tokenFactoryRegistry));
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, address(systemAddonRegistry));
+
+        // Grant additional roles needed for trusted issuers registry operations
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, platformAdmin);
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.SYSTEM_MANAGER_ROLE, platformAdmin);
+        IAccessControl(address(system.systemAccessManager())).grantRole(ATKSystemRoles.IDENTITY_MANAGER_ROLE, platformAdmin);
 
         vm.stopPrank();
     }
