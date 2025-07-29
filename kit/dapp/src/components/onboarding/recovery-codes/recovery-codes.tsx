@@ -6,13 +6,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { authClient } from "@/lib/auth/auth.client";
 import { Route } from "@/routes/_private/onboarding/_sidebar/wallet-recovery-codes";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import { Await } from "@tanstack/react-router";
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { RecoveryCodesActions } from "./recovery-codes-actions";
 import { RecoveryCodesDisplay } from "./recovery-codes-display";
-import { RecoveryCodesSkeleton } from "./recovery-codes-skeleton";
 import { RecoveryCodesWarning } from "./recovery-codes-warning";
 import { useRecoveryCodes } from "./use-recovery-codes";
 
@@ -20,70 +18,38 @@ const logger = createLogger();
 
 export function RecoveryCodes() {
   const { completeStepAndNavigate } = useOnboardingNavigation();
+  const { recoveryCodesData } = Route.useLoaderData();
+
+  // Log the data to see what we're getting
+  logger.info("Recovery codes data received:", { data: recoveryCodesData });
+
+  // Handle error case
+  if (!recoveryCodesData || (recoveryCodesData && recoveryCodesData.error)) {
+    const errorMessage =
+      recoveryCodesData &&
+      "error" in recoveryCodesData &&
+      recoveryCodesData.error &&
+      typeof recoveryCodesData.error === "object" &&
+      "message" in recoveryCodesData.error
+        ? recoveryCodesData.error.message
+        : "Unknown error";
+    logger.error("Recovery codes generation failed:", {
+      error: recoveryCodesData?.error || recoveryCodesData,
+      fullData: recoveryCodesData,
+    });
+    return <RecoveryCodesError error={{ message: errorMessage }} />;
+  }
+
+  // Handle the nested data structure from better-auth
+  const actualData = recoveryCodesData.data || recoveryCodesData;
 
   return (
-    <Suspense fallback={<RecoveryCodesLoader />}>
-      <Await promise={Route.useLoaderData().recoveryCodesData}>
-        {(data) => {
-          // Log the data to see what we're getting
-          logger.info("Recovery codes data received:", { data });
-
-          // Handle error case
-          if (!data || (data && data.error)) {
-            const errorMessage =
-              data &&
-              "error" in data &&
-              data.error &&
-              typeof data.error === "object" &&
-              "message" in data.error
-                ? data.error.message
-                : "Unknown error";
-            logger.error("Recovery codes generation failed:", {
-              error: data?.error || data,
-              fullData: data,
-            });
-            return <RecoveryCodesError error={{ message: errorMessage }} />;
-          }
-
-          // Handle the nested data structure from better-auth
-          const actualData = data.data || data;
-
-          return (
-            <RecoveryCodesContent
-              recoveryCodesData={actualData}
-              onComplete={() =>
-                completeStepAndNavigate(OnboardingStep.walletRecoveryCodes)
-              }
-            />
-          );
-        }}
-      </Await>
-    </Suspense>
-  );
-}
-
-function RecoveryCodesLoader() {
-  const { t } = useTranslation(["onboarding"]);
-
-  return (
-    <OnboardingStepLayout
-      title={t("wallet-security.recovery-codes.title")}
-      description={t("wallet-security.recovery-codes.description")}
-      fullWidth={true}
-      actions={
-        <Button disabled>{t("wallet-security.recovery-codes.confirm")}</Button>
+    <RecoveryCodesContent
+      recoveryCodesData={actualData}
+      onComplete={() =>
+        completeStepAndNavigate(OnboardingStep.walletRecoveryCodes)
       }
-    >
-      <p className="text-sm mb-6">
-        {t("wallet-security.recovery-codes.description-2")}
-      </p>
-
-      <div className="flex-1 overflow-y-auto">
-        <div className="w-full space-y-6">
-          <RecoveryCodesSkeleton />
-        </div>
-      </div>
-    </OnboardingStepLayout>
+    />
   );
 }
 
