@@ -54,14 +54,6 @@ export function tokenPermissionMiddleware({
       });
     }
 
-    if (!token.userPermissions.isCompliant) {
-      throw errors.USER_NOT_COMPLIANT({
-        data: {
-          requiredClaimTopics: token.requiredClaimTopics,
-        },
-      });
-    }
-
     if (!token.userPermissions.isAllowed) {
       throw errors.USER_NOT_ALLOWED({
         data: {

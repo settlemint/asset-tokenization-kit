@@ -80,10 +80,6 @@
     "description": "Sie benötigen zusätzliche Berechtigungen für diese Aktion. Erforderliche Rollen: {{requiredRoles}}",
     "title": "Zusätzliche Berechtigungen erforderlich"
   },
-  "userNotCompliant": {
-    "description": "Ihre Identität benötigt eine zusätzliche Überprüfung für diesen Token. Fehlende Überprüfungen: {{requiredClaimTopics}}",
-    "title": "Überprüfung erforderlich"
-  },
   "validation": {
     "description": "Einige der Informationen sehen nicht richtig aus. Überprüfen Sie die hervorgehobenen Felder und versuchen Sie es erneut.",
     "title": "Überprüfen Sie Ihre Eingabe"

@@ -115,19 +115,6 @@ export const baseContract = oc.errors({
   },
 
   /**
-   * User is not compliant with the token's required claim topics.
-   *
-   * Thrown when a user is not compliant with the token's required claim topics.
-   */
-  USER_NOT_COMPLIANT: {
-    status: 403,
-    message: "User is not compliant with the token's required claim topics.",
-    data: z.object({
-      requiredClaimTopics: z.array(z.string()),
-    }),
-  },
-
-  /**
    * User is not allowed to interact with the token.
    *
    * Thrown when a user is not allowed to interact with the token.
