@@ -23,15 +23,12 @@ describe("Token factory create", () => {
     });
 
     let isDeployed = false;
-    for await (const event of result) {
-      if (event.status !== "completed") {
-        continue;
-      }
-      if (event.currentFactory) {
+    if (result.status === "completed") {
+      if (result.currentFactory) {
         // It is alread deployed
         isDeployed = true;
       }
-      if (event.result?.["0"]?.transactionHash) {
+      if (result.result?.[0]?.transactionHash) {
         // First deploy
         isDeployed = true;
       }

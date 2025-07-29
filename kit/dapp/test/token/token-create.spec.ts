@@ -36,14 +36,9 @@ describe("Token create", () => {
     });
 
     let isDeployed = false;
-    for await (const event of result) {
-      if (event.status !== "confirmed") {
-        continue;
-      }
-      if (event.result && event.tokenType) {
-        // First deploy
-        isDeployed = true;
-      }
+    if (result.id && result.type) {
+      // Token was successfully created
+      isDeployed = true;
     }
 
     expect(isDeployed).toBe(true);

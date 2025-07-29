@@ -7,8 +7,10 @@ const identityCreate = baseContract
   .route({
     method: "POST",
     path: "/system/identity/create",
-    description: "Create a new identity for the current user",
-    successDescription: "Identity created successfully",
+    description:
+      "Create a new blockchain identity contract for the authenticated user. This is required before registering claims or interacting with regulated tokens",
+    successDescription:
+      "Identity created successfully with account details including the new identity contract address",
     tags: ["identity"],
   })
   .input(IdentityCreateSchema)
@@ -18,8 +20,10 @@ const identityRegister = baseContract
   .route({
     method: "PUT",
     path: "/system/identity/register",
-    description: "Register the identity of the current user",
-    successDescription: "Identity registered successfully",
+    description:
+      "Register identity claims (country, accreditation status) for the current user. Requires an identity contract to be created first",
+    successDescription:
+      "Identity claims registered successfully with updated account details",
     tags: ["identity"],
   })
   .input(IdentityRegisterSchema)

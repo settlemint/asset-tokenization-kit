@@ -11,14 +11,9 @@ export async function createToken(orpClient: OrpcClient, input: TokenInput) {
     name,
   });
   let isDeployed = false;
-  for await (const event of result) {
-    if (event.status !== "confirmed") {
-      continue;
-    }
-    if (event.result && event.tokenType) {
-      // First deploy
-      isDeployed = true;
-    }
+  if (result.id && result.type) {
+    // Token was successfully created
+    isDeployed = true;
   }
   if (!isDeployed) {
     throw new Error("Token not deployed");

@@ -74,7 +74,7 @@ export const AssetDesignerForm = ({ factories }: AssetDesignerFormProps) => {
         parsedValues.type
       );
 
-      const result = await toast.promise(createToken(parsedValues), {
+      toast.promise(createToken(parsedValues), {
         loading: t("messages.creating", { type: parsedValues.type }),
         success: (data) =>
           t("messages.created", {

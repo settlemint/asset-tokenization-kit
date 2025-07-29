@@ -66,17 +66,13 @@ export async function bootstrapTokenFactories(orpClient: OrpcClient) {
   });
 
   const transactionHashes: string[] = [];
-  for await (const event of result) {
-    console.log(
-      `Token factory create event received: ${JSON.stringify(event, null, 2)}`
-    );
-    if (event.result) {
-      event.result.forEach((result) => {
-        if (result.transactionHash) {
-          transactionHashes.push(result.transactionHash);
-        }
-      });
-    }
+
+  if (result.result) {
+    result.result.forEach((r: any) => {
+      if (r.transactionHash) {
+        transactionHashes.push(r.transactionHash);
+      }
+    });
   }
 
   expect(transactionHashes.length).toBe(nonExistingFactories.length);

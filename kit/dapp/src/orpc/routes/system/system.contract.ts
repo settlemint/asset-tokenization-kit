@@ -26,8 +26,10 @@ const list = baseContract
   .route({
     method: "GET",
     path: "/systems",
-    description: "List the SMART systems",
-    successDescription: "List of SMART systems",
+    description:
+      "List all SMART systems deployed on the blockchain with their registry contracts and configuration",
+    successDescription:
+      "List of SMART systems with deployment details and registry addresses",
     tags: ["system"],
   })
   .input(ListSchema) // Standard list query parameters (pagination, filters, etc.)
@@ -49,8 +51,10 @@ const create = baseContract
   .route({
     method: "POST",
     path: "/systems",
-    description: "Create a new SMART system",
-    successDescription: "New SMART system created",
+    description:
+      "Deploy a new SMART system with identity registry, compliance engine, and token factory registry contracts",
+    successDescription:
+      "SMART system deployed successfully with all registry contracts and configuration",
     tags: ["system"],
   })
   .input(SystemCreateSchema)
@@ -93,8 +97,10 @@ const addonCreate = baseContract
   .route({
     method: "POST",
     path: "/systems/addons",
-    description: "Register system add-ons",
-    successDescription: "System add-ons registered successfully",
+    description:
+      "Register system add-ons to extend SMART system functionality with additional modules and features",
+    successDescription:
+      "System add-ons registered successfully with updated system configuration",
     tags: ["system"],
   })
   .input(SystemAddonCreateSchema)
