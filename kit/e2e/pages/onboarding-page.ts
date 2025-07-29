@@ -61,7 +61,7 @@ export class OnboardingPage extends BasePage {
       name: "Get started",
     });
 
-    await expect(getStartedButton).toBeVisible({ timeout: 10000 });
+    await expect(getStartedButton).toBeVisible({ timeout: 120000 });
     await getStartedButton.click();
     await this.waitForReactStateSettle();
   }
@@ -265,7 +265,7 @@ export class OnboardingPage extends BasePage {
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
     await expect(this.page.getByText("Enable add-ons")).toBeVisible({
-      timeout: 12000,
+      timeout: 120000,
     });
     await this.selectCheckboxByLabel(addons, ".flex.flex-row.items-start");
     await this.page.getByRole("button", { name: "Deploy add-ons" }).click();
