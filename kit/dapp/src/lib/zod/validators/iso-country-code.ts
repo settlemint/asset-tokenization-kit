@@ -1,12 +1,12 @@
 /**
- * ISO 3166-1 Alpha-2 Country Code Validation
+ * ISO 3166-1 Country Code Validation
  *
- * This module provides Zod schemas for validating ISO 3166-1 alpha-2 country codes
+ * This module provides Zod schemas for validating ISO 3166-1 country codes (both alpha-2 and numeric)
  * using the i18n-iso-countries library to ensure only valid country codes are accepted.
  * @module ISOCountryCodeValidation
  */
 
-import countries, { getNames } from "i18n-iso-countries";
+import countries, { getNames, getNumericCodes } from "i18n-iso-countries";
 import { z } from "zod";
 
 // Preload supported locales
@@ -48,6 +48,15 @@ const validCountryCodes = Object.keys(getAlpha2Codes()) as [
 ];
 
 /**
+ * Array of all valid ISO 3166-1 numeric country codes.
+ * Generated from the i18n-iso-countries library.
+ */
+const validNumericCountryCodes = Object.keys(getNumericCodes()) as [
+  string,
+  ...string[],
+];
+
+/**
  * Zod schema for ISO 3166-1 alpha-2 country codes.
  *
  * Validates that a string is a valid ISO 3166-1 alpha-2 country code
@@ -70,9 +79,36 @@ export const isoCountryCode = z
   .describe("ISO 3166-1 alpha-2 country code");
 
 /**
+ * Zod schema for ISO 3166-1 numeric country codes.
+ *
+ * Validates that a string is a valid ISO 3166-1 numeric country code
+ * and coerces it to a number for smart contract compatibility.
+ * @example
+ * ```typescript
+ * // Valid codes
+ * isoCountryCodeNumeric.parse("840"); // ✓ 840 (United States)
+ * isoCountryCodeNumeric.parse("826"); // ✓ 826 (United Kingdom)
+ * isoCountryCodeNumeric.parse("392"); // ✓ 392 (Japan)
+ *
+ * // Invalid codes
+ * isoCountryCodeNumeric.parse("999"); // ✗ Not a valid numeric code
+ * isoCountryCodeNumeric.parse("XX");  // ✗ Not numeric
+ * ```
+ */
+export const isoCountryCodeNumeric = z
+  .enum(validNumericCountryCodes)
+  .pipe(z.coerce.number())
+  .describe("ISO 3166-1 numeric country code");
+
+/**
  * Type representing a valid ISO 3166-1 alpha-2 country code.
  */
 export type ISOCountryCode = z.infer<typeof isoCountryCode>;
+
+/**
+ * Type representing a valid ISO 3166-1 numeric country code (as number).
+ */
+export type ISOCountryCodeNumeric = z.infer<typeof isoCountryCodeNumeric>;
 
 /**
  * Get the country name for a given ISO 3166-1 alpha-2 code.
@@ -126,4 +162,27 @@ export function getSupportedLocales(): SupportedLocale[] {
  */
 export function getCountries(locale: SupportedLocale = "en") {
   return getNames(locale);
+}
+
+/**
+ * Get all countries with their numeric codes for form dropdown options.
+ * @param locale - The locale for the country names (default: "en")
+ *                 Supported locales: "en", "ar", "de", "ja"
+ * @returns Array of objects with label (country name) and value (numeric code as string)
+ * @example
+ * ```typescript
+ * getNumericCountries("en");
+ * // [
+ * //   { label: "United States of America", value: "840" },
+ * //   { label: "United Kingdom", value: "826" },
+ * //   ...
+ * // ]
+ * ```
+ */
+export function getNumericCountries(locale: SupportedLocale = "en") {
+  const numericCodes = getNumericCodes();
+  return Object.entries(numericCodes).map(([numeric, alpha2]) => ({
+    label: getName(alpha2, locale) || alpha2,
+    value: numeric, // string for form compatibility
+  }));
 }
