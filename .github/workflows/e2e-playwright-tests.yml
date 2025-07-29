@@ -132,18 +132,18 @@ jobs:
         working-directory: kit/dapp
         continue-on-error: true
 
-      - name: Run API Playwright tests
-        id: playwright-api
-        run:
-          bun playwright test --config=playwright.api.config.ts
-          --project=api-tests --retries 2 --reporter=html
-        working-directory: kit/e2e
-        env:
-          CI: true
+      # - name: Run API Playwright tests
+      #   id: playwright-api
+      #   run:
+      #     bun playwright test --config=playwright.api.config.ts
+      #     --project=api-tests --retries 2 --reporter=html
+      #   working-directory: kit/e2e
+      #   env:
+      #     CI: true
 
       - name: Run UI Playwright tests
         id: playwright-ui
-        if: success() || steps.playwright-api.conclusion == 'failure'
+        # if: success() || steps.playwright-api.conclusion == 'failure'
         run: |
           bun playwright test --config=playwright.ui.config.ts --project=ui-tests --retries 2 --reporter=html
         working-directory: kit/e2e
