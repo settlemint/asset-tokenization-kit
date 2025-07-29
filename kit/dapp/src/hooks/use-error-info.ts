@@ -85,8 +85,6 @@ export function useErrorTitle(error: unknown): string {
         return t("resourceAlreadyExists.title");
       case "TOKEN_INTERFACE_NOT_SUPPORTED":
         return t("tokenInterfaceNotSupported.title");
-      case "USER_NOT_COMPLIANT":
-        return t("userNotCompliant.title");
       case "USER_NOT_ALLOWED":
         return t("userNotAllowed.title");
       case "USER_NOT_AUTHORIZED":
