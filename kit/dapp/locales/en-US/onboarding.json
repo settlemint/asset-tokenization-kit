@@ -16,7 +16,6 @@
     "deploying-toast": "Deploying asset factories...",
     "deployment-warning": "This action will deploy smart contract factories to the blockchain. Once deployed, they cannot be removed but can remain unused.",
     "description": "Choose which digital asset types to enable on your platform",
-    "failed-toast": "Failed to deploy asset factories: ",
     "descriptions": {
       "bond": "Tokenized debt securities with fixed income features",
       "deposit": "Tokenized bank deposits and certificates",
@@ -24,6 +23,7 @@
       "fund": "Investment fund tokens for pooled investments",
       "stablecoin": "Price-stable digital currencies"
     },
+    "failed-toast": "Failed to deploy asset factories: ",
     "info": "Select the types of digital assets your platform will support. You can add more asset types later.",
     "no-system": "System not found. Please deploy the system first.",
     "select-all-asset-types": "Select all the asset types you plan to tokenize",
@@ -271,7 +271,7 @@
       "otp": {
         "description": "Uses an app like Google Authenticator to generate a new code every 30 seconds. Maximum security for your assets.",
         "summary": "Maximum security",
-        "title": "One-time password (OTP)"
+        "title": "OTP"
       },
       "pin": {
         "description": "A 6-digit code you'll enter to authorize transactions. Quick and convenient for daily use.",
@@ -329,7 +329,7 @@
       "title": "Set up a PIN code"
     },
     "recovery-codes": {
-      "confirm": "Confirm I've stored them",
+      "confirm": "Finish wallet setup",
       "confirm-error": "Failed to confirm secret codes",
       "copied-to-clipboard": "Secret codes copied to clipboard!",
       "copy-all": "Copy all",
@@ -345,6 +345,7 @@
       "your-recovery-codes": "Your secret codes ({{count}})"
     }
   },
+  "wallet-security.method-selector.otp.title": "OTP",
   "welcome": {
     "complete-journey": "Ready to complete your platform setup?",
     "continue-setup": "Continue setup",
