@@ -28,7 +28,11 @@ export const SelectAssetClass = withForm({
     onCancel: noop,
   },
   render: function Render({ form, onStepSubmit, onCancel }) {
-    const { t } = useTranslation(["asset-class", "asset-designer"]);
+    const { t } = useTranslation([
+      "asset-class",
+      "asset-designer",
+      "asset-types",
+    ]);
     const { assetClasses } = useAssetClass();
 
     const options = useMemo(
@@ -48,16 +52,18 @@ export const SelectAssetClass = withForm({
                   <Badge
                     key={factoryType.typeId}
                     variant="outline"
-                    className="text-xs capitalize"
+                    className="text-xs"
                   >
-                    {getAssetTypeFromFactoryTypeId(factoryType.typeId)}
+                    {t(
+                      `asset-types:types.${getAssetTypeFromFactoryTypeId(factoryType.typeId)}.name`
+                    )}
                   </Badge>
                 ))}
               </div>
             </div>
           ),
         })),
-      [assetClasses]
+      [assetClasses, t]
     );
 
     return (
