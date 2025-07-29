@@ -27,38 +27,37 @@ describe("Token create", () => {
       return;
     }
 
-    try {
-      const tokenData = {
-        type: "stablecoin",
-        name: `Test Stablecoin ${Date.now()}`,
-        symbol: "TSTC",
-        decimals: 18,
-      } as const;
+    const tokenData = {
+      type: "stablecoin",
+      name: `Test Stablecoin ${Date.now()}`,
+      symbol: "TSTC",
+      decimals: 18,
+    } as const;
 
-      const result = await client.token.create({
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
-        },
-        contract: system?.tokenFactoryRegistry,
-        ...tokenData,
-      });
+    const result = await client.token.create({
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+      contract: system?.tokenFactoryRegistry,
+      ...tokenData,
+    });
 
-      let isDeployed = false;
-      for await (const event of result) {
-        if (event.status !== "confirmed") {
-          continue;
-        }
-        if (event.result && event.tokenType) {
-          // First deploy
-          isDeployed = true;
-        }
+    let isDeployed = false;
+    for await (const event of result) {
+      if (event.status !== "confirmed") {
+        continue;
       }
+      if (event.result && event.tokenType) {
+        // First deploy
+        isDeployed = true;
+      }
+    }
 
-      expect(isDeployed).toBe(true);
+    expect(isDeployed).toBe(true);
 
-      // Give the graph some time to index
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+    // Give the graph some time to index
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const tokens = await client.token.list({});
     expect(tokens.length).toBeGreaterThan(0);
@@ -92,35 +91,22 @@ describe("Token create", () => {
       return;
     }
 
-    try {
-      await expect(
-        client.token.create({
-          verification: {
-            verificationCode: DEFAULT_PINCODE,
-            verificationType: "pincode",
-          },
-          contract: tokenFactoryRegistry,
-          type: "stablecoin",
-          name: `Test Stablecoin Investor ${Date.now()}`,
-          symbol: "TSTC",
-          decimals: 18,
-        })
-      ).rejects.toThrow(
-        "User does not have the required role to execute this action."
-      );
-    } catch (error: unknown) {
-      if (
-        error instanceof Error &&
-        error.toString().includes("Token factory context not set")
-      ) {
-        console.log(
-          "Skipping test due to token factory context error in system access manager integration"
-        );
-        // Mark test as passed
-        expect(true).toBe(true);
-      } else {
-        throw error;
-      }
-    }
+    // We expect either a permission error or a "Token factory context not set" error
+    // Both are acceptable in the system access manager integration
+    await expect(
+      client.token.create({
+        verification: {
+          verificationCode: DEFAULT_PINCODE,
+          verificationType: "pincode",
+        },
+        contract: tokenFactoryRegistry,
+        type: "stablecoin",
+        name: `Test Stablecoin Investor ${Date.now()}`,
+        symbol: "TSTC",
+        decimals: 18,
+      })
+    ).rejects.toThrow(
+      /User does not have the required role|Token factory context not set/
+    );
   });
 });
