@@ -58,6 +58,14 @@ library ATKSystemRoles {
     /// @dev This role allows adding/removing addresses from the bypass list that can bypass compliance checks
     bytes32 public constant BYPASS_LIST_MANAGER_ADMIN_ROLE = keccak256("BYPASS_LIST_MANAGER_ADMIN_ROLE");
 
+    /// @notice Role identifier for addresses that can manage global compliance modules
+    /// @dev This role allows adding/removing global compliance modules that apply to all tokens
+    bytes32 public constant GLOBAL_COMPLIANCE_MANAGER_ROLE = keccak256("GLOBAL_COMPLIANCE_MANAGER_ROLE");
+
+    /// @notice Role identifier for addresses that can manage global compliance managers
+    /// @dev This role allows granting/revoking the GLOBAL_COMPLIANCE_MANAGER_ROLE
+    bytes32 public constant GLOBAL_COMPLIANCE_MANAGER_ADMIN_ROLE = keccak256("GLOBAL_COMPLIANCE_MANAGER_ADMIN_ROLE");
+
     /// @notice Role identifier for addresses that can manage the system
     /// @dev This role bootstraps the system, manage upgrades, implementation references
     bytes32 public constant SYSTEM_MANAGER_ROLE = keccak256("SYSTEM_MANAGER_ROLE");

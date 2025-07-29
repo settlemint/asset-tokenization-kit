@@ -33,23 +33,4 @@ abstract contract AbstractIdentityComplianceModule is AbstractAddressListComplia
         return (true, identity);
     }
 
-    /// @notice Sets or removes an identity address in the global list
-    /// @param _identity The identity address to update
-    /// @param _inList True to add the identity, false to remove it
-    function _setIdentityInGlobalList(address _identity, bool _inList) internal {
-        _setAddressInGlobalList(_identity, _inList);
-    }
-
-    /// @notice Checks if an identity address is in the global list
-    /// @param _identity The identity address to check
-    /// @return True if the identity is in the global list
-    function _isIdentityInGlobalList(address _identity) internal view returns (bool) {
-        return _isAddressInGlobalList(_identity);
-    }
-
-    /// @notice Returns all identity addresses in the global list
-    /// @return Array of identity addresses in the global list
-    function _getGlobalIdentitiesList() internal view returns (address[] memory) {
-        return _getGlobalAddressesList();
-    }
 }
