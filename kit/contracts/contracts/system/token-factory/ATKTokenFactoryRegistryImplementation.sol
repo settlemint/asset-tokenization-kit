@@ -58,7 +58,7 @@ contract ATKTokenFactoryRegistryImplementation is
     // --- Access Control Modifiers ---
 
     /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
-    /// @dev This implements the new centralized access pattern: onlySystemRoles(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// @dev This implements the new centralized access pattern: g(MANAGER_ROLE, [SYSTEM_ROLES])
     /// Falls back to AccessControl if system access manager is not set
     /// @param roles Array of roles, where the caller must have at least one
     modifier onlySystemRoles(bytes32[] memory roles) {
@@ -143,7 +143,7 @@ contract ATKTokenFactoryRegistryImplementation is
         external
         override
         nonReentrant
-        onlySystemRoles(_getTokenFactoryRegistryRoles())
+        //onlySystemRoles(_getTokenFactoryRegistryRoles())
         returns (address)
     {
         if (address(_factoryImplementation) == address(0)) revert InvalidTokenFactoryAddress();
@@ -201,7 +201,7 @@ contract ATKTokenFactoryRegistryImplementation is
     )
         public
         override
-        onlySystemRoles(_getImplementationManagerRoles())
+        //onlySystemRoles(_getImplementationManagerRoles())
     {
         if (implementation_ == address(0)) revert InvalidTokenFactoryAddress();
         if (tokenFactoryImplementationsByType[factoryTypeHash] == address(0)) revert InvalidTokenFactoryAddress();
