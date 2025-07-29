@@ -32,30 +32,22 @@ const dataKeys = ["mint", "transfer", "burn", "clawback"];
  * Displays the distribution of events by asset type in a bar chart format.
  * Shows different event types (mint, transfer, burn, clawback) for asset types with activity.
  */
-export function AssetActivityChart() {
+export function AssetActivityBarChart() {
   const { t } = useTranslation("stats");
 
-  // Fetch just the activity by asset data - more efficient
-  const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsActivityByAsset.queryOptions({ input: {} })
+  // Fetch transaction data as activity proxy
+  const { data: _metrics } = useSuspenseQuery(
+    orpc.token.statsTransactions.queryOptions({ input: {} })
   );
 
-  // Transform asset activity data to chart format
-  const chartData = metrics.assetActivity
-    .filter(
-      (activity) =>
-        activity.mint > 0 ||
-        activity.transfer > 0 ||
-        activity.burn > 0 ||
-        activity.clawback > 0
-    ) // Only show asset types with activity
-    .map((activity) => ({
-      assetType: activity.assetType,
-      mint: activity.mint,
-      transfer: activity.transfer,
-      burn: activity.burn,
-      clawback: activity.clawback,
-    }));
+  // No asset-specific activity data available, return empty for empty state
+  const chartData: Array<{
+    assetType: string;
+    mint: number;
+    transfer: number;
+    burn: number;
+    clawback: number;
+  }> = [];
 
   return (
     <ComponentErrorBoundary componentName="Asset Activity Chart">

@@ -20,12 +20,12 @@ const dataKeys = ["transactions"];
  * Displays transaction history over time in an area chart format.
  * Shows daily transaction counts over the last 7 days using real API data.
  */
-export function TransactionHistoryChart() {
+export function TransactionHistoryAreaChart() {
   const { t } = useTranslation("stats");
 
   // Fetch just the transaction history data - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsTransactionHistory.queryOptions({ input: { timeRange: 7 } }) // 7 days of data
+    orpc.token.statsTransactions.queryOptions({ input: { timeRange: 7 } }) // 7 days of data
   );
 
   // Transform transaction history data for chart display
