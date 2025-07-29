@@ -7,58 +7,59 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
   const systems = await orpClient.system.list({});
   if (systems.length > 0) {
     const systemId = systems[0]?.id;
-    // Wait for system to be fully initialized
-    await retryWhenFailed(
-      async () => {
-        const system = await orpClient.system.read({ id: systemId });
-        if (!system.tokenFactoryRegistry) {
-          throw new Error("System not yet fully initialized");
-        }
-        return system;
-      },
-      5, // max retries
-      2000 // wait 2 seconds between retries
-    );
-    return systemId;
+    // For existing system, fetch and verify it's fully initialized
+    const system = await orpClient.system.read({ id: systemId });
+    if (!system.tokenFactoryRegistry) {
+      // Wait for system to be fully initialized
+      await retryWhenFailed(
+        async () => {
+          const sys = await orpClient.system.read({ id: systemId });
+          if (!sys.tokenFactoryRegistry) {
+            throw new Error("System not yet fully initialized");
+          }
+          return sys;
+        },
+        5, // max retries
+        2000 // wait 2 seconds between retries
+      );
+    }
+    return system;
   }
-  const response = await orpClient.system.create({
+
+  // Create new system - system.create returns the complete system object
+  const system = await orpClient.system.create({
     verification: {
       verificationCode: DEFAULT_PINCODE,
       verificationType: "pincode",
     },
   });
 
-  if (!response?.id) {
+  if (!system?.id) {
     throw new Error("Failed to bootstrap system");
   }
 
   // No need to grant permissions anymore as it's already done in the Ignition module
   console.log("✓ Permissions already granted during system bootstrap");
 
-  // Wait for system to be fully initialized
-  await retryWhenFailed(
-    async () => {
-      const system = await orpClient.system.read({ id: response.id });
-      if (!system.tokenFactoryRegistry) {
-        throw new Error("System not yet fully initialized");
-      }
-      return system;
-    },
-    5, // max retries
-    2000 // wait 2 seconds between retries
-  );
+  // The create method already returns a fully initialized system
+  if (!system.tokenFactoryRegistry) {
+    throw new Error(
+      "System created but not fully initialized - missing token factory registry"
+    );
+  }
 
-  return response.id;
+  return system;
 }
 
 export async function bootstrapTokenFactories(
   orpClient: OrpcClient,
-  systemId = "default"
-) {
-  const system = await orpClient.system.read({ id: systemId });
-  if (!system) {
-    throw new Error("System not found");
+  system: {
+    id: string;
+    tokenFactoryRegistry: string | null;
+    identityRegistry?: string | null;
+    compliance?: string | null;
   }
+) {
   if (!system.tokenFactoryRegistry) {
     console.log("System registries not yet initialized:", {
       identityRegistry: system.identityRegistry,

@@ -27,9 +27,9 @@ beforeAll(async () => {
 
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     console.log("Bootstrapping system");
-    const systemId = await bootstrapSystem(orpClient);
+    const system = await bootstrapSystem(orpClient);
     console.log("Bootstrapping token factories");
-    await bootstrapTokenFactories(orpClient, systemId);
+    await bootstrapTokenFactories(orpClient, system);
   } catch (error: unknown) {
     console.error("Failed to setup test environment", error);
     // Don't exit with error code in CI environment for system access manager integration
