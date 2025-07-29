@@ -19,7 +19,6 @@ import { RedirectToSignIn, SignedIn } from "@daveyplate/better-auth-ui";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private")({
-  ssr: "data-only",
   beforeLoad: async ({ context: { queryClient, orpc } }) => {
     // Try to get user data, but don't throw if unauthenticated
     try {

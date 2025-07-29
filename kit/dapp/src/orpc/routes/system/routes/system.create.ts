@@ -148,8 +148,8 @@ export const create = onboardedRouter.system.create
       });
     }
 
-    // Handle challenge once and reuse for both transactions
-    const challengeResponse = await handleChallenge(sender, {
+    // Handle challenge for system creation transaction
+    const createChallengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
@@ -158,7 +158,7 @@ export const create = onboardedRouter.system.create
     const createSystemVariables: VariablesOf<typeof CREATE_SYSTEM_MUTATION> = {
       address: contract,
       from: sender.wallet,
-      ...challengeResponse,
+      ...createChallengeResponse,
     };
 
     // Use the Portal client's mutate method
@@ -213,11 +213,17 @@ export const create = onboardedRouter.system.create
       });
     }
 
-    // Execute the bootstrap transaction (reuse challenge response)
+    // Handle challenge for bootstrap transaction (fresh challenge required)
+    const bootstrapChallengeResponse = await handleChallenge(sender, {
+      code: verification.verificationCode,
+      type: verification.verificationType,
+    });
+
+    // Execute the bootstrap transaction
     const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> = {
       address: system.id,
       from: sender.wallet,
-      ...challengeResponse,
+      ...bootstrapChallengeResponse,
     };
 
     // Execute bootstrap transaction
