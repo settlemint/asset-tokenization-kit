@@ -3,27 +3,26 @@ import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth.client";
-import { createLogger } from "@settlemint/sdk-utils/logging";
 import { Route } from "@/routes/_private/onboarding/_sidebar/wallet-recovery-codes";
-import { useCallback, useMemo, Suspense, useEffect } from "react";
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import { Await } from "@tanstack/react-router";
+import { Suspense, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { RecoveryCodesActions } from "./recovery-codes-actions";
 import { RecoveryCodesDisplay } from "./recovery-codes-display";
+import { RecoveryCodesSkeleton } from "./recovery-codes-skeleton";
 import { RecoveryCodesWarning } from "./recovery-codes-warning";
 import { useRecoveryCodes } from "./use-recovery-codes";
-import { RecoveryCodesSkeleton } from "./recovery-codes-skeleton";
-import { Await } from "@tanstack/react-router";
 
 const logger = createLogger();
 
 export function RecoveryCodes() {
   const { completeStepAndNavigate } = useOnboardingNavigation();
-  const { recoveryCodesData } = Route.useLoaderData();
 
   return (
     <Suspense fallback={<RecoveryCodesLoader />}>
-      <Await promise={recoveryCodesData}>
+      <Await promise={Route.useLoaderData().recoveryCodesData}>
         {(data) => {
           // Log the data to see what we're getting
           logger.info("Recovery codes data received:", { data });

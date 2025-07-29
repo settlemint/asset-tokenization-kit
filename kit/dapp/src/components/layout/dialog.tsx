@@ -15,7 +15,7 @@ export function DialogLayout({ children }: DialogLayoutProps) {
   const { t } = useTranslation(["general"]);
 
   return (
-    <div className="DialogLayout flex flex-col min-h-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
+    <div className="DialogLayout flex flex-col h-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
       <div className="flex-shrink-0 flex justify-between items-center p-8">
         <div className="flex w-full items-center gap-3">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
