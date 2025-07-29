@@ -331,6 +331,7 @@
     "recovery-codes": {
       "confirm": "Bestätigen, dass ich sie gespeichert habe",
       "confirm-error": "Fehler beim Bestätigen der geheimen Codes",
+      "confirm-stored": "Confirm you stored your recovery keys in a safe place.",
       "copied-to-clipboard": "Geheime Codes in die Zwischenablage kopiert!",
       "copy-all": "Alles kopieren",
       "description": "Speichern Sie diese Codes an einem sicheren Ort",
