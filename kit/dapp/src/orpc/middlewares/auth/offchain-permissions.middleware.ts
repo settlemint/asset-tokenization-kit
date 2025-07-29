@@ -21,10 +21,7 @@ export const offChainPermissionsMiddleware = <InputSchema extends z.ZodType>({
       throw errors.UNAUTHORIZED();
     }
 
-    if (
-      typeof alwaysAllowIf === "function" &&
-      alwaysAllowIf(context, input as z.infer<InputSchema>)
-    ) {
+    if (alwaysAllowIf(context, input as z.infer<InputSchema>)) {
       return next();
     }
 
