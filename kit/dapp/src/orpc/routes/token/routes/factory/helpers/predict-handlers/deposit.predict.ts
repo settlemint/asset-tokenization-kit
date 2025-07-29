@@ -15,7 +15,6 @@ const PREDICT_DEPOSIT_ADDRESS_QUERY = portalGraphql(`
     $name: String!
     $decimals: Int!
     $initialModulePairs: [ATKDepositFactoryImplementationPredictDepositAddressInitialModulePairsInput!]!
-    $requiredClaimTopics: [String!]!
   ) {
     ATKDepositFactoryImplementation(address: $address) {
       predictDepositAddress(
@@ -23,7 +22,6 @@ const PREDICT_DEPOSIT_ADDRESS_QUERY = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
       ) {
         predictedAddress
       }

@@ -15,7 +15,6 @@ const PREDICT_FUND_ADDRESS_QUERY = portalGraphql(`
     $name: String!
     $decimals: Int!
     $initialModulePairs: [ATKFundFactoryImplementationPredictFundAddressInitialModulePairsInput!]!
-    $requiredClaimTopics: [String!]!
     $managementFeeBps: Int!
   ) {
     ATKFundFactoryImplementation(address: $address) {
@@ -24,7 +23,6 @@ const PREDICT_FUND_ADDRESS_QUERY = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
         managementFeeBps_: $managementFeeBps
       ) {
         predictedAddress

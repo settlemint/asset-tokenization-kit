@@ -72,9 +72,6 @@ export const RawTokenSchema = z.object({
   pausable: z.object({
     paused: z.boolean().describe("Whether the token is paused"),
   }),
-  requiredClaimTopics: z
-    .array(z.string())
-    .describe("The required claim topics of the token"),
   collateral: z
     .object({
       collateral: bigDecimal()
