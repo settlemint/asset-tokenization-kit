@@ -216,7 +216,10 @@ function RecoveryCodesContent({
                 htmlFor="recovery-codes-stored"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                Confirm you stored your recovery keys in a safe place.
+                {t(
+                  "wallet-security.recovery-codes.confirm-stored",
+                  "Confirm you stored your recovery keys in a safe place."
+                )}
               </label>
             </div>
           )}
