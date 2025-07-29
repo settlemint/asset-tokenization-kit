@@ -75,20 +75,25 @@ export function FieldWithAddons({
 }: {
   startAddon?: string;
   endAddon?: string;
-  children: (inputProps: { className: string }) => React.ReactElement;
+  children: (inputProps: { className?: string }) => React.ReactElement;
 }) {
   return (
-    <div className="relative">
-      {children({
-        className: cn("peer", startAddon && "ps-6", endAddon && "pe-12"),
-      })}
+    <div className="flex rounded-md shadow-xs">
       {startAddon && (
-        <span className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-sm peer-disabled:opacity-50">
+        <span className="border-input bg-background text-muted-foreground inline-flex items-center rounded-s-md border px-3 text-sm">
           {startAddon}
         </span>
       )}
+      {children({
+        className: cn(
+          "shadow-none",
+          startAddon && !endAddon && "-ms-px rounded-s-none",
+          !startAddon && endAddon && "-me-px rounded-e-none",
+          startAddon && endAddon && "-mx-px rounded-none"
+        ),
+      })}
       {endAddon && (
-        <span className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm peer-disabled:opacity-50">
+        <span className="border-input bg-background text-muted-foreground inline-flex items-center rounded-e-md border px-3 text-sm">
           {endAddon}
         </span>
       )}
