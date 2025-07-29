@@ -1,5 +1,5 @@
 import { AssetDesignerForm } from "@/components/asset-designer/asset-designer-form";
-import { DialogLayout } from "@/components/layout/dialog";
+import { Logo } from "@/components/logo/logo";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/asset-designer/")({
@@ -17,8 +17,13 @@ function RouteComponent() {
   const routeContext = Route.useRouteContext();
 
   return (
-    <DialogLayout>
-      <AssetDesignerForm factories={routeContext.factories} />
-    </DialogLayout>
+    <div className="flex h-screen flex-col bg-background">
+      <header className="flex h-16 shrink-0 items-center border-b px-8">
+        <Logo className="h-8" />
+      </header>
+      <main className="flex-1 overflow-hidden">
+        <AssetDesignerForm factories={routeContext.factories} />
+      </main>
+    </div>
   );
 }
