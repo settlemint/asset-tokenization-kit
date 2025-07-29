@@ -20,7 +20,8 @@
     },
     "artifacts": {},
     "test": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["codegen"],
+      "outputs": ["coverage/**"]
     },
     "test:integration": {
       "dependsOn": ["codegen"]
