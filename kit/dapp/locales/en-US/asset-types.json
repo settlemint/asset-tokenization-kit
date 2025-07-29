@@ -6,23 +6,6 @@
   "whichAssetType": "Which asset type do you want to design?",
   "whichAssetTypeForClass": "Which {{assetClass}} asset do you want to design?",
   "assetTypeDifferences": "Each asset type has different payment structures, liquidity terms, and investor rights.",
-  "categories": {
-    "cashEquivalent": {
-      "description": "Highly liquid investments that can be readily converted to known amounts of cash.",
-      "icon": "Wallet",
-      "name": "Cash Equivalent"
-    },
-    "fixedIncome": {
-      "description": "Assets that provide returns in the form of regular, fixed interest payments and the return of principal at maturity.",
-      "icon": "TrendingUp",
-      "name": "Fixed Income"
-    },
-    "flexibleIncome": {
-      "description": "Assets that generate variable returns based on market conditions and underlying performance.",
-      "icon": "Activity",
-      "name": "Flexible Income"
-    }
-  },
   "deposit": {
     "description": "Time-locked deposits that earn interest over a fixed period",
     "name": "Deposit Tokens"
