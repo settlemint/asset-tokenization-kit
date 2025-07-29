@@ -65,7 +65,7 @@ export const SelectAssetType = withForm({
           const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
           return {
             value: assetType,
-            label: getAssetTypeFromFactoryTypeId(factory.typeId),
+            label: t(`asset-types:types.${assetType}.name`),
             description: t(`asset-types:types.${assetType}.description`),
           };
         }),
