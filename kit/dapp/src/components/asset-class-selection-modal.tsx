@@ -117,7 +117,7 @@ export function AssetClassSelectionModal({
       <DialogContent className="sm:max-w-2xl md:max-w-4xl lg:max-w-6xl">
         <DialogHeader className="text-center mt-10">
           <DialogTitle className="text-2xl text-center">
-            Which asset class do you want to design?
+            Which asset class do you want?
           </DialogTitle>
           <DialogDescription className="text-center">
             Each asset class offers a different risk-return profile.
