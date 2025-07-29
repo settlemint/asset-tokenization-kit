@@ -223,5 +223,8 @@ function getTokenAddress(input: unknown) {
   if (typeof input === "object" && "contract" in input) {
     return input.contract;
   }
+  if (typeof input === "object" && "address" in input) {
+    return input.address;
+  }
   return null;
 }
