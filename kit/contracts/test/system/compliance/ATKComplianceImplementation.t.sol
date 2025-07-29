@@ -819,7 +819,7 @@ contract ATKComplianceImplementationTest is Test {
     }
 
     function testSetParametersForGlobalComplianceModuleInvalidParams() public {
-        MockFailingModule invalidParamsModule = new MockFailingModule("Invalid params", false, true);
+        MockFailingModule invalidParamsModule = new MockFailingModule("Invalid params", false, false);
         bytes memory initialParams = abi.encode(uint256(500));
 
         // Add module first
