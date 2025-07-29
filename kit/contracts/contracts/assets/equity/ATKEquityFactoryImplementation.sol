@@ -35,7 +35,6 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
     /// @param name_ The name of the equity token.
     /// @param symbol_ The symbol of the equity token.
     /// @param decimals_ The number of decimals for the equity token.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the equity token.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedEquityAddress The address of the newly deployed equity token contract.
@@ -43,7 +42,6 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
         string calldata name_,
         string calldata symbol_,
         uint8 decimals_,
-        uint256[] calldata requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
         uint16 countryCode_
     )
@@ -61,7 +59,7 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
             name_,
             symbol_,
             decimals_,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -81,14 +79,7 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
         // Identity registration is now handled automatically in _deployContractIdentity
 
         emit EquityCreated(
-            _msgSender(),
-            deployedEquityAddress,
-            deployedTokenIdentityAddress,
-            name_,
-            symbol_,
-            decimals_,
-            requiredClaimTopics_,
-            countryCode_
+            _msgSender(), deployedEquityAddress, deployedTokenIdentityAddress, name_, symbol_, decimals_, countryCode_
         );
 
         return deployedEquityAddress;
@@ -105,14 +96,12 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
     /// @param name_ The name of the equity.
     /// @param symbol_ The symbol of the equity.
     /// @param decimals_ The decimals of the equity.
-    /// @param requiredClaimTopics_ The required claim topics for the equity.
     /// @param initialModulePairs_ The initial compliance module pairs for the equity.
     /// @return predictedAddress The predicted address of the equity contract.
     function predictEquityAddress(
         string calldata name_,
         string calldata symbol_,
         uint8 decimals_,
-        uint256[] calldata requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] calldata initialModulePairs_
     )
         external
@@ -128,7 +117,7 @@ contract ATKEquityFactoryImplementation is IATKEquityFactory, AbstractATKTokenFa
             name_,
             symbol_,
             decimals_,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_

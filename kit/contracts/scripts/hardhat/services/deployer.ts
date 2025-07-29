@@ -37,6 +37,7 @@ export type PredeployedContractName = keyof Pick<
   | "addressBlockListModule"
   | "identityBlockListModule"
   | "identityAllowListModule"
+  | "identityVerificationModule"
   | "fixedYieldScheduleFactory"
   | "vestingAirdropFactory"
   | "pushAirdropFactory"

@@ -14,7 +14,12 @@ import { IATKCompliance } from "./IATKCompliance.sol";
 import { ISMARTComplianceModule } from "../../smart/interface/ISMARTComplianceModule.sol";
 import { ISMART } from "../../smart/interface/ISMART.sol";
 import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManager.sol";
 import { ATKSystemRoles } from "../ATKSystemRoles.sol";
+
+/// @dev Custom errors for ATKCompliance
+error SystemAccessManagerNotSet();
+error UnauthorizedAccess();
 
 /// @title ATK Compliance Contract Implementation
 /// @author SettleMint
@@ -38,10 +43,38 @@ contract ATKComplianceImplementation is
     IATKCompliance
 {
     // --- Storage ---
+    /// @notice Optional centralized access manager for enhanced role checking
+    /// @dev If set, enables multi-role access patterns alongside existing AccessControl
+    IATKSystemAccessManager private _systemAccessManager;
+
     /// @notice Mapping of addresses that are on the bypass list to bypass compliance checks
     /// @dev When an address is on the bypass list, transfers involving this address (as sender or receiver) will skip
     /// compliance module checks in the `canTransfer` function
     mapping(address => bool) private _bypassedAddresses;
+
+    // --- Access Control Modifiers ---
+
+    /// @notice Modifier that checks if the caller has any of the specified roles in the system access manager
+    /// @dev This implements the new centralized access pattern: onlySystemRoles(MANAGER_ROLE, [SYSTEM_ROLES])
+    /// Falls back to AccessControl if system access manager is not set
+    /// @param roles Array of roles, where the caller must have at least one
+    modifier onlySystemRoles(bytes32[] memory roles) {
+        if (address(_systemAccessManager) == address(0)) revert SystemAccessManagerNotSet();
+        if (!_systemAccessManager.hasAnyRole(roles, _msgSender())) revert UnauthorizedAccess();
+        _;
+    }
+
+    // --- Internal Helper Functions ---
+
+    /// @notice Returns the roles that can perform compliance management operations
+    /// @dev Implements the pattern from the ticket: MANAGER_ROLE + [SYSTEM_ROLES]
+    /// @return roles Array of roles that can manage compliance and bypass lists
+    function _getComplianceManagementRoles() internal pure returns (bytes32[] memory roles) {
+        roles = new bytes32[](3);
+        roles[0] = ATKSystemRoles.COMPLIANCE_MANAGER_ROLE;       // Primary compliance manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;           // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;            // System module role
+    }
 
     // --- Constructor ---
     /// @notice Constructor for the compliance implementation contract.
@@ -88,13 +121,34 @@ contract ATKComplianceImplementation is
         }
     }
 
+    // --- System Access Manager Functions ---
+
+    /// @notice Sets the system access manager for enhanced role checking
+    /// @dev Only callable by accounts with DEFAULT_ADMIN_ROLE. Setting to address(0) disables centralized access control
+    /// @param systemAccessManager The address of the ATK system access manager, or address(0) to disable
+    function setSystemAccessManager(address systemAccessManager) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _systemAccessManager = IATKSystemAccessManager(systemAccessManager);
+        emit SystemAccessManagerSet(_msgSender(), systemAccessManager);
+    }
+
+    /// @notice Returns the current system access manager address
+    /// @return The address of the system access manager, or address(0) if not set
+    function getSystemAccessManager() external view returns (address) {
+        return address(_systemAccessManager);
+    }
+
+    /// @notice Event emitted when the system access manager is updated
+    /// @param admin The address that updated the system access manager
+    /// @param systemAccessManager The new system access manager address
+    event SystemAccessManagerSet(address indexed admin, address indexed systemAccessManager);
+
     // --- Bypass List Management Functions ---
 
     /// @notice Adds an address to the compliance bypass list
-    /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
+    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE.
     /// Bypassed addresses can bypass compliance checks in canTransfer function.
     /// @param account The address to add to the bypass list
-    function addToBypassList(address account) external onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE) {
+    function addToBypassList(address account) external onlySystemRoles(_getComplianceManagementRoles()) {
         if (account == address(0)) revert ZeroAddressNotAllowed();
         if (_bypassedAddresses[account]) revert AddressAlreadyOnBypassList(account);
 
@@ -103,9 +157,9 @@ contract ATKComplianceImplementation is
     }
 
     /// @notice Removes an address from the compliance bypass list
-    /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
+    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE.
     /// @param account The address to remove from the bypass list
-    function removeFromBypassList(address account) external onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE) {
+    function removeFromBypassList(address account) external onlySystemRoles(_getComplianceManagementRoles()) {
         if (!_bypassedAddresses[account]) revert AddressNotOnBypassList(account);
 
         _bypassedAddresses[account] = false;
@@ -113,12 +167,12 @@ contract ATKComplianceImplementation is
     }
 
     /// @notice Adds multiple addresses to the compliance bypass list in a single transaction
-    /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
+    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE.
     /// This is a gas-efficient way to add multiple addresses to the bypass list at once.
     /// @param accounts Array of addresses to add to the bypass list
     function addMultipleToBypassList(address[] calldata accounts)
         external
-        onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE)
+        onlySystemRoles(_getComplianceManagementRoles())
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {
@@ -136,11 +190,11 @@ contract ATKComplianceImplementation is
     }
 
     /// @notice Removes multiple addresses from the compliance bypass list in a single transaction
-    /// @dev Only addresses with BYPASS_LIST_MANAGER_ROLE can call this function.
+    /// @dev Uses new multi-role access control. Can be called by COMPLIANCE_MANAGER_ROLE, SYSTEM_MANAGER_ROLE, or SYSTEM_MODULE_ROLE.
     /// @param accounts Array of addresses to remove from the bypass list
     function removeMultipleFromBypassList(address[] calldata accounts)
         external
-        onlyRole(ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE)
+        onlySystemRoles(_getComplianceManagementRoles())
     {
         uint256 accountsLength = accounts.length;
         for (uint256 i = 0; i < accountsLength;) {

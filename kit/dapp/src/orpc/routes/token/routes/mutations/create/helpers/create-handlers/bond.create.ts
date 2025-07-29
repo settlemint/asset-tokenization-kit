@@ -30,7 +30,6 @@ const CREATE_BOND_MUTATION = portalGraphql(`
     $name: String!
     $decimals: Int!
     $initialModulePairs: [ATKBondFactoryImplementationATKBondFactoryImplementationCreateBondInitialModulePairsInput!]!
-    $requiredClaimTopics: [String!]!
     $cap: String!
     $faceValue: String!
     $maturityDate: String!
@@ -47,7 +46,6 @@ const CREATE_BOND_MUTATION = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
         cap_: $cap
         faceValue_: $faceValue
         maturityDate_: $maturityDate

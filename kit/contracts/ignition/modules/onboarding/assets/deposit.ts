@@ -12,7 +12,10 @@ const ATKOnboardingDepositModule = buildModule(
     const createDepositFactory = m.call(
       tokenFactoryRegistry,
       "registerTokenFactory",
-      ["deposit", depositFactoryImplementation, depositImplementation]
+      ["deposit", depositFactoryImplementation, depositImplementation],
+      {
+        from: m.getAccount(0),
+      }
     );
     const depositFactoryAddress = m.readEventArgument(
       createDepositFactory,

@@ -15,7 +15,6 @@ const PREDICT_STABLECOIN_ADDRESS_QUERY = portalGraphql(`
     $name: String!
     $decimals: Int!
     $initialModulePairs: [ATKStableCoinFactoryImplementationPredictStableCoinAddressInitialModulePairsInput!]!
-    $requiredClaimTopics: [String!]!
   ) {
     ATKStableCoinFactoryImplementation(address: $address) {
       predictStableCoinAddress(
@@ -23,7 +22,6 @@ const PREDICT_STABLECOIN_ADDRESS_QUERY = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
       ) {
         predictedAddress
       }

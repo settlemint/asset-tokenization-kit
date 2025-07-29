@@ -6,7 +6,7 @@ const defaultAdminRole: Hex =
 // System Roles (from ATKSystemRoles.sol)
 const registrarRole = keccak256(toBytes("REGISTRAR_ROLE"));
 const claimManagerRole = keccak256(toBytes("CLAIM_MANAGER_ROLE"));
-const tokenDeployerRole = keccak256(toBytes("TOKEN_DEPLOYER_ROLE"));
+const deployerRole = keccak256(toBytes("DEPLOYER_ROLE"));
 const storageModifierRole = keccak256(toBytes("STORAGE_MODIFIER_ROLE"));
 const registryManagerRole = keccak256(toBytes("REGISTRY_MANAGER_ROLE"));
 const bypassListManagerRole = keccak256(toBytes("BYPASS_LIST_MANAGER_ROLE"));
@@ -22,7 +22,7 @@ export const ATKRoles = {
   // System Roles
   registrarRole,
   claimManagerRole,
-  tokenDeployerRole,
+  deployerRole,
   storageModifierRole,
   registryManagerRole,
   bypassListManagerRole,
