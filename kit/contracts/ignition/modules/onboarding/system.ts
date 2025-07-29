@@ -227,6 +227,21 @@ const ATKOnboardingSystemModule = buildModule(
       }
     );
 
+    // Grant SYSTEM_MANAGER_ROLE to m.getAccount(0) on the system access manager
+    // This allows the admin to manage all aspects of the system
+    const grantSystemManagerRoleToDeployer = m.call(
+      systemAccessManager,
+      "grantRole",
+      [
+        "0xc58b9ee9eca79156f8e9765448a989a28f9cf526ffcc112afbedfa6a1c59acac", // SYSTEM_MANAGER_ROLE
+        m.getAccount(0),
+      ],
+      {
+        from: m.getAccount(0),
+        id: "grantSystemManagerRoleToDeployer",
+      }
+    );
+
     // Set the system access manager on contracts that need it
     // This is required for contracts that use onlySystemRoles modifier
     const setComplianceSystemAccessManager = m.call(
@@ -246,6 +261,45 @@ const ATKOnboardingSystemModule = buildModule(
       {
         from: m.getAccount(0),
         id: "setTrustedIssuersRegistrySystemAccessManager",
+      }
+    );
+
+    // Set the system access manager on the token factory registry
+    // This is required for the token factory registry to use the system access manager
+    // to check for SYSTEM_MANAGER_ROLE and other roles
+    const setTokenFactoryRegistrySystemAccessManager = m.call(
+      tokenFactoryRegistry,
+      "setSystemAccessManager",
+      [systemAccessManagerAddress],
+      {
+        from: m.getAccount(0),
+        id: "setTokenFactoryRegistrySystemAccessManager",
+      }
+    );
+
+    // Set the system access manager on the compliance module registry
+    // This is required for the compliance module registry to use the system access manager
+    // to check for SYSTEM_MANAGER_ROLE and other roles
+    const setComplianceModuleRegistrySystemAccessManager = m.call(
+      complianceModuleRegistry,
+      "setSystemAccessManager",
+      [systemAccessManagerAddress],
+      {
+        from: m.getAccount(0),
+        id: "setComplianceModuleRegistrySystemAccessManager",
+      }
+    );
+
+    // Set the system access manager on the system addon registry
+    // This is required for the system addon registry to use the system access manager
+    // to check for SYSTEM_MANAGER_ROLE and other roles
+    const setSystemAddonRegistrySystemAccessManager = m.call(
+      systemAddonRegistry,
+      "setSystemAccessManager",
+      [systemAccessManagerAddress],
+      {
+        from: m.getAccount(0),
+        id: "setSystemAddonRegistrySystemAccessManager",
       }
     );
 
