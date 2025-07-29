@@ -39,6 +39,7 @@ export function SystemDeploy() {
     <OnboardingStepLayout
       title={t("system.initialize-title")}
       description={t("system.initialize-subtitle")}
+      fullWidth={true}
       actions={
         <>
           <Button
@@ -62,7 +63,7 @@ export function SystemDeploy() {
     >
       <>
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-2xl space-y-6">
+          <div className="space-y-6">
             <div className="rounded-lg bg-sm-state-warning-background/50 border border-sm-state-warning-background p-4">
               <div className="flex items-start gap-3">
                 <TriangleAlert className="h-5 w-5 text-sm-state-warning mt-0.5 flex-shrink-0" />

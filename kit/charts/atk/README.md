@@ -17,11 +17,11 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 |  | besu-network | * |
 |  | blockscout | * |
 |  | erpc | * |
+|  | graph-node | * |
 |  | hasura | * |
 |  | observability | * |
 |  | portal | * |
 |  | support | * |
-|  | thegraph | * |
 | file://./charts/dapp | dapp | * |
 | file://./charts/txsigner | txsigner | * |
 
@@ -167,6 +167,13 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | global.ingressNamespace | string | `"ingress-nginx"` |  |
 | global.labels."kots.io/app-slug" | string | `"settlemint-atk"` |  |
 | global.networkPolicy.enabled | bool | `false` |  |
+| graph-node.enabled | bool | `true` |  |
+| graph-node.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
+| graph-node.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
+| graph-node.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
+| graph-node.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
+| graph-node.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
+| graph-node.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
 | hasura.enabled | bool | `true` |  |
 | hasura.graphql-engine.global.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
 | hasura.graphql-engine.global.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
@@ -272,58 +279,6 @@ A Helm chart for the SettleMint Asset Tokenization Kit
 | support.redis.resources.requests.cpu | string | `"100m"` |  |
 | support.redis.resources.requests.memory | string | `"128Mi"` |  |
 | support.reloader.enabled | bool | `true` |  |
-| thegraph.enabled | bool | `true` |  |
-| thegraph.graph-node.blockIngestorGroupName | string | `"combined"` |  |
-| thegraph.graph-node.grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
-| thegraph.graph-node.graphNodeDefaults.imagePullSecrets[0].name | string | `"image-pull-secret-docker"` |  |
-| thegraph.graph-node.graphNodeDefaults.imagePullSecrets[1].name | string | `"image-pull-secret-ghcr"` |  |
-| thegraph.graph-node.graphNodeDefaults.imagePullSecrets[2].name | string | `"image-pull-secret-harbor"` |  |
-| thegraph.graph-node.graphNodeGroups.block-ingestor.enabled | bool | `false` |  |
-| thegraph.graph-node.graphNodeGroups.block-ingestor.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
-| thegraph.graph-node.graphNodeGroups.block-ingestor.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
-| thegraph.graph-node.graphNodeGroups.block-ingestor.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
-| thegraph.graph-node.graphNodeGroups.block-ingestor.replicaCount | int | `1` |  |
-| thegraph.graph-node.graphNodeGroups.combined.enabled | bool | `true` |  |
-| thegraph.graph-node.graphNodeGroups.combined.env.node_role | string | `"combined-mode"` |  |
-| thegraph.graph-node.graphNodeGroups.combined.includeInIndexPools[0] | string | `"default"` |  |
-| thegraph.graph-node.graphNodeGroups.combined.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
-| thegraph.graph-node.graphNodeGroups.combined.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
-| thegraph.graph-node.graphNodeGroups.combined.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
-| thegraph.graph-node.graphNodeGroups.combined.replicaCount | int | `1` |  |
-| thegraph.graph-node.graphNodeGroups.index.enabled | bool | `false` |  |
-| thegraph.graph-node.graphNodeGroups.index.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
-| thegraph.graph-node.graphNodeGroups.index.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
-| thegraph.graph-node.graphNodeGroups.index.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
-| thegraph.graph-node.graphNodeGroups.index.replicaCount | int | `1` |  |
-| thegraph.graph-node.graphNodeGroups.query.enabled | bool | `false` |  |
-| thegraph.graph-node.graphNodeGroups.query.podAnnotations."prometheus.io/path" | string | `"/metrics"` |  |
-| thegraph.graph-node.graphNodeGroups.query.podAnnotations."prometheus.io/port" | string | `"8040"` |  |
-| thegraph.graph-node.graphNodeGroups.query.podAnnotations."prometheus.io/scrape" | string | `"true"` |  |
-| thegraph.graph-node.graphNodeGroups.query.replicaCount | int | `1` |  |
-| thegraph.graph-node.ingress.hosts[0].host | string | `"graph.k8s.orb.local"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[0].path | string | `"/(.*)"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[0].port | int | `8000` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[0].serviceName | string | `"graph-node-combined"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[1].path | string | `"/ws/?(.*)"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[1].pathType | string | `"ImplementationSpecific"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[1].port | int | `8001` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[1].serviceName | string | `"graph-node-combined"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[2].path | string | `"/admin/?(.*)"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[2].pathType | string | `"ImplementationSpecific"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[2].port | int | `8020` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[2].serviceName | string | `"graph-node-combined"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[3].path | string | `"/indexer/?(.*)"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[3].pathType | string | `"ImplementationSpecific"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[3].port | int | `8030` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[3].serviceName | string | `"graph-node-combined"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[4].path | string | `"/graphman/?(.*)"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[4].pathType | string | `"ImplementationSpecific"` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[4].port | int | `8050` |  |
-| thegraph.graph-node.ingress.hosts[0].paths[4].serviceName | string | `"graph-node-combined"` |  |
-| thegraph.job.enabled | bool | `true` |  |
-| thegraph.job.fullnameOverride | string | `"graph"` |  |
-| thegraph.job.workspace.size | string | `"1Gi"` |  |
 | txsigner.config.derivationPath | string | `"m/44'/60'/0'/0/0"` |  |
 | txsigner.config.mnemonic | string | `"gate yellow grunt wrestle disease obtain mixed nature mansion tape purchase awful"` |  |
 | txsigner.enabled | bool | `true` |  |
