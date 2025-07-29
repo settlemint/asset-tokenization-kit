@@ -74,7 +74,7 @@ export function SystemDeploy() {
                 <p className="font-medium mb-3">
                   {t("system.bootstrap-contracts-header")}
                 </p>
-                <ul className="space-y-3 text-sm">
+                <ul className="space-y-3 text-sm list-disc ml-6">
                   <li>
                     <strong>{t("system.identity-registry-name")}</strong> –{" "}
                     {t("system.identity-registry-description")}
