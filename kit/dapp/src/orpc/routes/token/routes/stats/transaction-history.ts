@@ -94,7 +94,7 @@ export const statsTransactionHistory = authRouter.token.statsTransactionHistory
           since: sinceTimestamp.toString(),
         },
         output: TransactionHistoryResponseSchema,
-        error: "Failed to fetch transaction history",
+        error: context.t("tokens:api.stats.transactionHistory.messages.failed"),
       }
     );
 

@@ -31,26 +31,26 @@ function Web3AddressComponent({
   showPrettyName = true,
 }: Web3AddressProps) {
   // Select only the first user from the list to minimize re-renders
-  const { data: user } = useQuery({
-    ...orpc.user.list.queryOptions({
+  const { data: user } = useQuery(
+    orpc.user.list.queryOptions({
       input: {
         searchByAddress: address,
       },
-    }),
-    select: (users) => users[0],
-    staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes as it rarely changes
-  });
+      select: (users) => users[0],
+      staleTime: 1000 * 60 * 30, // Cache user data for 30 minutes as it rarely changes
+    })
+  );
 
   // Select only the first token from the list to minimize re-renders
-  const { data: token } = useQuery({
-    ...orpc.token.list.queryOptions({
+  const { data: token } = useQuery(
+    orpc.token.list.queryOptions({
       input: {
         searchByAddress: address,
       },
-    }),
-    select: (tokens) => tokens[0],
-    staleTime: 1000 * 60 * 30, // Cache token metadata for 30 minutes as it rarely changes
-  });
+      select: (tokens) => tokens[0],
+      staleTime: 1000 * 60 * 30, // Cache token metadata for 30 minutes as it rarely changes
+    })
+  );
 
   // Memoize truncated address display
   const truncatedAddressDisplay = useMemo(() => {

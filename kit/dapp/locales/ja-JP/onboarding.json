@@ -281,7 +281,7 @@
       "otp": {
         "description": "Google Authenticatorのようなアプリを使用して、30秒ごとに新しいコードを生成します。資産に対する最大のセキュリティ。",
         "summary": "最大のセキュリティ",
-        "title": "ワンタイムパスワード（OTP）"
+        "title": "OTP"
       },
       "pin": {
         "description": "取引を承認するために入力する6桁のコード。日常的な使用に便利で迅速です。",
@@ -339,7 +339,7 @@
       "title": "PINコードを設定する"
     },
     "recovery-codes": {
-      "confirm": "保存したことを確認する",
+      "confirm": "ウォレットの設定を完了する",
       "confirm-error": "秘密コードの確認に失敗しました",
       "confirm-stored": "Confirm you stored your recovery keys in a safe place.",
       "copied-to-clipboard": "秘密コードがクリップボードにコピーされました！",
@@ -366,5 +366,6 @@
     "setup-overview": "あなたの旅の先",
     "title": "デジタル資産プラットフォームへようこそ",
     "welcome-back": "お帰りなさい！"
-  }
+  },
+  "wallet-security.method-selector.otp.title": "OTP"
 }

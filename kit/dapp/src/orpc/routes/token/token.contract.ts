@@ -40,7 +40,14 @@ import { tokenStatsTransactionHistoryContract } from "@/orpc/routes/token/routes
 import { tokenStatsTransactionsContract } from "@/orpc/routes/token/routes/stats/transactions.contract";
 import { tokenStatsValueContract } from "@/orpc/routes/token/routes/stats/value.contract";
 
-const tokenContractMutations = {
+export const tokenContract = {
+  // Factory
+  factoryCreate: factoryCreateContract,
+  factoryList: factoryListContract,
+  factoryRead: factoryReadContract,
+  factoryPredictAddress: factoryPredictAddressContract,
+
+  // Mutations
   create: tokenCreateContract,
   pause: tokenPauseContract,
   unpause: tokenUnpauseContract,
@@ -57,19 +64,6 @@ const tokenContractMutations = {
   tokenSetYieldSchedule: tokenSetYieldScheduleContract,
   tokenAddComplianceModule: tokenAddComplianceModuleContract,
   tokenRemoveComplianceModule: tokenRemoveComplianceModuleContract,
-} as const;
-
-export type TokenContractMutations = keyof typeof tokenContractMutations;
-
-export const tokenContract = {
-  // Factory
-  factoryCreate: factoryCreateContract,
-  factoryList: factoryListContract,
-  factoryRead: factoryReadContract,
-  factoryPredictAddress: factoryPredictAddressContract,
-
-  // Mutations
-  ...tokenContractMutations,
 
   // Queries
   actions: tokenActionsContract,
@@ -89,3 +83,22 @@ export const tokenContract = {
   statsActivityByAsset: tokenStatsActivityByAssetContract,
   statsTransactionHistory: tokenStatsTransactionHistoryContract,
 };
+
+// Extract mutation keys for permissions
+export type TokenContractMutations =
+  | "burn"
+  | "create"
+  | "mint"
+  | "pause"
+  | "tokenAddComplianceModule"
+  | "tokenApprove"
+  | "tokenForcedRecover"
+  | "tokenFreezeAddress"
+  | "tokenRecoverERC20"
+  | "tokenRecoverTokens"
+  | "tokenRedeem"
+  | "tokenRemoveComplianceModule"
+  | "tokenSetCap"
+  | "tokenSetYieldSchedule"
+  | "transfer"
+  | "unpause";

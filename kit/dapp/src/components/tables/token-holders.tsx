@@ -76,13 +76,13 @@ export function TokenHoldersTable({ token }: TokenHoldersTableProps) {
   const router = useRouter();
   const routePath = router.state.matches.at(-1)?.pathname;
 
-  const { data: holdersResponse } = useSuspenseQuery({
-    ...orpc.token.holders.queryOptions({
+  const { data: holdersResponse } = useSuspenseQuery(
+    orpc.token.holders.queryOptions({
       input: {
         tokenAddress: token.id,
       },
-    }),
-  });
+    })
+  );
 
   // Extract holders data with proper null checking
   const holders = holdersResponse.token?.balances ?? [];

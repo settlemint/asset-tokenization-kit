@@ -30,4 +30,4 @@ dependencies:
   repository: file://./charts/dapp
   version: 0.1.0
 digest: sha256:43cedf79e086ffadc3bb34dff32fd38d40d556798ecbebd3d4a0c823fb6cd299
-generated: "2025-07-29T14:34:39.280784+02:00"
+generated: "2025-07-29T14:54:38.099496+02:00"

@@ -72,9 +72,15 @@ abstract contract AbstractATKAssetTest is Test {
 
         // Grant necessary roles to the owner in the system access manager
         vm.startPrank(platformAdmin);
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(ATKSystemRoles.DEPLOYER_ROLE, _owner);
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(ATKSystemRoles.TOKEN_MANAGER_ROLE, _owner);
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(ATKSystemRoles.ADDON_MANAGER_ROLE, _owner);
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.DEPLOYER_ROLE, _owner
+        );
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.TOKEN_MANAGER_ROLE, _owner
+        );
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.ADDON_MANAGER_ROLE, _owner
+        );
         vm.stopPrank();
     }
 

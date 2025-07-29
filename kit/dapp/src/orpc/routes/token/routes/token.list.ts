@@ -107,7 +107,7 @@ export const list = authRouter.token.list
         where: Object.keys(where).length > 0 ? where : undefined,
       },
       output: TokensResponseSchema,
-      error: "Failed to list tokens",
+      error: context.t("tokens:api.queries.list.messages.failed"),
     });
 
     return response.tokens;
