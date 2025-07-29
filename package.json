@@ -80,9 +80,6 @@
     "typescript": "5.9.1-rc",
     "yaml": "2.8.0"
   },
-  "resolutions": {
-    "zod": "4.0.13"
-  },
   "trustedDependencies": [
     "@sentry/cli",
     "@tailwindcss/oxide",
