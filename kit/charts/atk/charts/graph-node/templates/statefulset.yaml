@@ -41,11 +41,11 @@ spec:
               value: {{ $val | quote }}
             {{- end }}
             {{- range $key, $val := .Values.secretEnv }}
-            {{- if and $val.secretName $val.key }}
+            {{- if $val.key }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ $val.secretName | quote }}
+                  name: {{ if $val.secretName }}{{ $val.secretName | quote }}{{ else }}{{ include "graph-node.pgSecretName" $ | quote }}{{ end }}
                   key: {{ $val.key | quote }}
             {{- end }}
             {{- end }}
@@ -111,7 +111,7 @@ spec:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secretEnv.PRIMARY_SUBGRAPH_DATA_PGPASSWORD.secretName }}
+                  name: {{ include "graph-node.pgSecretName" . }}
                   key: {{ .Values.secretEnv.PRIMARY_SUBGRAPH_DATA_PGPASSWORD.key }}
         {{- end }}
         {{- with .Values.extraInitContainers }}
@@ -154,11 +154,11 @@ spec:
               value: {{ $val | quote }}
             {{- end }}
             {{- range $key, $val := .Values.secretEnv }}
-            {{- if and $val.secretName $val.key }}
+            {{- if $val.key }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ $val.secretName | quote }}
+                  name: {{ if $val.secretName }}{{ $val.secretName | quote }}{{ else }}{{ include "graph-node.pgSecretName" $ | quote }}{{ end }}
                   key: {{ $val.key | quote }}
             {{- end }}
             {{- end }}

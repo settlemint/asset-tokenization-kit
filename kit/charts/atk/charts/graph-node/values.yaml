@@ -132,13 +132,13 @@ env:
 # -- Environment variables from secrets
 secretEnv:
   PRIMARY_SUBGRAPH_DATA_PGUSER:
-    # -- Name of the secret that contains your PG username
-    secretName: thegraph-pg-secret
+    # -- Name of the secret that contains your PG username (uses graph-node.pgSecretName helper)
+    secretName: ""  # Dynamically set in templates using helper
     # -- Name of the data key in the secret that contains your PG username
     key: PGUSER
   PRIMARY_SUBGRAPH_DATA_PGPASSWORD:
-    # -- Name of the secret that contains your PG password
-    secretName: thegraph-pg-secret
+    # -- Name of the secret that contains your PG password (uses graph-node.pgSecretName helper)
+    secretName: ""  # Dynamically set in templates using helper
     # -- Name of the data key in the secret that contains your PG password
     key: PGPASSWORD
 

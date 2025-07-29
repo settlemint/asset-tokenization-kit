@@ -75,3 +75,10 @@ Return the config template
 {{- define "graph-node.config" -}}
 {{- tpl .Values.configTemplate . }}
 {{- end }}
+
+{{/*
+Return the PostgreSQL secret name
+*/}}
+{{- define "graph-node.pgSecretName" -}}
+{{- printf "%s-pg-secret" (include "graph-node.fullname" .) }}
+{{- end }}
