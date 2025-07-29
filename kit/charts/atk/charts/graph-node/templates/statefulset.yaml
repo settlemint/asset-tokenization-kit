@@ -79,8 +79,8 @@ spec:
 
               # Function to test PostgreSQL connection
               test_postgres() {
-                pg_isready -h {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }} -p {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }} -U {{ .Values.customSecret.PGUSER }} && \
-                psql -h {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }} -p {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }} -U {{ .Values.customSecret.PGUSER }} -d {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGDATABASE }} -c "SELECT 1;" > /dev/null 2>&1
+                pg_isready -h {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }} -p {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }} -U "$PGUSER" && \
+                psql -h {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGHOST }} -p {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGPORT }} -U "$PGUSER" -d {{ .Values.env.PRIMARY_SUBGRAPH_DATA_PGDATABASE }} -c "SELECT 1;" > /dev/null 2>&1
               }
 
               # Wait with exponential backoff
@@ -108,6 +108,11 @@ spec:
               echo "PostgreSQL failed to become ready after $MAX_RETRIES attempts"
               exit 1
           env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "graph-node.pgSecretName" . }}
+                  key: {{ .Values.secretEnv.PRIMARY_SUBGRAPH_DATA_PGUSER.key }}
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:

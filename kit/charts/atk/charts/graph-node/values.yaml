@@ -38,17 +38,11 @@ serviceAccount:
 
 rbac:
   # -- Specifies whether RBAC resources are to be created
-  create: true
+  create: false
   # @default -- See `values.yaml`
-  rules:
-    # Required for the init container to create Grafana Datasource Secrets
-    - apiGroups: [""]
-      resources:
-      - "secrets"
-      verbs:
-      - "get"
-      - "create"
-      - "patch"
+  rules: []
+    # Add RBAC rules here if graph-node requires specific Kubernetes API access
+    # Currently no special permissions are needed
 
 replicaCount: 1
 

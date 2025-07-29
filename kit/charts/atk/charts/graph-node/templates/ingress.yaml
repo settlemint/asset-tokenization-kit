@@ -1,6 +1,5 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "graph-node.fullname" . -}}
-{{- $svcPort := .Values.service.ports.httpQuery -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -31,13 +30,31 @@ spec:
       http:
         paths:
           {{- range .paths }}
+          {{- if eq .path "/ws/?(.*)" }}
           - path: {{ .path }}
             pathType: {{ .pathType | default "ImplementationSpecific" }}
             backend:
               service:
                 name: {{ $fullName }}-combined
                 port:
-                  number: {{ $svcPort }}
+                  name: http-queryws
+          {{- else if or (eq .path "/admin/?(.*)") (eq .path "/indexer/?(.*)") (eq .path "/graphman/?(.*)") }}
+          - path: {{ .path }}
+            pathType: {{ .pathType | default "ImplementationSpecific" }}
+            backend:
+              service:
+                name: {{ $fullName }}-combined
+                port:
+                  name: http-admin
+          {{- else }}
+          - path: {{ .path }}
+            pathType: {{ .pathType | default "ImplementationSpecific" }}
+            backend:
+              service:
+                name: {{ $fullName }}-combined
+                port:
+                  name: http-query
+          {{- end }}
           {{- end }}
     {{- end }}
 {{- end }}
