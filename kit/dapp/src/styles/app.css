@@ -437,4 +437,43 @@
   .StepLayout [data-slot="sidebar-inner"] {
     height: 100%;
   }
+
+  /* Custom thin scrollbars for StepLayout */
+  .StepLayout ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .StepLayout ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .StepLayout ::-webkit-scrollbar-thumb {
+    background: var(--sm-muted);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+
+  .StepLayout ::-webkit-scrollbar-thumb:hover {
+    background: var(--sm-border);
+  }
+
+  /* Specific styling for StepLayout sidebar scrollbar */
+  .StepLayout [data-slot="sidebar-content"] ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .StepLayout [data-slot="sidebar-content"] ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Firefox scrollbar styling */
+  .StepLayout {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sm-muted) transparent;
+  }
+
+  .StepLayout [data-slot="sidebar-content"] {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
 }

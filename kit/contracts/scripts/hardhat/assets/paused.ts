@@ -3,9 +3,7 @@ import { atkDeployer } from "../services/deployer";
 import { owner } from "../constants/actors";
 import { Countries } from "../constants/countries";
 import { ATKRoles } from "../constants/roles";
-import { ATKTopic } from "../constants/topics";
 import { Asset } from "../entities/asset";
-import { topicManager } from "../services/topic-manager";
 import { grantRoles } from "./actions/core/grant-roles";
 import { issueBasePriceClaim } from "./actions/core/issue-base-price-claim";
 import { pauseAsset } from "./actions/pausable/pause-asset";
@@ -28,7 +26,6 @@ export const createPausedAsset = async () => {
     pausedStableCoin.name,
     pausedStableCoin.symbol,
     pausedStableCoin.decimals,
-    [topicManager.getTopicId(ATKTopic.kyc)],
     [],
     Countries.BE,
   ]);

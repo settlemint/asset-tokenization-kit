@@ -568,7 +568,7 @@ abstract contract SMARTCustodianTest is AbstractSMARTTest {
         assertEq(token.balanceOf(lostWallet), 0, "Lost wallet balance not zero");
         assertEq(token.balanceOf(newWallet), initialBalance, "New wallet balance wrong");
         assertTrue(
-            systemUtils.identityRegistry().isVerified(newWallet, requiredClaimTopics),
+            systemUtils.identityRegistry().isVerified(newWallet, _topicsToExpressionNodes(requiredClaimTopics)),
             "New wallet not verified after recovery"
         );
         assertEq(
@@ -622,7 +622,10 @@ abstract contract SMARTCustodianTest is AbstractSMARTTest {
         assertFalse(tokenUtils.isFrozen(address(token), lostWallet), "Lost wallet still frozen after recovery");
         assertEq(tokenUtils.getFrozenTokens(address(token), newWallet), freezeAmount, "New wallet frozen tokens wrong");
         assertEq(tokenUtils.getFrozenTokens(address(token), lostWallet), 0, "Lost wallet frozen tokens not zero");
-        assertTrue(systemUtils.identityRegistry().isVerified(newWallet, requiredClaimTopics), "New wallet not verified");
+        assertTrue(
+            systemUtils.identityRegistry().isVerified(newWallet, _topicsToExpressionNodes(requiredClaimTopics)),
+            "New wallet not verified"
+        );
     }
 
     function test_Custodian_ForcedRecoverTokens_WithPartialFreezeOnly_Success() public {

@@ -12,7 +12,7 @@ interface DialogLayoutProps {
  */
 export function DialogLayout({ children }: DialogLayoutProps) {
   return (
-    <div className="DialogLayout flex flex-col min-h-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
+    <div className="DialogLayout flex flex-col h-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
       <div className="flex-shrink-0 flex justify-between items-center p-8">
         <AssetTokenizationKitLogo />
         <div className="flex gap-2">

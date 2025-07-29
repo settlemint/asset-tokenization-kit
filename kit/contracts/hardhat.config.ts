@@ -1,5 +1,5 @@
 import "@nomicfoundation/hardhat-foundry";
-import "@nomicfoundation/hardhat-toolbox-viem";
+import "@nomicfoundation/hardhat-ignition-viem";
 import "@nomiclabs/hardhat-solhint";
 import type { HardhatUserConfig } from "hardhat/config";
 

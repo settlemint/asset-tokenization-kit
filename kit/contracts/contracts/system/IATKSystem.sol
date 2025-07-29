@@ -101,7 +101,6 @@ interface IATKSystem is IERC165 {
     /// @param tokenFactoryRegistryProxy The address of the deployed ATKTokenFactoryRegistryProxy contract.
     /// @param systemAddonRegistryProxy The address of the deployed ATKSystemAddonRegistryProxy contract.
     /// @param complianceModuleRegistryProxy The address of the deployed ATKComplianceModuleRegistryProxy contract.
-    /// @param identityVerificationModule The address of the deployed IdentityVerificationModule contract.
     /// @param systemAccessManagerProxy The address of the deployed ATKSystemAccessManagerProxy contract.
     /// @param systemAccessManagerImplementation The address of the deployed ATKSystemAccessManagerImplementation
     /// contract.
@@ -116,7 +115,6 @@ interface IATKSystem is IERC165 {
         address tokenFactoryRegistryProxy,
         address systemAddonRegistryProxy,
         address complianceModuleRegistryProxy,
-        address identityVerificationModule,
         address systemAccessManagerProxy,
         address systemAccessManagerImplementation
     );
@@ -198,13 +196,6 @@ interface IATKSystem is IERC165 {
     /// @notice Returns the address of the system access manager.
     /// @return The address of the system access manager proxy contract.
     function systemAccessManager() external view returns (address);
-
-    /// @notice Retrieves the smart contract address of the proxy for the identity verification module.
-    /// @dev This function returns the stable, unchanging address of the identity verification module's proxy contract.
-    /// To interact with the identity verification module (e.g., to verify an identity or check verification status),
-    /// you should use this proxy address. It will forward calls to the current logic implementation.
-    /// @return identityVerificationModuleAddress The blockchain address of the identity verification module's proxy.
-    function identityVerificationModule() external view returns (address identityVerificationModuleAddress);
 
     /// @notice Returns the address of the identity implementation.
     /// @return The address of the identity implementation contract.

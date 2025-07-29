@@ -11,6 +11,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { ATKSystemAccessManagerImplementation } from "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 
 // Mock claim issuer for testing
 contract MockClaimIssuer {
@@ -23,10 +24,11 @@ contract MockClaimIssuer {
 contract ATKTrustedIssuersRegistryImplementationTest is Test {
     ATKTrustedIssuersRegistryImplementation public implementation;
     IERC3643TrustedIssuersRegistry public registry;
+    ATKSystemAccessManagerImplementation public systemAccessManager;
 
     // Test addresses
     address public admin = makeAddr("admin");
-    address public registrar = makeAddr("registrar");
+    address public claimPolicyManager = makeAddr("claimPolicyManager");
     address public user1 = makeAddr("user1");
     address public forwarder = makeAddr("forwarder");
 
@@ -51,7 +53,19 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         issuer2 = new MockClaimIssuer();
         issuer3 = new MockClaimIssuer();
 
-        // Deploy implementation
+        // Deploy system access manager
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        ATKSystemAccessManagerImplementation accessManagerImpl = new ATKSystemAccessManagerImplementation(forwarder);
+        bytes memory accessManagerInitData = abi.encodeWithSelector(accessManagerImpl.initialize.selector, initialAdmins);
+        ERC1967Proxy accessManagerProxy = new ERC1967Proxy(address(accessManagerImpl), accessManagerInitData);
+        systemAccessManager = ATKSystemAccessManagerImplementation(address(accessManagerProxy));
+
+        // Grant claim policy manager role to our test user
+        vm.prank(admin);
+        systemAccessManager.grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager);
+
+        // Deploy trusted issuers registry implementation
         implementation = new ATKTrustedIssuersRegistryImplementation(forwarder);
 
         // Deploy proxy with initialization data
@@ -61,9 +75,9 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
         registry = IERC3643TrustedIssuersRegistry(address(proxy));
 
-        // Grant registrar role
+        // Set the system access manager
         vm.prank(admin);
-        IAccessControl(address(registry)).grantRole(ATKSystemRoles.REGISTRAR_ROLE, registrar);
+        ATKTrustedIssuersRegistryImplementation(address(registry)).setSystemAccessManager(address(systemAccessManager));
     }
 
     function test_InitializeSuccess() public view {
@@ -71,8 +85,8 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         assertTrue(IAccessControl(address(registry)).hasRole(ATKSystemRoles.DEFAULT_ADMIN_ROLE, admin));
         assertTrue(IAccessControl(address(registry)).hasRole(ATKSystemRoles.REGISTRAR_ROLE, admin));
 
-        // Verify registrar has registrar role
-        assertTrue(IAccessControl(address(registry)).hasRole(ATKSystemRoles.REGISTRAR_ROLE, registrar));
+        // Verify claimPolicyManager has claim policy manager role
+        assertTrue(systemAccessManager.hasRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, claimPolicyManager));
 
         // Verify initial state
         IClaimIssuer[] memory issuers = registry.getTrustedIssuers();
@@ -89,9 +103,9 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         topics[0] = KYC_TOPIC;
         topics[1] = AML_TOPIC;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, false);
-        emit TrustedIssuerAdded(registrar, address(issuer1), topics);
+        emit TrustedIssuerAdded(claimPolicyManager, address(issuer1), topics);
 
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
@@ -126,7 +140,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         uint256[] memory topics = new uint256[](1);
         topics[0] = KYC_TOPIC;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(ATKTrustedIssuersRegistryImplementation.InvalidIssuerAddress.selector);
         registry.addTrustedIssuer(IClaimIssuer(address(0)), topics);
     }
@@ -134,7 +148,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
     function test_AddTrustedIssuerNoTopics() public {
         uint256[] memory topics = new uint256[](0);
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(ATKTrustedIssuersRegistryImplementation.NoClaimTopicsProvided.selector);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
     }
@@ -144,11 +158,11 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         topics[0] = KYC_TOPIC;
 
         // Add issuer first time
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
         // Try to add again
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(
             abi.encodeWithSelector(
                 ATKTrustedIssuersRegistryImplementation.IssuerAlreadyExists.selector, address(issuer1)
@@ -163,13 +177,13 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         topics[0] = KYC_TOPIC;
         topics[1] = AML_TOPIC;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
         // Remove issuer
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, false);
-        emit TrustedIssuerRemoved(registrar, address(issuer1));
+        emit TrustedIssuerRemoved(claimPolicyManager, address(issuer1));
 
         registry.removeTrustedIssuer(IClaimIssuer(address(issuer1)));
 
@@ -188,7 +202,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         uint256[] memory topics = new uint256[](1);
         topics[0] = KYC_TOPIC;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
         // Try to remove without permission
@@ -198,7 +212,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
     }
 
     function test_RemoveTrustedIssuerDoesNotExist() public {
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(
             abi.encodeWithSelector(
                 ATKTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
@@ -213,7 +227,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         originalTopics[0] = KYC_TOPIC;
         originalTopics[1] = AML_TOPIC;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), originalTopics);
 
         // Update topics
@@ -221,9 +235,9 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         newTopics[0] = AML_TOPIC;
         newTopics[1] = ACCREDITATION_TOPIC;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectEmit(true, true, false, false);
-        emit ClaimTopicsUpdated(registrar, address(issuer1), newTopics);
+        emit ClaimTopicsUpdated(claimPolicyManager, address(issuer1), newTopics);
 
         registry.updateIssuerClaimTopics(IClaimIssuer(address(issuer1)), newTopics);
 
@@ -243,7 +257,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         uint256[] memory topics = new uint256[](1);
         topics[0] = KYC_TOPIC;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
         // Try to update without permission
@@ -259,7 +273,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         uint256[] memory newTopics = new uint256[](1);
         newTopics[0] = AML_TOPIC;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(
             abi.encodeWithSelector(
                 ATKTrustedIssuersRegistryImplementation.IssuerDoesNotExist.selector, address(issuer1)
@@ -273,13 +287,13 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         uint256[] memory topics = new uint256[](1);
         topics[0] = KYC_TOPIC;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
 
         // Try to update with empty topics
         uint256[] memory newTopics = new uint256[](0);
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         vm.expectRevert(ATKTrustedIssuersRegistryImplementation.NoClaimTopicsProvided.selector);
         registry.updateIssuerClaimTopics(IClaimIssuer(address(issuer1)), newTopics);
     }
@@ -296,11 +310,11 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         uint256[] memory topics3 = new uint256[](1);
         topics3[0] = ACCREDITATION_TOPIC;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics1);
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer2)), topics2);
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer3)), topics3);
 
         // Check KYC topic (should have issuer1 and issuer2)
@@ -345,11 +359,11 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         topics3[0] = KYC_TOPIC;
         topics3[1] = ACCREDITATION_TOPIC;
 
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics1);
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer2)), topics2);
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer3)), topics3);
 
         // Verify all are trusted
@@ -362,7 +376,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         assertEq(allIssuers.length, 3);
 
         // Remove middle issuer
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.removeTrustedIssuer(IClaimIssuer(address(issuer2)));
 
         // Verify updated state
@@ -402,11 +416,11 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         topics[0] = KYC_TOPIC;
 
         // Add three issuers for KYC topic
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer1)), topics);
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer2)), topics);
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.addTrustedIssuer(IClaimIssuer(address(issuer3)), topics);
 
         // Verify all are present
@@ -414,7 +428,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         assertEq(kycIssuers.length, 3);
 
         // Remove the middle one (should trigger swap-and-pop)
-        vm.prank(registrar);
+        vm.prank(claimPolicyManager);
         registry.removeTrustedIssuer(IClaimIssuer(address(issuer2)));
 
         // Verify state after removal
@@ -440,7 +454,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
 
         // Add all issuers
         for (uint8 i = 0; i < numIssuers; i++) {
-            vm.prank(registrar);
+            vm.prank(claimPolicyManager);
             registry.addTrustedIssuer(IClaimIssuer(issuers[i]), topics);
             assertTrue(registry.isTrustedIssuer(issuers[i]));
             assertTrue(registry.hasClaimTopic(issuers[i], topic));
@@ -452,7 +466,7 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
 
         // Remove all issuers
         for (uint8 i = 0; i < numIssuers; i++) {
-            vm.prank(registrar);
+            vm.prank(claimPolicyManager);
             registry.removeTrustedIssuer(IClaimIssuer(issuers[i]));
             assertFalse(registry.isTrustedIssuer(issuers[i]));
             assertFalse(registry.hasClaimTopic(issuers[i], topic));

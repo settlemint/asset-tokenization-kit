@@ -21,8 +21,8 @@ for:
 - **Security Token Issuance**: ERC-3643 derived and ERC-20 compliant tokens for
   regulated financial instruments
 - **Asset Tokenization**: Bonds, equity shares, deposits, funds, and stablecoins
-- **Identity Management**: On-chain KYC/AML compliance with ERC-734/735
-  identities
+- **Advanced Identity Management**: On-chain KYC/AML compliance with ERC-734/735
+  identities and **logical expressions** for complex verification rules
 - **Regulatory Compliance**: Modular compliance rules for different
   jurisdictions
 - **DeFi Integration**: Full ERC-20 compatibility for seamless ecosystem
@@ -401,7 +401,62 @@ graph LR
 2. **Identity-based Restrictions**
    - `IdentityAllowListComplianceModule`: Whitelist specific identities
    - `AddressBlockListComplianceModule`: Blacklist specific addresses
-   - `SMARTIdentityVerificationComplianceModule`: Require identity verification
+   - `SMARTIdentityVerificationComplianceModule`: **Advanced logical identity
+     verification**
+
+#### Advanced Identity Verification with Logical Expressions
+
+**Major Innovation**: Unlike ERC-3643's simple AND-only claim requirements,
+SMART Protocol supports **complex logical expressions** for identity
+verification, enabling sophisticated compliance rules that reflect real-world
+requirements.
+
+```mermaid
+graph LR
+    subgraph "ERC-3643 (Limited)"
+        ERC[Required Topics: KYC + AML + ACCREDITED]
+        ERC --> Simple[ALL topics required]
+    end
+
+    subgraph "SMART Protocol (Advanced)"
+        SMART[Expression: CONTRACT OR KYC AND AML]
+        SMART --> Contract[Contracts: Only CONTRACT claim]
+        SMART --> Individual[Individuals: KYC + AML claims]
+    end
+
+    style ERC fill:#ffcccc,stroke:#333,stroke-width:2px
+    style SMART fill:#ccffcc,stroke:#333,stroke-width:2px
+```
+
+**Expression Examples**:
+
+```typescript
+// Simple requirement (like ERC-3643)
+"KYC AND AML";
+
+// Smart contracts bypass individual verification
+"CONTRACT OR (KYC AND AML)";
+
+// Accredited investors have different requirements
+"ACCREDITED OR (KYC AND AML AND JURISDICTION)";
+
+// Complex institutional rules
+"(INSTITUTION AND REGULATORY_APPROVAL) OR (INDIVIDUAL AND KYC AND AML)";
+
+// Flexible jurisdiction handling
+"CONTRACT OR (KYC AND (US_ACCREDITED OR EU_QUALIFIED OR UK_SOPHISTICATED))";
+```
+
+**Benefits**:
+
+- ✅ **Flexible Entity Types**: Different rules for contracts, institutions, and
+  individuals
+- ✅ **Regulatory Efficiency**: Accredited investors can have streamlined
+  requirements
+- ✅ **DeFi Compatibility**: Smart contracts can interact without individual KYC
+- ✅ **Jurisdiction Flexibility**: Support multiple regulatory frameworks
+  simultaneously
+- ✅ **Future-Proof**: Easy to adapt to new regulatory requirements
 
 **Note**: The compliance module system is fully extensible. You can implement
 custom modules by following the `ISMARTComplianceModule` interface to address
@@ -530,7 +585,7 @@ sequenceDiagram
         Compliance->>IdentityModule: canTransfer(token, from, to, amount, params)
 
         %% Identity verification within module (only checks recipient)
-        IdentityModule->>IdentityRegistry: isVerified(to, requiredClaimTopics)
+        IdentityModule->>IdentityRegistry: isVerified(to, logicalExpression)
         IdentityRegistry->>TopicScheme: hasTopicScheme(topic)
         TopicScheme-->>IdentityRegistry: topic valid
         IdentityRegistry->>TrustedIssuers: getTrustedIssuersForClaimTopic(topic)
@@ -586,23 +641,23 @@ sequenceDiagram
 
 ## 🔄 ERC-3643 vs SMART Protocol
 
-| **Aspect**                               | **ERC-3643**                                | **SMART Protocol**                                                                       | **Notes**                                                              |
-| ---------------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **ERC20 Compatibility**                  | Partial / constrained                       | Fully `ERC20` and `ERC20Upgradeable` compliant                                           | Ensures full compatibility with DeFi and wallets                       |
-| **Upgradeability**                       | Centralized via Implementation Authority    | Supported via UUPS; system-agnostic (project decides upgrade pattern)                    | SMART provides the option but doesn't enforce a pattern                |
-| **Modularity**                           | Partially modular                           | Modular by default (OpenZeppelin extension pattern)                                      | SMARTBurnable, SMARTRedeemable, SMARTPausable, etc.                    |
-| **Identity / Compliance Contract Reuse** | Typically one-off per token                 | Reusable across all tokens                                                               | Efficient architecture, simplifies ecosystem-wide compliance           |
-| **Compliance Model**                     | Single compliance contract, may be modular  | Fully modular compliance rules; also supports monolithic if desired                      | Flexible based on project use case                                     |
-| **Compliance Configuration**             | No token-specific configuration             | Rule-specific parameters configurable per token                                          | Enables rule reuse with different behaviors                            |
-| **Claim Topics Storage**                 | External Claim Topics Registry              | Defined and stored per token                                                             | Improves clarity and portability of tokens                             |
-| **Identity Verification**                | Relies on Claim Topics Registry             | Handled via compliance modules calling `isVerified(identity, topics)` + **optional KYC** | Identity checks are configurable and optional                          |
-| **KYC Optional**                         | Implied as required                         | **Optional** per token, part of the modular compliance                                   | Allows issuing cryptocurrencies or unrestricted tokens                 |
-| **Authorization**                        | Agent-based role system                     | Access-control agnostic                                                                  | Supports OpenZeppelin `AccessControl`, custom roles, or hybrid models  |
-| **Burning Logic**                        | Owner-initiated only (`burn(user, amount)`) | `SMARTBurnable` (admin burn) + `SMARTRedeemable` (self-burn)                             | Enables more flexible redemption logic (e.g. for bonds)                |
-| **Meta-Transaction Support**             | Not specified                               | Fully ERC-2771 compatible (trusted forwarders)                                           | Enables gasless transactions and better UX                             |
-| **Immutability**                         | Name and symbol mutable                     | Immutable following ERC20 standard                                                       | Avoids confusion and aligns with token standards                       |
-| **Interface Detection (ERC-165)**        | Not part of standard                        | **Built-in ERC-165 support**                                                             | Enables introspection: e.g., query if token supports Burnable, etc.    |
-| **Token Recovery Flow**                  | Custodian-based recovery                    | Two-step: identity registry manager handles recovery + user reclaims tokens              | SMART separates identity and asset recovery for better security and UX |
+| **Aspect**                               | **ERC-3643**                                | **SMART Protocol**                                                          | **Notes**                                                              |
+| ---------------------------------------- | ------------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **ERC20 Compatibility**                  | Partial / constrained                       | Fully `ERC20` and `ERC20Upgradeable` compliant                              | Ensures full compatibility with DeFi and wallets                       |
+| **Upgradeability**                       | Centralized via Implementation Authority    | Supported via UUPS; system-agnostic (project decides upgrade pattern)       | SMART provides the option but doesn't enforce a pattern                |
+| **Modularity**                           | Partially modular                           | Modular by default (OpenZeppelin extension pattern)                         | SMARTBurnable, SMARTRedeemable, SMARTPausable, etc.                    |
+| **Identity / Compliance Contract Reuse** | Typically one-off per token                 | Reusable across all tokens                                                  | Efficient architecture, simplifies ecosystem-wide compliance           |
+| **Compliance Model**                     | Single compliance contract, may be modular  | Fully modular compliance rules; also supports monolithic if desired         | Flexible based on project use case                                     |
+| **Compliance Configuration**             | No token-specific configuration             | Rule-specific parameters configurable per token                             | Enables rule reuse with different behaviors                            |
+| **Claim Topics Storage**                 | External Claim Topics Registry              | Defined and stored per token                                                | Improves clarity and portability of tokens                             |
+| **Identity Verification**                | Simple AND-only logic for required topics   | **Advanced logical expressions** with AND/OR/NOT                            | Enables complex rules like "CONTRACT OR (KYC AND AML)"                 |
+| **KYC Optional**                         | Implied as required                         | **Optional** per token, part of the modular compliance                      | Allows issuing cryptocurrencies or unrestricted tokens                 |
+| **Authorization**                        | Agent-based role system                     | Access-control agnostic                                                     | Supports OpenZeppelin `AccessControl`, custom roles, or hybrid models  |
+| **Burning Logic**                        | Owner-initiated only (`burn(user, amount)`) | `SMARTBurnable` (admin burn) + `SMARTRedeemable` (self-burn)                | Enables more flexible redemption logic (e.g. for bonds)                |
+| **Meta-Transaction Support**             | Not specified                               | Fully ERC-2771 compatible (trusted forwarders)                              | Enables gasless transactions and better UX                             |
+| **Immutability**                         | Name and symbol mutable                     | Immutable following ERC20 standard                                          | Avoids confusion and aligns with token standards                       |
+| **Interface Detection (ERC-165)**        | Not part of standard                        | **Built-in ERC-165 support**                                                | Enables introspection: e.g., query if token supports Burnable, etc.    |
+| **Token Recovery Flow**                  | Custodian-based recovery                    | Two-step: identity registry manager handles recovery + user reclaims tokens | SMART separates identity and asset recovery for better security and UX |
 
 ## **Common Use Cases**
 
