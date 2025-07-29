@@ -10,19 +10,12 @@ describe("System Addon create", () => {
   test("can create an addon", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
-    const system = await client.system.read({ id: "default" });
-
-    expect(system?.systemAddonRegistry).toBeDefined();
-    if (!system?.systemAddonRegistry) {
-      return;
-    }
 
     const result = await client.system.addonCreate({
       verification: {
         verificationCode: DEFAULT_PINCODE,
         verificationType: "pincode",
       },
-      contract: system.systemAddonRegistry,
       addons: [
         { type: "yield", name: "Yield Addon" },
         { type: "xvp", name: "XVP Addon" },

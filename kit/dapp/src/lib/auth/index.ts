@@ -408,5 +408,4 @@ export type Session = typeof auth.$Infer.Session;
 export interface SessionUser extends InferUser<typeof options> {
   wallet: EthereumAddress;
   role: UserRole;
-  isOnboarded: boolean;
 }

@@ -169,10 +169,20 @@ export const addonCreate = portalRouter.system.addonCreate
   .handler(async function* ({
     input,
     context,
+    errors,
   }): AsyncGenerator<SystemAddonCreateOutput, void, void> {
-    const { contract, addons, verification } = input;
+    const { addons, verification } = input;
     const sender = context.auth.user;
     const { t, system } = context;
+
+    const contract = system?.systemAddonRegistry?.id;
+    if (!contract) {
+      const cause = new Error("System addon registry not found");
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: cause.message,
+        cause,
+      });
+    }
 
     // Normalize to array
     const addonList = Array.isArray(addons) ? addons : [addons];
@@ -228,7 +238,7 @@ export const addonCreate = portalRouter.system.addonCreate
       // Check if addon already exists (if we had that data)
       if (existingAddonNames.includes(name)) {
         yield {
-          status: "completed" as const,
+          status: "completed",
           message: t("system:addons.messages.alreadyExists", { name }),
           currentAddon: { type, name },
           progress,
@@ -253,7 +263,7 @@ export const addonCreate = portalRouter.system.addonCreate
         logger.info(`Registering addon with details:`, {
           addonType: type,
           addonName: name,
-          contract: contract,
+          contract,
           implementationAddress,
           initializationData,
           userWallet: sender.wallet,

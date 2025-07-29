@@ -1,24 +1,13 @@
-import {
-  getFactoryTypeIdFromAssetType,
-  type AssetType,
-} from "@/lib/zod/validators/asset-types";
-import type { Context } from "@/orpc/context/context";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { portalRouter } from "@/orpc/procedures/portal.router";
+import { getTokenFactory } from "@/orpc/routes/token/routes/factory/helpers/factory-context";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
 import type {
   TokenCreateOutput,
   TokenCreateSchema,
 } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
-
-function getTokenFactory(context: Context, type: AssetType) {
-  return context.system?.tokenFactories.find(
-    (tokenFactory) =>
-      tokenFactory.typeId === getFactoryTypeIdFromAssetType(type)
-  );
-}
 
 export const create = portalRouter.token.create
   .use(

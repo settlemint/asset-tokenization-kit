@@ -84,6 +84,7 @@ export const read = onboardedRouter.system.read
       systemAddonRegistry: systemContext.systemAddonRegistry?.id ?? null,
       tokenFactories: systemContext.tokenFactories,
       systemAddons: systemContext.systemAddons,
+      complianceModules: systemContext.complianceModules,
     };
     return output;
   });

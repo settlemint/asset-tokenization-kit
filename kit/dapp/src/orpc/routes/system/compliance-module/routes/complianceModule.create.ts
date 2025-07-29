@@ -19,18 +19,13 @@
 
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
-import {
-  portalMiddleware,
-  TransactionEventEmitted,
-} from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/orpc/procedures/portal.router";
 import {
   getDefaultComplianceModuleImplementations,
   SystemComplianceModuleConfig,
   type SystemComplianceModuleCreateOutput,
+  type SystemComplianceModuleCreateSchema,
 } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -66,7 +61,7 @@ const COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME = {
   "address-block-list": "sanctionsModuleFactory",
   "identity-block-list": "sanctionsModuleFactory",
   "identity-allow-list": "sanctionsModuleFactory",
-} as const;
+};
 
 /**
  * Gets the implementation address for a compliance module configuration
@@ -95,240 +90,237 @@ function getComplianceImplementationAddress(
   return defaultImplementation;
 }
 
-export const complianceModuleCreate =
-  onboardedRouter.system.complianceModuleCreate
-    .use(permissionsMiddleware({ system: ["create"] }))
-    .use(theGraphMiddleware)
-    .use(portalMiddleware)
-    .use(systemMiddleware)
-    .handler(async function* ({
-      input,
-      context,
-    }): AsyncGenerator<
-      SystemComplianceModuleCreateOutput | TransactionEventEmitted,
-      void,
-      void
-    > {
-      const { contract, complianceModules, verification } = input;
-      const sender = context.auth.user;
-      const { t, system } = context;
+export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
+  .use(
+    blockchainPermissionsMiddleware<typeof SystemComplianceModuleCreateSchema>({
+      requiredRoles: ["deployer"],
+      getAccessControl: ({ context }) => {
+        return context.system?.complianceModuleRegistry?.accessControl;
+      },
+    })
+  )
+  .handler(async function* ({
+    input,
+    context,
+    errors,
+  }): AsyncGenerator<SystemComplianceModuleCreateOutput, void, void> {
+    const { complianceModules, verification } = input;
+    const sender = context.auth.user;
+    const { t, system } = context;
 
-      // Normalize to array
-      const moduleList = Array.isArray(complianceModules)
-        ? complianceModules
-        : [complianceModules];
-      const totalModules = moduleList.length;
+    const contract = system?.complianceModuleRegistry?.id;
+    if (!contract) {
+      const cause = new Error("System addon registry not found");
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: cause.message,
+        cause,
+      });
+    }
 
-      // Yield initial loading message
+    // Normalize to array
+    const moduleList = Array.isArray(complianceModules)
+      ? complianceModules
+      : [complianceModules];
+    const totalModules = moduleList.length;
+
+    // Yield initial loading message
+    yield {
+      status: "pending",
+      message: t("system:compliance.messages.preparing"),
+      progress: { current: 0, total: totalModules },
+    };
+
+    // Query existing compliance modules to check for duplicates
+    const existingModuleTypes =
+      system?.complianceModules.map((module) => module.typeId) ?? [];
+
+    const results: SystemComplianceModuleCreateOutput["results"] = [];
+
+    /**
+     * Checks if an error contains a specific pattern
+     */
+    function containsErrorPattern(error: unknown, pattern: string): boolean {
+      if (error instanceof Error) {
+        return (
+          error.message.includes(pattern) ||
+          (error.stack?.includes(pattern) ?? false)
+        );
+      }
+      if (typeof error === "string") {
+        return error.includes(pattern);
+      }
+      return false;
+    }
+
+    // Process each compliance module using a generator pattern for batch operations
+    for (const [index, moduleConfig] of moduleList.entries()) {
+      const progress = { current: index + 1, total: totalModules };
+      const { type } = moduleConfig;
+
+      // Yield initial progress message for this module
       yield {
-        status: "pending" as const,
-        message: t("system:compliance.messages.preparing"),
-        progress: { current: 0, total: totalModules },
+        status: "pending",
+        message: t("system:compliance.messages.progress", {
+          current: progress.current,
+          total: progress.total,
+          type,
+        }),
+        currentComplianceModule: { type },
+        progress,
       };
 
-      // Query existing compliance modules to check for duplicates
-      const existingModuleTypes =
-        system?.complianceModules.map((module) => module.typeId) ?? [];
-
-      const results: SystemComplianceModuleCreateOutput["results"] = [];
-
-      /**
-       * Checks if an error contains a specific pattern
-       */
-      function containsErrorPattern(error: unknown, pattern: string): boolean {
-        if (error instanceof Error) {
-          return (
-            error.message.includes(pattern) ||
-            (error.stack?.includes(pattern) ?? false)
-          );
-        }
-        if (typeof error === "string") {
-          return error.includes(pattern);
-        }
-        return false;
-      }
-
-      // Process each compliance module using a generator pattern for batch operations
-      for (const [index, moduleConfig] of moduleList.entries()) {
-        const progress = { current: index + 1, total: totalModules };
-        const { type } = moduleConfig;
-
-        // Yield initial progress message for this module
+      // Check if module already exists (if we had that data)
+      if (existingModuleTypes.includes(type)) {
         yield {
-          status: "pending" as const,
-          message: t("system:compliance.messages.progress", {
-            current: progress.current,
-            total: progress.total,
-            type,
-          }),
+          status: "completed",
+          message: t("system:compliance.messages.alreadyExists", { type }),
           currentComplianceModule: { type },
           progress,
         };
 
-        // Check if module already exists (if we had that data)
-        if (existingModuleTypes.some((existingType) => existingType === type)) {
-          yield {
-            status: "completed" as const,
-            message: t("system:compliance.messages.alreadyExists", { type }),
-            currentComplianceModule: { type },
-            progress,
-          };
+        results.push({
+          type,
+          transactionHash: "",
+          error: "Compliance module already exists",
+        });
 
-          results.push({
-            type,
-            transactionHash: "",
-            error: "Compliance module already exists",
+        continue; // Skip to next module
+      }
+
+      try {
+        // Get implementation address and initialization data
+        const implementationAddress =
+          getComplianceImplementationAddress(moduleConfig);
+
+        // Log the implementation details for auditing
+        logger.info(`Registering compliance module with details:`, {
+          moduleType: type,
+          contract,
+          implementationAddress,
+          userWallet: sender.wallet,
+        });
+
+        // Execute the compliance module registration transaction
+        const variables: VariablesOf<
+          typeof REGISTER_COMPLIANCE_MODULE_MUTATION
+        > = {
+          address: contract,
+          from: sender.wallet,
+          implementation: implementationAddress,
+          ...(await handleChallenge(sender, {
+            code: verification.verificationCode,
+            type: verification.verificationType,
+          })),
+        };
+
+        // Use the Portal client's mutate method that returns an async generator
+        const transactionHash = yield* context.portalClient.mutate(
+          REGISTER_COMPLIANCE_MODULE_MUTATION,
+          variables,
+          t("system:compliance.messages.failed", { name: type }),
+          {
+            waitingForMining: t("system:compliance.messages.registering", {
+              name: type,
+            }),
+            transactionIndexed: t("system:compliance.messages.registered", {
+              name: type,
+            }),
+          }
+        );
+
+        const implementationName = COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME[type];
+        results.push({
+          type,
+          transactionHash,
+          implementations: { [implementationName]: implementationAddress },
+        });
+      } catch (error) {
+        // Handle any errors during compliance module registration
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : t("system:compliance.messages.defaultError");
+
+        // Enhanced error logging with more details
+        logger.error(`Compliance module registration failed for ${type}:`, {
+          error,
+          errorMessage,
+          errorStack: error instanceof Error ? error.stack : undefined,
+          moduleConfig,
+          sender: sender.wallet,
+          userWallet: sender.wallet,
+          moduleType: type,
+          contract,
+        });
+
+        // Check for specific error patterns to provide better user feedback
+        let specificErrorMessage = errorMessage;
+        if (containsErrorPattern(error, "ComplianceModuleAlreadyRegistered")) {
+          specificErrorMessage = t("system:compliance.messages.alreadyExists", {
+            name: type,
           });
-
-          continue; // Skip to next module
+        } else if (containsErrorPattern(error, "AccessControl")) {
+          specificErrorMessage = t("system:compliance.messages.accessDenied", {
+            contract: system.complianceModuleRegistry,
+          });
+        } else if (containsErrorPattern(error, "Unauthorized")) {
+          specificErrorMessage = t("system:compliance.messages.accessDenied", {
+            contract: system.complianceModuleRegistry,
+          });
+        } else if (containsErrorPattern(error, "implementation")) {
+          specificErrorMessage = t(
+            "system:compliance.messages.invalidImplementation"
+          );
+        } else if (containsErrorPattern(error, "invalid")) {
+          specificErrorMessage = t(
+            "system:compliance.messages.invalidConfiguration"
+          );
         }
 
-        try {
-          // Get implementation address and initialization data
-          const implementationAddress =
-            getComplianceImplementationAddress(moduleConfig);
-
-          // Log the implementation details for auditing
-          logger.info(`Registering compliance module with details:`, {
-            moduleType: type,
-            contract: contract,
-            implementationAddress,
-            userWallet: sender.wallet,
-          });
-
-          // Execute the compliance module registration transaction
-          const variables: VariablesOf<
-            typeof REGISTER_COMPLIANCE_MODULE_MUTATION
-          > = {
-            address: contract,
-            from: sender.wallet,
-            implementation: implementationAddress,
-            ...(await handleChallenge(sender, {
-              code: verification.verificationCode,
-              type: verification.verificationType,
-            })),
-          };
-
-          // Use the Portal client's mutate method that returns an async generator
-          const transactionHash = yield* context.portalClient.mutate(
-            REGISTER_COMPLIANCE_MODULE_MUTATION,
-            variables,
-            t("system:compliance.messages.failed", { name: type }),
-            {
-              waitingForMining: t("system:compliance.messages.registering", {
-                name: type,
-              }),
-              transactionIndexed: t("system:compliance.messages.registered", {
-                name: type,
-              }),
-            }
-          );
-
-          const implementationName =
-            COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME[type];
-          results.push({
-            type,
-            transactionHash,
-            implementations: { [implementationName]: implementationAddress },
-          });
-        } catch (error) {
-          // Handle any errors during compliance module registration
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : t("system:compliance.messages.defaultError");
-
-          // Enhanced error logging with more details
-          logger.error(`Compliance module registration failed for ${name}:`, {
-            error,
-            errorMessage,
-            errorStack: error instanceof Error ? error.stack : undefined,
-            moduleConfig,
-            contract,
-            sender: sender.wallet,
-            userWallet: sender.wallet,
-            moduleType: type,
-          });
-
-          // Check for specific error patterns to provide better user feedback
-          let specificErrorMessage = errorMessage;
-          if (
-            containsErrorPattern(error, "ComplianceModuleAlreadyRegistered")
-          ) {
-            specificErrorMessage = t(
-              "system:compliance.messages.alreadyExists",
-              {
-                name,
-              }
-            );
-          } else if (containsErrorPattern(error, "AccessControl")) {
-            specificErrorMessage = t(
-              "system:compliance.messages.accessDenied",
-              {
-                contract,
-              }
-            );
-          } else if (containsErrorPattern(error, "Unauthorized")) {
-            specificErrorMessage = t(
-              "system:compliance.messages.accessDenied",
-              {
-                contract,
-              }
-            );
-          } else if (containsErrorPattern(error, "implementation")) {
-            specificErrorMessage = t(
-              "system:compliance.messages.invalidImplementation"
-            );
-          } else if (containsErrorPattern(error, "invalid")) {
-            specificErrorMessage = t(
-              "system:compliance.messages.invalidConfiguration"
-            );
-          }
-
-          yield {
-            status: "failed" as const,
-            message: t("system:compliance.messages.failed", { name: type }),
-            currentComplianceModule: {
-              type,
-              error: specificErrorMessage,
-            },
-            progress,
-          };
-
-          results.push({
+        yield {
+          status: "failed",
+          message: t("system:compliance.messages.failed", { name: type }),
+          currentComplianceModule: {
             type,
             error: specificErrorMessage,
-          });
-        }
-      }
+          },
+          progress,
+        };
 
-      // Calculate final results and determine completion message
-      const successful = results.filter((r) => !r.error);
-      const failed = results.filter((r) => r.error);
-
-      // Yield final completion message
-      let finalMessage: string;
-      if (failed.length === 0) {
-        finalMessage = t("system:compliance.messages.allSuccess", {
-          count: successful.length,
-        });
-      } else if (successful.length === 0) {
-        finalMessage = t("system:compliance.messages.allFailed");
-      } else {
-        finalMessage = t("system:compliance.messages.partialSuccess", {
-          successCount: successful.length,
-          totalCount: totalModules,
+        results.push({
+          type,
+          error: specificErrorMessage,
         });
       }
+    }
 
-      yield {
-        status: "completed" as const,
-        message: finalMessage,
-        results,
-        result: results, // Added for useStreamingMutation hook compatibility
-        progress: {
-          current: totalModules,
-          total: totalModules,
-        },
-      };
-    });
+    // Calculate final results and determine completion message
+    const successful = results.filter((r) => !r.error);
+    const failed = results.filter((r) => r.error);
+
+    // Yield final completion message
+    let finalMessage: string;
+    if (failed.length === 0) {
+      finalMessage = t("system:compliance.messages.allSuccess", {
+        count: successful.length,
+      });
+    } else if (successful.length === 0) {
+      finalMessage = t("system:compliance.messages.allFailed");
+    } else {
+      finalMessage = t("system:compliance.messages.partialSuccess", {
+        successCount: successful.length,
+        totalCount: totalModules,
+      });
+    }
+
+    yield {
+      status: "completed",
+      message: finalMessage,
+      results,
+      result: results, // Added for useStreamingMutation hook compatibility
+      progress: {
+        current: totalModules,
+        total: totalModules,
+      },
+    };
+  });

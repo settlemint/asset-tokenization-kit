@@ -1,5 +1,5 @@
+import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { z } from "zod";
-import { MutationInputSchemaWithContract } from "../../../common/schemas/mutation.schema";
 
 /**
  * Supported system compliance module types enum
@@ -58,13 +58,12 @@ const SystemComplianceModuleConfigSchema = z.object({
 /**
  * Input schema for system compliance module creation
  */
-export const SystemComplianceModuleCreateSchema =
-  MutationInputSchemaWithContract.extend({
-    complianceModules: z.union([
-      SystemComplianceModuleConfigSchema,
-      z.array(SystemComplianceModuleConfigSchema),
-    ]),
-  });
+export const SystemComplianceModuleCreateSchema = MutationInputSchema.extend({
+  complianceModules: z.union([
+    SystemComplianceModuleConfigSchema,
+    z.array(SystemComplianceModuleConfigSchema),
+  ]),
+});
 
 /**
  * Schema for individual compliance module result in streaming output
