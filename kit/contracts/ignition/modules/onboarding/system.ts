@@ -249,6 +249,16 @@ const ATKOnboardingSystemModule = buildModule(
       }
     );
 
+    const setTokenFactoryRegistrySystemAccessManager = m.call(
+      tokenFactoryRegistry,
+      "setSystemAccessManager",
+      [systemAccessManagerAddress],
+      {
+        from: m.getAccount(0),
+        id: "setTokenFactoryRegistrySystemAccessManager",
+      }
+    );
+
     return {
       system,
       compliance,
