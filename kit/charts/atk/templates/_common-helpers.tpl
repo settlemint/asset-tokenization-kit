@@ -390,7 +390,7 @@ Usage: {{ include "common.warnings.rollingTag" .Values.image }}
 */}}
 {{- define "common.warnings.rollingTag" -}}
 {{- if and .repository .tag }}
-{{- if contains "latest" .tag }}
+{{- if and (contains "latest" .tag) (not .registry) }}
 
 WARNING: Rolling tag detected ({{ .repository }}:{{ .tag }}), please note that it is strongly recommended to avoid using rolling tags in a production environment.
 +info https://docs.bitnami.com/containers/how-to/understand-rolling-tags-containers/
