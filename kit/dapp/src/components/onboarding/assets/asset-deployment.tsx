@@ -17,11 +17,11 @@ export function AssetDeployment() {
   const { completeStepAndNavigate } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common"]);
   const navigate = useNavigate();
-  const { data: systemDetails } = useQuery({
-    ...orpc.system.read.queryOptions({
+  const { data: systemDetails } = useQuery(
+    orpc.system.read.queryOptions({
       input: { id: "default" },
-    }),
-  });
+    })
+  );
 
   // Stable reference for deployed factories
   const deployedFactories = systemDetails?.tokenFactories ?? [];

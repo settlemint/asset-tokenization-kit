@@ -1,11 +1,10 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
+import { read } from "@/orpc/routes/account/routes/account.read";
 import { read as readSystem } from "@/orpc/routes/system/routes/system.read";
 import { call, ORPCError } from "@orpc/server";
 
@@ -34,11 +33,12 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
 export const identityCreate = onboardedRouter.system.identityCreate
   .use(theGraphMiddleware)
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async ({ input, context, errors }) => {
     const { verification } = input;
-    const { auth, t } = context;
+    const { auth } = context;
     const sender = auth.user;
 
+    // Parallel fetch of account and system details
     const [account, systemDetails] = await Promise.all([
       call(readAccount, {}, { context }).catch((error: unknown) => {
         if (error instanceof ORPCError && error.status === 404) {
@@ -69,31 +69,27 @@ export const identityCreate = onboardedRouter.system.identityCreate
       });
     }
 
-    // Generate messages using server-side translations
-    const identityCreateMessages = getMutationMessages(
-      t,
-      "system",
-      "identityCreate"
-    );
-
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
 
-    const transactionHash = yield* context.portalClient.mutate(
+    await context.portalClient.mutate(
       IDENTITY_CREATE_MUTATION,
       {
         address: systemDetails.identityFactory,
         from: sender.wallet,
         ...challengeResponse,
       },
-      identityCreateMessages.errorMessage,
-      {
-        waitingForMining: identityCreateMessages.pendingMessage,
-        transactionIndexed: identityCreateMessages.successMessage,
-      }
+      "Failed to create identity"
     );
 
-    return getEthereumHash(transactionHash);
+    // Return the updated account data
+    return await call(
+      read,
+      {
+        wallet: sender.wallet,
+      },
+      { context }
+    );
   });

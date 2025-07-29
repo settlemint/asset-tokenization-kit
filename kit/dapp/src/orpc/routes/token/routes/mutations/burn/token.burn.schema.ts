@@ -1,9 +1,8 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { apiBigInt } from "@/lib/zod/validators/bigint";
-import {
-  MutationInputSchemaWithContract,
-  MutationOutputSchema,
-} from "@/orpc/routes/common/schemas/mutation.schema";
+import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
+import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { z } from "zod";
 
 export const TokenBurnInputSchema = MutationInputSchemaWithContract.extend({
@@ -12,7 +11,10 @@ export const TokenBurnInputSchema = MutationInputSchemaWithContract.extend({
       // Single address - transform to array
       ethereumAddress.transform((addr) => [addr]),
       // Array of addresses
-      z.array(ethereumAddress).min(1, "At least one address required").max(100),
+      z
+        .array(ethereumAddress)
+        .min(1, "tokens:validation.burn.addressRequired")
+        .max(100),
     ])
     .describe("Address(es) to burn tokens from"),
   amounts: z
@@ -20,7 +22,10 @@ export const TokenBurnInputSchema = MutationInputSchemaWithContract.extend({
       // Single amount - transform to array
       apiBigInt.transform((amt) => [amt]),
       // Array of amounts
-      z.array(apiBigInt).min(1, "At least one amount required").max(100),
+      z
+        .array(apiBigInt)
+        .min(1, "tokens:validation.burn.amountRequired")
+        .max(100),
     ])
     .describe("Amount(s) of tokens to burn"),
 }).refine(
@@ -36,8 +41,27 @@ export const TokenBurnInputSchema = MutationInputSchemaWithContract.extend({
 
 /**
  * Output schema for token burn operation
+ * Returns transaction hash and burn details
  */
-export const TokenBurnOutputSchema = MutationOutputSchema;
+export const TokenBurnOutputSchema = BaseMutationOutputSchema.extend({
+  data: z
+    .object({
+      totalBurned: bigDecimal().describe("Total amount of tokens burned"),
+      addresses: z
+        .array(ethereumAddress)
+        .describe("Addresses tokens were burned from"),
+      amounts: z
+        .array(bigDecimal())
+        .describe("Amounts burned from each address"),
+      tokenName: z.string().optional().describe("Name of the token"),
+      tokenSymbol: z.string().optional().describe("Symbol of the token"),
+      newTotalSupply: bigDecimal()
+        .optional()
+        .describe("New total supply after burn"),
+    })
+    .optional()
+    .describe("Burn operation details"),
+});
 
 // Type exports using Zod's type inference
 export type TokenBurnInput = z.infer<typeof TokenBurnInputSchema>;

@@ -14,7 +14,6 @@ import { Summary } from "@/components/asset-designer/summary/summary";
 import { StepLayout } from "@/components/stepper/step-layout";
 import { getNextStep, getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
-import { waitForStream } from "@/lib/utils/stream";
 import {
   getFactoryTypeIdFromAssetType,
   type AssetType,
@@ -43,12 +42,7 @@ export const AssetDesignerForm = ({
   const queryClient = useQueryClient();
   const { mutateAsync: createToken } = useMutation(
     orpc.token.create.mutationOptions({
-      mutationFn: async (values) => {
-        return await orpc.token.create.call(values);
-      },
-      onSuccess: async (result, variables) => {
-        await waitForStream(result, "token creation");
-
+      onSuccess: async (_result, variables) => {
         const tokenFactory = getFactoryAddressFromTypeId(
           factories,
           variables.type
@@ -85,7 +79,13 @@ export const AssetDesignerForm = ({
 
       toast.promise(createToken(parsedValues), {
         loading: t("messages.creating", { type: parsedValues.type }),
-        success: t("messages.created", { type: parsedValues.type }),
+        success: (data) =>
+          t("messages.created", {
+            type: parsedValues.type,
+            defaultValue: `${parsedValues.type} token '${data.name} (${data.symbol})' created successfully`,
+            name: data.name,
+            symbol: data.symbol,
+          }),
         error: (error: Error) =>
           `${t("messages.creation-failed", { type: parsedValues.type })}: ${error.message}`,
       });

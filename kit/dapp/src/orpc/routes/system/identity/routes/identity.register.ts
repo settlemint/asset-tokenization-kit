@@ -1,11 +1,9 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
+import { read } from "@/orpc/routes/account/routes/account.read";
 import { read as readSystem } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import { alpha2ToNumeric } from "i18n-iso-countries";
@@ -38,14 +36,14 @@ const IDENTITY_REGISTER_MUTATION = portalGraphql(`
 export const identityRegister = onboardedRouter.system.identityRegister
   .use(theGraphMiddleware)
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async ({ input, context, errors }) => {
     const { verification, country } = input;
-    const { auth, t } = context;
+    const { auth } = context;
     const sender = auth.user;
 
     const [account, systemDetails] = await Promise.all([
       call(
-        readAccount,
+        read,
         {
           wallet: auth.user.wallet,
         },
@@ -74,18 +72,12 @@ export const identityRegister = onboardedRouter.system.identityRegister
       });
     }
 
-    const identityRegisterMessages = getMutationMessages(
-      t,
-      "system",
-      "identityRegister"
-    );
-
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
 
-    const transactionHash = yield* context.portalClient.mutate(
+    await context.portalClient.mutate(
       IDENTITY_REGISTER_MUTATION,
       {
         address: systemDetails.identityRegistry,
@@ -94,12 +86,15 @@ export const identityRegister = onboardedRouter.system.identityRegister
         identity: account.identity,
         ...challengeResponse,
       },
-      identityRegisterMessages.errorMessage,
-      {
-        waitingForMining: identityRegisterMessages.pendingMessage,
-        transactionIndexed: identityRegisterMessages.successMessage,
-      }
+      "Failed to register identity"
     );
 
-    return getEthereumHash(transactionHash);
+    // Return the updated account data
+    return await call(
+      read,
+      {
+        wallet: sender.wallet,
+      },
+      { context }
+    );
   });

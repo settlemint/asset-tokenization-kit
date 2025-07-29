@@ -93,7 +93,9 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
         IAccessControl(address(vestingAirdropFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
 
         // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, address(vestingAirdropFactory));
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(vestingAirdropFactory)
+        );
 
         vm.stopPrank();
 

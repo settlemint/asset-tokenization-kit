@@ -1,9 +1,8 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { apiBigInt } from "@/lib/zod/validators/bigint";
-import {
-  MutationInputSchemaWithContract,
-  MutationOutputSchema,
-} from "@/orpc/routes/common/schemas/mutation.schema";
+import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
+import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { z } from "zod";
 
 export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
@@ -14,7 +13,7 @@ export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
       // Array of recipients
       z
         .array(ethereumAddress)
-        .min(1, "At least one recipient required")
+        .min(1, "tokens:validation.mint.recipientRequired")
         .max(100),
     ])
     .describe("Recipient address(es) for minted tokens"),
@@ -23,7 +22,10 @@ export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
       // Single amount - transform to array
       apiBigInt.transform((amt) => [amt]),
       // Array of amounts
-      z.array(apiBigInt).min(1, "At least one amount required").max(100),
+      z
+        .array(apiBigInt)
+        .min(1, "tokens:validation.mint.amountRequired")
+        .max(100),
     ])
     .describe("Amount(s) of tokens to mint"),
 }).refine(
@@ -39,8 +41,25 @@ export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
 
 /**
  * Output schema for token mint operation
+ * Returns transaction hash and mint details
  */
-export const TokenMintOutputSchema = MutationOutputSchema;
+export const TokenMintOutputSchema = BaseMutationOutputSchema.extend({
+  data: z
+    .object({
+      totalMinted: bigDecimal().describe("Total amount of tokens minted"),
+      recipients: z
+        .array(ethereumAddress)
+        .describe("Addresses tokens were minted to"),
+      amounts: z.array(bigDecimal()).describe("Amounts minted to each address"),
+      tokenName: z.string().optional().describe("Name of the token"),
+      tokenSymbol: z.string().optional().describe("Symbol of the token"),
+      newTotalSupply: bigDecimal()
+        .optional()
+        .describe("New total supply after mint"),
+    })
+    .optional()
+    .describe("Mint operation details"),
+});
 
 // Type exports using Zod's type inference
 export type TokenMintInput = z.infer<typeof TokenMintInputSchema>;

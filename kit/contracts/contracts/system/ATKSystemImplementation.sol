@@ -435,7 +435,8 @@ contract ATKSystemImplementation is
         // Deploy the ATKSystemAccessManagerProxy first, as other contracts need to reference it.
         address[] memory initialSystemAccessManagerAdmins = new address[](2);
         initialSystemAccessManagerAdmins[0] = initialAdmin;
-        initialSystemAccessManagerAdmins[1] = address(this); // Grant the system contract admin role so it can grant other roles during bootstrap
+        initialSystemAccessManagerAdmins[1] = address(this); // Grant the system contract admin role so it can grant
+            // other roles during bootstrap
         bytes memory systemAccessManagerData = abi.encodeWithSelector(
             ATKSystemAccessManagerImplementation.initialize.selector, initialSystemAccessManagerAdmins
         );
@@ -443,8 +444,9 @@ contract ATKSystemImplementation is
             address(new ATKTypedImplementationProxy(address(this), SYSTEM_ACCESS_MANAGER, systemAccessManagerData));
 
         // Deploy the ATKIdentityRegistryStorageProxy, using the system access manager for centralized access control.
-        bytes memory identityRegistryStorageData =
-            abi.encodeWithSelector(IATKIdentityRegistryStorage.initialize.selector, localSystemAccessManagerProxy, address(this));
+        bytes memory identityRegistryStorageData = abi.encodeWithSelector(
+            IATKIdentityRegistryStorage.initialize.selector, localSystemAccessManagerProxy, address(this)
+        );
         address localIdentityRegistryStorageProxy = address(
             new ATKTypedImplementationProxy(address(this), IDENTITY_REGISTRY_STORAGE, identityRegistryStorageData)
         );
@@ -521,8 +523,6 @@ contract ATKSystemImplementation is
                 // set.
         );
 
-
-
         // Grant necessary roles to the system access manager for topic scheme management
         IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
             ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, initialAdmin
@@ -557,15 +557,11 @@ contract ATKSystemImplementation is
         IATKTokenFactoryRegistry(localTokenFactoryRegistryProxy).setSystemAccessManager(localSystemAccessManagerProxy);
 
         // Grant necessary roles for token factory registration to the initial admin
-        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
-            ATKSystemRoles.REGISTRAR_ROLE, initialAdmin
-        );
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(ATKSystemRoles.REGISTRAR_ROLE, initialAdmin);
 
         // Ensure the initial admin has DEFAULT_ADMIN_ROLE on the system access manager
         // This is needed for registerTokenFactory to grant roles to new factory proxies
-        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(
-            DEFAULT_ADMIN_ROLE, initialAdmin
-        );
+        IATKSystemAccessManager(localSystemAccessManagerProxy).grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
 
         // Mark the system as bootstrapped
         _bootstrapped = true;
