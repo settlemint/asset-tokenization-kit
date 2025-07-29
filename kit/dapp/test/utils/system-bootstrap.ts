@@ -1,3 +1,4 @@
+import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { expect } from "vitest";
 import { OrpcClient } from "./orpc-client";
 import { DEFAULT_PINCODE } from "./user";
@@ -5,7 +6,20 @@ import { DEFAULT_PINCODE } from "./user";
 export async function bootstrapSystem(orpClient: OrpcClient) {
   const systems = await orpClient.system.list({});
   if (systems.length > 0) {
-    return systems[0]?.id;
+    const systemId = systems[0]?.id;
+    // Wait for system to be fully initialized
+    await retryWhenFailed(
+      async () => {
+        const system = await orpClient.system.read({ id: systemId });
+        if (!system.tokenFactoryRegistry) {
+          throw new Error("System not yet fully initialized");
+        }
+        return system;
+      },
+      5, // max retries
+      2000 // wait 2 seconds between retries
+    );
+    return systemId;
   }
   const response = await orpClient.system.create({
     verification: {
@@ -21,6 +35,19 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
   // No need to grant permissions anymore as it's already done in the Ignition module
   console.log("✓ Permissions already granted during system bootstrap");
 
+  // Wait for system to be fully initialized
+  await retryWhenFailed(
+    async () => {
+      const system = await orpClient.system.read({ id: response.id });
+      if (!system.tokenFactoryRegistry) {
+        throw new Error("System not yet fully initialized");
+      }
+      return system;
+    },
+    5, // max retries
+    2000 // wait 2 seconds between retries
+  );
+
   return response.id;
 }
 
@@ -33,7 +60,14 @@ export async function bootstrapTokenFactories(
     throw new Error("System not found");
   }
   if (!system.tokenFactoryRegistry) {
-    throw new Error("Token factory registry not found");
+    console.log("System registries not yet initialized:", {
+      identityRegistry: system.identityRegistry,
+      tokenFactoryRegistry: system.tokenFactoryRegistry,
+      compliance: system.compliance,
+    });
+    throw new Error(
+      "System not fully initialized - token factory registry not found"
+    );
   }
 
   try {
