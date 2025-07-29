@@ -78,7 +78,6 @@ export const bondCreateHandler = async (
         cap: input.cap.toString(),
         faceValue: input.faceValue.toString(),
         ...context.mutationVariables,
-        countryCode: 1, // TODO: should come from ui
       },
       "Failed to create bond token"
     );

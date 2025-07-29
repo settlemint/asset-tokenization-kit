@@ -48,13 +48,21 @@ const validCountryCodes = Object.keys(getAlpha2Codes()) as [
 ];
 
 /**
- * Array of all valid ISO 3166-1 numeric country codes.
+ * Array of all valid ISO 3166-1 numeric country codes as strings.
  * Generated from the i18n-iso-countries library.
  */
 const validNumericCountryCodes = Object.keys(getNumericCodes()) as [
   string,
   ...string[],
 ];
+
+/**
+ * Array of all valid ISO 3166-1 numeric country codes as numbers.
+ * Generated from the i18n-iso-countries library.
+ */
+const validNumericCountryCodesAsNumbers = validNumericCountryCodes.map((code) =>
+  Number.parseInt(code, 10)
+) as [number, ...number[]];
 
 /**
  * Zod schema for ISO 3166-1 alpha-2 country codes.
@@ -81,22 +89,27 @@ export const isoCountryCode = z
 /**
  * Zod schema for ISO 3166-1 numeric country codes.
  *
- * Validates that a string is a valid ISO 3166-1 numeric country code
- * and coerces it to a number for smart contract compatibility.
+ * Accepts both string and number inputs, always outputs a number.
+ * Validates against the complete list from i18n-iso-countries.
  * @example
  * ```typescript
- * // Valid codes
+ * // Valid inputs (all output numbers)
  * isoCountryCodeNumeric.parse("840"); // ✓ 840 (United States)
- * isoCountryCodeNumeric.parse("826"); // ✓ 826 (United Kingdom)
- * isoCountryCodeNumeric.parse("392"); // ✓ 392 (Japan)
+ * isoCountryCodeNumeric.parse(840);   // ✓ 840 (United States)
+ * isoCountryCodeNumeric.parse("056"); // ✓ 56 (Belgium)
+ * isoCountryCodeNumeric.parse(56);    // ✓ 56 (Belgium)
  *
  * // Invalid codes
  * isoCountryCodeNumeric.parse("999"); // ✗ Not a valid numeric code
+ * isoCountryCodeNumeric.parse(999);   // ✗ Not a valid numeric code
  * isoCountryCodeNumeric.parse("XX");  // ✗ Not numeric
  * ```
  */
 export const isoCountryCodeNumeric = z
-  .enum(validNumericCountryCodes)
+  .union([
+    z.enum(validNumericCountryCodes), // accepts "840", "056", etc.
+    z.literal(validNumericCountryCodesAsNumbers), // accepts 840, 56, etc.
+  ])
   .pipe(z.coerce.number())
   .describe("ISO 3166-1 numeric country code");
 
