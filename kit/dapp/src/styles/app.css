@@ -279,6 +279,10 @@
       0 5px 15px var(--sm-colored-shadow);
   }
 
+  .dark [data-slot="accordion"] {
+    box-shadow: none;
+  }
+
   [data-slot="dropdown-menu-content"] {
     @apply border-0;
   }
