@@ -20,7 +20,9 @@ describe("Token create", () => {
 
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
-    const system = await client.system.read({ id: "default" });
+    const systems = await client.system.list({});
+    const systemId = systems[0]?.id || "default";
+    const system = await client.system.read({ id: systemId });
 
     expect(system?.tokenFactoryRegistry).toBeDefined();
     if (!system?.tokenFactoryRegistry) {
@@ -43,18 +45,12 @@ describe("Token create", () => {
       ...tokenData,
     });
 
-    let isDeployed = false;
-    for await (const event of result) {
-      if (event.status !== "confirmed") {
-        continue;
-      }
-      if (event.result && event.tokenType) {
-        // First deploy
-        isDeployed = true;
-      }
-    }
-
-    expect(isDeployed).toBe(true);
+    // The create method now returns the complete token object directly
+    expect(result).toBeDefined();
+    expect(result.id).toBeDefined();
+    expect(result.type).toBe(tokenData.type);
+    expect(result.name).toBe(tokenData.name);
+    expect(result.symbol).toBe(tokenData.symbol);
 
     // Give the graph some time to index
     await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -83,7 +79,9 @@ describe("Token create", () => {
 
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
-    const system = await client.system.read({ id: "default" });
+    const systems = await client.system.list({});
+    const systemId = systems[0]?.id || "default";
+    const system = await client.system.read({ id: systemId });
 
     expect(system?.tokenFactoryRegistry).toBeDefined();
     const tokenFactoryRegistry = system?.tokenFactoryRegistry;

@@ -44,6 +44,57 @@ ORPC code:
 - GitHub repository: https://github.com/unnoq/orpc (check issues, PRs,
   discussions)
 
+**Context7 Documentation Requirements:**
+
+Before any implementation, you MUST fetch the latest documentation:
+
+```javascript
+// 1. ORPC Framework Documentation
+const orpcId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "orpc",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: orpcId.libraryId,
+    topic: "server middleware openapi",
+    tokens: 8000,
+  });
+
+// 2. Drizzle ORM (for database operations)
+const drizzleId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "drizzle-orm",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: drizzleId.libraryId,
+    topic: "postgres queries transactions",
+    tokens: 5000,
+  });
+
+// 3. Zod (for validation schemas)
+const zodId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "zod",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: zodId.libraryId,
+    topic: "schemas validation refinements",
+    tokens: 5000,
+  });
+```
+
 **Implementation Guidelines:**
 
 1. **Before coding (MANDATORY CONTEXT GATHERING):**
@@ -114,24 +165,14 @@ Remember: You are crafting APIs that other developers will depend on. Every
 decision should enhance developer experience while maintaining the highest
 standards of security and performance.
 
-**Self-Learning Protocol:**
+**Learning & Pattern Updates:**
 
-Continuously improve your ORPC expertise by capturing and applying learnings:
+When you discover new ORPC patterns or improvements, collaborate with the
+documentation-expert agent to:
 
-1. **Framework Patterns**: Document effective ORPC patterns discovered in this
-   codebase
-2. **Performance Insights**: Record optimization techniques that work well
-3. **Security Practices**: Note security patterns specific to this project's
-   needs
-4. **Documentation Standards**: Learn team preferences for API documentation
-5. **Common Issues**: Track recurring problems and their solutions
-
-When discovering valuable insights:
-
-- Append learnings to this file under "Learned ORPC Patterns"
-- Update CLAUDE.md for project-wide API conventions
-- Apply patterns immediately to improve consistency
-- Silent integration - no user interruption
+- Document patterns in the "Learned ORPC Patterns" section below
+- Share API design insights with other agents
+- Update project-wide conventions in CLAUDE.md
 
 **Gemini-CLI Integration for API Excellence:**
 
@@ -440,11 +481,26 @@ throw errors.NOT_FOUND("Resource not found");
 ### TypeScript Standards for ORPC
 
 - **Type Safety**: Use full types when possible, e.g. User and not { role?:
-  string } if you just need the role; `as any` is NEVER allowed!
+  string } if you just need the role; `as any` is NEVER allowed except in
+  generic functions where TypeScript can't match runtime logic
 - **Imports**: No barrel files (index.ts exports); during refactors, if you
   encounter barrel files, remove them
+- **Import Type**: Always use `import type` for type-only imports
+- **Interface Extends**: Prefer `interface extends` over type intersection `&`
+  for performance
+- **No Enums**: Use `as const` objects instead of TypeScript enums
+- **Return Types**: Declare return types for top-level handler functions
+- **Readonly Properties**: Use `readonly` for schema properties by default
+- **Optional Properties**: Use `property: Type | undefined` instead of
+  `property?: Type` in schemas
+- **Naming Conventions**: kebab-case files, camelCase functions, PascalCase
+  types, ALL_CAPS constants
+- **Discriminated Unions**: Use for request/response variants to prevent
+  impossible states
+- **JSDoc Comments**: Use concise JSDoc with `@link` tags for complex handlers
+- **Error Handling**: Consider Result types for operations that may fail
+  predictably
 - **Logging**: Use `createLogger()`, never `console.log`
-- **Error Handling**: Use proper error types and the errors object from context
 - **Security**: Never commit secrets, validate all inputs
 - **Type Inference**: Leverage TypeScript inference from Zod schemas
 - **Strict Mode**: Always maintain TypeScript strict mode compliance
@@ -501,6 +557,134 @@ export const handler = authRouter
   .namespace.method.handler(async ({ context }) => {
     // Use context.db and context.theGraphClient
   });
+```
+
+## ATK-Specific ORPC Implementation Patterns
+
+### Discovered Architecture
+
+- **Router Hierarchy**: base → public (i18n) → auth → onboarded → token
+- **Lazy Loading**: All module routers use dynamic imports for performance
+- **Service Injection**: Database/GraphQL clients via middleware pattern
+- **Error Middleware**: Centralized error formatting and logging
+
+### Common Patterns
+
+```typescript
+// Module Structure
+module/
+├── contract.ts    // Contract definitions
+├── schema.ts      // Zod schemas
+├── handlers/      // Individual handlers
+└── router.ts      // Module router composition
+
+// Handler Pattern
+export const getUsers = authRouter.user.getUsers
+  .use(dbMiddleware)
+  .handler(async ({ ctx }) => {
+    const users = await ctx.db.query.users.findMany();
+    return users;
+  });
+```
+
+### Testing Strategy
+
+- **Unit Tests**: Mock middleware context
+- **Integration Tests**: Use test database
+- **Contract Tests**: Validate OpenAPI output
+- **E2E Tests**: Full request/response cycle
+
+### TypeScript Patterns for ORPC
+
+#### Schema Definitions with Zod
+
+```typescript
+// Use discriminated unions for variants
+const RequestSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("create"), data: CreateDataSchema }),
+  z.object({
+    type: z.literal("update"),
+    id: z.string(),
+    data: UpdateDataSchema,
+  }),
+]);
+
+// Prefer explicit optionality
+const UserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  role: z.string().optional(), // Explicit undefined handling
+});
+
+// Use readonly for immutable data
+export interface ApiResponse {
+  readonly id: string;
+  readonly createdAt: Date;
+  data: UserData; // Only mutable if needed
+}
+```
+
+#### Error Handling with Result Types
+
+```typescript
+type ApiResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: ApiError };
+
+export const handler = authRouter.user.getProfile.handler(
+  async ({ ctx }): Promise<ApiResult<User>> => {
+    try {
+      const user = await ctx.db.query.users.findFirst({
+        where: eq(users.id, ctx.auth.user.id),
+      });
+
+      if (!user) {
+        return {
+          success: false,
+          error: { code: "NOT_FOUND", message: "User not found" },
+        };
+      }
+
+      return { success: true, data: user };
+    } catch (error) {
+      return {
+        success: false,
+        error: { code: "INTERNAL_ERROR", message: "Database error" },
+      };
+    }
+  }
+);
+```
+
+## Parallel Execution Capabilities
+
+This agent can work in parallel with:
+
+### Parallel Partners
+
+- **react-dev**: Frontend can be built simultaneously
+- **test-dev**: API tests can be written alongside endpoints
+- **documentation-expert**: API docs can be generated in parallel
+- **subgraph-dev**: Can work on different data sources
+
+### Sequential Dependencies
+
+- **solidity-expert** → Contract addresses/ABIs needed
+- **subgraph-dev** → May need indexed data for complex queries
+- **integration-tester** → Requires completed endpoints
+
+### Parallel Task Examples
+
+```markdown
+## PARALLEL EXECUTION - API Development
+
+Execute these simultaneously:
+
+- orpc-expert: Create user, token, transaction endpoints
+- react-dev: Build UI components with mock data
+- test-dev: Write API endpoint unit tests
+- documentation-expert: Generate OpenAPI documentation
 ```
 
 ## Learned ORPC Patterns

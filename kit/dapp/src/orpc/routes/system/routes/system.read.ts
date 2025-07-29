@@ -184,15 +184,17 @@ export const read = onboardedRouter.system.read
     const output: SystemReadOutput = {
       id: result.system.id as EthereumAddress,
       deployedInTransaction: result.system.deployedInTransaction,
-      identityRegistry: result.system.identityRegistry?.id as EthereumAddress,
-      identityFactory: result.system.identityFactory?.id as EthereumAddress,
-      trustedIssuersRegistry: result.system.trustedIssuersRegistry
-        ?.id as EthereumAddress,
-      compliance: result.system.compliance?.id as EthereumAddress,
-      tokenFactoryRegistry: result.system.tokenFactoryRegistry
-        ?.id as EthereumAddress,
-      systemAddonRegistry: result.system.systemAddonRegistry
-        ?.id as EthereumAddress,
+      identityRegistry:
+        (result.system.identityRegistry?.id as EthereumAddress) ?? null,
+      identityFactory:
+        (result.system.identityFactory?.id as EthereumAddress) ?? null,
+      trustedIssuersRegistry:
+        (result.system.trustedIssuersRegistry?.id as EthereumAddress) ?? null,
+      compliance: (result.system.compliance?.id as EthereumAddress) ?? null,
+      tokenFactoryRegistry:
+        (result.system.tokenFactoryRegistry?.id as EthereumAddress) ?? null,
+      systemAddonRegistry:
+        (result.system.systemAddonRegistry?.id as EthereumAddress) ?? null,
       tokenFactories:
         result.system.tokenFactoryRegistry?.tokenFactories.map((factory) => ({
           id: factory.id as EthereumAddress,

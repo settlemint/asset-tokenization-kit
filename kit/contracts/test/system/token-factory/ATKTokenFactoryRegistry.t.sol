@@ -5,8 +5,10 @@ import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IATKTokenFactoryRegistry } from "../../../contracts/system/token-factory/IATKTokenFactoryRegistry.sol";
-import { ATKTokenFactoryRegistryImplementation, UnauthorizedAccess } from
-    "../../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
+import {
+    ATKTokenFactoryRegistryImplementation,
+    UnauthorizedAccess
+} from "../../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
 import { IATKSystem } from "../../../contracts/system/IATKSystem.sol";
 import { IATKTokenFactory } from "../../../contracts/system/token-factory/IATKTokenFactory.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";

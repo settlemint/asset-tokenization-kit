@@ -160,7 +160,7 @@ export const statsActivityByAsset = authRouter.token.statsActivityByAsset
       {
         input: {},
         output: ActivityByAssetResponseSchema,
-        error: "Failed to fetch activity by asset",
+        error: context.t("tokens:api.stats.activityByAsset.messages.failed"),
       }
     );
 

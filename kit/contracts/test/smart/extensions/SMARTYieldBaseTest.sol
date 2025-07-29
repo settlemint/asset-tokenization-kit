@@ -45,7 +45,9 @@ abstract contract SMARTYieldBaseTest is AbstractSMARTTest, SMARTYieldHelpers {
         IAccessControl(address(yieldScheduleFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, tokenIssuer);
 
         // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, address(yieldScheduleFactory));
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(yieldScheduleFactory)
+        );
 
         vm.stopPrank();
 

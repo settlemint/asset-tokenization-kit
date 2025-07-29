@@ -15,11 +15,11 @@ export function DeploymentDetails() {
   const [showDetails, setShowDetails] = useState(false);
 
   // Query system details
-  const { data: systemDetails } = useQuery({
-    ...orpc.system.read.queryOptions({
+  const { data: systemDetails } = useQuery(
+    orpc.system.read.queryOptions({
       input: { id: "default" },
-    }),
-  });
+    })
+  );
 
   const toggleDetails = useCallback(() => {
     setShowDetails(!showDetails);

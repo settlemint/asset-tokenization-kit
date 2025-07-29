@@ -83,13 +83,13 @@ export function TokensTable({ factoryAddress }: TokensTableProps) {
   // Get the current route's path pattern from the matched route
   const routePath = router.state.matches.at(-1)?.pathname;
 
-  const { data: tokens } = useSuspenseQuery({
-    ...orpc.token.list.queryOptions({
+  const { data: tokens } = useSuspenseQuery(
+    orpc.token.list.queryOptions({
       input: {
         tokenFactory: factoryAddress,
       },
-    }),
-  });
+    })
+  );
 
   /**
    * Creates action items for each row in the table

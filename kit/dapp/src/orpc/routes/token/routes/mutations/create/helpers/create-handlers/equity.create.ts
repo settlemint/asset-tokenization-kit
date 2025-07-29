@@ -54,15 +54,15 @@ const CREATE_EQUITY_MUTATION = portalGraphql(`
   }
 `);
 
-export const equityCreateHandler = async function* (
+export const equityCreateHandler = async (
   input: TokenCreateInput,
   context: TokenCreateContext
-) {
+) => {
   if (input.type !== AssetTypeEnum.equity) {
     throw new Error("Invalid token type");
   }
 
-  yield* createToken(input, context, (creationFailedMessage, messages) => {
+  return createToken(input, context, () => {
     // Delete verification from input to avoid leaking it in the logs
     const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
@@ -72,8 +72,7 @@ export const equityCreateHandler = async function* (
         ...context.mutationVariables,
         countryCode: 1, // TODO: should come from ui
       },
-      creationFailedMessage,
-      messages
+      "Failed to create equity token"
     );
   });
 };

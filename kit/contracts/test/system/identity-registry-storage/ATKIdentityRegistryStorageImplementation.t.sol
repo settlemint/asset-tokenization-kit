@@ -6,8 +6,7 @@ import { ATKIdentityRegistryStorageImplementation } from
     "../../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
 import { ATKSystemAccessManagerImplementation } from
     "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
-import { IATKSystemAccessManager } from
-    "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
+import { IATKSystemAccessManager } from "../../../contracts/system/access-manager/IATKSystemAccessManager.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import { ISMARTIdentityRegistryStorage } from "../../../contracts/smart/interface/ISMARTIdentityRegistryStorage.sol";
@@ -74,10 +73,8 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
         address[] memory initialAdmins = new address[](1);
         initialAdmins[0] = admin;
 
-        bytes memory accessManagerInitData = abi.encodeWithSelector(
-            ATKSystemAccessManagerImplementation.initialize.selector,
-            initialAdmins
-        );
+        bytes memory accessManagerInitData =
+            abi.encodeWithSelector(ATKSystemAccessManagerImplementation.initialize.selector, initialAdmins);
 
         ERC1967Proxy accessManagerProxy = new ERC1967Proxy(address(accessManagerImplementation), accessManagerInitData);
         accessManager = IATKSystemAccessManager(address(accessManagerProxy));
@@ -92,9 +89,7 @@ contract ATKIdentityRegistryStorageImplementationTest is Test {
         implementation = new ATKIdentityRegistryStorageImplementation(forwarder);
 
         bytes memory initData = abi.encodeWithSelector(
-            ATKIdentityRegistryStorageImplementation.initialize.selector,
-            address(accessManager),
-            system
+            ATKIdentityRegistryStorageImplementation.initialize.selector, address(accessManager), system
         );
 
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);

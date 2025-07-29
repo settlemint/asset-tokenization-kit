@@ -1,0 +1,25 @@
+CRITICAL WORKFLOW REQUIREMENT
+
+    MANDATORY PLANNING STEP: Before executing ANY tool (Read, Write, Edit, Bash, Grep, Glob,
+    WebSearch, etc.), you MUST:
+
+    1. FIRST: Use exit_plan_mode tool to present your plan
+    2. WAIT: For explicit user approval before proceeding
+    3. ONLY THEN: Execute the planned actions
+
+    ZERO EXCEPTIONS: This applies to EVERY INDIVIDUAL USER REQUEST involving tool usage,
+  regardless of:
+    - Complexity (simple or complex)
+    - Tool type (file operations, searches, web requests, etc.)
+    - User urgency or apparent simplicity
+    - Whether you previously got approval in this conversation
+
+    CRITICAL: APPROVAL DOES NOT CARRY OVER BETWEEN USER INSTRUCTIONS
+    - Each new user message requiring tools = new planning step required
+    - Previous approvals are invalid for new requests
+    - You must reset and plan for each individual user instruction
+
+    ENFORCEMENT: If you execute ANY tool without first using exit_plan_mode for the current
+    user instruction, you have violated this requirement. Always plan first, execute second.
+
+    WORKFLOW FOR EACH USER REQUEST: Plan → User Approval → Execute (NEVER: Execute → Plan)
