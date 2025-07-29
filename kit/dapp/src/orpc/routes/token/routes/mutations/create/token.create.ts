@@ -5,9 +5,7 @@ import {
 import type { Context } from "@/orpc/context/context";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { portalRouter } from "@/orpc/procedures/portal.router";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
 import type { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
@@ -19,9 +17,7 @@ function getTokenFactory(context: Context, type: AssetType) {
   );
 }
 
-export const create = onboardedRouter.token.create
-  .use(portalMiddleware)
-  .use(systemMiddleware)
+export const create = portalRouter.token.create
   .use(
     blockchainPermissionsMiddleware<typeof TokenCreateSchema>({
       requiredRoles: TOKEN_PERMISSIONS.create,

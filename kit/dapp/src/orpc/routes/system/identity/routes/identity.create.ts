@@ -2,10 +2,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { getMutationMessages } from "@/orpc/helpers/mutation-messages";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { portalRouter } from "@/orpc/procedures/portal.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { call, ORPCError } from "@orpc/server";
 
@@ -31,11 +28,8 @@ const IDENTITY_CREATE_MUTATION = portalGraphql(`
   }
 `);
 
-export const identityCreate = onboardedRouter.system.identityCreate
-  .use(theGraphMiddleware)
-  .use(portalMiddleware)
-  .use(systemMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+export const identityCreate = portalRouter.system.identityCreate.handler(
+  async function* ({ input, context, errors }) {
     const { verification } = input;
     const { auth, t, system } = context;
     const sender = auth.user;
@@ -90,4 +84,5 @@ export const identityCreate = onboardedRouter.system.identityCreate
     );
 
     return getEthereumHash(transactionHash);
-  });
+  }
+);

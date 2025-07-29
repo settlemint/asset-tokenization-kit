@@ -21,10 +21,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { portalRouter } from "@/orpc/procedures/portal.router";
 import { SystemAddonCreateSchema } from "@/orpc/routes/system/routes/system.addonCreate.schema";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -160,7 +157,7 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system not bootstrapped or transaction fails
  */
-export const addonCreate = onboardedRouter.system.addonCreate
+export const addonCreate = portalRouter.system.addonCreate
   .use(
     blockchainPermissionsMiddleware<typeof SystemAddonCreateSchema>({
       requiredRoles: ["deployer"],
@@ -169,9 +166,6 @@ export const addonCreate = onboardedRouter.system.addonCreate
       },
     })
   )
-  .use(theGraphMiddleware)
-  .use(portalMiddleware)
-  .use(systemMiddleware)
   .handler(async function* ({ input, context }) {
     const { contract, addons, verification } = input;
     const sender = context.auth.user;
