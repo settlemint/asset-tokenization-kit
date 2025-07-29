@@ -131,6 +131,13 @@ export const me = authRouter.user.me
           ? [VerificationTypeEnum.secretCode]
           : []),
       ] as VerificationType[],
+      userPermissions: {
+        tokenFactory: {
+          actions: {
+            create: true,
+          },
+        },
+      },
       onboardingState: {
         wallet: authUser.wallet !== zeroAddress,
         walletSecurity:

@@ -9,6 +9,7 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { userRoles } from "@/lib/zod/validators/user-roles";
 import { verificationType } from "@/lib/zod/validators/verification-type";
+import { type TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { z } from "zod";
 
 const onboardingStateSchema = z.object({
@@ -40,6 +41,28 @@ const onboardingStateSchema = z.object({
 });
 
 export type OnboardingState = z.infer<typeof onboardingStateSchema>;
+
+const userPermissionsSchema = z.object({
+  tokenFactory: z
+    .object({
+      actions: z.object(
+        (() => {
+          const actionsSchema: Record<
+            keyof typeof TOKEN_FACTORY_PERMISSIONS,
+            z.ZodType<boolean>
+          > = {
+            create: z
+              .boolean()
+              .describe("Whether the user can execute the create action"),
+          };
+          return actionsSchema;
+        })()
+      ),
+    })
+    .describe("The actions on the token the user is allowed to execute"),
+});
+
+export type UserPermissions = z.infer<typeof userPermissionsSchema>;
 
 export const UserSchema = z.object({
   id: z.string(),
@@ -122,6 +145,12 @@ export const UserMeSchema = z.object({
    * This is used to track the user's onboarding progress.
    */
   onboardingState: onboardingStateSchema,
+
+  /**
+   * User's permissions.
+   * This is used to track the user's permissions.
+   */
+  userPermissions: userPermissionsSchema,
 });
 
 /**
