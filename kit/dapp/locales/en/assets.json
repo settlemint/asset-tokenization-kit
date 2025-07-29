@@ -1,0 +1,12 @@
+{
+  "Bonds_one": "bond",
+  "Bonds_other": "bonds",
+  "Deposits_one": "deposit",
+  "Deposits_other": "deposits",
+  "Equities_one": "equity",
+  "Equities_other": "equities",
+  "Funds_one": "fund",
+  "Funds_other": "funds",
+  "Stablecoins_one": "stablecoin",
+  "Stablecoins_other": "stablecoins"
+}
