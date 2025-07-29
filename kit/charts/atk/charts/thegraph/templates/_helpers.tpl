@@ -1,82 +1,99 @@
 {{/*
 Expand the name of the chart.
-Using common helper with chart-specific alias.
 */}}
 {{- define "thegraph.name" -}}
-{{ include "atk.common.name" . }}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Create a default fully qualified app name.
-Using common helper with chart-specific alias.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
 */}}
 {{- define "thegraph.fullname" -}}
-{{ include "atk.common.fullname" . }}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
 {{- end }}
 
 {{/*
 Create chart name and version as used by the chart label.
-Using common helper with chart-specific alias.
 */}}
 {{- define "thegraph.chart" -}}
-{{ include "atk.common.chart" . }}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
-Using common helper with chart-specific alias.
 */}}
 {{- define "thegraph.labels" -}}
-{{ include "atk.common.labels" . }}
-{{- end -}}
+helm.sh/chart: {{ include "thegraph.chart" . }}
+{{ include "thegraph.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.global.labels }}
+{{ toYaml .Values.global.labels }}
+{{- end }}
+{{- end }}
 
 {{/*
 Selector labels
-Using common helper with chart-specific alias.
 */}}
 {{- define "thegraph.selectorLabels" -}}
-{{ include "atk.common.selectorLabels" . }}
+app.kubernetes.io/name: {{ include "thegraph.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
-Using common helper with chart-specific alias.
 */}}
 {{- define "thegraph.serviceAccountName" -}}
-{{ include "atk.common.serviceAccountName" . }}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "thegraph.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
 {{- end }}
-
-{{- define "thegraph.imagePullSecretName" -}}
-{{- printf "image-pull-secret-%s" . -}}
-{{- end -}}
-
-{{/*
-Creates an image pull secret value
-*/}}
-{{- define "thegraph.imagePullSecret" }}
-{{- printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"auth\":\"%s\"}}}" .registryUrl .username .password .email (printf "%s:%s" .username .password | b64enc) | b64enc }}
 {{- end }}
 
 {{/*
-Common image pull secrets for all deployments/statefulsets
+Return the proper image name for the init container
 */}}
-{{- define "atk.imagePullSecrets" -}}
-{{- if .Values.global }}
-{{- if .Values.global.imagePullSecrets }}
+{{- define "thegraph.initContainerImage" -}}
+{{- printf "%s:%s" .Values.initContainer.image.repository .Values.initContainer.image.tag }}
+{{- end }}
+
+{{/*
+Return the proper image name
+*/}}
+{{- define "thegraph.image" -}}
+{{- $tag := .Values.image.tag | default .Chart.AppVersion }}
+{{- printf "%s:%s" .Values.image.repository $tag }}
+{{- end }}
+
+{{/*
+Return image pull secrets
+*/}}
+{{- define "thegraph.imagePullSecrets" -}}
+{{- if .Values.imagePullSecrets }}
 imagePullSecrets:
-{{- range .Values.global.imagePullSecrets }}
+{{- range .Values.imagePullSecrets }}
   - name: {{ . }}
 {{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
 {{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
 {{- end }}
+
+{{/*
+Return the config template
+*/}}
+{{- define "thegraph.config" -}}
+{{- tpl .Values.configTemplate . }}
 {{- end }}

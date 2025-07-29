@@ -215,78 +215,14 @@ blockscout:
 
 thegraph:
   enabled: true
-  graph-node:
-    graphNodeDefaults:
-      imagePullSecrets:
-        - name: image-pull-secret-docker
-        - name: image-pull-secret-ghcr
-        - name: image-pull-secret-harbor
-    graphNodeGroups:
-      query:
-        enabled: false
-        replicaCount: 1
-        podAnnotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "8040"
-          prometheus.io/path: "/metrics"
-      index:
-        enabled: false
-        replicaCount: 1
-        podAnnotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "8040"
-          prometheus.io/path: "/metrics"
-      block-ingestor:
-        enabled: false
-        replicaCount: 1
-        podAnnotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "8040"
-          prometheus.io/path: "/metrics"
-      combined:
-        enabled: true
-        replicaCount: 1
-        podAnnotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "8040"
-          prometheus.io/path: "/metrics"
-        includeInIndexPools:
-          - default
-        env:
-          node_role: combined-mode
-    blockIngestorGroupName: combined
-    ingress:
-      hosts:
-        - host: graph.k8s.orb.local
-          paths:
-            - path: /(.*)
-              pathType: ImplementationSpecific
-              port: 8000
-              serviceName: graph-node-combined
-            - path: /ws/?(.*)
-              pathType: ImplementationSpecific
-              port: 8001
-              serviceName: graph-node-combined
-            - path: /admin/?(.*)
-              pathType: ImplementationSpecific
-              port: 8020
-              serviceName: graph-node-combined
-            - path: /indexer/?(.*)
-              pathType: ImplementationSpecific
-              port: 8030
-              serviceName: graph-node-combined
-            - path: /graphman/?(.*)
-              pathType: ImplementationSpecific
-              port: 8050
-              serviceName: graph-node-combined
-    grafana:
-      # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
-      dashboards: false
-  job:
-    enabled: true
-    fullnameOverride: graph
-    workspace:
-      size: 1Gi
+  imagePullSecrets:
+    - name: image-pull-secret-docker
+    - name: image-pull-secret-ghcr
+    - name: image-pull-secret-harbor
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8040"
+    prometheus.io/path: "/metrics"
 
 hasura:
   enabled: true
