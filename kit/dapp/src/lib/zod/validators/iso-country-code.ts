@@ -198,3 +198,34 @@ export function getNumericCountries(locale: SupportedLocale = "en") {
 
   return result;
 }
+
+/**
+ * Get all countries with their names in the specified locale, sorted alphabetically by country name.
+ * @param locale - The locale for the country names (default: "en")
+ *                 Supported locales: "en", "ar", "de", "ja"
+ * @returns Array of [countryCode, countryName] entries, sorted alphabetically by country name
+ */
+export function getCountriesSorted(locale: SupportedLocale = "en") {
+  const countries = getCountries(locale);
+  return Object.entries(countries).sort(([, nameA], [, nameB]) =>
+    nameA.localeCompare(nameB)
+  );
+}
+
+/**
+ * Get all numeric country codes with their corresponding country names, sorted alphabetically by country name.
+ * @param locale - The locale for the country names (default: "en")
+ *                 Supported locales: "en", "ar", "de", "ja"
+ * @returns Array of [numericCode, countryName] entries, sorted alphabetically by country name
+ * @example
+ * ```typescript
+ * getNumericCountriesSorted("en");
+ * // [["040", "Austria"], ["056", "Belgium"], ["840", "United States of America"], ...]
+ * ```
+ */
+export function getNumericCountriesSorted(locale: SupportedLocale = "en") {
+  const numericCountries = getNumericCountries(locale);
+  return Object.entries(numericCountries).sort(([, nameA], [, nameB]) =>
+    nameA.localeCompare(nameB)
+  );
+}

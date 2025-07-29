@@ -3,8 +3,8 @@ import {
   type SelectFieldProps,
 } from "@/components/form/select-field";
 import {
-  getCountries,
-  getNumericCountries,
+  getCountriesSorted,
+  getNumericCountriesSorted,
   getSupportedLocales,
 } from "@/lib/zod/validators/iso-country-code";
 import { useMemo } from "react";
@@ -26,15 +26,15 @@ export function CountrySelectField({
     const baseLocale = getSupportedLocales().find((l) => l === lang) ?? "en";
 
     if (valueType === "numeric") {
-      const numericCountries = getNumericCountries(baseLocale);
-      return Object.entries(numericCountries).map(([numeric, name]) => ({
+      const numericCountries = getNumericCountriesSorted(baseLocale);
+      return numericCountries.map(([numeric, name]) => ({
         label: name,
         value: numeric,
       }));
     }
 
-    const names = getCountries(baseLocale);
-    return Object.entries(names).map(([code, name]) => ({
+    const names = getCountriesSorted(baseLocale);
+    return names.map(([code, name]) => ({
       label: name,
       value: code,
     }));
