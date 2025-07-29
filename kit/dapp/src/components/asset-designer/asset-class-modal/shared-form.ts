@@ -1,4 +1,4 @@
-import { AssetClassSelectionStepsSchema } from "@/components/asset-designer/asset-class/steps";
+import { AssetClassSelectionStepsSchema } from "@/components/asset-designer/asset-class-modal/steps";
 import { isRequiredFieldForZodObject } from "@/lib/utils/schema-field";
 import { KeysOfUnion } from "@/lib/utils/union";
 import { assetClass, assetType } from "@/lib/zod/validators/asset-types";

@@ -1,4 +1,4 @@
-import { AssetDesignerForm } from "@/components/asset-designer/asset-designer-form";
+import { AssetDesignerWizard } from "@/components/asset-designer/asset-designer-wizard/asset-designer-wizard";
 import { AssetTokenizationKitLogo } from "@/components/asset-tokenization-kit-logo";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import { useGoBack } from "@/hooks/use-go-back";
@@ -51,7 +51,7 @@ function RouteComponent() {
         />
       </header>
       <main className="flex-1 overflow-hidden">
-        <AssetDesignerForm factories={routeContext.factories} type={type} />
+        <AssetDesignerWizard factories={routeContext.factories} type={type} />
       </main>
     </div>
   );

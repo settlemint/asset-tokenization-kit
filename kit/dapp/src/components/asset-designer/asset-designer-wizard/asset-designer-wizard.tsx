@@ -1,16 +1,14 @@
-"use client";
-
-import { AssetBasics } from "@/components/asset-designer/asset-basics/asset";
-import { ComplianceModules } from "@/components/asset-designer/compliance-modules/compliance-modules";
+import { AssetBasics } from "@/components/asset-designer/asset-designer-wizard/asset-basics/asset";
+import { ComplianceModules } from "@/components/asset-designer/asset-designer-wizard/compliance-modules/compliance-modules";
 import {
   assetDesignerFormOptions,
   AssetDesignerFormSchema,
-} from "@/components/asset-designer/shared-form";
+} from "@/components/asset-designer/asset-designer-wizard/shared-form";
 import {
   useAssetDesignerSteps,
   type AssetDesignerStepsType,
-} from "@/components/asset-designer/steps";
-import { Summary } from "@/components/asset-designer/summary/summary";
+} from "@/components/asset-designer/asset-designer-wizard/steps";
+import { Summary } from "@/components/asset-designer/asset-designer-wizard/summary/summary";
 import { StepLayout } from "@/components/stepper/step-layout";
 import { getNextStep, getStepById } from "@/components/stepper/utils";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -26,13 +24,12 @@ import { useStore } from "@tanstack/react-store";
 import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-
 interface AssetDesignerFormProps {
   type: AssetType;
   factories: FactoryList;
 }
 
-export const AssetDesignerForm = ({
+export const AssetDesignerWizard = ({
   type,
   factories,
 }: AssetDesignerFormProps) => {

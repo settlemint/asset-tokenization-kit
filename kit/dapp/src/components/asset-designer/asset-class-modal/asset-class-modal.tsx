@@ -1,7 +1,7 @@
 import {
   useAssetClassSelectionSteps,
   type AssetClassSelectionStepsType,
-} from "@/components/asset-designer/asset-class/steps";
+} from "@/components/asset-designer/asset-class-modal/steps";
 import { getNextStepId, getPreviousStepId } from "@/components/stepper/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAppForm } from "@/hooks/use-app-form";

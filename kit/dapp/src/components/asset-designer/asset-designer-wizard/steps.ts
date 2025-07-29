@@ -42,13 +42,13 @@ export function useAssetDesignerSteps(): Step<AssetDesignerStepsType>[] {
       description: t("wizard.steps.assetBasics.description"),
     },
     {
-      step: 3,
+      step: 2,
       id: "complianceModules",
       label: t("wizard.steps.complianceModules.title"),
       description: t("wizard.steps.complianceModules.description"),
     },
     {
-      step: 4,
+      step: 3,
       id: "summary",
       label: t("wizard.steps.summary.title"),
       description: t("wizard.steps.summary.description"),
