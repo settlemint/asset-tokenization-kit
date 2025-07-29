@@ -35,7 +35,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   // Pause mutation
   const { mutate: pauseAsset } = useMutation(
     orpc.token.pause.mutationOptions({
-      onSuccess: async () => {
+      onSuccess: async (data) => {
         // Invalidate both single asset and list queries
         await Promise.all([
           queryClient.invalidateQueries({
@@ -49,7 +49,13 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         ]);
         setShowVerificationDialog(false);
         setOpenAction(null);
-        toast.success(t("actions.pause.messages.success"));
+        toast.success(
+          t("actions.pause.messages.success", {
+            defaultValue: `Asset '${data.name} (${data.symbol})' paused successfully`,
+            name: data.name,
+            symbol: data.symbol,
+          })
+        );
       },
       onError: (error) => {
         toast.error(t("actions.pause.messages.error"), {
@@ -62,7 +68,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   // Unpause mutation
   const { mutate: unpauseAsset } = useMutation(
     orpc.token.unpause.mutationOptions({
-      onSuccess: async () => {
+      onSuccess: async (data) => {
         // Invalidate both single asset and list queries
         await Promise.all([
           queryClient.invalidateQueries({
@@ -76,7 +82,13 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         ]);
         setShowVerificationDialog(false);
         setOpenAction(null);
-        toast.success(t("actions.unpause.messages.success"));
+        toast.success(
+          t("actions.unpause.messages.success", {
+            defaultValue: `Asset '${data.name} (${data.symbol})' resumed successfully`,
+            name: data.name,
+            symbol: data.symbol,
+          })
+        );
       },
       onError: (error) => {
         toast.error(t("actions.unpause.messages.error"), {

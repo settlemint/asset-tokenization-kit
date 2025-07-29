@@ -28,14 +28,32 @@ bun run ci
 
 ## Agent Orchestration Pattern
 
-### CRITICAL: Agent Routing Protocol
+### CRITICAL: Agent Communication Limitations
+
+**Sub-agents CANNOT invoke other agents** - Only main Claude orchestrates:
+- Agents return structured outputs with handoff information
+- Main Claude extracts findings and passes context between agents
+- Each agent must specify what the next agent needs
+
+### Agent Routing Protocol
 
 **For any implementation task:**
 
 1. **ALWAYS start with planner** agent for multi-step features
 2. **FOLLOW the agent routing** specified by planner EXACTLY
 3. **USE ONLY the agents** explicitly recommended
-4. **NEVER substitute agents** unless specified as fallback
+4. **EXTRACT and PASS context** between agent invocations
+
+### Agent Return Format
+
+Agents must return structured information:
+```markdown
+## Task Completed: [Task Name]
+- Key findings: [What was discovered/implemented]
+- Output location: [Files created/modified]
+- Next agent needs: [Context for next specialist]
+- Blockers: [Any issues preventing completion]
+```
 
 ### Available Specialized Agents
 
@@ -64,18 +82,33 @@ bun run ci
 - **code-archaeologist**: Legacy code analysis
 - **team-configurator**: Multi-agent coordination
 
-### Example: Implementing a Feature
+### Example: Multi-Agent Feature Implementation
 
 ```
 User: "Add token transfer functionality with approval"
 
 Correct Flow:
-1. Use planner agent to analyze and create plan
-2. Follow planner's agent routing map:
-   - solidity-expert for contract implementation
-   - react-dev for UI components
-   - test-dev for test coverage
-3. Use code-reviewer after implementation
+1. Invoke planner agent → Returns implementation roadmap
+2. Extract planner's findings and routing map
+3. Invoke each agent sequentially with context:
+   - solidity-expert: "Implement transfer methods per planner's spec: [context]"
+   - react-dev: "Build UI using contract at [address] with methods: [context]"
+   - test-dev: "Test transfer feature with contracts at [addresses]"
+4. Pass outputs between agents as needed
+5. Invoke code-reviewer with all changes
+```
+
+### Orchestration Workflow
+
+```mermaid
+Main Claude ─┬─> Planner (returns roadmap)
+             ├─> Extract context
+             ├─> Solidity Expert (returns contract info)
+             ├─> Extract contract details
+             ├─> React Dev (uses contract info)
+             ├─> Extract UI components
+             ├─> Test Dev (tests all components)
+             └─> Code Reviewer (reviews everything)
 ```
 
 ## Essential Commands
@@ -88,11 +121,37 @@ See `package.json` scripts. Key ones:
 
 ## MCP Tools (Strategic Usage)
 
-1. **Gemini-CLI** - Use ONLY for:
-   - Second opinions on critical architectural decisions
-   - Validation when stuck on complex problems
-   - Quick sanity checks with `gemini-2.5-pro`
-   - NOT for initial analysis (use Opus's built-in understanding first)
+### MANDATORY: Gemini-CLI Usage Protocol
+
+**ALWAYS use Gemini-CLI for:**
+1. **Context Gathering** (REQUIRED before implementation):
+   - `@file.ts explain the architecture` - Understand before modifying
+   - `@module/ what patterns are used here` - Learn conventions first
+   - Use before making architectural decisions
+   
+2. **Code Review** (REQUIRED after changes):
+   - `@changed-file.ts review for bugs and edge cases`
+   - `changeMode: true` for structured edit suggestions
+   - Validate security implications of changes
+
+3. **Complex Problem Solving**:
+   - Architecture validation and alternatives
+   - Performance optimization strategies
+   - Cross-module impact analysis
+
+**Usage Pattern:**
+```bash
+# Before implementation - gather context
+mcp__gemini-cli__ask-gemini(prompt="@kit/contracts/ explain the upgrade pattern", model="gemini-2.5-pro")
+
+# After implementation - review changes
+mcp__gemini-cli__ask-gemini(prompt="@file.ts review my changes for security issues", changeMode=true)
+
+# For complex analysis - use flash for speed
+mcp__gemini-cli__ask-gemini(prompt="analyze performance bottlenecks", model="gemini-2.5-pro")
+```
+
+### Other MCP Tools:
 2. **Context7** - Latest library docs
 3. **Grep** - Real-world examples
 4. **Linear/Sentry** - Issue tracking

@@ -1,13 +1,7 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import {
-  IdentityCreateOutputSchema,
-  IdentityCreateSchema,
-} from "@/orpc/routes/system/identity/routes/identity.create.schema";
-import {
-  IdentityRegisterOutputSchema,
-  IdentityRegisterSchema,
-} from "@/orpc/routes/system/identity/routes/identity.register.schema";
-import { eventIterator } from "@orpc/server";
+import { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
+import { IdentityRegisterSchema } from "@/orpc/routes/system/identity/routes/identity.register.schema";
+import { AccountSchema } from "@/orpc/routes/account/routes/account.read.schema";
 
 const identityCreate = baseContract
   .route({
@@ -18,7 +12,7 @@ const identityCreate = baseContract
     tags: ["identity"],
   })
   .input(IdentityCreateSchema)
-  .output(eventIterator(IdentityCreateOutputSchema));
+  .output(AccountSchema);
 
 const identityRegister = baseContract
   .route({
@@ -29,7 +23,7 @@ const identityRegister = baseContract
     tags: ["identity"],
   })
   .input(IdentityRegisterSchema)
-  .output(eventIterator(IdentityRegisterOutputSchema));
+  .output(AccountSchema);
 
 export const identityContract = {
   identityCreate,

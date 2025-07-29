@@ -1,9 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import {
-  TokenCreateOutputSchema,
-  TokenCreateSchema,
-} from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
-import { eventIterator } from "@orpc/server";
+import { transactionHash } from "@/lib/zod/validators/transaction-hash";
+import { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 
 export const tokenCreateContract = baseContract
   .route({
@@ -14,4 +11,4 @@ export const tokenCreateContract = baseContract
     tags: ["token"],
   })
   .input(TokenCreateSchema)
-  .output(eventIterator(TokenCreateOutputSchema));
+  .output(transactionHash);

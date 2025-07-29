@@ -1,10 +1,10 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getConditionalMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
+import { readTokenAfterMutation } from "@/orpc/helpers/post-mutation-read";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 
@@ -63,16 +63,17 @@ export const mint = tokenRouter.token.mint
     })
   )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .use(tokenMiddleware)
+  .handler(async ({ input, context, errors }) => {
     const { contract, verification, recipients, amounts } = input;
-    const { auth, t } = context;
+    const { auth } = context;
 
     // Determine if this is a batch operation
     const isBatch = recipients.length > 1;
 
-    // Generate messages using server-side translations
-    const { pendingMessage, successMessage, errorMessage } =
-      getConditionalMutationMessages(t, "tokens", "mint", isBatch);
+    const errorMessage = isBatch
+      ? "Failed to batch mint tokens"
+      : "Failed to mint tokens";
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -80,7 +81,7 @@ export const mint = tokenRouter.token.mint
       type: verification.verificationType,
     });
 
-    // Choose the appropriate mutation based on single vs batch
+    // Execute the mint operation
     if (isBatch) {
       // Validate batch arrays
       validateBatchArrays(
@@ -91,7 +92,7 @@ export const mint = tokenRouter.token.mint
         "batch mint"
       );
 
-      const transactionHash = yield* context.portalClient.mutate(
+      await context.portalClient.mutate(
         TOKEN_BATCH_MINT_MUTATION,
         {
           address: contract,
@@ -100,14 +101,8 @@ export const mint = tokenRouter.token.mint
           amounts: amounts.map((a) => a.toString()),
           ...challengeResponse,
         },
-        errorMessage,
-        {
-          waitingForMining: pendingMessage,
-          transactionIndexed: successMessage,
-        }
+        errorMessage
       );
-
-      return getEthereumHash(transactionHash);
     } else {
       const [to] = recipients;
       const [amount] = amounts;
@@ -119,7 +114,7 @@ export const mint = tokenRouter.token.mint
         });
       }
 
-      const transactionHash = yield* context.portalClient.mutate(
+      await context.portalClient.mutate(
         TOKEN_SINGLE_MINT_MUTATION,
         {
           address: contract,
@@ -128,13 +123,18 @@ export const mint = tokenRouter.token.mint
           amount: amount.toString(),
           ...challengeResponse,
         },
-        errorMessage,
-        {
-          waitingForMining: pendingMessage,
-          transactionIndexed: successMessage,
-        }
+        errorMessage
       );
-
-      return getEthereumHash(transactionHash);
     }
+
+    // Return the updated token data using the read handler
+    return await call(
+      read,
+      {
+        tokenAddress: contract,
+      },
+      {
+        context,
+      }
+    );
   });

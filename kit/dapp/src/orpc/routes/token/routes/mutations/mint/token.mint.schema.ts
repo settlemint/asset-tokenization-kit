@@ -1,9 +1,8 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { apiBigInt } from "@/lib/zod/validators/bigint";
-import {
-  MutationInputSchemaWithContract,
-  MutationOutputSchema,
-} from "@/orpc/routes/common/schemas/mutation.schema";
+import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
+import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { z } from "zod";
 
 export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
@@ -39,8 +38,25 @@ export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
 
 /**
  * Output schema for token mint operation
+ * Returns transaction hash and mint details
  */
-export const TokenMintOutputSchema = MutationOutputSchema;
+export const TokenMintOutputSchema = BaseMutationOutputSchema.extend({
+  data: z
+    .object({
+      totalMinted: bigDecimal().describe("Total amount of tokens minted"),
+      recipients: z
+        .array(ethereumAddress)
+        .describe("Addresses tokens were minted to"),
+      amounts: z.array(bigDecimal()).describe("Amounts minted to each address"),
+      tokenName: z.string().optional().describe("Name of the token"),
+      tokenSymbol: z.string().optional().describe("Symbol of the token"),
+      newTotalSupply: bigDecimal()
+        .optional()
+        .describe("New total supply after mint"),
+    })
+    .optional()
+    .describe("Mint operation details"),
+});
 
 // Type exports using Zod's type inference
 export type TokenMintInput = z.infer<typeof TokenMintInputSchema>;

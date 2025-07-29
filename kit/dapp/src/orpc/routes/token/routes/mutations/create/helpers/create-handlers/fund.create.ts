@@ -58,15 +58,15 @@ const CREATE_FUND_MUTATION = portalGraphql(`
   }
 `);
 
-export const fundCreateHandler = async function* (
+export const fundCreateHandler = async (
   input: TokenCreateInput,
   context: TokenCreateContext
-) {
+) => {
   if (input.type !== AssetTypeEnum.fund) {
     throw new Error("Invalid token type");
   }
 
-  yield* createToken(input, context, (creationFailedMessage, messages) => {
+  return createToken(input, context, () => {
     // Delete verification from input to avoid leaking it in the logs
     const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
@@ -76,8 +76,7 @@ export const fundCreateHandler = async function* (
         ...context.mutationVariables,
         countryCode: 1, // TODO: should come from ui
       },
-      creationFailedMessage,
-      messages
+      "Failed to create fund token"
     );
   });
 };

@@ -62,15 +62,15 @@ const CREATE_BOND_MUTATION = portalGraphql(`
   }
 `);
 
-export const bondCreateHandler = async function* (
+export const bondCreateHandler = async (
   input: TokenCreateInput,
   context: TokenCreateContext
-) {
+) => {
   if (input.type !== AssetTypeEnum.bond) {
     throw new Error("Invalid token type");
   }
 
-  yield* createToken(input, context, (creationFailedMessage, messages) => {
+  return createToken(input, context, () => {
     // Delete verification from input to avoid leaking it in the logs
     const { verification: _, ...otherInput } = input;
     return context.portalClient.mutate(
@@ -82,8 +82,7 @@ export const bondCreateHandler = async function* (
         ...context.mutationVariables,
         countryCode: 1, // TODO: should come from ui
       },
-      creationFailedMessage,
-      messages
+      "Failed to create bond token"
     );
   });
 };

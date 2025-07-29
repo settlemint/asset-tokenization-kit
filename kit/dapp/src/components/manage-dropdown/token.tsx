@@ -54,7 +54,7 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
   // Pause mutation
   const { mutate: pauseToken, isPending: isPausing } = useMutation(
     orpc.token.pause.mutationOptions({
-      onSuccess: async () => {
+      onSuccess: async (data) => {
         // Invalidate token query to refresh the paused state
         await queryClient.invalidateQueries({
           queryKey: orpc.token.read.key({
@@ -63,7 +63,13 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
         });
         setOpenAction(null);
         form.reset();
-        toast.success(t("actions.pause.messages.success"));
+        toast.success(
+          t("actions.pause.messages.success", {
+            defaultValue: `Token '${data.name} (${data.symbol})' paused successfully`,
+            name: data.name,
+            symbol: data.symbol,
+          })
+        );
       },
       onError: (error) => {
         toast.error(t("actions.pause.messages.error"), {
@@ -76,7 +82,7 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
   // Unpause mutation
   const { mutate: unpauseToken, isPending: isUnpausing } = useMutation(
     orpc.token.unpause.mutationOptions({
-      onSuccess: async () => {
+      onSuccess: async (data) => {
         // Invalidate token query to refresh the paused state
         await queryClient.invalidateQueries({
           queryKey: orpc.token.read.key({
@@ -85,7 +91,13 @@ export function ManageDropdown({ token }: ManageDropdownProps) {
         });
         setOpenAction(null);
         form.reset();
-        toast.success(t("actions.unpause.messages.success"));
+        toast.success(
+          t("actions.unpause.messages.success", {
+            defaultValue: `Token '${data.name} (${data.symbol})' resumed successfully`,
+            name: data.name,
+            symbol: data.symbol,
+          })
+        );
       },
       onError: (error) => {
         toast.error(t("actions.unpause.messages.error"), {

@@ -3,7 +3,6 @@ import {
   FactoryCreateOutputSchema,
   FactoryCreateSchema,
 } from "@/orpc/routes/token/routes/factory/factory.create.schema";
-import { eventIterator } from "@orpc/server";
 
 export const factoryCreateContract = baseContract
   .route({
@@ -14,4 +13,4 @@ export const factoryCreateContract = baseContract
     tags: ["token"],
   })
   .input(FactoryCreateSchema)
-  .output(eventIterator(FactoryCreateOutputSchema));
+  .output(FactoryCreateOutputSchema);

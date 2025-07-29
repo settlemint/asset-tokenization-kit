@@ -1,5 +1,7 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { apiBigInt } from "@/lib/zod/validators/bigint";
+import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { z } from "zod";
 
@@ -88,4 +90,35 @@ export const TokenTransferSchema = z
 
 // Note: Old separate schemas removed since we consolidated into TokenTransferSchema
 
+/**
+ * Output schema for token transfer operation
+ * Returns the ethereum hash and the updated token data
+ */
+export const TokenTransferOutputSchema = BaseMutationOutputSchema.extend({
+  data: z
+    .object({
+      totalTransferred: bigDecimal().describe(
+        "Total amount of tokens transferred"
+      ),
+      transferType: z
+        .enum(["standard", "transferFrom", "forced"])
+        .describe("Type of transfer performed"),
+      recipients: z
+        .array(ethereumAddress)
+        .describe("Addresses tokens were transferred to"),
+      amounts: z
+        .array(bigDecimal())
+        .describe("Amounts transferred to each address"),
+      from: z
+        .array(ethereumAddress)
+        .optional()
+        .describe("Source addresses for transferFrom/forced transfers"),
+      tokenName: z.string().optional().describe("Name of the token"),
+      tokenSymbol: z.string().optional().describe("Symbol of the token"),
+    })
+    .optional()
+    .describe("Transfer operation details"),
+});
+
 export type TokenTransferInput = z.infer<typeof TokenTransferSchema>;
+export type TokenTransferOutput = z.infer<typeof TokenTransferOutputSchema>;

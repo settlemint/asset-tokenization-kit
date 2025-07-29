@@ -18,7 +18,7 @@ export const create = onboardedRouter.token.create
       getTokenType: (input) => input.type,
     })
   )
-  .handler(async function* ({ input, context }) {
+  .handler(async ({ input, context }) => {
     const { tokenFactory } = context;
 
     const handler = tokenCreateHandlerMap[input.type];
@@ -27,13 +27,13 @@ export const create = onboardedRouter.token.create
       type: input.verification.verificationType,
     });
 
-    yield* handler(input, {
+    // The handler will return the transaction hash
+    return handler(input, {
       mutationVariables: {
         address: tokenFactory.address,
         from: context.auth.user.wallet,
         ...challengeResponse,
       },
       portalClient: context.portalClient,
-      t: context.t,
     });
   });
