@@ -567,14 +567,6 @@ contract ATKSystemImplementation is
             DEFAULT_ADMIN_ROLE, initialAdmin
         );
 
-        // Register the identity verification module
-        if (_identityVerificationModule != address(0)) {
-            _checkInterface(_identityVerificationModule, _COMPLIANCE_MODULE_ID);
-
-            IATKComplianceModuleRegistry(localComplianceModuleRegistryProxy).registerComplianceModule(
-                _identityVerificationModule
-            );
-        }
         // Mark the system as bootstrapped
         _bootstrapped = true;
 
