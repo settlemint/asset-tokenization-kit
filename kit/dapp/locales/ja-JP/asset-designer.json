@@ -22,7 +22,8 @@
       "disable": "無効にする",
       "enable": "有効にする",
       "next": "次へ",
-      "submit": "送信"
+      "submit": "送信",
+      "leave": "終了"
     },
     "description": "{{type}}の基本情報を以下に提供して構成します。",
     "fields": {
@@ -77,6 +78,12 @@
       }
     },
     "title": "{{type}}を作成"
+  },
+  "leave-confirmation": {
+    "title": "アセットデザイナーを終了しますか？",
+    "description": "今終了すると進行状況が失われます。入力した情報は保存されません。",
+    "stay": "残る",
+    "leave": "終了"
   },
   "messages": {
     "comingSoon": "近日公開！",

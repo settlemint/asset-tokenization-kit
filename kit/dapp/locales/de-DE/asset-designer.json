@@ -22,7 +22,8 @@
       "disable": "Deaktivieren",
       "enable": "Aktivieren",
       "next": "Weiter",
-      "submit": "Einreichen"
+      "submit": "Einreichen",
+      "leave": "Verlassen"
     },
     "description": "Konfigurieren Sie Ihr {{type}}, indem Sie die grundlegenden Informationen unten bereitstellen.",
     "fields": {
@@ -77,6 +78,12 @@
       }
     },
     "title": "Erstellen {{type}}"
+  },
+  "leave-confirmation": {
+    "title": "Asset-Designer verlassen?",
+    "description": "Ihr Fortschritt geht verloren, wenn Sie jetzt verlassen. Alle eingegebenen Informationen werden nicht gespeichert.",
+    "stay": "Bleiben",
+    "leave": "Verlassen"
   },
   "messages": {
     "comingSoon": "Bald verfügbar!",
