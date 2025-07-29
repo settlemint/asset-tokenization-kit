@@ -1,29 +1,12 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import {
-  ValueInputSchema,
-  ValueOutputSchema,
-  TotalValueInputSchema,
-  TotalValueOutputSchema,
-} from "@/orpc/routes/token/routes/stats/value.schema";
+import { TokenStatsValueOutputSchema } from "@/orpc/routes/token/routes/stats/value.schema";
 
-export const valueContract = baseContract
+export const tokenStatsValueContract = baseContract
   .route({
     method: "GET",
-    path: "/stats/value",
-    description: "Get system-wide value metrics",
-    successDescription: "System value data",
+    path: "/token/stats/value",
+    description: "Get token value statistics",
+    successDescription: "Value statistics",
     tags: ["token", "stats"],
   })
-  .input(ValueInputSchema)
-  .output(ValueOutputSchema);
-
-export const totalValueContract = baseContract
-  .route({
-    method: "GET",
-    path: "/stats/total-value",
-    description: "Get system-wide total value metrics",
-    successDescription: "System total value data",
-    tags: ["token", "stats"],
-  })
-  .input(TotalValueInputSchema)
-  .output(TotalValueOutputSchema);
+  .output(TokenStatsValueOutputSchema);

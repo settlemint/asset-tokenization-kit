@@ -1,63 +1,49 @@
 import { z } from "zod";
 
 /**
- * Input schema for transaction endpoints (both system and asset-specific)
+ * Schema for transaction statistics input parameters
  */
-export const TransactionsInputSchema = z
-  .object({
-    timeRange: z
-      .number()
-      .int()
-      .min(1)
-      .max(365)
-      .default(7)
-      .describe("Number of days to look back for transaction data"),
-  })
-  .strict();
-
-/**
- * Output schema for system-wide transaction data
- */
-export const SystemTransactionsOutputSchema = z.object({
-  totalTransactions: z.number().int().min(0),
-  recentTransactions: z.number().int().min(0),
-  transactionHistory: z.array(
-    z.object({
-      timestamp: z.string(),
-      transactions: z.number().int().min(0),
-    })
-  ),
-  timeRangeDays: z.number().int().min(1).max(365),
+export const TokenStatsTransactionsInputSchema = z.object({
+  /** Time range in days for historical data (default: 7 days) */
+  timeRange: z.number().min(1).max(365).optional().default(7),
 });
 
 /**
- * Output schema for asset-specific transaction data
+ * Schema for transaction statistics output
+ * Contains transaction-related metrics including totals and history over time
  */
-export const AssetTransactionsOutputSchema = z.object({
-  tokenId: z.string(),
-  timeRangeDays: z.number().int().min(1),
+export const TokenStatsTransactionsOutputSchema = z.object({
+  /** Total number of transactions (all Transfer events) */
+  totalTransactions: z.number(),
+
+  /** Number of transactions in the specified time range */
+  recentTransactions: z.number(),
+
+  /** Transaction history data over time for charting */
   transactionHistory: z.array(
     z.object({
+      /** ISO timestamp for this data point */
       timestamp: z.string(),
-      transactions: z.number().int().min(0),
+
+      /** Number of transactions on this day */
+      transactions: z.number(),
     })
   ),
-  totalEvents: z.number().int().min(0),
+
+  /** The time range in days that was used for recent calculations */
+  timeRangeDays: z.number(),
 });
 
 /**
- * Combined output schema for transaction endpoints
+ * Type definition for transaction statistics input
  */
-export const TransactionsOutputSchema = z.union([
-  SystemTransactionsOutputSchema,
-  AssetTransactionsOutputSchema,
-]);
+export type TokenStatsTransactionsInput = z.infer<
+  typeof TokenStatsTransactionsInputSchema
+>;
 
-export type TransactionsInput = z.infer<typeof TransactionsInputSchema>;
-export type SystemTransactionsOutput = z.infer<
-  typeof SystemTransactionsOutputSchema
+/**
+ * Type definition for transaction statistics output
+ */
+export type TokenStatsTransactions = z.infer<
+  typeof TokenStatsTransactionsOutputSchema
 >;
-export type AssetTransactionsOutput = z.infer<
-  typeof AssetTransactionsOutputSchema
->;
-export type TransactionsOutput = z.infer<typeof TransactionsOutputSchema>;

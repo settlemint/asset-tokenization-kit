@@ -4,10 +4,10 @@ import {
   TokenStatsSupplyDistributionOutputSchema,
 } from "@/orpc/routes/token/routes/stats/supply-distribution.schema";
 
-export const supplyDistributionContract = baseContract
+export const tokenStatsSupplyDistributionContract = baseContract
   .route({
     method: "GET",
-    path: "/stats/supply-distribution",
+    path: "/token/stats/supply-distribution",
     description: "Get supply distribution for charts",
     successDescription: "Supply distribution data",
     tags: ["token", "stats"],

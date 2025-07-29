@@ -5,11 +5,11 @@ import { authRouter } from "@/orpc/procedures/auth.router";
 import { z } from "zod";
 
 /**
- * GraphQL query to fetch system-wide value metrics
- * Simple query focused only on total value in base currency
+ * GraphQL query to fetch system-wide total value metrics
+ * Optimized for the Value Stats Widget specifically
  */
-const VALUE_METRICS_QUERY = theGraphGraphql(`
-  query ValueMetrics($systemId: ID!) {
+const TOTAL_VALUE_QUERY = theGraphGraphql(`
+  query TotalValue($systemId: ID!) {
     systemStatsState(id: $systemId) {
       totalValueInBaseCurrency
     }
@@ -17,7 +17,7 @@ const VALUE_METRICS_QUERY = theGraphGraphql(`
 `);
 
 // Schema for the GraphQL response
-const ValueMetricsResponseSchema = z.object({
+const TotalValueResponseSchema = z.object({
   systemStatsState: z
     .object({
       totalValueInBaseCurrency: z.string(),
@@ -26,41 +26,41 @@ const ValueMetricsResponseSchema = z.object({
 });
 
 /**
- * Value statistics route handler.
+ * Total value route handler.
  *
- * Fetches the total value of all assets in the system.
+ * Fetches the total value of all assets in the system specifically for the Value Stats Widget.
  * This is a lightweight endpoint optimized for frequent updates.
  *
  * The value is returned in the system's base currency and is
  * calculated by the subgraph based on token supplies and prices.
  *
  * Authentication: Required
- * Method: GET /token/stats/value
+ * Method: GET /token/stats/total-value
  *
- * @returns Promise<ValueMetrics> - Total value in base currency
+ * @returns Promise<TotalValueMetrics> - Total value in base currency
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws INTERNAL_SERVER_ERROR - If TheGraph query fails
  *
  * @example
  * ```typescript
  * // Get the total system value
- * const { totalValue } = await orpc.token.statsValue.query();
+ * const { totalValue } = await orpc.token.statsTotalValue.query();
  * console.log(`Total system value: ${totalValue}`);
  * ```
  */
-export const statsValue = authRouter.token.statsValue
+export const statsTotalValue = authRouter.token.statsTotalValue
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {
     // System context is guaranteed by systemMiddleware
 
     // Fetch system value from TheGraph
-    const response = await context.theGraphClient.query(VALUE_METRICS_QUERY, {
+    const response = await context.theGraphClient.query(TOTAL_VALUE_QUERY, {
       input: {
         systemId: context.system.address.toLowerCase(),
       },
-      output: ValueMetricsResponseSchema,
-      error: "Failed to fetch value metrics",
+      output: TotalValueResponseSchema,
+      error: "Failed to fetch total value",
     });
 
     // Extract total value, defaulting to "0" if no system stats

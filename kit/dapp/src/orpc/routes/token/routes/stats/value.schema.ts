@@ -1,30 +1,15 @@
 import { z } from "zod";
 
 /**
- * Input schema for value endpoint (no input required)
+ * Schema for value statistics output
+ * Contains the total value of all assets in the system
  */
-export const ValueInputSchema = z.object({}).strict();
-
-/**
- * Input schema for total value endpoint (no input required)
- */
-export const TotalValueInputSchema = z.object({}).strict();
-
-/**
- * Output schema for value endpoint
- */
-export const ValueOutputSchema = z.object({
+export const TokenStatsValueOutputSchema = z.object({
+  /** Total value of all assets in the base currency (as string to preserve precision) */
   totalValue: z.string(),
 });
 
 /**
- * Output schema for total value endpoint
+ * Type definition for value statistics
  */
-export const TotalValueOutputSchema = z.object({
-  totalValue: z.string(),
-});
-
-export type ValueInput = z.infer<typeof ValueInputSchema>;
-export type ValueOutput = z.infer<typeof ValueOutputSchema>;
-export type TotalValueInput = z.infer<typeof TotalValueInputSchema>;
-export type TotalValueOutput = z.infer<typeof TotalValueOutputSchema>;
+export type TokenStatsValue = z.infer<typeof TokenStatsValueOutputSchema>;

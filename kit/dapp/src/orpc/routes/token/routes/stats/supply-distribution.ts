@@ -102,7 +102,7 @@ function createSupplyDistribution(
  * console.log('Distribution:', distribution.supplyDistribution);
  * ```
  */
-export const supplyDistribution = authRouter.token.statsSupplyDistribution
+export const statsSupplyDistribution = authRouter.token.statsSupplyDistribution
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {

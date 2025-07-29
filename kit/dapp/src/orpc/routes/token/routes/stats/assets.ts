@@ -291,7 +291,7 @@ function createAssetActivity(
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws INTERNAL_SERVER_ERROR - If TheGraph query fails
  */
-export const assets = authRouter.token.statsAssets
+export const statsAssets = authRouter.token.statsAssets
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {
