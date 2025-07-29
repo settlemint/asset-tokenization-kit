@@ -406,8 +406,8 @@ initContainers:
 
         # Function to test PostgreSQL connection
         test_postgres() {
-          pg_isready -h postgresql-pgpool -p 5432 -U portal && \
-          psql -h postgresql-pgpool -p 5432 -U portal -d portal -c "SELECT 1;" > /dev/null 2>&1
+          pg_isready -h postgresql -p 5432 -U portal && \
+          psql -h postgresql -p 5432 -U portal -d portal -c "SELECT 1;" > /dev/null 2>&1
         }
 
         # Wait with exponential backoff
@@ -450,12 +450,12 @@ config:
     nodeRpcUrl: "http://txsigner:3000"
 
   # -- PostgreSQL connection string
-  postgresql: "postgresql://portal:atk@postgresql-pgpool:5432/portal?sslmode=disable"
+  postgresql: "postgresql://portal:atk@postgresql:5432/portal?sslmode=disable"
 
   # -- Redis configuration
   redis:
     # -- Redis host
-    host: "redis-master"
+    host: "redis"
     # -- Redis port
     port: 6379
     # -- Redis username

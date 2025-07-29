@@ -485,7 +485,7 @@ config:
   extraSecretEnv: {}
 
 # -- PostgreSQL connection string
-postgresql: "postgresql://txsigner:atk@postgresql-pgpool:5432/txsigner?sslmode=disable"
+postgresql: "postgresql://txsigner:atk@postgresql:5432/txsigner?sslmode=disable"
 
 # -- Init containers configuration
 initContainers:
@@ -505,8 +505,8 @@ initContainers:
 
         # Function to test PostgreSQL connection
         test_postgres() {
-          pg_isready -h postgresql-pgpool -p 5432 -U txsigner && \
-          psql -h postgresql-pgpool -p 5432 -U txsigner -d txsigner -c "SELECT 1;" > /dev/null 2>&1
+          pg_isready -h postgresql -p 5432 -U txsigner && \
+          psql -h postgresql -p 5432 -U txsigner -d txsigner -c "SELECT 1;" > /dev/null 2>&1
         }
 
         # Wait with exponential backoff

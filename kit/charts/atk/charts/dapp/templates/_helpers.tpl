@@ -1,86 +1,55 @@
 {{/*
 Expand the name of the chart.
+Using common helper with chart-specific alias.
 */}}
 {{- define "dapp.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{ include "atk.common.name" . }}
 {{- end }}
 
 {{/*
 Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
+Using common helper with chart-specific alias.
 */}}
 {{- define "dapp.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
+{{ include "atk.common.fullname" . }}
 {{- end }}
 
 {{/*
 Create chart name and version as used by the chart label.
+Using common helper with chart-specific alias.
 */}}
 {{- define "dapp.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{ include "atk.common.chart" . }}
 {{- end }}
 
 {{/*
 Common labels
+Using common helper with chart-specific alias.
 */}}
 {{- define "dapp.labels" -}}
-helm.sh/chart: {{ include "dapp.chart" . }}
-{{ include "dapp.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{ include "atk.common.labels" . }}
 {{- end }}
 
 {{/*
 Selector labels
+Using common helper with chart-specific alias.
 */}}
 {{- define "dapp.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "dapp.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{ include "atk.common.selectorLabels" . }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
+Using common helper with chart-specific alias.
 */}}
 {{- define "dapp.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "dapp.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
+{{ include "atk.common.serviceAccountName" . }}
 {{- end }}
 
 {{/*
 Common image pull secrets for all deployments/statefulsets
+Using common helper.
 */}}
 {{- define "atk.imagePullSecrets" -}}
-{{- if .Values.global }}
-{{- if .Values.global.imagePullSecrets }}
-imagePullSecrets:
-{{- range .Values.global.imagePullSecrets }}
-  - name: {{ . }}
-{{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
-{{- end }}
-{{- else }}
-imagePullSecrets:
-  - name: image-pull-secret-docker
-  - name: image-pull-secret-ghcr
-  - name: image-pull-secret-harbor
-{{- end }}
+{{ include "atk.common.imagePullSecrets" . }}
 {{- end }}

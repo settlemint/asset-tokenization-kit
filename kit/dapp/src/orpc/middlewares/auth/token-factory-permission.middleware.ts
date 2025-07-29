@@ -49,7 +49,10 @@ export const tokenFactoryPermissionMiddleware = <
           .map(([role]) => role as keyof typeof tokenFactory.accessControl)
       : [];
 
-    if (!userRoles.some((role) => requiredRoles.includes(role))) {
+    if (
+      requiredRoles.length > 0 &&
+      !userRoles.some((role) => requiredRoles.includes(role))
+    ) {
       throw errors.USER_NOT_AUTHORIZED({
         data: {
           requiredRoles,
