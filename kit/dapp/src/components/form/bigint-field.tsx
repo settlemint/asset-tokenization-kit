@@ -7,6 +7,7 @@ import {
   FieldErrors,
   FieldLabel,
   FieldLayout,
+  FieldWithAddons,
 } from "./field";
 
 export function BigIntField({
@@ -29,36 +30,23 @@ export function BigIntField({
     <FieldLayout>
       <FieldLabel htmlFor={field.name} label={label} required={required} />
       <FieldDescription description={description} />
-      <div className="relative">
-        <Input
-          id={field.name}
-          value={field.state.value?.toString()}
-          type="text"
-          onChange={(e) => {
-            if (e.target.value === "") {
-              field.handleChange(undefined);
-            } else {
-              field.handleChange(BigInt(e.target.value));
-            }
-          }}
-          className={cn(
-            "peer",
-            startAddon && "ps-6",
-            endAddon && "pe-12",
-            errorClassNames(field.state.meta)
-          )}
-        />
-        {startAddon && (
-          <span className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-sm peer-disabled:opacity-50">
-            {startAddon}
-          </span>
+      <FieldWithAddons startAddon={startAddon} endAddon={endAddon}>
+        {({ className }) => (
+          <Input
+            id={field.name}
+            value={field.state.value?.toString()}
+            type="text"
+            onChange={(e) => {
+              if (e.target.value === "") {
+                field.handleChange(undefined);
+              } else {
+                field.handleChange(BigInt(e.target.value));
+              }
+            }}
+            className={cn(className, errorClassNames(field.state.meta))}
+          />
         )}
-        {endAddon && (
-          <span className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm peer-disabled:opacity-50">
-            {endAddon}
-          </span>
-        )}
-      </div>
+      </FieldWithAddons>
       <FieldErrors {...field.state.meta} />
     </FieldLayout>
   );

@@ -68,6 +68,34 @@ export function withPostfix<T extends object>(
   return ComponentWithPostfix;
 }
 
+export function FieldWithAddons({
+  startAddon,
+  endAddon,
+  children,
+}: {
+  startAddon?: string;
+  endAddon?: string;
+  children: (inputProps: { className: string }) => React.ReactElement;
+}) {
+  return (
+    <div className="relative">
+      {children({
+        className: cn("peer", startAddon && "ps-6", endAddon && "pe-12"),
+      })}
+      {startAddon && (
+        <span className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-sm peer-disabled:opacity-50">
+          {startAddon}
+        </span>
+      )}
+      {endAddon && (
+        <span className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm peer-disabled:opacity-50">
+          {endAddon}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function errorClassNames({
   isTouched,
   errors,

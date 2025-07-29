@@ -7,6 +7,7 @@ import {
   FieldErrors,
   FieldLabel,
   FieldLayout,
+  FieldWithAddons,
 } from "./field";
 
 export function TextField({
@@ -29,32 +30,19 @@ export function TextField({
     <FieldLayout>
       <FieldLabel htmlFor={field.name} label={label} required={required} />
       <FieldDescription description={description} />
-      <div className="relative">
-        <Input
-          type="text"
-          id={field.name}
-          value={field.state.value}
-          onChange={(e) => {
-            field.handleChange(e.target.value);
-          }}
-          className={cn(
-            "peer",
-            startAddon && "ps-6",
-            endAddon && "pe-12",
-            errorClassNames(field.state.meta)
-          )}
-        />
-        {startAddon && (
-          <span className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 text-sm peer-disabled:opacity-50">
-            {startAddon}
-          </span>
+      <FieldWithAddons startAddon={startAddon} endAddon={endAddon}>
+        {({ className }) => (
+          <Input
+            type="text"
+            id={field.name}
+            value={field.state.value}
+            onChange={(e) => {
+              field.handleChange(e.target.value);
+            }}
+            className={cn(className, errorClassNames(field.state.meta))}
+          />
         )}
-        {endAddon && (
-          <span className="text-muted-foreground pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-sm peer-disabled:opacity-50">
-            {endAddon}
-          </span>
-        )}
-      </div>
+      </FieldWithAddons>
       <FieldErrors {...field.state.meta} />
     </FieldLayout>
   );
