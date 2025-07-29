@@ -82,9 +82,9 @@ contract SystemUtils is Test {
 
     // Compliance Modules
     MockedComplianceModule public mockedComplianceModule;
+    SMARTIdentityVerificationComplianceModule public identityVerificationModule;
     CountryAllowListComplianceModule public countryAllowListComplianceModule;
     CountryBlockListComplianceModule public countryBlockListComplianceModule;
-    SMARTIdentityVerificationComplianceModule public identityVerificationModule;
 
     // --- Setup ---
     constructor(address platformAdmin) {
@@ -113,9 +113,6 @@ contract SystemUtils is Test {
         ATKSystemAddonRegistryImplementation systemAddonRegistryImpl =
             new ATKSystemAddonRegistryImplementation(forwarder);
 
-        identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
-        vm.label(address(identityVerificationModule), "Identity Verification Module");
-
         ATKSystemAccessManagerImplementation systemAccessManagerImpl =
             new ATKSystemAccessManagerImplementation(forwarder);
 
@@ -130,7 +127,6 @@ contract SystemUtils is Test {
             address(identityImpl),
             address(contractIdentityImpl),
             address(accessManagerImpl),
-            address(identityVerificationModule),
             address(tokenFactoryRegistryImpl),
             address(complianceModuleRegistryImpl),
             address(systemAddonRegistryImpl),
@@ -173,6 +169,8 @@ contract SystemUtils is Test {
         // --- Deploy Other Contracts ---
         mockedComplianceModule = new MockedComplianceModule();
         vm.label(address(mockedComplianceModule), "Mocked Compliance Module");
+        identityVerificationModule = new SMARTIdentityVerificationComplianceModule(forwarder);
+        vm.label(address(identityVerificationModule), "Identity Verification Module");
         countryAllowListComplianceModule = new CountryAllowListComplianceModule(forwarder);
         vm.label(address(countryAllowListComplianceModule), "Country Allow List Compliance Module");
         countryBlockListComplianceModule = new CountryBlockListComplianceModule(forwarder);

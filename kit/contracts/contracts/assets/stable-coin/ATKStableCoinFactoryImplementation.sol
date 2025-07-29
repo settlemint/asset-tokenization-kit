@@ -45,18 +45,16 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
     /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE.
-    /// @param identityVerificationModule_ The address of the identity verification module.
     function initialize(
         address systemAddress,
         address tokenImplementation_,
-        address initialAdmin,
-        address identityVerificationModule_
+        address initialAdmin
     )
         public
         override(AbstractATKTokenFactoryImplementation, IATKTokenFactory)
         initializer
     {
-        super.initialize(systemAddress, tokenImplementation_, initialAdmin, identityVerificationModule_);
+        super.initialize(systemAddress, tokenImplementation_, initialAdmin);
 
         ISMARTTopicSchemeRegistry topicSchemeRegistry =
             ISMARTTopicSchemeRegistry(IATKSystem(_systemAddress).topicSchemeRegistry());
@@ -68,7 +66,6 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
     /// @param name_ The name of the stable coin.
     /// @param symbol_ The symbol of the stable coin.
     /// @param decimals_ The number of decimals for the stable coin.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the stable coin.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The ISO 3166-1 numeric country code for jurisdiction
     /// @return deployedStableCoinAddress The address of the newly deployed stable coin contract.
@@ -76,7 +73,6 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
         string calldata name_,
         string calldata symbol_,
         uint8 decimals_,
-        uint256[] calldata requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
         uint16 countryCode_
     )
@@ -94,7 +90,7 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
             symbol_,
             decimals_,
             _collateralClaimTopicId,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -120,7 +116,6 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
             name_,
             symbol_,
             decimals_,
-            requiredClaimTopics_,
             countryCode_
         );
 
@@ -138,14 +133,12 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
     /// @param name_ The name of the stable coin.
     /// @param symbol_ The symbol of the stable coin.
     /// @param decimals_ The decimals of the stable coin.
-    /// @param requiredClaimTopics_ The required claim topics for the stable coin.
     /// @param initialModulePairs_ The initial compliance module pairs for the stable coin.
     /// @return predictedAddress The predicted address of the stable coin contract.
     function predictStableCoinAddress(
         string calldata name_,
         string calldata symbol_,
         uint8 decimals_,
-        uint256[] calldata requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] calldata initialModulePairs_
     )
         external
@@ -162,7 +155,7 @@ contract ATKStableCoinFactoryImplementation is IATKStableCoinFactory, AbstractAT
             symbol_,
             decimals_,
             _collateralClaimTopicId,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_

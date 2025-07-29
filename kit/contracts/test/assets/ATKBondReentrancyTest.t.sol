@@ -174,7 +174,6 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
             DECIMALS,
             CAP,
             bondParams,
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             TestConstants.COUNTRY_CODE_US
         );
@@ -499,7 +498,6 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
             DECIMALS,
             CAP,
             normalBondParams,
-            new uint256[](0),
             new SMARTComplianceModuleParamPair[](0),
             TestConstants.COUNTRY_CODE_US
         );

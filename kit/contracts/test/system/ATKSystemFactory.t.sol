@@ -18,7 +18,6 @@ import {
     ContractIdentityImplementationNotSet,
     TokenAccessManagerImplementationNotSet,
     IndexOutOfBounds,
-    IdentityVerificationModuleNotSet,
     TokenFactoryRegistryImplementationNotSet,
     AddonRegistryImplementationNotSet,
     ComplianceModuleRegistryImplementationNotSet,
@@ -119,7 +118,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -156,7 +154,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -178,7 +175,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -200,7 +196,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -222,7 +217,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -244,7 +238,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -266,7 +259,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -288,7 +280,6 @@ contract ATKSystemFactoryTest is Test {
             address(0), // Zero identity implementation
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -310,7 +301,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             address(0), // Zero contract identity implementation
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -332,7 +322,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             address(0), // Zero contract identity implementation
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -354,29 +343,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             address(0), // Zero token access manager implementation
-            identityVerificationModule,
-            tokenFactoryRegistryImpl,
-            complianceModuleRegistryImpl,
-            addonRegistryImpl,
-            systemAccessManagerImpl,
-            forwarder
-        );
-    }
-
-    function test_ConstructorWithZeroIdentityVerificationModule() public {
-        vm.expectRevert(IdentityVerificationModuleNotSet.selector);
-        new ATKSystemFactory(
-            systemImpl,
-            complianceImpl,
-            identityRegistryImpl,
-            identityRegistryStorageImpl,
-            trustedIssuersRegistryImpl,
-            topicSchemeRegistryImpl,
-            identityFactoryImpl,
-            identityImpl,
-            contractIdentityImpl,
-            tokenAccessManagerImpl,
-            address(0), // Zero identity verification module
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -398,7 +364,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             address(0), // complianceModuleRegistryImpl
             addonRegistryImpl,
@@ -420,7 +385,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             address(0), // addonRegistryImpl
@@ -442,7 +406,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             address(0), // tokenFactoryRegistryImpl
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -464,7 +427,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,
@@ -580,7 +542,7 @@ contract ATKSystemFactoryTest is Test {
         assertEq(factory.defaultIdentityImplementation(), identityImpl);
         assertEq(factory.defaultContractIdentityImplementation(), contractIdentityImpl);
         assertEq(factory.defaultTokenAccessManagerImplementation(), tokenAccessManagerImpl);
-        assertEq(factory.defaultIdentityVerificationModule(), identityVerificationModule);
+        // Note: defaultIdentityVerificationModule() removed as functionality moved to compliance module registry
         assertEq(factory.factoryForwarder(), forwarder);
     }
 
@@ -597,7 +559,6 @@ contract ATKSystemFactoryTest is Test {
             identityImpl,
             contractIdentityImpl,
             tokenAccessManagerImpl,
-            identityVerificationModule,
             tokenFactoryRegistryImpl,
             complianceModuleRegistryImpl,
             addonRegistryImpl,

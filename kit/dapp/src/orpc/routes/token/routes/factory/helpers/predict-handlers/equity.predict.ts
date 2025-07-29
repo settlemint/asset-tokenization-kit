@@ -15,7 +15,6 @@ const PREDICT_EQUITY_ADDRESS_QUERY = portalGraphql(`
     $name: String!
     $decimals: Int!
     $initialModulePairs: [ATKEquityFactoryImplementationPredictEquityAddressInitialModulePairsInput!]!
-    $requiredClaimTopics: [String!]!
   ) {
     ATKEquityFactoryImplementation(address: $address) {
       predictEquityAddress(
@@ -23,7 +22,6 @@ const PREDICT_EQUITY_ADDRESS_QUERY = portalGraphql(`
         name_: $name
         decimals_: $decimals
         initialModulePairs_: $initialModulePairs
-        requiredClaimTopics_: $requiredClaimTopics
       ) {
         predictedAddress
       }
