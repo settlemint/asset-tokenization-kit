@@ -72,6 +72,32 @@ these differences.
 - Don't ignore transaction receipts - they contain valuable metadata
 - Don't assume event ordering - handle all possible sequences
 
+**Context7 Documentation Requirements**:
+
+Before implementing any subgraph features, gather documentation for:
+
+```javascript
+// 1. The Graph Protocol
+const graphId = await mcp__context7__resolve_library_id({
+  libraryName: "graph-protocol",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: graphId.libraryId,
+  topic: "assemblyscript mappings entities schema",
+  tokens: 8000,
+});
+
+// 2. AssemblyScript
+const assemblyScriptId = await mcp__context7__resolve_library_id({
+  libraryName: "assemblyscript",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: assemblyScriptId.libraryId,
+  topic: "types memory management graph-ts",
+  tokens: 5000,
+});
+```
+
 **Your Approach**:
 
 1. **MANDATORY CONTEXT GATHERING WITH GEMINI-CLI**:

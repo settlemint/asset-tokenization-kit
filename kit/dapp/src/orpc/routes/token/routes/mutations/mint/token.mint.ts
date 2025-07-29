@@ -73,8 +73,8 @@ export const mint = tokenRouter.token.mint
     const isBatch = recipients.length > 1;
 
     const errorMessage = isBatch
-      ? "Failed to batch mint tokens"
-      : "Failed to mint tokens";
+      ? context.t("tokens:api.mutations.mint.messages.batchFailed")
+      : context.t("tokens:api.mutations.mint.messages.failed");
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
@@ -110,7 +110,9 @@ export const mint = tokenRouter.token.mint
 
       if (!to || !amount) {
         throw errors.INPUT_VALIDATION_FAILED({
-          message: "Missing required recipient or amount",
+          message: context.t(
+            "tokens:api.mutations.mint.messages.missingRecipientOrAmount"
+          ),
           data: { errors: ["Invalid input data"] },
         });
       }

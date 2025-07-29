@@ -98,7 +98,7 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
         token: contract,
         ...challengeResponse,
       },
-      "Failed to create yield schedule"
+      context.t("tokens:api.mutations.yield.messages.createScheduleFailed")
     );
     let receipt: Awaited<ReturnType<typeof getTransactionReceipt>>;
     try {
@@ -106,14 +106,21 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
       // Check if transaction was successful
       if (receipt.status !== "Success") {
         throw errors.INTERNAL_SERVER_ERROR({
-          message: "Transaction failed",
-          cause: new Error(`Transaction failed with status: ${receipt.status}`),
+          message: context.t(
+            "tokens:api.mutations.yield.messages.transactionFailed"
+          ),
+          cause: new Error(
+            context.t(
+              "tokens:api.mutations.yield.messages.transactionFailedWithStatus",
+              { status: receipt.status }
+            )
+          ),
         });
       }
     } catch (error_) {
       const error = error_ as Error;
       throw errors.INTERNAL_SERVER_ERROR({
-        message: "Failed to get transaction receipt",
+        message: context.t("tokens:api.mutations.yield.messages.receiptFailed"),
         cause: error.message,
       });
     }
@@ -137,8 +144,14 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
     }
     if (!scheduleAddress) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: "Failed to create yield schedule",
-        cause: new Error("Schedule address not found"),
+        message: context.t(
+          "tokens:api.mutations.yield.messages.createScheduleFailed"
+        ),
+        cause: new Error(
+          context.t(
+            "tokens:api.mutations.yield.messages.scheduleAddressNotFound"
+          )
+        ),
       });
     }
     // Now set the yield schedule with the created schedule address
@@ -150,7 +163,7 @@ export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
         schedule: getEthereumAddress(scheduleAddress),
         ...challengeResponse,
       },
-      "Failed to set yield schedule"
+      context.t("tokens:api.mutations.yield.messages.setScheduleFailed")
     );
 
     // Return updated token data

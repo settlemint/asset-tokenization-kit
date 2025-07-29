@@ -60,7 +60,7 @@ export const tokenRecoverERC20 = tokenRouter.token.tokenRecoverERC20
         amount: amount.toString(),
         ...challengeResponse,
       },
-      "Failed to recover ERC20 tokens"
+      context.t("tokens:api.mutations.recovery.messages.recoverERC20Failed")
     );
 
     // Return updated token data

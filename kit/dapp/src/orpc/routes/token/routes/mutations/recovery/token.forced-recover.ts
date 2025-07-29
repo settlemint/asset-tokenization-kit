@@ -58,7 +58,7 @@ export const tokenForcedRecover = tokenRouter.token.tokenForcedRecover
         newWallet,
         ...challengeResponse,
       },
-      "Failed to force recover tokens"
+      context.t("tokens:api.mutations.recovery.messages.forcedRecoverFailed")
     );
 
     // Return updated token data

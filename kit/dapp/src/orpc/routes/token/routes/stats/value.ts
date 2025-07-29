@@ -60,7 +60,7 @@ export const statsValue = authRouter.token.statsValue
         systemId: context.system.address.toLowerCase(),
       },
       output: ValueMetricsResponseSchema,
-      error: "Failed to fetch value metrics",
+      error: context.t("tokens:api.stats.value.messages.failed"),
     });
 
     // Extract total value, defaulting to "0" if no system stats

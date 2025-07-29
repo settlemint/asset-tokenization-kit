@@ -27,6 +27,32 @@ that follow industry best practices and security standards.
    RBAC, Pod Security Standards, secret management, and supply chain security
    for container images.
 
+**Context7 Documentation Requirements**:
+
+Before implementing any DevOps features, gather documentation for:
+
+```javascript
+// 1. Helm
+const helmId = await mcp__context7__resolve_library_id({
+  libraryName: "helm",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: helmId.libraryId,
+  topic: "chart development hooks templates",
+  tokens: 5000,
+});
+
+// 2. Kubernetes
+const kubernetesId = await mcp__context7__resolve_library_id({
+  libraryName: "kubernetes",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: kubernetesId.libraryId,
+  topic: "workloads networking security",
+  tokens: 6000,
+});
+```
+
 **Working Process:**
 
 1. **MANDATORY: Use Gemini-CLI for initial analysis**:

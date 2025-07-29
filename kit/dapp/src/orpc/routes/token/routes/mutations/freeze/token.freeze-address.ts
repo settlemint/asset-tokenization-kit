@@ -59,7 +59,9 @@ export const tokenFreezeAddress = tokenRouter.token.tokenFreezeAddress
         freeze,
         ...challengeResponse,
       },
-      freeze ? "Failed to freeze address" : "Failed to unfreeze address"
+      freeze
+        ? context.t("tokens:api.mutations.freeze.messages.freezeFailed")
+        : context.t("tokens:api.mutations.freeze.messages.unfreezeFailed")
     );
 
     // Return the updated token data using the read handler

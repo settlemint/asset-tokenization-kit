@@ -109,7 +109,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
   .handler(async ({ input, context, errors }) => {
     const { contract, factories, verification } = input;
     const sender = context.auth.user;
-    // const { t } = context; // Removed - using hardcoded messages
+    const { t } = context;
 
     // Normalize to array
     const factoryList = Array.isArray(factories) ? factories : [factories];
@@ -174,7 +174,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
           type,
           name,
           transactionHash: "",
-          error: "Factory already exists",
+          error: t("tokens:api.factory.create.messages.alreadyExists"),
         });
 
         continue; // Skip to next factory
@@ -195,7 +195,7 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
         const transactionHash = await context.portalClient.mutate(
           CREATE_TOKEN_FACTORY_MUTATION,
           variables,
-          `Failed to create factory: ${name}`
+          context.t("tokens:api.factory.create.messages.failed", { name })
         );
 
         results.push({
@@ -205,14 +205,20 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
         });
       } catch (error) {
         // Check for specific error types
-        let errorMessage = "Factory creation failed";
-        let errorDetail = "Factory creation failed";
+        let errorMessage = t("tokens:api.factory.create.messages.failed", {
+          name,
+        });
+        let errorDetail = t("tokens:api.factory.create.messages.failed", {
+          name,
+        });
 
         if (error instanceof Error) {
           errorDetail = error.message;
           // Check for SystemNotBootstrapped error
           if (containsErrorPattern(error, "SystemNotBootstrapped")) {
-            errorMessage = "System is not bootstrapped";
+            errorMessage = t(
+              "tokens:api.factory.create.messages.systemNotBootstrapped"
+            );
             // For critical errors like system not bootstrapped, throw proper error
             throw errors.INTERNAL_SERVER_ERROR({
               message: errorMessage,
@@ -232,41 +238,71 @@ export const factoryCreate = onboardedRouter.token.factoryCreate
     // Final completion message
     const successCount = results.filter((r) => !r.error).length;
     const skippedCount = results.filter(
-      (r) => r.error === "Factory already exists"
+      (r) => r.error === t("tokens:api.factory.create.messages.alreadyExists")
     ).length;
     const failureCount = results.filter(
-      (r) => r.error && r.error !== "Factory already exists"
+      (r) =>
+        r.error &&
+        r.error !== t("tokens:api.factory.create.messages.alreadyExists")
     ).length;
 
-    let completionMessage = "Factory creation completed";
+    let completionMessage = t("tokens:api.factory.create.messages.completed");
 
     // All succeeded
     if (successCount > 0 && failureCount === 0 && skippedCount === 0) {
-      completionMessage = `Successfully created ${successCount} ${successCount === 1 ? "factory" : "factories"}`;
+      completionMessage = t("tokens:api.factory.create.messages.allSucceeded", {
+        count: successCount,
+      });
     }
     // All skipped
     else if (skippedCount > 0 && successCount === 0 && failureCount === 0) {
-      completionMessage = `All ${skippedCount} ${skippedCount === 1 ? "factory" : "factories"} already exist`;
+      completionMessage = t("tokens:api.factory.create.messages.allSkipped", {
+        count: skippedCount,
+      });
     }
     // All failed
     else if (failureCount > 0 && successCount === 0 && skippedCount === 0) {
-      completionMessage = `Failed to create all ${failureCount} ${failureCount === 1 ? "factory" : "factories"}`;
+      completionMessage = t("tokens:api.factory.create.messages.batchFailed", {
+        count: failureCount,
+      });
     }
     // Mixed results with all three types
     else if (successCount > 0 && skippedCount > 0 && failureCount > 0) {
-      completionMessage = `Created ${successCount}, skipped ${skippedCount}, failed ${failureCount} factories`;
+      completionMessage = t("tokens:api.factory.create.messages.mixedResults", {
+        successCount,
+        skippedCount,
+        failureCount,
+      });
     }
     // Success and skipped only
     else if (successCount > 0 && skippedCount > 0 && failureCount === 0) {
-      completionMessage = `Created ${successCount}, skipped ${skippedCount} factories`;
+      completionMessage = t(
+        "tokens:api.factory.create.messages.successAndSkipped",
+        {
+          successCount,
+          skippedCount,
+        }
+      );
     }
     // Success and failed only
     else if (successCount > 0 && failureCount > 0 && skippedCount === 0) {
-      completionMessage = `Created ${successCount}, failed ${failureCount} factories`;
+      completionMessage = t(
+        "tokens:api.factory.create.messages.successAndFailed",
+        {
+          successCount,
+          failureCount,
+        }
+      );
     }
     // Skipped and failed only
     else if (skippedCount > 0 && failureCount > 0 && successCount === 0) {
-      completionMessage = `Skipped ${skippedCount}, failed ${failureCount} factories`;
+      completionMessage = t(
+        "tokens:api.factory.create.messages.skippedAndFailed",
+        {
+          skippedCount,
+          failureCount,
+        }
+      );
     }
 
     return {

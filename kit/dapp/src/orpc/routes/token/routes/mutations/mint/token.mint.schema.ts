@@ -13,7 +13,7 @@ export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
       // Array of recipients
       z
         .array(ethereumAddress)
-        .min(1, "At least one recipient required")
+        .min(1, "tokens:validation.mint.recipientRequired")
         .max(100),
     ])
     .describe("Recipient address(es) for minted tokens"),
@@ -22,7 +22,10 @@ export const TokenMintInputSchema = MutationInputSchemaWithContract.extend({
       // Single amount - transform to array
       apiBigInt.transform((amt) => [amt]),
       // Array of amounts
-      z.array(apiBigInt).min(1, "At least one amount required").max(100),
+      z
+        .array(apiBigInt)
+        .min(1, "tokens:validation.mint.amountRequired")
+        .max(100),
     ])
     .describe("Amount(s) of tokens to mint"),
 }).refine(

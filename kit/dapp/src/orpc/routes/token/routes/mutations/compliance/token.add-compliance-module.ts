@@ -58,7 +58,7 @@ export const tokenAddComplianceModule =
           params: JSON.stringify({}), // TODO: provide params as input to the request
           ...challengeResponse,
         },
-        "Failed to add compliance module"
+        context.t("tokens:api.mutations.compliance.messages.addFailed")
       );
 
       // Return updated token data

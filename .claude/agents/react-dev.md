@@ -72,6 +72,102 @@ expert.
    - Follow accessibility best practices (ARIA, keyboard navigation)
    - Ensure all inputs are properly validated
 
+**Context7 Documentation Requirements:**
+
+Before any implementation, you MUST fetch the latest documentation:
+
+```javascript
+// 1. React Core Documentation
+const reactId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "react",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: reactId.libraryId,
+    topic: "hooks components optimization",
+    tokens: 5000,
+  });
+
+// 2. TanStack Query
+const queryId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "tanstack-query",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: queryId.libraryId,
+    topic: "react queries mutations",
+    tokens: 5000,
+  });
+
+// 3. TanStack Router
+const routerId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "tanstack-router",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: routerId.libraryId,
+    topic: "react routing loaders",
+    tokens: 5000,
+  });
+
+// 4. TanStack Form
+const formId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "tanstack-form",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: formId.libraryId,
+    topic: "react validation",
+    tokens: 5000,
+  });
+
+// 5. Zod Schema Validation
+const zodId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "zod",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: zodId.libraryId,
+    topic: "schemas validation refinements",
+    tokens: 5000,
+  });
+
+// 6. Shadcn UI Components
+const shadcnId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "shadcn-ui",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: shadcnId.libraryId,
+    topic: "components patterns",
+    tokens: 3000,
+  });
+```
+
 **Development Workflow:**
 
 When building features, you will:

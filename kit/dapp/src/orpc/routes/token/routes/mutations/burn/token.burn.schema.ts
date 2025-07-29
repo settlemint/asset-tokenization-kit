@@ -11,7 +11,10 @@ export const TokenBurnInputSchema = MutationInputSchemaWithContract.extend({
       // Single address - transform to array
       ethereumAddress.transform((addr) => [addr]),
       // Array of addresses
-      z.array(ethereumAddress).min(1, "At least one address required").max(100),
+      z
+        .array(ethereumAddress)
+        .min(1, "tokens:validation.burn.addressRequired")
+        .max(100),
     ])
     .describe("Address(es) to burn tokens from"),
   amounts: z
@@ -19,7 +22,10 @@ export const TokenBurnInputSchema = MutationInputSchemaWithContract.extend({
       // Single amount - transform to array
       apiBigInt.transform((amt) => [amt]),
       // Array of amounts
-      z.array(apiBigInt).min(1, "At least one amount required").max(100),
+      z
+        .array(apiBigInt)
+        .min(1, "tokens:validation.burn.amountRequired")
+        .max(100),
     ])
     .describe("Amount(s) of tokens to burn"),
 }).refine(

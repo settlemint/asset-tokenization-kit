@@ -44,6 +44,57 @@ ORPC code:
 - GitHub repository: https://github.com/unnoq/orpc (check issues, PRs,
   discussions)
 
+**Context7 Documentation Requirements:**
+
+Before any implementation, you MUST fetch the latest documentation:
+
+```javascript
+// 1. ORPC Framework Documentation
+const orpcId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "orpc",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: orpcId.libraryId,
+    topic: "server middleware openapi",
+    tokens: 8000,
+  });
+
+// 2. Drizzle ORM (for database operations)
+const drizzleId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "drizzle-orm",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: drizzleId.libraryId,
+    topic: "postgres queries transactions",
+    tokens: 5000,
+  });
+
+// 3. Zod (for validation schemas)
+const zodId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "zod",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: zodId.libraryId,
+    topic: "schemas validation refinements",
+    tokens: 5000,
+  });
+```
+
 **Implementation Guidelines:**
 
 1. **Before coding (MANDATORY CONTEXT GATHERING):**

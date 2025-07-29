@@ -94,7 +94,7 @@ export const factoryList = authRouter.token.factoryList
           where,
         },
         output: FactoriesResponseSchema,
-        error: "Failed to list token factories",
+        error: context.t("tokens:api.factory.list.messages.failed"),
       }
     );
 

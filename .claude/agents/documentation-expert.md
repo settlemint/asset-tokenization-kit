@@ -173,6 +173,32 @@ kit/dapp/locales/
   - Be explicit about subjects and objects
   - Use consistent terminology throughout
 
+**Context7 Documentation Requirements**:
+
+Before creating any documentation, gather relevant library documentation:
+
+```javascript
+// 1. Markdown Best Practices
+const markdownId = await mcp__context7__resolve_library_id({
+  libraryName: "markdown",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: markdownId.libraryId,
+  topic: "syntax best-practices documentation",
+  tokens: 3000,
+});
+
+// 2. Technical Writing
+const techWritingId = await mcp__context7__resolve_library_id({
+  libraryName: "technical-writing",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: techWritingId.libraryId,
+  topic: "documentation structure readability",
+  tokens: 3000,
+});
+```
+
 **MCP Tool Integration:**
 
 ### 1. MANDATORY: Start with Gemini-CLI Analysis
@@ -511,6 +537,7 @@ const balance = await tokenManager.getBalance(userAddress);
 This agent works best in parallel from the start:
 
 ### Parallel Partners
+
 - **ALL development agents**: Documentation should start with development
 - Can work simultaneously with any implementation agent
 - Particularly effective with:
@@ -520,13 +547,17 @@ This agent works best in parallel from the start:
   - **test-dev**: Testing documentation
 
 ### No Sequential Dependencies
+
 - Documentation can begin immediately
 - Updates throughout the development cycle
 
 ### Parallel Task Examples
+
 ```markdown
 ## PARALLEL EXECUTION - Documentation
+
 Execute these simultaneously with ANY development:
+
 - documentation-expert: Create README structure
 - documentation-expert: Draft API documentation
 - documentation-expert: Prepare user guides

@@ -163,13 +163,13 @@ export const transfer = tokenRouter.token.transfer
     const errorMessage =
       transferType === "forced"
         ? isBatch
-          ? "Failed to batch force transfer tokens"
-          : "Failed to force transfer tokens"
+          ? context.t("tokens:api.mutations.transfer.messages.batchForceFailed")
+          : context.t("tokens:api.mutations.transfer.messages.forceFailed")
         : transferType === "transferFrom"
-          ? "Failed to transfer tokens from owner"
+          ? context.t("tokens:api.mutations.transfer.messages.fromOwnerFailed")
           : isBatch
-            ? "Failed to batch transfer tokens"
-            : "Failed to transfer tokens";
+            ? context.t("tokens:api.mutations.transfer.messages.batchFailed")
+            : context.t("tokens:api.mutations.transfer.messages.failed");
 
     // For forced transfers, check custodian interface;
     if (transferType === "forced") {
@@ -215,7 +215,9 @@ export const transfer = tokenRouter.token.transfer
         // Forced batch transfer is supported
         if (!from || from.length === 0) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: "From addresses are required for forced batch transfers",
+            message: context.t(
+              "tokens:api.mutations.transfer.messages.fromRequired"
+            ),
             data: { errors: ["Missing required from addresses"] },
           });
         }
@@ -243,8 +245,9 @@ export const transfer = tokenRouter.token.transfer
       } else {
         // transferType === "transferFrom" - not supported in batch, must be done individually
         throw errors.INPUT_VALIDATION_FAILED({
-          message:
-            "Batch transferFrom operations are not supported. Use individual transfers instead.",
+          message: context.t(
+            "tokens:api.mutations.transfer.messages.batchTransferFromNotSupported"
+          ),
           data: { errors: ["Batch transferFrom not supported"] },
         });
       }
@@ -255,7 +258,9 @@ export const transfer = tokenRouter.token.transfer
       const [owner] = from ?? [];
       if (!to || !amount) {
         throw errors.INPUT_VALIDATION_FAILED({
-          message: "Missing required recipient or amount",
+          message: context.t(
+            "tokens:api.mutations.transfer.messages.missingRecipientOrAmount"
+          ),
           data: { errors: ["Invalid input data"] },
         });
       }
@@ -274,7 +279,9 @@ export const transfer = tokenRouter.token.transfer
       } else if (transferType === "transferFrom") {
         if (!owner) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: "Missing required owner address for transferFrom",
+            message: context.t(
+              "tokens:api.mutations.transfer.messages.missingOwnerForTransferFrom"
+            ),
             data: { errors: ["Invalid input data"] },
           });
         }
@@ -294,7 +301,9 @@ export const transfer = tokenRouter.token.transfer
         // transferType === "forced"
         if (!owner) {
           throw errors.INPUT_VALIDATION_FAILED({
-            message: "Missing required owner address for forced transfer",
+            message: context.t(
+              "tokens:api.mutations.transfer.messages.missingOwnerForForced"
+            ),
             data: { errors: ["Invalid input data"] },
           });
         }

@@ -82,8 +82,7 @@ export const TokenTransferSchema = z
       return true;
     },
     {
-      message:
-        "From address(es) required for transferFrom and forced transfers",
+      message: "tokens:validation.transfer.fromRequired",
       path: ["from"],
     }
   );

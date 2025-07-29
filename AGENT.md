@@ -86,13 +86,15 @@ Agents must return structured information:
 
 - **tailwind-css-expert**: Styling with Tailwind/shadcn
 - **documentation-expert**: All documentation needs - README, CLAUDE.md,
-  content, translations
+  content, translations (MUST write to README.md files in relevant folders,
+  NEVER create separate docs/ folders)
 - **code-archaeologist**: Legacy code analysis
 - **team-configurator**: Multi-agent coordination
 
 ### Parallel Execution Guidelines
 
 **When to Execute in Parallel:**
+
 - Independent file operations (reads, writes, analysis)
 - Separate module implementations (frontend + backend)
 - Multiple test file creations
@@ -100,6 +102,7 @@ Agents must return structured information:
 - Style and type definitions
 
 **When to Execute Sequentially:**
+
 - Dependencies exist between tasks
 - Output from one agent feeds another
 - Contract → Subgraph → API → UI flow
@@ -137,20 +140,20 @@ graph TD
     Plan --> P1{Phase 1: Parallel}
     P1 --> Sol[Solidity Expert]
     P1 --> Doc1[Documentation Expert]
-    
+
     Sol --> S1{Sequential}
     S1 --> Sub[Subgraph Dev]
-    
+
     Sub --> P2{Phase 2: Parallel}
     P2 --> API[ORPC Expert]
     P2 --> UI[React Dev]
     P2 --> Test1[Test Dev - Units]
-    
+
     API --> P3{Phase 3: Parallel}
     UI --> P3
     P3 --> Test2[Test Dev - Integration]
     P3 --> Doc2[Documentation Expert - Finalize]
-    
+
     Test2 --> Rev[Code Reviewer]
     Doc2 --> Rev
 ```
@@ -161,13 +164,17 @@ When invoking agents in parallel, use clear phase grouping:
 
 ```markdown
 ## PARALLEL EXECUTION - [Phase Name]
+
 Invoke the following agents simultaneously:
+
 - agent-1: "Task description with specific context"
 - agent-2: "Task description with specific context"
 - agent-3: "Task description with specific context"
 
 ## SEQUENTIAL EXECUTION - [Phase Name]
+
 After parallel tasks complete, invoke:
+
 - agent-4: "Task using outputs from previous phase"
 ```
 
@@ -236,6 +243,21 @@ Module CLAUDE.md files MUST be minimal (< 50 lines):
 [Only critical AI-specific notes if needed]
 ```
 
+## Documentation Rules
+
+1. **ALWAYS write documentation in README.md files** in the relevant module
+   folders
+2. **NEVER create separate docs/ folders** - documentation belongs with the code
+3. **Module structure for documentation**:
+   - `kit/contracts/README.md` - Smart contract documentation
+   - `kit/dapp/README.md` - Frontend documentation
+   - `kit/dapp/src/orpc/README.md` - API documentation
+   - `kit/subgraph/README.md` - Subgraph documentation
+4. **Documentation content**:
+   - User guides go in module README.md files
+   - API references go in relevant folder README.md files
+   - Architecture docs go in root or module README.md files
+
 ## Critical Rules
 
 1. **NEVER commit to main branch**
@@ -286,15 +308,19 @@ Module CLAUDE.md files MUST be minimal (< 50 lines):
 
 ## Granular Task Planning
 
-**CRITICAL**: All tasks must be broken down into specific, measurable actions with concrete values. This transparency ensures all implementation decisions are visible and approved before execution.
+**CRITICAL**: All tasks must be broken down into specific, measurable actions
+with concrete values. This transparency ensures all implementation decisions are
+visible and approved before execution.
 
 ### ❌ WRONG - Vague Tasks:
+
 - "Style the navbar"
 - "Optimize the API"
 - "Update the database schema"
 - "Improve the algorithm"
 
 ### ✅ CORRECT - Granular Tasks:
+
 - "Change navbar height from 60px to 80px"
 - "Reduce padding-top from 16px to 12px"
 - "Adjust background from #ffffff to rgba(255,255,255,0.95)"
@@ -306,28 +332,83 @@ Module CLAUDE.md files MUST be minimal (< 50 lines):
 ### Domain-Specific Examples:
 
 **Frontend Tasks:**
+
 - "Change button border-radius from 4px to 8px"
 - "Update font-size from 14px to 16px for .heading-secondary"
 - "Add 200ms ease-in-out transition to hover states"
 - "Change grid from 3 columns to 4 columns on desktop (>1024px)"
 
 **Backend Tasks:**
+
 - "Add rate limiting: 100 requests per minute per IP"
 - "Change batch size from 100 to 500 records"
 - "Add retry logic: 3 attempts with exponential backoff (1s, 2s, 4s)"
 - "Update validation: require email to match /^[^\s@]+@[^\s@]+\.[^\s@]+$/"
 
 **Database Tasks:**
+
 - "Add compound index on (user_id, created_at DESC)"
 - "Change column type from VARCHAR(255) to TEXT"
 - "Add CHECK constraint: price >= 0"
 - "Set default value for status column to 'pending'"
 
 **Algorithm Tasks:**
+
 - "Replace linear search with binary search for sorted array"
 - "Change hash function from MD5 to SHA-256"
 - "Update threshold from 0.7 to 0.85 for matching algorithm"
 - "Add memoization for recursive calls with cache size 1000"
+
+## Agent Context7 MCP Documentation Requirements
+
+**CRITICAL**: All specialized agents MUST fetch latest documentation using
+Context7 MCP for their area of responsibility before implementation. This
+ensures agents use current APIs and best practices.
+
+Each agent has specific Context7 documentation requirements defined in their
+individual agent files in `.claude/agents/`. Agents must:
+
+1. **Fetch documentation at task start** - Before any implementation
+2. **Use library-specific topics** - Target relevant documentation sections
+3. **Apply latest patterns** - Use current best practices from docs
+4. **Cache results** - Avoid redundant fetches in same session
+
+### Documentation Fetching Pattern
+
+All agents should follow this pattern:
+
+1. **Identify required libraries** from package.json and imports
+2. **Resolve library IDs** using `resolve-library-id`
+3. **Fetch specific docs** with relevant topics using `get-library-docs`
+4. **Cache results** to avoid repeated fetches in same session
+5. **Apply latest patterns** from fetched documentation
+
+### Example Agent Implementation
+
+```typescript
+// At the start of any agent task
+async function fetchRequiredDocs() {
+  // Resolve library ID first
+  const { libraryId } =
+    (await mcp__context7__resolve) -
+    library -
+    id({
+      libraryName: "react",
+    });
+
+  // Then fetch documentation with specific topic
+  const docs =
+    (await mcp__context7__get) -
+    library -
+    docs({
+      context7CompatibleLibraryID: libraryId,
+      topic: "hooks",
+      tokens: 5000,
+    });
+
+  return docs;
+}
+```
 
 ## Agent Best Practices
 
@@ -354,3 +435,9 @@ Module CLAUDE.md files MUST be minimal (< 50 lines):
    - Include exact values (pixels, percentages, timeouts, etc.)
    - Expose algorithmic choices and thresholds
    - Make design decisions explicit before implementation
+
+5. **Documentation First**
+   - ALWAYS fetch latest docs before implementation
+   - Use Context7 MCP for all library documentation
+   - Apply current best practices from fetched docs
+   - Update approach based on latest API changes

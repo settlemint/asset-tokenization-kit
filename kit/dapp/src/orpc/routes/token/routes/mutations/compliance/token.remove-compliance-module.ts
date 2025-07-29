@@ -55,7 +55,7 @@ export const tokenRemoveComplianceModule =
           moduleAddress,
           ...challengeResponse,
         },
-        "Failed to remove compliance module"
+        context.t("tokens:api.mutations.compliance.messages.removeFailed")
       );
 
       // Return updated token data

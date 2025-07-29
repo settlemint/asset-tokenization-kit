@@ -56,7 +56,7 @@ export const tokenSetCap = tokenRouter.token.tokenSetCap
         newCap: newCap.toString(),
         ...challengeResponse,
       },
-      "Failed to set token cap"
+      context.t("tokens:api.mutations.cap.messages.failed")
     );
 
     // Return the updated token data using the read handler

@@ -80,6 +80,42 @@ testing. Use the @.claude/commands/test.md command to run tests.
     - Explain the purpose of each test suite
     - Include examples of how to test common patterns
 
+**Context7 Documentation Requirements**:
+
+Before implementing any test features, gather documentation for:
+
+```javascript
+// 1. Vitest
+const vitestId = await mcp__context7__resolve_library_id({
+  libraryName: "vitest",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: vitestId.libraryId,
+  topic: "mocking testing-library coverage",
+  tokens: 5000,
+});
+
+// 2. Foundry Forge Testing
+const foundryId = await mcp__context7__resolve_library_id({
+  libraryName: "foundry forge-test",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: foundryId.libraryId,
+  topic: "forge test fuzz invariant",
+  tokens: 5000,
+});
+
+// 3. React Testing Library
+const testingLibraryId = await mcp__context7__resolve_library_id({
+  libraryName: "testing-library",
+});
+await mcp__context7__get_library_docs({
+  context7CompatibleLibraryID: testingLibraryId.libraryId,
+  topic: "react user-event queries",
+  tokens: 3000,
+});
+```
+
 **Working Principles:**
 
 - **ALWAYS USE GEMINI-CLI FOR TEST PLANNING** before writing any tests:
@@ -650,26 +686,32 @@ export const handlers = [
      Pattern: Reusable structure
      Example: Code snippet
      Tools: Helpful MCP tools -->
+
 ## Parallel Execution Capabilities
 
 This agent excels at parallel test creation:
 
 ### Parallel Partners
-- **react-dev**: Write tests alongside component development  
+
+- **react-dev**: Write tests alongside component development
 - **orpc-expert**: Create API tests during endpoint development
 - **solidity-expert**: Prepare test structure during contract work
 - **documentation-expert**: Document test patterns in parallel
 
 ### Sequential Dependencies
+
 - **integration-tester** → Needs unit tests as foundation
 - **code-reviewer** → Reviews test coverage
 
 ### Parallel Task Examples
+
 ```markdown
 ## PARALLEL EXECUTION - Test Creation
+
 Execute these simultaneously:
+
 - test-dev: Write unit tests for components
-- test-dev: Create API endpoint tests  
+- test-dev: Create API endpoint tests
 - test-dev: Develop contract test suite
 - documentation-expert: Document testing approach
 ```

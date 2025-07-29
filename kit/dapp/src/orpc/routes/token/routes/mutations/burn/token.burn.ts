@@ -74,8 +74,8 @@ export const burn = tokenRouter.token.burn
     const isBatch = addresses.length > 1;
 
     const errorMessage = isBatch
-      ? "Failed to batch burn tokens"
-      : "Failed to burn tokens";
+      ? context.t("tokens:api.mutations.burn.messages.batchFailed")
+      : context.t("tokens:api.mutations.burn.messages.failed");
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
@@ -90,7 +90,7 @@ export const burn = tokenRouter.token.burn
           addresses,
           amounts,
         },
-        "batch burn"
+        context.t("tokens:api.mutations.burn.validation.batchDescription")
       );
 
       await context.portalClient.mutate(
@@ -109,7 +109,9 @@ export const burn = tokenRouter.token.burn
       const [amount] = amounts;
       if (!userAddress || !amount) {
         throw errors.INPUT_VALIDATION_FAILED({
-          message: "Missing required address or amount",
+          message: context.t(
+            "tokens:api.mutations.burn.messages.missingAddressOrAmount"
+          ),
           data: { errors: ["Invalid input data"] },
         });
       }

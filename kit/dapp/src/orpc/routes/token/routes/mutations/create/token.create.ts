@@ -82,14 +82,21 @@ export const create = onboardedRouter.token.create
       {
         input: queryVariables,
         output: TokenQueryResultSchema,
-        error: "Failed to find created token",
+        error: context.t("tokens:api.mutations.create.messages.notFound"),
       }
     );
 
     if (result.tokens.length === 0) {
       throw errors.NOT_FOUND({
-        message: "Token not found after creation",
-        cause: new Error(`Token not found for transaction ${transactionHash}`),
+        message: context.t(
+          "tokens:api.mutations.create.messages.missingAfterCreation"
+        ),
+        cause: new Error(
+          context.t(
+            "tokens:api.mutations.create.messages.notFoundForTransaction",
+            { transactionHash }
+          )
+        ),
       });
     }
 
@@ -97,9 +104,11 @@ export const create = onboardedRouter.token.create
 
     if (!token) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: "Failed to create token",
+        message: context.t("tokens:api.mutations.create.messages.failed"),
         cause: new Error(
-          `Token object is null for transaction ${transactionHash}`
+          context.t("tokens:api.mutations.create.messages.nullObject", {
+            transactionHash,
+          })
         ),
       });
     }

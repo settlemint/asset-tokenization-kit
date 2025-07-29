@@ -52,7 +52,7 @@ export const pause = tokenRouter.token.pause
         from: sender.wallet,
         ...challengeResponse,
       },
-      "Failed to pause token"
+      context.t("tokens:actions.pause.messages.failed")
     );
 
     // Return the updated token data using the read handler

@@ -59,7 +59,7 @@ export const tokenApprove = tokenRouter.token.tokenApprove
         amount: amount.toString(),
         ...challengeResponse,
       },
-      "Failed to approve token spending"
+      context.t("tokens:api.mutations.approve.messages.failed")
     );
 
     // Return the updated token data using the read handler

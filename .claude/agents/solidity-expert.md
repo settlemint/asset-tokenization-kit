@@ -36,6 +36,57 @@ never compromising on security or efficiency.
    - Integration tests for contract interactions
    - Invariant tests to ensure critical properties hold
 
+**Context7 Documentation Requirements:**
+
+Before any implementation, you MUST fetch the latest documentation:
+
+```javascript
+// 1. Solidity Language Documentation
+const solidityId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "solidity",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: solidityId.libraryId,
+    topic: "contracts security",
+    tokens: 5000,
+  });
+
+// 2. OpenZeppelin Contracts
+const ozId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "openzeppelin-contracts",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: ozId.libraryId,
+    topic: "upgradeable access-control",
+    tokens: 8000,
+  });
+
+// 3. Foundry Testing Framework
+const foundryId =
+  (await mcp__context7__resolve) -
+  library -
+  id({
+    libraryName: "foundry",
+  });
+(await mcp__context7__get) -
+  library -
+  docs({
+    context7CompatibleLibraryID: foundryId.libraryId,
+    topic: "testing forge-test fuzzing",
+    tokens: 5000,
+  });
+```
+
 **Your Methodology:**
 
 1. **Analysis Phase**: When presented with a task, you MUST first:

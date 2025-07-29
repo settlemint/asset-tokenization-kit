@@ -52,7 +52,7 @@ export const unpause = tokenRouter.token.unpause
         from: sender.wallet,
         ...challengeResponse,
       },
-      "Failed to unpause token"
+      context.t("tokens:actions.unpause.messages.failed")
     );
 
     // Return the updated token data using the read handler
