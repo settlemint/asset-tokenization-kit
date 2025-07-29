@@ -38,7 +38,7 @@ spec:
                 name: {{ $fullName }}-combined
                 port:
                   name: http-queryws
-          {{- else if or (eq .path "/admin/?(.*)") (eq .path "/indexer/?(.*)") (eq .path "/graphman/?(.*)") }}
+          {{- else if eq .path "/admin/?(.*)" }}
           - path: {{ .path }}
             pathType: {{ .pathType | default "ImplementationSpecific" }}
             backend:
@@ -46,6 +46,14 @@ spec:
                 name: {{ $fullName }}-combined
                 port:
                   name: http-admin
+          {{- else if or (eq .path "/indexer/?(.*)") (eq .path "/graphman/?(.*)") }}
+          - path: {{ .path }}
+            pathType: {{ .pathType | default "ImplementationSpecific" }}
+            backend:
+              service:
+                name: {{ $fullName }}-combined
+                port:
+                  name: http-status
           {{- else }}
           - path: {{ .path }}
             pathType: {{ .pathType | default "ImplementationSpecific" }}
