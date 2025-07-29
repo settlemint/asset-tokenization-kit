@@ -18,6 +18,7 @@ const READ_TOKEN_QUERY = theGraphGraphql(
     token(id: $id) {
       id
       type
+      createdAt
       name
       symbol
       decimals
