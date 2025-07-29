@@ -5,7 +5,6 @@ import { DEFAULT_PINCODE } from "./user";
 export async function bootstrapSystem(orpClient: OrpcClient) {
   const systems = await orpClient.system.list({});
   if (systems.length > 0) {
-    console.log("System already created");
     return systems[0]?.id;
   }
   const response = await orpClient.system.create({
@@ -14,17 +13,12 @@ export async function bootstrapSystem(orpClient: OrpcClient) {
       verificationType: "pincode",
     },
   });
-  let finalResult: `0x${string}` | undefined = undefined;
-  for await (const event of response) {
-    console.log(
-      `System bootstrap event received: ${JSON.stringify(event, null, 2)}`
-    );
-    finalResult = event.result;
-  }
-  if (!finalResult) {
+
+  if (!response?.id) {
     throw new Error("Failed to bootstrap system");
   }
-  return finalResult;
+
+  return response.id;
 }
 
 export async function bootstrapTokenFactories(orpClient: OrpcClient) {
@@ -52,7 +46,6 @@ export async function bootstrapTokenFactories(orpClient: OrpcClient) {
   );
 
   if (nonExistingFactories.length === 0) {
-    console.log("All token factories already exist");
     return;
   }
 
@@ -67,14 +60,15 @@ export async function bootstrapTokenFactories(orpClient: OrpcClient) {
 
   const transactionHashes: string[] = [];
 
-  if (result.result) {
-    result.result.forEach((r: any) => {
+  if (result.results) {
+    result.results.forEach((r) => {
       if (r.transactionHash) {
         transactionHashes.push(r.transactionHash);
       }
     });
   }
 
-  expect(transactionHashes.length).toBe(nonExistingFactories.length);
-  console.log("Token factories created");
+  const successfulCreations =
+    result.results?.filter((r) => !r.error).length || 0;
+  expect(successfulCreations).toBe(nonExistingFactories.length);
 }

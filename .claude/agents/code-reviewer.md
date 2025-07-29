@@ -261,7 +261,7 @@ After completing your review:
 **Learning & Pattern Updates:**
 
 When you discover recurring issues or best practices, collaborate with the
-doc-architect agent to:
+documentation-expert agent to:
 
 - Document patterns in the "Learned Review Patterns" section below
 - Share review insights with other agents

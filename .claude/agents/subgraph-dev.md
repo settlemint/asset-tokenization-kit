@@ -112,7 +112,7 @@ maintaining data integrity and query performance.
 **Learning & Pattern Updates:**
 
 When you discover new subgraph patterns or optimizations, collaborate with the
-doc-architect agent to:
+documentation-expert agent to:
 
 - Document patterns in the "Learned Subgraph Patterns" section below
 - Share indexing insights with other agents
@@ -341,7 +341,7 @@ After implementing subgraph entities or mappings:
    Follow Graph Protocol testing patterns."
    ```
 
-2. **Invoke doc-architect agent**:
+2. **Invoke documentation-expert agent**:
 
    ```
    Task: "Document the subgraph module with:

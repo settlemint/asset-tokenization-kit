@@ -32,12 +32,20 @@ ANALYZE requirements and CREATE PLANS - you do NOT implement anything yourself.
    - Check package.json and dependencies for available tools and frameworks
 
 3. **Strategic Planning**: Create comprehensive implementation plans that:
-   - Define clear phases and milestones
+   - Define clear phases and milestones with SPECIFIC, MEASURABLE tasks
+   - Break down vague requirements into concrete actions with exact values
    - Identify which specialized agents to use for each component
    - Establish dependencies and execution order
    - Anticipate integration challenges
    - Include testing and documentation requirements
    - Use Gemini-CLI MCP to validate your plans
+
+   **Task Granularity Requirements:**
+   - Every task MUST include specific values, metrics, or configurations
+   - Design decisions must be explicit (colors, sizes, timings, limits)
+   - Algorithm choices must specify exact approaches and thresholds
+   - Database changes must detail indexes, constraints, and types
+   - API changes must include endpoints, parameters, and response formats
 
 4. **Agent Routing Map**: Specify which agents handle each component:
    - `solidity-expert` for smart contract implementations (leverages
@@ -46,8 +54,8 @@ ANALYZE requirements and CREATE PLANS - you do NOT implement anything yourself.
    - `orpc-expert` for API endpoints
    - `subgraph-dev` for indexing requirements
    - `test-dev` for test creation
-   - `doc-architect` for documentation updates
-   - `content-writer` for user-facing content
+   - `documentation-expert` for all documentation needs (README, CLAUDE.md,
+     content, translations)
    - `devops` for infrastructure management
    - `security-auditor` for security reviews
    - `performance-optimizer` for optimization tasks
@@ -67,13 +75,13 @@ ANALYZE requirements and CREATE PLANS - you do NOT implement anything yourself.
    - Test coverage is at least as much as before, preferably more
 
 6. **Documentation**:
-   - Use the `doc-architect` agent (@.claude/agents/doc-architect.md) to create
-     documentation
+   - Use the `documentation-expert` agent
+     (@.claude/agents/documentation-expert.md) to create documentation
 
 **Your Planning Process:**
 
 1. **Specification Generation** (MANDATORY FIRST STEP): Before ANY analysis,
-   create a detailed specification:
+   create a detailed specification with GRANULAR, MEASURABLE tasks:
 
    ```markdown
    ## Feature Specification: [Feature Name]
@@ -104,6 +112,23 @@ ANALYZE requirements and CREATE PLANS - you do NOT implement anything yourself.
    - [ ] Dependencies and limitations
    - [ ] Browser/platform support
    ```
+
+   **CRITICAL: Break Down ALL Tasks Into Specific Values**
+
+   ❌ WRONG - Vague Tasks:
+   - "Style the token list component"
+   - "Optimize the database queries"
+   - "Update the API validation"
+   - "Improve error handling"
+
+   ✅ CORRECT - Granular Tasks with Specific Values:
+   - "Change TokenList padding from 24px to 32px on all sides"
+   - "Add box-shadow: 0 2px 8px rgba(0,0,0,0.08) to token cards"
+   - "Increase font-size from 14px to 16px for token names"
+   - "Add compound index on (user_id, created_at DESC) to tokens table"
+   - "Change API rate limit from 60/min to 100/min per IP"
+   - "Add 3-retry logic with exponential backoff (1s, 2s, 4s)"
+   - "Update regex validation from .+ to ^[A-Za-z0-9_-]{3,32}$"
 
 2. **Context Analysis** (Use Opus primarily, Gemini for second opinions):
 
@@ -180,24 +205,44 @@ the specified agents. Include:
    ```markdown
    ## Agent Execution Order
 
-   ### Phase 1: [Phase Name]
+   ### PARALLEL EXECUTION - Phase 1: [Initial Setup]
+
+   Execute these agents simultaneously:
 
    - Agent: `[agent-name]`
-   - Task: [Specific task description]
-   - Dependencies: [What needs to be done first]
-   - Expected Output: [What this agent will produce]
+     - Task: [Specific task with exact values, e.g., "Add padding: 16px
+       top/bottom, 24px left/right"]
+     - Expected Output: [Precise deliverable, e.g., "Component with 980px
+       max-width, centered"]
+   - Agent: `[agent-name]`
+     - Task: [Specific task with metrics, e.g., "Set cache TTL to 300 seconds,
+       max size 1000 entries"]
+     - Expected Output: [Measurable result, e.g., "Redis config with 5 minute
+       expiry"]
 
-   ### Phase 2: [Phase Name]
+   ### SEQUENTIAL - Phase 2: [Dependent Tasks]
+
+   After Phase 1 completes:
 
    - Agent: `[agent-name]`
-   - Task: [Specific task description]
-   - Dependencies: [Results from Phase 1]
-   - Expected Output: [What this agent will produce]
+     - Task: [Uses outputs from Phase 1]
+     - Dependencies: [Specific outputs needed]
+     - Expected Output: [What this agent will produce]
 
-   ### Parallel Tasks (can run simultaneously):
+   ### PARALLEL EXECUTION - Phase 3: [Independent Development]
 
-   - Agent: `[agent-name]` - [Task description]
-   - Agent: `[agent-name]` - [Task description]
+   Execute these agents simultaneously:
+
+   - Agent: `[agent-name]` - [Frontend task]
+   - Agent: `[agent-name]` - [Backend task]
+   - Agent: `[agent-name]` - [Test creation]
+   - Agent: `[agent-name]` - [Documentation prep]
+
+   ### SEQUENTIAL - Final Phase: [Integration & Review]
+
+   After all parallel work completes:
+
+   - Agent: `[agent-name]` - [Integration/Review task]
    ```
 
 4. **Risk Assessment**: Potential issues and mitigation strategies
@@ -323,44 +368,135 @@ Leverage the full suite of MCP tools strategically:
    // - Ensure ERC-3643 compliance if needed
    ```
 
-**Example Agent Chain Definition:**
+**Example Agent Chain Definition with Parallel Execution:**
 
-Your plans should specify clear agent execution chains. Here's how to structure
-them:
+Your plans MUST specify parallel vs sequential execution with GRANULAR, SPECIFIC
+tasks:
 
-1. **Implementation Phase** (specify agents, not implement):
+```markdown
+## Complete Token Transfer Feature Implementation
 
-   ```markdown
-   ### Implementation Agents:
+### PARALLEL EXECUTION - Phase 1: Foundation
 
-   - `solidity-expert`: Implement token transfer contract methods
-   - `subgraph-dev`: Update mappings for transfer events
-   - `orpc-expert`: Create transfer API endpoints
-   - `react-dev`: Build transfer UI components
-   ```
+Execute these agents simultaneously:
 
-2. **Testing Phase** (specify test-dev invocation):
+- `solidity-expert`: Implement token transfer contract methods
+  - Task: Create transfer, approve, transferFrom functions with:
+    - Transfer gas limit: 65000
+    - Approval gas limit: 45000
+    - Add require(to != address(0), "ERC20: transfer to zero address")
+    - Add require(amount <= balances[from], "ERC20: insufficient balance")
+    - Emit Transfer(from, to, amount) event
+  - Output: Contract address, ABI, deployment details
+- `documentation-expert`: Initialize transfer documentation
+  - Task: Create README.md with sections:
+    - Overview (200-300 words)
+    - API Reference table with 4 columns: Method, Parameters, Returns, Gas
+    - Code examples for each function (3-5 lines each)
+    - Error codes table with descriptions
+  - Output: Documentation framework ready
 
-   ```markdown
-   ### Testing Agent:
+### SEQUENTIAL - Phase 2: Blockchain Integration
 
-   - `test-dev`: Create comprehensive tests for:
-     - Unit tests for transfer logic
-     - Integration tests for API endpoints
-     - Component tests for UI elements
-     - Contract tests for transfer methods
-   ```
+After contract deployment:
 
-3. **Documentation Phase** (specify doc-architect invocation):
+- `subgraph-dev`: Index transfer events
+  - Task: Update mappings for:
+    - Transfer event: index from, to, amount (BigInt)
+    - Approval event: index owner, spender, amount (BigInt)
+    - Add cumulative volume tracking (+=amount for each transfer)
+    - Update user balance entities on each event
+  - Dependencies: Contract ABI from Phase 1
+  - Output: GraphQL schema with new queries: transfers, approvals, userBalances
 
-   ```markdown
-   ### Documentation Agent:
+### PARALLEL EXECUTION - Phase 3: Full Stack Development
 
-   - `doc-architect`: Document the transfer feature:
-     - Update module README.md
-     - Add API documentation
-     - Update architectural diagrams
-   ```
+Execute these agents simultaneously:
+
+- `orpc-expert`: Create transfer API endpoints
+  - Task: Build endpoints with specific parameters:
+    - POST /transfer: {to: address, amount: string, gasPrice?: string}
+    - POST /approve: {spender: address, amount: string}
+    - GET /allowance: {owner: address, spender: address}
+    - Add rate limiting: 10 requests per minute per IP
+    - Set timeout: 30 seconds for blockchain calls
+  - Output: TypeScript types, API routes with OpenAPI spec
+- `react-dev`: Build transfer UI components
+  - Task: Create components with specific props:
+    - TransferForm: onSubmit, maxAmount, recipientValidator
+    - ApprovalModal: isOpen, onClose, spenderAddress, amount
+    - Set input debounce: 300ms
+    - Add loading states with 2s minimum display time
+    - Use 16px base font, 24px line height
+  - Output: React components with TanStack Form integration
+- `test-dev`: Write unit tests
+  - Task: Test cases with specific values:
+    - Transfer with amount "1000000000000000000" (1 token)
+    - Approval with MAX_UINT256
+      "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    - Zero amount transfers should fail
+    - Test gas estimation accuracy within 10% margin
+  - Output: Vitest unit test files with 95%+ coverage
+- `tailwind-css-expert`: Design transfer UI styles
+  - Task: Create styles with exact specifications:
+    - Card padding: 24px desktop, 16px mobile
+    - Border radius: 12px for cards, 8px for buttons
+    - Shadow: 0 4px 6px -1px rgba(0,0,0,0.1)
+    - Primary button: bg-blue-600 hover:bg-blue-700
+    - Transition duration: 150ms ease-in-out
+  - Output: Tailwind component classes
+
+### PARALLEL EXECUTION - Phase 4: Quality Assurance
+
+Execute these agents simultaneously:
+
+- `test-dev`: Integration testing
+  - Task: E2E test scenarios:
+    - Full transfer flow < 3 seconds response time
+    - Test with 0.1, 1, 100, 1000 token amounts
+    - Verify event emission within 2 blocks
+    - Check approval + transferFrom combo
+    - Test insufficient balance (should revert in < 1s)
+  - Dependencies: All components from Phase 3
+  - Output: Playwright E2E test files
+- `documentation-expert`: Finalize documentation
+  - Task: Complete docs with:
+    - 5 code examples (20-30 lines each)
+    - Sequence diagram for approval flow
+    - Gas optimization tips section (300 words)
+    - Troubleshooting guide with 10 common issues
+  - Output: Complete markdown documentation
+- `performance-optimizer`: Optimize transfer operations
+  - Task: Specific optimizations:
+    - Reduce contract bytecode by 15% via optimizer runs: 200
+    - Implement multicall for batch transfers (save 30% gas)
+    - Add Redis caching with 60s TTL for allowances
+    - Implement query result pagination (limit: 100)
+    - Bundle size target: < 200KB for transfer feature
+  - Output: Optimized code and performance metrics
+
+### SEQUENTIAL - Phase 5: Final Review
+
+After all development completes:
+
+- `security-auditor`: Security review
+  - Task: Audit checklist:
+    - Check for reentrancy in transfer functions
+    - Verify overflow protection (using SafeMath or Solidity 0.8+)
+    - Validate access controls on admin functions
+    - Check for front-running vulnerabilities
+    - Ensure private keys never logged/exposed
+    - Verify HTTPS only for API calls
+  - Output: Security audit report with severity ratings
+- `code-reviewer`: Final code review
+  - Task: Review criteria:
+    - TypeScript strict mode compliance (no any types)
+    - Test coverage minimum 90%
+    - No console.log statements in production code
+    - All TODOs resolved or ticketed
+    - Consistent naming (camelCase for vars, PascalCase for components)
+  - Output: Approval with 0 critical, <3 minor issues
+```
 
 4. **Review Phase** (specify code-reviewer invocation):
 
@@ -371,10 +507,11 @@ them:
    ```
 
 5. **Localization Phase** (if needed):
+
    ```markdown
    ### Localization Agent:
 
-   - `content-writer`: Translate transfer UI strings to ar, de, ja
+   - `documentation-expert`: Translate transfer UI strings to ar, de, ja
    ```
 
 **CRITICAL: You define the chain, Claude executes it**
@@ -382,7 +519,7 @@ them:
 **Learning & Pattern Updates:**
 
 When you discover successful planning patterns or architectural insights,
-collaborate with the doc-architect agent to:
+collaborate with the documentation-expert agent to:
 
 - Document patterns in the "Learned Planning Patterns" section below
 - Share architectural insights with other agents
@@ -421,28 +558,77 @@ maintainable solutions.
 
 **Multi-Agent Coordination Patterns:**
 
-1. **Parallel Execution**
+1. **Parallel Execution Opportunities**
 
-   ```
-   Frontend & Backend teams work simultaneously:
+   ```markdown
+   ## PARALLEL - Independent Module Development
+
    - react-dev: Build UI components
    - orpc-expert: Create API endpoints
-   - Sync points: API contracts, integration tests
+   - test-dev: Write unit tests for utilities
+   - documentation-expert: Draft initial docs
+
+   ## PARALLEL - Multi-File Operations
+
+   - Multiple file reads/writes
+   - Separate component creation
+   - Independent test file generation
+   - Style and type definitions
    ```
 
 2. **Sequential Dependencies**
 
-   ```
-   Contract → Subgraph → API → Frontend:
-   - Each agent starts when predecessor completes
-   - Clear handoff documentation required
+   ```markdown
+   ## SEQUENTIAL - Dependency Chain
+
+   1. solidity-expert → (contract address)
+   2. subgraph-dev → (uses contract ABI)
+   3. orpc-expert → (uses indexed data)
+   4. react-dev → (uses API endpoints)
+   5. integration-tester → (tests full flow)
    ```
 
-3. **Cross-Functional Reviews**
+3. **Hybrid Patterns**
+
+   ```markdown
+   ## HYBRID - Smart Parallelization
+
+   Phase 1 (Parallel):
+
+   - Core implementation agents
+   - Documentation structure
+
+   Phase 2 (Sequential):
+
+   - Integration points
+
+   Phase 3 (Parallel):
+
+   - Testing across modules
+   - Documentation finalization
+   - Performance optimization
+
+   Phase 4 (Sequential):
+
+   - Final review and validation
    ```
-   Security & Performance reviews run across all work:
-   - security-auditor: Continuous security checks
-   - performance-optimizer: Ongoing performance monitoring
+
+4. **Optimization Guidelines**
+
+   ```markdown
+   ## Maximize Parallelization:
+
+   - Group independent tasks
+   - Separate concerns (UI/API/Tests)
+   - Prepare documentation early
+   - Run analyses concurrently
+
+   ## Avoid Over-Parallelization:
+
+   - Don't split tiny tasks
+   - Respect dependencies
+   - Consider token costs
+   - Maintain clarity
    ```
 
 ## Learned Planning Patterns

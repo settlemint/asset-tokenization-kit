@@ -117,7 +117,7 @@ standards of security and performance.
 **Learning & Pattern Updates:**
 
 When you discover new ORPC patterns or improvements, collaborate with the
-doc-architect agent to:
+documentation-expert agent to:
 
 - Document patterns in the "Learned ORPC Patterns" section below
 - Share API design insights with other agents
@@ -604,6 +604,36 @@ export const handler = authRouter.user.getProfile.handler(
     }
   }
 );
+```
+
+## Parallel Execution Capabilities
+
+This agent can work in parallel with:
+
+### Parallel Partners
+
+- **react-dev**: Frontend can be built simultaneously
+- **test-dev**: API tests can be written alongside endpoints
+- **documentation-expert**: API docs can be generated in parallel
+- **subgraph-dev**: Can work on different data sources
+
+### Sequential Dependencies
+
+- **solidity-expert** → Contract addresses/ABIs needed
+- **subgraph-dev** → May need indexed data for complex queries
+- **integration-tester** → Requires completed endpoints
+
+### Parallel Task Examples
+
+```markdown
+## PARALLEL EXECUTION - API Development
+
+Execute these simultaneously:
+
+- orpc-expert: Create user, token, transaction endpoints
+- react-dev: Build UI components with mock data
+- test-dev: Write API endpoint unit tests
+- documentation-expert: Generate OpenAPI documentation
 ```
 
 ## Learned ORPC Patterns

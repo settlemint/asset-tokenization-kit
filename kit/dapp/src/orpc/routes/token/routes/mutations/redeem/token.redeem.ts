@@ -103,7 +103,11 @@ export const tokenRedeem = tokenRouter.token.tokenRedeem
         ));
 
     // Get updated token data
-    const updatedToken = await call(read, { tokenAddress: contract }, { context });
+    const updatedToken = await call(
+      read,
+      { tokenAddress: contract },
+      { context }
+    );
 
     // Calculate redeemed amount
     const amountRedeemed = redeemAll

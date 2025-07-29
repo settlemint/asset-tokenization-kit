@@ -141,7 +141,7 @@ reliable deployments across all environments.
 **Learning & Pattern Updates:**
 
 When you discover new DevOps patterns or optimizations, collaborate with the
-doc-architect agent to:
+documentation-expert agent to:
 
 - Document patterns in the "Learned DevOps Patterns" section below
 - Share deployment insights with other agents
@@ -364,7 +364,7 @@ After creating or modifying Helm charts:
    Ensure tests cover all values permutations."
    ```
 
-2. **Invoke doc-architect agent**:
+2. **Invoke documentation-expert agent**:
 
    ```
    Task: "Document the Helm chart with:

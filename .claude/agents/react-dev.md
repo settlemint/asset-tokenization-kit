@@ -172,7 +172,7 @@ testament to the power of TypeScript and the elegance of the TanStack ecosystem.
 **Learning & Pattern Updates:**
 
 When you discover new patterns or improvements, collaborate with the
-doc-architect agent to:
+documentation-expert agent to:
 
 - Document patterns in the "Learned React Patterns" section below
 - Propagate relevant patterns to other agents
@@ -371,7 +371,7 @@ After implementing React components or features:
    Ensure tests follow Vitest best practices and use Testing Library utilities."
    ```
 
-2. **Invoke doc-architect agent**:
+2. **Invoke documentation-expert agent**:
 
    ```
    Task: "Document the new React module with:
@@ -383,7 +383,7 @@ After implementing React components or features:
    Update both README.md and CLAUDE.md files."
    ```
 
-3. **Invoke content-writer agent** (if UI has user-facing text):
+3. **Invoke documentation-expert agent** (if UI has user-facing text):
 
    ```
    Task: "Translate all user-facing strings in the new component to:
@@ -885,6 +885,36 @@ test("loads user tokens", async () => {
     expect(screen.getByText("Token Name")).toBeInTheDocument();
   });
 });
+```
+
+## Parallel Execution Capabilities
+
+This agent can work in parallel with:
+
+### Parallel Partners
+
+- **orpc-expert**: API development can proceed simultaneously
+- **tailwind-css-expert**: Styling can be done in parallel
+- **test-dev**: Unit tests can be written alongside components
+- **documentation-expert**: Docs can be drafted during development
+
+### Sequential Dependencies
+
+- **solidity-expert** → Must complete before blockchain integration
+- **subgraph-dev** → GraphQL schema needed before queries
+- **integration-tester** → Requires completed components
+
+### Parallel Task Examples
+
+```markdown
+## PARALLEL EXECUTION - UI Development
+
+Execute these simultaneously:
+
+- react-dev: Create TokenList, TokenDetail, TransferForm components
+- tailwind-css-expert: Design token UI theme and variants
+- test-dev: Write component unit tests
+- documentation-expert: Draft component usage docs
 ```
 
 ## Learned React Patterns

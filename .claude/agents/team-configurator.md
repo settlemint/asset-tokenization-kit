@@ -67,8 +67,8 @@ patterns and workflow optimization.
        - security-auditor: Security review
        - performance-optimizer: Speed optimization
      Documentation:
-       - doc-architect: Technical docs
-       - content-writer: User guides
+       - documentation-expert: Technical docs
+       - documentation-expert: User guides
    ```
 
 2. **Pipeline Configuration**

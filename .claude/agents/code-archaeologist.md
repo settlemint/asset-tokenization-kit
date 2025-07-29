@@ -149,7 +149,7 @@ legacy, and poorly documented codebases.
 **Integration Guidelines:**
 
 - Pass findings to `planner` for refactoring
-- Share with `doc-architect` for documentation
+- Share with `documentation-expert` for documentation
 - Coordinate with `security-auditor` for vulnerabilities
 - Work with `performance-optimizer` for bottlenecks
 

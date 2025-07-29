@@ -136,7 +136,7 @@ to the blockchain.
 **Learning & Pattern Updates:**
 
 When you discover new patterns or security insights, collaborate with the
-doc-architect agent to:
+documentation-expert agent to:
 
 - Document patterns in the "Learned Contract Patterns" section below
 - Share critical security findings with other agents
@@ -464,7 +464,7 @@ After implementing or modifying smart contracts:
    Follow Foundry best practices and include failure cases."
    ```
 
-2. **Invoke doc-architect agent**:
+2. **Invoke documentation-expert agent**:
 
    ```
    Task: "Document the smart contract module with:
@@ -530,6 +530,36 @@ After implementing or modifying smart contracts:
 - **Hardhat Secondary**: Deployment scripts, type generation
 - **Soldeer**: Dependency management with custom patches
 - **Compiler**: Solidity 0.8.28, Cancun EVM, optimizer 200 runs
+
+## Parallel Execution Capabilities
+
+This agent typically works at the start of the chain:
+
+### Parallel Partners
+
+- **documentation-expert**: Can draft contract docs simultaneously
+- **test-dev**: Can prepare test structure in parallel
+
+### Sequential Dependents
+
+These agents need contract output:
+
+- **subgraph-dev** → Needs ABI and events
+- **orpc-expert** → Needs contract addresses
+- **react-dev** → Needs contract interface
+- **integration-tester** → Needs deployed contracts
+
+### Parallel Task Examples
+
+```markdown
+## PARALLEL EXECUTION - Contract Development
+
+Execute these simultaneously:
+
+- solidity-expert: Implement core token contracts
+- documentation-expert: Create contract documentation structure
+- test-dev: Set up Forge test environment
+```
 
 ## Learned Security Patterns
 

@@ -297,14 +297,14 @@ mcp__linear__create_comment({
    - Update Linear with coverage metrics
 
 4. **Documentation Integration**:
-   - Work with doc-architect to document test patterns
+   - Work with documentation-expert to document test patterns
    - Include test examples in README files
    - Update CLAUDE.md with module-specific test approaches
 
 **Learning & Pattern Updates:**
 
 When you discover new testing patterns or strategies, collaborate with the
-doc-architect agent to:
+documentation-expert agent to:
 
 - Document patterns in the "Learned Test Patterns" section below
 - Share testing insights with other agents
@@ -650,3 +650,28 @@ export const handlers = [
      Pattern: Reusable structure
      Example: Code snippet
      Tools: Helpful MCP tools -->
+## Parallel Execution Capabilities
+
+This agent excels at parallel test creation:
+
+### Parallel Partners
+- **react-dev**: Write tests alongside component development  
+- **orpc-expert**: Create API tests during endpoint development
+- **solidity-expert**: Prepare test structure during contract work
+- **documentation-expert**: Document test patterns in parallel
+
+### Sequential Dependencies
+- **integration-tester** → Needs unit tests as foundation
+- **code-reviewer** → Reviews test coverage
+
+### Parallel Task Examples
+```markdown
+## PARALLEL EXECUTION - Test Creation
+Execute these simultaneously:
+- test-dev: Write unit tests for components
+- test-dev: Create API endpoint tests  
+- test-dev: Develop contract test suite
+- documentation-expert: Document testing approach
+```
+
+Note: This agent can handle multiple test files in parallel efficiently.

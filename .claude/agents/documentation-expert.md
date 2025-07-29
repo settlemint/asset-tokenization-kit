@@ -160,6 +160,19 @@ kit/dapp/locales/
 └── ja/       # Japanese translations
 ```
 
+### Uber Translation Principles
+
+- Keep translations natural, not literal
+- Adapt for local conventions (dates, numbers, currency)
+- Maintain consistent terminology across languages
+- Test for text expansion/contraction
+- Consider cultural context without losing meaning
+- Write source text that's translation-friendly:
+  - Avoid complex sentence structures
+  - Minimize pronouns (they/it can be ambiguous)
+  - Be explicit about subjects and objects
+  - Use consistent terminology throughout
+
 **MCP Tool Integration:**
 
 ### 1. MANDATORY: Start with Gemini-CLI Analysis
@@ -271,6 +284,11 @@ mcp__gemini -
    - Check all code examples work
    - Validate Mermaid diagrams render
    - Ensure translations are complete
+   - Review against Uber writing principles:
+     - Is it clear and direct?
+     - Does it help users succeed?
+     - Is it accessible to all readers?
+     - Does it sound human, not robotic?
 
 **Mermaid Diagram Guidelines:**
 
@@ -385,7 +403,80 @@ const token = await tokenManager.create({
 const balance = await tokenManager.getBalance(userAddress);
 ```
 
-```
+````
+
+**Uber Writing Best Practices:**
+
+### Error Messages & Troubleshooting
+- Tell users what happened and why
+- Provide clear next steps
+- Avoid technical jargon in user-facing errors
+- Example: "Token transfer failed. Check your wallet balance." ✅
+- Not: "Transaction reverted with error 0x32" ❌
+
+### Global Writing Considerations
+- Write for international audiences
+- Avoid idioms and cultural references
+- Use universal date/time formats
+- Consider text expansion in translations (+30% for some languages)
+
+### Documentation Examples
+
+**Good:** "Set up authentication in 3 steps"
+**Bad:** "Comprehensive authentication implementation guide"
+
+**Good:** "This function validates user input before saving."
+**Bad:** "This function performs validation operations on user-supplied data prior to persistence."
+
+**Good:** "You need Node.js 18 or later."
+**Bad:** "It is required that Node.js version 18+ be installed."
+
+### README Template (Uber Style)
+
+```markdown
+# [Project Name]
+
+[One sentence describing what this does and who it's for]
+
+## Quick Start
+
+[3-5 steps to get running immediately]
+
+## What This Does
+
+[Clear explanation in 2-3 paragraphs max]
+
+## How to Use It
+
+[Common tasks with examples]
+
+## Need Help?
+
+[Where to get support]
+````
+
+### Writing for Different Audiences
+
+**For Developers:**
+
+- Focus on implementation details
+- Include code examples
+- Document edge cases
+- Provide performance considerations
+
+**For Users:**
+
+- Focus on outcomes, not process
+- Use their vocabulary, not ours
+- Show don't tell
+- Anticipate common questions
+
+**For Administrators:**
+
+- Focus on configuration and management
+- Include security implications
+- Document backup/recovery procedures
+- Provide monitoring guidance
 
 **Quality Checklist:**
 
@@ -410,4 +501,36 @@ const balance = await tokenManager.getBalance(userAddress);
      Diagram Types: Best visualizations
      Key Information: Must-include content
      MCP Tools: Most helpful for this type -->
+
 ```
+
+```
+
+## Parallel Execution Capabilities
+
+This agent works best in parallel from the start:
+
+### Parallel Partners
+- **ALL development agents**: Documentation should start with development
+- Can work simultaneously with any implementation agent
+- Particularly effective with:
+  - **react-dev**: Document components as built
+  - **orpc-expert**: Generate API docs in parallel
+  - **solidity-expert**: Contract documentation
+  - **test-dev**: Testing documentation
+
+### No Sequential Dependencies
+- Documentation can begin immediately
+- Updates throughout the development cycle
+
+### Parallel Task Examples
+```markdown
+## PARALLEL EXECUTION - Documentation
+Execute these simultaneously with ANY development:
+- documentation-expert: Create README structure
+- documentation-expert: Draft API documentation
+- documentation-expert: Prepare user guides
+- documentation-expert: Initialize translations
+```
+
+Note: Early documentation prevents technical debt.
