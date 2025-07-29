@@ -99,7 +99,7 @@ abstract contract AbstractComplianceModuleTest is Test {
 
         // Add token issuer to the bypass list so that he is allowed to do things for testing
         vm.startPrank(platformAdmin);
-        IAccessControl(address(systemUtils.compliance())).grantRole(
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
             ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, platformAdmin
         );
         IATKCompliance(address(systemUtils.compliance())).addToBypassList(tokenIssuer);

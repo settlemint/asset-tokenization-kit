@@ -48,18 +48,16 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     /// @param systemAddress The address of the `IATKSystem` contract.
     /// @param tokenImplementation_ The initial address of the token implementation contract.
     /// @param initialAdmin The address to be granted the DEFAULT_ADMIN_ROLE and DEPLOYER_ROLE.
-    /// @param identityVerificationModule_ The address of the identity verification module.
     function initialize(
         address systemAddress,
         address tokenImplementation_,
-        address initialAdmin,
-        address identityVerificationModule_
+        address initialAdmin
     )
         public
         override(AbstractATKTokenFactoryImplementation, IATKTokenFactory)
         initializer
     {
-        super.initialize(systemAddress, tokenImplementation_, initialAdmin, identityVerificationModule_);
+        super.initialize(systemAddress, tokenImplementation_, initialAdmin);
 
         ISMARTTopicSchemeRegistry topicSchemeRegistry =
             ISMARTTopicSchemeRegistry(IATKSystem(_systemAddress).topicSchemeRegistry());
@@ -71,7 +69,6 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     /// @param name_ The name of the deposit token.
     /// @param symbol_ The symbol of the deposit token.
     /// @param decimals_ The number of decimals for the deposit token.
-    /// @param requiredClaimTopics_ An array of claim topics required for interacting with the deposit token.
     /// @param initialModulePairs_ An array of initial compliance module and parameter pairs.
     /// @param countryCode_ The numeric country code (ISO 3166-1 alpha-2 standard) representing the token's
     /// jurisdiction.
@@ -80,7 +77,6 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         string calldata name_,
         string calldata symbol_,
         uint8 decimals_,
-        uint256[] calldata requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
         uint16 countryCode_
     )
@@ -100,7 +96,7 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
             symbol_,
             decimals_,
             _collateralClaimTopicId,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             address(accessManager)
@@ -118,14 +114,7 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
         // Identity verification check removed - identity is now set after deployment
 
         emit DepositCreated(
-            _msgSender(),
-            deployedDepositAddress,
-            deployedTokenIdentityAddress,
-            name_,
-            symbol_,
-            decimals_,
-            requiredClaimTopics_,
-            countryCode_
+            _msgSender(), deployedDepositAddress, deployedTokenIdentityAddress, name_, symbol_, decimals_, countryCode_
         );
 
         return deployedDepositAddress;
@@ -144,14 +133,12 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
     /// @param name_ The name of the token.
     /// @param symbol_ The symbol of the token.
     /// @param decimals_ The decimals of the token.
-    /// @param requiredClaimTopics_ The required claim topics for the token.
     /// @param initialModulePairs_ The initial compliance module pairs for the token.
     /// @return predictedAddress The predicted address of the token contract.
     function predictDepositAddress(
         string calldata name_,
         string calldata symbol_,
         uint8 decimals_,
-        uint256[] calldata requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] calldata initialModulePairs_
     )
         external
@@ -169,7 +156,7 @@ contract ATKDepositFactoryImplementation is IATKDepositFactory, AbstractATKToken
             symbol_,
             decimals_,
             _collateralClaimTopicId,
-            _addIdentityVerificationModulePair(initialModulePairs_, requiredClaimTopics_),
+            initialModulePairs_,
             _identityRegistry(),
             _compliance(),
             accessManagerAddress_ // Use the provided access manager address

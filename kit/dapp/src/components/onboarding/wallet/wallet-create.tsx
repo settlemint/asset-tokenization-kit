@@ -26,6 +26,7 @@ export function CreateWallet() {
     <OnboardingStepLayout
       title={t("steps.wallet.title")}
       description={t("wallet.subtitle")}
+      fullWidth={true}
       actions={
         <>
           <Button

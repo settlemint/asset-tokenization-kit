@@ -9,13 +9,16 @@ const ATKOnboardingStableCoinModule = buildModule(
     const { stablecoinFactoryImplementation, stablecoinImplementation } =
       m.useModule(ATKModule);
 
-    const createStableCoinFactory = m.call(
+    const createStablecoinFactory = m.call(
       tokenFactoryRegistry,
       "registerTokenFactory",
-      ["stablecoin", stablecoinFactoryImplementation, stablecoinImplementation]
+      ["stablecoin", stablecoinFactoryImplementation, stablecoinImplementation],
+      {
+        from: m.getAccount(0),
+      }
     );
     const stablecoinFactoryAddress = m.readEventArgument(
-      createStableCoinFactory,
+      createStablecoinFactory,
       "TokenFactoryRegistered",
       "proxyAddress",
       { id: "stablecoinFactoryAddress" }

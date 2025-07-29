@@ -69,8 +69,7 @@ contract ATKEquityTest is AbstractATKAssetTest {
         _setUpIdentity(user2, "User 2");
         _setUpIdentity(spender, "Spender");
 
-        smartEquity =
-            _createEquityAndMint(NAME, SYMBOL, DECIMALS, new uint256[](0), new SMARTComplianceModuleParamPair[](0));
+        smartEquity = _createEquityAndMint(NAME, SYMBOL, DECIMALS, new SMARTComplianceModuleParamPair[](0));
         vm.label(address(smartEquity), "ATKEquity");
 
         // Fund test accounts
@@ -83,16 +82,14 @@ contract ATKEquityTest is AbstractATKAssetTest {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        uint256[] memory requiredClaimTopics_,
         SMARTComplianceModuleParamPair[] memory initialModulePairs_
     )
         internal
         returns (IATKEquity result)
     {
         vm.startPrank(owner);
-        address equityAddress = equityFactory.createEquity(
-            name_, symbol_, decimals_, requiredClaimTopics_, initialModulePairs_, TestConstants.COUNTRY_CODE_US
-        );
+        address equityAddress =
+            equityFactory.createEquity(name_, symbol_, decimals_, initialModulePairs_, TestConstants.COUNTRY_CODE_US);
 
         result = IATKEquity(equityAddress);
 
@@ -135,7 +132,6 @@ contract ATKEquityTest is AbstractATKAssetTest {
                 string.concat("Test ATK Equity", Strings.toString(decimalValues[i])),
                 string.concat("TEST", Strings.toString(decimalValues[i])),
                 decimalValues[i],
-                new uint256[](0),
                 new SMARTComplianceModuleParamPair[](0)
             );
             assertEq(newEquity.decimals(), decimalValues[i]);

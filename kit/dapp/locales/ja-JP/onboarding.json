@@ -331,6 +331,7 @@
     "recovery-codes": {
       "confirm": "保存したことを確認する",
       "confirm-error": "秘密コードの確認に失敗しました",
+      "confirm-stored": "Confirm you stored your recovery keys in a safe place.",
       "copied-to-clipboard": "秘密コードがクリップボードにコピーされました！",
       "copy-all": "すべてコピー",
       "description": "これらのコードを安全な場所に保存してください",

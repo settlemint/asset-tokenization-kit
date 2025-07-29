@@ -10,7 +10,10 @@ const ATKOnboardingBondModule = buildModule("ATKOnboardingBondModule", (m) => {
   const createBondFactory = m.call(
     tokenFactoryRegistry,
     "registerTokenFactory",
-    ["bond", bondFactoryImplementation, bondImplementation]
+    ["bond", bondFactoryImplementation, bondImplementation],
+    {
+      from: m.getAccount(0),
+    }
   );
   const bondFactoryAddress = m.readEventArgument(
     createBondFactory,

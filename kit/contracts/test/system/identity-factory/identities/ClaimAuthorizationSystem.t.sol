@@ -7,6 +7,8 @@ import { ATKIdentityImplementation } from
 import { ATKIdentityProxy } from "../../../../contracts/system/identity-factory/identities/ATKIdentityProxy.sol";
 import { ATKTrustedIssuersRegistryImplementation } from
     "../../../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersRegistryImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 import { IClaimAuthorizer } from "../../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
 import { ClaimAuthorizationExtension } from "../../../../contracts/onchainid/extensions/ClaimAuthorizationExtension.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
@@ -16,6 +18,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ERC734KeyPurposes } from "../../../../contracts/onchainid/ERC734KeyPurposes.sol";
 import { ERC734KeyTypes } from "../../../../contracts/onchainid/ERC734KeyTypes.sol";
+import { ATKSystemRoles } from "../../../../contracts/system/ATKSystemRoles.sol";
 
 /// @title ClaimAuthorizationSystem Test
 /// @notice Tests for the new claim authorization system (SRT-754)
@@ -36,6 +39,10 @@ contract ClaimAuthorizationSystemTest is Test {
     ATKTrustedIssuersRegistryImplementation trustedIssuersRegistryLogic;
     ERC1967Proxy trustedIssuersRegistryProxy;
     ATKTrustedIssuersRegistryImplementation trustedIssuersRegistry;
+
+    ATKSystemAccessManagerImplementation systemAccessManagerLogic;
+    ERC1967Proxy systemAccessManagerProxy;
+    ATKSystemAccessManagerImplementation systemAccessManager;
 
     MockClaimIssuer mockIssuer;
     ATKIdentityImplementation issuerIdentity;
@@ -58,7 +65,17 @@ contract ClaimAuthorizationSystemTest is Test {
         );
         identity = ATKIdentityImplementation(address(identityProxy));
 
-        // Deploy trusted address(mockIssuer)s registry
+        // Deploy system access manager first
+        systemAccessManagerLogic = new ATKSystemAccessManagerImplementation(address(0));
+        address[] memory initialAdmins = new address[](1);
+        initialAdmins[0] = admin;
+        systemAccessManagerProxy = new ERC1967Proxy(
+            address(systemAccessManagerLogic),
+            abi.encodeWithSelector(systemAccessManagerLogic.initialize.selector, initialAdmins)
+        );
+        systemAccessManager = ATKSystemAccessManagerImplementation(address(systemAccessManagerProxy));
+
+        // Deploy trusted issuers registry
         trustedIssuersRegistryLogic = new ATKTrustedIssuersRegistryImplementation(address(0));
         address[] memory initialRegistrars = new address[](1);
         initialRegistrars[0] = admin;
@@ -67,6 +84,10 @@ contract ClaimAuthorizationSystemTest is Test {
             abi.encodeWithSelector(trustedIssuersRegistryLogic.initialize.selector, admin, initialRegistrars)
         );
         trustedIssuersRegistry = ATKTrustedIssuersRegistryImplementation(address(trustedIssuersRegistryProxy));
+
+        // Configure trusted issuers registry with system access manager
+        vm.prank(admin);
+        trustedIssuersRegistry.setSystemAccessManager(address(systemAccessManager));
 
         // Deploy mock contracts and issuer identity
         mockIssuer = new MockClaimIssuer();
@@ -78,6 +99,10 @@ contract ClaimAuthorizationSystemTest is Test {
             abi.encodeWithSelector(ATKIdentityImplementation.initialize.selector, issuerOwner, new address[](0))
         );
         issuerIdentity = ATKIdentityImplementation(address(issuerIdentityProxy));
+
+        // Grant the admin the claim policy manager role in the system access manager
+        vm.prank(admin);
+        systemAccessManager.grantRole(ATKSystemRoles.CLAIM_POLICY_MANAGER_ROLE, admin);
     }
 
     // --- Authorization Contract Registration Tests ---

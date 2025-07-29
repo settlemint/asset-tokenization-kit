@@ -7,9 +7,7 @@ import {
   owner,
 } from "../constants/actors";
 import { Countries } from "../constants/countries";
-import { ATKTopic } from "../constants/topics";
 import { Asset } from "../entities/asset";
-import { topicManager } from "../services/topic-manager";
 import { getAnvilTimeMilliseconds, getAnvilTimeSeconds } from "../utils/anvil";
 import { toBaseUnits } from "../utils/to-base-units";
 import { mature } from "./actions/bond/mature";
@@ -65,7 +63,6 @@ export const createBond = async (depositToken: Asset<any>) => {
       faceValue: faceValue,
       underlyingAsset: depositToken.address!,
     },
-    [topicManager.getTopicId(ATKTopic.kyc)],
     [
       ...getDefaultComplianceModules(),
       {
