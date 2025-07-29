@@ -1,18 +1,11 @@
 import { ListSchema } from "@/orpc/routes/common/schemas/list.schema";
 import { identityContract } from "@/orpc/routes/system/identity/identity.contract";
-import {
-  SystemAddonCreateOutputSchema,
-  SystemAddonCreateSchema,
-} from "@/orpc/routes/system/routes/system.addonCreate.schema";
-import {
-  SystemCreateOutputSchema,
-  SystemCreateSchema,
-} from "@/orpc/routes/system/routes/system.create.schema";
+import { SystemAddonCreateSchema } from "@/orpc/routes/system/routes/system.addonCreate.schema";
+import { SystemCreateSchema } from "@/orpc/routes/system/routes/system.create.schema";
 import {
   SystemReadOutputSchema,
   SystemReadSchema,
 } from "@/orpc/routes/system/routes/system.read.schema";
-import { eventIterator } from "@orpc/server";
 import { z } from "zod";
 import { baseContract } from "../../procedures/base.contract";
 import { SystemSchema } from "./routes/system.list.schema";
@@ -33,8 +26,10 @@ const list = baseContract
   .route({
     method: "GET",
     path: "/systems",
-    description: "List the SMART systems",
-    successDescription: "List of SMART systems",
+    description:
+      "List all SMART systems deployed on the blockchain with their registry contracts and configuration",
+    successDescription:
+      "List of SMART systems with deployment details and registry addresses",
     tags: ["system"],
   })
   .input(ListSchema) // Standard list query parameters (pagination, filters, etc.)
@@ -56,12 +51,14 @@ const create = baseContract
   .route({
     method: "POST",
     path: "/systems",
-    description: "Create a new SMART system",
-    successDescription: "New SMART system created",
+    description:
+      "Deploy a new SMART system with identity registry, compliance engine, and token factory registry contracts",
+    successDescription:
+      "SMART system deployed successfully with all registry contracts and configuration",
     tags: ["system"],
   })
   .input(SystemCreateSchema)
-  .output(eventIterator(SystemCreateOutputSchema));
+  .output(SystemReadOutputSchema);
 
 /**
  * Contract definition for the system read endpoint.
@@ -100,12 +97,14 @@ const addonCreate = baseContract
   .route({
     method: "POST",
     path: "/systems/addons",
-    description: "Register system add-ons",
-    successDescription: "System add-ons registered successfully",
+    description:
+      "Register system add-ons to extend SMART system functionality with additional modules and features",
+    successDescription:
+      "System add-ons registered successfully with updated system configuration",
     tags: ["system"],
   })
   .input(SystemAddonCreateSchema)
-  .output(eventIterator(SystemAddonCreateOutputSchema));
+  .output(SystemReadOutputSchema);
 
 /**
  * System API contract collection.

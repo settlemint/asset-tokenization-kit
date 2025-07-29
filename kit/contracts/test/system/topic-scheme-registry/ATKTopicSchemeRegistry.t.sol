@@ -262,8 +262,7 @@ contract ATKTopicSchemeRegistryTest is Test {
 
         // Verify it's gone
         assertFalse(
-            topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_1),
-            "Topic scheme should be removed by system manager"
+            topicSchemeRegistry.hasTopicSchemeByName(TOPIC_NAME_1), "Topic scheme should be removed by system manager"
         );
     }
 
@@ -280,9 +279,7 @@ contract ATKTopicSchemeRegistryTest is Test {
 
         // Verify it was set
         assertEq(
-            topicSchemeRegistry.getSystemAccessManager(),
-            mockAccessManager,
-            "System access manager should be updated"
+            topicSchemeRegistry.getSystemAccessManager(), mockAccessManager, "System access manager should be updated"
         );
 
         // Try with unauthorized user
@@ -341,7 +338,8 @@ contract ATKTopicSchemeRegistryTest is Test {
 
     function test_SystemAccessManagerIntegration() public view {
         // Test that the topic scheme registry correctly references the system access manager
-        ATKTopicSchemeRegistryImplementation registry = ATKTopicSchemeRegistryImplementation(address(topicSchemeRegistry));
+        ATKTopicSchemeRegistryImplementation registry =
+            ATKTopicSchemeRegistryImplementation(address(topicSchemeRegistry));
         assertEq(registry.getSystemAccessManager(), address(systemAccessManager));
 
         // Test hasRole delegation
@@ -406,7 +404,7 @@ contract ATKTopicSchemeRegistryTest is Test {
         assertEq(topicSchemeRegistry.getTopicSchemeCount(), countBefore + 1);
     }
 
-                function test_Initialize_ZeroAddressSystemAccessManager() public pure {
+    function test_Initialize_ZeroAddressSystemAccessManager() public pure {
         // NOTE: This test verifies that our validation exists by checking the error selector
         // The actual runtime validation is tested during system bootstrap
         bytes4 expectedSelector = ATKTopicSchemeRegistryImplementation.SystemAccessManagerCannotBeZeroAddress.selector;

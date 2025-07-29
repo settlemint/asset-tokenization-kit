@@ -62,7 +62,7 @@
     "happy-dom": "18.0.1",
     "languine": "3.1.4",
     "minimatch": "10.0.3",
-    "typescript": "5.8.3",
+    "typescript": "5.9.1-rc",
     "typescript-eslint": "8.38.0",
     "vite": "7.0.6",
     "vite-bundle-analyzer": "1.1.0",

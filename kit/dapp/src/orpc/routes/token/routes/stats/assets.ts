@@ -304,7 +304,7 @@ export const statsAssets = authRouter.token.statsAssets
     const response = await context.theGraphClient.query(ASSET_METRICS_QUERY, {
       input: validatedInput,
       output: AssetMetricsResponseSchema,
-      error: "Failed to fetch asset metrics",
+      error: context.t("tokens:api.stats.assets.messages.failed"),
     });
 
     // Debug logging

@@ -1,20 +1,17 @@
 /**
  * System Addon Registration Handler
  *
- * This handler registers system addons through the ATKSystemAddonRegistry
- * using an async generator pattern for real-time transaction tracking and batch progress.
+ * This handler registers system addons through the ATKSystemAddonRegistry.
  * It supports registering different addon types (airdrops, yield, xvp) either
- * individually or in batch with live progress updates.
+ * individually or in batch.
  *
  * The handler performs the following operations:
  * 1. Validates user authentication and authorization
  * 2. Processes addon registration requests (single or batch)
- * 3. Executes transactions via Portal GraphQL with real-time tracking
- * 4. Yields progress events for each addon registration
- * 5. Returns a summary of all registered addons
- * @generator
+ * 3. Executes transactions via Portal GraphQL
+ * 4. Returns a summary of all registered addons
  * @see {@link ./system.addonCreate.schema} - Input validation schema
- * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
+ * @see {@link @/lib/settlemint/portal} - Portal GraphQL client
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
@@ -25,6 +22,8 @@ import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware"
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { read } from "@/orpc/routes/system/routes/system.read";
+import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { encodeFunctionData, getAddress } from "viem";
@@ -141,21 +140,18 @@ function getImplementationAddress(addonConfig: SystemAddonConfig): string {
 }
 
 /**
- * Creates system addons using async iteration for progress tracking.
+ * Creates system addons.
  *
- * This handler uses a generator pattern to yield real-time progress updates during
- * addon registration, supporting both single and batch operations with detailed status
- * for each addon being registered.
+ * This handler registers system addons, supporting both single and batch operations.
  * @auth Required - User must be authenticated
- * @middleware portalMiddleware - Provides Portal GraphQL client with transaction tracking
+ * @middleware portalMiddleware - Provides Portal GraphQL client
  * @middleware theGraphMiddleware - Provides TheGraph client
  * @middleware systemMiddleware - Provides system context and addon registry
  * @param input.contract - The system addon registry contract address
  * @param input.addons - Single addon or array of addons to register
  * @param input.messages - Optional custom messages for localization
  * @param input.verification - The verification code and type for the transaction
- * @yields {SystemAddonCreateOutput} Progress events with status, message, and current addon info
- * @returns {AsyncGenerator} Generator that yields events and completes with registration summary
+ * @returns {Promise<SystemAddonCreateOutput>} Registration summary with results for each addon
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system not bootstrapped or transaction fails
  */
@@ -164,21 +160,13 @@ export const addonCreate = onboardedRouter.system.addonCreate
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .use(systemMiddleware)
-  .handler(async function* ({ input, context }) {
+  .handler(async ({ input, context }) => {
     const { contract, addons, verification } = input;
     const sender = context.auth.user;
-    const { t } = context;
+    // const { t } = context; // Removed - using hardcoded messages
 
     // Normalize to array
     const addonList = Array.isArray(addons) ? addons : [addons];
-    const totalAddons = addonList.length;
-
-    // Yield initial loading message
-    yield {
-      status: "pending" as const,
-      message: t("system:addons.messages.preparing"),
-      progress: { current: 0, total: totalAddons },
-    };
 
     // Query existing system addons to check for duplicates
     const existingAddonNames = new Set<string>();
@@ -210,33 +198,18 @@ export const addonCreate = onboardedRouter.system.addonCreate
       return false;
     }
 
-    // Process each addon using a generator pattern for batch operations
-    for (const [index, addonConfig] of addonList.entries()) {
-      const progress = { current: index + 1, total: totalAddons };
-      const { type, name } = addonConfig;
+    // Handle challenge once for all addon registrations
+    const challengeResponse = await handleChallenge(sender, {
+      code: verification.verificationCode,
+      type: verification.verificationType,
+    });
 
-      // Yield initial progress message for this addon
-      yield {
-        status: "pending" as const,
-        message: t("system:addons.messages.progress", {
-          current: progress.current,
-          total: progress.total,
-          type,
-          name,
-        }),
-        currentAddon: { type, name },
-        progress,
-      };
+    // Process each addon using a generator pattern for batch operations
+    for (const addonConfig of addonList) {
+      const { type, name } = addonConfig;
 
       // Check if addon already exists (if we had that data)
       if (existingAddonNames.has(name.toLowerCase())) {
-        yield {
-          status: "completed" as const,
-          message: t("system:addons.messages.alreadyExists", { name }),
-          currentAddon: { type, name },
-          progress,
-        };
-
         results.push({
           type,
           name,
@@ -262,30 +235,21 @@ export const addonCreate = onboardedRouter.system.addonCreate
           userWallet: sender.wallet,
         });
 
-        // Execute the addon registration transaction
+        // Execute the addon registration transaction (reuse challenge response)
         const variables: VariablesOf<typeof REGISTER_SYSTEM_ADDON_MUTATION> = {
           address: contract,
           from: sender.wallet,
           name: name,
           implementation: implementationAddress,
           initializationData: initializationData,
-          ...(await handleChallenge(sender, {
-            code: verification.verificationCode,
-            type: verification.verificationType,
-          })),
+          ...challengeResponse,
         };
 
-        // Use the Portal client's mutate method that returns an async generator
-        const transactionHash = yield* context.portalClient.mutate(
+        // Execute the mutation
+        const transactionHash = await context.portalClient.mutate(
           REGISTER_SYSTEM_ADDON_MUTATION,
           variables,
-          t("system:addons.messages.failed", { name }),
-          {
-            waitingForMining: t("system:addons.messages.registering", { name }),
-            transactionIndexed: t("system:addons.messages.registered", {
-              name,
-            }),
-          }
+          `Failed to register addon: ${name}`
         );
 
         const implementationName = ADDON_TYPE_TO_IMPLEMENTATION_NAME[type];
@@ -298,9 +262,7 @@ export const addonCreate = onboardedRouter.system.addonCreate
       } catch (error) {
         // Handle any errors during addon registration
         const errorMessage =
-          error instanceof Error
-            ? error.message
-            : t("system:addons.messages.defaultError");
+          error instanceof Error ? error.message : "Addon registration failed";
 
         // Enhanced error logging with more details
         logger.error(`Addon registration failed for ${name}:`, {
@@ -325,33 +287,16 @@ export const addonCreate = onboardedRouter.system.addonCreate
         // Check for specific error patterns to provide better user feedback
         let specificErrorMessage = errorMessage;
         if (containsErrorPattern(error, "SystemAddonTypeAlreadyRegistered")) {
-          specificErrorMessage = t("system:addons.messages.alreadyExists", {
-            name,
-          });
+          specificErrorMessage = `Addon already exists: ${name}`;
         } else if (containsErrorPattern(error, "AccessControl")) {
-          specificErrorMessage = t("system:addons.messages.accessDenied", {
-            contract,
-          });
+          specificErrorMessage = `Access denied for contract: ${contract}`;
         } else if (containsErrorPattern(error, "Unauthorized")) {
-          specificErrorMessage = t("system:addons.messages.accessDenied", {
-            contract,
-          });
+          specificErrorMessage = `Access denied for contract: ${contract}`;
         } else if (containsErrorPattern(error, "implementation")) {
-          specificErrorMessage = t(
-            "system:addons.messages.invalidImplementation"
-          );
+          specificErrorMessage = "Invalid implementation address";
         } else if (containsErrorPattern(error, "invalid")) {
-          specificErrorMessage = t(
-            "system:addons.messages.invalidConfiguration"
-          );
+          specificErrorMessage = "Invalid addon configuration";
         }
-
-        yield {
-          status: "failed" as const,
-          message: t("system:addons.messages.failed", { name }),
-          currentAddon: { type, name, error: specificErrorMessage },
-          progress,
-        };
 
         results.push({
           type,
@@ -361,33 +306,14 @@ export const addonCreate = onboardedRouter.system.addonCreate
       }
     }
 
-    // Calculate final results and determine completion message
-    const successful = results.filter((r) => !r.error);
-    const failed = results.filter((r) => r.error);
+    // We don't need the final message anymore since we're returning the system
 
-    // Yield final completion message
-    let finalMessage: string;
-    if (failed.length === 0) {
-      finalMessage = t("system:addons.messages.allSuccess", {
-        count: successful.length,
-      });
-    } else if (successful.length === 0) {
-      finalMessage = t("system:addons.messages.allFailed");
-    } else {
-      finalMessage = t("system:addons.messages.partialSuccess", {
-        successCount: successful.length,
-        totalCount: totalAddons,
-      });
-    }
-
-    yield {
-      status: "completed" as const,
-      message: finalMessage,
-      results,
-      result: results, // Added for useStreamingMutation hook compatibility
-      progress: {
-        current: totalAddons,
-        total: totalAddons,
+    // Return the updated system details
+    return await call(
+      read,
+      {
+        id: "default",
       },
-    };
+      { context }
+    );
   });

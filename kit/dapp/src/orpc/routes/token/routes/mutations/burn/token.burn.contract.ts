@@ -1,9 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import {
-  TokenBurnInputSchema,
-  TokenBurnOutputSchema,
-} from "@/orpc/routes/token/routes/mutations/burn/token.burn.schema";
-import { eventIterator } from "@orpc/server";
+import { TokenBurnInputSchema } from "@/orpc/routes/token/routes/mutations/burn/token.burn.schema";
+import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 
 export const tokenBurnContract = baseContract
   .route({
@@ -14,4 +11,4 @@ export const tokenBurnContract = baseContract
     tags: ["token"],
   })
   .input(TokenBurnInputSchema)
-  .output(eventIterator(TokenBurnOutputSchema));
+  .output(TokenSchema);

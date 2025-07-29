@@ -1,4 +1,3 @@
-import { retryWhenFailed } from "@settlemint/sdk-utils";
 import { randomUUID } from "node:crypto";
 import { OrpcClient } from "./orpc-client";
 
@@ -20,38 +19,12 @@ export async function createToken(orpClient: OrpcClient, input: TokenInput) {
       name,
     });
 
-    let isDeployed = false;
-    for await (const event of result) {
-      if (event.status !== "confirmed") {
-        continue;
-      }
-      if (event.result && event.tokenType) {
-        // First deploy
-        isDeployed = true;
-      }
-    }
-
-    if (!isDeployed) {
+    // The create method now returns the token object directly
+    if (!result || !result.id || !result.type) {
       throw new Error("Token not deployed");
     }
 
-    return retryWhenFailed(
-      async () => {
-        const tokens = await orpClient.token.list({});
-        const token = tokens.find(
-          (t) =>
-            t.name === name &&
-            t.symbol === input.symbol &&
-            t.type === input.type
-        );
-        if (!token) {
-          throw new Error("Token not found");
-        }
-        return token;
-      },
-      3,
-      3_000
-    );
+    return result;
   } catch (error: unknown) {
     // If we're in CI and get an access control error, propagate it to be handled by the tests
     if (

@@ -45,7 +45,7 @@
     "ci": "turbo run ci",
     "ci:publish": "turbo run ci:publish",
     "version": "bun run tools/version.ts",
-    "clean": "git clean -fdX -e '.env' -e '.env.*' -e '!.env' -e '!.env.*' -e '.turbo/config.json' && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' -o -name 'bun.lock' \\) -exec rm -f {} + && bun install && bunx turbo link --yes --scope settlemint",
+    "clean": "git clean -fdX -e '.env' -e '.env.*' -e '!.env' -e '!.env.*' -e '.turbo/config.json' && find . -type f \\( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' -o -name 'yarn.lock' -o -name 'bun.lockb' -o -name 'bun.lock' \\) -exec rm -f {} + && bun install && bunx turbo link --yes",
     "predev": "bunx settlemint connect --instance local",
     "dev": "turbo dev watch db:studio",
     "lint": "turbo lint",
@@ -77,7 +77,7 @@
     "@settlemint/sdk-utils": "2.5.2",
     "prettier": "3.6.2",
     "turbo": "2.5.5",
-    "typescript": "5.8.3",
+    "typescript": "5.9.1-rc",
     "yaml": "2.8.0"
   },
   "trustedDependencies": [

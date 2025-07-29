@@ -1,12 +1,13 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
-import { getEthereumHash } from "@/lib/zod/validators/ethereum-hash";
 import { validateBatchArrays } from "@/orpc/helpers/array-validation";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { getConditionalMutationMessages } from "@/orpc/helpers/mutation-messages";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
+import { tokenMiddleware } from "@/orpc/middlewares/system/token.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { read } from "../../token.read";
+import { call } from "@orpc/server";
 
 const TOKEN_SINGLE_BURN_MUTATION = portalGraphql(`
   mutation TokenBurn(
@@ -64,24 +65,24 @@ export const burn = tokenRouter.token.burn
     })
   )
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .use(tokenMiddleware)
+  .handler(async ({ input, context, errors }) => {
     const { contract, verification, addresses, amounts } = input;
-    const { auth, t } = context;
+    const { auth } = context;
 
     // Determine if this is a batch operation
     const isBatch = addresses.length > 1;
 
-    // Generate messages using server-side translations
-    const { pendingMessage, successMessage, errorMessage } =
-      getConditionalMutationMessages(t, "tokens", "burn", isBatch);
-
+    const errorMessage = isBatch
+      ? context.t("tokens:api.mutations.burn.messages.batchFailed")
+      : context.t("tokens:api.mutations.burn.messages.failed");
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
       code: verification.verificationCode,
       type: verification.verificationType,
     });
 
-    // Choose the appropriate mutation based on single vs batch
+    // Execute the burn operation
     if (isBatch) {
       // Validate batch arrays
       validateBatchArrays(
@@ -89,10 +90,10 @@ export const burn = tokenRouter.token.burn
           addresses,
           amounts,
         },
-        "batch burn"
+        context.t("tokens:api.mutations.burn.validation.batchDescription")
       );
 
-      const transactionHash = yield* context.portalClient.mutate(
+      await context.portalClient.mutate(
         TOKEN_BATCH_BURN_MUTATION,
         {
           address: contract,
@@ -101,26 +102,20 @@ export const burn = tokenRouter.token.burn
           amounts: amounts.map((a) => a.toString()),
           ...challengeResponse,
         },
-        errorMessage,
-        {
-          waitingForMining: pendingMessage,
-          transactionIndexed: successMessage,
-        }
+        errorMessage
       );
-
-      return getEthereumHash(transactionHash);
     } else {
       const [userAddress] = addresses;
       const [amount] = amounts;
-
       if (!userAddress || !amount) {
         throw errors.INPUT_VALIDATION_FAILED({
-          message: "Missing required address or amount",
+          message: context.t(
+            "tokens:api.mutations.burn.messages.missingAddressOrAmount"
+          ),
           data: { errors: ["Invalid input data"] },
         });
       }
-
-      const transactionHash = yield* context.portalClient.mutate(
+      await context.portalClient.mutate(
         TOKEN_SINGLE_BURN_MUTATION,
         {
           address: contract,
@@ -129,13 +124,18 @@ export const burn = tokenRouter.token.burn
           amount: amount.toString(),
           ...challengeResponse,
         },
-        errorMessage,
-        {
-          waitingForMining: pendingMessage,
-          transactionIndexed: successMessage,
-        }
+        errorMessage
       );
-
-      return getEthereumHash(transactionHash);
     }
+
+    // Return the updated token data using the read handler
+    return await call(
+      read,
+      {
+        tokenAddress: contract,
+      },
+      {
+        context,
+      }
+    );
   });

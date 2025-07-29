@@ -14,7 +14,9 @@ describe("Token factory create", () => {
 
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
-    const system = await client.system.read({ id: "default" });
+    const systems = await client.system.list({});
+    const systemId = systems[0]?.id || "default";
+    const system = await client.system.read({ id: systemId });
 
     expect(system?.tokenFactoryRegistry).toBeDefined();
     if (!system?.tokenFactoryRegistry) {
@@ -31,22 +33,15 @@ describe("Token factory create", () => {
         factories: [{ type: "equity", name: "Test Token" }],
       });
 
-      let isDeployed = false;
-      for await (const event of result) {
-        if (event.status !== "completed") {
-          continue;
-        }
-        if (event.currentFactory) {
-          // It is already deployed
-          isDeployed = true;
-        }
-        if (event.result?.["0"]?.transactionHash) {
-          // First deploy
-          isDeployed = true;
-        }
-      }
+      // The factoryCreate method returns a FactoryCreateOutput with status and results
+      expect(result.status).toBe("completed");
+      expect(result.results).toBeDefined();
+      expect(result.results?.length).toBeGreaterThan(0);
 
-      expect(isDeployed).toBe(true);
+      // Check that at least one factory was successfully created
+      const successfulFactories =
+        result.results?.filter((r) => !r.error && r.transactionHash) ?? [];
+      expect(successfulFactories.length).toBeGreaterThan(0);
 
       const factories = await client.token.factoryList({});
       expect(factories.length).toBeGreaterThan(0);

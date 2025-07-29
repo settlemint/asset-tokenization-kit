@@ -167,6 +167,5 @@ describe("Token permissions", () => {
         throw error;
       }
     }
-
   });
 });

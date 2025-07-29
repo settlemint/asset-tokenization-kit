@@ -114,7 +114,7 @@ export const statsSupplyDistribution = authRouter.token.statsSupplyDistribution
       {
         input: {},
         output: SupplyDistributionResponseSchema,
-        error: "Failed to fetch supply distribution",
+        error: context.t("tokens:api.stats.supplyDistribution.messages.failed"),
       }
     );
 

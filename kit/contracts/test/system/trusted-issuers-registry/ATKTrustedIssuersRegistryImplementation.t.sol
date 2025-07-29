@@ -11,7 +11,8 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { ATKSystemAccessManagerImplementation } from "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
 
 // Mock claim issuer for testing
 contract MockClaimIssuer {
@@ -57,7 +58,8 @@ contract ATKTrustedIssuersRegistryImplementationTest is Test {
         address[] memory initialAdmins = new address[](1);
         initialAdmins[0] = admin;
         ATKSystemAccessManagerImplementation accessManagerImpl = new ATKSystemAccessManagerImplementation(forwarder);
-        bytes memory accessManagerInitData = abi.encodeWithSelector(accessManagerImpl.initialize.selector, initialAdmins);
+        bytes memory accessManagerInitData =
+            abi.encodeWithSelector(accessManagerImpl.initialize.selector, initialAdmins);
         ERC1967Proxy accessManagerProxy = new ERC1967Proxy(address(accessManagerImpl), accessManagerInitData);
         systemAccessManager = ATKSystemAccessManagerImplementation(address(accessManagerProxy));
 

@@ -1,5 +1,7 @@
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
+import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { apiBigInt } from "@/lib/zod/validators/bigint";
+import { bigDecimal } from "@/lib/zod/validators/bigdecimal";
 import { z } from "zod";
 
 export const TokenRedeemInputSchema = MutationInputSchemaWithContract.extend({
@@ -13,5 +15,25 @@ export const TokenRedeemInputSchema = MutationInputSchemaWithContract.extend({
 
 export const TokenRedeemAllInputSchema = MutationInputSchemaWithContract;
 
+/**
+ * Output schema for token redeem operation
+ * Returns the ethereum hash and the updated token data
+ */
+export const TokenRedeemOutputSchema = BaseMutationOutputSchema.extend({
+  data: z
+    .object({
+      amountRedeemed: bigDecimal().describe("Amount of tokens redeemed"),
+      redeemedAll: z.boolean().describe("Whether all tokens were redeemed"),
+      tokenName: z.string().optional().describe("Name of the token"),
+      tokenSymbol: z.string().optional().describe("Symbol of the token"),
+      totalRedeemedAmount: bigDecimal()
+        .optional()
+        .describe("Total amount redeemed from this token"),
+    })
+    .optional()
+    .describe("Redeem operation details"),
+});
+
 export type TokenRedeemInput = z.infer<typeof TokenRedeemInputSchema>;
 export type TokenRedeemAllInput = z.infer<typeof TokenRedeemAllInputSchema>;
+export type TokenRedeemOutput = z.infer<typeof TokenRedeemOutputSchema>;

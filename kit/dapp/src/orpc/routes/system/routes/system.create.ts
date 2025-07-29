@@ -1,20 +1,18 @@
 /**
  * System Creation Handler
  *
- * This handler creates a new system contract instance through the ATKSystemFactory
- * using an async generator pattern for real-time transaction tracking and progress updates.
+ * This handler creates a new system contract instance through the ATKSystemFactory.
  * System contracts are fundamental infrastructure components in the SettleMint
  * platform that manage various system-level operations and configurations.
  *
  * The handler performs the following operations:
  * 1. Validates user authentication and authorization
- * 2. Creates the system contract via Portal GraphQL with transaction tracking
+ * 2. Creates the system contract via Portal GraphQL
  * 3. Queries TheGraph to get the deployed system contract address
  * 4. Bootstraps the system contract to initialize its state
- * 5. Yields progress events throughout the process
- * @generator
+ * 5. Returns the system contract address
  * @see {@link ../system.create.schema} - Input validation schema
- * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
+ * @see {@link @/lib/settlemint/portal} - Portal GraphQL client
  */
 
 import { portalGraphql } from "@/lib/settlemint/portal";
@@ -24,8 +22,9 @@ import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middl
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { read } from "@/orpc/routes/settings/routes/settings.read";
+import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
+import { read } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { z } from "zod";
@@ -98,93 +97,75 @@ const FIND_SYSTEM_FOR_TRANSACTION_QUERY = theGraphGraphql(`
 `);
 
 /**
- * Creates a new system contract instance using async iteration for real-time progress tracking.
+ * Creates a new system contract instance.
  *
- * This handler uses a generator pattern to yield progress updates during the multi-step
- * system creation process, including contract deployment and bootstrapping.
+ * This handler creates and bootstraps a system contract.
  * @auth Required - User must be authenticated
- * @middleware portalMiddleware - Provides Portal GraphQL client with transaction tracking
+ * @middleware portalMiddleware - Provides Portal GraphQL client
  * @middleware theGraphMiddleware - Provides TheGraph client for querying deployed contracts
  * @param input.contract - The system factory contract address (defaults to standard address)
  * @param input.messages - Optional custom messages for localization
  * @param input.verification - The verification code and type for the transaction
- * @yields {TransactionEvent} Progress events during system creation and bootstrapping
- * @returns {AsyncGenerator} Generator that yields events and completes with the system contract address
+ * @returns {Promise<string>} The system contract address
  * @throws {ORPCError} UNAUTHORIZED - If user is not authenticated
  * @throws {ORPCError} INTERNAL_SERVER_ERROR - If system creation or bootstrapping fails
  * @example
  * ```typescript
- * // Create system with async iteration for progress tracking
- * for await (const event of client.system.create({
+ * // Create system
+ * const systemAddress = await client.system.create({
  *   contract: "0x123..."
- * })) {
- *   console.log(`Status: ${event.status}, Message: ${event.message}`);
- *
- *   if (event.status === "confirmed" && event.result) {
- *     console.log(`System created at: ${event.result}`);
- *   }
- * }
+ * });
+ * console.log(`System created at: ${systemAddress}`);
  *
  * // Or use with React hooks
- * const { mutate } = client.system.create.useMutation({
- *   onProgress: (event) => {
- *     // Update UI with progress
- *   }
- * });
+ * const { mutate } = client.system.create.useMutation();
  * ```
  */
 export const create = onboardedRouter.system.create
   .use(permissionsMiddleware({ system: ["create"] }))
   .use(theGraphMiddleware)
   .use(portalMiddleware)
-  .handler(async function* ({ input, context, errors }) {
+  .handler(async ({ input, context, errors }) => {
     const { contract, verification } = input;
     const sender = context.auth.user;
-    const { t } = context;
+    // const { t } = context; // Removed - using hardcoded messages
 
     // Check if system already exists using orpc
     const existingSystem = await call(
-      read,
+      settingsRead,
       {
         key: "SYSTEM_ADDRESS",
       },
-      {
-        context,
-      }
+      { context }
     );
 
     if (existingSystem) {
       throw errors.RESOURCE_ALREADY_EXISTS({
-        message: t("system:create.messages.alreadyExists"),
+        message: "System already exists",
         cause: new Error(
           `System already deployed at address: ${existingSystem}`
         ),
       });
     }
 
+    // Handle challenge for system creation transaction
+    const createChallengeResponse = await handleChallenge(sender, {
+      code: verification.verificationCode,
+      type: verification.verificationType,
+    });
+
     // Execute the system creation transaction
     const createSystemVariables: VariablesOf<typeof CREATE_SYSTEM_MUTATION> = {
       address: contract,
       from: sender.wallet,
-      ...(await handleChallenge(sender, {
-        code: verification.verificationCode,
-        type: verification.verificationType,
-      })),
+      ...createChallengeResponse,
     };
 
-    // Generate messages using server-side translations
-    const pendingMessage = t("system:create.messages.creating");
-    const errorMessage = t("system:create.messages.creationFailed");
-
-    // Use the Portal client's mutate method that returns an async generator
-    const transactionHash = yield* context.portalClient.mutate(
+    // Use the Portal client's mutate method
+    const transactionHash = await context.portalClient.mutate(
       CREATE_SYSTEM_MUTATION,
       createSystemVariables,
-      errorMessage,
-      {
-        waitingForMining: pendingMessage,
-        transactionIndexed: t("system:create.messages.queryingSystem"),
-      }
+      "Failed to create system"
     );
 
     // Query for the deployed system contract
@@ -208,13 +189,13 @@ export const create = onboardedRouter.system.create
       {
         input: queryVariables,
         output: SystemQueryResultSchema,
-        error: errorMessage,
+        error: "Failed to create system",
       }
     );
 
     if (result.systems.length === 0) {
       throw errors.NOT_FOUND({
-        message: t("system:create.messages.systemNotFound"),
+        message: "System not found after creation",
         cause: new Error(`System not found for transaction ${transactionHash}`),
       });
     }
@@ -225,49 +206,33 @@ export const create = onboardedRouter.system.create
 
     if (!system) {
       throw errors.INTERNAL_SERVER_ERROR({
-        message: errorMessage,
+        message: "Failed to create system",
         cause: new Error(
           `System object is null for transaction ${transactionHash}`
         ),
       });
     }
 
-    // Now bootstrap the system
-    const bootstrapPendingMessage = t("system:create.messages.bootstrapping");
-    const bootstrapErrorMessage = t("system:create.messages.bootstrapFailed");
-
-    yield {
-      status: "pending" as const,
-      message: bootstrapPendingMessage,
-    };
+    // Handle challenge for bootstrap transaction (fresh challenge required)
+    const bootstrapChallengeResponse = await handleChallenge(sender, {
+      code: verification.verificationCode,
+      type: verification.verificationType,
+    });
 
     // Execute the bootstrap transaction
     const bootstrapVariables: VariablesOf<typeof BOOTSTRAP_SYSTEM_MUTATION> = {
       address: system.id,
       from: sender.wallet,
-      ...(await handleChallenge(sender, {
-        code: verification.verificationCode,
-        type: verification.verificationType,
-      })),
+      ...bootstrapChallengeResponse,
     };
 
-    // Track bootstrap transaction using the same async generator pattern
-    let bootstrapSucceeded = true;
-    try {
-      yield* context.portalClient.mutate(
-        BOOTSTRAP_SYSTEM_MUTATION,
-        bootstrapVariables,
-        bootstrapErrorMessage,
-        {
-          waitingForMining: bootstrapPendingMessage,
-          transactionIndexed: t("system:create.messages.bootstrapSuccess"),
-        }
-      );
-    } catch {
-      bootstrapSucceeded = false;
-      // Don't throw - we still need to report the system ID
-      // even if bootstrap failed, as the system was created successfully
-    }
+    // Execute bootstrap transaction
+
+    await context.portalClient.mutate(
+      BOOTSTRAP_SYSTEM_MUTATION,
+      bootstrapVariables,
+      "Failed to bootstrap system"
+    );
 
     // Save the system address to settings using orpc BEFORE yielding final events
     await call(
@@ -276,24 +241,15 @@ export const create = onboardedRouter.system.create
         key: "SYSTEM_ADDRESS",
         value: system.id,
       },
-      {
-        context,
-      }
+      { context }
     );
 
-    // Always yield the final message with the system ID
-    // If bootstrap failed, we still return the system ID but with a warning
-    const finalMessage = bootstrapSucceeded
-      ? t("system:create.messages.success")
-      : t("system:create.messages.createdBootstrapFailed", {
-          systemAddress: system.id,
-        });
-
-    yield {
-      status: "confirmed" as const,
-      message: finalMessage,
-      result: system.id,
-    };
-
-    return system.id;
+    // Return the complete system details
+    return await call(
+      read,
+      {
+        id: system.id,
+      },
+      { context }
+    );
   });

@@ -80,7 +80,7 @@ export const events = tokenRouter.token.events
         emitter: context.token.id.toLowerCase(),
       },
       output: EventsResponseSchema,
-      error: "Failed to fetch token events",
+      error: context.t("tokens:api.queries.events.messages.failed"),
     });
 
     return response;

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { VerificationDialog } from "@/components/verification-dialog/verification-dialog";
 import { useAppForm } from "@/hooks/use-app-form";
-import { waitForStream } from "@/lib/utils/stream";
 import {
   type AssetFactoryTypeId,
   getAssetTypeFromFactoryTypeId,
@@ -46,11 +45,11 @@ export function AssetTypeSelection() {
     | null
   >(null);
 
-  const { data: systemDetails } = useQuery({
-    ...orpc.system.read.queryOptions({
+  const { data: systemDetails } = useQuery(
+    orpc.system.read.queryOptions({
       input: { id: "default" },
-    }),
-  });
+    })
+  );
 
   const form = useAppForm({
     defaultValues: {
@@ -77,9 +76,7 @@ export function AssetTypeSelection() {
   const { mutateAsync: createFactories, isPending: isFactoriesCreating } =
     useMutation(
       orpc.token.factoryCreate.mutationOptions({
-        onSuccess: async (result) => {
-          await waitForStream(result, "token factory deployment");
-
+        onSuccess: async () => {
           // Refetch all relevant data
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: orpc.system.read.key() }),

@@ -37,7 +37,8 @@ import { IATKSystemAccessManager } from "../access-manager/IATKSystemAccessManag
 ///      are allowed to interact with this storage. It can bind new registry contracts (granting them
 ///      `IDENTITY_REGISTRY_MODULE_ROLE`) and unbind existing ones. This role is usually assigned to a system controller
 ///      contract like `ATKSystem` or an identity factory.
-///    - `IDENTITY_REGISTRY_MODULE_ROLE`: This role is granted to `SMARTIdentityRegistry` contracts that have been "bound"
+///    - `IDENTITY_REGISTRY_MODULE_ROLE`: This role is granted to `SMARTIdentityRegistry` contracts that have been
+/// "bound"
 ///      to this storage. Contracts with this role are authorized to call functions that add, remove, or update
 ///      identity data within this storage contract (e.g., `addIdentityToStorage`, `modifyStoredInvestorCountry`).
 /// The contract supports meta-transactions through `ERC2771ContextUpgradeable`, allowing users to interact with it
@@ -86,9 +87,9 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @return roles Array of roles that can manage identity registries
     function _getIdentityManagementRoles() internal pure returns (bytes32[] memory roles) {
         roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;        // Primary manager role
-        roles[1] = ATKSystemRoles.IDENTITY_MANAGER_ROLE;      // Identity-specific manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;         // System module role
+        roles[0] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // Primary manager role
+        roles[1] = ATKSystemRoles.IDENTITY_MANAGER_ROLE; // Identity-specific manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
     // --- Storage Variables ---
@@ -249,7 +250,8 @@ contract ATKIdentityRegistryStorageImplementation is
     /// 2.  Sets the centralized access manager reference for role-based access control.
     /// The `initializer` modifier from `Initializable` ensures this function can only be executed once, preventing
     /// re-initialization.
-    /// @param accessManager The address of the centralized ATKSystemAccessManager contract that will handle role checks.
+    /// @param accessManager The address of the centralized ATKSystemAccessManager contract that will handle role
+    /// checks.
     /// @param system The address of the system-level contract (e.g., `ATKSystem` or a factory) that will be granted
     /// the `SYSTEM_MANAGER_ROLE`. This role allows it to control which identity registry contracts can interact with
     /// and modify the data in this storage.
@@ -275,7 +277,8 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @inheritdoc IERC3643IdentityRegistryStorage
     /// @notice Adds a new identity record to the storage, linking a user's wallet address to their identity contract
     /// and country code.
-    /// @dev This function can only be called by an address that holds the `IDENTITY_REGISTRY_MODULE_ROLE`. Typically, this
+    /// @dev This function can only be called by an address that holds the `IDENTITY_REGISTRY_MODULE_ROLE`. Typically,
+    /// this
     /// role is granted to `SMARTIdentityRegistry` contracts that have been "bound" to this storage.
     /// It performs several critical validation checks before proceeding:
     /// -   The `_userAddress` (the user's external wallet) must not be the zero address (`address(0)`).
@@ -481,10 +484,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// @param _identityRegistry The address of the `SMARTIdentityRegistry` contract to unbind. This registry will no
     /// longer be able to modify storage data.
     /// @dev Reverts with `IdentityRegistryNotBound(_identityRegistry)` if the registry is not currently bound.
-    function unbindIdentityRegistry(address _identityRegistry)
-        external
-        onlyRoles(_getIdentityManagementRoles())
-    {
+    function unbindIdentityRegistry(address _identityRegistry) external onlyRoles(_getIdentityManagementRoles()) {
         if (!_boundIdentityRegistries[_identityRegistry]) revert IdentityRegistryNotBound(_identityRegistry);
 
         // Note: Role revoking is now handled by the centralized access manager
@@ -510,7 +510,8 @@ contract ATKIdentityRegistryStorageImplementation is
     // --- View Functions ---
 
     /// @notice Returns an array of addresses of all `SMARTIdentityRegistry` contracts currently bound to this storage.
-    /// @dev "Bound" means these registry contracts have been granted the `IDENTITY_REGISTRY_MODULE_ROLE` and are authorized
+    /// @dev "Bound" means these registry contracts have been granted the `IDENTITY_REGISTRY_MODULE_ROLE` and are
+    /// authorized
     /// to write data to this storage contract. This function provides a way to discover which registry contracts are
     /// active and can modify identity data.
     /// @return An array of `address` types, where each address is that of a bound identity registry contract.
@@ -635,13 +636,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// attributed to the correct originating user, even when gas is paid by a third party.
     /// @return The address of the original transaction sender (user) if relayed via a trusted forwarder,
     /// or `msg.sender` if called directly.
-    function _msgSender()
-        internal
-        view
-        virtual
-        override(ERC2771ContextUpgradeable)
-        returns (address)
-    {
+    function _msgSender() internal view virtual override(ERC2771ContextUpgradeable) returns (address) {
         return ERC2771ContextUpgradeable._msgSender();
     }
 
@@ -655,13 +650,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// This ensures that the contract logic operates on the user's intended call, even if it's wrapped by a forwarder.
     /// @return The original transaction data (calldata) if relayed via a trusted forwarder,
     /// or the current `msg.data` if called directly.
-    function _msgData()
-        internal
-        view
-        virtual
-        override(ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
+    function _msgData() internal view virtual override(ERC2771ContextUpgradeable) returns (bytes calldata) {
         return ERC2771ContextUpgradeable._msgData();
     }
 
@@ -673,13 +662,7 @@ contract ATKIdentityRegistryStorageImplementation is
     /// For Ethereum addresses, this length is 20 bytes.
     /// This allows `_msgSender()` to extract the original sender if the call is coming from a trusted forwarder.
     /// @return The length of the context suffix in bytes (e.g., 20 for an Ethereum address).
-    function _contextSuffixLength()
-        internal
-        view
-        virtual
-        override(ERC2771ContextUpgradeable)
-        returns (uint256)
-    {
+    function _contextSuffixLength() internal view virtual override(ERC2771ContextUpgradeable) returns (uint256) {
         return ERC2771ContextUpgradeable._contextSuffixLength();
     }
 
