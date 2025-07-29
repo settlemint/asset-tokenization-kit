@@ -170,6 +170,7 @@ type VaultSigner @entity(immutable: false) {
 type Compliance @entity(immutable: false) {
   id: Bytes!
   account: Account!
+  globalComplianceModules: [GlobalComplianceModule!]! @derivedFrom(field: "compliance")
 }
 
 # ==================================================
@@ -279,6 +280,37 @@ type ComplianceModule @entity(immutable: false) {
   countries: [Int!]
 }
 
+type GlobalComplianceModule @entity(immutable: false) {
+  id: Bytes!
+  compliance: Compliance!
+  complianceModule: ComplianceModule!
+  parameters: ComplianceModuleParameters!
+}
+
+type ComplianceModuleParameters @entity(immutable: false) {
+  id: Bytes!
+  complianceModule: ComplianceModule!
+  encodedParams: Bytes!
+  addresses: [Bytes!]
+  countries: [Int!]
+  expression: [ExpressionNode!] @derivedFrom(field: "parameters")
+}
+
+type ExpressionNode @entity(immutable: true) {
+  id: Bytes!
+  parameters: ComplianceModuleParameters!
+  nodeType: ExpressionNodeType!
+  index: Int!
+  topicScheme: TopicScheme
+}
+
+enum ExpressionNodeType {
+  TOPIC
+  AND
+  OR
+  NOT
+}
+
 # ==================================================
 # TOKEN MANAGEMENT
 # ==================================================
@@ -380,26 +412,9 @@ type TokenComplianceModule @entity(immutable: false) {
   id: Bytes!
   token: Token!
   complianceModule: ComplianceModule!
-  encodedParams: Bytes!
-  addresses: [Bytes!]
-  countries: [Int!]
-  expression: [ExpressionNode!] @derivedFrom(field: "complianceModule")
+  parameters: ComplianceModuleParameters!
 }
 
-type ExpressionNode @entity(immutable: true) {
-  id: Bytes!
-  complianceModule: TokenComplianceModule!
-  nodeType: ExpressionNodeType!
-  index: Int!
-  topicScheme: TopicScheme
-}
-
-enum ExpressionNodeType {
-  TOPIC
-  AND
-  OR
-  NOT
-}
 
 # ==================================================
 # TOKEN EXTENSIONS
