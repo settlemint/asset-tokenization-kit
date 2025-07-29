@@ -18,7 +18,7 @@ contract ATKSystemAccessManagerImplementation is
     ERC2771ContextUpgradeable,
     IATKSystemAccessManager
 {
-        error NoInitialAdmins();
+    error NoInitialAdmins();
 
     /// @notice Constructor that disables initializers and sets the trusted forwarder
     /// @param forwarder The address of the trusted forwarder for meta-transactions
@@ -80,7 +80,6 @@ contract ATKSystemAccessManagerImplementation is
     }
 
     // --- Role Checking Functions ---
-
 
     /// @notice Checks if an account has a specific role
     /// @param role The role identifier to check

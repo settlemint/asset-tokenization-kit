@@ -102,7 +102,9 @@ contract ATKBondTest is AbstractATKAssetTest {
         IAccessControl(address(fixedYieldScheduleFactory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, owner);
 
         // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, address(fixedYieldScheduleFactory));
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(fixedYieldScheduleFactory)
+        );
 
         vm.stopPrank();
 

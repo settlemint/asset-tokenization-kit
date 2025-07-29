@@ -6,7 +6,11 @@ import { DEFAULT_PINCODE } from "./user";
 export async function bootstrapSystem(orpClient: OrpcClient) {
   const systems = await orpClient.system.list({});
   if (systems.length > 0) {
-    const systemId = systems[0]?.id;
+    const firstSystem = systems[0];
+    if (!firstSystem) {
+      throw new Error("No system found in list");
+    }
+    const systemId = firstSystem.id;
     // For existing system, fetch and verify it's fully initialized
     const system = await orpClient.system.read({ id: systemId });
     if (!system.tokenFactoryRegistry) {

@@ -78,7 +78,9 @@ contract XvPSettlementTest is AbstractATKAssetTest {
         IAccessControl(address(factory)).grantRole(ATKSystemRoles.DEPLOYER_ROLE, user2);
 
         // Grant SYSTEM_MODULE_ROLE to the factory so it can access compliance functions like addToBypassList
-        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(ATKSystemRoles.SYSTEM_MODULE_ROLE, address(factory));
+        IAccessControl(address(systemUtils.system().systemAccessManager())).grantRole(
+            ATKSystemRoles.SYSTEM_MODULE_ROLE, address(factory)
+        );
 
         vm.stopPrank();
 

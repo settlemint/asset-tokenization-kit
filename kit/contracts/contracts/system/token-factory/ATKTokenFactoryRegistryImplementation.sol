@@ -79,9 +79,9 @@ contract ATKTokenFactoryRegistryImplementation is
     /// @return roles Array of roles that can register and manage token factories
     function _getTokenFactoryRegistryRoles() internal pure returns (bytes32[] memory roles) {
         roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.REGISTRAR_ROLE;               // Primary registrar role
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;          // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;           // System module role
+        roles[0] = ATKSystemRoles.REGISTRAR_ROLE; // Primary registrar role
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
     /// @notice Returns the roles that can perform implementation management operations
@@ -89,9 +89,9 @@ contract ATKTokenFactoryRegistryImplementation is
     /// @return roles Array of roles that can manage implementations
     function _getImplementationManagerRoles() internal pure returns (bytes32[] memory roles) {
         roles = new bytes32[](3);
-        roles[0] = ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE;  // Primary implementation manager
-        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE;          // System manager
-        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE;           // System module role
+        roles[0] = ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE; // Primary implementation manager
+        roles[1] = ATKSystemRoles.SYSTEM_MANAGER_ROLE; // System manager
+        roles[2] = ATKSystemRoles.SYSTEM_MODULE_ROLE; // System module role
     }
 
     /// @notice Constructor that disables initializers and sets the trusted forwarder
@@ -101,7 +101,7 @@ contract ATKTokenFactoryRegistryImplementation is
         _disableInitializers();
     }
 
-        /// @notice Initializes the token factory registry with initial admin and system address
+    /// @notice Initializes the token factory registry with initial admin and system address
     /// @param initialAdmin The address to be granted admin roles
     /// @param systemAddress The address of the ATK system contract
     function initialize(address initialAdmin, address systemAddress) public override initializer {
