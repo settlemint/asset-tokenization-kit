@@ -3,6 +3,7 @@ import type { Actor } from "../../entities/actor";
 import { atkDeployer } from "../../services/deployer";
 import { getPublicClient } from "../../utils/public-client";
 import { waitForEvent } from "../../utils/wait-for-event";
+import { grantXvpSettlementPermissions } from "./utils/permissions";
 
 // Define the Flow struct type for XVP settlements
 type FlowStruct = {
@@ -46,6 +47,9 @@ export async function createXvpSettlement(
   console.log(`Auto-execute: ${autoExecute}`);
 
   try {
+    // Grant necessary permissions to the XVP settlement factory
+    await grantXvpSettlementPermissions();
+
     // Get the XVP settlement factory
     const xvpFactory = atkDeployer.getXvpSettlementFactoryContract(
       fromActor.getWalletClient()

@@ -10,7 +10,10 @@ const ATKOnboardingFundModule = buildModule("ATKOnboardingFundModule", (m) => {
   const createFundFactory = m.call(
     tokenFactoryRegistry,
     "registerTokenFactory",
-    ["fund", fundFactoryImplementation, fundImplementation]
+    ["fund", fundFactoryImplementation, fundImplementation],
+    {
+      from: m.getAccount(0),
+    }
   );
   const fundFactoryAddress = m.readEventArgument(
     createFundFactory,

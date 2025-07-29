@@ -5,7 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IATKTokenFactoryRegistry } from "../../../contracts/system/token-factory/IATKTokenFactoryRegistry.sol";
-import { ATKTokenFactoryRegistryImplementation } from
+import { ATKTokenFactoryRegistryImplementation, UnauthorizedAccess } from
     "../../../contracts/system/token-factory/ATKTokenFactoryRegistryImplementation.sol";
 import { IATKSystem } from "../../../contracts/system/IATKSystem.sol";
 import { IATKTokenFactory } from "../../../contracts/system/token-factory/IATKTokenFactory.sol";
@@ -107,19 +107,15 @@ contract ATKTokenFactoryRegistryTest is Test {
 
         // check roles granted
         assertTrue(
-            IAccessControl(address(systemUtils.compliance())).hasRole(
-                ATKSystemRoles.BYPASS_LIST_MANAGER_ROLE, proxyAddress
+            IAccessControl(address(systemUtils.system().systemAccessManager())).hasRole(
+                ATKSystemRoles.COMPLIANCE_MANAGER_ROLE, proxyAddress
             )
         );
     }
 
     function test_RegisterTokenFactory_Fail_NotAdmin() public {
         vm.prank(user);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector, user, ATKSystemRoles.REGISTRAR_ROLE
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(UnauthorizedAccess.selector));
         registry.registerTokenFactory("TestFactory", address(mockTokenFactory), address(mockTokenImplementation));
     }
 
@@ -195,13 +191,7 @@ contract ATKTokenFactoryRegistryTest is Test {
         MockTokenFactory newMockTokenFactory = new MockTokenFactory();
 
         vm.prank(user);
-        vm.expectRevert(
-            abi.encodeWithSelector(
-                IAccessControl.AccessControlUnauthorizedAccount.selector,
-                user,
-                ATKSystemRoles.IMPLEMENTATION_MANAGER_ROLE
-            )
-        );
+        vm.expectRevert(abi.encodeWithSelector(UnauthorizedAccess.selector));
         registry.setTokenFactoryImplementation(factoryTypeHash, address(newMockTokenFactory));
     }
 
