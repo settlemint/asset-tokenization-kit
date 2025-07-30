@@ -1,4 +1,3 @@
-import { afterAll, beforeAll } from "vitest";
 import { getOrpcClient } from "../utils/orpc-client";
 import { bootstrapSystem } from "../utils/system-bootstrap";
 import {
@@ -11,7 +10,7 @@ import {
 
 let runningDevServer: any | undefined;
 
-beforeAll(async () => {
+export async function setup() {
   try {
     await startDevServerIfNotRunning();
 
@@ -32,9 +31,9 @@ beforeAll(async () => {
     console.error("Failed to setup test environment", error);
     process.exit(1);
   }
-});
+}
 
-afterAll(stopDevServer);
+export const teardown = stopDevServer;
 
 process.on("SIGINT", stopDevServer);
 process.on("exit", stopDevServer);
@@ -79,7 +78,7 @@ async function startDevServer() {
 
       // Check if server is ready
       const cleanText = output.replace(
-        // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
+        // eslint-disable-next-line no-control-regex
         /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
         ""
       );

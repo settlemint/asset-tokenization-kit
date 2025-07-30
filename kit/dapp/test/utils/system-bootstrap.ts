@@ -1,5 +1,4 @@
 import { retryWhenFailed } from "@settlemint/sdk-utils";
-import { expect } from "vitest";
 import { OrpcClient } from "./orpc-client";
 import { DEFAULT_PINCODE } from "./user";
 
@@ -122,6 +121,10 @@ export async function bootstrapTokenFactories(
 
   const successfulCreations =
     result.results?.filter((r) => !r.error).length || 0;
-  expect(successfulCreations).toBe(nonExistingFactories.length);
+  if (successfulCreations !== nonExistingFactories.length) {
+    throw new Error(
+      `Token factories attempted: ${nonExistingFactories.length}, succeeded: ${successfulCreations}`
+    );
+  }
   console.log("Token factories created");
 }
