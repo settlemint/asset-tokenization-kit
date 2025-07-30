@@ -288,7 +288,6 @@ type GlobalComplianceModuleConfig @entity(immutable: false) {
 
 type ComplianceModuleParameters @entity(immutable: false) {
   id: Bytes!
-  complianceModule: ComplianceModule!
   encodedParams: Bytes!
   addresses: [Bytes!]
   countries: [Int!]

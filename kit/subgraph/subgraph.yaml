@@ -8,7 +8,7 @@ dataSources:
     name: SystemFactory
     network: settlemint
     source:
-      address: "0xA5c9020ea95324a05B48491FB3e61Ba111E5dd95"
+      address: "0x76c47A3688A530738a1ee882684Ee36d3546ff7c"
       abi: SystemFactory
       startBlock: 0
     mapping:

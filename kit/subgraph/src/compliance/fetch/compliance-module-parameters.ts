@@ -39,7 +39,7 @@ export function updateComplianceModuleParameters(
   complianceModuleParameters: ComplianceModuleParameters,
   complianceModule: ComplianceModule,
   encodedParams: Bytes
-) {
+): void {
   complianceModuleParameters.encodedParams = encodedParams;
 
   // Handle different compliance module types
