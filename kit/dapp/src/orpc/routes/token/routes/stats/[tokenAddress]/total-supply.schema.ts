@@ -1,3 +1,4 @@
+import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { z } from "zod";
 
 /**
@@ -5,7 +6,7 @@ import { z } from "zod";
  */
 export const TokenStatsAssetTotalSupplyInputSchema = z.object({
   /** The token address for which to fetch total supply history */
-  tokenAddress: z.string().describe("The token contract address"),
+  tokenAddress: ethereumAddress.describe("The token contract address"),
 
   /** Time range in days for historical data (default: 30 days) */
   days: z.number().min(1).max(365).optional().default(30),
@@ -24,9 +25,6 @@ export const TokenStatsAssetTotalSupplyOutputSchema = z.object({
 
       /** Total supply value as string (BigDecimal) */
       totalSupply: z.string(),
-
-      /** Total collateral value for stablecoin/tokenizeddeposit assets (optional) */
-      totalCollateral: z.string().optional(),
     })
   ),
 });

@@ -3,8 +3,9 @@ import { ComponentErrorBoundary } from "@/components/error/component-error-bound
 import { type ChartConfig } from "@/components/ui/chart";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format } from "date-fns/format";
 import { useTranslation } from "react-i18next";
+import { useMemo } from "react";
 
 export interface TokenTotalSupplyAreaChartProps {
   tokenAddress: string;
@@ -22,36 +23,80 @@ export function TokenTotalSupplyAreaChart({
 }: TokenTotalSupplyAreaChartProps) {
   const { t } = useTranslation("stats");
 
-  // Fetch and transform total supply history data with select function
-  // This reduces re-renders when other parts of the API response change
+  // Memoize the data transformation function to prevent unnecessary re-creation
+  const selectTransform = useMemo(
+    () =>
+      (response: {
+        totalSupplyHistory?: Array<{ timestamp: number; totalSupply: string }>;
+      }) => {
+        // Handle empty data case
+        if (!response.totalSupplyHistory?.length) {
+          return {
+            chartData: [],
+            chartConfig: {
+              totalSupply: {
+                label: t("charts.totalSupply.label"),
+                color: "var(--chart-1)",
+              },
+            },
+            dataKeys: ["totalSupply"],
+            isEmpty: true,
+          };
+        }
+
+        // Transform the response data to chart format
+        const transformedData = response.totalSupplyHistory.map((item) => ({
+          timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
+          totalSupply: Number.parseFloat(item.totalSupply),
+        }));
+
+        // Configure chart colors and labels
+        const config: ChartConfig = {
+          totalSupply: {
+            label: t("charts.totalSupply.label"),
+            color: "var(--chart-1)",
+          },
+        };
+
+        return {
+          chartData: transformedData,
+          chartConfig: config,
+          dataKeys: ["totalSupply"],
+          isEmpty: false,
+        };
+      },
+    [t]
+  );
+
+  // Fetch and transform total supply history data with optimized caching
   const {
-    data: { chartData, chartConfig, dataKeys },
+    data: { chartData, chartConfig, dataKeys, isEmpty },
   } = useSuspenseQuery({
     ...orpc.token.statsAssetTotalSupply.queryOptions({
       input: { tokenAddress, days: timeRange },
     }),
-    select: (response) => {
-      // Transform the response data to chart format
-      const transformedData = response.totalSupplyHistory.map((item) => ({
-        timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
-        totalSupply: Number.parseFloat(item.totalSupply),
-      }));
-
-      // Configure chart colors and labels
-      const config: ChartConfig = {
-        totalSupply: {
-          label: t("charts.totalSupply.label"),
-          color: "var(--chart-1)",
-        },
-      };
-
-      return {
-        chartData: transformedData,
-        chartConfig: config,
-        dataKeys: ["totalSupply"],
-      };
-    },
+    select: selectTransform,
+    staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
+    gcTime: 10 * 60 * 1000, // 10 minutes - cache retention
   });
+
+  // Handle empty state
+  if (isEmpty) {
+    return (
+      <ComponentErrorBoundary componentName="Token Total Supply Chart">
+        <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              {t("charts.totalSupply.noData")}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {t("charts.totalSupply.noDataDescription", { days: timeRange })}
+            </p>
+          </div>
+        </div>
+      </ComponentErrorBoundary>
+    );
+  }
 
   return (
     <ComponentErrorBoundary componentName="Token Total Supply Chart">

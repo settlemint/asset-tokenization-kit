@@ -13,8 +13,10 @@
     },
     "totalSupply": {
       "description": "Historical total supply changes over time",
-      "label": "Total Supply",
-      "title": "Token Supply History"
+      "label": "Total supply",
+      "title": "Token supply history",
+      "noData": "No data available",
+      "noDataDescription": "No total supply data found for the last {{days}} days"
     },
     "transactionHistory": {
       "description": "Transaction volume over time",

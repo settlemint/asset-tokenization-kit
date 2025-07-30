@@ -14,7 +14,9 @@
     "totalSupply": {
       "description": "Historische Änderungen des Gesamtangebots über die Zeit",
       "label": "Gesamtangebot",
-      "title": "Token-Angebotsverlauf"
+      "title": "Token-Angebotsverlauf",
+      "noData": "Keine Daten verfügbar",
+      "noDataDescription": "Keine Gesamtangebotsdaten für die letzten {{days}} Tage gefunden"
     },
     "transactionHistory": {
       "description": "Transaktionsvolumen über die Zeit",

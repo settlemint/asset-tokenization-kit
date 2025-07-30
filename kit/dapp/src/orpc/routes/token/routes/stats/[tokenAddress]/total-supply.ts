@@ -1,6 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
+import { ORPCError } from "@orpc/server";
 import { z } from "zod";
 
 /**
@@ -89,32 +90,54 @@ export const statsAssetTotalSupply = tokenRouter.token.statsAssetTotalSupply
     // Token context is guaranteed by tokenRouter middleware
 
     // Extract parameters with defaults applied by schema
+    // tokenAddress is now validated as proper Ethereum address by schema
     const { tokenAddress, days } = input;
 
-    // Calculate the date range for queries
+    // Calculate the date range for queries with bounds validation
+    const maxDaysBack = 365;
+    const validatedDays = Math.min(Math.max(1, days), maxDaysBack);
+
     const since = new Date();
-    since.setDate(since.getDate() - days);
-    const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
+    since.setDate(since.getDate() - validatedDays);
 
-    // Fetch token total supply history from TheGraph
-    const response = await context.theGraphClient.query(
-      TOKEN_TOTAL_SUPPLY_QUERY,
-      {
-        input: {
-          tokenId: tokenAddress.toLowerCase(),
-          since: sinceTimestamp.toString(),
+    // Validate timestamp is not too far in the past (blockchain inception)
+    const minTimestamp = Math.floor(new Date("2015-07-30").getTime() / 1000); // Ethereum mainnet launch
+    const sinceTimestamp = Math.max(
+      minTimestamp,
+      Math.floor(since.getTime() / 1000)
+    );
+
+    try {
+      // Fetch token total supply history from TheGraph
+      // tokenAddress is already validated and checksummed by ethereumAddress schema
+      const response = await context.theGraphClient.query(
+        TOKEN_TOTAL_SUPPLY_QUERY,
+        {
+          input: {
+            tokenId: tokenAddress.toLowerCase(),
+            since: sinceTimestamp.toString(),
+          },
+          output: TokenTotalSupplyResponseSchema,
+          error: "Failed to fetch token total supply history",
+        }
+      );
+
+      // Process the raw data into the expected output format
+      const totalSupplyHistory = processTotalSupplyHistoryData(
+        response.tokenStats_collection
+      );
+
+      return {
+        totalSupplyHistory,
+      };
+    } catch (error) {
+      throw new ORPCError("INTERNAL_SERVER_ERROR", {
+        message: "Failed to fetch token total supply history",
+        data: {
+          tokenAddress,
+          days: validatedDays,
+          error: error instanceof Error ? error.message : String(error),
         },
-        output: TokenTotalSupplyResponseSchema,
-        error: "Failed to fetch token total supply history",
-      }
-    );
-
-    // Process the raw data into the expected output format
-    const totalSupplyHistory = processTotalSupplyHistoryData(
-      response.tokenStats_collection
-    );
-
-    return {
-      totalSupplyHistory,
-    };
+      });
+    }
   });
