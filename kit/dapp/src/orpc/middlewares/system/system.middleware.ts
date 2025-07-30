@@ -5,13 +5,13 @@ import {
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { AddonFactoryTypeId } from "@/lib/zod/validators/addon-types";
 import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
+import { ComplianceTypeId } from "@/lib/zod/validators/compliance";
 import {
   getEthereumAddress,
   type EthereumAddress,
 } from "@/lib/zod/validators/ethereum-address";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
-import type { SystemComplianceModuleType } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
 import { call } from "@orpc/server";
 import type { Hex } from "viem";
 
@@ -139,7 +139,7 @@ export interface SystemAddon extends SystemComponent {
  */
 export interface SystemComplianceModule extends SystemComponent {
   name: string;
-  typeId: SystemComplianceModuleType;
+  typeId: ComplianceTypeId;
 }
 
 /**
@@ -246,7 +246,7 @@ export const getSystemContext = async (
     system.complianceModuleRegistry?.complianceModules.map(
       ({ id, typeId, name, accessControl }) => ({
         id: getEthereumAddress(id),
-        typeId: typeId as SystemComplianceModuleType,
+        typeId: typeId as ComplianceTypeId,
         name,
         accessControl,
       })

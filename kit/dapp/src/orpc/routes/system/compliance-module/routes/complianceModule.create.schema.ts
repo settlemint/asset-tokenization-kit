@@ -1,45 +1,36 @@
+import {
+  ComplianceTypeId,
+  complianceTypeId,
+} from "@/lib/zod/validators/compliance";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { z } from "zod";
-
-/**
- * Supported system compliance module types enum
- */
-export const SystemComplianceModuleTypeEnum = z.enum([
-  "identity-verification",
-  "country-allow-list",
-  "country-block-list",
-  "address-block-list",
-  "identity-block-list",
-  "identity-allow-list",
-]);
-
-/**
- * System compliance module type
- */
-export type SystemComplianceModuleType = z.infer<
-  typeof SystemComplianceModuleTypeEnum
->;
 
 /**
  * Default implementation addresses for each compliance module type
  */
 const DEFAULT_COMPLIANCE_MODULE_IMPLEMENTATIONS: Record<
-  SystemComplianceModuleType,
+  ComplianceTypeId,
   string
 > = {
-  "identity-verification": "0x5e771e1417100000000000000000000000020100",
-  "country-allow-list": "0x5e771e1417100000000000000000000000020101",
-  "country-block-list": "0x5e771e1417100000000000000000000000020102",
-  "address-block-list": "0x5e771e1417100000000000000000000000020103",
-  "identity-block-list": "0x5e771e1417100000000000000000000000020104",
-  "identity-allow-list": "0x5e771e1417100000000000000000000000020105",
+  SMARTIdentityVerificationComplianceModule:
+    "0x5e771e1417100000000000000000000000020100",
+  CountryAllowListComplianceModule:
+    "0x5e771e1417100000000000000000000000020101",
+  CountryBlockListComplianceModule:
+    "0x5e771e1417100000000000000000000000020102",
+  AddressBlockListComplianceModule:
+    "0x5e771e1417100000000000000000000000020103",
+  IdentityBlockListComplianceModule:
+    "0x5e771e1417100000000000000000000000020104",
+  IdentityAllowListComplianceModule:
+    "0x5e771e1417100000000000000000000000020105",
 } as const;
 
 /**
  * Get default implementation addresses for a compliance module type
  */
 export function getDefaultComplianceModuleImplementations(
-  type: SystemComplianceModuleType
+  type: ComplianceTypeId
 ) {
   return DEFAULT_COMPLIANCE_MODULE_IMPLEMENTATIONS[type];
 }
@@ -48,7 +39,7 @@ export function getDefaultComplianceModuleImplementations(
  * Individual compliance module configuration schema
  */
 const SystemComplianceModuleConfigSchema = z.object({
-  type: SystemComplianceModuleTypeEnum,
+  type: complianceTypeId(),
   // Optional implementation addresses for custom deployments
   implementations: z
     .record(z.string(), z.string().regex(/^0x[a-fA-F0-9]{40}$/))
@@ -69,8 +60,7 @@ export const SystemComplianceModuleCreateSchema = MutationInputSchema.extend({
  * Schema for individual compliance module result in streaming output
  */
 const ComplianceModuleResultSchema = z.object({
-  type: SystemComplianceModuleTypeEnum,
-
+  type: complianceTypeId(),
   proxyAddress: z.string().optional(),
   transactionHash: z.string().optional(),
   error: z.string().optional(),

@@ -57,12 +57,12 @@ const REGISTER_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
 `);
 
 const COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME = {
-  "identity-verification": "kycModuleFactory",
-  "country-allow-list": "amlModuleFactory",
-  "country-block-list": "sanctionsModuleFactory",
-  "address-block-list": "sanctionsModuleFactory",
-  "identity-block-list": "sanctionsModuleFactory",
-  "identity-allow-list": "sanctionsModuleFactory",
+  SMARTIdentityVerificationComplianceModule: "kycModuleFactory",
+  CountryAllowListComplianceModule: "amlModuleFactory",
+  CountryBlockListComplianceModule: "sanctionsModuleFactory",
+  AddressBlockListComplianceModule: "sanctionsModuleFactory",
+  IdentityBlockListComplianceModule: "sanctionsModuleFactory",
+  IdentityAllowListComplianceModule: "sanctionsModuleFactory",
 };
 
 /**

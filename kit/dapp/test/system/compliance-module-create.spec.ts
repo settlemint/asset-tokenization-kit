@@ -18,13 +18,13 @@ describe("System Compliance Module create", () => {
       },
       complianceModules: [
         {
-          type: "identity-verification",
+          type: "SMARTIdentityVerificationComplianceModule",
         },
         {
-          type: "country-allow-list",
+          type: "CountryAllowListComplianceModule",
         },
         {
-          type: "country-block-list",
+          type: "CountryBlockListComplianceModule",
         },
       ],
     });
