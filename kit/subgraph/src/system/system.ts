@@ -26,6 +26,7 @@ import { fetchTokenFactoryRegistry } from "../token-factory/fetch/token-factory-
 import { fetchTopicSchemeRegistry } from "../topic-scheme-registry/fetch/topic-scheme-registry";
 import { fetchCompliance } from "./fetch/compliance";
 import { fetchSystem } from "./fetch/system";
+import { fetchSystemAccessManager } from "./fetch/system-access-manager";
 import { fetchTrustedIssuersRegistry } from "./fetch/trusted-issuers-registry";
 
 export function handleBootstrapped(event: Bootstrapped): void {
@@ -98,6 +99,15 @@ export function handleBootstrapped(event: Bootstrapped): void {
   }
   systemAddonRegistry.save();
 
+  const systemAccessManager = fetchSystemAccessManager(
+    event.params.systemAccessManagerProxy
+  );
+  if (systemAccessManager.deployedInTransaction.equals(Bytes.empty())) {
+    systemAccessManager.deployedInTransaction = event.transaction.hash;
+  }
+  systemAccessManager.system = system.id;
+  systemAccessManager.save();
+
   system.compliance = fetchCompliance(event.params.complianceProxy).id;
   system.identityRegistry = identityRegistry.id;
   system.identityRegistryStorage = identityRegistryStorage.id;
@@ -107,6 +117,7 @@ export function handleBootstrapped(event: Bootstrapped): void {
   system.tokenFactoryRegistry = tokenFactoryRegistry.id;
   system.complianceModuleRegistry = complianceModuleRegistry.id;
   system.systemAddonRegistry = systemAddonRegistry.id;
+  system.systemAccessManager = systemAccessManager.id;
   system.save();
 }
 

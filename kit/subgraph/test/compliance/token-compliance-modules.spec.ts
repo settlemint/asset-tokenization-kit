@@ -64,7 +64,7 @@ describe("Token Compliance Modules", () => {
           identityVerificationModule.expression
         )
           ? identityVerificationModule.expression.sort(
-              (a: any, b: any) => a.index - b.index
+              (a, b) => a.index - b.index
             )
           : [];
 

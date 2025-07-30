@@ -1,4 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import { ATKRoles } from "../../../scripts/hardhat/constants/roles";
 import ATKModule from "../main";
 
 const ATKOnboardingSystemModule = buildModule(
@@ -217,10 +218,7 @@ const ATKOnboardingSystemModule = buildModule(
     const grantRegistrarRoleToDeployer = m.call(
       systemAccessManager,
       "grantRole",
-      [
-        "0x2cf38baf8b867d91cfcccc0e8d7a429365579f0eb969ff29c0621b271cdeeb64", // REGISTRAR_ROLE
-        m.getAccount(0),
-      ],
+      [ATKRoles.registrarRole, m.getAccount(0)],
       {
         from: m.getAccount(0),
         id: "grantRegistrarRoleToDeployer",
