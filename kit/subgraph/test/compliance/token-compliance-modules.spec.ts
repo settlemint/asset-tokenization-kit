@@ -37,7 +37,7 @@ describe("Token Compliance Modules", () => {
       `query {
         tokens(where: {}) {
           name
-          tokenComplianceModuleConfigs(where: {}) {
+          complianceModuleConfigs(where: {}) {
             parameters {
               addresses
               countries
