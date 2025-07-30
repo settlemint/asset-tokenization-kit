@@ -31,6 +31,10 @@
         "label": "Token-Obergrenze",
         "placeholder": "z.B. 1000000"
       },
+      "countryCode": {
+        "description": "Wählen Sie aus, wo Ihr Asset registriert wird",
+        "label": "Land"
+      },
       "decimals": {
         "description": "Anzahl der Dezimalstellen für das Token (0-18, Standard ist 18)",
         "label": "Dezimalstellen",
