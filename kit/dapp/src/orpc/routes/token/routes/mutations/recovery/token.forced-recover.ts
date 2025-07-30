@@ -31,10 +31,10 @@ const TOKEN_FORCED_RECOVER_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenForcedRecover = tokenRouter.token.tokenForcedRecover
+export const forcedRecover = tokenRouter.token.forcedRecover
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.tokenForcedRecover,
+      requiredRoles: TOKEN_PERMISSIONS.forcedRecover,
       requiredExtensions: ["CUSTODIAN"],
     })
   )

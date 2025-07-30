@@ -78,6 +78,7 @@ export function isOnboarded(
     | "twoFactorEnabled"
     | "twoFactorVerificationId"
     | "secretCodeVerificationId"
+    | "secretCodesConfirmed"
     | "wallet"
   >
 ): boolean {
@@ -85,7 +86,8 @@ export function isOnboarded(
     (user.pincodeEnabled && !!user.pincodeVerificationId) ?? false;
   const twoFactorSet =
     (user.twoFactorEnabled && !!user.twoFactorVerificationId) ?? false;
-  const secretCodeSet = !!user.secretCodeVerificationId;
+  const secretCodeSet =
+    !!user.secretCodeVerificationId && (user.secretCodesConfirmed ?? false);
   const isVerificationSet = (pincodeSet || twoFactorSet) && secretCodeSet;
   return isVerificationSet;
 }

@@ -1,23 +1,22 @@
 import { kycProfiles } from "@/lib/db/schema";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
+import { UserIdSchema } from "@/orpc/routes/user/kyc/kyc.schema";
 import { generateId } from "better-auth";
 import { sql } from "drizzle-orm";
 import { encryptData } from "../kyc.utils";
 
 export const upsert = authRouter.user.kyc.upsert
-  // .use(permissionsMiddleware({ user: ["list"] }))
+  .use(
+    offChainPermissionsMiddleware<typeof UserIdSchema>({
+      requiredPermissions: { kyc: ["upsert"] },
+      alwaysAllowIf: (context, input) => input.userId === context.auth?.user.id,
+    })
+  )
   .use(databaseMiddleware)
   .handler(async ({ context, input, errors }) => {
     const { userId, id, nationalId, ...profileData } = input;
-
-    // Check if user is accessing their own data or is an admin
-    if (context.auth.user.id !== userId && context.auth.user.role !== "admin") {
-      throw errors.FORBIDDEN({
-        message:
-          "Access denied. You do not have permission to modify this KYC profile.",
-      });
-    }
 
     // Prepare values for upsert
     const values: typeof kycProfiles.$inferInsert = {

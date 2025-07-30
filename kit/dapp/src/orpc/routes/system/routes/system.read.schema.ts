@@ -28,8 +28,8 @@ export const SystemReadSchema = z.object({
    * The system contract address to query
    */
   id: z.union([
-    ethereumAddress.describe("The system contract address"),
     z.literal("default").describe("The system used by the dApp"),
+    ethereumAddress.describe("The system contract address"),
   ]),
 });
 
@@ -74,6 +74,26 @@ const SystemAddonSchema = z.object({
 });
 
 /**
+ * Compliance module information schema
+ */
+const ComplianceModuleSchema = z.object({
+  /**
+   * The compliance module contract address
+   */
+  id: ethereumAddress,
+
+  /**
+   * The name of the compliance module
+   */
+  name: z.string(),
+
+  /**
+   * The type identifier of the compliance module
+   */
+  typeId: z.string(),
+});
+
+/**
  * Output schema for system read operations
  */
 export const SystemReadOutputSchema = z.object({
@@ -103,9 +123,9 @@ export const SystemReadOutputSchema = z.object({
   trustedIssuersRegistry: ethereumAddress.nullable(),
 
   /**
-   * The compliance engine contract address
+   * The compliance module registry contract address
    */
-  compliance: ethereumAddress.nullable(),
+  complianceModuleRegistry: ethereumAddress.nullable(),
 
   /**
    * The token factory registry contract address
@@ -126,6 +146,11 @@ export const SystemReadOutputSchema = z.object({
    * List of system addons deployed by this system
    */
   systemAddons: z.array(SystemAddonSchema),
+
+  /**
+   * List of compliance modules deployed by this system
+   */
+  complianceModules: z.array(ComplianceModuleSchema),
 });
 
 // Type exports
