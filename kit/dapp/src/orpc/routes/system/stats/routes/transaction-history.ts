@@ -96,7 +96,7 @@ function processTransactionHistoryData(
  * This endpoint is optimized for dashboard transaction widgets and history charts.
  *
  * Authentication: Required
- * Method: GET /token/stats/system/transaction-history
+ * Method: GET /system/stats/transaction-history
  *
  * @param input.timeRange - Number of days to look back for recent activity (default: 7)
  * @returns Promise<SystemTransactionHistoryMetrics> - Comprehensive transaction metrics
@@ -106,12 +106,12 @@ function processTransactionHistoryData(
  * @example
  * ```typescript
  * // Get transaction metrics for the last 14 days
- * const metrics = await orpc.token.statsSystemTransactionHistory.query({ input: { timeRange: 14 } });
+ * const metrics = await orpc.system.statsTransactionHistory.query({ input: { timeRange: 14 } });
  * console.log(metrics.totalTransactions, metrics.transactionHistory);
  * ```
  */
 export const statsTransactionHistory =
-  authRouter.token.statsSystemTransactionHistory
+  authRouter.system.statsTransactionHistory
     .use(systemMiddleware)
     .use(theGraphMiddleware)
     .handler(async ({ context, input }) => {

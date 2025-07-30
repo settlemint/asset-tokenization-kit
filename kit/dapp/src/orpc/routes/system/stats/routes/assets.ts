@@ -63,7 +63,7 @@ function createAssetBreakdown(
  * This endpoint is optimized for displaying system asset summaries.
  *
  * Authentication: Required
- * Method: GET /token/stats/system/assets
+ * Method: GET /system/stats/assets
  *
  * @returns Promise<SystemAssetMetrics> - System asset count and breakdown metrics
  * @throws UNAUTHORIZED - If user is not authenticated
@@ -72,12 +72,12 @@ function createAssetBreakdown(
  * @example
  * ```typescript
  * // Get system asset count stats
- * const stats = await orpc.token.statsSystemAssets.query();
+ * const stats = await orpc.system.statsAssets.query();
  * console.log(`Total assets: ${stats.totalAssets}`);
  * console.log('Breakdown:', stats.assetBreakdown);
  * ```
  */
-export const statsAssets = authRouter.token.statsSystemAssets
+export const statsAssets = authRouter.system.statsAssets
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {

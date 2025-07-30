@@ -62,7 +62,7 @@ function sumEventCounts(eventStats: { eventsCount: number }[]): number {
  * This endpoint is optimized for displaying transaction count summaries.
  *
  * Authentication: Required
- * Method: GET /token/stats/system/transaction-count
+ * Method: GET /system/stats/transaction-count
  *
  * @param input.timeRange - Number of days to look back for recent activity (default: 7)
  * @returns Promise<SystemTransactionCountMetrics> - Transaction count metrics
@@ -72,12 +72,12 @@ function sumEventCounts(eventStats: { eventsCount: number }[]): number {
  * @example
  * ```typescript
  * // Get transaction count for the last 14 days
- * const stats = await orpc.token.statsSystemTransactionCount.query({ input: { timeRange: 14 } });
+ * const stats = await orpc.system.statsTransactionCount.query({ input: { timeRange: 14 } });
  * console.log(`Total: ${stats.totalTransactions}, Recent: ${stats.recentTransactions}`);
  * ```
  */
 export const statsTransactionCount =
-  authRouter.token.statsSystemTransactionCount
+  authRouter.system.statsTransactionCount
     .use(systemMiddleware)
     .use(theGraphMiddleware)
     .handler(async ({ context, input }) => {
