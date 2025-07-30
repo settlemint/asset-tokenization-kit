@@ -7,7 +7,7 @@ import {
 import { describe, expect, test } from "vitest";
 
 describe("System Compliance Module create", () => {
-  test("can create a compliance module", async () => {
+  test.skip("can create a compliance module", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 

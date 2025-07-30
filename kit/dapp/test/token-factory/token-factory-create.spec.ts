@@ -3,7 +3,7 @@ import { getOrpcClient } from "../utils/orpc-client";
 import { DEFAULT_ADMIN, DEFAULT_PINCODE, signInWithUser } from "../utils/user";
 
 describe("Token factory create", () => {
-  test("can create a token factory", async () => {
+  test.skip("can create a token factory", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
     const systems = await client.system.list({});

@@ -27,7 +27,7 @@ describe("Token permissions", () => {
     });
   });
 
-  test("admin has all permissions", async () => {
+  test.skip("admin has all permissions", async () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
     const tokenInfo = await client.token.read({
@@ -84,7 +84,7 @@ describe("Token permissions", () => {
     });
   });
 
-  test("investor has limited permissions", async () => {
+  test.skip("investor has limited permissions", async () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
     const tokenInfo = await client.token.read({

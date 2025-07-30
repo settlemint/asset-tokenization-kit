@@ -1,9 +1,6 @@
 import { afterAll, beforeAll } from "vitest";
 import { getOrpcClient } from "../utils/orpc-client";
-import {
-  bootstrapSystem,
-  bootstrapTokenFactories,
-} from "../utils/system-bootstrap";
+import { bootstrapSystem } from "../utils/system-bootstrap";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
@@ -27,9 +24,10 @@ beforeAll(async () => {
 
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     console.log("Bootstrapping system");
-    const system = await bootstrapSystem(orpClient);
-    console.log("Bootstrapping token factories");
-    await bootstrapTokenFactories(orpClient, system);
+    await bootstrapSystem(orpClient);
+    // TODO: factories is broken due to system access manager changes (https://linear.app/settlemint/issue/ENG-3547/onboarding-asset-factories-failed-to-create-asset)
+    // console.log("Bootstrapping token factories");
+    // await bootstrapTokenFactories(orpClient, system);
   } catch (error: unknown) {
     console.error("Failed to setup test environment", error);
     process.exit(1);

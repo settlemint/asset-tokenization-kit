@@ -36,18 +36,9 @@ export const addComplianceModule = portalRouter.token.addComplianceModule
       requiredRoles: TOKEN_PERMISSIONS.addComplianceModule,
     })
   )
-  .handler(async ({ input, context, errors }) => {
-    const { verification, moduleAddress } = input;
-    const { auth, system } = context;
-
-    const contract = system?.complianceModuleRegistry?.id;
-    if (!contract) {
-      const cause = new Error("Compliance module registry not found");
-      throw errors.INTERNAL_SERVER_ERROR({
-        message: cause.message,
-        cause,
-      });
-    }
+  .handler(async ({ input, context }) => {
+    const { contract, verification, moduleAddress } = input;
+    const { auth } = context;
 
     const sender = auth.user;
     const challengeResponse = await handleChallenge(sender, {
