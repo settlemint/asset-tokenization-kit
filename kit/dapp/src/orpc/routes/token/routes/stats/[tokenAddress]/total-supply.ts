@@ -4,79 +4,53 @@ import { tokenRouter } from "@/orpc/procedures/token.router";
 import { z } from "zod";
 
 /**
- * GraphQL query to fetch asset-specific total supply history
- * Retrieves historical total supply and collateral data for a specific asset
+ * GraphQL query to fetch token-specific total supply history
+ * Retrieves historical total supply data for a specific token
  */
-const ASSET_TOTAL_SUPPLY_QUERY = theGraphGraphql(`
-  query AssetTotalSupplyHistory($assetId: String!, $since: Timestamp!) {
-    assetStats_collection(
-      where: { asset: $assetId, timestamp_gte: $since }
-      orderBy: timestamp_ASC
+const TOKEN_TOTAL_SUPPLY_QUERY = theGraphGraphql(`
+  query TokenTotalSupplyHistory($tokenId: String!, $since: Timestamp!) {
+    tokenStats_collection(
+      where: { token: $tokenId, timestamp_gte: $since }
+      interval: day
+      orderBy: timestamp
+      orderDirection: asc
     ) {
       timestamp
       totalSupply
-      totalCollateral
-      asset {
-        assetType
-      }
     }
   }
 `);
 
 // Schema for the GraphQL response
-const AssetTotalSupplyResponseSchema = z.object({
-  assetStats_collection: z.array(
+const TokenTotalSupplyResponseSchema = z.object({
+  tokenStats_collection: z.array(
     z.object({
       timestamp: z.string(),
       totalSupply: z.string(),
-      totalCollateral: z.string().nullable(),
-      asset: z.object({
-        assetType: z.string(),
-      }),
     })
   ),
 });
 
 /**
- * Helper function to process asset stats into total supply history data
- * Converts raw asset statistics into timestamped total supply data points
+ * Helper function to process token stats into total supply history data
+ * Converts raw token statistics into timestamped total supply data points
  *
- * @param assetStats - Raw asset statistics from TheGraph
- * @returns Processed total supply history with conditional collateral data
+ * @param tokenStats - Token statistics from TheGraph
+ * @returns Processed total supply history data
  */
 function processTotalSupplyHistoryData(
-  assetStats: {
+  tokenStats: {
     timestamp: string;
     totalSupply: string;
-    totalCollateral: string | null;
-    asset: { assetType: string };
   }[]
 ): {
   timestamp: number;
   totalSupply: string;
-  totalCollateral?: string;
 }[] {
-  return assetStats.map((stat) => {
-    const result: {
-      timestamp: number;
-      totalSupply: string;
-      totalCollateral?: string;
-    } = {
-      timestamp: Number.parseInt(stat.timestamp, 10),
-      totalSupply: stat.totalSupply,
-    };
-
-    // Include totalCollateral for stablecoin and tokenizeddeposit asset types
-    if (
-      stat.totalCollateral &&
-      (stat.asset.assetType === "stablecoin" ||
-        stat.asset.assetType === "tokenizeddeposit")
-    ) {
-      result.totalCollateral = stat.totalCollateral;
-    }
-
-    return result;
-  });
+  return tokenStats.map((stat) => ({
+    timestamp: Number.parseInt(stat.timestamp, 10),
+    totalSupply: stat.totalSupply,
+  }));
 }
 
 /**
@@ -91,9 +65,9 @@ function processTotalSupplyHistoryData(
  *
  * Authentication: Required
  * Permissions: Requires "read" permission on the specific token
- * Method: GET /token/stats/{assetId}/total-supply
+ * Method: GET /token/stats/{tokenAddress}/total-supply
  *
- * @param input.assetId - The asset contract address to query
+ * @param input.tokenAddress - The token contract address to query
  * @param input.days - Number of days to look back for historical data (default: 30)
  * @returns Promise<AssetTotalSupplyMetrics> - Historical total supply data
  * @throws UNAUTHORIZED - If user is not authenticated
@@ -104,7 +78,7 @@ function processTotalSupplyHistoryData(
  * ```typescript
  * // Get total supply history for the last 60 days
  * const metrics = await orpc.token.statsAssetTotalSupply.query({
- *   input: { assetId: '0x1234...', days: 60 }
+ *   input: { tokenAddress: '0x1234...', days: 60 }
  * });
  * console.log(metrics.totalSupplyHistory);
  * ```
@@ -115,29 +89,29 @@ export const statsAssetTotalSupply = tokenRouter.token.statsAssetTotalSupply
     // Token context is guaranteed by tokenRouter middleware
 
     // Extract parameters with defaults applied by schema
-    const { assetId, days } = input;
+    const { tokenAddress, days } = input;
 
     // Calculate the date range for queries
     const since = new Date();
     since.setDate(since.getDate() - days);
     const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
 
-    // Fetch asset total supply history from TheGraph
+    // Fetch token total supply history from TheGraph
     const response = await context.theGraphClient.query(
-      ASSET_TOTAL_SUPPLY_QUERY,
+      TOKEN_TOTAL_SUPPLY_QUERY,
       {
         input: {
-          assetId: assetId.toLowerCase(),
+          tokenId: tokenAddress.toLowerCase(),
           since: sinceTimestamp.toString(),
         },
-        output: AssetTotalSupplyResponseSchema,
-        error: "Failed to fetch asset total supply history",
+        output: TokenTotalSupplyResponseSchema,
+        error: "Failed to fetch token total supply history",
       }
     );
 
     // Process the raw data into the expected output format
     const totalSupplyHistory = processTotalSupplyHistoryData(
-      response.assetStats_collection
+      response.tokenStats_collection
     );
 
     return {

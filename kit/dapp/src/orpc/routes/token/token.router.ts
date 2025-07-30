@@ -26,7 +26,7 @@ import { statsSystemAssets } from "@/orpc/routes/token/routes/stats/system/asset
 import { statsSystemValue } from "@/orpc/routes/token/routes/stats/system/value";
 import { statsSystemTransactionCount } from "@/orpc/routes/token/routes/stats/system/transaction-count";
 import { statsSystemTransactionHistory } from "@/orpc/routes/token/routes/stats/system/transaction-history";
-import { statsAssetTotalSupply } from "@/orpc/routes/token/routes/stats/[assetId]/total-supply";
+import { statsAssetTotalSupply } from "@/orpc/routes/token/routes/stats/[tokenAddress]/total-supply";
 import { actions } from "@/orpc/routes/token/routes/token.actions";
 
 const routes = {

@@ -4,8 +4,8 @@ import { z } from "zod";
  * Schema for asset-specific total supply input parameters
  */
 export const TokenStatsAssetTotalSupplyInputSchema = z.object({
-  /** The asset ID for which to fetch total supply history */
-  assetId: z.string().describe("The asset contract address"),
+  /** The token address for which to fetch total supply history */
+  tokenAddress: z.string().describe("The token contract address"),
 
   /** Time range in days for historical data (default: 30 days) */
   days: z.number().min(1).max(365).optional().default(30),

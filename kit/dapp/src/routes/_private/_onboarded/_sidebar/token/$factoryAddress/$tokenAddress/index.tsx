@@ -1,9 +1,8 @@
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { TokenTotalSupplyAreaChart } from "@/components/stats/charts/token-total-supply-area-chart";
 import { ChartSkeleton } from "@/components/stats/charts/chart-skeleton";
-import { getAssetTypeFromFactoryTypeId } from "@/lib/zod/validators/asset-types";
+import { TokenTotalSupplyAreaChart } from "@/components/stats/charts/token-total-supply-area-chart";
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
@@ -84,14 +83,10 @@ export const Route = createFileRoute(
  */
 
 function RouteComponent() {
-  const { asset, factory } = useLoaderData({
+  const { asset } = useLoaderData({
     from: "/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress",
   });
   const { t } = useTranslation(["tokens", "assets", "common", "stats"]);
-
-  // Get asset type from factory to determine if collateral should be shown
-  const assetType = getAssetTypeFromFactoryTypeId(factory.typeId);
-  const showCollateral = ["stablecoin", "deposit"].includes(assetType);
 
   return (
     <>
@@ -223,11 +218,7 @@ function RouteComponent() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
           <Suspense fallback={<ChartSkeleton />}>
-            <TokenTotalSupplyAreaChart
-              assetId={asset.id}
-              timeRange={30}
-              showCollateral={showCollateral}
-            />
+            <TokenTotalSupplyAreaChart tokenAddress={asset.id} timeRange={30} />
           </Suspense>
         </div>
       </section>

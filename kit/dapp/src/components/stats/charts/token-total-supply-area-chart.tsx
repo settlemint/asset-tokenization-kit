@@ -7,21 +7,18 @@ import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 
 export interface TokenTotalSupplyAreaChartProps {
-  assetId: string;
+  tokenAddress: string;
   timeRange?: number; // days, default 30
-  showCollateral?: boolean; // for stablecoin/tokenizeddeposit
 }
 
 /**
  * Token Total Supply Area Chart Component
  *
- * Displays historical total supply data for a specific asset using an area chart.
- * Supports optional collateral display for stablecoin and tokenized deposit assets.
+ * Displays historical total supply data for a specific token using an area chart.
  */
 export function TokenTotalSupplyAreaChart({
-  assetId,
+  tokenAddress,
   timeRange = 30,
-  showCollateral = false,
 }: TokenTotalSupplyAreaChartProps) {
   const { t } = useTranslation("stats");
 
@@ -31,17 +28,13 @@ export function TokenTotalSupplyAreaChart({
     data: { chartData, chartConfig, dataKeys },
   } = useSuspenseQuery({
     ...orpc.token.statsAssetTotalSupply.queryOptions({
-      input: { assetId, days: timeRange },
+      input: { tokenAddress, days: timeRange },
     }),
     select: (response) => {
       // Transform the response data to chart format
       const transformedData = response.totalSupplyHistory.map((item) => ({
         timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
         totalSupply: Number.parseFloat(item.totalSupply),
-        ...(item.totalCollateral &&
-          showCollateral && {
-            totalCollateral: Number.parseFloat(item.totalCollateral),
-          }),
       }));
 
       // Configure chart colors and labels
@@ -52,23 +45,10 @@ export function TokenTotalSupplyAreaChart({
         },
       };
 
-      // Add collateral configuration if needed
-      const keys = ["totalSupply"];
-      if (
-        showCollateral &&
-        response.totalSupplyHistory.some((item) => item.totalCollateral)
-      ) {
-        config.totalCollateral = {
-          label: t("charts.totalCollateral.label"),
-          color: "var(--chart-2)",
-        };
-        keys.push("totalCollateral");
-      }
-
       return {
         chartData: transformedData,
         chartConfig: config,
-        dataKeys: keys,
+        dataKeys: ["totalSupply"],
       };
     },
   });
@@ -77,12 +57,12 @@ export function TokenTotalSupplyAreaChart({
     <ComponentErrorBoundary componentName="Token Total Supply Chart">
       <AreaChartComponent
         title={t("charts.totalSupply.title")}
-        description={t("charts.totalSupply.description")}
+        description={t("charts.totalSupply.description", { days: timeRange })}
         data={chartData}
         config={chartConfig}
         dataKeys={dataKeys}
         nameKey="timestamp"
-        showLegend={dataKeys.length > 1}
+        showLegend={false}
         stacked={false}
       />
     </ComponentErrorBoundary>
