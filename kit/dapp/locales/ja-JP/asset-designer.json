@@ -32,6 +32,10 @@
         "label": "トークンキャップ",
         "placeholder": "例：1000000"
       },
+      "countryCode": {
+        "description": "アセットが登録される場所を選択してください",
+        "label": "国"
+      },
       "decimals": {
         "description": "トークンの小数点以下の桁数（0-18、デフォルトは18）",
         "label": "小数",
