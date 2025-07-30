@@ -254,7 +254,7 @@ export const getSystemContext = async (
   return {
     address: systemAddress,
     deployedInTransaction: system.deployedInTransaction as Hex,
-    accessControl: system?.accessControl,
+    accessControl: system.accessControl,
     tokenFactories,
     systemAddons,
     complianceModules,
@@ -265,32 +265,32 @@ export const getSystemContext = async (
       : null,
     tokenFactoryRegistry: system.tokenFactoryRegistry
       ? {
-          id: getEthereumAddress(system.tokenFactoryRegistry?.id),
-          accessControl: system?.tokenFactoryRegistry?.accessControl,
+          id: getEthereumAddress(system.tokenFactoryRegistry.id),
+          accessControl: system.tokenFactoryRegistry.accessControl,
         }
       : null,
     complianceModuleRegistry: system.complianceModuleRegistry
       ? {
-          id: getEthereumAddress(system.complianceModuleRegistry?.id),
-          accessControl: system?.complianceModuleRegistry?.accessControl,
+          id: getEthereumAddress(system.complianceModuleRegistry.id),
+          accessControl: system.complianceModuleRegistry.accessControl,
         }
       : null,
     identityRegistryStorage: system.identityRegistryStorage
       ? {
-          id: getEthereumAddress(system.identityRegistryStorage?.id),
-          accessControl: system?.identityRegistryStorage?.accessControl,
+          id: getEthereumAddress(system.identityRegistryStorage.id),
+          accessControl: system.identityRegistryStorage.accessControl,
         }
       : null,
     identityRegistry: system.identityRegistry
       ? {
-          id: getEthereumAddress(system.identityRegistry?.id),
-          accessControl: system?.identityRegistry?.accessControl,
+          id: getEthereumAddress(system.identityRegistry.id),
+          accessControl: system.identityRegistry.accessControl,
         }
       : null,
     trustedIssuersRegistry: system.trustedIssuersRegistry
       ? {
-          id: getEthereumAddress(system.trustedIssuersRegistry?.id),
-          accessControl: system?.trustedIssuersRegistry?.accessControl,
+          id: getEthereumAddress(system.trustedIssuersRegistry.id),
+          accessControl: system.trustedIssuersRegistry.accessControl,
         }
       : null,
     topicSchemeRegistry: system.topicSchemeRegistry
@@ -301,8 +301,8 @@ export const getSystemContext = async (
       : null,
     systemAddonRegistry: system.systemAddonRegistry
       ? {
-          id: getEthereumAddress(system.systemAddonRegistry?.id),
-          accessControl: system?.systemAddonRegistry?.accessControl,
+          id: getEthereumAddress(system.systemAddonRegistry.id),
+          accessControl: system.systemAddonRegistry.accessControl,
         }
       : null,
   };
