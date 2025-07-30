@@ -24,15 +24,16 @@ import "./types";
 
 // Import all en-US translations synchronously for SSR
 import enUSAccessibility from "@/locales/en-US/accessibility.json";
+import enUSAssetClass from "@/locales/en-US/asset-class.json";
 import enUSAssetDesigner from "@/locales/en-US/asset-designer.json";
 import enUSAssetTypes from "@/locales/en-US/asset-types.json";
 import enUSAssets from "@/locales/en-US/assets.json";
 import enUSAuth from "@/locales/en-US/auth.json";
 import enUSBlockchain from "@/locales/en-US/blockchain.json";
-import enUSComplianceModules from "@/locales/en-US/compliance-modules.json";
 import enUSCommon from "@/locales/en-US/common.json";
-import enUSCountryMultiselect from "@/locales/en-US/country-multiselect.json";
+import enUSComplianceModules from "@/locales/en-US/compliance-modules.json";
 import enUSComponents from "@/locales/en-US/components.json";
+import enUSCountryMultiselect from "@/locales/en-US/country-multiselect.json";
 import enUSDashboard from "@/locales/en-US/dashboard.json";
 import enUSDataTable from "@/locales/en-US/data-table.json";
 import enUSDepositsTable from "@/locales/en-US/deposits-table.json";
@@ -82,6 +83,7 @@ export const fallbackLng = "en-US";
  */
 export const namespaces = [
   "accessibility",
+  "asset-class",
   "asset-designer",
   "asset-types",
   "assets",
@@ -130,6 +132,7 @@ const translationModules = {
   },
   "de-DE": {
     accessibility: () => import("@/locales/de-DE/accessibility.json"),
+    "asset-class": () => import("@/locales/de-DE/asset-class.json"),
     "asset-designer": () => import("@/locales/de-DE/asset-designer.json"),
     "asset-types": () => import("@/locales/de-DE/asset-types.json"),
     assets: () => import("@/locales/de-DE/assets.json"),
@@ -168,6 +171,7 @@ const translationModules = {
   },
   "ar-SA": {
     accessibility: () => import("@/locales/ar-SA/accessibility.json"),
+    "asset-class": () => import("@/locales/ar-SA/asset-class.json"),
     "asset-designer": () => import("@/locales/ar-SA/asset-designer.json"),
     "asset-types": () => import("@/locales/ar-SA/asset-types.json"),
     assets: () => import("@/locales/ar-SA/assets.json"),
@@ -206,6 +210,7 @@ const translationModules = {
   },
   "ja-JP": {
     accessibility: () => import("@/locales/ja-JP/accessibility.json"),
+    "asset-class": () => import("@/locales/ja-JP/asset-class.json"),
     "asset-designer": () => import("@/locales/ja-JP/asset-designer.json"),
     "asset-types": () => import("@/locales/ja-JP/asset-types.json"),
     assets: () => import("@/locales/ja-JP/assets.json"),
@@ -254,6 +259,7 @@ async function loadResource(lng: SupportedLanguage, ns: Namespace) {
     if (lng === "en-US") {
       const enUSResources: Record<Namespace, unknown> = {
         accessibility: enUSAccessibility,
+        "asset-class": enUSAssetClass,
         "asset-designer": enUSAssetDesigner,
         "asset-types": enUSAssetTypes,
         assets: enUSAssets,
@@ -360,6 +366,7 @@ void i18n.init({
   resources: {
     "en-US": {
       accessibility: enUSAccessibility,
+      "asset-class": enUSAssetClass,
       "asset-designer": enUSAssetDesigner,
       "asset-types": enUSAssetTypes,
       assets: enUSAssets,

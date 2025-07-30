@@ -14,10 +14,11 @@ export function FieldLabel({
   className,
 }: {
   htmlFor: string;
-  label: string;
+  label?: string;
   required?: boolean;
   className?: string;
 }) {
+  if (!label) return null;
   return (
     <FormLabel htmlFor={htmlFor} className={className}>
       {label}

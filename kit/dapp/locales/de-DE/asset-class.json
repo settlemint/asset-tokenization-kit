@@ -1,0 +1,54 @@
+{
+  "whichAssetClass": "Welche Anlageklasse möchten Sie gestalten?",
+  "assetClassDifferences": "Jede Anlageklasse bietet ein unterschiedliches Risiko-Rendite-Profil.",
+  "includes": "Beinhaltet",
+  "categories": {
+    "cashEquivalent": {
+      "description": "Hochliquide Anlagen, die leicht in bekannte Geldbeträge umgewandelt werden können.",
+      "icon": "Wallet",
+      "name": "Geldäquivalent"
+    },
+    "fixedIncome": {
+      "description": "Vermögenswerte, die Erträge in Form regelmäßiger, fester Zinszahlungen und der Rückzahlung des Kapitals bei Fälligkeit bieten.",
+      "icon": "TrendingUp",
+      "name": "Festverzinsliche Anlage"
+    },
+    "flexibleIncome": {
+      "description": "Vermögenswerte, die variable Erträge basierend auf Marktbedingungen und zugrunde liegender Performance generieren.",
+      "icon": "Activity",
+      "name": "Flexible Einkommen"
+    }
+  },
+  "types": {
+    "bond": {
+      "name": "Anleihe",
+      "namePlural": "Anleihen",
+      "description": "Schuldtitel, die über einen bestimmten Zeitraum feste Zinsen zahlen.",
+      "category": "fixedIncome"
+    },
+    "deposit": {
+      "name": "Einlage",
+      "namePlural": "Einlagen",
+      "description": "Zeitgebundene Einlagen, die über einen festen Zeitraum Zinsen erwirtschaften.",
+      "category": "cashEquivalent"
+    },
+    "equity": {
+      "name": "Eigenkapital",
+      "namePlural": "Eigenkapitalanteile",
+      "description": "Eigentumsanteile, die einen Anspruch auf Vermögenswerte und Erträge darstellen.",
+      "category": "flexibleIncome"
+    },
+    "fund": {
+      "name": "Fonds",
+      "namePlural": "Fonds",
+      "description": "Gepoolte Anlagevehikel, die Kapital von mehreren Investoren zusammenfassen.",
+      "category": "flexibleIncome"
+    },
+    "stablecoin": {
+      "name": "Stablecoin",
+      "namePlural": "Stablecoins",
+      "description": "Digitale Währungen, die darauf ausgelegt sind, einen stabilen Wert relativ zu einem Referenzvermögenswert zu halten.",
+      "category": "cashEquivalent"
+    }
+  }
+}
