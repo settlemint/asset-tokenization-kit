@@ -1,5 +1,6 @@
 import { Address } from "viem";
 import { atkDeployer } from "../services/deployer";
+import { withDecodedRevertReason } from "../utils/decode-revert-reason";
 import { encodeAddressParams } from "../utils/encode-address-params";
 import { waitForSuccess } from "../utils/wait-for-success";
 
@@ -11,10 +12,12 @@ export const setGlobalBlockedAddresses = async (addresses: Address[]) => {
 
   const compliance = atkDeployer.getComplianceContract();
 
-  const transactionHash = await compliance.write.addGlobalComplianceModule([
-    addressBlockListModule.address,
-    encodeAddressParams(addresses),
-  ]);
+  const transactionHash = await withDecodedRevertReason(() =>
+    compliance.write.addGlobalComplianceModule([
+      addressBlockListModule.address,
+      encodeAddressParams(addresses),
+    ])
+  );
 
   await waitForSuccess(transactionHash);
 

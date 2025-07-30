@@ -1,4 +1,5 @@
 import { atkDeployer } from "../services/deployer";
+import { withDecodedRevertReason } from "../utils/decode-revert-reason";
 import { encodeCountryParams } from "../utils/encode-country-params";
 import { waitForSuccess } from "../utils/wait-for-success";
 
@@ -10,10 +11,12 @@ export const setGlobalBlockedCountries = async (countryCodes: number[]) => {
 
   const compliance = atkDeployer.getComplianceContract();
 
-  const transactionHash = await compliance.write.addGlobalComplianceModule([
-    countryBlockListModule.address,
-    encodeCountryParams(countryCodes),
-  ]);
+  const transactionHash = await withDecodedRevertReason(() =>
+    compliance.write.addGlobalComplianceModule([
+      countryBlockListModule.address,
+      encodeCountryParams(countryCodes),
+    ])
+  );
 
   await waitForSuccess(transactionHash);
 
