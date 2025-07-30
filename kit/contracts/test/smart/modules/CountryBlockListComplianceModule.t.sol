@@ -42,17 +42,32 @@ contract CountryBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         module.validateParameters(invalidParams);
     }
 
-    function test_CountryBlockList_CanTransfer_NoIdentity() public view {
-        // A transfer to an address with no identity should be allowed by this module.
+    function test_CountryBlockList_RevertWhen_NoIdentity() public {
+        // A transfer to an address with no identity should revert.
         bytes memory params = abi.encode(new uint16[](0));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
+            )
+        );
         module.canTransfer(address(smartToken), user1, user3, 100, params);
     }
 
     function test_CountryBlockList_CanTransfer_EmptyBlockList() public view {
-        // Empty block list means no countries are blocked
+        // Empty block list means no countries are blocked for users with identity
         bytes memory params = abi.encode(new uint16[](0));
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
+    }
+
+    function test_CountryBlockList_RevertWhen_EmptyBlockListButNoIdentity() public {
+        // Even with empty block list, users without identity are blocked
+        bytes memory params = abi.encode(new uint16[](0));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
+            )
+        );
         module.canTransfer(address(smartToken), tokenIssuer, user3, 100, params);
     }
 
@@ -127,10 +142,14 @@ contract CountryBlockListComplianceModuleTest is AbstractComplianceModuleTest {
         smartToken.transfer(user2, 100);
         assertEq(smartToken.balanceOf(user2), 100);
 
-        // Transfer to user3 (no identity) should succeed
+        // Transfer to user3 (no identity) should fail
         vm.prank(tokenIssuer);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
+            )
+        );
         smartToken.transfer(user3, 100);
-        assertEq(smartToken.balanceOf(user3), 100);
     }
 
     function test_CountryBlockList_SupportsInterface() public view {

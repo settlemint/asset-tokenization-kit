@@ -42,15 +42,25 @@ contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
         module.validateParameters(invalidParams);
     }
 
-    function test_CountryAllowList_CanTransfer_NoIdentity() public view {
-        // A transfer to an address with no identity should be allowed by this module.
+    function test_CountryAllowList_RevertWhen_NoIdentity() public {
+        // A transfer to an address with no identity should revert.
         bytes memory params = abi.encode(new uint16[](0));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
+            )
+        );
         module.canTransfer(address(smartToken), user1, user3, 100, params);
     }
 
-    function test_CountryAllowList_CanTransfer_EmptyAllowList() public view {
-        // Empty allow list means no countries are allowed, but users without identity pass
+    function test_CountryAllowList_RevertWhen_EmptyAllowListAndNoIdentity() public {
+        // Empty allow list means no countries are allowed, and users without identity are also blocked
         bytes memory params = abi.encode(new uint16[](0));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
+            )
+        );
         module.canTransfer(address(smartToken), tokenIssuer, user3, 100, params); // user3 has no identity
     }
 
@@ -70,7 +80,7 @@ contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
         uint16[] memory allowedCountries = new uint16[](1);
         allowedCountries[0] = TestConstants.COUNTRY_CODE_US;
         bytes memory params = abi.encode(allowedCountries);
-        
+
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
     }
 
@@ -80,7 +90,7 @@ contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
         allowedCountries[0] = TestConstants.COUNTRY_CODE_US; // user1
         allowedCountries[1] = TestConstants.COUNTRY_CODE_BE; // user2
         bytes memory params = abi.encode(allowedCountries);
-        
+
         module.canTransfer(address(smartToken), tokenIssuer, user1, 100, params);
         module.canTransfer(address(smartToken), tokenIssuer, user2, 100, params);
     }
@@ -90,7 +100,7 @@ contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
         uint16[] memory allowedCountries = new uint16[](1);
         allowedCountries[0] = TestConstants.COUNTRY_CODE_JP;
         bytes memory params = abi.encode(allowedCountries);
-        
+
         vm.expectRevert(
             abi.encodeWithSelector(
                 ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver country not in allowlist"
@@ -124,10 +134,14 @@ contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
         smartToken.transfer(user2, 100);
         assertEq(smartToken.balanceOf(user2), 100);
 
-        // Transfer to user3 (no identity) should succeed
+        // Transfer to user3 (no identity) should fail
         vm.prank(tokenIssuer);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ISMARTComplianceModule.ComplianceCheckFailed.selector, "Receiver identity unknown"
+            )
+        );
         smartToken.transfer(user3, 100);
-        assertEq(smartToken.balanceOf(user3), 100);
     }
 
     function test_CountryAllowList_SupportsInterface() public view {
@@ -136,7 +150,7 @@ contract CountryAllowListComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_CountryAllowList_Lifecycle_Functions() public {
         bytes memory params = abi.encode(new uint16[](0));
-        
+
         // These functions should not revert for stateless modules
         module.transferred(address(smartToken), tokenIssuer, user1, 100, params);
         module.created(address(smartToken), user1, 100, params);
