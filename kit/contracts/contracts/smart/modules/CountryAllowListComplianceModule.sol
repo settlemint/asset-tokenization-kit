@@ -16,11 +16,12 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 /// module is registered with a particular `ISMART` token. The format for these parameters is `abi.encode(uint16[] memory
 /// allowedCountries)`.
 /// A transfer *to* a recipient is PERMITTED if:
+///    - The recipient has a registered identity in the token's `ISMARTIdentityRegistry` AND their country code is known
+///      (not 0) AND the recipient's registered country code is present in the token-specific list of allowed countries.
+/// A transfer *to* a recipient is BLOCKED if:
 ///    - The recipient has no identity registered in the token's `ISMARTIdentityRegistry`, or their country code is 0.
-///      (In this case, the module cannot determine the country, so it defaults to allowing the transfer).
-///    - OR the recipient's registered country code is present in the token-specific list of allowed countries passed
-/// via `_params`.
-/// If none of these conditions are met, the `canTransfer` function will revert with a `ComplianceCheckFailed` error,
+///    - OR the recipient's registered country code is not present in the token-specific list of allowed countries.
+/// If any of these blocking conditions are met, the `canTransfer` function will revert with a `ComplianceCheckFailed` error,
 /// effectively blocking the transfer.
 /// @custom:parameters The `_params` data for this module should be ABI-encoded as a dynamic array of `uint16` country
 /// codes:
@@ -54,9 +55,8 @@ contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
     /// The logic is as follows:
     /// 1. Retrieve the recipient's (`_to`) country code using `_getUserCountry` (from
     /// `AbstractCountryComplianceModule`).
-    /// 2. If the recipient has no identity or their country code is 0, the transfer is allowed (return without
-    /// reverting).
-    ///    This is because the module cannot enforce an allow-list if the country is unknown.
+    /// 2. If the recipient has no identity or their country code is 0, the function reverts with
+    /// `ComplianceCheckFailed("Receiver identity unknown")` because this module requires known identity and country.
     /// 3. Decode the token-specific `allowedCountries` from `_params` (using `_decodeParams`).
     /// 4. Check if the recipient's country is present in this `allowedCountries` list. If yes, the transfer
     /// is allowed.
@@ -80,10 +80,9 @@ contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
         (bool hasIdentity, uint16 receiverCountry) = _getUserCountry(_token, _to);
 
         // Condition 1: If no identity is found for the receiver, or their country code is 0 (unknown/not set),
-        // this module cannot enforce an allow-list based on country. Therefore, the transfer is implicitly allowed by
-        // this module.
+        // this module requires known identity and country information. Therefore, the transfer is blocked.
         if (!hasIdentity || receiverCountry == 0) {
-            return; // Allow transfer
+            revert ComplianceCheckFailed("Receiver identity unknown");
         }
 
         // Condition 2: Check the token-specific allowed countries provided in _params.
@@ -98,9 +97,7 @@ contract CountryAllowListComplianceModule is AbstractCountryComplianceModule {
             }
         }
 
-        // If none of the above conditions for allowing the transfer were met, the receiver's country is not in the
-        // allow-list.
-        // Therefore, the compliance check fails, and the transfer should be blocked.
+        // If the receiver's country is not in the allow-list, the compliance check fails and the transfer is blocked.
         revert ComplianceCheckFailed("Receiver country not in allowlist");
     }
 

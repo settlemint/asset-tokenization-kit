@@ -10,19 +10,19 @@ import { ISMARTComplianceModule } from "../interface/ISMARTComplianceModule.sol"
 /// @title Country Block-List Compliance Module
 /// @author SettleMint
 /// @notice This compliance module restricts token transfers *to* users if their registered country is on a prohibited
-/// list (block-list).
+/// list (block-list) or if their identity/country is unknown.
 /// @dev It inherits from `AbstractCountryComplianceModule` and implements a country-based block-list logic.
 /// The module uses a token-specific list of blocked country codes provided via the `_params` argument when this
 /// module is registered with a particular `ISMART` token. The format for these parameters is `abi.encode(uint16[] memory
 /// blockedCountries)`.
 /// A transfer *to* a recipient is BLOCKED (i.e., `canTransfer` reverts) if:
-///    - The recipient has a registered identity in the token's `ISMARTIdentityRegistry` AND their country code is known
-/// (not 0),
-///    - AND the recipient's registered country code is present in the token-specific list of blocked countries passed
-/// via `_params`.
-/// If the recipient has no identity or their country code is 0, the transfer is implicitly ALLOWED by this module
-/// because it cannot determine if they are from a blocked country.
-/// Similarly, if their known country is not on the block-list, the transfer is allowed.
+///    - The recipient has no identity registered in the token's `ISMARTIdentityRegistry`, or their country code is 0
+///      (unknown), OR
+///    - The recipient has a registered identity AND their country code is known (not 0) AND their country code is
+///      present in the token-specific list of blocked countries passed via `_params`.
+/// A transfer *to* a recipient is ALLOWED only if:
+///    - The recipient has a registered identity AND their country code is known (not 0) AND their country code is
+///      NOT present in the token-specific list of blocked countries.
 /// @custom:parameters The `_params` data for this module should be ABI-encoded as a dynamic array of `uint16` country
 /// codes:
 ///                   `abi.encode(uint16[] memory blockedCountries)`. These are the countries blocked for a specific token.
@@ -56,9 +56,8 @@ contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
     /// The logic is as follows:
     /// 1. Retrieve the recipient's (`_to`) country code using `_getUserCountry` (from
     /// `AbstractCountryComplianceModule`).
-    /// 2. If the recipient has no identity or their country code is 0 (unknown), the transfer is allowed by this module
-    /// (return without reverting).
-    ///    This is because the module cannot enforce a block-list if the country is unknown.
+    /// 2. If the recipient has no identity or their country code is 0 (unknown), the function reverts with
+    /// `ComplianceCheckFailed("Receiver identity unknown")` because this module requires known identity and country.
     /// 3. Decode the token-specific `blockedCountries` from `_params` (using `_decodeParams`).
     /// 4. Check if the recipient's country is present in this `blockedCountries` list. If yes,
     ///    the transfer is blocked, and the function reverts with `ComplianceCheckFailed("Receiver country blocked")`.
@@ -81,10 +80,10 @@ contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
     {
         (bool hasIdentity, uint16 receiverCountry) = _getUserCountry(_token, _to);
 
-        // Condition 1: Only apply block-list if identity and country are known.
-        // If no identity or country is 0, this module cannot determine if they are blocked, so it allows the transfer.
+        // Condition 1: This module requires known identity and country information.
+        // If no identity or country is 0, the transfer is blocked.
         if (!hasIdentity || receiverCountry == 0) {
-            return; // Allow transfer as country cannot be determined for blocking.
+            revert ComplianceCheckFailed("Receiver identity unknown");
         }
 
         // Condition 2: Check the token-specific blocked countries provided in _params.
