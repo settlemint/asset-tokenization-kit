@@ -37,10 +37,10 @@ export function BigIntField({
             value={field.state.value?.toString()}
             type="text"
             onChange={(e) => {
-              if (e.target.value === "") {
-                field.handleChange(undefined);
-              } else {
+              try {
                 field.handleChange(BigInt(e.target.value));
+              } catch {
+                field.handleChange(undefined);
               }
             }}
             className={cn(className, errorClassNames(field.state.meta))}
