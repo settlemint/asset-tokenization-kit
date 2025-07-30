@@ -76,7 +76,7 @@
     "@daveyplate/better-auth-ui": "2.1.2",
     "@fontsource-variable/figtree": "5.2.8",
     "@fontsource-variable/roboto-mono": "5.2.6",
-    "@hookform/resolvers": "5.2.0",
+    "@hookform/resolvers": "5.2.1",
     "@orpc/client": "1.7.5",
     "@orpc/contract": "1.7.5",
     "@orpc/json-schema": "1.7.5",
