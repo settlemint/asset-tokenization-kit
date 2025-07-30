@@ -34,6 +34,10 @@
         "label": "Token Cap",
         "placeholder": "e.g., 1000000"
       },
+      "countryCode": {
+        "description": "Choose where your asset will be registered",
+        "label": "Country"
+      },
       "decimals": {
         "description": "Number of decimal places for the token (0-18, default is 18)",
         "label": "Decimals",

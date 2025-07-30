@@ -34,6 +34,7 @@ describe("Token create", () => {
       name: `Test Stablecoin ${Date.now()}`,
       symbol: "TSTC",
       decimals: 18,
+      countryCode: "056",
     } as const;
 
     const result = await client.token.create({
@@ -102,6 +103,7 @@ describe("Token create", () => {
         name: `Test Stablecoin Investor ${Date.now()}`,
         symbol: "TSTC",
         decimals: 18,
+        countryCode: "056", // Belgium numeric code for testing
       })
     ).rejects.toThrow(
       /User does not have the required role|Token factory context not set/
