@@ -30,10 +30,10 @@ const TOKEN_SET_CAP_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenSetCap = tokenRouter.token.tokenSetCap
+export const setCap = tokenRouter.token.setCap
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.tokenSetCap,
+      requiredRoles: TOKEN_PERMISSIONS.setCap,
       requiredExtensions: ["CAPPED"],
     })
   )

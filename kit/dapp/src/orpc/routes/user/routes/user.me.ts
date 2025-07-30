@@ -10,13 +10,16 @@
 
 import { kycProfiles, user as userTable } from "@/lib/db/schema";
 import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
+import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { VerificationType as VerificationTypeEnum } from "@/lib/zod/validators/verification-type";
+import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
+import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
-import { read as systemRead } from "@/orpc/routes/system/routes/system.read";
+import { TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/routes/factory/factory.permissions";
 import { call, ORPCError } from "@orpc/server";
 import { eq } from "drizzle-orm";
 import { zeroAddress } from "viem";
@@ -107,52 +110,11 @@ export const me = authRouter.user.me
 
     const { kyc } = userQueryResult ?? {};
 
-    // Check if system has token factories/addons using existing ORPC route
-    let hasTokenFactories = false;
-    let hasSystemAddons = false;
-    let hasBondFactory = false;
-    let hasYieldAddon = false;
-    if (systemAddress) {
-      try {
-        const systemData = await call(
-          systemRead,
-          {
-            id: systemAddress,
-          },
-          {
-            context,
-          }
-        );
-        hasTokenFactories = systemData.tokenFactories.length > 0;
-
-        // Check if bond factory is deployed
-        hasBondFactory = systemData.tokenFactories.some(
-          (factory) => factory.typeId === AssetFactoryTypeIdEnum.ATKBondFactory
-        );
-
-        // Check if yield addon is deployed
-        hasYieldAddon = systemData.systemAddons.some(
-          (addon) => addon.typeId === "ATKFixedYieldScheduleFactory"
-        );
-
-        // System addons are optional, except when bond factory exists - then yield addon is required
-        // If user has explicitly skipped, consider it complete unless bond factory requires yield
-        if (systemAddonsSkipped === "true") {
-          hasSystemAddons = hasBondFactory ? hasYieldAddon : true;
-        } else {
-          hasSystemAddons = hasBondFactory
-            ? hasYieldAddon
-            : systemData.systemAddons.length > 0;
-        }
-      } catch {
-        // If system read fails, we assume no factories and addons
-        hasTokenFactories = false;
-        hasSystemAddons = true; // Default to true since addons are optional
-        hasBondFactory = false;
-        hasYieldAddon = false;
-      }
-    }
-
+    const { accessControl, ...systemOnboardingState } = await getSystemInfo(
+      systemAddress,
+      systemAddonsSkipped
+    );
+    const userRoles = mapUserRoles(authUser.wallet, accessControl);
     return {
       id: authUser.id,
       name:
@@ -162,7 +124,6 @@ export const me = authRouter.user.me
       email: authUser.email,
       role: authUser.role,
       wallet: authUser.wallet,
-      isOnboarded: authUser.isOnboarded,
       firstName: kyc?.firstName,
       lastName: kyc?.lastName,
       verificationTypes: [
@@ -172,17 +133,88 @@ export const me = authRouter.user.me
           ? [VerificationTypeEnum.secretCode]
           : []),
       ] as VerificationType[],
+      userPermissions: {
+        tokenFactory: {
+          actions: {
+            create:
+              TOKEN_FACTORY_PERMISSIONS.create.every(
+                (role) => userRoles[role]
+              ) ?? false,
+          },
+        },
+      },
       onboardingState: {
         wallet: authUser.wallet !== zeroAddress,
         walletSecurity:
           authUser.pincodeEnabled || authUser.twoFactorEnabled || false,
         walletRecoveryCodes: authUser.secretCodesConfirmed ?? false,
-        system: !!systemAddress,
+        ...systemOnboardingState,
         systemSettings: !!baseCurrency,
-        systemAssets: hasTokenFactories,
-        systemAddons: hasSystemAddons,
         identitySetup: !!account?.identity,
         identity: !!userQueryResult?.kyc,
       },
     };
   });
+
+async function getSystemInfo(
+  systemAddress: string | null,
+  systemAddonsSkipped: string | null
+) {
+  const systemOnboardingState = {
+    system: false,
+    systemAssets: false,
+    systemAddons: false,
+  };
+
+  if (!systemAddress) {
+    return {
+      ...systemOnboardingState,
+      accessControl: null,
+    };
+  }
+  try {
+    const systemData = await getSystemContext(
+      getEthereumAddress(systemAddress)
+    );
+    if (!systemData) {
+      return {
+        ...systemOnboardingState,
+        accessControl: null,
+      };
+    }
+    systemOnboardingState.system = true;
+    systemOnboardingState.systemAssets = systemData.tokenFactories.length > 0;
+
+    // Check if bond factory is deployed
+    const hasBondFactory = systemData.tokenFactories.some(
+      (factory) => factory.typeId === AssetFactoryTypeIdEnum.ATKBondFactory
+    );
+
+    // Check if yield addon is deployed
+    const hasYieldAddon = systemData.systemAddons.some(
+      (addon) => addon.typeId === "ATKFixedYieldScheduleFactory"
+    );
+
+    // System addons are optional, except when bond factory exists - then yield addon is required
+    // If user has explicitly skipped, consider it complete unless bond factory requires yield
+    if (systemAddonsSkipped === "true") {
+      systemOnboardingState.systemAddons = hasBondFactory
+        ? hasYieldAddon
+        : true;
+    } else {
+      systemOnboardingState.systemAddons = hasBondFactory
+        ? hasYieldAddon
+        : systemData.systemAddons.length > 0;
+    }
+    return {
+      ...systemOnboardingState,
+      accessControl: systemData.accessControl,
+    };
+  } catch {
+    // If system read fails, we assume no factories and addons
+  }
+  return {
+    ...systemOnboardingState,
+    accessControl: null,
+  };
+}

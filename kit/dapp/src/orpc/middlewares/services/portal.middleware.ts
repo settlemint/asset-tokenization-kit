@@ -1,3 +1,4 @@
+import { handlePortalError } from "@/lib/portal/portal-error-handling";
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ethereumHash } from "@/lib/zod/validators/ethereum-hash";
@@ -135,24 +136,7 @@ function createValidatedPortalClient(
           error: error instanceof Error ? error.message : String(error),
         });
 
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-
-        // Use specialized errors when possible
-        if (
-          errorMessage.includes("Portal") ||
-          errorMessage.includes("portal")
-        ) {
-          throw errors.PORTAL_ERROR({
-            message: userMessage,
-            data: { operation, details: errorMessage },
-          });
-        }
-
-        throw errors.INTERNAL_SERVER_ERROR({
-          message: userMessage,
-          cause: new Error(`GraphQL ${operation} failed: ${errorMessage}`),
-        });
+        handlePortalError(error, errors);
       }
 
       // Find transaction hash in the result
@@ -471,33 +455,7 @@ function createValidatedPortalClient(
           error: error instanceof Error ? error.message : String(error),
         });
 
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-
-        if (
-          errorMessage.includes("Portal") ||
-          errorMessage.includes("portal")
-        ) {
-          throw errors.PORTAL_ERROR({
-            message: userMessage,
-            data: { operation, details: errorMessage },
-          });
-        }
-
-        if (
-          errorMessage.includes("not found") ||
-          errorMessage.includes("404")
-        ) {
-          throw errors.NOT_FOUND({
-            message: userMessage,
-            data: { operation, details: errorMessage },
-          });
-        }
-
-        throw errors.INTERNAL_SERVER_ERROR({
-          message: userMessage,
-          cause: new Error(`GraphQL ${operation} failed: ${errorMessage}`),
-        });
+        handlePortalError(error, errors);
       }
 
       // Validate with Zod schema

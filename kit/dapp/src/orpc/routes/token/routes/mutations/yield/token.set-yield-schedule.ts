@@ -62,10 +62,10 @@ const TOKEN_CREATE_YIELD_SCHEDULE_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenSetYieldSchedule = tokenRouter.token.tokenSetYieldSchedule
+export const setYieldSchedule = tokenRouter.token.setYieldSchedule
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.tokenSetYieldSchedule,
+      requiredRoles: TOKEN_PERMISSIONS.setYieldSchedule,
       requiredExtensions: ["YIELD"],
     })
   )

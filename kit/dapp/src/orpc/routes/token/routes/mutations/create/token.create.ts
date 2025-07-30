@@ -1,10 +1,8 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { tokenFactoryPermissionMiddleware } from "@/orpc/middlewares/auth/token-factory-permission.middleware";
-import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
-import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
-import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
-import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
+import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
+import { portalRouter } from "@/orpc/procedures/portal.router";
+import { getTokenFactory } from "@/orpc/routes/token/routes/factory/helpers/factory-context";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
 import type { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { read } from "@/orpc/routes/token/routes/token.read";
@@ -29,18 +27,23 @@ const FIND_TOKEN_FOR_TRANSACTION_QUERY = theGraphGraphql(`
   }
 `);
 
-export const create = onboardedRouter.token.create
-  .use(theGraphMiddleware)
-  .use(portalMiddleware)
-  .use(systemMiddleware)
+export const create = portalRouter.token.create
   .use(
-    tokenFactoryPermissionMiddleware<typeof TokenCreateSchema>({
+    blockchainPermissionsMiddleware<typeof TokenCreateSchema>({
       requiredRoles: TOKEN_PERMISSIONS.create,
-      getTokenType: (input) => input.type,
+      getAccessControl: ({ context, input }) => {
+        const tokenFactory = getTokenFactory(context, input.type);
+        return tokenFactory?.accessControl;
+      },
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { tokenFactory } = context;
+    const tokenFactory = getTokenFactory(context, input.type);
+    if (!tokenFactory) {
+      throw errors.NOT_FOUND({
+        message: `Token factory for type ${input.type} not found`,
+      });
+    }
 
     const handler = tokenCreateHandlerMap[input.type];
     const challengeResponse = await handleChallenge(context.auth.user, {
@@ -51,7 +54,7 @@ export const create = onboardedRouter.token.create
     // The handler will return the transaction hash
     const transactionHash = await handler(input, {
       mutationVariables: {
-        address: tokenFactory.address,
+        address: tokenFactory.id,
         from: context.auth.user.wallet,
         ...challengeResponse,
       },

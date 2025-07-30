@@ -33,10 +33,10 @@ const TOKEN_RECOVER_ERC20_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenRecoverERC20 = tokenRouter.token.tokenRecoverERC20
+export const recoverERC20 = tokenRouter.token.recoverERC20
   .use(
     tokenPermissionMiddleware({
-      requiredRoles: TOKEN_PERMISSIONS.tokenRecoverERC20,
+      requiredRoles: TOKEN_PERMISSIONS.recoverERC20,
     })
   )
   .use(portalMiddleware)

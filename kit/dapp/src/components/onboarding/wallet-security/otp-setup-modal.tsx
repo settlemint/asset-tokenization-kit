@@ -43,7 +43,6 @@ export function OtpSetupModal({ open, onOpenChange }: OtpSetupModalProps) {
     mutationFn: async () =>
       authClient.twoFactor.enable({
         password: undefined,
-        onboarding: true,
       }),
     onSuccess: async (data) => {
       try {

@@ -1,9 +1,5 @@
-import { afterAll, beforeAll } from "vitest";
 import { getOrpcClient } from "../utils/orpc-client";
-import {
-  bootstrapSystem,
-  bootstrapTokenFactories,
-} from "../utils/system-bootstrap";
+import { bootstrapSystem } from "../utils/system-bootstrap";
 import {
   DEFAULT_ADMIN,
   DEFAULT_INVESTOR,
@@ -14,7 +10,7 @@ import {
 
 let runningDevServer: any | undefined;
 
-beforeAll(async () => {
+export async function setup() {
   try {
     await startDevServerIfNotRunning();
 
@@ -27,27 +23,17 @@ beforeAll(async () => {
 
     const orpClient = getOrpcClient(await signInWithUser(DEFAULT_ADMIN));
     console.log("Bootstrapping system");
-    const system = await bootstrapSystem(orpClient);
-    console.log("Bootstrapping token factories");
-    await bootstrapTokenFactories(orpClient, system);
+    await bootstrapSystem(orpClient);
+    // TODO: factories is broken due to system access manager changes (https://linear.app/settlemint/issue/ENG-3547/onboarding-asset-factories-failed-to-create-asset)
+    // console.log("Bootstrapping token factories");
+    // await bootstrapTokenFactories(orpClient, system);
   } catch (error: unknown) {
     console.error("Failed to setup test environment", error);
-    // Don't exit with error code in CI environment for system access manager integration
-    if (
-      process.env.CI === "true" &&
-      error instanceof Error &&
-      error.toString().includes("AccessControlUnauthorizedAccount")
-    ) {
-      console.log(
-        "Continuing tests despite AccessControlUnauthorizedAccount error in system access manager integration"
-      );
-    } else {
-      process.exit(1);
-    }
+    process.exit(1);
   }
-});
+}
 
-afterAll(stopDevServer);
+export const teardown = stopDevServer;
 
 process.on("SIGINT", stopDevServer);
 process.on("exit", stopDevServer);
@@ -92,7 +78,7 @@ async function startDevServer() {
 
       // Check if server is ready
       const cleanText = output.replace(
-        // eslint-disable-next-line no-control-regex, security/detect-unsafe-regex
+        // eslint-disable-next-line no-control-regex
         /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
         ""
       );

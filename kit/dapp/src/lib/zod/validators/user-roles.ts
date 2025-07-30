@@ -14,7 +14,7 @@ import { z } from "zod";
  * Simple role hierarchy for application access:
  * - `admin`: Full administrative access, can manage users and settings
  * - `investor`: Standard investor access, can perform regular operations
- * - `issuer`: Asset issuance permissions, can create and manage assets
+ * - `issuer`: Trusted issuer access, can see all users data and issue claims
  *
  * Note: This is separate from system roles (roles.ts) which handle
  * blockchain/smart contract permissions.
@@ -31,7 +31,7 @@ export const userRoleNames = ["admin", "investor", "issuer"] as const;
  * // Valid roles
  * schema.parse("admin");    // Administrative access
  * schema.parse("investor"); // Standard investor access
- * schema.parse("issuer");   // Asset issuance access
+ * schema.parse("issuer");   // Trusted issuer access
  *
  * // Invalid role
  * schema.parse("moderator"); // Throws ZodError

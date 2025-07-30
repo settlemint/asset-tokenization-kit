@@ -1,5 +1,6 @@
+import addonRouter from "@/orpc/routes/system/addon/addon.router";
+import complianceModuleRouter from "@/orpc/routes/system/compliance-module/compliance-module.router";
 import identityRouter from "@/orpc/routes/system/identity/identity.router";
-import { addonCreate } from "./routes/system.addonCreate";
 import { create } from "./routes/system.create";
 import { list } from "./routes/system.list";
 import { read } from "./routes/system.read";
@@ -24,8 +25,9 @@ const routes = {
   list,
   create,
   read,
-  addonCreate,
+  ...addonRouter,
   ...identityRouter,
+  ...complianceModuleRouter,
 };
 
 export default routes;

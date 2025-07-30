@@ -96,13 +96,13 @@ export function DeploymentDetails() {
             )}
 
             {/* Compliance Engine */}
-            {systemDetails.compliance && (
+            {systemDetails.complianceModuleRegistry && (
               <div className="p-3 bg-background rounded border">
                 <p className="font-medium text-sm mb-1">
                   {t("system.compliance-engine-label")}
                 </p>
                 <Web3Address
-                  address={systemDetails.compliance}
+                  address={systemDetails.complianceModuleRegistry}
                   copyToClipboard
                   showFullAddress={false}
                   showBadge={false}
