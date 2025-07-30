@@ -4,14 +4,6 @@ import { DEFAULT_ADMIN, DEFAULT_PINCODE, signInWithUser } from "../utils/user";
 
 describe("Token factory create", () => {
   test("can create a token factory", async () => {
-    // Skip this test in CI for system access manager integration branch
-    if (process.env.CI === "true") {
-      console.log(
-        "Skipping token factory creation test in CI for system access manager integration"
-      );
-      return;
-    }
-
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
     const systems = await client.system.list({});

@@ -17,7 +17,6 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client with transaction tracking
  */
 
-import { isPortalError } from "@/lib/portal/portal-error-handling";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
@@ -28,6 +27,8 @@ import {
   type SystemComplianceModuleCreateOutput,
   type SystemComplianceModuleCreateSchema,
 } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
+import { read } from "@/orpc/routes/system/routes/system.read";
+import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 
@@ -100,18 +101,14 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
       },
     })
   )
-  .handler(async function* ({
-    input,
-    context,
-    errors,
-  }): AsyncGenerator<SystemComplianceModuleCreateOutput, void, void> {
+  .handler(async ({ input, context, errors }) => {
     const { complianceModules, verification } = input;
     const sender = context.auth.user;
-    const { t, system } = context;
+    const { system } = context;
 
     const contract = system?.complianceModuleRegistry?.id;
     if (!contract) {
-      const cause = new Error("System addon registry not found");
+      const cause = new Error("System compliance module registry not found");
       throw errors.INTERNAL_SERVER_ERROR({
         message: cause.message,
         cause,
@@ -122,47 +119,21 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
     const moduleList = Array.isArray(complianceModules)
       ? complianceModules
       : [complianceModules];
-    const totalModules = moduleList.length;
 
-    // Yield initial loading message
-    yield {
-      status: "pending",
-      message: t("system:compliance.messages.preparing"),
-      progress: { current: 0, total: totalModules },
-    };
-
-    // Query existing compliance modules to check for duplicates
-    const existingModuleTypes =
-      system?.complianceModules.map((module) => module.typeId) ?? [];
+    // Query existing system compliance modules to check for duplicates
+    const existingComplianceModuleTypeIds =
+      system?.complianceModules.map(
+        (complianceModule) => complianceModule.typeId
+      ) ?? [];
 
     const results: SystemComplianceModuleCreateOutput["results"] = [];
 
-    // Process each compliance module using a generator pattern for batch operations
-    for (const [index, moduleConfig] of moduleList.entries()) {
-      const progress = { current: index + 1, total: totalModules };
+    // Process each addon using a generator pattern for batch operations
+    for (const moduleConfig of moduleList) {
       const { type } = moduleConfig;
 
-      // Yield initial progress message for this module
-      yield {
-        status: "pending",
-        message: t("system:compliance.messages.progress", {
-          current: progress.current,
-          total: progress.total,
-          type,
-        }),
-        currentComplianceModule: { type },
-        progress,
-      };
-
       // Check if module already exists (if we had that data)
-      if (existingModuleTypes.includes(type)) {
-        yield {
-          status: "completed",
-          message: t("system:compliance.messages.alreadyExists", { type }),
-          currentComplianceModule: { type },
-          progress,
-        };
-
+      if (existingComplianceModuleTypeIds.includes(type)) {
         results.push({
           type,
           transactionHash: "",
@@ -185,6 +156,12 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
           userWallet: sender.wallet,
         });
 
+        // Every transaction needs a challenge response (can only be used once)
+        const challengeResponse = await handleChallenge(sender, {
+          code: verification.verificationCode,
+          type: verification.verificationType,
+        });
+
         // Execute the compliance module registration transaction
         const variables: VariablesOf<
           typeof REGISTER_COMPLIANCE_MODULE_MUTATION
@@ -192,25 +169,14 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
           address: contract,
           from: sender.wallet,
           implementation: implementationAddress,
-          ...(await handleChallenge(sender, {
-            code: verification.verificationCode,
-            type: verification.verificationType,
-          })),
+          ...challengeResponse,
         };
 
-        // Use the Portal client's mutate method that returns an async generator
-        const transactionHash = yield* context.portalClient.mutate(
+        // Execute the mutation
+        const transactionHash = await context.portalClient.mutate(
           REGISTER_COMPLIANCE_MODULE_MUTATION,
           variables,
-          t("system:compliance.messages.failed", { name: type }),
-          {
-            waitingForMining: t("system:compliance.messages.registering", {
-              name: type,
-            }),
-            transactionIndexed: t("system:compliance.messages.registered", {
-              name: type,
-            }),
-          }
+          `Failed to register compliance module: ${type}`
         );
 
         const implementationName = COMPLIANCE_TYPE_TO_IMPLEMENTATION_NAME[type];
@@ -220,55 +186,21 @@ export const complianceModuleCreate = portalRouter.system.complianceModuleCreate
           implementations: { [implementationName]: implementationAddress },
         });
       } catch (error) {
-        // Handle any errors during compliance module registration
-        const errorMessage = isPortalError(error)
-          ? error.translate(t)
-          : t("system:compliance.messages.defaultError");
-
-        yield {
-          status: "failed",
-          message: t("system:compliance.messages.failed", { name: type }),
-          currentComplianceModule: {
-            type,
-            error: errorMessage,
-          },
-          progress,
-        };
-
         results.push({
           type,
-          error: errorMessage,
+          error: error instanceof Error ? error.message : String(error),
         });
       }
     }
 
-    // Calculate final results and determine completion message
-    const successful = results.filter((r) => !r.error);
-    const failed = results.filter((r) => r.error);
+    // We don't need the final message anymore since we're returning the system
 
-    // Yield final completion message
-    let finalMessage: string;
-    if (failed.length === 0) {
-      finalMessage = t("system:compliance.messages.allSuccess", {
-        count: successful.length,
-      });
-    } else if (successful.length === 0) {
-      finalMessage = t("system:compliance.messages.allFailed");
-    } else {
-      finalMessage = t("system:compliance.messages.partialSuccess", {
-        successCount: successful.length,
-        totalCount: totalModules,
-      });
-    }
-
-    yield {
-      status: "completed",
-      message: finalMessage,
-      results,
-      result: results, // Added for useStreamingMutation hook compatibility
-      progress: {
-        current: totalModules,
-        total: totalModules,
+    // Return the updated system details
+    return await call(
+      read,
+      {
+        id: "default",
       },
-    };
+      { context }
+    );
   });

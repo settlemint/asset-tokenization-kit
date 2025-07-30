@@ -1,16 +1,11 @@
+import { CUSTOM_ERRORS } from "@/orpc/procedures/base.contract";
+import { createORPCErrorConstructorMap, ORPCError } from "@orpc/server";
 import { GraphQLError } from "graphql";
 import { ClientError } from "graphql-request";
 import { describe, expect, it } from "vitest";
-import { PortalError, handlePortalError } from "./portal-error-handling";
+import { handlePortalError } from "./portal-error-handling";
 
-describe("PortalError", () => {
-  it("should set message and statusCode", () => {
-    const err = new PortalError("fail", 401);
-    expect(err).toBeInstanceOf(Error);
-    expect(err.message).toBe("fail");
-    expect(err.statusCode).toBe(401);
-  });
-});
+const orpcErrors = createORPCErrorConstructorMap(CUSTOM_ERRORS);
 
 describe("handlePortalError", () => {
   it("should throw PortalError with correct message and statusCode from ClientError with extensions", () => {
@@ -31,12 +26,13 @@ describe("handlePortalError", () => {
       { query: "", variables: {} }
     );
     try {
-      handlePortalError(clientError);
+      handlePortalError(clientError, orpcErrors);
     } catch (error) {
-      expect(error).toBeInstanceOf(PortalError);
-      if (error instanceof PortalError) {
+      expect(error).toBeInstanceOf(ORPCError);
+      if (error instanceof ORPCError) {
         expect(error.message).toBe("AccessControlUnauthorizedAccount");
-        expect(error.statusCode).toBe(400);
+        expect(error.status).toBe(403);
+        expect(error.code).toBe("FORBIDDEN");
       }
     }
   });
@@ -44,12 +40,13 @@ describe("handlePortalError", () => {
   it("throws default error if not a ClientError", () => {
     const error = new Error("test");
     try {
-      handlePortalError(error);
+      handlePortalError(error, orpcErrors);
     } catch (error) {
-      expect(error).toBeInstanceOf(PortalError);
-      if (error instanceof PortalError) {
+      expect(error).toBeInstanceOf(ORPCError);
+      if (error instanceof ORPCError) {
         expect(error.message).toBe("test");
-        expect(error.statusCode).toBe(500);
+        expect(error.status).toBe(500);
+        expect(error.code).toBe("INTERNAL_SERVER_ERROR");
       }
     }
   });

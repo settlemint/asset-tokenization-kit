@@ -14,7 +14,6 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client
  */
 
-import { isPortalError } from "@/lib/portal/portal-error-handling";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import type { Context } from "@/orpc/context/context";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
@@ -166,7 +165,7 @@ export const addonCreate = portalRouter.system.addonCreate
   .handler(async ({ input, context, errors }) => {
     const { addons, verification } = input;
     const sender = context.auth.user;
-    const { system, t } = context;
+    const { system } = context;
 
     const contract = system?.systemAddonRegistry?.id;
     if (!contract) {
@@ -183,12 +182,6 @@ export const addonCreate = portalRouter.system.addonCreate
       system?.systemAddons.map((addon) => addon.name) ?? [];
 
     const results: SystemAddonCreateOutput["results"] = [];
-
-    // Handle challenge once for all addon registrations
-    const challengeResponse = await handleChallenge(sender, {
-      code: verification.verificationCode,
-      type: verification.verificationType,
-    });
 
     // Process each addon using a generator pattern for batch operations
     for (const addonConfig of addonList) {
@@ -221,6 +214,12 @@ export const addonCreate = portalRouter.system.addonCreate
           userWallet: sender.wallet,
         });
 
+        // Every transaction needs a challenge response (can only be used once)
+        const challengeResponse = await handleChallenge(sender, {
+          code: verification.verificationCode,
+          type: verification.verificationType,
+        });
+
         // Execute the addon registration transaction (reuse challenge response)
         const variables: VariablesOf<typeof REGISTER_SYSTEM_ADDON_MUTATION> = {
           address: contract,
@@ -246,15 +245,10 @@ export const addonCreate = portalRouter.system.addonCreate
           implementations: { [implementationName]: implementationAddress },
         });
       } catch (error) {
-        // Handle any errors during addon registration
-        const errorMessage = isPortalError(error)
-          ? error.translate(t)
-          : "Addon registration failed";
-
         results.push({
           type,
           name,
-          error: errorMessage,
+          error: error instanceof Error ? error.message : String(error),
         });
       }
     }

@@ -14,7 +14,6 @@
  * @see {@link @/lib/settlemint/portal} - Portal GraphQL client
  */
 
-import { isPortalError } from "@/lib/portal/portal-error-handling";
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
@@ -175,15 +174,10 @@ export const factoryCreate = portalRouter.token.factoryCreate
           transactionHash,
         });
       } catch (error) {
-        // Check for specific error types
-        const errorMessage = isPortalError(error)
-          ? error.translate(t)
-          : t("token-factory:messages.defaultError");
-
         results.push({
           type,
           name,
-          error: errorMessage,
+          error: error instanceof Error ? error.message : String(error),
         });
       }
     }

@@ -1,9 +1,6 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import {
-  SystemComplianceModuleCreateOutputSchema,
-  SystemComplianceModuleCreateSchema,
-} from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
-import { eventIterator } from "@orpc/server";
+import { SystemComplianceModuleCreateSchema } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
+import { SystemReadSchema } from "@/orpc/routes/system/routes/system.read.schema";
 
 const complianceModuleCreate = baseContract
   .route({
@@ -14,7 +11,7 @@ const complianceModuleCreate = baseContract
     tags: ["system"],
   })
   .input(SystemComplianceModuleCreateSchema)
-  .output(eventIterator(SystemComplianceModuleCreateOutputSchema));
+  .output(SystemReadSchema);
 
 export const complianceModuleContract = {
   complianceModuleCreate,

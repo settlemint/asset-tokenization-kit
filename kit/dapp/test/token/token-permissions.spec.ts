@@ -9,44 +9,22 @@ import {
 import { beforeAll, describe, expect, test } from "vitest";
 
 describe("Token permissions", () => {
-  let token: Awaited<ReturnType<typeof createToken>> | null = null;
+  let token: Awaited<ReturnType<typeof createToken>>;
 
   beforeAll(async () => {
-    // Skip token creation in CI for system access manager integration branch
-    if (process.env.CI === "true") {
-      console.log(
-        "Skipping token creation in CI for system access manager integration"
-      );
-      return;
-    }
-
-    try {
-      const headers = await signInWithUser(DEFAULT_ADMIN);
-      const client = getOrpcClient(headers);
-      token = await createToken(client, {
-        name: "Test Token",
-        symbol: "TT",
-        decimals: 18,
-        type: "stablecoin",
-        countryCode: "056",
-        verification: {
-          verificationCode: DEFAULT_PINCODE,
-          verificationType: "pincode",
-        },
-      });
-    } catch (error: unknown) {
-      if (
-        error instanceof Error &&
-        (error.toString().includes("AccessControlUnauthorizedAccount") ||
-          error.toString().includes("Token factory context not set"))
-      ) {
-        console.log(
-          "Skipping token creation due to access control error in system access manager integration"
-        );
-      } else {
-        throw error;
-      }
-    }
+    const headers = await signInWithUser(DEFAULT_ADMIN);
+    const client = getOrpcClient(headers);
+    token = await createToken(client, {
+      name: "Test Token",
+      symbol: "TT",
+      decimals: 18,
+      type: "stablecoin",
+      countryCode: "056",
+      verification: {
+        verificationCode: DEFAULT_PINCODE,
+        verificationType: "pincode",
+      },
+    });
   });
 
   test("admin has all permissions", async () => {

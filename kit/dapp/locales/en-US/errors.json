@@ -42,13 +42,7 @@
   },
   "portal": {
     "description": "We're having trouble connecting to our data service. This is usually temporary — try refreshing in a moment.",
-    "title": "Connection issue",
-    "error-codes": {
-      "default": "An error occurred while processing the request",
-      "AccessControlUnauthorizedAccount": "You are not authorized to perform this action",
-      "SystemAddonTypeAlreadyRegistered": "The system addon type is already registered",
-      "SystemNotBootstrapped": "The system is not bootstrapped"
-    }
+    "title": "Connection issue"
   },
   "rateLimit": {
     "description": "Whoa, slow down there! You've been quite busy. Take a breather for a moment, then try again.",

@@ -136,7 +136,7 @@ function createValidatedPortalClient(
           error: error instanceof Error ? error.message : String(error),
         });
 
-        handlePortalError(error);
+        handlePortalError(error, errors);
       }
 
       // Find transaction hash in the result

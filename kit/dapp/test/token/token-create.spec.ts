@@ -10,14 +10,6 @@ import {
 
 describe("Token create", () => {
   test("can create a token", async () => {
-    // Skip this test in CI for system access manager integration branch
-    if (process.env.CI === "true") {
-      console.log(
-        "Skipping token creation test in CI for system access manager integration"
-      );
-      return;
-    }
-
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
@@ -61,14 +53,6 @@ describe("Token create", () => {
   });
 
   test("regular users cant create tokens", async () => {
-    // Skip this test in CI for system access manager integration branch
-    if (process.env.CI === "true") {
-      console.log(
-        "Skipping token permission test in CI for system access manager integration"
-      );
-      return;
-    }
-
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
 
