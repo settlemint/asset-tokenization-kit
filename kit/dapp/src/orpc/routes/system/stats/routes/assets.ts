@@ -77,7 +77,7 @@ function createAssetBreakdown(
  * console.log('Breakdown:', stats.assetBreakdown);
  * ```
  */
-export const statsSystemAssets = authRouter.token.statsSystemAssets
+export const statsAssets = authRouter.token.statsSystemAssets
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {

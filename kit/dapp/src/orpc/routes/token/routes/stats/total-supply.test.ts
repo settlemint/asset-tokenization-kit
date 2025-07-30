@@ -12,9 +12,9 @@
 import { safeParse } from "@/lib/zod";
 import { describe, expect, it } from "vitest";
 import {
-  TokenStatsAssetTotalSupplyInputSchema,
-  TokenStatsAssetTotalSupplyOutputSchema,
-  type TokenStatsAssetTotalSupplyOutput,
+  StatsTotalSupplyInputSchema,
+  StatsTotalSupplyOutputSchema,
+  type StatsTotalSupplyOutput,
 } from "./total-supply.schema";
 
 // Logger is mocked via vitest.config.ts alias
@@ -26,10 +26,7 @@ describe("Token Total Supply Schema Validation", () => {
         tokenAddress: "0x1234567890123456789012345678901234567890",
         days: 30,
       };
-      const result = safeParse(
-        TokenStatsAssetTotalSupplyInputSchema,
-        validInput
-      );
+      const result = safeParse(StatsTotalSupplyInputSchema, validInput);
       expect(result.tokenAddress).toBe(
         "0x1234567890123456789012345678901234567890"
       );
@@ -40,10 +37,7 @@ describe("Token Total Supply Schema Validation", () => {
       const inputWithoutDays = {
         tokenAddress: "0x1234567890123456789012345678901234567890",
       };
-      const result = safeParse(
-        TokenStatsAssetTotalSupplyInputSchema,
-        inputWithoutDays
-      );
+      const result = safeParse(StatsTotalSupplyInputSchema, inputWithoutDays);
       expect(result.days).toBe(30); // Default value
     });
 
@@ -53,7 +47,7 @@ describe("Token Total Supply Schema Validation", () => {
         days: 0, // Below minimum
       };
       expect(() =>
-        safeParse(TokenStatsAssetTotalSupplyInputSchema, invalidInput)
+        safeParse(StatsTotalSupplyInputSchema, invalidInput)
       ).toThrow("Validation failed with error(s). Check logs for details.");
     });
 
@@ -63,7 +57,7 @@ describe("Token Total Supply Schema Validation", () => {
         days: 366, // Above maximum
       };
       expect(() =>
-        safeParse(TokenStatsAssetTotalSupplyInputSchema, invalidInput)
+        safeParse(StatsTotalSupplyInputSchema, invalidInput)
       ).toThrow("Validation failed with error(s). Check logs for details.");
     });
 
@@ -73,7 +67,7 @@ describe("Token Total Supply Schema Validation", () => {
         days: 30,
       };
       expect(() =>
-        safeParse(TokenStatsAssetTotalSupplyInputSchema, invalidAddress)
+        safeParse(StatsTotalSupplyInputSchema, invalidAddress)
       ).toThrow();
     });
 
@@ -83,7 +77,7 @@ describe("Token Total Supply Schema Validation", () => {
         days: 30,
       };
       expect(() =>
-        safeParse(TokenStatsAssetTotalSupplyInputSchema, nonHexAddress)
+        safeParse(StatsTotalSupplyInputSchema, nonHexAddress)
       ).toThrow("Validation failed with error(s). Check logs for details.");
     });
 
@@ -93,7 +87,7 @@ describe("Token Total Supply Schema Validation", () => {
         days: 30,
       };
       expect(() =>
-        safeParse(TokenStatsAssetTotalSupplyInputSchema, shortAddress)
+        safeParse(StatsTotalSupplyInputSchema, shortAddress)
       ).toThrow();
     });
 
@@ -102,10 +96,7 @@ describe("Token Total Supply Schema Validation", () => {
         tokenAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
         days: 30,
       };
-      const result = safeParse(
-        TokenStatsAssetTotalSupplyInputSchema,
-        lowercaseAddress
-      );
+      const result = safeParse(StatsTotalSupplyInputSchema, lowercaseAddress);
       // Should be checksummed (mixed case)
       expect(result.tokenAddress).not.toBe(
         "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"
@@ -116,7 +107,7 @@ describe("Token Total Supply Schema Validation", () => {
 
   describe("Output Schema", () => {
     it("should validate correct output structure", () => {
-      const validOutput: TokenStatsAssetTotalSupplyOutput = {
+      const validOutput: StatsTotalSupplyOutput = {
         totalSupplyHistory: [
           {
             timestamp: 1_640_995_200, // Unix timestamp
@@ -128,10 +119,7 @@ describe("Token Total Supply Schema Validation", () => {
           },
         ],
       };
-      const result = safeParse(
-        TokenStatsAssetTotalSupplyOutputSchema,
-        validOutput
-      );
+      const result = safeParse(StatsTotalSupplyOutputSchema, validOutput);
       expect(result.totalSupplyHistory).toHaveLength(2);
       expect(result.totalSupplyHistory[0]?.timestamp).toBe(1_640_995_200);
       expect(result.totalSupplyHistory[0]?.totalSupply).toBe(
@@ -140,13 +128,10 @@ describe("Token Total Supply Schema Validation", () => {
     });
 
     it("should handle empty supply history", () => {
-      const emptyOutput: TokenStatsAssetTotalSupplyOutput = {
+      const emptyOutput: StatsTotalSupplyOutput = {
         totalSupplyHistory: [],
       };
-      const result = safeParse(
-        TokenStatsAssetTotalSupplyOutputSchema,
-        emptyOutput
-      );
+      const result = safeParse(StatsTotalSupplyOutputSchema, emptyOutput);
       expect(result.totalSupplyHistory).toHaveLength(0);
     });
 
@@ -160,7 +145,7 @@ describe("Token Total Supply Schema Validation", () => {
         ],
       };
       expect(() =>
-        safeParse(TokenStatsAssetTotalSupplyOutputSchema, invalidOutput)
+        safeParse(StatsTotalSupplyOutputSchema, invalidOutput)
       ).toThrow();
     });
 
@@ -174,7 +159,7 @@ describe("Token Total Supply Schema Validation", () => {
         ],
       };
       expect(() =>
-        safeParse(TokenStatsAssetTotalSupplyOutputSchema, invalidOutput)
+        safeParse(StatsTotalSupplyOutputSchema, invalidOutput)
       ).toThrow();
     });
   });
@@ -248,7 +233,7 @@ describe("Edge Cases and Error Scenarios", () => {
         tokenAddress: "0x1234567890123456789012345678901234567890",
         days: 1,
       };
-      const result = safeParse(TokenStatsAssetTotalSupplyInputSchema, input);
+      const result = safeParse(StatsTotalSupplyInputSchema, input);
       expect(result.days).toBe(1);
     });
 
@@ -257,7 +242,7 @@ describe("Edge Cases and Error Scenarios", () => {
         tokenAddress: "0x1234567890123456789012345678901234567890",
         days: 365,
       };
-      const result = safeParse(TokenStatsAssetTotalSupplyInputSchema, input);
+      const result = safeParse(StatsTotalSupplyInputSchema, input);
       expect(result.days).toBe(365);
     });
   });
@@ -321,7 +306,7 @@ describe("Security and Input Sanitization", () => {
     };
     // The ethereumAddress validator should reject this
     expect(() =>
-      safeParse(TokenStatsAssetTotalSupplyInputSchema, maliciousInput)
+      safeParse(StatsTotalSupplyInputSchema, maliciousInput)
     ).toThrow();
   });
 
@@ -337,9 +322,9 @@ describe("Security and Input Sanitization", () => {
     invalidTestCases.forEach((testCase) => {
       const input = { tokenAddress: testCase, days: 30 };
       // All these should fail
-      expect(() =>
-        safeParse(TokenStatsAssetTotalSupplyInputSchema, input)
-      ).toThrow("Validation failed with error(s). Check logs for details.");
+      expect(() => safeParse(StatsTotalSupplyInputSchema, input)).toThrow(
+        "Validation failed with error(s). Check logs for details."
+      );
     });
   });
 });

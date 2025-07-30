@@ -48,7 +48,7 @@ const TotalValueResponseSchema = z.object({
  * console.log(`Total system value: ${totalValue}`);
  * ```
  */
-export const statsSystemValue = authRouter.token.statsSystemValue
+export const statsValue = authRouter.token.statsSystemValue
   .use(systemMiddleware)
   .use(theGraphMiddleware)
   .handler(async ({ context }) => {

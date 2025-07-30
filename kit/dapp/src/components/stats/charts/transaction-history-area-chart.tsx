@@ -25,7 +25,7 @@ export function TransactionHistoryAreaChart() {
 
   // Fetch just the transaction history data - more efficient
   const { data: metrics } = useSuspenseQuery(
-    orpc.token.statsSystemTransactionHistory.queryOptions({
+    orpc.system.statsTransactionHistory.queryOptions({
       input: { timeRange: 7 },
     }) // 7 days of data
   );

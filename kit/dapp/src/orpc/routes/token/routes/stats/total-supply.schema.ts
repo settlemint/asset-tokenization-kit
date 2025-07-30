@@ -4,7 +4,7 @@ import { z } from "zod";
 /**
  * Schema for asset-specific total supply input parameters
  */
-export const TokenStatsAssetTotalSupplyInputSchema = z.object({
+export const StatsTotalSupplyInputSchema = z.object({
   /** The token address for which to fetch total supply history */
   tokenAddress: ethereumAddress.describe("The token contract address"),
 
@@ -16,7 +16,7 @@ export const TokenStatsAssetTotalSupplyInputSchema = z.object({
  * Schema for asset-specific total supply output
  * Contains total supply history over time for a specific asset
  */
-export const TokenStatsAssetTotalSupplyOutputSchema = z.object({
+export const StatsTotalSupplyOutputSchema = z.object({
   /** Historical total supply data points for charting */
   totalSupplyHistory: z.array(
     z.object({
@@ -32,13 +32,11 @@ export const TokenStatsAssetTotalSupplyOutputSchema = z.object({
 /**
  * Type definition for asset-specific total supply input
  */
-export type TokenStatsAssetTotalSupplyInput = z.infer<
-  typeof TokenStatsAssetTotalSupplyInputSchema
->;
+export type StatsTotalSupplyInput = z.infer<typeof StatsTotalSupplyInputSchema>;
 
 /**
  * Type definition for asset-specific total supply output
  */
-export type TokenStatsAssetTotalSupplyOutput = z.infer<
-  typeof TokenStatsAssetTotalSupplyOutputSchema
+export type StatsTotalSupplyOutput = z.infer<
+  typeof StatsTotalSupplyOutputSchema
 >;

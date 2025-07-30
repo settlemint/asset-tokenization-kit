@@ -5,11 +5,11 @@ import { authRouter } from "@/orpc/procedures/auth.router";
 import { z } from "zod";
 
 /**
- * GraphQL query to fetch transaction count metrics
- * Optimized for the Transaction Stats Widget specifically
+ * GraphQL query to fetch transaction-related metrics
+ * Combines total transaction counts with time-series data for history tracking
  */
-const TRANSACTION_COUNT_QUERY = theGraphGraphql(`
-  query TransactionCount($since: Timestamp!) {
+const TRANSACTION_METRICS_QUERY = theGraphGraphql(`
+  query TransactionMetrics($since: Timestamp!) {
     # Total transaction count (all Transfer events)
     totalTransactions: eventStats_collection(
       where: { eventName: "Transfer" }
@@ -28,11 +28,25 @@ const TRANSACTION_COUNT_QUERY = theGraphGraphql(`
     ) {
       eventsCount
     }
+
+    # Transaction history over time for charting
+    transactionHistory: eventStats_collection(
+      where: {
+        timestamp_gte: $since
+        eventName: "Transfer"
+      }
+      interval: day
+      orderBy: timestamp
+      orderDirection: asc
+    ) {
+      timestamp
+      eventsCount
+    }
   }
 `);
 
 // Schema for the GraphQL response
-const TransactionCountResponseSchema = z.object({
+const TransactionMetricsResponseSchema = z.object({
   totalTransactions: z.array(
     z.object({
       eventsCount: z.number(),
@@ -40,6 +54,12 @@ const TransactionCountResponseSchema = z.object({
   ),
   recentTransactions: z.array(
     z.object({
+      eventsCount: z.number(),
+    })
+  ),
+  transactionHistory: z.array(
+    z.object({
+      timestamp: z.string(),
       eventsCount: z.number(),
     })
   ),
@@ -53,31 +73,45 @@ function sumEventCounts(eventStats: { eventsCount: number }[]): number {
 }
 
 /**
- * System transaction count route handler.
+ * Helper function to process event stats into transaction history data
+ * Converts raw event statistics into daily transaction counts
+ */
+function processTransactionHistoryData(
+  eventStats: { timestamp: string; eventsCount: number }[]
+): { timestamp: string; transactions: number }[] {
+  return eventStats.map((stat) => ({
+    timestamp: stat.timestamp,
+    transactions: stat.eventsCount,
+  }));
+}
+
+/**
+ * System transaction history route handler.
  *
- * Fetches system-wide transaction count metrics:
+ * Fetches comprehensive system-wide transaction-related metrics including:
  * - Total number of transactions (all Transfer events)
  * - Number of recent transactions in the specified time range
+ * - Transaction history data over time for charting
  *
- * This endpoint is optimized for displaying transaction count summaries.
+ * This endpoint is optimized for dashboard transaction widgets and history charts.
  *
  * Authentication: Required
- * Method: GET /token/stats/system/transaction-count
+ * Method: GET /token/stats/system/transaction-history
  *
  * @param input.timeRange - Number of days to look back for recent activity (default: 7)
- * @returns Promise<SystemTransactionCountMetrics> - Transaction count metrics
+ * @returns Promise<SystemTransactionHistoryMetrics> - Comprehensive transaction metrics
  * @throws UNAUTHORIZED - If user is not authenticated
  * @throws INTERNAL_SERVER_ERROR - If TheGraph query fails
  *
  * @example
  * ```typescript
- * // Get transaction count for the last 14 days
- * const stats = await orpc.token.statsSystemTransactionCount.query({ input: { timeRange: 14 } });
- * console.log(`Total: ${stats.totalTransactions}, Recent: ${stats.recentTransactions}`);
+ * // Get transaction metrics for the last 14 days
+ * const metrics = await orpc.token.statsSystemTransactionHistory.query({ input: { timeRange: 14 } });
+ * console.log(metrics.totalTransactions, metrics.transactionHistory);
  * ```
  */
-export const statsSystemTransactionCount =
-  authRouter.token.statsSystemTransactionCount
+export const statsTransactionHistory =
+  authRouter.token.statsSystemTransactionHistory
     .use(systemMiddleware)
     .use(theGraphMiddleware)
     .handler(async ({ context, input }) => {
@@ -91,25 +125,29 @@ export const statsSystemTransactionCount =
       since.setDate(since.getDate() - timeRange);
       const sinceTimestamp = Math.floor(since.getTime() / 1000); // Convert to Unix timestamp
 
-      // Fetch transaction count data in a single query
+      // Fetch all transaction-related data in a single query
       const response = await context.theGraphClient.query(
-        TRANSACTION_COUNT_QUERY,
+        TRANSACTION_METRICS_QUERY,
         {
           input: {
             since: sinceTimestamp.toString(),
           },
-          output: TransactionCountResponseSchema,
-          error: context.t("tokens:api.stats.transactionCount.messages.failed"),
+          output: TransactionMetricsResponseSchema,
+          error: context.t("tokens:api.stats.transactions.messages.failed"),
         }
       );
 
       // Calculate metrics
       const totalTransactions = sumEventCounts(response.totalTransactions);
       const recentTransactions = sumEventCounts(response.recentTransactions);
+      const transactionHistory = processTransactionHistoryData(
+        response.transactionHistory
+      );
 
       return {
         totalTransactions,
         recentTransactions,
+        transactionHistory,
         timeRangeDays: timeRange,
       };
     });

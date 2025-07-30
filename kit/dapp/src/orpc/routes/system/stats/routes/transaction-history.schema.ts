@@ -3,7 +3,7 @@ import { z } from "zod";
 /**
  * Schema for system transaction history input parameters
  */
-export const TokenStatsSystemTransactionHistoryInputSchema = z.object({
+export const StatsTransactionHistoryInputSchema = z.object({
   /** Time range in days for historical data (default: 7 days) */
   timeRange: z.number().min(1).max(365).optional().default(7),
 });
@@ -12,7 +12,7 @@ export const TokenStatsSystemTransactionHistoryInputSchema = z.object({
  * Schema for system transaction history output
  * Contains transaction-related metrics including totals and history over time
  */
-export const TokenStatsSystemTransactionHistoryOutputSchema = z.object({
+export const StatsTransactionHistoryOutputSchema = z.object({
   /** Total number of transactions (all Transfer events) */
   totalTransactions: z.number(),
 
@@ -37,13 +37,13 @@ export const TokenStatsSystemTransactionHistoryOutputSchema = z.object({
 /**
  * Type definition for system transaction history input
  */
-export type TokenStatsSystemTransactionHistoryInput = z.infer<
-  typeof TokenStatsSystemTransactionHistoryInputSchema
+export type StatsTransactionHistoryInput = z.infer<
+  typeof StatsTransactionHistoryInputSchema
 >;
 
 /**
  * Type definition for system transaction history output
  */
-export type TokenStatsSystemTransactionHistoryOutput = z.infer<
-  typeof TokenStatsSystemTransactionHistoryOutputSchema
+export type StatsTransactionHistoryOutput = z.infer<
+  typeof StatsTransactionHistoryOutputSchema
 >;

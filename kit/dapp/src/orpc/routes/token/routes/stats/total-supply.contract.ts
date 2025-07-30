@@ -1,10 +1,10 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
 import {
-  TokenStatsAssetTotalSupplyInputSchema,
-  TokenStatsAssetTotalSupplyOutputSchema,
-} from "@/orpc/routes/token/routes/stats/[tokenAddress]/total-supply.schema";
+  StatsTotalSupplyInputSchema,
+  StatsTotalSupplyOutputSchema,
+} from "@/orpc/routes/token/routes/stats/total-supply.schema";
 
-export const tokenStatsAssetTotalSupplyContract = baseContract
+export const statsTotalSupplyContract = baseContract
   .route({
     method: "GET",
     path: "/token/stats/{tokenAddress}/total-supply",
@@ -12,5 +12,5 @@ export const tokenStatsAssetTotalSupplyContract = baseContract
     successDescription: "Token total supply history statistics",
     tags: ["token", "stats", "asset", "total-supply"],
   })
-  .input(TokenStatsAssetTotalSupplyInputSchema)
-  .output(TokenStatsAssetTotalSupplyOutputSchema);
+  .input(StatsTotalSupplyInputSchema)
+  .output(StatsTotalSupplyOutputSchema);

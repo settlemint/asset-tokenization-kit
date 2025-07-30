@@ -74,7 +74,7 @@ export function TokenTotalSupplyAreaChart({
   const {
     data: { chartData, chartConfig, dataKeys, isEmpty },
   } = useSuspenseQuery(
-    orpc.token.statsAssetTotalSupply.queryOptions({
+    orpc.token.statsTotalSupply.queryOptions({
       input: { tokenAddress, days: timeRange },
       select: selectTransform,
       staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls

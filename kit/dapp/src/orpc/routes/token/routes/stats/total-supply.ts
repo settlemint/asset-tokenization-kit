@@ -22,7 +22,7 @@ const TOKEN_TOTAL_SUPPLY_QUERY = theGraphGraphql(`
 `);
 
 // Schema for the GraphQL response
-const TokenTotalSupplyResponseSchema = z.object({
+const StatsTotalSupplyResponseSchema = z.object({
   tokenStats_collection: z.array(
     z.object({
       timestamp: z.string(),
@@ -83,7 +83,7 @@ function processTotalSupplyHistoryData(
  * console.log(metrics.totalSupplyHistory);
  * ```
  */
-export const statsAssetTotalSupply = tokenRouter.token.statsAssetTotalSupply
+export const statsTotalSupply = tokenRouter.token.statsTotalSupply
   .use(theGraphMiddleware)
   .handler(async ({ context, input }) => {
     // Token context is guaranteed by tokenRouter middleware
@@ -112,7 +112,7 @@ export const statsAssetTotalSupply = tokenRouter.token.statsAssetTotalSupply
           tokenId: tokenAddress.toLowerCase(),
           since: sinceTimestamp.toString(),
         },
-        output: TokenTotalSupplyResponseSchema,
+        output: StatsTotalSupplyResponseSchema,
         error: "Failed to fetch token total supply history",
       }
     );

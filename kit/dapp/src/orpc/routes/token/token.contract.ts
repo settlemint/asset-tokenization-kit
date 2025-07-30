@@ -3,6 +3,8 @@ import { factoryCreateContract } from "@/orpc/routes/token/routes/factory/factor
 import { factoryListContract } from "@/orpc/routes/token/routes/factory/factory.list.contract";
 import { factoryReadContract } from "@/orpc/routes/token/routes/factory/factory.read.contract";
 
+import { factoryPredictAddressContract } from "@/orpc/routes/token/routes/factory/factory.predict-address.contract";
+
 // Mutation contracts
 import { tokenApproveContract } from "@/orpc/routes/token/routes/mutations/approve/token.approve.contract";
 import { tokenBurnContract } from "@/orpc/routes/token/routes/mutations/burn/token.burn.contract";
@@ -29,12 +31,7 @@ import { tokenListContract } from "@/orpc/routes/token/routes/token.list.contrac
 import { tokenReadContract } from "@/orpc/routes/token/routes/token.read.contract";
 
 // Stats contracts
-import { factoryPredictAddressContract } from "@/orpc/routes/token/routes/factory/factory.predict-address.contract";
-import { tokenStatsSystemAssetsContract } from "@/orpc/routes/token/routes/stats/system/assets.contract";
-import { tokenStatsSystemValueContract } from "@/orpc/routes/token/routes/stats/system/value.contract";
-import { tokenStatsSystemTransactionCountContract } from "@/orpc/routes/token/routes/stats/system/transaction-count.contract";
-import { tokenStatsSystemTransactionHistoryContract } from "@/orpc/routes/token/routes/stats/system/transaction-history.contract";
-import { tokenStatsAssetTotalSupplyContract } from "@/orpc/routes/token/routes/stats/[tokenAddress]/total-supply.contract";
+import { statsTotalSupplyContract } from "@/orpc/routes/token/routes/stats/total-supply.contract";
 
 export const tokenContract = {
   // Factory
@@ -69,11 +66,7 @@ export const tokenContract = {
   holders: tokenHoldersContract,
 
   // Stats
-  statsSystemTransactionHistory: tokenStatsSystemTransactionHistoryContract,
-  statsSystemAssets: tokenStatsSystemAssetsContract,
-  statsSystemTransactionCount: tokenStatsSystemTransactionCountContract,
-  statsSystemValue: tokenStatsSystemValueContract,
-  statsAssetTotalSupply: tokenStatsAssetTotalSupplyContract,
+  statsTotalSupply: statsTotalSupplyContract,
 };
 
 // Extract mutation keys for permissions
