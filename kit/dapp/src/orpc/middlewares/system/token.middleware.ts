@@ -1,9 +1,7 @@
-import {
-  AccessControlFragment,
-  type AccessControlRoles,
-} from "@/lib/fragments/the-graph/access-control-fragment";
+import { AccessControlFragment } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { isEthereumAddress } from "@/lib/zod/validators/ethereum-address";
+import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
@@ -117,45 +115,7 @@ export const tokenMiddleware = baseRouter.middleware(
       });
     }
 
-    // Initialize with all roles set to false
-    const initialUserRoles: Record<AccessControlRoles, boolean> = {
-      addonModule: false,
-      addonRegistryModule: false,
-      admin: false,
-      auditor: false,
-      bypassListManager: false,
-      bypassListManagerAdmin: false,
-      claimManager: false,
-      custodian: false,
-      deployer: false,
-      emergency: false,
-      fundsManager: false,
-      globalListManager: false,
-      governance: false,
-      identityRegistryModule: false,
-      implementationManager: false,
-      registrar: false,
-      registrarAdmin: false,
-      registryManager: false,
-      saleAdmin: false,
-      signer: false,
-      storageModifier: false,
-      supplyManagement: false,
-      systemModule: false,
-      tokenFactoryModule: false,
-      tokenFactoryRegistryModule: false,
-    };
-
-    const userRoles = Object.entries(token.accessControl ?? {}).reduce<
-      Record<AccessControlRoles, boolean>
-    >((acc, [role, accounts]) => {
-      const userHasRole = accounts.some(
-        (account) => account.id === auth.user.wallet
-      );
-      acc[role as AccessControlRoles] = userHasRole;
-      return acc;
-    }, initialUserRoles);
-
+    const userRoles = mapUserRoles(auth.user.wallet, token.accessControl);
     const tokenContext = TokenSchema.parse({
       ...token,
       userPermissions: {

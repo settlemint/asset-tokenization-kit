@@ -13,11 +13,13 @@ import { AssetFactoryTypeIdEnum } from "@/lib/zod/validators/asset-types";
 import { getEthereumAddress } from "@/lib/zod/validators/ethereum-address";
 import type { VerificationType } from "@/lib/zod/validators/verification-type";
 import { VerificationType as VerificationTypeEnum } from "@/lib/zod/validators/verification-type";
+import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { getSystemContext } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
+import { TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/routes/factory/factory.permissions";
 import { call, ORPCError } from "@orpc/server";
 import { eq } from "drizzle-orm";
 import { zeroAddress } from "viem";
@@ -108,11 +110,11 @@ export const me = authRouter.user.me
 
     const { kyc } = userQueryResult ?? {};
 
-    const systemOnboardingState = await getSystemOnboardingState(
+    const { accessControl, ...systemOnboardingState } = await getSystemInfo(
       systemAddress,
       systemAddonsSkipped
     );
-
+    const userRoles = mapUserRoles(authUser.wallet, accessControl);
     return {
       id: authUser.id,
       name:
@@ -134,7 +136,10 @@ export const me = authRouter.user.me
       userPermissions: {
         tokenFactory: {
           actions: {
-            create: true,
+            create:
+              TOKEN_FACTORY_PERMISSIONS.create.every(
+                (role) => userRoles[role]
+              ) ?? false,
           },
         },
       },
@@ -151,7 +156,7 @@ export const me = authRouter.user.me
     };
   });
 
-async function getSystemOnboardingState(
+async function getSystemInfo(
   systemAddress: string | null,
   systemAddonsSkipped: string | null
 ) {
@@ -160,15 +165,22 @@ async function getSystemOnboardingState(
     systemAssets: false,
     systemAddons: false,
   };
+
   if (!systemAddress) {
-    return systemOnboardingState;
+    return {
+      ...systemOnboardingState,
+      accessControl: null,
+    };
   }
   try {
     const systemData = await getSystemContext(
       getEthereumAddress(systemAddress)
     );
     if (!systemData) {
-      return systemOnboardingState;
+      return {
+        ...systemOnboardingState,
+        accessControl: null,
+      };
     }
     systemOnboardingState.system = true;
     systemOnboardingState.systemAssets = systemData.tokenFactories.length > 0;
@@ -194,13 +206,15 @@ async function getSystemOnboardingState(
         ? hasYieldAddon
         : systemData.systemAddons.length > 0;
     }
+    return {
+      ...systemOnboardingState,
+      accessControl: systemData.accessControl,
+    };
   } catch {
     // If system read fails, we assume no factories and addons
-    return {
-      system: false,
-      systemAssets: false,
-      systemAddons: false,
-    };
   }
-  return systemOnboardingState;
+  return {
+    ...systemOnboardingState,
+    accessControl: null,
+  };
 }

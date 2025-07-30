@@ -1,98 +1,55 @@
-import { portalGraphql } from "@/lib/settlemint/portal";
-import type { ValidatedPortalClient } from "@/orpc/middlewares/services/portal.middleware";
-import { z } from "zod";
+import type {
+  AccessControl,
+  AccessControlRoles,
+} from "@/lib/fragments/the-graph/access-control-fragment";
+import type { EthereumAddress } from "@/lib/zod/validators/ethereum-address";
 
 /**
- * Role names used in the token contracts
+ * Maps the user roles from the access control fragment
+ * @param wallet - The wallet address of the user
+ * @param accessControl - The access control fragment
+ * @returns The user roles
  */
-export const TOKEN_ROLES = {
-  MINTER: "MINTER_ROLE",
-  BURNER: "BURNER_ROLE",
-  PAUSER: "PAUSER_ROLE",
-  FREEZER: "FREEZER_ROLE",
-  CUSTODIAN: "CUSTODIAN_ROLE",
-  REDEEMER: "REDEEMER_ROLE",
-  CAP_SETTER: "CAP_SETTER_ROLE",
-  YIELD_MANAGER: "YIELD_MANAGER_ROLE",
-  COMPLIANCE_MANAGER: "COMPLIANCE_MANAGER_ROLE",
-  RECOVERY_AGENT: "RECOVERY_AGENT_ROLE",
-} as const;
+export function mapUserRoles(
+  wallet: EthereumAddress,
+  accessControl: AccessControl | null
+) {
+  // Initialize with all roles set to false
+  const initialUserRoles: Record<AccessControlRoles, boolean> = {
+    addonModule: false,
+    addonRegistryModule: false,
+    admin: false,
+    auditor: false,
+    bypassListManager: false,
+    bypassListManagerAdmin: false,
+    claimManager: false,
+    custodian: false,
+    deployer: false,
+    emergency: false,
+    fundsManager: false,
+    globalListManager: false,
+    governance: false,
+    identityRegistryModule: false,
+    implementationManager: false,
+    registrar: false,
+    registrarAdmin: false,
+    registryManager: false,
+    saleAdmin: false,
+    signer: false,
+    storageModifier: false,
+    supplyManagement: false,
+    systemModule: false,
+    tokenFactoryModule: false,
+    tokenFactoryRegistryModule: false,
+  };
 
-export type TokenRole = (typeof TOKEN_ROLES)[keyof typeof TOKEN_ROLES];
+  const userRoles = Object.entries(accessControl ?? {}).reduce<
+    Record<AccessControlRoles, boolean>
+  >((acc, [role, accounts]) => {
+    const userHasRole = accounts.some((account) => account.id === wallet);
+    acc[role as AccessControlRoles] = userHasRole;
+    return acc;
+  }, initialUserRoles);
 
-/**
- * GraphQL query to check if an address has a specific role
- */
-const HAS_ROLE_QUERY = portalGraphql(`
-  query HasRole($contract: String!, $account: String!, $role: String!) {
-    hasRole: IAccessControlHasRole(
-      address: $contract
-      account: $account
-      role: $role
-    ) {
-      hasRole
-    }
-  }
-`);
-
-/**
- * Check if an account has a specific role on a contract
- * @param client - The portal client
- * @param contract - The contract address
- * @param account - The account to check
- * @param role - The role to check
- * @returns true if the account has the role, false otherwise
- */
-export async function hasRole(
-  client: ValidatedPortalClient,
-  contract: string,
-  account: string,
-  role: TokenRole
-): Promise<boolean> {
-  try {
-    const result = await client.query(
-      HAS_ROLE_QUERY,
-      {
-        contract,
-        account,
-        role,
-      },
-      z.object({
-        hasRole: z.object({
-          hasRole: z.boolean(),
-        }),
-      }),
-      "Failed to check role"
-    );
-
-    return result.hasRole.hasRole;
-  } catch {
-    // If the contract doesn't implement IAccessControl, assume no role
-    return false;
-  }
-}
-
-/**
- * Validate that an account has the required role, throwing if not
- * @param client - The portal client
- * @param contract - The contract address
- * @param account - The account to check
- * @param role - The role to check
- * @param operation - The operation name for error messages
- * @throws ORPCError if the account doesn't have the required role
- */
-export async function validateRole(
-  client: ValidatedPortalClient,
-  contract: string,
-  account: string,
-  role: TokenRole,
-  operation: string
-): Promise<void> {
-  const hasRequiredRole = await hasRole(client, contract, account, role);
-
-  if (!hasRequiredRole) {
-    throw new Error(
-      `Account ${account} does not have the required ${role} to perform ${operation}`
-    );
-  }
+  return userRoles;
 }
