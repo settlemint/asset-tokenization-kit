@@ -73,14 +73,14 @@ export function TokenTotalSupplyAreaChart({
   // Fetch and transform total supply history data with optimized caching
   const {
     data: { chartData, chartConfig, dataKeys, isEmpty },
-  } = useSuspenseQuery({
-    ...orpc.token.statsAssetTotalSupply.queryOptions({
+  } = useSuspenseQuery(
+    orpc.token.statsAssetTotalSupply.queryOptions({
       input: { tokenAddress, days: timeRange },
-    }),
-    select: selectTransform,
-    staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
-    gcTime: 10 * 60 * 1000, // 10 minutes - cache retention
-  });
+      select: selectTransform,
+      staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
+      gcTime: 10 * 60 * 1000, // 10 minutes - cache retention
+    })
+  );
 
   // Handle empty state
   if (isEmpty) {
