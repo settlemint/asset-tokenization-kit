@@ -69,6 +69,39 @@ export function withPostfix<T extends object>(
   return ComponentWithPostfix;
 }
 
+export function FieldWithAddons({
+  startAddon,
+  endAddon,
+  children,
+}: {
+  startAddon?: string;
+  endAddon?: string;
+  children: (inputProps: { className?: string }) => React.ReactElement;
+}) {
+  return (
+    <div className="flex rounded-md shadow-xs">
+      {startAddon && (
+        <span className="border-input bg-background text-muted-foreground inline-flex items-center rounded-s-md border px-3 text-sm">
+          {startAddon}
+        </span>
+      )}
+      {children({
+        className: cn(
+          "shadow-none",
+          startAddon && !endAddon && "-ms-px rounded-s-none",
+          !startAddon && endAddon && "-me-px rounded-e-none",
+          startAddon && endAddon && "-mx-px rounded-none"
+        ),
+      })}
+      {endAddon && (
+        <span className="border-input bg-background text-muted-foreground inline-flex items-center rounded-e-md border px-3 text-sm">
+          {endAddon}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export function errorClassNames({
   isTouched,
   errors,

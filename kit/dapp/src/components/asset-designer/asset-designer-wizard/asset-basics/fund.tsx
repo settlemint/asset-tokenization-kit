@@ -34,7 +34,7 @@ export const FundBasics = withForm({
             children={(field) => (
               <field.NumberField
                 label={t("form.fields.managementFeeBps.label")}
-                postfix="bps"
+                endAddon="bps"
                 required={isRequiredField("managementFeeBps")}
               />
             )}
