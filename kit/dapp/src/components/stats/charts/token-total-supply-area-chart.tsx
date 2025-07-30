@@ -47,7 +47,7 @@ export function TokenTotalSupplyAreaChart({
         // Transform the response data to chart format
         const transformedData = response.totalSupplyHistory.map((item) => ({
           timestamp: format(new Date(item.timestamp * 1000), "MMM dd"),
-          totalSupply: Number.parseFloat(item.totalSupply),
+          totalSupply: Number(BigInt(item.totalSupply)),
         }));
 
         // Configure chart colors and labels
