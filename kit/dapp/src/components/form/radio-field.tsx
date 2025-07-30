@@ -2,7 +2,8 @@ import { FormLabel } from "@/components/form/tanstack-form";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFieldContext } from "@/hooks/use-form-contexts";
-import { type ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import {
   FieldDescription,
   FieldErrors,
@@ -13,8 +14,9 @@ import {
 interface RadioOption {
   value: string;
   label: string;
-  description?: string;
-  icon?: ReactNode;
+  description?: ReactNode;
+  footer?: ReactNode;
+  icon?: LucideIcon;
 }
 
 export function RadioField({
@@ -23,12 +25,14 @@ export function RadioField({
   required = false,
   options = [],
   variant = "default",
+  onSelect,
 }: {
-  label: string;
+  label?: string;
   description?: string;
   required?: boolean;
   options?: RadioOption[];
   variant?: "default" | "card";
+  onSelect?: (value: string) => void;
 }) {
   // The `Field` infers that it should have a `value` type of `string`
   const field = useFieldContext<string>();
@@ -46,6 +50,7 @@ export function RadioField({
       value={field.state.value}
       onValueChange={(value) => {
         field.handleChange(value);
+        onSelect?.(value);
       }}
       className={`grid ${getGridColumns()} gap-4`}
     >
@@ -58,22 +63,26 @@ export function RadioField({
           />
           <FormLabel
             htmlFor={option.value}
-            className="flex cursor-pointer select-none rounded-lg border border-input bg-background p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-data-[state=checked]:text-primary transition-all h-full"
+            className="flex cursor-pointer select-none rounded-lg border border-input bg-background hover:bg-accent/50 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 peer-data-[state=checked]:text-primary transition-all h-full"
           >
-            <div className="flex items-start space-x-3 h-full">
-              {option.icon && (
-                <div className="flex-shrink-0 mt-0.5">{option.icon}</div>
-              )}
-              <div className="min-w-0 flex-1 flex flex-col">
-                <div className="text-sm font-medium leading-6 mb-1">
+            <div className="flex flex-col h-full p-4">
+              {/* Header with icon and title */}
+              <div className="flex items-center gap-2 mb-2">
+                {option.icon && <option.icon className="h-5 w-5" />}
+                <div className="text-base font-semibold capitalize">
                   {option.label}
                 </div>
-                {option.description && (
-                  <div className="text-sm text-muted-foreground flex-1">
-                    {option.description}
-                  </div>
-                )}
               </div>
+
+              {/* Description - takes up available space */}
+              {option.description && (
+                <div className="text-sm text-muted-foreground mb-4 flex-1">
+                  {option.description}
+                </div>
+              )}
+
+              {/* Footer - always at bottom */}
+              {option.footer && <div className="mt-auto">{option.footer}</div>}
             </div>
           </FormLabel>
         </div>
@@ -86,6 +95,7 @@ export function RadioField({
       value={field.state.value}
       onValueChange={(value) => {
         field.handleChange(value);
+        onSelect?.(value);
       }}
     >
       {options.map((option) => (

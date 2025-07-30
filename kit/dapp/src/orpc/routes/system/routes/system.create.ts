@@ -18,7 +18,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
-import { permissionsMiddleware } from "@/orpc/middlewares/auth/permissions.middleware";
+import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { portalMiddleware } from "@/orpc/middlewares/services/portal.middleware";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
@@ -122,7 +122,11 @@ const FIND_SYSTEM_FOR_TRANSACTION_QUERY = theGraphGraphql(`
  * ```
  */
 export const create = onboardedRouter.system.create
-  .use(permissionsMiddleware({ system: ["create"] }))
+  .use(
+    offChainPermissionsMiddleware({
+      requiredPermissions: { system: ["create"] },
+    })
+  )
   .use(theGraphMiddleware)
   .use(portalMiddleware)
   .handler(async ({ input, context, errors }) => {

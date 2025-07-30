@@ -112,7 +112,7 @@ describe("Token supply", () => {
         verificationType: "pincode",
       },
     });
-    await client.token.tokenApprove({
+    await client.token.approve({
       contract: depositToken.id,
       spender: admin.id,
       amount: "10",

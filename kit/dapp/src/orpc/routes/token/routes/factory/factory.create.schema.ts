@@ -108,14 +108,6 @@ const SingleFactorySchema = z.object({
  */
 export const FactoryCreateSchema = MutationInputSchemaWithContract.extend({
   /**
-   * The token factory registry contract address to use for creating factories
-   * This should be the TokenFactoryRegistry address from the deployed system
-   */
-  contract: ethereumAddress.describe(
-    "The token factory registry contract address"
-  ),
-
-  /**
    * Factory or factories to create
    * Can be a single factory object or an array of factories
    */

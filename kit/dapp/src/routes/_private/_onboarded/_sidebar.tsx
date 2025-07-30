@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar")({
  */
 function LayoutComponent() {
   return (
-    <SidebarProvider className="OnboardingSidebar">
+    <SidebarProvider className="OnboardedSidebar">
       <AppSidebar className="group-data-[side=left]:border-0" />
       <SidebarInset className="bg-sidebar">
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 bg-sidebar">

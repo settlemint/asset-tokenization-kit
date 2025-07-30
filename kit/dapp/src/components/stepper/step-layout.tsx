@@ -50,7 +50,7 @@ export function StepLayout<StepId, GroupId>({
 
   const renderGroupedSteps = () => {
     return (
-      <div className={cn("step-layout flex gap-6", className)}>
+      <div className={cn("step-layout flex gap-6")}>
         <div className="flex-shrink-0 w-80 space-y-2">
           {stepsOrGroups.map((item) => {
             if (isStepGroup(item)) {
@@ -83,9 +83,14 @@ export function StepLayout<StepId, GroupId>({
   };
 
   return (
-    <div className="StepLayout h-full rounded-xl shadow-lg overflow-hidden">
+    <div
+      className={cn(
+        "StepLayout h-full shadow-lg overflow-hidden flex",
+        className
+      )}
+    >
       <SidebarProvider defaultOpen={true}>
-        <Sidebar className="w-[360px] flex-shrink-0 transition-all duration-300 group-data-[side=left]:border-0 rounded-l-xl overflow-hidden">
+        <Sidebar className="w-[360px] flex-shrink-0 transition-all duration-300 group-data-[side=left]:border-0 overflow-hidden">
           <div
             className="w-full overflow-y-auto h-full"
             style={{

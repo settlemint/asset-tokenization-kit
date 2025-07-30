@@ -1,0 +1,54 @@
+{
+  "whichAssetClass": "Which asset class do you want to design?",
+  "assetClassDifferences": "Each asset class offers a different risk-return profile.",
+  "includes": "Includes",
+  "categories": {
+    "cashEquivalent": {
+      "description": "Highly liquid investments that can be readily converted to known amounts of cash.",
+      "icon": "Wallet",
+      "name": "Cash Equivalent"
+    },
+    "fixedIncome": {
+      "description": "Assets that provide returns in the form of regular, fixed interest payments and the return of principal at maturity.",
+      "icon": "TrendingUp",
+      "name": "Fixed Income"
+    },
+    "flexibleIncome": {
+      "description": "Assets that generate variable returns based on market conditions and underlying performance.",
+      "icon": "Activity",
+      "name": "Flexible Income"
+    }
+  },
+  "types": {
+    "bond": {
+      "name": "Bond",
+      "namePlural": "Bonds",
+      "description": "Debt securities that pay fixed interest over a specified period.",
+      "category": "fixedIncome"
+    },
+    "deposit": {
+      "name": "Deposit",
+      "namePlural": "Deposits",
+      "description": "Time-locked deposits that earn interest over a fixed period.",
+      "category": "cashEquivalent"
+    },
+    "equity": {
+      "name": "Equity",
+      "namePlural": "Equities",
+      "description": "Ownership shares representing a claim on assets and earnings.",
+      "category": "flexibleIncome"
+    },
+    "fund": {
+      "name": "Fund",
+      "namePlural": "Funds",
+      "description": "Pooled investment vehicles that aggregate capital from multiple investors.",
+      "category": "flexibleIncome"
+    },
+    "stablecoin": {
+      "name": "Stablecoin",
+      "namePlural": "Stablecoins",
+      "description": "Digital currencies designed to maintain a stable value relative to a reference asset.",
+      "category": "cashEquivalent"
+    }
+  }
+}
