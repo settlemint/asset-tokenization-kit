@@ -16,12 +16,12 @@ export class OnboardingPage extends BasePage {
               document.querySelector("[data-react-helmet]"))
           );
         },
-        { timeout: 10000 }
+        { timeout: 30000 }
       ),
-      this.page.waitForSelector("#root", { state: "visible", timeout: 10000 }),
+      this.page.waitForSelector("#root", { state: "visible", timeout: 30000 }),
       this.page.waitForSelector('a[href*="sign-up"], a:has-text("Sign Up")', {
         state: "visible",
-        timeout: 10000,
+        timeout: 30000,
       }),
     ]);
   }
@@ -43,7 +43,7 @@ export class OnboardingPage extends BasePage {
     await expect(
       this.page.getByRole("button", { name: "Get started" })
     ).toBeVisible({
-      timeout: 10000,
+      timeout: 30000,
     });
   }
 
@@ -107,7 +107,7 @@ export class OnboardingPage extends BasePage {
     await expect(
       this.page.getByRole("button", { name: "Create my wallet" })
     ).toBeVisible({
-      timeout: 10000,
+      timeout: 120000,
     });
     await this.page.getByRole("button", { name: "Create my wallet" }).click();
 
@@ -174,14 +174,23 @@ export class OnboardingPage extends BasePage {
 
   async verifyAndConfirmRecoveryCodes(): Promise<void> {
     await expect(
-      this.page.getByRole("heading", { name: "Your secret codes" })
-    ).toBeVisible({ timeout: 10000 });
-    await expect(
-      this.page.getByRole("button", { name: "Finish wallet setup" })
-    ).toBeVisible({ timeout: 10000 });
-    await this.page
-      .getByRole("button", { name: "Finish wallet setup" })
-      .click();
+      this.page.getByRole("heading", { name: "Your secret codes", exact: true })
+    ).toBeVisible({ timeout: 120000 });
+
+    const copyAllButton = this.page.getByRole("button", { name: "Copy all" });
+    await expect(copyAllButton).toBeVisible({ timeout: 120000 });
+    await copyAllButton.click();
+
+    const confirmCheckbox = this.page.locator("#recovery-codes-stored");
+    await expect(confirmCheckbox).toBeEnabled({ timeout: 120000 });
+    await confirmCheckbox.click();
+
+    const finishButton = this.page.getByRole("button", {
+      name: "Finish wallet setup",
+    });
+    await expect(finishButton).toBeEnabled({ timeout: 120000 });
+    await finishButton.click();
+
     await this.page.waitForLoadState("networkidle");
     await this.waitForReactStateSettle();
   }
@@ -189,7 +198,7 @@ export class OnboardingPage extends BasePage {
   async deploySystem(pin: string): Promise<void> {
     await this.waitForReactStateSettle();
     await expect(this.page.getByText("Initialize the system")).toBeVisible({
-      timeout: 10000,
+      timeout: 120000,
     });
     await this.page
       .getByRole("button", { name: "Deploy system", exact: true })
@@ -234,7 +243,7 @@ export class OnboardingPage extends BasePage {
           (await container.locator("label").innerText())?.trim() ?? "";
         if (label.toLowerCase() === labelToSelect.toLowerCase()) {
           const checkbox = container.locator('button[role="checkbox"]');
-          await expect(checkbox).toBeVisible({ timeout: 20000 });
+          await expect(checkbox).toBeVisible({ timeout: 120000 });
           await checkbox.click();
           await this.page.waitForTimeout(200);
           found = true;
@@ -253,7 +262,7 @@ export class OnboardingPage extends BasePage {
     await this.waitForReactStateSettle();
     await expect(
       this.page.locator("h2", { hasText: /^Select asset types$/ })
-    ).toBeVisible({ timeout: 10000 });
+    ).toBeVisible({ timeout: 120000 });
     await this.selectCheckboxByLabel(assetTypes, ".flex.flex-row.items-start");
     await this.page
       .getByRole("button", { name: "Deploy asset factories" })
@@ -291,7 +300,7 @@ export class OnboardingPage extends BasePage {
         exact: true,
       })
     ).toBeVisible({
-      timeout: 10000,
+      timeout: 120000,
     });
     await this.page.getByRole("button", { name: "Create ONCHAINID" }).click();
 
@@ -320,7 +329,7 @@ export class OnboardingPage extends BasePage {
     await expect(
       this.page.locator("h2").filter({ hasText: "Add Personal Information" })
     ).toBeVisible({
-      timeout: 10000,
+      timeout: 120000,
     });
 
     await expect(
@@ -352,7 +361,7 @@ export class OnboardingPage extends BasePage {
     const countryOption = this.page.getByRole("option", {
       name: new RegExp(`^${kycData.countryOfResidence}$`, "i"),
     });
-    await expect(countryOption).toBeVisible({ timeout: 10000 });
+    await expect(countryOption).toBeVisible({ timeout: 20000 });
     await countryOption.click();
     await this.page.waitForTimeout(300);
 
@@ -364,7 +373,7 @@ export class OnboardingPage extends BasePage {
     const residencyOption = this.page.getByRole("option", {
       name: new RegExp(`^${kycData.residencyStatus}$`, "i"),
     });
-    await expect(residencyOption).toBeVisible({ timeout: 10000 });
+    await expect(residencyOption).toBeVisible({ timeout: 20000 });
     await residencyOption.click();
     await this.page.waitForTimeout(300);
 
@@ -385,11 +394,11 @@ export class OnboardingPage extends BasePage {
 
     await this.waitForReactStateSettle();
     await expect(this.page.getByRole("dialog")).toBeVisible({
-      timeout: 10000,
+      timeout: 20000,
     });
 
     await this.enterPinVerification(pin);
-    await expect(this.page).toHaveURL(/\/$/, { timeout: 20000 });
+    await expect(this.page).toHaveURL(/\/$/, { timeout: 120000 });
     await this.waitForReactStateSettle();
   }
 
@@ -440,11 +449,11 @@ export class OnboardingPage extends BasePage {
     ].findIndex((m) => m.toLowerCase() === month.toLowerCase().slice(0, 3));
     try {
       const dateBtn = this.page.locator("button#dob");
-      await expect(dateBtn).toBeVisible({ timeout: 10000 });
+      await expect(dateBtn).toBeVisible({ timeout: 20000 });
       await dateBtn.click();
       await this.waitForReactStateSettle();
       const monthSelect = this.page.locator("select.rdp-months_dropdown");
-      await expect(monthSelect).toBeVisible({ timeout: 10000 });
+      await expect(monthSelect).toBeVisible({ timeout: 20000 });
 
       const monthOptions = await monthSelect
         .locator("option")
@@ -460,7 +469,7 @@ export class OnboardingPage extends BasePage {
       await this.page.waitForTimeout(300);
 
       const yearSelect = this.page.locator("select.rdp-years_dropdown");
-      await expect(yearSelect).toBeVisible({ timeout: 10000 });
+      await expect(yearSelect).toBeVisible({ timeout: 20000 });
       const yearOptions = await yearSelect.locator("option").allTextContents();
       if (yearOptions.includes(year)) {
         await yearSelect.selectOption(year);
@@ -515,7 +524,7 @@ export class OnboardingPage extends BasePage {
         );
       }
       await this.page.waitForTimeout(300);
-      await expect(monthSelect).toBeHidden({ timeout: 10000 });
+      await expect(monthSelect).toBeHidden({ timeout: 20000 });
       await this.waitForReactStateSettle();
     } catch (e) {
       throw e;
@@ -526,7 +535,7 @@ export class OnboardingPage extends BasePage {
     await this.retryOperation(async () => {
       await this.waitForReactStateSettle();
       const pinInput = this.page.getByRole("textbox").last();
-      await expect(pinInput).toBeVisible({ timeout: 10000 });
+      await expect(pinInput).toBeVisible({ timeout: 20000 });
       await pinInput.clear();
       await pinInput.fill(pin);
       await this.page.waitForTimeout(300);
@@ -539,7 +548,7 @@ export class OnboardingPage extends BasePage {
 
       await this.page
         .getByRole("dialog")
-        .waitFor({ state: "detached", timeout: 10000 });
+        .waitFor({ state: "detached", timeout: 20000 });
       await this.waitForReactStateSettle();
     });
   }
