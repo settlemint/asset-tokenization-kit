@@ -7,7 +7,7 @@ import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
  * Portal router
  *
  * @description
- * This router is used to handle requrests that require a portal client and system.
+ * This router is used to handle requests that require a portal client and system.
  */
 export const portalRouter = onboardedRouter
   .use(theGraphMiddleware)

@@ -56,8 +56,6 @@ describe("Token create", () => {
     const headers = await signInWithUser(DEFAULT_INVESTOR);
     const client = getOrpcClient(headers);
 
-    // We expect either a permission error or a "Token factory context not set" error
-    // Both are acceptable in the system access manager integration
     await expect(
       client.token.create({
         verification: {
@@ -71,7 +69,7 @@ describe("Token create", () => {
         countryCode: "056", // Belgium numeric code for testing
       })
     ).rejects.toThrow(
-      /User does not have the required role|Token factory context not set/
+      "User does not have the required role to execute this action."
     );
   });
 });
