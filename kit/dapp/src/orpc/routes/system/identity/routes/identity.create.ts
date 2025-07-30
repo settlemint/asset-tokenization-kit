@@ -1,7 +1,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { handleChallenge } from "@/orpc/helpers/challenge-response";
 import { portalRouter } from "@/orpc/procedures/portal.router";
-import { me as readAccount } from "@/orpc/routes/account/routes/account.me";
+import { read as readAccount } from "@/orpc/routes/account/routes/account.read";
 import { call, ORPCError } from "@orpc/server";
 
 const IDENTITY_CREATE_MUTATION = portalGraphql(`
@@ -40,14 +40,18 @@ export const identityCreate = portalRouter.system.identityCreate.handler(
       });
     }
 
-    const account = await call(readAccount, {}, { context }).catch(
-      (error: unknown) => {
-        if (error instanceof ORPCError && error.status === 404) {
-          return null;
-        }
-        throw error;
+    const account = await call(
+      readAccount,
+      {
+        wallet: sender.wallet,
+      },
+      { context }
+    ).catch((error: unknown) => {
+      if (error instanceof ORPCError && error.status === 404) {
+        return null;
       }
-    );
+      throw error;
+    });
 
     if (account?.identity) {
       throw errors.CONFLICT({

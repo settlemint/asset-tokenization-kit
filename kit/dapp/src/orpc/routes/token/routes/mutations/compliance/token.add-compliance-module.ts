@@ -30,7 +30,7 @@ const TOKEN_ADD_COMPLIANCE_MODULE_MUTATION = portalGraphql(`
   }
 `);
 
-export const tokenAddComplianceModule = portalRouter.token.addComplianceModule
+export const addComplianceModule = portalRouter.token.addComplianceModule
   .use(
     tokenPermissionMiddleware({
       requiredRoles: TOKEN_PERMISSIONS.addComplianceModule,

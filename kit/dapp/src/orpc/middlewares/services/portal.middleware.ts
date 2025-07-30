@@ -455,7 +455,7 @@ function createValidatedPortalClient(
           error: error instanceof Error ? error.message : String(error),
         });
 
-        handlePortalError(error);
+        handlePortalError(error, errors);
       }
 
       // Validate with Zod schema

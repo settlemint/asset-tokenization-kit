@@ -119,7 +119,6 @@ export function SystemAddonsSelection() {
       toast.promise(
         createAddons({
           verification,
-          contract: systemDetails.systemAddonRegistry,
           addons: pendingAddons,
         }),
         {

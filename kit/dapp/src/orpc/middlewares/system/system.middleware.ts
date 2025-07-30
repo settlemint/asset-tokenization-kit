@@ -3,6 +3,7 @@ import {
   type AccessControl,
 } from "@/lib/fragments/the-graph/access-control-fragment";
 import { theGraphClient, theGraphGraphql } from "@/lib/settlemint/the-graph";
+import type { AddonFactoryTypeId } from "@/lib/zod/validators/addon-types";
 import type { AssetFactoryTypeId } from "@/lib/zod/validators/asset-types";
 import {
   getEthereumAddress,
@@ -10,7 +11,6 @@ import {
 } from "@/lib/zod/validators/ethereum-address";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { read } from "@/orpc/routes/settings/routes/settings.read";
-import { SystemAddonType } from "@/orpc/routes/system/addon/routes/addon.create.schema";
 import type { SystemComplianceModuleType } from "@/orpc/routes/system/compliance-module/routes/complianceModule.create.schema";
 import { call } from "@orpc/server";
 import type { Hex } from "viem";
@@ -128,7 +128,7 @@ interface TokenFactory extends SystemComponent {
  */
 export interface SystemAddon extends SystemComponent {
   name: string;
-  typeId: SystemAddonType;
+  typeId: AddonFactoryTypeId;
 }
 
 /**
@@ -237,7 +237,7 @@ export const getSystemContext = async (
     system.systemAddonRegistry?.systemAddons.map(
       ({ id, name, typeId, accessControl }): SystemAddon => ({
         name,
-        typeId: typeId as SystemAddonType,
+        typeId: typeId as AddonFactoryTypeId,
         id: getEthereumAddress(id),
         accessControl,
       })

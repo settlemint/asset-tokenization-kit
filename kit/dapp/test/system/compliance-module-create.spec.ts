@@ -29,17 +29,7 @@ describe("System Compliance Module create", () => {
       ],
     });
 
-    let isDeployed = false;
-    for await (const event of result) {
-      if (event.status !== "completed") {
-        continue;
-      }
-      isDeployed = event.result?.length === 3;
-    }
-
-    expect(isDeployed).toBe(true);
-
-    const updatedSystem = await client.system.read({ id: "default" });
+    const updatedSystem = await client.system.read({ id: result.id });
     expect(updatedSystem.complianceModules.length).toBeGreaterThanOrEqual(3);
   });
 });

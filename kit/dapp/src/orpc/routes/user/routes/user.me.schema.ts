@@ -9,7 +9,7 @@
 import { ethereumAddress } from "@/lib/zod/validators/ethereum-address";
 import { userRoles } from "@/lib/zod/validators/user-roles";
 import { verificationType } from "@/lib/zod/validators/verification-type";
-import { type TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import { type TOKEN_FACTORY_PERMISSIONS } from "@/orpc/routes/token/routes/factory/factory.permissions";
 import { z } from "zod";
 
 const onboardingStateSchema = z.object({
