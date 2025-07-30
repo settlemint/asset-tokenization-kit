@@ -17,14 +17,12 @@ interface TokenComplianceModule {
   };
   complianceModule: {
     name: string;
-    addresses?: string[];
-    countries?: number[];
   };
 }
 
 interface Token {
   name: string;
-  tokenComplianceModuleConfigs: TokenComplianceModule[];
+  complianceModuleConfigs: TokenComplianceModule[];
 }
 
 interface TokensResponse {
@@ -65,7 +63,7 @@ describe("Token Compliance Modules", () => {
         continue;
       }
 
-      const complianceModules = token.tokenComplianceModuleConfigs;
+      const complianceModules = token.complianceModuleConfigs;
 
       const countryAllowListModule = complianceModules.find(
         (m) => m.complianceModule.name === "Country AllowList Compliance Module"
