@@ -75,16 +75,16 @@ export const read = onboardedRouter.system.read
     const output: SystemReadOutput = {
       id: systemContext.address,
       deployedInTransaction: systemContext.deployedInTransaction,
-      identityRegistry: systemContext.identityRegistry?.id ?? null,
-      identityFactory: systemContext.identityFactory?.id ?? null,
-      trustedIssuersRegistry: systemContext.trustedIssuersRegistry?.id ?? null,
-      complianceModuleRegistry:
-        systemContext.complianceModuleRegistry?.id ?? null,
-      tokenFactoryRegistry: systemContext.tokenFactoryRegistry?.id ?? null,
-      systemAddonRegistry: systemContext.systemAddonRegistry?.id ?? null,
+      identityRegistry: systemContext.identityRegistry ?? null,
+      identityFactory: systemContext.identityFactory ?? null,
+      trustedIssuersRegistry: systemContext.trustedIssuersRegistry ?? null,
+      complianceModuleRegistry: systemContext.complianceModuleRegistry ?? null,
+      tokenFactoryRegistry: systemContext.tokenFactoryRegistry ?? null,
+      systemAddonRegistry: systemContext.systemAddonRegistry ?? null,
       tokenFactories: systemContext.tokenFactories,
       systemAddons: systemContext.systemAddons,
       complianceModules: systemContext.complianceModules,
+      systemAccessManager: systemContext.systemAccessManager?.id ?? null,
     };
     return output;
   });

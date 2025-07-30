@@ -27,6 +27,7 @@ import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
 import { read } from "@/orpc/routes/system/routes/system.read";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
+import { keccak256, toBytes } from "viem";
 import { z } from "zod";
 
 /**
@@ -49,6 +50,27 @@ const CREATE_SYSTEM_MUTATION = portalGraphql(`
       challengeResponse: $challengeResponse
       address: $address
       from: $from
+    ) {
+      transactionHash
+    }
+  }
+`);
+
+const GRANT_ROLE_MUTATION = portalGraphql(`
+  mutation GrantRoleMutation(
+    $verificationId: String
+    $challengeResponse: String!
+    $address: String!
+    $to: String!
+    $role: String!
+    $from: String!
+  ) {
+    IATKSystemAccessManagerGrantRole(
+      verificationId: $verificationId
+      challengeResponse: $challengeResponse
+      address: $address
+      from: $from
+      input: { account: $to, role: $role }
     ) {
       transactionHash
     }
@@ -248,12 +270,34 @@ export const create = onboardedRouter.system.create
       { context }
     );
 
-    // Return the complete system details
-    return await call(
+    const systemDetails = await call(
       read,
       {
         id: system.id,
       },
       { context }
     );
+
+    // Grant deployer role to the initial admin
+    if (systemDetails.systemAccessManager) {
+      const grantRoleChallengeResponse = await handleChallenge(sender, {
+        code: verification.verificationCode,
+        type: verification.verificationType,
+      });
+
+      await context.portalClient.mutate(
+        GRANT_ROLE_MUTATION,
+        {
+          address: systemDetails.systemAccessManager,
+          from: sender.wallet,
+          to: sender.wallet,
+          role: keccak256(toBytes("DEPLOYER_ROLE")),
+          ...grantRoleChallengeResponse,
+        },
+        "Failed to grant deployer role"
+      );
+    }
+
+    // Return the complete system details
+    return systemDetails;
   });
