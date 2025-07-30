@@ -18,6 +18,14 @@
       "noData": "Keine Daten verfügbar",
       "noDataDescription": "Keine Gesamtangebotsdaten für die letzten {{days}} Tage gefunden"
     },
+    "supplyChanges": {
+      "description": "Gemintete und verbrannte Token in den letzten {{days}} Tagen",
+      "title": "Angebotsänderungen",
+      "minted": "Gemintet",
+      "burned": "Verbrannt",
+      "noData": "Keine Angebotsänderungsdaten verfügbar",
+      "noDataDescription": "Keine Mint- oder Burn-Aktivitäten in den letzten {{days}} Tagen gefunden"
+    },
     "transactionHistory": {
       "description": "Transaktionsvolumen über die Zeit",
       "title": "Transaktionshistorie"

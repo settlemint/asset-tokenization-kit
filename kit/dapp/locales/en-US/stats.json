@@ -18,6 +18,14 @@
       "noData": "No data available",
       "noDataDescription": "No total supply data found for the last {{days}} days"
     },
+    "supplyChanges": {
+      "description": "Minted and burned tokens over the last {{days}} days",
+      "title": "Supply changes",
+      "minted": "Minted",
+      "burned": "Burned",
+      "noData": "No supply changes data available",
+      "noDataDescription": "No minting or burning activity found for the last {{days}} days"
+    },
     "transactionHistory": {
       "description": "Transaction volume over time",
       "title": "Transaction history"
