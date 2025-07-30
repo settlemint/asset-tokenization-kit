@@ -170,6 +170,7 @@ async function getSystemOnboardingState(
     if (!systemData) {
       return systemOnboardingState;
     }
+    systemOnboardingState.system = true;
     systemOnboardingState.systemAssets = systemData.tokenFactories.length > 0;
 
     // Check if bond factory is deployed
