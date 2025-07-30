@@ -67,14 +67,16 @@ export const SelectAssetType = withForm({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-6 mb-10">
-          <form.AppField
-            name="assetType"
-            children={(field) => (
-              <field.RadioField options={options} variant="card" />
-            )}
-          />
-        </div>
+        <form.AppField
+          name="assetType"
+          children={(field) => (
+            <field.RadioField
+              options={options}
+              variant="card"
+              className="mt-6 mb-10"
+            />
+          )}
+        />
 
         <DialogFooter className="!flex !flex-row !justify-between">
           <Button variant="ghost" onClick={onCancel}>
